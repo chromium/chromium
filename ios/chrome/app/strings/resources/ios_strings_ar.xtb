@@ -38,6 +38,7 @@
 <translation id="1176932207622159128">يتعذر حفظ الصورة</translation>
 <translation id="1177414119866731261">‏افتح قائمة Chrome.</translation>
 <translation id="1181037720776840403">إزالة</translation>
+<translation id="1200396280085622191">‏يؤدي هذا الإعداد إلى فتح Chrome عند النقر على الروابط في الرسائل والتطبيقات الأخرى.</translation>
 <translation id="1207113853726624428">بحث جديد</translation>
 <translation id="1207493287814084192">‫5:30 مساءً</translation>
 <translation id="1209206284964581585">إخفاء الآن</translation>
@@ -167,6 +168,7 @@
 <translation id="1974060860693918893">الإعدادات المتقدّمة</translation>
 <translation id="1980417445547898121">{count,plural, =1{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على علامة تبويب واحدة ({count}) نشطة مؤخرًا على جهازك الآخر.}zero{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامة تبويب نشطة مؤخرًا على جهازك الآخر.}two{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على علامتَي تبويب ({count}) نشطتَين مؤخرًا على جهازك الآخر.}few{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامات تبويب نشطة مؤخرًا على جهازك الآخر.}many{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامة تبويب نشطة مؤخرًا على جهازك الآخر.}other{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامة تبويب نشطة مؤخرًا على جهازك الآخر.}}</translation>
 <translation id="1981118202195772574">الجهاز الجوّال</translation>
+<translation id="1987779152850321833">‏يمكنك إكمال هذه الإجراءات المقترَحة أدناه للاستفادة إلى أقصى حدّ من Chrome.</translation>
 <translation id="1989112275319619282">تصفّح</translation>
 <translation id="1990820278544963435">بحث</translation>
 <translation id="199425419756152024">عرض كلمة المرور</translation>
@@ -324,6 +326,7 @@
 <translation id="2952246431280799028">انقر مع الاستمرار على أحد العناوين.</translation>
 <translation id="2952278131021475699">‏البحث باستخدام الكاميرا من خلال "عدسة Google"</translation>
 <translation id="2952581218264071393">‏1- افتَح إعدادات Chrome.</translation>
+<translation id="2956733177489514605">‏يمكنك تسجيل الدخول باستخدام حسابك على Google لمزامنة كلمات المرور وغير ذلك.</translation>
 <translation id="2958718410589002129">كلمات المرور</translation>
 <translation id="2961210776189273067">العنوان</translation>
 <translation id="2964349545761222050">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
@@ -345,6 +348,7 @@
 اطّلِع على تعليمات محرك البحث بشأن حذف سجلّ البحث، إن أمكن.</translation>
 <translation id="3080525922482950719">يمكنك حفظ صفحات لقرائتها لاحقًا أو بلا إنترنت.</translation>
 <translation id="3081338492074632642">يُرجى التأكّد من أنّ كلمة المرور التي تريد حفظها تطابِق كلمة مرور <ph name="WEBSITE" />.</translation>
+<translation id="309672519329227863">‏يمكنك الوصول إلى كلمات مرورك على Chrome وغيرها من البيانات في التطبيقات الأخرى.</translation>
 <translation id="3112556859945124369">وضع علامة...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />التعرُّف على أنواع البيانات التي يمكنك مزامنتها<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">السجلّ وغير ذلك</translation>
@@ -523,6 +527,7 @@
 <translation id="4277990410970811858">التصفُّح الآمن</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
 <translation id="4293080268407233932">بحث</translation>
+<translation id="4302248187517737842">بلا اسم مستخدم ••••••••</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
 <translation id="430793432425771671">مزامنة جميع البيانات</translation>
 <translation id="4309403553630140242">يُرجى النقر مرّتَين للحصول على المزيد من المعلومات.</translation>
@@ -703,6 +708,7 @@
 <translation id="5478327362747197944">‏يمكنك إنشاء أحداث في "تقويم Google" مباشرةً من خلال النقر على تاريخ في إحدى صفحات الويب.</translation>
 <translation id="5489208564673669003">لإدارة ملفات تعريف الارتباط لجميع المواقع الإلكترونية، يمكنك الاطّلاع على <ph name="BEGIN_LINK" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">حظر كل ملفات تعريف الارتباط (لا ننصح بهذا الخيار)</translation>
+<translation id="5511959326926949696">يوفّر لك هذا الوضع حماية صارمة اختيارية على المتصفِّح. وينصح بعدم استخدام هذا الوضع إلا إذا كنت تعتقد أنّك قد تتعرّض لهجوم إلكتروني متطوِّر جدًا.</translation>
 <translation id="5513681519188741830">قبل <ph name="TIME" /> ساعة</translation>
 <translation id="5520466080178053306">انقر على "مدير كلمات المرور"، ثم على "إضافة".</translation>
 <translation id="5525095647255982834">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على ذلك الجهاز.</translation>
@@ -819,6 +825,7 @@
 <translation id="6149061208933997199">استخدام كلمة المرور</translation>
 <translation id="6152406514676263192">يمكنك تفعيل المزامنة للحصول على المحتوى الأكثر صلة باهتماماتك.</translation>
 <translation id="6159839020698489198">اختياري</translation>
+<translation id="6166946945007577435">قائمة جديدة لمساعدتك في الوصول إلى ما تريد</translation>
 <translation id="6170450281939467187">تعذَّرت ترجمة المحتوى</translation>
 <translation id="6173499589275053515">‏تم حفظ كلمة المرور في حساب Google الخاص بك: <ph name="EMAIL" />.</translation>
 <translation id="6177442314419606057">‏البحث في Chrome</translation>
@@ -1057,6 +1064,7 @@
 <translation id="7554645225856321710">إغلاق الكل</translation>
 <translation id="7554791636758816595">علامة تبويب جديدة</translation>
 <translation id="7561196759112975576">دائمًا</translation>
+<translation id="7582857256643797524">هذه الإعدادات مفعَّلة على جهازك</translation>
 <translation id="7583004045319035904">يمكنك استخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> لفتح علامات التبويب في وضع التصفّح المتخفي.</translation>
 <translation id="7600965453749440009">عدم الترجمة مطلقًا من اللغة <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">تم حظر النوافذ المنبثقة (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
@@ -1183,6 +1191,7 @@
 <translation id="8319076807703933069">بحث جديد</translation>
 <translation id="8323906514956095947">النقر مع الاستمرار لعرض المزيد من خيارات علامات التبويب</translation>
 <translation id="8328777765163860529">إغلاق الكل</translation>
+<translation id="8331621926962374866">‏عندما يكون Chrome في "وضع الإغلاق"، يتم حظر بعض تقنيات الويب، ما قد يؤدي إلى تحميل بعض المواقع الإلكترونية بشكل أبطأ أو عدم عملها بشكل صحيح.</translation>
 <translation id="8343993175958086504">يمكنك الاحتفاظ بنسخة احتياطية من بياناتك واستخدامها على أي جهاز.</translation>
 <translation id="834783239627985533">المواقع الإلكترونية الأكثر زيارة</translation>
 <translation id="8378714024927312812">بإدارة مؤسستك</translation>
@@ -1333,9 +1342,11 @@
 <translation id="952704832371081537">إلغاء</translation>
 <translation id="953008885340860025">‏تم تسجيل الخروج من Chrome</translation>
 <translation id="959066944189734975">تتم حاليًا متابعة <ph name="CHANNEL_NAME" /></translation>
+<translation id="97300214378190234">‏يؤدي هذا الإعداد إلى فتح Chrome عند النقر على الروابط في التطبيقات الأخرى.</translation>
 <translation id="973493300226275298">يمكنك تتبُّع سعر منتج معيَّن في المتاجر على الإنترنت. وستتلقّى تنبيهات عند انخفاض السعر.</translation>
 <translation id="981498610235328462">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط. ويتم إخفاء الحسابات غير المسموح بها.</translation>
 <translation id="984509647832111802">المزامنة لا تعمل.</translation>
+<translation id="984879470761322682">‏لإيقاف "وضع الإغلاق" في Chrome، عليك إيقافه على جهازك</translation>
 <translation id="988141524645182168">أجهزة أخرى</translation>
 <translation id="989988560359834682">تعديل العنوان</translation>
 <translation id="994757059139821576">اقتراحات المقالات</translation>

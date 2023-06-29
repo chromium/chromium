@@ -395,6 +395,7 @@
 <translation id="2750941250130734256">অ্যাক্টিভ উইন্ডোটি আনডক করা হয়েছে।</translation>
 <translation id="2761723519669354964">শেল্ফ থেকে হাইলাইট করা আইটেম খুলুন</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> <ph name="KEY_TWO" />-এর মাধ্যমে</translation>
+<translation id="2778197796481941784">Ctrl+Search+S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />, <ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>
 <translation id="2782591952652094792">ক্যাপচার মোড থেকে বেরিয়ে আসুন</translation>
 <translation id="2785499565474703580">১টি ডিভাইস কানেক্ট করা আছে</translation>
@@ -458,6 +459,7 @@
 <translation id="3062298103034426069">কাজ করে না</translation>
 <translation id="3068622547379332530">ভার্সন <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">শেল্ফ বাঁ দিকে দেখানো হচ্ছে</translation>
+<translation id="3070639127620815135">Search+Esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">মেনুটি বড় করুন</translation>
 <translation id="3087734570205094154">নিচে</translation>
@@ -471,6 +473,7 @@
 <translation id="3120421559657122717">ডিভাইস বন্ধ করবেন?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">আপডেট করার জন্য পুনরারম্ভ করুন</translation>
+<translation id="3139188263101386725">আপডেট করা শর্টকাট ব্যবহার করুন</translation>
 <translation id="3139942575505304791">ডেস্ক ১</translation>
 <translation id="315116470104423982">মোবাইল ডেটা</translation>
 <translation id="3151786313568798007">সজ্জা</translation>
@@ -606,6 +609,7 @@
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />. Google Calendar-এ আরও বিবরণ দেখতে বেছে নিন।</translation>
 <translation id="3659444876902283058">(দিন <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
+<translation id="3659667652322717492">আপনি পরে যেকোনও সময়ে মাইক সম্পর্কিত ফিচারগুলি চালু বা বন্ধ করতে পারবেন।</translation>
 <translation id="3659814201068740063">আর <ph name="TIME_LEFT" /> চলবে (<ph name="PERCENTAGE" />%)।
 ডিভাইসটি চার্জে বসান।</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ম্যানেজ করা ব্যবহারকারী</translation>
@@ -1049,6 +1053,7 @@
 <translation id="5578188167649348993">মেমরি</translation>
 <translation id="5580000943347215299">লাইব্রেরি</translation>
 <translation id="558849140439112033">যে জায়গার স্ক্রিন ক্যাপচার করতে চান সেটি ড্র্যাগ করে বেছে নিন</translation>
+<translation id="5590609058453685222">'মিউট নাজ' চালু আছে। মিউট করা অবস্থায় আপনি কথা বললে, আপনাকে বিজ্ঞপ্তি দেখানো হবে।</translation>
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">কথ্য প্রতিবার্তা বন্ধ করতে Ctrl + Alt + Z টিপুন।</translation>
@@ -1202,6 +1207,7 @@
 <translation id="6231419273573514727">পেরিফেরাল পারফর্ম্যন্স সীমাবদ্ধ হতে পারে</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> এখন আপনার ক্যামেরা এবং মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">"<ph name="NEW_SHORTCUT" />" শর্টকাট ব্যবহার করে Task Manager অ্য়াপ খুলুন।</translation>
 <translation id="6247728804802644171">বিজ্ঞপ্তি খুলুন</translation>
 <translation id="6254629735336163724">স্ক্রিনটি ল্যান্ডস্কেপ মোডে লক করা আছে</translation>
 <translation id="6259254695169772643">বেছে নিতে স্টাইলাস ব্যবহার করুন</translation>
@@ -1252,6 +1258,7 @@
 <translation id="6497418457565568043">'বিরক্ত করবে না' চালু আছে</translation>
 <translation id="6500896621837555595">আপডেট করুন</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> এ স্ক্রিন কাস্ট করা হচ্ছে</translation>
+<translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />" প্রেস করে Key Shortcuts অ্যাপ খুলুন।</translation>
 <translation id="6507618042428827377">উপলভ্য রয়েছে, পরবর্তী এমন ইনপুট পদ্ধতিতে সুইচ করুন</translation>
 <translation id="6508923215158854599">আপনার Chromebook এবং Chromecast ডিভাইস একই ওয়াই-ফাই নেটওয়ার্কে কানেক্ট আছে কিনা কনফার্ম করুন।</translation>
 <translation id="6515727200518652613">ক্যামেরা ডিসকানেক্ট হয়ে গেছে, আবার কানেক্ট করার চেষ্টা করা হচ্ছে।</translation>
@@ -1644,6 +1651,7 @@
 <translation id="8255234195843591763">আপডেট করতে রিসেট করুন</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8262312463845990408">প্লেব্যাক টগল করুন</translation>
+<translation id="8265826854528868575"><ph name="NUM_TOTAL_TASKS" />টির মধ্যে <ph name="NUM_SHOWN_TASKS" />টি টাস্ক দেখানো হচ্ছে</translation>
 <translation id="8270450402312105425">{0,plural, =1{১ ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}one{# ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}other{# ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}}</translation>
 <translation id="8277261673056602147">আপনার স্ক্রিনে টেক্সট হাইলাইট করুন</translation>
 <translation id="8284362522226889623">পূর্ববর্তী ডেস্কে সুইচ করতে, চার আঙুল ব্যবহার করে বাঁদিকে সোয়াইপ করুন</translation>

@@ -696,6 +696,7 @@
 <translation id="1576594961618857597">デフォルトの白のアバター</translation>
 <translation id="1576729678809834061">この検索結果を報告</translation>
 <translation id="1578558981922970608">強制終了</translation>
+<translation id="157931050206866263">マルウェア スキャンの詳細</translation>
 <translation id="1580772913177567930">管理者にお問い合わせください</translation>
 <translation id="1581962803218266616">Finder で表示</translation>
 <translation id="1582955169539260415">[<ph name="FINGERPRINT_NAME" />] を削除</translation>
@@ -919,6 +920,7 @@
 <translation id="1757132445735080748">Linux の設定を完了するには、ChromeOS Flex を更新してからもう一度お試しください。</translation>
 <translation id="1757301747492736405">アンインストールは保留中です</translation>
 <translation id="175772926354468439">テーマを有効にする</translation>
+<translation id="1757786065507923842">保護者の権限をリクエストできませんでした。</translation>
 <translation id="17584710573359123">Chrome ウェブストアのページに移動</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> さんのアカウント</translation>
 <translation id="176272781006230109">おすすめのショッピング情報</translation>
@@ -971,6 +973,7 @@
 <translation id="1795214765651529549">クラシックを使用</translation>
 <translation id="1796588414813960292">音を使用する機能は動作しなくなります</translation>
 <translation id="1797117170091578105">Chromebook のキーボードを使ってプレイしましょう。特定の操作を行うキーをカスタマイズできます。</translation>
+<translation id="1801571666562084067">PDF 画像をテキストに変換する</translation>
 <translation id="180203835522132923">検索+O の後、W</translation>
 <translation id="1802624026913571222">ディスプレイを閉じたときにスリープ状態にする</translation>
 <translation id="1802687198411089702">ページが応答していません。しばらくお待ちいただくか、終了してください。</translation>
@@ -2625,6 +2628,7 @@
 <translation id="3165390001037658081">携帯通信会社によってはこの機能を利用できない場合があります。</translation>
 <translation id="3169930038976362151">ニーズに合ったテーマを選択します。テーマ、壁紙、スクリーンセーバーなどを変更するには、デスクトップを長押しします。</translation>
 <translation id="3170072451822350649">ログインせずに<ph name="LINK_START" />ゲストとしてブラウジング<ph name="LINK_END" />することもできます。</translation>
+<translation id="3174311489448105660">可能な場合に、スクリーン リーダーで読み上げられるよう、PDF 画像をスキャンして内容をテキストに変換します。この機能は Chrome ブラウザでのみサポートされます。</translation>
 <translation id="31774765611822736">左側の新しいタブ</translation>
 <translation id="3177909033752230686">ページの言語:</translation>
 <translation id="3177914167275935955">デバイスには Chrome Education Upgrade が含まれていますが、ユーザー名が Google for Education アカウントに関連付けられていません。別のデバイスで g.co/workspace/edusignup にアクセスし、Google for Education アカウントを作成してください。</translation>
@@ -4719,6 +4723,7 @@
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" /> / <ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">アクセスの確認</translation>
 <translation id="4979263087381759787">デベロッパー オプション</translation>
+<translation id="4979510648199782334">Microsoft 365 のセットアップが完了しました</translation>
 <translation id="4980805016576257426">この拡張機能には不正なソフトウェアが含まれています。</translation>
 <translation id="4981449534399733132">同期しているすべてのデバイスと Google アカウントから閲覧データを削除するには、<ph name="BEGIN_LINK" />ログイン<ph name="END_LINK" />してください。</translation>
 <translation id="4986706507552097681">同期する項目はいつでも [設定] で選択できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
@@ -8125,6 +8130,7 @@
 <translation id="7910768399700579500">新しいフォルダ(&amp;N)</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">サーバーでパスワードが変更されました。いったんログアウトして再度ログインしてください。</translation>
+<translation id="791247712619243506">設定をキャンセル</translation>
 <translation id="7912974581251770345">翻訳</translation>
 <translation id="7915457674565721553">保護者による使用制限を設定するにはインターネットに接続してください</translation>
 <translation id="7916364730877325865">お客様の組織では、このアカウントとの同期を有効にすることは許可されていません</translation>
@@ -8915,6 +8921,7 @@
 <translation id="8592141010104017453">通知を一切表示しない</translation>
 <translation id="859246725979739260">このサイトでは位置情報へのアクセスがブロックされています。</translation>
 <translation id="8593121833493516339">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
+<translation id="8593450223647418235">設定が完了するまで、Microsoft 365 でファイルを開くことはできません。</translation>
 <translation id="8596540852772265699">カスタム ファイル</translation>
 <translation id="8597845839771543242">プロパティの書式:</translation>
 <translation id="8599681327221583254">正しく設定されていないポリシーがあります。管理者にお問い合わせください</translation>
@@ -9331,6 +9338,7 @@
 <translation id="8941173171815156065">権限「<ph name="PERMISSION" />」を取り消します</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> はオフになっています</translation>
 <translation id="894191600409472540">安全なパスワードにしてください</translation>
+<translation id="8942714513622077633">Microsoft 365 のセットアップをキャンセルしますか？</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">バッテリー消費が速くなります（現在 <ph name="BATTERY_PERCENTAGE" />%）</translation>
 <translation id="8944725102565796255">このアカウントを今回だけ使用する場合は、<ph name="GUEST_LINK_BEGIN" />デバイスをゲストとして<ph name="GUEST_LINK_END" />使用できます。他のユーザーのアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に<ph name="LINK_BEGIN" />新しいユーザーを追加<ph name="LINK_END" />します。
@@ -9375,10 +9383,14 @@
 <translation id="8978154919215542464">オン - すべて同期</translation>
 <translation id="8978670037548431647">テザリング機能を更新</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" /></translation>
+<translation id="8980335421826918629">このファイルはウイルスや不正なソフトウェアの可能性があります。
+
+Google セーフ ブラウジングに送信して、安全でないかどうかを確認できます。通常、スキャンには数秒かかります。</translation>
 <translation id="8980345560318123814">フィードバック レポート</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - クラッシュしました</translation>
 <translation id="8981038076986775523">マイクの使用についての詳細</translation>
 <translation id="8981825781894055334">用紙が残り少なくなっています</translation>
+<translation id="8982043802480025357">Word、Excel、PowerPoint ファイルを開くと、Microsoft 365 で開く前に Microsoft OneDrive に移動します。</translation>
 <translation id="8983018820925880511">この新しいプロフィールは <ph name="DOMAIN" /> によって管理されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> は「<ph name="FILENAME" />」を編集できます</translation>
 <translation id="8984694057134206124">あなたのデバイスは誰でも <ph name="MINUTES" /> 分間検出できるようになります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>

@@ -5,6 +5,7 @@
 <translation id="1008557486741366299">暫時不要</translation>
 <translation id="100957008357583611">要使用您的位置資訊嗎？</translation>
 <translation id="1010200102790553230">稍後載入網頁</translation>
+<translation id="1010481144722131607">銀行希望確認你的身分</translation>
 <translation id="1011206368273183593">正在準備檔案</translation>
 <translation id="1015730422737071372">提供額外詳情</translation>
 <translation id="1019413721762100891">關閉</translation>
@@ -761,6 +762,7 @@
 <translation id="2649204054376361687"><ph name="COUNTRY" />，<ph name="CITY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度清除瀏覽記錄、Cookie、快取同更多資料</translation>
 <translation id="2650446666397867134">存取檔案被拒</translation>
+<translation id="2651465929321991146">歷史記錄和分頁</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2655752832536625875">浴室</translation>
 <translation id="2657637947725373811">{0,plural, =1{要傳輸機密檔案嗎？}other{要傳輸機密檔案嗎？}}</translation>
@@ -1211,6 +1213,7 @@
 <translation id="3677008721441257057">您是不是要前往&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;？</translation>
 <translation id="3678029195006412963">無法簽署要求</translation>
 <translation id="3678529606614285348">在新無痕式視窗中開啟網頁 (Ctrl-Shift-N)</translation>
+<translation id="3678914302246317895">請輸入 <ph name="OTP_LENGTH" /> 位數驗證碼</translation>
 <translation id="3681007416295224113">憑證資料</translation>
 <translation id="3681421644246505351">Chrome 會根據您最近的瀏覽記錄，記住您感興趣的主題。</translation>
 <translation id="3693327506115126094">選擇身分驗證方式</translation>
@@ -2019,6 +2022,7 @@
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資料}other{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資料}}</translation>
 <translation id="5463625433003343978">正在尋找裝置…</translation>
 <translation id="5464236009658034488">辦公室設備供應</translation>
+<translation id="5466018172325111652">沒有收到驗證碼嗎？<ph name="BEGIN_LINK" />取得新的驗證碼<ph name="END_LINK" /></translation>
 <translation id="5470230812924696184">土木工程</translation>
 <translation id="5470861586879999274">重做編輯(&amp;R)</translation>
 <translation id="5471337644440862957">喜劇電影</translation>

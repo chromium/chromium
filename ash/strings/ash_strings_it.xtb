@@ -395,6 +395,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2750941250130734256">Finestra attiva sganciata.</translation>
 <translation id="2761723519669354964">Apri l'elemento evidenziato dalla barra delle app</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> da <ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">Ctrl+ Tasto per la ricerca + S</translation>
 <translation id="2778650143428714839">Dispositivo <ph name="DEVICE_TYPE" /> gestito da <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Esci dalla modalità di acquisizione</translation>
 <translation id="2785499565474703580">1 dispositivo connesso</translation>
@@ -458,6 +459,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3062298103034426069">Non supportate</translation>
 <translation id="3068622547379332530">Versione <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Barra delle app a sinistra</translation>
+<translation id="3070639127620815135">Tasto per la ricerca + Esc</translation>
 <translation id="3077734595579995578">maiusc</translation>
 <translation id="3081696990447829002">Espandi il menu</translation>
 <translation id="3087734570205094154">In basso</translation>
@@ -471,6 +473,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3120421559657122717">Arrestare il dispositivo?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Riavvia per aggiornare</translation>
+<translation id="3139188263101386725">Usa la scorciatoia aggiornata</translation>
 <translation id="3139942575505304791">Scrivania 1</translation>
 <translation id="315116470104423982">Dati mobili</translation>
 <translation id="3151786313568798007">Orientamento</translation>
@@ -602,6 +605,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3649505501900178324">Aggiornamento scaduto</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />, <ph name="EVENT_SUMMARY" />, dalle ore <ph name="START_TIME" /> alle ore <ph name="END_TIME" />, <ph name="TIME_ZONE" />. Seleziona per avere maggiori dettagli in Google Calendar.</translation>
 <translation id="3659444876902283058">(giorno <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
+<translation id="3659667652322717492">Puoi modificare il comportamento del microfono in qualsiasi momento.</translation>
 <translation id="3659814201068740063">Tempo rimanente: circa <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Collega il dispositivo all'alimentazione.</translation>
 <translation id="366222428570480733">Utente gestito <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1046,6 +1050,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5578188167649348993">memoria</translation>
 <translation id="5580000943347215299">Raccolta</translation>
 <translation id="558849140439112033">Trascina per selezionare l'area da acquisire</translation>
+<translation id="5590609058453685222">L'avviso di microfono spento è attivo. Se parli mentre il microfono è spento, riceverai una notifica.</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Premi CTRL + ALT + Z per disattivare la funzione di lettura vocale.</translation>
@@ -1199,6 +1204,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6231419273573514727">Le prestazioni delle periferiche potrebbero essere limitate</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sta usando la fotocamera e il microfono</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Apri l'app Task Manager con "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Apri le notifiche</translation>
 <translation id="6254629735336163724">Bloccata in orizzontale</translation>
 <translation id="6259254695169772643">Usa lo stilo per selezionare</translation>
@@ -1249,6 +1255,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6497418457565568043">Non disturbare attiva</translation>
 <translation id="6500896621837555595">Aggiorna</translation>
 <translation id="6501401484702599040">Trasmissione dello schermo a <ph name="RECEIVER_NAME" /> in corso</translation>
+<translation id="6507042703812908515">Apri l'app Scorciatoie da tastiera con "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Passa al metodo di immissione disponibile successivo</translation>
 <translation id="6508923215158854599">Assicurati che Chromebook sia connesso alla stessa rete Wi-Fi del dispositivo Chromecast.</translation>
 <translation id="6515727200518652613">Fotocamera disconnessa, tentativo di riconnessione.</translation>
@@ -1641,6 +1648,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8255234195843591763">Reimposta per aggiornare</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8262312463845990408">Attiva/disattiva riproduzione</translation>
+<translation id="8265826854528868575">Visualizzazione di <ph name="NUM_SHOWN_TASKS" /> su <ph name="NUM_TOTAL_TASKS" /></translation>
 <translation id="8270450402312105425">{0,plural, =1{Ripristina la versione precedente del dispositivo entro un'ora}other{Ripristina la versione precedente del dispositivo entro # ore}}</translation>
 <translation id="8277261673056602147">Evidenzia il testo sullo schermo</translation>
 <translation id="8284362522226889623">Scorri verso sinistra con quattro dita per passare alla scrivania precedente</translation>

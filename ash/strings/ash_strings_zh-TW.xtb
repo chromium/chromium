@@ -395,6 +395,7 @@
 <translation id="2750941250130734256">已取消固定使用中的視窗。</translation>
 <translation id="2761723519669354964">開啟檔案櫃中的醒目顯示項目</translation>
 <translation id="2774348302533424868">按下 <ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> 到 <ph name="KEY_TWO" /> 鍵</translation>
+<translation id="2778197796481941784">Ctrl + 搜尋鍵 + S 鍵</translation>
 <translation id="2778650143428714839">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="MANAGER" /> 管理</translation>
 <translation id="2782591952652094792">結束擷取模式</translation>
 <translation id="2785499565474703580">已與 1 部裝置連線</translation>
@@ -458,6 +459,7 @@
 <translation id="3062298103034426069">不支援</translation>
 <translation id="3068622547379332530">版本 <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">在左側顯示檔案櫃</translation>
+<translation id="3070639127620815135">搜尋鍵 + Esc 鍵</translation>
 <translation id="3077734595579995578">Shift</translation>
 <translation id="3081696990447829002">展開選單</translation>
 <translation id="3087734570205094154">置底</translation>
@@ -471,6 +473,7 @@
 <translation id="3120421559657122717">要關機嗎？</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">重新啟動即可更新</translation>
+<translation id="3139188263101386725">使用新版快速鍵</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">行動數據</translation>
 <translation id="3151786313568798007">方向</translation>
@@ -603,6 +606,7 @@
         <ph name="EVENT_SUMMARY" />：
         <ph name="START_TIME" /> 至 <ph name="END_TIME" /> (<ph name="TIME_ZONE" />)。選取活動即可在 Google 日曆中查看詳情。</translation>
 <translation id="3659444876902283058">(第 <ph name="CURRENT_DAY" /> 天，共 <ph name="TOTAL_DAYS" /> 天)</translation>
+<translation id="3659667652322717492">你稍後隨時可以變更麥克風行為。</translation>
 <translation id="3659814201068740063">大約還可使用 <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)。
 請將裝置接上電源。</translation>
 <translation id="366222428570480733">受管理的使用者：<ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1046,6 +1050,7 @@
 <translation id="5578188167649348993">記憶體</translation>
 <translation id="5580000943347215299">資料庫</translation>
 <translation id="558849140439112033">拖曳選取要擷圖的區域</translation>
+<translation id="5590609058453685222">靜音提醒已開啟。如果在靜音狀態下說話，系統會傳送通知給你。</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用互動朗讀功能。</translation>
@@ -1199,6 +1204,7 @@
 <translation id="6231419273573514727">周邊裝置效能可能受到限制</translation>
 <translation id="6232891689835436217">「<ph name="APP_NAME" />」正在使用你的攝影機和麥克風</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">使用「<ph name="NEW_SHORTCUT" />」開啟工作管理員應用程式。</translation>
 <translation id="6247728804802644171">開啟通知</translation>
 <translation id="6254629735336163724">已鎖定為水平畫面</translation>
 <translation id="6259254695169772643">請使用觸控筆選取</translation>
@@ -1249,6 +1255,7 @@
 <translation id="6497418457565568043">零打擾模式已開啟</translation>
 <translation id="6500896621837555595">更新</translation>
 <translation id="6501401484702599040">正在將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
+<translation id="6507042703812908515">使用「<ph name="NEW_SHORTCUT" />」開啟 Key Shortcuts 應用程式。</translation>
 <translation id="6507618042428827377">切換到下一個可用的輸入法</translation>
 <translation id="6508923215158854599">確認 Chromebook 和 Chromecast 裝置連線到相同 Wi-Fi 網路。</translation>
 <translation id="6515727200518652613">攝影機連線中斷，正在嘗試重新連接。</translation>
@@ -1640,6 +1647,7 @@
 <translation id="8255234195843591763">重設以更新</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8262312463845990408">切換播放</translation>
+<translation id="8265826854528868575">目前顯示 <ph name="NUM_SHOWN_TASKS" /> 個，共 <ph name="NUM_TOTAL_TASKS" /> 個</translation>
 <translation id="8270450402312105425">{0,plural, =1{在 1 小時內將裝置復原為先前的版本}other{在 # 小時內將裝置復原為先前的版本}}</translation>
 <translation id="8277261673056602147">醒目顯示畫面上的文字</translation>
 <translation id="8284362522226889623">以四指向左滑動即可切換至上一個桌面</translation>

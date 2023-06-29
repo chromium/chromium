@@ -302,6 +302,7 @@
 <translation id="6467852467360539617">Pastro të dhënat dhe rivendos lejet</translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="6545864417968258051">Skanimi për Bluetooth</translation>
+<translation id="6552691050538553146">Opsione të tjera te "<ph name="BANNER_TITLE" />"</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër e bllokuar}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera të bllokuara}}</translation>
 <translation id="6554732001434021288">Vizituar së fundi <ph name="NUM_DAYS" /> ditë më parë</translation>
 <translation id="6561560012278703671">Përdor mesazhe më të qeta (bllokon kërkesat e njoftimeve që mos të të ndërpresin)</translation>

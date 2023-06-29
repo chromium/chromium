@@ -157,6 +157,7 @@ Op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NA
       Het instellen van <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> heeft alleen effect als je <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> hebt ingesteld op False.</translation>
 <translation id="1147732569915511430">De SHA-256-hash van de avatarafbeelding.</translation>
 <translation id="1148415065145333943">Geavanceerde batterijoplaadmodus uitzetten</translation>
+<translation id="1149203480502386713">Post-quantum sleutelovereenkomst voor TLS aanzetten</translation>
 <translation id="1149841949061115313">KLS-kanaal</translation>
 <translation id="1150742937785306405">Sta gebruikers toe de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor door sites voorgestelde advertenties aan of uit te zetten op hun apparaat.</translation>
 <translation id="1151353063931113432">Afbeeldingen toestaan op deze sites</translation>
@@ -969,6 +970,7 @@ De beschikbaarheid van extensies wordt nog steeds beheerd door andere beleidsreg
 
           Dit beleid wordt alleen gerespecteerd als het beleid DefaultSearchProviderEnabled is toegepast.</translation>
 <translation id="1850439894606905202">Standaard worden documenten in site-keyed agentclusters geplaatst. document.domain blijft instelbaar.</translation>
+<translation id="1851034156561932736">Oplaadgeluiden aanzetten</translation>
 <translation id="1851282952069386119">Gebruikers kunnen ervoor kiezen de resultaten van Chrome Cleanup te delen met Google</translation>
 <translation id="1852294065645015766">Automatisch afspelen van media toestaan</translation>
 <translation id="1855963029978337744">Als je het beleid instelt, kun je een lijst met URL's maken die aangeven welke sites automatisch toegangsrechten krijgen voor een HID-apparaat met de opgegeven leveranciers- en product-ID's. Het beleid is alleen geldig als elk item in de lijst de velden <ph name="DEVICES_FIELD_NAME" /> en <ph name="URLS_FIELD_NAME" /> bevat, anders wordt het item genegeerd. Elk item in het veld <ph name="DEVICES_FIELD_NAME" /> moet een veld <ph name="VENDOR_ID_FIELD_NAME" /> hebben en kan het een veld <ph name="PRODUCT_ID_FIELD_NAME" /> hebben. Als je het veld <ph name="PRODUCT_ID_FIELD_NAME" /> weglaat, wordt een beleid gemaakt dat geschikt is voor elk apparaat met de opgegeven leveranciers-ID. Een item dat het veld <ph name="PRODUCT_ID_FIELD_NAME" /> heeft zonder het veld <ph name="VENDOR_ID_FIELD_NAME" />, is ongeldig en wordt genegeerd.
@@ -1088,6 +1090,7 @@ Hoewel het voorgaande voorbeeld de onderdrukking van op bestandsextensies gebase
 
 Als dit beleid wordt toegepast in combinatie met <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> en DownloadRestrictions is ingesteld om gevaarlijke bestandstypen te blokkeren, hebben downloadblokkeringen bepaald door DownloadRestrictions voorrang. Als dit beleid bijvoorbeeld is ingesteld om downloads van exe-bestanden van website1.com aan te zetten en DownloadRestrictions is ingesteld om schadelijke downloads en gevaarlijke bestandstypen te blokkeren, worden downloads van exe-bestanden alsnog geblokkeerd voor alle domeinen. Als DownloadRestrictions niet is ingesteld om gevaarlijke bestandstypen te blokkeren, worden bestandstypen die in dit beleid zijn gespecificeerd, vrijgesteld van op bestandsextensies gebaseerde downloadwaarschuwingen in de opgegeven domeinen. Lees meer over DownloadRestrictions (https://chromeenterprise.google/policies/?policy=DownloadRestrictions).</translation>
 <translation id="1954612656043024615">De functie voor gedeeld klembord aanzetten</translation>
+<translation id="1955063069502242812">Geluid voor een bijna lege batterij aanzetten</translation>
 <translation id="1960059835237529462">Hiermee kan de promotie voor <ph name="IOS_NAME" />-appstore-beoordelingen worden getoond aan gebruikers</translation>
 <translation id="1960416154405676350">Regio doorzoeken aanzetten voor <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1961091374249454164">Het beleid is alleen van toepassing op beheerde gastsessies.
@@ -2498,6 +2501,7 @@ In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor ins
       Als je dit beleid toepast, krijgen gebruikers de optie om cast-apparaten te selecteren met een toegangscode of door een QR-code te scannen.
       Als je dit beleid niet toepast of niet instelt, krijgen gebruikers niet de optie om cast-apparaten te selecteren met een toegangscode of door een QR-code te scannen.</translation>
 <translation id="3208615748170745525">Dagen vanaf ontdekking van update.</translation>
+<translation id="3209947902706795852">Gebruikers vragen om te migreren.</translation>
 <translation id="3210408472559816322">Als je dit beleid toepast, geef je aan welke hosts voor systeemeigen berichten niet mogen worden geladen. Een weigeringslijst met de waarde <ph name="WILDCARD_VALUE" /> betekent dat alle hosts voor systeemeigen berichten worden geweigerd, tenzij ze expliciet zijn toegestaan.
 
       Als je het beleid niet instelt, laadt <ph name="PRODUCT_NAME" /> alle geïnstalleerde hosts voor systeemeigen berichten.</translation>
@@ -3010,6 +3014,17 @@ In versie 114 en hoger is <ph name="DOH_SALT_POLICY_NAME" /> optioneel als dit b
 
       Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> een standaard bibliotheeknaam.</translation>
 <translation id="3650122925429054129">Cursormarkering op het inlogscherm uitzetten</translation>
+<translation id="3652207037778361023">De functie voor geluid voor een bijna lege batterij aanzetten.
+
+          Deze functie is verantwoordelijk voor het afspelen van het geluid voor een bijna lege batterij.
+
+          Als je dit beleid toepast, wordt het geluid voor een bijna lege batterij afgespeeld als het batterijniveau of de resterende tijd onder een drempelwaarde zakt.
+
+          Als je dit beleid niet toepast, wordt er geen geluid voor een bijna lege batterij afgespeeld.
+
+          Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of negeren.
+
+          Als je dit beleid niet instelt, staat deze functie uit op de beheerde <ph name="PRODUCT_OS_NAME" />-apparaten, maar aan onder andere omstandigheden.</translation>
 <translation id="3652670852519271837">Sites toestaan om gebruikers schrijftoegang te vragen tot bestanden en directory's via de File System API</translation>
 <translation id="3653237928288822292">Icoon voor standaardzoekprovider</translation>
 <translation id="3654906736796256792">Toestaan dat de audiosandbox wordt uitgevoerd</translation>
@@ -3049,6 +3064,7 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
       Als je dit beleid niet instelt, wordt <ph name="PRINTERS_ALLOW_ALL" /> gebruikt.</translation>
 <translation id="3695204334462456702">Op zeroconf gebaseerde (mDNS + DNS-SD) protocolbestemmingen (beëindigd)</translation>
 <translation id="3695706037816556327">Actie bij verwijdering van beveiligingstoken (bijv. smartcard) voor <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="3696134803170884851">Oplaadgeluiden uitzetten</translation>
 <translation id="3699986274986041335">Altijd toestemming vragen als een site het recht voor lokale lettertypen wil hebben</translation>
 <translation id="3700193037252896716">Frequentie waarmee opnieuw opstarten moet plaatsvinden.</translation>
 <translation id="3700318587977845664">Frequentie waarmee de updatecheck moet worden herhaald.</translation>
@@ -3694,6 +3710,7 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
 <translation id="4275048399551500192">Mediabediening niet tonen voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten</translation>
+<translation id="4278656834593750050">Oplaadgeluiden aanzetten</translation>
 <translation id="4282243913059705499"><ph name="PRODUCT_NAME" />-icoon altijd tonen in de werkbalk</translation>
 <translation id="4285674129118156176">Toestaan dat niet-gelieerde gebruikers ARC gebruiken</translation>
 <translation id="428948795004445932">Snelheid waarmee netwerkgegevens worden bemonsterd en verzameld. Het toegestane minimum is 1 minuut.
@@ -3709,6 +3726,7 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
       Dit beleid wordt genegeerd en de melding wordt altijd getoond als het apparaat onbeheerd is of er slechts één gebruiker is.
 
       Als er meerdere gebruikersaccounts zijn op een beheerd apparaat, wordt de melding alleen getoond als dit beleid is toegepast.</translation>
+<translation id="4298476374822550051">Post-quantum sleutelovereenkomst van Kyber voor TLS aanzetten</translation>
 <translation id="4303167373847512281">Ontwikkelaarsmodus toestaan</translation>
 <translation id="4307116964468610577">Het beleid verlengt de bruikbare levensduur van de systeembatterijen door ze maar één keer per dag volledig op te laden. De rest van de dag worden de batterijen in een lagere oplaadstatus gehouden, wat beter is voor opslag, ook als het systeem is aangesloten op een voedingsbron.
 
@@ -3722,6 +3740,17 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="4311662690937656540">Online inloggen afdwingen op de inlog- en vergrendelschermen</translation>
 <translation id="4313767483634435271">Toegewezen MAC-adres van dock van apparaat</translation>
 <translation id="4314538398999793073">CNAME-lookup tijdens Kerberos-verificatie uitzetten</translation>
+<translation id="4316437338046981895">De functie voor oplaadgeluiden aanzetten.
+
+          Deze functie is verantwoordelijk voor het afspelen van de oplaadgeluiden.
+
+          Als je dit beleid toepast, worden de oplaadgeluiden afgespeeld als het apparaat wordt aangesloten op een wisselstroomoplader.
+
+          Als je dit beleid niet toepast, wordt er geen oplaadgeluid afgespeeld.
+
+          Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of negeren.
+
+          Als je dit beleid niet instelt, staat deze functie uit op de beheerde <ph name="PRODUCT_OS_NAME" />-apparaten, maar aan onder andere omstandigheden.</translation>
 <translation id="4320592646346933548">Wifi</translation>
 <translation id="4322842393287974810">Toestaan dat de kiosk-app die automatisch zonder vertraging is gestart, de <ph name="PRODUCT_OS_NAME" />-versie beheert</translation>
 <translation id="4323412353642577604">Extern attest voor contentbescherming aanzetten</translation>
@@ -5154,6 +5183,7 @@ Als je het beleid niet instelt, hebben alle domeinen geen toegang tot file://-UR
 <translation id="5657752663637568277">Met dit beleid wordt bepaald of waarschuwingen over de beëindiging van <ph name="CLOUD_PRINT_NAME" /> aan gebruikers worden getoond in het dialoogvenster met het afdrukvoorbeeld of op de pagina's met instellingen.
       Als je dit beleid instelt op True, worden de waarschuwingen over beëindiging verborgen.
       Als je dit beleid instelt op False of niet instelt, worden de waarschuwingen over beëindiging getoond.</translation>
+<translation id="5659776687676755342">Geluid voor een bijna lege batterij aanzetten</translation>
 <translation id="5660228672907979869">Voorkomen dat partitionering van opslag door derden kan worden aangezet.</translation>
 <translation id="5666457529647159548">Gebruikers toestaan geïnstalleerde clientcertificaten te beheren.</translation>
 <translation id="567377007899266033">Als het beleid wordt ingesteld op True, worden rapporten over belangrijke, op basis van beleid geactiveerde installatiegebeurtenissen voor extensies naar Google gestuurd. Er worden geen gebeurtenissen geregistreerd als het beleid is ingesteld op False. Als het beleid niet is ingesteld, is True de standaardwaarde.</translation>
@@ -5286,6 +5316,7 @@ Als je dit beleid niet toepast, wordt <ph name="SAFE_BROWSING_NAME" />-extensieb
 <translation id="5790763087505467169">Minder meldingen voor automatisch starten van beheerde gastsessies</translation>
 <translation id="5800329278018669527">Prompt voor netwerkconfiguratie uitzetten als je offline bent</translation>
 <translation id="5802931736499687181">De Encrypted Reporting Pipeline uitzetten</translation>
+<translation id="5804795151506109282">Gebruikers niet vragen om te migreren.</translation>
 <translation id="5806128552675651249">Alleen afdrukken zonder achtergrondbeelden toestaan</translation>
 <translation id="5809210507920527553">Beheert instellingen voor de Linux-container (Crostini).</translation>
 <translation id="5809728392451418079">De weergavenaam voor lokale accounts van het apparaat instellen</translation>
@@ -5849,6 +5880,7 @@ Zie https://developer.chrome.com/blog/immutable-document-domain/ voor meer infor
 
        Als de waarde van het beleid verandert, kunnen bestaande <ph name="DM_CRYPT" />-basismappen voor gebruikers worden geopend via de versleutelingsimplementatie die door het beleid is ingesteld, omdat de <ph name="AES_ALGORITHM_NAME" />-implementaties compatibel zijn.
        Als het beleid niet wordt toegepast of niet is ingesteld, maakt versleuteling van gebruikersopslag voor <ph name="DM_CRYPT" />-basismappen voor gebruikers standaard gebruik van <ph name="AES_NI_NAME" />.</translation>
+<translation id="6316971721180184579">Geluid voor een bijna lege batterij uitzetten</translation>
 <translation id="6319198883324703402">De tijd van de melding voor eerste keer opnieuw opstarten door gebruiker instellen</translation>
 <translation id="6319907968994678054">Als je het beleid toepast, wordt gegevenssynchronisatie in <ph name="PRODUCT_NAME" /> via door Google gehoste synchronisatieservices uitgezet.
       Als je <ph name="CHROME_SYNC_NAME" />-services helemaal wilt uitzetten, raden we je aan de service in <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> uit te zetten.
@@ -5882,6 +5914,7 @@ Zie https://developer.chrome.com/blog/immutable-document-domain/ voor meer infor
         Voeg een app met de bijbehorende |app_id| en |app_type| aan |app_list| toe om de app op de toelatingslijst te zetten.
        </translation>
 <translation id="6334397544347592516">Verbindingen voor externe support van bedrijfsbeheerders met deze machine toestaan</translation>
+<translation id="6335206050538331829">Migratiestrategie voor ARC VM-gegevensmigratie</translation>
 <translation id="6337782882143073193">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
       Hiermee worden de vermelde protocolschema's uitgezet in <ph name="PRODUCT_NAME" />.
@@ -6447,6 +6480,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="6800181452282128474">Geen query's sturen naar Quirks Servers</translation>
 <translation id="68031099365512050">Audiostatus rapporteren</translation>
 <translation id="680356860463873420">Gebruikers niet toestaan een PluginVm te gebruiken</translation>
+<translation id="6807947647944603395">Post-quantum sleutelovereenkomst van Kyber voor TLS uitzetten</translation>
 <translation id="6810445994095397827">JavaScript blokkeren op deze sites</translation>
 <translation id="6813263547126514821">Energiebeheer en uitzetten</translation>
 <translation id="681446116407619279">Ondersteunde authenticatieschema's</translation>
@@ -6674,6 +6708,7 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
        In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="6988791975283483023">Wifi uitzetten</translation>
 <translation id="6990736882800900101">Toestaan dat alle pop-ups die zijn geopend met het doel <ph name="BLANK_PAGE_NAME" />, interactie hebben met de pagina die het openen van de pop-up heeft aangevraagd, tenzij de openende pagina expliciet geen toestemming geeft voor dergelijke interactie </translation>
+<translation id="6991623831629598930">Standaardwaarde gebruiken voor post-quantum sleutelovereenkomst van Kyber voor TLS</translation>
 <translation id="6992943675460798920">Toestaan dat gebruikers screenshots en video-opnamen maken</translation>
 <translation id="6994082778848658360">Geeft aan hoe de ingebouwde Secure Element-hardware kan worden gebruikt voor authenticatie met meerdere factoren, indien de hardware geschikt is voor deze functie. De aan/uit-knop van de machine wordt gebruikt om de fysieke aanwezigheid van de gebruiker te detecteren.
 

@@ -566,6 +566,7 @@
 <translation id="5422221874247253874">অ্যাক্সেস পয়েন্ট</translation>
 <translation id="5428105026674456456">স্প্যানিশ</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" />-এর জন্য কোনও ফলাফল পাওয়া যায়নি।</translation>
+<translation id="5447680084201416734">পর্যাপ্ত স্টোরেজ নেই।</translation>
 <translation id="5449551289610225147">ভুল পাসওয়ার্ড</translation>
 <translation id="5459064203055649751">"<ph name="FILENAME" />" নামের ফাইল আগে থেকেই আছে। আপনি কি এটিকে একটি ফাইল দিয়ে পরিবর্তন করতে চান যা বর্তমানে আছে?</translation>
 <translation id="5463231940765244860">লিখুন</translation>
@@ -694,6 +695,7 @@
 <translation id="6423031066725912715">ভিয়েতনামি ভাষায় টিসিভিএন (TCVN) কীবোর্ড</translation>
 <translation id="6430271654280079150">আপনি আর ১ বার চেষ্টা করতে পারেন।</translation>
 <translation id="643243556292470964">মুছে ফেলা ফাইলগুলি এখন ট্র্যাশে সরানো হয়েছে</translation>
+<translation id="6438480100790416671">স্টোরেজের জায়গা চেক করা হচ্ছে…</translation>
 <translation id="6485131920355264772">স্থান তথ্য পুনরুদ্ধার করতে ব্যর্থ হয়েছে</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, বিবরণ</translation>
 <translation id="649877868557234318"><ph name="FOLDER_NAME" />-এ <ph name="FILE_NAME" /> এক্সট্যাক্ট করা হচ্ছে</translation>
@@ -897,6 +899,7 @@
 <translation id="8000066093800657092">কোনও নেটওয়ার্ক নেই</translation>
 <translation id="8008366997883261463">জ্যাক রাসেল ক্ষুদ্রকায় কুকুর</translation>
 <translation id="8028993641010258682">সাইজ</translation>
+<translation id="8034974485549318493">প্রাথমিক সেট-আপের জন্য, আপনাকে ইন্টারনেটের সাথে কানেক্ট করতে হবে যাতে ফাইল সিঙ্ক করা যায়।</translation>
 <translation id="803771048473350947">ফাইল</translation>
 <translation id="8038111231936746805">(ডিফল্ট)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> অডিও</translation>

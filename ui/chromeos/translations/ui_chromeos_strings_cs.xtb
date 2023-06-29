@@ -566,6 +566,7 @@
 <translation id="5422221874247253874">Přístupový bod</translation>
 <translation id="5428105026674456456">španělština</translation>
 <translation id="5438282218546237410">Pro dotaz <ph name="SEARCH_TERM" /> nebyly nalezeny žádné výsledky.</translation>
+<translation id="5447680084201416734">Nedostatek místa v úložišti.</translation>
 <translation id="5449551289610225147">Neplatné heslo</translation>
 <translation id="5459064203055649751">Soubor s názvem <ph name="FILENAME" /> už existuje. Chcete ho nahradit tím, který právě přesouváte?</translation>
 <translation id="5463231940765244860">Zadat</translation>
@@ -694,6 +695,7 @@
 <translation id="6423031066725912715">vietnamština s klávesnicí TCVN</translation>
 <translation id="6430271654280079150">Zbývá vám jeden pokus.</translation>
 <translation id="643243556292470964">Smazané soubory byly přesunuty do koše</translation>
+<translation id="6438480100790416671">Kontrola úložného prostoru…</translation>
 <translation id="6485131920355264772">Informace o volném místě se nepodařilo načíst</translation>
 <translation id="6495925982925244349">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> síla signálu: <ph name="SIGNAL_STRENGTH" /> %, spravováno administrátorem, podrobnosti</translation>
 <translation id="649877868557234318">Rozbalování souboru <ph name="FILE_NAME" /> do složky <ph name="FOLDER_NAME" /></translation>
@@ -897,6 +899,7 @@
 <translation id="8000066093800657092">Žádná síť</translation>
 <translation id="8008366997883261463">Jack Russell teriér</translation>
 <translation id="8028993641010258682">Velikost</translation>
+<translation id="8034974485549318493">K počátečnímu nastavení je potřeba připojení k internetu, aby se soubory mohly synchronizovat.</translation>
 <translation id="803771048473350947">Soubor</translation>
 <translation id="8038111231936746805">(výchozí)</translation>
 <translation id="8042602468072383151">Zvuk <ph name="AUDIO_TYPE" /></translation>

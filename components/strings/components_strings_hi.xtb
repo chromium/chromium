@@ -5,6 +5,7 @@
 <translation id="1008557486741366299">अभी नहीं</translation>
 <translation id="100957008357583611">क्या आप अपनी जगह की जानकारी का इस्तेमाल करना चाहते हैं?</translation>
 <translation id="1010200102790553230">पेज को बाद में लोड करें</translation>
+<translation id="1010481144722131607">आपका बैंक आपकी पहचान की पुष्टि करना चाहता है</translation>
 <translation id="1011206368273183593">फ़ाइलें तैयार की जा रही हैं</translation>
 <translation id="1015730422737071372">ज़्यादा जानकारी दें</translation>
 <translation id="1019413721762100891">बंद है</translation>
@@ -762,6 +763,7 @@
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में अपना ब्राउज़िंग इतिहास, कुकी, कैश मेमोरी वगैरह मिटाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="2650446666397867134">फ़ाइल को एक्सेस नहीं दिया गया था</translation>
+<translation id="2651465929321991146">इतिहास और टैब</translation>
 <translation id="2653659639078652383">सबमिट करें</translation>
 <translation id="2655752832536625875">बाथरूम</translation>
 <translation id="2657637947725373811">{0,plural, =1{क्या आपको गोपनीय फ़ाइल ट्रांसफ़र करनी है?}one{क्या आपको गोपनीय फ़ाइल ट्रांसफ़र करनी है?}other{क्या आपको गोपनीय फ़ाइलें ट्रांसफ़र करनी हैं?}}</translation>
@@ -1212,6 +1214,7 @@
 <translation id="3677008721441257057">क्या आपका मतलब &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; से था?</translation>
 <translation id="3678029195006412963">अनुरोध पर हस्ताक्षर नहीं किया जा सका</translation>
 <translation id="3678529606614285348">पेज को नई गुप्त विंडो में खोलें (Ctrl-Shift-N)</translation>
+<translation id="3678914302246317895">पुष्टि करने के लिए <ph name="OTP_LENGTH" /> अंकों वाला कोड डालें</translation>
 <translation id="3681007416295224113">प्रमाणपत्र जानकारी</translation>
 <translation id="3681421644246505351">Chrome आपके हाल ही के ब्राउज़िंग इतिहास के आधार पर, आपकी पसंद के विषयों को सेव करता है.</translation>
 <translation id="3693327506115126094">अपनी पहचान की पुष्टि करने का तरीका चुनें</translation>
@@ -2020,6 +2023,7 @@
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}one{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}other{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}}</translation>
 <translation id="5463625433003343978">डिवाइस ढूंढे जा रहे हैं...</translation>
 <translation id="5464236009658034488">ऑफ़िस का सामान</translation>
+<translation id="5466018172325111652">क्या आपको कोड नहीं मिला? <ph name="BEGIN_LINK" />नया कोड पाएं<ph name="END_LINK" /></translation>
 <translation id="5470230812924696184">सिविल इंजीनियरिंग</translation>
 <translation id="5470861586879999274">&amp;बदलाव को फिर से लागू करें</translation>
 <translation id="5471337644440862957">कॉमेडी फ़िल्में</translation>

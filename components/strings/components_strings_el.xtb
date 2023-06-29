@@ -5,6 +5,7 @@
 <translation id="1008557486741366299">Όχι τώρα</translation>
 <translation id="100957008357583611">Χρήση της τοποθεσίας σας;</translation>
 <translation id="1010200102790553230">Φόρτωση σελίδας αργότερα</translation>
+<translation id="1010481144722131607">Η τράπεζά σας θέλει να επαληθεύσει την ταυτότητά σας</translation>
 <translation id="1011206368273183593">Προετοιμασία αρχείων</translation>
 <translation id="1015730422737071372">Καταχωρίστε επιπλέον λεπτομέρειες</translation>
 <translation id="1019413721762100891">Απενεργοποιημένο</translation>
@@ -761,6 +762,7 @@
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για εκκαθάριση του ιστορικού περιήγησης, των cookie, της κρυφής μνήμης κ.α. στις ρυθμίσεις του Chrome.</translation>
 <translation id="2650446666397867134">Η πρόσβαση στο αρχείο απορρίφθηκε</translation>
+<translation id="2651465929321991146">Ιστορικό και καρτέλες</translation>
 <translation id="2653659639078652383">Υποβολή</translation>
 <translation id="2655752832536625875">Μπάνιο</translation>
 <translation id="2657637947725373811">{0,plural, =1{Μεταφορά εμπιστευτικού αρχείου;}other{Μεταφορά εμπιστευτικών αρχείων;}}</translation>

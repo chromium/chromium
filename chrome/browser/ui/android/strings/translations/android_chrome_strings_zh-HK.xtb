@@ -297,6 +297,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="2643064289437760082">只要刪除瀏覽資料，即可隨時刪除廣告評估資料</translation>
 <translation id="2647434099613338025">新增語言</translation>
 <translation id="2649068648233607930">您的瀏覽器由 <ph name="DOMAIN" /> 管理</translation>
+<translation id="2650077116157640844">前往已同步的裝置查看更多資訊</translation>
 <translation id="2650348088770008516">閂咗私隱權指南說明</translation>
 <translation id="2650408372219180431">匯出並刪除儲存至此裝置的密碼</translation>
 <translation id="2650751991977523696">要重新下載檔案嗎？</translation>
@@ -482,6 +483,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="360901359071773787">要刪除過去 15 分鐘的瀏覽資料嗎？</translation>
 <translation id="3616113530831147358">音效檔案</translation>
 <translation id="3622349720008044802">管理視窗</translation>
+<translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 個網站}other{+ # 個網站}}</translation>
 <translation id="3631987586758005671">正在分享至 <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">使用儲存的憑證自動登入網站。關閉功能時，每次登入網站之前都會要求您驗證。</translation>
 <translation id="3636940436873918441">偏好語言</translation>

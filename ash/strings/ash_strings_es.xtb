@@ -395,6 +395,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2750941250130734256">Ventana activa desanclada.</translation>
 <translation id="2761723519669354964">Abre el elemento destacado de la estantería</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" />teclas del <ph name="KEY_ONE" /> al <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">Ctrl + Tecla de búsqueda + S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gestionado por <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Salir del modo de captura</translation>
 <translation id="2785499565474703580">1 dispositivo conectado</translation>
@@ -458,6 +459,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3062298103034426069">No compatible</translation>
 <translation id="3068622547379332530">Versión <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">La estantería está en la parte izquierda</translation>
+<translation id="3070639127620815135">Tecla de búsqueda + Esc</translation>
 <translation id="3077734595579995578">mayús</translation>
 <translation id="3081696990447829002">Mostrar menú</translation>
 <translation id="3087734570205094154">Inferior</translation>
@@ -471,6 +473,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3120421559657122717">¿Apagar el dispositivo?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reiniciar para actualizar</translation>
+<translation id="3139188263101386725">Usar el acceso directo actualizado</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
 <translation id="315116470104423982">Redes móviles</translation>
 <translation id="3151786313568798007">Orientación</translation>
@@ -606,6 +609,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />. Selecciónalo para ver más detalles en Google Calendar.</translation>
 <translation id="3659444876902283058">(día <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
+<translation id="3659667652322717492">Puedes cambiar el comportamiento del micrófono en cualquier momento.</translation>
 <translation id="3659814201068740063">Batería restante: alrededor de <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Conecta tu dispositivo a la corriente.</translation>
 <translation id="366222428570480733">Usuario administrado (<ph name="USER_EMAIL_ADDRESS" />)</translation>
@@ -930,6 +934,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="504465286040788597">Párrafo anterior</translation>
 <translation id="5045550434625856497">Contraseña incorrecta</translation>
 <translation id="5062496344832867502">RAM</translation>
+<translation id="5068762093486106012">Se te avisará si hablas y el micrófono está silenciado. El audio no saldrá de tu dispositivo.</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083553833479578423">Descubre más funciones del Asistente.</translation>
 <translation id="5092436659250499817">Activar o desactivar la retroiluminación del teclado</translation>
@@ -960,6 +965,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5207949376430453814">Resaltar el símbolo de intercalación del texto</translation>
 <translation id="5208059991603368177">Sí</translation>
 <translation id="5216991270656129561">Desactivada hasta el <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Envía o responde rápidamente a mensajes de tu teléfono con Mi teléfono.</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
 <translation id="5229343007215035173">Activar o desactivar la pantalla de privacidad</translation>
 <translation id="5234764350956374838">Cerrar</translation>
@@ -1048,6 +1054,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5578188167649348993">memoria</translation>
 <translation id="5580000943347215299">Biblioteca</translation>
 <translation id="558849140439112033">Arrastra para seleccionar un área para hacer la captura</translation>
+<translation id="5590609058453685222">Aviso para activar micrófono está activado. Se te avisará si hablas y el micrófono está silenciado.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Pulsa Ctrl + Alt + Z para inhabilitar los mensajes de voz.</translation>
@@ -1201,6 +1208,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6231419273573514727">Es posible que el rendimiento de los periféricos esté limitado</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está usando tu cámara y tu micrófono</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Abre la aplicación Administrador de tareas con <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Abrir notificaciones</translation>
 <translation id="6254629735336163724">Bloqueada en horizontal</translation>
 <translation id="6259254695169772643">Usa el lápiz óptico para seleccionar contenido</translation>
@@ -1251,6 +1259,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6497418457565568043">Función No molestar activada</translation>
 <translation id="6500896621837555595">Actualizar</translation>
 <translation id="6501401484702599040">Enviando la pantalla a <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Abre la aplicación Accesos directos con <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Cambiar al siguiente método de introducción de texto disponible</translation>
 <translation id="6508923215158854599">Asegúrate de que tu Chromebook esté conectado a la misma red Wi‐Fi que tu dispositivo Chromecast.</translation>
 <translation id="6515727200518652613">La cámara ha perdido la conexión, intentando volver a conectar.</translation>
@@ -1643,6 +1652,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8255234195843591763">Reinicia para actualizar</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8262312463845990408">Reproducir/Pausar</translation>
+<translation id="8265826854528868575">Mostrando <ph name="NUM_SHOWN_TASKS" /> de <ph name="NUM_TOTAL_TASKS" /></translation>
 <translation id="8270450402312105425">{0,plural, =1{Cambia el dispositivo a la versión anterior en un plazo de 1 hora}other{Cambia el dispositivo a la versión anterior en un plazo de # horas}}</translation>
 <translation id="8277261673056602147">Destacar texto en la pantalla</translation>
 <translation id="8284362522226889623">Desliza cuatro dedos hacia la izquierda por la pantalla para cambiar al escritorio anterior</translation>

@@ -298,6 +298,7 @@
 <translation id="2643064289437760082">刪除瀏覽資料即可刪除廣告評估資料</translation>
 <translation id="2647434099613338025">新增語言</translation>
 <translation id="2649068648233607930">你的瀏覽器是由 <ph name="DOMAIN" /> 管理</translation>
+<translation id="2650077116157640844">前往已同步的裝置查看更多資訊</translation>
 <translation id="2650348088770008516">已關閉隱私權指南說明</translation>
 <translation id="2650408372219180431">匯出並刪除儲存到這部裝置的密碼</translation>
 <translation id="2650751991977523696">要再次下載檔案嗎？</translation>
@@ -483,6 +484,7 @@
 <translation id="360901359071773787">刪除過去 15 分鐘的瀏覽資料？</translation>
 <translation id="3616113530831147358">音訊</translation>
 <translation id="3622349720008044802">管理視窗</translation>
+<translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 個網站}other{+ # 個網站}}</translation>
 <translation id="3631987586758005671">正在分享至「<ph name="DEVICE_NAME" />」</translation>
 <translation id="363596933471559332">自動使用已儲存的憑證登入網站。如果關閉這項功能，每次在您登入網站之前，網站一律會要求驗證。</translation>
 <translation id="3636940436873918441">偏好語言</translation>

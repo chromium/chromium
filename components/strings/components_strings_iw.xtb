@@ -5,6 +5,7 @@
 <translation id="1008557486741366299">לא עכשיו</translation>
 <translation id="100957008357583611">להשתמש במיקום שלך?</translation>
 <translation id="1010200102790553230">לטעינת הדף מאוחר יותר</translation>
+<translation id="1010481144722131607">הבנק שלך מבקש לאמת את זהותך</translation>
 <translation id="1011206368273183593">הקבצים בהכנה…</translation>
 <translation id="1015730422737071372">ספק פרטים נוספים</translation>
 <translation id="1019413721762100891">כבוי</translation>
@@ -714,6 +715,7 @@
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861">‏<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לנקות את נתוני היסטוריית הגלישה, קובצי ה-cookie, המטמון ועוד בהגדרות Chrome</translation>
 <translation id="2650446666397867134">לא ניתן לגשת לקובץ</translation>
+<translation id="2651465929321991146">היסטוריה וכרטיסיות</translation>
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2657637947725373811">{0,plural, =1{להעביר את הקובץ הסודי?}one{להעביר את הקבצים הסודיים?}two{להעביר את הקבצים הסודיים?}other{להעביר את הקבצים הסודיים?}}</translation>
 <translation id="2660779039299703961">אירוע</translation>

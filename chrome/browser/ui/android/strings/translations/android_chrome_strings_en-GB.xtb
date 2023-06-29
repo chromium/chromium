@@ -297,6 +297,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="2643064289437760082">You can always delete ad-measurement data by deleting your browsing data</translation>
 <translation id="2647434099613338025">Add language</translation>
 <translation id="2649068648233607930">Your browser is managed by <ph name="DOMAIN" /></translation>
+<translation id="2650077116157640844">More on synced devices</translation>
 <translation id="2650348088770008516">Privacy guide explanation closed</translation>
 <translation id="2650408372219180431">Export and delete passwords saved to this device</translation>
 <translation id="2650751991977523696">Download file again?</translation>
@@ -482,6 +483,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="360901359071773787">Delete last 15 minutes?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Manage windows</translation>
+<translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}other{+ # sites}}</translation>
 <translation id="3631987586758005671">Sharing to <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Automatically sign in to websites using stored credentials. When the feature is off, you’ll be asked for verification every time before signing in to a website.</translation>
 <translation id="3636940436873918441">Preferred languages</translation>

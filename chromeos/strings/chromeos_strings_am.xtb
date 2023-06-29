@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">ልጣፍ ይለውጡ</translation>
 <translation id="360565022852130722">የWiFi አውታረ መረብ ደህንነት በደካማ ፕሮቶኮል WEP 802.1x የተጠበቀ ነው</translation>
 <translation id="3606583719724308068">ለኤችቲቲፒኤስ ድር ጣቢያዎች ከፍተኛ የስርዓተ ምላሽ ጊዜ</translation>
+<translation id="3607216139080387279">ማያ ገጽ ቆጣቢን አሳይ</translation>
 <translation id="361575905210396100">ለግብረመልስዎ እናመሰግናለን</translation>
 <translation id="3632579075709132555">የግላዊነት ማያ ገፅ መቀየሪያ</translation>
 <translation id="3639846061339007994">ከፍተኛ</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ግምገማዎች)</translation>
 <translation id="3748026146096797577">አልተገናኘም</translation>
 <translation id="3749289110408117711">የፋይል ስም</translation>
+<translation id="3766934827878963937">ለ1 ሰዓት</translation>
 <translation id="3771294271822695279">የቪዲዮ ፋይሎች</translation>
 <translation id="3784455785234192852">ቆልፍ</translation>
 <translation id="380097101658023925">የአርጂቢ መቆጣጠሪያዎች</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">የቁልፍ ሰሌዛ መፍዘዝ</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ሙከራ ተሰርዟል</translation>
 <translation id="631063167932043783">መተግበሪያን አስስ</translation>
+<translation id="6318437367327684789">ለዘለዓለም</translation>
 <translation id="6319207335391420837">ፊርምዌር በ<ph name="DEVICE_NAME" /> ላይ ያዘምኑ</translation>
 <translation id="6321407676395378991">የማያ ገፅ ማቆያን አብራ</translation>
 <translation id="6325525973963619867">አልተሳካም</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">በርካታ ገጾችን በአንድ PDF ያስቀምጡ</translation>
 <translation id="9137526406337347448">Google አገልግሎቶች</translation>
 <translation id="9138630967333032450">የግራ ቀያይር</translation>
+<translation id="9143347780818904997">ለ<ph name="MINUTES" /> ደቂቃዎች</translation>
 <translation id="9149391708638971077">የማህደረ ትውስታ ሙከራን አሂድ</translation>
 <translation id="9161276708550942948">ክፍተት</translation>
 <translation id="9173638680043580060">ከአንድ ደቂቃ በታች ይቀራል</translation>

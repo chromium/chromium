@@ -8,6 +8,7 @@
 <translation id="1004218526896219317">Достъп до сайтове</translation>
 <translation id="1005274289863221750">Използване на микрофона и камерата ви</translation>
 <translation id="1005333234656240382">Да се активира ли отстраняването на грешки през ADB?</translation>
+<translation id="1005671386794704751">розово</translation>
 <translation id="1006873397406093306">Това разширение може да чете и променя данните ви на сайтовете. Можете да контролирате кои сайтове да са достъпни за него.</translation>
 <translation id="1007057452468855774">Включване на Google Play Магазин</translation>
 <translation id="1008186147501209563">Експортиране на отметки</translation>
@@ -2074,6 +2075,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2691385045260836588">Модел</translation>
 <translation id="2691440343905273290">Промяна на настройките за въвеждане</translation>
 <translation id="2692503699962701720">Промяна на височината на гласа при изговаряне на типове елементи и форматиран текст</translation>
+<translation id="2692901429679246677">вода</translation>
 <translation id="2693134906590795721">Звуци при зареждане</translation>
 <translation id="2693176596243495071">Ами сега! Възникна неизвестна грешка. Моля, опитайте отново по-късно или се свържете с администратора си, ако проблемът продължи.</translation>
 <translation id="2698147581454716013">Това устройство се предлага в пакет и не може да бъде регистрирано в Kiosk &amp; Signage Upgrade.</translation>
@@ -2108,6 +2110,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2721695630904737430">Функцията за контролирани потребители е деактивирана от администратора ви.</translation>
 <translation id="2722540561488096675">Устройството ви ще се изключи след <ph name="TIME_LEFT" />. Преди да го включите отново, премахнете USB кабела. След това можете да започнете да използвате <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
+<translation id="2723819893410108315">лимоненожълто</translation>
 <translation id="2724841811573117416">Регистрационни файлове за WebRTC</translation>
 <translation id="272488616838512378">Преобразуване на мерни единици</translation>
 <translation id="2725200716980197196">Връзката с мрежата е възстановена</translation>
@@ -5203,6 +5206,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5407167491482639988">Неразбираемо</translation>
 <translation id="5408750356094797285">Мащаб: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">От профила ви в Google</translation>
+<translation id="5410889048775606433">яркорозово</translation>
 <translation id="5411022484772257615">Регистрирането в учебно заведение не бе завършено</translation>
 <translation id="5411856344659127989">В случай че искате да добавите профил за друго лице, <ph name="LINK_BEGIN" />добавете нов човек<ph name="LINK_END" /> към своя <ph name="DEVICE_TYPE" />.
 
@@ -6512,6 +6516,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6532527800157340614">Влизането в профила не бе успешно, защото означението ви за достъп не можа да бъде извлечено. Моля, проверете връзката си с мрежата и опитайте отново.</translation>
 <translation id="6532663472409656417">Корпоративно записано</translation>
 <translation id="6533315466883598769">Използване на Google Преводач</translation>
+<translation id="6533636340637966565">Включва се…</translation>
 <translation id="6535331821390304775">Винаги да се разрешава на <ph name="ORIGIN" /> да отваря връзки от този тип в свързаното приложение</translation>
 <translation id="653659894138286600">Сканиране на документи и изображения</translation>
 <translation id="6537613839935722475">Можете да ползвате букви, цифри и къси тирета (-)</translation>
@@ -8220,6 +8225,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7963001036288347286">Ускоряване на сензорния панел</translation>
 <translation id="7963608432878156675">Това име се вижда от другите устройства при връзки с мрежи и чрез Bluetooth</translation>
 <translation id="7963826112438303517">Асистент използва тези записи и гласовите ви заявки, за да създаде и актуализира гласовия ви модел, който се съхранява само на устройствата, на които сте включили Voice Match. Можете да прегледате гласовата активност или да обучите отново гласовия модел от настройките на Асистент.</translation>
+<translation id="7964458523224581615">изумруденозелено</translation>
 <translation id="7966241909927244760">К&amp;опиране на адреса на изображението</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 елемент в списъка с отметки}other{{COUNT} елемента в списъка с отметки}}</translation>
 <translation id="7968072247663421402">Опции за доставчика</translation>
@@ -8244,6 +8250,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7981670705071137488">След това софтуерните актуализации ще се извършват на заден план. Можете да прегледате предпочитанията за тях в настройките.</translation>
 <translation id="7982083145464587921">Моля, рестартирайте устройството си, за да поправите тази грешка.</translation>
 <translation id="7982789257301363584">Мрежа</translation>
+<translation id="7982878511129296052">Изключва се…</translation>
 <translation id="7984068253310542383">Дублиране на <ph name="DISPLAY_NAME" /></translation>
 <translation id="7986295104073916105">Четене и промяна на настройките за запазени пароли</translation>
 <translation id="7987814697832569482">Винаги да се установява връзка през тази VPN</translation>
@@ -8372,6 +8379,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8090234456044969073">Четене на списък с най-често посещаваните от вас уебсайтове</translation>
 <translation id="8090513782447872344">Можете да се върнете по всяко време, за да прегледате това още веднъж</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> не реагира</translation>
+<translation id="8094536695728193970">оранжево-розово</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Създаване на резервно копие в Google Диск. По всяко време можете лесно да възстановите данните на устройството си или да го замените с друго. Резервното ви копие включва данните на приложенията.<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />Резервните ви копия са качени в Google и са шифровани посредством паролата за профила ви в Google.<ph name="END_PARAGRAPH2" />
 <ph name="BEGIN_PARAGRAPH3" />Данните на приложенията могат да бъдат всяка запазена от тях информация (въз основа на настройките за програмисти), включително контакти, съобщения и снимки.<ph name="END_PARAGRAPH3" />

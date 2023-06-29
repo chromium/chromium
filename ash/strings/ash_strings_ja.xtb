@@ -395,6 +395,7 @@
 <translation id="2750941250130734256">アクティブなウィンドウの固定を解除しました。</translation>
 <translation id="2761723519669354964">シェルフのハイライト表示されたアイテムを開きます</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />～<ph name="KEY_TWO" /> キーを押す</translation>
+<translation id="2778197796481941784">Ctrl+Search+S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="2782591952652094792">キャプチャ モードを終了</translation>
 <translation id="2785499565474703580">1 台のデバイスが接続されています</translation>
@@ -458,6 +459,7 @@
 <translation id="3062298103034426069">未対応</translation>
 <translation id="3068622547379332530">バージョン <ph name="VERSION_NAME" />（<ph name="OFFICIAL_STATUS" />）<ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">シェルフは左側にあります</translation>
+<translation id="3070639127620815135">Search+Esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">メニューを展開</translation>
 <translation id="3087734570205094154">下</translation>
@@ -471,6 +473,7 @@
 <translation id="3120421559657122717">デバイスをシャットダウンしますか？</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">再起動して更新</translation>
+<translation id="3139188263101386725">新しいショートカットを使用</translation>
 <translation id="3139942575505304791">デスク 1</translation>
 <translation id="315116470104423982">モバイル データ</translation>
 <translation id="3151786313568798007">向き</translation>
@@ -606,6 +609,7 @@
         <ph name="END_TIME" />、
         <ph name="TIME_ZONE" />。選択すると、Google カレンダーで詳細を確認できます。</translation>
 <translation id="3659444876902283058">（<ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" /> 日目）</translation>
+<translation id="3659667652322717492">マイクの動作は後からいつでも変更できます。</translation>
 <translation id="3659814201068740063">残り <ph name="TIME_LEFT" />（<ph name="PERCENTAGE" /> %）。
 デバイスを電源に接続してください。</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> の管理対象ユーザー</translation>
@@ -1049,6 +1053,7 @@
 <translation id="5578188167649348993">メモリ</translation>
 <translation id="5580000943347215299">ライブラリ</translation>
 <translation id="558849140439112033">キャプチャする領域をドラッグして選択してください</translation>
+<translation id="5590609058453685222">ミュート通知はオンです。ミュートしているときに話すと、通知されます。</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5597451508971090205"><ph name="DATE" /> (<ph name="SHORT_WEEKDAY" />)</translation>
 <translation id="5600837773213129531">音声フィードバックを無効にするには Ctrl+Alt+Z を押してください。</translation>
@@ -1202,6 +1207,7 @@
 <translation id="6231419273573514727">周辺機器のパフォーマンスが制限されている可能性があります</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> がカメラとマイクを使用しています</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">「<ph name="NEW_SHORTCUT" />」でタスク マネージャー アプリを開きます。</translation>
 <translation id="6247728804802644171">通知を開きます</translation>
 <translation id="6254629735336163724">横に固定</translation>
 <translation id="6259254695169772643">タッチペンを使って選択してください</translation>
@@ -1252,6 +1258,7 @@
 <translation id="6497418457565568043">サイレント モードがオンです</translation>
 <translation id="6500896621837555595">更新</translation>
 <translation id="6501401484702599040">画面を <ph name="RECEIVER_NAME" /> にキャスト中</translation>
+<translation id="6507042703812908515">「<ph name="NEW_SHORTCUT" />」でキー ショートカット アプリを開きます。</translation>
 <translation id="6507618042428827377">次の利用可能な入力方法に切り替える</translation>
 <translation id="6508923215158854599">Chromebook がお使いの Chromecast デバイスと同じ Wi-Fi ネットワークに接続されていることを確認します。</translation>
 <translation id="6515727200518652613">カメラの接続が解除されました。再接続を試行しています。</translation>
@@ -1645,6 +1652,7 @@
 <translation id="8255234195843591763">リセットして更新してください</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="8262312463845990408">再生を切り替える</translation>
+<translation id="8265826854528868575"><ph name="NUM_TOTAL_TASKS" /> 件中 <ph name="NUM_SHOWN_TASKS" /> 件を表示しています</translation>
 <translation id="8270450402312105425">{0,plural, =1{1 時間以内にデバイスを以前のバージョンに戻してください}other{# 時間以内にデバイスを以前のバージョンに戻してください}}</translation>
 <translation id="8277261673056602147">画面上のテキストを選択</translation>
 <translation id="8284362522226889623">前のデスクに切り替えるには 4 本の指で左にスワイプします</translation>

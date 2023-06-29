@@ -8,6 +8,7 @@
 <translation id="1004218526896219317">網站存取權</translation>
 <translation id="1005274289863221750">使用您的麥克風和相機</translation>
 <translation id="1005333234656240382">要啟用 ADB 偵錯嗎？</translation>
+<translation id="1005671386794704751">玫瑰粉</translation>
 <translation id="1006873397406093306">此擴充程式可讀取及變更您在網站上的資料。您可控制擴充程式可以存取的網站。</translation>
 <translation id="1007057452468855774">開「Google Play 商店」</translation>
 <translation id="1008186147501209563">匯出書籤</translation>
@@ -698,6 +699,7 @@
 <translation id="1576594961618857597">預設白色圖示</translation>
 <translation id="1576729678809834061">舉報此搜尋結果</translation>
 <translation id="1578558981922970608">強制關閉</translation>
+<translation id="157931050206866263">進一步瞭解惡意軟件掃瞄程序</translation>
 <translation id="1580772913177567930">請聯絡您的管理員</translation>
 <translation id="1581962803218266616">在 Finder 中顯示</translation>
 <translation id="1582955169539260415">刪除 [<ph name="FINGERPRINT_NAME" />]</translation>
@@ -929,6 +931,7 @@
 <translation id="1757132445735080748">如要完成 Linux 的設定程序，請更新 ChromeOS Flex，然後再試一次。</translation>
 <translation id="1757301747492736405">正在等待解除安裝</translation>
 <translation id="175772926354468439">啟用主題</translation>
+<translation id="1757786065507923842">家長權限要求失敗。</translation>
 <translation id="17584710573359123">在「Chrome 網上應用程式商店」上查看</translation>
 <translation id="1761845175367251960"><ph name="NAME" />的帳戶</translation>
 <translation id="176272781006230109">購物建議</translation>
@@ -981,6 +984,7 @@
 <translation id="1795214765651529549">使用經典主題</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。您可為特定動作自訂按鍵。</translation>
+<translation id="1801571666562084067">將 PDF 圖片轉成文字</translation>
 <translation id="180203835522132923">搜尋 + O，然後按 W</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁沒有回應，您可以繼續等待或離開。</translation>
@@ -2078,6 +2082,7 @@
 <translation id="2691385045260836588">型號</translation>
 <translation id="2691440343905273290">變更輸入法設定</translation>
 <translation id="2692503699962701720">在朗讀元素種類和格式化文字時變更音調</translation>
+<translation id="2692901429679246677">水藍</translation>
 <translation id="2693134906590795721">充電音效</translation>
 <translation id="2693176596243495071">抱歉！出現不明的錯誤。請稍後再試一次，如果問題持續，請與您的管理員聯絡。</translation>
 <translation id="2698147581454716013">這是隨附裝置，因此無法註冊 Kiosk &amp; Signage 升級版。</translation>
@@ -2112,6 +2117,7 @@
 <translation id="2721695630904737430">您的管理員已停用受管使用者。</translation>
 <translation id="2722540561488096675">裝置將會在 <ph name="TIME_LEFT" />後關機。請先拔除 USB，然後才重新開啟裝置。之後，您便可以開始使用 <ph name="DEVICE_OS" />。</translation>
 <translation id="2722547199758472013">ID：<ph name="EXTENSION_ID" /></translation>
+<translation id="2723819893410108315">黃金柚色</translation>
 <translation id="2724841811573117416">WebRTC 記錄</translation>
 <translation id="272488616838512378">單位轉換</translation>
 <translation id="2725200716980197196">網絡連線已恢復</translation>
@@ -2643,6 +2649,7 @@
 <translation id="3165390001037658081">部分流動網絡供應商可能會封鎖此功能。</translation>
 <translation id="3169930038976362151">選擇切合您需要的主題。如要變更主題、桌布、螢幕保護程式和其他設定，只要輕觸並按住桌面即可。</translation>
 <translation id="3170072451822350649">您也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
+<translation id="3174311489448105660">喺可用嘅情況下掃瞄 PDF 圖片，將內容轉成文字俾螢幕閱讀器讀出嚟。呢個功能淨係適用喺 Chrome 瀏覽器。</translation>
 <translation id="31774765611822736">新分頁位於左側</translation>
 <translation id="3177909033752230686">網頁語言：</translation>
 <translation id="3177914167275935955">您的裝置包含一項 Chrome Education 升級，但您的使用者名稱尚未連結 Google for Education 帳戶。請在次要裝置上前往 g.co/workspace/edusignup 建立 Google for Education 帳戶。</translation>
@@ -4740,6 +4747,7 @@
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">確認存取權</translation>
 <translation id="4979263087381759787">開發人員選項</translation>
+<translation id="4979510648199782334">Microsoft 365 設定完成</translation>
 <translation id="4980805016576257426">這個擴充程式含有惡意軟件。</translation>
 <translation id="4981449534399733132">如要從所有已同步的裝置和 Google 帳戶中清除瀏覽資料，請<ph name="BEGIN_LINK" />登入<ph name="END_LINK" />。</translation>
 <translation id="4986706507552097681">您隨時可在設定中選擇要同步的資料。Google 可能會根據您的記錄，提供個人化「搜尋」和其他服務。</translation>
@@ -5206,6 +5214,7 @@
 <translation id="5407167491482639988">無法辨識</translation>
 <translation id="5408750356094797285">縮放：<ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">您 Google 帳戶中的密碼</translation>
+<translation id="5410889048775606433">紫紅色</translation>
 <translation id="5411022484772257615">無法完成學校註冊程序</translation>
 <translation id="5411856344659127989">如要新增其他人的帳戶，請<ph name="LINK_BEGIN" />新增使用者<ph name="LINK_END" />至您的 <ph name="DEVICE_TYPE" />。
 
@@ -6512,6 +6521,7 @@
 <translation id="6532527800157340614">無法擷取您的存取憑證，因此無法登入。請檢查您的網絡連線，然後再試一次。</translation>
 <translation id="6532663472409656417">已註冊企業</translation>
 <translation id="6533315466883598769">使用 Google 翻譯</translation>
+<translation id="6533636340637966565">開啟中...</translation>
 <translation id="6535331821390304775">永遠允許 <ph name="ORIGIN" /> 使用相關聯的應用程式開啟這類連結</translation>
 <translation id="653659894138286600">掃瞄文件及圖片</translation>
 <translation id="6537613839935722475">名稱可以使用字母、數字和連字號 (-)</translation>
@@ -8147,6 +8157,7 @@
 <translation id="7910768399700579500">新增資料夾(&amp;N)</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">您已在伺服器上變更密碼。請先登出，然後重新登入。</translation>
+<translation id="791247712619243506">取消設定</translation>
 <translation id="7912974581251770345">翻譯</translation>
 <translation id="7915457674565721553">連線至互聯網即可設定家長監控設定</translation>
 <translation id="7916364730877325865">您的機構不允許您開啟此帳戶的同步功能</translation>
@@ -8219,6 +8230,7 @@
 <translation id="7963001036288347286">觸控板加速</translation>
 <translation id="7963608432878156675">此名稱會向其他裝置顯示，以建立藍牙及網絡連線</translation>
 <translation id="7963826112438303517">「Google 助理」會使用這些錄音檔案和您的語音要求來建立及更新您的語音模型；語音模型只會儲存在已啟用 Voice Match 的裝置上。您可在「Google 助理」設定中查看或重新調校語音活動。</translation>
+<translation id="7964458523224581615">鉻綠色</translation>
 <translation id="7966241909927244760">複製圖片位址(&amp;O)</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{書籤清單入面有 1 個項目}other{書籤清單入面有 {COUNT} 個項目}}</translation>
 <translation id="7968072247663421402">供應商選項</translation>
@@ -8243,6 +8255,7 @@
 <translation id="7981670705071137488">軟件日後會在背景中更新。您可在「設定」中查看更新偏好設定。</translation>
 <translation id="7982083145464587921">請重新啟動裝置以修正這個錯誤。</translation>
 <translation id="7982789257301363584">網絡</translation>
+<translation id="7982878511129296052">關閉中...</translation>
 <translation id="7984068253310542383">鏡射「<ph name="DISPLAY_NAME" />」</translation>
 <translation id="7986295104073916105">讀取及變更已儲存的密碼設定</translation>
 <translation id="7987814697832569482">永遠透過此 VPN 連接</translation>
@@ -8371,6 +8384,7 @@
 <translation id="8090234456044969073">讀取最常瀏覽的網站清單</translation>
 <translation id="8090513782447872344">您日後可隨時返回查看</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> 沒有回應</translation>
+<translation id="8094536695728193970">杏黃色</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />備份至「Google 雲端硬碟」。您可隨時輕鬆還原資料或轉用其他裝置。備份包含應用程式資料。<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />您的備份會上載至 Google，並使用您的 Google 帳戶密碼加密。<ph name="END_PARAGRAPH2" />
 <ph name="BEGIN_PARAGRAPH3" />應用程式資料泛指應用程式根據開發人員設定所儲存的任何資料，包括聯絡人、訊息和相片等資料。<ph name="END_PARAGRAPH3" />
@@ -8934,6 +8948,7 @@
 <translation id="8592141010104017453">完全不顯示通知</translation>
 <translation id="859246725979739260">此網站已被禁止存取您的位置。</translation>
 <translation id="8593121833493516339">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您子女的 Android 使用體驗。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已為子女開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至其 Google 帳戶。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
+<translation id="8593450223647418235">設定完成後，您才能在 Microsoft 365 中開啟檔案。</translation>
 <translation id="8596540852772265699">自訂檔</translation>
 <translation id="8597845839771543242">網絡屬性：</translation>
 <translation id="8599681327221583254">一或多項政策設定有誤，請聯絡您的管理員</translation>
@@ -9350,6 +9365,7 @@
 <translation id="8941173171815156065">撤銷「<ph name="PERMISSION" />」權限</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" />已關閉</translation>
 <translation id="894191600409472540">建立安全度高的密碼</translation>
+<translation id="8942714513622077633">要取消設定 Microsoft 365 嗎？</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">加快耗電量 (目前為 <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944725102565796255">如果您只想使用此帳戶一次，可以<ph name="GUEST_LINK_BEGIN" />透過訪客身份使用裝置<ph name="GUEST_LINK_END" />。如要新增其他人的帳戶，請<ph name="LINK_BEGIN" />新增使用者<ph name="LINK_END" />至您的 <ph name="DEVICE_TYPE" />。
@@ -9394,10 +9410,14 @@
 <translation id="8978154919215542464">開啟 - 同步所有內容</translation>
 <translation id="8978670037548431647">重新整理網絡共享功能</translation>
 <translation id="897939795688207351">在 <ph name="ORIGIN" /> 上</translation>
+<translation id="8980335421826918629">此檔案可能是病毒或惡意軟件。
+
+您可將此檔案傳送至「Google 安全瀏覽」，檢查是否不安全。掃瞄通常需時幾秒鐘。</translation>
 <translation id="8980345560318123814">意見反映報告</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - 已當機</translation>
 <translation id="8981038076986775523">進一步了解點樣用咪</translation>
 <translation id="8981825781894055334">紙張不足</translation>
+<translation id="8982043802480025357">開啟 Word、Excel 和 PowerPoint 檔案時，檔案會先移至 Microsoft OneDrive，後才會在 Microsoft 365 中開啟</translation>
 <translation id="8983018820925880511">此新設定檔將由 <ph name="DOMAIN" /> 管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> 可編輯 <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">您的裝置將會向附近所有人顯示 <ph name="MINUTES" /> 分鐘。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>

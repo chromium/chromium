@@ -566,6 +566,7 @@
 <translation id="5422221874247253874">Пункт доступу</translation>
 <translation id="5428105026674456456">Іспанская</translation>
 <translation id="5438282218546237410">Няма вынікаў па запыце "<ph name="SEARCH_TERM" />".</translation>
+<translation id="5447680084201416734">Не хапае месца ў сховішчы.</translation>
 <translation id="5449551289610225147">Несапраўдны пароль</translation>
 <translation id="5459064203055649751">Файл з такой назвай (<ph name="FILENAME" />) ужо існуе. Замяніць яго файлам, які вы перамяшчаеце?</translation>
 <translation id="5463231940765244860">Увесці</translation>
@@ -694,6 +695,7 @@
 <translation id="6423031066725912715">В'етнамская (раскладка TCVN)</translation>
 <translation id="6430271654280079150">У вас засталася 1 спроба.</translation>
 <translation id="643243556292470964">Выдаленыя файлы перамяшчаюцца ў сметніцу</translation>
+<translation id="6438480100790416671">Ідзе праверка наяўнасці месца ў сховішчы…</translation>
 <translation id="6485131920355264772">Не ўдалося атрымаць звесткі пра вольнае месца</translation>
 <translation id="6495925982925244349">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>
 <translation id="649877868557234318">Выманне файла "<ph name="FILE_NAME" />" ажыццяўляецца ў папку "<ph name="FOLDER_NAME" />"</translation>
@@ -897,6 +899,7 @@
 <translation id="8000066093800657092">Няма сеткі</translation>
 <translation id="8008366997883261463">Сабака</translation>
 <translation id="8028993641010258682">Памер</translation>
+<translation id="8034974485549318493">Для першапачатковага наладжвання вам трэба падключыцца да інтэрнэту, каб сінхранізаваць файлы.</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038111231936746805">(стандартна)</translation>
 <translation id="8042602468072383151">Аўдыяфайл фармату <ph name="AUDIO_TYPE" /></translation>

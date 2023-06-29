@@ -395,6 +395,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2750941250130734256">Dirisha linalotumika limepachuliwa.</translation>
 <translation id="2761723519669354964">Fungua kipengee kilichoangaziwa kwenye rafu</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> hadi <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> inadhibitiwa na <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Funga hali ya kupiga picha</translation>
 <translation id="2785499565474703580">Kifaa 1 kimeunganishwa</translation>
@@ -458,6 +459,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3062298103034426069">Haiwezi kutumika</translation>
 <translation id="3068622547379332530">Toleo la <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Rafu iko upande wa kushoto</translation>
+<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Panua menyu</translation>
 <translation id="3087734570205094154">Chini</translation>
@@ -471,6 +473,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3120421559657122717">Je, ungependa kuzima kifaa?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Anzisha upya ili kusasisha</translation>
+<translation id="3139188263101386725">Tumia njia ya mkato iliyosasishwa</translation>
 <translation id="3139942575505304791">Eneokazi la 1</translation>
 <translation id="315116470104423982">Data ya mtandao wa simu</translation>
 <translation id="3151786313568798007">Mkao</translation>
@@ -606,6 +609,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />. Chagua ili uone maelezo zaidi katika Kalenda ya Google.</translation>
 <translation id="3659444876902283058">(Siku ya <ph name="CURRENT_DAY" /> kati ya <ph name="TOTAL_DAYS" />)</translation>
+<translation id="3659667652322717492">Unaweza kubadilisha hali ya maikrofoni wakati wowote baadaye.</translation>
 <translation id="3659814201068740063">Zimesalia takribani dakika <ph name="TIME_LEFT" /> asilimia(<ph name="PERCENTAGE" />%).
 Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Mtumiaji anayesimamiwa</translation>
@@ -1049,6 +1053,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="5578188167649348993">hifadhi</translation>
 <translation id="5580000943347215299">Maktaba</translation>
 <translation id="558849140439112033">Buruta ili uchague sehemu ya kunasa</translation>
+<translation id="5590609058453685222">Kikumbusho cha kuwasha maikrofoni kimewashwa. Utaarifiwa ukizungumza huku umezima maikrofoni.</translation>
 <translation id="5596627076506792578">Chaguo zaidi</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Bonyeza Ctrl + Alt + Z ili uzime kipengele cha maelezo yanayotamkwa.</translation>
@@ -1202,6 +1207,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="6231419273573514727">Huenda vifaa unavyounganisha kwenye kompyuta yako visifanye kazi kikamilifu</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> inatumia kamera na maikrofoni yako kwa sasa</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Fungua Kidhibiti cha Shughuli kwenye Chrome ukitumia "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Fungua arifa</translation>
 <translation id="6254629735336163724">Inatumia skrini ya mlalo pekee</translation>
 <translation id="6259254695169772643">Tumia stylus yako kuchagua</translation>
@@ -1252,6 +1258,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="6497418457565568043">Kipengele cha usinisumbue kimewashwa</translation>
 <translation id="6500896621837555595">Sasisha</translation>
 <translation id="6501401484702599040">Inatuma skrini kwenye <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Fungua programu ya Njia za Mkato za Ufunguo ukitumia "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Badilisha utumie mbinu inayofuata inayopatikana ya kuingiza data</translation>
 <translation id="6508923215158854599">Hakikisha kuwa Chromebook yako inatumia mtandao wa Wi-Fi unaotumika kwenye kifaa chako cha Chromecast.</translation>
 <translation id="6515727200518652613">Kamera imepoteza muunganisho, inajaribu kuunganisha tena.</translation>
@@ -1645,6 +1652,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8255234195843591763">Weka upya ili usasishe</translation>
 <translation id="8261506727792406068">Futa</translation>
 <translation id="8262312463845990408">Kipengele cha kuwasha uchezaji</translation>
+<translation id="8265826854528868575">Inaonyesha <ph name="NUM_SHOWN_TASKS" /> kati ya <ph name="NUM_TOTAL_TASKS" /></translation>
 <translation id="8270450402312105425">{0,plural, =1{Badilisha utumie toleo la awali kwenye kifaa ndani ya saa moja}other{Badilisha utumie toleo la awali kwenye kifaa ndani ya saa #}}</translation>
 <translation id="8277261673056602147">Angazia maandishi kwenye skrini yako</translation>
 <translation id="8284362522226889623">Telezesha vidole vinne kushoto ili uende kwenye eneokazi lililotangulia</translation>

@@ -5,6 +5,7 @@
 <translation id="1008557486741366299">나중에 하기</translation>
 <translation id="100957008357583611">위치를 사용하시겠습니까?</translation>
 <translation id="1010200102790553230">페이지 나중에 로드하기</translation>
+<translation id="1010481144722131607">은행에서 본인 확인을 요청합니다</translation>
 <translation id="1011206368273183593">파일 준비 중</translation>
 <translation id="1015730422737071372">추가 세부정보 제공</translation>
 <translation id="1019413721762100891">꺼짐</translation>
@@ -761,6 +762,7 @@
 <translation id="2649204054376361687"><ph name="COUNTRY" />, <ph name="CITY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 방문 기록, 쿠키, 캐시 등을 삭제하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="2650446666397867134">파일 액세스 거부됨</translation>
+<translation id="2651465929321991146">기록 및 탭</translation>
 <translation id="2653659639078652383">제출</translation>
 <translation id="2655752832536625875">욕실</translation>
 <translation id="2657637947725373811">{0,plural, =1{기밀 파일을 전송하시겠습니까?}other{기밀 파일을 전송하시겠습니까?}}</translation>
@@ -1212,6 +1214,7 @@
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;을(를) 찾으셨나요?</translation>
 <translation id="3678029195006412963">요청을 서명할 수 없음</translation>
 <translation id="3678529606614285348">새 시크릿 창에서 페이지 열기(Ctrl-Shift-N)</translation>
+<translation id="3678914302246317895"><ph name="OTP_LENGTH" />자리 인증 코드 입력</translation>
 <translation id="3681007416295224113">인증서 정보</translation>
 <translation id="3681421644246505351">Chrome에서는 내 최근 방문 기록을 기반으로 관심 주제를 파악합니다.</translation>
 <translation id="3693327506115126094">본인 인증 방법 선택</translation>
@@ -2020,6 +2023,7 @@
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}other{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}}</translation>
 <translation id="5463625433003343978">기기를 찾는 중...</translation>
 <translation id="5464236009658034488">사무용품</translation>
+<translation id="5466018172325111652">코드를 받지 못하셨나요? <ph name="BEGIN_LINK" />새 코드 받기<ph name="END_LINK" /></translation>
 <translation id="5470230812924696184">토목공학</translation>
 <translation id="5470861586879999274">수정 다시 실행(&amp;R)</translation>
 <translation id="5471337644440862957">코미디 영화</translation>

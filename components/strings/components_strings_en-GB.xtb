@@ -5,6 +5,7 @@
 <translation id="1008557486741366299">Not Now</translation>
 <translation id="100957008357583611">Use your location?</translation>
 <translation id="1010200102790553230">Load page later</translation>
+<translation id="1010481144722131607">Your bank wants to make sure that it\u2019s you</translation>
 <translation id="1011206368273183593">Preparing files</translation>
 <translation id="1015730422737071372">Provide additional details.</translation>
 <translation id="1019413721762100891">Off</translation>
@@ -761,6 +762,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to clear your browsing history, cookies, cache and more in Chrome settings</translation>
 <translation id="2650446666397867134">Access to the file was denied</translation>
+<translation id="2651465929321991146">History and tabs</translation>
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2655752832536625875">Toilet</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transfer confidential file?}other{Transfer confidential files?}}</translation>
@@ -1212,6 +1214,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3677008721441257057">Did you mean &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Request could not be signed</translation>
 <translation id="3678529606614285348">Open page in a new incognito window (Ctrl-Shift-N)</translation>
+<translation id="3678914302246317895">Enter <ph name="OTP_LENGTH" />-digit verification code</translation>
 <translation id="3681007416295224113">Certificate information</translation>
 <translation id="3681421644246505351">Chrome notes topics of interest based on your recent browsing history.</translation>
 <translation id="3693327506115126094">Choose how you'll verify that it's you</translation>
@@ -2020,6 +2023,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}}</translation>
 <translation id="5463625433003343978">Finding devices…</translation>
 <translation id="5464236009658034488">Office Supplies</translation>
+<translation id="5466018172325111652">Didn\u2019t receive your code? <ph name="BEGIN_LINK" />Get new code<ph name="END_LINK" /></translation>
 <translation id="5470230812924696184">Civil engineering</translation>
 <translation id="5470861586879999274">&amp;Redo edit</translation>
 <translation id="5471337644440862957">Comedy movies</translation>

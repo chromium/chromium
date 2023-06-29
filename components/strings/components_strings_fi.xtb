@@ -5,6 +5,7 @@
 <translation id="1008557486741366299">Ei nyt</translation>
 <translation id="100957008357583611">Käytä sijaintiasi?</translation>
 <translation id="1010200102790553230">Lataa sivu myöhemmin</translation>
+<translation id="1010481144722131607">Pankkisi haluaa varmistaa henkilöllisyytesi</translation>
 <translation id="1011206368273183593">Valmistellaan tiedostoja</translation>
 <translation id="1015730422737071372">Lisätietoja</translation>
 <translation id="1019413721762100891">Pois päältä</translation>
@@ -761,6 +762,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, tyhjennä selaushistoria, evästeet, välimuisti ja muita tietoja Chromen asetuksista painamalla sarkainta ja sitten Enter</translation>
 <translation id="2650446666397867134">Tiedoston käyttöoikeus evättiin</translation>
+<translation id="2651465929321991146">Historia ja välilehdet</translation>
 <translation id="2653659639078652383">Lähetä</translation>
 <translation id="2655752832536625875">Kylpyhuone</translation>
 <translation id="2657637947725373811">{0,plural, =1{Siirretäänkö luottamuksellinen tiedosto?}other{Siirretäänkö luottamuksellisia tiedostoja?}}</translation>

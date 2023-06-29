@@ -395,6 +395,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2750941250130734256">Aktiivne aken dokiti lahti.</translation>
 <translation id="2761723519669354964">Riiulil esile tõstetud üksuse avamine</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />–<ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">Ctrl + otsinguklahv + s</translation>
 <translation id="2778650143428714839">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Välju jäädvustusrežiimist</translation>
 <translation id="2785499565474703580">1 seade on ühendatud</translation>
@@ -458,6 +459,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3062298103034426069">Ei toetata</translation>
 <translation id="3068622547379332530">Versioon: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Riiul asub vasakul</translation>
+<translation id="3070639127620815135">otsinguklahv + paoklahv</translation>
 <translation id="3077734595579995578">tõstuklahv</translation>
 <translation id="3081696990447829002">Laienda menüü</translation>
 <translation id="3087734570205094154">Alaserv</translation>
@@ -471,6 +473,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3120421559657122717">Kas lülitada seade välja?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Taaskäivitage värskendamiseks</translation>
+<translation id="3139188263101386725">Kasutage uut otseteed</translation>
 <translation id="3139942575505304791">Töölaud 1</translation>
 <translation id="315116470104423982">Mobiilne andmeside</translation>
 <translation id="3151786313568798007">Suund</translation>
@@ -606,6 +609,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />. Valige, et Google'i kalendris lisateavet näha.</translation>
 <translation id="3659444876902283058">(<ph name="CURRENT_DAY" />. päev <ph name="TOTAL_DAYS" />-st)</translation>
+<translation id="3659667652322717492">Mikrofoni käitumist saate hiljem igal ajal muuta.</translation>
 <translation id="3659814201068740063">Umbes <ph name="TIME_LEFT" /> jäänud (<ph name="PERCENTAGE" />%).
 Ühendage seade toiteallikaga.</translation>
 <translation id="366222428570480733">Kontoga <ph name="USER_EMAIL_ADDRESS" /> hallatav kasutaja</translation>
@@ -1050,6 +1054,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5578188167649348993">mälumaht</translation>
 <translation id="5580000943347215299">Kogu</translation>
 <translation id="558849140439112033">Lohistage jäädvustatava piirkonna valimiseks</translation>
+<translation id="5590609058453685222">Vaigistamise märguanne on sisse lülitatud. Teid teavitatakse, kui räägite vaigistatuna.</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Vajutage suulise tagasiside keelamiseks klahvikombinatsiooni Ctrl + Alt + Z.</translation>
@@ -1203,6 +1208,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6231419273573514727">Välisseadme toimivus võib olla piiratud</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> kasutab praegu teie kaamerat ja mikrofoni</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Avage tegumihalduri rakendus otseteega <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Ava märguanded</translation>
 <translation id="6254629735336163724">Lukustatud horisontaalasendisse</translation>
 <translation id="6259254695169772643">Kasutage valimiseks elektronpliiatsit</translation>
@@ -1253,6 +1259,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6497418457565568043">Funktsioon Mitte segada on sisse lülitatud</translation>
 <translation id="6500896621837555595">Värskenda</translation>
 <translation id="6501401484702599040">Ekraani ülekandmine seadmesse <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Kasutage rakenduse Klaviatuuri otseteed avamiseks otseteed <ph name="NEW_SHORTCUT" /></translation>
 <translation id="6507618042428827377">Lülitu järgmisele saadaoleva sisestusmeetodile</translation>
 <translation id="6508923215158854599">Veenduge, et teie Chromebook oleks teie Chromecasti seadmega samas WiFi-võrgus.</translation>
 <translation id="6515727200518652613">Kaamera ühendus katkes, proovitakse uuesti ühendada.</translation>
@@ -1645,6 +1652,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8255234195843591763">Värskendamiseks taaskäivitage</translation>
 <translation id="8261506727792406068">Kustuta</translation>
 <translation id="8262312463845990408">Taasesituse käivitamine/peatamine</translation>
+<translation id="8265826854528868575">Kuvatud on <ph name="NUM_SHOWN_TASKS" /> toimingut <ph name="NUM_TOTAL_TASKS" />-st</translation>
 <translation id="8270450402312105425">{0,plural, =1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega üks tund}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # tundi}}</translation>
 <translation id="8277261673056602147">Tõstke tekst oma ekraanikuval esile</translation>
 <translation id="8284362522226889623">Eelmisele töölauale lülitumiseks pühkige nelja sõrmega vasakule</translation>

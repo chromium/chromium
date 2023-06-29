@@ -8,6 +8,7 @@
 <translation id="1004218526896219317">වෙබ් අඩවි ප්‍රවේශය</translation>
 <translation id="1005274289863221750">ඔබේ මයික්‍රෆෝනය සහ කැමරාව භාවිතා කරන්න</translation>
 <translation id="1005333234656240382">ADB නිදොස් කිරීම සබල කරන්නද?</translation>
+<translation id="1005671386794704751">රෝස</translation>
 <translation id="1006873397406093306">මෙම දිගුවට වෙබ් අඩවි මත ඔබේ දත්ත කියවීමටත් වෙනස් කිරීමටත් හැකි වෙයි ඔබට දිගුවට ප්‍රවේශ විය හැක්කේ කුමන වෙබ් අඩවිවලටද යන්න පාලන කළ හැක.</translation>
 <translation id="1007057452468855774">Google Play Store ක්‍රියාත්මක කරන්න</translation>
 <translation id="1008186147501209563">පිටුසන් නිර්යාත කරන්න</translation>
@@ -2067,6 +2068,7 @@
 <translation id="2691385045260836588">මාදිලිය</translation>
 <translation id="2691440343905273290">ආදාන සැකසීම් වෙනස් කරන්න</translation>
 <translation id="2692503699962701720">කථන මූලාංගය ටයිප් කරන විට සහ පෙළ හැඩ ගැන් වූ විට තාරතාව වෙනස් කරන්න</translation>
+<translation id="2692901429679246677">ඇක්වා</translation>
 <translation id="2693134906590795721">ආරෝපණය වීමේ ශබ්ද</translation>
 <translation id="2693176596243495071">අපොයි! නොදන්නා දෝෂයක් ඇති විය. පසුව නැවත උත්සාහ කරන්න හෝ ගැටලුව දිගටම පැවතියහොත් ඔබේ පරිපාලකයා සම්බන්ධ කර ගන්න.</translation>
 <translation id="2698147581454716013">මෙය පොදි බඳින ලද උපාංගයක් වන අතර Kiosk සහ Signage Upgrade සමග ලියාපදිංචි විය නොහැක.</translation>
@@ -2101,6 +2103,7 @@
 <translation id="2721695630904737430">පාලිත පරිශීලකයන් ඔබේ පරිපාලක විසින් අබල කර ඇත.</translation>
 <translation id="2722540561488096675">ඔබගේ උපාංගය <ph name="TIME_LEFT" />කින් වසා දමනු ඇත. ඔබගේ උපාංගය නැවත ක්‍රියාත්මක කිරීමට පෙර USB ඉවත් කරන්න. අනතුරුව ඔබට <ph name="DEVICE_OS" /> භාවිත කිරීම ආරම්භ කළ හැකිය.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
+<translation id="2723819893410108315">සිට්‍රන්</translation>
 <translation id="2724841811573117416">WebRTC වාර්ථා</translation>
 <translation id="272488616838512378">ඒකක පරිවර්තනය</translation>
 <translation id="2725200716980197196">ජාල සම්බන්ධතාවය ප්‍රතිසාධනය කෙරිණි</translation>
@@ -5195,6 +5198,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5407167491482639988">තේරුම් ගත නොහැකි</translation>
 <translation id="5408750356094797285">විශාලනය: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">ඔබේ Google ගිණුමෙන්</translation>
+<translation id="5410889048775606433">ෆුසියා</translation>
 <translation id="5411022484772257615">පාසල් ලියාපදිංචිය සම්පූර්ණ කළ නොහැකි විය</translation>
 <translation id="5411856344659127989">ඔබට වෙනත් යම් කෙනෙකු සඳහා ගිණුමක් එක් කිරීමට අවශ්‍ය නම්, ඔබේ <ph name="DEVICE_TYPE" /> වෙත <ph name="LINK_BEGIN" />නව පුද්ගලයෙකු එක් කරන්න<ph name="LINK_END" />.
 
@@ -6502,6 +6506,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6532527800157340614">ඔබේ ප්‍රවේශ ටෝකනය ලබා ගත නොහැකි බැවින් පුරනය අසමත් විය. ඔබගේ අන්තර්ජාල සම්බන්ධතාව පරීක්‍ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="6532663472409656417">ව්‍යවසාය ලියාපදිංචි කළා</translation>
 <translation id="6533315466883598769">Google පරිවර්තනය භාවිත කරන්න</translation>
+<translation id="6533636340637966565">ක්‍රියාත්මක කරමින්...</translation>
 <translation id="6535331821390304775">සැම විටම <ph name="ORIGIN" /> හට මෙම වර්ගයේ සබැඳි සම්බන්ධිත යෙදුම තුළ විවෘත කිරීමට ඉඩ දෙන්න</translation>
 <translation id="653659894138286600">ලේඛන සහ රූප ස්කෑන් කරන්න</translation>
 <translation id="6537613839935722475">නමට අකුරු, ඉලක්කම් සහ කෙටි ඉරි (-) භාවිත කළ හැකිය</translation>
@@ -8211,6 +8216,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7963001036288347286">ස්පර්ශ පුවරු ත්වරණය</translation>
 <translation id="7963608432878156675">මෙම නම බ්ලූටූත් සහ ජාල සම්බන්ධතා සඳහා වෙනත් උපාංගවලට දැකිය හැකිය</translation>
 <translation id="7963826112438303517">ඔබ Voice Match සක්‍රීය කර ඇති උපාංග තුළ පමණක් ගබඩා කෙරෙන ඔබේ හඬ මාදිලිය නිර්මාණ කිරීමටත් යාවත්කාලීන කිරීමටත් ඔබේ සහකරු මෙම පටිගත කිරීම් සහ කථන ඉල්ලීම් භාවිත කරයි. සහකරු සැකසීම් තුළ හඬ ක්‍රියාකාරකම බලන්න හෝ යළි පුහුණු කරන්න.</translation>
+<translation id="7964458523224581615">විරිඩියන්</translation>
 <translation id="7966241909927244760">පින්තූර ලිපිනය පිටපත් කරන්න</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{පිටුසන් ලැයිස්තුවේ අයිතම 1කි}one{පිටුසන් ලැයිස්තුවේ අයිතම {COUNT}කි}other{පිටුසන් ලැයිස්තුවේ අයිතම {COUNT}කි}}</translation>
 <translation id="7968072247663421402">සැපයුම්කරු විකල්ප</translation>
@@ -8235,6 +8241,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7981670705071137488">මෙයින් පසු, මෘදුකාංග යාවත්කාලීන කිරීම් පසුබිමේ සිදු වනු ඇත. ඔබට සැකසීම් තුළ යාවත්කාලීන මනාප සමාලෝචනය කළ හැකිය.</translation>
 <translation id="7982083145464587921">මෙම දෝෂය නිවැරදි කර ගැනීමට කරුණාකර ඔබේ උපාංගය නැවත අරඹන්න.</translation>
 <translation id="7982789257301363584">ජාලය</translation>
+<translation id="7982878511129296052">ක්‍රියාවිරහිත කරමින්...</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> දර්පණය කරන්න</translation>
 <translation id="7986295104073916105">සුරැකි මුරපද සැකසීම් කියවන්න සහ වෙනස් කරන්න</translation>
 <translation id="7987814697832569482">සැම විටම මෙම VPN හරහා සම්බන්ධ කරන්න</translation>
@@ -8362,6 +8369,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8090234456044969073">ඔබේ වඩා මෑත පිවිසි වෙබ් අඩවි ලැයිස්තුවක් කියවන්න</translation>
 <translation id="8090513782447872344">ඔබට තවත් බැල්මකට ඕනෑම වේලාවක ආපසු පැමිණිය හැකිය</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ප්‍රතිචාර නොදක්වයි</translation>
+<translation id="8094536695728193970">එප්‍රිකට්</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google Drive වෙත උපස්ථ කරන්න. ඔබේ දත්ත පහසුවෙන් ප්‍රතිසාධනය කරන්න හෝ ඕනෑම වේලාවක දී උපාංගය මාරු කරන්න. ඔබේ උපස්ථයේ යෙදුම් දත්ත ඇතුළත් වේ.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ඔබේ උපස්ථයන් Google වෙත උඩුගත කරන අතර ඔබේ Google ගිණුමේ මුරපදය භාවිතයෙන් ගුප්ත කේතනය කර ඇත.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />යෙදුම් දත්ත සම්බන්ධතා, පණිවිඩ, ඡායාරූප වැනි දත්ත ඇතුළුව යෙදුමක් විසින් සුරකිනු ලැබූ (සංවර්ධක සැකසීම් මත පදනම්ව) ඕනෑම දත්තයක් විය හැකිය.<ph name="END_PARAGRAPH3" />

@@ -297,6 +297,7 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="2643064289437760082">Tarama verilerini silerek reklam ölçümü verilerini istediğiniz zaman silebilirsiniz</translation>
 <translation id="2647434099613338025">Dil ekle</translation>
 <translation id="2649068648233607930">Tarayıcınız, <ph name="DOMAIN" /> tarafından yönetilmektedir</translation>
+<translation id="2650077116157640844">Senkronize edilen cihazlar hakkında daha fazla bilgi</translation>
 <translation id="2650348088770008516">Gizlilik kılavuzu açıklaması kapatıldı</translation>
 <translation id="2650408372219180431">Bu cihaza kaydedilen şifreleri dışa aktarıp silin</translation>
 <translation id="2650751991977523696">Dosya tekrar indirilsin mi?</translation>
@@ -482,6 +483,7 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="360901359071773787">Son 15 dakika silinsin mi?</translation>
 <translation id="3616113530831147358">Ses</translation>
 <translation id="3622349720008044802">Pencereleri yönetin</translation>
+<translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}other{+ # site}}</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> ile paylaşılıyor</translation>
 <translation id="363596933471559332">Depolanmış kimlik bilgileriyle web sitelerinde otomatik olarak oturum açın. Bu özellik kapatıldığında, bir web sitesinde oturum açmadan önce her defasında doğrulama yapmanız istenir.</translation>
 <translation id="3636940436873918441">Tercih edilen diller</translation>
