@@ -172,8 +172,6 @@ CGFloat const kInitialHeightPadding = 5;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-  [self.view layoutIfNeeded];
-
   // Update the custom detent with the correct initial height for the bottom
   // sheet. (Initial height is not calculated properly in -viewDidLoad, but we
   // need to setup the bottom sheet in that method so there is not a delay when
