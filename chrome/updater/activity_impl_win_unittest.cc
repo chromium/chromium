@@ -7,8 +7,7 @@
 #include <string>
 #include <tuple>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/strings/strcat.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
@@ -34,16 +33,16 @@ struct ReadActiveBitRetval {
 };
 
 using ReadActiveBitCallback =
-    base::RepeatingCallback<ReadActiveBitRetval(base::win::RegKey&)>;
+    base::FunctionRef<ReadActiveBitRetval(base::win::RegKey&)>;
 using WriteActiveBitCallback =
-    base::RepeatingCallback<DWORD(base::win::RegKey&, bool)>;
+    base::FunctionRef<DWORD(base::win::RegKey&, bool)>;
 
 struct ReadWriteCallbacks {
-  ReadWriteCallbacks() = default;
+  ReadWriteCallbacks() = delete;
   ReadWriteCallbacks(ReadActiveBitCallback read, WriteActiveBitCallback write)
       : read_callback(read), write_callback(write) {}
   ReadWriteCallbacks(const ReadWriteCallbacks&) = default;
-  ReadWriteCallbacks& operator=(const ReadWriteCallbacks&) = default;
+  ReadWriteCallbacks& operator=(const ReadWriteCallbacks&) = delete;
 
   ReadActiveBitCallback read_callback;
   WriteActiveBitCallback write_callback;
@@ -118,7 +117,7 @@ class ActivityWinTest : public ::testing::TestWithParam<
     base::win::RegKey key;
     ASSERT_EQ(ERROR_SUCCESS, key.Create(HKEY_CURRENT_USER, key_name.c_str(),
                                         Wow6432(KEY_SET_VALUE)));
-    ASSERT_EQ(DWORD{ERROR_SUCCESS}, callback.Run(key, value));
+    ASSERT_EQ(DWORD{ERROR_SUCCESS}, callback(key, value));
   }
 
   void DeleteActiveBit(const std::wstring& key_name) const {
@@ -135,7 +134,7 @@ class ActivityWinTest : public ::testing::TestWithParam<
     ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, key_name.c_str(),
                                       Wow6432(KEY_QUERY_VALUE)));
 
-    const ReadActiveBitRetval retval = callback.Run(key);
+    const ReadActiveBitRetval retval = callback(key);
     ASSERT_EQ(DWORD{ERROR_SUCCESS}, retval.read_result);
     ASSERT_EQ(expected, retval.active_bit_set);
   }
@@ -179,9 +178,8 @@ TEST_P(ActivityWinTest, GetActiveBit) {
 TEST_P(ActivityWinTest, ClearActiveBit) {
   ClearActiveBit(GetScope(), kAppId);
 
-  CheckUserActiveBit(false, base::BindRepeating(&ReadActiveBitAsString));
-  CheckLowIntegrityUserActiveBit(false,
-                                 base::BindRepeating(&ReadActiveBitAsString));
+  CheckUserActiveBit(false, &ReadActiveBitAsString);
+  CheckLowIntegrityUserActiveBit(false, &ReadActiveBitAsString);
   ASSERT_FALSE(GetActiveBit(GetScope(), kAppId));
 }
 
@@ -191,10 +189,9 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         ::testing::Bool(),
         ::testing::Bool(),
-        ::testing::Values(
-            ReadWriteCallbacks(base::BindRepeating(&ReadActiveBitAsString),
-                               base::BindRepeating(&WriteActiveBitAsString)),
-            ReadWriteCallbacks(base::BindRepeating(&ReadActiveBitAsDword),
-                               base::BindRepeating(&WriteActiveBitAsDword)))));
+        ::testing::Values(ReadWriteCallbacks(&ReadActiveBitAsString,
+                                             &WriteActiveBitAsString),
+                          ReadWriteCallbacks(&ReadActiveBitAsDword,
+                                             &WriteActiveBitAsDword))));
 
 }  // namespace updater

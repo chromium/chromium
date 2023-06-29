@@ -117,10 +117,10 @@ TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
   base::FilePath os_upgrade_file = current_directory.Append(os_upgrade_string);
   base::FilePath hardcoded_file = current_directory.Append(L"HardcodedFile");
 
-  EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting([&]() {
+  EXPECT_TRUE(test::WaitFor([&]() {
     return base::PathExists(os_upgrade_file) &&
            base::PathExists(hardcoded_file);
-  })));
+  }));
   EXPECT_TRUE(base::DeleteFile(os_upgrade_file));
   EXPECT_TRUE(base::DeleteFile(hardcoded_file));
 }

@@ -20,6 +20,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/hash/hash.h"
 #include "base/process/process_iterator.h"
 #include "base/scoped_generic.h"
@@ -374,7 +375,7 @@ bool IsGuid(const std::wstring& s);
 // Runs `callback` for each run value in the registry that matches `prefix`.
 void ForEachRegistryRunValueWithPrefix(
     const std::wstring& prefix,
-    base::RepeatingCallback<void(const std::wstring&)> callback);
+    base::FunctionRef<void(const std::wstring&)> callback);
 
 // Deletes the registry value at `root\\path`, and returns `true` on success or
 // if the path does not exist.
@@ -388,7 +389,7 @@ void ForEachRegistryRunValueWithPrefix(
 void ForEachServiceWithPrefix(
     const std::wstring& service_name_prefix,
     const std::wstring& display_name_prefix,
-    base::RepeatingCallback<void(const std::wstring&)> callback);
+    base::FunctionRef<void(const std::wstring&)> callback);
 
 // Deletes `service_name` system service and returns `true` on success.
 [[nodiscard]] bool DeleteService(const std::wstring& service_name);

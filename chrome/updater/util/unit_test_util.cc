@@ -17,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -449,17 +450,17 @@ EventHolder CreateWaitableEventForTest() {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-bool WaitFor(base::RepeatingCallback<bool()> predicate,
-             base::RepeatingClosure still_waiting) {
+bool WaitFor(base::FunctionRef<bool()> predicate,
+             base::FunctionRef<void()> still_waiting) {
   constexpr base::TimeDelta kOutputInterval = base::Seconds(10);
   auto notify_next = base::TimeTicks::Now() + kOutputInterval;
   const auto deadline = base::TimeTicks::Now() + TestTimeouts::action_timeout();
   while (base::TimeTicks::Now() < deadline) {
-    if (predicate.Run()) {
+    if (predicate()) {
       return true;
     }
     if (notify_next < base::TimeTicks::Now()) {
-      still_waiting.Run();
+      still_waiting();
       notify_next += kOutputInterval;
     }
     base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());

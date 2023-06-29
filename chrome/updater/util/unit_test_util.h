@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process_iterator.h"
 #include "base/synchronization/waitable_event.h"
@@ -99,8 +100,8 @@ base::FilePath::StringType PrintProcesses(
 // periodically to provide a indication of progress. Returns true if the
 // predicate becomes true before a timeout, otherwise returns false.
 [[nodiscard]] bool WaitFor(
-    base::RepeatingCallback<bool()> predicate,
-    base::RepeatingClosure still_waiting = base::DoNothing());
+    base::FunctionRef<bool()> predicate,
+    base::FunctionRef<void()> still_waiting = []() {});
 
 struct EventHolder {
   base::WaitableEvent event;

@@ -6,8 +6,7 @@
 
 #include <string>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,7 +21,7 @@ namespace updater {
 namespace {
 
 using ProcessActiveBitUnderKeyCallback =
-    base::RepeatingCallback<bool(HKEY, const std::wstring&)>;
+    base::FunctionRef<bool(HKEY, const std::wstring&)>;
 
 constexpr wchar_t kDidRun[] = L"dr";
 
@@ -68,7 +67,7 @@ bool ProcessActiveBit(ProcessActiveBitUnderKeyCallback callback,
                       const std::string& id) {
   const std::wstring rootkey_suffix =
       (rootkey == HKEY_USERS) ? base::StrCat({sid, L"\\"}) : L"";
-  const bool process_success = callback.Run(
+  const bool process_success = callback(
       rootkey, base::StrCat({rootkey_suffix, GetAppClientStateKey(id)}));
 
   // For Google Toolbar and similar apps that run at low integrity, we need to
@@ -81,7 +80,7 @@ bool ProcessActiveBit(ProcessActiveBitUnderKeyCallback callback,
       base::StrCat({rootkey_suffix, USER_REG_VISTA_LOW_INTEGRITY_HKCU, L"\\",
                     sid, L"\\", GetAppClientStateKey(id)});
 
-  return callback.Run(rootkey, low_integrity_key_name) || process_success;
+  return callback(rootkey, low_integrity_key_name) || process_success;
 }
 
 bool ProcessUserActiveBit(ProcessActiveBitUnderKeyCallback callback,
@@ -112,22 +111,22 @@ bool ProcessSystemActiveBit(ProcessActiveBitUnderKeyCallback callback,
 
 bool GetUserActiveBit(const std::string& id) {
   // Read the active bit under HKCU.
-  return ProcessUserActiveBit(base::BindRepeating(&GetActiveBitUnderKey), id);
+  return ProcessUserActiveBit(&GetActiveBitUnderKey, id);
 }
 
 void ClearUserActiveBit(const std::string& id) {
   // Clear the active bit under HKCU.
-  ProcessUserActiveBit(base::BindRepeating(&ClearActiveBitUnderKey), id);
+  ProcessUserActiveBit(&ClearActiveBitUnderKey, id);
 }
 
 bool GetSystemActiveBit(const std::string& id) {
   // Read the active bit under each user in HKU\<sid>.
-  return ProcessSystemActiveBit(base::BindRepeating(&GetActiveBitUnderKey), id);
+  return ProcessSystemActiveBit(&GetActiveBitUnderKey, id);
 }
 
 void ClearSystemActiveBit(const std::string& id) {
   // Clear the active bit under each user in HKU\<sid>.
-  ProcessSystemActiveBit(base::BindRepeating(&ClearActiveBitUnderKey), id);
+  ProcessSystemActiveBit(&ClearActiveBitUnderKey, id);
 }
 
 }  // namespace

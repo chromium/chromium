@@ -28,6 +28,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/path_service.h"
@@ -1013,13 +1014,13 @@ bool IsGuid(const std::wstring& s) {
 
 void ForEachRegistryRunValueWithPrefix(
     const std::wstring& prefix,
-    base::RepeatingCallback<void(const std::wstring&)> callback) {
+    base::FunctionRef<void(const std::wstring&)> callback) {
   for (base::win::RegistryValueIterator it(HKEY_CURRENT_USER, REGSTR_PATH_RUN,
                                            KEY_WOW64_32KEY);
        it.Valid(); ++it) {
     const std::wstring run_name = it.Name();
     if (base::StartsWith(run_name, prefix)) {
-      callback.Run(run_name);
+      callback(run_name);
     }
   }
 }
@@ -1040,7 +1041,7 @@ void ForEachRegistryRunValueWithPrefix(
 void ForEachServiceWithPrefix(
     const std::wstring& service_name_prefix,
     const std::wstring& display_name_prefix,
-    base::RepeatingCallback<void(const std::wstring&)> callback) {
+    base::FunctionRef<void(const std::wstring&)> callback) {
   for (base::win::RegistryKeyIterator it(HKEY_LOCAL_MACHINE,
                                          L"SYSTEM\\CurrentControlSet\\Services",
                                          KEY_WOW64_32KEY);
@@ -1048,7 +1049,7 @@ void ForEachServiceWithPrefix(
     const std::wstring service_name = it.Name();
     if (base::StartsWith(service_name, service_name_prefix)) {
       if (display_name_prefix.empty()) {
-        callback.Run(service_name);
+        callback(service_name);
         continue;
       }
 
@@ -1073,7 +1074,7 @@ void ForEachServiceWithPrefix(
               << ": " << display_name_starts_with_prefix << ": "
               << display_name_prefix;
       if (display_name_starts_with_prefix) {
-        callback.Run(service_name);
+        callback(service_name);
       }
     }
   }

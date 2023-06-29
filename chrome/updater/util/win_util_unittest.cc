@@ -193,9 +193,9 @@ TEST(WinUtil, RunDeElevated_Exe) {
                     test_process_cmd_line.GetArgumentsString()));
   EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
 
-  EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting([&]() {
+  EXPECT_TRUE(test::WaitFor([&]() {
     return test::FindProcesses(kTestProcessExecutableName).empty();
-  })));
+  }));
 }
 
 TEST(WinUtil, GetOSVersion) {
@@ -435,12 +435,11 @@ TEST(WinUtil, ForEachRegistryRunValueWithPrefix) {
   int count_entries = 0;
   ForEachRegistryRunValueWithPrefix(
       kRunEntryPrefix,
-      base::BindLambdaForTesting([&key, &count_entries, kRunEntryPrefix](
-                                     const std::wstring& run_name) {
+      [&key, &count_entries, kRunEntryPrefix](const std::wstring& run_name) {
         EXPECT_TRUE(base::StartsWith(run_name, kRunEntryPrefix));
         ++count_entries;
         EXPECT_EQ(key.DeleteValue(run_name.c_str()), ERROR_SUCCESS);
-      }));
+      });
   EXPECT_EQ(count_entries, kRunEntries);
 }
 
@@ -483,12 +482,11 @@ TEST(WinUtil, ForEachServiceWithPrefix) {
   int count_entries = 0;
   ForEachServiceWithPrefix(
       kServiceNamePrefix, kServiceNamePrefix,
-      base::BindLambdaForTesting([&count_entries, kServiceNamePrefix](
-                                     const std::wstring& service_name) {
+      [&count_entries, kServiceNamePrefix](const std::wstring& service_name) {
         EXPECT_TRUE(base::StartsWith(service_name, kServiceNamePrefix));
         ++count_entries;
         EXPECT_TRUE(DeleteService(service_name));
-      }));
+      });
   EXPECT_EQ(count_entries, kNumServices);
 }
 

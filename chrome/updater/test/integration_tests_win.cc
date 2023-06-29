@@ -215,9 +215,9 @@ void CheckInstallation(UpdaterScope scope,
       if (!IsSystemInstall(scope)) {
         ForEachRegistryRunValueWithPrefix(
             base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-            base::BindRepeating([](const std::wstring& run_name) {
+            [](const std::wstring& run_name) {
               ADD_FAILURE() << "Unexpected Run key found: " << run_name;
-            }));
+            });
       }
     }
   }
@@ -265,9 +265,9 @@ void CheckInstallation(UpdaterScope scope,
                           is_internal_service ? kWindowsInternalServiceName
                                               : kWindowsServiceName}),
             base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-            base::BindRepeating([](const std::wstring& service_name) {
+            [](const std::wstring& service_name) {
               ADD_FAILURE() << "Unexpected service found: " << service_name;
-            }));
+            });
       }
     }
   }
@@ -297,21 +297,19 @@ void CheckInstallation(UpdaterScope scope,
   } else {
     task_scheduler->ForEachTaskWithPrefix(
         base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-        base::BindRepeating([](const std::wstring& task_name) {
+        [](const std::wstring& task_name) {
           ADD_FAILURE() << "Unexpected task found: " << task_name;
-        }));
+        });
   }
 
   const absl::optional<base::FilePath> path =
       GetVersionedInstallDirectory(scope, base::Version(kUpdaterVersion));
   ASSERT_TRUE(path);
-  EXPECT_TRUE(WaitFor(base::BindLambdaForTesting([&]() {
-                        return is_installed == base::PathExists(*path);
-                      }),
-                      base::BindLambdaForTesting([&]() {
+  EXPECT_TRUE(WaitFor([&]() { return is_installed == base::PathExists(*path); },
+                      [&]() {
                         VLOG(0) << "Still waiting for " << *path
                                 << " where is_installed=" << is_installed;
-                      })))
+                      }))
       << base::JoinString(
              [&path]() {
                std::vector<base::FilePath::StringType> files;
@@ -633,7 +631,7 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
     // Dismiss the installation completion dialog, then wait for the process
     // exit.
     EXPECT_TRUE(WaitFor(
-        base::BindLambdaForTesting([string_resource_id_to_find] {
+        [string_resource_id_to_find] {
           // Enumerate the top-level dialogs to find the setup dialog.
           WindowEnumerator(
               ::GetDesktopWindow(), base::BindRepeating([](HWND hwnd) {
@@ -663,9 +661,8 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
                   }))
               .Run();
           return !IsUpdaterRunning();
-        }),
-        base::BindRepeating(
-            [] { VLOG(0) << "Still waiting for the process exit."; })));
+        },
+        [] { VLOG(0) << "Still waiting for the process exit."; }));
   }
 
   const base::Version pv =
@@ -753,31 +750,27 @@ void Clean(UpdaterScope scope) {
   if (!IsSystemInstall(scope)) {
     ForEachRegistryRunValueWithPrefix(
         base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-        base::BindRepeating([](const std::wstring& run_name) {
+        [](const std::wstring& run_name) {
           base::win::RegKey(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_WRITE)
               .DeleteValue(run_name.c_str());
-        }));
+        });
   }
 
   if (IsSystemInstall(scope)) {
-    ForEachServiceWithPrefix(
-        base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-        base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-        base::BindRepeating([](const std::wstring& service_name) {
-          EXPECT_TRUE(DeleteService(service_name));
-        }));
+    ForEachServiceWithPrefix(base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+                             base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+                             [](const std::wstring& service_name) {
+                               EXPECT_TRUE(DeleteService(service_name));
+                             });
   }
 
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope);
   task_scheduler->ForEachTaskWithPrefix(
       base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-      base::BindRepeating(
-          [](scoped_refptr<TaskScheduler> task_scheduler,
-             const std::wstring& task_name) {
-            EXPECT_TRUE(task_scheduler->DeleteTask(task_name));
-          },
-          task_scheduler));
+      [&task_scheduler](const std::wstring& task_name) {
+        EXPECT_TRUE(task_scheduler->DeleteTask(task_name));
+      });
 
   const absl::optional<base::FilePath> target_path =
       GetGoogleUpdateExePath(scope);
@@ -873,11 +866,11 @@ void ExpectNotActive(UpdaterScope /*scope*/, const std::string& id) {
 // the prefs lock.
 bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
   return WaitFor(
-      base::BindRepeating([] { return !IsUpdaterRunning(); }),
-      base::BindLambdaForTesting([] {
+      [] { return !IsUpdaterRunning(); },
+      [] {
         VLOG(0) << "Still waiting for updater to exit. "
                 << test::PrintProcesses(GetExecutableRelativePath().value());
-      }));
+      });
 }
 
 // Verify registry entries for all interfaces.
@@ -1434,11 +1427,11 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
       variant_params[3], variant_params[4], variant_params[5],
       variant_params[6], variant_params[7], variant_params[8]));
 
-  EXPECT_TRUE(WaitFor(base::BindLambdaForTesting([&]() {
+  EXPECT_TRUE(WaitFor([&]() {
     UINT status = 0;
     EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
     return status == COMMAND_STATUS_COMPLETE;
-  })));
+  }));
 
   DWORD exit_code = 0;
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_exitCode(&exit_code));
@@ -1451,11 +1444,11 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
 
   CallDispatchMethod(command_dispatch, L"execute", variant_params);
 
-  EXPECT_TRUE(WaitFor(base::BindLambdaForTesting([&]() {
+  EXPECT_TRUE(WaitFor([&]() {
     base::win::ScopedVariant status =
         GetDispatchProperty(command_dispatch, L"status");
     return V_UINT(status.ptr()) == COMMAND_STATUS_COMPLETE;
-  })));
+  }));
 
   base::win::ScopedVariant command_exit_code =
       GetDispatchProperty(command_dispatch, L"exitCode");
@@ -1810,18 +1803,16 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
     // Expect no GoogleUpdate services.
     ForEachServiceWithPrefix(
         kLegacyServiceNamePrefix, kLegacyServiceDisplayNamePrefix,
-        base::BindLambdaForTesting(
-            [&count_entries](const std::wstring& /*service_name*/) {
-              ++count_entries;
-            }));
+        [&count_entries](const std::wstring& /*service_name*/) {
+          ++count_entries;
+        });
   } else {
     // Expect no GoogleUpdate run value.
     ForEachRegistryRunValueWithPrefix(
         kLegacyRunValuePrefix,
-        base::BindLambdaForTesting(
-            [&count_entries](const std::wstring& /* run_name*/) {
-              ++count_entries;
-            }));
+        [&count_entries](const std::wstring& /* run_name*/) {
+          ++count_entries;
+        });
   }
   EXPECT_EQ(count_entries, 0);
 
@@ -1834,10 +1825,7 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
       TaskScheduler::CreateInstance(scope, /*use_task_subfolders=*/false);
   task_scheduler->ForEachTaskWithPrefix(
       task_name_prefix,
-      base::BindLambdaForTesting(
-          [&count_entries](const std::wstring& /*task_name*/) {
-            ++count_entries;
-          }));
+      [&count_entries](const std::wstring& /*task_name*/) { ++count_entries; });
 
   EXPECT_EQ(count_entries, 0);
 

@@ -173,22 +173,21 @@ bool UninstallGoogleUpdate(UpdaterScope scope,
     // Delete the GoogleUpdate services.
     ForEachServiceWithPrefix(
         kLegacyServiceNamePrefix, kLegacyServiceDisplayNamePrefix,
-        base::BindRepeating([](const std::wstring& service_name) {
+        [](const std::wstring& service_name) {
           VLOG(2) << __func__ << ": Deleting legacy service: " << service_name;
           if (!DeleteService(service_name)) {
             VLOG(1) << __func__
                     << ": failed to delete service: " << service_name;
           }
-        }));
+        });
   } else {
     // Delete the GoogleUpdate run values.
     ForEachRegistryRunValueWithPrefix(
-        kLegacyRunValuePrefix,
-        base::BindRepeating([](const std::wstring& run_name) {
+        kLegacyRunValuePrefix, [](const std::wstring& run_name) {
           VLOG(2) << __func__ << ": Deleting legacy run value: " << run_name;
           base::win::RegKey(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_WRITE)
               .DeleteValue(run_name.c_str());
-        }));
+        });
   }
 
   // Delete the GoogleUpdate tasks. This is a best-effort operation.
@@ -198,14 +197,11 @@ bool UninstallGoogleUpdate(UpdaterScope scope,
     task_scheduler->ForEachTaskWithPrefix(
         IsSystemInstall(scope) ? kLegacyTaskNamePrefixSystem
                                : kLegacyTaskNamePrefixUser,
-        base::BindRepeating(
-            [](scoped_refptr<TaskScheduler> task_scheduler,
-               const std::wstring& task_name) {
-              VLOG(2) << __func__ << ": Deleting legacy task: " << task_name;
-              bool is_deleted = task_scheduler->DeleteTask(task_name);
-              VLOG_IF(2, !is_deleted) << "Legacy task was not deleted.";
-            },
-            task_scheduler));
+        [&task_scheduler](const std::wstring& task_name) {
+          VLOG(2) << __func__ << ": Deleting legacy task: " << task_name;
+          bool is_deleted = task_scheduler->DeleteTask(task_name);
+          VLOG_IF(2, !is_deleted) << "Legacy task was not deleted.";
+        });
   }
 
   // Keep only `GoogleUpdate.exe` and nothing else under `\Google\Update`.

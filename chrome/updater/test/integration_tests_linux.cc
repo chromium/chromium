@@ -67,19 +67,16 @@ absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
   return path->Append(GetExecutableRelativePath());
 }
 
-bool WaitForUpdaterExit(UpdaterScope scope) {
+bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
   return WaitFor(
-      base::BindRepeating(
-          [](UpdaterScope scope) {
-            return !base::NamedProcessIterator(
-                        GetExecutableRelativePath().MaybeAsASCII(), nullptr)
-                        .NextProcessEntry() &&
-                   !base::NamedProcessIterator(kLauncherName, nullptr)
-                        .NextProcessEntry();
-          },
-          scope),
-      base::BindLambdaForTesting(
-          [] { VLOG(0) << "Still waiting for updater to exit..."; }));
+      []() {
+        return !base::NamedProcessIterator(
+                    GetExecutableRelativePath().MaybeAsASCII(), nullptr)
+                    .NextProcessEntry() &&
+               !base::NamedProcessIterator(kLauncherName, nullptr)
+                    .NextProcessEntry();
+      },
+      [] { VLOG(0) << "Still waiting for updater to exit..."; });
 }
 
 void Uninstall(UpdaterScope scope) {

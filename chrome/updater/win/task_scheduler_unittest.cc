@@ -126,8 +126,8 @@ class TaskSchedulerTests : public ::testing::Test {
 
     EXPECT_TRUE(
         event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
-    EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting(
-        [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); })));
+    EXPECT_TRUE(test::WaitFor(
+        [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); }));
 
     if (trigger_type == TaskScheduler::TRIGGER_TYPE_NOW) {
       base::Time next_run_time;
@@ -274,14 +274,14 @@ TEST_F(TaskSchedulerTests, IsTaskRunning) {
       task_scheduler_->RegisterTask(kTaskName1, kTaskDescription1, command_line,
                                     TaskScheduler::TRIGGER_TYPE_NOW, false));
 
-  EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting(
-      [&]() { return task_scheduler_->IsTaskRunning(kTaskName1); })));
+  EXPECT_TRUE(test::WaitFor(
+      [&]() { return task_scheduler_->IsTaskRunning(kTaskName1); }));
   EXPECT_EQ(test::FindProcesses(kTestProcessExecutableName).size(), 1U);
 
   event_holder.event.Signal();
 
-  EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting(
-      [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); })));
+  EXPECT_TRUE(test::WaitFor(
+      [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); }));
   EXPECT_TRUE(test::FindProcesses(kTestProcessExecutableName).empty());
 }
 
@@ -515,25 +515,21 @@ TEST(TaskSchedulerTest, ForEachTaskWithPrefix) {
     int count_entries = 0;
 
     task_scheduler_different_namespace->ForEachTaskWithPrefix(
-        kTaskNamePrefix,
-        base::BindLambdaForTesting(
-            [&count_entries](const std::wstring& /*task_name*/) {
-              ++count_entries;
-            }));
+        kTaskNamePrefix, [&count_entries](const std::wstring& /*task_name*/) {
+          ++count_entries;
+        });
 
     EXPECT_EQ(count_entries, 0);
 
     count_entries = 0;
 
     task_scheduler->ForEachTaskWithPrefix(
-        kTaskNamePrefix,
-        base::BindLambdaForTesting(
-            [&count_entries, &task_scheduler,
-             kTaskNamePrefix](const std::wstring& task_name) {
-              EXPECT_TRUE(base::StartsWith(task_name, kTaskNamePrefix));
-              ++count_entries;
-              EXPECT_TRUE(task_scheduler->DeleteTask(task_name));
-            }));
+        kTaskNamePrefix, [&count_entries, &task_scheduler,
+                          kTaskNamePrefix](const std::wstring& task_name) {
+          EXPECT_TRUE(base::StartsWith(task_name, kTaskNamePrefix));
+          ++count_entries;
+          EXPECT_TRUE(task_scheduler->DeleteTask(task_name));
+        });
 
     EXPECT_EQ(count_entries, kNumTasks);
   }

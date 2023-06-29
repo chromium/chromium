@@ -22,6 +22,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/native_library.h"
@@ -736,7 +737,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
   void ForEachTaskWithPrefix(
       const std::wstring& prefix,
-      base::RepeatingCallback<void(const std::wstring&)> callback) override {
+      base::FunctionRef<void(const std::wstring&)> callback) override {
     if (!task_folder_) {
       return;
     }
@@ -748,7 +749,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
     for (const std::wstring& task_name : task_names) {
       if (base::StartsWith(task_name, prefix)) {
-        callback.Run(task_name);
+        callback(task_name);
       }
     }
   }
