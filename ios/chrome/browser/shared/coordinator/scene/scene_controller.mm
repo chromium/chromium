@@ -2948,6 +2948,7 @@ void InjectNTP(Browser* browser) {
 
 - (void)presentSignedInAccountsViewControllerForBrowserState:
     (ChromeBrowserState*)browserState {
+  CHECK(!_accountsViewController);
   UMA_HISTOGRAM_BOOLEAN("Signin.SignedInAccountsViewImpression", true);
   id<ApplicationSettingsCommands> settingsHandler =
       HandlerForProtocol(self.mainInterface.browser->GetCommandDispatcher(),
