@@ -93,14 +93,19 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   }
 
   // Returns the allowlist match result previously set by
-  // |SetAllowlistResultForUrl|. It crashes if the allowlist match result for
-  // the |gurl| is not set in advance.
+  // |SetAllowlistLookupDetailsForUrl|. It also checks whether the
+  // |metric_variation| parameter passed through is an expected value. It
+  // crashes if either of the allowlist match result or the allowed metric
+  // variations are not set in advance for the |gurl|.
   void CheckUrlForHighConfidenceAllowlist(
       const GURL& gurl,
       const std::string& metric_variation,
       base::OnceCallback<void(bool)> callback) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_allowlist_match_, url));
+    DCHECK(base::Contains(urls_allowlist_metric_variation_, url));
+    EXPECT_TRUE(base::Contains(urls_allowlist_metric_variation_[url],
+                               metric_variation));
     sb_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), urls_allowlist_match_[url]));
@@ -128,9 +133,13 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     urls_delayed_callback_[url] = delayed_callback;
   }
 
-  void SetAllowlistResultForUrl(const GURL& gurl, bool match) {
+  void SetAllowlistLookupDetailsForUrl(
+      const GURL& gurl,
+      bool match,
+      const std::set<std::string>& metric_variations) {
     std::string url = gurl.spec();
     urls_allowlist_match_[url] = match;
+    urls_allowlist_metric_variation_[url] = metric_variations;
   }
 
   void SetAcceptableExperimentCacheSelections(
@@ -161,6 +170,8 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   base::flat_map<std::string, bool> urls_delayed_callback_;
   base::flat_map<std::string, Client*> urls_client_;
   base::flat_map<std::string, bool> urls_allowlist_match_;
+  base::flat_map<std::string, std::set<std::string>>
+      urls_allowlist_metric_variation_;
   std::set<MechanismExperimentHashDatabaseCache> acceptable_cache_selections_ =
       {MechanismExperimentHashDatabaseCache::kNoExperiment};
 
@@ -678,7 +689,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledAllowlistMatch) {
       hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true,
+                                                     {"RT"});
   // To make sure hash based check is not skipped when the URL is in the
   // allowlist, set threat type to phishing for hash based check.
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -707,7 +719,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledSafeUrl) {
       hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"RT"});
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                            /*should_complete_lookup=*/true);
 
@@ -744,7 +757,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"RT"});
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                          /*delayed_callback=*/false);
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
@@ -780,7 +794,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"RT"});
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
@@ -939,7 +954,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL origin_url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(origin_url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(origin_url,
+                                                     /*match=*/false, {"RT"});
   url_lookup_service_->SetThreatTypeForUrl(origin_url, SB_THREAT_TYPE_SAFE,
                                            /*should_complete_lookup=*/true);
 
@@ -955,7 +971,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(origin_url, "GET", origin_callback.Get());
 
   GURL redirect_url("https://example.redirect.test/");
-  database_manager_->SetAllowlistResultForUrl(redirect_url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(redirect_url,
+                                                     /*match=*/false, {"RT"});
   url_lookup_service_->SetThreatTypeForUrl(redirect_url, SB_THREAT_TYPE_SAFE,
                                            /*should_complete_lookup=*/true);
 
@@ -981,7 +998,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnDestruct) {
         hash_realtime_utils::HashRealTimeSelection::kNone);
 
     GURL url("https://example.test/");
-    database_manager_->SetAllowlistResultForUrl(url, false);
+    database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                       {"RT"});
     url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                              /*should_complete_lookup=*/true);
 
@@ -1030,7 +1048,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
         hash_realtime_utils::HashRealTimeSelection::kNone);
 
     GURL url("https://example.test/");
-    database_manager_->SetAllowlistResultForUrl(url, false);
+    database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                       {"RT"});
     url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                              /*should_complete_lookup=*/false);
     base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback> cb;
@@ -1134,7 +1153,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       /*is_lookup_mechanism_experiment_enabled=*/true);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true,
+                                                     {"RT", "HPRT"});
   // To make sure hash based check is not skipped when the URL is in the
   // allowlist, set threat type to phishing for hash based check.
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -1180,7 +1200,8 @@ TEST_F(
       /*is_lookup_mechanism_experiment_enabled=*/true);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true,
+                                                     {"RT", "HPRT"});
   // To make sure hash based check is not skipped when the URL is in the
   // allowlist, set threat type to phishing for hash based check.
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -1226,7 +1247,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       /*is_lookup_mechanism_experiment_enabled=*/true);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"RT", "HPRT"});
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                            /*should_complete_lookup=*/true);
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -1298,7 +1320,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   hash_realtime_service_->SetThreatTypeForUrl(origin_url,
                                               SB_THREAT_TYPE_URL_PHISHING,
                                               /*should_fail_lookup=*/false);
-  database_manager_->SetAllowlistResultForUrl(origin_url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(
+      origin_url, /*match=*/false, {"RT", "HPRT"});
   url_checker_delegate_->SetLookupMechanismExperimentEligibility(
       origin_url, /*eligibility=*/true);
 
@@ -1321,7 +1344,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   hash_realtime_service_->SetThreatTypeForUrl(redirect_url,
                                               SB_THREAT_TYPE_URL_PHISHING,
                                               /*should_fail_lookup=*/false);
-  database_manager_->SetAllowlistResultForUrl(redirect_url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(
+      redirect_url, /*match=*/false, {"RT", "HPRT"});
   url_checker_delegate_->SetLookupMechanismExperimentEligibility(
       redirect_url, /*eligibility=*/true);
 
@@ -1360,7 +1384,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   GURL url("https://example.test/");
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                          /*delayed_callback=*/false);
-  database_manager_->SetAllowlistResultForUrl(url, true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true,
+                                                     {"HPRT"});
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
@@ -1391,7 +1416,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   GURL url("https://example.test/");
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
-  database_manager_->SetAllowlistResultForUrl(url, true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true,
+                                                     {"HPRT"});
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
@@ -1418,7 +1444,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_SafeLookup) {
   GURL url("https://example.test/");
   hash_realtime_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                               /*should_fail_lookup=*/false);
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"HPRT"});
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
@@ -1449,7 +1476,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_UnsafeLookup) {
   GURL url("https://example.test/");
   hash_realtime_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                               /*should_fail_lookup=*/false);
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"HPRT"});
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
@@ -1479,7 +1507,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   GURL url("https://example.test/");
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"HPRT"});
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
@@ -1509,7 +1538,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
                                               /*should_fail_lookup=*/true);
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"HPRT"});
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
@@ -1535,7 +1565,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"RT"});
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                            /*should_complete_lookup=*/true);
 
