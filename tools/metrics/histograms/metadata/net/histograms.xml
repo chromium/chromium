@@ -3852,6 +3852,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.QuicSession.Pushed" units="count"
     expires_after="2024-04-03">
+  <obsolete>
+    Removed 2023-06.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3861,6 +3864,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.QuicSession.PushedAndClaimed" units="count"
     expires_after="2024-04-03">
+  <obsolete>
+    Removed 2023-06.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3870,6 +3876,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.QuicSession.PushedAndUnclaimedBytes" units="count"
     expires_after="2024-04-03">
+  <obsolete>
+    Removed 2023-06.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3879,6 +3888,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.QuicSession.PushedBytes" units="count"
     expires_after="2023-11-19">
+  <obsolete>
+    Removed 2023-06.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4990,6 +5002,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.SpdySession.PushedAndUnclaimedBytes" units="count"
     expires_after="2024-04-03">
+  <obsolete>
+    Removed 2023-06.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4999,6 +5014,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.SpdySession.PushedBytes" units="count"
     expires_after="2024-04-03">
+  <obsolete>
+    Removed 2023-06.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -5079,6 +5097,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.SpdyStreamsPushedAndClaimedPerSession" units="units"
     expires_after="2023-12-04">
+  <obsolete>
+    Removed 2023-06.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -5088,6 +5109,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.SpdyStreamsPushedPerSession" units="units"
     expires_after="2024-04-03">
+  <obsolete>
+    Removed 2023-06.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>The number of push streams received over a single session.</summary>

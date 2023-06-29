@@ -21,18 +21,6 @@ void QuicChromiumClientSessionPeer::SetHostname(
 }
 
 // static
-uint64_t QuicChromiumClientSessionPeer::GetPushedBytesCount(
-    QuicChromiumClientSession* session) {
-  return session->bytes_pushed_count_;
-}
-
-// static
-uint64_t QuicChromiumClientSessionPeer::GetPushedAndUnclaimedBytesCount(
-    QuicChromiumClientSession* session) {
-  return session->bytes_pushed_and_unclaimed_count_;
-}
-
-// static
 QuicChromiumClientStream* QuicChromiumClientSessionPeer::CreateOutgoingStream(
     QuicChromiumClientSession* session) {
   return session->ShouldCreateOutgoingBidirectionalStream()

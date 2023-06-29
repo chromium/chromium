@@ -139,10 +139,6 @@ class SpdyStreamTest : public ::testing::Test, public WithTaskEnvironment {
     session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_);
   }
 
-  static size_t num_pushed_streams(base::WeakPtr<SpdySession> session) {
-    return session->num_pushed_streams_;
-  }
-
   int32_t unacked_recv_window_bytes(base::WeakPtr<SpdyStream> stream) {
     return stream->unacked_recv_window_bytes_;
   }

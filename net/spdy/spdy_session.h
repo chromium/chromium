@@ -622,9 +622,6 @@ class NET_EXPORT SpdySession
   friend class SpdySessionTest;
   friend class SpdyStreamRequest;
 
-  // TODO(https://crbug.com/1426477): Remove.
-  FRIEND_TEST_ALL_PREFIXES(RecordPushedStreamHistogramTest, VaryResponseHeader);
-
   using PendingStreamRequestQueue =
       base::circular_deque<base::WeakPtr<SpdyStreamRequest>>;
   using ActiveStreamMap = std::map<spdy::SpdyStreamId, SpdyStream*>;
@@ -1045,10 +1042,6 @@ class NET_EXPORT SpdySession
 
   spdy::SpdyStreamId stream_hi_water_mark_;  // The next stream id to use.
 
-  // Used to ensure the server increments push stream ids correctly.
-  // TODO(https://crbug.com/1426477): Remove.
-  spdy::SpdyStreamId last_accepted_push_stream_id_ = 0;
-
   // Queue, for each priority, of pending stream requests that have
   // not yet been satisfied.
   PendingStreamRequestQueue pending_create_stream_queues_[NUM_PRIORITIES];
@@ -1070,26 +1063,6 @@ class NET_EXPORT SpdySession
   //
   // |created_streams_| owns all its SpdyStream objects.
   CreatedStreamSet created_streams_;
-
-  // Number of pushed streams. All active streams are stored in
-  // |active_streams_|, but it's better to know the number of push streams
-  // without traversing the whole collection.
-  // TODO(https://crbug.com/1426477): Remove.
-  size_t num_pushed_streams_ = 0u;
-
-  // Number of active pushed streams in |active_streams_|, i.e. not in reserved
-  // remote state. Streams in reserved state are not counted towards any
-  // concurrency limits.
-  // TODO(https://crbug.com/1426477): Remove.
-  size_t num_active_pushed_streams_ = 0u;
-
-  // Number of bytes that has been pushed by the server.
-  // TODO(https://crbug.com/1426477): Remove.
-  uint64_t bytes_pushed_count_ = 0u;
-
-  // Number of bytes that has been pushed by the server but never claimed.
-  // TODO(https://crbug.com/1426477): Remove.
-  uint64_t bytes_pushed_and_unclaimed_count_ = 0u;
 
   // The write queue.
   SpdyWriteQueue write_queue_;
@@ -1172,15 +1145,9 @@ class NET_EXPORT SpdySession
 
   // Limits
   size_t max_concurrent_streams_;
-  // TODO(https://crbug.com/1426477): Remove.
-  size_t max_concurrent_pushed_streams_;
 
   // Some statistics counters for the session.
   int streams_initiated_count_ = 0;
-
-  // TODO(https://crbug.com/1426477): Remove.
-  int streams_pushed_count_ = 0;
-  int streams_pushed_and_claimed_count_ = 0;
 
   int streams_abandoned_count_ = 0;
 

@@ -1118,13 +1118,6 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
 
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.NumTotalStreams",
                           num_total_streams_);
-  UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.Pushed", streams_pushed_count_);
-  UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.PushedAndClaimed",
-                          streams_pushed_and_claimed_count_);
-  UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.PushedBytes", bytes_pushed_count_);
-  DCHECK_LE(bytes_pushed_and_unclaimed_count_, bytes_pushed_count_);
-  UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.PushedAndUnclaimedBytes",
-                          bytes_pushed_and_unclaimed_count_);
 
   if (!OneRttKeysAvailable())
     return;
@@ -1617,10 +1610,6 @@ void QuicChromiumClientSession::OnStreamClosed(quic::QuicStreamId stream_id) {
   if (stream != nullptr) {
     logger_->UpdateReceivedFrameCounts(stream_id, stream->num_frames_received(),
                                        stream->num_duplicate_frames_received());
-    if (quic::QuicUtils::IsServerInitiatedStreamId(
-            connection()->transport_version(), stream_id)) {
-      bytes_pushed_count_ += stream->stream_bytes_read();
-    }
   }
   quic::QuicSpdyClientSessionBase::OnStreamClosed(stream_id);
 }
@@ -3864,10 +3853,7 @@ handles::NetworkHandle QuicChromiumClientSession::GetCurrentNetwork() const {
 }
 
 bool QuicChromiumClientSession::IsAuthorized(const std::string& hostname) {
-  bool result = CanPool(hostname, session_key_);
-  if (result)
-    streams_pushed_count_++;
-  return result;
+  return CanPool(hostname, session_key_);
 }
 
 bool QuicChromiumClientSession::HandlePromised(
@@ -3882,20 +3868,6 @@ bool QuicChromiumClientSession::HandlePromised(
                           &headers, id, promised_id, capture_mode);
                     });
   return result;
-}
-
-void QuicChromiumClientSession::DeletePromised(
-    quic::QuicClientPromisedInfo* promised) {
-  if (IsOpenStream(promised->id()))
-    streams_pushed_and_claimed_count_++;
-  quic::QuicSpdyClientSessionBase::DeletePromised(promised);
-}
-
-void QuicChromiumClientSession::OnPushStreamTimedOut(
-    quic::QuicStreamId stream_id) {
-  quic::QuicSpdyStream* stream = GetPromisedStream(stream_id);
-  if (stream != nullptr)
-    bytes_pushed_and_unclaimed_count_ += stream->stream_bytes_read();
 }
 
 void QuicChromiumClientSession::OnServerPreferredAddressAvailable(
@@ -3923,15 +3895,8 @@ void QuicChromiumClientSession::CancelPush(const GURL& url) {
     return;
   }
 
-  quic::QuicStreamId stream_id = promised_info->id();
-
-  // Collect data on the cancelled push stream.
-  quic::QuicSpdyStream* stream = GetPromisedStream(stream_id);
-  if (stream != nullptr)
-    bytes_pushed_and_unclaimed_count_ += stream->stream_bytes_read();
-
   // Send the reset and remove the promised info from the promise index.
-  quic::QuicSpdyClientSessionBase::ResetPromised(stream_id,
+  quic::QuicSpdyClientSessionBase::ResetPromised(promised_info->id(),
                                                  quic::QUIC_STREAM_CANCELLED);
   DeletePromised(promised_info);
 }

@@ -912,10 +912,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
                       quic::QuicStreamId promised_id,
                       const spdy::Http2HeaderBlock& headers) override;
 
-  void DeletePromised(quic::QuicClientPromisedInfo* promised) override;
-
-  void OnPushStreamTimedOut(quic::QuicStreamId stream_id) override;
-
   // Override to validate |server_preferred_address| on a different socket.
   // Migrates to this address on validation succeeds.
   void OnServerPreferredAddressAvailable(
@@ -1141,11 +1137,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool port_migration_detected_ = false;
   bool quic_connection_migration_attempted_ = false;
   bool quic_connection_migration_successful_ = false;
-  // UMA histogram counters for streams pushed to this session.
-  int streams_pushed_count_ = 0;
-  int streams_pushed_and_claimed_count_ = 0;
-  uint64_t bytes_pushed_count_ = 0;
-  uint64_t bytes_pushed_and_unclaimed_count_ = 0;
   // Stores the packet that witnesses socket write error. This packet will be
   // written to an alternate socket when the migration completes and the
   // alternate socket is unblocked.
