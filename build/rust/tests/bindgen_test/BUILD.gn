@@ -41,11 +41,8 @@ rust_static_library("bindgen_test_lib") {
   rustenv = [ "BINDGEN_RS_FILE=" + rebase_path(bindgen_output[0]) ]
 }
 
-# TODO(crbug/1439611): does not compile on Android platform.
-if (!is_android) {
-  rust_executable("bindgen_test") {
-    deps = [ ":bindgen_test_lib" ]
-    sources = [ "main.rs" ]
-    crate_root = "main.rs"
-  }
+rust_executable("bindgen_test") {
+  deps = [ ":bindgen_test_lib" ]
+  sources = [ "main.rs" ]
+  crate_root = "main.rs"
 }
