@@ -616,6 +616,12 @@ void TileManager::PrepareToDraw() {
   raster_buffer_provider_->Flush();
   CheckPendingGpuWorkAndIssueSignals();
 
+  // We want to reset the flag back to false now that we're drawing. This may be
+  // set to true again in future PrepareTiles calls.
+  if (IsReadyToDraw()) {
+    client_->SetIsLikelyToRequireADraw(false);
+  }
+
   TRACE_EVENT_INSTANT1(
       "cc", "TileManager::PrepareToDrawFinished", TRACE_EVENT_SCOPE_THREAD,
       "stats", RasterTaskCompletionStatsAsValue(raster_task_completion_stats_));

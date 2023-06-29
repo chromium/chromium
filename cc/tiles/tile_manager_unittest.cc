@@ -2955,6 +2955,38 @@ TEST_F(TileManagerReadyToDrawTest, ReadyToDrawRespectsRequirementChange) {
   EXPECT_TRUE(host_impl()->tile_manager()->IsReadyToActivate());
 }
 
+TEST_F(TileManagerReadyToDrawTest, SetBackIsLikelyToRequireADrawToFalse) {
+  const gfx::Size layer_bounds(1000, 1000);
+  host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(layer_bounds));
+  SetupDefaultTrees(layer_bounds);
+
+  // Verify that the queue has a required for draw tile
+  std::unique_ptr<RasterTilePriorityQueue> queue(host_impl()->BuildRasterQueue(
+      SAME_PRIORITY_FOR_BOTH_TREES, RasterTilePriorityQueue::Type::ALL));
+  EXPECT_FALSE(queue->IsEmpty());
+  EXPECT_TRUE(queue->Top().tile()->required_for_draw());
+  EXPECT_FALSE(host_impl()->is_likely_to_require_a_draw());
+
+  // Mark all these tiles as ready to draw.
+  {
+    base::RunLoop run_loop;
+    host_impl()->tile_manager()->DidModifyTilePriorities();
+    host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+    EXPECT_CALL(MockHostImpl(), NotifyReadyToActivate())
+        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+    EXPECT_CALL(*mock_raster_buffer_provider(), IsResourceReadyToDraw(_))
+        .WillRepeatedly(Return(true));
+    run_loop.Run();
+  }
+
+  EXPECT_TRUE(host_impl()->is_likely_to_require_a_draw());
+
+  // Check is_likely_to_require_a_draw returns FALSE after PrepareToDraw.
+  EXPECT_TRUE(host_impl()->tile_manager()->IsReadyToDraw());
+  host_impl()->tile_manager()->PrepareToDraw();
+  EXPECT_FALSE(host_impl()->is_likely_to_require_a_draw());
+}
+
 PaintImage MakeCheckerablePaintImage(const gfx::Size& size) {
   auto image = CreateDiscardablePaintImage(size);
   return PaintImageBuilder::WithCopy(image)
