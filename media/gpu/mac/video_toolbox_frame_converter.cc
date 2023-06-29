@@ -18,6 +18,7 @@
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/gpu/mac/video_toolbox_decode_metadata.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -113,8 +114,7 @@ void VideoToolboxFrameConverter::DestroyStub() {
 
 void VideoToolboxFrameConverter::Convert(
     base::ScopedCFTypeRef<CVImageBufferRef> image,
-    base::TimeDelta timestamp,
-    void* context,
+    std::unique_ptr<VideoToolboxDecodeMetadata> metadata,
     OutputCB output_cb) {
   DVLOG(3) << __func__;
   DCHECK(gpu_task_runner_->RunsTasksInCurrentSequence());
@@ -125,7 +125,7 @@ void VideoToolboxFrameConverter::Convert(
 
   if (!stub_) {
     MEDIA_LOG(ERROR, media_log_.get()) << "Failed to get command buffer stub.";
-    std::move(output_cb).Run(nullptr, context);
+    std::move(output_cb).Run(nullptr, std::move(metadata));
   }
 
   // TODO(crbug.com/1331597): Is this different from
@@ -155,7 +155,7 @@ void VideoToolboxFrameConverter::Convert(
       kSharedImageDebugLabel);
   if (!result) {
     MEDIA_LOG(ERROR, media_log_.get()) << "Failed to create shared image.";
-    std::move(output_cb).Run(nullptr, context);
+    std::move(output_cb).Run(nullptr, std::move(metadata));
   }
 
   GLenum target = texture_rectangle_ ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
@@ -175,7 +175,7 @@ void VideoToolboxFrameConverter::Convert(
   // expensive whenever the renderer is not doing readback.
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
       PIXEL_FORMAT_NV12, mailbox_holders, std::move(release_cb), coded_size,
-      visible_rect, natural_size, timestamp);
+      visible_rect, natural_size, metadata->timestamp);
 
   if (!frame) {
     MEDIA_LOG(ERROR, media_log_.get()) << "Failed to create VideoFrame.";
@@ -184,7 +184,7 @@ void VideoToolboxFrameConverter::Convert(
     // alive.
     sis_->GetSharedImageDestructionCallback(mailbox).Run(gpu::SyncToken());
 
-    std::move(output_cb).Run(nullptr, context);
+    std::move(output_cb).Run(nullptr, std::move(metadata));
     return;
   }
 
@@ -205,7 +205,7 @@ void VideoToolboxFrameConverter::Convert(
   // we plumb that through?
   frame->metadata().power_efficient = true;
 
-  std::move(output_cb).Run(std::move(frame), context);
+  std::move(output_cb).Run(std::move(frame), std::move(metadata));
 }
 
 void VideoToolboxFrameConverter::OnVideoFrameReleased(

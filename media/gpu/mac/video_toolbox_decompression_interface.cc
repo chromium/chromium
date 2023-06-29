@@ -5,13 +5,11 @@
 #include "media/gpu/mac/video_toolbox_decompression_interface.h"
 
 #include <memory>
-#include <tuple>
-
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
 #include "media/base/media_log.h"
+#include "media/gpu/mac/video_toolbox_decode_metadata.h"
 #include "media/gpu/mac/video_toolbox_decompression_session.h"
 
 namespace media {
@@ -42,7 +40,7 @@ VideoToolboxDecompressionInterface::~VideoToolboxDecompressionInterface() {
 
 void VideoToolboxDecompressionInterface::Decode(
     base::ScopedCFTypeRef<CMSampleBufferRef> sample,
-    void* context) {
+    std::unique_ptr<VideoToolboxDecodeMetadata> metadata) {
   DVLOG(3) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -50,9 +48,9 @@ void VideoToolboxDecompressionInterface::Decode(
     return;
   }
 
-  pending_decodes_.push(std::make_pair(std::move(sample), context));
+  pending_decodes_.push(std::make_pair(std::move(sample), std::move(metadata)));
 
-  if (!ProcessDecodes()) {
+  if (!Process()) {
     NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);
     return;
   }
@@ -71,10 +69,10 @@ void VideoToolboxDecompressionInterface::Reset() {
   DestroySession();
 }
 
-size_t VideoToolboxDecompressionInterface::PendingDecodes() {
+size_t VideoToolboxDecompressionInterface::NumDecodes() {
   DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  return pending_decodes_.size() + active_decodes_;
+  return pending_decodes_.size() + active_decodes_.size();
 }
 
 void VideoToolboxDecompressionInterface::NotifyError(DecoderStatus status) {
@@ -99,7 +97,7 @@ void VideoToolboxDecompressionInterface::CallErrorCB(ErrorCB error_cb,
   std::move(error_cb).Run(std::move(status));
 }
 
-bool VideoToolboxDecompressionInterface::ProcessDecodes() {
+bool VideoToolboxDecompressionInterface::Process() {
   DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(error_cb_);
@@ -111,7 +109,8 @@ bool VideoToolboxDecompressionInterface::ProcessDecodes() {
   while (!pending_decodes_.empty()) {
     base::ScopedCFTypeRef<CMSampleBufferRef>& sample =
         pending_decodes_.front().first;
-    void* context = pending_decodes_.front().second;
+    std::unique_ptr<VideoToolboxDecodeMetadata>& metadata =
+        pending_decodes_.front().second;
 
     CMFormatDescriptionRef format = CMSampleBufferGetFormatDescription(sample);
 
@@ -121,7 +120,7 @@ bool VideoToolboxDecompressionInterface::ProcessDecodes() {
         active_format_.reset(format, base::scoped_policy::RETAIN);
       } else {
         // Destroy the active session so that it can be replaced.
-        if (active_decodes_) {
+        if (!active_decodes_.empty()) {
           // Wait for the active session to drain before destroying it.
           draining_ = true;
           return true;
@@ -138,12 +137,14 @@ bool VideoToolboxDecompressionInterface::ProcessDecodes() {
     }
 
     // Submit the sample for decoding.
+    void* context = static_cast<void*>(metadata.get());
     if (!decompression_session_->DecodeFrame(sample, context)) {
       return false;
     }
 
+    // Update state. The pop() must come second because it destructs `metadata`.
+    active_decodes_[context] = std::move(metadata);
     pending_decodes_.pop();
-    ++active_decodes_;
   }
 
   return true;
@@ -195,7 +196,7 @@ void VideoToolboxDecompressionInterface::DestroySession() {
 
   decompression_session_->Invalidate();
   active_format_.reset();
-  active_decodes_ = 0;
+  active_decodes_.clear();
   draining_ = false;
 }
 
@@ -230,20 +231,32 @@ void VideoToolboxDecompressionInterface::OnOutput(
     return;
   }
 
-  --active_decodes_;
-  DCHECK_GE(active_decodes_, 0);
+  auto metadata_it = active_decodes_.find(context);
+  if (metadata_it == active_decodes_.end()) {
+    DLOG(ERROR) << "Unknown decode context";
+    MEDIA_LOG(ERROR, media_log_.get()) << "Unknown decode context";
+    NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);
+    return;
+  }
 
-  // If we are draining and the session is now empty, complete the drain.
-  if (draining_ && !active_decodes_) {
+  std::unique_ptr<VideoToolboxDecodeMetadata> metadata =
+      std::move(metadata_it->second);
+
+  active_decodes_.erase(metadata_it);
+
+  // If we are draining and the session is now empty, complete the drain. This
+  // happens before output so that we don't need to consider what the output
+  // callback might do synchronously.
+  if (draining_ && active_decodes_.empty()) {
     DestroySession();
-    if (!ProcessDecodes()) {
+    if (!Process()) {
       NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);
       return;
     }
   }
 
   // OnOutput() was posted, so this is never re-entrant.
-  output_cb_.Run(std::move(image), context);
+  output_cb_.Run(std::move(image), std::move(metadata));
 }
 
 void VideoToolboxDecompressionInterface::SetDecompressionSessionForTesting(

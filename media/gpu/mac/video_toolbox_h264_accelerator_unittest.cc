@@ -12,11 +12,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
-
 using testing::_;
 using testing::ElementsAre;
 using testing::SaveArg;
+
+namespace media {
 
 namespace {
 

@@ -23,7 +23,9 @@
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "media/gpu/codec_picture.h"
+#include "media/gpu/mac/video_toolbox_decompression_interface.h"
 #include "media/gpu/mac/video_toolbox_frame_converter.h"
+#include "media/gpu/mac/video_toolbox_output_queue.h"
 #include "media/gpu/media_gpu_export.h"
 
 namespace gpu {
@@ -34,7 +36,7 @@ namespace media {
 
 class AcceleratedVideoDecoder;
 class MediaLog;
-class VideoToolboxDecompressionInterface;
+struct VideoToolboxDecodeMetadata;
 
 class MEDIA_GPU_EXPORT VideoToolboxVideoDecoder : public VideoDecoder {
  public:
@@ -69,9 +71,6 @@ class MEDIA_GPU_EXPORT VideoToolboxVideoDecoder : public VideoDecoder {
   // Drop all state, calling decode callbacks with |status|.
   void ResetInternal(DecoderStatus status);
 
-  // Match |output_queue_| entries to |output_frames_| and output them.
-  void ProcessOutputs();
-
   // Call |decode_cb_| entries until the correct backpressure is achieved.
   void ReleaseDecodeCallbacks();
 
@@ -81,12 +80,14 @@ class MEDIA_GPU_EXPORT VideoToolboxVideoDecoder : public VideoDecoder {
   void OnAcceleratorOutput(scoped_refptr<CodecPicture> picture);
 
   // |video_toolbox_| callbacks.
-  void OnVideoToolboxOutput(base::ScopedCFTypeRef<CVImageBufferRef> image,
-                            void* context);
+  void OnVideoToolboxOutput(
+      base::ScopedCFTypeRef<CVImageBufferRef> image,
+      std::unique_ptr<VideoToolboxDecodeMetadata> metadata);
   void OnVideoToolboxError(DecoderStatus status);
 
   // |converter_| callbacks.
-  void OnConverterOutput(scoped_refptr<VideoFrame> frame, void* context);
+  void OnConverterOutput(scoped_refptr<VideoFrame> frame,
+                         std::unique_ptr<VideoToolboxDecodeMetadata> metadata);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<MediaLog> media_log_;
@@ -95,38 +96,21 @@ class MEDIA_GPU_EXPORT VideoToolboxVideoDecoder : public VideoDecoder {
 
   bool has_error_ = false;
 
-  VideoDecoderConfig config_;
-  InitCB init_cb_;
-  OutputCB output_cb_;
-  DecodeCB flush_cb_;
+  std::unique_ptr<AcceleratedVideoDecoder> accelerator_;
+  VideoToolboxDecompressionInterface video_toolbox_;
+  scoped_refptr<VideoToolboxFrameConverter> converter_;
+  VideoToolboxOutputQueue output_queue_;
 
-  // Pending decode callbacks. These are released in decode order, keeping
-  // the total number the same as the number of pending decodes in
-  // |video_toolbox_|. There is no mapping to actual decode requests, it is
-  // only a backpressure mechanism.
-  base::queue<DecodeCB> decode_cbs_;
+  VideoDecoderConfig config_;
 
   // Used to link re-entrant OnAcceleratorDecode() callbacks to Decode() calls.
   scoped_refptr<DecoderBuffer> active_decode_;
 
-  std::unique_ptr<AcceleratedVideoDecoder> accelerator_;
-  std::unique_ptr<VideoToolboxDecompressionInterface> video_toolbox_;
-  scoped_refptr<VideoToolboxFrameConverter> converter_;
+  // Decode callbacks, which are released in decode order. There is no mapping
+  // to decode requests or frames, it is simply a backpressure mechanism.
+  base::queue<DecodeCB> decode_cbs_;
 
-  // Metadata for decodes that are currently in |video_toolbox_|.
-  struct DecodeMetadata {
-    base::TimeDelta timestamp;
-  };
-  base::flat_map<void*, DecodeMetadata> decode_metadata_;
-
-  // The output order of decodes.
-  // Note: outputs are created after decodes.
-  base::queue<scoped_refptr<CodecPicture>> output_queue_;
-
-  // Frames that have completed conversion.
-  base::flat_map<void*, scoped_refptr<VideoFrame>> output_frames_;
-
-  // Convertersion callbacks are invalidated during resets.
+  // Converter callbacks are invalidated during resets.
   base::WeakPtrFactory<VideoToolboxVideoDecoder> converter_weak_this_factory_{
       this};
 };

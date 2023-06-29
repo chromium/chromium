@@ -19,6 +19,8 @@ source_set("mac") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   sources = [
+    "video_toolbox_decode_metadata.cc",
+    "video_toolbox_decode_metadata.h",
     "video_toolbox_decompression_interface.cc",
     "video_toolbox_decompression_interface.h",
     "video_toolbox_decompression_session.cc",
@@ -27,6 +29,8 @@ source_set("mac") {
     "video_toolbox_frame_converter.h",
     "video_toolbox_h264_accelerator.cc",
     "video_toolbox_h264_accelerator.h",
+    "video_toolbox_output_queue.cc",
+    "video_toolbox_output_queue.h",
     "video_toolbox_video_decoder.cc",
     "video_toolbox_video_decoder.h",
     "vp9_super_frame_bitstream_filter.cc",
@@ -82,6 +86,7 @@ source_set("unit_tests") {
   sources = [
     "video_toolbox_decompression_interface_unittest.cc",
     "video_toolbox_h264_accelerator_unittest.cc",
+    "video_toolbox_output_queue_unittest.cc",
     "vp9_super_frame_bitstream_filter_unittest.cc",
     "vt_config_util_unittest.cc",
   ]

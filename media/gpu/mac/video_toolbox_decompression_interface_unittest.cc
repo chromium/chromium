@@ -8,21 +8,28 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "media/base/decoder_status.h"
 #include "media/base/media_util.h"
+#include "media/gpu/mac/video_toolbox_decode_metadata.h"
 #include "media/gpu/mac/video_toolbox_decompression_interface.h"
 #include "media/gpu/mac/video_toolbox_decompression_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
-
 using testing::_;
+
+namespace media {
 
 namespace {
 
-void* CreateContext(intptr_t i) {
-  return reinterpret_cast<void*>(i);
+MATCHER_P(MetadataEq, id, "") {
+  return arg->timestamp == base::Microseconds(id);
+}
+
+std::unique_ptr<VideoToolboxDecodeMetadata> CreateMetadata(int id) {
+  return std::make_unique<VideoToolboxDecodeMetadata>(nullptr,
+                                                      base::Microseconds(id));
 }
 
 base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateFormat() {
@@ -56,8 +63,9 @@ base::ScopedCFTypeRef<CVImageBufferRef> CreateImage() {
 
 class FakeDecompressionSession : public VideoToolboxDecompressionSession {
  public:
-  FakeDecompressionSession(raw_ptr<VideoToolboxDecompressionInterface> vtdi)
-      : vtdi_(vtdi) {}
+  FakeDecompressionSession(
+      VideoToolboxDecompressionSessionImpl::OutputCB output_cb)
+      : output_cb_(std::move(output_cb)) {}
 
   ~FakeDecompressionSession() override = default;
 
@@ -90,7 +98,7 @@ class FakeDecompressionSession : public VideoToolboxDecompressionSession {
     return can_decode_frame;
   }
 
-  // Call vtdi->OnOutput() for the first pending decode, with an image.
+  // Output the first pending decode, with an image.
   void CompleteDecode() {
     CHECK(!pending_decodes_.empty());
 
@@ -100,10 +108,10 @@ class FakeDecompressionSession : public VideoToolboxDecompressionSession {
     base::ScopedCFTypeRef<CVImageBufferRef> image = CreateImage();
 
     pending_decodes_.pop();
-    vtdi_->OnOutput(context, status, flags, std::move(image));
+    output_cb_.Run(context, status, flags, std::move(image));
   }
 
-  // Call vtdi->OnOutput() for the first pending decode, with an error code.
+  // Output the first pending decode, with an error code.
   void FailDecode() {
     CHECK(!pending_decodes_.empty());
 
@@ -113,10 +121,10 @@ class FakeDecompressionSession : public VideoToolboxDecompressionSession {
     base::ScopedCFTypeRef<CVImageBufferRef> image;
 
     pending_decodes_.pop();
-    vtdi_->OnOutput(context, status, flags, std::move(image));
+    output_cb_.Run(context, status, flags, std::move(image));
   }
 
-  size_t ActiveDecodes() { return pending_decodes_.size(); }
+  size_t NumDecodes() { return pending_decodes_.size(); }
 
   bool can_create = true;
   bool can_accept_format = true;
@@ -125,7 +133,7 @@ class FakeDecompressionSession : public VideoToolboxDecompressionSession {
   size_t creations = 0;
 
  private:
-  raw_ptr<VideoToolboxDecompressionInterface> vtdi_ = nullptr;
+  VideoToolboxDecompressionSessionImpl::OutputCB output_cb_;
   bool valid_ = false;
   base::queue<void*> pending_decodes_;
 };
@@ -135,7 +143,7 @@ class FakeDecompressionSession : public VideoToolboxDecompressionSession {
 class VideoToolboxDecompressionInterfaceTest : public testing::Test {
  public:
   VideoToolboxDecompressionInterfaceTest() {
-    video_toolbox_->SetDecompressionSessionForTesting(
+    video_toolbox_.SetDecompressionSessionForTesting(
         base::WrapUnique(decompression_session_.get()));
   }
 
@@ -143,19 +151,22 @@ class VideoToolboxDecompressionInterfaceTest : public testing::Test {
 
  protected:
   MOCK_METHOD1(OnError, void(DecoderStatus));
-  MOCK_METHOD2(OnOutput, void(base::ScopedCFTypeRef<CVImageBufferRef>, void*));
+  MOCK_METHOD2(OnOutput,
+               void(base::ScopedCFTypeRef<CVImageBufferRef>,
+                    std::unique_ptr<VideoToolboxDecodeMetadata>));
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<VideoToolboxDecompressionInterface> video_toolbox_{
-      std::make_unique<VideoToolboxDecompressionInterface>(
-          task_environment_.GetMainThreadTaskRunner(),
-          std::make_unique<NullMediaLog>(),
-          base::BindRepeating(&VideoToolboxDecompressionInterfaceTest::OnOutput,
-                              base::Unretained(this)),
-          base::BindOnce(&VideoToolboxDecompressionInterfaceTest::OnError,
-                         base::Unretained(this)))};
-  raw_ptr<FakeDecompressionSession> decompression_session_ =
-      new FakeDecompressionSession(video_toolbox_.get());
+  VideoToolboxDecompressionInterface video_toolbox_{
+      task_environment_.GetMainThreadTaskRunner(),
+      std::make_unique<NullMediaLog>(),
+      base::BindRepeating(&VideoToolboxDecompressionInterfaceTest::OnOutput,
+                          base::Unretained(this)),
+      base::BindOnce(&VideoToolboxDecompressionInterfaceTest::OnError,
+                     base::Unretained(this))};
+  raw_ptr<FakeDecompressionSession> decompression_session_{
+      new FakeDecompressionSession(
+          base::BindRepeating(&VideoToolboxDecompressionInterface::OnOutput,
+                              base::Unretained(&video_toolbox_)))};
 };
 
 TEST_F(VideoToolboxDecompressionInterfaceTest, Construct) {}
@@ -163,39 +174,39 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, Construct) {}
 TEST_F(VideoToolboxDecompressionInterfaceTest, Decode) {
   auto format = CreateFormat();
   auto sample = CreateSample(format);
-  void* context = CreateContext(0);
+  auto metadata = CreateMetadata(0);
 
-  video_toolbox_->Decode(sample, context);
+  video_toolbox_.Decode(sample, std::move(metadata));
 
-  EXPECT_EQ(video_toolbox_->PendingDecodes(), 1ul);
-  EXPECT_EQ(decompression_session_->ActiveDecodes(), 1ul);
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 1ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 1ul);
 
-  EXPECT_CALL(*this, OnOutput(_, context));
+  EXPECT_CALL(*this, OnOutput(_, MetadataEq(0)));
 
   decompression_session_->CompleteDecode();
 
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(video_toolbox_->PendingDecodes(), 0ul);
-  EXPECT_EQ(decompression_session_->ActiveDecodes(), 0ul);
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 0ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 0ul);
   EXPECT_EQ(decompression_session_->creations, 1ul);
 }
 
 TEST_F(VideoToolboxDecompressionInterfaceTest, CreateFailure) {
   auto format = CreateFormat();
   auto sample = CreateSample(format);
-  void* context = CreateContext(0);
+  auto metadata = CreateMetadata(0);
 
   decompression_session_->can_create = false;
 
   EXPECT_CALL(*this, OnError(_));
 
-  video_toolbox_->Decode(sample, context);
+  video_toolbox_.Decode(sample, std::move(metadata));
 
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(video_toolbox_->PendingDecodes(), 0ul);
-  EXPECT_EQ(decompression_session_->ActiveDecodes(), 0ul);
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 0ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 0ul);
   EXPECT_EQ(decompression_session_->creations, 1ul);
 }
 
@@ -204,25 +215,25 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, CompatibleFormatChange) {
   auto format1 = CreateFormat();
   auto sample0 = CreateSample(format0);
   auto sample1 = CreateSample(format1);
-  void* context0 = CreateContext(0);
-  void* context1 = CreateContext(1);
+  auto metadata0 = CreateMetadata(0);
+  auto metadata1 = CreateMetadata(1);
 
-  video_toolbox_->Decode(sample0, context0);
-  video_toolbox_->Decode(sample1, context1);
+  video_toolbox_.Decode(sample0, std::move(metadata0));
+  video_toolbox_.Decode(sample1, std::move(metadata1));
 
-  EXPECT_EQ(video_toolbox_->PendingDecodes(), 2ul);
-  EXPECT_EQ(decompression_session_->ActiveDecodes(), 2ul);
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 2ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 2ul);
 
-  EXPECT_CALL(*this, OnOutput(_, context0));
-  EXPECT_CALL(*this, OnOutput(_, context1));
+  EXPECT_CALL(*this, OnOutput(_, MetadataEq(0)));
+  EXPECT_CALL(*this, OnOutput(_, MetadataEq(1)));
 
   decompression_session_->CompleteDecode();
   decompression_session_->CompleteDecode();
 
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(video_toolbox_->PendingDecodes(), 0ul);
-  EXPECT_EQ(decompression_session_->ActiveDecodes(), 0ul);
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 0ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 0ul);
   EXPECT_EQ(decompression_session_->creations, 1ul);
 }
 
@@ -231,61 +242,61 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, IncompatibleFormatChange) {
   auto format1 = CreateFormat();
   auto sample0 = CreateSample(format0);
   auto sample1 = CreateSample(format1);
-  void* context0 = CreateContext(0);
-  void* context1 = CreateContext(1);
+  auto metadata0 = CreateMetadata(0);
+  auto metadata1 = CreateMetadata(1);
 
   // CanAcceptFormat() is only called when necessary, so this only affects the
   // second sample.
   decompression_session_->can_accept_format = false;
 
-  video_toolbox_->Decode(sample0, context0);
-  video_toolbox_->Decode(sample1, context1);
+  video_toolbox_.Decode(sample0, std::move(metadata0));
+  video_toolbox_.Decode(sample1, std::move(metadata1));
 
-  EXPECT_EQ(video_toolbox_->PendingDecodes(), 2ul);
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 2ul);
   // The second decode will not be started until after the first session is
   // invalidated (which happens after the first CompleteDecode()).
-  EXPECT_EQ(decompression_session_->ActiveDecodes(), 1ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 1ul);
 
-  EXPECT_CALL(*this, OnOutput(_, context0));
-  EXPECT_CALL(*this, OnOutput(_, context1));
+  EXPECT_CALL(*this, OnOutput(_, MetadataEq(0)));
+  EXPECT_CALL(*this, OnOutput(_, MetadataEq(1)));
 
   decompression_session_->CompleteDecode();
   decompression_session_->CompleteDecode();
 
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(video_toolbox_->PendingDecodes(), 0ul);
-  EXPECT_EQ(decompression_session_->ActiveDecodes(), 0ul);
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 0ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 0ul);
   EXPECT_EQ(decompression_session_->creations, 2ul);
 }
 
 TEST_F(VideoToolboxDecompressionInterfaceTest, DecodeError_Early) {
   auto format = CreateFormat();
   auto sample = CreateSample(format);
-  void* context = CreateContext(0);
+  auto metadata = CreateMetadata(0);
 
   decompression_session_->can_decode_frame = false;
 
   EXPECT_CALL(*this, OnError(_));
 
-  video_toolbox_->Decode(sample, context);
+  video_toolbox_.Decode(sample, std::move(metadata));
 
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(video_toolbox_->PendingDecodes(), 0ul);
-  EXPECT_EQ(decompression_session_->ActiveDecodes(), 0ul);
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 0ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 0ul);
   EXPECT_EQ(decompression_session_->creations, 1ul);
 }
 
 TEST_F(VideoToolboxDecompressionInterfaceTest, DecodeError_Late) {
   auto format = CreateFormat();
   auto sample = CreateSample(format);
-  void* context = CreateContext(0);
+  auto metadata = CreateMetadata(0);
 
-  video_toolbox_->Decode(sample, context);
+  video_toolbox_.Decode(sample, std::move(metadata));
 
-  EXPECT_EQ(video_toolbox_->PendingDecodes(), 1ul);
-  EXPECT_EQ(decompression_session_->ActiveDecodes(), 1ul);
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 1ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 1ul);
 
   EXPECT_CALL(*this, OnError(_));
 
@@ -293,8 +304,8 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, DecodeError_Late) {
 
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(video_toolbox_->PendingDecodes(), 0ul);
-  EXPECT_EQ(decompression_session_->ActiveDecodes(), 0ul);
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 0ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 0ul);
   EXPECT_EQ(decompression_session_->creations, 1ul);
 }
 

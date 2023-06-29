@@ -28,6 +28,7 @@ struct SyncToken;
 namespace media {
 
 class MediaLog;
+struct VideoToolboxDecodeMetadata;
 
 // Converts IOSurface-backed CVImageBuffers to VideoFrames.
 class VideoToolboxFrameConverter
@@ -36,7 +37,9 @@ class VideoToolboxFrameConverter
  public:
   using GetCommandBufferStubCB =
       base::RepeatingCallback<gpu::CommandBufferStub*()>;
-  using OutputCB = base::OnceCallback<void(scoped_refptr<VideoFrame>, void*)>;
+  using OutputCB =
+      base::OnceCallback<void(scoped_refptr<VideoFrame>,
+                              std::unique_ptr<VideoToolboxDecodeMetadata>)>;
 
   // `gpu_task_runner` is the task runner on which |this| operates, which must
   // match the task runner used by the stub returned from |get_stub_cb|
@@ -48,8 +51,7 @@ class VideoToolboxFrameConverter
       GetCommandBufferStubCB get_stub_cb);
 
   void Convert(base::ScopedCFTypeRef<CVImageBufferRef> image,
-               base::TimeDelta timestamp,
-               void* context,
+               std::unique_ptr<VideoToolboxDecodeMetadata> metadata,
                OutputCB output_cb);
 
  private:
