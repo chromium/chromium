@@ -88,14 +88,13 @@
       :host-context([chrome-refresh-2023]):host([disabled]) {
         --cr-toggle-checked-bar-color:
             var(--color-toggle-button-track-on-disabled,
-                rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+                var(--cr-fallback-color-disabled-background));
         --cr-toggle-checked-button-color:
             var(--color-toggle-button-thumb-on-disabled, var(--cr-fallback-color-surface));
         --cr-toggle-unchecked-bar-color: transparent;
         --cr-toggle-unchecked-button-color:
             var(--color-toggle-button-thumb-off-disabled,
-                rgba(var(--cr-fallback-color-on-surface-rgb),
-                    var(--cr-disabled-opacity)));
+                var(--cr-fallback-color-disabled-foreground));
         opacity: 1;
       }
 

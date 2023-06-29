@@ -287,6 +287,11 @@ html[chrome-refresh-2023] {
 
   --cr-fallback-color-base-container: rgba(105, 145, 214, .12);
 
+  --cr-fallback-color-disabled-background: rgba(
+      var(--cr-fallback-color-on-surface-rgb), .12);
+  --cr-fallback-color-disabled-foreground: rgba(
+      var(--cr-fallback-color-on-surface-rgb), var(--cr-disabled-opacity));
+
   /* States */
   --cr-hover-background-color: var(--color-sys-state-hover,
       rgba(var(--cr-fallback-color-on-surface-rgb), .08));
@@ -334,5 +339,13 @@ html[chrome-refresh-2023] {
     --cr-fallback-color-state-ripple-neutral-on-subtle: rgba(
         var(--cr-fallback-color-state-on-subtle-rgb), .16);
     --cr-fallback-color-base-container: rgba(40, 40, 40, 1);
+  }
+}
+
+/* Overrides to ensure disabled elements show up disabled. */
+@media (forced-colors: active) {
+  html[chrome-refresh-2023] {
+    --cr-fallback-color-disabled-background: Canvas;
+    --cr-fallback-color-disabled-foreground: GrayText;
   }
 }

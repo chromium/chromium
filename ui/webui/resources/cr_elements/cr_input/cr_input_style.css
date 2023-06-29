@@ -187,13 +187,12 @@
 
       :host-context([chrome-refresh-2023]):host([disabled]) {
         color: var(--color-textfield-foreground-disabled,
-              rgba(var(--cr-fallback-color-on-surface-rgb),
-                  var(--cr-disabled-opacity)));
+            var(--cr-fallback-color-disabled-foreground));
         --cr-input-border-bottom: 1px solid currentColor;
         --cr-input-placeholder-color: currentColor;
         --cr-input-color: currentColor;
         --cr-input-background-color: var(--color-textfield-background-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+            var(--cr-fallback-color-disabled-background));
       }
 
       :host-context([chrome-refresh-2023]):host([disabled])
@@ -201,4 +200,3 @@
         --cr-icon-color: currentColor;
         --cr-icon-button-fill-color: currentColor;
       }
-

@@ -88,10 +88,9 @@
         /* Disabled default button colors. */
         --disabled-bg: transparent;
         --disabled-border-color: var(--color-button-border-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+            var(--cr-fallback-color-disabled-background));
         --disabled-text-color: var(--color-button-foreground-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb),
-                 var(--cr-disabled-opacity)));
+            var(--cr-fallback-color-disabled-foreground));
 
         /* Action button colors. */
         --bg-action: var(--color-button-background-prominent,
@@ -105,7 +104,7 @@
 
         /* Disabled action button colors. */
         --disabled-bg-action: var(--color-button-background-prominent-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+            var(--cr-fallback-color-disabled-background));
 
         background: transparent;
         border-radius: 100px;
@@ -216,7 +215,7 @@
       :host-context([chrome-refresh-2023]):host([disabled].floating-button)
           #background {
         background-color: var(--color-button-background-tonal-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+            var(--cr-fallback-color-disabled-background));
       }
 
       #content {

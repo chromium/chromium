@@ -70,10 +70,10 @@
       :host-context([chrome-refresh-2023]):host([disabled]) {
         opacity: 1;
         --cr-radio-button-checked-color: var(--color-radio-foreground-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+            var(--cr-fallback-color-disabled-background));
         --cr-radio-button-unchecked-color:
             var(--color-radio-foreground-disabled,
-                rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+                var(--cr-fallback-color-disabled-background));
       }
 
       :host(:not([disabled])) {

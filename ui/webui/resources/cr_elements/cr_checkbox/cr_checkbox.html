@@ -62,11 +62,11 @@
       :host-context([chrome-refresh-2023]):host([disabled]) {
         opacity: 1;
         --cr-checkbox-checked-box-color: var(--color-checkbox-background-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+            var(--cr-fallback-color-disabled-background));
         --cr-checkbox-unchecked-box-color: var(--color-checkbox-background-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+            var(--cr-fallback-color-disabled-background));
         --cr-checkbox-mark-color: var(--color-checkbox-foreground-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), var(--cr-disabled-opacity)));
+            var(--cr-fallback-color-disabled-foreground));
       }
 
       #checkbox {
