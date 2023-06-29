@@ -8288,32 +8288,6 @@
             ]
         }
     ],
-    "MaxUnthrottledTimeoutNestingLevel": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "nesting": "15"
-                    },
-                    "enable_features": [
-                        "MaxUnthrottledTimeoutNestingLevel"
-                    ]
-                }
-            ]
-        }
-    ],
     "MediaFoundationAV1Encoding": [
         {
             "platforms": [
