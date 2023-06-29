@@ -231,6 +231,11 @@ interface LocalFrameHost {
   // longer fullscreen. |options| is only provided if |is_fullscreen == true|.
   FullscreenStateChanged(bool is_fullscreen, FullscreenOptions? options);
 
+  // Request browser to minimize window. Link to I2P:
+  // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
+  [EnableIf=use_aura]
+  Minimize();
+
   // Register a new handler for URL requests with the given scheme. |scheme|
   // and |url| are provided directly from javascript. See
   // https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers

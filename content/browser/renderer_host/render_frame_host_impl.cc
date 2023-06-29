@@ -6485,6 +6485,31 @@ void RenderFrameHostImpl::FullscreenStateChanged(
   delegate_->FullscreenStateChanged(this, is_fullscreen, std::move(options));
 }
 
+#if defined(USE_AURA)
+void RenderFrameHostImpl::Minimize() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kDesktopPWAsAdditionalWindowingControls)) {
+    mojo::ReportBadMessage(
+        "window.minimize called without the feature enabled.");
+    return;
+  }
+  if (!IsInPrimaryMainFrame()) {
+    mojo::ReportBadMessage(
+        "window.minimize called from a non-primary-main frame.");
+    return;
+  }
+  if (GetLifecycleState() == RenderFrameHost::LifecycleState::kPrerendering) {
+    mojo::ReportBadMessage("window.minimize called from a prerendered page.");
+    return;
+  }
+  if (!IsActive()) {
+    return;
+  }
+
+  delegate_->Minimize();
+}
+#endif
+
 void RenderFrameHostImpl::RegisterProtocolHandler(const std::string& scheme,
                                                   const GURL& url,
                                                   bool user_gesture) {

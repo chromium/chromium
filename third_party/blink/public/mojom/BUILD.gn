@@ -1322,6 +1322,11 @@ mojom("mojom_core") {
     ]
   }
 
+  enabled_features = []
+  if (use_aura) {
+    enabled_features += [ "use_aura" ]
+  }
+
   shared_cpp_typemaps = [
     {
       types = [

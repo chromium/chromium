@@ -2288,6 +2288,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void FullscreenStateChanged(
       bool is_fullscreen,
       blink::mojom::FullscreenOptionsPtr options) override;
+#if defined(USE_AURA)
+  void Minimize() override;
+#endif
   void RegisterProtocolHandler(const std::string& scheme,
                                const GURL& url,
                                bool user_gesture) override;
