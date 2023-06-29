@@ -4,6 +4,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -115,7 +116,11 @@
                                               kWaitForDownloadTimeout];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
-  [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
+  // When the last account is removed, the signin dialog should be dismissed,
+  // unless the new account interface flag is enabled to show to another version
+  // of the dialog with no existing account.
+  [SigninEarlGreyUI
+      verifyWebSigninIsVisible:IsConsistencyNewAccountInterfaceEnabled()];
 }
 
 // Display an error dialog and then dismiss the web sign-in dialog.
