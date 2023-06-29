@@ -34,6 +34,12 @@ AddressPoolManager& AddressPoolManager::GetInstance() {
   return singleton_;
 }
 
+namespace {
+// Allocations are all performed on behalf of PartitionAlloc.
+constexpr PageTag kPageTag = PageTag::kPartitionAlloc;
+
+}  // namespace
+
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
 
 namespace {
@@ -43,7 +49,7 @@ void DecommitPages(uintptr_t address, size_t size) {
   // Callers rely on the pages being zero-initialized when recommitting them.
   // |DecommitSystemPages| doesn't guarantee this on all operating systems, in
   // particular on macOS, but |DecommitAndZeroSystemPages| does.
-  DecommitAndZeroSystemPages(address, size);
+  DecommitAndZeroSystemPages(address, size, kPageTag);
 }
 
 }  // namespace
@@ -357,7 +363,7 @@ uintptr_t AddressPoolManager::Reserve(pool_handle handle,
       AllocPages(requested_address, length, kSuperPageSize,
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
-                 PageTag::kPartitionAlloc);
+                 kPageTag);
   return address;
 }
 

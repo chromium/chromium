@@ -189,7 +189,9 @@ void DecommitSystemPagesInternal(
                            PageAccessibilityConfiguration::kInaccessible));
 }
 
-void DecommitAndZeroSystemPagesInternal(uintptr_t address, size_t length) {
+void DecommitAndZeroSystemPagesInternal(uintptr_t address,
+                                        size_t length,
+                                        PageTag page_tag) {
   // https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualfree:
   // "If a page is decommitted but not released, its state changes to reserved.
   // Subsequently, you can call VirtualAlloc to commit it, or VirtualFree to

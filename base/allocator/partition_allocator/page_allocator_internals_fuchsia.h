@@ -67,7 +67,6 @@ const char* PageTagToName(PageTag tag) {
       return "cr_chromium";
     case PageTag::kV8:
       return "cr_v8";
-    case PageTag::kFirst:
     case PageTag::kSimulation:
       PA_NOTREACHED();
   }
@@ -224,7 +223,9 @@ void DecommitSystemPagesInternal(
   DiscardSystemPagesInternal(address, length);
 }
 
-void DecommitAndZeroSystemPagesInternal(uintptr_t address, size_t length) {
+void DecommitAndZeroSystemPagesInternal(uintptr_t address,
+                                        size_t length,
+                                        PageTag page_tag) {
   SetSystemPagesAccess(address, length,
                        PageAccessibilityConfiguration(
                            PageAccessibilityConfiguration::kInaccessible));
