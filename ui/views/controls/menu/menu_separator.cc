@@ -25,7 +25,7 @@ MenuSeparator::MenuSeparator(ui::MenuSeparatorType type) : type_(type) {
 void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
   const MenuConfig& menu_config = MenuConfig::instance();
   if (type_ == ui::SPACING_SEPARATOR ||
-      width() < menu_config.item_horizontal_border_padding * 2) {
+      width() < menu_config.separator_horizontal_border_padding * 2) {
     return;
   }
 
@@ -44,9 +44,10 @@ void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
       break;
   }
 
-  gfx::Rect paint_rect(menu_config.item_horizontal_border_padding, y,
-                       width() - menu_config.item_horizontal_border_padding * 2,
-                       separator_thickness);
+  gfx::Rect paint_rect(
+      menu_config.separator_horizontal_border_padding, y,
+      width() - menu_config.separator_horizontal_border_padding * 2,
+      separator_thickness);
   if (type_ == ui::PADDED_SEPARATOR) {
     paint_rect.Inset(
         gfx::Insets::TLBR(0, menu_config.padded_separator_start_padding, 0, 0));

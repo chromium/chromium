@@ -107,6 +107,9 @@ struct VIEWS_EXPORT MenuConfig {
   // Thickness of the drawn separator line in pixels for double separator.
   int double_separator_thickness = 2;
 
+  // Horizontal border padding of a separator.
+  int separator_horizontal_border_padding = 0;
+
   // Are mnemonics shown?
   bool show_mnemonics = false;
 

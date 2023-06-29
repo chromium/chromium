@@ -55,6 +55,7 @@ void MenuConfig::InitCR2023() {
   separator_height = 17;
   item_vertical_margin = 6;
   item_horizontal_border_padding = 12;
+  separator_horizontal_border_padding = 20;
 }
 
 // static
