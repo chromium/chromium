@@ -98,7 +98,9 @@
 <iron-pages selected="[[themeType_]]" attr-for-selected="theme-type">
   <div class="snapshot-container"
       theme-type="customTheme">
-    <div class="image-background">
+    <div class="image-background"
+        id="customThemeImageBackground"
+        on-click="onThemeSnapshotClick_">
       <img class="image" id="customThemeImage" is="cr-auto-img"
           auto-src="[[theme_.backgroundImage.snapshotUrl.url]]"
           draggable="false"
@@ -113,7 +115,9 @@
   </div>
   <div class="snapshot-container"
       theme-type="classicChrome">
-    <div class="image-background image" id="classicChromeBackground">
+    <div class="image-background image"
+        id="classicChromeBackground"
+        on-click="onThemeSnapshotClick_">
       <template is="dom-if" if="[[!chromeRefresh2023Enabled_]]">
         <img id="miniNewTabPage" src="icons/mini_new_tab_page.svg"
             aria-labelledby="classicChromeThemeTitle">
@@ -133,7 +137,9 @@
   </div>
   <div class="snapshot-container"
       theme-type="uploadedImage">
-    <div class="image-background">
+    <div class="image-background"
+        id="uploadedThemeImageBackground"
+        on-click="onThemeSnapshotClick_">
       <img class="image" id="uploadedThemeImage"
             src="icons/uploaded_image.svg"
             aria-labelledby="uploadedThemeTitle">

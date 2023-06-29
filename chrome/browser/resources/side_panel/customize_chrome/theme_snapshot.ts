@@ -95,6 +95,14 @@ export class ThemeSnapshotElement extends PolymerElement {
     }
     return null;
   }
+
+  private onThemeSnapshotClick_() {
+    if (!this.chromeRefresh2023Enabled_ ||
+        (this.theme_ && this.theme_.backgroundManagedByPolicy)) {
+      return;
+    }
+    this.dispatchEvent(new Event('edit-theme-click'));
+  }
 }
 
 declare global {
