@@ -822,7 +822,7 @@ const base::FeatureParam<bool>
 const base::FeatureParam<int> kAutocompleteStabilityUpdateResultDebounceDelay(
     &omnibox::kUpdateResultDebounce,
     "AutocompleteStabilityUpdateResultDebounceDelay",
-    0);
+    200);
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions:
 

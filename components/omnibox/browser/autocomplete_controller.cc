@@ -352,8 +352,10 @@ AutocompleteController::AutocompleteController(
       notify_changed_debouncer_(
           OmniboxFieldTrial::
               kAutocompleteStabilityUpdateResultDebounceFromLastRun.Get(),
-          OmniboxFieldTrial::kAutocompleteStabilityUpdateResultDebounceDelay
-              .Get()),
+          DebouncingEnabled()
+              ? OmniboxFieldTrial::
+                    kAutocompleteStabilityUpdateResultDebounceDelay.Get()
+              : 0),
       is_cros_launcher_(is_cros_launcher),
       search_service_worker_signal_sent_(false),
       template_url_service_(provider_client_->GetTemplateURLService()),
