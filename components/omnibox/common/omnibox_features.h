@@ -108,13 +108,6 @@ BASE_DECLARE_FEATURE(kOmniboxAssistantVoiceSearch);
 
 BASE_DECLARE_FEATURE(kOmniboxCR23SteadyStateIcons);
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateBackgroundColor);
-// These feature params are located here, as opposed to omnibox_field_trial.h,
-// in order to permit inclusion into (non-Omnibox) color mixer code.
-extern const base::FeatureParam<std::string> kOmniboxDarkBackgroundColor;
-extern const base::FeatureParam<std::string> kOmniboxDarkBackgroundColorHovered;
-extern const base::FeatureParam<std::string> kOmniboxLightBackgroundColor;
-extern const base::FeatureParam<std::string>
-    kOmniboxLightBackgroundColorHovered;
 
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateHeight);
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateTextStyle);

@@ -1853,29 +1853,6 @@ const FeatureEntry::FeatureVariation kOmniboxSuggestionHeightVariations[] = {
      std::size(kOmniboxUniformRowHeight40), nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kOmniboxSteadyStateBackgroundColorBaselineBlue[] = {
-        {"OmniboxLightBackgroundColor", "0xEBEFF7"},
-        {"OmniboxLightBackgroundColorHovered", "0xE3E7F0"}};
-
-const FeatureEntry::FeatureParam kOmniboxSteadyStateBackgroundColorGray[] = {
-    {"OmniboxLightBackgroundColor", "0xF2F2F2"},
-    {"OmniboxLightBackgroundColorHovered", "0xE5E5E5"}};
-
-const FeatureEntry::FeatureParam kOmniboxSteadyStateBackgroundColorDarkBlue[] =
-    {{"OmniboxLightBackgroundColor", "0xE1E9F7"},
-     {"OmniboxLightBackgroundColorHovered", "0xD5DDEA"}};
-
-const FeatureEntry::FeatureVariation
-    kOmniboxSteadyStateBackgroundColorVariations[] = {
-        {"baseline blue", kOmniboxSteadyStateBackgroundColorBaselineBlue,
-         std::size(kOmniboxSteadyStateBackgroundColorBaselineBlue), nullptr},
-        {"gray", kOmniboxSteadyStateBackgroundColorGray,
-         std::size(kOmniboxSteadyStateBackgroundColorGray), nullptr},
-        {"dark blue", kOmniboxSteadyStateBackgroundColorDarkBlue,
-         std::size(kOmniboxSteadyStateBackgroundColorDarkBlue), nullptr},
-};
-
 const FeatureEntry::FeatureParam kOmniboxFontSize12[] = {
     {"OmniboxFontSizeNonTouchUI", "12"}};
 const FeatureEntry::FeatureParam kOmniboxFontSize13[] = {
@@ -6155,11 +6132,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-gm3-steady-state-background-color",
      flag_descriptions::kOmniboxGM3SteadyStateBackgroundColorName,
      flag_descriptions::kOmniboxGM3SteadyStateBackgroundColorDescription,
-     kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kOmniboxSteadyStateBackgroundColor,
-         kOmniboxSteadyStateBackgroundColorVariations,
-         "OmniboxCR2023m113")},
+     kOsAll, FEATURE_VALUE_TYPE(omnibox::kOmniboxSteadyStateBackgroundColor)},
 
     {"omnibox-gm3-steady-state-height",
      flag_descriptions::kOmniboxGM3SteadyStateHeightName,
