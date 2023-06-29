@@ -323,11 +323,15 @@ ResizeToggleMenu::MakeBubbleDelegateView(
     return delegate_view->AddChildView(std::make_unique<MenuButtonView>(
         base::BindRepeating(command_handler, command_id), icon, string_id));
   };
-  phone_button_ =
-      add_menu_button(ResizeCompatMode::kPhone, ash::kSystemMenuPhoneLegacyIcon,
-                      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE);
+  phone_button_ = add_menu_button(ResizeCompatMode::kPhone,
+                                  chromeos::features::IsJellyEnabled()
+                                      ? ash::kSystemMenuPhoneIcon
+                                      : ash::kSystemMenuPhoneLegacyIcon,
+                                  IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE);
   tablet_button_ = add_menu_button(
-      ResizeCompatMode::kTablet, ash::kSystemMenuTabletLegacyIcon,
+      ResizeCompatMode::kTablet,
+      chromeos::features::IsJellyEnabled() ? ash::kSystemMenuTabletIcon
+                                           : ash::kSystemMenuTabletLegacyIcon,
       IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
   resizable_button_ =
       add_menu_button(ResizeCompatMode::kResizable, kResizableIcon,

@@ -19,6 +19,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,9 +33,13 @@ namespace {
 const gfx::VectorIcon& GetIcon(const ResizeCompatMode& mode) {
   switch (mode) {
     case ResizeCompatMode::kPhone:
-      return ash::kSystemMenuPhoneLegacyIcon;
+      return chromeos::features::IsJellyEnabled()
+                 ? ash::kSystemMenuPhoneIcon
+                 : ash::kSystemMenuPhoneLegacyIcon;
     case ResizeCompatMode::kTablet:
-      return ash::kSystemMenuTabletLegacyIcon;
+      return chromeos::features::IsJellyEnabled()
+                 ? ash::kSystemMenuTabletIcon
+                 : ash::kSystemMenuTabletLegacyIcon;
     case ResizeCompatMode::kResizable:
       return kResizableIcon;
   }
