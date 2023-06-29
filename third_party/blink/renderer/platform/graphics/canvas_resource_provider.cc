@@ -1217,39 +1217,6 @@ bool CanvasResourceProvider::CanvasImageProvider::IsHardwareDecodeCache()
   return raster_mode_ != cc::PlaybackImageProvider::RasterMode::kSoftware;
 }
 
-CanvasResourceProvider::CanvasResourceProvider(
-    const ResourceProviderType& type,
-    const SkImageInfo& info,
-    cc::PaintFlags::FilterQuality filter_quality,
-    bool is_origin_top_left,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher)
-    : type_(type),
-      context_provider_wrapper_(std::move(context_provider_wrapper)),
-      resource_dispatcher_(resource_dispatcher),
-      filter_quality_(filter_quality),
-      is_origin_top_left_(is_origin_top_left),
-      snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
-  info_ = info;
-  if (context_provider_wrapper_) {
-    context_provider_wrapper_->AddObserver(this);
-    const auto& caps =
-        context_provider_wrapper_->ContextProvider()->GetCapabilities();
-    oopr_uses_dmsaa_ = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
-  }
-
-  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
-  recorder_.beginRecording(Size());
-}
-
-CanvasResourceProvider::~CanvasResourceProvider() {
-  UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
-                             max_inflight_resources_, 20);
-  if (context_provider_wrapper_)
-    context_provider_wrapper_->RemoveObserver(this);
-  CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
-}
-
 BASE_FEATURE(kCanvas2DAutoFlushParams,
              "Canvas2DAutoFlushParams",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1277,18 +1244,49 @@ const base::FeatureParam<int> kMaxPinnedImageKB(&kCanvas2DAutoFlushParams,
                                                 "max_pinned_image_kb",
                                                 64 * 1024);
 
+CanvasResourceProvider::CanvasResourceProvider(
+    const ResourceProviderType& type,
+    const SkImageInfo& info,
+    cc::PaintFlags::FilterQuality filter_quality,
+    bool is_origin_top_left,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher)
+    : type_(type),
+      context_provider_wrapper_(std::move(context_provider_wrapper)),
+      resource_dispatcher_(resource_dispatcher),
+      filter_quality_(filter_quality),
+      is_origin_top_left_(is_origin_top_left),
+      snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
+  info_ = info;
+  max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
+  max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
+  if (context_provider_wrapper_) {
+    context_provider_wrapper_->AddObserver(this);
+    const auto& caps =
+        context_provider_wrapper_->ContextProvider()->GetCapabilities();
+    oopr_uses_dmsaa_ = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
+  }
+
+  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
+  recorder_.beginRecording(Size());
+}
+
+CanvasResourceProvider::~CanvasResourceProvider() {
+  UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
+                             max_inflight_resources_, 20);
+  if (context_provider_wrapper_)
+    context_provider_wrapper_->RemoveObserver(this);
+  CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
+}
+
 void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
   // When printing we avoid flushing if it is still possible to print in
   // vector mode.
   if (IsPrinting() && clear_frame_) {
     return;
   }
-  static size_t max_recorded_op_bytes =
-      static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
-  static size_t max_pinned_image_bytes =
-      static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
-  if (UNLIKELY(TotalOpBytesUsed() > max_recorded_op_bytes) ||
-      UNLIKELY(total_pinned_image_bytes_ > max_pinned_image_bytes)) {
+  if (UNLIKELY(TotalOpBytesUsed() > max_recorded_op_bytes_) ||
+      UNLIKELY(total_pinned_image_bytes_ > max_pinned_image_bytes_)) {
     FlushCanvas(FlushReason::kRecordingLimitExceeded);
   }
 }

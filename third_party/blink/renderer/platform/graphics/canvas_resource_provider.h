@@ -514,6 +514,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
 
+  // Parameters for the auto-flushing heuristic.
+  size_t max_recorded_op_bytes_;
+  size_t max_pinned_image_bytes_;
+
   RestoreMatrixClipStackCb restore_clip_stack_callback_;
 
   CanvasResourceHost* resource_host_ = nullptr;
