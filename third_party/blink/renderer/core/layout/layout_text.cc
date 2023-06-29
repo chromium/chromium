@@ -327,6 +327,15 @@ void LayoutText::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
   // TODO(yosin): Call |NGAbstractInlineTextBox::WillDestroy()|.
   DCHECK_NE(index, 0u);
   DetachAbstractInlineTextBoxesIfNeeded();
+  // Changing the first fragment item index causes
+  // LayoutText::FirstAbstractInlineTextBox to return a box,
+  // so notify the AX object for this LayoutText that it might need to
+  // recompute its text child.
+  if (index > 0 && first_fragment_item_index_ == 0) {
+    if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+      cache->TextChanged(this);
+    }
+  }
   first_fragment_item_index_ = index;
 }
 

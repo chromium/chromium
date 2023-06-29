@@ -3933,23 +3933,27 @@ bool AXNodeObject::HasValidHTMLTableStructureAndLayout() const {
   auto* table = To<HTMLTableElement>(GetNode());
   auto* thead = table->tHead();
   auto* tfoot = table->tFoot();
-  for (Element* child = ElementTraversal::FirstChild(*GetElement()); child;
-       child = ElementTraversal::NextSibling(*child)) {
-    if (child == thead || child == tfoot) {
-      // Only 1 thead and 1 tfoot are allowed.
+  for (Node* node = LayoutTreeBuilderTraversal::FirstChild(*GetElement()); node;
+       node = LayoutTreeBuilderTraversal::NextSibling(*node)) {
+    if (Element* child = DynamicTo<Element>(node)) {
+      if (child == thead || child == tfoot) {
+        // Only 1 thead and 1 tfoot are allowed.
+        continue;
+      }
+      if (IsA<HTMLTableSectionElement>(child) &&
+          child->HasTagName(html_names::kTbodyTag)) {
+        // Multiple <tbody>s are valid, but only 1 thead or tfoot.
+        continue;
+      }
+      if (!child->GetLayoutObject() &&
+          child->HasTagName(html_names::kColgroupTag)) {
+        continue;
+      }
+      if (IsA<HTMLTableCaptionElement>(child) && child == table->caption()) {
+        continue;  // Only one caption is valid.
+      }
+    } else if (!node->GetLayoutObject()) {
       continue;
-    }
-    if (IsA<HTMLTableSectionElement>(child) &&
-        child->HasTagName(html_names::kTbodyTag)) {
-      // Multiple <tbody>s are valid, but only 1 thead or tfoot.
-      continue;
-    }
-    if (!child->GetLayoutObject() &&
-        child->HasTagName(html_names::kColgroupTag)) {
-      continue;
-    }
-    if (IsA<HTMLTableCaptionElement>(child) && child == table->caption()) {
-      continue;  // Only one caption is valid.
     }
     return false;
   }

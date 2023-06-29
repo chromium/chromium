@@ -3011,6 +3011,37 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySub) {
   RunHtmlTest(FILE_PATH_LITERAL("sub.html"));
 }
 
+class YieldingParserDumpAccessibilityTreeTest
+    : public DumpAccessibilityTreeTest {
+ protected:
+  YieldingParserDumpAccessibilityTreeTest() {
+    feature_list_.InitWithFeatures(
+        {{blink::features::kHTMLParserYieldAndDelayOftenForTesting}},
+        {/* disabled_features */});
+  }
+
+  ~YieldingParserDumpAccessibilityTreeTest() override {
+    // Ensure that the feature lists are destroyed in the same order they
+    // were created in.
+    scoped_feature_list_.Reset();
+    feature_list_.Reset();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    YieldingParserDumpAccessibilityTreeTest,
+    ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
+    DumpAccessibilityTreeTestPassToString());
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilitySub) {
+  RunHtmlTest(FILE_PATH_LITERAL("sub.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySup) {
   RunHtmlTest(FILE_PATH_LITERAL("sup.html"));
 }
@@ -3586,6 +3617,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ShadowDomFirstChild) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, WhitespaceDynamic) {
   RunHtmlTest(FILE_PATH_LITERAL("whitespace-dynamic.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, TableWithPseudoElements) {
+  RunHtmlTest(FILE_PATH_LITERAL("table-with-pseudo-elements.html"));
 }
 
 //

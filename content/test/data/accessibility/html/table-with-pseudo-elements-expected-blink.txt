@@ -1,0 +1,55 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++staticText name='before'
+++++++++inlineTextBox name='before'
+++++genericContainer ignored
+++++++genericContainer ignored
+++++++++staticText name='before'
+++++++++++inlineTextBox name='before'
+++++++layoutTable
+++++++++genericContainer ignored
+++++++++++staticText name='before'
+++++++++++++inlineTextBox name='before'
+++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++staticText name='before'
+++++++++++++++inlineTextBox name='before'
+++++++++++layoutTableRow
+++++++++++++genericContainer ignored
+++++++++++++++staticText name='before'
+++++++++++++++++inlineTextBox name='before'
+++++++++++++layoutTableCell name='before after'
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='before'
+++++++++++++++++++inlineTextBox name='before'
+++++++++++++++textField
+++++++++++++++++genericContainer
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='after'
+++++++++++++++++++inlineTextBox name='after'
+++++++++++++layoutTableCell name='before Submit after'
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='before'
+++++++++++++++++++inlineTextBox name='before'
+++++++++++++++button name='Submit'
+++++++++++++++++staticText name='Submit'
+++++++++++++++++++inlineTextBox name='Submit'
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='after'
+++++++++++++++++++inlineTextBox name='after'
+++++++++++++genericContainer ignored
+++++++++++++++staticText name='after'
+++++++++++++++++inlineTextBox name='after'
+++++++++++genericContainer ignored
+++++++++++++staticText name='after'
+++++++++++++++inlineTextBox name='after'
+++++++++genericContainer ignored
+++++++++++staticText name='after'
+++++++++++++inlineTextBox name='after'
+++++++genericContainer ignored
+++++++++staticText name='after'
+++++++++++inlineTextBox name='after'
+++++genericContainer ignored
+++++++staticText name='after'
+++++++++inlineTextBox name='after'

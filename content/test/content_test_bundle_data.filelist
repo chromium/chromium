@@ -4525,6 +4525,8 @@ data/accessibility/html/table-thead-tbody-tfoot-expected-fuchsia.txt
 data/accessibility/html/table-thead-tbody-tfoot-expected-mac.txt
 data/accessibility/html/table-thead-tbody-tfoot-expected-win.txt
 data/accessibility/html/table-thead-tbody-tfoot.html
+data/accessibility/html/table-with-pseudo-elements-expected-blink.txt
+data/accessibility/html/table-with-pseudo-elements.html
 data/accessibility/html/text-align-expected-android-external.txt
 data/accessibility/html/text-align-expected-auralinux.txt
 data/accessibility/html/text-align-expected-blink.txt
