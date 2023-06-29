@@ -106,7 +106,7 @@ void LogApplicationStorageMetrics(base::FilePath profile_path) {
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(&LogDocumentsDirectorySize, task_runner));
