@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 #include "ui/gl/gpu_switching_observer.h"
-#include "ui/gl/scoped_cgl.h"
 
 namespace ui {
 

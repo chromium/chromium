@@ -15,6 +15,30 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gpu_switching_manager.h"
 
+namespace base {
+
+template <>
+struct ScopedTypeRefTraits<CGLContextObj> {
+  static CGLContextObj InvalidValue() { return nullptr; }
+  static CGLContextObj Retain(CGLContextObj object) {
+    return CGLRetainContext(object);
+  }
+  static void Release(CGLContextObj object) { CGLReleaseContext(object); }
+};
+
+template <>
+struct ScopedTypeRefTraits<CGLPixelFormatObj> {
+  static CGLPixelFormatObj InvalidValue() { return nullptr; }
+  static CGLPixelFormatObj Retain(CGLPixelFormatObj object) {
+    return CGLRetainPixelFormat(object);
+  }
+  static void Release(CGLPixelFormatObj object) {
+    CGLReleasePixelFormat(object);
+  }
+};
+
+}  // namespace base
+
 namespace ui {
 
 namespace {

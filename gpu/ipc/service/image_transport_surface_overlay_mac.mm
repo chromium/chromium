@@ -31,7 +31,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/io_surface_context.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/scoped_cgl.h"
 #endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

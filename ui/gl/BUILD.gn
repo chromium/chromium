@@ -349,8 +349,6 @@ component("gl") {
       "gl_display_egl.mm",
       "gl_fence_apple.cc",
       "gl_fence_apple.h",
-      "scoped_cgl.cc",
-      "scoped_cgl.h",
     ]
 
     frameworks = [
