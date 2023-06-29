@@ -240,8 +240,8 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
   // Returns the theme service type that should be used on startup.
   virtual ui::SystemTheme GetDefaultSystemTheme() const;
 
-  // Clears all the override fields and saves the dictionary.
-  virtual void ClearAllThemeData();
+  // Clears override fields and saves the dictionary.
+  virtual void ClearThemeData(bool clear_ntp_background);
 
   // Initialize current theme state data from preferences.
   virtual void InitFromPrefs();

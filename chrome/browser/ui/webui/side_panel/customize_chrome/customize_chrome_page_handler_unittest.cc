@@ -802,7 +802,6 @@ TEST_F(CustomizeChromePageHandlerTest, SetDefaultColorGM3) {
   scoped_feature_list_.InitWithFeatures(
       {features::kChromeRefresh2023, features::kChromeWebuiRefresh2023}, {});
   absl::optional<SkColor> color;
-  EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(1);
   EXPECT_CALL(mock_theme_service(), SetUserColor)
       .Times(1)
       .WillOnce(testing::SaveArg<0>(&color));
@@ -837,7 +836,6 @@ TEST_F(CustomizeChromePageHandlerTest, SetSeedColorGM3) {
   scoped_feature_list_.InitWithFeatures(
       {features::kChromeRefresh2023, features::kChromeWebuiRefresh2023}, {});
   absl::optional<SkColor> color;
-  EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(1);
   EXPECT_CALL(mock_theme_service(), SetUserColor)
       .Times(1)
       .WillOnce(testing::SaveArg<0>(&color));
