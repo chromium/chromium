@@ -10083,6 +10083,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadingList.AddOrReplaceEntry" enum="ReadingListStorageState"
+    expires_after="2024-06-15">
+  <owner>mastiz@chromium.org</owner>
+  <owner>mmrashad@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    When an entry is added or replaced in the reading list, records in which
+    storage this happened.
+  </summary>
+</histogram>
+
 <histogram name="ReadingList.BookmarkBarState.On{Frequency}AddToReadingList"
     enum="BookmarkBarState" expires_after="2022-11-20">
   <owner>corising@chromium.org</owner>
@@ -10130,6 +10141,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time since the first read of the reading list entry getting deleted. 0 if it
     has never been read.
+  </summary>
+</histogram>
+
+<histogram name="ReadingList.MarkEntryRead" enum="ReadingListStorageState"
+    expires_after="2024-06-15">
+  <owner>mastiz@chromium.org</owner>
+  <owner>mmrashad@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    When a reading list entry is marked as read, records in which storage this
+    happened.
   </summary>
 </histogram>
 

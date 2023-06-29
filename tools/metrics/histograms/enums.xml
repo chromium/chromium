@@ -90735,6 +90735,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Will retry"/>
 </enum>
 
+<enum name="ReadingListStorageState">
+  <int value="0" label="Account storage"/>
+  <int value="1" label="Local-only storage"/>
+  <int value="2" label="Local storage being synced"/>
+</enum>
+
 <enum name="ReasonToShowShelfNavigationButtons">
   <int value="0" label="None"/>
   <int value="1" label="Navigation buttons"/>

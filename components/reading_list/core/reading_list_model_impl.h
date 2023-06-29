@@ -142,15 +142,17 @@ class ReadingListModelImpl : public ReadingListModel {
   ReadingListSyncBridge* GetSyncBridgeForTest();
 
  private:
-  // An enum class to add storage state as a suffix to metrics.
+  // An enum class to record storage state in enum histograms, or add it as a
+  // suffix to metrics.
   enum class StorageStateForUma {
     // Account storage.
-    kAccount,
+    kAccount = 0,
     // Local storage that is not being synced at the time the metric is
     // recorded.
-    kLocalOnly,
+    kLocalOnly = 1,
     // Local storage that is being synced at the time the metric is recorded.
-    kSyncEnabled,
+    kSyncEnabled = 2,
+    kMaxValue = kSyncEnabled
   };
   StorageStateForUma GetStorageStateForUma() const;
   std::string GetStorageStateSuffixForUma() const;

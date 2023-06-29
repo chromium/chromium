@@ -365,6 +365,9 @@ const ReadingListEntry& ReadingListModelImpl::AddOrReplaceEntry(
 
   AddEntry(std::move(entry), source);
 
+  base::UmaHistogramEnumeration("ReadingList.AddOrReplaceEntry",
+                                GetStorageStateForUma());
+
   return *(entries_.at(url));
 }
 
@@ -394,6 +397,11 @@ void ReadingListModelImpl::SetReadStatusIfExists(const GURL& url, bool read) {
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidMoveEntry(this, url);
     observer.ReadingListDidApplyChanges(this);
+  }
+
+  if (read) {
+    base::UmaHistogramEnumeration("ReadingList.MarkEntryRead",
+                                  GetStorageStateForUma());
   }
 }
 
