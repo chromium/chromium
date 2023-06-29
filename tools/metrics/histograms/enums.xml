@@ -33824,6 +33824,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1124" label="LowBatterySoundEnabled"/>
   <int value="1125" label="ArcVmDataMigrationStrategy"/>
   <int value="1126" label="AccessibilityPerformanceFilteringAllowed"/>
+  <int value="1127" label="RemoteAccessHostAllowEnterpriseFileTransfer"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
