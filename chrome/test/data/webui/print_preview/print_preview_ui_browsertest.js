@@ -688,6 +688,10 @@ var PrintPreviewPrinterSetupInfoCrosTest = class extends PrintPreviewTest {
 TEST_F('PrintPreviewPrinterSetupInfoCrosTest', 'ElementDisplays', function() {
   this.runMochaTest(printer_setup_info_cros_test.TestNames.ElementDisplays);
 });
+
+TEST_F('PrintPreviewPrinterSetupInfoCrosTest', 'ElementLocalized', function() {
+  this.runMochaTest(printer_setup_info_cros_test.TestNames.ElementLocalized);
+});
 GEN('#endif')
 
 GEN('#if BUILDFLAG(IS_CHROMEOS)');
