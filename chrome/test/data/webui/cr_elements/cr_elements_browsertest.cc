@@ -7,9 +7,145 @@
 #include "content/public/test/browser_test.h"
 #include "ui/compositor/compositor_switches.h"
 
+typedef WebUIMochaBrowserTest CrElementsTest;
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrA11yAnnouncer) {
+  RunTest("cr_elements/cr_a11y_announcer_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrButton) {
+  RunTest("cr_elements/cr_button_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrContainerShadowMixin) {
+  RunTest("cr_elements/cr_container_shadow_mixin_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrDialog) {
+  RunTest("cr_elements/cr_dialog_test.js", "mocha.run()");
+}
+
+// https://crbug.com/1008122 - Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CrDrawer DISABLED_CrDrawer
+#else
+#define MAYBE_CrDrawer CrDrawer
+#endif
+IN_PROC_BROWSER_TEST_F(CrElementsTest, MAYBE_CrDrawer) {
+  RunTest("cr_elements/cr_drawer_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrExpandButton) {
+  RunTest("cr_elements/cr_expand_button_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, FindShortcutMixin) {
+  RunTest("cr_elements/find_shortcut_mixin_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, I18nMixin) {
+  RunTest("cr_elements/i18n_mixin_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, IconButton) {
+  RunTest("cr_elements/cr_icon_button_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLazyRender) {
+  RunTest("cr_elements/cr_lazy_render_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLinkRow) {
+  RunTest("cr_elements/cr_link_row_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, ListPropertyUpdateMixin) {
+  RunTest("cr_elements/list_property_update_mixin_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrRadioButton) {
+  RunTest("cr_elements/cr_radio_button_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrCardRadioButton) {
+  RunTest("cr_elements/cr_card_radio_button_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrRadioGroup) {
+  RunTest("cr_elements/cr_radio_group_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrScrollableMixin) {
+  RunTest("cr_elements/cr_scrollable_mixin_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrSearchField) {
+  RunTest("cr_elements/cr_search_field_test.js", "mocha.run()");
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrSearchableDropDown) {
+  RunTest("cr_elements/cr_searchable_drop_down_test.js", "mocha.run()");
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrSlider) {
+  RunTest("cr_elements/cr_slider_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrSplitter) {
+  RunTest("cr_elements/cr_splitter_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrToast) {
+  RunTest("cr_elements/cr_toast_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrToastManager) {
+  RunTest("cr_elements/cr_toast_manager_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrViewManager) {
+  RunTest("cr_elements/cr_view_manager_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrPolicyIndicator) {
+  RunTest("cr_elements/cr_policy_indicator_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrPolicyPrefIndicator) {
+  // Preload a settings URL, so that the test can access settingsPrivate.
+  set_test_loader_host(chrome::kChromeUISettingsHost);
+  RunTest("cr_elements/cr_policy_pref_indicator_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrPolicyIndicatorMixin) {
+  RunTest("cr_elements/cr_policy_indicator_mixin_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrAutoImg) {
+  RunTest("cr_elements/cr_auto_img_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrToolbar) {
+  RunTest("cr_elements/cr_toolbar_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrTree) {
+  RunTest("cr_elements/cr_tree_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, WebUiListenerMixin) {
+  RunTest("cr_elements/web_ui_listener_mixin_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrUrlListItem) {
+  RunTest("cr_elements/cr_url_list_item_test.js", "mocha.run()");
+}
+
 // Test with --enable-pixel-output-in-tests enabled, required by a few test
 // cases using HTML canvas.
-class WithPixelOutputTest : public WebUIMochaBrowserTest {
+class CrElementsWithPixelOutputTest : public WebUIMochaBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(::switches::kEnablePixelOutputInTests);
@@ -17,186 +153,17 @@ class WithPixelOutputTest : public WebUIMochaBrowserTest {
   }
 };
 
-typedef WebUIMochaBrowserTest CrElementsA11yAnnouncerTest;
-IN_PROC_BROWSER_TEST_F(CrElementsA11yAnnouncerTest, All) {
-  RunTest("cr_elements/cr_a11y_announcer_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsButtonTest;
-IN_PROC_BROWSER_TEST_F(CrElementsButtonTest, All) {
-  RunTest("cr_elements/cr_button_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsContainerShadowMixinTest;
-IN_PROC_BROWSER_TEST_F(CrElementsContainerShadowMixinTest, All) {
-  RunTest("cr_elements/cr_container_shadow_mixin_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsDialogTest;
-IN_PROC_BROWSER_TEST_F(CrElementsDialogTest, All) {
-  RunTest("cr_elements/cr_dialog_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsDrawerTest;
-
-// https://crbug.com/1008122 - Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Drawer DISABLED_Drawer
-#else
-#define MAYBE_Drawer Drawer
-#endif
-IN_PROC_BROWSER_TEST_F(CrElementsDrawerTest, MAYBE_Drawer) {
-  RunTest("cr_elements/cr_drawer_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsExpandButtonTest;
-IN_PROC_BROWSER_TEST_F(CrElementsExpandButtonTest, All) {
-  RunTest("cr_elements/cr_expand_button_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsFindShortcutMixinTest;
-IN_PROC_BROWSER_TEST_F(CrElementsFindShortcutMixinTest, All) {
-  RunTest("cr_elements/find_shortcut_mixin_test.js", "mocha.run()");
-}
-
-typedef WithPixelOutputTest CrElementsFingerprintProgressArcTest;
-
-// https://crbug.com/1044390 - maybe flaky on Mac?
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Fingerprint DISABLED_Fingerprint
-#else
-#define MAYBE_Fingerprint Fingerprint
-#endif
-IN_PROC_BROWSER_TEST_F(CrElementsFingerprintProgressArcTest,
-                       MAYBE_Fingerprint) {
-  RunTest("cr_elements/cr_fingerprint_progress_arc_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsI18nMixinTest;
-IN_PROC_BROWSER_TEST_F(CrElementsI18nMixinTest, All) {
-  RunTest("cr_elements/i18n_mixin_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsIconButtonTest;
-IN_PROC_BROWSER_TEST_F(CrElementsIconButtonTest, All) {
-  RunTest("cr_elements/cr_icon_button_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsLazyRenderTest;
-IN_PROC_BROWSER_TEST_F(CrElementsLazyRenderTest, All) {
-  RunTest("cr_elements/cr_lazy_render_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsLinkRowTest;
-IN_PROC_BROWSER_TEST_F(CrElementsLinkRowTest, All) {
-  RunTest("cr_elements/cr_link_row_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsListPropertyUpdateMixinTest;
-IN_PROC_BROWSER_TEST_F(CrElementsListPropertyUpdateMixinTest, All) {
-  RunTest("cr_elements/list_property_update_mixin_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsRadioButtonTest;
-IN_PROC_BROWSER_TEST_F(CrElementsRadioButtonTest, All) {
-  RunTest("cr_elements/cr_radio_button_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsCardRadioButtonTest;
-IN_PROC_BROWSER_TEST_F(CrElementsCardRadioButtonTest, All) {
-  RunTest("cr_elements/cr_card_radio_button_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsRadioGroupTest;
-IN_PROC_BROWSER_TEST_F(CrElementsRadioGroupTest, All) {
-  RunTest("cr_elements/cr_radio_group_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsScrollableMixinTest;
-IN_PROC_BROWSER_TEST_F(CrElementsScrollableMixinTest, All) {
-  RunTest("cr_elements/cr_scrollable_mixin_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsSearchFieldTest;
-IN_PROC_BROWSER_TEST_F(CrElementsSearchFieldTest, All) {
-  RunTest("cr_elements/cr_search_field_test.js", "mocha.run()");
-}
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-typedef WebUIMochaBrowserTest CrElementsSearchableDropDownTest;
-IN_PROC_BROWSER_TEST_F(CrElementsSearchableDropDownTest, All) {
-  RunTest("cr_elements/cr_searchable_drop_down_test.js", "mocha.run()");
-}
-#endif
-
-typedef WebUIMochaBrowserTest CrElementsSliderTest;
-IN_PROC_BROWSER_TEST_F(CrElementsSliderTest, All) {
-  RunTest("cr_elements/cr_slider_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsSplitterTest;
-IN_PROC_BROWSER_TEST_F(CrElementsSplitterTest, All) {
-  RunTest("cr_elements/cr_splitter_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsToastTest;
-IN_PROC_BROWSER_TEST_F(CrElementsToastTest, All) {
-  RunTest("cr_elements/cr_toast_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsToastManagerTest;
-IN_PROC_BROWSER_TEST_F(CrElementsToastManagerTest, All) {
-  RunTest("cr_elements/cr_toast_manager_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsViewManagerTest;
-IN_PROC_BROWSER_TEST_F(CrElementsViewManagerTest, All) {
-  RunTest("cr_elements/cr_view_manager_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsPolicyIndicatorTest;
-IN_PROC_BROWSER_TEST_F(CrElementsPolicyIndicatorTest, All) {
-  RunTest("cr_elements/cr_policy_indicator_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsPolicyPrefIndicatorTest;
-IN_PROC_BROWSER_TEST_F(CrElementsPolicyPrefIndicatorTest, All) {
-  // Preload a settings URL, so that the test can access settingsPrivate.
-  set_test_loader_host(chrome::kChromeUISettingsHost);
-  RunTest("cr_elements/cr_policy_pref_indicator_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsPolicyIndicatorMixinTest;
-IN_PROC_BROWSER_TEST_F(CrElementsPolicyIndicatorMixinTest, All) {
-  RunTest("cr_elements/cr_policy_indicator_mixin_test.js", "mocha.run()");
-}
-
-typedef WithPixelOutputTest CrElementsLottieTest;
-IN_PROC_BROWSER_TEST_F(CrElementsLottieTest, All) {
+IN_PROC_BROWSER_TEST_F(CrElementsWithPixelOutputTest, CrLottie) {
   RunTest("cr_elements/cr_lottie_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaBrowserTest CrElementsAutoImgTest;
-IN_PROC_BROWSER_TEST_F(CrElementsAutoImgTest, All) {
-  RunTest("cr_elements/cr_auto_img_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsToolbarTest;
-IN_PROC_BROWSER_TEST_F(CrElementsToolbarTest, All) {
-  RunTest("cr_elements/cr_toolbar_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsTreeTest;
-IN_PROC_BROWSER_TEST_F(CrElementsTreeTest, All) {
-  RunTest("cr_elements/cr_tree_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsWebUiListenerMixinTest;
-IN_PROC_BROWSER_TEST_F(CrElementsWebUiListenerMixinTest, All) {
-  RunTest("cr_elements/web_ui_listener_mixin_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrElementsUrlListItemTest;
-IN_PROC_BROWSER_TEST_F(CrElementsUrlListItemTest, All) {
-  RunTest("cr_elements/cr_url_list_item_test.js", "mocha.run()");
+// https://crbug.com/1044390 - maybe flaky on Mac?
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CrFingerprintProgressArc DISABLED_CrFingerprintProgressArc
+#else
+#define MAYBE_CrFingerprintProgressArc CrFingerprintProgressArc
+#endif
+IN_PROC_BROWSER_TEST_F(CrElementsWithPixelOutputTest,
+                       MAYBE_CrFingerprintProgressArc) {
+  RunTest("cr_elements/cr_fingerprint_progress_arc_test.js", "mocha.run()");
 }

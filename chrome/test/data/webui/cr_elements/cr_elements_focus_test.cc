@@ -5,74 +5,62 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
-typedef WebUIMochaFocusTest CrElementsActionMenuTest;
-IN_PROC_BROWSER_TEST_F(CrElementsActionMenuTest, All) {
+typedef WebUIMochaFocusTest CrElementsFocusTest;
+
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrActionMenu) {
   RunTest("cr_elements/cr_action_menu_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaFocusTest CrElementsCheckboxTest;
-IN_PROC_BROWSER_TEST_F(CrElementsCheckboxTest, All) {
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrCheckbox) {
   RunTest("cr_elements/cr_checkbox_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaFocusTest CrElementsInputTest;
-
 // https://crbug.com/997943: Flaky on Mac
 #if BUILDFLAG(IS_MAC)
-#define MAYBE_All DISABLED_All
+#define MAYBE_CrInput DISABLED_CrInput
 #else
-#define MAYBE_All All
+#define MAYBE_CrInput CrInput
 #endif
-IN_PROC_BROWSER_TEST_F(CrElementsInputTest, MAYBE_All) {
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, MAYBE_CrInput) {
   RunTest("cr_elements/cr_input_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaFocusTest CrElementsProfileAvatarSelectorTest;
-IN_PROC_BROWSER_TEST_F(CrElementsProfileAvatarSelectorTest, All) {
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrProfileAvatarSelector) {
   RunTest("cr_elements/cr_profile_avatar_selector_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaFocusTest CrElementsTabsTest;
-IN_PROC_BROWSER_TEST_F(CrElementsTabsTest, All) {
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrTabs) {
   RunTest("cr_elements/cr_tabs_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaFocusTest CrElementsToggleTest;
-IN_PROC_BROWSER_TEST_F(CrElementsToggleTest, All) {
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrToggle) {
   RunTest("cr_elements/cr_toggle_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaFocusTest CrElementsToolbarSearchFieldTest;
-IN_PROC_BROWSER_TEST_F(CrElementsToolbarSearchFieldTest, All) {
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrToolbarSearchField) {
   RunTest("cr_elements/cr_toolbar_search_field_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaFocusTest IronListFocusTest;
-IN_PROC_BROWSER_TEST_F(IronListFocusTest, All) {
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, IronList) {
   RunTest("cr_elements/iron_list_focus_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaFocusTest CrElementsGridFocusTest;
-IN_PROC_BROWSER_TEST_F(CrElementsGridFocusTest, All) {
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrGrid) {
   RunTest("cr_elements/cr_grid_focus_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaFocusTest CrElementsMenuSelectorFocusTest;
-IN_PROC_BROWSER_TEST_F(CrElementsMenuSelectorFocusTest, All) {
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrMenuSelector) {
   RunTest("cr_elements/cr_menu_selector_focus_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaFocusTest CrElementsToolbarFocusTest;
-IN_PROC_BROWSER_TEST_F(CrElementsToolbarFocusTest, All) {
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrToolbar) {
   RunTest("cr_elements/cr_toolbar_focus_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaFocusTest CrElementsTextareaFocusTest;
-IN_PROC_BROWSER_TEST_F(CrElementsTextareaFocusTest, All) {
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrTextarea) {
   RunTest("cr_elements/cr_textarea_focus_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaFocusTest CrFocusRowMixinTest;
-IN_PROC_BROWSER_TEST_F(CrFocusRowMixinTest, FocusTest) {
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrFocusRowMixin) {
   RunTest("cr_elements/cr_focus_row_mixin_test.js", "mocha.run()");
 }
