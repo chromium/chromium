@@ -6650,3 +6650,5 @@ crbug.com/1459304 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-fram
 crbug.com/1459304 [ Linux ] virtual/plz-dedicated-worker/external/wpt/workers/WorkerLocation_protocol.htm [ Failure Pass ]
 crbug.com/1459304 [ Linux ] fast/peerconnection/RTCPeerConnection-iframe-gc.html [ Failure Pass ]
 crbug.com/1459304 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Failure Pass ]
+crbug.com/1459347 [ Fuchsia ] virtual/text-antialias/stroking-decorations.html [ Failure Pass ]
+crbug.com/1459347 [ Fuchsia ] paint/invalidation/shadow-multiple.html [ Failure Pass ]
