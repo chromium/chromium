@@ -41,6 +41,12 @@ BASE_FEATURE(kAutofillEnableCardArtImage,
              "AutofillEnableCardArtImage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, server will return card art images of the exact required
+// dimension.
+BASE_FEATURE(kAutofillEnableCardArtServerSideStretching,
+             "AutofillEnableCardArtServerSideStretching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, card product name (instead of issuer network) will be shown in
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardProductName,

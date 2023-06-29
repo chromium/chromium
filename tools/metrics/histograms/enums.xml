@@ -62328,6 +62328,8 @@ from previous Chrome versions.
   <int value="-762687134" label="ExperimentalCrostiniUI:enabled"/>
   <int value="-762541013" label="enable-bluetooth-spp-in-serial-api"/>
   <int value="-761870200" label="CaptureModeDemoTools:disabled"/>
+  <int value="-760729135"
+      label="AutofillEnableCardArtServerSideStretching:disabled"/>
   <int value="-759830869" label="enable-tab-discarding"/>
   <int value="-758999727" label="ContentIndexingNTP:disabled"/>
   <int value="-758917191" label="AccountIdMigration:enabled"/>
@@ -62656,6 +62658,8 @@ from previous Chrome versions.
   <int value="-594076614" label="PluginVmShowCameraPermissions:disabled"/>
   <int value="-593536514" label="ExperimentalTabController:enabled"/>
   <int value="-593079381" label="component-updater"/>
+  <int value="-592776252"
+      label="AutofillEnableCardArtServerSideStretching:enabled"/>
   <int value="-592628080" label="DnsProxyEnableDOH:disabled"/>
   <int value="-592148755" label="RoundedWindows:enabled"/>
   <int value="-591874964" label="LiteVideo:enabled"/>
