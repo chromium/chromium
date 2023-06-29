@@ -194,6 +194,15 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
         },
         readOnly: true,
       },
+
+      isChromeVoxHintImprovementsEnabled_: {
+        type: Boolean,
+        value: function() {
+          return (
+              loadTimeData.getBoolean('isChromeVoxHintImprovementsEnabled'));
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -843,9 +852,18 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
           ', giving default hint in English.');
     }
     this.cleanupChromeVoxHint_();
-    const msgId = this.$.welcomeScreen.isInTabletMode ?
-        'chromeVoxHintAnnouncementTextTablet' :
-        'chromeVoxHintAnnouncementTextLaptop';
+    // |msgId| depends on both feature enabled status and tablet mode.
+    let msgId;
+    if (this.isChromeVoxHintImprovementsEnabled_) {
+      msgId = this.$.welcomeScreen.isInTabletMode ?
+          'chromeVoxHintAnnouncementTextTabletExpanded' :
+          'chromeVoxHintAnnouncementTextLaptopExpanded';
+    } else {
+      msgId = this.$.welcomeScreen.isInTabletMode ?
+          'chromeVoxHintAnnouncementTextTablet' :
+          'chromeVoxHintAnnouncementTextLaptop';
+    }
+
     const message = this.i18n(msgId);
     chrome.tts.speak(message, options, () => {
       this.showChromeVoxHint_();

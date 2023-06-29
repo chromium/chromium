@@ -5959,6 +5959,13 @@ const char kExoSurroundingTextOffsetDescription[] =
     "On wayland protocol, surrounding text may be trimmed. Enabling this "
     "supports the cases.";
 
+const char kExperimentalAccessibilityChromeVoxOobeDialogImprovementsName[] =
+    "Experimental accessibility ChromeVox OOBE dialog improvements.";
+
+const char
+    kExperimentalAccessibilityChromeVoxOobeDialogImprovementsDescription[] =
+        "Enables experimental UI improvements for the ChromeVox OOBE dialog.";
+
 const char kExperimentalAccessibilityDictationContextCheckingName[] =
     "Experimental accessibility dictation using context checking.";
 const char kExperimentalAccessibilityDictationContextCheckingDescription[] =

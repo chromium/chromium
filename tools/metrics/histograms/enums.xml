@@ -64398,6 +64398,8 @@ from previous Chrome versions.
   <int value="280925459" label="LiveCaption:disabled"/>
   <int value="281024089" label="AppServiceExternalProtocol:disabled"/>
   <int value="282165459" label="ForceMinorVersion100InUserAgent:enabled"/>
+  <int value="282456095"
+      label="ExperimentalAccessibilityChromeVoxOobeDialogImprovements:enabled"/>
   <int value="282582564" label="DisableCameraFrameRotationAtSource:enabled"/>
   <int value="282636212" label="VideoPlayerNativeControls:disabled"/>
   <int value="282647662" label="WebAppBorderless:enabled"/>
@@ -65208,6 +65210,8 @@ from previous Chrome versions.
   <int value="696261973" label="GaiaActionButtons:enabled"/>
   <int value="696600628" label="VibrateRequiresUserGesture:disabled"/>
   <int value="697503858" label="SharingPeerConnectionSender:disabled"/>
+  <int value="698253616"
+      label="ExperimentalAccessibilityChromeVoxOobeDialogImprovements:disabled"/>
   <int value="698273842" label="SyncSendTabToSelf:enabled"/>
   <int value="698809951" label="WebRtcHWVP8Encoding:enabled"/>
   <int value="698842796"

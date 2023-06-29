@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -49,6 +50,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 
 namespace ash {
@@ -78,6 +80,12 @@ const char kCurrentKeyboard[] =
 
 const test::UIPath kChromeVoxHintDialog = {"connect", "welcomeScreen",
                                            "chromeVoxHint"};
+const test::UIPath kChromeVoxHintDialogCloseButton = {
+    "connect", "welcomeScreen", "dismissChromeVoxButton"};
+const test::UIPath kChromeVoxHintDialogContent = {"connect", "welcomeScreen",
+                                                  "chromeVoxHintContent"};
+const test::UIPath kChromeVoxHintDialogTitle = {"connect", "welcomeScreen",
+                                                "chromeVoxHintTitle"};
 const test::UIPath kDismissChromeVoxButton = {"connect", "welcomeScreen",
                                               "dismissChromeVoxButton"};
 const test::UIPath kActivateChromeVoxButton = {"connect", "welcomeScreen",
@@ -94,6 +102,18 @@ const char kSetAvailableVoices[] = R"(
 const char kChromeVoxHintLaptopSpokenString[] =
     "Do you want to activate ChromeVox, the built-in screen reader for "
     "ChromeOS? If so, press the space bar.";
+
+const char kChromeVoxHintLaptopSpokenStringImproved[] =
+    "The screen reader on ChromeOS, ChromeVox, is primarily used by "
+    "people with blindness and low vision. Press the space bar to turn on "
+    "ChromeVox. When ChromeVox is activated, you’ll go through a quick "
+    "tour.";
+
+const char kChromeVoxHintTabletSpokenStringImproved[] =
+    "The screen reader on ChromeOS, ChromeVox, is primarily used by "
+    "people with blindness and low vision. Press and hold both volume keys "
+    "for five seconds to turn on ChromeVox. When ChromeVox is activated, "
+    "you’ll go through a quick tour.";
 
 constexpr const char kWelcomeScreenLocaleChangeMetric[] =
     "OOBE.WelcomeScreen.UserChangedLocale";
@@ -953,6 +973,61 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenInternationalChromeVoxHintTest,
   GiveChromeVoxHintForTesting();
   // Expect speech in English, even though the system locale is French.
   monitor.ExpectSpeechPatternWithLocale("*", "en-US");
+  monitor.Replay();
+  WaitForSpokenSuccessMetric();
+}
+
+class WelcomeScreenImprovedChromeVoxHintTest
+    : public WelcomeScreenChromeVoxHintTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WelcomeScreenChromeVoxHintTest::SetUpCommandLine(command_line);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kExperimentalAccessibilityChromeVoxOobeDialogImprovements);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WelcomeScreenImprovedChromeVoxHintTest,
+                       DialogStructure) {
+  test::WaitForWelcomeScreen();
+  TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
+  test::ExecuteOobeJS(kSetAvailableVoices);
+  test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
+  GiveChromeVoxHintForTesting();
+  WaitForChromeVoxHintDialogToOpen();
+  test::OobeJS().ExpectAttributeEQ("textContent", kChromeVoxHintDialogTitle,
+                                   std::string("Turn on screen reader"));
+  test::OobeJS().ExpectAttributeEQ(
+      "textContent", kChromeVoxHintDialogContent,
+      std::string(kChromeVoxHintLaptopSpokenStringImproved));
+  test::OobeJS().ExpectAttributeEQ(
+      "labelForAria_", kChromeVoxHintDialogCloseButton, std::string("Close"));
+}
+
+IN_PROC_BROWSER_TEST_F(WelcomeScreenImprovedChromeVoxHintTest,
+                       LaptopAnnouncement) {
+  test::WaitForWelcomeScreen();
+  TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
+  test::ExecuteOobeJS(kSetAvailableVoices);
+  test::SpeechMonitor monitor;
+  GiveChromeVoxHintForTesting();
+  monitor.ExpectSpeech(kChromeVoxHintLaptopSpokenStringImproved);
+  monitor.Replay();
+  WaitForSpokenSuccessMetric();
+}
+
+IN_PROC_BROWSER_TEST_F(WelcomeScreenImprovedChromeVoxHintTest,
+                       TabletAnnouncement) {
+  test::WaitForWelcomeScreen();
+  TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
+  test::ExecuteOobeJS(kSetAvailableVoices);
+  ShellTestApi().SetTabletModeEnabledForTest(true);
+  test::SpeechMonitor monitor;
+  GiveChromeVoxHintForTesting();
+  monitor.ExpectSpeech(kChromeVoxHintTabletSpokenStringImproved);
   monitor.Replay();
   WaitForSpokenSuccessMetric();
 }

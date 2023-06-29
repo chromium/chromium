@@ -9,6 +9,7 @@ import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/oobe_vars/oobe_shared_vars.css.js';
 import '../../components/buttons/oobe_icon_button.js';
+import '../../components/hd_iron_icon.js';
 
 import {assert} from '//resources/ash/common/assert.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
@@ -90,6 +91,15 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
           return (
               loadTimeData.valueExists('isOobeSimonEnabled') &&
               loadTimeData.getBoolean('isOobeSimonEnabled'));
+        },
+        readOnly: true,
+      },
+
+      isChromeVoxHintImprovementsEnabled_: {
+        type: Boolean,
+        value: function() {
+          return (
+              loadTimeData.getBoolean('isChromeVoxHintImprovementsEnabled'));
         },
         readOnly: true,
       },

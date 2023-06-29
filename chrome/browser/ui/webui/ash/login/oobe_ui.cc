@@ -143,6 +143,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -297,6 +298,10 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
   // TODO (b/269117729) Cleanup OobeSimon
   source->AddBoolean("isOobeSimonEnabled", features::IsOobeSimonEnabled());
+  source->AddBoolean(
+      "isChromeVoxHintImprovementsEnabled",
+      ::features::
+          IsExperimentalAccessibilityChromeVoxOobeDialogImprovementsEnabled());
   source->AddBoolean("isOobeGaiaInfoScreenEnabled",
                      features::IsOobeGaiaInfoScreenEnabled());
   source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());

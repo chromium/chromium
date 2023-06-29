@@ -2490,6 +2490,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "enable-experimental-accessibility-chromevox-oobe-dialog-improvements",
+    "owners": [ "akihiroota", "//ash/accessibility/OWNERS" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "enable-experimental-accessibility-color-enhancement-settings",
     "owners": [ "katie", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 120

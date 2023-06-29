@@ -108,6 +108,12 @@ AX_BASE_EXPORT bool IsUiaProviderEnabled();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 AX_BASE_EXPORT bool IsDictationOfflineAvailable();
 
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kExperimentalAccessibilityChromeVoxOobeDialogImprovements);
+
+AX_BASE_EXPORT bool
+IsExperimentalAccessibilityChromeVoxOobeDialogImprovementsEnabled();
+
 // Enables Context Checking with the accessibility Dictation feature.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kExperimentalAccessibilityDictationContextChecking);

@@ -5420,6 +5420,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVirtualKeyboardRoundCornersName,
      flag_descriptions::kVirtualKeyboardRoundCornersDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kVirtualKeyboardRoundCorners)},
+    {"enable-experimental-accessibility-chromevox-oobe-dialog-improvements",
+     flag_descriptions::
+         kExperimentalAccessibilityChromeVoxOobeDialogImprovementsName,
+     flag_descriptions::
+         kExperimentalAccessibilityChromeVoxOobeDialogImprovementsDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         features::kExperimentalAccessibilityChromeVoxOobeDialogImprovements)},
     {"enable-experimental-accessibility-dictation-context-checking",
      flag_descriptions::kExperimentalAccessibilityDictationContextCheckingName,
      flag_descriptions::
