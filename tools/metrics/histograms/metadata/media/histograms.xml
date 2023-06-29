@@ -5258,6 +5258,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Device.Opened.PixelFormat"
+    enum="VideoPixelFormatUnion" expires_after="2024-06-28">
+  <owner>atadres@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    This metric records the pixel format of the active camera video feed at
+    start, and everytime the pixel format changes.
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.Device.Opened.Resolution"
+    units="resolution" expires_after="2024-06-28">
+  <owner>atadres@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    This metric records the resolution of the active camera video feed at start,
+    and everytime the resolution changes. The metric combines the width and
+    height into a single uint32_t value, with the width stored in the first 16
+    bits and the height stored in the last 16 bits.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Device.SupportedPixelFormat"
     enum="VideoPixelFormatUnion" expires_after="2024-06-08">
   <owner>eshr@google.com</owner>
