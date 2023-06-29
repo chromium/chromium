@@ -85,12 +85,12 @@ void MultipartDataPipeGetter::InternalMemoryMappedFile::CloseHandles() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (data_ != nullptr)
-    munmap(data_, length_);
-  file_.Close();
-
+  if (data_) {
+    munmap(data_.ExtractAsDangling(), length_);
+  }
   data_ = nullptr;
   length_ = 0;
+  file_.Close();
 }
 
 #endif  // BUILDFLAG(IS_POSIX)
