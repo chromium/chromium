@@ -14,11 +14,14 @@
 # limitations under the License.
 from __future__ import annotations
 
+import base64
+import io
 import itertools
 import json
 from typing import Literal
 
 from anys import ANY_NUMBER, ANY_STR, AnyContains, AnyGT, AnyLT, AnyWithEntries
+from PIL import Image, ImageChops
 
 _command_counter = itertools.count(1)
 
@@ -188,3 +191,46 @@ def AnyExtending(expected: list | dict):
         return AnyWithEntries(dict_result)
 
     return expected
+
+
+def assert_images_equal(img1: Image.Image | str, img2: Image.Image | str):
+    """Assert that the given images are equal."""
+    if isinstance(img1, str):
+        img1 = Image.open(io.BytesIO(base64.b64decode(img1)))
+    if isinstance(img2, str):
+        img2 = Image.open(io.BytesIO(base64.b64decode(img2)))
+
+    equal_size = (img1.height == img2.height) and (img1.width == img2.width)
+
+    if img1.mode == img2.mode == "RGBA":
+        img1_alphas = [pixel[3] for pixel in img1.getdata()]
+        img2_alphas = [pixel[3] for pixel in img2.getdata()]
+        equal_alphas = img1_alphas == img2_alphas
+    else:
+        equal_alphas = True
+
+    equal_content = not ImageChops.difference(img1.convert("RGB"),
+                                              img2.convert("RGB")).getbbox()
+
+    assert equal_alphas
+    assert equal_size
+    assert equal_content
+
+
+def save_png(png_bytes_or_str: bytes | str, output_file: str):
+    """Save the given PNG (bytes or base64 string representation) to the given output file."""
+    png_bytes = png_bytes_or_str if isinstance(
+        png_bytes_or_str, bytes) else base64.b64decode(png_bytes_or_str,
+                                                       validate=True)
+    Image.open(io.BytesIO(png_bytes)).save(output_file, 'PNG')
+
+
+def save_pdf(pdf_bytes_or_str: bytes | str, output_file: str):
+    pdf_bytes = pdf_bytes_or_str if isinstance(
+        pdf_bytes_or_str, bytes) else base64.b64decode(pdf_bytes_or_str,
+                                                       validate=True)
+    if pdf_bytes[0:4] != b'%PDF':
+        raise ValueError('Missing the PDF file signature')
+
+    with open(output_file, 'wb') as f:
+        f.write(pdf_bytes)

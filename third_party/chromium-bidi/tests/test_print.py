@@ -13,29 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import base64
-
 import pytest
 from anys import ANY_STR
-from test_helpers import execute_command, goto_url
-
-
-def save_pdf(pdf_bytes_or_str: bytes | str, output_file: str):
-    pdf_bytes = pdf_bytes_or_str if isinstance(
-        pdf_bytes_or_str, bytes) else base64.b64decode(pdf_bytes_or_str,
-                                                       validate=True)
-    if pdf_bytes[0:4] != b'%PDF':
-        raise ValueError('Missing the PDF file signature')
-
-    with open(output_file, 'wb') as f:
-        f.write(pdf_bytes)
+from test_helpers import assert_images_equal, execute_command, goto_url
 
 
 @pytest.mark.asyncio
-async def test_print(websocket, context_id, html):
+async def test_print(websocket, context_id, html, get_cdp_session_id):
     await goto_url(websocket, context_id, html())
 
-    result = await execute_command(
+    print_result = await execute_command(
         websocket, {
             "method": "browsingContext.print",
             "params": {
@@ -49,4 +36,45 @@ async def test_print(websocket, context_id, html):
         })
 
     # 'data' is not deterministic, ~a dozen characters differ between runs.
-    assert result['data'] == ANY_STR
+    assert print_result["data"] == ANY_STR
+
+    try:
+        await goto_url(websocket, context_id,
+                       f'data:application/pdf,base64;{print_result["data"]}')
+    except Exception as e:
+        assert e.args[0] == {
+            'error': 'unknown error',
+            'message': 'net::ERR_ABORTED'
+        }
+        pytest.xfail("PDF viewer not available in headless.")
+
+    session_id = await get_cdp_session_id(context_id)
+
+    # Set a fixed viewport to make the test deterministic.
+    await execute_command(
+        websocket, {
+            "method": "cdp.sendCommand",
+            "params": {
+                "method": "Emulation.setDeviceMetricsOverride",
+                "params": {
+                    "width": 200,
+                    "height": 200,
+                    "deviceScaleFactor": 1.0,
+                    "mobile": False,
+                },
+                "session": session_id
+            }
+        })
+
+    screenshot_result = await execute_command(
+        websocket, {
+            "method": "browsingContext.captureScreenshot",
+            "params": {
+                "context": context_id
+            }
+        })
+
+    assert_images_equal(
+        screenshot_result["data"],
+        "iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAAAXNSR0IArs4c6QAAAhlJREFUeJzt07ENgDAAwLDSEzsg8f8h9IEqKwz2BVlyrft5B3A0vw6APzMIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQNhGJAOQPl8yRgAAAABJRU5ErkJggg=="
+    )

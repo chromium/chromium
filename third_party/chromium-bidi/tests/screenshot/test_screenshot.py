@@ -13,41 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import base64
-import io
 from pathlib import Path
 
 import pytest
 from anys import ANY_STR
-from PIL import Image, ImageChops
-from test_helpers import (execute_command, get_tree, goto_url,
-                          read_JSON_message, send_JSON_command)
-
-
-def assert_images_equal(img1: Image, img2: Image):
-    """Assert that the given images are equal."""
-    equal_size = (img1.height == img2.height) and (img1.width == img2.width)
-
-    if img1.mode == img2.mode == "RGBA":
-        img1_alphas = [pixel[3] for pixel in img1.getdata()]
-        img2_alphas = [pixel[3] for pixel in img2.getdata()]
-        equal_alphas = img1_alphas == img2_alphas
-    else:
-        equal_alphas = True
-
-    equal_content = not ImageChops.difference(img1.convert("RGB"),
-                                              img2.convert("RGB")).getbbox()
-
-    assert equal_alphas
-    assert equal_size
-    assert equal_content
-
-
-def save_png(png_bytes_or_str: bytes | str, output_file: str):
-    """Save the given PNG (bytes or base64 string representation) to the given output file."""
-    png_bytes = png_bytes_or_str if isinstance(
-        png_bytes_or_str, bytes) else base64.b64decode(png_bytes_or_str,
-                                                       validate=True)
-    Image.open(io.BytesIO(png_bytes)).save(output_file, 'PNG')
+from test_helpers import (assert_images_equal, execute_command, get_tree,
+                          goto_url, read_JSON_message, send_JSON_command)
 
 
 @pytest.mark.asyncio
@@ -94,9 +65,7 @@ async def test_screenshot(websocket, context_id, png_filename,
         resp = await read_JSON_message(websocket)
         assert resp["result"] == {'data': ANY_STR}
 
-        img1 = Image.open(io.BytesIO(base64.b64decode(resp["result"]["data"])))
-        img2 = Image.open(io.BytesIO(base64.b64decode(png_base64)))
-        assert_images_equal(img1, img2)
+        assert_images_equal(resp["result"]["data"], png_base64)
 
 
 @pytest.mark.asyncio
@@ -146,6 +115,4 @@ async def test_screenshot_oopif(websocket, context_id, html, iframe,
               'rb') as image_file:
         png_base64 = base64.b64encode(image_file.read()).decode('utf-8')
 
-        img1 = Image.open(io.BytesIO(base64.b64decode(resp["result"]["data"])))
-        img2 = Image.open(io.BytesIO(base64.b64decode(png_base64)))
-        assert_images_equal(img1, img2)
+        assert_images_equal(resp["result"]["data"], png_base64)
