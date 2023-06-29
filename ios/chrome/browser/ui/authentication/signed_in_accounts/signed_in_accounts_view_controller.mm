@@ -127,7 +127,6 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
     return;
   }
   [_accountTableView teardownUI];
-  _browserState = nullptr;
   [_primaryButton removeTarget:self
                         action:@selector(onPrimaryButtonPressed:)
               forControlEvents:UIControlEventTouchDown];
