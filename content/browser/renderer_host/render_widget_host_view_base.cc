@@ -174,6 +174,7 @@ uint32_t RenderWidgetHostViewBase::GetCaptureSequenceNumber() const {
 }
 
 ui::TextInputClient* RenderWidgetHostViewBase::GetTextInputClient() {
+  NOTREACHED();
   return nullptr;
 }
 
