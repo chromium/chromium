@@ -22,7 +22,6 @@
 namespace {
 
 const CGFloat kActionsBottomMargin = 10;
-const CGFloat kActionButtonImageInsets = 10;
 // Gradient height.
 const CGFloat kGradientHeight = 40.;
 const CGFloat kScrollViewBottomInsets = 20;
@@ -759,15 +758,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
                   forControlEvents:UIControlEventTouchUpInside];
   [secondaryActionButton setTitle:self.secondaryActionString
                          forState:UIControlStateNormal];
-  if (self.secondaryActionImage) {
-    [secondaryActionButton setImage:self.secondaryActionImage
-                           forState:UIControlStateNormal];
-    // TODO(crbug.com/1418068): Replace with UIButtonConfiguration when min
-    // deployment target is iOS 15.
-    UIEdgeInsets imageInsets =
-        UIEdgeInsetsMake(0, 0, 0, kActionButtonImageInsets);
-    SetImageEdgeInsets(secondaryActionButton, imageInsets);
-  }
   [secondaryActionButton setBackgroundColor:[UIColor clearColor]];
   UIColor* titleColor = [UIColor colorNamed:self.secondaryActionTextColor
                                                 ? self.secondaryActionTextColor

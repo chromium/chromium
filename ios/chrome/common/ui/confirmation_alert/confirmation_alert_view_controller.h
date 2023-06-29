@@ -51,9 +51,6 @@
 // not set.
 @property(nonatomic, copy) NSString* secondaryActionTextColor;
 
-// The icon for the secondary action. Must be set before the view is loaded.
-@property(nonatomic, strong) UIImage* secondaryActionImage;
-
 // The text for the tertiary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* tertiaryActionString;
 
