@@ -847,6 +847,8 @@ TEST_F(BitmapHistogramTest, DecodedImageDensityKiBWeighted) {
     // Test images that don't report any density metrics.
     base::HistogramTester histogram_tester;
     LoadImage("rgb-jpeg-red.jpg");           // 64x64
+    // 500x500 but animation is not reported.
+    LoadBlinkWebTestsImage("webp-animated-large.webp");
 #if BUILDFLAG(ENABLE_AV1_DECODER)
     LoadImage("red-full-ranged-8bpc.avif");  // 3x3
     // 159x159 but animation is not reported.
