@@ -187,6 +187,9 @@ PerformanceTimingForReporting::LargestContentfulPaintDetailsForMetrics() const {
           MonotonicTimeToIntegerMilliseconds(timing.largest_text_paint_time_))
           .InSecondsF();
 
+  absl::optional<base::TimeDelta> largest_image_discovery_time =
+      MonotonicTimeToPseudoWallTime(timing.largest_image_discovery_time_);
+
   absl::optional<base::TimeDelta> largest_image_load_start =
       MonotonicTimeToPseudoWallTime(timing.largest_image_load_start_);
 
@@ -195,6 +198,7 @@ PerformanceTimingForReporting::LargestContentfulPaintDetailsForMetrics() const {
 
   return {largest_image_paint_time,
           timing.largest_image_paint_size_,
+          largest_image_discovery_time,
           largest_image_load_start,
           largest_image_load_end,
           timing.largest_contentful_paint_type_,

@@ -398,6 +398,8 @@ bool PaintTimingDetector::NotifyMetricsIfLargestImagePaintChanged(
             blink::LargestContentfulPaintType::kDataURI;
       }
 
+      lcp_details_.largest_image_discovery_time_ =
+          image_record->media_timing->DiscoveryTime();
       lcp_details_.largest_image_load_start_ =
           image_record->media_timing->LoadStart();
       lcp_details_.largest_image_load_end_ =

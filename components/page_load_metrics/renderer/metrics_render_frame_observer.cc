@@ -660,7 +660,16 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
           ->image_request_priority_valid = false;
     }
 
-    // Set largest image load type
+    // Set largest image load timings.
+    if (largest_contentful_paint_details.image_discovery_time.has_value()) {
+      timing->paint_timing->largest_contentful_paint
+          ->largest_image_discovery_time =
+          CreateTimeDeltaFromTimestampsInSeconds(
+              (largest_contentful_paint_details.image_discovery_time.value())
+                  .InSecondsF(),
+              start);
+    }
+
     if (largest_contentful_paint_details.image_load_start.has_value()) {
       timing->paint_timing->largest_contentful_paint->largest_image_load_start =
           CreateTimeDeltaFromTimestampsInSeconds(

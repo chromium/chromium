@@ -21,6 +21,7 @@ class WindowPerformance;
 struct LargestContentfulPaintDetailsForReporting {
   double image_paint_time = 0;
   uint64_t image_paint_size = 0;
+  absl::optional<base::TimeDelta> image_discovery_time = absl::nullopt;
   absl::optional<base::TimeDelta> image_load_start = absl::nullopt;
   absl::optional<base::TimeDelta> image_load_end = absl::nullopt;
   blink::LargestContentfulPaintType type =

@@ -719,6 +719,10 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
       if (priority)
         builder.SetPaintTiming_LargestContentfulPaintRequestPriority(*priority);
     }
+    if (cwv_lcp_timing_info.ImageDiscoveryTime().has_value()) {
+      builder.SetPaintTiming_LargestContentfulPaintImageDiscoveryTime(
+          cwv_lcp_timing_info.ImageDiscoveryTime().value().InMilliseconds());
+    }
     if (cwv_lcp_timing_info.ImageLoadStart().has_value()) {
       builder.SetPaintTiming_LargestContentfulPaintImageLoadStart(
           cwv_lcp_timing_info.ImageLoadStart().value().InMilliseconds());
