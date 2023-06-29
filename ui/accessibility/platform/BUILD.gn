@@ -58,10 +58,6 @@ component("platform") {
     "compute_attributes.cc",
     "compute_attributes.h",
 
-    # Used by //ui/accessibility:ax_assistant.
-    "ax_android_constants.cc",
-    "ax_android_constants.h",
-
     # Used by //ui/views/views/ax_virtual_view.h.
     "ax_platform_node_base.cc",
     "ax_platform_node_base.h",
@@ -120,6 +116,14 @@ component("platform") {
       "//components/crash/core/common:crash_key",
       "//gin",
       "//services/accessibility/public/mojom",
+    ]
+  }
+
+  if (is_android || is_chromeos_ash) {
+    sources += [
+      # Used by //ui/accessibility:ax_assistant.
+      "ax_android_constants.cc",
+      "ax_android_constants.h",
     ]
   }
 

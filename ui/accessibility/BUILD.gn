@@ -225,15 +225,17 @@ component("accessibility_internal") {
   }
 }
 
-source_set("ax_assistant") {
-  sources = [
-    "ax_assistant_structure.cc",
-    "ax_assistant_structure.h",
-  ]
+if (is_android || is_chromeos_ash) {
+  source_set("ax_assistant") {
+    sources = [
+      "ax_assistant_structure.cc",
+      "ax_assistant_structure.h",
+    ]
 
-  deps = [ ":accessibility" ]
+    deps = [ ":accessibility" ]
 
-  public_deps = [ ":ax_enums_mojo" ]
+    public_deps = [ ":ax_enums_mojo" ]
+  }
 }
 
 static_library("test_support") {
