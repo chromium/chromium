@@ -2518,8 +2518,10 @@ if (!is_android) {
       "data/webui/certificate_viewer_ui_test-inl.h",
       "data/webui/chrome_send_browsertest.cc",
       "data/webui/chrome_send_browsertest.h",
+      "data/webui/cr_elements/cr_elements_browsertest.cc",
       "data/webui/history_ui_browsertest.cc",
       "data/webui/history_ui_browsertest.h",
+      "data/webui/js/js_browsertest.cc",
       "data/webui/metrics_internals/metrics_internals_ui_browsertest.cc",
       "data/webui/metrics_internals/metrics_internals_ui_browsertest.h",
       "data/webui/mojo/mojo_file_system_access_browsertest.cc",
@@ -10016,6 +10018,7 @@ if (!is_android) {
       "../browser/webauthn/chrome_webauthn_autofill_interactive_uitest.cc",
       "//ui/base/clipboard/clipboard_unittest.cc",
       "base/interactive_ui_tests_main.cc",
+      "data/webui/cr_elements/cr_elements_focus_test.cc",
     ]
 
     configs += [ "//build/config:precompiled_headers" ]
