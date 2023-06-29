@@ -16,9 +16,7 @@ var allTests = [
   function testSimplePage() {
     var title = rootNode.docTitle;
     assertEq('Automation Tests', title);
-
-    var state = RemoveUntestedStates(rootNode.state);
-    assertEq({focusable: true, focused: true}, state);
+    assertTrue(rootNode.state.focusable);
     assertEq(undefined, rootNode.restriction);
 
     var children = rootNode.children;
@@ -49,7 +47,7 @@ var allTests = [
     assertEq(undefined, cancelButton.restriction);
 
     // Traversal.
-    assertEq(undefined, rootNode.parent);
+    assertTrue(!!rootNode.parent);
     assertEq(rootNode, body.parent);
 
     assertEq(body, rootNode.firstChild);

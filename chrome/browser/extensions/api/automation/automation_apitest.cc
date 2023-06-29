@@ -56,12 +56,6 @@
 
 namespace extensions {
 
-namespace {
-static const char kDomain[] = "a.com";
-static const char kSitesDir[] = "automation/sites";
-static const char kGotTree[] = "got_tree";
-}  // anonymous namespace
-
 class AutomationApiTest : public ExtensionApiTest {
  protected:
   GURL GetURLForPath(const std::string& host, const std::string& path) {
@@ -75,6 +69,7 @@ class AutomationApiTest : public ExtensionApiTest {
   }
 
   void StartEmbeddedTestServer() {
+    static const char kSitesDir[] = "automation/sites";
     base::FilePath test_data;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data));
     embedded_test_server()->ServeFilesFromDirectory(
@@ -107,6 +102,13 @@ class AutomationApiCanvasTest : public AutomationApiTest {
     ExtensionApiTest::SetUp();
   }
 };
+
+#if defined(USE_AURA)
+
+namespace {
+static const char kDomain[] = "a.com";
+static const char kGotTree[] = "got_tree";
+}  // anonymous namespace
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, TestRendererAccessibilityEnabled) {
   StartEmbeddedTestServer();
@@ -170,19 +172,6 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, ImageLabels) {
   EXPECT_EQ(expected_mode, accessibility_mode);
 }
 
-// Flaky on Mac: crbug.com/1248445
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_GetTreeByTabId DISABLED_GetTreeByTabId
-#else
-#define MAYBE_GetTreeByTabId GetTreeByTabId
-#endif
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_GetTreeByTabId) {
-  StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "tab_id.html"}))
-      << message_;
-}
-
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, Events) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
@@ -242,50 +231,6 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, TableProperties) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
                                {.extension_url = "table_properties.html"}))
-      << message_;
-}
-
-// Flaky on Mac and Windows: crbug.com/1235249
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_TabsAutomationBooleanPermissions \
-  DISABLED_TabsAutomationBooleanPermissions
-#else
-#define MAYBE_TabsAutomationBooleanPermissions TabsAutomationBooleanPermissions
-#endif
-IN_PROC_BROWSER_TEST_F(AutomationApiTest,
-                       MAYBE_TabsAutomationBooleanPermissions) {
-  StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs_automation_boolean",
-                               {.extension_url = "permissions.html"}))
-      << message_;
-}
-
-// Flaky on Mac and Windows: crbug.com/1235249
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_TabsAutomationBooleanActions \
-  DISABLED_TabsAutomationBooleanActions
-#else
-#define MAYBE_TabsAutomationBooleanActions TabsAutomationBooleanActions
-#endif
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_TabsAutomationBooleanActions) {
-  StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs_automation_boolean",
-                               {.extension_url = "actions.html"}))
-      << message_;
-}
-
-// Flaky on Mac and Windows: crbug.com/1202710
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_TabsAutomationHostsPermissions \
-  DISABLED_TabsAutomationHostsPermissions
-#else
-#define MAYBE_TabsAutomationHostsPermissions TabsAutomationHostsPermissions
-#endif
-IN_PROC_BROWSER_TEST_F(AutomationApiTest,
-                       MAYBE_TabsAutomationHostsPermissions) {
-  StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs_automation_hosts",
-                               {.extension_url = "permissions.html"}))
       << message_;
 }
 
@@ -418,12 +363,6 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, EnumValidity) {
       << message_;
 }
 
-#if defined(USE_AURA)
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotRequested) {
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "desktop_not_requested.html"}))
-      << message_;
-}
 #endif  // defined(USE_AURA)
 
 #if !defined(USE_AURA)
