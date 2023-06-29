@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -86,9 +87,9 @@ void UninstallAllUserInstalledWebAppsCommand::JobComplete(
 
   if (code != webapps::UninstallResultCode::kSuccess &&
       code != webapps::UninstallResultCode::kNoAppToUninstall) {
-    errors_.push_back(std::format("{}[{}]: {}", active_job_->app_id(),
-                                  base::ToString(install_source),
-                                  ConvertUninstallResultCodeToString(code)));
+    errors_.push_back(base::StrCat(
+        {active_job_->app_id(), "[", base::ToString(install_source),
+         "]: ", ConvertUninstallResultCodeToString(code)}));
   }
 
   active_job_.reset();
