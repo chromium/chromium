@@ -34,7 +34,8 @@ ChildCallStackProfileCollector::ProfileState&
 ChildCallStackProfileCollector::ProfileState::operator=(ProfileState&&) =
     default;
 
-ChildCallStackProfileCollector::ChildCallStackProfileCollector() {}
+ChildCallStackProfileCollector::ChildCallStackProfileCollector()
+  : lock_("ChildCallStackProfileCollector.lock_") {}
 
 ChildCallStackProfileCollector::~ChildCallStackProfileCollector() {}
 
