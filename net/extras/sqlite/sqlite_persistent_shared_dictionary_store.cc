@@ -336,17 +336,17 @@ class SQLitePersistentSharedDictionaryStore::Backend
       const base::UnguessableToken& disk_cache_key_token);
 
   Error MaybeEvictDictionariesForPerSiteLimit(
-      const net::SchemefulSite& top_frame_site,
+      const SchemefulSite& top_frame_site,
       uint64_t max_size_per_site,
       uint64_t max_count_per_site,
       std::vector<base::UnguessableToken>* evicted_disk_cache_key_tokens,
       uint64_t* total_dictionary_size_out);
   base::expected<uint64_t, Error> GetDictionaryCountPerSite(
-      const net::SchemefulSite& top_frame_site);
+      const SchemefulSite& top_frame_site);
   base::expected<uint64_t, Error> GetDictionarySizePerSite(
-      const net::SchemefulSite& top_frame_site);
+      const SchemefulSite& top_frame_site);
   Error SelectCandidatesForPerSiteEviction(
-      const net::SchemefulSite& top_frame_site,
+      const SchemefulSite& top_frame_site,
       uint64_t max_size_per_site,
       uint64_t max_count_per_site,
       std::vector<int64_t>* primary_keys_out,
@@ -561,7 +561,7 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
 SQLitePersistentSharedDictionaryStore::Error
 SQLitePersistentSharedDictionaryStore::Backend::
     MaybeEvictDictionariesForPerSiteLimit(
-        const net::SchemefulSite& top_frame_site,
+        const SchemefulSite& top_frame_site,
         uint64_t max_size_per_site,
         uint64_t max_count_per_site,
         std::vector<base::UnguessableToken>* evicted_disk_cache_key_tokens,
@@ -595,7 +595,7 @@ SQLitePersistentSharedDictionaryStore::Backend::
 SQLitePersistentSharedDictionaryStore::Error
 SQLitePersistentSharedDictionaryStore::Backend::
     SelectCandidatesForPerSiteEviction(
-        const net::SchemefulSite& top_frame_site,
+        const SchemefulSite& top_frame_site,
         uint64_t max_size_per_site,
         uint64_t max_count_per_site,
         std::vector<int64_t>* primary_keys_out,
@@ -689,7 +689,7 @@ SQLitePersistentSharedDictionaryStore::Backend::
 
 base::expected<uint64_t, SQLitePersistentSharedDictionaryStore::Error>
 SQLitePersistentSharedDictionaryStore::Backend::GetDictionaryCountPerSite(
-    const net::SchemefulSite& top_frame_site) {
+    const SchemefulSite& top_frame_site) {
   CHECK(background_task_runner()->RunsTasksInCurrentSequence());
   static constexpr char kQuery[] =
       // clang-format off
@@ -712,7 +712,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetDictionaryCountPerSite(
 
 base::expected<uint64_t, SQLitePersistentSharedDictionaryStore::Error>
 SQLitePersistentSharedDictionaryStore::Backend::GetDictionarySizePerSite(
-    const net::SchemefulSite& top_frame_site) {
+    const SchemefulSite& top_frame_site) {
   CHECK(background_task_runner()->RunsTasksInCurrentSequence());
   static constexpr char kQuery[] =
       // clang-format off
@@ -860,8 +860,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDictionariesImpl() {
     }
 
     url::Origin frame_origin = url::Origin::Create(GURL(frame_origin_string));
-    net::SchemefulSite top_frame_site =
-        net::SchemefulSite(GURL(top_frame_site_string));
+    SchemefulSite top_frame_site = SchemefulSite(GURL(top_frame_site_string));
 
     result[SharedDictionaryIsolationKey(frame_origin, top_frame_site)]
         .emplace_back(GURL(url_string), response_time,
@@ -892,8 +891,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetUsageInfoImpl() {
     return base::unexpected(Error::kInvalidSql);
   }
 
-  std::map<net::SharedDictionaryIsolationKey, net::SharedDictionaryUsageInfo>
-      result_map;
+  std::map<SharedDictionaryIsolationKey, SharedDictionaryUsageInfo> result_map;
   sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
 
   while (statement.Step()) {
@@ -903,17 +901,17 @@ SQLitePersistentSharedDictionaryStore::Backend::GetUsageInfoImpl() {
 
     const SharedDictionaryIsolationKey key = SharedDictionaryIsolationKey(
         url::Origin::Create(GURL(frame_origin_string)),
-        net::SchemefulSite(GURL(top_frame_site_string)));
+        SchemefulSite(GURL(top_frame_site_string)));
     auto it = result_map.find(key);
     if (it != result_map.end()) {
       it->second.total_size_bytes += size;
     } else {
-      result_map[key] = net::SharedDictionaryUsageInfo{
-          .isolation_key = key, .total_size_bytes = size};
+      result_map[key] = SharedDictionaryUsageInfo{.isolation_key = key,
+                                                  .total_size_bytes = size};
     }
   }
 
-  std::vector<net::SharedDictionaryUsageInfo> result;
+  std::vector<SharedDictionaryUsageInfo> result;
   for (auto& it : result_map) {
     result.push_back(std::move(it.second));
   }
