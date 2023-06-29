@@ -1,20 +1,20 @@
 <?php
-    $type = $_GET["type"];
-    $wait = $_GET["wait"];
-    $tail_wait = $_GET["tail_wait"];
-    $send = $_GET["send"];
-    $size = $_GET["size"];
-    $gzip = $_GET["gzip"];
-    $jsdelay = $_GET["jsdelay"];
-    $jscontent = $_GET["jscontent"];
-    $chunked = $_GET["chunked"];
-    $random = $_GET["random"];
-    $cached = $_GET["cached"];
-    $nosniff = $_GET["nosniff"];
-    $download = $_GET["download"];
-    $named_download = $_GET["named_download"];
-    $mime_type = $_GET["mime_type"];
-    $body_pattern = $_GET["body_pattern"];
+    $type = $_GET["type"] ?? null;
+    $wait = $_GET["wait"] ?? null;
+    $tail_wait = $_GET["tail_wait"] ?? null;
+    $send = $_GET["send"] ?? null;
+    $size = $_GET["size"] ?? null;
+    $gzip = $_GET["gzip"] ?? null;
+    $jsdelay = $_GET["jsdelay"] ?? null;
+    $jscontent = $_GET["jscontent"] ?? null;
+    $chunked = $_GET["chunked"] ?? null;
+    $random = $_GET["random"] ?? null;
+    $cached = $_GET["cached"] ?? null;
+    $nosniff = $_GET["nosniff"] ?? null;
+    $download = $_GET["download"] ?? null;
+    $named_download = $_GET["named_download"] ?? null;
+    $mime_type = $_GET["mime_type"] ?? null;
+    $body_pattern = $_GET["body_pattern"] ?? null;
 
     # Wait before sending response
     if ($wait)

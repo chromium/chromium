@@ -5,9 +5,10 @@ if ($_SERVER["REQUEST_METHOD"] == "OPTIONS")
 header("Content-Type: text/event-stream");
 
 $count = intval($_GET["count"]);
+$cors = $_GET["cors"] ?? null;
 
-if ($_GET["cors"])
-    header("Access-Control-Allow-Origin: " . $_GET["cors"]);
+if ($cors)
+    header("Access-Control-Allow-Origin: " . $cors);
 else if ($count == 2)
     header("Access-Control-Allow-Origin: http://some.other.origin:80");
 else if ($count == 3)
