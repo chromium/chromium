@@ -55,6 +55,8 @@ public class MediaNotificationController {
     // The maximum number of actions in BigView media notification.
     private static final int BIG_VIEW_ACTIONS_COUNT = 5;
 
+    private final PendingIntentProvider mPendingIntentActionSwipe;
+
     public static final String ACTION_PLAY = "org.chromium.components.browser_ui.media.ACTION_PLAY";
     public static final String ACTION_PAUSE =
             "org.chromium.components.browser_ui.media.ACTION_PAUSE";
@@ -345,6 +347,8 @@ public class MediaNotificationController {
                         R.string.accessibility_seek_backward, ACTION_SEEK_BACKWARD,
                         MEDIA_ACTION_SEEK_BACKWARD));
 
+        mPendingIntentActionSwipe = createPendingIntent(ACTION_SWIPE);
+
         mThrottler = new Throttler(this);
     }
 
@@ -633,7 +637,8 @@ public class MediaNotificationController {
 
         if (mMediaNotificationInfo.supportsSwipeAway()) {
             mNotificationBuilder.setOngoing(!mMediaNotificationInfo.isPaused);
-            mNotificationBuilder.setDeleteIntent(createPendingIntent(ACTION_SWIPE));
+            assert (mPendingIntentActionSwipe != null);
+            mNotificationBuilder.setDeleteIntent(mPendingIntentActionSwipe);
         }
 
         // The intent will currently only be null when using a custom tab.
