@@ -74,6 +74,14 @@ TEST_F(ShortcutInfoTest, AllAttributesUpdate) {
   manifest_.has_background_color = true;
   manifest_.background_color = 0xffbb0000;
 
+  info_.dark_theme_color = 0x000000;
+  manifest_.has_dark_theme_color = true;
+  manifest_.dark_theme_color = 0x7a7a7a;
+
+  info_.dark_background_color = 0x000000;
+  manifest_.has_dark_background_color = true;
+  manifest_.dark_background_color = 0x7a7a7a;
+
   info_.icon_urls.push_back("https://old.com/icon.png");
   blink::Manifest::ImageResource icon;
   icon.src = GURL("https://new.com/icon.png");
@@ -88,6 +96,8 @@ TEST_F(ShortcutInfoTest, AllAttributesUpdate) {
   ASSERT_EQ(manifest_.display, info_.display);
   ASSERT_EQ(manifest_.theme_color, info_.theme_color);
   ASSERT_EQ(manifest_.background_color, info_.background_color);
+  ASSERT_EQ(manifest_.dark_theme_color, info_.dark_theme_color);
+  ASSERT_EQ(manifest_.dark_background_color, info_.dark_background_color);
   ASSERT_EQ(1u, info_.icon_urls.size());
   ASSERT_EQ(manifest_.icons[0].src, GURL(info_.icon_urls[0]));
 }

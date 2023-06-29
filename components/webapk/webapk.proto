@@ -110,6 +110,8 @@ message WebAppManifest {
   repeated ShareTarget share_targets = 17;
   repeated ShortcutItem shortcuts = 18;
   optional string id = 19;
+  optional string dark_theme_color = 20;
+  optional string dark_background_color = 21;
 
   reserved 3, 7, 8, 13 to 16;
 }

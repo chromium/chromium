@@ -162,6 +162,10 @@ std::unique_ptr<std::string> BuildProtoInBackground(
       ui::OptionalSkColorToString(shortcut_info.background_color));
   web_app_manifest->set_theme_color(
       ui::OptionalSkColorToString(shortcut_info.theme_color));
+  web_app_manifest->set_dark_background_color(
+      ui::OptionalSkColorToString(shortcut_info.dark_background_color));
+  web_app_manifest->set_dark_theme_color(
+      ui::OptionalSkColorToString(shortcut_info.dark_theme_color));
 
   web_app_manifest->set_id(shortcut_info.manifest_id.spec());
   webapk->set_app_key(app_key.spec());

@@ -163,6 +163,8 @@ struct ShortcutInfo {
   std::vector<std::string> icon_urls;
   std::vector<GURL> screenshot_urls;
   absl::optional<ShareTarget> share_target;
+  absl::optional<SkColor> dark_theme_color;
+  absl::optional<SkColor> dark_background_color;
 
   // Id specified in the manifest.
   GURL manifest_id;
