@@ -24,6 +24,7 @@
 #include "ash/system/holding_space/holding_space_progress_indicator_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
+#include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -363,7 +364,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   progress_ring_animation_changed_subscription_ =
       HoldingSpaceAnimationRegistry::GetInstance()
           ->AddProgressRingAnimationChangedCallbackForKey(
-              item,
+              ProgressIndicatorAnimationRegistry::AsAnimationKey(item),
               base::IgnoreArgs<ProgressRingAnimation*>(base::BindRepeating(
                   &HoldingSpaceItemChipView::UpdateImageTransform,
                   base::Unretained(this))));
@@ -562,7 +563,8 @@ void HoldingSpaceItemChipView::UpdateImageTransform() {
 
   const ProgressRingAnimation* progress_ring_animation =
       HoldingSpaceAnimationRegistry::GetInstance()
-          ->GetProgressRingAnimationForKey(item());
+          ->GetProgressRingAnimationForKey(
+              ProgressIndicatorAnimationRegistry::AsAnimationKey(item()));
 
   gfx::Transform transform;
   if (is_item_visibly_in_progress || progress_ring_animation) {

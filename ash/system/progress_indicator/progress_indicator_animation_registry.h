@@ -13,6 +13,7 @@
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 
 namespace ash {
 
@@ -40,6 +41,11 @@ class ASH_EXPORT ProgressIndicatorAnimationRegistry {
       const ProgressIndicatorAnimationRegistry&) = delete;
   ~ProgressIndicatorAnimationRegistry();
 
+  using AnimationKey = intptr_t;
+
+  // Returns the specified `ptr` as an animation key.
+  static AnimationKey AsAnimationKey(const void* ptr);
+
   using ProgressIconAnimationChangedCallbackList =
       base::RepeatingCallbackList<void(ProgressIconAnimation*)>;
 
@@ -48,7 +54,7 @@ class ASH_EXPORT ProgressIndicatorAnimationRegistry {
   // continue to receive events so long as both `this` and the returned
   // subscription exist.
   base::CallbackListSubscription AddProgressIconAnimationChangedCallbackForKey(
-      const void* key,
+      AnimationKey key,
       ProgressIconAnimationChangedCallbackList::CallbackType callback);
 
   using ProgressRingAnimationChangedCallbackList =
@@ -59,59 +65,59 @@ class ASH_EXPORT ProgressIndicatorAnimationRegistry {
   // continue to receive events so long as both `this` and the returned
   // subscription exist.
   base::CallbackListSubscription AddProgressRingAnimationChangedCallbackForKey(
-      const void* key,
+      AnimationKey key,
       ProgressRingAnimationChangedCallbackList::CallbackType callback);
 
   // Returns the progress icon animation registered for the specified `key`.
   // NOTE: This may return `nullptr` if no such animation is registered.
-  ProgressIconAnimation* GetProgressIconAnimationForKey(const void* key);
+  ProgressIconAnimation* GetProgressIconAnimationForKey(AnimationKey key);
 
   // Returns the progress ring animation registered for the specified `key`.
   // NOTE: This may return `nullptr` if no such animation is registered.
-  ProgressRingAnimation* GetProgressRingAnimationForKey(const void* key);
+  ProgressRingAnimation* GetProgressRingAnimationForKey(AnimationKey key);
 
   // Sets and returns the progress icon animation registered for the specified
   // `key`. NOTE: `animation` may be `nullptr` to unregister `key`.
   ProgressIconAnimation* SetProgressIconAnimationForKey(
-      const void* key,
+      AnimationKey key,
       std::unique_ptr<ProgressIconAnimation> animation);
 
   // Sets and returns the progress ring animation registered for the specified
   // `key`. NOTE: `animation` may be `nullptr` to unregister `key`.
   ProgressRingAnimation* SetProgressRingAnimationForKey(
-      const void* key,
+      AnimationKey key,
       std::unique_ptr<ProgressRingAnimation> animation);
 
   // Erases all animations for all keys.
   void EraseAllAnimations();
 
   // Erases all animations for the specified `key`.
-  void EraseAllAnimationsForKey(const void* key);
+  void EraseAllAnimationsForKey(AnimationKey key);
 
   // Erases all animations for all keys for which the specified `predicate`
   // returns `true`.
   void EraseAllAnimationsForKeyIf(
-      base::RepeatingCallback<bool(const void* key)> predicate);
+      base::FunctionRef<bool(AnimationKey key)> predicate);
 
  private:
   // Mapping of keys to their associated progress icon animations.
-  std::map<const void*, std::unique_ptr<ProgressIconAnimation>>
+  std::map<AnimationKey, std::unique_ptr<ProgressIconAnimation>>
       icon_animations_by_key_;
 
   // Mapping of keys to their associated icon animation changed callback lists.
   // Whenever an animation for a given key is changed, the callback list for
   // that key will be notified.
-  std::map<const void*, ProgressIconAnimationChangedCallbackList>
+  std::map<AnimationKey, ProgressIconAnimationChangedCallbackList>
       icon_animation_changed_callback_lists_by_key_;
 
   // Mapping of keys to their associated progress ring animations.
-  std::map<const void*, std::unique_ptr<ProgressRingAnimation>>
+  std::map<AnimationKey, std::unique_ptr<ProgressRingAnimation>>
       ring_animations_by_key_;
 
   // Mapping of keys to their associated ring animation changed callback lists.
   // Whenever an animation for a given key is changed, the callback list for
   // that key will be notified.
-  std::map<const void*, ProgressRingAnimationChangedCallbackList>
+  std::map<AnimationKey, ProgressRingAnimationChangedCallbackList>
       ring_animation_changed_callback_lists_by_key_;
 };
 

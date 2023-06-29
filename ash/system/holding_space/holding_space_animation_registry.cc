@@ -105,7 +105,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
     // If `item` has just progressed to completion, ensure that a pulse
     // animation is created and started.
     if (item->progress().IsComplete()) {
-      EnsureRingAnimationOfTypeForKey(item,
+      EnsureRingAnimationOfTypeForKey(AsAnimationKey(item),
                                       ProgressRingAnimation::Type::kPulse);
     }
 
@@ -114,7 +114,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
 
   // Erases the ring animation for the specified `key` if it is not of the
   // desired `type`, notifying any animation changed callbacks.
-  void EraseRingAnimationIfNotOfTypeForKey(const void* key,
+  void EraseRingAnimationIfNotOfTypeForKey(AnimationKey key,
                                            ProgressRingAnimation::Type type) {
     auto* ring_animation = registry_->GetProgressRingAnimationForKey(key);
     if (ring_animation && ring_animation->type() != type)
@@ -124,7 +124,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
   // Ensures that the icon animation for the specified `key` exists. If
   // necessary, a new animation is created and started, notifying any animation
   // changed callbacks.
-  void EnsureIconAnimationForKey(const void* key) {
+  void EnsureIconAnimationForKey(AnimationKey key) {
     if (registry_->GetProgressIconAnimationForKey(key))
       return;
 
@@ -135,14 +135,15 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
     // `controller_`. In all other cases, the `animation` is associated with a
     // holding space item and will be started after the associated holding space
     // tray item preview has had the opportunity to animate in.
-    if (key == controller_)
+    if (key == AsAnimationKey(controller_)) {
       animation->Start();
+    }
   }
 
   // Ensures that the ring animation for the specified `key` is of the desired
   // `type`. If necessary, a new animation is created and started, notifying any
   // animation changed callbacks.
-  void EnsureRingAnimationOfTypeForKey(const void* key,
+  void EnsureRingAnimationOfTypeForKey(AnimationKey key,
                                        ProgressRingAnimation::Type type) {
     auto* ring_animation = registry_->GetProgressRingAnimationForKey(key);
     if (ring_animation && ring_animation->type() == type)
@@ -151,10 +152,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
     auto animation = ProgressRingAnimation::CreateOfType(type);
     animation->AddUnsafeAnimationUpdatedCallback(base::BindRepeating(
         &ProgressIndicatorAnimationDelegate::OnRingAnimationUpdatedForKey,
-        base::Unretained(this),
-        // This is safe, for all the usages the lifetime of `key` extends beyond
-        // that of the registry/observer.
-        key, animation.get()));
+        base::Unretained(this), key, animation.get()));
 
     registry_->SetProgressRingAnimationForKey(key, std::move(animation))
         ->Start();
@@ -171,26 +169,29 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
       return;
     }
 
+    const auto controller_key = AsAnimationKey(controller_);
+
     // Clean up all animations associated with holding space items that are no
     // longer present in the attached `model_`.
-    registry_->EraseAllAnimationsForKeyIf(base::BindRepeating(
-        [](const std::vector<std::unique_ptr<HoldingSpaceItem>>& items,
-           const void* controller, const void* key) {
-          return key != controller &&
-                 !base::Contains(items, key,
-                                 &std::unique_ptr<HoldingSpaceItem>::get);
-        },
-        std::cref(model_->items()), base::Unretained(controller_)));
+    registry_->EraseAllAnimationsForKeyIf([&](AnimationKey key) {
+      return key != controller_key &&
+             !base::Contains(model_->items(), key,
+                             [](const std::unique_ptr<HoldingSpaceItem>& item) {
+                               return AsAnimationKey(item.get());
+                             });
+    });
 
     HoldingSpaceProgress last_cumulative_progress = cumulative_progress_;
     cumulative_progress_ = HoldingSpaceProgress();
 
     // Iterate over each holding space item in the attached `model_`.
     for (const auto& item : model_->items()) {
+      const auto item_key = AsAnimationKey(item.get());
+
       // If an `item` is not initialized or is not visibly in-progress, it
       // shouldn't contribute to `cumulative_progress_` nor have an animation.
       if (!item->IsInitialized() || item->progress().IsHidden()) {
-        registry_->EraseAllAnimationsForKey(item.get());
+        registry_->EraseAllAnimationsForKey(item_key);
         continue;
       }
 
@@ -201,9 +202,9 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
       // animated. Any other type of animation should be cleared. Note that a
       // completed `item` does not contribute to `cumulative_progress_`.
       if (item->progress().IsComplete()) {
-        registry_->SetProgressIconAnimationForKey(item.get(), nullptr);
+        registry_->SetProgressIconAnimationForKey(item_key, nullptr);
         EraseRingAnimationIfNotOfTypeForKey(
-            item.get(), ProgressRingAnimation::Type::kPulse);
+            item_key, ProgressRingAnimation::Type::kPulse);
         continue;
       }
 
@@ -211,37 +212,37 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
 
       // Because the `item` is in-progress, an icon animation should be
       // associated with it (if one does not already exist).
-      EnsureIconAnimationForKey(item.get());
+      EnsureIconAnimationForKey(item_key);
 
       // If the `item` is in an indeterminate state, an indeterminate animation
       // should be associated with it (if one does not already exist).
       if (item->progress().IsIndeterminate()) {
         EnsureRingAnimationOfTypeForKey(
-            item.get(), ProgressRingAnimation::Type::kIndeterminate);
+            item_key, ProgressRingAnimation::Type::kIndeterminate);
         continue;
       }
 
       // If `item` is not in an indeterminate state, it should not have an
       // associated ring animation.
-      registry_->SetProgressRingAnimationForKey(item.get(), nullptr);
+      registry_->SetProgressRingAnimationForKey(item_key, nullptr);
     }
 
     if (cumulative_progress_.IsComplete()) {
       // Because `cumulative_progress_` is complete, the `controller_` should
       // not have an associated icon animation.
-      registry_->SetProgressIconAnimationForKey(controller_, nullptr);
+      registry_->SetProgressIconAnimationForKey(controller_key, nullptr);
 
       if (!last_cumulative_progress.IsComplete()) {
         if (for_removal) {
           // If `cumulative_progress_` has just become complete as a result of
           // one or more holding space items being removed, the `controller_`
           // should not have an associated ring animation.
-          registry_->SetProgressRingAnimationForKey(controller_, nullptr);
+          registry_->SetProgressRingAnimationForKey(controller_key, nullptr);
         } else {
           // If `cumulative_progress_` has just become complete and is *not* due
           // to the removal of one or more holding space items, ensure that a
           // pulse animation is created and started.
-          EnsureRingAnimationOfTypeForKey(controller_,
+          EnsureRingAnimationOfTypeForKey(controller_key,
                                           ProgressRingAnimation::Type::kPulse);
         }
       } else {
@@ -249,32 +250,32 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
         // to continue a pulse animation if one was previously created and
         // started. Any other type of ring animation should be cleared.
         EraseRingAnimationIfNotOfTypeForKey(
-            controller_, ProgressRingAnimation::Type::kPulse);
+            controller_key, ProgressRingAnimation::Type::kPulse);
       }
       return;
     }
 
     // Because `cumulative_progress_` is in-progress, the `controller_` should
     // have an associated icon animation.
-    EnsureIconAnimationForKey(controller_);
+    EnsureIconAnimationForKey(controller_key);
 
     // If `cumulative_progress_` is in an indeterminate state, an indeterminate
     // animation should be associated with the `controller_` (if one does not
     // already exist).
     if (cumulative_progress_.IsIndeterminate()) {
       EnsureRingAnimationOfTypeForKey(
-          controller_, ProgressRingAnimation::Type::kIndeterminate);
+          controller_key, ProgressRingAnimation::Type::kIndeterminate);
       return;
     }
 
     // If `cumulative_progress_` is not in an indeterminate state, the
     // `controller_` should not have an associated ring animation.
-    registry_->SetProgressRingAnimationForKey(controller_, nullptr);
+    registry_->SetProgressRingAnimationForKey(controller_key, nullptr);
   }
 
   // Invoked when the specified ring `animation` for the specified `key` has
   // been updated. This is used to clean up finished animations.
-  void OnRingAnimationUpdatedForKey(const void* key,
+  void OnRingAnimationUpdatedForKey(AnimationKey key,
                                     ProgressRingAnimation* animation) {
     if (animation->IsAnimating())
       return;
@@ -284,19 +285,16 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](const base::WeakPtr<ProgressIndicatorAnimationDelegate>&
-                   delegate,
-               const void* key, ProgressRingAnimation* animation) {
-              if (!delegate)
+            [](const base::WeakPtr<ProgressIndicatorAnimationDelegate>& self,
+               AnimationKey key, ProgressRingAnimation* animation) {
+              if (!self) {
                 return;
-              auto* registry = delegate->registry_.get();
+              }
+              auto* registry = self->registry_.get();
               if (registry->GetProgressRingAnimationForKey(key) == animation)
                 registry->SetProgressRingAnimationForKey(key, nullptr);
             },
-            weak_factory_.GetWeakPtr(),
-            // This is safe. For all usages, `key` has a longer lifetime than
-            // the delegate.
-            key,
+            weak_factory_.GetWeakPtr(), key,
             // This is safe. `animation` is owned by the registry and has
             // at least the same lifetime as the delegate.
             animation));

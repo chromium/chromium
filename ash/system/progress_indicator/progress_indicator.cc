@@ -8,7 +8,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/progress_indicator/progress_icon_animation.h"
-#include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -194,7 +193,7 @@ class DefaultProgressIndicatorAnimationRegistry
                ProgressRingAnimation* animation) {
               if (!registry)
                 return;
-              auto* key = registry->progress_indicator_.get();
+              auto key = registry->progress_indicator_->animation_key();
               if (registry->GetProgressRingAnimationForKey(key) == animation)
                 registry->SetProgressRingAnimationForKey(key, nullptr);
             },
@@ -203,17 +202,19 @@ class DefaultProgressIndicatorAnimationRegistry
 
   // Ensures that a progress icon animation exists and is started.
   void EnsureProgressIconAnimation() {
-    if (!GetProgressIconAnimationForKey(progress_indicator_)) {
-      SetProgressIconAnimationForKey(progress_indicator_,
-                                     std::make_unique<ProgressIconAnimation>())
-          ->Start();
+    auto key = progress_indicator_->animation_key();
+    if (!GetProgressIconAnimationForKey(key)) {
+      auto* icon_animation = SetProgressIconAnimationForKey(
+          key, std::make_unique<ProgressIconAnimation>());
+      icon_animation->Start();
     }
   }
 
   // Ensures that a progress ring animation of the specified `type` exists and
   // is started.
   void EnsureProgressRingAnimationOfType(ProgressRingAnimation::Type type) {
-    auto* ring_animation = GetProgressRingAnimationForKey(progress_indicator_);
+    auto key = progress_indicator_->animation_key();
+    auto* ring_animation = GetProgressRingAnimationForKey(key);
     if (ring_animation && ring_animation->type() == type)
       return;
 
@@ -226,18 +227,19 @@ class DefaultProgressIndicatorAnimationRegistry
                                 OnProgressRingAnimationUpdated,
                             base::Unretained(this), animation.get()));
 
-    SetProgressRingAnimationForKey(progress_indicator_, std::move(animation))
-        ->Start();
+    SetProgressRingAnimationForKey(key, std::move(animation))->Start();
   }
 
   // Erases any existing progress icon animation.
   void EraseProgressIconAnimation() {
-    SetProgressIconAnimationForKey(progress_indicator_, nullptr);
+    SetProgressIconAnimationForKey(progress_indicator_->animation_key(),
+                                   nullptr);
   }
 
   // Erases any existing progress ring animation.
   void EraseProgressRingAnimation() {
-    SetProgressRingAnimationForKey(progress_indicator_, nullptr);
+    SetProgressRingAnimationForKey(progress_indicator_->animation_key(),
+                                   nullptr);
   }
 
   // The progress indicator for which to manage animations and a subscription
@@ -265,8 +267,9 @@ class DefaultProgressIndicator : public ProgressIndicator {
   DefaultProgressIndicator(
       std::unique_ptr<DefaultProgressIndicatorAnimationRegistry> registry,
       base::RepeatingCallback<absl::optional<float>()> progress_callback)
-      : ProgressIndicator(/*registry=*/registry.get(),
-                          /*animation_key=*/this),
+      : ProgressIndicator(
+            registry.get(),
+            ProgressIndicatorAnimationRegistry::AsAnimationKey(this)),
         registry_(std::move(registry)),
         progress_callback_(std::move(progress_callback)) {
     registry_->SetProgressIndicator(this);
@@ -296,7 +299,7 @@ constexpr float ProgressIndicator::kProgressComplete;
 
 ProgressIndicator::ProgressIndicator(
     ProgressIndicatorAnimationRegistry* animation_registry,
-    const void* animation_key)
+    ProgressIndicatorAnimationRegistry::AnimationKey animation_key)
     : animation_registry_(animation_registry), animation_key_(animation_key) {
   if (!animation_registry_)
     return;

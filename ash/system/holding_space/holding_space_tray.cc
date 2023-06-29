@@ -28,6 +28,7 @@
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/holding_space/pinned_files_section.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
+#include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/user_education/user_education_class_properties.h"
@@ -735,7 +736,8 @@ void HoldingSpaceTray::UpdatePreviewsState() {
   if (auto* model = HoldingSpaceController::Get()->model(); model) {
     auto* registry = HoldingSpaceAnimationRegistry::GetInstance();
     for (const auto& item : model->items()) {
-      auto* animation = registry->GetProgressIconAnimationForKey(item.get());
+      auto* animation = registry->GetProgressIconAnimationForKey(
+          ProgressIndicatorAnimationRegistry::AsAnimationKey(item.get()));
       if (animation && !animation->HasAnimated())
         animation->Start();
     }

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -19,7 +20,6 @@
 namespace ash {
 
 class ProgressIconAnimation;
-class ProgressIndicatorAnimationRegistry;
 class ProgressRingAnimation;
 
 // A class owning a `ui::Layer` which paints indication of progress.
@@ -76,7 +76,9 @@ class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
 
   // Returns the `animation_key_` for which to look up animations in the
   // underlying `animation_registry_`. NOTE: This may return `nullptr`.
-  const void* animation_key() const { return animation_key_; }
+  ProgressIndicatorAnimationRegistry::AnimationKey animation_key() const {
+    return animation_key_;
+  }
 
   // Returns the underlying `progress_` for which to paint indication.
   // NOTE: If absent, progress is indeterminate.
@@ -89,8 +91,9 @@ class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
   // animation exists, it will be painted in lieu of the determinate progress
   // indication that would otherwise be painted for the cached `progress_`.
   // NOTE: `animation_registry` may be `nullptr` if animations are not needed.
-  ProgressIndicator(ProgressIndicatorAnimationRegistry* animation_registry,
-                    const void* animation_key);
+  ProgressIndicator(
+      ProgressIndicatorAnimationRegistry* animation_registry,
+      ProgressIndicatorAnimationRegistry::AnimationKey animation_key);
 
   // Returns the calculated progress to paint to the owned `layer()`. This is
   // invoked during `UpdateVisualState()` just prior to painting.
@@ -127,7 +130,7 @@ class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
   // When an animation exists, it will be painted in lieu of the determinate
   // progress indication that would otherwise be painted for the cached
   // `progress_`.
-  const raw_ptr<const void, ExperimentalAsh> animation_key_;
+  const ProgressIndicatorAnimationRegistry::AnimationKey animation_key_;
 
   // A subscription to receive events when the icon animation associated with
   // this progress indicator's `animation_key_` has changed in the
