@@ -53,8 +53,10 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/action_customization_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_action_handler.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -129,7 +131,11 @@ enum class IOSOverflowMenuActionType {
 
 @end
 
-@implementation PopupMenuCoordinator
+@implementation PopupMenuCoordinator {
+  OverflowMenuOrderer* _overflowMenuOrderer;
+
+  ActionCustomizationCoordinator* _actionCustomizationCoordinator;
+}
 
 @synthesize mediator = _mediator;
 @synthesize presenter = _presenter;
@@ -253,8 +259,11 @@ enum class IOSOverflowMenuActionType {
       UIContentSizeCategory contentSizeCategory =
           self.baseViewController.traitCollection.preferredContentSizeCategory;
 
-      self.overflowMenuMediator.isIncognito =
-          self.browser->GetBrowserState()->IsOffTheRecord();
+      BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+      self.overflowMenuMediator.isIncognito = isIncognito;
+      _overflowMenuOrderer =
+          [[OverflowMenuOrderer alloc] initWithIsIncognito:isIncognito];
+      self.overflowMenuMediator.menuOrderer = _overflowMenuOrderer;
       self.overflowMenuMediator.visibleDestinationsCount =
           [OverflowMenuUIConfiguration
               numDestinationsVisibleWithoutHorizontalScrollingForScreenWidth:
@@ -554,9 +563,16 @@ enum class IOSOverflowMenuActionType {
 #pragma mark - OverflowMenuCustomizationCommands
 
 - (void)showActionCustomization {
+  _actionCustomizationCoordinator = [[ActionCustomizationCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+  _actionCustomizationCoordinator.menuOrderer = _overflowMenuOrderer;
+  [_actionCustomizationCoordinator start];
 }
 
 - (void)hideActionCustomization {
+  [_actionCustomizationCoordinator stop];
+  _actionCustomizationCoordinator = nil;
 }
 
 #pragma mark - ContainedPresenterDelegate

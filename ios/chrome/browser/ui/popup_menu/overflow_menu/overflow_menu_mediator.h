@@ -32,6 +32,7 @@ class BrowserPolicyConnectorIOS;
 @protocol FindInPageCommands;
 class FollowBrowserAgent;
 @protocol OverflowMenuCustomizationCommands;
+@class OverflowMenuOrderer;
 class OverlayPresenter;
 @protocol PageInfoCommands;
 @protocol PopupMenuCommands;
@@ -73,6 +74,9 @@ class WebStateList;
 
 // If the current session is off the record or not.
 @property(nonatomic, assign) bool isIncognito;
+
+// The Orderer to control the order of the overflow menu.
+@property(nonatomic, weak) OverflowMenuOrderer* menuOrderer;
 
 // BaseViewController for presenting some UI.
 @property(nonatomic, weak) UIViewController* baseViewController;

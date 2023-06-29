@@ -8,73 +8,91 @@ import ios_chrome_common_ui_colors_swift
 /// A view that displays an action in the overflow menu.
 @available(iOS 15, *)
 struct OverflowMenuActionRow: View {
+  /// Remove some of the default padding on the row, as it is too large by
+  /// default.
+  private static let rowEndPadding: CGFloat = -4
+
+  /// Add extra padding between the row content and move handle in edit mode.
+  private static let editRowEndPadding: CGFloat = 8
+
+  /// The size of the "N" IPH icon.
+  private static let newLabelIconWidth: CGFloat = 15
+
   /// The action for this row.
   @ObservedObject var action: OverflowMenuAction
 
-  /// The size of the symbols.
-  static let symbolSize: CGFloat = 18
-  static let symbolImageFrameLength: CGFloat = 30
-  static let symbolImagePadding: CGFloat = -4
-
-  /// The size of the "N" IPH icon.
-  static let newLabelIconWidth: CGFloat = 15
-
   weak var metricsHandler: PopupMenuMetricsHandler?
+
+  @Environment(\.editMode) var editMode
+
+  private var isEditing: Bool {
+    return editMode?.wrappedValue.isEditing ?? false
+  }
 
   var body: some View {
     Button(
       action: {
+        guard !isEditing else {
+          return
+        }
         metricsHandler?.popupMenuTookAction()
         action.handler()
       },
       label: {
-        HStack {
-          Text(action.name).lineLimit(1)
-          if action.displayNewLabelIcon {
-            newLabelIconView()
-              .accessibilityIdentifier("overflowRowIPHBadgeIdentifier")
-          }
-          if let symbol = actionSymbol() {
-            Spacer()
-            symbol
-              .font(Font.system(size: OverflowMenuActionRow.symbolSize, weight: .medium))
-              .imageScale(.medium)
-              .frame(
-                width: OverflowMenuActionRow.symbolImageFrameLength,
-                height: OverflowMenuActionRow.symbolImageFrameLength, alignment: .center
-              )
-              // Without explicitly removing the image from accessibility,
-              // VoiceOver will occasionally read out icons it thinks it can
-              // recognize.
-              .accessibilityHidden(true)
-          }
+        rowContent
+          .contentShape(Rectangle())
+      }
+    )
+    .accessibilityIdentifier(action.accessibilityIdentifier)
+    .disabled(!action.enabled || action.enterpriseDisabled)
+    .if(!action.useSystemRowColoring) { view in
+      view.accentColor(.textPrimary)
+    }
+    .listRowSeparatorTint(.overflowMenuSeparator)
+  }
+
+  @ViewBuilder
+  private var rowContent: some View {
+    if isEditing {
+      HStack {
+        rowIcon
+        name
+        Spacer()
+        Toggle(isOn: $action.shown.animation()) {}
+          .labelsHidden()
+          .tint(.chromeBlue)
+      }
+      .padding([.trailing], Self.editRowEndPadding)
+    } else {
+      HStack {
+        name
+        if action.displayNewLabelIcon {
+          newLabelIconView
         }
-        .contentShape(Rectangle())
+        if let rowIcon = rowIcon {
+          Spacer()
+          rowIcon
+        }
       }
-    ).padding([.trailing], OverflowMenuActionRow.symbolImagePadding)
-      .accessibilityIdentifier(action.accessibilityIdentifier)
-      .disabled(!action.enabled || action.enterpriseDisabled)
-      .if(!action.useSystemRowColoring) { view in
-        view.accentColor(.textPrimary)
-      }
-      .listRowSeparatorTint(.overflowMenuSeparator)
+      .padding([.trailing], Self.rowEndPadding)
+    }
   }
 
-  func actionSymbol() -> Image? {
-    guard let symbolName = action.symbolName else {
-      return nil
-    }
-    let symbol =
-      action.systemSymbol ? Image(systemName: symbolName) : Image(symbolName)
-    if action.monochromeSymbol {
-      return symbol.symbolRenderingMode(.monochrome)
-    }
-    return symbol
+  private var name: some View {
+    Text(action.name).lineLimit(1)
   }
 
-  // Returns the "N" IPH icon view.
-  func newLabelIconView() -> some View {
-    return Image(systemName: "seal.fill")
+  private var rowIcon: OverflowMenuRowIcon? {
+    action.symbolName.flatMap { symbolName in
+      OverflowMenuRowIcon(
+        symbolName: symbolName, systemSymbol: action.systemSymbol,
+        monochromeSymbol: action.monochromeSymbol)
+    }
+  }
+
+  // The "N" IPH icon view.
+  private var newLabelIconView: some View {
+    Image(systemName: "seal.fill")
       .resizable()
       .foregroundColor(.blue600)
       .frame(
@@ -91,5 +109,6 @@ struct OverflowMenuActionRow: View {
             .foregroundColor(.primaryBackground)
         }
       }
+      .accessibilityIdentifier("overflowRowIPHBadgeIdentifier")
   }
 }

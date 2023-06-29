@@ -182,9 +182,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
 }
 
-// The Orderer to control the order of the overflow menu.
-@property(nonatomic, strong) OverflowMenuOrderer* menuOrderer;
-
 // The current web state.
 @property(nonatomic, assign) web::WebState* webState;
 
@@ -317,13 +314,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 - (void)setIsIncognito:(BOOL)isIncognito {
   _isIncognito = isIncognito;
-  if (!self.menuOrderer) {
-    self.menuOrderer =
-        [[OverflowMenuOrderer alloc] initWithIsIncognito:self.isIncognito];
-    self.menuOrderer.destinationProvider = self;
-    self.menuOrderer.actionProvider = self;
-  }
   [self updateModel];
+}
+
+- (void)setMenuOrderer:(OverflowMenuOrderer*)menuOrderer {
+  _menuOrderer = menuOrderer;
+  self.menuOrderer.destinationProvider = self;
+  self.menuOrderer.actionProvider = self;
 }
 
 - (void)setVisibleDestinationsCount:(int)visibleDestinationsCount {

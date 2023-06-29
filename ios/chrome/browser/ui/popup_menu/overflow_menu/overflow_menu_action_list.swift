@@ -22,7 +22,8 @@ struct OverflowMenuActionList: View {
   var body: some View {
     List {
       ForEach(actionGroups) { actionGroup in
-        OverflowMenuActionSection(actionGroup: actionGroup, metricsHandler: metricsHandler)
+        OverflowMenuActionSection(
+          actionGroup: actionGroup, metricsHandler: metricsHandler)
       }
     }
     .simultaneousGesture(

@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/popup_menu//overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
@@ -197,8 +198,11 @@ class OverflowMenuMediatorTest : public PlatformTest {
 
  protected:
   OverflowMenuMediator* CreateMediator(BOOL is_incognito) {
+    orderer_ = [[OverflowMenuOrderer alloc] initWithIsIncognito:is_incognito];
+
     mediator_ = [[OverflowMenuMediator alloc] init];
     mediator_.isIncognito = is_incognito;
+    mediator_.menuOrderer = orderer_;
     mediator_.baseViewController = baseViewController_;
     return mediator_;
   }
@@ -206,10 +210,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
   OverflowMenuMediator* CreateMediatorWithBrowserPolicyConnector(
       BOOL is_incognito,
       BrowserPolicyConnectorIOS* browser_policy_connector) {
-    mediator_ = [[OverflowMenuMediator alloc] init];
-    mediator_.isIncognito = is_incognito;
+    CreateMediator(is_incognito);
     mediator_.browserPolicyConnector = browser_policy_connector;
-    mediator_.baseViewController = baseViewController_;
     return mediator_;
   }
 
@@ -344,6 +346,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
 
   FakeOverlayPresentationContext presentation_context_;
   OverflowMenuMediator* mediator_;
+  OverflowMenuOrderer* orderer_;
   BookmarkModel* local_or_syncable_bookmark_model_;
   BookmarkModel* account_bookmark_model_;
   std::unique_ptr<TestingPrefServiceSimple> browserStatePrefs_;

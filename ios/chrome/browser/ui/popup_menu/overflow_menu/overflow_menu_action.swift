@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import SwiftUI
+import Combine
 
 /// Represents an action in the overflow menu.
 @objcMembers public class OverflowMenuAction: OverflowMenuItem {
@@ -12,4 +12,7 @@ import SwiftUI
 
   /// If true, do not override the color of the row's text with a custom color.
   @Published public var useSystemRowColoring = false
+
+  /// Whether the action is shown or hidden in the menu overall.
+  @Published public var shown = true
 }
