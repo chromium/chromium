@@ -7,6 +7,7 @@
 #import "content/browser/accessibility/browser_accessibility_mac.h"
 
 #include "base/debug/stack_trace.h"
+#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_policy.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -211,11 +212,10 @@ void BrowserAccessibilityMac::CreatePlatformNodes() {
 BrowserAccessibilityCocoa* BrowserAccessibilityMac::CreateNativeWrapper() {
   DCHECK(platform_node_);
 
-  BrowserAccessibilityCocoa* node_cocoa =
+  base::scoped_nsobject<BrowserAccessibilityCocoa> node_cocoa(
       [[BrowserAccessibilityCocoa alloc] initWithObject:this
-                                       withPlatformNode:platform_node_];
+                                       withPlatformNode:platform_node_]);
 
-  // `AXPlatformNodeMac` takes ownership of the Cocoa object here.
   platform_node_->SetNativeWrapper(node_cocoa);
   return node_cocoa;
 }
