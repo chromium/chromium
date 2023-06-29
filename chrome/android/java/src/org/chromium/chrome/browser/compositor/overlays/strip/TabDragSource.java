@@ -16,8 +16,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.view.ContentInfoCompat;
-import androidx.core.view.OnReceiveContentListener;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Log;
@@ -45,7 +43,7 @@ public class TabDragSource {
     private StripLayoutHelper mSourceStripLayoutHelper;
     private int mDragSourceTabsToolbarHashCode;
     private Tab mTabBeingDragged;
-    private DropContentReceiver mDropContentReceiver;
+    private boolean mAcceptNextDrop;
     private OnDragListenerImpl mOnDragListenerImpl;
 
     private float mPxToDp;
@@ -59,12 +57,52 @@ public class TabDragSource {
         return sTabDragSource;
     }
 
-    public int getDragSourceTabsToolbarHashCode() {
+    int getDragSourceTabsToolbarHashCode() {
         return mDragSourceTabsToolbarHashCode;
     }
 
-    private void setDragSourceTabsToolbarHashCode(int tabsToolbarHashCode) {
+    void clearDragSourceTabsToolbarHashCode() {
+        mDragSourceTabsToolbarHashCode = 0;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    void setDragSourceTabsToolbarHashCode(int tabsToolbarHashCode) {
         mDragSourceTabsToolbarHashCode = tabsToolbarHashCode;
+    }
+
+    Tab getTabBeingDragged() {
+        return mTabBeingDragged;
+    }
+
+    void clearTabBeingDragged() {
+        mTabBeingDragged = null;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    void setTabBeingDragged(Tab tabBeingDragged) {
+        mTabBeingDragged = tabBeingDragged;
+    }
+
+    boolean getAcceptNextDrop() {
+        return mAcceptNextDrop;
+    }
+
+    void clearAcceptNextDrop() {
+        mAcceptNextDrop = false;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    void setAcceptNextDrop(boolean acceptNextDrop) {
+        mAcceptNextDrop = acceptNextDrop;
+    }
+
+    MultiInstanceManager getMultiInstanceManager() {
+        return mMultiInstanceManager;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    void setMultiInstanceManager(MultiInstanceManager multiInstanceManager) {
+        mMultiInstanceManager = multiInstanceManager;
     }
 
     @VisibleForTesting
@@ -78,6 +116,9 @@ public class TabDragSource {
 
         @Override
         public boolean onDrag(View view, DragEvent dragEvent) {
+            // Check if the events are being received in the possible drop targets.
+            if (canAcceptTabDrop(view, dragEvent)) return false;
+
             switch (dragEvent.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     resetState();
@@ -115,7 +156,7 @@ public class TabDragSource {
                     }
 
                     // Clear the source view handle as DragNDrop is completed.
-                    setDragSourceTabsToolbarHashCode(0);
+                    clearDragSourceTabsToolbarHashCode();
                     mSourceStripLayoutHelper.clearActiveClickedTab();
                     break;
                 case DragEvent.ACTION_DRAG_ENTERED:
@@ -156,15 +197,7 @@ public class TabDragSource {
         }
     }
 
-    private void initiateTabDragAndDrop(View view, String clipData) {
-        // Create a new ClipData.Item from the ImageView object's tag.
-        ClipData.Item item = new ClipData.Item((CharSequence) clipData);
-
-        // Create a new ClipData using the tag as a label, the plain text MIME type,
-        // and the already-created item. This creates a new ClipDescription object
-        // within the ClipData and sets its MIME type to "cr_tab/plain".
-        ClipData dragData = new ClipData((CharSequence) view.getTag(), SUPPORTED_MIMETYPES, item);
-
+    private void initiateTabDragAndDrop(View view, ClipData dragData) {
         // Instantiate the drag shadow builder.
         View.DragShadowBuilder tabShadow = new TabDragShadowBuilder(getDragShadowView(view));
 
@@ -232,7 +265,8 @@ public class TabDragSource {
         return imageView;
     }
 
-    private String getClipDataInfo(Tab clickedTab) {
+    @VisibleForTesting
+    String getClipDataInfo(Tab clickedTab) {
         String tabData = "";
         if (clickedTab != null) {
             tabData = "TabId=" + clickedTab.getId();
@@ -260,24 +294,16 @@ public class TabDragSource {
         mSourceStripLayoutHelper = sourceStripLayoutHelper;
 
         // Build the ClipData before initiating the drag action.
-        String clipData = getClipDataInfo(tabBeingDragged);
-        if (clipData != null && clipData.length() > 0) {
+        ClipData tabClipData = createClipDataFromTab(tabBeingDragged, tabsToolbarView);
+        if (tabClipData != null) {
             mTabBeingDragged = tabBeingDragged;
-            initiateTabDragAndDrop(tabsToolbarView, clipData);
+            initiateTabDragAndDrop(tabsToolbarView, tabClipData);
 
             // Save this View handle to identify the source view.
             mDragSourceTabsToolbarHashCode = System.identityHashCode(tabsToolbarView);
             return true;
         }
         return false;
-    }
-
-    private class DropContentReceiver implements OnReceiveContentListener {
-        @Override
-        public ContentInfoCompat onReceiveContent(View view, ContentInfoCompat payload) {
-            // Not implemented.
-            return payload;
-        }
     }
 
     /* Prepares the toolbar view to listen to the drag events and data drop after the drag is
@@ -287,9 +313,11 @@ public class TabDragSource {
      *         View.OnDragListener}.
      * @param multiInstanceManager @{link MultiInstanceManager} to perform move action when drop
      *         completes.
+     * @param tabDropTarget @{link TabDropTarget} used to receive the tab data drop from other
+     *         Chrome windows via @{link ClipData}.
      */
-    public void prepareForDragDrop(
-            View tabsToolbarView, MultiInstanceManager multiInstanceManager) {
+    public void prepareForDragDrop(View tabsToolbarView, MultiInstanceManager multiInstanceManager,
+            TabDropTarget tabDropTarget) {
         if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
 
         assert (tabsToolbarView != null);
@@ -301,9 +329,8 @@ public class TabDragSource {
 
         // Setup a drop target and register the callback where the drag events
         // will be received.
-        mDropContentReceiver = new DropContentReceiver();
         ViewCompat.setOnReceiveContentListener(
-                tabsToolbarView, SUPPORTED_MIMETYPES, mDropContentReceiver);
+                tabsToolbarView, SUPPORTED_MIMETYPES, tabDropTarget.getDropContentReceiver());
         mOnDragListenerImpl = new OnDragListenerImpl();
         tabsToolbarView.setOnDragListener(mOnDragListenerImpl);
     }
@@ -311,11 +338,6 @@ public class TabDragSource {
     @VisibleForTesting
     float getPxToDp() {
         return mPxToDp;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    DropContentReceiver getDropContentReceiver() {
-        return mDropContentReceiver;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -330,8 +352,46 @@ public class TabDragSource {
         mSourceStripLayoutHelper = null;
         mDragSourceTabsToolbarHashCode = 0;
         mTabBeingDragged = null;
-        mDropContentReceiver = null;
         mOnDragListenerImpl = null;
         mPxToDp = 0.0f;
+    }
+
+    @VisibleForTesting
+    boolean canAcceptTabDrop(View view, DragEvent dragEvent) {
+        // If the event is received by a non source chrome window then mark to accept the drop in
+        // the destination chrome window only if drop is within the tabs strip area.
+        if (System.identityHashCode(view) != getDragSourceTabsToolbarHashCode()) {
+            // Check if the drop is in the tabs strip area of the toolbar container.
+            // The container has two toolbars strips stacked on each other. The top one is the tabs
+            // strip layout and lower is for omnibox and navigation buttons. The tab drop is
+            // accepted only in the top tabs toolbar area only.
+            if ((dragEvent.getAction() == DragEvent.ACTION_DROP)
+                    // TODO(b/288959915): Exactly determine the tabs toolbar area rather than using
+                    // the approximate top half height of the toolbar container.
+                    && (dragEvent.getY() < view.getHeight() / 2.0f)) {
+                mAcceptNextDrop = true;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private ClipData createClipDataFromTab(Tab tabBeingDragged, View view) {
+        String clipData = getClipDataInfo(tabBeingDragged);
+        if (clipData != null && clipData.length() > 0) {
+            // Create a new ClipData.Item from the ImageView object's tag.
+            ClipData.Item item = new ClipData.Item((CharSequence) clipData);
+
+            // Create a new ClipData using the tag as a label, the plain text MIME type,
+            // and the already-created item. This creates a new ClipDescription object
+            // within the ClipData and sets its MIME type to "cr_tab/plain".
+            return new ClipData((CharSequence) view.getTag(), SUPPORTED_MIMETYPES, item);
+        }
+        return null;
+    }
+
+    int getTabIdFromClipData(ClipData.Item item) {
+        String[] itemTexts = item.getText().toString().split(";");
+        return Integer.parseInt(itemTexts[0].replaceAll("[^0-9]", ""));
     }
 }

@@ -99,6 +99,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutTabTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/StripStackerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/TabDragSourceTest.java",
+  "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/TabDropTargetTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/TabUsageTrackerTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/TestTabModel.java",
   "junit/src/org/chromium/chrome/browser/compositor/scene_layer/TabStripSceneLayerTest.java",
