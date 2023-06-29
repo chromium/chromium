@@ -35,8 +35,7 @@ class PrefRegistrySyncable;
 
 namespace web_app {
 
-class WebAppSyncBridge;
-class OsIntegrationManager;
+class WebAppProvider;
 
 // Policy installation allows enterprise admins to control and manage
 // Web Apps on behalf of their managed users. This class tracks the policy that
@@ -56,15 +55,16 @@ class WebAppPolicyManager {
   WebAppPolicyManager& operator=(const WebAppPolicyManager&) = delete;
   ~WebAppPolicyManager();
 
-  void SetSubsystems(
-      ExternallyManagedAppManager* externally_managed_app_manager,
-      WebAppRegistrar* app_registrar,
-      WebAppSyncBridge* sync_bridge,
-      OsIntegrationManager* os_integration_manager);
+  void set_provider(base::PassKey<WebAppProvider>, WebAppProvider& provider) {
+    provider_ = &provider;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetSystemWebAppDelegateMap(
       const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map);
 #endif
+
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
 
   // `policy_settings_and_force_installs_applied_` waits for the first
   // `SynchronizeInstalledApps` to finish if it's triggered on `Start`.
@@ -178,19 +178,12 @@ class WebAppPolicyManager {
 
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
-  // Used to install, uninstall, and update apps. Should outlive this class
-  // (owned by WebAppProvider).
-  raw_ptr<ExternallyManagedAppManager, DanglingUntriaged>
-      externally_managed_app_manager_ = nullptr;
-  raw_ptr<WebAppRegistrar, DanglingUntriaged> app_registrar_ = nullptr;
-  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<const ash::SystemWebAppDelegateMap, DanglingUntriaged>
       system_web_apps_delegate_map_ = nullptr;
 #endif
-  raw_ptr<OsIntegrationManager, DanglingAcrossTasks> os_integration_manager_ =
-      nullptr;
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
 

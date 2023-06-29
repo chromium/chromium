@@ -163,6 +163,12 @@ const WebAppRegistrar& WebAppProvider::registrar_unsafe() const {
   return *registrar_;
 }
 
+WebAppRegistrarMutable& WebAppProvider::registrar_mutable(
+    base::PassKey<WebAppSyncBridge>) {
+  CheckIsConnected();
+  return *registrar_;
+}
+
 WebAppSyncBridge& WebAppProvider::sync_bridge_unsafe() {
   CheckIsConnected();
   return *sync_bridge_;
@@ -237,13 +243,20 @@ WebContentsManager& WebAppProvider::web_contents_manager() {
   return *web_contents_manager_;
 }
 
+PreinstalledWebAppManager& WebAppProvider::preinstalled_web_app_manager() {
+  return *preinstalled_web_app_manager_;
+}
+
+AbstractWebAppDatabaseFactory& WebAppProvider::database_factory() {
+  return *database_factory_;
+}
+
 void WebAppProvider::Shutdown() {
   command_scheduler_->Shutdown();
   command_manager_->Shutdown();
   ui_manager_->Shutdown();
   externally_managed_app_manager_->Shutdown();
   manifest_update_manager_->Shutdown();
-  iwa_command_line_install_manager_->Shutdown();
   install_manager_->Shutdown();
   icon_manager_->Shutdown();
   install_finalizer_->Shutdown();
@@ -270,18 +283,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 
   database_factory_ = std::make_unique<WebAppDatabaseFactory>(profile);
 
-  std::unique_ptr<WebAppRegistrar> registrar;
-  std::unique_ptr<WebAppSyncBridge> sync_bridge;
-
-  // Only WebAppSyncBridge must have an access to mutable WebAppRegistrar.
-  {
-    auto mutable_registrar = std::make_unique<WebAppRegistrarMutable>(profile);
-
-    sync_bridge = std::make_unique<WebAppSyncBridge>(mutable_registrar.get());
-
-    // Upcast to read-only WebAppRegistrar.
-    registrar = std::move(mutable_registrar);
-  }
+  registrar_ = std::make_unique<WebAppRegistrarMutable>(profile);
+  sync_bridge_ = std::make_unique<WebAppSyncBridge>(registrar_.get());
 
   icon_manager_ = std::make_unique<WebAppIconManager>(
       profile, base::MakeRefCounted<FileUtilsWrapper>());
@@ -298,8 +301,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
     auto protocol_handler_manager =
         std::make_unique<WebAppProtocolHandlerManager>(profile);
     auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
-        profile, icon_manager_.get(), file_handler_manager.get(),
-        protocol_handler_manager.get());
+        profile, file_handler_manager.get(), protocol_handler_manager.get());
 
     // TODO(crbug.com/1072058): Remove UrlHandlerManager from
     // OsIntegrationManager.
@@ -308,14 +310,11 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
         std::move(protocol_handler_manager), /*url_handler_manager=*/nullptr);
   }
 
-  command_manager_ = std::make_unique<WebAppCommandManager>(profile, this);
-  command_scheduler_ = std::make_unique<WebAppCommandScheduler>(*profile, this);
+  command_manager_ = std::make_unique<WebAppCommandManager>(profile);
+  command_scheduler_ = std::make_unique<WebAppCommandScheduler>(*profile);
 
   origin_association_manager_ =
       std::make_unique<WebAppOriginAssociationManager>();
-
-  registrar_ = std::move(registrar);
-  sync_bridge_ = std::move(sync_bridge);
 
 #if (BUILDFLAG(IS_CHROMEOS))
   web_app_run_on_os_login_manager_ =
@@ -328,33 +327,24 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 void WebAppProvider::ConnectSubsystems() {
   DCHECK(!started_);
 
+  // TODO(https://issuetracker.google.com/283816014): Replace SetSubsystems()
+  // with SetProvider().
   sync_bridge_->SetSubsystems(database_factory_.get(), command_manager_.get(),
                               command_scheduler_.get(), install_manager_.get());
-  icon_manager_->SetSubsystems(registrar_.get(), install_manager_.get());
-  install_finalizer_->SetSubsystems(
-      install_manager_.get(), registrar_.get(), ui_manager_.get(),
-      sync_bridge_.get(), os_integration_manager_.get(), icon_manager_.get(),
-      web_app_policy_manager_.get(), translation_manager_.get(),
-      command_manager_.get(), origin_association_manager_.get());
-  manifest_update_manager_->SetSubsystems(install_manager_.get(),
-                                          registrar_.get(), ui_manager_.get(),
-                                          command_scheduler_.get());
-  externally_managed_app_manager_->SetSubsystems(
-      ui_manager_.get(), install_finalizer_.get(), command_scheduler_.get(),
-      web_contents_manager_.get());
-  preinstalled_web_app_manager_->SetSubsystems(
-      registrar_.get(), ui_manager_.get(),
-      externally_managed_app_manager_.get());
-  web_app_policy_manager_->SetSubsystems(externally_managed_app_manager_.get(),
-                                         registrar_.get(), sync_bridge_.get(),
-                                         os_integration_manager_.get());
-  registrar_->SetSubsystems(web_app_policy_manager_.get(),
-                            translation_manager_.get());
-  ui_manager_->SetSubsystems(sync_bridge_.get(), os_integration_manager_.get());
-  os_integration_manager_->SetSubsystems(sync_bridge_.get(), registrar_.get(),
-                                         ui_manager_.get(),
-                                         icon_manager_.get());
-  iwa_command_line_install_manager_->SetSubsystems(command_scheduler_.get());
+
+  base::PassKey<WebAppProvider> pass_key;
+  icon_manager_->SetProvider(pass_key, *this);
+  install_finalizer_->SetProvider(pass_key, *this);
+  manifest_update_manager_->SetProvider(pass_key, *this);
+  externally_managed_app_manager_->SetProvider(pass_key, *this);
+  preinstalled_web_app_manager_->SetProvider(pass_key, *this);
+  web_app_policy_manager_->SetProvider(pass_key, *this);
+  registrar_->SetProvider(pass_key, *this);
+  os_integration_manager_->SetProvider(pass_key, *this);
+  command_manager_->SetProvider(pass_key, *this);
+  command_scheduler_->SetProvider(pass_key, *this);
+  iwa_command_line_install_manager_->SetProvider(pass_key, *this);
+
   connected_ = true;
 }
 

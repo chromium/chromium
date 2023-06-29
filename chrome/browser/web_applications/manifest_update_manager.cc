@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -174,17 +175,6 @@ ManifestUpdateManager::ManifestUpdateManager() = default;
 
 ManifestUpdateManager::~ManifestUpdateManager() = default;
 
-void ManifestUpdateManager::SetSubsystems(
-    WebAppInstallManager* install_manager,
-    WebAppRegistrar* registrar,
-    WebAppUiManager* ui_manager,
-    WebAppCommandScheduler* command_scheduler) {
-  install_manager_ = install_manager;
-  registrar_ = registrar;
-  ui_manager_ = ui_manager;
-  command_scheduler_ = command_scheduler;
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ManifestUpdateManager::SetSystemWebAppDelegateMap(
     const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map) {
@@ -192,8 +182,13 @@ void ManifestUpdateManager::SetSystemWebAppDelegateMap(
 }
 #endif
 
+void ManifestUpdateManager::SetProvider(base::PassKey<WebAppProvider>,
+                                        WebAppProvider& provider) {
+  provider_ = &provider;
+}
+
 void ManifestUpdateManager::Start() {
-  install_manager_observation_.Observe(install_manager_.get());
+  install_manager_observation_.Observe(&provider_->install_manager());
 
   CHECK(!started_);
   started_ = true;
@@ -213,26 +208,30 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
     return;
   }
 
-  if (!app_id.has_value() || !registrar_->IsLocallyInstalled(*app_id)) {
+  if (!app_id.has_value() ||
+      !provider_->registrar_unsafe().IsLocallyInstalled(*app_id)) {
     NotifyResult(url, app_id, ManifestUpdateResult::kNoAppInScope);
     return;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (system_web_apps_delegate_map_ &&
-      IsSystemWebApp(*registrar_, *system_web_apps_delegate_map_, *app_id)) {
+      IsSystemWebApp(provider_->registrar_unsafe(),
+                     *system_web_apps_delegate_map_, *app_id)) {
     NotifyResult(url, *app_id, ManifestUpdateResult::kAppIsSystemWebApp);
     return;
   }
 #endif
 
-  if (registrar_->IsPlaceholderApp(*app_id, WebAppManagement::kPolicy) ||
-      registrar_->IsPlaceholderApp(*app_id, WebAppManagement::kKiosk)) {
+  if (provider_->registrar_unsafe().IsPlaceholderApp(
+          *app_id, WebAppManagement::kPolicy) ||
+      provider_->registrar_unsafe().IsPlaceholderApp(
+          *app_id, WebAppManagement::kKiosk)) {
     NotifyResult(url, *app_id, ManifestUpdateResult::kAppIsPlaceholder);
     return;
   }
 
-  if (registrar_->IsIsolated(*app_id)) {
+  if (provider_->registrar_unsafe().IsIsolated(*app_id)) {
     // Manifests of Isolated Web Apps are only updated when a new version of the
     // app is installed.
     NotifyResult(url, *app_id, ManifestUpdateResult::kAppIsIsolatedWebApp);
@@ -299,7 +298,7 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
   if (load_finished_callback_)
     std::move(load_finished_callback_).Run();
 
-  command_scheduler_->ScheduleManifestUpdateCheck(
+  provider_->scheduler().ScheduleManifestUpdateCheck(
       url, app_id, check_time, web_contents,
       base::BindOnce(&ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose,
                      weak_factory_.GetWeakPtr(), web_contents, url, app_id));
@@ -361,7 +360,7 @@ void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
                                          std::move(profile_keep_alive),
                                          std::move(install_info.value()));
   } else {
-    ui_manager_->NotifyOnAllAppWindowsClosed(
+    provider_->ui_manager().NotifyOnAllAppWindowsClosed(
         app_id,
         base::BindOnce(
             &ManifestUpdateManager::StartManifestWriteAfterWindowsClosed,
@@ -390,7 +389,7 @@ void ManifestUpdateManager::StartManifestWriteAfterWindowsClosed(
   UpdateStage& update_stage = update_stage_it->second;
   CHECK_EQ(update_stage.stage, UpdateStage::Stage::kPendingAppWindowClose);
 
-  command_scheduler_->ScheduleManifestUpdateFinalize(
+  provider_->scheduler().ScheduleManifestUpdateFinalize(
       url, app_id, std::move(install_info), std::move(keep_alive),
       std::move(profile_keep_alive),
       base::BindOnce(&ManifestUpdateManager::OnUpdateStopped,

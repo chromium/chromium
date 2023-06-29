@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_sources.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
@@ -680,6 +681,11 @@ bool WebAppRegistrar::AppsExistWithExternalConfigData() const {
   return false;
 }
 
+void WebAppRegistrar::SetProvider(base::PassKey<WebAppProvider>,
+                                  WebAppProvider& provider) {
+  provider_ = &provider;
+}
+
 void WebAppRegistrar::Start() {
   // Profile manager can be null in unit tests.
   if (ProfileManager* profile_manager = g_browser_process->profile_manager())
@@ -697,13 +703,6 @@ void WebAppRegistrar::Start() {
 
 void WebAppRegistrar::Shutdown() {
   profile_manager_observation_.Reset();
-}
-
-void WebAppRegistrar::SetSubsystems(
-    WebAppPolicyManager* policy_manager,
-    WebAppTranslationManager* translation_manager) {
-  policy_manager_ = policy_manager;
-  translation_manager_ = translation_manager;
 }
 
 base::WeakPtr<WebAppRegistrar> WebAppRegistrar::AsWeakPtr() {
@@ -816,7 +815,7 @@ bool WebAppRegistrar::CanUserUninstallWebApp(const AppId& app_id) const {
 }
 
 bool WebAppRegistrar::IsPreventCloseEnabled(const AppId& app_id) const {
-  return policy_manager_->IsPreventCloseEnabled(app_id);
+  return provider_->policy_manager().IsPreventCloseEnabled(app_id);
 }
 
 bool WebAppRegistrar::IsAllowedLaunchProtocol(
@@ -950,7 +949,7 @@ std::string WebAppRegistrar::GetAppShortName(const AppId& app_id) const {
   if (base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableTranslations)) {
     std::string translated_name =
-        translation_manager_->GetTranslatedName(app_id);
+        provider_->translation_manager().GetTranslatedName(app_id);
     if (!translated_name.empty()) {
       return translated_name;
     }
@@ -963,7 +962,7 @@ std::string WebAppRegistrar::GetAppDescription(const AppId& app_id) const {
   if (base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableTranslations)) {
     std::string translated_description =
-        translation_manager_->GetTranslatedDescription(app_id);
+        provider_->translation_manager().GetTranslatedDescription(app_id);
     if (!translated_description.empty()) {
       return translated_description;
     }
@@ -1220,7 +1219,7 @@ base::flat_map<AppId, AppId> WebAppRegistrar::GetSubAppToParentMap() const {
 ValueWithPolicy<RunOnOsLoginMode> WebAppRegistrar::GetAppRunOnOsLoginMode(
     const AppId& app_id) const {
   RunOnOsLoginPolicy login_policy =
-      policy_manager_->GetUrlRunOnOsLoginPolicy(app_id);
+      provider_->policy_manager().GetUrlRunOnOsLoginPolicy(app_id);
 
   switch (login_policy) {
     case RunOnOsLoginPolicy::kAllowed: {

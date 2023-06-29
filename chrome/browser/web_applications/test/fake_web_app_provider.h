@@ -35,7 +35,6 @@ class WebAppIconManager;
 class WebAppInstallFinalizer;
 class WebAppInstallManager;
 class WebAppPolicyManager;
-class WebAppRegistrar;
 class WebAppRegistrarMutable;
 class WebAppSyncBridge;
 class WebAppTranslationManager;
@@ -107,7 +106,7 @@ class FakeWebAppProvider : public WebAppProvider {
 
   // NB: If you replace the Registrar, you also have to replace the SyncBridge
   // accordingly.
-  void SetRegistrar(std::unique_ptr<WebAppRegistrar> registrar);
+  void SetRegistrar(std::unique_ptr<WebAppRegistrarMutable> registrar);
   void SetDatabaseFactory(
       std::unique_ptr<AbstractWebAppDatabaseFactory> database_factory);
   void SetSyncBridge(std::unique_ptr<WebAppSyncBridge> sync_bridge);

@@ -126,6 +126,7 @@ class WebAppProvider : public KeyedService {
   // chrome/browser/web_applications/locks/ for more info).
   WebAppRegistrar& registrar_unsafe();
   const WebAppRegistrar& registrar_unsafe() const;
+  WebAppRegistrarMutable& registrar_mutable(base::PassKey<WebAppSyncBridge>);
   // Unsafe access to the WebAppSyncBridge. Reading or data from here should be
   // considered an 'uncommitted read', and writing data is unsafe and could
   // interfere with other operations. For safe access use locks to ensure no
@@ -165,6 +166,10 @@ class WebAppProvider : public KeyedService {
 
   WebContentsManager& web_contents_manager();
 
+  PreinstalledWebAppManager& preinstalled_web_app_manager();
+
+  AbstractWebAppDatabaseFactory& database_factory();
+
   // KeyedService:
   void Shutdown() override;
 
@@ -186,10 +191,6 @@ class WebAppProvider : public KeyedService {
   // Returns whether the app registry is ready.
   bool is_registry_ready() const { return is_registry_ready_; }
 
-  PreinstalledWebAppManager& preinstalled_web_app_manager() {
-    return *preinstalled_web_app_manager_;
-  }
-
  protected:
   virtual void StartImpl();
 
@@ -210,7 +211,7 @@ class WebAppProvider : public KeyedService {
   void DoMigrateProfilePrefs(Profile* profile);
 
   std::unique_ptr<AbstractWebAppDatabaseFactory> database_factory_;
-  std::unique_ptr<WebAppRegistrar> registrar_;
+  std::unique_ptr<WebAppRegistrarMutable> registrar_;
   std::unique_ptr<WebAppSyncBridge> sync_bridge_;
   std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager_;
   std::unique_ptr<WebAppIconManager> icon_manager_;

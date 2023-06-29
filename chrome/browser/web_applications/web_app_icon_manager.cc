@@ -41,6 +41,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -927,12 +928,6 @@ WebAppIconManager::WebAppIconManager(Profile* profile,
 
 WebAppIconManager::~WebAppIconManager() = default;
 
-void WebAppIconManager::SetSubsystems(WebAppRegistrar* registrar,
-                                      WebAppInstallManager* install_manager) {
-  registrar_ = registrar;
-  install_manager_ = install_manager;
-}
-
 void WebAppIconManager::WriteData(
     AppId app_id,
     IconBitmaps icon_bitmaps,
@@ -961,8 +956,13 @@ void WebAppIconManager::DeleteData(AppId app_id, WriteDataCallback callback) {
       std::move(callback));
 }
 
+void WebAppIconManager::SetProvider(base::PassKey<WebAppProvider>,
+                                    WebAppProvider& provider) {
+  provider_ = &provider;
+}
+
 void WebAppIconManager::Start() {
-  for (const AppId& app_id : registrar_->GetAppIds()) {
+  for (const AppId& app_id : provider_->registrar_unsafe().GetAppIds()) {
     ReadFavicon(app_id);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -970,7 +970,7 @@ void WebAppIconManager::Start() {
     ReadMonochromeFavicon(app_id);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
-  install_manager_observation_.Observe(install_manager_);
+  install_manager_observation_.Observe(&provider_->install_manager());
 }
 
 void WebAppIconManager::Shutdown() {}
@@ -979,7 +979,7 @@ bool WebAppIconManager::HasIcons(const AppId& app_id,
                                  IconPurpose purpose,
                                  const SortedSizesPx& icon_sizes) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const WebApp* web_app = registrar_->GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app)
     return false;
 
@@ -992,7 +992,7 @@ WebAppIconManager::FindIconMatchBigger(const AppId& app_id,
                                        const std::vector<IconPurpose>& purposes,
                                        SquareSizePx min_size) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const WebApp* web_app = registrar_->GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app)
     return absl::nullopt;
 
@@ -1022,7 +1022,7 @@ void WebAppIconManager::ReadIcons(const AppId& app_id,
                                   ReadIconsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!registrar_->GetAppById(app_id)) {
+  if (!provider_->registrar_unsafe().GetAppById(app_id)) {
     std::move(callback).Run(std::map<SquareSizePx, SkBitmap>());
     return;
   }
@@ -1041,7 +1041,7 @@ void WebAppIconManager::ReadAllShortcutMenuIconsWithTimestamp(
     const AppId& app_id,
     ShortcutIconDataCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const WebApp* web_app = registrar_->GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app) {
     std::move(callback).Run(ShortcutIconDataVector());
     return;
@@ -1059,7 +1059,7 @@ void WebAppIconManager::ReadIconsLastUpdateTime(
     const AppId& app_id,
     ReadIconsUpdateTimeCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const WebApp* web_app = registrar_->GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app) {
     std::move(callback).Run(base::flat_map<SquareSizePx, base::Time>());
     return;
@@ -1081,7 +1081,7 @@ void WebAppIconManager::ReadIconsLastUpdateTime(
 void WebAppIconManager::ReadAllIcons(const AppId& app_id,
                                      ReadIconBitmapsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const WebApp* web_app = registrar_->GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app) {
     std::move(callback).Run(IconBitmaps());
     return;
@@ -1107,7 +1107,7 @@ void WebAppIconManager::ReadAllShortcutsMenuIcons(
     const AppId& app_id,
     ReadShortcutsMenuIconsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const WebApp* web_app = registrar_->GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app) {
     std::move(callback).Run(ShortcutsMenuIconBitmaps{});
     return;
@@ -1128,7 +1128,7 @@ void WebAppIconManager::ReadBestHomeTabIcon(
     const SquareSizePx min_home_tab_icon_size_px,
     ReadHomeTabIconsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const WebApp* web_app = registrar_->GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app) {
     std::move(callback).Run(SkBitmap());
     return;
@@ -1283,7 +1283,7 @@ void WebAppIconManager::OnReadUiScaleFactorsIcons(
 void WebAppIconManager::CheckForEmptyOrMissingIconFiles(
     const AppId& app_id,
     base::OnceCallback<void(IconFilesCheck)> callback) const {
-  const WebApp* web_app = registrar_->GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app) {
     std::move(callback).Run({});
     return;
@@ -1330,7 +1330,7 @@ WebAppIconManager::FindIconMatchSmaller(
     const std::vector<IconPurpose>& purposes,
     SquareSizePx max_size) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const WebApp* web_app = registrar_->GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app)
     return absl::nullopt;
 
@@ -1372,7 +1372,7 @@ void WebAppIconManager::ReadMonochromeFavicon(const AppId& app_id) {
 void WebAppIconManager::OnReadMonochromeFavicon(
     const AppId& app_id,
     gfx::ImageSkia manifest_monochrome_image) {
-  const WebApp* web_app = registrar_->GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app)
     return;
 

@@ -117,28 +117,17 @@ WebAppPolicyManager::WebAppPolicyManager(Profile* profile)
 
 WebAppPolicyManager::~WebAppPolicyManager() = default;
 
-void WebAppPolicyManager::SetSubsystems(
-    ExternallyManagedAppManager* externally_managed_app_manager,
-    WebAppRegistrar* app_registrar,
-    WebAppSyncBridge* sync_bridge,
-    OsIntegrationManager* os_integration_manager) {
-  DCHECK(externally_managed_app_manager);
-  DCHECK(app_registrar);
-  DCHECK(sync_bridge);
-  DCHECK(os_integration_manager);
-
-  externally_managed_app_manager_ = externally_managed_app_manager;
-  app_registrar_ = app_registrar;
-  sync_bridge_ = sync_bridge;
-  os_integration_manager_ = os_integration_manager;
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void WebAppPolicyManager::SetSystemWebAppDelegateMap(
     const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map) {
   system_web_apps_delegate_map_ = system_web_apps_delegate_map;
 }
 #endif
+
+void WebAppPolicyManager::SetProvider(base::PassKey<WebAppProvider>,
+                                      WebAppProvider& provider) {
+  provider_ = &provider;
+}
 
 void WebAppPolicyManager::Start(
     base::OnceClosure policy_settings_and_force_installs_applied) {
@@ -174,7 +163,8 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(
       });
 
   bool is_placeholder_url =
-      app_registrar_->LookupPlaceholderAppId(url, WebAppManagement::kPolicy)
+      provider_->registrar_unsafe()
+          .LookupPlaceholderAppId(url, WebAppManagement::kPolicy)
           .has_value();
 
   if (it == web_apps_list.end() || !is_placeholder_url) {
@@ -200,8 +190,8 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(
 
   // If the app is not a placeholder app, ExternallyManagedAppManager will
   // ignore the request.
-  externally_managed_app_manager_->InstallNow(std::move(install_options),
-                                              std::move(on_complete));
+  provider_->externally_managed_app_manager().InstallNow(
+      std::move(install_options), std::move(on_complete));
 }
 
 // static
@@ -252,7 +242,7 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
 void WebAppPolicyManager::OnDisableListPolicyChanged() {
 #if BUILDFLAG(IS_CHROMEOS)
   PopulateDisabledWebAppsIdsLists();
-  std::vector<AppId> app_ids = app_registrar_->GetAppIds();
+  std::vector<AppId> app_ids = provider_->registrar_unsafe().GetAppIds();
   WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile_);
   for (const auto& id : app_ids) {
     const bool is_disabled = base::Contains(disabled_web_apps_, id);
@@ -263,7 +253,7 @@ void WebAppPolicyManager::OnDisableListPolicyChanged() {
 
 void WebAppPolicyManager::OnSyncPolicySettingsCommandsComplete(
     std::vector<std::string> app_ids) {
-  app_registrar_->NotifyWebAppSettingsPolicyChanged();
+  provider_->registrar_unsafe().NotifyWebAppSettingsPolicyChanged();
   if (refresh_policy_settings_completed_) {
     std::move(refresh_policy_settings_completed_).Run();
   }
@@ -334,26 +324,27 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
     // apps but only if they are not being used. In the non-placeholder case, we
     // will not reinstall and there is no need to wait for windows being closed.
     install_options.wait_for_windows_closed =
-        app_registrar_
-            ->LookupPlaceholderAppId(install_options.install_url,
-                                     WebAppManagement::kPolicy)
+        provider_->registrar_unsafe()
+            .LookupPlaceholderAppId(install_options.install_url,
+                                    WebAppManagement::kPolicy)
             .has_value();
     install_options.reinstall_placeholder = true;
 
     absl::optional<AppId> app_id =
-        app_registrar_->LookupExternalAppId(install_options.install_url);
+        provider_->registrar_unsafe().LookupExternalAppId(
+            install_options.install_url);
     if (app_id) {
       // If the override name has changed, reinstall:
       if (install_options.override_name &&
           install_options.override_name.value() !=
-              app_registrar_->GetAppShortName(app_id.value())) {
+              provider_->registrar_unsafe().GetAppShortName(app_id.value())) {
         install_options.force_reinstall = true;
       }
 
       // If the override icon has changed, reinstall:
       if (install_options.override_icon_url &&
           !IconInfosContainIconURL(
-              app_registrar_->GetAppIconInfos(app_id.value()),
+              provider_->registrar_unsafe().GetAppIconInfos(app_id.value()),
               install_options.override_icon_url.value())) {
         install_options.force_reinstall = true;
       }
@@ -361,7 +352,7 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
     install_options_list.push_back(std::move(install_options));
   }
 
-  externally_managed_app_manager_->SynchronizeInstalledApps(
+  provider_->externally_managed_app_manager().SynchronizeInstalledApps(
       std::move(install_options_list), ExternalInstallSource::kExternalPolicy,
       base::BindOnce(&WebAppPolicyManager::OnAppsSynchronized,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -465,7 +456,8 @@ void WebAppPolicyManager::RefreshPolicySettings() {
 }
 
 void WebAppPolicyManager::ApplyPolicySettings() {
-  std::vector<AppId> app_ids_to_sync = app_registrar_->GetAppIds();
+  std::vector<AppId> app_ids_to_sync =
+      provider_->registrar_unsafe().GetAppIds();
   auto callback_for_sync_commands = base::BarrierCallback<std::string>(
       app_ids_to_sync.size(),
       base::BindOnce(&WebAppPolicyManager::OnSyncPolicySettingsCommandsComplete,
@@ -570,7 +562,7 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
 RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicy(
     const AppId& app_id) const {
   return GetUrlRunOnOsLoginPolicyByManifestId(
-      app_registrar_->GetComputedManifestId(app_id).spec());
+      provider_->registrar_unsafe().GetComputedManifestId(app_id).spec());
 }
 
 RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicyByManifestId(
@@ -629,7 +621,7 @@ void WebAppPolicyManager::MaybeOverrideManifest(
     const AppId& app_id = GenerateAppIdFromManifestId(manifest->id);
     // List of policy-installed apps and their install URLs:
     base::flat_map<AppId, base::flat_set<GURL>> policy_installed_apps =
-        app_registrar_->GetExternallyInstalledApps(
+        provider_->registrar_unsafe().GetExternallyInstalledApps(
             ExternalInstallSource::kExternalPolicy);
     if (base::Contains(policy_installed_apps, app_id)) {
       DCHECK_GT(policy_installed_apps[app_id].size(), 0UL);
@@ -662,7 +654,8 @@ bool WebAppPolicyManager::IsPreventCloseEnabled(const AppId& app_id) const {
     return false;
   }
 
-  const ManifestId manifest_id = app_registrar_->GetComputedManifestId(app_id);
+  const ManifestId manifest_id =
+      provider_->registrar_unsafe().GetComputedManifestId(app_id);
   auto it = settings_by_url_.find(manifest_id.spec());
   if (it != settings_by_url_.end()) {
     return it->second.prevent_close;
@@ -783,7 +776,7 @@ void WebAppPolicyManager::ObserveDisabledSystemFeaturesPolicy() {
 
 void WebAppPolicyManager::OnDisableModePolicyChanged() {
 #if BUILDFLAG(IS_CHROMEOS)
-  sync_bridge_->UpdateAppsDisableMode();
+  provider_->sync_bridge_unsafe().UpdateAppsDisableMode();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -850,8 +843,9 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(system_web_apps_delegate_map_);
   for (const ash::SystemWebAppType& app_type : disabled_system_apps_) {
-    absl::optional<AppId> app_id = GetAppIdForSystemApp(
-        *app_registrar_, *system_web_apps_delegate_map_, app_type);
+    absl::optional<AppId> app_id =
+        GetAppIdForSystemApp(provider_->registrar_unsafe(),
+                             *system_web_apps_delegate_map_, app_type);
     if (app_id.has_value()) {
       disabled_web_apps_.insert(app_id.value());
     }

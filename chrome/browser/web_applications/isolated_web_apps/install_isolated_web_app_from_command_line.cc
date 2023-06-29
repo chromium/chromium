@@ -153,9 +153,10 @@ IsolatedWebAppCommandLineInstallManager::
 IsolatedWebAppCommandLineInstallManager::
     ~IsolatedWebAppCommandLineInstallManager() = default;
 
-void IsolatedWebAppCommandLineInstallManager::SetSubsystems(
-    WebAppCommandScheduler* command_scheduler) {
-  command_scheduler_ = command_scheduler;
+void IsolatedWebAppCommandLineInstallManager::SetProvider(
+    base::PassKey<WebAppProvider>,
+    WebAppProvider& provider) {
+  provider_ = &provider;
 }
 
 void IsolatedWebAppCommandLineInstallManager::Start() {
@@ -192,12 +193,6 @@ void IsolatedWebAppCommandLineInstallManager::Start() {
                          std::move(optional_profile_keep_alive),
                          base::TaskPriority::BEST_EFFORT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-void IsolatedWebAppCommandLineInstallManager::Shutdown() {
-  // Avoid dangling pointer error on destruction of the `WebAppProvider` by
-  // removing our reference to the command scheduler.
-  command_scheduler_ = nullptr;
 }
 
 void IsolatedWebAppCommandLineInstallManager::InstallFromCommandLine(
@@ -261,7 +256,7 @@ void IsolatedWebAppCommandLineInstallManager::OnGetIsolatedWebAppUrlInfo(
     return;
   }
 
-  command_scheduler_->InstallIsolatedWebApp(
+  provider_->scheduler().InstallIsolatedWebApp(
       url_info.value(), location,
       /*expected_version=*/absl::nullopt, std::move(keep_alive),
       std::move(optional_profile_keep_alive),

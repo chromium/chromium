@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/sync/base/time.h"
 #include "url/gurl.h"
@@ -57,11 +58,8 @@ void MeasureShortcutMenuIconHistograms(int icon_count, int item_count) {
 
 ShortcutMenuHandlingSubManager::ShortcutMenuHandlingSubManager(
     const base::FilePath& profile_path,
-    WebAppIconManager& icon_manager,
-    WebAppRegistrar& registrar)
-    : profile_path_(profile_path),
-      icon_manager_(icon_manager),
-      registrar_(registrar) {}
+    WebAppProvider& provider)
+    : profile_path_(profile_path), provider_(provider) {}
 
 ShortcutMenuHandlingSubManager::~ShortcutMenuHandlingSubManager() = default;
 
@@ -71,20 +69,20 @@ void ShortcutMenuHandlingSubManager::Configure(
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_shortcut_menus());
 
-  if (!registrar_->IsLocallyInstalled(app_id)) {
+  if (!provider_->registrar_unsafe().IsLocallyInstalled(app_id)) {
     std::move(configure_done).Run();
     return;
   }
 
   std::vector<WebAppShortcutsMenuItemInfo> shortcut_menu_item_info =
-      registrar_->GetAppShortcutsMenuItemInfos(app_id);
+      provider_->registrar_unsafe().GetAppShortcutsMenuItemInfos(app_id);
   if (shortcut_menu_item_info.empty()) {
     std::move(configure_done).Run();
     return;
   }
 
   proto::ShortcutMenus* shortcut_menus = desired_state.mutable_shortcut_menus();
-  icon_manager_->ReadAllShortcutMenuIconsWithTimestamp(
+  provider_->icon_manager().ReadAllShortcutMenuIconsWithTimestamp(
       app_id,
       base::BindOnce(&ShortcutMenuHandlingSubManager::StoreShortcutMenuData,
                      weak_ptr_factory_.GetWeakPtr(), app_id,
@@ -211,7 +209,7 @@ void ShortcutMenuHandlingSubManager::ReadIconDataForShortcutsMenu(
     return;
   }
 
-  icon_manager_->ReadAllShortcutsMenuIcons(
+  provider_->icon_manager().ReadAllShortcutsMenuIcons(
       app_id, base::BindOnce(&ShortcutMenuHandlingSubManager::
                                  OnIconDataLoadedRegisterShortcutsMenu,
                              weak_ptr_factory_.GetWeakPtr(), app_id,
@@ -224,7 +222,8 @@ void ShortcutMenuHandlingSubManager::OnIconDataLoadedRegisterShortcutsMenu(
     base::OnceClosure execute_complete,
     ShortcutsMenuIconBitmaps shortcut_menu_icon_bitmaps) {
   base::FilePath shortcut_data_dir = GetOsIntegrationResourcesDirectoryForApp(
-      profile_path_, app_id, registrar_->GetAppStartUrl(app_id));
+      profile_path_, app_id,
+      provider_->registrar_unsafe().GetAppStartUrl(app_id));
   web_app::RegisterShortcutsMenuWithOs(
       app_id, profile_path_, shortcut_data_dir,
       CreateShortcutsMenuItemInfos(desired_state.shortcut_menus()),

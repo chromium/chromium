@@ -165,7 +165,7 @@ FakeOsIntegrationManager::AsTestOsIntegrationManager() {
 }
 
 TestShortcutManager::TestShortcutManager(Profile* profile)
-    : WebAppShortcutManager(profile, nullptr, nullptr, nullptr) {}
+    : WebAppShortcutManager(profile, nullptr, nullptr) {}
 
 TestShortcutManager::~TestShortcutManager() = default;
 

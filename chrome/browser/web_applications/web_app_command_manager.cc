@@ -70,15 +70,18 @@ base::Value::Dict CreateLogValue(const WebAppCommand& command,
 
 }  // namespace
 
-WebAppCommandManager::WebAppCommandManager(Profile* profile,
-                                           WebAppProvider* provider)
-    : profile_(profile),
-      provider_(provider),
-      lock_manager_(std::make_unique<WebAppLockManager>(*provider_)) {}
+WebAppCommandManager::WebAppCommandManager(Profile* profile)
+    : profile_(profile) {}
 WebAppCommandManager::~WebAppCommandManager() {
   // Make sure that unittests & browsertests correctly shut down the manager.
   // This ensures that all tests also cover shutdown.
   DCHECK(is_in_shutdown_);
+}
+
+void WebAppCommandManager::SetProvider(base::PassKey<WebAppProvider>,
+                                       WebAppProvider& provider) {
+  provider_ = &provider;
+  lock_manager_.SetProvider(PassKey(), provider);
 }
 
 void WebAppCommandManager::Start() {
@@ -110,7 +113,7 @@ void WebAppCommandManager::ScheduleCommand(
   auto command_id = command->id();
   auto command_it = commands_.try_emplace(command_id, std::move(command)).first;
   command_it->second->RequestLock(
-      this, lock_manager_.get(),
+      this, &lock_manager_,
       base::BindOnce(&WebAppCommandManager::OnLockAcquired,
                      weak_ptr_factory_.GetWeakPtr(), command_id),
       location);
@@ -283,7 +286,7 @@ void WebAppCommandManager::OnCommandComplete(
   commands_.erase(command_it);
 
   if (shared_web_contents_) {
-    bool lock_free = lock_manager_->IsSharedWebContentsLockFree();
+    bool lock_free = lock_manager_.IsSharedWebContentsLockFree();
     if (lock_free) {
       AddValueToLog(base::Value("Destroying the shared web contents."));
       shared_web_contents_.reset();

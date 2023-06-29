@@ -37,8 +37,7 @@ struct LoadedConfigs;
 struct ParsedConfigs;
 }  // namespace
 
-class ExternallyManagedAppManager;
-class WebAppRegistrar;
+class WebAppProvider;
 
 // Installs web apps to be preinstalled on the device (AKA default apps) during
 // start up. Will keep the apps installed on the device in sync with the set of
@@ -96,10 +95,7 @@ class PreinstalledWebAppManager {
       delete;
   ~PreinstalledWebAppManager();
 
-  void SetSubsystems(
-      WebAppRegistrar* registrar,
-      const WebAppUiManager* ui_manager,
-      ExternallyManagedAppManager* externally_managed_app_manager);
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
 
   // Loads the preinstalled app configs and synchronizes them with the device's
   // installed apps.
@@ -174,11 +170,8 @@ class PreinstalledWebAppManager {
   bool IsReinstallPastMilestoneNeededSinceLastSync(
       int force_reinstall_for_milestone);
 
-  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
-  raw_ptr<const WebAppUiManager, DanglingAcrossTasks> ui_manager_ = nullptr;
-  raw_ptr<ExternallyManagedAppManager, DanglingAcrossTasks>
-      externally_managed_app_manager_ = nullptr;
   const raw_ptr<Profile> profile_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS)
   PreinstalledWebAppWindowExperiment preinstalled_web_app_window_experiment_;

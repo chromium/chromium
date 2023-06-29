@@ -26,6 +26,7 @@ class Profile;
 namespace web_app {
 
 class IsolatedWebAppUrlInfo;
+class WebAppProvider;
 
 void GetIsolatedWebAppLocationFromCommandLine(
     const base::CommandLine& command_line,
@@ -55,11 +56,9 @@ class IsolatedWebAppCommandLineInstallManager {
   explicit IsolatedWebAppCommandLineInstallManager(Profile& profile);
   ~IsolatedWebAppCommandLineInstallManager();
 
-  void SetSubsystems(WebAppCommandScheduler* command_scheduler);
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
 
   void Start();
-
-  void Shutdown();
 
   // Install an IWA from command line, if the command line specifies the
   // appropriate switches.
@@ -98,7 +97,7 @@ class IsolatedWebAppCommandLineInstallManager {
 
   raw_ref<Profile> profile_;
 
-  raw_ptr<WebAppCommandScheduler> command_scheduler_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
   base::RepeatingCallback<void(
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>)>

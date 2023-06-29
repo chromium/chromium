@@ -24,8 +24,6 @@ class FakeWebAppUiManager : public WebAppUiManager {
       base::RepeatingCallback<void(apps::AppLaunchParams params,
                                    LaunchWebAppWindowSetting launch_setting)>;
 
-  void SetSubsystems(WebAppSyncBridge* sync_bridge,
-                     OsIntegrationManager* os_integration_manager) override;
   void Start() override;
   void Shutdown() override;
 

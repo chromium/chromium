@@ -17,6 +17,7 @@
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 
 class Profile;
@@ -28,7 +29,6 @@ class WebContents;
 namespace web_app {
 
 class WebAppProvider;
-class WebAppLockManager;
 class WebAppUrlLoader;
 enum class WebAppUrlLoaderResult;
 
@@ -45,8 +45,10 @@ class WebAppCommandManager {
  public:
   using PassKey = base::PassKey<WebAppCommandManager>;
 
-  explicit WebAppCommandManager(Profile* profile, WebAppProvider* provider);
+  explicit WebAppCommandManager(Profile* profile);
   ~WebAppCommandManager();
+
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
 
   // Starts running commands.
   void Start();
@@ -82,7 +84,7 @@ class WebAppCommandManager {
     return shared_web_contents_.get();
   }
 
-  WebAppLockManager& lock_manager() const { return *lock_manager_; }
+  WebAppLockManager& lock_manager() { return lock_manager_; }
 
   // Only used by `WebAppLockManager` to give web contents access to certain
   // locks.
@@ -127,7 +129,7 @@ class WebAppCommandManager {
   bool is_in_shutdown_ = false;
   std::deque<base::Value> command_debug_log_;
 
-  std::unique_ptr<WebAppLockManager> lock_manager_;
+  WebAppLockManager lock_manager_;
 
   std::map<WebAppCommand::Id, std::unique_ptr<WebAppCommand>> commands_{};
 

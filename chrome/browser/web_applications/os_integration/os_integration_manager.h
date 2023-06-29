@@ -37,10 +37,7 @@ class Profile;
 namespace web_app {
 
 class FakeOsIntegrationManager;
-class WebAppIconManager;
-class WebAppRegistrar;
-class WebAppSyncBridge;
-class WebAppUiManager;
+class WebAppProvider;
 
 // Returns if the sub-manager architecture is enabled. This means that they are
 // writing the expected os integration state to disk. See
@@ -118,10 +115,10 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   static base::RepeatingCallback<void(OsHooksErrors)> GetBarrierForSynchronize(
       AnyOsHooksErrorCallback errors_callback);
 
-  virtual void SetSubsystems(WebAppSyncBridge* sync_bridge,
-                             WebAppRegistrar* registrar,
-                             WebAppUiManager* ui_manager,
-                             WebAppIconManager* icon_manager);
+  // Sets internal WebAppProvider reference and threads it through to all sub
+  // managers.
+  virtual void SetProvider(base::PassKey<WebAppProvider>,
+                           WebAppProvider& provider);
 
   virtual void Start();
 
@@ -365,9 +362,7 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       base::OnceClosure update_finished_callback);
 
   const raw_ptr<Profile> profile_;
-  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
-  raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
-  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_ = nullptr;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
   std::unique_ptr<WebAppShortcutManager> shortcut_manager_;
   std::unique_ptr<WebAppFileHandlerManager> file_handler_manager_;
@@ -375,7 +370,7 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   std::unique_ptr<UrlHandlerManager> url_handler_manager_;
 
   std::vector<std::unique_ptr<OsIntegrationSubManager>> sub_managers_;
-  bool set_subsystems_called_ = false;
+  bool set_provider_called_ = false;
   bool first_synchronize_called_ = false;
 
   base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>

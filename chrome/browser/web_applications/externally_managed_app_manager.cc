@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
@@ -108,30 +109,21 @@ ExternallyManagedAppManager::~ExternallyManagedAppManager() {
   }
 }
 
-void ExternallyManagedAppManager::SetSubsystems(
-    WebAppUiManager* ui_manager,
-    WebAppInstallFinalizer* finalizer,
-    WebAppCommandScheduler* command_scheduler,
-    WebContentsManager* web_contents_manager) {
-  ui_manager_ = ui_manager;
-  finalizer_ = finalizer;
-  command_scheduler_ = command_scheduler;
-  if (!web_contents_manager) {
-    CHECK_IS_TEST();
-  } else {
-    // TODO(http://b/283521737): Remove this and use WebContentsManager.
-    url_loader_ = web_contents_manager->CreateUrlLoader();
-    // TODO(http://b/283521737): Remove this and use WebContentsManager.
-    data_retriever_factory_ = base::BindRepeating(
-        [](base::WeakPtr<WebContentsManager> web_contents_manager)
-            -> std::unique_ptr<WebAppDataRetriever> {
-          if (!web_contents_manager) {
-            return nullptr;
-          }
-          return web_contents_manager->CreateDataRetriever();
-        },
-        web_contents_manager->GetWeakPtr());
-  }
+void ExternallyManagedAppManager::SetProvider(base::PassKey<WebAppProvider>,
+                                              WebAppProvider& provider) {
+  provider_ = &provider;
+  // TODO(http://b/283521737): Remove this and use WebContentsManager.
+  url_loader_ = provider.web_contents_manager().CreateUrlLoader();
+  // TODO(http://b/283521737): Remove this and use WebContentsManager.
+  data_retriever_factory_ = base::BindRepeating(
+      [](base::WeakPtr<WebContentsManager> web_contents_manager)
+          -> std::unique_ptr<WebAppDataRetriever> {
+        if (!web_contents_manager) {
+          return nullptr;
+        }
+        return web_contents_manager->CreateDataRetriever();
+      },
+      provider.web_contents_manager().GetWeakPtr());
 }
 
 void ExternallyManagedAppManager::InstallNow(
@@ -168,7 +160,7 @@ void ExternallyManagedAppManager::UninstallApps(
     ExternalInstallSource install_source,
     const UninstallCallback& callback) {
   for (auto& url : uninstall_urls) {
-    finalizer()->UninstallExternalWebAppByUrl(
+    provider_->install_finalizer().UninstallExternalWebAppByUrl(
         url, ConvertExternalInstallSourceToSource(install_source),
         ConvertExternalInstallSourceToUninstallSource(install_source),
         base::BindOnce(
@@ -193,7 +185,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
   // Only one concurrent SynchronizeInstalledApps() expected per
   // ExternalInstallSource.
   CHECK(!base::Contains(synchronize_requests_, install_source));
-  command_scheduler_->ScheduleCallbackWithLock<AllAppsLock>(
+  provider_->scheduler().ScheduleCallbackWithLock<AllAppsLock>(
       "ExternallyManagedAppManager::SynchronizeInstalledApps",
       std::make_unique<AllAppsLockDescription>(),
       base::BindOnce(
@@ -254,8 +246,7 @@ ExternallyManagedAppManager::CreateInstallationTask(
     ExternalInstallOptions install_options) {
   std::unique_ptr<ExternallyManagedAppInstallTask> install_task =
       std::make_unique<ExternallyManagedAppInstallTask>(
-          profile_, url_loader_.get(), ui_manager(), finalizer(),
-          command_scheduler(), data_retriever_factory_,
+          profile_, url_loader_.get(), *provider_, data_retriever_factory_,
           std::move(install_options));
   return install_task;
 }
@@ -294,7 +285,7 @@ void ExternallyManagedAppManager::MaybeStartNext() {
   if (current_install_ || IsShuttingDown()) {
     return;
   }
-  command_scheduler()->ScheduleCallbackWithLock<AllAppsLock>(
+  provider_->scheduler().ScheduleCallbackWithLock<AllAppsLock>(
       "ExternallyManagedAppManager::MaybeStartNext",
       std::make_unique<AllAppsLockDescription>(),
       base::BindOnce(&ExternallyManagedAppManager::MaybeStartNextOnLockAcquired,
@@ -669,7 +660,7 @@ void ExternallyManagedAppManager::ContinueSynchronization(
     return;
 
   if (base::FeatureList::IsEnabled(features::kWebAppDedupeInstallUrls)) {
-    command_scheduler_->ScheduleDedupeInstallUrls(
+    provider_->scheduler().ScheduleDedupeInstallUrls(
         base::BindOnce(&ExternallyManagedAppManager::CompleteSynchronization,
                        weak_ptr_factory_.GetWeakPtr(), source));
   } else {

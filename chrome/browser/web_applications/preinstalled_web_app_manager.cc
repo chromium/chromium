@@ -32,6 +32,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 // TODO(crbug.com/1402145): Remove or at least isolate circular dependencies on
 // app service by moving this code to //c/b/web_applications/adjustments, or
 // flip entire dependency so web_applications depends on app_service.
@@ -643,16 +644,13 @@ PreinstalledWebAppManager::~PreinstalledWebAppManager() {
   }
 }
 
-void PreinstalledWebAppManager::SetSubsystems(
-    WebAppRegistrar* registrar,
-    const WebAppUiManager* ui_manager,
-    ExternallyManagedAppManager* externally_managed_app_manager) {
-  registrar_ = registrar;
-  ui_manager_ = ui_manager;
-  externally_managed_app_manager_ = externally_managed_app_manager;
+void PreinstalledWebAppManager::SetProvider(base::PassKey<WebAppProvider>,
+                                            WebAppProvider& provider) {
+  provider_ = &provider;
 }
 
 void PreinstalledWebAppManager::Start(base::OnceClosure on_done) {
+  DCHECK(provider_);
   if (g_skip_startup_for_testing_ || skip_startup_for_testing_) {  // IN-TEST
     std::move(on_done).Run();                                      // IN-TEST
     return;                                                        // IN-TEST
@@ -844,9 +842,10 @@ void PreinstalledWebAppManager::PostProcessConfigs(
   size_t corrupt_user_uninstall_prefs_count = 0;
   base::EraseIf(
       parsed_configs.options_list, [&](const ExternalInstallOptions& options) {
-        absl::optional<std::string> disable_reason = GetDisableReason(
-            options, profile_, registrar_, preinstalled_apps_enabled_in_prefs,
-            is_new_user, user_type, corrupt_user_uninstall_prefs_count);
+        absl::optional<std::string> disable_reason =
+            GetDisableReason(options, profile_, &provider_->registrar_unsafe(),
+                             preinstalled_apps_enabled_in_prefs, is_new_user,
+                             user_type, corrupt_user_uninstall_prefs_count);
         if (disable_reason) {
           VLOG(1) << *disable_reason;
           ++disabled_count;
@@ -865,7 +864,8 @@ void PreinstalledWebAppManager::PostProcessConfigs(
   }
 
   for (ExternalInstallOptions& options : parsed_configs.options_list) {
-    if (ShouldForceReinstall(options, *profile_->GetPrefs(), *registrar_)) {
+    if (ShouldForceReinstall(options, *profile_->GetPrefs(),
+                             provider_->registrar_unsafe())) {
       options.force_reinstall = true;
     }
   }
@@ -884,7 +884,7 @@ void PreinstalledWebAppManager::PostProcessConfigs(
 void PreinstalledWebAppManager::Synchronize(
     ExternallyManagedAppManager::SynchronizeCallback callback,
     std::vector<ExternalInstallOptions> desired_apps_install_options) {
-  DCHECK(externally_managed_app_manager_);
+  DCHECK(provider_);
 
   std::map<InstallUrl, std::vector<AppId>> desired_uninstalls;
   for (const auto& entry : desired_apps_install_options) {
@@ -892,7 +892,7 @@ void PreinstalledWebAppManager::Synchronize(
       desired_uninstalls.emplace(entry.install_url,
                                  entry.uninstall_and_replace);
   }
-  externally_managed_app_manager_->SynchronizeInstalledApps(
+  provider_->externally_managed_app_manager().SynchronizeInstalledApps(
       std::move(desired_apps_install_options),
       ExternalInstallSource::kExternalDefault,
       base::BindOnce(&PreinstalledWebAppManager::OnExternalWebAppsSynchronized,
@@ -964,9 +964,11 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
         if (extensions::IsExtensionDefaultInstalled(profile_, replace_id))
           ++app_to_replace_still_default_installed_count;
 
-        if (ui_manager_->CanAddAppToQuickLaunchBar()) {
-          if (ui_manager_->IsAppInQuickLaunchBar(result.app_id.value()))
+        if (provider_->ui_manager().CanAddAppToQuickLaunchBar()) {
+          if (provider_->ui_manager().IsAppInQuickLaunchBar(
+                  result.app_id.value())) {
             ++app_to_replace_still_installed_in_shelf_count;
+          }
         }
       }
     }

@@ -178,15 +178,8 @@ class InstallIsolatedWebAppFromCommandLineFlagTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-
-    // Clear raw_ptr to existing scheduler to prevent dangling pointer.
-    // TODO(b/283816014): Remove this once SetSubsystems is replaced by
-    // SetProvider().
-    fake_provider().iwa_command_line_install_manager().SetSubsystems(nullptr);
-
-    fake_provider().SetScheduler(std::make_unique<FakeWebAppCommandScheduler>(
-        *profile(), &fake_provider()));
-
+    fake_provider().SetScheduler(
+        std::make_unique<FakeWebAppCommandScheduler>(*profile()));
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 

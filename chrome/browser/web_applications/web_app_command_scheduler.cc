@@ -83,11 +83,15 @@ std::unique_ptr<content::WebContents> CreateIsolatedWebAppWebContents(
 
 }  // namespace
 
-WebAppCommandScheduler::WebAppCommandScheduler(Profile& profile,
-                                               WebAppProvider* provider)
-    : profile_(profile), provider_(provider) {}
+WebAppCommandScheduler::WebAppCommandScheduler(Profile& profile)
+    : profile_(profile) {}
 
 WebAppCommandScheduler::~WebAppCommandScheduler() = default;
+
+void WebAppCommandScheduler::SetProvider(base::PassKey<WebAppProvider>,
+                                         WebAppProvider& provider) {
+  provider_ = &provider;
+}
 
 void WebAppCommandScheduler::Shutdown() {
   is_in_shutdown_ = true;

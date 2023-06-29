@@ -38,7 +38,6 @@
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -140,13 +139,6 @@ WebAppUiManagerImpl::WebAppUiManagerImpl(Profile* profile)
       profile_(profile) {}
 
 WebAppUiManagerImpl::~WebAppUiManagerImpl() = default;
-
-void WebAppUiManagerImpl::SetSubsystems(
-    WebAppSyncBridge* sync_bridge,
-    OsIntegrationManager* os_integration_manager) {
-  sync_bridge_ = sync_bridge;
-  os_integration_manager_ = os_integration_manager;
-}
 
 void WebAppUiManagerImpl::Start() {
   DCHECK(!started_);

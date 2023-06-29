@@ -36,8 +36,6 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   WebAppUiManagerImpl& operator=(const WebAppUiManagerImpl&) = delete;
   ~WebAppUiManagerImpl() override;
 
-  void SetSubsystems(WebAppSyncBridge* sync_bridge,
-                     OsIntegrationManager* os_integration_manager) override;
   void Start() override;
   void Shutdown() override;
 
@@ -106,10 +104,6 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   std::unique_ptr<WebAppDialogManager> dialog_manager_;
 
   const raw_ptr<Profile> profile_;
-
-  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
-  raw_ptr<OsIntegrationManager, DanglingAcrossTasks> os_integration_manager_ =
-      nullptr;
 
   std::map<AppId, std::vector<base::OnceClosure>> windows_closed_requests_map_;
   std::map<AppId, size_t> num_windows_for_apps_map_;

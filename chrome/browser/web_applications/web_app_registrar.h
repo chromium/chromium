@@ -53,8 +53,7 @@ namespace web_app {
 class IsolatedWebAppUrlInfo;
 class WebAppRegistrarObserver;
 class WebApp;
-class WebAppPolicyManager;
-class WebAppTranslationManager;
+class WebAppProvider;
 
 using Registry = std::map<AppId, std::unique_ptr<WebApp>>;
 
@@ -84,11 +83,9 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   bool AppsExistWithExternalConfigData() const;
 
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Start();
   void Shutdown();
-
-  void SetSubsystems(WebAppPolicyManager* policy_manager,
-                     WebAppTranslationManager* translation_manager);
 
   base::WeakPtr<WebAppRegistrar> AsWeakPtr();
 
@@ -533,9 +530,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
  private:
   const raw_ptr<Profile> profile_;
-  raw_ptr<WebAppPolicyManager, DanglingAcrossTasks> policy_manager_ = nullptr;
-  raw_ptr<WebAppTranslationManager, DanglingAcrossTasks> translation_manager_ =
-      nullptr;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};

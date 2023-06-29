@@ -38,12 +38,9 @@ namespace web_app {
 class AllAppsLock;
 class ExternallyManagedAppInstallTask;
 class ExternallyManagedAppRegistrationTaskBase;
-class WebAppCommandScheduler;
 class WebAppDataRetriever;
-class WebAppInstallFinalizer;
-class WebAppUiManager;
 class WebAppUrlLoader;
-class WebContentsManager;
+class WebAppProvider;
 
 enum class RegistrationResultCode { kSuccess, kAlreadyRegistered, kTimeout };
 
@@ -106,10 +103,7 @@ class ExternallyManagedAppManager {
       delete;
   virtual ~ExternallyManagedAppManager();
 
-  void SetSubsystems(WebAppUiManager* ui_manager,
-                     WebAppInstallFinalizer* finalizer,
-                     WebAppCommandScheduler* command_scheduler,
-                     WebContentsManager* web_contents_manager);
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
 
   // Queues an installation operation with the highest priority. Essentially
   // installing the app immediately if there are no ongoing operations or
@@ -181,10 +175,6 @@ class ExternallyManagedAppManager {
       base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()> factory);
 
  protected:
-  WebAppUiManager* ui_manager() { return ui_manager_; }
-  WebAppInstallFinalizer* finalizer() { return finalizer_; }
-  WebAppCommandScheduler* command_scheduler() { return command_scheduler_; }
-
   virtual void ReleaseWebContents();
 
   virtual std::unique_ptr<ExternallyManagedAppInstallTask>
@@ -197,6 +187,8 @@ class ExternallyManagedAppManager {
                                       RegistrationResultCode result);
 
   Profile* profile() { return profile_; }
+
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
  private:
   struct TaskAndCallback;
@@ -255,11 +247,6 @@ class ExternallyManagedAppManager {
   bool IsShuttingDown();
 
   base::OnceClosure registrations_complete_callback_;
-
-  raw_ptr<WebAppUiManager, DanglingAcrossTasks> ui_manager_ = nullptr;
-  raw_ptr<WebAppInstallFinalizer, DanglingAcrossTasks> finalizer_ = nullptr;
-  raw_ptr<WebAppCommandScheduler, DanglingAcrossTasks> command_scheduler_ =
-      nullptr;
 
   const raw_ptr<Profile> profile_;
 

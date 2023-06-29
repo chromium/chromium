@@ -32,7 +32,6 @@ class NavigationHandle;
 namespace web_app {
 
 class AppLock;
-class WebAppSyncBridge;
 // WebAppUiManagerImpl can be used only in UI code.
 class WebAppUiManagerImpl;
 
@@ -96,8 +95,6 @@ class WebAppUiManager {
 
   base::WeakPtr<WebAppUiManager> GetWeakPtr();
 
-  virtual void SetSubsystems(WebAppSyncBridge* sync_bridge,
-                             OsIntegrationManager* os_integration_manager) = 0;
   virtual void Start() = 0;
   virtual void Shutdown() = 0;
 

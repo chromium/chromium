@@ -35,9 +35,9 @@
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_install_finalizer.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -261,8 +261,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
 
 }  // namespace
 
-class ExternallyManagedAppInstallTaskTest
-    : public ChromeRenderViewHostTestHarness {
+class ExternallyManagedAppInstallTaskTest : public WebAppTest {
  public:
   ExternallyManagedAppInstallTaskTest() = default;
 
@@ -273,15 +272,13 @@ class ExternallyManagedAppInstallTaskTest
   ~ExternallyManagedAppInstallTaskTest() override = default;
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    WebAppTest::SetUp();
 
     url_loader_ = std::make_unique<TestWebAppUrlLoader>();
 
     auto* provider = FakeWebAppProvider::Get(profile());
     provider->SetDefaultFakeSubsystems();
     registrar_ = &provider->GetRegistrarMutable();
-    command_scheduler_ = &provider->scheduler();
-    ui_manager_ = static_cast<FakeWebAppUiManager*>(&provider->GetUiManager());
 
     auto install_finalizer =
         std::make_unique<TestExternallyManagedAppInstallFinalizer>(
@@ -301,13 +298,10 @@ class ExternallyManagedAppInstallTaskTest
 
   TestWebAppUrlLoader& url_loader() { return *url_loader_; }
 
-  FakeWebAppUiManager* ui_manager() { return ui_manager_; }
   WebAppRegistrar* registrar() { return registrar_; }
   TestExternallyManagedAppInstallFinalizer* finalizer() {
     return install_finalizer_;
   }
-  WebAppCommandScheduler* command_scheduler() { return command_scheduler_; }
-
   FakeDataRetriever* data_retriever() { return data_retriever_; }
 
   const WebAppInstallInfo& web_app_info() {
@@ -344,21 +338,17 @@ class ExternallyManagedAppInstallTaskTest
         options.install_url, webapps::InstallResultCode::kSuccessNewInstall);
 
     auto task = std::make_unique<ExternallyManagedAppInstallTask>(
-        profile(), url_loader_.get(), ui_manager_, install_finalizer_,
-        command_scheduler_, GetFactoryForRetriever(std::move(data_retriever)),
-        std::move(options));
+        profile(), url_loader_.get(), fake_provider(),
+        GetFactoryForRetriever(std::move(data_retriever)), std::move(options));
     return task;
   }
 
  private:
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
-  raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_ =
-      nullptr;
   raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
   raw_ptr<FakeDataRetriever, DanglingUntriaged> data_retriever_ = nullptr;
   raw_ptr<TestExternallyManagedAppInstallFinalizer, DanglingUntriaged>
       install_finalizer_ = nullptr;
-  raw_ptr<FakeWebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
 };
 
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallSucceeds) {
@@ -763,9 +753,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallURLLoadFailed) {
         GURL(), mojom::UserDisplayMode::kStandalone,
         ExternalInstallSource::kInternalDefault);
     ExternallyManagedAppInstallTask install_task(
-        profile(), &url_loader(), ui_manager(), finalizer(),
-        command_scheduler(), /*data_retriever_factory=*/base::NullCallback(),
-        install_options);
+        profile(), &url_loader(), fake_provider(),
+        /*data_retriever_factory=*/base::NullCallback(), install_options);
     url_loader().SetPrepareForLoadResultLoaded();
     url_loader().SetNextLoadUrlResult(GURL(), result_pair.loader_result);
 
@@ -782,8 +771,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallFailedWebContentsDestroyed) {
       GURL(), mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
   ExternallyManagedAppInstallTask install_task(
-      profile(), &url_loader(), ui_manager(), finalizer(), command_scheduler(),
-      base::NullCallback(), install_options);
+      profile(), &url_loader(), fake_provider(), base::NullCallback(),
+      install_options);
   url_loader().SetPrepareForLoadResultLoaded();
   url_loader().SetNextLoadUrlResult(
       GURL(), WebAppUrlLoader::Result::kFailedWebContentsDestroyed);
@@ -810,9 +799,9 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
     return info;
   });
 
-  ExternallyManagedAppInstallTask task(
-      profile(), /*url_loader=*/nullptr, ui_manager(), finalizer(),
-      command_scheduler(), base::NullCallback(), std::move(options));
+  ExternallyManagedAppInstallTask task(profile(), /*url_loader=*/nullptr,
+                                       fake_provider(), base::NullCallback(),
+                                       std::move(options));
 
   finalizer()->SetNextFinalizeInstallResult(
       kWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
@@ -852,9 +841,9 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
     return info;
   });
 
-  ExternallyManagedAppInstallTask task(
-      profile(), /*url_loader=*/nullptr, ui_manager(), finalizer(),
-      command_scheduler(), base::NullCallback(), std::move(options));
+  ExternallyManagedAppInstallTask task(profile(), /*url_loader=*/nullptr,
+                                       fake_provider(), base::NullCallback(),
+                                       std::move(options));
 
   finalizer()->SetNextFinalizeInstallResult(
       kWebAppUrl, webapps::InstallResultCode::kWriteDataFailed);

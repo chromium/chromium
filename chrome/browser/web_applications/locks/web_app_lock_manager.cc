@@ -132,9 +132,13 @@ void LogLockRequest(
 
 }  // namespace
 
-WebAppLockManager::WebAppLockManager(WebAppProvider& provider)
-    : provider_(provider) {}
+WebAppLockManager::WebAppLockManager() = default;
 WebAppLockManager::~WebAppLockManager() = default;
+
+void WebAppLockManager::SetProvider(base::PassKey<WebAppCommandManager>,
+                                    WebAppProvider& provider) {
+  provider_ = &provider;
+}
 
 bool WebAppLockManager::IsSharedWebContentsLockFree() {
   return lock_manager_.TestLock(GetSharedWebContentsLock()) ==

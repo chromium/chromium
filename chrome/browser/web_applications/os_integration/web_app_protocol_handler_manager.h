@@ -19,7 +19,8 @@ class Profile;
 
 namespace web_app {
 
-class WebAppRegistrar;
+class WebAppProvider;
+class OsIntegrationManager;
 
 class WebAppProtocolHandlerManager {
  public:
@@ -29,8 +30,8 @@ class WebAppProtocolHandlerManager {
       delete;
   virtual ~WebAppProtocolHandlerManager();
 
-  // |registrar| is used to observe OnWebAppInstalled/Uninstalled events.
-  void SetSubsystems(WebAppRegistrar* registrar);
+  void SetProvider(base::PassKey<OsIntegrationManager>,
+                   WebAppProvider& provider);
   void Start();
 
   // If a protocol handler matching the scheme of |protocol_url| is installed
@@ -67,8 +68,8 @@ class WebAppProtocolHandlerManager {
                                     ResultCallback callback);
 
  private:
-  raw_ptr<WebAppRegistrar, DanglingUntriaged> app_registrar_;
   const raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 };
 
 }  // namespace web_app

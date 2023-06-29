@@ -72,11 +72,10 @@ class WebAppCommandScheduler {
       base::expected<InstallIsolatedWebAppCommandSuccess,
                      InstallIsolatedWebAppCommandError>)>;
 
-  WebAppCommandScheduler(Profile& profile, WebAppProvider* provider);
+  explicit WebAppCommandScheduler(Profile& profile);
   virtual ~WebAppCommandScheduler();
 
-  void Start();
-
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Shutdown();
 
   // User initiated install that uses current `WebContents` to fetch manifest
@@ -374,10 +373,7 @@ class WebAppCommandScheduler {
   bool IsShuttingDown() const;
 
   const raw_ref<Profile> profile_;
-  // Safe because we live on the WebAppProvider.
-  // raw_ptr is required due to the FakeWebAppCommandScheduler not having a
-  // WebAppProvider.
-  const raw_ptr<WebAppProvider> provider_;
+  raw_ptr<WebAppProvider> provider_;
 
   bool is_in_shutdown_ = false;
 

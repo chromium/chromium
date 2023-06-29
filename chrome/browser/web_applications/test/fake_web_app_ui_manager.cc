@@ -20,10 +20,6 @@ FakeWebAppUiManager::FakeWebAppUiManager() = default;
 
 FakeWebAppUiManager::~FakeWebAppUiManager() = default;
 
-void FakeWebAppUiManager::SetSubsystems(
-    WebAppSyncBridge* sync_bridge,
-    OsIntegrationManager* os_integration_manager) {}
-
 void FakeWebAppUiManager::Start() {}
 
 void FakeWebAppUiManager::Shutdown() {}

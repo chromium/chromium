@@ -38,16 +38,8 @@ enum class WebappUninstallSource;
 
 namespace web_app {
 
-class WebAppSyncBridge;
-class WebAppUiManager;
 class WebApp;
-class WebAppIconManager;
-class WebAppInstallManager;
-class WebAppPolicyManager;
-class WebAppRegistrar;
-class WebAppTranslationManager;
-class WebAppCommandManager;
-class WebAppOriginAssociationManager;
+class WebAppProvider;
 
 // An finalizer for the installation process, represents the last step.
 // Takes WebAppInstallInfo as input, writes data to disk (e.g icons, shortcuts)
@@ -143,24 +135,11 @@ class WebAppInstallFinalizer {
                            bool shortcut_created,
                            content::WebContents* web_contents);
 
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Start();
   void Shutdown();
 
-  void SetSubsystems(
-      WebAppInstallManager* install_manager,
-      WebAppRegistrar* registrar,
-      WebAppUiManager* ui_manager,
-      WebAppSyncBridge* sync_bridge,
-      OsIntegrationManager* os_integration_manager,
-      WebAppIconManager* icon_manager,
-      WebAppPolicyManager* policy_manager,
-      WebAppTranslationManager* translation_manager,
-      WebAppCommandManager* command_manager,
-      WebAppOriginAssociationManager* origin_association_manager);
-
   Profile* profile() { return profile_; }
-
-  const WebAppRegistrar& GetWebAppRegistrar() const;
 
   // Writes external config data to the web_app DB, mapped per source.
   void WriteExternalConfigMapInfo(
@@ -243,21 +222,9 @@ class WebAppInstallFinalizer {
       const AppId& app_id,
       const WebAppInstallInfo& new_web_app_info);
 
-  raw_ptr<WebAppInstallManager, DanglingAcrossTasks> install_manager_ = nullptr;
-  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
-  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_ = nullptr;
-  raw_ptr<WebAppUiManager, DanglingAcrossTasks> ui_manager_ = nullptr;
-  raw_ptr<OsIntegrationManager, DanglingAcrossTasks> os_integration_manager_ =
-      nullptr;
-  raw_ptr<WebAppIconManager, DanglingUntriaged> icon_manager_ = nullptr;
-  raw_ptr<WebAppPolicyManager, DanglingAcrossTasks> policy_manager_ = nullptr;
-  raw_ptr<WebAppTranslationManager, DanglingUntriaged> translation_manager_ =
-      nullptr;
-  raw_ptr<WebAppCommandManager, DanglingAcrossTasks> command_manager_ = nullptr;
-  raw_ptr<WebAppOriginAssociationManager, DanglingAcrossTasks>
-      origin_association_manager_ = nullptr;
-
   const raw_ptr<Profile> profile_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
+
   bool started_ = false;
 
   base::WeakPtrFactory<WebAppInstallFinalizer> weak_ptr_factory_{this};

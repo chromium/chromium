@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -104,20 +105,17 @@ void WebAppShortcutManager::RegisterProfilePrefs(
 
 WebAppShortcutManager::WebAppShortcutManager(
     Profile* profile,
-    WebAppIconManager* icon_manager,
     WebAppFileHandlerManager* file_handler_manager,
     WebAppProtocolHandlerManager* protocol_handler_manager)
     : profile_(profile),
-      icon_manager_(icon_manager),
       file_handler_manager_(file_handler_manager),
       protocol_handler_manager_(protocol_handler_manager) {}
 
 WebAppShortcutManager::~WebAppShortcutManager() = default;
 
-void WebAppShortcutManager::SetSubsystems(WebAppIconManager* icon_manager,
-                                          WebAppRegistrar* registrar) {
-  icon_manager_ = icon_manager;
-  registrar_ = registrar;
+void WebAppShortcutManager::SetProvider(base::PassKey<OsIntegrationManager>,
+                                        WebAppProvider& provider) {
+  provider_ = &provider;
 }
 
 void WebAppShortcutManager::Start() {
@@ -211,7 +209,7 @@ void WebAppShortcutManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
     const AppId& app_id,
     const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
     ResultCallback callback) {
-  icon_manager_->ReadAllShortcutsMenuIcons(
+  provider_->icon_manager().ReadAllShortcutsMenuIcons(
       app_id,
       base::BindOnce(
           &WebAppShortcutManager::OnShortcutsMenuIconsReadRegisterShortcutsMenu,
@@ -334,7 +332,7 @@ void WebAppShortcutManager::OnShortcutInfoRetrievedUpdateShortcuts(
 
 std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfo(
     const AppId& app_id) {
-  const WebApp* app = registrar_->GetAppById(app_id);
+  const WebApp* app = provider_->registrar_unsafe().GetAppById(app_id);
   DCHECK(app);
   return BuildShortcutInfoForWebApp(app);
 }
@@ -342,7 +340,7 @@ std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfo(
 void WebAppShortcutManager::GetShortcutInfoForApp(
     const AppId& app_id,
     GetShortcutInfoCallback callback) {
-  const WebApp* app = registrar_->GetAppById(app_id);
+  const WebApp* app = provider_->registrar_unsafe().GetAppById(app_id);
 
   // app could be nullptr if registry profile is being deleted.
   if (!app) {
@@ -355,12 +353,12 @@ void WebAppShortcutManager::GetShortcutInfoForApp(
       app->downloaded_icon_sizes(IconPurpose::ANY),
       GetDesiredIconSizesForShortcut());
 
-  DCHECK(icon_manager_);
   if (!icon_sizes_in_px.empty()) {
-    icon_manager_->ReadIcons(app_id, IconPurpose::ANY, icon_sizes_in_px,
-                             base::BindOnce(&WebAppShortcutManager::OnIconsRead,
-                                            weak_ptr_factory_.GetWeakPtr(),
-                                            app_id, std::move(callback)));
+    provider_->icon_manager().ReadIcons(
+        app_id, IconPurpose::ANY, icon_sizes_in_px,
+        base::BindOnce(&WebAppShortcutManager::OnIconsRead,
+                       weak_ptr_factory_.GetWeakPtr(), app_id,
+                       std::move(callback)));
     return;
   }
 
@@ -368,7 +366,7 @@ void WebAppShortcutManager::GetShortcutInfoForApp(
   // get.
   SquareSizePx desired_icon_size = GetDesiredIconSizesForShortcut().back();
 
-  icon_manager_->ReadIconAndResize(
+  provider_->icon_manager().ReadIconAndResize(
       app_id, IconPurpose::ANY, desired_icon_size,
       base::BindOnce(&WebAppShortcutManager::OnIconsRead,
                      weak_ptr_factory_.GetWeakPtr(), app_id,
@@ -380,7 +378,7 @@ void WebAppShortcutManager::OnIconsRead(
     GetShortcutInfoCallback callback,
     std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
   // |icon_bitmaps| can be empty here if no icon found.
-  const WebApp* app = registrar_->GetAppById(app_id);
+  const WebApp* app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!app) {
     std::move(callback).Run(nullptr);
     return;
@@ -411,10 +409,10 @@ std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfoForWebApp(
 
   shortcut_info->app_id = app->app_id();
   shortcut_info->url = app->start_url();
-  shortcut_info->title =
-      base::UTF8ToUTF16(registrar_->GetAppShortName(app->app_id()));
-  shortcut_info->description =
-      base::UTF8ToUTF16(registrar_->GetAppDescription(app->app_id()));
+  shortcut_info->title = base::UTF8ToUTF16(
+      provider_->registrar_unsafe().GetAppShortName(app->app_id()));
+  shortcut_info->description = base::UTF8ToUTF16(
+      provider_->registrar_unsafe().GetAppDescription(app->app_id()));
   shortcut_info->profile_path = profile_->GetPath();
   shortcut_info->profile_name =
       profile_->GetPrefs()->GetString(prefs::kProfileName);
@@ -498,7 +496,7 @@ void WebAppShortcutManager::UpdateShortcutsForAllAppsNow() {
   if (suppress_shortcuts_for_testing_)
     return;
 
-  std::vector<AppId> app_ids = registrar_->GetAppIds();
+  std::vector<AppId> app_ids = provider_->registrar_unsafe().GetAppIds();
   auto done_callback = base::BarrierClosure(
       app_ids.size() + 1,
       base::BindOnce(&WebAppShortcutManager::SetCurrentAppShortcutsVersion,
