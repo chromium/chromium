@@ -166,6 +166,16 @@ class BitmapImageTest : public testing::Test {
     image_->SetData(image_data, true);
   }
 
+  void LoadBlinkWebTestsImage(const char* relative_path) {
+    CreateImage();
+
+    String file_path = test::BlinkWebTestsImagesTestDataPath(relative_path);
+    scoped_refptr<SharedBuffer> image_data = test::ReadFromFile(file_path);
+    ASSERT_TRUE(image_data.get());
+
+    image_->SetData(image_data, true);
+  }
+
   SkBitmap GenerateBitmap(size_t frame_index) {
     SkBitmap bitmap;
     GenerateBitmapForPaintImage(image_->PaintImageForTesting(), frame_index,
@@ -840,9 +850,10 @@ TEST_F(BitmapHistogramTest, DecodedImageDensityKiBWeighted) {
 #if BUILDFLAG(ENABLE_AV1_DECODER)
     LoadImage("red-full-ranged-8bpc.avif");  // 3x3
     // 159x159 but animation is not reported.
-    LoadImage("star-animated-8bpc.avif");
+    LoadBlinkWebTestsImage("avif/star-animated-8bpc.avif");
     // 800x800 but 10-bit images are not reported.
-    LoadImage("red-at-12-oclock-with-color-profile-10bpc.avif");
+    LoadBlinkWebTestsImage(
+        "avif/red-at-12-oclock-with-color-profile-10bpc.avif");
 #endif
     LoadImage("animated-10color.gif");       // 100x100 but GIF is not reported.
     histogram_tester.ExpectTotalCount(

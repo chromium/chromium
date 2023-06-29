@@ -506,12 +506,10 @@ testing/data/happy_dog.avif
 testing/data/icc-v2-gbr.jpg
 testing/data/original-cat-420-629x473.jpg
 testing/data/palatted-color-png-gamma-one-color-profile.png
-testing/data/red-at-12-oclock-with-color-profile-10bpc.avif
 testing/data/red-full-ranged-8bpc.avif
 testing/data/rgb-jpeg-red.jpg
 testing/data/roboto-a-different-cmap.ttf
 testing/data/roboto-a.ttf
-testing/data/star-animated-8bpc.avif
 testing/data/third_party/Amiri/amiri_arabic.woff2
 testing/data/third_party/MEgalopolis/MEgalopolisExtra.woff
 testing/data/third_party/Noto/NotoNaskhArabic-regular.woff2

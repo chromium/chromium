@@ -148,6 +148,12 @@ String BlinkWebTestsFontsTestDataPath(const String& relative_path) {
           .Append(WebStringToFilePath(relative_path)));
 }
 
+String BlinkWebTestsImagesTestDataPath(const String& relative_path) {
+  return FilePathToWebString(WebTestsFilePath()
+                                 .Append(FILE_PATH_LITERAL("images/resources"))
+                                 .Append(WebStringToFilePath(relative_path)));
+}
+
 String StylePerfTestDataPath(const String& relative_path) {
   return FilePathToWebString(
       BlinkRootFilePath()
