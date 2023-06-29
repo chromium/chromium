@@ -186,10 +186,15 @@ void PrefetchNetworkContext::CreateNewURLLoaderFactory(
     factory_params->isolation_info = *isolation_info;
   }
 
-  // Call WillCreateURLLoaderFactory so that Extensions (and other features) can
-  // proxy the URLLoaderFactory pipe.
+  // Prerender should not trigger any prefetch. This assumption is needed to
+  // call GetPageUkmSourceId.
   RenderFrameHost* referring_render_frame_host =
       RenderFrameHost::FromID(referring_render_frame_host_id_);
+  CHECK(!referring_render_frame_host->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kPrerendering));
+
+  // Call WillCreateURLLoaderFactory so that Extensions (and other features) can
+  // proxy the URLLoaderFactory pipe.
   mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
       header_client;
   bool bypass_redirect_checks = false;
