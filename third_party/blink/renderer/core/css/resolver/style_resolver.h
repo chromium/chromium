@@ -258,7 +258,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                     PseudoId,
                                     const AtomicString& view_transition_name,
                                     unsigned rules_to_include);
-  void MatchRuleSets(ElementRuleCollector&, const MatchRequest&);
   void MatchUARules(const Element&, ElementRuleCollector&);
   void MatchUserRules(ElementRuleCollector&);
   void MatchPresentationalHints(StyleResolverState&, ElementRuleCollector&);

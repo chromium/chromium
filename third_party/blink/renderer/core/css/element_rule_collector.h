@@ -159,24 +159,20 @@ class CORE_EXPORT ElementRuleCollector {
   void CollectMatchingPartPseudoRules(const MatchRequest&,
                                       PartNames&,
                                       bool for_shadow_pseudo);
-  void SortAndTransferMatchedRules(bool is_vtt_embedded_style,
+  void SortAndTransferMatchedRules(CascadeOrigin origin,
+                                   bool is_vtt_embedded_style,
                                    StyleRuleUsageTracker* tracker);
   void ClearMatchedRules();
   void AddElementStyleProperties(const CSSPropertyValueSet*,
+                                 CascadeOrigin,
                                  bool is_cacheable = true,
                                  bool is_inline_style = false);
-  void FinishAddingUARules() { result_.FinishAddingUARules(); }
-  void FinishAddingUserRules() { result_.FinishAddingUserRules(); }
-  void FinishAddingPresentationalHints() {
-    result_.FinishAddingPresentationalHints();
-  }
   void BeginAddingAuthorRulesForTreeScope(const TreeScope& tree_scope) {
     current_matching_tree_scope_ = &tree_scope;
     result_.BeginAddingAuthorRulesForTreeScope(tree_scope);
   }
   void FinishAddingAuthorRulesForTreeScope() {
     current_matching_tree_scope_ = nullptr;
-    result_.FinishAddingAuthorRulesForTreeScope();
   }
 
   // Return the pseudo id if the style request is for rules associated with a

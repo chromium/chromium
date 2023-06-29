@@ -381,6 +381,7 @@ inline RuleIndexList* ElementRuleCollector::EnsureRuleList() {
 
 void ElementRuleCollector::AddElementStyleProperties(
     const CSSPropertyValueSet* property_set,
+    CascadeOrigin origin,
     bool is_cacheable,
     bool is_inline_style) {
   if (!property_set) {
@@ -388,7 +389,7 @@ void ElementRuleCollector::AddElementStyleProperties(
   }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
-      property_set,
+      property_set, origin,
       AddMatchedPropertiesOptions::Builder()
           .SetLinkMatchType(AdjustLinkMatchType(inside_link_, link_match_type))
           .SetIsInlineStyle(is_inline_style)
@@ -975,6 +976,7 @@ void ElementRuleCollector::AppendCSSOMWrapperForRule(
 }
 
 void ElementRuleCollector::SortAndTransferMatchedRules(
+    CascadeOrigin origin,
     bool is_vtt_embedded_style,
     StyleRuleUsageTracker* tracker) {
   if (matched_rules_.empty()) {
@@ -1007,7 +1009,7 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
           static_cast<MatchFlags>(MatchFlag::kAffectedByStartingStyle));
     }
     result_.AddMatchedProperties(
-        &rule_data->Rule()->Properties(),
+        &rule_data->Rule()->Properties(), origin,
         AddMatchedPropertiesOptions::Builder()
             .SetLinkMatchType(
                 AdjustLinkMatchType(inside_link_, rule_data->LinkMatchType()))

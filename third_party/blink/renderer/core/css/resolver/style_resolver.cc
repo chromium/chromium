@@ -537,9 +537,8 @@ static void MatchHostRules(const Element& element,
   collector.ClearMatchedRules();
   collector.BeginAddingAuthorRulesForTreeScope(resolver->GetTreeScope());
   resolver->CollectMatchingShadowHostRules(collector);
-  collector.SortAndTransferMatchedRules(/*is_vtt_embedded_style=*/false,
-                                        tracker);
-  collector.FinishAddingAuthorRulesForTreeScope();
+  collector.SortAndTransferMatchedRules(
+      CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
 }
 
 static void MatchSlottedRules(const Element&,
@@ -607,9 +606,8 @@ static void MatchSlottedRules(const Element& element,
     collector.ClearMatchedRules();
     collector.BeginAddingAuthorRulesForTreeScope(slot->GetTreeScope());
     resolver->CollectMatchingSlottedRules(collector);
-    collector.SortAndTransferMatchedRules(/*is_vtt_embedded_style=*/false,
-                                          tracker);
-    collector.FinishAddingAuthorRulesForTreeScope();
+    collector.SortAndTransferMatchedRules(
+        CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
   }
 }
 
@@ -645,8 +643,8 @@ static void MatchVTTRules(const Element& element,
         style_sheet_index++;
       }
     }
-    collector.SortAndTransferMatchedRules(true /* is_vtt_embedded_style */,
-                                          tracker);
+    collector.SortAndTransferMatchedRules(
+        CascadeOrigin::kAuthor, true /* is_vtt_embedded_style */, tracker);
   }
 }
 
@@ -661,8 +659,8 @@ static void MatchElementScopeRules(const Element& element,
     collector.BeginAddingAuthorRulesForTreeScope(
         element_scope_resolver->GetTreeScope());
     element_scope_resolver->CollectMatchingElementScopeRules(collector);
-    collector.SortAndTransferMatchedRules(/*is_vtt_embedded_style=*/false,
-                                          tracker);
+    collector.SortAndTransferMatchedRules(
+        CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
   } else {
     collector.BeginAddingAuthorRulesForTreeScope(element.GetTreeScope());
   }
@@ -680,12 +678,10 @@ static void MatchElementScopeRules(const Element& element,
     // every frame, making the style cacheable would effectively just fill up
     // the MPC with unnecessary ComputedStyles.
     bool is_inline_style_cacheable = !element.InlineStyle()->IsMutable();
-    collector.AddElementStyleProperties(element.InlineStyle(),
-                                        is_inline_style_cacheable,
-                                        true /* is_inline_style */);
+    collector.AddElementStyleProperties(
+        element.InlineStyle(), CascadeOrigin::kAuthor,
+        is_inline_style_cacheable, true /* is_inline_style */);
   }
-
-  collector.FinishAddingAuthorRulesForTreeScope();
 }
 
 void StyleResolver::MatchPseudoPartRulesForUAHost(
@@ -741,9 +737,8 @@ void StyleResolver::MatchPseudoPartRules(const Element& part_matching_element,
       collector.BeginAddingAuthorRulesForTreeScope(resolver->GetTreeScope());
       resolver->CollectMatchingPartPseudoRules(collector, current_names,
                                                for_shadow_pseudo);
-      collector.SortAndTransferMatchedRules(/*is_vtt_embedded_style=*/false,
-                                            tracker_);
-      collector.FinishAddingAuthorRulesForTreeScope();
+      collector.SortAndTransferMatchedRules(
+          CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker_);
     }
 
     // If we have now considered the :host/:host() ::part rules in our own tree
@@ -774,9 +769,8 @@ void StyleResolver::MatchAuthorRules(
 void StyleResolver::MatchUserRules(ElementRuleCollector& collector) {
   collector.ClearMatchedRules();
   GetDocument().GetStyleEngine().CollectMatchingUserRules(collector);
-  collector.SortAndTransferMatchedRules(/*is_vtt_embedded_style=*/false,
-                                        tracker_);
-  collector.FinishAddingUserRules();
+  collector.SortAndTransferMatchedRules(
+      CascadeOrigin::kUser, /*is_vtt_embedded_style=*/false, tracker_);
 }
 
 namespace {
@@ -859,19 +853,13 @@ void StyleResolver::MatchUARules(const Element& element,
   ForEachUARulesForElement(element, &collector, func);
 
   if (!match_request.IsEmpty()) {
-    MatchRuleSets(collector, match_request);
+    collector.ClearMatchedRules();
+    collector.CollectMatchingRules(match_request);
+    collector.SortAndTransferMatchedRules(
+        CascadeOrigin::kUserAgent, /*is_vtt_embedded_style=*/false, tracker_);
   }
 
-  collector.FinishAddingUARules();
   collector.SetMatchingUARules(false);
-}
-
-void StyleResolver::MatchRuleSets(ElementRuleCollector& collector,
-                                  const MatchRequest& match_request) {
-  collector.ClearMatchedRules();
-  collector.CollectMatchingRules(match_request);
-  collector.SortAndTransferMatchedRules(/*is_vtt_embedded_style=*/false,
-                                        tracker_);
 }
 
 void StyleResolver::MatchPresentationalHints(StyleResolverState& state,
@@ -887,26 +875,28 @@ void StyleResolver::MatchPresentationalHints(StyleResolverState& state,
     // attribute every frame, filling up the MPC.
     const bool is_cacheable = !element.IsSVGElement();
 
-    collector.AddElementStyleProperties(element.PresentationAttributeStyle(),
-                                        is_cacheable);
+    collector.AddElementStyleProperties(
+        element.PresentationAttributeStyle(),
+        CascadeOrigin::kAuthorPresentationalHint, is_cacheable);
 
     // Now we check additional mapped declarations.
     // Tables and table cells share an additional mapped rule that must be
     // applied after all attributes, since their mapped style depends on the
     // values of multiple attributes.
     collector.AddElementStyleProperties(
-        element.AdditionalPresentationAttributeStyle(), is_cacheable);
+        element.AdditionalPresentationAttributeStyle(),
+        CascadeOrigin::kAuthorPresentationalHint, is_cacheable);
 
     if (auto* html_element = DynamicTo<HTMLElement>(element)) {
       if (html_element->HasDirectionAuto()) {
         collector.AddElementStyleProperties(
             html_element->CachedDirectionality() == TextDirection::kLtr
                 ? LeftToRightDeclaration()
-                : RightToLeftDeclaration());
+                : RightToLeftDeclaration(),
+            CascadeOrigin::kAuthorPresentationalHint);
       }
     }
   }
-  collector.FinishAddingPresentationalHints();
 }
 
 DISABLE_CFI_PERF
@@ -930,9 +920,9 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
     auto* svg_element = DynamicTo<SVGElement>(element);
     if (include_smil_properties && svg_element) {
       collector.AddElementStyleProperties(
-          svg_element->AnimatedSMILStyleProperties(), false /* isCacheable */);
+          svg_element->AnimatedSMILStyleProperties(), CascadeOrigin::kAuthor,
+          false /* isCacheable */);
     }
-    collector.FinishAddingAuthorRulesForTreeScope();
   }
 }
 
@@ -1364,7 +1354,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
   if (!style_request.IsPseudoStyleRequest()) {
     if (IsForcedColorsModeEnabled()) {
       cascade.MutableMatchResult().AddMatchedProperties(
-          ForcedColorsUserAgentDeclarations());
+          ForcedColorsUserAgentDeclarations(), CascadeOrigin::kUserAgent);
     }
 
     // UA rule: * { overlay: none !important }
@@ -1374,7 +1364,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
     // namespace since the sheet has a default namespace.
     if (RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
       cascade.MutableMatchResult().AddMatchedProperties(
-          UniversalOverlayUserAgentDeclaration());
+          UniversalOverlayUserAgentDeclaration(), CascadeOrigin::kUserAgent);
     }
 
     // This adds a CSSInitialColorValue to the cascade for the document
@@ -1386,7 +1376,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
     // TODO(crbug.com/1046753): Remove this when canvastext is supported.
     if (element == state.GetDocument().documentElement()) {
       cascade.MutableMatchResult().AddMatchedProperties(
-          DocumentElementUserAgentDeclarations());
+          DocumentElementUserAgentDeclarations(), CascadeOrigin::kUserAgent);
     }
   }
 
@@ -1640,13 +1630,10 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
     auto* set =
         MakeGarbageCollected<MutableCSSPropertyValueSet>(state.GetParserMode());
     set->SetProperty(property.GetCSSPropertyName(), *value);
-    cascade.MutableMatchResult().FinishAddingUARules();
-    cascade.MutableMatchResult().FinishAddingUserRules();
-    cascade.MutableMatchResult().FinishAddingPresentationalHints();
     cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(
         element.GetTreeScope());
-    cascade.MutableMatchResult().AddMatchedProperties(set);
-    cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope();
+    cascade.MutableMatchResult().AddMatchedProperties(set,
+                                                      CascadeOrigin::kAuthor);
     cascade.Apply();
   }
   scoped_refptr<const ComputedStyle> style = state.TakeStyle();
@@ -1842,17 +1829,11 @@ void StyleResolver::CollectPseudoRulesForElement(
 
   if (rules_to_include & kUACSSRules) {
     MatchUARules(element, collector);
-  } else {
-    collector.FinishAddingUARules();
   }
 
   if (rules_to_include & kUserCSSRules) {
     MatchUserRules(collector);
-  } else {
-    collector.FinishAddingUserRules();
   }
-
-  collector.FinishAddingPresentationalHints();
 
   if (rules_to_include & kAuthorCSSRules) {
     MatchAuthorRules(element, ScopedResolverFor(element), collector);
@@ -2222,13 +2203,10 @@ const CSSValue* StyleResolver::ComputeValue(
   auto* set =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(state.GetParserMode());
   set->SetProperty(property_name, value);
-  cascade.MutableMatchResult().FinishAddingUARules();
-  cascade.MutableMatchResult().FinishAddingUserRules();
-  cascade.MutableMatchResult().FinishAddingPresentationalHints();
   cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(
       element->GetTreeScope());
-  cascade.MutableMatchResult().AddMatchedProperties(set);
-  cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope();
+  cascade.MutableMatchResult().AddMatchedProperties(set,
+                                                    CascadeOrigin::kAuthor);
   cascade.Apply();
 
   CSSPropertyRef property_ref(property_name, element->GetDocument());
@@ -2407,8 +2385,8 @@ StyleRuleList* StyleResolver::CollectMatchingRulesFromUnconnectedRuleSet(
   collector.SetMode(SelectorChecker::kCollectingStyleRules);
   MatchRequest match_request(rule_set, scope);
   collector.CollectMatchingRules(match_request);
-  collector.SortAndTransferMatchedRules(/*is_vtt_embedded_style=*/false,
-                                        tracker_);
+  collector.SortAndTransferMatchedRules(
+      CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker_);
   collector.SetMatchingRulesFromNoStyleSheet(false);
 
   return collector.MatchedStyleRuleList();
@@ -2826,7 +2804,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForFormattedText(
   // Use StyleCascade to apply inheritance in the correct order.
   STACK_UNINITIALIZED StyleCascade cascade(state);
   cascade.MutableMatchResult().AddMatchedProperties(
-      css_property_value_set,
+      css_property_value_set, CascadeOrigin::kNone,
       AddMatchedPropertiesOptions::Builder().SetIsInlineStyle(true).Build());
   cascade.Apply();
 
@@ -2963,12 +2941,9 @@ scoped_refptr<const ComputedStyle> StyleResolver::ResolvePositionFallbackStyle(
   const CSSPropertyValueSet& properties = try_rule->Properties();
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
-  cascade.MutableMatchResult().FinishAddingUARules();
-  cascade.MutableMatchResult().FinishAddingUserRules();
-  cascade.MutableMatchResult().FinishAddingPresentationalHints();
   cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(*tree_scope);
-  cascade.MutableMatchResult().AddMatchedProperties(&properties);
-  cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope();
+  cascade.MutableMatchResult().AddMatchedProperties(&properties,
+                                                    CascadeOrigin::kAuthor);
   cascade.Apply();
 
   return state.TakeStyle();

@@ -879,15 +879,19 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
   auto* light_declaration = ParseDeclarationBlock("color-scheme:light");
 
   StyleCascade cascade1(state);
-  cascade1.MutableMatchResult().AddMatchedProperties(color_declaration);
-  cascade1.MutableMatchResult().AddMatchedProperties(dark_declaration);
+  cascade1.MutableMatchResult().AddMatchedProperties(color_declaration,
+                                                     CascadeOrigin::kNone);
+  cascade1.MutableMatchResult().AddMatchedProperties(dark_declaration,
+                                                     CascadeOrigin::kNone);
   cascade1.Apply();
   scoped_refptr<const ComputedStyle> style = state.StyleBuilder().CloneStyle();
   EXPECT_EQ(Color::kWhite, style->VisitedDependentColor(GetCSSPropertyColor()));
 
   StyleCascade cascade2(state);
-  cascade2.MutableMatchResult().AddMatchedProperties(color_declaration);
-  cascade2.MutableMatchResult().AddMatchedProperties(light_declaration);
+  cascade2.MutableMatchResult().AddMatchedProperties(color_declaration,
+                                                     CascadeOrigin::kNone);
+  cascade2.MutableMatchResult().AddMatchedProperties(light_declaration,
+                                                     CascadeOrigin::kNone);
   cascade2.Apply();
   style = state.StyleBuilder().CloneStyle();
   EXPECT_EQ(Color::kBlack, style->VisitedDependentColor(GetCSSPropertyColor()));
@@ -918,16 +922,20 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   auto* light_declaration = ParseDeclarationBlock("color-scheme:light");
 
   StyleCascade cascade1(state);
-  cascade1.MutableMatchResult().AddMatchedProperties(bgimage_declaration);
-  cascade1.MutableMatchResult().AddMatchedProperties(dark_declaration);
+  cascade1.MutableMatchResult().AddMatchedProperties(bgimage_declaration,
+                                                     CascadeOrigin::kNone);
+  cascade1.MutableMatchResult().AddMatchedProperties(dark_declaration,
+                                                     CascadeOrigin::kNone);
   cascade1.Apply();
   EXPECT_TRUE(state.TakeStyle()->HasBackgroundImage());
 
   state.SetStyle(*initial);
 
   StyleCascade cascade2(state);
-  cascade2.MutableMatchResult().AddMatchedProperties(bgimage_declaration);
-  cascade2.MutableMatchResult().AddMatchedProperties(light_declaration);
+  cascade2.MutableMatchResult().AddMatchedProperties(bgimage_declaration,
+                                                     CascadeOrigin::kNone);
+  cascade2.MutableMatchResult().AddMatchedProperties(light_declaration,
+                                                     CascadeOrigin::kNone);
   cascade2.Apply();
   EXPECT_FALSE(state.TakeStyle()->HasBackgroundImage());
 }

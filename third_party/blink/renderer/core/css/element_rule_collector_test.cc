@@ -72,7 +72,8 @@ class ElementRuleCollectorTest : public PageTestBase {
     MatchRequest request(rule_set, scope);
 
     collector.CollectMatchingRules(request);
-    collector.SortAndTransferMatchedRules(/*is_vtt_embedded_style=*/false,
+    collector.SortAndTransferMatchedRules(CascadeOrigin::kNone,
+                                          /*is_vtt_embedded_style=*/false,
                                           /*tracker=*/nullptr);
 
     const MatchedPropertiesVector& vector = result.GetMatchedProperties();
@@ -117,7 +118,8 @@ class ElementRuleCollectorTest : public PageTestBase {
 
     collector.SetMode(SelectorChecker::kCollectingCSSRules);
     collector.CollectMatchingRules(request);
-    collector.SortAndTransferMatchedRules(/*is_vtt_embedded_style=*/false,
+    collector.SortAndTransferMatchedRules(CascadeOrigin::kAuthor,
+                                          /*is_vtt_embedded_style=*/false,
                                           /*tracker=*/nullptr);
 
     return collector.MatchedCSSRuleList();

@@ -126,10 +126,11 @@ class TestCascade {
     DCHECK_LE(current_origin_, origin) << "Please add declarations in order";
     EnsureAtLeast(origin);
     cascade_.MutableMatchResult().AddMatchedProperties(
-        set, AddMatchedPropertiesOptions::Builder()
-                 .SetLinkMatchType(link_match_type)
-                 .SetIsInlineStyle(is_inline_style)
-                 .Build());
+        set, origin,
+        AddMatchedPropertiesOptions::Builder()
+            .SetLinkMatchType(link_match_type)
+            .SetIsInlineStyle(is_inline_style)
+            .Build());
   }
 
   void Apply(CascadeFilter filter = CascadeFilter()) {
@@ -240,21 +241,17 @@ class TestCascade {
   void FinishOrigin() {
     switch (current_origin_) {
       case CascadeOrigin::kUserAgent:
-        cascade_.MutableMatchResult().FinishAddingUARules();
         current_origin_ = CascadeOrigin::kUser;
         break;
       case CascadeOrigin::kUser:
-        cascade_.MutableMatchResult().FinishAddingUserRules();
         current_origin_ = CascadeOrigin::kAuthorPresentationalHint;
         break;
       case CascadeOrigin::kAuthorPresentationalHint:
-        cascade_.MutableMatchResult().FinishAddingPresentationalHints();
         cascade_.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(
             GetDocument());
         current_origin_ = CascadeOrigin::kAuthor;
         break;
       case CascadeOrigin::kAuthor:
-        cascade_.MutableMatchResult().FinishAddingAuthorRulesForTreeScope();
         current_origin_ = CascadeOrigin::kAnimation;
         break;
       case CascadeOrigin::kAnimation:

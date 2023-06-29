@@ -139,14 +139,11 @@ class CORE_EXPORT MatchResult {
 
   void AddMatchedProperties(
       const CSSPropertyValueSet* properties,
+      CascadeOrigin origin,
       const AddMatchedPropertiesOptions& = AddMatchedPropertiesOptions());
   bool HasMatchedProperties() const { return matched_properties_.size(); }
 
-  void FinishAddingUARules();
-  void FinishAddingUserRules();
-  void FinishAddingPresentationalHints();
   void BeginAddingAuthorRulesForTreeScope(const TreeScope&);
-  void FinishAddingAuthorRulesForTreeScope();
 
   void AddCustomHighlightName(const AtomicString& custom_highlight_name) {
     custom_highlight_names_.insert(custom_highlight_name);
@@ -270,7 +267,9 @@ class CORE_EXPORT MatchResult {
   bool has_non_universal_highlight_pseudo_styles_{false};
   bool has_non_ua_highlight_pseudo_styles_{false};
   MatchFlags flags_{0};
-  CascadeOrigin current_origin_{CascadeOrigin::kUserAgent};
+#if DCHECK_IS_ON()
+  CascadeOrigin last_origin_{CascadeOrigin::kNone};
+#endif
   uint16_t current_tree_order_{0};
   uint16_t pseudo_element_styles_{kPseudoIdNone};
 };
