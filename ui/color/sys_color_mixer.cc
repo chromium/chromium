@@ -70,7 +70,7 @@ void AddThemedSysColorOverrides(ColorMixer& mixer,
   mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefSecondary35
                                              : kColorRefPrimary90};
 
-  mixer[kColorSysHeader] = {dark_mode ? kColorRefSecondary15
+  mixer[kColorSysHeader] = {dark_mode ? kColorRefSecondary12
                                       : kColorRefSecondary90};
   mixer[kColorSysHeaderContainer] = {dark_mode ? kColorRefSecondary25
                                                : kColorRefPrimary95};
@@ -102,6 +102,11 @@ void AddGrayscaleSysColorOverrides(ColorMixer& mixer,
                                              : kColorRefNeutral90};
   mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral15
                                       : kColorRefNeutral90};
+  mixer[kColorSysHeaderInactive] = {
+      dark_mode ? GetResultingPaintColor(SetAlpha({kColorSysHeader}, 0x99),
+                                         {kColorRefNeutral25})
+                : GetResultingPaintColor(SetAlpha({kColorSysHeader}, 0x48),
+                                         {kColorRefNeutral98})};
   mixer[kColorSysHeaderContainer] = {dark_mode ? kColorRefNeutral25
                                                : kColorRefNeutral95};
   mixer[kColorSysOnHeaderDivider] = {dark_mode ? kColorRefNeutral25
@@ -256,10 +261,11 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
   mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefNeutral40
                                              : kColorRefPrimary90};
 
-  mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral15
+  mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral12
                                       : kColorRefPrimary90};
   mixer[kColorSysHeaderInactive] = {
-      dark_mode ? kColorSysSurface1
+      dark_mode ? GetResultingPaintColor(SetAlpha({kColorSysHeader}, 0x99),
+                                         {kColorRefNeutral25})
                 : GetResultingPaintColor(SetAlpha({kColorSysHeader}, 0x48),
                                          {kColorSysSurfaceVariant})};
   mixer[kColorSysHeaderContainer] = {dark_mode ? kColorRefNeutral25
