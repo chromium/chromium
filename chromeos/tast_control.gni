@@ -394,4 +394,8 @@ tast_disabled_tests_from_lacros_all = [
 
   # https://crbug.com/1446233
   "tast.arc.IntentForward.lacros_vm",
+
+  # https://crbug.com/1459085
+  # TODO(crbug.com/1459085): Remove this when tast-test repo change is applied.
+  "lacros.CompareVersionWithAsh",
 ]
