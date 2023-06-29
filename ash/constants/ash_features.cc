@@ -836,7 +836,7 @@ BASE_FEATURE(kExoOrdinalMotion,
 // or not (=decides using heuristics based on key code etc.).
 BASE_FEATURE(kExoConsumedByImeByFlag,
              "ExoConsumedByImeByFlag",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables using an extended Wayland API for ConfirmCompositionText.
 BASE_FEATURE(kExoExtendedConfirmComposition,
