@@ -13,8 +13,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser//device_notifications/device_connection_tracker.h"
-#include "chrome/browser/device_notifications/device_status_icon_renderer.h"
 #include "chrome/browser/device_notifications/device_system_tray_icon.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -58,11 +56,6 @@ const std::string& GetExpectedOriginName(Profile* profile,
 }
 
 }  // namespace
-
-MockDeviceConnectionTracker::MockDeviceConnectionTracker(Profile* profile)
-    : DeviceConnectionTracker(profile) {}
-
-MockDeviceConnectionTracker::~MockDeviceConnectionTracker() = default;
 
 void DeviceSystemTrayIconTestBase::TearDown() {
   // In a test environment, g_browser_process is set to null before
@@ -380,27 +373,20 @@ void DeviceSystemTrayIconTestBase::TestExtensionRemoval() {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-class MockDeviceSystemTrayIcon : public DeviceSystemTrayIcon {
- public:
-  MockDeviceSystemTrayIcon() : DeviceSystemTrayIcon(nullptr) {}
-
-  MOCK_METHOD(void, ProfileAdded, (Profile*), (override));
-  MOCK_METHOD(void, ProfileRemoved, (Profile*), (override));
-  MOCK_METHOD(void, NotifyConnectionCountUpdated, (Profile*), (override));
-  MOCK_METHOD(gfx::ImageSkia, GetIcon, (), (override));
-  MOCK_METHOD(std::u16string, GetTitleLabel, (size_t, size_t), (override));
-  MOCK_METHOD(std::u16string, GetContentSettingsLabel, (), (override));
-  MOCK_METHOD(DeviceConnectionTracker*,
-              GetConnectionTracker,
-              (base::WeakPtr<Profile>),
-              (override));
-};
-
 class DeviceSystemTrayIconTest : public DeviceSystemTrayIconTestBase {
  public:
   void SetUp() override {
     DeviceSystemTrayIconTestBase::SetUp();
     device_system_tray_icon_ = std::make_unique<MockDeviceSystemTrayIcon>();
+    ON_CALL(*device_system_tray_icon_, StageProfile)
+        .WillByDefault([this](Profile* profile) {
+          device_system_tray_icon_->DeviceSystemTrayIcon::StageProfile(profile);
+        });
+    ON_CALL(*device_system_tray_icon_, UnstageProfile)
+        .WillByDefault([this](Profile* profile, bool immediate) {
+          device_system_tray_icon_->DeviceSystemTrayIcon::UnstageProfile(
+              profile, immediate);
+        });
   }
 
   // DeviceSystemTrayIconTestBase
@@ -521,6 +507,16 @@ TEST_F(DeviceSystemTrayIconTest, TwoProfilesRemovedFiveSecondsApart) {
 TEST_F(DeviceSystemTrayIconTest, CallbackAfterDeviceSystemTrayIconDestroyed) {
   Profile* profile = CreateTestingProfile("user");
   auto device_system_tray_icon = std::make_unique<MockDeviceSystemTrayIcon>();
+  ON_CALL(*device_system_tray_icon, StageProfile)
+      .WillByDefault([&device_system_tray_icon](Profile* profile) {
+        device_system_tray_icon->DeviceSystemTrayIcon::StageProfile(profile);
+      });
+  ON_CALL(*device_system_tray_icon, UnstageProfile)
+      .WillByDefault(
+          [&device_system_tray_icon](Profile* profile, bool immediate) {
+            device_system_tray_icon->DeviceSystemTrayIcon::UnstageProfile(
+                profile, immediate);
+          });
   EXPECT_CALL(*device_system_tray_icon, ProfileAdded(profile));
   device_system_tray_icon->StageProfile(profile);
   EXPECT_CALL(*device_system_tray_icon, NotifyConnectionCountUpdated(profile));
