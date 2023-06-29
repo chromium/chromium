@@ -157,16 +157,36 @@ function generateGa4SessionId() {
 }
 
 /**
+ * Sends an "end_session" event when CCA is closed or refreshed.
+ */
+function registerGa4EndSessionEvent(): void {
+  window.addEventListener('unload', () => {
+    sendGa4Event({
+      name: 'end_session',
+      eventParams: {
+        duration: window.performance.now().toFixed(),
+      },
+      beacon: true,
+    });
+  });
+}
+
+interface SendGaEventParams {
+  baseEvent: BaseEvent;
+  dimensions: Map<MetricDimension, string>;
+}
+
+/**
  * Sends an event to GA.
  *
- * @param baseEvent The basic event properties.
- * @param eventDimensions Custom dimensions of the event.
+ * @param params The parameters object.
+ * @param params.baseEvent The basic event properties.
+ * @param params.dimensions Custom dimensions of the event.
  */
-function sendGaEvent(
-    baseEvent: BaseEvent, eventDimensions: Map<MetricDimension, string>): void {
+function sendGaEvent({baseEvent, dimensions}: SendGaEventParams): void {
   assert(gaBaseDimensions !== null);
   const event: UniversalAnalytics.FieldsObject = {...baseEvent};
-  for (const [key, value] of [...gaBaseDimensions, ...eventDimensions]) {
+  for (const [key, value] of [...gaBaseDimensions, ...dimensions]) {
     event[`dimension${key}`] = value;
   }
   // TODO(b/267265966): Move `MetricDimension` to this file. Hardcode the
@@ -176,14 +196,26 @@ function sendGaEvent(
   window.ga('send', 'event', event);
 }
 
+interface SendGa4EventParams {
+  name: string;
+  eventParams: Record<string, number|string>;
+  beacon?: boolean;
+}
+
 /**
  * Sends an event to GA4.
  *
- * @param name The name of the event.
- * @param eventParams The event parameters (custom dimensions) of the event.
+ * @param params The parameters object.
+ * @param params.name The name of the event.
+ * @param params.eventParams The event parameters (custom dimensions) of the
+ *     event.
+ * @param params.beacon Send the event via `navigator.sendBeacon`.
  */
-function sendGa4Event(
-    name: string, eventParams: Record<string, number|string>): void {
+function sendGa4Event({
+  name,
+  eventParams,
+  beacon = false,
+}: SendGa4EventParams): void {
   const {apiSecret, baseParams, clientId, measurementId, sessionId} =
       assertExists(ga4Config);
   const params = {
@@ -203,16 +235,19 @@ function sendGa4Event(
     // https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?client_type=gtag#recommended_parameters_for_reports.
     ['session_id']: sessionId,
   };
-  void fetch(
-      `https://www.google-analytics.com/mp/collect?measurement_id=${
-          measurementId}&api_secret=${apiSecret}`,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          ['client_id']: clientId,
-          events: [{name, params}],
-        }),
-      });
+
+  const url = `https://www.google-analytics.com/mp/collect?measurement_id=${
+      measurementId}&api_secret=${apiSecret}`;
+  const body = JSON.stringify({
+    ['client_id']: clientId,
+    events: [{name, params}],
+  });
+
+  if (beacon) {
+    navigator.sendBeacon(url, body);
+  } else {
+    void fetch(url, {method: 'POST', body});
+  }
 }
 
 /**
@@ -237,8 +272,16 @@ function getScreenResolution() {
 export interface GaHelper {
   initGa: typeof initGa;
   initGa4: typeof initGa4;
+  registerGa4EndSessionEvent: typeof registerGa4EndSessionEvent;
   sendGaEvent: typeof sendGaEvent;
   sendGa4Event: typeof sendGa4Event;
   setGaEnabled: typeof setGaEnabled;
 }
-export {initGa, initGa4, sendGaEvent, sendGa4Event, setGaEnabled};
+export {
+  initGa,
+  initGa4,
+  registerGa4EndSessionEvent,
+  sendGaEvent,
+  sendGa4Event,
+  setGaEnabled,
+};

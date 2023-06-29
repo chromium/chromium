@@ -75,7 +75,7 @@ async function sendEvent(
 async function sendGaEvent(
     baseEvent: BaseEvent, dimensions: Map<MetricDimension, string>) {
   const gaHelper = await getGaHelper();
-  await gaHelper.sendGaEvent(baseEvent, dimensions);
+  await gaHelper.sendGaEvent({baseEvent, dimensions});
 }
 
 async function sendGa4Event(
@@ -98,7 +98,7 @@ async function sendGa4Event(
   }
   const gaHelper = await getGaHelper();
   const name = event.eventAction.replaceAll('-', '_');
-  await gaHelper.sendGa4Event(name, params);
+  await gaHelper.sendGa4Event({name, eventParams: params});
 }
 
 /**
@@ -174,6 +174,7 @@ export async function initMetrics(): Promise<void> {
   const board = assertExists(/^(x86-)?(\w*)/.exec(loadTimeData.getBoard()))[0];
   const osVer = navigator.appVersion.match(/CrOS\s+\S+\s+([\d.]+)/)?.[1] ?? '';
   const isTestImage = loadTimeData.getIsTestImage();
+  const gaHelper = await getGaHelper();
 
   async function initGa() {
     const baseDimensions = new Map([
@@ -187,7 +188,6 @@ export async function initMetrics(): Promise<void> {
     function setClientId(id: string) {
       localStorage.set(LocalStorageKey.GA_USER_ID, id);
     }
-    const gaHelper = await getGaHelper();
     return gaHelper.initGa(
         {
           id: GA_ID,
@@ -211,7 +211,6 @@ export async function initMetrics(): Promise<void> {
     function setClientId(id: string) {
       localStorage.set(LocalStorageKey.GA4_CLIENT_ID, id);
     }
-    const gaHelper = await getGaHelper();
     return gaHelper.initGa4(
         {
           apiSecret: GA4_API_SECRET,
@@ -222,10 +221,8 @@ export async function initMetrics(): Promise<void> {
         Comlink.proxy(setClientId));
   }
 
-  await Promise.all([
-    initGa(),
-    initGa4(),
-  ]);
+  await Promise.all([initGa(), initGa4()]);
+  await gaHelper.registerGa4EndSessionEvent();
   ready.signal();
 }
 
