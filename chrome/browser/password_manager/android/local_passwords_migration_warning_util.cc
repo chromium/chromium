@@ -6,6 +6,8 @@
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/PasswordMigrationWarningBridge_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -34,9 +36,25 @@ void ShowWarning(const gfx::NativeWindow window, Profile* profile) {
 }
 
 bool ShouldShowWarning(Profile* profile) {
+  if (profile->IsOffTheRecord()) {
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(
           password_manager::features::
               kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
+    return false;
+  }
+
+  PrefService* pref_service = profile->GetPrefs();
+  bool is_warning_acknowledged = pref_service->GetBoolean(
+      password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning);
+  if (is_warning_acknowledged) {
+    return false;
+  }
+
+  if (password_bubble_experiment::HasChosenToSyncPasswords(
+          SyncServiceFactory::GetForProfile(profile))) {
     return false;
   }
 
@@ -44,7 +62,6 @@ bool ShouldShowWarning(Profile* profile) {
     return true;
   }
 
-  PrefService* pref_service = profile->GetPrefs();
   base::Time last_shown_timestamp = pref_service->GetTime(
       password_manager::prefs::kLocalPasswordsMigrationWarningShownTimestamp);
   base::TimeDelta time_since_last_shown =
@@ -53,8 +70,6 @@ bool ShouldShowWarning(Profile* profile) {
     return false;
   }
 
-  // TODO(crbug.com/1451827): Check whether the user is already syncing
-  // passwords.
   return true;
 }
 
