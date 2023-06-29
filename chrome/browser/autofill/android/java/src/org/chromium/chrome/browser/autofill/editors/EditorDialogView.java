@@ -232,7 +232,7 @@ public class EditorDialogView
     public void findAndScrollToInvalidField() {
         // Iterate over all the fields to update what errors are displayed, which is necessary
         // to to clear existing errors on any newly valid fields.
-        mFieldViews.forEach(view -> view.updateDisplayedError(!view.isValid()));
+        mFieldViews.forEach(view -> view.updateDisplayedError());
 
         // Make sure that focus is on an invalid field.
         @Nullable

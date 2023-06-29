@@ -15,11 +15,8 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Drop
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FORM_VALID;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.CUSTOM_ERROR_MESSAGE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.INVALID_ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.REQUIRED_ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
@@ -36,7 +33,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Text
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.REGION_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.STREET_ADDRESS_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.isFormValid;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.validateForm;
 
 import android.app.ProgressDialog;
 import android.text.TextUtils;
@@ -56,7 +53,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.GetSubKeysReques
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.editors.EditorBase;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType;
 import org.chromium.payments.mojom.AddressErrors;
@@ -72,6 +69,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 /**
  * An address editor. Can be used for either shipping or billing address editing.
@@ -86,7 +84,6 @@ public class AddressEditor
     private final Set<String> mPhoneNumbers = new HashSet<>();
     private final boolean mSaveToDisk;
     private final PhoneNumberUtil.CountryAwareFormatTextWatcher mPhoneFormatter;
-    private final CountryAwarePhoneNumberValidator mPhoneValidator;
     @Nullable
     private AutofillProfileBridge mAutofillProfileBridge;
     @Nullable
@@ -117,7 +114,6 @@ public class AddressEditor
     public AddressEditor(boolean saveToDisk) {
         mSaveToDisk = saveToDisk;
         mPhoneFormatter = new PhoneNumberUtil.CountryAwareFormatTextWatcher();
-        mPhoneValidator = new CountryAwarePhoneNumberValidator();
     }
 
     /**
@@ -235,7 +231,6 @@ public class AddressEditor
                 showProgressDialog();
                 mRecentlySelectedCountry = countryCode;
                 mPhoneFormatter.setCountryCode(mRecentlySelectedCountry);
-                mPhoneValidator.setCountryCode(mRecentlySelectedCountry);
                 loadAdminAreasForCountry(mRecentlySelectedCountry);
             }
         });
@@ -248,7 +243,6 @@ public class AddressEditor
         // for the new profile that's being edited.
         final String countryValue = mCountryField.get(VALUE);
         assert countryValue != null;
-        mPhoneValidator.setCountryCode(countryValue);
         mPhoneFormatter.setCountryCode(countryValue);
 
         // There's a finite number of fields for address editing. Changing the country will re-order
@@ -294,23 +288,15 @@ public class AddressEditor
 
         // Phone number is present for all countries.
         if (mPhoneField == null) {
-            String requiredErrorMessage =
-                    mContext.getString(R.string.pref_edit_dialog_field_required_validation_message);
-            mPhoneField =
-                    new PropertyModel.Builder(TEXT_ALL_KEYS)
-                            .with(TEXT_INPUT_TYPE, PHONE_NUMBER_INPUT)
-                            .with(LABEL,
-                                    mContext.getString(
-                                            R.string.autofill_profile_editor_phone_number))
-                            .with(TEXT_SUGGESTIONS, new ArrayList<>(mPhoneNumbers))
-                            .with(TEXT_FORMATTER, mPhoneFormatter)
-                            .with(VALIDATOR, mPhoneValidator)
-                            .with(IS_REQUIRED, true)
-                            .with(REQUIRED_ERROR_MESSAGE, requiredErrorMessage)
-                            .with(INVALID_ERROR_MESSAGE,
-                                    mContext.getString(
-                                            R.string.payments_phone_invalid_validation_message))
-                            .build();
+            mPhoneField = new PropertyModel.Builder(TEXT_ALL_KEYS)
+                                  .with(TEXT_INPUT_TYPE, PHONE_NUMBER_INPUT)
+                                  .with(LABEL,
+                                          mContext.getString(
+                                                  R.string.autofill_profile_editor_phone_number))
+                                  .with(TEXT_SUGGESTIONS, new ArrayList<>(mPhoneNumbers))
+                                  .with(TEXT_FORMATTER, mPhoneFormatter)
+                                  .with(IS_REQUIRED, true)
+                                  .build();
         }
 
         // Phone number field is cached, so its value needs to be updated for every new profile
@@ -330,11 +316,11 @@ public class AddressEditor
                 mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView);
 
         loadAdminAreasForCountry(mCountryField.get(VALUE));
-        mEditorModel.set(FORM_VALID, mAddressErrors == null || isFormValid(mEditorModel));
+        mEditorModel.set(FORM_VALID, mAddressErrors == null || validateForm(mEditorModel));
     }
 
     private void onDone() {
-        if (!isFormValid(mEditorModel)) {
+        if (!validateForm(mEditorModel)) {
             // Note: triggering editor error messages and focused field update using temporary
             // property.
             // TODO(crbug.com/1435314): remove this temporary logic.
@@ -565,7 +551,6 @@ public class AddressEditor
         mAddressUiComponents = mAutofillProfileBridge.getAddressUiComponents(
                 countryCode, languageCode, AddressValidationType.PAYMENT_REQUEST);
         // In terms of order, country must be the first field.
-        mCountryField.set(CUSTOM_ERROR_MESSAGE, getAddressError(AddressField.COUNTRY));
         editorFields.add(new FieldItem(DROPDOWN, mCountryField, /*isFullLine=*/true));
         for (int i = 0; i < mAddressUiComponents.size(); i++) {
             AddressUiComponent component = mAddressUiComponents.get(i);
@@ -584,55 +569,45 @@ public class AddressEditor
             // already localized.
             field.set(LABEL, component.label);
 
+            field.set(VALIDATOR,
+                    EditorFieldValidator.builder()
+                            .withInitialErrorMessage(getAddressError(component.id))
+                            .build());
             // Libaddressinput formats do not always require the full name (RECIPIENT), but
             // PaymentRequest does.
             if (component.isRequired || component.id == AddressField.RECIPIENT) {
                 field.set(IS_REQUIRED, true);
-                field.set(REQUIRED_ERROR_MESSAGE,
-                        mContext.getString(
-                                R.string.pref_edit_dialog_field_required_validation_message));
+                field.get(VALIDATOR).setRequiredErrorMessage(mContext.getString(
+                        R.string.pref_edit_dialog_field_required_validation_message));
             } else {
                 field.set(IS_REQUIRED, false);
             }
 
-            field.set(CUSTOM_ERROR_MESSAGE, getAddressError(component.id));
             boolean isFullLine = component.isFullLine || component.id == AddressField.LOCALITY
                     || component.id == AddressField.DEPENDENT_LOCALITY;
             editorFields.add(new FieldItem(fieldType, field, isFullLine));
         }
         // Phone number (and email if applicable) are the last fields of the address.
-        mPhoneField.set(CUSTOM_ERROR_MESSAGE, mAddressErrors != null ? mAddressErrors.phone : null);
+        mPhoneField.set(VALIDATOR, getPhoneValidator(countryCode));
         editorFields.add(new FieldItem(TEXT_INPUT, mPhoneField, /*isFullLine=*/true));
         mEditorModel.set(EDITOR_FIELDS, editorFields);
     }
 
-    /** Country based phone number validator. */
-    private static class CountryAwarePhoneNumberValidator implements EditorFieldValidator {
-        @Nullable
-        private String mCountryCode;
+    private EditorFieldValidator getPhoneValidator(String countryCode) {
+        // TODO(crbug.com/736387): Warn users when the phone number is a possible number but may be
+        // invalid.
+        // Note that isPossibleNumber is used since the metadata in libphonenumber has to be
+        // updated frequently (daily) to do more strict validation.
+        Predicate<String> validationPredicate = value
+                -> !TextUtils.isEmpty(value)
+                && PhoneNumberUtil.isPossibleNumber(value, countryCode);
 
-        /**
-         * Builds a country based phone number validator.
-         */
-        CountryAwarePhoneNumberValidator() {}
-
-        /**
-         * Sets the country code used to validate the phone number.
-         *
-         * @param countryCode The given country code.
-         */
-        public void setCountryCode(@Nullable String countryCode) {
-            mCountryCode = countryCode;
-        }
-
-        @Override
-        public boolean isValid(@Nullable String value) {
-            // TODO(gogerald): Warn users when the phone number is a possible number but may be
-            // invalid, crbug.com/736387.
-            // Note that isPossibleNumber is used since the metadata in libphonenumber has to be
-            // updated frequently (daily) to do more strict validation.
-            return !TextUtils.isEmpty(value)
-                    && PhoneNumberUtil.isPossibleNumber(value, mCountryCode);
-        }
+        return EditorFieldValidator.builder()
+                .withRequiredErrorMessage(mContext.getString(
+                        R.string.pref_edit_dialog_field_required_validation_message))
+                .withValidationPredicate(validationPredicate,
+                        mContext.getString(R.string.payments_phone_invalid_validation_message))
+                .withInitialErrorMessage(mAddressErrors != null ? mAddressErrors.phone : null)
+                .build();
     }
 }

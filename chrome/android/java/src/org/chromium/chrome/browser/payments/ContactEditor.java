@@ -11,11 +11,8 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FORM_VALID;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.CUSTOM_ERROR_MESSAGE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.INVALID_ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.REQUIRED_ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
@@ -28,7 +25,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Text
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PERSON_NAME_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PHONE_NUMBER_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.isFormValid;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.validateForm;
 
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
@@ -44,7 +41,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.editors.EditorBase;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.payments.mojom.PayerErrors;
 import org.chromium.ui.modelutil.ListModel;
@@ -81,8 +78,6 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     private final Set<String> mPhoneNumbers;
     private final Set<String> mEmailAddresses;
     @Nullable private PayerErrors mPayerErrors;
-    @Nullable
-    private EditorFieldValidator mPhoneValidator;
     @Nullable
     private EditorFieldValidator mEmailValidator;
     private boolean mContactNew;
@@ -150,11 +145,11 @@ public class ContactEditor extends EditorBase<AutofillContact> {
             completionStatus |= INVALID_NAME;
         }
 
-        if (mRequestPayerPhone && !getPhoneValidator().isValid(phone)) {
+        if (mRequestPayerPhone && !isPhoneValid(phone)) {
             completionStatus |= INVALID_PHONE_NUMBER;
         }
 
-        if (mRequestPayerEmail && !getEmailValidator().isValid(email)) {
+        if (mRequestPayerEmail && !isEmailValid(email)) {
             completionStatus |= INVALID_EMAIL;
         }
 
@@ -176,7 +171,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
      * @param phoneNumber The phone number to possibly add.
      */
     public void addPhoneNumberIfValid(@Nullable String phoneNumber) {
-        if (getPhoneValidator().isValid(phoneNumber)) mPhoneNumbers.add(phoneNumber);
+        if (isPhoneValid(phoneNumber)) mPhoneNumbers.add(phoneNumber);
     }
 
     /**
@@ -185,7 +180,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
      * @param emailAddress The email address to possibly add.
      */
     public void addEmailAddressIfValid(@Nullable String emailAddress) {
-        if (getEmailValidator().isValid(emailAddress)) mEmailAddresses.add(emailAddress);
+        if (isEmailValid(emailAddress)) mEmailAddresses.add(emailAddress);
     }
 
     /**
@@ -229,15 +224,16 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                                                   R.string.payments_name_field_in_contact_details))
                                   .with(TEXT_SUGGESTIONS, new ArrayList<>(mPayerNames))
                                   .with(IS_REQUIRED, true)
-                                  .with(REQUIRED_ERROR_MESSAGE,
-                                          mContext.getString(
-                                                  R.string.pref_edit_dialog_field_required_validation_message))
-                                  .with(CUSTOM_ERROR_MESSAGE, nameCustomErrorMessage)
+                                  .with(VALIDATOR,
+                                          EditorFieldValidator.builder()
+                                                  .withRequiredErrorMessage(mContext.getString(
+                                                          R.string.pref_edit_dialog_field_required_validation_message))
+                                                  .withInitialErrorMessage(nameCustomErrorMessage)
+                                                  .build())
                                   .with(VALUE, mContact.getPayerName())
                                   .build()
                         : null);
 
-        final String phoneCustomErrorMessage = mPayerErrors != null ? mPayerErrors.phone : null;
         mPhoneField = Optional.ofNullable(mRequestPayerPhone
                         ? new PropertyModel.Builder(TEXT_ALL_KEYS)
                                   .with(TEXT_INPUT_TYPE, PHONE_NUMBER_INPUT)
@@ -247,20 +243,12 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                                   .with(TEXT_SUGGESTIONS, new ArrayList<>(mPhoneNumbers))
                                   .with(TEXT_FORMATTER,
                                           new PhoneNumberUtil.CountryAwareFormatTextWatcher())
-                                  .with(VALIDATOR, getPhoneValidator())
                                   .with(IS_REQUIRED, true)
-                                  .with(REQUIRED_ERROR_MESSAGE,
-                                          mContext.getString(
-                                                  R.string.pref_edit_dialog_field_required_validation_message))
-                                  .with(INVALID_ERROR_MESSAGE,
-                                          mContext.getString(
-                                                  R.string.payments_phone_invalid_validation_message))
-                                  .with(CUSTOM_ERROR_MESSAGE, phoneCustomErrorMessage)
+                                  .with(VALIDATOR, getPhoneValidator())
                                   .with(VALUE, mContact.getPayerPhone())
                                   .build()
                         : null);
 
-        final String emailCustomErrorMessage = mPayerErrors != null ? mPayerErrors.email : null;
         mEmailField = Optional.ofNullable(mRequestPayerEmail
                         ? new PropertyModel.Builder(TEXT_ALL_KEYS)
                                   .with(TEXT_INPUT_TYPE, EMAIL_ADDRESS_INPUT)
@@ -268,15 +256,8 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                                           mContext.getString(
                                                   R.string.autofill_profile_editor_email_address))
                                   .with(TEXT_SUGGESTIONS, new ArrayList<>(mEmailAddresses))
-                                  .with(VALIDATOR, getEmailValidator())
                                   .with(IS_REQUIRED, true)
-                                  .with(REQUIRED_ERROR_MESSAGE,
-                                          mContext.getString(
-                                                  R.string.pref_edit_dialog_field_required_validation_message))
-                                  .with(INVALID_ERROR_MESSAGE,
-                                          mContext.getString(
-                                                  R.string.payments_email_invalid_validation_message))
-                                  .with(CUSTOM_ERROR_MESSAGE, emailCustomErrorMessage)
+                                  .with(VALIDATOR, getEmailValidator())
                                   .with(VALUE, mContact.getPayerEmail())
                                   .build()
                         : null);
@@ -309,11 +290,11 @@ public class ContactEditor extends EditorBase<AutofillContact> {
         mEditorMCP = PropertyModelChangeProcessor.create(
                 mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView);
         mEditorModel.set(VISIBLE, true);
-        mEditorModel.set(FORM_VALID, mPayerErrors == null || isFormValid(mEditorModel));
+        mEditorModel.set(FORM_VALID, mPayerErrors == null || validateForm(mEditorModel));
     }
 
     private void onDone() {
-        if (!isFormValid(mEditorModel)) {
+        if (!validateForm(mEditorModel)) {
             // Note: triggering editor error messages and focused field update using temporary
             // property.
             // TODO(crbug.com/1435314): remove this temporary logic.
@@ -371,33 +352,37 @@ public class ContactEditor extends EditorBase<AutofillContact> {
         reset();
     }
 
-    private EditorFieldValidator getPhoneValidator() {
-        if (mPhoneValidator == null) {
-            mPhoneValidator = new EditorFieldValidator() {
-                @Override
-                public boolean isValid(@Nullable String value) {
-                    // TODO(crbug.com/999286): PhoneNumberUtils internally trigger disk reads for
-                    //                         certain devices/configurations.
-                    try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                        return value != null
-                                && PhoneNumberUtils.isGlobalPhoneNumber(
-                                        PhoneNumberUtils.stripSeparators(value));
-                    }
-                }
-            };
+    private static boolean isEmailValid(@Nullable String email) {
+        return email != null && Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    private static boolean isPhoneValid(@Nullable String phone) {
+        // TODO(crbug.com/999286): PhoneNumberUtils internally trigger
+        // disk reads for certain devices/configurations.
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            return phone != null
+                    && PhoneNumberUtils.isGlobalPhoneNumber(
+                            PhoneNumberUtils.stripSeparators(phone));
         }
-        return mPhoneValidator;
     }
 
     private EditorFieldValidator getEmailValidator() {
-        if (mEmailValidator == null) {
-            mEmailValidator = new EditorFieldValidator() {
-                @Override
-                public boolean isValid(@Nullable String value) {
-                    return value != null && Patterns.EMAIL_ADDRESS.matcher(value).matches();
-                }
-            };
-        }
-        return mEmailValidator;
+        return EditorFieldValidator.builder()
+                .withRequiredErrorMessage(mContext.getString(
+                        R.string.pref_edit_dialog_field_required_validation_message))
+                .withInitialErrorMessage(mPayerErrors != null ? mPayerErrors.email : null)
+                .withValidationPredicate(ContactEditor::isEmailValid,
+                        mContext.getString(R.string.payments_email_invalid_validation_message))
+                .build();
+    }
+
+    private EditorFieldValidator getPhoneValidator() {
+        return EditorFieldValidator.builder()
+                .withRequiredErrorMessage(mContext.getString(
+                        R.string.pref_edit_dialog_field_required_validation_message))
+                .withInitialErrorMessage(mPayerErrors != null ? mPayerErrors.phone : null)
+                .withValidationPredicate(ContactEditor::isPhoneValid,
+                        mContext.getString(R.string.payments_phone_invalid_validation_message))
+                .build();
     }
 }

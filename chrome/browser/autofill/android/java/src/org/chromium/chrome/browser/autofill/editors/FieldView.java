@@ -8,10 +8,8 @@ package org.chromium.chrome.browser.autofill.editors;
 interface FieldView {
     /**
      * Updates the error display.
-     *
-     * @param showError If true, displays the error message.  If false, clears it.
      */
-    void updateDisplayedError(boolean showError);
+    void updateDisplayedError();
 
     /** @return True if this field is valid. */
     boolean isValid();

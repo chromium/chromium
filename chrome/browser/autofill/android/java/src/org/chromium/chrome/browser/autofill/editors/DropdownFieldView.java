@@ -6,14 +6,13 @@ package org.chromium.chrome.browser.autofill.editors;
 
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_HINT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.CUSTOM_ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.getDropdownKeyByValue;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.getDropdownValueByKey;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.getValidationErrorMessage;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.isFieldValid;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.setDropdownKey;
 
 import android.annotation.SuppressLint;
@@ -129,8 +128,8 @@ class DropdownFieldView implements FieldView {
                     }
                     mSelectedIndex = position;
                     setDropdownKey(mFieldModel, key);
-                    mFieldModel.set(CUSTOM_ERROR_MESSAGE, null);
-                    updateDisplayedError(false);
+                    mFieldModel.set(ERROR_MESSAGE, null);
+                    updateDisplayedError();
                 }
                 if (sObserverForTest != null) {
                     sObserverForTest.onEditorTextUpdate();
@@ -180,7 +179,11 @@ class DropdownFieldView implements FieldView {
 
     @Override
     public boolean isValid() {
-        return isFieldValid(mFieldModel);
+        if (mFieldModel.get(VALIDATOR) == null) {
+            return true;
+        }
+        mFieldModel.get(VALIDATOR).validate(mFieldModel);
+        return mFieldModel.get(ERROR_MESSAGE) != null;
     }
 
     @Override
@@ -189,30 +192,35 @@ class DropdownFieldView implements FieldView {
     }
 
     @Override
-    public void updateDisplayedError(boolean showError) {
+    public void updateDisplayedError() {
         View view = mDropdown.getSelectedView();
-        if (view != null && view instanceof TextView) {
-            if (showError) {
-                Drawable drawable = TraceEventVectorDrawableCompat.create(
-                        mContext.getResources(), R.drawable.ic_error, mContext.getTheme());
-                drawable.setBounds(
-                        0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-                ((TextView) view).setError(getValidationErrorMessage(mFieldModel), drawable);
-                mUnderline.setBackgroundColor(mContext.getColor(R.color.default_text_color_error));
-                mErrorLabel.setText(getValidationErrorMessage(mFieldModel));
-                mErrorLabel.setVisibility(View.VISIBLE);
-            } else {
-                ((TextView) view).setError(null);
-                mUnderline.setBackgroundColor(mContext.getColor(R.color.modern_grey_600));
-                mErrorLabel.setText(null);
-                mErrorLabel.setVisibility(View.GONE);
-            }
+        if (view == null || !(view instanceof TextView)) {
+            return;
         }
+        String errorMessage = mFieldModel.get(ERROR_MESSAGE);
+        if (errorMessage == null) {
+            ((TextView) view).setError(null);
+            mUnderline.setBackgroundColor(mContext.getColor(R.color.modern_grey_600));
+            mErrorLabel.setText(null);
+            mErrorLabel.setVisibility(View.GONE);
+            return;
+        }
+
+        Drawable drawable = TraceEventVectorDrawableCompat.create(
+                mContext.getResources(), R.drawable.ic_error, mContext.getTheme());
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        ((TextView) view).setError(errorMessage, drawable);
+        mUnderline.setBackgroundColor(mContext.getColor(R.color.default_text_color_error));
+        mErrorLabel.setText(errorMessage);
+        mErrorLabel.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void scrollToAndFocus() {
-        updateDisplayedError(!isValid());
+        if (mFieldModel.get(VALIDATOR) != null) {
+            mFieldModel.get(VALIDATOR).validate(mFieldModel);
+            updateDisplayedError();
+        }
         requestFocusAndHideKeyboard();
     }
 

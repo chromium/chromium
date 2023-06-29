@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.CUSTOM_ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
@@ -17,8 +18,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Text
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PHONE_NUMBER_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.REGION_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.STREET_ADDRESS_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.getValidationErrorMessage;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.isFieldValid;
 
 import android.content.Context;
 import android.text.Editable;
@@ -123,7 +122,10 @@ class TextFieldView extends FrameLayout implements FieldView {
                 if (!hasFocus) {
                     // Validate the field when the user de-focuses it.
                     // Show no errors until the user has already tried to edit the field once.
-                    updateDisplayedError(!isFieldValid(mEditorFieldModel));
+                    if (mEditorFieldModel.get(VALIDATOR) != null) {
+                        mEditorFieldModel.get(VALIDATOR).validate(mEditorFieldModel);
+                        updateDisplayedError();
+                    }
                 }
             }
         });
@@ -133,7 +135,8 @@ class TextFieldView extends FrameLayout implements FieldView {
             @Override
             public void afterTextChanged(Editable s) {
                 fieldModel.set(VALUE, s.toString());
-                updateDisplayedError(false);
+                mEditorFieldModel.set(ERROR_MESSAGE, null);
+                updateDisplayedError();
                 if (sObserverForTest != null) {
                     sObserverForTest.onEditorTextUpdate();
                 }
@@ -142,7 +145,7 @@ class TextFieldView extends FrameLayout implements FieldView {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (mInput.hasFocus()) {
-                    fieldModel.set(CUSTOM_ERROR_MESSAGE, null);
+                    mEditorFieldModel.set(ERROR_MESSAGE, null);
                 }
             }
         });
@@ -243,7 +246,11 @@ class TextFieldView extends FrameLayout implements FieldView {
 
     @Override
     public boolean isValid() {
-        return isFieldValid(mEditorFieldModel);
+        if (mEditorFieldModel.get(VALIDATOR) == null) {
+            return true;
+        }
+        mEditorFieldModel.get(VALIDATOR).validate(mEditorFieldModel);
+        return mEditorFieldModel.get(ERROR_MESSAGE) == null;
     }
 
     @Override
@@ -252,8 +259,8 @@ class TextFieldView extends FrameLayout implements FieldView {
     }
 
     @Override
-    public void updateDisplayedError(boolean showError) {
-        mInputLayout.setError(showError ? getValidationErrorMessage(mEditorFieldModel) : null);
+    public void updateDisplayedError() {
+        mInputLayout.setError(mEditorFieldModel.get(ERROR_MESSAGE));
     }
 
     @Override
