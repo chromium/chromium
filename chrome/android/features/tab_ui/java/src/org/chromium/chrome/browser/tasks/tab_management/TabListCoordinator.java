@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardPropert
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -81,6 +82,7 @@ public class TabListCoordinator
     static final int GRID_LAYOUT_SPAN_COUNT_LARGE = 4;
     static final int MAX_SCREEN_WIDTH_COMPACT_DP = 600;
     static final int MAX_SCREEN_WIDTH_MEDIUM_DP = 800;
+
     private final TabListMediator mMediator;
     private final TabListRecyclerView mRecyclerView;
     private final SimpleRecyclerViewAdapter mAdapter;
@@ -97,6 +99,10 @@ public class TabListCoordinator
     private @Nullable TabStripSnapshotter mTabStripSnapshotter;
     private ItemTouchHelper mItemTouchHelper;
     private OnItemTouchListener mOnItemTouchListener;
+    private TabListEmptyCoordinator mTabListEmptyCoordinator;
+    private int mEmptyViewTitleResId;
+    private int mEmptyViewSubtitleResId;
+    private int mEmptyViewImageResId;
 
     /**
      * Construct a coordinator for UI that shows a list of tabs.
@@ -123,6 +129,8 @@ public class TabListCoordinator
      * @param rootView The root view of the app.
      * @param onModelTokenChange Callback to invoke whenever a model changes. Only currently
      *                           respected in TabListMode.STRIP mode.
+     * @param showEmptyView A boolean to determine if we should show empty view in tab switcher.
+     *                      Currently only valid for TabListMode.GRID and TabListMode.LIST.
      */
     TabListCoordinator(@TabListMode int mode, Context context, TabModelSelector tabModelSelector,
             @Nullable TabListMediator.ThumbnailProvider thumbnailProvider,
@@ -134,13 +142,15 @@ public class TabListCoordinator
             @Nullable TabSwitcherMediator
                     .PriceWelcomeMessageController priceWelcomeMessageController,
             @NonNull ViewGroup parentView, boolean attachToParent, String componentName,
-            @NonNull ViewGroup rootView, @Nullable Callback<Object> onModelTokenChange) {
+            @NonNull ViewGroup rootView, @Nullable Callback<Object> onModelTokenChange,
+            boolean showEmptyView) {
         mMode = mode;
         mItemType = itemType;
         mContext = context;
         mModel = new TabListModel();
         mAdapter = new SimpleRecyclerViewAdapter(mModel);
         mRootView = rootView;
+
         RecyclerView.RecyclerListener recyclerListener = null;
         if (mMode == TabListMode.GRID || mMode == TabListMode.CAROUSEL) {
             mAdapter.registerType(UiType.SELECTABLE, parent -> {
@@ -258,6 +268,21 @@ public class TabListCoordinator
                                                   : LinearLayoutManager.HORIZONTAL,
                         false));
             }
+        }
+
+        // @Todo crbugs.com/1456257 (zheliooo) We could wait to lazily inflate this until we need to
+        // show it for the 1st time to save some memory. Also we could destroy when the first tab is
+        // added, or we also have the soft/hard cleanup methods.
+        if (showEmptyView && (mMode == TabListMode.GRID || mMode == TabListMode.LIST)) {
+            mTabListEmptyCoordinator = new TabListEmptyCoordinator(parentView, mModel);
+            mEmptyViewImageResId = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                    ? R.drawable.tablet_tab_switcher_empty_state_illustration
+                    : R.drawable.phone_tab_switcher_empty_state_illustration;
+            mEmptyViewTitleResId = R.string.tabswitcher_no_tabs_empty_state;
+            mEmptyViewSubtitleResId = R.string.tabswitcher_no_tabs_open_to_visit_different_pages;
+            mTabListEmptyCoordinator.initializeEmptyStateView(
+                    mEmptyViewImageResId, mEmptyViewTitleResId, mEmptyViewSubtitleResId);
+            mTabListEmptyCoordinator.attachEmptyView();
         }
 
         if (mMode == TabListMode.GRID) {
@@ -507,6 +532,9 @@ public class TabListCoordinator
     void prepareTabSwitcherView() {
         registerLayoutChangeListener();
         mRecyclerView.prepareTabSwitcherView();
+        if (mTabListEmptyCoordinator != null) {
+            mTabListEmptyCoordinator.setIsTabSwitcherShowing(true);
+        }
         mMediator.registerOnScrolledListener(mRecyclerView);
     }
 
@@ -519,6 +547,9 @@ public class TabListCoordinator
     }
 
     void postHiding() {
+        if (mTabListEmptyCoordinator != null) {
+            mTabListEmptyCoordinator.setIsTabSwitcherShowing(false);
+        }
         unregisterLayoutChangeListener();
         mRecyclerView.postHiding();
         mMediator.postHiding();
@@ -530,6 +561,9 @@ public class TabListCoordinator
     @Override
     public void onDestroy() {
         mMediator.destroy();
+        if (mTabListEmptyCoordinator != null) {
+            mTabListEmptyCoordinator.removeListObserver();
+        }
         if (mListLayoutListener != null) {
             mRecyclerView.removeOnLayoutChangeListener(mListLayoutListener);
             mLayoutListenerRegistered = false;

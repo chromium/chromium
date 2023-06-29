@@ -20,6 +20,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -54,6 +55,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAssertion;
@@ -147,7 +149,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "force-fieldtrials=Study/Group"})
-@EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+@EnableFeatures({
+        ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study",
+        ChromeFeatureList.EMPTY_STATES})
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherAndStartSurfaceLayoutTest {
@@ -2115,6 +2119,71 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         assertEquals("4", snackbarManager.getCurrentSnackbarForTesting().getTextForTesting());
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         verifyTabSwitcherCardCount(cta, 3);
+    }
+
+    @Test
+    @MediumTest
+    public void testEmptyStateView_DeleteLastNormalTab() throws Exception {
+        prepareTabs(1, 0, NTP_URL);
+        enterGTSWithThumbnailChecking();
+
+        // Close the last tab.
+        Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().closeTab(
+                    tab, false, false, true);
+        });
+
+        // Check empty view should show up.
+        onView(allOf(withId(R.id.empty_state_container),
+                       withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
+                               ApplicationProvider.getApplicationContext())))))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testEmptyStateView_ToggleIncognito() throws Exception {
+        mActivityTestRule.loadUrl(mUrl);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+
+        // Prepare one incognito tab and one normal and enter tab switcher.
+        createTabs(cta, true, 1);
+        createTabs(cta, false, 1);
+        enterTabSwitcher(cta);
+
+        // Go into normal tab switcher.
+        switchTabModel(cta, false);
+
+        // Close the last normal tab.
+        Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().closeTab(
+                    tab, false, false, true);
+        });
+
+        // Go into incognito tab switcher.
+        switchTabModel(cta, true);
+
+        // Check empty view should never show up in incognito tab switcher.
+        onView(allOf(withId(R.id.empty_state_container),
+                       withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
+                               ApplicationProvider.getApplicationContext())))))
+                .check(matches(not(isDisplayed())));
+
+        // Close the last incognito tab.
+        Tab incognitoTab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().closeTab(
+                    incognitoTab, false, false, true);
+        });
+
+        // Incognito tab switcher should exit to go to normal tab switcher and we should see empty
+        // view.
+        onView(allOf(withId(R.id.empty_state_container),
+                       withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
+                               ApplicationProvider.getApplicationContext())))))
+                .check(matches(isDisplayed()));
     }
 
     private TabSwitcher.TabListDelegate getTabListDelegateFromUIThread() {

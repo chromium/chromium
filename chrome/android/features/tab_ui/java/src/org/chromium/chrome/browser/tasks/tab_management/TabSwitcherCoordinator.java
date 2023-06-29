@@ -249,7 +249,7 @@ public class TabSwitcherCoordinator
             mTabListCoordinator = new TabListCoordinator(mode, activity, tabModelSelector,
                     mMultiThumbnailCardProvider, titleProvider, true, mMediator, null,
                     TabProperties.UiType.CLOSABLE, null, this, container, true, COMPONENT_NAME,
-                    mRootView, null);
+                    mRootView, null, ChromeFeatureList.sEmptyStates.isEnabled());
             mTabListCoordinator.setOnLongPressTabItemEventListener(this);
             mContainerViewChangeProcessor = PropertyModelChangeProcessor.create(containerViewModel,
                     mTabListCoordinator.getContainerView(), TabListContainerViewBinder::bind);

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:autoMirrored="true"
+    android:height="130dp"
+    android:viewportHeight="130"
+    android:viewportWidth="130"
+    android:width="130dp">
+  <path
+      android:fillColor="@color/empty_state_icon_bg_color"
+      android:pathData="M84.07,67.58L53.87,37.38C44.1,27.6 51.02,10.9 64.84,10.9H100.76C104.87,10.9 108.82,12.53 111.73,15.44L123.97,27.68C130.03,33.74 130.03,43.56 123.97,49.62L106.01,67.58C99.95,73.64 90.13,73.64 84.07,67.58Z"/>
+  <path
+      android:fillColor="@color/empty_state_icon_bg_color"
+      android:pathData="M45.36,61.85L75.57,92.06C85.34,101.83 78.42,118.54 64.6,118.54H28.68C24.56,118.54 20.62,116.9 17.71,114L5.46,101.75C-0.59,95.69 -0.59,85.87 5.46,79.82L23.43,61.85C29.48,55.8 39.3,55.8 45.36,61.85Z"/>
+  <path
+      android:pathData="M94,41L94,99A3,3 0,0 1,91 102L50,102A3,3 0,0 1,47 99L47,41A3,3 0,0 1,50 38L91,38A3,3 0,0 1,94 41z"
+      android:strokeColor="@color/empty_state_icon_color"
+      android:strokeWidth="2"/>
+  <path
+      android:fillColor="@color/empty_state_icon_color"
+      android:fillType="evenOdd"
+      android:pathData="M50,37C47.79,37 46,38.79 46,41V45H95V41C95,38.79 93.21,37 91,37H50Z"/>
+  <path
+      android:fillColor="@color/empty_state_icon_bg_color"
+      android:pathData="M84,31L84,89A3,3 0,0 1,81 92L40,92A3,3 0,0 1,37 89L37,31A3,3 0,0 1,40 28L81,28A3,3 0,0 1,84 31z"
+      android:strokeColor="@color/empty_state_icon_color"
+      android:strokeWidth="2"/>
+  <path
+      android:fillColor="@color/empty_state_icon_color"
+      android:fillType="evenOdd"
+      android:pathData="M40,27C37.79,27 36,28.79 36,31V35H85V31C85,28.79 83.21,27 81,27H40Z"/>
+  <path
+      android:fillColor="@macro/default_bg_color_elev_0"
+      android:pathData="M40,29L42,29A1,1 0,0 1,43 30L43,32A1,1 0,0 1,42 33L40,33A1,1 0,0 1,39 32L39,30A1,1 0,0 1,40 29z"/>
+  <path
+      android:pathData="M81,30L79,32"
+      android:strokeColor="@macro/default_bg_color_elev_0"
+      android:strokeLineCap="round"
+      android:strokeWidth="2"/>
+  <path
+      android:pathData="M79,30L81,32"
+      android:strokeColor="@macro/default_bg_color_elev_0"
+      android:strokeLineCap="round"
+      android:strokeWidth="2"/>
+</vector>

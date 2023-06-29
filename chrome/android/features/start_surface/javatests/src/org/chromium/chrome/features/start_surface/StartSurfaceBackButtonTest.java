@@ -78,7 +78,8 @@ import java.util.concurrent.ExecutionException;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+@EnableFeatures(
+        {ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.EMPTY_STATES})
 @DoNotBatch(reason = "StartSurface*Test tests startup behaviours and thus can't be batched.")
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
@@ -119,7 +120,6 @@ public class StartSurfaceBackButtonTest {
     @Before
     public void setUp() throws IOException {
         StartSurfaceTestUtils.setUpStartSurfaceTests(mImmediateReturn, mActivityTestRule);
-
         mLayoutChangedCallbackHelper = new CallbackHelper();
 
         if (isInstantReturn()) {
