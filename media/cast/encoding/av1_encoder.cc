@@ -192,7 +192,7 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   aom_image_t aom_image;
   aom_image_t* const result = aom_img_wrap(
       &aom_image, aom_format, frame_size.width(), frame_size.height(), 1,
-      video_frame->writable_data(VideoFrame::kYPlane));
+      const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kYPlane)));
   DCHECK_EQ(result, &aom_image);
 
   aom_image.planes[AOM_PLANE_Y] =
