@@ -657,21 +657,14 @@
         'os_type': 'android',
       },
       'Oreo Phone Tester': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'device_os': 'OPR3.170623.008',
-              'device_type': 'marlin',
-              'os': 'Android',
-            },
-          ],
-        },
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_oreo_gtests',
         },
         'mixins': [
           'has_native_resultdb_integration',
+          'oreo_fleet',
+          'walleye',
         ],
       },
       'android-10-arm64-rel': {
