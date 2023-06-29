@@ -13,6 +13,7 @@
     "Bluetooth",
     "BluetoothDevice",
     "BluetoothRemoteGATTCharacteristic",
+    "CaptureController",
     "CookieStore",
     "DelegatedInkTrail",
     "DocumentPictureInPicture",

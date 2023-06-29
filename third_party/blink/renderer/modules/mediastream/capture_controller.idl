@@ -14,7 +14,7 @@ enum CaptureStartFocusBehavior {
   SecureContext,
   RuntimeEnabled=CaptureController
 ]
-interface CaptureController {
+interface CaptureController : EventTarget {
   [CallWith=ExecutionContext] constructor();
 
   [
