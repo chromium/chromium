@@ -8932,6 +8932,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Extensions.Menu.ExtensionsSettingsOpened">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user opened chrome://extensions by clicking on the &quot;settings&quot;
+    option in the extensions menu. This is recorded for both keyboard and mouse
+    activations.
+  </description>
+</action>
+
 <action name="Extensions.Menu.HideRequestsInToolbarPressed">
   <owner>emiliapaz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>

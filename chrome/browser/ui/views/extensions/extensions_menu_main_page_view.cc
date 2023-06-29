@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -514,6 +515,9 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                       views::CreateVectorImageButtonWithNativeTheme(
                           base::BindRepeating(
                               [](Browser* browser) {
+                                base::RecordAction(base::UserMetricsAction(
+                                    "Extensions.Menu."
+                                    "ExtensionsSettingsOpened"));
                                 chrome::ShowExtensions(browser);
                               },
                               browser_),
