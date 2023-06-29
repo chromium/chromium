@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/common/gaia_id_hash.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 
 #include "base/base64.h"
 #include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
+namespace signin {
 
 TEST(GaiaIdHashTest, ShouldBeDeterministic) {
   const std::string gaia_id = "user_gaia_id";
@@ -46,4 +46,4 @@ TEST(GaiaIdHashTest, ShouldBeInvalid) {
   EXPECT_FALSE(hash2.IsValid());
 }
 
-}  // namespace autofill
+}  // namespace signin

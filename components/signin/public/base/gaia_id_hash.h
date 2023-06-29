@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_COMMON_GAIA_ID_HASH_H_
-#define COMPONENTS_AUTOFILL_CORE_COMMON_GAIA_ID_HASH_H_
+#ifndef COMPONENTS_SIGNIN_PUBLIC_BASE_GAIA_ID_HASH_H_
+#define COMPONENTS_SIGNIN_PUBLIC_BASE_GAIA_ID_HASH_H_
 
 #include <string>
 
-namespace autofill {
+namespace signin {
 
 // Represents the hash of the Gaia ID of a signed-in user. This is useful for
 // storing Gaia-keyed information without storing sensitive information (like
 // the email address).
+// Note: the hashed GaiaId here is not cryptographically-secure and should still
+// be treated as a PII.
 class GaiaIdHash {
  public:
   static GaiaIdHash FromGaiaId(const std::string& gaia_id);
@@ -44,6 +46,6 @@ class GaiaIdHash {
   std::string gaia_id_hash_;
 };
 
-}  // namespace autofill
+}  // namespace signin
 
-#endif  // COMPONENTS_AUTOFILL_CORE_COMMON_GAIA_ID_HASH_H_
+#endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_GAIA_ID_HASH_H_

@@ -28,6 +28,8 @@ static_library("base") {
     "consent_level.h",
     "device_id_helper.cc",
     "device_id_helper.h",
+    "gaia_id_hash.cc",
+    "gaia_id_hash.h",
     "multilogin_parameters.cc",
     "multilogin_parameters.h",
     "persistent_repeating_timer.cc",
@@ -107,6 +109,7 @@ source_set("unit_tests") {
   sources = [
     "avatar_icon_util_unittest.cc",
     "device_id_helper_unittest.cc",
+    "gaia_id_hash_unittest.cc",
     "persistent_repeating_timer_unittest.cc",
     "session_binding_utils_unittest.cc",
     "signin_metrics_unittest.cc",

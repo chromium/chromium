@@ -15,9 +15,9 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/gaia_id_hash.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -453,7 +453,7 @@ struct PasswordForm {
   // Vector of hashes of the gaia id for users who prefer not to move this
   // password form to their account. This list is used to suppress the move
   // prompt for those users.
-  std::vector<autofill::GaiaIdHash> moving_blocked_for_list;
+  std::vector<signin::GaiaIdHash> moving_blocked_for_list;
 
   // A mapping from the credential insecurity type (e.g. leaked, phished),
   // to its metadata (e.g. time it was discovered, whether alerts are muted).

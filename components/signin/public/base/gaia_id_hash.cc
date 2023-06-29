@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/common/gaia_id_hash.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 
 #include "base/base64.h"
 #include "crypto/sha2.h"
 
-namespace autofill {
+namespace signin {
 
 // static
 GaiaIdHash GaiaIdHash::FromGaiaId(const std::string& gaia_id) {
@@ -67,4 +67,4 @@ GaiaIdHash& GaiaIdHash::operator=(const GaiaIdHash& form) = default;
 
 GaiaIdHash& GaiaIdHash::operator=(GaiaIdHash&& form) = default;
 
-}  // namespace autofill
+}  // namespace signin

@@ -74,7 +74,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
       metrics_util::MoveToAccountStoreTrigger) override;
 
   void BlockMovingToAccountStoreFor(
-      const autofill::GaiaIdHash& gaia_id_hash) override;
+      const signin::GaiaIdHash& gaia_id_hash) override;
 
   void UpdateSubmissionIndicatorEvent(
       autofill::mojom::SubmissionIndicatorEvent event) override;

@@ -17,7 +17,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/gaia_id_hash.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
@@ -30,6 +29,7 @@
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,9 +37,9 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
-using autofill::GaiaIdHash;
 using base::ASCIIToUTF16;
 using base::StringPiece;
+using signin::GaiaIdHash;
 using testing::_;
 using testing::IsEmpty;
 using testing::Pointee;

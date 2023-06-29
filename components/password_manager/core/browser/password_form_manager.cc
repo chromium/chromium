@@ -58,11 +58,11 @@ using autofill::FormFieldData;
 using autofill::FormRendererId;
 using autofill::FormSignature;
 using autofill::FormStructure;
-using autofill::GaiaIdHash;
 using autofill::NOT_USERNAME;
 using autofill::SINGLE_USERNAME;
 using autofill::password_generation::PasswordGenerationType;
 using base::TimeTicks;
+using signin::GaiaIdHash;
 
 using Logger = autofill::SavePasswordProgressLogger;
 

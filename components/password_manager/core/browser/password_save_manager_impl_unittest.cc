@@ -1460,8 +1460,8 @@ TEST_F(MultiStorePasswordSaveManagerTest, UpdateInBothStores) {
   saved_match_in_account_store.in_store = PasswordForm::Store::kAccountStore;
   PasswordForm saved_match_in_profile_store(saved_match_in_account_store);
   saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
-  autofill::GaiaIdHash user_id_hash =
-      autofill::GaiaIdHash::FromGaiaId("user@gmail.com");
+  signin::GaiaIdHash user_id_hash =
+      signin::GaiaIdHash::FromGaiaId("user@gmail.com");
   saved_match_in_profile_store.moving_blocked_for_list.push_back(user_id_hash);
 
   SetNonFederatedAndNotifyFetchCompleted(
@@ -1523,7 +1523,7 @@ TEST_F(MultiStorePasswordSaveManagerTest, AutomaticSaveInBothStores) {
       base::Time::Now() - base::Days(10);
   saved_match_in_profile_store.times_used_in_html_form = 10;
   saved_match_in_profile_store.moving_blocked_for_list.push_back(
-      autofill::GaiaIdHash::FromGaiaId("email@gmail.com"));
+      signin::GaiaIdHash::FromGaiaId("email@gmail.com"));
 
   PasswordForm saved_match_in_account_store(saved_match_in_profile_store);
   saved_match_in_account_store.in_store = PasswordForm::Store::kAccountStore;
@@ -1736,7 +1736,7 @@ TEST_F(MultiStorePasswordSaveManagerTest,
   PasswordForm saved_match_in_profile_store(saved_match_);
   saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
   saved_match_in_profile_store.moving_blocked_for_list.push_back(
-      autofill::GaiaIdHash::FromGaiaId("user@gmail.com"));
+      signin::GaiaIdHash::FromGaiaId("user@gmail.com"));
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_in_profile_store});
 
   password_save_manager_impl()->CreatePendingCredentials(
@@ -1764,7 +1764,7 @@ TEST_F(MultiStorePasswordSaveManagerTest,
   PasswordForm saved_match_in_profile_store(saved_match_);
   saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
   saved_match_in_profile_store.moving_blocked_for_list.push_back(
-      autofill::GaiaIdHash::FromGaiaId("user@gmail.com"));
+      signin::GaiaIdHash::FromGaiaId("user@gmail.com"));
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_in_profile_store});
 
   password_save_manager_impl()->CreatePendingCredentials(
@@ -1929,10 +1929,10 @@ TEST_F(MultiStorePasswordSaveManagerTest,
 }
 
 TEST_F(MultiStorePasswordSaveManagerTest, BlockMovingWhenExistsInProfileStore) {
-  autofill::GaiaIdHash user1_id_hash =
-      autofill::GaiaIdHash::FromGaiaId("user1@gmail.com");
-  autofill::GaiaIdHash user2_id_hash =
-      autofill::GaiaIdHash::FromGaiaId("user2@gmail.com");
+  signin::GaiaIdHash user1_id_hash =
+      signin::GaiaIdHash::FromGaiaId("user1@gmail.com");
+  signin::GaiaIdHash user2_id_hash =
+      signin::GaiaIdHash::FromGaiaId("user2@gmail.com");
 
   PasswordForm profile_saved_match(saved_match_);
   profile_saved_match.username_value = parsed_submitted_form_.username_value;
@@ -1959,10 +1959,10 @@ TEST_F(MultiStorePasswordSaveManagerTest, BlockMovingWhenExistsInProfileStore) {
 }
 
 TEST_F(MultiStorePasswordSaveManagerTest, BlockMovingWhenExistsInBothStores) {
-  autofill::GaiaIdHash user1_id_hash =
-      autofill::GaiaIdHash::FromGaiaId("user1@gmail.com");
-  autofill::GaiaIdHash user2_id_hash =
-      autofill::GaiaIdHash::FromGaiaId("user2@gmail.com");
+  signin::GaiaIdHash user1_id_hash =
+      signin::GaiaIdHash::FromGaiaId("user1@gmail.com");
+  signin::GaiaIdHash user2_id_hash =
+      signin::GaiaIdHash::FromGaiaId("user2@gmail.com");
 
   PasswordForm account_saved_match(saved_match_);
   account_saved_match.username_value = parsed_submitted_form_.username_value;

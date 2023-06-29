@@ -326,6 +326,7 @@ static_library("browser") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/security_state/core",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/strings:components_strings",
@@ -453,6 +454,7 @@ source_set("password_form") {
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/core/common/mojom:mojo_types_shared",
+    "//components/signin/public/base",
     "//url",
   ]
 }
@@ -768,6 +770,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/security_state/core",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",
     "//components/strings",
     "//components/sync:test_support",

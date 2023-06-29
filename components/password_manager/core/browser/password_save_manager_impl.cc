@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/validation.h"
-#include "components/autofill/core/common/gaia_id_hash.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
@@ -22,6 +21,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 
 using autofill::FieldRendererId;
 using autofill::FormData;
@@ -449,7 +449,7 @@ void PasswordSaveManagerImpl::MoveCredentialsToAccountStore(
 }
 
 void PasswordSaveManagerImpl::BlockMovingToAccountStoreFor(
-    const autofill::GaiaIdHash& gaia_id_hash) {
+    const signin::GaiaIdHash& gaia_id_hash) {
   // TODO(crbug.com/1032992): This doesn't work if moving is offered upon update
   // prompts.
 

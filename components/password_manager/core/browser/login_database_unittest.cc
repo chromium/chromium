@@ -48,9 +48,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
-using autofill::GaiaIdHash;
 using base::ASCIIToUTF16;
 using base::UTF16ToASCII;
+using signin::GaiaIdHash;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;

@@ -57,7 +57,7 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
-using autofill::GaiaIdHash;
+using signin::GaiaIdHash;
 
 namespace password_manager {
 

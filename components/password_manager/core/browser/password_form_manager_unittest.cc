@@ -25,7 +25,6 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/gaia_id_hash.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -55,6 +54,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -71,7 +71,6 @@ using autofill::FormFieldData;
 using autofill::FormRendererId;
 using autofill::FormSignature;
 using autofill::FormStructure;
-using autofill::GaiaIdHash;
 using autofill::NOT_USERNAME;
 using autofill::PasswordFormFillData;
 using autofill::PasswordFormGenerationData;
@@ -80,6 +79,7 @@ using autofill::ServerFieldTypeSet;
 using autofill::SINGLE_USERNAME;
 using autofill::UNKNOWN_TYPE;
 using autofill::password_generation::PasswordGenerationType;
+using signin::GaiaIdHash;
 using testing::_;
 using testing::AllOf;
 using testing::Contains;
@@ -3074,7 +3074,7 @@ class MockPasswordSaveManager : public PasswordSaveManager {
   }
   MOCK_METHOD1(MoveCredentialsToAccountStore,
                void(metrics_util::MoveToAccountStoreTrigger));
-  MOCK_METHOD1(BlockMovingToAccountStoreFor, void(const autofill::GaiaIdHash&));
+  MOCK_METHOD1(BlockMovingToAccountStoreFor, void(const signin::GaiaIdHash&));
 };
 
 class PasswordFormManagerTestWithMockedSaver : public PasswordFormManagerTest {
