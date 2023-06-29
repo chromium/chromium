@@ -166,6 +166,8 @@ public abstract class ChromeFeatureList {
     public static final String CCT_AUTO_TRANSLATE = "CCTAutoTranslate";
     public static final String CCT_BOTTOM_BAR_SWIPE_UP_GESTURE = "CCTBottomBarSwipeUpGesture";
     public static final String CCT_BRAND_TRANSPARENCY = "CCTBrandTransparency";
+    public static final String CCT_BRAND_TRANSPARENCY_MEMORY_IMPROVEMENT =
+            "CCTBrandTransparencyMemoryImprovement";
     public static final String CCT_CLIENT_DATA_HEADER = "CCTClientDataHeader";
     public static final String CCT_FEATURE_USAGE = "CCTFeatureUsage";
     public static final String CCT_INCOGNITO = "CCTIncognito";
@@ -505,6 +507,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CCT_BOTTOM_BAR_SWIPE_UP_GESTURE, true);
     public static final CachedFlag sCctBrandTransparency =
             new CachedFlag(CCT_BRAND_TRANSPARENCY, true);
+    public static final CachedFlag sCctBrandTransparencyMemoryImprovement =
+            new CachedFlag(CCT_BRAND_TRANSPARENCY_MEMORY_IMPROVEMENT, true);
     public static final CachedFlag sCctFeatureUsage = new CachedFlag(CCT_FEATURE_USAGE, false);
     public static final CachedFlag sCctIncognito = new CachedFlag(CCT_INCOGNITO, true);
     public static final CachedFlag sCctIncognitoAvailableToThirdParty =
@@ -621,6 +625,7 @@ public abstract class ChromeFeatureList {
         sCctAutoTranslate,
         sCctBottomBarSwipeUpGesture,
         sCctBrandTransparency,
+        sCctBrandTransparencyMemoryImprovement,
         sCctFeatureUsage,
         sCctIncognito,
         sCctIncognitoAvailableToThirdParty,

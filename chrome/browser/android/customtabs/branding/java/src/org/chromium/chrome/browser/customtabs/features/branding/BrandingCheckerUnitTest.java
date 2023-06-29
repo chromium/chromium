@@ -196,7 +196,7 @@ public class BrandingCheckerUnitTest {
 
     private BrandingChecker createBrandingChecker(
             String packageName, CallbackDelegate callbackDelegate) {
-        return new BrandingChecker(mContext, packageName, mStorage, callbackDelegate::notifyCalled,
+        return new BrandingChecker(packageName, mStorage, callbackDelegate::notifyCalled,
                 TEST_BRANDING_CADENCE, BrandingDecision.TOAST);
     }
 

@@ -39,6 +39,7 @@ BASE_DECLARE_FEATURE(kCastDeviceFilter);
 BASE_DECLARE_FEATURE(kCCTBackgroundTab);
 BASE_DECLARE_FEATURE(kCCTBottomBarSwipeUpGesture);
 BASE_DECLARE_FEATURE(kCCTBrandTransparency);
+BASE_DECLARE_FEATURE(kCCTBrandTransparencyMemoryImprovement);
 BASE_DECLARE_FEATURE(kCCTClientDataHeader);
 BASE_DECLARE_FEATURE(kCCTFeatureUsage);
 BASE_DECLARE_FEATURE(kCCTIncognito);

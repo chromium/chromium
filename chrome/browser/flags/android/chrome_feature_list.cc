@@ -180,6 +180,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTBackgroundTab,
     &kCCTBottomBarSwipeUpGesture,
     &kCCTBrandTransparency,
+    &kCCTBrandTransparencyMemoryImprovement,
     &kCCTClientDataHeader,
     &kCCTFeatureUsage,
     &kCCTIncognito,
@@ -516,6 +517,10 @@ BASE_FEATURE(kCCTBackgroundTab,
 
 BASE_FEATURE(kCCTBrandTransparency,
              "CCTBrandTransparency",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTBrandTransparencyMemoryImprovement,
+             "CCTBrandTransparencyMemoryImprovement",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTClientDataHeader,

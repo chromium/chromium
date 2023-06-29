@@ -214,7 +214,7 @@ public class BrandingControllerUnitTest {
                 .onToolbarInitialized()
                 .assertBrandingDecisionMade(BrandingDecision.TOOLBAR);
 
-        SharedPreferencesBrandingTimeStorage.resetInstanceForTesting();
+        SharedPreferencesBrandingTimeStorage.resetInstance();
 
         // After reset storage instance, decision should be in use again.
         new BrandingCheckTester()

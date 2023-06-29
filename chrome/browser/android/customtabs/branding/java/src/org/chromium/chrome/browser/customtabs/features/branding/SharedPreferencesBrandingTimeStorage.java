@@ -42,8 +42,7 @@ class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLa
         return sInstance;
     }
 
-    @VisibleForTesting
-    static void resetInstanceForTesting() {
+    static void resetInstance() {
         sInstance = null;
     }
 

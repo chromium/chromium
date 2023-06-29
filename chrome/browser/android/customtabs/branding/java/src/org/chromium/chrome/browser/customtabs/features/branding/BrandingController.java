@@ -83,15 +83,13 @@ public class BrandingController {
     private final Context mContext;
     private final String mAppName;
     private final boolean mEnableIconAnimation;
-
+    @Nullable
+    private final PureJavaExceptionReporter mExceptionReporter;
     private ToolbarBrandingDelegate mToolbarBrandingDelegate;
     private @Nullable Toast mToast;
     private long mToolbarInitializedTime;
-    private boolean mIsBrandingShowing;
     private boolean mIsDestroyed;
-
-    @Nullable
-    private PureJavaExceptionReporter mExceptionReporter;
+    private boolean mReleaseStorageOnFinished;
 
     /**
      * Branding controller responsible for showing branding.
@@ -108,9 +106,11 @@ public class BrandingController {
         mEnableIconAnimation = ANIMATE_TOOLBAR_ICON_TRANSITION.getValue();
         mBrandingDecision.onAvailable(
                 mCallbackController.makeCancelable((decision) -> maybeMakeBrandingDecision()));
+        mReleaseStorageOnFinished =
+                ChromeFeatureList.sCctBrandTransparencyMemoryImprovement.isEnabled();
 
         // TODO(https://crbug.com/1350661): Start branding checker during CCT warm up.
-        mBrandingChecker = new BrandingChecker(context, packageName,
+        mBrandingChecker = new BrandingChecker(packageName,
                 SharedPreferencesBrandingTimeStorage.getInstance(), mBrandingDecision::set,
                 BRANDING_CADENCE_MS.getValue(), BrandingDecision.TOAST);
         mBrandingChecker.executeWithTaskTraits(TaskTraits.USER_VISIBLE_MAY_BLOCK);
@@ -172,16 +172,13 @@ public class BrandingController {
                 assert false : "Unreachable state!";
         }
 
-        // Post histogram recording after UI updates.
-        recordNumberOfClientAppsHistogram();
+        finish();
     }
 
     private void showToolbarBranding(long durationMs) {
-        mIsBrandingShowing = true;
         mToolbarBrandingDelegate.showBrandingLocationBar();
 
         Runnable hideToolbarBranding = () -> {
-            mIsBrandingShowing = false;
             mToolbarBrandingDelegate.showRegularToolbar();
         };
         PostTask.postDelayedTask(TaskTraits.UI_DEFAULT,
@@ -221,11 +218,19 @@ public class BrandingController {
         }
     }
 
-    private void recordNumberOfClientAppsHistogram() {
+    private void finish() {
+        // Post the task as it's not important to be complete during branding check.
         PostTask.postTask(TaskTraits.BEST_EFFORT, mCallbackController.makeCancelable(() -> {
             int numberOfPackages = SharedPreferencesBrandingTimeStorage.getInstance().getSize();
             RecordHistogram.recordCount100Histogram(
                     "CustomTabs.Branding.NumberOfClients", numberOfPackages);
+
+            // Release the in-memory share pref from the current session if branding checker didn't
+            // timeout.
+            if (mReleaseStorageOnFinished && !mBrandingChecker.isCancelled()
+                    && !USE_TEMPORARY_STORAGE.getValue()) {
+                SharedPreferencesBrandingTimeStorage.resetInstance();
+            }
         }));
     }
 

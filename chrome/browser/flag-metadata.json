@@ -1010,7 +1010,7 @@
   {
     "name": "cct-brand-transparency",
     "owners": [ "wenyufu" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 117
   },
   {
     "name": "cct-incognito",
