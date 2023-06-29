@@ -1368,10 +1368,16 @@ def main():
     env = None
     if sys.platform.startswith('linux'):
       env = os.environ.copy()
-      # See SANITIZER_OVERRIDE_INTERCEPTORS above: We disable crypt_r()
-      # interception, so its tests can't pass.
-      env['LIT_FILTER_OUT'] = ('^SanitizerCommon-(a|l|m|ub|t)san-x86_64-Linux' +
-                               ' :: Linux/crypt_r.cpp$')
+      lit_excludes = [
+          # See SANITIZER_OVERRIDE_INTERCEPTORS above: We disable crypt_r()
+          # interception, so its tests can't pass.
+          '^SanitizerCommon-(a|l|m|ub|t)san-x86_64-Linux :: Linux/crypt_r.cpp$',
+          # fstat and sunrpc tests fail due to sysroot/host mismatches
+          # (crbug.com/1459187).
+          '^MemorySanitizer-.* f?stat(at)?(64)?.cpp$',
+          '^.*Sanitizer-.* Linux/sunrpc.*cpp$'
+      ]
+      env['LIT_FILTER_OUT'] = '|'.join(lit_excludes)
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'check-all'],
                env=env,
                setenv=True)
