@@ -4127,7 +4127,7 @@ deps = {
   },
 
   'src/chrome/services/speech/internal': {
-      'url': Var('chrome_git') + '/chromeos/speech.git' + '@' + '8d46b1cb1312a0933799e37bde27e6747db8fcc2',
+      'url': Var('chrome_git') + '/chromeos/speech.git' + '@' + 'ae7682c436511496dcfb1eea6f8f493aa733f9a7',
       'condition': 'checkout_chromeos and checkout_src_internal',
    },
 
