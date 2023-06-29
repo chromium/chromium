@@ -719,11 +719,25 @@ LayoutRect LayoutBlock::LocalCaretRect(
     return LayoutBox::LocalCaretRect(caret_offset, extra_width_to_end_of_line);
   }
 
-  LayoutRect caret_rect =
-      LocalCaretRectForEmptyElement(Size().width, TextIndentOffset());
+  const ComputedStyle& style = StyleRef();
+  const bool is_horizontal = style.IsHorizontalWritingMode();
 
-  if (extra_width_to_end_of_line)
-    *extra_width_to_end_of_line = Size().width - caret_rect.MaxX();
+  LayoutRect caret_rect;
+  if (is_horizontal) {
+    caret_rect =
+        LocalCaretRectForEmptyElement(Size().width, TextIndentOffset());
+
+    if (extra_width_to_end_of_line) {
+      *extra_width_to_end_of_line = Size().width - caret_rect.MaxX();
+    }
+  } else {
+    caret_rect =
+        LocalCaretRectForEmptyElement(Size().height, TextIndentOffset());
+
+    if (extra_width_to_end_of_line) {
+      *extra_width_to_end_of_line = Size().height - caret_rect.MaxY();
+    }
+  }
 
   return caret_rect;
 }

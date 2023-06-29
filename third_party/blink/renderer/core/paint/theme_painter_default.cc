@@ -578,14 +578,22 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
       std::min(input_content_box.size.width,
                std::min(input_content_box.size.height, LayoutUnit(r.height())));
   // Calculate cancel button's coordinates relative to the input element.
-  // Center the button vertically.  Round up though, so if it has to be one
+  // Center the button inline.  Round up though, so if it has to be one
   // pixel off-center, it will be one pixel closer to the bottom of the field.
   // This tends to look better with the text.
-  PhysicalRect cancel_button_rect(
-      cancel_button_object.OffsetFromAncestor(&input_layout_box).left,
-      input_content_box.Y() +
-          (input_content_box.Height() - cancel_button_size + 1) / 2,
-      cancel_button_size, cancel_button_size);
+  const LayoutUnit cancel_button_rect_left =
+      IsHorizontalWritingMode(cancel_button_object.StyleRef().GetWritingMode())
+          ? cancel_button_object.OffsetFromAncestor(&input_layout_box).left
+          : input_content_box.X() +
+                (input_content_box.Width() - cancel_button_size + 1) / 2;
+  const LayoutUnit cancel_button_rect_top =
+      IsHorizontalWritingMode(cancel_button_object.StyleRef().GetWritingMode())
+          ? input_content_box.Y() +
+                (input_content_box.Height() - cancel_button_size + 1) / 2
+          : cancel_button_object.OffsetFromAncestor(&input_layout_box).top;
+  PhysicalRect cancel_button_rect(cancel_button_rect_left,
+                                  cancel_button_rect_top, cancel_button_size,
+                                  cancel_button_size);
   gfx::Rect painting_rect = ConvertToPaintingRect(
       input_layout_box, cancel_button_object, cancel_button_rect, r);
   DEFINE_STATIC_REF(Image, cancel_image,
