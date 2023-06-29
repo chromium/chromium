@@ -531,6 +531,8 @@ data/accessibility/aria/aria-columnheader-expected-blink.txt
 data/accessibility/aria/aria-columnheader-expected-mac.txt
 data/accessibility/aria/aria-columnheader-expected-win.txt
 data/accessibility/aria/aria-columnheader.html
+data/accessibility/aria/aria-combobox-dynamic-expected-blink.txt
+data/accessibility/aria/aria-combobox-dynamic.html
 data/accessibility/aria/aria-combobox-expected-android-external.txt
 data/accessibility/aria/aria-combobox-expected-android.txt
 data/accessibility/aria/aria-combobox-expected-auralinux.txt

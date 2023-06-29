@@ -168,6 +168,10 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData,
   static const AtomicString& GetPropertyOrARIAAttribute(Element*,
                                                         AOMStringProperty);
 
+  static const AtomicString& GetPropertyOrARIAAttributeValue(
+      Element* element,
+      AOMRelationProperty property);
+
   // Returns the given relation property if the Element has an AccessibleNode,
   // otherwise returns the equivalent ARIA attribute.
   static Element* GetPropertyOrARIAAttribute(Element*, AOMRelationProperty);

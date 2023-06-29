@@ -113,6 +113,14 @@ void AXRelationCache::UpdateReverseTextRelations(
                          target_ids);
 }
 
+void AXRelationCache::UpdateReverseActiveDescendantRelations(
+    Node* relation_source,
+    const String& id) {
+  Vector<String> ids = {id};
+  UpdateReverseRelations(id_attr_to_active_descendant_mapping_, relation_source,
+                         ids);
+}
+
 // ContainsCycle() should:
 // * Return true when a cycle is an authoring error, but not an error in Blink.
 // * CHECK(false) when Blink should have caught this error earlier ... we should
@@ -562,6 +570,8 @@ void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
   }
 
   UpdateRelatedText(node);
+
+  UpdateRelatedActiveDescendant(node);
 }
 
 void AXRelationCache::UpdateRelatedText(Node* node) {
@@ -600,6 +610,15 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
       LabelChanged(current_node);
       break;  // Unlikely/unusual to need multiple name/description changes.
     }
+  }
+}
+
+void AXRelationCache::UpdateRelatedActiveDescendant(Node* node) {
+  HeapVector<Member<AXObject>> related_sources;
+  GetReverseRelated(node, id_attr_to_active_descendant_mapping_,
+                    related_sources);
+  for (AXObject* related : related_sources) {
+    object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
   }
 }
 

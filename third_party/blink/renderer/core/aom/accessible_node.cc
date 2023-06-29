@@ -362,13 +362,28 @@ const AtomicString& AccessibleNode::GetPropertyOrARIAAttribute(
 }
 
 // static
-Element* AccessibleNode::GetPropertyOrARIAAttribute(
+const AtomicString& AccessibleNode::GetPropertyOrARIAAttributeValue(
     Element* element,
     AOMRelationProperty property) {
   if (!element)
-    return nullptr;
+    return g_null_atom;
   QualifiedName attribute = GetCorrespondingARIAAttribute(property);
-  AtomicString value = GetElementOrInternalsARIAAttribute(*element, attribute);
+  const AtomicString& value =
+      GetElementOrInternalsARIAAttribute(*element, attribute);
+  if (IsUndefinedAttrValue(value)) {
+    return g_null_atom;  // Attribute not set or explicitly undefined.
+  }
+
+  return value;
+}
+
+Element* AccessibleNode::GetPropertyOrARIAAttribute(
+    Element* element,
+    AOMRelationProperty property) {
+  auto& value = GetPropertyOrARIAAttributeValue(element, property);
+  if (value == g_null_atom) {
+    return nullptr;
+  }
   return element->GetTreeScope().getElementById(value);
 }
 

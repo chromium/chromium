@@ -56,6 +56,8 @@ class AXRelationCache {
   // |obj| is optional. If provided, it must match the AXObject for |node|.
   void UpdateRelatedTree(Node* node, AXObject* obj);
 
+  void UpdateRelatedActiveDescendant(Node* node);
+
   // Remove given AXID from cache.
   void RemoveAXID(AXID);
 
@@ -74,6 +76,9 @@ class AXRelationCache {
   // Update map of ids to related objects for aria-labelledby/aria-describedby.
   void UpdateReverseTextRelations(Node* relation_source,
                                   const Vector<String>& target_ids);
+
+  void UpdateReverseActiveDescendantRelations(Node* relation_source,
+                                              const String& id);
 
   // Called when the "for" attribute of a label element changes and the
   // reverse mapping needs to be updated.
@@ -170,6 +175,7 @@ class AXRelationCache {
   //   and fire the appropriate change events.
   HashMap<String, HashSet<DOMNodeId>> id_attr_to_owns_relation_mapping_;
   HashMap<String, HashSet<DOMNodeId>> id_attr_to_text_relation_mapping_;
+  HashMap<String, HashSet<DOMNodeId>> id_attr_to_active_descendant_mapping_;
 
   // HTML id attributes that at one time havehad a <label for> pointing to it.
   // IDs are not necessarily removed from this set. It is not necessary to

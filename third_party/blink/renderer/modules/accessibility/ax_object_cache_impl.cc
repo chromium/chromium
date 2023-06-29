@@ -2256,6 +2256,12 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
   if (AXObject::HasARIAOwns(element))
     HandleAttributeChangedWithCleanLayout(html_names::kAriaOwnsAttr, element);
 
+  if (AccessibleNode::GetPropertyOrARIAAttributeValue(
+          element, AOMRelationProperty::kActiveDescendant)) {
+    HandleAttributeChangedWithCleanLayout(html_names::kAriaActivedescendantAttr,
+                                          element);
+  }
+
   AXObject* obj = Get(node);
   MaybeNewRelationTarget(*node, obj);
 
@@ -3328,6 +3334,13 @@ void AXObjectCacheImpl::HandleActiveDescendantChangedWithCleanLayout(
   // cached values even if it doesn't result in a notification, because
   // it can affect what's focusable or not.
   modification_count_++;
+
+  if (Element* element = DynamicTo<Element>(node)) {
+    if (auto& value = AccessibleNode::GetPropertyOrARIAAttributeValue(
+            element, AOMRelationProperty::kActiveDescendant)) {
+      relation_cache_->UpdateReverseActiveDescendantRelations(node, value);
+    }
+  }
 
   if (AXObject* obj = GetOrCreate(node))
     obj->HandleActiveDescendantChanged();
