@@ -19,12 +19,14 @@
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "base/barrier_callback.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
@@ -121,16 +123,20 @@ SampleColorScheme GenerateSampleColorScheme(bool dark,
   return sample;
 }
 
-std::vector<SampleColorScheme> GenerateSamples(
-    bool dark,
-    SkColor sample_color,
-    const std::vector<const ColorScheme>& schemes) {
-  std::vector<SampleColorScheme> samples;
-  for (auto scheme : schemes) {
-    samples.push_back(GenerateSampleColorScheme(dark, sample_color, scheme));
+void SortSampleColorSchemes(
+    ColorPaletteController::SampleColorSchemeCallback callback,
+    base::span<const ColorScheme> color_scheme_buttons,
+    std::vector<SampleColorScheme> sample_color_schemes) {
+  std::vector<SampleColorScheme> sorted_sample_color_schemes;
+  for (const auto scheme : color_scheme_buttons) {
+    auto color_scheme_sample =
+        std::find_if(sample_color_schemes.begin(), sample_color_schemes.end(),
+                     [&scheme](SampleColorScheme sample) {
+                       return scheme == sample.scheme;
+                     });
+    sorted_sample_color_schemes.push_back(*color_scheme_sample);
   }
-
-  return samples;
+  std::move(callback).Run(sorted_sample_color_schemes);
 }
 
 // Refresh colors of the system on the current color mode. Not only the SysUI,
@@ -326,10 +332,19 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     // out of scope.
     std::vector<const ColorScheme> schemes_copy(color_scheme_buttons.begin(),
                                                 color_scheme_buttons.end());
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&GenerateSamples, dark, *seed_color, schemes_copy),
-        base::BindOnce(std::move(callback)));
+    const auto barrier_callback = base::BarrierCallback<SampleColorScheme>(
+        color_scheme_buttons.size(),
+        base::BindOnce(&SortSampleColorSchemes,
+                       base::BindPostTaskToCurrentDefault(std::move(callback)),
+                       std::move(schemes_copy)));
+
+    for (unsigned int i = 0; i < color_scheme_buttons.size(); i++) {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&GenerateSampleColorScheme, dark, *seed_color,
+                         color_scheme_buttons[i]),
+          base::BindOnce(std::move(barrier_callback)));
+    }
   }
 
   // LoginDataDispatcher::Observer overrides:
