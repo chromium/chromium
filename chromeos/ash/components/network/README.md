@@ -215,6 +215,88 @@ Example of retrieving and iterating over `NetworkState` objects:
   }
 ```
 
+### Configuring Networks
+
+Networks on ChromeOS are created and configured using three primary classes.
+Each of the classes operates at a different level of abstraction and which class
+is used will be determined by the goals of the user.
+
+#### `ManagedNetworkConfigurationHandler`
+
+The
+[`ManagedNetworkConfigurationHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/managed_network_configuration_handler.h;drc=5e476d249f1b36460280115db38fdc37b1c37128)
+class is used to create and configure networks on ChromeOS. This class is
+responsible for taking care of network policies and specifically only accepts
+ONC with a stated goal of decoupling users from direct interaction with Shill.
+Most of the APIs provided by this class accept both a callback to invoke on
+success and a callback to invoke on failure. The failure callback will be
+provided with an error message that is suitable for logging.
+
+This class is typically used to:
+
+* Configure and remove networks, including policy-defined networks
+* Set the properties of a network
+* Get the properties of a network *with policies applied*
+* Set or update the policies actively applied
+* Get the policies actively applied
+  * Many helper methods are provided for checking specific policy features
+
+When creating networks or retrieving the properties of a network, the caller is
+required to provide a user hash that is used to make sure that both the device
+policies (applied to all users) and the user policies (specific for a user) are
+considered. The result of this is that when creating or configuring networks,
+some properties may be assigned specific values; this can mean that properties
+receive default values, or it can mean that properties that the caller specific
+are overridden and restricted from being any different value. When retrieving
+the properties of a network, many of the properties received will have
+additional information beyond the value. This information includes:
+
+* The policy source and enforcement level, if any, e.g. provided by a device
+  policy and the value provided is recommended.
+* The value provided by policy. When a policy is recommended this will be the
+  default value for the property, and when a policy is required the property
+  will be forced to have this value.
+
+While the `ManagedNetworkConfigurationHandler` class does provide an API to set
+the active policy this API should not be called outside of tests. The [`NetworkConfigurationUpdated`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/policy/networking/network_configuration_updater.h;drc=148f8a073813914fe0de89b7785d5750b3bb5520) class
+is the class responsible for tracking device and user policies and applying them
+to the device. When there are policy changes this class will use
+[`ManagedNetworkConfigurationHandler::SetPolicy()`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/managed_network_configuration_handler.h;l=145-154;drc=5e476d249f1b36460280115db38fdc37b1c37128)
+which will result in all existing user profiles, and all networks that they
+have, having the new policy applied to them. While applying the policy to
+existing user profiles and networks is not an instantaneous operation, any
+networks created or configured after `SetPolicy()` is called will have the
+policy enforced.
+
+The `ManagedNetworkConfigurationHandler` class also provides an observer
+interface,
+[`NetworkPolicyObserver`](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:chromeos/ash/components/network/network_policy_observer.h;drc=614b0b49c9e734fa7f6632df48542891b9f7f92a),
+that can be used to be notified when policies have changed, or have been
+applied.
+
+Unlike most of the network classes this class provides a mock to help simplify
+testing:
+[`MockManagedNetworkConfigurationHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/mock_managed_network_configuration_handler.h;drc=5e476d249f1b36460280115db38fdc37b1c37128).
+If it is not possible to use this mock the `ManagedNetworkConfigurationHandler`
+class can still be accessed via `NetworkHandler`. For more information please
+see the [Testing](#testing) section.
+
+#### `NetworkConfigurationHandler`
+
+TODO: Discuss the `NetworkConfigurationHandler` class.
+
+#### `ShillServiceClient`
+
+The
+[`ShillServiceClient`](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:chromeos/ash/components/dbus/shill/shill_service_client.h;drc=af33e6b506bcb54e29efd850e2eb546f476ee63a)
+class provides APIs for interacting with the Platform equivalent of networks:
+Shill services. This class is typically chosen when the user wants to directly
+interact with Shill, or is already directly interacting with Shill for other
+functionality and it is easier to continue to do so than transition to one of
+the higher-level classes discussed above. For more information on this class
+please see the associated
+[README.md](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/shill/README.md;l=96-118;drc=1585cdd820a4a1db5b6e91ad2827f8db31fe33fc).
+
 ### Device State
 
 [`DeviceState`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/device_state.h;drc=ad947e92bd398452f42173e7a39ed7ab2e4ad094)
