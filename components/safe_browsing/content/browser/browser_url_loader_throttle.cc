@@ -350,9 +350,6 @@ void BrowserURLLoaderThrottle::WillStartRequest(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(0u, pending_checks_);
   DCHECK(!blocked_);
-  base::UmaHistogramBoolean(
-      "SafeBrowsing.BrowserThrottle.WillStartRequestAfterWillProcessResponse",
-      will_process_response_count_ > 0);
   base::UmaHistogramEnumeration(
       "SafeBrowsing.BrowserThrottle.RequestDestination", request->destination);
 
@@ -390,10 +387,6 @@ void BrowserURLLoaderThrottle::WillRedirectRequest(
     net::HttpRequestHeaders* /* modified_headers */,
     net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::UmaHistogramBoolean(
-      "SafeBrowsing.BrowserThrottle."
-      "WillRedirectRequestAfterWillProcessResponse",
-      will_process_response_count_ > 0);
 
   // TODO(crbug.com/1410939): Below histograms are for debugging. Remove them
   // afterwards.
