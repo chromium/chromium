@@ -28,7 +28,7 @@
 - (PromoConfig)config {
   return PromoConfig(promos_manager::Promo::DefaultBrowser,
                      &feature_engagement::kIPHiOSPromoDefaultBrowserFeature,
-                     @[ [[ImpressionLimit alloc] initWithLimit:1
+                     @[ [[ImpressionLimit alloc] initWithLimit:4
                                                     forNumDays:365] ]);
 }
 

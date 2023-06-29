@@ -52,8 +52,8 @@ absl::optional<FeatureConfig> GetClientSideiOSPromoFeatureConfig(
   }
 
   if (kIPHiOSPromoDefaultBrowserFeature.name == feature->name) {
-    // Should trigger once only, and only after Chrome has been opened 7 or more
-    // times.
+    // Should trigger at most 4 times in a year, and only after Chrome has
+    // been opened 7 or more times.
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
@@ -62,10 +62,9 @@ absl::optional<FeatureConfig> GetClientSideiOSPromoFeatureConfig(
       config->groups.push_back(kiOSFullscreenPromosGroup.name);
     }
     config->used = EventConfig("default_browser_promo_used",
-                               Comparator(EQUAL, 0), 365, 365);
-    // Default Browser promo should only ever trigger once.
+                               Comparator(LESS_THAN, 4), 365, 365);
     config->trigger = EventConfig("default_browser_promo_trigger",
-                                  Comparator(EQUAL, 0), 1000, 1000);
+                                  Comparator(LESS_THAN, 4), 365, 365);
     config->event_configs.insert(EventConfig(
         "chrome_opened", Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
     // Default Browser promo shouldn't be shown if the Post Restore Default
