@@ -2072,8 +2072,16 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
     DumpAccessibilityTreeTestPassToString());
 
+// TODO(crbug.com/1459385): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AccessibilityFencedFrameScrollable \
+  DISABLED_AccessibilityFencedFrameScrollable
+#else
+#define MAYBE_AccessibilityFencedFrameScrollable \
+  AccessibilityFencedFrameScrollable
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeFencedFrameTest,
-                       AccessibilityFencedFrameScrollable) {
+                       MAYBE_AccessibilityFencedFrameScrollable) {
   RunHtmlTest(FILE_PATH_LITERAL("fencedframe-scrollable-mparch.html"));
 }
 

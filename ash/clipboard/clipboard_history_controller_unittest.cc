@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "build/build_config.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/clipboard/clipboard_history.h"
@@ -632,8 +633,16 @@ TEST_F(ClipboardHistoryControllerObserverTest,
   WriteTextToClipboardAndConfirm(u"A");
 }
 
+// TODO(crbug.com/1459385): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ChangeSessionStateWithNonEmptyHistory \
+  DISABLED_ChangeSessionStateWithNonEmptyHistory
+#else
+#define MAYBE_ChangeSessionStateWithNonEmptyHistory \
+  ChangeSessionStateWithNonEmptyHistory
+#endif
 TEST_F(ClipboardHistoryControllerObserverTest,
-       ChangeSessionStateWithNonEmptyHistory) {
+       MAYBE_ChangeSessionStateWithNonEmptyHistory) {
   // Notify `mock_observer` once when adding a clipboard history item.
   MockObserver mock_observer;
   EXPECT_CALL(mock_observer, OnClipboardHistoryItemsUpdated);

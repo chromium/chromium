@@ -5,6 +5,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -209,7 +211,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
 }
 
 // TODO(crbug.com/1304977): Failing on Mac and Linux builders.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1459385): Re-enable this test
+#if (BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_QuotaUsageShrinks DISABLED_QuotaUsageShrinks
 #else
 #define MAYBE_QuotaUsageShrinks QuotaUsageShrinks

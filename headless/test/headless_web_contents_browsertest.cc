@@ -629,7 +629,9 @@ class HeadlessWebContentsBeginFrameControlViewportTest
   }
 };
 
-HEADLESS_DEVTOOLED_TEST_F(HeadlessWebContentsBeginFrameControlViewportTest);
+// TODO(crbug.com/1459385): Turning this off since it's flaking regularly.
+DISABLED_HEADLESS_DEVTOOLED_TEST_F(
+    HeadlessWebContentsBeginFrameControlViewportTest);
 
 #endif  // !BUILDFLAG(IS_MAC)
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -62,8 +63,16 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
 // is tracking while a cross-site navigation is canceled after having reached
 // the ReadyToCommit stage.
 // See https://crbug.com/695203.
+// TODO(crbug.com/1459385): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CancelCrossOriginNavigationAfterReadyToCommit \
+  DISABLED_CancelCrossOriginNavigationAfterReadyToCommit
+#else
+#define MAYBE_CancelCrossOriginNavigationAfterReadyToCommit \
+  CancelCrossOriginNavigationAfterReadyToCommit
+#endif
 IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
-                       CancelCrossOriginNavigationAfterReadyToCommit) {
+                       MAYBE_CancelCrossOriginNavigationAfterReadyToCommit) {
   net::test_server::ControllableHttpResponse response_b(embedded_test_server(),
                                                         "/response_b");
   net::test_server::ControllableHttpResponse response_c(embedded_test_server(),
