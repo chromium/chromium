@@ -6759,6 +6759,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessiblePDFFormDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kAccessiblePDFForm)},
 
+    {"pdf-portfolio", flag_descriptions::kPdfPortfolioName,
+     flag_descriptions::kPdfPortfolioDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfPortfolio)},
+
     {"pdf-use-skia-renderer", flag_descriptions::kPdfUseSkiaRendererName,
      flag_descriptions::kPdfUseSkiaRendererDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfUseSkiaRenderer)},
