@@ -17,13 +17,16 @@
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/web_contents_tester.h"
@@ -119,6 +122,12 @@ class StorageAccessGrantPermissionContextTest
         std::make_unique<permissions::MockPermissionPromptFactory>(
             permissions::PermissionRequestManager::FromWebContents(
                 web_contents()));
+
+    // Enable 3p cookie blocking.
+    profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
 
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
@@ -260,6 +269,28 @@ TEST_F(StorageAccessGrantPermissionContextAPIDisabledTest, PermissionBlocked) {
               IsEmpty());
 }
 
+// When 3p cookie access is already allowed by user-agent-specific cookie
+// settings, request should be allowed even when the Storage Access API feature
+// is disabled.
+TEST_F(StorageAccessGrantPermissionContextAPIDisabledTest,
+       AllowedByCookieSettings) {
+  base::HistogramTester histogram_tester;
+  // Allow 3p cookies.
+  profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kOff));
+
+  // User gesture is not needed.
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            DecidePermissionSync(/*user_gesture=*/false));
+  histogram_tester.ExpectUniqueSample(
+      kRequestOutcomeHistogram, RequestOutcome::kAllowedByCookieSettings, 1);
+
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              IsEmpty());
+}
+
 class StorageAccessGrantPermissionContextAPIEnabledTest
     : public StorageAccessGrantPermissionContextTest {
  public:
@@ -357,6 +388,27 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
                 ->GetPermissionStatus(/*render_frame_host=*/nullptr,
                                       GetRequesterURL(), GetTopLevelURL())
                 .content_setting);
+}
+
+// When 3p cookie access is already allowed by user-agent-specific cookie
+// settings, request should be allowed without granting an explicit storage
+// access permission.
+TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
+       AllowedByCookieSettings) {
+  // Allow 3p cookies.
+  profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kOff));
+
+  // User gesture is not needed.
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            DecidePermissionSync(/*user_gesture=*/false));
+  histogram_tester().ExpectUniqueSample(
+      kRequestOutcomeHistogram, RequestOutcome::kAllowedByCookieSettings, 1);
+
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              IsEmpty());
 }
 
 class StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest

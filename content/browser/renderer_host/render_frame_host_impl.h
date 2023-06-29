@@ -2179,6 +2179,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   bool IsLastCrossDocumentNavigationStartedByUser() const override;
 
+  net::CookieSettingOverrides GetCookieSettingOverrides() override;
+
   bool is_fenced_frame_root_originating_from_opaque_url() const {
     return is_fenced_frame_root_originating_from_opaque_url_;
   }
@@ -2925,11 +2927,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // queried while attempting to close the current tab/window.  Should only be
   // used on primary main frames.
   bool IsPageReadyToBeClosed();
-
-  // Checks Blink runtime-enabled features (BREF) to create and return
-  // a CookieSettingOverrides pertaining to the last committed document in the
-  // frame. Can only be called on a frame with a committed navigation.
-  net::CookieSettingOverrides GetCookieSettingOverrides();
 
   // When this returns true, the user has specified that third-party cookies
   // should remain enabled for this frame.
