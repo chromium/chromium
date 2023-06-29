@@ -11,6 +11,9 @@
 namespace blink {
 
 DisplayItemList::~DisplayItemList() {
+  if (!recordreplay::AreEventsDisallowed())
+    recordreplay::Assert("[RUN-2104-2266] ~DisplayItemList %zu",
+                         MemoryUsageInBytes());
   for (auto& item : *this)
     item.Destruct();
 }

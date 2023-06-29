@@ -113,7 +113,9 @@ PictureLayerImpl::PictureLayerImpl(LayerTreeImpl* tree_impl, int id)
 
 PictureLayerImpl::~PictureLayerImpl() {
   if (!recordreplay::AreEventsDisallowed()) {
-    recordreplay::Assert("[RUN-2104-2228] ~PictureLayerImpl");
+    recordreplay::Assert("[RUN-2104-2266] ~PictureLayerImpl %d %d %llu",
+                         id(), recordreplay::PointerId(this),
+                         element_id().GetStableId());
   }
   if (twin_layer_)
     twin_layer_->twin_layer_ = nullptr;

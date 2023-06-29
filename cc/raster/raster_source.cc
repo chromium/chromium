@@ -36,7 +36,12 @@ RasterSource::RasterSource(const RecordingSource* other)
           other->slow_down_raster_scale_factor_for_debug_),
       recording_scale_factor_(other->recording_scale_factor_) {}
 
-RasterSource::~RasterSource() = default;
+RasterSource::~RasterSource() {
+  if (!recordreplay::AreEventsDisallowed())
+    recordreplay::Assert("[RUN-2104-2266] ~RasterSource %s %d %d", debug_name_.c_str(),
+                         display_list_->HasOneRef(),
+                         display_list_->HasAtLeastOneRef());
+}
 
 void RasterSource::ClearForOpaqueRaster(
     SkCanvas* raster_canvas,
