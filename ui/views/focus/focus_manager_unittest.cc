@@ -157,6 +157,8 @@ TEST_F(FocusManagerTest, FocusChangeListener) {
   GetFocusManager()->ClearFocus();
   ASSERT_EQ(1, static_cast<int>(listener.focus_changes().size()));
   EXPECT_TRUE(listener.focus_changes()[0] == ViewPair(view2, null_view));
+
+  RemoveFocusChangeListener(&listener);
 }
 
 TEST_F(FocusManagerTest, WidgetFocusChangeListener) {
@@ -194,6 +196,8 @@ TEST_F(FocusManagerTest, WidgetFocusChangeListener) {
   ASSERT_EQ(2u, widget_listener.focus_changes().size());
   EXPECT_EQ(gfx::NativeView(), widget_listener.focus_changes()[0]);
   EXPECT_EQ(native_view2, widget_listener.focus_changes()[1]);
+
+  RemoveWidgetFocusChangeListener(&widget_listener);
 }
 
 TEST_F(FocusManagerTest, CallsNormalAcceleratorTarget) {

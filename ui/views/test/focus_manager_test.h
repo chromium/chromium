@@ -49,7 +49,9 @@ class FocusManagerTest : public ViewsTestBase, public WidgetDelegate {
   virtual void InitContentView();
 
   void AddFocusChangeListener(FocusChangeListener* listener);
+  void RemoveFocusChangeListener(FocusChangeListener* listener);
   void AddWidgetFocusChangeListener(WidgetFocusChangeListener* listener);
+  void RemoveWidgetFocusChangeListener(WidgetFocusChangeListener* listener);
 
   // For testing FocusManager::RotatePaneFocus().
   void SetAccessiblePanes(const std::vector<View*>& panes);
