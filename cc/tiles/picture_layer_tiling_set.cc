@@ -79,9 +79,9 @@ PictureLayerTilingSet::PictureLayerTilingSet(
 
 PictureLayerTilingSet::~PictureLayerTilingSet() {
   if (!recordreplay::AreEventsDisallowed())
-    recordreplay::Assert("[RUN-2104-2266] ~PictureLayerTilingSet %d %d",
-                         recordreplay::PointerId(this),
-                         raster_source_->HasOneRef());
+    recordreplay::Assert("[RUN-2104-2266] ~PictureLayerTilingSet %d %d %d",
+                         recordreplay::PointerId(this), !!raster_source_,
+                         raster_source_ && raster_source_->HasOneRef());
   recordreplay::UnregisterPointer(this);
 }
 

@@ -38,9 +38,10 @@ RasterSource::RasterSource(const RecordingSource* other)
 
 RasterSource::~RasterSource() {
   if (!recordreplay::AreEventsDisallowed())
-    recordreplay::Assert("[RUN-2104-2266] ~RasterSource %s %d %d", debug_name_.c_str(),
-                         display_list_->HasOneRef(),
-                         display_list_->HasAtLeastOneRef());
+    recordreplay::Assert("[RUN-2104-2266] ~RasterSource %s %d %d %d",
+                         debug_name_.c_str(), !!display_list_,
+                         display_list_ && display_list_->HasOneRef(),
+                         display_list_ && display_list_->HasAtLeastOneRef());
 }
 
 void RasterSource::ClearForOpaqueRaster(
