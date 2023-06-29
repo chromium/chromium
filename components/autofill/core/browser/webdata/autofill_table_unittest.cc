@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -157,6 +158,19 @@ class AutofillTableTest : public testing::Test {
   }
 
   void TearDown() override { OSCryptMocker::TearDown(); }
+
+  // Update tests verify that the date_modified is set correctly in the `column`
+  // of `table`. This function simplifies accessing it.
+  time_t GetDateModified(const std::string& guid,
+                         base::StringPiece column,
+                         base::StringPiece table) {
+    sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
+        base::StrCat({"SELECT ", column, " FROM ", table, " WHERE guid = ?"})
+            .c_str()));
+    s.BindString(0, guid);
+    EXPECT_TRUE(s.Step());
+    return s.ColumnInt64(0);
+  }
 
   base::FilePath file_;
   base::ScopedTempDir temp_dir_;
@@ -1217,6 +1231,69 @@ TEST_F(AutofillTableTest, CreditCard) {
   EXPECT_TRUE(table_->RemoveCreditCard(target_creditcard.guid()));
   db_creditcard = table_->GetCreditCard(target_creditcard.guid());
   EXPECT_FALSE(db_creditcard);
+}
+
+// Tests that adding credit card with cvc, get credit card with cvc and update
+// credit card with only cvc change will not update credit_card table
+// modification_date.
+TEST_F(AutofillTableTest, CreditCardCvc) {
+  const base::Time arbitrary_time = base::Time::FromDoubleT(25);
+  // Create the test clock and set the time to a specific value.
+  TestAutofillClock test_clock;
+  test_clock.SetNow(arbitrary_time);
+  CreditCard card = test::GetCreditCard();
+  card.set_cvc(u"123");
+  EXPECT_TRUE(table_->AddCreditCard(card));
+
+  // Get the credit card, cvc should match.
+  std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
+  EXPECT_EQ(card.cvc(), db_card->cvc());
+
+  // Verify last_updated_timestamp in local_stored_cvc table is set correctly.
+  EXPECT_EQ(GetDateModified(card.guid(), "last_updated_timestamp",
+                            "local_stored_cvc"),
+            arbitrary_time.ToTimeT());
+
+  // Set the current time to another value.
+  const base::Time some_later_time = base::Time::FromDoubleT(1000);
+  test_clock.SetNow(some_later_time);
+
+  // Update the credit card but CVC is same.
+  card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Charles Grady");
+  EXPECT_TRUE(table_->UpdateCreditCard(card));
+  // credit_card table date_modified should be updated.
+  EXPECT_EQ(GetDateModified(card.guid(), "date_modified", "credit_cards"),
+            some_later_time.ToTimeT());
+  // local_stored_cvc table timestamp should not be updated.
+  EXPECT_EQ(GetDateModified(card.guid(), "last_updated_timestamp",
+                            "local_stored_cvc"),
+            arbitrary_time.ToTimeT());
+
+  // Set the current time to another value.
+  const base::Time much_later_time = base::Time::FromDoubleT(5000);
+  test_clock.SetNow(much_later_time);
+
+  // Update the credit card and CVC is different.
+  card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Jack Torrance");
+  card.set_cvc(u"234");
+  EXPECT_TRUE(table_->UpdateCreditCard(card));
+  db_card = table_->GetCreditCard(card.guid());
+  // CVC should be updated to new CVC.
+  EXPECT_EQ(u"234", db_card->cvc());
+  // local_stored_cvc table timestamp should be updated.
+  EXPECT_EQ(GetDateModified(card.guid(), "last_updated_timestamp",
+                            "local_stored_cvc"),
+            much_later_time.ToTimeT());
+
+  // Remove the credit card. It should also remove cvc from local_stored_cvc
+  // table.
+  EXPECT_TRUE(table_->RemoveCreditCard(card.guid()));
+  sql::Statement cvc_removed_statement(
+      db_->GetSQLConnection()->GetUniqueStatement(
+          "SELECT guid FROM local_stored_cvc WHERE guid=?"));
+  cvc_removed_statement.BindString(0, card.guid());
+  ASSERT_TRUE(cvc_removed_statement.is_valid());
+  EXPECT_FALSE(cvc_removed_statement.Step());
 }
 
 TEST_F(AutofillTableTest, AddFullServerCreditCard) {

@@ -1964,27 +1964,41 @@ bool AutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
   if (!old_credit_card)
     return false;
 
-  bool update_modification_date = *old_credit_card != credit_card;
+  bool cvc_result = false;
+  if (old_credit_card->cvc() != credit_card.cvc()) {
+    sql::Statement cvc_statement;
+    UpdateBuilder(db_, cvc_statement, kLocalStoredCvcTable,
+                  {kGuid, kValueEncrypted, kLastUpdatedTimestamp}, "guid=?1");
+    BindLocalStoredCvcToStatement(credit_card, AutofillClock::Now(),
+                                  &cvc_statement, *autofill_table_encryptor_);
+    cvc_result = cvc_statement.Run();
+    CHECK(db_->GetLastChangeCount() > 0);
+  }
 
-  sql::Statement s;
-  UpdateBuilder(db_, s, kCreditCardsTable,
+  // If only cvc is updated, we don't need to update credit_card table
+  // date_modified field. Since we already checked if cvc updated, to ignore
+  // cvc, we set old_credit_card cvc to new cvc.
+  old_credit_card->set_cvc(credit_card.cvc());
+  bool card_updated = *old_credit_card != credit_card;
+  sql::Statement card_statement;
+  UpdateBuilder(db_, card_statement, kCreditCardsTable,
                 {kGuid, kNameOnCard, kExpirationMonth, kExpirationYear,
                  kCardNumberEncrypted, kUseCount, kUseDate, kDateModified,
                  kOrigin, kBillingAddressId, kNickname},
                 "guid=?1");
   BindCreditCardToStatement(credit_card,
-                            update_modification_date
-                                ? AutofillClock::Now()
-                                : old_credit_card->modification_date(),
-                            &s, *autofill_table_encryptor_);
+                            card_updated ? AutofillClock::Now()
+                                         : old_credit_card->modification_date(),
+                            &card_statement, *autofill_table_encryptor_);
+  bool card_result = card_statement.Run();
+  CHECK(db_->GetLastChangeCount() > 0);
 
-  bool result = s.Run();
-  DCHECK_GT(db_->GetLastChangeCount(), 0);
-  return result;
+  return cvc_result || card_result;
 }
 
 bool AutofillTable::RemoveCreditCard(const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
+  DeleteWhereColumnEq(db_, kLocalStoredCvcTable, kGuid, guid);
   return DeleteWhereColumnEq(db_, kCreditCardsTable, kGuid, guid);
 }
 
@@ -2856,7 +2870,7 @@ bool AutofillTable::RemoveOriginURLsModifiedBetween(
 }
 
 bool AutofillTable::ClearCreditCards() {
-  return Delete(db_, kCreditCardsTable);
+  return Delete(db_, kCreditCardsTable) || Delete(db_, kLocalStoredCvcTable);
 }
 
 bool AutofillTable::GetAllSyncMetadata(syncer::ModelType model_type,
