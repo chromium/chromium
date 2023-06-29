@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_future.h"
@@ -140,8 +141,8 @@ class ApiGuardDelegateTest
     // dangling pointer to the User.
     // TODO(b/208629291): Consider removing all users from ProfileHelper in the
     // destructor of ash::FakeChromeUserManager.
-    GetFakeUserManager()->RemoveUserFromList(
-        GetFakeUserManager()->GetActiveUser()->GetAccountId());
+    GetFakeUserManager().RemoveUserFromList(
+        GetFakeUserManager().GetActiveUser()->GetAccountId());
     scoped_user_manager_.reset();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -160,25 +161,25 @@ class ApiGuardDelegateTest
   const extensions::Extension* extension() { return extension_.get(); }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
+  ash::FakeChromeUserManager& GetFakeUserManager() {
+    return CHECK_DEREF(static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get()));
   }
 
   virtual void AddUserAndLogIn() {
-    auto* const user_manager = GetFakeUserManager();
+    auto& user_manager = GetFakeUserManager();
     // Make sure the current user is affiliated.
     const AccountId account_id = AccountId::FromUserEmail(kUserEmail);
-    user_manager->AddUser(account_id);
-    user_manager->LoginUser(account_id);
-    user_manager->SwitchActiveUser(account_id);
+    user_manager.AddUser(account_id);
+    user_manager.LoginUser(account_id);
+    user_manager.SwitchActiveUser(account_id);
   }
 
   void SetUserAsOwner() {
-    auto* const user_manager = GetFakeUserManager();
+    auto& user_manager = GetFakeUserManager();
     // Make sure the current user is affiliated.
     const AccountId account_id = AccountId::FromUserEmail(kUserEmail);
-    user_manager->SetOwnerId(account_id);
+    user_manager.SetOwnerId(account_id);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -233,10 +234,10 @@ class ApiGuardDelegateTest
 
 TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* const user_manager = GetFakeUserManager();
+  auto& user_manager = GetFakeUserManager();
   // Make sure the current user is not the device owner.
   const AccountId regular_user = AccountId::FromUserEmail("regular@gmail.com");
-  user_manager->SetOwnerId(regular_user);
+  user_manager.SetOwnerId(regular_user);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -408,12 +409,12 @@ class ApiGuardDelegateAffiliatedUserTest : public ApiGuardDelegateTest {
  protected:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void AddUserAndLogIn() override {
-    auto* const user_manager = GetFakeUserManager();
+    auto& user_manager = GetFakeUserManager();
     // Make sure the current user is affiliated.
     const AccountId account_id = AccountId::FromUserEmail("user@example.com");
-    user_manager->AddUserWithAffiliation(account_id, /*is_affiliated=*/true);
-    user_manager->LoginUser(account_id);
-    user_manager->SwitchActiveUser(account_id);
+    user_manager.AddUserWithAffiliation(account_id, /*is_affiliated=*/true);
+    user_manager.LoginUser(account_id);
+    user_manager.SwitchActiveUser(account_id);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
