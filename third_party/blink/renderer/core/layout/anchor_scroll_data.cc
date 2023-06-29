@@ -38,32 +38,14 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   return anchor;
 }
 
-// Returns the PaintLayer of the scroll container of |anchor|.
-const PaintLayer* ContainingScrollContainerForAnchor(
-    const LayoutObject* anchor) {
-  if (!anchor->HasLayer())
-    return anchor->ContainingScrollContainer()->Layer();
+const PaintLayer* ContainingScrollContainerLayer(const PaintLayer& layer) {
   // Normally, |scroller_layer| is the result. There's only one special case
-  // where |anchor| is fixed-positioned and |scroller_layer| is the LayoutView,
-  // then |anchor| doesn't actually scroll with |scroller_layer|, and null
+  // where |layer| is fixed-positioned and |scroller_layer| is the LayoutView,
+  // then |layer| doesn't actually scroll with |scroller_layer|, and null
   // should be returned.
   bool is_fixed_to_view = false;
   const PaintLayer* scroller_layer =
-      To<LayoutBoxModelObject>(anchor)->Layer()->ContainingScrollContainerLayer(
-          &is_fixed_to_view);
-  return is_fixed_to_view ? nullptr : scroller_layer;
-}
-
-// Returns the PaintLayer of the scroll container of an anchor-positioned |box|.
-const PaintLayer* ContainingScrollContainerLayerForAnchorPositionedBox(
-    const LayoutBox* box) {
-  // Normally, |scroller_layer| is the result. There's only one special case
-  // where |box| is fixed-positioned and |scroller_layer| is the LayoutView,
-  // then |box| doesn't actually scroll with |scroller_layer|, and null should
-  // be returned.
-  bool is_fixed_to_view = false;
-  const PaintLayer* scroller_layer =
-      box->Layer()->ContainingScrollContainerLayer(&is_fixed_to_view);
+      layer.ContainingScrollContainerLayer(&is_fixed_to_view);
   return is_fixed_to_view ? nullptr : scroller_layer;
 }
 
@@ -99,15 +81,14 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
   if (const LayoutObject* anchor =
           AnchorScrollObject(owner_->GetLayoutObject())) {
     const PaintLayer* starting_layer =
-        ContainingScrollContainerForAnchor(anchor);
+        anchor->HasLayer() ? ContainingScrollContainerLayer(
+                                 *To<LayoutBoxModelObject>(anchor)->Layer())
+                           : anchor->ContainingScrollContainer()->Layer();
     const PaintLayer* bounding_layer =
-        ContainingScrollContainerLayerForAnchorPositionedBox(
-            owner_->GetLayoutBox());
-    for (const PaintLayer* layer = starting_layer; layer != bounding_layer;
-         layer = layer->ContainingScrollContainerLayer()) {
-      // |bounding_layer| must be either null (for fixed-positioned |owner_|) or
-      // an ancestor of |starting_layer|, so we'll never have a null layer here.
-      DCHECK(layer);
+        ContainingScrollContainerLayer(*owner_->GetLayoutBox()->Layer());
+    for (const PaintLayer* layer = starting_layer;
+         layer && layer != bounding_layer;
+         layer = ContainingScrollContainerLayer(*layer)) {
       const PaintLayerScrollableArea* scrollable_area =
           layer->GetScrollableArea();
       new_scroll_container_ids.push_back(scrollable_area->GetScrollElementId());
