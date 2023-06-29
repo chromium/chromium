@@ -341,9 +341,10 @@ WebViewImpl::WebViewImpl(const std::string& id,
   // Browser.setDownloadBehavior. This is handled by the
   // DownloadDirectoryOverrideManager, which is only instantiated
   // in headless chrome.
-  if (browser_info->is_headless)
+  if (browser_info->is_headless_shell) {
     download_directory_override_manager_ =
         std::make_unique<DownloadDirectoryOverrideManager>(client_.get());
+  }
   // Child WebViews should not have their own navigation_tracker, but defer
   // all related calls to their parent. All WebViews must have either parent_
   // or navigation_tracker_

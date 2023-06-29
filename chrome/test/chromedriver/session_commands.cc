@@ -475,8 +475,9 @@ Status ConfigureSession(Session* session,
 
 Status ConfigureHeadlessSession(Session* session,
                                 const Capabilities& capabilities) {
-  if (!session->chrome->GetBrowserInfo()->is_headless)
+  if (!session->chrome->GetBrowserInfo()->is_headless_shell) {
     return Status(kOk);
+  }
 
   const std::string* download_directory = nullptr;
   if (capabilities.prefs) {

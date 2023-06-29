@@ -361,7 +361,7 @@ Status ChromeImpl::SetWindowBounds(Window* window,
   const std::string* desired_state = bounds->FindString("windowState");
 
   if (desired_state && *desired_state == "fullscreen" &&
-      !GetBrowserInfo()->is_headless) {
+      !GetBrowserInfo()->is_headless_shell) {
     // Work around crbug.com/982071. This block of code is necessary to ensure
     // that document.webkitIsFullScreen and document.fullscreenElement return
     // the correct values.

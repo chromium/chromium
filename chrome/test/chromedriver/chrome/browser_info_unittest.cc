@@ -39,7 +39,7 @@ TEST(ParseBrowserInfo, BlinkVersionContainsSvnRevision) {
   ASSERT_EQ(37, browser_info.major_version);
   ASSERT_EQ(2062, browser_info.build_no);
   ASSERT_EQ(181352, browser_info.blink_revision);
-  ASSERT_FALSE(browser_info.is_headless);
+  ASSERT_FALSE(browser_info.is_headless_shell);
 }
 
 TEST(ParseBrowserInfo, BlinkVersionContainsGitHash) {
@@ -67,7 +67,7 @@ TEST(ParseBrowserString, KitKatWebView) {
   ASSERT_EQ(30, browser_info.major_version);
   ASSERT_EQ(kToTBuildNo, browser_info.build_no);
   ASSERT_TRUE(browser_info.is_android);
-  ASSERT_FALSE(browser_info.is_headless);
+  ASSERT_FALSE(browser_info.is_headless_shell);
 }
 
 TEST(ParseBrowserString, LollipopWebView) {
@@ -80,7 +80,7 @@ TEST(ParseBrowserString, LollipopWebView) {
   ASSERT_EQ(37, browser_info.major_version);
   ASSERT_EQ(kToTBuildNo, browser_info.build_no);
   ASSERT_TRUE(browser_info.is_android);
-  ASSERT_FALSE(browser_info.is_headless);
+  ASSERT_FALSE(browser_info.is_headless_shell);
 }
 
 TEST(ParseBrowserString, AndroidChrome) {
@@ -93,7 +93,7 @@ TEST(ParseBrowserString, AndroidChrome) {
   ASSERT_EQ(39, browser_info.major_version);
   ASSERT_EQ(2171, browser_info.build_no);
   ASSERT_TRUE(browser_info.is_android);
-  ASSERT_FALSE(browser_info.is_headless);
+  ASSERT_FALSE(browser_info.is_headless_shell);
 }
 
 TEST(ParseBrowserString, DesktopChrome) {
@@ -106,7 +106,7 @@ TEST(ParseBrowserString, DesktopChrome) {
   ASSERT_EQ(39, browser_info.major_version);
   ASSERT_EQ(2171, browser_info.build_no);
   ASSERT_FALSE(browser_info.is_android);
-  ASSERT_FALSE(browser_info.is_headless);
+  ASSERT_FALSE(browser_info.is_headless_shell);
 }
 
 TEST(ParseBrowserString, HeadlessChrome) {
@@ -119,7 +119,7 @@ TEST(ParseBrowserString, HeadlessChrome) {
   ASSERT_EQ(39, browser_info.major_version);
   ASSERT_EQ(2171, browser_info.build_no);
   ASSERT_FALSE(browser_info.is_android);
-  ASSERT_TRUE(browser_info.is_headless);
+  ASSERT_TRUE(browser_info.is_headless_shell);
 }
 
 TEST(ParseBlinkVersionString, GitHash) {
@@ -166,7 +166,7 @@ TEST(FillFromBrowserVersionResponse, Chrome) {
   ASSERT_EQ("37.0.2062.124", browser_info.browser_version);
   ASSERT_EQ(37, browser_info.major_version);
   ASSERT_EQ(2062, browser_info.build_no);
-  ASSERT_FALSE(browser_info.is_headless);
+  ASSERT_FALSE(browser_info.is_headless_shell);
 }
 
 TEST(FillFromBrowserVersionResponse, HeadlessChrome) {
@@ -179,5 +179,5 @@ TEST(FillFromBrowserVersionResponse, HeadlessChrome) {
   ASSERT_EQ("39.0.2171.59", browser_info.browser_version);
   ASSERT_EQ(39, browser_info.major_version);
   ASSERT_EQ(2171, browser_info.build_no);
-  ASSERT_TRUE(browser_info.is_headless);
+  ASSERT_TRUE(browser_info.is_headless_shell);
 }

@@ -32,7 +32,7 @@ struct BrowserInfo {
   int build_no = kToTBuildNo;
   int blink_revision = kToTBlinkRevision;
   bool is_android = false;
-  bool is_headless = false;
+  bool is_headless_shell = false;
 
   Status FillFromBrowserVersionResponse(const base::Value::Dict& response);
 
