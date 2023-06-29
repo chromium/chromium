@@ -90,6 +90,10 @@ class CompanionPageHandler
   bool OnSearchTextQuery();
   void OnImageQuery(side_panel::mojom::ImageQuery image_query);
 
+  // Informs the page handler that the WebUI has detected a navigation that
+  // resulted in an error page.
+  void OnNavigationError();
+
  private:
   // Notifies the companion side panel about the URL of the main frame. Based on
   // the call site, either does a full reload of the side panel or does a

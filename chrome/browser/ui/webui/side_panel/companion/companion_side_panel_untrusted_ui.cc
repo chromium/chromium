@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/side_panel/companion/companion_side_panel_controller_utils.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_companion_resources.h"
 #include "chrome/grit/side_panel_companion_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -53,6 +54,15 @@ CompanionSidePanelUntrustedUI::CompanionSidePanelUntrustedUI(
       network::mojom::CSPDirectiveName::FormAction, formActionDirective);
   html_source->AddString("companion_origin", frameSrcString);
 
+  // Add localized companion strings.
+  html_source->AddLocalizedString(
+      "network_error_page_top_line",
+      IDS_SIDE_PANEL_COMPANION_ERROR_PAGE_FIRST_LINE);
+  html_source->AddLocalizedString(
+      "network_error_page_bottom_line",
+      IDS_SIDE_PANEL_COMPANION_ERROR_PAGE_SECOND_LINE);
+
+  Observe(web_ui->GetWebContents());
   web_ui->GetWebContents()->SetDelegate(this);
 }
 
@@ -79,6 +89,13 @@ void CompanionSidePanelUntrustedUI::RequestMediaAccessPermission(
   // Note: This is needed for taking screenshots via the feedback form.
   MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
       web_contents, request, std::move(callback), /*extension=*/nullptr);
+}
+
+void CompanionSidePanelUntrustedUI::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsErrorPage() && companion_page_handler_) {
+    companion_page_handler_->OnNavigationError();
+  }
 }
 
 base::WeakPtr<CompanionSidePanelUntrustedUI>
