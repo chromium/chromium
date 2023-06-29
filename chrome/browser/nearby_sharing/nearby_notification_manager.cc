@@ -29,7 +29,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
-#include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
+#include "chrome/browser/nearby_sharing/nearby_share_metrics.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/platform_util.h"

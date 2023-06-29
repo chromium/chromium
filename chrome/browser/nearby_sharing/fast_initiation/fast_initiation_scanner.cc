@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/fast_initiation/constants.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
-#include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
+#include "chrome/browser/nearby_sharing/nearby_share_metrics.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

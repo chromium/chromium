@@ -39,7 +39,7 @@
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
-#include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
+#include "chrome/browser/nearby_sharing/nearby_share_metrics.h"
 #include "chrome/browser/nearby_sharing/paired_key_verification_runner.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/share_target.h"

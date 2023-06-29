@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
+#include "chrome/browser/nearby_sharing/nearby_share_metrics.h"
 
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
