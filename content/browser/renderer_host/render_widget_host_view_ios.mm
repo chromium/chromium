@@ -64,25 +64,11 @@ bool IsTesting() {
 
 @interface RenderWidgetUIView : CALayerFrameSinkProvider {
   raw_ptr<content::RenderWidgetHostViewIOS> _view;
-  absl::optional<gfx::Vector2dF> _view_offset_during_touch_sequence;
+  absl::optional<gfx::Vector2dF> _viewOffsetDuringTouchSequence;
 }
 
 // TextInput state.
 @property(nonatomic, strong) RenderWidgetUIViewTextInput* textInput;
-
-/** The constraint between the top edge of @c contentView and its superview. */
-@property(nonatomic, strong, nonnull)
-    NSLayoutConstraint* contentViewTopConstraint;
-
-/** The constraint between the bottom edge of @c contentView and its superview.
- */
-@property(nonatomic, strong, nonnull)
-    NSLayoutConstraint* contentViewBottomConstraint;
-
-/** The constraint between the trailing edge of @c contentView and its
- * superview. */
-@property(nonatomic, strong, nonnull)
-    NSLayoutConstraint* contentViewTrailingConstraint;
 
 - (void)updateView:(UIScrollView*)view;
 - (void)removeView;
@@ -183,7 +169,7 @@ bool IsTesting() {
 @end
 
 @implementation RenderWidgetUIView
-@synthesize textInput = _text_input;
+@synthesize textInput = _textInput;
 
 - (instancetype)initWithWidget:(content::RenderWidgetHostViewIOS*)view {
   self = [self init];
@@ -192,11 +178,18 @@ bool IsTesting() {
     self.multipleTouchEnabled = YES;
     self.autoresizingMask =
         UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    _text_input = [[RenderWidgetUIViewTextInput alloc] initWithWidget:view];
-    [self addSubview:_text_input];
+    _textInput = [[RenderWidgetUIViewTextInput alloc] initWithWidget:view];
+    [self addSubview:_textInput];
   }
   return self;
 }
+
+- (void)dealloc {
+  [_textInput release];
+  _textInput = nil;
+  [super dealloc];
+}
+
 - (void)layoutSubviews {
   [super layoutSubviews];
   _view->UpdateScreenInfo();
@@ -239,9 +232,9 @@ bool IsTesting() {
   for (UITouch* touch in touches) {
     blink::WebTouchEvent webTouchEvent = content::WebTouchEventBuilder::Build(
         blink::WebInputEvent::Type::kTouchStart, touch, event, self,
-        _view_offset_during_touch_sequence);
-    if (!_view_offset_during_touch_sequence) {
-      _view_offset_during_touch_sequence =
+        _viewOffsetDuringTouchSequence);
+    if (!_viewOffsetDuringTouchSequence) {
+      _viewOffsetDuringTouchSequence =
           webTouchEvent.touches[0].PositionInWidget() -
           webTouchEvent.touches[0].PositionInScreen();
     }
@@ -253,10 +246,10 @@ bool IsTesting() {
   for (UITouch* touch in touches) {
     _view->OnTouchEvent(content::WebTouchEventBuilder::Build(
         blink::WebInputEvent::Type::kTouchEnd, touch, event, self,
-        _view_offset_during_touch_sequence));
+        _viewOffsetDuringTouchSequence));
   }
   if (event.allTouches.count == 1) {
-    _view_offset_during_touch_sequence.reset();
+    _viewOffsetDuringTouchSequence.reset();
   }
 }
 
@@ -264,7 +257,7 @@ bool IsTesting() {
   for (UITouch* touch in touches) {
     _view->OnTouchEvent(content::WebTouchEventBuilder::Build(
         blink::WebInputEvent::Type::kTouchMove, touch, event, self,
-        _view_offset_during_touch_sequence));
+        _viewOffsetDuringTouchSequence));
   }
 }
 
@@ -272,9 +265,9 @@ bool IsTesting() {
   for (UITouch* touch in touches) {
     _view->OnTouchEvent(content::WebTouchEventBuilder::Build(
         blink::WebInputEvent::Type::kTouchCancel, touch, event, self,
-        _view_offset_during_touch_sequence));
+        _viewOffsetDuringTouchSequence));
   }
-  _view_offset_during_touch_sequence.reset();
+  _viewOffsetDuringTouchSequence.reset();
 }
 
 - (void)observeValueForKeyPath:(NSString*)keyPath
