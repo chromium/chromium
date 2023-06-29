@@ -5,63 +5,273 @@
 #include "third_party/blink/renderer/core/css/check_pseudo_has_argument_context.h"
 
 #include "third_party/blink/renderer/core/css/check_pseudo_has_fast_reject_filter.h"
+#include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 
 namespace blink {
 
-const CSSSelector*
-CheckPseudoHasArgumentContext::GetCurrentRelationAndNextCompound(
-    const CSSSelector* compound_selector,
-    CSSSelector::RelationType& relation,
-    bool& compound_contains_sibling_relationship) {
-  DCHECK(compound_selector);
-  compound_contains_sibling_relationship = false;
-  for (const CSSSelector* simple_selector = compound_selector; simple_selector;
+namespace {
+
+// Iterator class for the compound selectors in the :has() argument selector.
+// During iteration, this class collects :has() pseudo class argument
+// hashes for fast rejection and provides current compound information.
+class CheckPseudoHasArgumentCompoundIterator {
+  STACK_ALLOCATED();
+
+ public:
+  CheckPseudoHasArgumentCompoundIterator(
+      const CSSSelector* compound,
+      Vector<unsigned>& pseudo_has_argument_hashes);
+
+  void operator++();
+  bool AtEnd() const { return !next_compound_; }
+
+  inline CSSSelector::RelationType RelationToNextCompound() const {
+    return relation_to_next_compound_;
+  }
+
+  bool CurrentCompoundAffectedBySiblingsOfMatchingElement() const {
+    return current_compound_affected_by_ & kSiblingsOfMatchingElement;
+  }
+
+  bool CurrentCompoundAffectedByAncestorSiblingsOfMatchingElement() const {
+    return current_compound_affected_by_ & kAncestorSiblingsOfMatchingElement;
+  }
+
+ private:
+  // Flags for extracting sibling relationship information from a :has()
+  // argument selector.
+  //
+  // CheckPseudoHasArgumentContext extracts the relationship information
+  // (sibling_combinator_between_child_or_descendant_combinator_ and
+  // sibling_combinator_at_rightmost_) and provides them to the SelectorChecker
+  // so that the SelectorChecker marks elements that affect a :has() state when
+  // there is an element that matches the :has() argument selector. (Please
+  // refer the SetAffectedByHasForAgumentMatchedElement() in
+  // selector_checker.cc)
+  //
+  // To extract the information, CheckPseudoHasArgumentContext need to check
+  // sibling relationships in a :has() argument selector.
+  //
+  // By default, CheckPseudoHasArgumentContext can get the sibling relationship
+  // information from the direct and indirect adjacent combinators ('~', '+')
+  // between two compound selectors of the :has() argument selector.
+  // (e.g. set sibling_combinator_at_rightmost_ flag for ':has(.a .b ~ .c)')
+  //
+  // In most cases, a compound selector doesn't have any sibling relationships
+  // in it. (.e.g. 'div.item:hover')
+  // But it can have implicit sibling relationships when it has a child indexed
+  // pseudo class or a logical combination pseudo class containing a complex
+  // selector.
+  // - .a:nth-child(3) : An element that matches this compound selector has
+  //                     relationships with its siblings since 'nth-child(3)'
+  //                     state can be affected by sibling existence.
+  // - .a:is(.b ~ .c) : An element that matches this compound selector has
+  //                    relationships with its siblings since ':is(.b ~ .c)'
+  //                    state can be affected by siblings' class values.
+  //
+  // A compound selector matching result on an element can be affected by
+  // following sibling relationships:
+  // - affected by the siblings of the matching element
+  // - affected by the ancestors' siblings of the matching element.
+  //
+  // To extract the sibling relationships within a compound selector of a :has()
+  // argument, CheckPseudoHasArgumentContext collects these flags from the
+  // simple selectors in the compound selector:
+  // - kAffectedBySiblingsOfMatchingElement:
+  //     Indicates that the siblings of the matching element can affect the
+  //     selector match result.
+  // - kAffectedByAncestorSiblingsOfMatchingElement:
+  //     Indicates that the matching element's ancestors' siblings can affect
+  //     the selector match result.
+  //
+  // 'MatchingElement' in the flag name indicates the selector's subject
+  // element, i.e. the element on which the ':has()' argument selector is being
+  // tested.
+  using AffectedByFlags = uint32_t;
+  enum AffectedByFlag : uint32_t {
+    kMatchingElementOnly = 0,
+    kSiblingsOfMatchingElement = 1 << 0,
+    kAncestorSiblingsOfMatchingElement = 1 << 1,
+  };
+
+  inline static bool NeedToCollectAffectedByFlagsFromSubSelector(
+      const CSSSelector* simple_selector) {
+    switch (simple_selector->GetPseudoType()) {
+      case CSSSelector::kPseudoIs:
+      case CSSSelector::kPseudoWhere:
+      case CSSSelector::kPseudoNot:
+      case CSSSelector::kPseudoParent:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  static void CollectAffectedByFlagsFromSimpleSelector(
+      const CSSSelector* simple_selector,
+      AffectedByFlags&);
+
+  const CSSSelector* next_compound_;
+  Vector<unsigned>& pseudo_has_argument_hashes_;
+  CSSSelector::RelationType relation_to_next_compound_ =
+      CSSSelector::kSubSelector;
+  AffectedByFlags current_compound_affected_by_ = kMatchingElementOnly;
+};
+
+CheckPseudoHasArgumentCompoundIterator::CheckPseudoHasArgumentCompoundIterator(
+    const CSSSelector* compound,
+    Vector<unsigned>& pseudo_has_argument_hashes)
+    : next_compound_(compound),
+      pseudo_has_argument_hashes_(pseudo_has_argument_hashes) {
+  ++(*this);
+}
+
+// Collect sibling relationship within a simple selector in ':has()' argument.
+//
+// In most cases, a simple selector doesn't have any sibling relationships
+// in it. (.e.g. 'div', '.item', ':hover')
+// But it can have implicit sibling relationships if it is a child indexed
+// pseudo class or a logical combination pseudo class containing a complex
+// selector.
+// - :nth-child(3) : An element that matches this selector has relationships
+//                   with its siblings since the match result can be affected
+//                   by sibling existence.
+// - :is(.a ~ .b) : An element that matches this selector has relationships
+//                  with its siblings since the match result can be affected
+//                  by siblings' class values.
+// - :is(.a ~ .b .c) : An element that matches this selector has relationships
+//                     with its ancestors' siblings since the match result can
+//                     be affected by ancestors' siblings' class values.
+//
+// static
+void CheckPseudoHasArgumentCompoundIterator::
+    CollectAffectedByFlagsFromSimpleSelector(const CSSSelector* simple_selector,
+                                             AffectedByFlags& affected_by) {
+  if (simple_selector->IsChildIndexedSelector()) {
+    affected_by |= kSiblingsOfMatchingElement;
+    return;
+  }
+
+  if (!NeedToCollectAffectedByFlagsFromSubSelector(simple_selector)) {
+    return;
+  }
+
+  // In case of a logical combination pseudo class (e.g. :is(), :where()), the
+  // relationship within the logical combination can be collected by checking
+  // the simple selectors or the combinators in its sub selectors.
+  //
+  // While checking the simple selectors and combinators in selector matching
+  // order (from rightmost to left), if the sibling relationship is collected,
+  // we need to differentiate the sibling relationship by checking whether the
+  // child or descendant combinator has already been found or not since the
+  // collected sibling relationship make the logical combination pseudo class
+  // containing sibling relationship or ancestor sibling relationship.
+  //
+  // We can see this with the following nested ':is()' case:
+  // - ':is(:is(.ancestor_sibling ~ .ancestor) .target)'
+  //
+  // The inner ':is()' pseudo class contains the 'sibling relationship'
+  // because there is one adjacent combinator in the sub selector of the
+  // pseudo class and there is no child or descendant combinator to the
+  // right of the adjacent combinator:
+  // - ':is(.ancestor_sibling ~ .ancestor)'
+  //
+  // The 'sibling relationship' within the inner 'is()' pseudo class makes
+  // the outer ':is()' pseudo class containing the 'ancestor sibling
+  // relationship' because there is a descendant combinator to the right of
+  // the inner ':is()' pseudo class:
+  // - ':is(:is(...) .target)'
+  const CSSSelector* sub_selector = simple_selector->SelectorListOrParent();
+  for (; sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
+    bool found_child_or_descendant_combinator_in_sub_selector = false;
+
+    for (const CSSSelector* selector = sub_selector; selector;
+         selector = selector->NextSimpleSelector()) {
+      AffectedByFlags simple_in_sub_affected_by = kMatchingElementOnly;
+
+      CollectAffectedByFlagsFromSimpleSelector(selector,
+                                               simple_in_sub_affected_by);
+
+      if (simple_in_sub_affected_by & kSiblingsOfMatchingElement) {
+        found_child_or_descendant_combinator_in_sub_selector
+            ? affected_by |= kAncestorSiblingsOfMatchingElement
+            : affected_by |= kSiblingsOfMatchingElement;
+      }
+      if (simple_in_sub_affected_by & kAncestorSiblingsOfMatchingElement) {
+        affected_by |= kAncestorSiblingsOfMatchingElement;
+      }
+
+      switch (selector->Relation()) {
+        case CSSSelector::kDescendant:
+        case CSSSelector::kChild:
+          found_child_or_descendant_combinator_in_sub_selector = true;
+          break;
+        case CSSSelector::kDirectAdjacent:
+        case CSSSelector::kIndirectAdjacent:
+          found_child_or_descendant_combinator_in_sub_selector
+              ? affected_by |= kAncestorSiblingsOfMatchingElement
+              : affected_by |= kSiblingsOfMatchingElement;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+}
+
+void CheckPseudoHasArgumentCompoundIterator::operator++() {
+  DCHECK(next_compound_);
+  current_compound_affected_by_ = kMatchingElementOnly;
+  for (const CSSSelector* simple_selector = next_compound_; simple_selector;
        simple_selector = simple_selector->NextSimpleSelector()) {
     CheckPseudoHasFastRejectFilter::CollectPseudoHasArgumentHashes(
         pseudo_has_argument_hashes_, simple_selector);
 
-    if (simple_selector->IsChildIndexedSelector()) {
-      compound_contains_sibling_relationship = true;
-    }
+    CollectAffectedByFlagsFromSimpleSelector(simple_selector,
+                                             current_compound_affected_by_);
 
-    relation = simple_selector->Relation();
-    if (relation != CSSSelector::kSubSelector) {
-      return simple_selector->NextSimpleSelector();
+    relation_to_next_compound_ = simple_selector->Relation();
+    if (relation_to_next_compound_ != CSSSelector::kSubSelector) {
+      next_compound_ = simple_selector->NextSimpleSelector();
+      return;
     }
   }
-  return nullptr;
+  next_compound_ = nullptr;
 }
+
+}  // namespace
 
 CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
     const CSSSelector* selector)
     : has_argument_(selector) {
-  CSSSelector::RelationType relation = CSSSelector::kSubSelector;
   depth_limit_ = 0;
   adjacent_distance_limit_ = 0;
   bool contains_child_or_descendant_combinator = false;
   bool sibling_combinator_at_leftmost = false;
-  bool compound_contains_sibling_relationship = false;
-
-  for (selector = GetCurrentRelationAndNextCompound(
-           selector, relation, compound_contains_sibling_relationship);
-       selector;
-       selector = GetCurrentRelationAndNextCompound(
-           selector, relation, compound_contains_sibling_relationship)) {
-    if (compound_contains_sibling_relationship) {
-      // If the compound contains an :nth-child() or another child-indexed
-      // selector, we need to do the same invalidation as for an indirect
-      // adjacent combinator since inserting or removing a sibling at any place
-      // may change matching of a :has() selector on any of its siblings.
+  CheckPseudoHasArgumentCompoundIterator iterator(selector,
+                                                  pseudo_has_argument_hashes_);
+  for (; !iterator.AtEnd(); ++iterator) {
+    // If the compound contains an :nth-child() or another child-indexed
+    // selector, or the compound contains a logical combination pseudo class
+    // containing a sibling relationship in its sub-selector, we need to do the
+    // same invalidation as for an indirect adjacent combinator since inserting
+    // or removing a sibling at any place may change matching of a :has()
+    // selector on any of its siblings or sibling descendant.
+    if (iterator.CurrentCompoundAffectedBySiblingsOfMatchingElement()) {
       if (contains_child_or_descendant_combinator) {
         sibling_combinator_at_leftmost = true;
       } else {
         sibling_combinator_at_rightmost_ = true;
       }
     }
-    switch (relation) {
+    if (iterator.CurrentCompoundAffectedByAncestorSiblingsOfMatchingElement()) {
+      sibling_combinator_between_child_or_descendant_combinator_ = true;
+    }
+
+    switch (iterator.RelationToNextCompound()) {
       case CSSSelector::kRelativeDescendant:
-        leftmost_relation_ = relation;
+        leftmost_relation_ = iterator.RelationToNextCompound();
         [[fallthrough]];
       case CSSSelector::kDescendant:
         if (sibling_combinator_at_leftmost) {
@@ -74,7 +284,7 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
         break;
 
       case CSSSelector::kRelativeChild:
-        leftmost_relation_ = relation;
+        leftmost_relation_ = iterator.RelationToNextCompound();
         [[fallthrough]];
       case CSSSelector::kChild:
         if (sibling_combinator_at_leftmost) {
@@ -89,7 +299,7 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
         break;
 
       case CSSSelector::kRelativeDirectAdjacent:
-        leftmost_relation_ = relation;
+        leftmost_relation_ = iterator.RelationToNextCompound();
         [[fallthrough]];
       case CSSSelector::kDirectAdjacent:
         if (contains_child_or_descendant_combinator) {
@@ -103,7 +313,7 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
         break;
 
       case CSSSelector::kRelativeIndirectAdjacent:
-        leftmost_relation_ = relation;
+        leftmost_relation_ = iterator.RelationToNextCompound();
         [[fallthrough]];
       case CSSSelector::kIndirectAdjacent:
         if (contains_child_or_descendant_combinator) {

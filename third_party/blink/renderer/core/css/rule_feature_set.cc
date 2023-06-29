@@ -1311,7 +1311,6 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
     InvalidationSetFeatures& descendant_features,
     CSSSelector::RelationType previous_combinator,
     AddFeaturesMethodForLogicalCombinationInHas add_features_method) {
-  DCHECK(logical_combination.SelectorList());
   DCHECK(compound_containing_has);
 
   for (const CSSSelector* complex = logical_combination.SelectorListOrParent();
