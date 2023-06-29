@@ -29,9 +29,6 @@ namespace ash::quick_start {
 
 namespace {
 
-constexpr base::TimeDelta kNotifySourceOfUpdateResponseTimeout =
-    base::Seconds(3);
-
 // TODO(b/280308144): Delete this switch once the host device handles the
 // NotifySourceOfUpdate message. This is used to manually test forced update
 // before Android implements the NotifySourceOfUpdate ack response.
@@ -119,6 +116,7 @@ void Connection::RequestWifiCredentials(
                      std::move(callback));
   SendMessageAndReadResponse(requests::BuildRequestWifiCredentialsMessage(
                                  session_id, shared_secret_str),
+                             QuickStartResponseType::kWifiCredentials,
                              std::move(on_response_received));
 }
 
@@ -131,13 +129,10 @@ void Connection::NotifySourceOfUpdate(int32_t session_id,
     return;
   }
 
-  // Send message to source that target device will perform an update.
-  response_timeout_timer_.Start(FROM_HERE, kNotifySourceOfUpdateResponseTimeout,
-                                base::BindOnce(&Connection::OnResponseTimeout,
-                                               weak_ptr_factory_.GetWeakPtr()));
   SendMessageAndReadResponse(
       requests::BuildNotifySourceOfUpdateMessage(session_id,
                                                  secondary_shared_secret_),
+      QuickStartResponseType::kNotifySourceOfUpdate,
       base::BindOnce(&Connection::OnNotifySourceOfUpdateResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -154,7 +149,8 @@ void Connection::RequestAccountTransferAssertion(
           &Connection::SendMessageAndReadResponse,
           weak_ptr_factory_.GetWeakPtr(),
           requests::BuildAssertionRequestMessage(challenge_b64url),
-          std::move(parse_assertion_response)));
+          QuickStartResponseType::kAssertion,
+          std::move(parse_assertion_response), kDefaultRoundTripTimeout));
 
   // Set up a callback to call GetInfo, calling back into RequestAssertion
   // (and ignoring the results of GetInfo) after the call succeeds.
@@ -162,7 +158,8 @@ void Connection::RequestAccountTransferAssertion(
       base::BindOnce(&Connection::SendMessageAndReadResponse,
                      weak_ptr_factory_.GetWeakPtr(),
                      requests::BuildGetInfoRequestMessage(),
-                     std::move(request_assertion)));
+                     QuickStartResponseType::kGetInfo,
+                     std::move(request_assertion), kDefaultRoundTripTimeout));
 
   auto bootstrap_configurations_response =
       base::BindOnce(&Connection::OnBootstrapConfigurationsResponse,
@@ -170,6 +167,7 @@ void Connection::RequestAccountTransferAssertion(
 
   // Call into SetBootstrapOptions, starting the chain of callbacks.
   SendMessageAndReadResponse(requests::BuildBootstrapOptionsRequest(),
+                             QuickStartResponseType::kBootstrapConfigurations,
                              std::move(bootstrap_configurations_response));
 }
 
@@ -279,26 +277,38 @@ void Connection::ParseBootstrapConfigurationsResponse(
 
 void Connection::SendMessageAndReadResponse(
     std::unique_ptr<QuickStartMessage> message,
-    ConnectionResponseCallback callback) {
+    QuickStartResponseType response_type,
+    ConnectionResponseCallback callback,
+    base::TimeDelta timeout) {
   std::string json_serialized_payload;
   CHECK(base::JSONWriter::Write(*message->GenerateEncodedMessage(),
                                 &json_serialized_payload));
 
   SendBytesAndReadResponse(std::vector<uint8_t>(json_serialized_payload.begin(),
                                                 json_serialized_payload.end()),
-                           std::move(callback));
+                           response_type, std::move(callback), timeout);
 }
 
 void Connection::SendBytesAndReadResponse(std::vector<uint8_t>&& bytes,
-                                          ConnectionResponseCallback callback) {
+                                          QuickStartResponseType response_type,
+                                          ConnectionResponseCallback callback,
+                                          base::TimeDelta timeout) {
   nearby_connection_->Write(std::move(bytes));
-  nearby_connection_->Read(std::move(callback));
+  nearby_connection_->Read(base::BindOnce(
+      &Connection::OnResponseReceived, response_weak_ptr_factory_.GetWeakPtr(),
+      std::move(callback), response_type));
+
+  response_timeout_timer_.Start(
+      FROM_HERE, timeout,
+      base::BindOnce(&Connection::OnResponseTimeout,
+                     weak_ptr_factory_.GetWeakPtr(), response_type));
 }
 
 void Connection::InitiateHandshake(const std::string& authentication_token,
                                    HandshakeSuccessCallback callback) {
   SendBytesAndReadResponse(
       handshake::BuildHandshakeMessage(authentication_token, shared_secret_),
+      QuickStartResponseType::kHandshake,
       base::BindOnce(&Connection::OnHandshakeResponse,
                      weak_ptr_factory_.GetWeakPtr(), authentication_token,
                      std::move(callback)));
@@ -400,9 +410,26 @@ void Connection::OnConnectionClosed(
   std::move(on_connection_closed_).Run(reason);
 }
 
-void Connection::OnResponseTimeout() {
-  QS_LOG(ERROR) << "Timed out waiting for a response from source device.";
+void Connection::OnResponseTimeout(QuickStartResponseType response_type) {
+  // Ensures that if the response is received after this timeout but before the
+  // Connection is destroyed, it will be ignored.
+  response_weak_ptr_factory_.InvalidateWeakPtrs();
+
+  QS_LOG(ERROR) << "Timed out waiting for " << response_type
+                << " response from source device.";
   Close(TargetDeviceConnectionBroker::ConnectionClosedReason::kResponseTimeout);
+}
+
+void Connection::OnResponseReceived(
+    ConnectionResponseCallback callback,
+    QuickStartResponseType response_type,
+    absl::optional<std::vector<uint8_t>> response_bytes) {
+  // Cancel the timeout timer if running.
+  response_timeout_timer_.Stop();
+
+  QS_LOG(INFO) << "Received " << response_type
+               << " response from source device";
+  std::move(callback).Run(std::move(response_bytes));
 }
 
 }  // namespace ash::quick_start

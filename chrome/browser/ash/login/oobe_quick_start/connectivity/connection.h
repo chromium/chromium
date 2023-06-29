@@ -11,12 +11,14 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
+#include "chromeos/ash/components/quick_start/quick_start_response_type.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "components/cbor/values.h"
@@ -34,6 +36,8 @@ class QuickStartMessage;
 class Connection
     : public TargetDeviceConnectionBroker::AuthenticatedConnection {
  public:
+  static constexpr base::TimeDelta kDefaultRoundTripTimeout = base::Seconds(3);
+
   using SharedSecret = TargetDeviceConnectionBroker::SharedSecret;
   using HandshakeSuccessCallback = base::OnceCallback<void(bool)>;
   using ConnectionAuthenticatedCallback = base::OnceCallback<void(
@@ -148,10 +152,16 @@ class Connection
   void ParseBootstrapConfigurationsResponse(
       absl::optional<mojom::BootstrapConfigurations> bootstrap_configurations);
 
-  void SendMessageAndReadResponse(std::unique_ptr<QuickStartMessage> message,
-                                  ConnectionResponseCallback callback);
-  void SendBytesAndReadResponse(std::vector<uint8_t>&& bytes,
-                                ConnectionResponseCallback callback);
+  void SendMessageAndReadResponse(
+      std::unique_ptr<QuickStartMessage> message,
+      QuickStartResponseType response_type,
+      ConnectionResponseCallback callback,
+      base::TimeDelta timeout = kDefaultRoundTripTimeout);
+  void SendBytesAndReadResponse(
+      std::vector<uint8_t>&& bytes,
+      QuickStartResponseType response_type,
+      ConnectionResponseCallback callback,
+      base::TimeDelta timeout = kDefaultRoundTripTimeout);
 
   void OnHandshakeResponse(const std::string& authentication_token,
                            HandshakeSuccessCallback callback,
@@ -160,7 +170,10 @@ class Connection
   void OnConnectionClosed(
       TargetDeviceConnectionBroker::ConnectionClosedReason reason);
 
-  void OnResponseTimeout();
+  void OnResponseTimeout(QuickStartResponseType response_type);
+  void OnResponseReceived(ConnectionResponseCallback callback,
+                          QuickStartResponseType response_type,
+                          absl::optional<std::vector<uint8_t>> response_bytes);
 
   template <typename T>
   using DecoderResponseCallback =
@@ -195,6 +208,10 @@ class Connection
   ConnectionAuthenticatedCallback on_connection_authenticated_;
   std::string challenge_b64url_;
   mojo::SharedRemote<mojom::QuickStartDecoder> decoder_;
+
+  // Separate WeakPtrFactory for use with |OnResponseReceived()| to allow for
+  // canceling the response.
+  base::WeakPtrFactory<Connection> response_weak_ptr_factory_{this};
 
   base::WeakPtrFactory<Connection> weak_ptr_factory_{this};
 };

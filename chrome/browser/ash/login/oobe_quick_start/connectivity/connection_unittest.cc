@@ -54,6 +54,7 @@ const char kChallengeBase64Url[] = "testchallenge";
 
 const std::vector<uint8_t> kTestBytes = {0x00, 0x01, 0x02};
 const std::vector<uint8_t> kExpectedGetInfoRequest = {0x04};
+constexpr base::TimeDelta kShortInterval = base::Milliseconds(20);
 
 const char kNotifySourceOfUpdateMessageKey[] = "forced_update_required";
 constexpr uint8_t kSuccess = 0x00;
@@ -79,8 +80,7 @@ constexpr std::array<uint8_t, 6> kRandomSessionId = {0x6b, 0xb3, 0x85,
 constexpr std::array<uint8_t, 12> kNonce = {0x60, 0x3e, 0x87, 0x69, 0xa3, 0x55,
                                             0xd3, 0x49, 0xbd, 0x0a, 0x63, 0xed};
 
-constexpr base::TimeDelta kNotifySourceOfUpdateResponseTimeout =
-    base::Seconds(3);
+constexpr base::TimeDelta kResponseTimeout = base::Seconds(3);
 
 }  // namespace
 
@@ -136,6 +136,14 @@ class ConnectionTest : public testing::Test {
     connection_->ParseBootstrapConfigurationsResponse(
         *mojom::BootstrapConfigurations::New(cryptauth_device_id));
     std::move(callback).Run();
+  }
+
+  void SendBytesAndReadResponse(std::vector<uint8_t>&& bytes,
+                                Connection::ConnectionResponseCallback callback,
+                                base::TimeDelta timeout) {
+    connection_->SendBytesAndReadResponse(std::move(bytes),
+                                          QuickStartResponseType::kHandshake,
+                                          std::move(callback), timeout);
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -412,8 +420,42 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate_ResponseTimeout) {
   EXPECT_TRUE(IsResponseTimeoutTimerRunning());
   EXPECT_EQ(connection_->GetState(), Connection::State::kOpen);
 
-  task_environment_.FastForwardBy(kNotifySourceOfUpdateResponseTimeout);
+  task_environment_.FastForwardBy(kResponseTimeout);
   EXPECT_EQ(connection_->GetState(), Connection::State::kClosed);
+}
+
+TEST_F(ConnectionTest, SendBytesAndReadResponse_TimedOut) {
+  ASSERT_FALSE(IsResponseTimeoutTimerRunning());
+
+  base::test::TestFuture<absl::optional<std::vector<uint8_t>>> future;
+  SendBytesAndReadResponse(std::vector<uint8_t>(kTestBytes),
+                           future.GetCallback(), kResponseTimeout);
+
+  EXPECT_TRUE(IsResponseTimeoutTimerRunning());
+  EXPECT_EQ(connection_->GetState(), Connection::State::kOpen);
+
+  task_environment_.FastForwardBy(kResponseTimeout);
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(connection_->GetState(), Connection::State::kClosed);
+}
+
+TEST_F(ConnectionTest, SendBytesAndReadResponse_SucceedsBeforeTimeout) {
+  ASSERT_FALSE(IsResponseTimeoutTimerRunning());
+
+  base::test::TestFuture<absl::optional<std::vector<uint8_t>>> future;
+  SendBytesAndReadResponse(std::vector<uint8_t>(kTestBytes),
+                           future.GetCallback(), kResponseTimeout);
+
+  EXPECT_TRUE(IsResponseTimeoutTimerRunning());
+  EXPECT_EQ(connection_->GetState(), Connection::State::kOpen);
+
+  task_environment_.FastForwardBy(kResponseTimeout - kShortInterval);
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(connection_->GetState(), Connection::State::kOpen);
+
+  task_environment_.FastForwardBy(kShortInterval);
+  EXPECT_EQ(connection_->GetState(), Connection::State::kOpen);
 }
 
 TEST_F(ConnectionTest, TestClose) {

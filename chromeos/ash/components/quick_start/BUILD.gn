@@ -17,6 +17,8 @@ static_library("quick_start") {
     "quick_start_metrics.h",
     "quick_start_requests.cc",
     "quick_start_requests.h",
+    "quick_start_response_type.cc",
+    "quick_start_response_type.h",
   ]
   deps = [
     "//base",
