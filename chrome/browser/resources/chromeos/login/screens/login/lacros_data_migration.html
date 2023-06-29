@@ -37,14 +37,16 @@ found in the LICENSE file.
   </div>
   <div slot="content" class="flex layout vertical center center-justified"
        hidden="[[lowBatteryStatus_]]" id="updating">
-    <img src="/images/update_boot.svg"
-        class="oobe-illustration" aria-hidden="true">
+    <iron-icon icon="oobe-illos:update-boot-illo"
+        class="illustration-jelly">
+    </iron-icon>
   </div>
   <div hidden="[[!lowBatteryStatus_]]" class="slide-view"
        slot="content", id="lowBattery">
     <oobe-slide is-warning>
-      <img slot="slide-img" class="update-illustration oobe-illustration"
-           srcset="images/update-charge.svg" aria-hidden="true">
+      <iron-icon slot="slide-img" icon="oobe-illos:update-charge-illo"
+          class="illustration-jelly">
+      </iron-icon>
       <div slot="title">
         [[i18nDynamic(locale, 'batteryWarningTitle')]]
       </div>

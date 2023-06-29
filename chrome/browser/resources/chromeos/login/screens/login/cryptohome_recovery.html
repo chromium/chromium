@@ -59,11 +59,9 @@ found in the LICENSE file. -->
     [[i18nDynamic(locale, 'cryptohomeRecoveryReauthNotificationSubtitle')]]
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
-    <iron-media-query query="(prefers-color-scheme: dark)"
-        query-matches="{{isDarkModeActive_}}">
-    </iron-media-query>
-    <img class="oobe-illustration" aria-hidden="true"
-        srcset="[[getImageSource_(isDarkModeActive_)]]">
+    <iron-icon icon="oobe-illos:smart-lock-illo"
+        class="illustration-jelly">
+    </iron-icon>
   </div>
   <div slot="bottom-buttons">
     <oobe-next-button id="reauthButton" class="focus-on-show"

@@ -99,7 +99,6 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
         type: Boolean,
         value: loadTimeData.getBoolean('isCryptohomeRecoveryUIFlowEnabled'),
       },
-      isDarkModeActive_: {type: Boolean, value: false},
     };
   }
 
@@ -174,15 +173,6 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
   suggestRecovery() {
     this.disabled = false;
     this.setUIStep(GaiaPasswordChangedUIState.RECOVERY);
-  }
-
-  /**
-   * Returns the src of the illustration.
-   * @private
-   */
-  getImageSource_() {
-    return this.isDarkModeActive_ ? 'images/security_lock_dark.svg' :
-                                    'images/security_lock_light.svg';
   }
 
   /**
