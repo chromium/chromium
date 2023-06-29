@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script type="module">
 import {MockMIDIService} from './resources/mock-midiservice.js';
-import {setMidiPermission} from './resources/permissions-helper.js';
 
 const mock = new MockMIDIService();
 promise_test(async () => {
   // Obtain the first MIDIAccess instance without a sysex permission.
-  await setMidiPermission({}, 'granted');
+  await test_driver.set_permission({name: 'midi'}, 'granted');
   const nosysex_access = await navigator.requestMIDIAccess();
 
   // See if a sysex message can not be sent over the first instance.
@@ -20,7 +21,7 @@ promise_test(async () => {
   });
 
   // Obtain the second MIDIAccess instance with a sysex permission.
-  await setMidiPermission({sysex: true}, 'granted');
+  await test_driver.set_permission({name: 'midi', sysex: true}, 'granted');
   const sysex_access = await navigator.requestMIDIAccess({sysex: true});
 
   // See if a sysex message can be sent correctly over the second instance.

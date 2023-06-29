@@ -3039,8 +3039,6 @@ crbug.com/626703 [ Linux ] external/wpt/webxr/xrSession_requestReferenceSpace_fe
 crbug.com/626703 [ Linux ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
 crbug.com/626703 [ Linux Release ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/forms/file/file-input-webkitdirectory-key-enter-prevent-keypress.html [ Timeout ]
-crbug.com/626703 [ Linux ] wpt_internal/webmidi/loopback-receive.https.html [ Timeout ]
-crbug.com/626703 [ Linux ] wpt_internal/webmidi/send-system-messages.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/webxr/ar/ar_hittestsource_lifetimes.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/webxr/xrDevice_supportsSession_immersive.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/webxr/xrSession_dataProviderDisconnect_immersive.https.html [ Timeout ]

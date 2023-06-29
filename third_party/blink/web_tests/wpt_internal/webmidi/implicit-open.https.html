@@ -3,11 +3,12 @@
 <head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 </head>
 <body>
 <script type="module">
 import {MockMIDIService} from './resources/mock-midiservice.js';
-import {setMidiPermission} from './resources/permissions-helper.js';
 import {checkStateTransition} from './resources/state-check-utils.js';
 
 const mock = new MockMIDIService();
@@ -48,7 +49,7 @@ async function checkAccess(access) {
 
 promise_test(async _ => {
   // Set default permission behavior that grants non-sysex requests.
-  await setMidiPermission({}, 'granted');
+  await test_driver.set_permission({name: 'midi'}, 'granted');
   const access = await navigator.requestMIDIAccess();
   await checkAccess(access);
 }, 'MIDIPort implicit open');

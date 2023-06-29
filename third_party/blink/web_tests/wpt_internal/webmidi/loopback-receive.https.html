@@ -3,10 +3,12 @@
 <head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+</head>
 <body>
 <script type="module">
 import {MockMIDIService} from './resources/mock-midiservice.js';
-import {setMidiPermission} from './resources/permissions-helper.js';
 
 const mock = new MockMIDIService();
 
@@ -70,7 +72,7 @@ function test(useAddEventListener) {
 }
 
 promise_test(async _ => {
-  await setMidiPermission({sysex: true}, 'granted');
+  await test_driver.set_permission({name: 'midi', sysex: true}, 'granted');
   await test(false);
   await test(true);
 }, 'midimessage event handling works as expected');
