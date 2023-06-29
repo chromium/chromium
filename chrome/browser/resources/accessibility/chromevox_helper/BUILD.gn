@@ -14,19 +14,24 @@ group("build") {
 }
 
 ts_library("build_ts") {
-  in_files = [ "content.ts" ]
+  in_files = [
+    "content.ts",
+    "service_worker.ts",
+  ]
   out_dir = tsc_output_dir
   definitions = [
     "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/scripting.d.ts",
+    "//tools/typescript/definitions/storage.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
   ]
 }
 
 copy("chromevox_helper_copied_files") {
-  sources = [
-    "$tsc_output_dir/content.js",
-    "../../chromeos/accessibility/chromevox/injected/cvox_gdocs_script.js",
-  ]
+  sources =
+      filter_include(get_target_outputs(":build_ts"), [ "*.js" ]) +
+      [ "../../chromeos/accessibility/chromevox/injected/cvox_gdocs_script.js" ]
   outputs = [ "$out_dir/{{source_file_part}}" ]
   deps = [ ":build_ts" ]
 }

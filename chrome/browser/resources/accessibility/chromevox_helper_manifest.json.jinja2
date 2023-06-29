@@ -6,8 +6,14 @@
   "name": "ChromeVox Helper",
   "version": "{{set_version}}",
   "description": "Provides support for ChromeVox within non-Ash browsers",
+  "background": {
+    "service_worker": "chromevox_helper/service_worker.js",
+    "type":"module"
+  },
   "permissions": [
-    "scripting"
+    "tabs",
+    "scripting",
+    "storage"
   ],
   "incognito": "split",
   "content_scripts": [

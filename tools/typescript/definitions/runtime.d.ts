@@ -14,6 +14,8 @@ declare global {
         message?: string,
       } | undefined;
 
+      export let id: string;
+
       export interface MessageSender {
         id?: string;
         tab?: chrome.tabs.Tab;
@@ -29,9 +31,23 @@ declare global {
           message: any,
           sender: MessageSender,
           sendResponse: (response?: any) => void) => void> { }
+
       export const onMessageExternal: ExtensionMessageEvent;
 
       export function getURL(path: string): string;
+
+      export interface SerializedContentScripts {
+        matches: string[];
+      }
+
+      export interface SerializedManifest {
+        manifest_version: string;
+        name: string;
+        version: string;
+        content_scripts?: SerializedContentScripts[];
+      }
+
+      export function getManifest(): SerializedManifest;
     }
   }
 }
