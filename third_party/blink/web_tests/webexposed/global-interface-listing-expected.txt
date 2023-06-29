@@ -1231,8 +1231,15 @@ interface CanvasRenderingContext2D
     setter wordSpacing
 interface CaptureController : EventTarget
     attribute @@toStringTag
+    getter oncapturedmousechange
     method constructor
     method setFocusBehavior
+    setter oncapturedmousechange
+interface CapturedMouseEvent : Event
+    attribute @@toStringTag
+    getter surfaceX
+    getter surfaceY
+    method constructor
 interface ChannelMergerNode : AudioNode
     attribute @@toStringTag
     method constructor

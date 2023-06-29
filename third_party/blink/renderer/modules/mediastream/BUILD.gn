@@ -14,6 +14,8 @@ blink_modules_sources("mediastream") {
     "browser_capture_media_stream_track.h",
     "capture_controller.cc",
     "capture_controller.h",
+    "captured_mouse_event.cc",
+    "captured_mouse_event.h",
     "crop_target.cc",
     "crop_target.h",
     "dom_window_media_stream.h",

@@ -22,4 +22,7 @@ interface CaptureController : EventTarget {
     MeasureAs=ConditionalFocus
   ]
   void setFocusBehavior(CaptureStartFocusBehavior focusBehavior);
+
+  // https://screen-share.github.io/mouse-events/#capture-controller-extensions
+  [RuntimeEnabled=CapturedMouseEvents] attribute EventHandler oncapturedmousechange;
 };

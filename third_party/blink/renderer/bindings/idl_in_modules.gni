@@ -432,6 +432,8 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/mediastream/capture_controller.idl",
           "//third_party/blink/renderer/modules/mediastream/capture_handle.idl",
           "//third_party/blink/renderer/modules/mediastream/capture_handle_config.idl",
+          "//third_party/blink/renderer/modules/mediastream/captured_mouse_event.idl",
+          "//third_party/blink/renderer/modules/mediastream/captured_mouse_event_init.idl",
           "//third_party/blink/renderer/modules/mediastream/constrain_boolean_parameters.idl",
           "//third_party/blink/renderer/modules/mediastream/constrain_dom_string_parameters.idl",
           "//third_party/blink/renderer/modules/mediastream/constrain_double_range.idl",

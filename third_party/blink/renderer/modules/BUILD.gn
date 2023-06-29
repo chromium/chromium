@@ -318,6 +318,7 @@ generate_event_interfaces("modules_event_interfaces") {
     "hid/hid_input_report_event.idl",
     "indexeddb/idb_version_change_event.idl",
     "mediarecorder/blob_event.idl",
+    "mediastream/captured_mouse_event.idl",
     "mediastream/media_stream_event.idl",
     "mediastream/media_stream_track_event.idl",
     "nfc/ndef_reading_event.idl",

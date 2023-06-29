@@ -66,6 +66,7 @@
     "canplay",
     "canplaythrough",
     "capturehandlechange",
+    "capturedmousechange",
     "change",
     "characterboundsupdate",
     "characteristicvaluechanged",
