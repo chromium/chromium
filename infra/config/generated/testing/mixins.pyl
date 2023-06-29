@@ -1,129 +1,7 @@
-# Copyright 2018 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-# This is a .pyl, or "Python Literal", file. You can treat it just like a
-# .json file, with the following exceptions:
-# * all keys must be quoted (use single quotes, please);
-# * comments are allowed, using '#' syntax; and
-# * trailing commas are allowed.
-#
-# The mixins known to exist. These can be applied to a waterfall, builder, or
-# test. The mixins are copied verbatim for each test in a config, overwriting
-# existing values. These values can be overriden by exceptions.
-#
-# 'swarming' mixins are copied verbatim into the test, with one exception; the
-# swarming 'dimensions' key. All values in the 'dimensions' key are applied to
-# every 'dimension_set' in a test, creating one if no 'dimension_set' already
-# exists.
-#
-# TODO: Potentially switch structure. It's possible we want swarming dimensions
-# to live in their own 'swarming' top level key in this file. The file would
-# then look something like:
-#
-# {
-#   'swarming': {
-#     'x86-64': {
-#       'cpu': 'x86-64',
-#     },
-#   },
-#   'coverage_data': {
-#     'isolate_profile_data': True,
-#   },
-# }
-#
-# This could make things more clear for users, but would require moving mixins
-# into sections. Re-evaluate if there are more uses of this potential feature.
-#
-# Examples:
-#
-# == Regular ==
-# Mixin:
-#   'mac-archive-rel-args': {
-#     'args': [
-#       'mac-release/sizes',
-#     ],
-#   },
-#
-# Waterfall:
-#   {
-#     'name': 'chromium'
-#     'machines': {
-#       'mac-archive-rel': {
-#         'test_suites': {
-#           'scripts': 'public_build_scripts',
-#         },
-#         'mixins': ['mac-archive-rel-args'],
-#       },
-#     },
-#   },
-#
-# Output:
-#   {
-#     'name': 'chromium'
-#     'machines': {
-#       'mac-archive-rel': {
-#         "scripts": [
-#           {
-#             "args": [
-#               "mac-release/sizes"
-#             ],
-#             "name": "sizes",
-#             "script": "sizes.py"
-#           }
-#         ]
-#       },
-#     },
-#   },
-#
-# == Swarming ==
-# Mixin:
-#   'x86-64': {
-#     'swarming': {
-#       'dimensions': {
-#         'cpu': 'x86-64',
-#       },
-#     },
-#   },
-#
-# Waterfall:
-#   {
-#     'name': 'chromium'
-#     'machines': {
-#       'msan-bot': {
-#         'test_suites': {
-#           'scripts': 'linux_chromeos_gtests',
-#         },
-#         'mixins': ['x86-64'],
-#       },
-#     },
-#   },
-#
-# Output:
-#   {
-#     'name': 'chromium'
-#     'machines': {
-#       'msan-bot': {
-#         "gtest_tests": [
-#           {
-#             "args": [
-#               "--test-launcher-print-test-stdio=always"
-#             ],
-#             "swarming": {
-#               "can_use_on_swarming_builders": true,
-#               "dimension_sets": [
-#                 {
-#                   "cpu": "x86-64",
-#                   "os": "Ubuntu-14.04"
-#                 }
-#               ]
-#             },
-#             "test": "accessibility_unittests"
-#           },
-#           <snip>
-#       },
-#     },
-#   },
+# THIS IS A GENERATED FILE DO NOT EDIT!!!
+# Instead:
+# 1. Modify //infra/config/targets/mixins.star
+# 2. Run //infra/config/main.star
 
 {
   '10-x86-emulator': {
@@ -131,12 +9,11 @@
       '--avd-config=../../tools/android/avd/proto/generic_android29.textpb',
     ],
     'swarming': {
-      # soft affinity so that bots with caches will be picked first
       'optional_dimensions': {
         '60': [
           {
             'caches': 'generic_android29',
-          }
+          },
         ],
       },
       'named_caches': [
@@ -144,7 +21,7 @@
           'name': 'generic_android29',
           'path': '.android_emulator/generic_android29',
         },
-      ]
+      ],
     },
   },
   '11-x86-emulator': {
@@ -152,12 +29,11 @@
       '--avd-config=../../tools/android/avd/proto/generic_android30.textpb',
     ],
     'swarming': {
-      # soft affinity so that bots with caches will be picked first
       'optional_dimensions': {
         '60': [
           {
             'caches': 'generic_android30',
-          }
+          },
         ],
       },
       'named_caches': [
@@ -165,7 +41,7 @@
           'name': 'generic_android30',
           'path': '.android_emulator/generic_android30',
         },
-      ]
+      ],
     },
   },
   '12-x64-emulator': {
@@ -173,12 +49,11 @@
       '--avd-config=../../tools/android/avd/proto/generic_android31.textpb',
     ],
     'swarming': {
-      # soft affinity so that bots with caches will be picked first
       'optional_dimensions': {
         '60': [
           {
             'caches': 'generic_android31',
-          }
+          },
         ],
       },
       'named_caches': [
@@ -186,7 +61,7 @@
           'name': 'generic_android31',
           'path': '.android_emulator/generic_android31',
         },
-      ]
+      ],
     },
   },
   '12l-x64-emulator': {
@@ -194,12 +69,11 @@
       '--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb',
     ],
     'swarming': {
-      # soft affinity so that bots with caches will be picked first
       'optional_dimensions': {
         '60': [
           {
             'caches': 'generic_android32_foldable',
-          }
+          },
         ],
       },
       'named_caches': [
@@ -207,7 +81,7 @@
           'name': 'generic_android32_foldable',
           'path': '.android_emulator/generic_android32_foldable',
         },
-      ]
+      ],
     },
   },
   '12l-x64-emulator-experimental': {
@@ -215,12 +89,11 @@
       '--avd-config=../../tools/android/avd/proto/generic_android32_foldable_experimental.textpb',
     ],
     'swarming': {
-      # soft affinity so that bots with caches will be picked first
       'optional_dimensions': {
         '60': [
           {
             'caches': 'generic_android32_foldable_experimental',
-          }
+          },
         ],
       },
       'named_caches': [
@@ -228,7 +101,7 @@
           'name': 'generic_android32_foldable_experimental',
           'path': '.android_emulator/generic_android32_foldable_experimental',
         },
-      ]
+      ],
     },
   },
   '13-x64-emulator': {
@@ -236,12 +109,11 @@
       '--avd-config=../../tools/android/avd/proto/generic_android33.textpb',
     ],
     'swarming': {
-      # soft affinity so that bots with caches will be picked first
       'optional_dimensions': {
         '60': [
           {
             'caches': 'generic_android33',
-          }
+          },
         ],
       },
       'named_caches': [
@@ -249,7 +121,7 @@
           'name': 'generic_android33',
           'path': '.android_emulator/generic_android33',
         },
-      ]
+      ],
     },
   },
   '13-x64-emulator-experimental': {
@@ -257,12 +129,11 @@
       '--avd-config=../../tools/android/avd/proto/generic_android33_experimental.textpb',
     ],
     'swarming': {
-      # soft affinity so that bots with caches will be picked first
       'optional_dimensions': {
         '60': [
           {
             'caches': 'generic_android33_experimental',
-          }
+          },
         ],
       },
       'named_caches': [
@@ -270,7 +141,7 @@
           'name': 'generic_android33_experimental',
           'path': '.android_emulator/generic_android33_experimental',
         },
-      ]
+      ],
     },
   },
   'android_r': {
@@ -334,6 +205,9 @@
     },
   },
   'chromeos-amd64-generic': {
+    'args': [
+      '--magic-vm-cache=magic_cros_vm_cache',
+    ],
     'swarming': {
       'dimension_sets': [
         {
@@ -341,20 +215,15 @@
           'kvm': '1',
           'os': 'Ubuntu-18.04',
           'pool': 'chromium.tests',
-        }
+        },
       ],
       'optional_dimensions': {
         '60': [
           {
             'caches': 'cros_vm',
-          }
+          },
         ],
       },
-      # This cache dir doesn't actually contain anything. Rather, its presence
-      # merely signals to the fleet that the a CrOS VM test recently ran on the
-      # bot and that its large VM image is likely still present in the bot's
-      # isolated cache. So by optionally targeting bots with that magic dir,
-      # CrOS VM tests can naturally have higher cache hit rates.
       'named_caches': [
         {
           'name': 'cros_vm',
@@ -362,11 +231,11 @@
         },
       ],
     },
+  },
+  'chromeos-betty': {
     'args': [
       '--magic-vm-cache=magic_cros_vm_cache',
     ],
-  },
-  'chromeos-betty': {
     'swarming': {
       'dimension_sets': [
         {
@@ -375,17 +244,15 @@
           'gce': '1',
           'os': 'Ubuntu-18.04',
           'pool': 'chrome.tests',
-        }
+        },
       ],
       'optional_dimensions': {
         '60': [
           {
             'caches': 'cros_vm',
-          }
+          },
         ],
       },
-      # See the 'chromeos-amd64-generic' mixin above for the purpose of this
-      # cache.
       'named_caches': [
         {
           'name': 'cros_vm',
@@ -393,11 +260,11 @@
         },
       ],
     },
+  },
+  'chromeos-betty-finch': {
     'args': [
       '--magic-vm-cache=magic_cros_vm_cache',
     ],
-  },
-  'chromeos-betty-finch': {
     'swarming': {
       'dimension_sets': [
         {
@@ -406,17 +273,15 @@
           'gce': '1',
           'os': 'Ubuntu-18.04',
           'pool': 'chrome.tests.finch',
-        }
+        },
       ],
       'optional_dimensions': {
         '60': [
           {
             'caches': 'cros_vm',
-          }
+          },
         ],
       },
-      # See the 'chromeos-amd64-generic' mixin above for the purpose of this
-      # cache.
       'named_caches': [
         {
           'name': 'cros_vm',
@@ -424,9 +289,6 @@
         },
       ],
     },
-    'args': [
-      '--magic-vm-cache=magic_cros_vm_cache',
-    ],
   },
   'chromeos-jacuzzi': {
     'swarming': {
@@ -454,6 +316,9 @@
     },
   },
   'chromeos-reven': {
+    'args': [
+      '--magic-vm-cache=magic_cros_reven_vm_cache',
+    ],
     'swarming': {
       'dimension_sets': [
         {
@@ -462,17 +327,15 @@
           'gce': '1',
           'os': 'Ubuntu-18.04',
           'pool': 'chrome.tests',
-        }
+        },
       ],
       'optional_dimensions': {
         '60': [
           {
             'caches': 'cros_reven_vm',
-          }
+          },
         ],
       },
-      # See the 'chromeos-amd64-generic' mixin above for the purpose of this
-      # cache.
       'named_caches': [
         {
           'name': 'cros_reven_vm',
@@ -480,9 +343,6 @@
         },
       ],
     },
-    'args': [
-      '--magic-vm-cache=magic_cros_reven_vm_cache',
-    ],
   },
   'chromium-tester-dev-service-account': {
     'swarming': {
@@ -494,21 +354,18 @@
       'service_account': 'chromium-tester@chops-service-accounts.iam.gserviceaccount.com',
     },
   },
-  # Used for invert CQ tests selection. Adding ci_only: False to
-  # test_suite_exceptions.pyl to select tests that are allowed on CQ builders.
   'ci_only': {
     'ci_only': True,
   },
   'dawn_end2end_gpu_test': {
     'args': [
       '--use-gpu-in-tests',
-      # Dawn test retries deliberately disabled to prevent flakiness.
       '--test-launcher-retry-limit=0',
       '--exclusive-device-type-preference=discrete,integrated',
     ],
   },
   'disable_check_flakiness_web_tests': {
-     'check_flakiness_for_new_tests': False,
+    'check_flakiness_for_new_tests': False,
   },
   'disable_field_trial_config_for_earl_grey': {
     'args': [
@@ -550,7 +407,6 @@
     },
   },
   'flame': {
-    # Pixel 4
     'swarming': {
       'dimensions': {
         'device_type': 'flame',
@@ -560,12 +416,12 @@
   },
   'fuchsia-code-coverage': {
     'args': [
-      '--code-coverage-dir=${ISOLATED_OUTDIR}'
+      '--code-coverage-dir=${ISOLATED_OUTDIR}',
     ],
   },
   'fuchsia-persistent-emulator': {
     'args': [
-      '--everlasting'
+      '--everlasting',
     ],
   },
   'fuchsia_logs': {
@@ -580,13 +436,9 @@
       },
     },
   },
-  # Use of this mixin signals to the recipe that the test uploads its results
-  # to result-sink and doesn't need to be wrapped by result_adapter.
   'has_native_resultdb_integration': {
     'resultdb': {
       'enable': True,
-      # TODO(crbug.com/1163797): Remove the 'enable' field in favor of
-      # 'has_native_resultdb_integration'.
       'has_native_resultdb_integration': True,
     },
   },
@@ -600,7 +452,7 @@
   'ios_custom_webkit': {
     'args': [
       '--args-json',
-      '{"test_args": ["--run-with-custom-webkit"]}'
+      '{"test_args": ["--run-with-custom-webkit"]}',
     ],
   },
   'ios_output_disabled_tests': {
@@ -659,12 +511,11 @@
       '--avd-config=../../tools/android/avd/proto/generic_android19.textpb',
     ],
     'swarming': {
-      # soft affinity so that bots with caches will be picked first
       'optional_dimensions': {
         '60': [
           {
             'caches': 'generic_android19',
-          }
+          },
         ],
       },
       'named_caches': [
@@ -672,13 +523,10 @@
           'name': 'generic_android19',
           'path': '.android_emulator/generic_android19',
         },
-      ]
+      ],
     },
   },
   'limited_capacity_bot': {
-    # Some FYI bot configurations have a limited number of bots in the swarming
-    # pool. Increase the default expiration time from 1 hour to 6 hours to
-    # prevent shards from timing out.
     'swarming': {
       'expiration': 21600,
     },
@@ -716,8 +564,6 @@
       },
     },
   },
-  # TODO(crbug.com/1260217): Remove the xenial mixin once the MSAN bots have
-  # migrated to focal.
   'linux-xenial': {
     'swarming': {
       'dimensions': {
@@ -741,7 +587,7 @@
         'os': 'Ubuntu-18.04.6',
         'pool': 'chromium.tests.gpu',
       },
-    }
+    },
   },
   'linux_intel_uhd_630_stable': {
     'swarming': {
@@ -750,7 +596,7 @@
         'os': 'Ubuntu-18.04.6',
         'pool': 'chromium.tests.gpu',
       },
-    }
+    },
   },
   'linux_nvidia_gtx_1660_experimental': {
     'swarming': {
@@ -762,10 +608,6 @@
     },
   },
   'linux_nvidia_gtx_1660_stable': {
-    # TODO(crbug.com/1408314): The swarming dimensions for
-    # webgpu_blink_web_tests and webgpu_cts_tests on linux-code-coverage
-    # must be kept manually in sync with the appropriate mixin; currently,
-    # this one, which is used by Dawn Linux x64 Release (NVIDIA).
     'swarming': {
       'dimensions': {
         'gpu': '10de:2184-440.100',
@@ -779,12 +621,11 @@
       '--avd-config=../../tools/android/avd/proto/generic_android22.textpb',
     ],
     'swarming': {
-      # soft affinity so that bots with caches will be picked first
       'optional_dimensions': {
         '60': [
           {
             'caches': 'generic_android22',
-          }
+          },
         ],
       },
       'named_caches': [
@@ -792,7 +633,7 @@
           'name': 'generic_android22',
           'path': '.android_emulator/generic_android22',
         },
-      ]
+      ],
     },
   },
   'long_skylab_timeout': {
@@ -851,7 +692,6 @@
       },
     },
   },
-  # TODO (crbug/1448671): remove the 3 OR mixins below after Mac13 upgrade completes
   'mac_12_or_13_arm64': {
     'swarming': {
       'dimensions': {
@@ -860,8 +700,6 @@
       },
     },
   },
-  # this can be replaced with mac_13_x64 mixins after upgrade completes. Mac13 machines
-  # are automatically on T2 or above
   'mac_12_or_13_t2_x64': {
     'swarming': {
       'dimensions': {
@@ -964,10 +802,6 @@
     },
   },
   'mac_mini_intel_gpu_stable': {
-    # TODO(crbug.com/1408314): The swarming dimensions for
-    # webgpu_blink_web_tests and webgpu_cts_tests on mac-code-coverage
-    # must be kept manually in sync with the appropriate mixin; currently,
-    # this one, which is used by Dawn Mac x64 Release (Intel).
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
@@ -1013,7 +847,6 @@
     },
   },
   'mac_retina_nvidia_gpu_experimental': {
-    # Currently the same as the stable version.
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
@@ -1041,22 +874,20 @@
     'swarming': {
       'cipd_packages': [
         {
-          "cipd_package": 'infra/tools/mac_toolchain/${platform}',
+          'cipd_package': 'infra/tools/mac_toolchain/${platform}',
           'location': '.',
           'revision': 'git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2',
         },
       ],
     },
   },
-  # mac_x64 is used as a prefered OS dimension for mac platform instead of any
-  # mac OS version. It selects the most representative dimension on Swarming.
   'mac_x64': {
     'swarming': {
       'dimension_sets': [
-         {
-           'os': 'Mac-12',
-           'cpu': 'x86-64',
-         },
+        {
+          'os': 'Mac-12',
+          'cpu': 'x86-64',
+        },
       ],
     },
   },
@@ -1072,12 +903,11 @@
       '--avd-config=../../tools/android/avd/proto/generic_android23.textpb',
     ],
     'swarming': {
-      # soft affinity so that bots with caches will be picked first
       'optional_dimensions': {
         '60': [
           {
             'caches': 'generic_android23',
-          }
+          },
         ],
       },
       'named_caches': [
@@ -1085,11 +915,10 @@
           'name': 'generic_android23',
           'path': '.android_emulator/generic_android23',
         },
-      ]
+      ],
     },
   },
   'mdarcy': {
-    # NVIDIA Shield TV 2019
     'swarming': {
       'dimensions': {
         'device_type': 'mdarcy',
@@ -1116,12 +945,11 @@
       '--avd-config=../../tools/android/avd/proto/generic_android24.textpb',
     ],
     'swarming': {
-      # soft affinity so that bots with caches will be picked first
       'optional_dimensions': {
         '60': [
           {
             'caches': 'generic_android24',
-          }
+          },
         ],
       },
       'named_caches': [
@@ -1129,7 +957,7 @@
           'name': 'generic_android24',
           'path': '.android_emulator/generic_android24',
         },
-      ]
+      ],
     },
   },
   'oreo-x86-emulator': {
@@ -1137,12 +965,11 @@
       '--avd-config=../../tools/android/avd/proto/generic_android27.textpb',
     ],
     'swarming': {
-      # soft affinity so that bots with caches will be picked first
       'optional_dimensions': {
         '60': [
           {
             'caches': 'generic_android27',
-          }
+          },
         ],
       },
       'named_caches': [
@@ -1150,7 +977,7 @@
           'name': 'generic_android27',
           'path': '.android_emulator/generic_android27',
         },
-      ]
+      ],
     },
   },
   'oreo_fleet': {
@@ -1162,7 +989,6 @@
     },
   },
   'oriole': {
-    # Pixel 6
     'swarming': {
       'dimensions': {
         'device_type': 'oriole',
@@ -1173,7 +999,7 @@
   'out_dir_arg': {
     'args': [
       '--out-dir',
-      '${ISOLATED_OUTDIR}'
+      '${ISOLATED_OUTDIR}',
     ],
   },
   'pie-x86-emulator': {
@@ -1181,12 +1007,11 @@
       '--avd-config=../../tools/android/avd/proto/generic_android28.textpb',
     ],
     'swarming': {
-      # soft affinity so that bots with caches will be picked first
       'optional_dimensions': {
         '60': [
           {
             'caches': 'generic_android28',
-          }
+          },
         ],
       },
       'named_caches': [
@@ -1194,7 +1019,7 @@
           'name': 'generic_android28',
           'path': '.android_emulator/generic_android28',
         },
-      ]
+      ],
     },
   },
   'pie_fleet': {
@@ -1244,11 +1069,6 @@
   'skia_gold_test': {
     'args': [
       '--git-revision=${got_revision}',
-      # BREAK GLASS IN CASE OF EMERGENCY
-      # Uncommenting this argument will bypass all interactions with Skia
-      # Gold in any tests that use it. This is meant as a temporary
-      # emergency stop in case of a Gold outage that's affecting the bots.
-      # '--bypass-skia-gold-functionality',
     ],
     'precommit_args': [
       '--gerrit-issue=${patch_issue}',
@@ -1277,7 +1097,6 @@
   'updater-mac-pool': {
     'swarming': {
       'dimensions': {
-        # Bots in this pool support passwordless sudo.
         'pool': 'chromium.updater.mac',
       },
     },
@@ -1296,7 +1115,6 @@
     ],
   },
   'walleye': {
-    # Pixel 2
     'swarming': {
       'dimensions': {
         'device_type': 'walleye',
@@ -1306,22 +1124,23 @@
   },
   'webgpu_cts': {
     'args': [
-      # crbug.com/953991 Ensure WebGPU is ready before running tests
       '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
-    ],
-    'win64_args': [ '--target=Release_x64' ],
-    'mac_args': [
-      '--platform=mac-mac11'
     ],
     'linux_args': [
       '--no-xvfb',
       '--additional-driver-flag=--enable-features=Vulkan',
     ],
+    'mac_args': [
+      '--platform=mac-mac11',
+    ],
+    'win64_args': [
+      '--target=Release_x64',
+    ],
     'merge': {
+      'script': '//third_party/blink/tools/merge_web_test_results.py',
       'args': [
         '--verbose',
       ],
-      'script': '//third_party/blink/tools/merge_web_test_results.py',
     },
     'resultdb': {
       'enable': True,
@@ -1393,9 +1212,6 @@
   },
   'win10_intel_uhd_630_stable_dimension_set': {
     'swarming': {
-      # We use explicit 'dimension_sets' instead of 'dimensions' since this is
-      # used in conjunction with 'win10_nvidia_gtx_1660_stable_dimension_set'
-      # to trigger tests on multiple configurations.
       'dimension_sets': [
         {
           'display_attached': '1',
@@ -1417,10 +1233,6 @@
     },
   },
   'win10_nvidia_gtx_1660_stable': {
-    # TODO(crbug.com/1408314): The swarming dimensions for
-    # webgpu_blink_web_tests and webgpu_cts_tests on win10-code-coverage
-    # must be kept manually in sync with the appropriate mixin; currently,
-    # this one, which is used by Dawn Win10 x64 Release (NVIDIA).
     'swarming': {
       'dimensions': {
         'display_attached': '1',
@@ -1430,9 +1242,6 @@
       },
     },
   },
-  # Version of win10_nvidia_gtx_1660_stable that uses 'dimension_sets'
-  # instead of 'dimensions' so it can be used to trigger tests on multiple
-  # configurations.
   'win10_nvidia_gtx_1660_stable_dimension_set': {
     'swarming': {
       'dimension_sets': [
@@ -1455,15 +1264,12 @@
   'win_arm64': {
     'swarming': {
       'dimensions': {
-        # TODO(https://crbug.com/1422826): Update the right cpu value.
         'cpu': None,
         'os': 'Windows-11',
         'pool': 'chrome.tests.arm64',
       },
-      # The resources are limited in the pool.
-      # The slowest test is expected to run >9 hours.
-      'expiration': 64800,  # 18 hours
-      'hard_timeout': 43200,  # 12 hours
+      'expiration': 64800,
+      'hard_timeout': 43200,
     },
   },
   'x86-64': {
@@ -1473,11 +1279,10 @@
       },
     },
   },
-  # Default Xcode 14 beta.
   'xcode_14_beta': {
     'args': [
       '--xcode-build-version',
-      '14e222b'
+      '14e222b',
     ],
     'swarming': {
       'named_caches': [
@@ -1488,11 +1293,10 @@
       ],
     },
   },
-  # Xcode 14 on iOS main.
   'xcode_14_main': {
     'args': [
       '--xcode-build-version',
-      '14c18'
+      '14c18',
     ],
     'swarming': {
       'named_caches': [
