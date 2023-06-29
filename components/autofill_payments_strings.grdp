@@ -732,7 +732,7 @@
       Choose how you'll verify it's you
   </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_ISSUER_CONFIRMATION_TEXT" desc="The issuer confirmation text shown in the Autofill card unmask authentication selection dialog on Desktop and Clank. This is the header text of the dialog, and it is the text stating that the issuer wants additional authentication. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card." formatter_data="android_java">
-      Your bank wants to make sure it\u2019s you
+      Your bank wants to make sure it's you
   </message>
   <message name="IDS_AUTOFILL_AUTHENTICATION_MODE_SECURITY_CODE" desc="The label for the 3 digit security code authentication option shown in the Autofill card unmask authentication selection dialog on Desktop. Only shown when there are multiple unmask options presented to the user. If selected, the user will be prompted to enter their security code.">
     Enter your security code
