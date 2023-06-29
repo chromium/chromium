@@ -440,58 +440,55 @@ SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
     SharedImageFormat format,
     bool use_angle_rgbx_format) {
   CHECK(format.is_single_plane());
-  switch (format.resource_format()) {
-    case RGBA_8888:
-      return GL_RGBA8_OES;
-    case BGRA_8888:
-      return GL_BGRA8_EXT;
-    case RGBA_F16:
-      return GL_RGBA16F_EXT;
-    case RGBA_4444:
-      return GL_RGBA4;
-    case ALPHA_8:
-      return GL_ALPHA8_EXT;
-    case LUMINANCE_8:
-      return GL_LUMINANCE8_EXT;
-    case BGR_565:
-    case RGB_565:
-      return GL_RGB565;
-    case RED_8:
-      return GL_R8_EXT;
-    case RG_88:
-      return GL_RG8_EXT;
-    case LUMINANCE_F16:
-      return GL_LUMINANCE16F_EXT;
-    case R16_EXT:
-      return GL_R16_EXT;
-    case RG16_EXT:
-      return GL_RG16_EXT;
-    case RGBX_8888:
-    case BGRX_8888:
-      return use_angle_rgbx_format ? GL_RGBX8_ANGLE : GL_RGB8_OES;
-    case ETC1:
-      return GL_ETC1_RGB8_OES;
-    case P010:
+  if (format == SinglePlaneFormat::kRGBA_8888) {
+    return GL_RGBA8_OES;
+  } else if (format == SinglePlaneFormat::kBGRA_8888) {
+    return GL_BGRA8_EXT;
+  } else if (format == SinglePlaneFormat::kRGBA_F16) {
+    return GL_RGBA16F_EXT;
+  } else if (format == SinglePlaneFormat::kRGBA_4444) {
+    return GL_RGBA4;
+  } else if (format == SinglePlaneFormat::kALPHA_8) {
+    return GL_ALPHA8_EXT;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_8) {
+    return GL_LUMINANCE8_EXT;
+  } else if (format == SinglePlaneFormat::kBGR_565 ||
+             format == SinglePlaneFormat::kRGB_565) {
+    return GL_RGB565;
+  } else if (format == SinglePlaneFormat::kR_8) {
+    return GL_R8_EXT;
+  } else if (format == SinglePlaneFormat::kRG_88) {
+    return GL_RG8_EXT;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
+    return GL_LUMINANCE16F_EXT;
+  } else if (format == SinglePlaneFormat::kR_16) {
+    return GL_R16_EXT;
+  } else if (format == SinglePlaneFormat::kRG_1616) {
+    return GL_RG16_EXT;
+  } else if (format == SinglePlaneFormat::kRGBX_8888 ||
+             format == SinglePlaneFormat::kBGRX_8888) {
+    return use_angle_rgbx_format ? GL_RGBX8_ANGLE : GL_RGB8_OES;
+  } else if (format == SinglePlaneFormat::kETC1) {
+    return GL_ETC1_RGB8_OES;
+  } else if (format == LegacyMultiPlaneFormat::kP010) {
 #if BUILDFLAG(IS_APPLE)
-      DLOG(ERROR) << "Sampling of P010 resources must be done per-plane.";
+    DLOG(ERROR) << "Sampling of P010 resources must be done per-plane.";
 #endif
-      return GL_RGB10_A2_EXT;
-    case RGBA_1010102:
-    case BGRA_1010102:
-      return GL_RGB10_A2_EXT;
-    case YVU_420:
-    case YUV_420_BIPLANAR:
+    return GL_RGB10_A2_EXT;
+  } else if (format == SinglePlaneFormat::kRGBA_1010102 ||
+             format == SinglePlaneFormat::kBGRA_1010102) {
+    return GL_RGB10_A2_EXT;
+  } else if (format == LegacyMultiPlaneFormat::kYV12 ||
+             format == LegacyMultiPlaneFormat::kNV12) {
 #if BUILDFLAG(IS_APPLE)
-      DLOG(ERROR) << "Sampling of YUV_420 resources must be done per-plane.";
+    DLOG(ERROR) << "Sampling of YUV_420 resources must be done per-plane.";
 #endif
-      return GL_RGB8_OES;
-    case YUVA_420_TRIPLANAR:
+    return GL_RGB8_OES;
+  } else if (format == LegacyMultiPlaneFormat::kNV12A) {
 #if BUILDFLAG(IS_APPLE)
-      DLOG(ERROR) << "Sampling of YUVA_420 resources must be done per-plane.";
+    DLOG(ERROR) << "Sampling of YUVA_420 resources must be done per-plane.";
 #endif
-      return GL_RGBA8_OES;
-    default:
-      break;
+    return GL_RGBA8_OES;
   }
   NOTREACHED();
   return GL_RGBA8_OES;
