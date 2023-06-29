@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactoryImpl;
+import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -231,10 +232,12 @@ class ClientManager {
         private boolean mCustomTabIsInForeground;
         private boolean mWasSessionDisconnectStatusLogged;
         private Supplier<Boolean> mEngagementSignalsAvailableSupplier;
+        private final EngagementSignalsHandler mEngagementSignalsHandler;
 
         public SessionParams(Context context, int uid, CustomTabsCallback customTabsCallback,
                 DisconnectCallback callback, PostMessageHandler postMessageHandler,
-                PostMessageServiceConnection serviceConnection) {
+                PostMessageServiceConnection serviceConnection,
+                EngagementSignalsHandler engagementSignalsHandler) {
             this.uid = uid;
             mPackageName = getPackageName(context, uid);
             mCustomTabsCallback = customTabsCallback;
@@ -242,6 +245,7 @@ class ClientManager {
             this.postMessageHandler = postMessageHandler;
             this.serviceConnection = serviceConnection;
             if (postMessageHandler != null) this.serviceConnection.setPackageName(mPackageName);
+            mEngagementSignalsHandler = engagementSignalsHandler;
         }
 
         /**
@@ -330,6 +334,10 @@ class ClientManager {
         public Supplier<Boolean> getEngagementSignalsAvailableSupplier() {
             return mEngagementSignalsAvailableSupplier;
         }
+
+        public EngagementSignalsHandler getEngagementSignalsHandler() {
+            return mEngagementSignalsHandler;
+        }
     }
 
     /** A wrapper around {@link InstalledAppProviderImpl} to aid testing. */
@@ -367,7 +375,8 @@ class ClientManager {
         RequestThrottler.loadInBackground();
     }
 
-    /** Creates a new session.
+    /**
+     * Creates a new session.
      *
      * @param session Session provided by the client.
      * @param uid Client UID, as returned by Binder.getCallingUid(),
@@ -377,7 +386,8 @@ class ClientManager {
      */
     public synchronized boolean newSession(CustomTabsSessionToken session, int uid,
             DisconnectCallback onDisconnect, @NonNull PostMessageHandler postMessageHandler,
-            @NonNull PostMessageServiceConnection serviceConnection) {
+            @NonNull PostMessageServiceConnection serviceConnection,
+            @NonNull EngagementSignalsHandler engagementSignalsHandler) {
         if (session == null || session.getCallback() == null) return false;
         if (mSessionParams.containsKey(session)) {
             SessionParams params = mSessionParams.get(session);
@@ -385,7 +395,8 @@ class ClientManager {
             params.mWasSessionDisconnectStatusLogged = false;
         } else {
             SessionParams params = new SessionParams(ContextUtils.getApplicationContext(), uid,
-                    session.getCallback(), onDisconnect, postMessageHandler, serviceConnection);
+                    session.getCallback(), onDisconnect, postMessageHandler, serviceConnection,
+                    engagementSignalsHandler);
             mSessionParams.put(session, params);
         }
 
@@ -927,6 +938,11 @@ class ClientManager {
     public @Nullable Supplier<Boolean> getEngagementSignalsAvailableSupplierForSession(
             CustomTabsSessionToken session) {
         return callOnSession(session, null, SessionParams::getEngagementSignalsAvailableSupplier);
+    }
+
+    public @NonNull EngagementSignalsHandler getEngagementSignalsHandlerForSession(
+            CustomTabsSessionToken session) {
+        return callOnSession(session, null, SessionParams::getEngagementSignalsHandler);
     }
 
     private void logConnectionClosed(SessionParams sessionParams) {

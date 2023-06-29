@@ -8,12 +8,14 @@ import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.NONE;
 import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ON_SCROLL_END;
 
 import android.graphics.Point;
+import android.os.Bundle;
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.browser.customtabs.EngagementSignalsCallback;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.UserData;
@@ -72,8 +74,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
 
     private final CustomTabsConnection mConnection;
     private final TabObserverRegistrar mTabObserverRegistrar;
-
-    @Nullable
+    private final EngagementSignalsCallback mCallback;
     private final CustomTabsSessionToken mSession;
 
     private final boolean mShouldSendRealValues;
@@ -100,13 +101,16 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
      *         BaseCustomTabActivityComponent#resolveTabObserverRegistrar()}.
      * @param connection See {@link ChromeAppComponent#resolveCustomTabsConnection()}.
      * @param session See {@link CustomTabIntentDataProvider#getSession()}.
+     * @param callback The {@link EngagementSignalsCallback} to sends the signals to.
      */
     // TODO(https://crbug.com/1378410): Inject this class and implement NativeInitObserver.
     public RealtimeEngagementSignalObserver(TabObserverRegistrar tabObserverRegistrar,
-            CustomTabsConnection connection, @Nullable CustomTabsSessionToken session) {
+            CustomTabsConnection connection, CustomTabsSessionToken session,
+            EngagementSignalsCallback callback) {
         mConnection = connection;
         mSession = session;
         mTabObserverRegistrar = tabObserverRegistrar;
+        mCallback = callback;
 
         mScrollOffsetUpdateFrequency =
                 ChromeFeatureList.isEnabled(
@@ -344,7 +348,13 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
      */
     private void notifyVerticalScrollEvent(boolean isDirectionUp) {
         if (mSignalsPaused) return;
-        mConnection.notifyVerticalScrollEvent(mSession, isDirectionUp);
+        try {
+            mCallback.onVerticalScrollEvent(isDirectionUp, Bundle.EMPTY);
+        } catch (Exception e) {
+            // Catching all exceptions is really bad, but we need it here,
+            // because Android exposes us to client bugs by throwing a variety
+            // of exceptions. See crbug.com/517023.
+        }
     }
 
     /**
@@ -352,14 +362,26 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
      */
     private void notifyGreatestScrollPercentageIncreased(int scrollPercentage) {
         if (mSignalsPaused) return;
-        mConnection.notifyGreatestScrollPercentageIncreased(mSession, scrollPercentage);
+        try {
+            mCallback.onGreatestScrollPercentageIncreased(scrollPercentage, Bundle.EMPTY);
+        } catch (Exception e) {
+            // Catching all exceptions is really bad, but we need it here,
+            // because Android exposes us to client bugs by throwing a variety
+            // of exceptions. See crbug.com/517023.
+        }
     }
 
     /**
      * @param didGetUserInteraction Whether user had any interaction in the current CCT session.
      */
     private void notifySessionEnded(boolean didGetUserInteraction) {
-        mConnection.notifyDidGetUserInteraction(mSession, didGetUserInteraction);
+        try {
+            mCallback.onSessionEnded(didGetUserInteraction, Bundle.EMPTY);
+        } catch (Exception e) {
+            // Catching all exceptions is really bad, but we need it here,
+            // because Android exposes us to client bugs by throwing a variety
+            // of exceptions. See crbug.com/517023.
+        }
     }
 
     /**

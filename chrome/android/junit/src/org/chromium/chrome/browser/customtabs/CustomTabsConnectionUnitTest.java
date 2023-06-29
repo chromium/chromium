@@ -52,6 +52,7 @@ import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
+import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -122,6 +123,7 @@ public class CustomTabsConnectionUnitTest {
         ChromeApplicationImpl.getComponent().resolveSessionDataHolder().removeActiveHandler(
                 mSessionHandler);
         ShadowPostTask.reset();
+        PrivacyPreferencesManagerImpl.setInstanceForTesting(null);
     }
 
     @Test
@@ -305,7 +307,10 @@ public class CustomTabsConnectionUnitTest {
     }
 
     @Test
-    public void setEngagementSignalsCallback_Available() {
+    @EnableFeatures({ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
+            ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void
+    setEngagementSignalsCallback_Available() {
         initSession();
         when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(true);
         assertTrue(mConnection.setEngagementSignalsCallback(
@@ -315,7 +320,10 @@ public class CustomTabsConnectionUnitTest {
     }
 
     @Test
-    public void setEngagementSignalsCallback_NotAvailable() {
+    @EnableFeatures({ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
+            ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void
+    setEngagementSignalsCallback_NotAvailable() {
         initSession();
         when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(false);
         assertFalse(mConnection.setEngagementSignalsCallback(
@@ -328,7 +336,8 @@ public class CustomTabsConnectionUnitTest {
         ShadowProcess.setUid(uid);
         shadowOf(RuntimeEnvironment.getApplication().getApplicationContext().getPackageManager())
                 .setPackagesForUid(uid, "test.package.name");
-        mConnection.mClientManager.newSession(mSession, uid, null, null, null);
+        var handler = new EngagementSignalsHandler(mConnection, mSession);
+        mConnection.mClientManager.newSession(mSession, uid, null, null, null, handler);
     }
 
     // TODO(https://crrev.com/c/4118209) Add more tests for Feature enabling/disabling.

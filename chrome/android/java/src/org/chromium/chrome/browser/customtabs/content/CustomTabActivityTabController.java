@@ -14,7 +14,6 @@ import android.view.Window;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
@@ -47,7 +46,6 @@ import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
@@ -117,9 +115,6 @@ public class CustomTabActivityTabController implements InflationObserver {
     @Nullable
     private final CustomTabsSessionToken mSession;
     private final Intent mIntent;
-
-    @Nullable
-    private RealtimeEngagementSignalObserver mRealtimeEngagementSignalObserver;
 
     @Inject
     public CustomTabActivityTabController(AppCompatActivity activity,
@@ -300,6 +295,8 @@ public class CustomTabActivityTabController implements InflationObserver {
                     mIntent.getIntExtra(ServiceTabLauncher.LAUNCH_REQUEST_ID_EXTRA, 0),
                     tab.getWebContents());
         }
+
+        updateEngagementSignalsHandler();
     }
 
     // Creates the tab on native init, if it hasn't been created yet, and does all the additional
@@ -452,23 +449,6 @@ public class CustomTabActivityTabController implements InflationObserver {
             observer.onContentChanged(tab);
         }
 
-        if (CustomTabsConnection.getInstance().isDynamicFeatureEnabled(
-                    ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)
-                && PrivacyPreferencesManagerImpl.getInstance()
-                           .isUsageAndCrashReportingPermitted()) {
-            mRealtimeEngagementSignalObserver = new RealtimeEngagementSignalObserver(
-                    mTabObserverRegistrar, mConnection, mSession);
-            PrivacyPreferencesManagerImpl.getInstance().addObserver(permitted -> {
-                if (!permitted) {
-                    if (mRealtimeEngagementSignalObserver != null) {
-                        mConnection.notifyDidGetUserInteraction(mSession, false);
-                        mRealtimeEngagementSignalObserver.destroy();
-                        mRealtimeEngagementSignalObserver = null;
-                    }
-                }
-            });
-        }
-
         // TODO(pshmakov): invert these dependencies.
         // Please don't register new observers here. Instead, inject TabObserverRegistrar in classes
         // dedicated to your feature, and register there.
@@ -543,8 +523,14 @@ public class CustomTabActivityTabController implements InflationObserver {
         return true;
     }
 
-    @VisibleForTesting
-    RealtimeEngagementSignalObserver getRealtimeEngagementSignalObserverForTesting() {
-        return mRealtimeEngagementSignalObserver;
+    public void updateEngagementSignalsHandler() {
+        if (!CustomTabsConnection.getInstance().isDynamicFeatureEnabled(
+                    ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)) {
+            return;
+        }
+
+        var handler = mConnection.getEngagementSignalsHandler(mSession);
+        if (handler == null) return;
+        handler.setTabObserverRegistrar(mTabObserverRegistrar);
     }
 }
