@@ -269,6 +269,21 @@ TEST_F(NavigationItemTest, NavigationItemImplRoundTripNonHTTPURL) {
   EXPECT_EQ(original.GetVirtualURL(), decoded.GetVirtualURL());
 }
 
+// Tests that NavigationItemImpl round trip correctly when serialized to proto
+// even when the URL is not an HTTP/HTTPS url, in absence of virtual URL.
+TEST_F(NavigationItemTest, NavigationItemImplRoundTripNonHTTPURLNoVirtualURL) {
+  NavigationItemImpl original;
+  original.SetURL(GURL("testwebui://invalid/"));
+
+  proto::NavigationItemStorage storage;
+  original.SerializeToProto(storage);
+
+  NavigationItemImpl decoded(storage);
+
+  EXPECT_EQ(original.GetURL(), decoded.GetURL());
+  EXPECT_EQ(original.GetVirtualURL(), decoded.GetVirtualURL());
+}
+
 // Tests that NavigationItemImpl serialization skips invalid referrer.
 TEST_F(NavigationItemTest, SerializationSkipsInvalidReferrer) {
   NavigationItemImpl original;
