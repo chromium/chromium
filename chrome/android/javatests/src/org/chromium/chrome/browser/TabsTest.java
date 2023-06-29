@@ -241,43 +241,39 @@ public class TabsTest {
     @DisabledTest(message = "https://crbug.com/1347598")
     public void testOpenAndCloseNewTabButton() {
         sActivityTestRule.loadUrl(getUrl(TEST_FILE_PATH));
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            String title =
-                    sActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0).getTitle();
-            Assert.assertEquals("Data file for TabsTest", title);
-        });
-        final int tabCount = sActivityTestRule.getActivity().getCurrentTabModel().getCount();
-        View tabSwitcherButton =
-                sActivityTestRule.getActivity().findViewById(R.id.tab_switcher_button);
-        Assert.assertNotNull("'tab_switcher_button' view is not found", tabSwitcherButton);
-        TouchCommon.singleClickView(tabSwitcherButton);
+        Tab tab0 = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return sActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0); });
+        Assert.assertEquals("Data file for TabsTest", ChromeTabUtils.getTitleOnUiThread(tab0));
+        final int originalTabCount = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return sActivityTestRule.getActivity().getCurrentTabModel().getCount(); });
+        onViewWaiting(withId(R.id.tab_switcher_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
         LayoutTestUtils.waitForLayout(
                 sActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
 
-        View newTabButton = sActivityTestRule.getActivity().findViewById(R.id.new_tab_button);
-        Assert.assertNotNull("'new_tab_button' view is not found", newTabButton);
-        TouchCommon.singleClickView(newTabButton);
+        onViewWaiting(withId(R.id.new_tab_view)).check(matches(isDisplayed())).perform(click());
         LayoutTestUtils.waitForLayout(
                 sActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
 
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                ()
-                        -> Assert.assertEquals("The tab count is wrong", tabCount + 1,
-                                sActivityTestRule.getActivity().getCurrentTabModel().getCount()));
+        int currentTabCount = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return sActivityTestRule.getActivity().getCurrentTabModel().getCount(); });
+        Assert.assertEquals(
+                "The tab count should increase by one", originalTabCount + 1, currentTabCount);
 
         CriteriaHelper.pollUiThread(() -> {
-            Tab tab = sActivityTestRule.getActivity().getCurrentTabModel().getTabAt(1);
-            String title = tab.getTitle().toLowerCase(Locale.US);
+            Tab tab1 = sActivityTestRule.getActivity().getCurrentTabModel().getTabAt(1);
+            String title = tab1.getTitle().toLowerCase(Locale.US);
             String expectedTitle = "new tab";
             Criteria.checkThat(title, Matchers.startsWith(expectedTitle));
         });
 
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                ()
-                        -> Assert.assertEquals(tabCount,
-                                sActivityTestRule.getActivity().getCurrentTabModel().getCount()));
+        currentTabCount = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return sActivityTestRule.getActivity().getCurrentTabModel().getCount(); });
+        Assert.assertEquals(
+                "The tab count should be same as original", originalTabCount, currentTabCount);
     }
 
     private void assertWaitForKeyboardStatus(final boolean show) {
