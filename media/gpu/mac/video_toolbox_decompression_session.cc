@@ -8,6 +8,12 @@
 #include "base/mac/mac_logging.h"
 #include "media/base/media_log.h"
 
+#define OSSTATUS_MEDIA_DLOG_ERROR(status, msg)                  \
+  do {                                                          \
+    OSSTATUS_DLOG(ERROR, status) << msg;                        \
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get()) << msg; \
+  } while (0)
+
 namespace media {
 
 namespace {
@@ -64,9 +70,7 @@ bool VideoToolboxDecompressionSessionImpl::Create(
       &callback,       // output_callback
       session_.InitializeInto());
   if (status != noErr) {
-    OSSTATUS_DLOG(ERROR, status) << "VTDecompressionSessionCreate()";
-    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
-        << "VTDecompressionSessionCreate()";
+    OSSTATUS_MEDIA_DLOG_ERROR(status, "VTDecompressionSessionCreate()");
     DCHECK(!session_);
     return false;
   }
@@ -119,9 +123,7 @@ bool VideoToolboxDecompressionSessionImpl::DecodeFrame(CMSampleBufferRef sample,
   OSStatus status = VTDecompressionSessionDecodeFrame(
       session_, sample, decode_flags, context, nullptr);
   if (status != noErr) {
-    OSSTATUS_DLOG(ERROR, status) << "VTDecompressionSessionDecodeFrame()";
-    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
-        << "VTDecompressionSessionDecodeFrame()";
+    OSSTATUS_MEDIA_DLOG_ERROR(status, "VTDecompressionSessionDecodeFrame()");
     return false;
   }
 
