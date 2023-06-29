@@ -227,6 +227,10 @@ bool BrowsingDataFilterBuilderImpl::MatchesAllOriginsAndDomains() {
   return mode_ == Mode::kPreserve && origins_.empty() && domains_.empty();
 }
 
+bool BrowsingDataFilterBuilderImpl::MatchesNothing() {
+  return mode_ == Mode::kDelete && origins_.empty() && domains_.empty();
+}
+
 void BrowsingDataFilterBuilderImpl::SetPartitionedStateAllowedOnly(bool value) {
   partitioned_state_only_ = value;
 }

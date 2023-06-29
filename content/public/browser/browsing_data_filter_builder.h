@@ -117,6 +117,9 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   // Returns true if we're an empty preserve list, where we delete everything.
   virtual bool MatchesAllOriginsAndDomains() = 0;
 
+  // Returns true if we're an empty delete list, where we delete nothing.
+  virtual bool MatchesNothing() = 0;
+
   // When true, this filter will exclude unpartitioned cookies, i.e. cookies
   // whose partition key is null. By default, the value is false.
   // Partitioned cookies are unaffected by this setting.

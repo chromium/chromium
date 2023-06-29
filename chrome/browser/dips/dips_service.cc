@@ -142,12 +142,6 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
       base::OnceClosure callback) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-    // Note: we prevent deletion in this case because of crbug.com/1457600.
-    if (filter->MatchesAllOriginsAndDomains()) {
-      std::move(callback).Run();
-      return;
-    }
-
     // StateClearer manages its own lifetime and deletes itself when finished.
     auto* state_clearer = new StateClearer(remover, std::move(callback));
 

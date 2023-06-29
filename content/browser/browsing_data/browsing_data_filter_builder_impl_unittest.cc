@@ -172,6 +172,38 @@ TEST(BrowsingDataFilterBuilderImplTest, Noop) {
     RunTestCase(test_case, filter);
 }
 
+TEST(BrowsingDataFilterBuilderImplTest, EmptyDelete) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilderImpl::Mode::kDelete);
+  // An empty kDelete filter matches nothing.
+  ASSERT_TRUE(builder.MatchesNothing());
+  base::RepeatingCallback<bool(const GURL&)> filter = builder.BuildUrlFilter();
+
+  TestCase test_cases[] = {
+      {"https://www.google.com", false},
+      {"https://www.chrome.com", false},
+      {"http://www.google.com/foo/bar", false},
+      {"https://website.sp.nom.br", false},
+      {"http://192.168.1.1", false},
+      {"http://192.168.1.1:80", false},
+  };
+
+  for (TestCase test_case : test_cases) {
+    RunTestCase(test_case, filter);
+  }
+}
+
+TEST(BrowsingDataFilterBuilderImplTest, MatchesNothing) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilderImpl::Mode::kDelete);
+  // An empty kDelete filter matches nothing.
+  ASSERT_TRUE(builder.MatchesNothing());
+
+  // With a domain added to the builder, it should no longer match nothing.
+  builder.AddRegisterableDomain(std::string(kGoogleDomain));
+  ASSERT_FALSE(builder.MatchesNothing());
+}
+
 TEST(BrowsingDataFilterBuilderImplTest, RegistrableDomainGURLDeleteList) {
   BrowsingDataFilterBuilderImpl builder(
       BrowsingDataFilterBuilderImpl::Mode::kDelete);

@@ -1476,10 +1476,7 @@ TEST_F(BrowsingDataRemoverImplTest, MultipleTasks) {
   std::unique_ptr<BrowsingDataFilterBuilder> filter_builder_1(
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kDelete));
-  std::unique_ptr<BrowsingDataFilterBuilder> filter_builder_2(
-      BrowsingDataFilterBuilder::Create(
-          BrowsingDataFilterBuilder::Mode::kPreserve));
-  filter_builder_2->AddRegisterableDomain("example.com");
+  filter_builder_1->AddRegisterableDomain("example.com");
 
   MultipleTasksObserver observer(remover);
   BrowsingDataRemoverCompletionInhibitor completion_inhibitor(remover);

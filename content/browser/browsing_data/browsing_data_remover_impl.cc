@@ -248,6 +248,10 @@ void BrowsingDataRemoverImpl::RemoveInternal(
       << "Every observer must register itself (by calling AddObserver()) "
       << "before observing a removal task.";
 
+  CHECK(!filter_builder || !filter_builder->MatchesNothing())
+      << "Filters of type `kDelete` with empty origin and domain lists match "
+      << "nothing. To match all origins and domains, use a `kPreserve` filter.";
+
   // Remove() and RemoveAndReply() pass a null pointer to indicate no filter.
   // No filter is equivalent to one that |MatchesAllOriginsAndDomains()|.
   if (!filter_builder) {
