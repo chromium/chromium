@@ -8,6 +8,8 @@ import './print_preview_shared.css.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {NativeLayer, NativeLayerImpl} from '../native_layer.js';
+
 import {getTemplate} from './printer_setup_info_cros.html.js';
 
 /**
@@ -28,6 +30,17 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
 
   static get template() {
     return getTemplate();
+  }
+
+  private nativeLayer: NativeLayer;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.nativeLayer = NativeLayerImpl.getInstance();
+  }
+
+  private onManagePrintersClicked(): void {
+    this.nativeLayer.managePrinters();
   }
 }
 

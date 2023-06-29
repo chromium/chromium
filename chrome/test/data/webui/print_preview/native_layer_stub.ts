@@ -61,6 +61,7 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
       'getPreview',
       'getPrinterCapabilities',
       'hidePreview',
+      'managePrinters',
       'print',
       'saveAppState',
       'showSystemDialog',
@@ -190,7 +191,9 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
 
   cancelPendingPrintRequest() {}
 
-  managePrinters() {}
+  managePrinters() {
+    this.methodCalled('managePrinters');
+  }
 
   /**
    * settings The settings to return as a response to |getInitialSettings|.

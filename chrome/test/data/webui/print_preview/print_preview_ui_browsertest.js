@@ -692,6 +692,12 @@ TEST_F('PrintPreviewPrinterSetupInfoCrosTest', 'ElementDisplays', function() {
 TEST_F('PrintPreviewPrinterSetupInfoCrosTest', 'ElementLocalized', function() {
   this.runMochaTest(printer_setup_info_cros_test.TestNames.ElementLocalized);
 });
+
+TEST_F(
+    'PrintPreviewPrinterSetupInfoCrosTest', 'ManagePrintersButton', function() {
+      this.runMochaTest(
+          printer_setup_info_cros_test.TestNames.ManagePrintersButton);
+    });
 GEN('#endif')
 
 GEN('#if BUILDFLAG(IS_CHROMEOS)');
