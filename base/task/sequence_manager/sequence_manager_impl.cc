@@ -244,6 +244,8 @@ SequenceManagerImpl::SequenceManagerImpl(
 }
 
 SequenceManagerImpl::~SequenceManagerImpl() {
+  recordreplay::Assert("[RUN-2217-2269] ~SequenceManagerImpl %d", recordreplay::PointerId(this));
+
   recordreplay::UnregisterPointer(this);
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
@@ -458,6 +460,9 @@ void SequenceManagerImpl::SetObserver(Observer* observer) {
 
 void SequenceManagerImpl::ShutdownTaskQueueGracefully(
     std::unique_ptr<internal::TaskQueueImpl> task_queue) {
+  recordreplay::Assert(
+      "[RUN-2217-2269] SequenceManagerImpl::ShutdownTaskQueueGracefully %d",
+      recordreplay::PointerId(task_queue.get()));
   main_thread_only().queues_to_gracefully_shutdown[task_queue.get()] =
       std::move(task_queue);
 }
@@ -1141,7 +1146,8 @@ void SequenceManagerImpl::CleanUpQueues() {
 
   for (auto it = main_thread_only().queues_to_gracefully_shutdown.begin();
        it != main_thread_only().queues_to_gracefully_shutdown.end();) {
-    recordreplay::Assert("[RUN-2217] SequenceManagerImpl::CleanUpQueues #1");
+    recordreplay::Assert("[RUN-2217-2269] SequenceManagerImpl::CleanUpQueues #1 %d",
+                         recordreplay::PointerId(it->first));
     if (it->first->IsEmpty()) {
       recordreplay::Assert("[RUN-2217] SequenceManagerImpl::CleanUpQueues #2");
       UnregisterTaskQueueImpl(std::move(it->second));
