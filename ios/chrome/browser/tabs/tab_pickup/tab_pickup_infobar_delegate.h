@@ -10,8 +10,8 @@
 
 #import "base/ios/block_types.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/synced_sessions/distant_session.h"
 
 class Browser;
 class FaviconLoader;
@@ -46,14 +46,16 @@ class TabPickupInfobarDelegate : public ConfirmInfoBarDelegate {
   InfoBarIdentifier GetIdentifier() const override;
 
  private:
-  // Distant session.
-  raw_ptr<const synced_sessions::DistantSession> session_;
   // Session name.
   std::string session_name_;
   // Time the session is last modified.
   base::Time synced_time_;
   // Las synced tab URL.
   GURL tab_url_;
+  // Tab identifier.
+  SessionID tab_id_ = SessionID::InvalidValue();
+  // Distant session tag.
+  std::string session_tag_;
   // Favicon of the last synced tab.
   UIImage* favicon_image_ = nullptr;
 
