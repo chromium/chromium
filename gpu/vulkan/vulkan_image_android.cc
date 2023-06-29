@@ -150,7 +150,7 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
   };
 
   if (!InitializeSingleOrJointPlanes(
-          device_queue, size,
+          device_queue, gfx::Size(ahb_desc.width, ahb_desc.height),
           should_use_external_format ? VK_FORMAT_UNDEFINED
                                      : ahb_format_props.format,
           usage_flags, create_flags, VK_IMAGE_TILING_OPTIMAL,
