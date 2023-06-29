@@ -63487,6 +63487,7 @@ from previous Chrome versions.
   <int value="-198266781" label="FedCmWithoutWellKnownEnforcement:disabled"/>
   <int value="-198002129" label="MetricsSettingsAndroid:disabled"/>
   <int value="-197862414" label="PrivacyIndicators:enabled"/>
+  <int value="-196122711" label="WebEnvironmentIntegrity:enabled"/>
   <int value="-196110497" label="force-text-direction"/>
   <int value="-195242003"
       label="PrivateNetworkAccessRespectPreflightResults:disabled"/>
@@ -65707,6 +65708,7 @@ from previous Chrome versions.
   <int value="970344161" label="CrosPrivacyHub:enabled"/>
   <int value="970901442" label="EnableAndroidGamepadVibration:enabled"/>
   <int value="972228058" label="SyncUSSSessions:disabled"/>
+  <int value="972437898" label="WebEnvironmentIntegrity:disabled"/>
   <int value="973601997" label="SafeBrowsingUseLocalBlacklistsV2:disabled"/>
   <int value="975104092" label="show-taps"/>
   <int value="975249239" label="PasswordManagerRedesign:enabled"/>
