@@ -19,14 +19,17 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/touch_selection/touch_selection_magnifier_aura.h"
+#include "ui/touch_selection/vector_icons/vector_icons.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
@@ -123,10 +126,39 @@ gfx::Image* GetHandleImage(gfx::SelectionBound::Type bound_type) {
   }
 }
 
+// Returns the appropriate handle vector icon based on the handle bound type.
+ui::ImageModel GetHandleVectorIcon(gfx::SelectionBound::Type bound_type) {
+  const gfx::VectorIcon* icon = nullptr;
+  switch (bound_type) {
+    case gfx::SelectionBound::LEFT:
+      icon = &kTextSelectionHandleLeftIcon;
+      break;
+    case gfx::SelectionBound::CENTER:
+      icon = &kTextSelectionHandleCenterIcon;
+      break;
+    case gfx::SelectionBound::RIGHT:
+      icon = &kTextSelectionHandleRightIcon;
+      break;
+    default:
+      NOTREACHED_NORETURN()
+          << "Invalid touch handle bound type: " << bound_type;
+  }
+  return ui::ImageModel::FromVectorIcon(*icon,
+                                        /*color_id=*/ui::kColorSysPrimary);
+}
+
+// Returns the appropriate handle image model based on the handle bound type.
+ui::ImageModel GetHandleImageModel(gfx::SelectionBound::Type bound_type) {
+  return ::features::IsTouchTextEditingRedesignEnabled()
+             ? GetHandleVectorIcon(bound_type)
+             : ui::ImageModel::FromImage(*GetHandleImage(bound_type));
+  ;
+}
+
 // Calculates the bounds of the widget containing the selection handle based
 // on the SelectionBound's type and location.
 gfx::Rect GetSelectionWidgetBounds(const gfx::SelectionBound& bound) {
-  gfx::Size image_size = GetHandleImage(bound.type())->Size();
+  const gfx::Size image_size = GetHandleImageModel(bound.type()).Size();
   int widget_width = image_size.width() + 2 * kSelectionHandleHorizPadding;
   // Extend the widget height to handle touch events below the painted image.
   int widget_height = bound.GetHeight() + image_size.height() +
@@ -223,7 +255,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   EditingHandleView(TouchSelectionControllerImpl* controller,
                     bool is_cursor_handle)
       : controller_(controller),
-        image_(GetCenterHandleImage()),
+        handle_image_(ui::ImageModel::FromImage(*GetCenterHandleImage())),
         is_cursor_handle_(is_cursor_handle) {}
 
   EditingHandleView(const EditingHandleView&) = delete;
@@ -236,10 +268,17 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
 
   // View:
   void OnPaint(gfx::Canvas* canvas) override {
-    // Draw the handle image.
     canvas->DrawImageInt(
-        *image_->ToImageSkia(), kSelectionHandleHorizPadding,
+        handle_image_.Rasterize(GetColorProvider()),
+        kSelectionHandleHorizPadding,
         selection_bound_.GetHeight() + kSelectionHandleVerticalVisualOffset);
+  }
+
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    if (handle_image_.IsVectorIcon()) {
+      SchedulePaint();
+    }
   }
 
   void OnGestureEvent(ui::GestureEvent* event) override {
@@ -306,8 +345,8 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
 
   // If |is_visible| is true, this will update the widget and trigger a repaint
   // if necessary. Otherwise this will only update the internal state:
-  // |selection_bound_| and |image_|, so that the state is valid for the time
-  // this becomes visible.
+  // |selection_bound_| and |handle_image_|, so that the state is valid for the
+  // time this becomes visible.
   void SetBoundInScreen(const gfx::SelectionBound& bound, bool is_visible) {
     bool update_bound_type = false;
     // Cursor handle should always have the bound type CENTER
@@ -324,7 +363,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
     }
     if (update_bound_type) {
       selection_bound_.set_type(bound.type());
-      image_ = GetHandleImage(bound.type());
+      handle_image_ = GetHandleImageModel(bound.type());
       if (is_visible)
         SchedulePaint();
     }
@@ -353,12 +392,14 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
 
   bool GetIsDragging() const { return is_dragging_; }
 
+  gfx::Size GetHandleImageSize() const { return handle_image_.Size(); }
+
  private:
   raw_ptr<TouchSelectionControllerImpl> controller_;
 
   // In local coordinates
   gfx::SelectionBound selection_bound_;
-  raw_ptr<gfx::Image> image_;
+  ui::ImageModel handle_image_;
 
   // If true, this is a handle corresponding to the single cursor, otherwise it
   // is a handle corresponding to one of the two selection bounds.
@@ -375,6 +416,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
 BEGIN_METADATA(TouchSelectionControllerImpl, EditingHandleView, View)
 ADD_READONLY_PROPERTY_METADATA(gfx::SelectionBound::Type, SelectionBoundType)
 ADD_READONLY_PROPERTY_METADATA(bool, IsDragging)
+ADD_READONLY_PROPERTY_METADATA(gfx::Size, HandleImageSize)
 END_METADATA
 
 TouchSelectionControllerImpl::TouchSelectionControllerImpl(
@@ -669,8 +711,21 @@ void TouchSelectionControllerImpl::QuickMenuTimerFired() {
   if (menu_anchor == gfx::Rect())
     return;
 
+  gfx::Size handle_image_size;
+  if (::features::IsTouchTextEditingRedesignEnabled()) {
+    if (!cursor_handle_widget_ || !selection_handle_1_widget_ ||
+        !selection_handle_2_widget_) {
+      return;
+    }
+    handle_image_size = cursor_handle_widget_->IsVisible()
+                            ? GetCursorHandle()->GetHandleImageSize()
+                            : GetSelectionHandle1()->GetHandleImageSize();
+  } else {
+    handle_image_size = GetMaxHandleImageSize();
+  }
+
   ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
-      GetWeakPtr(), menu_anchor, GetMaxHandleImageSize(),
+      GetWeakPtr(), menu_anchor, handle_image_size,
       client_view_->GetNativeView());
 }
 

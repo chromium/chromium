@@ -42,6 +42,7 @@ component("touch_selection") {
     deps += [
       "//skia:skia",
       "//ui/aura",
+      "//ui/base",
       "//ui/color",
       "//ui/color:mixers",
       "//ui/compositor:compositor",
@@ -49,6 +50,7 @@ component("touch_selection") {
       "//ui/native_theme",
       "//ui/native_theme:native_theme_browser",
       "//ui/resources",
+      "//ui/touch_selection/vector_icons",
     ]
 
     sources += [

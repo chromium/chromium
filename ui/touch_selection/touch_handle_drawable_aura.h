@@ -6,8 +6,10 @@
 #define UI_TOUCH_SELECTION_TOUCH_HANDLE_DRAWABLE_AURA_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer_delegate.h"
-#include "ui/gfx/image/image.h"
+#include "ui/native_theme/native_theme_observer.h"
 #include "ui/touch_selection/touch_handle.h"
 #include "ui/touch_selection/touch_handle_orientation.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"
@@ -20,7 +22,8 @@ namespace ui {
 
 class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
     : public TouchHandleDrawable,
-      public ui::LayerDelegate {
+      public ui::LayerDelegate,
+      public ui::NativeThemeObserver {
  public:
   explicit TouchHandleDrawableAura(aura::Window* parent);
 
@@ -49,6 +52,10 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {}
 
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+
+  // Window to draw the handle image.
   std::unique_ptr<aura::Window> window_;
 
   bool enabled_;
@@ -62,7 +69,11 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
   // Window bounds relative to the focal position.
   gfx::RectF relative_bounds_;
 
-  gfx::Image handle_image_;
+  // The handle image to draw.
+  ui::ImageModel handle_image_;
+
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      theme_observation_{this};
 };
 
 }  // namespace ui

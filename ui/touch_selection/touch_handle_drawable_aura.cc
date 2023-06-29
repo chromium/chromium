@@ -8,14 +8,22 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/image/image.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_observer.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/touch_selection//vector_icons/vector_icons.h"
 
 namespace ui {
 namespace {
@@ -52,6 +60,26 @@ gfx::Image* GetHandleImage(TouchHandleOrientation orientation) {
   return &ResourceBundle::GetSharedInstance().GetImageNamed(resource_id);
 }
 
+// Returns the appropriate handle vector icon based on the handle orientation.
+ui::ImageModel GetHandleVectorIcon(TouchHandleOrientation orientation) {
+  const gfx::VectorIcon* icon = nullptr;
+  switch (orientation) {
+    case TouchHandleOrientation::LEFT:
+      icon = &kTextSelectionHandleLeftIcon;
+      break;
+    case TouchHandleOrientation::CENTER:
+      icon = &kTextSelectionHandleCenterIcon;
+      break;
+    case TouchHandleOrientation::RIGHT:
+      icon = &kTextSelectionHandleRightIcon;
+      break;
+    case TouchHandleOrientation::UNDEFINED:
+      NOTREACHED_NORETURN() << "Invalid touch handle bound type.";
+  }
+  return ui::ImageModel::FromVectorIcon(*icon,
+                                        /*color_id=*/ui::kColorSysPrimary);
+}
+
 bool IsNearlyZero(float value) {
   return std::abs(value) < kEpsilon;
 }
@@ -69,6 +97,8 @@ TouchHandleDrawableAura::TouchHandleDrawableAura(aura::Window* parent)
   window_->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
   window_->layer()->set_delegate(this);
   parent->AddChild(window_.get());
+
+  theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 }
 
 TouchHandleDrawableAura::~TouchHandleDrawableAura() = default;
@@ -104,7 +134,10 @@ void TouchHandleDrawableAura::SetOrientation(TouchHandleOrientation orientation,
   if (orientation_ == orientation)
     return;
   orientation_ = orientation;
-  handle_image_ = *GetHandleImage(orientation);
+
+  handle_image_ = ::features::IsTouchTextEditingRedesignEnabled()
+                      ? GetHandleVectorIcon(orientation)
+                      : ui::ImageModel::FromImage(*GetHandleImage(orientation));
 
   // Calculate the relative bounds.
   const gfx::Size image_size = handle_image_.Size();
@@ -114,11 +147,8 @@ void TouchHandleDrawableAura::SetOrientation(TouchHandleOrientation orientation,
       gfx::RectF(-kSelectionHandlePadding,
                  kSelectionHandleVerticalVisualOffset - kSelectionHandlePadding,
                  window_width, window_height);
-  const gfx::Rect paint_bounds(relative_bounds_.x(), relative_bounds_.y(),
-                               relative_bounds_.width(),
-                               relative_bounds_.height());
-  window_->SchedulePaintInRect(paint_bounds);
   UpdateBounds();
+  window_->SchedulePaintInRect(gfx::Rect(window_->bounds().size()));
 }
 
 void TouchHandleDrawableAura::SetOrigin(const gfx::PointF& position) {
@@ -155,10 +185,21 @@ float TouchHandleDrawableAura::GetDrawableHorizontalPaddingRatio() const {
 void TouchHandleDrawableAura::OnPaintLayer(const ui::PaintContext& context) {
   ui::PaintRecorder recorder(context, window_->bounds().size());
   if (!handle_image_.IsEmpty()) {
-    recorder.canvas()->DrawImageInt(handle_image_.AsImageSkia(),
-                                    kSelectionHandlePadding,
-                                    kSelectionHandlePadding);
+    recorder.canvas()->DrawImageInt(
+        handle_image_.Rasterize(
+            ui::ColorProviderManager::Get().GetColorProviderFor(
+                ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
+                    nullptr))),
+        kSelectionHandlePadding, kSelectionHandlePadding);
   }
+}
+
+void TouchHandleDrawableAura::OnNativeThemeUpdated(
+    ui::NativeTheme* observed_theme) {
+  if (!::features::IsTouchTextEditingRedesignEnabled()) {
+    return;
+  }
+  window_->SchedulePaintInRect(gfx::Rect(window_->bounds().size()));
 }
 
 }  // namespace ui
