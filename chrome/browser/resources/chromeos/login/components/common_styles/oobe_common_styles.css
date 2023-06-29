@@ -63,7 +63,7 @@
 
       .oobe-optin-title {
         color: var(--oobe-header-text-color);
-        font-family: var(--oobe-optin-title-font-family:);
+        font-family: var(--oobe-optin-title-font-family);
         font-weight: var(--oobe-optin-title-font-weight);
       }
 
