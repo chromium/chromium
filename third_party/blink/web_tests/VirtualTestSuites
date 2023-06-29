@@ -1012,6 +1012,7 @@
   },
   {
     "prefix": "streaming-declarative-shadow-dom-disabled",
+    "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/shadow-dom/declarative"
@@ -1021,10 +1022,11 @@
   },
   {
     "prefix": "backface-visibility-interop",
+    "owners": ["dbaron@chromium.org", "paint-dev@chromium.org"],
     "platforms": ["Linux"],
     "bases": [ "external/wpt/css/css-transforms" ],
     "args": [ "--enable-features=BackfaceVisibilityInterop" ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jan 15, 2024"
   },
   {
     "prefix": "portals",
@@ -1309,6 +1311,7 @@
   },
   {
     "prefix": "popover-hint-disabled",
+    "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/html/semantics/popovers/popover-anchor-idl-property.html",
@@ -1831,6 +1834,7 @@
   },
   {
     "prefix": "close-watcher",
+    "owners": ["jarhar@chromium.org", "dom-dev@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/close-watcher"
@@ -1876,6 +1880,7 @@
   },
   {
     "prefix": "scoped-custom-element-registry-disabled",
+    "owners": ["xiaochengh@chromium.org", "dom-dev@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/custom-elements/scoped-registry"],
     "args": ["--disable-blink-features=ScopedCustomElementRegistry"],
@@ -1954,6 +1959,7 @@
   },
   {
     "prefix": "date-input-inline-block-disabled",
+    "owners": ["jarhar@chromium.org", "dom-dev@chromium.org"],
     "platforms": ["Linux"],
     "bases": [
       "external/wpt/html/rendering/non-replaced-elements/form-controls/resets.html",
