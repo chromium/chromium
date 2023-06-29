@@ -46,7 +46,6 @@ __filegroups = {
         "type": "glob",
         "includes": ["*"],
     },
-
     "third_party/libc++/trunk/include:headers": {
         "type": "glob",
         "includes": ["*"],

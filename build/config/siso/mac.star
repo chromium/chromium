@@ -15,6 +15,7 @@ __handlers.update(rewrapper_to_reproxy.handlers)
 
 def __step_config(ctx, step_config):
     config.check(ctx)
+
     # rewrapper_to_reproxy takes precedence over remote exec wrapper handler if enabled.
     if rewrapper_to_reproxy.enabled(ctx):
         step_config = rewrapper_to_reproxy.step_config(ctx, step_config)

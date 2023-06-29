@@ -65,6 +65,7 @@ def __rewrite_rewrapper(ctx, cmd):
     # Not all clang actions will have rewrapper.
     if not "rewrapper" in cmd.args[0]:
         return
+
     # Example command:
     #   ../../buildtools/reclient/rewrapper
     #     -cfg=../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg
