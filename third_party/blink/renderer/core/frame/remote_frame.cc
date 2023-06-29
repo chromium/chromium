@@ -134,7 +134,7 @@ RemoteFrame::RemoteFrame(
   dom_window_ = MakeGarbageCollected<RemoteDOMWindow>(*this);
 
   DCHECK(task_runner_);
-  remote_frame_host_remote_.Bind(std::move(remote_frame_host));
+  remote_frame_host_remote_.Bind(std::move(remote_frame_host), task_runner_);
   receiver_.Bind(std::move(receiver), task_runner_);
 
   UpdateInertIfPossible();
@@ -157,6 +157,9 @@ void RemoteFrame::DetachAndDispose() {
 void RemoteFrame::Trace(Visitor* visitor) const {
   visitor->Trace(view_);
   visitor->Trace(security_context_);
+  visitor->Trace(remote_frame_host_remote_);
+  visitor->Trace(receiver_);
+  visitor->Trace(main_frame_receiver_);
   Frame::Trace(visitor);
 }
 
