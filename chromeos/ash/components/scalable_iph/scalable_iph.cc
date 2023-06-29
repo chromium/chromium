@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -73,6 +74,10 @@ NotificationParams ParseNotificationParams(const base::Feature& feature) {
   // show an IPH for the case instead of CHECK failure. Config is served from
   // the server. This is not a constraint coming from client side.
   NotificationParams param;
+  param.notification_id = base::GetFieldTrialParamValueByFeature(
+      feature, kCustomNotificationIdParamName);
+  CHECK(!param.notification_id.empty())
+      << kCustomNotificationIdParamName << " is a required field";
   param.title = base::GetFieldTrialParamValueByFeature(
       feature, kCustomNotificationTitleParamName);
   CHECK(!param.title.empty())
@@ -85,6 +90,13 @@ NotificationParams ParseNotificationParams(const base::Feature& feature) {
       feature, kCustomNotificationButtonTextParamName);
   CHECK(!param.button.text.empty())
       << kCustomNotificationButtonTextParamName << " is a required field";
+
+  std::string image_type = base::GetFieldTrialParamValueByFeature(
+      feature, kCustomNotificationImageTypeParamName);
+  param.image_type = ScalableIphDelegate::NotificationImageType::kNoImage;
+  if (image_type == kCustomNotificationImageTypeValueWallpaper) {
+    param.image_type = ScalableIphDelegate::NotificationImageType::kWallpaper;
+  }
   return param;
 }
 
@@ -219,26 +231,13 @@ void ScalableIph::CheckTriggerConditions() {
     // TODO(b/289267799): Check our custom extension version number.
     if (CheckCustomConditions(*feature) &&
         tracker_->ShouldTriggerHelpUI(*feature)) {
-      // TODO(b/289286456): Set up browser test and clean up.
-      if (show_notification_for_testing_) {
-        // Only show notification once in the test for now.
-        show_notification_for_testing_ = false;
-        ScalableIphDelegate::NotificationParams notification_params;
-        notification_params.type =
-            ScalableIphDelegate::NotificationType::kWallpaper;
-        notification_params.button.text = "test";
-        delegate_->ShowNotification(
-            notification_params,
-            std::make_unique<IphSession>(*feature, tracker_));
-      } else {
-        // TODO(b/284053005): Support other ui types.
-        UiType ui_type = ParseUiType(*feature);
-        CHECK(ui_type == UiType::kNotification)
-            << "Only Notification is implemented now";
-        delegate_->ShowNotification(
-            ParseNotificationParams(*feature),
-            std::make_unique<IphSession>(*feature, tracker_));
-      }
+      // TODO(b/284053005): Support other ui types.
+      UiType ui_type = ParseUiType(*feature);
+      CHECK(ui_type == UiType::kNotification)
+          << "Only Notification is implemented now";
+      delegate_->ShowNotification(
+          ParseNotificationParams(*feature),
+          std::make_unique<IphSession>(*feature, tracker_));
     }
   }
 }

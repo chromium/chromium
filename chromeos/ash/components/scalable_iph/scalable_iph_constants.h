@@ -75,15 +75,21 @@ enum class UiType {
 };
 
 // Parameters for a notification UI. All fields are required field.
+// - notification_id: the id used to add and remove a notification.
 // - Title: a title text of a notification.
 // - Body text: a body text of a notification.
 // - Button text: a text of a button in a notification.
+// - Image type: a type of preview image(s) in a notification.
+constexpr char kCustomNotificationIdParamName[] = "x_CustomNotificationId";
 constexpr char kCustomNotificationTitleParamName[] =
     "x_CustomNotificationTitle";
 constexpr char kCustomNotificationBodyTextParamName[] =
     "x_CustomNotificationBodyText";
 constexpr char kCustomNotificationButtonTextParamName[] =
     "x_CustomNotificationButtonText";
+constexpr char kCustomNotificationImageTypeParamName[] =
+    "x_CustomNotificationImageType";
+constexpr char kCustomNotificationImageTypeValueWallpaper[] = "Wallpaper";
 
 }  // namespace scalable_iph
 

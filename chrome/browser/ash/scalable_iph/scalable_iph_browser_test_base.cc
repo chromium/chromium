@@ -151,6 +151,7 @@ void ScalableIphBrowserTestBase::AppendFakeUiParams(
     base::FieldTrialParams& params) {
   params[scalable_iph::kCustomUiTypeParamName] =
       scalable_iph::kCustomUiTypeValueNotification;
+  params[scalable_iph::kCustomNotificationIdParamName] = kTestNotificationId;
   params[scalable_iph::kCustomNotificationTitleParamName] =
       kTestNotificationTitle;
   params[scalable_iph::kCustomNotificationBodyTextParamName] =

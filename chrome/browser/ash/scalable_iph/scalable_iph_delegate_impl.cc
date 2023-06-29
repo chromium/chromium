@@ -32,12 +32,12 @@ using ::chromeos::network_config::mojom::NetworkType;
 using Observer = ::scalable_iph::ScalableIphDelegate::Observer;
 using NotificationParams =
     ::scalable_iph::ScalableIphDelegate::NotificationParams;
-using NotificationType = ::scalable_iph::ScalableIphDelegate::NotificationType;
+using NotificationImageType =
+    ::scalable_iph::ScalableIphDelegate::NotificationImageType;
 
 constexpr char kNotificationSourceName[] = "ChromeOS";
 constexpr char kWallpaperNotificationType[] = "wallpaper_notification_type";
 constexpr char kNotifierId[] = "scalable_iph";
-constexpr char kWallpaperNotificationId[] = "scalable_iph_wallpaper";
 constexpr char kButtonIndex = 0;
 
 bool HasOnlineNetwork(const std::vector<NetworkStatePropertiesPtr>& networks) {
@@ -66,26 +66,16 @@ message_center::NotifierId GetNotifierId() {
 }
 
 bool IsWallpaperNotification(const NotificationParams& params) {
-  return params.type == NotificationType::kWallpaper;
+  return params.image_type == NotificationImageType::kWallpaper;
 }
 
 message_center::NotificationType GetNotificationType(
     const NotificationParams& params) {
-  switch (params.type) {
-    case NotificationType::kWallpaper:
+  switch (params.image_type) {
+    case NotificationImageType::kWallpaper:
       return message_center::NOTIFICATION_TYPE_CUSTOM;
-    case NotificationType::kInvalid:
-      CHECK(false);
-  }
-  NOTREACHED_NORETURN();
-}
-
-std::string GetNotificationId(const NotificationParams& params) {
-  switch (params.type) {
-    case NotificationType::kWallpaper:
-      return kWallpaperNotificationId;
-    case NotificationType::kInvalid:
-      CHECK(false);
+    case NotificationImageType::kNoImage:
+      return message_center::NOTIFICATION_TYPE_SIMPLE;
   }
   NOTREACHED_NORETURN();
 }
@@ -174,13 +164,13 @@ void ScalableIphDelegateImpl::ShowNotification(
 
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
-          GetNotificationType(params), GetNotificationId(params),
+          GetNotificationType(params), params.notification_id,
           base::UTF8ToUTF16(notification_title),
           base::UTF8ToUTF16(notification_text),
           base::UTF8ToUTF16(notification_source_name), GURL(), GetNotifierId(),
           rich_notification_data,
           base::MakeRefCounted<ScalableIphNotificationDelegate>(
-              std::move(iph_session), GetNotificationId(params)),
+              std::move(iph_session), params.notification_id),
           gfx::kNoneIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   if (IsWallpaperNotification(params)) {

@@ -25,6 +25,7 @@ namespace ash {
 
 class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
  public:
+  static constexpr char kTestNotificationId[] = "test_notification_id";
   static constexpr char kTestNotificationTitle[] = "Test Notification Title";
   static constexpr char kTestNotificationBodyText[] =
       "Test Notification Body Text";

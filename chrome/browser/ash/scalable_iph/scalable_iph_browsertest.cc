@@ -30,8 +30,6 @@ using TestEnvironment =
 using UserSessionType =
     ::ash::CustomizableTestEnvBrowserTestBase::UserSessionType;
 
-constexpr char kWallpaperNotificationId[] = "scalable_iph_wallpaper";
-
 class ScalableIphBrowserTestNetworkConnection : public ScalableIphBrowserTest {
  protected:
   void InitializeScopedFeatureList() override {
@@ -143,7 +141,7 @@ class ScalableIphBrowserTestNotification : public ScalableIphBrowserTest {
 
     auto* message_center = message_center::MessageCenter::Get();
     scoped_observation_.Observe(message_center);
-    EXPECT_CALL(mock_, OnNotificationAdded(kWallpaperNotificationId));
+    EXPECT_CALL(mock_, OnNotificationAdded(kTestNotificationId));
 
     mock_delegate()->FakeShowNotification();
   }
@@ -185,6 +183,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, InvokeIph) {
   EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));
 
   scalable_iph::ScalableIphDelegate::NotificationParams expected_params;
+  expected_params.notification_id =
+      ScalableIphBrowserTestBase::kTestNotificationId;
   expected_params.title = ScalableIphBrowserTestBase::kTestNotificationTitle;
   expected_params.text = ScalableIphBrowserTestBase::kTestNotificationBodyText;
   expected_params.button.text =
@@ -347,14 +347,13 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification, ShowNotification) {
 
   scalable_iph::ScalableIph* scalable_iph =
       ScalableIphFactory::GetForBrowserContext(browser()->profile());
-  scalable_iph->set_show_notification_for_testing();
   scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
 
   auto* message_center = message_center::MessageCenter::Get();
   auto* notification =
-      message_center->FindVisibleNotificationById(kWallpaperNotificationId);
+      message_center->FindVisibleNotificationById(kTestNotificationId);
   EXPECT_TRUE(notification);
-  message_center->RemoveNotification(kWallpaperNotificationId,
+  message_center->RemoveNotification(kTestNotificationId,
                                      /*by_user=*/false);
 }
 
@@ -367,12 +366,11 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification,
 
   scalable_iph::ScalableIph* scalable_iph =
       ScalableIphFactory::GetForBrowserContext(browser()->profile());
-  scalable_iph->set_show_notification_for_testing();
   scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
 
   auto* message_center = message_center::MessageCenter::Get();
   auto* notification =
-      message_center->FindVisibleNotificationById(kWallpaperNotificationId);
+      message_center->FindVisibleNotificationById(kTestNotificationId);
   EXPECT_TRUE(notification);
   EXPECT_TRUE(notification->delegate());
   notification->delegate()->Click(/*button_index=*/0, /*reply=*/absl::nullopt);
