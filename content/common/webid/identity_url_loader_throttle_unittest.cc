@@ -79,7 +79,7 @@ TEST_P(IdentityUrlLoaderThrottleTestParameterized, Headers) {
         signin_status == IdpSigninStatus::kSignedIn ? "In" : "Out");
   } else {
     base::SStringPrintf(
-        &header, "idp-signin-status: action=sign%s",
+        &header, "idp-signin-status: action=sign%s; type=idp; foo=bar",
         signin_status == IdpSigninStatus::kSignedIn ? "in" : "out-all");
   }
 
@@ -154,7 +154,7 @@ TEST_F(IdentityUrlLoaderThrottleTest, HeaderHasToken) {
       IdentityUrlLoaderThrottle::HeaderHasToken(*headers, "Signin", "val"));
 
   headers = net::HttpResponseHeaders::TryToCreate(
-      "HTTP/1.1 200 OK\nSignin:  val ; type=idp");
+      "HTTP/1.1 200 OK\nSignin:  val ; type=idp; foo=bar");
   EXPECT_TRUE(IdentityUrlLoaderThrottle::HeaderHasToken(*headers, "Signin",
                                                         "type=idp"));
 }
