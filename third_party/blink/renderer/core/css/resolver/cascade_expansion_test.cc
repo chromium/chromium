@@ -273,9 +273,9 @@ TEST_F(CascadeExpansionTest, LinkOmitted) {
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(ParseDeclarationBlock("color:red"),
                               CascadeOrigin::kAuthor,
-                              AddMatchedPropertiesOptions::Builder()
-                                  .SetLinkMatchType(CSSSelector::kMatchVisited)
-                                  .Build());
+                              {
+                                  .link_match_type = CSSSelector::kMatchVisited,
+                              });
 
   ASSERT_EQ(1u, result.GetMatchedProperties().size());
 
@@ -305,9 +305,9 @@ TEST_F(CascadeExpansionTest, InternalVisitedOmitted) {
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(ParseDeclarationBlock("color:red"),
                               CascadeOrigin::kAuthor,
-                              AddMatchedPropertiesOptions::Builder()
-                                  .SetLinkMatchType(CSSSelector::kMatchLink)
-                                  .Build());
+                              {
+                                  .link_match_type = CSSSelector::kMatchLink,
+                              });
 
   ASSERT_EQ(1u, result.GetMatchedProperties().size());
 
@@ -381,9 +381,9 @@ TEST_F(CascadeExpansionTest, FilterFirstLetter) {
   result.AddMatchedProperties(
       ParseDeclarationBlock("object-fit:unset;font-size:1px"),
       CascadeOrigin::kAuthor,
-      AddMatchedPropertiesOptions::Builder()
-          .SetValidPropertyFilter(ValidPropertyFilter::kFirstLetter)
-          .Build());
+      {
+          .valid_property_filter = ValidPropertyFilter::kFirstLetter,
+      });
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(1u, e.size());
@@ -396,9 +396,9 @@ TEST_F(CascadeExpansionTest, FilterFirstLine) {
   result.AddMatchedProperties(
       ParseDeclarationBlock("display:none;font-size:1px"),
       CascadeOrigin::kAuthor,
-      AddMatchedPropertiesOptions::Builder()
-          .SetValidPropertyFilter(ValidPropertyFilter::kFirstLine)
-          .Build());
+      {
+          .valid_property_filter = ValidPropertyFilter::kFirstLine,
+      });
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(1u, e.size());
@@ -411,9 +411,9 @@ TEST_F(CascadeExpansionTest, FilterCue) {
   result.AddMatchedProperties(
       ParseDeclarationBlock("object-fit:unset;font-size:1px"),
       CascadeOrigin::kAuthor,
-      AddMatchedPropertiesOptions::Builder()
-          .SetValidPropertyFilter(ValidPropertyFilter::kCue)
-          .Build());
+      {
+          .valid_property_filter = ValidPropertyFilter::kCue,
+      });
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(1u, e.size());
@@ -426,9 +426,9 @@ TEST_F(CascadeExpansionTest, FilterMarker) {
   result.AddMatchedProperties(
       ParseDeclarationBlock("object-fit:unset;font-size:1px"),
       CascadeOrigin::kAuthor,
-      AddMatchedPropertiesOptions::Builder()
-          .SetValidPropertyFilter(ValidPropertyFilter::kMarker)
-          .Build());
+      {
+          .valid_property_filter = ValidPropertyFilter::kMarker,
+      });
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(1u, e.size());
@@ -442,9 +442,9 @@ TEST_F(CascadeExpansionTest, FilterHighlightLegacy) {
       ParseDeclarationBlock(
           "display:block;background-color:lime;forced-color-adjust:none"),
       CascadeOrigin::kAuthor,
-      AddMatchedPropertiesOptions::Builder()
-          .SetValidPropertyFilter(ValidPropertyFilter::kHighlightLegacy)
-          .Build());
+      {
+          .valid_property_filter = ValidPropertyFilter::kHighlightLegacy,
+      });
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(3u, e.size());
@@ -463,9 +463,9 @@ TEST_F(CascadeExpansionTest, FilterHighlight) {
       ParseDeclarationBlock(
           "display:block;background-color:lime;forced-color-adjust:none"),
       CascadeOrigin::kAuthor,
-      AddMatchedPropertiesOptions::Builder()
-          .SetValidPropertyFilter(ValidPropertyFilter::kHighlight)
-          .Build());
+      {
+          .valid_property_filter = ValidPropertyFilter::kHighlight,
+      });
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(2u, e.size());
@@ -538,10 +538,10 @@ TEST_F(CascadeExpansionTest, AllVisitedOnly) {
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(
       ParseDeclarationBlock("all:unset"), CascadeOrigin::kAuthor,
-      AddMatchedPropertiesOptions::Builder()
-          .SetLinkMatchType(CSSSelector::kMatchVisited)
-          .SetValidPropertyFilter(ValidPropertyFilter::kNoFilter)
-          .Build());
+      {
+          .link_match_type = CSSSelector::kMatchVisited,
+          .valid_property_filter = ValidPropertyFilter::kNoFilter,
+      });
 
   ASSERT_EQ(1u, result.GetMatchedProperties().size());
 
@@ -560,10 +560,10 @@ TEST_F(CascadeExpansionTest, AllVisitedOrLink) {
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(
       ParseDeclarationBlock("all:unset"), CascadeOrigin::kAuthor,
-      AddMatchedPropertiesOptions::Builder()
-          .SetLinkMatchType(CSSSelector::kMatchAll)
-          .SetValidPropertyFilter(ValidPropertyFilter::kNoFilter)
-          .Build());
+      {
+          .link_match_type = CSSSelector::kMatchAll,
+          .valid_property_filter = ValidPropertyFilter::kNoFilter,
+      });
 
   ASSERT_EQ(1u, result.GetMatchedProperties().size());
 
@@ -582,10 +582,10 @@ TEST_F(CascadeExpansionTest, AllLinkOnly) {
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(
       ParseDeclarationBlock("all:unset"), CascadeOrigin::kAuthor,
-      AddMatchedPropertiesOptions::Builder()
-          .SetLinkMatchType(CSSSelector::kMatchLink)
-          .SetValidPropertyFilter(ValidPropertyFilter::kNoFilter)
-          .Build());
+      {
+          .link_match_type = CSSSelector::kMatchLink,
+          .valid_property_filter = ValidPropertyFilter::kNoFilter,
+      });
 
   ASSERT_EQ(1u, result.GetMatchedProperties().size());
 

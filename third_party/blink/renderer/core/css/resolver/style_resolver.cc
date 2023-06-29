@@ -2804,8 +2804,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForFormattedText(
   // Use StyleCascade to apply inheritance in the correct order.
   STACK_UNINITIALIZED StyleCascade cascade(state);
   cascade.MutableMatchResult().AddMatchedProperties(
-      css_property_value_set, CascadeOrigin::kNone,
-      AddMatchedPropertiesOptions::Builder().SetIsInlineStyle(true).Build());
+      css_property_value_set, CascadeOrigin::kNone, {.is_inline_style = true});
   cascade.Apply();
 
   StyleAdjuster::AdjustComputedStyle(state, nullptr);

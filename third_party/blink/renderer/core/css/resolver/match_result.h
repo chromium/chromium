@@ -77,56 +77,14 @@ namespace blink {
 
 using MatchedPropertiesVector = HeapVector<MatchedProperties, 64>;
 
-class AddMatchedPropertiesOptions {
+struct AddMatchedPropertiesOptions {
   STACK_ALLOCATED();
 
  public:
-  class Builder;
-
-  unsigned GetLinkMatchType() const { return link_match_type_; }
-  ValidPropertyFilter GetValidPropertyFilter() const {
-    return valid_property_filter_;
-  }
-  unsigned GetLayerOrder() const { return layer_order_; }
-  bool IsInlineStyle() const { return is_inline_style_; }
-
- private:
-  unsigned link_match_type_ = CSSSelector::kMatchAll;
-  ValidPropertyFilter valid_property_filter_ = ValidPropertyFilter::kNoFilter;
-  unsigned layer_order_ = CascadeLayerMap::kImplicitOuterLayerOrder;
-  bool is_inline_style_ = false;
-
-  friend class Builder;
-};
-
-class AddMatchedPropertiesOptions::Builder {
-  STACK_ALLOCATED();
-
- public:
-  AddMatchedPropertiesOptions Build() { return options_; }
-
-  Builder& SetLinkMatchType(unsigned type) {
-    options_.link_match_type_ = type;
-    return *this;
-  }
-
-  Builder& SetValidPropertyFilter(ValidPropertyFilter filter) {
-    options_.valid_property_filter_ = filter;
-    return *this;
-  }
-
-  Builder& SetLayerOrder(unsigned layer_order) {
-    options_.layer_order_ = layer_order;
-    return *this;
-  }
-
-  Builder& SetIsInlineStyle(bool is_inline_style) {
-    options_.is_inline_style_ = is_inline_style;
-    return *this;
-  }
-
- private:
-  AddMatchedPropertiesOptions options_;
+  unsigned link_match_type = CSSSelector::kMatchAll;
+  ValidPropertyFilter valid_property_filter = ValidPropertyFilter::kNoFilter;
+  unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
+  bool is_inline_style = false;
 };
 
 class CORE_EXPORT MatchResult {

@@ -55,13 +55,12 @@ void MatchResult::AddMatchedProperties(
   matched_properties_.Grow(matched_properties_.size() + 1);
   MatchedProperties& new_properties = matched_properties_.back();
   new_properties.properties = const_cast<CSSPropertyValueSet*>(properties);
-  new_properties.types_.link_match_type = options.GetLinkMatchType();
+  new_properties.types_.link_match_type = options.link_match_type;
   new_properties.types_.valid_property_filter =
       static_cast<std::underlying_type_t<ValidPropertyFilter>>(
-          options.GetValidPropertyFilter());
-  new_properties.types_.layer_order =
-      ClampTo<uint16_t>(options.GetLayerOrder());
-  new_properties.types_.is_inline_style = options.IsInlineStyle();
+          options.valid_property_filter);
+  new_properties.types_.layer_order = ClampTo<uint16_t>(options.layer_order);
+  new_properties.types_.is_inline_style = options.is_inline_style;
   new_properties.types_.origin = origin;
   new_properties.types_.tree_order = current_tree_order_;
 #if DCHECK_IS_ON()

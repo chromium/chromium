@@ -390,10 +390,8 @@ void ElementRuleCollector::AddElementStyleProperties(
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
       property_set, origin,
-      AddMatchedPropertiesOptions::Builder()
-          .SetLinkMatchType(AdjustLinkMatchType(inside_link_, link_match_type))
-          .SetIsInlineStyle(is_inline_style)
-          .Build());
+      {.link_match_type = AdjustLinkMatchType(inside_link_, link_match_type),
+       .is_inline_style = is_inline_style});
   if (!is_cacheable) {
     result_.SetIsCacheable(false);
   }
@@ -1010,14 +1008,12 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
     }
     result_.AddMatchedProperties(
         &rule_data->Rule()->Properties(), origin,
-        AddMatchedPropertiesOptions::Builder()
-            .SetLinkMatchType(
-                AdjustLinkMatchType(inside_link_, rule_data->LinkMatchType()))
-            .SetValidPropertyFilter(
-                rule_data->GetValidPropertyFilter(matching_ua_rules_))
-            .SetLayerOrder(matched_rule.LayerOrder())
-            .SetIsInlineStyle(is_vtt_embedded_style)
-            .Build());
+        {.link_match_type =
+             AdjustLinkMatchType(inside_link_, rule_data->LinkMatchType()),
+         .valid_property_filter =
+             rule_data->GetValidPropertyFilter(matching_ua_rules_),
+         .layer_order = matched_rule.LayerOrder(),
+         .is_inline_style = is_vtt_embedded_style});
   }
 
   if (tracker) {

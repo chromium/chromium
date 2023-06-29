@@ -127,10 +127,8 @@ class TestCascade {
     EnsureAtLeast(origin);
     cascade_.MutableMatchResult().AddMatchedProperties(
         set, origin,
-        AddMatchedPropertiesOptions::Builder()
-            .SetLinkMatchType(link_match_type)
-            .SetIsInlineStyle(is_inline_style)
-            .Build());
+        {.link_match_type = link_match_type,
+         .is_inline_style = is_inline_style});
   }
 
   void Apply(CascadeFilter filter = CascadeFilter()) {
