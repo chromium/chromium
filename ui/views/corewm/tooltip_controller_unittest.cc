@@ -196,6 +196,7 @@ class TooltipControllerTest : public ViewsTestBase {
 #endif
     generator_.reset();
     helper_.reset();
+    view_ = nullptr;
     widget_.reset();
     ViewsTestBase::TearDown();
   }
@@ -229,7 +230,7 @@ class TooltipControllerTest : public ViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<TooltipTestView, DanglingUntriaged> view_ = nullptr;
+  raw_ptr<TooltipTestView> view_ = nullptr;
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
