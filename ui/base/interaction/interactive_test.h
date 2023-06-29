@@ -140,7 +140,9 @@ class InteractiveTestApi {
 
   // Performs a check and fails the test if `check_callback` returns false.
   template <typename C, typename = internal::RequireSignature<C, bool()>>
-  [[nodiscard]] static StepBuilder Check(C&& check_callback);
+  [[nodiscard]] static StepBuilder Check(
+      C&& check_callback,
+      std::string check_description = internal::kNoCheckDescriptionSpecified);
 
   // Calls `function` and applies `matcher` to the result. If the matcher does
   // not match, an appropriate error message is printed and the test fails.
@@ -150,7 +152,10 @@ class InteractiveTestApi {
             typename M,
             typename R = internal::ReturnTypeOf<C>,
             typename = internal::RequireSignature<C, R()>>
-  [[nodiscard]] static StepBuilder CheckResult(C&& function, M&& matcher);
+  [[nodiscard]] static StepBuilder CheckResult(
+      C&& function,
+      M&& matcher,
+      std::string check_description = internal::kNoCheckDescriptionSpecified);
 
   // Checks that `check` returns true for element `element`. Will fail the test
   // sequence if `check` returns false - the callback should log any specific
@@ -711,9 +716,12 @@ InteractiveTestApi::StepBuilder InteractiveTestApi::Log(Args... args) {
 
 // static
 template <typename C, typename>
-InteractiveTestApi::StepBuilder InteractiveTestApi::Check(C&& check_callback) {
+InteractiveTestApi::StepBuilder InteractiveTestApi::Check(
+    C&& check_callback,
+    std::string check_description) {
   StepBuilder builder;
-  builder.SetDescription("Check()");
+  builder.SetDescription(
+      base::StringPrintf("Check(\"%s\")", check_description.c_str()));
   builder.SetElementID(internal::kInteractiveTestPivotElementId);
   builder.SetStartCallback(base::BindOnce(
       [](base::OnceCallback<bool()> check_callback, InteractionSequence* seq,
@@ -729,8 +737,10 @@ InteractiveTestApi::StepBuilder InteractiveTestApi::Check(C&& check_callback) {
 
 // static
 template <typename C, typename M, typename R, typename>
-InteractionSequence::StepBuilder InteractiveTestApi::CheckResult(C&& function,
-                                                                 M&& matcher) {
+InteractionSequence::StepBuilder InteractiveTestApi::CheckResult(
+    C&& function,
+    M&& matcher,
+    std::string check_description) {
   return std::move(Check(base::BindOnce(
                              [](base::OnceCallback<R()> function,
                                 testing::Matcher<R> matcher) {
@@ -740,7 +750,8 @@ InteractionSequence::StepBuilder InteractiveTestApi::CheckResult(C&& function,
                              },
                              internal::MaybeBind(std::forward<C>(function)),
                              testing::Matcher<R>(std::forward<M>(matcher))))
-                       .SetDescription("CheckResult()"));
+                       .SetDescription(base::StringPrintf(
+                           "CheckResult(\"%s\")", check_description.c_str())));
 }
 
 // static

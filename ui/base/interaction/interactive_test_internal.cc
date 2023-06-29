@@ -20,6 +20,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kInteractiveTestPivotElementId);
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kInteractiveTestPivotEventType);
 
 const char kInteractiveTestFailedMessagePrefix[] = "Interactive test failed ";
+const char kNoCheckDescriptionSpecified[] = "[no description specified]";
 
 InteractiveTestPrivate::InteractiveTestPrivate(
     std::unique_ptr<InteractionTestUtil> test_util)
