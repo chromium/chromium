@@ -225,47 +225,4 @@ public class LinkerTest {
         // extracting creation of mLocalLibInfo from ensureInitialized(). Hence no checks are
         // present here involving the exact value of |mLoadAddress|.
     }
-
-    @Test
-    @SmallTest
-    public void testWebviewRegionSearchHistograms() {
-        // Set up.
-        Linker linker = Mockito.spy(new Linker());
-        Mockito.doNothing().when(linker).loadLinkerJniLibraryLocked();
-        // The lookup of the region succeeds.
-        Mockito.when(mNativeMock.findRegionReservedByWebViewZygote(anyLibInfo())).thenReturn(true);
-        Mockito.when(linker.isNonZeroLoadAddress(anyLibInfo())).thenReturn(true);
-
-        // Exercise.
-        linker.ensureInitialized(
-                /* asRelroProducer= */ false, PreferAddress.FIND_RESERVED, 0);
-        linker.recordHistograms("Zygote");
-
-        // Verify.
-        Assert.assertNotNull(linker.mWebviewReservationSearchResult);
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "ChromiumAndroidLinker.TimeToFindWebViewReservation.Found.Zygote"));
-    }
-
-    @Test
-    @SmallTest
-    public void testWebviewRegionSearchFailedHistograms() {
-        // Set up.
-        Linker linker = Mockito.spy(new Linker());
-        Mockito.doNothing().when(linker).loadLinkerJniLibraryLocked();
-        // The lookup of the region fails.
-        Mockito.when(mNativeMock.findRegionReservedByWebViewZygote(anyLibInfo())).thenReturn(false);
-
-        // Exercise.
-        linker.ensureInitialized(
-                /* asRelroProducer= */ false, PreferAddress.FIND_RESERVED, 0);
-        linker.recordHistograms("Child");
-
-        // Verify.
-        Assert.assertNotNull(linker.mWebviewReservationSearchResult);
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "ChromiumAndroidLinker.TimeToFindWebViewReservation.NotFound.Child"));
-    }
 }

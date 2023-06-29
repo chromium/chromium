@@ -2462,6 +2462,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="ChromiumAndroidLinker.TimeToFindWebViewReservation.{SearchStatus}.{ProcessType}"
     units="ms" expires_after="2022-10-01">
+  <obsolete>
+    Removed in June 2023.
+  </obsolete>
   <owner>pasko@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>

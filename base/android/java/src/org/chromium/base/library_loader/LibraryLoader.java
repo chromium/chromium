@@ -364,16 +364,6 @@ public class LibraryLoader {
             }
         }
 
-        private void recordLinkerHistogramsAfterLibraryLoad() {
-            if (!useChromiumLinker()) return;
-            // When recording a sample in the App Zygote it gets copied to each forked process and
-            // hence gets duplicated in the uploads. Avoiding such duplication would require
-            // serializing the samples, sending them to the browser process and disambiguating by,
-            // for example, Zygote PID in ChildProcessConnection.java. A few rough performance
-            // estimations do not require this complexity.
-            getLinker().recordHistograms(creationAsString());
-        }
-
         private String creationAsString() {
             switch (mCreatedIn) {
                 case CreatedIn.MAIN:
@@ -733,7 +723,6 @@ public class LibraryLoader {
         String sourceDir = appInfo.sourceDir;
         Log.i(TAG, "Loading %s from within %s", library, sourceDir);
         linker.loadLibrary(library); // May throw UnsatisfiedLinkError.
-        getMediator().recordLinkerHistogramsAfterLibraryLoad();
     }
 
     @GuardedBy("mLock")

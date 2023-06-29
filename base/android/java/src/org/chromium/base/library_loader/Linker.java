@@ -111,12 +111,6 @@ class Linker {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     boolean mRelroProducer = true;
 
-    // Keeps stats about searching the WebView memory reservation. After each _successful_ library
-    // load a UMA histogram is recorded using this data.
-    @GuardedBy("mLock")
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    WebViewReservationSearchResult mWebviewReservationSearchResult;
-
     /**
      * The state machine of library loading.
      *
@@ -201,28 +195,6 @@ class Linker {
         }
     }
 
-    /**
-     * A helper class to group a couple of stats related to WebView reservation lookup, and
-     * recording a histogram after that.
-     */
-    private static class WebViewReservationSearchResult {
-        private final boolean mSuccess;
-        private final long mDurationMs;
-
-        WebViewReservationSearchResult(boolean searchSucceeded, long searchDurationMs) {
-            mSuccess = searchSucceeded;
-            mDurationMs = searchDurationMs;
-        }
-
-        private void recordHistograms(String suffix) {
-            String successAsString = mSuccess ? "Found" : "NotFound";
-            RecordHistogram.recordTimesHistogram(
-                    "ChromiumAndroidLinker.TimeToFindWebViewReservation." + successAsString + "."
-                            + suffix,
-                    mDurationMs);
-        }
-    }
-
     // Exposed to be able to mock out an assertion.
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     boolean isNonZeroLoadAddress(LibInfo libInfo) {
@@ -303,7 +275,6 @@ class Linker {
                 UptimeMillisTimer timer = new UptimeMillisTimer();
                 boolean reservationFound =
                         getLinkerJni().findRegionReservedByWebViewZygote(mLocalLibInfo);
-                saveWebviewReservationSearchStats(reservationFound, timer.getElapsedMillis());
                 if (reservationFound) {
                     assert isNonZeroLoadAddress(mLocalLibInfo);
                     if (addressHint == 0 || addressHint == mLocalLibInfo.mLoadAddress) {
@@ -329,26 +300,6 @@ class Linker {
                 // Intentional fallthrough.
             case PreferAddress.RESERVE_RANDOM:
                 getLinkerJni().findMemoryRegionAtRandomAddress(mLocalLibInfo);
-        }
-    }
-
-    @GuardedBy("mLock")
-    private void saveWebviewReservationSearchStats(boolean succeeded, long durationMs) {
-        assert mState == State.UNINITIALIZED;
-        assert mWebviewReservationSearchResult == null;
-        mWebviewReservationSearchResult = new WebViewReservationSearchResult(succeeded, durationMs);
-    }
-
-    /**
-     * Records UMA histograms related to library loading.
-     *
-     * @param suffix to append to the histogram name before recording it. A process type
-     * (e.g. "Browser") can be used here to avoid making the Linker aware of the process type.
-     */
-    void recordHistograms(String suffix) {
-        synchronized (mLock) {
-            if (mWebviewReservationSearchResult == null) return;
-            mWebviewReservationSearchResult.recordHistograms(suffix);
         }
     }
 
