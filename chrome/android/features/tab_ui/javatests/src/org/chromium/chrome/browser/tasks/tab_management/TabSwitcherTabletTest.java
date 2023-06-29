@@ -280,6 +280,33 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
+    public void testGridTabSwitcherToggleIncognitoWithNoRegularTab() throws ExecutionException {
+        // Close all the regular tabs.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            sActivityTestRule.getActivity().getCurrentTabModel().closeTab(
+                    sActivityTestRule.getActivity().getActivityTab());
+        });
+        assertEquals("Expected to be 0 tabs in regular model", 0,
+                sActivityTestRule.getActivity()
+                        .getTabModelSelectorSupplier()
+                        .get()
+                        .getModel(false)
+                        .getCount());
+        // Open an incognito tab.
+        prepareTabs(0, 1);
+        assertTrue("Expected to be in Incognito model",
+                sActivityTestRule.getActivity().getCurrentTabModel().isIncognito());
+        // Assert the grid tab switcher is not yet showing.
+        onView(withId(R.id.tab_switcher_view_holder)).check(matches(withEffectiveVisibility(GONE)));
+        // Toggle to normal switcher.
+        clickIncognitoToggleButton();
+        // Assert the grid tab switcher is shown automatically, since there is no regular tab.
+        onView(withId(R.id.tab_switcher_view_holder))
+                .check(matches(withEffectiveVisibility(VISIBLE)));
+    }
+
+    @Test
+    @MediumTest
     @EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
     public void testGridTabSwitcher_RefactorEnabled() throws ExecutionException {
         prepareTabs(2, 0);
