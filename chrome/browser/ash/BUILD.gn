@@ -6380,11 +6380,11 @@ source_set("test_with_shadow_variables") {
 }
 
 proto_library("add_remove_user_event_proto") {
+  proto_in_dir = "//"
   sources =
       [ "../policy/messaging_layer/proto/synced/add_remove_user_event.proto" ]
-  deps = [
-    "//chrome/browser/policy/messaging_layer/proto:session_affiliated_user",
-  ]
+  import_dirs = [ "//components/reporting/proto/synced" ]
+  deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
 }
 
 proto_library("attestation_proto") {
@@ -6404,25 +6404,25 @@ proto_library("key_permissions_proto") {
 }
 
 proto_library("login_logout_event_proto") {
+  proto_in_dir = "//"
   sources =
       [ "../policy/messaging_layer/proto/synced/login_logout_event.proto" ]
-  deps = [
-    "//chrome/browser/policy/messaging_layer/proto:session_affiliated_user",
-  ]
+  import_dirs = [ "//components/reporting/proto/synced" ]
+  deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
 }
 
 proto_library("lock_unlock_event_proto") {
+  proto_in_dir = "//"
   sources = [ "../policy/messaging_layer/proto/synced/lock_unlock_event.proto" ]
-  deps = [
-    "//chrome/browser/policy/messaging_layer/proto:session_affiliated_user",
-  ]
+  import_dirs = [ "//components/reporting/proto/synced" ]
+  deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
 }
 
 proto_library("os_events_proto") {
+  proto_in_dir = "//"
   sources = [ "../policy/messaging_layer/proto/synced/os_events.proto" ]
-  deps = [
-    "//chrome/browser/policy/messaging_layer/proto:session_affiliated_user",
-  ]
+  import_dirs = [ "//components/reporting/proto/synced" ]
+  deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
 }
 
 proto_library("print_job_info_proto") {

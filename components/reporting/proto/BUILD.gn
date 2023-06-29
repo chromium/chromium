@@ -59,6 +59,12 @@ proto_library("health_proto") {
   ]
 }
 
+proto_library("session_affiliated_user_proto") {
+  proto_in_dir = "//"
+
+  sources = [ "synced/session_affiliated_user.proto" ]
+}
+
 proto_library("test_proto") {
   proto_in_dir = "//"
   sources = [ "test.proto" ]

@@ -5,13 +5,11 @@
 import("//build/config/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-proto_library("session_affiliated_user") {
-  sources = [ "synced/session_affiliated_user.proto" ]
-}
-
 proto_library("crd_event_proto") {
+  proto_in_dir = "//"
   sources = [ "synced/crd_event.proto" ]
-  deps = [ ":session_affiliated_user" ]
+  import_dirs = [ "//components/reporting/proto/synced" ]
+  deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
 }
 
 proto_library("log_upload_event_proto") {

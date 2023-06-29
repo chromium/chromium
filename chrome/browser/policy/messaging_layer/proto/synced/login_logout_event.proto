@@ -8,7 +8,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-import "session_affiliated_user.proto";
+import "components/reporting/proto/synced/session_affiliated_user.proto";
 
 package ash.reporting;
 
