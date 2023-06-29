@@ -1486,12 +1486,6 @@ void AppMenuModel::Build() {
                      vector_icons::kExtensionChromeRefreshIcon);
     }
   }
-  if (features::IsChromeRefresh2023()) {
-    AddItemWithStringIdAndIcon(
-        IDC_CLEAR_BROWSING_DATA, IDS_CLEAR_BROWSING_DATA,
-        ui::ImageModel::FromVectorIcon(kTrashCanRefreshIcon, ui::kColorMenuIcon,
-                                       kDefaultIconSize));
-  }
 
   AddSeparator(features::IsChromeRefresh2023() ? ui::NORMAL_SEPARATOR
                                                : ui::LOWER_SEPARATOR);
