@@ -370,34 +370,34 @@ SharedImageFormat GetSharedImageFormat(gfx::BufferFormat format) {
 unsigned int SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataFormat(
     SharedImageFormat format) {
   CHECK(format.is_single_plane());
-  static const GLenum format_gl_data_format[] = {
-      GL_RGBA,       // RGBA_8888
-      GL_RGBA,       // RGBA_4444
-      GL_BGRA_EXT,   // BGRA_8888
-      GL_ALPHA,      // ALPHA_8
-      GL_LUMINANCE,  // LUMINANCE_8
-      GL_RGB,        // RGB_565
-      GL_RGB,        // BGR_565
-      GL_RGB,        // ETC1
-      GL_RED_EXT,    // RED_8
-      GL_RG_EXT,     // RG_88
-      GL_LUMINANCE,  // LUMINANCE_F16
-      GL_RGBA,       // RGBA_F16
-      GL_RED_EXT,    // R16_EXT
-      GL_RG_EXT,     // RG16_EXT
-      GL_RGB,        // RGBX_8888
-      GL_RGB,        // BGRX_8888
-      GL_RGBA,       // RGBA_1010102
-      GL_RGBA,       // BGRA_1010102
-      GL_ZERO,       // YVU_420
-      GL_ZERO,       // YUV_420_BIPLANAR
-      GL_ZERO,       // YUVA_420_TRIPLANAR
-      GL_ZERO,       // P010
-  };
-  static_assert(std::size(format_gl_data_format) == (RESOURCE_FORMAT_MAX + 1),
-                "format_gl_data_format does not handle all cases.");
+  if (format == SinglePlaneFormat::kRGBA_8888 ||
+      format == SinglePlaneFormat::kRGBA_4444 ||
+      format == SinglePlaneFormat::kRGBA_F16 ||
+      format == SinglePlaneFormat::kRGBA_1010102 ||
+      format == SinglePlaneFormat::kBGRA_1010102) {
+    return GL_RGBA;
+  } else if (format == SinglePlaneFormat::kBGRA_8888) {
+    return GL_BGRA_EXT;
+  } else if (format == SinglePlaneFormat::kALPHA_8) {
+    return GL_ALPHA;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_8 ||
+             format == SinglePlaneFormat::kLUMINANCE_F16) {
+    return GL_LUMINANCE;
+  } else if (format == SinglePlaneFormat::kRGB_565 ||
+             format == SinglePlaneFormat::kBGR_565 ||
+             format == SinglePlaneFormat::kETC1 ||
+             format == SinglePlaneFormat::kRGBX_8888 ||
+             format == SinglePlaneFormat::kBGRX_8888) {
+    return GL_RGB;
+  } else if (format == SinglePlaneFormat::kR_8 ||
+             format == SinglePlaneFormat::kR_16) {
+    return GL_RED_EXT;
+  } else if (format == SinglePlaneFormat::kRG_88 ||
+             format == SinglePlaneFormat::kRG_1616) {
+    return GL_RG_EXT;
+  }
 
-  return format_gl_data_format[format.resource_format()];
+  return GL_ZERO;
 }
 
 // static
