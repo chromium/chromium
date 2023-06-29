@@ -958,8 +958,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
 media::VideoEncoder::EncodeOptions VideoEncoder::CreateEncodeOptions(
     Request* request) {
   media::VideoEncoder::EncodeOptions result;
-  result.key_frame = request->encodeOpts->hasKeyFrameNonNull() &&
-                     request->encodeOpts->keyFrameNonNull();
+  result.key_frame = request->encodeOpts->keyFrame();
   switch (active_config_->codec) {
     case media::VideoCodec::kAV1: {
       if (!active_config_->options.bitrate.has_value() ||
