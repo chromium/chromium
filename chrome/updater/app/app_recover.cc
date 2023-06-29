@@ -178,11 +178,7 @@ void AppRecover::RegisterApps(
       CreateUpdateServiceProxy(updater_scope());
   base::RepeatingClosure barrier = base::BarrierClosure(
       registrations.size(),
-      // The service is bound to keep it alive through all callbacks.
-      base::BindOnce(
-          [](scoped_refptr<UpdateService> /*service*/,
-             base::OnceClosure shutdown) { std::move(shutdown).Run(); },
-          service, base::BindOnce(&AppRecover::Shutdown, this, kErrorOk)));
+      base::BindOnce(&AppRecover::Shutdown, this, kErrorOk));
   for (const RegistrationRequest& registration : registrations) {
     service->RegisterApp(registration,
                          base::BindOnce(

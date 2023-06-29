@@ -855,35 +855,39 @@ void UpdateServiceProxy::GetVersion(
     base::OnceCallback<void(const base::Version&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  impl_->GetVersion(base::BindPostTaskToCurrentDefault(std::move(callback)));
+  impl_->GetVersion(base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &UpdateServiceProxy::GetVersionDone, this, std::move(callback))));
 }
 
 void UpdateServiceProxy::FetchPolicies(base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  impl_->FetchPolicies(base::BindPostTaskToCurrentDefault(std::move(callback)));
+  impl_->FetchPolicies(base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &UpdateServiceProxy::FetchPoliciesDone, this, std::move(callback))));
 }
 
 void UpdateServiceProxy::RegisterApp(const RegistrationRequest& request,
                                      base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  impl_->RegisterApp(request,
-                     base::BindPostTaskToCurrentDefault(std::move(callback)));
+  impl_->RegisterApp(request, base::BindPostTaskToCurrentDefault(base::BindOnce(
+                                  &UpdateServiceProxy::RegisterAppDone, this,
+                                  std::move(callback))));
 }
 
 void UpdateServiceProxy::GetAppStates(
     base::OnceCallback<void(const std::vector<AppState>&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  impl_->GetAppStates(base::BindPostTaskToCurrentDefault(std::move(callback)));
+  impl_->GetAppStates(base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &UpdateServiceProxy::GetAppStatesDone, this, std::move(callback))));
 }
 
 void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  impl_->RunPeriodicTasks(
-      base::BindPostTaskToCurrentDefault(std::move(callback)));
+  impl_->RunPeriodicTasks(base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &UpdateServiceProxy::RunPeriodicTasksDone, this, std::move(callback))));
 }
 
 void UpdateServiceProxy::CheckForUpdate(
@@ -897,7 +901,8 @@ void UpdateServiceProxy::CheckForUpdate(
   impl_->CheckForUpdate(
       app_id, priority, policy_same_version_update,
       base::BindPostTaskToCurrentDefault(state_update),
-      base::BindPostTaskToCurrentDefault(std::move(callback)));
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &UpdateServiceProxy::CheckForUpdateDone, this, std::move(callback))));
 }
 
 void UpdateServiceProxy::Update(
@@ -909,18 +914,21 @@ void UpdateServiceProxy::Update(
     Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  impl_->Update(app_id, install_data_index, priority,
-                policy_same_version_update,
-                base::BindPostTaskToCurrentDefault(state_update),
-                base::BindPostTaskToCurrentDefault(std::move(callback)));
+  impl_->Update(
+      app_id, install_data_index, priority, policy_same_version_update,
+      base::BindPostTaskToCurrentDefault(state_update),
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &UpdateServiceProxy::UpdateDone, this, std::move(callback))));
 }
 
 void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
                                    Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  impl_->UpdateAll(base::BindPostTaskToCurrentDefault(state_update),
-                   base::BindPostTaskToCurrentDefault(std::move(callback)));
+  impl_->UpdateAll(
+      base::BindPostTaskToCurrentDefault(state_update),
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &UpdateServiceProxy::UpdateAllDone, this, std::move(callback))));
 }
 
 void UpdateServiceProxy::Install(const RegistrationRequest& registration,
@@ -931,9 +939,11 @@ void UpdateServiceProxy::Install(const RegistrationRequest& registration,
                                  Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  impl_->Install(registration, client_install_data, install_data_index,
-                 priority, base::BindPostTaskToCurrentDefault(state_update),
-                 base::BindPostTaskToCurrentDefault(std::move(callback)));
+  impl_->Install(
+      registration, client_install_data, install_data_index, priority,
+      base::BindPostTaskToCurrentDefault(state_update),
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &UpdateServiceProxy::InstallDone, this, std::move(callback))));
 }
 
 void UpdateServiceProxy::CancelInstalls(const std::string& app_id) {
@@ -951,10 +961,78 @@ void UpdateServiceProxy::RunInstaller(const std::string& app_id,
                                       Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  impl_->RunInstaller(app_id, installer_path, install_args, install_data,
-                      install_settings,
-                      base::BindPostTaskToCurrentDefault(state_update),
-                      base::BindPostTaskToCurrentDefault(std::move(callback)));
+  impl_->RunInstaller(
+      app_id, installer_path, install_args, install_data, install_settings,
+      base::BindPostTaskToCurrentDefault(state_update),
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &UpdateServiceProxy::RunInstallerDone, this, std::move(callback))));
+}
+
+void UpdateServiceProxy::GetVersionDone(
+    base::OnceCallback<void(const base::Version&)> callback,
+    const base::Version& version) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run(version);
+}
+
+void UpdateServiceProxy::FetchPoliciesDone(
+    base::OnceCallback<void(int)> callback,
+    int result) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run(result);
+}
+
+void UpdateServiceProxy::RegisterAppDone(base::OnceCallback<void(int)> callback,
+                                         int result) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run(result);
+}
+
+void UpdateServiceProxy::GetAppStatesDone(
+    base::OnceCallback<void(const std::vector<AppState>&)> callback,
+    const std::vector<AppState>& results) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run(results);
+}
+
+void UpdateServiceProxy::RunPeriodicTasksDone(base::OnceClosure callback) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run();
+}
+
+void UpdateServiceProxy::CheckForUpdateDone(Callback callback, Result result) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run(result);
+}
+
+void UpdateServiceProxy::UpdateDone(Callback callback, Result result) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run(result);
+}
+
+void UpdateServiceProxy::UpdateAllDone(Callback callback, Result result) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run(result);
+}
+
+void UpdateServiceProxy::InstallDone(Callback callback, Result result) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run(result);
+}
+
+void UpdateServiceProxy::RunInstallerDone(Callback callback, Result result) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run(result);
 }
 
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(

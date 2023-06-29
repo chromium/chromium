@@ -152,13 +152,27 @@ UpdateServiceInternalProxy::~UpdateServiceInternalProxy() {
 void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  impl_->Run(base::BindPostTaskToCurrentDefault(std::move(callback)));
+  impl_->Run(base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &UpdateServiceInternalProxy::RunDone, this, std::move(callback))));
 }
 
 void UpdateServiceInternalProxy::Hello(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  impl_->Hello(base::BindPostTaskToCurrentDefault(std::move(callback)));
+  impl_->Hello(base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &UpdateServiceInternalProxy::HelloDone, this, std::move(callback))));
+}
+
+void UpdateServiceInternalProxy::RunDone(base::OnceClosure callback) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run();
+}
+
+void UpdateServiceInternalProxy::HelloDone(base::OnceClosure callback) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run();
 }
 
 scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(

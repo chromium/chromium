@@ -98,7 +98,8 @@ void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
   remote_->Run(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      base::BindPostTaskToCurrentDefault(std::move(callback))));
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &UpdateServiceInternalProxy::RunDone, this, std::move(callback)))));
 }
 
 void UpdateServiceInternalProxy::Hello(base::OnceClosure callback) {
@@ -106,7 +107,18 @@ void UpdateServiceInternalProxy::Hello(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
   remote_->Hello(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      base::BindPostTaskToCurrentDefault(std::move(callback))));
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &UpdateServiceInternalProxy::HelloDone, this, std::move(callback)))));
+}
+
+void UpdateServiceInternalProxy::RunDone(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run();
+}
+
+void UpdateServiceInternalProxy::HelloDone(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run();
 }
 
 UpdateServiceInternalProxy::~UpdateServiceInternalProxy() = default;

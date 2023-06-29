@@ -21,11 +21,15 @@ class UpdateServiceInternalProxy : public UpdateServiceInternal {
   explicit UpdateServiceInternalProxy(UpdaterScope scope);
 
   // Overrides for UpdateServiceInternal.
+  // UpdateServiceInternalProxy will not be destroyed while these calls are
+  // outstanding; the caller need not retain a ref.
   void Run(base::OnceClosure callback) override;
   void Hello(base::OnceClosure callback) override;
 
  private:
   ~UpdateServiceInternalProxy() override;
+  void RunDone(base::OnceClosure callback);
+  void HelloDone(base::OnceClosure callback);
 
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<UpdateServiceInternalProxyImpl> impl_;

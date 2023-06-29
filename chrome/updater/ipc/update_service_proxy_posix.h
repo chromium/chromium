@@ -49,7 +49,9 @@ class UpdateServiceProxy : public UpdateService {
   // Overrides for updater::UpdateService.
   // Note: Provided OnceCallbacks are wrapped with
   // `mojo::WrapCallbackWithDefaultInvokeIfNotRun` to avoid deadlock if
-  // connection to the remote is broken.
+  // connection to the remote is broken, and UpdateServiceProxy will not be
+  // destroyed while these calls are outstanding; the caller need not retain a
+  // ref.
   void GetVersion(
       base::OnceCallback<void(const base::Version&)> callback) override;
   void FetchPolicies(base::OnceCallback<void(int)> callback) override;
@@ -91,6 +93,19 @@ class UpdateServiceProxy : public UpdateService {
                    absl::optional<mojo::PlatformChannelEndpoint> endpoint);
   void OnDisconnected();
   void EnsureConnecting();
+
+  void GetVersionDone(base::OnceCallback<void(const base::Version&)> callback,
+                      const base::Version& result);
+  void FetchPoliciesDone(base::OnceCallback<void(int)> callback, int result);
+  void RegisterAppDone(base::OnceCallback<void(int)> callback, int result);
+  void GetAppStatesDone(base::OnceCallback<void(const std::vector<AppState>&)>,
+                        const std::vector<AppState>& results);
+  void RunPeriodicTasksDone(base::OnceClosure callback);
+  void CheckForUpdateDone(Callback callback, Result result);
+  void UpdateDone(Callback callback, Result result);
+  void UpdateAllDone(Callback callback, Result result);
+  void InstallDone(Callback callback, Result result);
+  void RunInstallerDone(Callback callback, Result result);
 
   SEQUENCE_CHECKER(sequence_checker_);
   const UpdaterScope scope_;
