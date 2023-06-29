@@ -72,12 +72,14 @@ TEST(FilterOperationsTest, MapRectReverseDropShadowReferenceFilter) {
           SkIntToScalar(9), SkColors::kBlack,
           DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
           nullptr)));
-  EXPECT_EQ(gfx::Rect(-15, -35, 34, 64),
+
+  // DropShadow includes a 1px buffer for bilinear filtering.
+  EXPECT_EQ(gfx::Rect(-16, -36, 36, 66),
             ops.MapRectReverse(gfx::Rect(0, 0, 10, 10), SkMatrix::I()));
-  EXPECT_EQ(gfx::Rect(-30, -70, 68, 128),
+  EXPECT_EQ(gfx::Rect(-31, -71, 70, 130),
             ops.MapRectReverse(gfx::Rect(0, 0, 20, 20), SkMatrix::Scale(2, 2)));
   EXPECT_EQ(
-      gfx::Rect(-15, -29, 34, 64),
+      gfx::Rect(-16, -30, 36, 66),
       ops.MapRectReverse(gfx::Rect(0, -10, 10, 10), SkMatrix::Scale(1, -1)));
 }
 

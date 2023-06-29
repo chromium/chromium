@@ -24,10 +24,13 @@ test(function(t) {
     ctx.shadowOffsetY = SHADOW_OFFSET;
     ctx.rect(0, 0, image.width, image.height);
 
-    // colored pixels of html5.png starts at 3 pixels away from the border of
+    // colored pixels of html5.png starts at 3 pixels inset from the border of
     // the image, they must be taken into account since the shadow is applied
-    // to the colored pixels.
-    const squareBorder = image.width + SHADOW_OFFSET + 3 * 2;
+    // to the colored pixels. The blur affects up to 3*sigma, where sigma is
+    // 1/2*ctx.shadowBlur. The drop shadow should not affect pixels outside of
+    // a square sized to `squareBorder` placed at the origin.
+    const squareBorder = (image.width - 3) +
+                         SHADOW_OFFSET + 1.5 * ctx.shadowBlur;
     var imgDataBefore = [];
     imgDataBefore.push(ctx.getImageData(25, squareBorder, 1, 1).data)
     for (var i = 25; i < squareBorder; i += 10)
@@ -49,3 +52,4 @@ test(function(t) {
 }, 'Test that the drop shadow properly falls off when a rect is drawn by filling with a pattern.');
 
 </script>
+</body>
