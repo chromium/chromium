@@ -1342,8 +1342,15 @@ class HintsFetcherSearchPageBrowserTest : public HintsFetcherBrowserTest {
   }
 };
 
+// TODO(crbug.com/1459340): De-leakify and re-enable.
+#if BUILDFLAG(IS_LINUX) && defined(LEAK_SANITIZER)
+#define MAYBE_HintsFetcher_SRP_Slow_Connection \
+  DISABLED_HintsFetcher_SRP_Slow_Connection
+#else
+#define MAYBE_HintsFetcher_SRP_Slow_Connection HintsFetcher_SRP_Slow_Connection
+#endif
 IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
-                       HintsFetcher_SRP_Slow_Connection) {
+                       MAYBE_HintsFetcher_SRP_Slow_Connection) {
   SetNetworkConnectionOnline();
 
   const base::HistogramTester* histogram_tester = GetHistogramTester();
