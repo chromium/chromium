@@ -11,8 +11,9 @@
 
 namespace blink {
 
-void EnterCppForRustCrash();  // called from Rust, calls back into Rust then
-                              // crashes. See src/lib.rs for the sequence.
+// Called from Rust, calls back into Rust then crashes. See src/lib.rs for the
+// sequence.
+__attribute__((noinline)) void EnterCppForRustCrash();
 
 }  // namespace blink
 
