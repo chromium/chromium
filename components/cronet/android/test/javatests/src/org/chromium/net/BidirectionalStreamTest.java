@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
+import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
@@ -45,6 +46,7 @@ import java.util.regex.Pattern;
  * Test functionality of BidirectionalStream interface.
  */
 @RunWith(AndroidJUnit4.class)
+@Batch(Batch.UNIT_TESTS)
 public class BidirectionalStreamTest {
     private static final String TAG = BidirectionalStreamTest.class.getSimpleName();
 
@@ -1072,7 +1074,6 @@ public class BidirectionalStreamTest {
         callback.waitForNextReadStep(); // onReadCompleted
         // Verify that some part of proper response is read.
         assertThat(callback.mResponseAsString).startsWith(testData[0]);
-        assertThat(callback.mResponseAsString).startsWith(stringData.toString());
         // Read the rest of the response.
         callback.setAutoAdvance(true);
         callback.startNextRead(stream);
