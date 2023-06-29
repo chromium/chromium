@@ -40,11 +40,13 @@ source_set("bottom_sheet_ui") {
   ]
   deps = [
     "//build:branding_buildflags",
+    "//components/autofill/core/browser",
     "//components/resources:components_scaled_resources_grit",
     "//ios/chrome/browser/shared/ui/bottom_sheet",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/table_view:cells_constants",
   ]
 }

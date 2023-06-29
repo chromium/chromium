@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
+#import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/grit/components_scaled_resources.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -12,13 +14,22 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Credit Card icon corner radius.
+CGFloat const kCreditCardIconCornerRadius = 5;
+
+}  // namespace
+
 @interface PaymentsSuggestionBottomSheetViewController () <
-    ConfirmationAlertActionHandler> {
+    ConfirmationAlertActionHandler,
+    UITableViewDataSource> {
   // Height constraint for the bottom sheet when showing all suggestions.
   NSLayoutConstraint* _heightConstraint;
 
@@ -84,6 +95,46 @@
   [self dismissViewControllerAnimated:NO completion:NULL];
 }
 
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)tableView:(UITableView*)tableView
+    numberOfRowsInSection:(NSInteger)section {
+  return _creditCardData.count;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
+  return 1;
+}
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewDetailIconCell* cell =
+      [tableView dequeueReusableCellWithIdentifier:@"cell"];
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  cell.userInteractionEnabled = YES;
+
+  cell.textLabel.text = [self suggestionAtRow:indexPath.row];
+  [cell setDetailText:[self descriptionAtRow:indexPath.row]];
+  [cell setIconImage:[self iconAtRow:indexPath.row]
+            tintColor:nil
+      backgroundColor:cell.backgroundColor
+         cornerRadius:kCreditCardIconCornerRadius];
+
+  // Make separator invisible on last cell
+  CGFloat separatorLeftMargin = [self isLastRow:indexPath]
+                                    ? tableView.bounds.size.width
+                                    : kTableViewHorizontalSpacing;
+  cell.separatorInset = UIEdgeInsetsMake(0.f, separatorLeftMargin, 0.f, 0.f);
+
+  if ([self selectedRow] == indexPath.row) {
+    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+  } else {
+    cell.accessoryType = UITableViewCellAccessoryNone;
+  }
+  return cell;
+}
+
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
@@ -133,6 +184,25 @@
 #endif
 }
 
+// Returns the string to display at a given row in the table view.
+- (NSString*)suggestionAtRow:(NSInteger)row {
+  const autofill::CreditCard* creditCard = [_creditCardData[row] creditCard];
+
+  return base::SysUTF16ToNSString(creditCard->CardNameAndLastFourDigits());
+}
+
+// Returns the display description at a given row in the table view.
+- (NSString*)descriptionAtRow:(NSInteger)row {
+  const autofill::CreditCard* creditCard = [_creditCardData[row] creditCard];
+
+  return base::SysUTF16ToNSString(creditCard->ExpirationDateForDisplay());
+}
+
+// Returns the credit card icon at a given row in the table view.
+- (UIImage*)iconAtRow:(NSInteger)row {
+  return [_creditCardData[row] icon];
+}
+
 // Creates the payments bottom sheet's table view, initially at minimized
 // height.
 - (UITableView*)createTableView {
@@ -152,6 +222,12 @@
 - (void)didSelectCreditCard {
   [self.delegate
       didSelectCreditCard:[_creditCardData[[self selectedRow]] creditCard]];
+}
+
+// Returns whether the provided index path points to the last row of the table
+// view.
+- (BOOL)isLastRow:(NSIndexPath*)indexPath {
+  return NSUInteger(indexPath.row) == (_creditCardData.count - 1);
 }
 
 @end
