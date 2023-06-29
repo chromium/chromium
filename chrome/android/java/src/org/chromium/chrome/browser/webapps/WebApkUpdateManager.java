@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
 import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 
 import android.content.Context;
@@ -58,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * WebApkUpdateManager manages when to check for updates to the WebAPK's Web Manifest, and sends
@@ -84,6 +86,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     /** Whether updates are enabled. Some tests disable updates. */
     private static boolean sUpdatesEnabled = true;
+
+    /** The activity context to use. */
+    private Context mContext;
 
     /** The minimum shell version the WebAPK needs to be using. */
     private static int sWebApkTargetShellVersion;
@@ -118,8 +123,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     }
 
     @Inject
-    public WebApkUpdateManager(
+    public WebApkUpdateManager(@Named(ACTIVITY_CONTEXT) Context context,
             ActivityTabProvider tabProvider, ActivityLifecycleDispatcher lifecycleDispatcher) {
+        mContext = context;
         mTabProvider = tabProvider;
         lifecycleDispatcher.register(this);
     }
@@ -396,9 +402,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         // Show the dialog to confirm name and/or icon update.
         ModalDialogManager dialogManager =
                 mTabProvider.get().getWindowAndroid().getModalDialogManager();
-        Context context = mTabProvider.get().getContext();
         WebApkIconNameUpdateDialog dialog = new WebApkIconNameUpdateDialog();
-        dialog.show(context, dialogManager, mInfo.webApkPackageName(), iconChanging,
+        dialog.show(mContext, dialogManager, mInfo.webApkPackageName(), iconChanging,
                 shortNameChanging, nameChanging, mInfo.shortName(), mFetchedInfo.shortName(),
                 mInfo.name(), mFetchedInfo.name(), mInfo.icon().bitmap(),
                 mFetchedInfo.icon().bitmap(), mInfo.isIconAdaptive(), mFetchedInfo.isIconAdaptive(),

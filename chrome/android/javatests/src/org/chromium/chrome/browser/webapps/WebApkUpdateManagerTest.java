@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.webapps;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -135,10 +136,10 @@ public class WebApkUpdateManagerTest {
         private CallbackHelper mCompleteCallback;
         private boolean mAcceptDialogIfAppears;
 
-        public TestWebApkUpdateManager(CallbackHelper waiter, CallbackHelper complete,
-                ActivityTabProvider tabProvider, ActivityLifecycleDispatcher lifecycleDispatcher,
-                boolean acceptDialogIfAppears) {
-            super(tabProvider, lifecycleDispatcher);
+        public TestWebApkUpdateManager(Activity activity, CallbackHelper waiter,
+                CallbackHelper complete, ActivityTabProvider tabProvider,
+                ActivityLifecycleDispatcher lifecycleDispatcher, boolean acceptDialogIfAppears) {
+            super(activity, tabProvider, lifecycleDispatcher);
             mWaiter = waiter;
             mCompleteCallback = complete;
             mLastUpdateReasons = new ArrayList<>();
@@ -263,7 +264,7 @@ public class WebApkUpdateManagerTest {
         CallbackHelper waiter = new CallbackHelper();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(waiter,
+            TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivity, waiter,
                     completeCallback, mActivity.getActivityTabProvider(),
                     mActivity.getLifecycleDispatcher(), acceptDialogIfAppears);
             WebappDataStorage storage =
