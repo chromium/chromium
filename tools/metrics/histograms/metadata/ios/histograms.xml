@@ -2536,6 +2536,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.TabPickup.TabOpened.TimeSinceLastUse" units="ms"
+    expires_after="2024-06-28">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The delay in milliseconds between the Tab is opened from the tab pickup
+    banner on this device and the last time the same Tab was modified on the
+    other device. The 'last modified' time is not updated when the Tab is opened
+    from this device.
+  </summary>
+</histogram>
+
 <histogram name="IOS.TabPickup.TimeSinceLastCrossDeviceSync" units="ms"
     expires_after="2024-06-20">
   <owner>ewannpv@chromium.org</owner>

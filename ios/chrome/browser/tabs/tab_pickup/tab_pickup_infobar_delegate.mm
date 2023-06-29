@@ -77,8 +77,9 @@ void TabPickupInfobarDelegate::OpenDistantTab() {
     base::UmaHistogramCustomTimes("IOS.DistantTab.TimeSinceLastUse",
                                   time_since_last_use, base::Minutes(1),
                                   base::Days(24), 50);
-
-    // TODO(crbug.com/1457175): Records some metrics.
+    base::UmaHistogramCustomTimes("IOS.TabPickup.TabOpened.TimeSinceLastUse",
+                                  time_since_last_use, base::Minutes(1),
+                                  base::Days(24), 50);
 
     new_tab_page_uma::RecordAction(
         browser_state->IsOffTheRecord(), web_state_list->GetActiveWebState(),
