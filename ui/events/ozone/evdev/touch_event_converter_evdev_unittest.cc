@@ -70,6 +70,12 @@ constexpr char kEveTouchScreenLogDescription[] =
  x_num_tuxels=10369
  y_min_tuxels=0
  y_num_tuxels=6913
+ tool_x_res=0
+ tool_y_res=0
+ tool_x_min_tuxels=0
+ tool_x_num_tuxels=1
+ tool_y_min_tuxels=0
+ tool_y_num_tuxels=1
  x_scale=20
  y_scale=20
  rotated_x_scale=20
@@ -112,6 +118,12 @@ constexpr char kEveStylusLogDescription[] =
  x_num_tuxels=25921
  y_min_tuxels=0
  y_num_tuxels=17281
+ tool_x_res=100
+ tool_y_res=100
+ tool_x_min_tuxels=0
+ tool_x_num_tuxels=25921
+ tool_y_min_tuxels=0
+ tool_y_num_tuxels=17281
  x_scale=0.5
  y_scale=0.5
  rotated_x_scale=0.5
@@ -2735,7 +2747,12 @@ TEST_F(TouchEventConverterEvdevTest, AbsPositionXY) {
   log = LogSubst(log, "y_res", "2560");
   log = LogSubst(log, "y_min_tuxels", "100");
   log = LogSubst(log, "y_num_tuxels", "291");
-
+  log = LogSubst(log, "tool_x_res", "1230");
+  log = LogSubst(log, "tool_x_min_tuxels", "-200");
+  log = LogSubst(log, "tool_x_num_tuxels", "601");
+  log = LogSubst(log, "tool_y_res", "2560");
+  log = LogSubst(log, "tool_y_min_tuxels", "100");
+  log = LogSubst(log, "tool_y_num_tuxels", "291");
   std::stringstream output;
   dev->DescribeForLog(output);
 
@@ -2769,6 +2786,36 @@ TEST_F(TouchEventConverterEvdevTest, AbsMtPositionXY) {
   log = LogSubst(log, "y_scale", "125");
   log = LogSubst(log, "rotated_x_scale", "500");
   log = LogSubst(log, "rotated_y_scale", "125");
+
+  std::stringstream output;
+  dev->DescribeForLog(output);
+
+  EXPECT_EQ(output.str(), log);
+}
+
+TEST_F(TouchEventConverterEvdevTest, AbsMtToolXY) {
+  ui::MockTouchEventConverterEvdev* dev = device();
+
+  EventDeviceInfo devinfo;
+  CapabilitiesToDeviceInfo(kEveTouchScreen, &devinfo);
+
+  input_absinfo absinfo_x = {
+      .minimum = -250, .maximum = 450, .resolution = 1000};
+  input_absinfo absinfo_y = {
+      .minimum = 1000, .maximum = 3900, .resolution = 250};
+  devinfo.SetAbsInfo(ABS_MT_TOOL_X, absinfo_x);
+  devinfo.SetAbsInfo(ABS_MT_TOOL_Y, absinfo_y);
+
+  dev->Initialize(devinfo);
+
+  std::string log = kEveTouchScreenLogDescription;
+
+  log = LogSubst(log, "tool_x_res", "1000");
+  log = LogSubst(log, "tool_x_min_tuxels", "-250");
+  log = LogSubst(log, "tool_x_num_tuxels", "701");
+  log = LogSubst(log, "tool_y_res", "250");
+  log = LogSubst(log, "tool_y_min_tuxels", "1000");
+  log = LogSubst(log, "tool_y_num_tuxels", "2901");
 
   std::stringstream output;
   dev->DescribeForLog(output);

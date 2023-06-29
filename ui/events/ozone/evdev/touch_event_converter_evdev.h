@@ -225,6 +225,18 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   float y_min_tuxels_;
   float y_num_tuxels_;
 
+  // Resolution of tool_x and tool_y.
+  int tool_x_res_;
+  int tool_y_res_;
+
+  // Input range for tool_x-axis.
+  float tool_x_min_tuxels_;
+  float tool_x_num_tuxels_;
+
+  // Input range for tool_y-axis.
+  float tool_y_min_tuxels_;
+  float tool_y_num_tuxels_;
+
   // The resolution of ABS_MT_TOUCH_MAJOR/MINOR might be different from the
   // resolution of ABS_MT_POSITION_X/Y. As we use the (position range, display
   // pixels) to resize touch event radius, we have to scale major/minor.

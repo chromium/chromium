@@ -186,7 +186,14 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
     y_min_tuxels_ = info.GetAbsMinimum(ABS_MT_POSITION_Y);
     y_num_tuxels_ = info.GetAbsMaximum(ABS_MT_POSITION_Y) - y_min_tuxels_ + 1;
     y_res_ = info.GetAbsInfoByCode(ABS_MT_POSITION_Y).resolution;
-
+    tool_x_min_tuxels_ = info.GetAbsMinimum(ABS_MT_TOOL_X);
+    tool_x_num_tuxels_ =
+        info.GetAbsMaximum(ABS_MT_TOOL_X) - tool_x_min_tuxels_ + 1;
+    tool_x_res_ = info.GetAbsInfoByCode(ABS_MT_TOOL_X).resolution;
+    tool_y_min_tuxels_ = info.GetAbsMinimum(ABS_MT_TOOL_Y);
+    tool_y_num_tuxels_ =
+        info.GetAbsMaximum(ABS_MT_TOOL_Y) - tool_y_min_tuxels_ + 1;
+    tool_y_res_ = info.GetAbsInfoByCode(ABS_MT_TOOL_Y).resolution;
     touch_points_ =
         std::min<int>(info.GetAbsMaximum(ABS_MT_SLOT) + 1, kNumTouchEvdevSlots);
     major_max_ = info.GetAbsMaximum(ABS_MT_TOUCH_MAJOR);
@@ -202,6 +209,12 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
     y_min_tuxels_ = info.GetAbsMinimum(ABS_Y);
     y_num_tuxels_ = info.GetAbsMaximum(ABS_Y) - y_min_tuxels_ + 1;
     y_res_ = info.GetAbsInfoByCode(ABS_Y).resolution;
+    tool_x_min_tuxels_ = x_min_tuxels_;
+    tool_x_num_tuxels_ = x_num_tuxels_;
+    tool_x_res_ = x_res_;
+    tool_y_min_tuxels_ = y_min_tuxels_;
+    tool_y_num_tuxels_ = y_num_tuxels_;
+    tool_y_res_ = y_res_;
     tilt_x_min_ = info.GetAbsMinimum(ABS_TILT_X);
     tilt_y_min_ = info.GetAbsMinimum(ABS_TILT_Y);
     tilt_x_range_ = info.GetAbsMaximum(ABS_TILT_X) - tilt_x_min_;
@@ -212,6 +225,14 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
     touch_points_ = 1;
     major_max_ = 0;
     current_slot_ = 0;
+  }
+  if (info.HasAbsEvent(ABS_MT_TOOL_X)) {
+    DCHECK_EQ(tool_x_res_, x_res_)
+        << "Expected tool X resolution to be identical as position X.";
+  }
+  if (info.HasAbsEvent(ABS_MT_TOOL_Y)) {
+    DCHECK_EQ(tool_y_res_, y_res_)
+        << "Expected tool Y resolution to be identical as position Y.";
   }
 
   x_scale_ = GetFingerSizeScale(touch_major_res, x_res_) / 2.0f;
@@ -456,6 +477,12 @@ void TouchEventConverterEvdev::ProcessAbs(const input_event& input) {
       break;
     case ABS_MT_POSITION_Y:
       events_[current_slot_].y = input.value;
+      break;
+    case ABS_MT_TOOL_X:
+      events_[current_slot_].tool_x = input.value;
+      break;
+    case ABS_MT_TOOL_Y:
+      events_[current_slot_].tool_y = input.value;
       break;
     case ABS_MT_TOOL_TYPE:
       events_[current_slot_].tool_type = input.value;
@@ -924,6 +951,12 @@ std::ostream& TouchEventConverterEvdev::DescribeForLog(std::ostream& os) const {
      << " x_num_tuxels=" << x_num_tuxels_ << std::endl
      << " y_min_tuxels=" << y_min_tuxels_ << std::endl
      << " y_num_tuxels=" << y_num_tuxels_ << std::endl
+     << " tool_x_res=" << tool_x_res_ << std::endl
+     << " tool_y_res=" << tool_y_res_ << std::endl
+     << " tool_x_min_tuxels=" << tool_x_min_tuxels_ << std::endl
+     << " tool_x_num_tuxels=" << tool_x_num_tuxels_ << std::endl
+     << " tool_y_min_tuxels=" << tool_y_min_tuxels_ << std::endl
+     << " tool_y_num_tuxels=" << tool_y_num_tuxels_ << std::endl
      << " x_scale=" << x_scale_ << std::endl
      << " y_scale=" << y_scale_ << std::endl
      << " rotated_x_scale=" << rotated_x_scale_ << std::endl
