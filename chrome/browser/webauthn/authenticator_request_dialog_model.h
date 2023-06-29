@@ -11,12 +11,11 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -28,7 +27,6 @@
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -225,7 +223,8 @@ class AuthenticatorRequestDialogModel {
         PairingSource paired_source,
         const std::string& name,
         size_t contact_id,
-        const std::array<uint8_t, device::kP256X962Length> public_key_x962);
+        const std::array<uint8_t, device::kP256X962Length> public_key_x962,
+        base::Time last_updated);
     ~PairedPhone();
 
     PairedPhone& operator=(const PairedPhone&);
@@ -245,6 +244,9 @@ class AuthenticatorRequestDialogModel {
     size_t contact_id;
     // public_key_x962 is the phone's public key.
     std::array<uint8_t, device::kP256X962Length> public_key_x962;
+    // last_updated is the timestamp for the phone's last sync, or null if the
+    // PairingSource is not kSyncDeviceInfo.
+    base::Time last_updated;
   };
 
   // CableUIType enumerates the different types of caBLE UI that we've ended

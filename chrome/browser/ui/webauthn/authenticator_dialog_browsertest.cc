@@ -63,7 +63,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     AuthenticatorRequestDialogModel::PairedPhone phone(
         AuthenticatorRequestDialogModel::PairedPhone::PairingSource::kQR,
         "Elisa's Pixel 6 Pro", 0,
-        std::array<uint8_t, device::kP256X962Length>{0});
+        std::array<uint8_t, device::kP256X962Length>{0}, {});
 
     if (name == "cable_server_link_activate") {
       transport_availability.available_transports.insert(

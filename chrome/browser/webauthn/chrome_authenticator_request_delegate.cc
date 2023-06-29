@@ -635,7 +635,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
                       kSyncDeviceInfo
                 : AuthenticatorRequestDialogModel::PairedPhone::PairingSource::
                       kQR,
-            phone->name, i, phone->peer_public_key_x962);
+            phone->name, i, phone->peer_public_key_x962, phone->last_updated);
         phone_names_.push_back(phone->name);
         phone_public_keys_.push_back(phone->peer_public_key_x962);
       }

@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -22,11 +21,13 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
+#include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
-#include "components/strings/grit/components_strings.h"
+#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -34,10 +35,10 @@
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
-#include "device/fido/public_key_credential_user_entity.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -146,6 +147,38 @@ password_manager::PasskeyCredential::Source ToPasswordManagerSource(
   }
 }
 
+// Stores the last used pairing in the user's profile if available.
+void MaybeStoreLastUsedPairing(
+    content::RenderFrameHost* rfh,
+    const std::array<uint8_t, device::kP256X962Length>& pairing_public_key) {
+  if (!rfh) {
+    // The RFH might be null in unit tests, or it might not be alive anymore.
+    return;
+  }
+  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
+  profile->GetPrefs()->SetString(
+      webauthn::pref_names::kLastUsedPairingFromSyncPublicKey,
+      base::Base64Encode(pairing_public_key));
+}
+
+// Retrieves the last used pairing public key from the user's profile, if
+// available.
+absl::optional<std::vector<uint8_t>> RetrieveLastUsedPairing(
+    content::RenderFrameHost* rfh) {
+  if (!rfh) {
+    // The RFH might be null in unit tests, or it might not be alive anymore.
+    return absl::nullopt;
+  }
+  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
+  std::string maybe_last_used_pairing = profile->GetPrefs()->GetString(
+      webauthn::pref_names::kLastUsedPairingFromSyncPublicKey);
+  absl::optional<std::vector<uint8_t>> last_used_pairing;
+  if (maybe_last_used_pairing.empty()) {
+    return absl::nullopt;
+  }
+  return base::Base64Decode(maybe_last_used_pairing);
+}
+
 #if BUILDFLAG(IS_WIN)
 bool WebAuthnApiSupportsHybrid() {
   device::WinWebAuthnApi* const webauthn_api =
@@ -184,12 +217,13 @@ AuthenticatorRequestDialogModel::PairedPhone::PairedPhone(
     PairingSource pairing_source,
     const std::string& name,
     size_t contact_id,
-    const std::array<uint8_t, device::kP256X962Length> public_key_x962) {
-  this->pairing_source = pairing_source;
-  this->name = name;
-  this->contact_id = contact_id;
-  this->public_key_x962 = public_key_x962;
-}
+    const std::array<uint8_t, device::kP256X962Length> public_key_x962,
+    base::Time last_updated)
+    : pairing_source(pairing_source),
+      name(name),
+      contact_id(contact_id),
+      public_key_x962(public_key_x962),
+      last_updated(last_updated) {}
 AuthenticatorRequestDialogModel::PairedPhone::~PairedPhone() = default;
 AuthenticatorRequestDialogModel::PairedPhone&
 AuthenticatorRequestDialogModel::PairedPhone::operator=(const PairedPhone&) =
@@ -427,7 +461,7 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
           // If it's not preferable to complete the request by clicking
           // "Continue" then don't show the account selection sheet.
           HideDialogAndDispatchToPlatformAuthenticator();
-        } else
+        } else  // NOLINT(readability/braces)
 #endif
         {
           // Otherwise show the chosen credential to the user. For platform
@@ -1140,10 +1174,14 @@ void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
         break;
     }
     ReportConditionalUiPasskeyCount(credentials.size());
-    ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)
-        ->GetDelegateForFrame(render_frame_host)
-        ->OnCredentialsReceived(std::move(credentials),
-                                offer_passkey_from_another_device);
+    auto* webauthn_credentials_delegate_factory =
+        ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)
+            ->GetDelegateForFrame(render_frame_host);
+    if (webauthn_credentials_delegate_factory) {
+      // May be null on tests.
+      webauthn_credentials_delegate_factory->OnCredentialsReceived(
+          std::move(credentials), offer_passkey_from_another_device);
+    }
   }
 
   SetCurrentStep(Step::kConditionalMediation);
@@ -1173,6 +1211,9 @@ void AuthenticatorRequestDialogModel::ContactNextPhoneByName(
       found_name = true;
       ephemeral_state_.selected_phone_name_ = name;
       if (!paired_phones_contacted_[i]) {
+        MaybeStoreLastUsedPairing(
+            content::RenderFrameHost::FromID(frame_host_id_),
+            phone.public_key_x962);
         paired_phones_contacted_[i] = true;
         contact_phone_callback_.Run(phone.contact_id);
         break;
@@ -1189,13 +1230,28 @@ void AuthenticatorRequestDialogModel::ContactNextPhoneByName(
 
 absl::optional<AuthenticatorRequestDialogModel::PairedPhone>
 AuthenticatorRequestDialogModel::GetPrioritySyncedPhone() {
-  // TODO(crbug.com/1428655): return the last recently used phone instead.
-  for (const PairedPhone& phone : paired_phones_) {
-    if (phone.pairing_source == PairedPhone::PairingSource::kSyncDeviceInfo) {
-      return phone;
+  // Try finding the most recently used phone from sync.
+  absl::optional<std::vector<uint8_t>> last_used_pairing =
+      RetrieveLastUsedPairing(content::RenderFrameHost::FromID(frame_host_id_));
+  if (last_used_pairing) {
+    for (const PairedPhone& phone : paired_phones_) {
+      if (phone.pairing_source == PairedPhone::PairingSource::kSyncDeviceInfo &&
+          base::ranges::equal(phone.public_key_x962, *last_used_pairing)) {
+        return phone;
+      }
     }
   }
-  return absl::nullopt;
+  // Could not find a most recently used phone. Instead, return the phone that
+  // last published to sync.
+  absl::optional<PairedPhone> ret;
+  for (const PairedPhone& phone : paired_phones_) {
+    if (phone.pairing_source == PairedPhone::PairingSource::kSyncDeviceInfo) {
+      if (!ret || ret->last_updated < phone.last_updated) {
+        ret = phone;
+      }
+    }
+  }
+  return ret;
 }
 
 void AuthenticatorRequestDialogModel::PopulateMechanisms() {

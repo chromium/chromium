@@ -136,7 +136,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
       std::array<uint8_t, device::kP256X962Length> public_key = {0};
       AuthenticatorRequestDialogModel::PairedPhone phone(
           AuthenticatorRequestDialogModel::PairedPhone::PairingSource::kQR,
-          "Phone", 0, public_key);
+          "Phone", 0, public_key, {});
       dialog_model_->set_cable_transport_info(
           /*extension_is_v2=*/absl::nullopt,
           /*paired_phones=*/{phone},

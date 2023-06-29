@@ -1904,6 +1904,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(
       webauthn::pref_names::kRemoteProxiedRequestsAllowed, false);
 
+  registry->RegisterStringPref(
+      webauthn::pref_names::kLastUsedPairingFromSyncPublicKey, "");
+
   side_panel_prefs::RegisterProfilePrefs(registry);
 #endif
 
