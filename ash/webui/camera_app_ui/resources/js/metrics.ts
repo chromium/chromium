@@ -21,7 +21,13 @@ import {
   Resolution,
   VideoResolutionLevel,
 } from './type.js';
-import {getGaHelper} from './untrusted_scripts.js';
+import {
+  Ga4EventParams,
+  Ga4MetricDimension,
+  GaBaseEvent,
+  GaMetricDimension,
+  getGaHelper,
+} from './untrusted_scripts.js';
 import {WaitableEvent} from './waitable_event.js';
 
 /**
@@ -37,13 +43,6 @@ const GA4_API_SECRET =
 
 const ready = new WaitableEvent();
 
-export interface BaseEvent {
-  eventAction: string;
-  eventCategory?: string;
-  eventLabel?: string;
-  eventValue?: number;
-}
-
 /**
  * Send the event to GA backend.
  *
@@ -51,7 +50,8 @@ export interface BaseEvent {
  * @param dimensions Optional object contains dimension information.
  */
 async function sendEvent(
-    event: BaseEvent, dimensions: Map<MetricDimension, string> = new Map()) {
+    event: GaBaseEvent,
+    dimensions: Map<GaMetricDimension, string> = new Map()) {
   if (event.eventValue !== undefined && !Number.isInteger(event.eventValue)) {
     // Round the duration here since GA expects that the value is an
     // integer. Reference:
@@ -73,31 +73,31 @@ async function sendEvent(
 }
 
 async function sendGaEvent(
-    baseEvent: BaseEvent, dimensions: Map<MetricDimension, string>) {
+    baseEvent: GaBaseEvent, dimensions: Map<GaMetricDimension, string>) {
   const gaHelper = await getGaHelper();
   await gaHelper.sendGaEvent({baseEvent, dimensions});
 }
 
 async function sendGa4Event(
-    event: BaseEvent, dimensions: Map<MetricDimension, string>) {
-  const params: Record<string, number|string> = {};
-  if (event.eventCategory !== undefined) {
-    params['event_category'] = event.eventCategory;
+    baseEvent: GaBaseEvent, dimensions: Map<GaMetricDimension, string>) {
+  const params: Ga4EventParams = {};
+  if (baseEvent.eventCategory !== undefined) {
+    params.event_category = baseEvent.eventCategory;
   }
-  if (event.eventLabel !== undefined) {
-    params['event_label'] = event.eventLabel;
+  if (baseEvent.eventLabel !== undefined) {
+    params.event_label = baseEvent.eventLabel;
   }
-  if (event.eventValue !== undefined) {
-    params['value'] = event.eventValue;
+  if (baseEvent.eventValue !== undefined) {
+    params.value = baseEvent.eventValue;
   }
-  // TODO(b/267265966): Use enum as event parameter keys. Simply map lower cased
-  // enum keys from UA to parameter keys now.
-  for (const [enumKey, value] of dimensions) {
-    const key = MetricDimension[enumKey].toLowerCase();
-    params[key] = value;
+  for (const [gaKey, value] of dimensions) {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const ga4Key = GaMetricDimension[gaKey].toLowerCase() as
+        Lowercase<keyof typeof GaMetricDimension>;
+    params[ga4Key] = value;
   }
   const gaHelper = await getGaHelper();
-  const name = event.eventAction.replaceAll('-', '_');
+  const name = baseEvent.eventAction.replaceAll('-', '_');
   await gaHelper.sendGa4Event({name, eventParams: params});
 }
 
@@ -112,76 +112,19 @@ export async function setGaEnabled(enabled: boolean): Promise<void> {
   await (await getGaHelper()).setGaEnabled(GA_ID, enabled);
 }
 
-const SCHEMA_VERSION = '3';
-
 /**
- * All dimensions for GA metrics.
- *
- * The following two documents should also be updated when the dimensions is
- * updated.
- *
- * * Camera App PDD (Privacy Design Document): go/cca-metrics-pdd.
- * * CCA GA Events & Dimensions sheet: go/cca-metrics-schema.
- */
-export enum MetricDimension {
-  BOARD = 1,
-  OS_VERSION = 2,
-  // Obsolete 'sound' state.
-  // SOUND = 3,
-  MIRROR = 4,
-  GRID = 5,
-  TIMER = 6,
-  MICROPHONE = 7,
-  MAXIMIZED = 8,
-  TALL_ORIENTATION = 9,
-  RESOLUTION = 10,
-  FPS = 11,
-  INTENT_RESULT = 12,
-  SHOULD_HANDLE_RESULT = 13,
-  SHOULD_DOWN_SCALE = 14,
-  IS_SECURE = 15,
-  ERROR_NAME = 16,
-  FILENAME = 17,
-  FUNC_NAME = 18,
-  LINE_NO = 19,
-  COL_NO = 20,
-  SHUTTER_TYPE = 21,
-  IS_VIDEO_SNAPSHOT = 22,
-  EVER_PAUSED = 23,
-  SUPPORT_PAN = 24,
-  SUPPORT_TILT = 25,
-  SUPPORT_ZOOM = 26,
-  // Obsolete
-  // DOC_RESULT = 27,
-  RECORD_TYPE = 28,
-  GIF_RESULT = 29,
-  DURATION = 30,
-  SCHEMA_VERSION = 31,
-  LAUNCH_TYPE = 32,
-  DOC_FIX_TYPE = 33,
-  RESOLUTION_LEVEL = 34,
-  ASPECT_RATIO_SET = 35,
-  DOC_PAGE_COUNT = 36,
-  TIME_LAPSE_SPEED = 37,
-  IS_TEST_IMAGE = 38,
-  DEVICE_PIXEL_RATIO = 39,
-}
-
-/**
- * Initializes metrics with parameters.
+ * Initializes GA and GA4 with parameters like property ID, client ID, and
+ * custom dimensions from `loadTimeData`.
  */
 export async function initMetrics(): Promise<void> {
   const board = assertExists(/^(x86-)?(\w*)/.exec(loadTimeData.getBoard()))[0];
-  const osVer = navigator.appVersion.match(/CrOS\s+\S+\s+([\d.]+)/)?.[1] ?? '';
   const isTestImage = loadTimeData.getIsTestImage();
   const gaHelper = await getGaHelper();
 
   async function initGa() {
     const baseDimensions = new Map([
-      [MetricDimension.BOARD, board],
-      [MetricDimension.OS_VERSION, osVer],
-      [MetricDimension.SCHEMA_VERSION, SCHEMA_VERSION],
-      [MetricDimension.IS_TEST_IMAGE, boolToIntString(isTestImage)],
+      [GaMetricDimension.BOARD, board],
+      [GaMetricDimension.IS_TEST_IMAGE, boolToIntString(isTestImage)],
     ]);
 
     const clientId = localStorage.getString(LocalStorageKey.GA_USER_ID);
@@ -198,13 +141,10 @@ export async function initMetrics(): Promise<void> {
   }
 
   async function initGa4() {
-    // TODO(b/267265966): Use enum as event parameter keys.
     const baseParams = {
-      board,
-      ['os_version']: osVer,
-      ['schema_version']: SCHEMA_VERSION,
-      ['is_test_image']: boolToIntString(isTestImage),
-      ['browser_version']: loadTimeData.getBrowserVersion(),
+      [Ga4MetricDimension.BOARD]: board,
+      [Ga4MetricDimension.IS_TEST_IMAGE]: boolToIntString(isTestImage),
+      [Ga4MetricDimension.BROWSER_VERSION]: loadTimeData.getBrowserVersion(),
     };
 
     const clientId = localStorage.getString(LocalStorageKey.GA4_CLIENT_ID);
@@ -253,7 +193,7 @@ export function sendLaunchEvent({launchType}: LaunchEventParam): void {
         eventLabel: '',
       },
       new Map([
-        [MetricDimension.LAUNCH_TYPE, launchType],
+        [GaMetricDimension.LAUNCH_TYPE, launchType],
       ]));
 }
 
@@ -379,34 +319,37 @@ export function sendCaptureEvent({
       },
       new Map([
         // Skips 3rd dimension for obsolete 'sound' state.
-        [MetricDimension.MIRROR, condState([State.MIRROR])],
+        [GaMetricDimension.MIRROR, condState([State.MIRROR])],
         [
-          MetricDimension.GRID,
+          GaMetricDimension.GRID,
           condState(
               [State.GRID_3x3, State.GRID_4x4, State.GRID_GOLDEN], State.GRID),
         ],
         [
-          MetricDimension.TIMER,
+          GaMetricDimension.TIMER,
           condState([State.TIMER_3SEC, State.TIMER_10SEC], State.TIMER),
         ],
-        [MetricDimension.MICROPHONE, condState([State.MIC], Mode.VIDEO, true)],
-        [MetricDimension.MAXIMIZED, condState([State.MAX_WND])],
-        [MetricDimension.TALL_ORIENTATION, condState([State.TALL])],
-        [MetricDimension.RESOLUTION, resolution.toString()],
         [
-          MetricDimension.FPS,
+          GaMetricDimension.MICROPHONE,
+          condState([State.MIC], Mode.VIDEO, true),
+        ],
+        [GaMetricDimension.MAXIMIZED, condState([State.MAX_WND])],
+        [GaMetricDimension.TALL_ORIENTATION, condState([State.TALL])],
+        [GaMetricDimension.RESOLUTION, resolution.toString()],
+        [
+          GaMetricDimension.FPS,
           condState([State.FPS_30, State.FPS_60], Mode.VIDEO, true),
         ],
-        [MetricDimension.INTENT_RESULT, intentResult],
-        [MetricDimension.SHUTTER_TYPE, shutterType],
-        [MetricDimension.IS_VIDEO_SNAPSHOT, boolToIntString(isVideoSnapshot)],
-        [MetricDimension.EVER_PAUSED, boolToIntString(everPaused)],
-        [MetricDimension.RECORD_TYPE, String(recordType)],
-        [MetricDimension.GIF_RESULT, String(gifResult)],
-        [MetricDimension.DURATION, String(duration)],
-        [MetricDimension.RESOLUTION_LEVEL, resolutionLevel],
-        [MetricDimension.ASPECT_RATIO_SET, String(aspectRatioSet)],
-        [MetricDimension.TIME_LAPSE_SPEED, String(timeLapseSpeed)],
+        [GaMetricDimension.INTENT_RESULT, intentResult],
+        [GaMetricDimension.SHUTTER_TYPE, shutterType],
+        [GaMetricDimension.IS_VIDEO_SNAPSHOT, boolToIntString(isVideoSnapshot)],
+        [GaMetricDimension.EVER_PAUSED, boolToIntString(everPaused)],
+        [GaMetricDimension.RECORD_TYPE, String(recordType)],
+        [GaMetricDimension.GIF_RESULT, String(gifResult)],
+        [GaMetricDimension.DURATION, String(duration)],
+        [GaMetricDimension.RESOLUTION_LEVEL, resolutionLevel],
+        [GaMetricDimension.ASPECT_RATIO_SET, String(aspectRatioSet)],
+        [GaMetricDimension.TIME_LAPSE_SPEED, String(timeLapseSpeed)],
       ]));
 }
 
@@ -446,7 +389,7 @@ export function sendPerfEvent({event, duration, perfInfo = {}}: PerfEventParam):
         eventValue: duration,
       },
       new Map([
-        [MetricDimension.RESOLUTION, `${resolution}`],
+        [GaMetricDimension.RESOLUTION, `${resolution}`],
       ]));
 }
 
@@ -470,13 +413,13 @@ export function sendIntentEvent({intent, result}: IntentEventParam): void {
         eventLabel: result,
       },
       new Map([
-        [MetricDimension.INTENT_RESULT, result],
+        [GaMetricDimension.INTENT_RESULT, result],
         [
-          MetricDimension.SHOULD_HANDLE_RESULT,
+          GaMetricDimension.SHOULD_HANDLE_RESULT,
           boolToIntString(shouldHandleResult),
         ],
-        [MetricDimension.SHOULD_DOWN_SCALE, boolToIntString(shouldDownScale)],
-        [MetricDimension.IS_SECURE, boolToIntString(isSecure)],
+        [GaMetricDimension.SHOULD_DOWN_SCALE, boolToIntString(shouldDownScale)],
+        [GaMetricDimension.IS_SECURE, boolToIntString(isSecure)],
       ]));
 }
 
@@ -503,11 +446,11 @@ export function sendErrorEvent(
         eventLabel: level,
       },
       new Map([
-        [MetricDimension.ERROR_NAME, errorName],
-        [MetricDimension.FILENAME, fileName],
-        [MetricDimension.FUNC_NAME, funcName],
-        [MetricDimension.LINE_NO, lineNo],
-        [MetricDimension.COL_NO, colNo],
+        [GaMetricDimension.ERROR_NAME, errorName],
+        [GaMetricDimension.FILENAME, fileName],
+        [GaMetricDimension.FUNC_NAME, funcName],
+        [GaMetricDimension.LINE_NO, lineNo],
+        [GaMetricDimension.COL_NO, colNo],
       ]));
 }
 
@@ -556,9 +499,9 @@ export function sendOpenPTZPanelEvent(
         eventAction: 'open-panel',
       },
       new Map([
-        [MetricDimension.SUPPORT_PAN, boolToIntString(capabilities.pan)],
-        [MetricDimension.SUPPORT_TILT, boolToIntString(capabilities.tilt)],
-        [MetricDimension.SUPPORT_ZOOM, boolToIntString(capabilities.zoom)],
+        [GaMetricDimension.SUPPORT_PAN, boolToIntString(capabilities.pan)],
+        [GaMetricDimension.SUPPORT_TILT, boolToIntString(capabilities.tilt)],
+        [GaMetricDimension.SUPPORT_ZOOM, boolToIntString(capabilities.zoom)],
       ]));
 }
 
@@ -592,8 +535,8 @@ export function sendDocScanResultEvent(
         eventValue: fixCount,
       },
       new Map([
-        [MetricDimension.DOC_FIX_TYPE, String(fixType)],
-        [MetricDimension.DOC_PAGE_COUNT, String(pageCount)],
+        [GaMetricDimension.DOC_FIX_TYPE, String(fixType)],
+        [GaMetricDimension.DOC_PAGE_COUNT, String(pageCount)],
       ]));
 }
 

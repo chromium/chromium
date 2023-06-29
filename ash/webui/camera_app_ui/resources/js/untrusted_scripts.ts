@@ -4,7 +4,13 @@
 
 import {assert, assertExists} from './assert.js';
 import * as Comlink from './lib/comlink.js';
-import {GaHelper} from './untrusted_ga_helper.js';
+import {
+  Ga4EventParams,
+  Ga4MetricDimension,
+  GaBaseEvent,
+  GaHelper,
+  GaMetricDimension,
+} from './untrusted_ga_helper.js';
 import {VideoProcessorHelper} from './untrusted_video_processor_helper.js';
 import {WaitableEvent} from './waitable_event.js';
 
@@ -76,6 +82,16 @@ export function setGaHelper(newGaHelper: Promise<Comlink.Remote<GaHelper>>):
   assert(gaHelper === null, 'gaHelper should only be initialize once on init');
   gaHelper = newGaHelper;
 }
+
+/**
+ * Types of event parameters and dimensions for GA and GA4.
+ */
+export {
+  Ga4EventParams,
+  Ga4MetricDimension,
+  GaBaseEvent,
+  GaMetricDimension,
+};
 
 /**
  * Gets the singleton VideoProcessorHelper instance that is located in an

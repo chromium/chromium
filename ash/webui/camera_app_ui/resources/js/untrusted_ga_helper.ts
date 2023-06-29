@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert, assertExists} from './assert.js';
-import {BaseEvent, MetricDimension} from './metrics.js';
 
 /**
  * The GA library URL in trusted type.
@@ -29,9 +28,124 @@ declare global {
   }
 }
 
+const SCHEMA_VERSION = '3';
+
+export interface GaBaseEvent {
+  eventAction: string;
+  eventCategory?: string;
+  eventLabel?: string;
+  eventValue?: number;
+}
+
+/**
+ * All dimensions for GA metrics.
+ *
+ * The following two documents should also be updated when the dimensions is
+ * updated.
+ *
+ * * Camera App PDD (Privacy Design Document): go/cca-metrics-pdd.
+ * * CCA GA Events & Dimensions sheet: go/cca-metrics-schema.
+ */
+export enum GaMetricDimension {
+  BOARD = 1,
+  OS_VERSION = 2,
+  // Obsolete 'sound' state.
+  // SOUND = 3,
+  MIRROR = 4,
+  GRID = 5,
+  TIMER = 6,
+  MICROPHONE = 7,
+  MAXIMIZED = 8,
+  TALL_ORIENTATION = 9,
+  RESOLUTION = 10,
+  FPS = 11,
+  INTENT_RESULT = 12,
+  SHOULD_HANDLE_RESULT = 13,
+  SHOULD_DOWN_SCALE = 14,
+  IS_SECURE = 15,
+  ERROR_NAME = 16,
+  FILENAME = 17,
+  FUNC_NAME = 18,
+  LINE_NO = 19,
+  COL_NO = 20,
+  SHUTTER_TYPE = 21,
+  IS_VIDEO_SNAPSHOT = 22,
+  EVER_PAUSED = 23,
+  SUPPORT_PAN = 24,
+  SUPPORT_TILT = 25,
+  SUPPORT_ZOOM = 26,
+  // Obsolete
+  // DOC_RESULT = 27,
+  RECORD_TYPE = 28,
+  GIF_RESULT = 29,
+  DURATION = 30,
+  SCHEMA_VERSION = 31,
+  LAUNCH_TYPE = 32,
+  DOC_FIX_TYPE = 33,
+  RESOLUTION_LEVEL = 34,
+  ASPECT_RATIO_SET = 35,
+  DOC_PAGE_COUNT = 36,
+  TIME_LAPSE_SPEED = 37,
+  IS_TEST_IMAGE = 38,
+  DEVICE_PIXEL_RATIO = 39,
+}
+
+export enum Ga4MetricDimension {
+  ASPECT_RATIO_SET = 'aspect_ratio_set',
+  BOARD = 'board',
+  BROWSER_VERSION = 'browser_version',
+  COL_NO = 'col_no',
+  DEVICE_PIXEL_RATIO = 'device_pixel_ratio',
+  DOC_FIX_TYPE = 'doc_fix_type',
+  DOC_PAGE_COUNT = 'doc_page_count',
+  DURATION = 'duration',
+  ERROR_NAME = 'error_name',
+  EVENT_CATEGORY = 'event_category',
+  EVENT_LABEL = 'event_label',
+  EVER_PAUSED = 'ever_paused',
+  FILENAME = 'filename',
+  FPS = 'fps',
+  FUNC_NAME = 'func_name',
+  GIF_RESULT = 'gif_result',
+  GRID = 'grid',
+  INTENT_RESULT = 'intent_result',
+  IS_SECURE = 'is_secure',
+  IS_TEST_IMAGE = 'is_test_image',
+  IS_VIDEO_SNAPSHOT = 'is_video_snapshot',
+  LANGUAGE = 'language',
+  LAUNCH_TYPE = 'launch_type',
+  LINE_NO = 'line_no',
+  MAXIMIZED = 'maximized',
+  MICROPHONE = 'microphone',
+  MIRROR = 'mirror',
+  OS_VERSION = 'os_version',
+  RECORD_TYPE = 'record_type',
+  RESOLUTION = 'resolution',
+  RESOLUTION_LEVEL = 'resolution_level',
+  SCHEMA_VERSION = 'schema_version',
+  SCREEN_RESOLUTION = 'screen_resolution',
+  SHOULD_DOWN_SCALE = 'should_down_scale',
+  SHOULD_HANDLE_RESULT = 'should_handle_result',
+  SHUTTER_TYPE = 'shutter_type',
+  SUPPORT_PAN = 'support_pan',
+  SUPPORT_TILT = 'support_tilt',
+  SUPPORT_ZOOM = 'support_zoom',
+  TALL_ORIENTATION = 'tall_orientation',
+  TIME_LAPSE_SPEED = 'time_lapse_speed',
+  TIMER = 'timer',
+}
+
+export type Ga4EventParams =
+    Partial<Record<Ga4MetricDimension, string>&{value: number}>;
+
+type Ga4MeasurementProtocolEventParams = Ga4EventParams&{
+  ['engagement_time_msec']: string,
+  ['session_id']: string,
+}
+
 interface InitGaParams {
   id: string;
-  baseDimensions: Map<MetricDimension, string>;
+  baseDimensions: Map<GaMetricDimension, string>;
   clientId: string;
 }
 let gaBaseDimensions: InitGaParams['baseDimensions']|null = null;
@@ -108,7 +222,7 @@ function initGa(
 
 interface InitGa4Params {
   apiSecret: string;
-  baseParams: Record<string, number|string>;
+  baseParams: Ga4EventParams;
   clientId?: string;
   measurementId: string;
   sessionId?: string;
@@ -172,8 +286,8 @@ function registerGa4EndSessionEvent(): void {
 }
 
 interface SendGaEventParams {
-  baseEvent: BaseEvent;
-  dimensions: Map<MetricDimension, string>;
+  baseEvent: GaBaseEvent;
+  dimensions: Map<GaMetricDimension, string>;
 }
 
 /**
@@ -186,13 +300,16 @@ interface SendGaEventParams {
 function sendGaEvent({baseEvent, dimensions}: SendGaEventParams): void {
   assert(gaBaseDimensions !== null);
   const event: UniversalAnalytics.FieldsObject = {...baseEvent};
-  for (const [key, value] of [...gaBaseDimensions, ...dimensions]) {
+  const mergedDimensions: Array<[GaMetricDimension, string]> = [
+    ...gaBaseDimensions,
+    ...dimensions,
+    [GaMetricDimension.DEVICE_PIXEL_RATIO, getDevicePixelRatio()],
+    [GaMetricDimension.OS_VERSION, getOsVersion()],
+    [GaMetricDimension.SCHEMA_VERSION, SCHEMA_VERSION],
+  ];
+  for (const [key, value] of mergedDimensions) {
     event[`dimension${key}`] = value;
   }
-  // TODO(b/267265966): Move `MetricDimension` to this file. Hardcode the
-  // property (MetricDimension.DEVICE_PIXEL_RATIO = 39) as some files imported
-  // by `metrics.ts` cannot be imported under chrome-untrusted://.
-  event.dimension39 = getDevicePixelRatio();
   window.ga('send', 'event', event);
 }
 
@@ -218,12 +335,14 @@ function sendGa4Event({
 }: SendGa4EventParams): void {
   const {apiSecret, baseParams, clientId, measurementId, sessionId} =
       assertExists(ga4Config);
-  const params = {
+  const params: Ga4MeasurementProtocolEventParams = {
     ...baseParams,
     ...eventParams,
-    ['device_pixel_ratio']: getDevicePixelRatio(),
-    language: navigator.language,
-    ['screen_resolution']: getScreenResolution(),
+    [Ga4MetricDimension.DEVICE_PIXEL_RATIO]: getDevicePixelRatio(),
+    [Ga4MetricDimension.LANGUAGE]: navigator.language,
+    [Ga4MetricDimension.OS_VERSION]: getOsVersion(),
+    [Ga4MetricDimension.SCHEMA_VERSION]: SCHEMA_VERSION,
+    [Ga4MetricDimension.SCREEN_RESOLUTION]: getScreenResolution(),
     // Set '1' here as it's enough for GA4 to generate the metrics for n-day
     // active users and we don't want to reimplement how gtag.js calculate the
     // engagement time for each event.
@@ -262,6 +381,10 @@ function setGaEnabled(id: string, enabled: boolean): void {
 
 function getDevicePixelRatio() {
   return window.devicePixelRatio.toFixed(2);
+}
+
+function getOsVersion() {
+  return navigator.appVersion.match(/CrOS\s+\S+\s+([\d.]+)/)?.[1] ?? '';
 }
 
 function getScreenResolution() {
