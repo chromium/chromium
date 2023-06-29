@@ -429,6 +429,15 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function runUfsLifetimeRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runUfsLifetimeRoutine(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runUfsLifetimeRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       // Event APIs.
       async function isEventSupported() {
         await chrome.test.assertPromiseRejects(

@@ -414,4 +414,16 @@ void DiagnosticsServiceAsh::RunSmartctlCheckRoutine(
           std::move(callback)));
 }
 
+void DiagnosticsServiceAsh::RunUfsLifetimeRoutine(
+    RunUfsLifetimeRoutineCallback callback) {
+  GetService()->RunUfsLifetimeRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::RunUfsLifetimeRoutineCallback
+             callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
 }  // namespace ash

@@ -116,6 +116,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::DiagnosticsRoutineEnum::kSmartctlCheckWithPercentageUsed,
         crosapi::DiagnosticsRoutineEnum::kEmmcLifetime,
         crosapi::DiagnosticsRoutineEnum::kBluetoothPower,
+        crosapi::DiagnosticsRoutineEnum::kUfsLifetime,
     });
 
     SetServiceForTesting(std::move(fake_service_impl));
@@ -152,7 +153,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "fingerprint_alive",
               "smartctl_check_with_percentage_used",
               "emmc_lifetime",
-              "bluetooth_power"
+              "bluetooth_power",
+              "ufs_lifetime"
             ]
           }, response);
         chrome.test.succeed();
@@ -1121,6 +1123,37 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               percentage_used_threshold: 42
             }
           );
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunUfsLifetimeRoutineSuccess) {
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunUfsLifetimeRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    // Set the expected called routine.
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::DiagnosticsRoutineEnum::kUfsLifetime);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runUfsLifetimeRoutine() {
+        const response =
+          await chrome.os.diagnostics.runUfsLifetimeRoutine();
         chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }

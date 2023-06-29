@@ -128,6 +128,8 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
       return crosapi::mojom::DiagnosticsRoutineEnum::kEmmcLifetime;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPower:
       return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothPower;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kUfsLifetime:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kUfsLifetime;
     default:
       return absl::nullopt;
   }

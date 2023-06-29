@@ -376,4 +376,10 @@ void OsDiagnosticsRunSmartctlCheckRoutineFunction::RunIfAllowed() {
                                               GetOnResult());
 }
 
+// OsDiagnosticsRunUfsLifetimeRoutineFunction -------------------------------
+
+void OsDiagnosticsRunUfsLifetimeRoutineFunction::RunIfAllowed() {
+  GetRemoteService()->RunUfsLifetimeRoutine(GetOnResult());
+}
+
 }  // namespace chromeos

@@ -93,6 +93,9 @@ bool ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum in,
     case crosapi::DiagnosticsRoutineEnum::kBluetoothPower:
       *out = cx_diag::RoutineType::kBluetoothPower;
       return true;
+    case crosapi::DiagnosticsRoutineEnum::kUfsLifetime:
+      *out = cx_diag::RoutineType::kUfsLifetime;
+      return true;
     case crosapi::DiagnosticsRoutineEnum::kUnknown:
       return false;
   }

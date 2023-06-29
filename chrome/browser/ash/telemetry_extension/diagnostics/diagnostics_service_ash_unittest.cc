@@ -611,4 +611,18 @@ TEST_F(DiagnosticsServiceAshTest, RunSmartctlCheckRoutineWithParameterSuccess) {
                   ->DidExpectedDiagnosticsParametersMatch());
 }
 
+TEST_F(DiagnosticsServiceAshTest, RunUfsLifetimeRoutineSuccess) {
+  // Configure FakeCrosHealthd.
+  SetSuccessfulRoutineResponse();
+
+  base::test::TestFuture<crosapi::mojom::DiagnosticsRunRoutineResponsePtr>
+      future;
+  diagnostics_service()->RunUfsLifetimeRoutine(future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  ValidateResponse(result,
+                   cros_healthd::mojom::DiagnosticRoutineEnum::kUfsLifetime);
+}
+
 }  // namespace ash

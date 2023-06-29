@@ -81,6 +81,8 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineEnum) {
             crosapi::DiagnosticsRoutineEnum::kEmmcLifetime);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kBluetoothPower),
             crosapi::DiagnosticsRoutineEnum::kBluetoothPower);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kUfsLifetime),
+            crosapi::DiagnosticsRoutineEnum::kUfsLifetime);
 
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kArcHttp),
             absl::nullopt);

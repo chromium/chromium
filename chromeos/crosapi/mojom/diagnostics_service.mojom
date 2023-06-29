@@ -18,8 +18,8 @@ import "chromeos/crosapi/mojom/nullable_primitives.mojom";
 
 // Interface for exposing diagnostics service. Implemented in ash-chrome.
 //
-// Next version: 3
-// Next ID: 25
+// Next version: 4
+// Next ID: 26
 [Stable, Uuid="14bc6194-c059-4048-9bea-ca6823eeda82",
 RenamedFrom="ash.health.mojom.DiagnosticsService"]
 interface DiagnosticsService {
@@ -311,7 +311,7 @@ interface DiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunDnsResolutionRoutine@17() => (DiagnosticsRunRoutineResponse response);
-  
+
   // Requests that the SignalStrength routine is created and started on the
   // platform. This routine checks whether there is an acceptable signal
   // strength on wireless networks.
@@ -399,12 +399,22 @@ interface DiagnosticsService {
   [MinVersion=2] RunBluetoothPowerRoutine@24()
       => (DiagnosticsRunRoutineResponse response);
 
+  // Requests that the UfsLifetime routine is created and started on the
+  // platform. This routine checks the UFS drive's life time.
+  // The availability of this routine can be determined by checking that
+  // kUfsLifetime is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=3] RunUfsLifetimeRoutine@25()
+      => (DiagnosticsRunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// Next version: 2
-// Next ID: 25
+// Next version: 3
+// Next ID: 26
 [Stable, Extensible, RenamedFrom="ash.health.mojom.DiagnosticRoutineEnum"]
 enum DiagnosticsRoutineEnum {
   [Default] kUnknown = 15,
@@ -432,6 +442,7 @@ enum DiagnosticsRoutineEnum {
   kSmartctlCheckWithPercentageUsed = 22,
   kEmmcLifetime = 23,
   [MinVersion=1] kBluetoothPower = 24,
+  [MinVersion=2] kUfsLifetime = 25,
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.
