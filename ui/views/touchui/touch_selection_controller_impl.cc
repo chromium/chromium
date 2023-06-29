@@ -40,10 +40,6 @@ namespace {
 
 // Constants defining the visual attributes of selection handles
 
-// The distance by which a handle image is offset from the bottom of the
-// selection/text baseline.
-constexpr int kSelectionHandleVerticalVisualOffset = 2;
-
 // When a handle is dragged, the drag position reported to the client view is
 // offset vertically to represent the cursor position. This constant specifies
 // the offset in pixels above the bottom of the selection (see pic below). This
@@ -60,7 +56,7 @@ constexpr int kSelectionHandleVerticalVisualOffset = 2;
 //                            ___________
 //    Selection Highlight --->_____|__|<-|---- Drag position reported to client
 //                              _  |  O  |
-//          Vertical Padding __|   |   <-|---- ET_GESTURE_SCROLL_UPDATE position
+//            Bottom Padding __|   |   <-|---- ET_GESTURE_SCROLL_UPDATE position
 //                             |_  |_____|<--- Editing handle widget
 //
 //                                 | |
@@ -68,11 +64,6 @@ constexpr int kSelectionHandleVerticalVisualOffset = 2;
 //                          Horizontal Padding
 //
 constexpr int kSelectionHandleVerticalDragOffset = 5;
-
-// Padding around the selection handle defining the area that will be included
-// in the touch target to make dragging the handle easier (see pic above).
-constexpr int kSelectionHandleHorizPadding = 10;
-constexpr int kSelectionHandleVertPadding = 20;
 
 // Minimum height for selection handle bar. If the bar height is going to be
 // less than this value, handle will not be shown.
@@ -82,7 +73,33 @@ constexpr int kSelectionHandleBarMinHeight = 5;
 constexpr int kSelectionHandleBarBottomAllowance = 3;
 
 // Delay before showing the quick menu after it is requested, in milliseconds.
-const int kQuickMenuDelayInMs = 200;
+constexpr int kQuickMenuDelayInMs = 200;
+
+// Vertical offset to apply from the bottom of the selection/text baseline to
+// the top of the handle image.
+constexpr int kSelectionHandleVerticalOffset = 2;
+int GetSelectionHandleVerticalOffset() {
+  return ::features::IsTouchTextEditingRedesignEnabled()
+             ? 0
+             : kSelectionHandleVerticalOffset;
+}
+
+// Padding to apply horizontally around and vertically below the handle image.
+// This is included in the touch handle target area to make dragging the handle
+// easier (see pic above).
+constexpr int kSelectionHandleHorizontalPadding = 10;
+constexpr int kSelectionHandleBottomPadding = 20;
+constexpr int kSelectionHandlePadding = 6;
+int GetSelectionHandleHorizontalPadding() {
+  return ::features::IsTouchTextEditingRedesignEnabled()
+             ? kSelectionHandlePadding
+             : kSelectionHandleHorizontalPadding;
+}
+int GetSelectionHandleBottomPadding() {
+  return ::features::IsTouchTextEditingRedesignEnabled()
+             ? kSelectionHandlePadding
+             : kSelectionHandleBottomPadding;
+}
 
 gfx::Image* GetCenterHandleImage() {
   static gfx::Image* handle_image = nullptr;
@@ -159,22 +176,24 @@ ui::ImageModel GetHandleImageModel(gfx::SelectionBound::Type bound_type) {
 // on the SelectionBound's type and location.
 gfx::Rect GetSelectionWidgetBounds(const gfx::SelectionBound& bound) {
   const gfx::Size image_size = GetHandleImageModel(bound.type()).Size();
-  int widget_width = image_size.width() + 2 * kSelectionHandleHorizPadding;
+  const int widget_width =
+      image_size.width() + 2 * GetSelectionHandleHorizontalPadding();
   // Extend the widget height to handle touch events below the painted image.
-  int widget_height = bound.GetHeight() + image_size.height() +
-                      kSelectionHandleVerticalVisualOffset +
-                      kSelectionHandleVertPadding;
+  const int widget_height = bound.GetHeight() + image_size.height() +
+                            GetSelectionHandleVerticalOffset() +
+                            GetSelectionHandleBottomPadding();
+
   // Due to the shape of the handle images, the widget is aligned differently to
   // the selection bound depending on the type of the bound.
   int widget_left = 0;
   switch (bound.type()) {
     case gfx::SelectionBound::LEFT:
       widget_left = bound.edge_start_rounded().x() - image_size.width() -
-                    kSelectionHandleHorizPadding;
+                    GetSelectionHandleHorizontalPadding();
       break;
     case gfx::SelectionBound::RIGHT:
-      widget_left =
-          bound.edge_start_rounded().x() - kSelectionHandleHorizPadding;
+      widget_left = bound.edge_start_rounded().x() -
+                    GetSelectionHandleHorizontalPadding();
       break;
     case gfx::SelectionBound::CENTER:
       widget_left = bound.edge_start_rounded().x() - widget_width / 2;
@@ -270,8 +289,8 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   void OnPaint(gfx::Canvas* canvas) override {
     canvas->DrawImageInt(
         handle_image_.Rasterize(GetColorProvider()),
-        kSelectionHandleHorizPadding,
-        selection_bound_.GetHeight() + kSelectionHandleVerticalVisualOffset);
+        GetSelectionHandleHorizontalPadding(),
+        selection_bound_.GetHeight() + GetSelectionHandleVerticalOffset());
   }
 
   void OnThemeChanged() override {
@@ -382,8 +401,8 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
     }
 
     const auto insets = gfx::Insets::TLBR(
-        selection_bound_.GetHeight() + kSelectionHandleVerticalVisualOffset, 0,
-        0, 0);
+        selection_bound_.GetHeight() + GetSelectionHandleVerticalOffset(), 0, 0,
+        0);
 
     // Shifts the hit-test target below the apparent bounds to make dragging
     // easier.
@@ -774,14 +793,9 @@ gfx::Rect TouchSelectionControllerImpl::GetQuickMenuAnchorRect() const {
   else
     return menu_anchor;
 
-  if (!::features::IsTouchTextEditingRedesignEnabled()) {
-    // Enlarge the anchor rect so that the menu is offset from the text at least
-    // by the same distance the handles are offset from the text. This is not
-    // needed when the touch text editing redesign is enabled, since the menu
-    // will already apply padding in that case.
-    menu_anchor.Inset(
-        gfx::Insets::VH(-kSelectionHandleVerticalVisualOffset, 0));
-  }
+  // Enlarge the anchor rect so that the menu is offset from the text at least
+  // by the same distance the handles are offset from the text.
+  menu_anchor.Outset(gfx::Outsets::VH(GetSelectionHandleVerticalOffset(), 0));
 
   return menu_anchor;
 }

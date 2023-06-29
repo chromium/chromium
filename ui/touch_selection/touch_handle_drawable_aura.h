@@ -33,7 +33,8 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
   ~TouchHandleDrawableAura() override;
 
  private:
-  void UpdateBounds();
+  // Updates the bounds of the window containing the handle image.
+  void UpdateWindowBounds();
 
   bool IsVisible() const;
 
@@ -55,19 +56,18 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
-  // Window to draw the handle image.
+  // The window for drawing the handle image. This doesn't include invisible
+  // padding which is applied around the handle image.
   std::unique_ptr<aura::Window> window_;
 
   bool enabled_;
   float alpha_;
   ui::TouchHandleOrientation orientation_;
 
-  // Origin position of the handle set via SetOrigin, in coordinate space of
-  // selection controller client (i.e. handle's parent).
-  gfx::PointF origin_position_;
-
-  // Window bounds relative to the focal position.
-  gfx::RectF relative_bounds_;
+  // The origin of the targetable area of the touch handle, in coordinates of
+  // the handle window's parent. When drawing the handle image, an additional
+  // offset should be applied to this origin to account for invisible padding.
+  gfx::PointF targetable_origin_;
 
   // The handle image to draw.
   ui::ImageModel handle_image_;

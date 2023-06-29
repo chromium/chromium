@@ -18,7 +18,8 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/outsets_f.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
@@ -28,17 +29,18 @@
 namespace ui {
 namespace {
 
-// The distance by which a handle image is offset from the focal point (i.e.
-// text baseline) downwards.
-const int kSelectionHandleVerticalVisualOffset = 2;
+// Vertical offset to apply from the bottom of the selection/text baseline to
+// the top of the handle image. Only applied when touch text editing redesign is
+// disabled.
+constexpr int kSelectionHandleVerticalOffset = 2;
 
-// The padding around the selection handle image can be used to extend the
-// handle window so that touch events near the selection handle image are
-// targeted to the selection handle window.
-const int kSelectionHandlePadding = 0;
+// Padding to apply horizontally around and vertically below the handle image,
+// so that touch events near the handle image are targeted to the handle. Only
+// applied when touch text editing redesign is enabled.
+constexpr int kSelectionHandlePadding = 6;
 
 // Epsilon value used to compare float values to zero.
-const float kEpsilon = 1e-8f;
+constexpr float kEpsilon = 1e-8f;
 
 // Returns the appropriate handle image based on the handle orientation.
 gfx::Image* GetHandleImage(TouchHandleOrientation orientation) {
@@ -103,10 +105,17 @@ TouchHandleDrawableAura::TouchHandleDrawableAura(aura::Window* parent)
 
 TouchHandleDrawableAura::~TouchHandleDrawableAura() = default;
 
-void TouchHandleDrawableAura::UpdateBounds() {
-  gfx::RectF new_bounds = relative_bounds_;
-  new_bounds.Offset(origin_position_.x(), origin_position_.y());
-  window_->SetBounds(gfx::ToEnclosingRect(new_bounds));
+void TouchHandleDrawableAura::UpdateWindowBounds() {
+  gfx::Rect window_bounds(gfx::ToRoundedPoint(targetable_origin_),
+                          handle_image_.Size());
+  // Offset the window bounds to account for space between the origin of the
+  // targetable area and the handle image.
+  if (::features::IsTouchTextEditingRedesignEnabled()) {
+    window_bounds.Offset(kSelectionHandlePadding, 0);
+  } else {
+    window_bounds.Offset(0, kSelectionHandleVerticalOffset);
+  }
+  window_->SetBounds(window_bounds);
 }
 
 bool TouchHandleDrawableAura::IsVisible() const {
@@ -138,22 +147,13 @@ void TouchHandleDrawableAura::SetOrientation(TouchHandleOrientation orientation,
   handle_image_ = ::features::IsTouchTextEditingRedesignEnabled()
                       ? GetHandleVectorIcon(orientation)
                       : ui::ImageModel::FromImage(*GetHandleImage(orientation));
-
-  // Calculate the relative bounds.
-  const gfx::Size image_size = handle_image_.Size();
-  const int window_width = image_size.width() + 2 * kSelectionHandlePadding;
-  const int window_height = image_size.height() + 2 * kSelectionHandlePadding;
-  relative_bounds_ =
-      gfx::RectF(-kSelectionHandlePadding,
-                 kSelectionHandleVerticalVisualOffset - kSelectionHandlePadding,
-                 window_width, window_height);
-  UpdateBounds();
+  UpdateWindowBounds();
   window_->SchedulePaintInRect(gfx::Rect(window_->bounds().size()));
 }
 
 void TouchHandleDrawableAura::SetOrigin(const gfx::PointF& position) {
-  origin_position_ = position;
-  UpdateBounds();
+  targetable_origin_ = position;
+  UpdateWindowBounds();
 }
 
 void TouchHandleDrawableAura::SetAlpha(float alpha) {
@@ -169,17 +169,28 @@ void TouchHandleDrawableAura::SetAlpha(float alpha) {
 }
 
 gfx::RectF TouchHandleDrawableAura::GetVisibleBounds() const {
-  gfx::RectF bounds(window_->bounds());
-  bounds.Inset(gfx::InsetsF::TLBR(
-      kSelectionHandlePadding + kSelectionHandleVerticalVisualOffset,
-      kSelectionHandlePadding, kSelectionHandlePadding,
-      kSelectionHandlePadding));
-  return bounds;
+  // These bounds are used to determine the area that can be used for targeting
+  // the handle, so we include the transparent padding added around the handle
+  // image even though it technically isn't visible.
+  gfx::RectF targetable_bounds(window_->bounds());
+  if (::features::IsTouchTextEditingRedesignEnabled()) {
+    targetable_bounds.Outset(gfx::OutsetsF::TLBR(0, kSelectionHandlePadding,
+                                                 kSelectionHandlePadding,
+                                                 kSelectionHandlePadding));
+  }
+  return targetable_bounds;
 }
 
 float TouchHandleDrawableAura::GetDrawableHorizontalPaddingRatio() const {
-  // Aura does not have any transparent padding for its handle drawable.
-  return 0.0f;
+  if (!::features::IsTouchTextEditingRedesignEnabled()) {
+    return 0;
+  }
+  // The ratio returned by this function is used to position the touch handle
+  // targetable area relative to the focal point (e.g. bottom of text caret).
+  // So, even though padding is applied on both the left and right of the handle
+  // image, we compute the ratio based on the padding on only one side.
+  return kSelectionHandlePadding /
+         (window_->bounds().width() + 2.0f * kSelectionHandlePadding);
 }
 
 void TouchHandleDrawableAura::OnPaintLayer(const ui::PaintContext& context) {
@@ -190,7 +201,7 @@ void TouchHandleDrawableAura::OnPaintLayer(const ui::PaintContext& context) {
             ui::ColorProviderManager::Get().GetColorProviderFor(
                 ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
                     nullptr))),
-        kSelectionHandlePadding, kSelectionHandlePadding);
+        0, 0);
   }
 }
 
