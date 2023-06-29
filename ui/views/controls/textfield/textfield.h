@@ -776,10 +776,21 @@ class VIEWS_EXPORT Textfield : public View,
   // whether a dragging movement should be used for scrolling, cursor placement
   // or adjusting the text selection.
   enum class SelectionDraggingState {
+    // Default state, i.e. no selection dragging gestures being handled.
     kNone,
+    // A gesture has used to select all text (e.g. triple press), but dragging
+    // has not started yet.
     kSelectedAll,
+    // A gesture has used to select word (e.g. long press or double press), but
+    // dragging has not started yet.
     kSelectedWord,
+    // Dragging gesture is being handled to move the cursor. This state is
+    // reached if a dragging gesture begins while the cursor is present (roughly
+    // corresponds to the case where no text was selected by a prior gesture).
     kDraggingCursor,
+    // Dragging gesture is being handled to adjust the selection. This state is
+    // reached if a dragging gesture begins after a word was selected by a prior
+    // gesture.
     kDraggingSelectionExtent
   };
   SelectionDraggingState selection_dragging_state_ =

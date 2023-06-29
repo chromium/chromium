@@ -758,7 +758,8 @@ void TouchSelectionControllerImpl::StartQuickMenuTimer() {
 
 void TouchSelectionControllerImpl::UpdateQuickMenu() {
   HideQuickMenu();
-  if (quick_menu_requested_ && GetDraggingHandle() == nullptr) {
+  if (quick_menu_requested_ && GetDraggingHandle() == nullptr &&
+      !client_view_->IsSelectionDragging()) {
     StartQuickMenuTimer();
   }
 }

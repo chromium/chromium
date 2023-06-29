@@ -849,7 +849,9 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       }
       break;
     case ui::ET_GESTURE_LONG_TAP:
-      StopSelectionDragging();
+      if (HandleGestureForSelectionDragging(event)) {
+        NOTREACHED_NORETURN();
+      }
       // If touch selection is enabled, the context menu on long tap will be
       // shown by the |touch_selection_controller_|, hence we mark the event
       // handled so Views does not try to show context menu on it.
@@ -877,7 +879,7 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_SCROLL_END:
     case ui::ET_SCROLL_FLING_START:
       if (HandleGestureForSelectionDragging(event)) {
-        return;
+        NOTREACHED_NORETURN();
       }
       if (HasFocus()) {
         if (show_touch_handles_after_scroll_) {
@@ -889,7 +891,7 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_END:
       if (HandleGestureForSelectionDragging(event)) {
-        return;
+        NOTREACHED_NORETURN();
       }
       break;
     default:
@@ -1439,7 +1441,9 @@ gfx::NativeView Textfield::GetNativeView() const {
 }
 
 bool Textfield::IsSelectionDragging() const {
-  return selection_dragging_state_ != SelectionDraggingState::kNone;
+  return selection_dragging_state_ == SelectionDraggingState::kDraggingCursor ||
+         selection_dragging_state_ ==
+             SelectionDraggingState::kDraggingSelectionExtent;
 }
 
 void Textfield::ConvertPointToScreen(gfx::Point* point) {
@@ -2977,6 +2981,9 @@ bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
       selection_dragging_state_ = SelectionDraggingState::kSelectedWord;
       event->SetHandled();
       return true;
+    case ui::ET_GESTURE_LONG_TAP:
+      StopSelectionDragging();
+      return false;
     case ui::ET_GESTURE_SCROLL_BEGIN:
       // Only start selection dragging if scrolling with one touch point.
       if (event->details().touch_points() == 1 &&
@@ -3010,8 +3017,6 @@ bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
       return false;
     case ui::ET_GESTURE_SCROLL_END:
     case ui::ET_SCROLL_FLING_START:
-      StopSelectionDragging();
-      return false;
     case ui::ET_GESTURE_END:
       StopSelectionDragging();
       return false;

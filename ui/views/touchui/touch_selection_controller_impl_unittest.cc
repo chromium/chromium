@@ -926,6 +926,41 @@ TEST_F(TouchSelectionControllerImplTest, TapOnCursorTogglesMenu) {
   EXPECT_FALSE(IsQuickMenuVisible());
 }
 
+// Tests that the quick menu is hidden when moving the cursor with a dragging
+// gesture on the textfield.
+TEST_F(TouchSelectionControllerImplTest, MenuHiddenWhenDraggingCursor) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  CreateTextfield();
+  textfield_->SetText(u"some text in a textfield");
+  ui::test::EventGenerator generator(
+      textfield_->GetWidget()->GetNativeView()->GetRootWindow());
+
+  // Tap the textfield to invoke touch selection, then tap the touch handle to
+  // show the quick menu.
+  generator.GestureTapAt(gfx::Point(10, 10));
+  generator.GestureTapAt(GetCursorHandleBounds().CenterPoint());
+  EXPECT_TRUE(IsQuickMenuVisible());
+
+  // Scroll in a horizontal direction over the textfield to move the cursor.
+  // Menu should be hidden during the dragging movement.
+  const gfx::Point drag_start =
+      GetCursorPosition(gfx::SelectionModel(6, gfx::CURSOR_FORWARD));
+  const gfx::Point drag_end = drag_start + gfx::Vector2d(80, 0);
+  generator.GestureScrollSequenceWithCallback(
+      drag_start, drag_end, /*duration=*/base::Milliseconds(50),
+      /*steps=*/5,
+      base::BindLambdaForTesting(
+          [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
+            if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
+              EXPECT_FALSE(IsQuickMenuVisible());
+            }
+          }));
+}
+
 TEST_F(TouchSelectionControllerImplTest, SelectCommands) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
