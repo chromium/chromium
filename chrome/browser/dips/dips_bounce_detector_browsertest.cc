@@ -151,6 +151,14 @@ class WCOCallbackLogger
                          const content::CookieAccessDetails& details) override;
   void OnCookiesAccessed(NavigationHandle* navigation_handle,
                          const content::CookieAccessDetails& details) override;
+  void OnServiceWorkerAccessed(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& scope,
+      content::AllowServiceWorkerResult allowed) override;
+  void OnServiceWorkerAccessed(
+      content::NavigationHandle* navigation_handle,
+      const GURL& scope,
+      content::AllowServiceWorkerResult allowed) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void WebAuthnAssertionRequestSucceeded(
       content::RenderFrameHost* render_frame_host) override;
@@ -202,6 +210,24 @@ void WCOCallbackLogger::OnCookiesAccessed(
       "OnCookiesAccessed(NavigationHandle, %s: %s)",
       details.type == CookieOperation::kChange ? "Change" : "Read",
       FormatURL(details.url).c_str()));
+}
+
+void WCOCallbackLogger::OnServiceWorkerAccessed(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& scope,
+    content::AllowServiceWorkerResult allowed) {
+  log_.push_back(
+      base::StringPrintf("OnServiceWorkerAccessed(RenderFrameHost: %s)",
+                         FormatURL(scope).c_str()));
+}
+
+void WCOCallbackLogger::OnServiceWorkerAccessed(
+    content::NavigationHandle* navigation_handle,
+    const GURL& scope,
+    content::AllowServiceWorkerResult allowed) {
+  log_.push_back(
+      base::StringPrintf("OnServiceWorkerAccessed(NavigationHandle: %s)",
+                         FormatURL(scope).c_str()));
 }
 
 void WCOCallbackLogger::DidFinishNavigation(
@@ -1779,7 +1805,7 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
 }
 
 // WeLocks accesses aren't monitored by the `PageSpecificContentSettings` as
-// there are not persistent.
+// they are not persistent.
 // TODO(crbug.com/1449328): Remove `StorageType::DATABASE` once deprecation is
 // complete.
 // TODO(crbug.com/1449328): Remove `StorageType::FILE_SYSTEM` once deprecation
@@ -1936,3 +1962,46 @@ IN_PROC_BROWSER_TEST_F(DIPSWebAuthnBrowserTest,
   EXPECT_THAT(expected_redirects, Contains(redirects.front()));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// Verifies that a successfully registered service worker is tracked as a
+// storage access.
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       ServiceWorkerAccess_Storages) {
+  // Start logging `WebContentsObserver` callbacks.
+  WCOCallbackLogger::CreateForWebContents(GetActiveWebContents());
+  auto* logger = WCOCallbackLogger::FromWebContents(GetActiveWebContents());
+
+  // Navigate to URL to set service workers. This will result in a service
+  // worker access from the RenderFrameHost.
+  ASSERT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      embedded_test_server()->GetURL(
+          "/service_worker/create_service_worker.html")));
+
+  // Register a service worker on the current page, and await its completion.
+  ASSERT_EQ(true, content::EvalJs(GetActiveWebContents(), R"(
+    (async () => {
+      await navigator.serviceWorker.register('/service_worker/empty.js');
+      await navigator.serviceWorker.ready;
+      return true;
+    })();
+  )"));
+
+  // Navigate away from and back to the URL in scope of the registered service
+  // worker. This will result in a service worker access from the
+  // NavigationHandle.
+  ASSERT_TRUE(NavigateToURL(
+      GetActiveWebContents(),
+      embedded_test_server()->GetURL("/service_worker/blank.html")));
+  ASSERT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      embedded_test_server()->GetURL(
+          "/service_worker/create_service_worker.html")));
+
+  // Validate that the expected callbacks to WebContentsObserver were made.
+  EXPECT_THAT(logger->log(),
+              testing::IsSupersetOf({"OnServiceWorkerAccessed(RenderFrameHost: "
+                                     "127.0.0.1/service_worker/)",
+                                     "OnServiceWorkerAccessed(NavigationHandle:"
+                                     " 127.0.0.1/service_worker/)"}));
+}

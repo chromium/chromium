@@ -591,26 +591,6 @@ void DIPSWebContentsObserver::OnCookiesAccessed(
   detector_.OnClientCookiesAccessed(fpu.value(), details.type);
 }
 
-void DIPSBounceDetector::OnClientCookiesAccessed(const GURL& url,
-                                                 CookieOperation op) {
-  base::Time now = clock_->Now();
-
-  // We might be called for "late" server cookie accesses, not just client
-  // cookies. Before completing other checks, attempt to attribute the cookie
-  // access to the current redirect chain to handle that case.
-  //
-  // TODO(rtarpine): Is it possible for cookie accesses to be reported late for
-  // uncommitted navigations?
-  if (committed_redirect_context_.AddLateCookieAccess(url, op)) {
-    if (op == CookieOperation::kChange) {
-      delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
-    }
-    return;
-  }
-
-  OnClientSiteDataAccessed(url, op);
-}
-
 void DIPSWebContentsObserver::OnCookiesAccessed(
     NavigationHandle* navigation_handle,
     const content::CookieAccessDetails& details) {
@@ -642,6 +622,26 @@ void DIPSWebContentsObserver::OnCookiesAccessed(
   detector_.OnServerCookiesAccessed(&dips_handle, details.url, details.type);
 }
 
+void DIPSBounceDetector::OnClientCookiesAccessed(const GURL& url,
+                                                 CookieOperation op) {
+  base::Time now = clock_->Now();
+
+  // We might be called for "late" server cookie accesses, not just client
+  // cookies. Before completing other checks, attempt to attribute the cookie
+  // access to the current redirect chain to handle that case.
+  //
+  // TODO(rtarpine): Is it possible for cookie accesses to be reported late for
+  // uncommitted navigations?
+  if (committed_redirect_context_.AddLateCookieAccess(url, op)) {
+    if (op == CookieOperation::kChange) {
+      delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
+    }
+    return;
+  }
+
+  OnClientSiteDataAccessed(url, op);
+}
+
 void DIPSBounceDetector::OnServerCookiesAccessed(
     DIPSNavigationHandle* navigation_handle,
     const GURL& url,
@@ -653,6 +653,40 @@ void DIPSBounceDetector::OnServerCookiesAccessed(
   if (state) {
     state->filter.AddAccess(url, op);
   }
+}
+
+void DIPSWebContentsObserver::OnServiceWorkerAccessed(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& scope,
+    content::AllowServiceWorkerResult allowed) {
+  if (!IsInPrimaryPage(render_frame_host) || !allowed) {
+    return;
+  }
+
+  const absl::optional<GURL> fpu = GetFirstPartyURL(render_frame_host);
+  if (fpu.has_value()) {
+    detector_.OnServiceWorkerAccessed(fpu.value());
+  }
+}
+
+void DIPSWebContentsObserver::OnServiceWorkerAccessed(
+    content::NavigationHandle* navigation_handle,
+    const GURL& scope,
+    content::AllowServiceWorkerResult allowed) {
+  if (!IsInPrimaryPage(navigation_handle) || !allowed) {
+    return;
+  }
+
+  const absl::optional<GURL> fpu = GetFirstPartyURL(navigation_handle);
+  if (!fpu.has_value()) {
+    return;
+  }
+
+  detector_.OnServiceWorkerAccessed(fpu.value());
+}
+
+void DIPSBounceDetector::OnServiceWorkerAccessed(const GURL& url) {
+  delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, clock_->Now());
 }
 
 void DIPSWebContentsObserver::DidFinishNavigation(
