@@ -3,6 +3,11 @@
 
 name: WPT
 
+env:
+  DEBUG: 'bidi:server:info,bidi:mapper:debug:*'
+  FORCE_COLOR: 3
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+
 on:
   merge_group:
   pull_request:
@@ -44,7 +49,7 @@ jobs:
       pages: write
       id-token: write
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: chromedriver-headless-artifacts
       - name: Prepare Pages
@@ -52,14 +57,14 @@ jobs:
           mkdir -p out/site
           cp out/wptreport.html out/site/index.html
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@f156874f8191504dae5b037505266ed5dda6c382 # v3.0.6
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@66b63f4a7de003f4f00cc8e9af4b83b8f2abdb96 # v1.0.9
         with:
           path: out/site
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@ee48c7b82e077d7b8ef30b50a719e6a792a50c9a # v2.0.2
   wpt-auto-commit:
     name: WPT auto-commit expectations
     needs: wpt
@@ -71,14 +76,14 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: chromedriver-headless-wpt-metadata
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: mapper-headless-wpt-metadata
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: mapper-headful-wpt-metadata
       - name: Auto-commit WPT expectations
@@ -103,21 +108,21 @@ jobs:
             head: headless
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
         with:
           submodules: true
-      - name: Set up node.js
-        uses: actions/setup-node@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 16
           cache: npm
-      - uses: google/wireit@setup-github-actions-caching/v1
+      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
       - name: Install and build npm dependencies
         run: npm ci
       - name: Setup dirs
         run: mkdir -p out
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@bd6b4b6205c4dbad673328db7b31b7fab9e241c0 # v4.6.1
         with:
           python-version: '3.10'
           cache: 'pip'
@@ -127,7 +132,7 @@ jobs:
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
         working-directory: wpt
       - name: Setup cache for browser binaries
-        uses: actions/cache@v3
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
         with:
           path: ~/.cache/chromium-bidi
           key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
@@ -174,20 +179,15 @@ jobs:
           out/wptreport.html
       - name: Upload expectations
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
           path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
       - name: Upload artifacts
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts
           path: |
             logs
             out
-
-env:
-  DEBUG: 'bidi:server:info,bidi:mapper:debug:*'
-  FORCE_COLOR: 3
-  PIP_DISABLE_PIP_VERSION_CHECK: 1

@@ -3,6 +3,9 @@
 
 name: Unit tests
 
+env:
+  FORCE_COLOR: 3
+
 on:
   merge_group:
   pull_request:
@@ -17,19 +20,16 @@ jobs:
   unit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - name: Set up Node.js
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 16
           cache: npm
-      - uses: google/wireit@setup-github-actions-caching/v1
+      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
       - name: Install and build npm dependencies
         run: npm ci
       - name: Verify mapper size
         run: du -sh lib/iife/mapperTab.js
       - name: Run unit tests
         run: npm run unit
-
-env:
-  FORCE_COLOR: 3

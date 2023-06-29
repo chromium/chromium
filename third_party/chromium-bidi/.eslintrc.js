@@ -84,7 +84,7 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': ['warn', {argsIgnorePattern: '^_'}],
     '@typescript-eslint/prefer-return-this-type': 'warn',
     '@typescript-eslint/require-await': 'warn',
-    '@typescript-eslint/restrict-template-expressions': 'warn',
+    '@typescript-eslint/restrict-template-expressions': 'off',
     '@typescript-eslint/switch-exhaustiveness-check': 'error',
     'func-names': 'error',
     'import/first': 'error',

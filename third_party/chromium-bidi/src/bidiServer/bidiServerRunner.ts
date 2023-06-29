@@ -117,7 +117,7 @@ export class BidiServerRunner {
       }
     );
     server.listen(bidiPort, () => {
-      debugInfo('Server is listening on port', bidiPort);
+      debugInfo('BiDi server is listening on port', bidiPort);
     });
 
     const wsServer: websocket.server = new websocket.server({

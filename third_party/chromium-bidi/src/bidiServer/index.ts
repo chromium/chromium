@@ -35,20 +35,14 @@ import {MapperServer} from './mapperServer.js';
 import mapperReader from './mapperReader.js';
 
 function parseArguments(): {
-  port: number;
   channel: ChromeReleaseChannel;
   headless: string;
+  port: number;
   verbose: boolean;
 } {
   const parser = new argparse.ArgumentParser({
     add_help: true,
     exit_on_error: true,
-  });
-
-  parser.add_argument('-p', '--port', {
-    help: 'Port that BiDi server should listen to. Default is 8080.',
-    type: 'int',
-    default: process.env['PORT'] ?? 8080,
   });
 
   parser.add_argument('-c', '--channel', {
@@ -59,9 +53,15 @@ function parseArguments(): {
     default: ChromeReleaseChannel.DEV,
   });
 
-  parser.add_argument('-hl', '--headless', {
+  parser.add_argument('--headless', {
     help: 'Sets if browser should run in headless or headful mode. Default is true.',
     default: true,
+  });
+
+  parser.add_argument('-p', '--port', {
+    help: 'Port that BiDi server should listen to. Default is 8080.',
+    type: 'int',
+    default: process.env['PORT'] ?? 8080,
   });
 
   parser.add_argument('-v', '--verbose', {
@@ -70,27 +70,20 @@ function parseArguments(): {
     default: process.env['VERBOSE'] === 'true' || false,
   });
 
-  const args = parser.parse_known_args();
-  return args[0];
+  return parser.parse_known_args()[0];
 }
 
 (() => {
   try {
-    debugInfo('Launching BiDi server');
-
     const args = parseArguments();
-    const bidiPort = args.port;
+    const {channel, port} = args;
     const headless = args.headless !== 'false';
     const verbose = args.verbose === true;
-    const chromeChannel = args.channel;
 
-    new BidiServerRunner().run(bidiPort, (bidiServer) => {
-      return onNewBidiConnectionOpen(
-        headless,
-        chromeChannel,
-        bidiServer,
-        verbose
-      );
+    debugInfo('Launching BiDi server...');
+
+    new BidiServerRunner().run(port, (bidiServer) => {
+      return onNewBidiConnectionOpen(channel, headless, bidiServer, verbose);
     });
     debugInfo('BiDi server launched');
   } catch (e) {
@@ -108,8 +101,8 @@ function parseArguments(): {
  * @return delegate to be called when the connection is closed
  */
 async function onNewBidiConnectionOpen(
+  channel: ChromeReleaseChannel,
   headless: boolean,
-  chromeChannel: ChromeReleaseChannel,
   bidiTransport: ITransport,
   verbose: boolean
 ) {
@@ -122,6 +115,9 @@ async function onNewBidiConnectionOpen(
     ...(headless ? ['--headless', '--hide-scrollbars', '--mute-audio'] : []),
     // keep-sorted start
     '--disable-component-update',
+    '--disable-default-apps',
+    '--disable-features=DialMediaRouteProvider',
+    '--disable-notifications',
     '--disable-popup-blocking',
     '--enable-automation',
     '--no-default-browser-check',
@@ -138,7 +134,7 @@ async function onNewBidiConnectionOpen(
     process.env['BROWSER_BIN'] ??
     computeSystemExecutablePath({
       browser: Browser.CHROME,
-      channel: chromeChannel,
+      channel,
     });
 
   if (!executablePath) {

@@ -2,6 +2,11 @@
 
 name: E2E tests
 
+env:
+  DEBUG: 'bidi:server:info,bidi:mapper:debug:*'
+  FORCE_COLOR: 3
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+
 on:
   merge_group:
   pull_request:
@@ -29,17 +34,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-      - name: Set up node.js
-        uses: actions/setup-node@v3
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - name: Set up Node.js
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 16
           cache: npm
-      - uses: google/wireit@setup-github-actions-caching/v1
+      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
       - name: Install and build npm dependencies
         run: npm ci
       - name: Setup cache for browser binaries
-        uses: actions/cache@v3
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
         with:
           path: ~/.cache/chromium-bidi
           key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
@@ -47,7 +52,7 @@ jobs:
         id: browser
         run: node install-browser.mjs ~/.cache/chromium-bidi
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@bd6b4b6205c4dbad673328db7b31b7fab9e241c0 # v4.6.1
         with:
           python-version: '3.10'
           cache: pip
@@ -73,12 +78,7 @@ jobs:
           VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Upload artifacts
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: ${{ matrix.os }}-${{ matrix.head }}-artifacts
           path: logs
-
-env:
-  DEBUG: 'bidi:server:info,bidi:mapper:debug:*'
-  FORCE_COLOR: 3
-  PIP_DISABLE_PIP_VERSION_CHECK: 1

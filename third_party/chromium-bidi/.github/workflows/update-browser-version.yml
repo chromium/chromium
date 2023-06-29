@@ -12,13 +12,13 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - name: Set up Node.js
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 18
           cache: npm
-      - uses: google/wireit@setup-github-actions-caching/v1
+      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
       - name: Install and build npm dependencies
         run: npm ci
       - name: Download the latest version
@@ -26,7 +26,7 @@ jobs:
           browser_spec="$(npx @puppeteer/browsers install chrome@canary --path /tmp/browsers | cut -f 1 -d' ')"
           echo "$browser_spec" > .browser
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@284f54f989303d2699d373481a0cfa13ad5a6666 # v5.0.1
         with:
           token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
           branch: browser-automation-bot/update-browser-version

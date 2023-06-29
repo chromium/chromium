@@ -54,13 +54,13 @@ async def main():
 
     # Navigate to page: https://news.ycombinator.com/
     # To avoid network dependency in this test, use a local (static) copy.
-    pageUrl = f'file://{Path(__file__).parent.resolve()}/app.html'
+    page_url = f'file://{Path(__file__).parent.resolve()}/app.html'
     await run_and_wait_command(
         {
             "id": next(ID),
             "method": "browsingContext.navigate",
             "params": {
-                "url": pageUrl,
+                "url": page_url,
                 "context": context_id,
                 "wait": "complete"
             }

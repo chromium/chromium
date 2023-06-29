@@ -63,13 +63,13 @@ async def main():
     context_id = command_result['result']['context']
 
     # Navigate to page
-    pageUrl = 'about:blank'
+    page_url = 'about:blank'
     await run_and_wait_command(
         {
             "id": next(ID),
             "method": "browsingContext.navigate",
             "params": {
-                "url": pageUrl,
+                "url": page_url,
                 "context": context_id,
                 "wait": "complete"
             }
