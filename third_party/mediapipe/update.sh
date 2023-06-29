@@ -50,7 +50,7 @@ mkdir -p /tmp/mediapipe
 curl -s -L "https://github.com/google/mediapipe/archive/${MP_VERSION}.tar.gz" | tar xz --strip=1 -C /tmp/mediapipe
 
 cd /tmp/mediapipe
-FILES=$(find . -type f | grep -Ev "${EXCLUDE_PATTERN}" | sort | head -1000)
+FILES=$(find . -type f | grep -Ev "${EXCLUDE_PATTERN}" | sort)
 cd "${SRC_DIR}"
 
 rm -rf third_party/mediapipe/src
