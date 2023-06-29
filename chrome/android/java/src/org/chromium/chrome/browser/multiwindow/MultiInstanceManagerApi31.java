@@ -712,7 +712,15 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     public void moveTabToNewWindow(Tab tab) {
         if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
 
-        moveAndReparentTabToNewWindow(tab, INVALID_INSTANCE_ID, /*preferNew=*/true,
-                /*openAdjacently=*/false, /*addTrustedIntentExtras=*/true);
+        // Check if the new Chrome instance can be opened.
+        if (getInstanceInfo().size() < mMaxInstances) {
+            moveAndReparentTabToNewWindow(tab, INVALID_INSTANCE_ID, /*preferNew=*/true,
+                    /*openAdjacently=*/false, /*addTrustedIntentExtras=*/true);
+        } else {
+            // Just try to launch a Chrome window to inform user that maximum number of instances
+            // limit is exceeded. This will pop up a toast message and the tab will not be removed
+            // from the exiting window.
+            openNewWindow("Android.WindowManager.NewWindow");
+        }
     }
 }
