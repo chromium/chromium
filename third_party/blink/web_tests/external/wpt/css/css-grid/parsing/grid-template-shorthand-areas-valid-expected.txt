@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL grid-template: none / 1px and "grid-template-areas: "a";" should be valid. assert_equals: expected "" but got "none / 1px"
+FAIL grid-template: none / none and "grid-template-areas: "a";" should be valid. assert_equals: expected "" but got "none"
+PASS grid-template: auto / 1px and "grid-template-areas: "a a a";" should be valid.
+PASS grid-template: auto / auto and "grid-template-areas: "a a a";" should be valid.
+PASS grid-template: 10px 20px 30px / 40px 50px 60px 70px and "grid-template-areas: "a . b ." "c d . e" "f g h .";" should be valid.
+Harness: the test ran to completion.
+
