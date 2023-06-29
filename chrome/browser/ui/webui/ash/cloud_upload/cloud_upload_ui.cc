@@ -18,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace ash::cloud_upload {
@@ -75,7 +76,15 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       {"oneDriveSetupCompleteTitle", IDS_OFFICE_ONEDRIVE_SETUP_COMPLETE_TITLE},
       {"oneDriveSetupCompleteBodyText",
        IDS_OFFICE_ONEDRIVE_SETUP_COMPLETE_BODY_TEXT},
-  };
+      {"installPWABodyText", IDS_OFFICE_INSTALL_PWA_BODY_TEXT},
+      // Welcome dialog.
+      {"welcomeBodyText", IDS_OFFICE_WELCOME_BODY_TEXT},
+      {"welcomeGetStarted", IDS_OFFICE_WELCOME_GET_STARTED},
+      {"welcomeInstallOdfs", IDS_OFFICE_WELCOME_CONNECT_ONEDRIVE},
+      {"welcomeInstallOfficeWebApp", IDS_OFFICE_WELCOME_INSTALL_MICROSOFT365},
+      {"welcomeMoveFiles", IDS_OFFICE_WELCOME_FILES_WILL_MOVE},
+      {"welcomeSetUp", IDS_OFFICE_WELCOME_SET_UP},
+      {"welcomeTitle", IDS_OFFICE_WELCOME_TITLE}};
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
   webui::SetupWebUIDataSource(

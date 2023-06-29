@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import './strings.m.js';
+
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {BaseSetupPageElement, CANCEL_SETUP_EVENT, NEXT_PAGE_EVENT} from './base_setup_page.js';
 import {getTemplate} from './welcome_page.html.js';
@@ -27,32 +30,28 @@ export class WelcomePageElement extends BaseSetupPageElement {
     const actionButton = this.querySelector('.action-button') as HTMLElement;
     const cancelButton = this.querySelector('.cancel-button') as HTMLElement;
 
-    const installOfficeWebAppDescription = 'Install Microsoft 365';
-    const installOdfsDescription = 'Connect to Microsoft OneDrive';
-    const moveFilesDescription =
-        'Files will move to OneDrive when opening in Microsoft 365';
-    const zeroStepActionButtonText = 'Set up';
-
-
     if (this.isOfficeWebAppInstalled && this.isOdfsMounted) {
-      description.innerText = moveFilesDescription;
-      actionButton.innerText = zeroStepActionButtonText;
+      description.innerText = loadTimeData.getString('welcomeMoveFiles');
+      actionButton.innerText = loadTimeData.getString('welcomeSetUp');
     } else {
       const ul = document.createElement('ul');
       if (!this.isOfficeWebAppInstalled) {
         const installOfficeWebAppElement = document.createElement('li');
-        installOfficeWebAppElement.innerText = installOfficeWebAppDescription;
+        installOfficeWebAppElement.innerText =
+            loadTimeData.getString('welcomeInstallOfficeWebApp');
         ul.appendChild(installOfficeWebAppElement);
       }
       if (!this.isOdfsMounted) {
         const installOdfsElement = document.createElement('li');
-        installOdfsElement.innerText = installOdfsDescription;
+        installOdfsElement.innerText =
+            loadTimeData.getString('welcomeInstallOdfs');
         ul.appendChild(installOdfsElement);
       }
       const moveFilesElement = document.createElement('li');
-      moveFilesElement.innerText = moveFilesDescription;
+      moveFilesElement.innerText = loadTimeData.getString('welcomeMoveFiles');
       ul.appendChild(moveFilesElement);
       description.appendChild(ul);
+      actionButton.innerText = loadTimeData.getString('welcomeGetStarted');
     }
 
     actionButton.addEventListener('click', this.onActionButtonClick);

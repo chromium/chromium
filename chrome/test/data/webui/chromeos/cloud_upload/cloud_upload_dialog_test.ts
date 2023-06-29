@@ -62,6 +62,14 @@ suite('<cloud-upload>', () => {
       'oneDriveStorage': 'OneDrive as storage',
       'installPWATitle': 'Install PWA title',
       'installPWABodyText': 'Install PWA body',
+      'welcomeBodyText': 'Welcome text for test. &lt;a href="#"&gt;&lt;/a&gt;',
+      'welcomeGetStarted': 'Get started',
+      'welcomeInstallOdfs': 'Connect to Microsoft OneDrive',
+      'welcomeInstallOfficeWebApp': 'Install Microsoft 365',
+      'welcomeMoveFiles':
+          'Files will move to OneDrive when opening in Microsoft 365',
+      'welcomeSetUp': 'Set up',
+      'welcomeTitle': 'Set up Microsoft 365 to open files',
     });
 
     // Creates and attaches the <cloud-upload> element to the DOM tree.

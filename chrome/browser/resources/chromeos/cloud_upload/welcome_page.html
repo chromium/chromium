@@ -75,16 +75,15 @@
   <use href="images/welcome.svg#EXPORT_image"></use>
 </svg>
 <h1 slot="title">
-  Set up Microsoft 365 to open files
+  $i18n{welcomeTitle}
 </h1>
 <div slot="body">
   <div id="description"></div>
   <p>
-    <a href="#" onclick="e => e.preventDefault()">Learn more</a> about
-    Microsoft 365 on your Chromebook.
+    $i18nRaw{welcomeBodyText}
   </p>
 </div>
 <div slot="button-container">
-  <cr-button class="cancel-button">Cancel</cr-button>
-  <cr-button class="action-button">Get started</cr-button>
+  <cr-button class="cancel-button">$i18n{cancel}</cr-button>
+  <cr-button class="action-button">$i18n{welcomeGetStarted}</cr-button>
 </div>

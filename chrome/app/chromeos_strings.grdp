@@ -6811,7 +6811,30 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Open
   </message>
 
-  <!-- Office setup and move dialogs -->
+  <!-- Office setup welcome dialog -->
+  <message name="IDS_OFFICE_WELCOME_TITLE" desc="Title for the welcome dialog when the user sets up Microsoft Office for the first time.">
+    Set up Microsoft 365 to open files
+  </message>
+  <message name="IDS_OFFICE_WELCOME_BODY_TEXT" desc="Body text for the welcome dialog when the user sets up Microsoft Office for the first time.">
+    <ph name="LINK_BEGIN">&lt;a href="https://support.google.com/chromebook?p=edit_office_files" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph> about Microsoft 365 on your Chromebook.
+  </message>
+  <message name="IDS_OFFICE_WELCOME_INSTALL_MICROSOFT365" desc="A bullet point in the welcome dialog when the user sets up Microsoft Office for the first time, telling the user that Microsoft 365 web app will be installed.">
+    Install Microsoft 365
+  </message>
+  <message name="IDS_OFFICE_WELCOME_CONNECT_ONEDRIVE" desc="A bullet point in the welcome dialog when the user sets up Microsoft Office for the first time, telling the user that Microsoft OneDrive account will be installed.">
+    Connect to Microsoft OneDrive
+  </message>
+  <message name="IDS_OFFICE_WELCOME_FILES_WILL_MOVE" desc="A bullet point in the welcome dialog when the user sets up Microsoft Office for the first time, telling the user that selected files will be moved to the user's Microsoft OneDrive account when opened with Microsoft 365 web app.">
+    Files will move to OneDrive when opening in Microsoft 365
+  </message>
+  <message name="IDS_OFFICE_WELCOME_GET_STARTED" desc="Caption for a button that starts the setup flow in the welcome dialog when the user sets up Microsoft Office for the first time.">
+    Get started
+  </message>
+  <message name="IDS_OFFICE_WELCOME_SET_UP" desc="Caption for a button that starts the setup flow in the welcome dialog when the user sets up Microsoft Office, but both Microsoft 365 web app and Microsoft OneDrive were previously set up.">
+    Set up
+  </message>
+
+  <!-- Office setup Connect OneDrive dialog -->
   <message name="IDS_CONNECT_TO_ONEDRIVE_TITLE" desc="Title for a dialog which allows the user to connect Files app and Microsoft OneDrive storage.">
     Connect to Microsoft OneDrive
   </message>
