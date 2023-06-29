@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
@@ -82,8 +84,12 @@ public interface PasswordManagerHandler {
             boolean isBlockedCredential);
 
     /**
-     * Checks whether the all the conditions for the migraiton warning to be shown are met.
-     * This includes the flag check, whether there was another warning shown in the past month, etc.
+     * Calls C++ to trigger the migration warning. The C++ util centralizes the showing logic such
+     * that it can ensure that all appropriate checks are done an that the timestamp for showing
+     * the warning is uniformly recorded.
+     *
+     * @param activity the activity used to show the warning and potentially the export flow.
+     * @param bottomSheetController the controller displaying the warning bottom sheet.
      */
-    boolean shouldShowMigrationWarning();
+    void showMigrationWarning(Activity activity, BottomSheetController bottomSheetController);
 }

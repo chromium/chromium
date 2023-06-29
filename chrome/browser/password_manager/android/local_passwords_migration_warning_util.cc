@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
+
+#include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/PasswordMigrationWarningBridge_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
@@ -12,6 +14,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/android/window_android.h"
+#include "ui/gfx/native_widget_types.h"
 
 using base::android::AttachCurrentThread;
 
@@ -29,10 +32,25 @@ void ShowWarning(const gfx::NativeWindow window, Profile* profile) {
   if (!ShouldShowWarning(profile)) {
     return;
   }
+  SaveWarningShownTimestamp(profile->GetPrefs());
+
   Java_PasswordMigrationWarningBridge_showWarning(
       AttachCurrentThread(), window->GetJavaObject(),
       ProfileAndroid::FromProfile(profile)->GetJavaObject());
+}
+
+void ShowWarningWithActivity(
+    const base::android::JavaParamRef<jobject>& activity,
+    const base::android::JavaParamRef<jobject>& bottom_sheet_controller,
+    Profile* profile) {
+  if (!ShouldShowWarning(profile)) {
+    return;
+  }
   SaveWarningShownTimestamp(profile->GetPrefs());
+
+  Java_PasswordMigrationWarningBridge_showWarningWithActivity(
+      AttachCurrentThread(), activity, bottom_sheet_controller,
+      ProfileAndroid::FromProfile(profile)->GetJavaObject());
 }
 
 bool ShouldShowWarning(Profile* profile) {

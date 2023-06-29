@@ -39,13 +39,10 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningCoordinator;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
@@ -403,18 +400,10 @@ public class PasswordSettings extends PreferenceFragmentCompat
             }
         }
 
-        if (!mNoPasswords
-                && PasswordManagerHandlerProvider.getInstance()
-                           .getPasswordManagerHandler()
-                           .shouldShowMigrationWarning()) {
-            PasswordMigrationWarningCoordinator passwordMigrationWarningCoordinator =
-                    new PasswordMigrationWarningCoordinator(getContext(), mProfile,
-                            mBottomSheetController, SyncConsentActivityLauncherImpl.get(),
-                            new SettingsLauncherImpl(), ManageSyncSettings.class, new ExportFlow(),
-                            (PasswordListObserver observer)
-                                    -> PasswordManagerHandlerProvider.getInstance().addObserver(
-                                            observer));
-            passwordMigrationWarningCoordinator.showWarning();
+        if (!mNoPasswords) {
+            PasswordManagerHandlerProvider.getInstance()
+                    .getPasswordManagerHandler()
+                    .showMigrationWarning(getActivity(), mBottomSheetController);
         }
     }
 

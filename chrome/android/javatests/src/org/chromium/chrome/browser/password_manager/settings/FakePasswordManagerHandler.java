@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ final class FakePasswordManagerHandler implements PasswordManagerHandler {
     @Nullable
     private String mExportTargetPath;
 
-    private boolean mShouldShowWarning;
+    private boolean mShowWarningWasCalled;
 
     private int mSerializationInvocationCount;
 
@@ -49,11 +51,6 @@ final class FakePasswordManagerHandler implements PasswordManagerHandler {
     void setSavedPasswordExceptions(ArrayList<String> savedPasswordExceptions) {
         mSavedPasswordExeptions = savedPasswordExceptions;
     }
-
-    void setShouldShowWarning(boolean shouldShowWarning) {
-        mShouldShowWarning = shouldShowWarning;
-    }
-
     IntStringCallback getExportSuccessCallback() {
         return mExportSuccessCallback;
     }
@@ -64,6 +61,10 @@ final class FakePasswordManagerHandler implements PasswordManagerHandler {
 
     String getExportTargetPath() {
         return mExportTargetPath;
+    }
+
+    boolean wasShowWarningCalled() {
+        return mShowWarningWasCalled;
     }
 
     /**
@@ -122,10 +123,10 @@ final class FakePasswordManagerHandler implements PasswordManagerHandler {
             Context context, SettingsLauncher launcher, int index, boolean isBlockedCredential) {
         assert false : "Define this method before starting to use it in tests.";
     }
-
     @Override
-    public boolean shouldShowMigrationWarning() {
-        return mShouldShowWarning;
+    public void showMigrationWarning(
+            Activity activity, BottomSheetController bottomSheetController) {
+        mShowWarningWasCalled = true;
     }
 
     public int getSerializationInvocationCount() {
