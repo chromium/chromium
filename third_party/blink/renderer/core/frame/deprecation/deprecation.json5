@@ -244,7 +244,7 @@
     {
       name: "HostCandidateAttributeGetter",
       message: "`RTCPeerConnectionIceErrorEvent.hostCandidate` is deprecated. Please use `RTCPeerConnectionIceErrorEvent.address` or `RTCPeerConnectionIceErrorEvent.port` instead.",
-      translation_note: "A deprecation warning shown to developers in the DevTools Issues tab when code tries to use the deprecated hostCandidate field, guiding developers to use the the equivalent information in the .address and .port fields instead.",
+      translation_note: "A deprecation warning shown to developers in the DevTools Issues tab when code tries to use the deprecated hostCandidate field, guiding developers to use the equivalent information in the .address and .port fields instead.",
       web_features: [
         "kHostCandidateAttributeGetter",
       ],
