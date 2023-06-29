@@ -18,9 +18,12 @@ import {FlagsExperimentElement} from './experiment.js';
 import {ExperimentalFeaturesData, Feature, FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
 
 let lastChanged: HTMLElement|null = null;
+
+// <if expr="not is_ios">
 let lastFocused: HTMLElement|null = null;
 
-const restartButton = $('experiment-restart-button');
+const restartButton = getRequiredElement('experiment-restart-button');
+// </if>
 
 const experimentalFeaturesResolver: PromiseResolver<void> =
     new PromiseResolver();
@@ -92,9 +95,8 @@ function render(experimentalFeaturesData: ExperimentalFeaturesData) {
   showRestartToast(experimentalFeaturesData.needsRestart);
 
   // <if expr="not is_ios">
-  if (restartButton) {
-    restartButton.onclick = FlagsBrowserProxyImpl.getInstance().restartBrowser;
-  }
+  restartButton.onclick = () =>
+      FlagsBrowserProxyImpl.getInstance().restartBrowser();
   // </if>
 
   // Tab panel selection.
@@ -133,12 +135,11 @@ function render(experimentalFeaturesData: ExperimentalFeaturesData) {
 function registerFocusEvents(el: HTMLElement) {
   el.addEventListener('keydown', function(e) {
     if (lastChanged && e.key === 'Tab' && !e.shiftKey) {
-      lastFocused = lastChanged;
       e.preventDefault();
-      // There is no restart button on iOS.
-      if (restartButton) {
-        restartButton.focus();
-      }
+      // <if expr="not is_ios">
+      lastFocused = lastChanged;
+      restartButton.focus();
+      // </if>
     }
   });
   el.addEventListener('blur', function() {
@@ -243,9 +244,9 @@ function renderExperiments(features: Feature[], container: HTMLElement) {
 function showRestartToast(show: boolean) {
   getRequiredElement('needs-restart').classList.toggle('show', show);
   // There is no restart button on iOS.
-  if (restartButton) {
-    restartButton.setAttribute('tabindex', show ? '9' : '-1');
-  }
+  // <if expr="not is_ios">
+  restartButton.setAttribute('tabindex', show ? '9' : '-1');
+  // </if>
   if (show) {
     getRequiredElement('needs-restart').setAttribute('role', 'alert');
   }
@@ -435,16 +436,12 @@ class FlagSearch {
 
 let instance: FlagSearch|null = null;
 
+// <if expr="not is_ios">
 /**
  * Allows the restart button to jump back to the previously focused experiment
  * in the list instead of going to the top of the page.
  */
 function setupRestartButton() {
-  // There is no restart button on iOS.
-  if (!restartButton) {
-    return;
-  }
-
   restartButton.addEventListener('keydown', function(e) {
     if (e.shiftKey && e.key === 'Tab' && lastFocused) {
       e.preventDefault();
@@ -455,11 +452,15 @@ function setupRestartButton() {
     lastFocused = null;
   });
 }
+// </if>
 
 document.addEventListener('DOMContentLoaded', function() {
   // Get and display the data upon loading.
   requestExperimentalFeaturesData();
+  // There is no restart button on iOS.
+  // <if expr="not is_ios">
   setupRestartButton();
+  // </if>
   FocusOutlineManager.forDocument(document);
 });
 
