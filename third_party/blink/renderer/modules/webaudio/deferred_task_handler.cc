@@ -385,6 +385,14 @@ void DeferredTaskHandler::ClearHandlersToBeDeleted() {
 void DeferredTaskHandler::ClearContextFromOrphanHandlers() {
   DCHECK(IsMainThread());
 
+  if (recordreplay::AreEventsDisallowed() && recordreplay::IsRecordingOrReplaying(
+          "leak-references",
+          "DeferredTaskHandler::ClearContextFromOrphanHandlers")) {
+    // This is called during GC.
+    // → Don't take the lock.
+    return;
+  }
+
   // `rendering_orphan_handlers_` and `deletable_orphan_handlers_` can
   // be modified on the audio thread.
   GraphAutoLocker locker(*this);
