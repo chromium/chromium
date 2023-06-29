@@ -51,7 +51,7 @@ static constexpr char kSteamBigPictureId[] =
     "borealis_anon:org.chromium.guest_os.borealis.xprop.769";
 }  // namespace
 
-absl::optional<int> GetBorealisAppId(std::string exec) {
+absl::optional<int> ParseSteamGameId(std::string exec) {
   int app_id;
   if (RE2::PartialMatch(exec, kBorealisAppIdRegex, &app_id)) {
     return app_id;
@@ -60,7 +60,7 @@ absl::optional<int> GetBorealisAppId(std::string exec) {
   }
 }
 
-absl::optional<int> GetBorealisAppId(const aura::Window* window) {
+absl::optional<int> SteamGameId(const aura::Window* window) {
   const std::string* id = exo::GetShellApplicationId(window);
   if (id && base::StartsWith(*id, kBorealisWindowWithIdPrefix)) {
     int borealis_id;

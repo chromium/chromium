@@ -30,23 +30,23 @@ class BorealisUtilTest : public testing::Test {
 };
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsEmptyOnFailure) {
-  EXPECT_EQ(GetBorealisAppId("foo"), absl::nullopt);
+  EXPECT_EQ(ParseSteamGameId("foo"), absl::nullopt);
 }
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsId) {
-  EXPECT_EQ(GetBorealisAppId("steam://rungameid/123").value(), 123);
+  EXPECT_EQ(ParseSteamGameId("steam://rungameid/123").value(), 123);
 }
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsEmptyOnFailure) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.guest_os.borealis.wmclass.foo");
-  EXPECT_EQ(GetBorealisAppId(window.get()), absl::nullopt);
+  EXPECT_EQ(SteamGameId(window.get()), absl::nullopt);
 }
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsId) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.guest_os.borealis.xprop.123");
-  EXPECT_EQ(GetBorealisAppId(window.get()).value(), 123);
+  EXPECT_EQ(SteamGameId(window.get()).value(), 123);
 }
 
 TEST_F(BorealisUtilTest, IsNonGameBorealisAppReturnsTrueForNonGameBorealisApp) {

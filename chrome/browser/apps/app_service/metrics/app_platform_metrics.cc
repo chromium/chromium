@@ -564,7 +564,7 @@ ukm::SourceId AppPlatformMetrics::GetSourceIdForBorealis(
     return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("UNREGISTERED");
   }
   absl::optional<int> borealis_id =
-      borealis::GetBorealisAppId(registration->Exec());
+      borealis::ParseSteamGameId(registration->Exec());
   if (!borealis_id)
     LOG(WARNING) << "Couldn't get Borealis ID for registered app " << app_id;
   return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis(

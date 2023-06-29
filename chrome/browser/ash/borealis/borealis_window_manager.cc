@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "borealis_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
@@ -32,46 +33,51 @@ const char kFullscreenClientShellId[] =
     "org.chromium.guest_os.borealis.wmclass.steam";
 const char kBorealisClientSuffix[] = "wmclass.Steam";
 const char kBorealisAnonymousPrefix[] = "borealis_anon:";
+const int kSteamClientGameId = 769;
 
 namespace {
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kShelfAppIdKey, nullptr)
 
-// Returns an ID for this window (which is the app_id or startup_id, depending
-// on which are set. The ID string is owned by the window.
-const std::string* GetWindowId(const aura::Window* window) {
+// Returns an ID for this window, as set by the Wayland client that created it.
+//
+// Prefers the value set via xdg_toplevel.set_app_id(), if any. Falls back to
+// the value set via zaura_surface.set_startup_id().
+// The ID string is owned by the window.
+const std::string* WaylandWindowId(const aura::Window* window) {
   const std::string* id = exo::GetShellApplicationId(window);
   if (id)
     return id;
   return exo::GetShellStartupId(window);
 }
 
-// Return the app ID of an installed app with the given Borealis ID.
+// Return the GuestOS Shelf App ID of an installed app with the given Steam Game
+// ID.
 //
 // Relies on the Exec line in the desktop entry (.desktop file within the VM)
 // having the expected format.
-std::string BorealisIdToAppId(Profile* profile, unsigned borealis_id) {
+std::string SteamGameIdToShelfAppId(Profile* profile, unsigned steam_game_id) {
   for (const auto& item :
        guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)
            ->GetRegisteredApps(guest_os::VmType::BOREALIS)) {
-    absl::optional<int> app_id = GetBorealisAppId(item.second.Exec());
-    if (app_id && app_id.value() == static_cast<int>(borealis_id)) {
+    absl::optional<int> app_id = ParseSteamGameId(item.second.Exec());
+    if (app_id && app_id.value() == static_cast<int>(steam_game_id)) {
       return item.first;
     }
   }
   return {};
 }
 
-std::string WindowToAppId(Profile* profile, const aura::Window* window) {
-  // The Borealis app ID is the most reliable method, if known.
-  absl::optional<int> borealis_id = GetBorealisAppId(window);
-  if (borealis_id.has_value()) {
-    std::string app_id = BorealisIdToAppId(profile, borealis_id.value());
+// Return the GuestOS Shelf App ID for the given window.
+std::string ShelfAppId(Profile* profile, const aura::Window* window) {
+  // The Steam Game ID is the most reliable method, if known.
+  absl::optional<int> steam_id = SteamGameId(window);
+  if (steam_id.has_value()) {
+    if (steam_id.value() == kSteamClientGameId) {
+      return kClientAppId;
+    }
+    std::string app_id = SteamGameIdToShelfAppId(profile, steam_id.value());
     if (!app_id.empty()) {
       return app_id;
-    } else if (borealis_id.value() == 769) {
-      // TODO(b/287506770): Figure out why valve started doing this, come up
-      // with a more resilient solution.
-      return kClientAppId;
     }
   }
 
@@ -82,22 +88,44 @@ std::string WindowToAppId(Profile* profile, const aura::Window* window) {
   // "borealis_anon:".
   // TODO(cpelling): Log a warning here once all Steam startup windows and
   // games are correctly registered.
-  return guest_os::GetGuestOsShelfAppId(profile, GetWindowId(window), nullptr);
+  return guest_os::GetGuestOsShelfAppId(profile, WaylandWindowId(window),
+                                        nullptr);
 }
 
 }  // namespace
 
 // static
 bool BorealisWindowManager::IsBorealisWindow(const aura::Window* window) {
-  const std::string* id = GetWindowId(window);
+  const std::string* id = WaylandWindowId(window);
   if (!id)
     return false;
   return IsBorealisWindowId(*id);
 }
 
 // static
-bool BorealisWindowManager::IsBorealisWindowId(const std::string& window_id) {
-  return base::StartsWith(window_id, borealis::kBorealisWindowPrefix);
+bool BorealisWindowManager::IsBorealisWindowId(
+    const std::string& wayland_window_id) {
+  return base::StartsWith(wayland_window_id, borealis::kBorealisWindowPrefix);
+}
+
+// static
+bool BorealisWindowManager::IsSteamGameWindow(Profile* profile,
+                                              const aura::Window* window) {
+  // Only windows from the Borealis VM can possibly be Steam games.
+  if (!IsBorealisWindow(window)) {
+    return false;
+  }
+
+  // Exclude selected windows that are not games, such as Steam client windows.
+  std::string shelf_app_id = ShelfAppId(profile, window);
+  if (IsNonGameBorealisApp(shelf_app_id)) {
+    return false;
+  }
+
+  // TODO(b/289158975): Exclude game launcher windows.
+
+  // Every other Borealis window with the STEAM_GAME property is a game.
+  return SteamGameId(window).has_value();
 }
 
 // static
@@ -115,7 +143,7 @@ bool BorealisWindowManager::ShouldNewWindowBeMinimized(
   if (!active_window || !IsBorealisWindow(active_window))
     return false;
 
-  const std::string* active_window_id = GetWindowId(active_window);
+  const std::string* active_window_id = WaylandWindowId(active_window);
   if (!active_window_id)
     return false;
 
@@ -184,7 +212,7 @@ std::string BorealisWindowManager::GetShelfAppId(aura::Window* window) {
   }
 
   if (!window->GetProperty(kShelfAppIdKey))
-    window->SetProperty(kShelfAppIdKey, WindowToAppId(profile_, window));
+    window->SetProperty(kShelfAppIdKey, ShelfAppId(profile_, window));
   return *window->GetProperty(kShelfAppIdKey);
 }
 

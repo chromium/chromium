@@ -278,5 +278,48 @@ TEST_F(
   EXPECT_TRUE(BorealisWindowManager::ShouldNewWindowBeMinimized(new_window_id));
 }
 
+TEST_F(BorealisWindowManagerTest, SteamClientIsNonGameBorealisWindow) {
+  std::unique_ptr<aura::Window> window = MakeWindow(GetBorealisClientId());
+
+  EXPECT_TRUE(BorealisWindowManager::IsBorealisWindow(window.get()));
+  EXPECT_FALSE(
+      BorealisWindowManager::IsSteamGameWindow(profile(), window.get()));
+}
+
+TEST_F(BorealisWindowManagerTest, NewSteamClientIsNonGameBorealisWindow) {
+  std::unique_ptr<aura::Window> window =
+      MakeWindow("org.chromium.guest_os.borealis.xprop.769");
+
+  EXPECT_TRUE(BorealisWindowManager::IsBorealisWindow(window.get()));
+  EXPECT_FALSE(
+      BorealisWindowManager::IsSteamGameWindow(profile(), window.get()));
+}
+
+TEST_F(BorealisWindowManagerTest, ArbitraryBorealisWindowsAreNotGames) {
+  std::unique_ptr<aura::Window> window =
+      MakeWindow("org.chromium.guest_os.borealis.foo");
+
+  EXPECT_TRUE(BorealisWindowManager::IsBorealisWindow(window.get()));
+  EXPECT_FALSE(
+      BorealisWindowManager::IsSteamGameWindow(profile(), window.get()));
+}
+TEST_F(BorealisWindowManagerTest, CanIdentifySteamGames) {
+  std::unique_ptr<aura::Window> window =
+      MakeWindow("org.chromium.guest_os.borealis.xprop.123");
+
+  EXPECT_TRUE(BorealisWindowManager::IsBorealisWindow(window.get()));
+  EXPECT_TRUE(
+      BorealisWindowManager::IsSteamGameWindow(profile(), window.get()));
+}
+
+TEST_F(BorealisWindowManagerTest, TerminaWindowsAreNotBorealisWindowsOrGames) {
+  std::unique_ptr<aura::Window> window =
+      MakeWindow("org.chromium.guest_os.termina.xprop.123");
+
+  EXPECT_FALSE(BorealisWindowManager::IsBorealisWindow(window.get()));
+  EXPECT_FALSE(
+      BorealisWindowManager::IsSteamGameWindow(profile(), window.get()));
+}
+
 }  // namespace
 }  // namespace borealis

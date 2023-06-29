@@ -61,13 +61,20 @@ bool IsNonGameBorealisApp(const std::string& app_id);
 // thorough fix long term.
 bool ShouldHideIrrelevantApp(const std::string& desktop_name);
 
-// Returns a Borealis app ID parsed from |exec|, or nullopt on failure.
+// Returns a Steam Game ID parsed from |exec|, or nullopt on failure.
+// These are the numeric "App IDs" described at
+// https://partner.steamgames.com/doc/store/application. We use the term
+// "Steam Game ID" here to differentiate from other kinds of "application ID".
+//
 // TODO(b/173547790): This should probably be moved when we've decided
 // the details of how/where it will be used.
-absl::optional<int> GetBorealisAppId(std::string exec);
+absl::optional<int> ParseSteamGameId(std::string exec);
 
-// Returns the Borealis app ID of the |window|, or nullopt on failure.
-absl::optional<int> GetBorealisAppId(const aura::Window* window);
+// Returns the Steam Game ID of the |window|, or nullopt on failure.
+// These are the numeric "App IDs" described at
+// https://partner.steamgames.com/doc/store/application. We use the term
+// "Steam Game ID" here to differentiate from other kinds of "application ID".
+absl::optional<int> SteamGameId(const aura::Window* window);
 
 // Checks that a given URL has the allowed scheme and that its contents starts
 // with one of the URLs in the allowlist.
