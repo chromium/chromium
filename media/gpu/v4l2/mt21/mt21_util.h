@@ -220,16 +220,24 @@ int ReadGolombRiceSymbol(MT21BitstreamReader& reader, int k) {
   }
 }
 
+}  // namespace
+
 // "Fast" method of reading Golomb-Rice symbols that uses a lookahead window and
 // a lookup table. This will fall back to the slow method if the symbol exceeds
 // kGolombRiceTableLookaheadLen, because we need to keep the size of the lookup
 // table small enough to fit in L1.
+//
+// Note that we need to break this definition out of the anonymous namespace
+// because we want to forward declare it in mt21_decompressor.h.
 struct GolombRiceTableEntry {
   // Size of the compressed symbol.
   int8_t in_size;
   // Value of the symbol.
   int8_t symbol;
 };
+
+namespace {
+
 constexpr size_t kMaxKValue = 8;
 // Lookahead len chosen experimentally. We want it to be big enough that we
 // maximize how often we hit the lookup table, but small enough to fit in the

@@ -213,7 +213,7 @@ test("v4l2_unittest") {
 }
 
 if (is_chromeos && (current_cpu == "arm" || current_cpu == "arm64")) {
-  test("mt21_unittest") {
+  test("mt21_util_unittest") {
     testonly = true
     sources = [
       "mt21/mt21_util.h",
@@ -223,6 +223,25 @@ if (is_chromeos && (current_cpu == "arm" || current_cpu == "arm64")) {
       "//base:base",
       "//base/test:test_support",
       "//testing/gtest",
+    ]
+  }
+
+  test("mt21_decompressor_unittest") {
+    testonly = true
+    sources = [
+      "mt21/mt21_decompressor.cc",
+      "mt21/mt21_decompressor.h",
+      "mt21/mt21_decompressor_unittest.cc",
+      "mt21/mt21_util.h",
+    ]
+    deps = [
+      "//base:base",
+      "//base/test:test_support",
+      "//base/test:test_trace_processor",
+      "//testing/gtest",
+      "//testing/perf",
+      "//third_party/libyuv",
+      "//ui/gfx/geometry",
     ]
   }
 }
