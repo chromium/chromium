@@ -6,6 +6,8 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -60,7 +62,7 @@ public class MockCertVerifierTest {
 
         String url = Http2TestServer.getEchoAllHeadersUrl();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
     }
 
     private TestUrlRequestCallback startAndWaitForComplete(String url) {

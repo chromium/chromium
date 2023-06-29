@@ -946,6 +946,7 @@ android_library("cronet_test_apk_java") {
     "test/src/org/chromium/net/ReportingCollector.java",
     "test/src/org/chromium/net/TestFilesInstaller.java",
     "test/src/org/chromium/net/TestUploadDataStreamHandler.java",
+    "test/src/org/chromium/net/truth/UrlResponseInfoSubject.java",
   ]
 
   deps = [
@@ -957,6 +958,7 @@ android_library("cronet_test_apk_java") {
     "//build/android:build_java",
     "//net/android:net_java_test_support",
     "//third_party/android_sdk:android_test_base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_multidex_multidex_java",
     "//third_party/google-truth:google_truth_java",
     "//third_party/junit",
@@ -978,12 +980,14 @@ cronet_smoketests_native_common_srcs = cronet_smoketests_platform_only_common_sr
                                        ]
 
 cronet_tests_androidx_common_srcs = [
+  "//third_party/androidx:androidx_annotation_annotation_java",
   "//third_party/androidx:androidx_test_core_java",
   "//third_party/androidx:androidx_test_ext_junit_java",
   "//third_party/androidx:androidx_test_runner_java",
 ]
 
 # cronet_common_javatests.jar - Cronet Java test common files.
+# TODO(crbug/1458746) - refactor to cronet_api only dependency
 android_library("cronet_common_javatests") {
   testonly = true
   sources = [
@@ -994,17 +998,16 @@ android_library("cronet_common_javatests") {
     "test/javatests/src/org/chromium/net/TestRequestFinishedListener.java",
     "test/javatests/src/org/chromium/net/TestUploadDataProvider.java",
     "test/javatests/src/org/chromium/net/TestUrlRequestCallback.java",
-    "test/javatests/src/org/chromium/net/truth/UrlResponseInfoSubject.java",
   ]
   deps = [
            ":cronet_api_java",
            ":cronet_impl_all_java",
+           ":cronet_test_apk_java",
            "//base:base_java",
            "//base:base_java_test_support",
            "//base:jni_java",
            "//build/android:build_java",
            "//third_party/android_sdk:android_test_base_java",
-           "//third_party/androidx:androidx_annotation_annotation_java",
            "//third_party/google-truth:google_truth_java",
            "//third_party/junit",
          ] + cronet_tests_androidx_common_srcs
@@ -1028,6 +1031,7 @@ android_library("cronet_fake_javatests") {
            ":cronet_impl_common_base_java",
            ":cronet_impl_fake_base_java",
            ":cronet_impl_platform_base_java",
+           ":cronet_test_apk_java",
            "//base:base_java_test_support",
            "//third_party/android_deps:guava_android_java",
            "//third_party/android_sdk:android_test_base_java",
@@ -1212,6 +1216,7 @@ instrumentation_test_apk(
   sources = cronet_smoketests_platform_only_common_srcs + [
               "test/smoketests/src/org/chromium/net/smoke/PlatformOnlyEngineTest.java",
               "test/src/org/chromium/net/CronetTestApplication.java",
+              "test/src/org/chromium/net/truth/UrlResponseInfoSubject.java",
             ]
 
   deps = [

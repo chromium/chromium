@@ -8,6 +8,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assume.assumeTrue;
 
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
+
 import android.content.Context;
 import android.content.MutableContextWrapper;
 import android.os.Build;
@@ -70,18 +72,20 @@ public class CronetTestRule implements TestRule {
     }
 
     public void assertResponseEquals(UrlResponseInfo expected, UrlResponseInfo actual) {
-        assertThat(actual.getAllHeaders()).isEqualTo(expected.getAllHeaders());
-        assertThat(actual.getAllHeadersAsList()).isEqualTo(expected.getAllHeadersAsList());
-        assertThat(actual.getHttpStatusCode()).isEqualTo(expected.getHttpStatusCode());
-        assertThat(actual.getHttpStatusText()).isEqualTo(expected.getHttpStatusText());
-        assertThat(actual.getUrlChain()).isEqualTo(expected.getUrlChain());
-        assertThat(actual.getUrl()).isEqualTo(expected.getUrl());
+        assertThat(actual).hasHeadersThat().isEqualTo(expected.getAllHeaders());
+        assertThat(actual).hasHeadersListThat().isEqualTo(expected.getAllHeadersAsList());
+        assertThat(actual).hasHttpStatusCodeThat().isEqualTo(expected.getHttpStatusCode());
+        assertThat(actual).hasHttpStatusTextThat().isEqualTo(expected.getHttpStatusText());
+        assertThat(actual).hasUrlChainThat().isEqualTo(expected.getUrlChain());
+        assertThat(actual).hasUrlThat().isEqualTo(expected.getUrl());
         // Transferred bytes and proxy server are not supported in pure java
         if (!testingJavaImpl()) {
-            assertThat(actual.getReceivedByteCount()).isEqualTo(expected.getReceivedByteCount());
-            assertThat(actual.getProxyServer()).isEqualTo(expected.getProxyServer());
+            assertThat(actual).hasReceivedByteCountThat().isEqualTo(
+                    expected.getReceivedByteCount());
+            assertThat(actual).hasProxyServerThat().isEqualTo(expected.getProxyServer());
             // This is a place where behavior intentionally differs between native and java
-            assertThat(actual.getNegotiatedProtocol()).isEqualTo(expected.getNegotiatedProtocol());
+            assertThat(actual).hasNegotiatedProtocolThat().isEqualTo(
+                    expected.getNegotiatedProtocol());
         }
     }
 

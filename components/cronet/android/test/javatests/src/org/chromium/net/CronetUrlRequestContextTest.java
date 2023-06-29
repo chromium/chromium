@@ -11,6 +11,7 @@ import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.net.CronetEngine.Builder.HTTP_CACHE_IN_MEMORY;
 import static org.chromium.net.CronetTestRule.getTestStorage;
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import android.content.Context;
 import android.net.Network;
@@ -1043,8 +1044,8 @@ public class CronetUrlRequestContextTest {
                 cronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
         urlRequestBuilder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
-        assertThat(callback.mResponseInfo.wasCached()).isTrue();
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.mResponseInfo).wasCached();
         assertThat(callback.mOnCanceledCalled).isTrue();
     }
 
@@ -1292,7 +1293,7 @@ public class CronetUrlRequestContextTest {
                 engine.newUrlRequestBuilder(url, callback, callback.getExecutor()).build();
         request.start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(expectedStatusCode);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(expectedStatusCode);
     }
 
     private void checkRequestCaching(CronetEngine engine, String url, boolean expectCached) {
@@ -1421,7 +1422,6 @@ public class CronetUrlRequestContextTest {
         urlRequestBuilder.disableCache();
         urlRequestBuilder.build().start();
         callback.blockForDone();
-        assertThat(callback.mError).isNotNull();
         assertThat(callback.mError)
                 .hasMessageThat()
                 .contains("Exception in CronetUrlRequest: net::ERR_CONNECTION_REFUSED");
@@ -1461,7 +1461,7 @@ public class CronetUrlRequestContextTest {
                 cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
         urlRequestBuilder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
     }
 
     @Test
@@ -1495,8 +1495,8 @@ public class CronetUrlRequestContextTest {
         runBlocker.open();
         thread1.join();
         thread2.join();
-        assertThat(thread1.mCallback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
-        assertThat(thread2.mCallback.mResponseInfo.getHttpStatusCode()).isEqualTo(404);
+        assertThat(thread1.mCallback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(thread2.mCallback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(404);
     }
 
     @Test
@@ -1510,8 +1510,8 @@ public class CronetUrlRequestContextTest {
         thread1.join();
         thread2.start();
         thread2.join();
-        assertThat(thread1.mCallback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
-        assertThat(thread2.mCallback.mResponseInfo.getHttpStatusCode()).isEqualTo(404);
+        assertThat(thread1.mCallback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(thread2.mCallback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(404);
     }
 
     @Test
@@ -1704,7 +1704,7 @@ public class CronetUrlRequestContextTest {
                 requestUrl.toString(), callback, callback.getExecutor());
         urlRequestBuilder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
     }
 
     /**

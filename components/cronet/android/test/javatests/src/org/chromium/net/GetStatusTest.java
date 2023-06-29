@@ -8,6 +8,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertThrows;
 
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
+
 import android.os.ConditionVariable;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -108,7 +110,7 @@ public class GetStatusTest {
         assertThat(statusListener3.mOnStatusCalled).isTrue();
         assertThat(statusListener3.mStatus).isEqualTo(Status.INVALID);
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("GET");
     }
 
@@ -174,7 +176,7 @@ public class GetStatusTest {
         assertThat(dataProvider.getNumReadCalls()).isEqualTo(1);
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(0);
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("test");
     }
 

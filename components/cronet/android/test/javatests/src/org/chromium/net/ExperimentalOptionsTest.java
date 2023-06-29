@@ -10,6 +10,7 @@ import static com.google.common.truth.Truth.assertWithMessage;
 import static org.junit.Assert.assertThrows;
 
 import static org.chromium.net.CronetTestRule.getTestStorage;
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import androidx.annotation.OptIn;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -96,7 +97,7 @@ public class ExperimentalOptionsTest {
         UrlRequest urlRequest = builder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("GET");
         cronetEngine.stopNetLog();
         assertFileContainsString(logfile, "HostResolverRules");
@@ -149,7 +150,7 @@ public class ExperimentalOptionsTest {
         UrlRequest urlRequest = builder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("GET");
 
         assertFileContainsString(file, "CLIENT_HANDSHAKE_TRAFFIC_SECRET");
@@ -242,7 +243,7 @@ public class ExperimentalOptionsTest {
         urlRequest.start();
         callback.blockForDone();
         assertThat(callback.mError).isNull();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
 
         // Shut down the context, persisting contents to disk, and build a new one.
         context.shutdown();
@@ -256,7 +257,7 @@ public class ExperimentalOptionsTest {
         urlRequest.start();
         callback.blockForDone();
         assertThat(callback.mError).isNull();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         context.shutdown();
     }
 
@@ -297,7 +298,7 @@ public class ExperimentalOptionsTest {
         BidirectionalStream stream = builder.build();
         stream.start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("GET");
     }
 

@@ -6,6 +6,8 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -75,10 +77,10 @@ public class BidirectionalStreamQuicTest {
         stream.start();
         callback.blockForDone();
         assertThat(stream.isDone()).isTrue();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString)
                 .isEqualTo("This is a simple text file served by QUIC.\n");
-        assertThat(callback.mResponseInfo.getNegotiatedProtocol()).isEqualTo("quic/1+spdy/3");
+        assertThat(callback.mResponseInfo).hasNegotiatedProtocolThat().isEqualTo("quic/1+spdy/3");
     }
 
     @Test
@@ -115,10 +117,10 @@ public class BidirectionalStreamQuicTest {
         assertThat(finishedInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
         MetricsTestUtil.checkHasConnectTiming(finishedInfo.getMetrics(), startTime, endTime, true);
         assertThat(finishedInfo.getAnnotations()).containsExactly("request annotation", this);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString)
                 .isEqualTo("This is a simple text file served by QUIC.\n");
-        assertThat(callback.mResponseInfo.getNegotiatedProtocol()).isEqualTo("quic/1+spdy/3");
+        assertThat(callback.mResponseInfo).hasNegotiatedProtocolThat().isEqualTo("quic/1+spdy/3");
     }
 
     @Test
@@ -146,10 +148,12 @@ public class BidirectionalStreamQuicTest {
             stream.start();
             callback.blockForDone();
             assertThat(stream.isDone()).isTrue();
-            assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+            assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
             assertThat(callback.mResponseAsString)
                     .isEqualTo("This is a simple text file served by QUIC.\n");
-            assertThat(callback.mResponseInfo.getNegotiatedProtocol()).isEqualTo("quic/1+spdy/3");
+            assertThat(callback.mResponseInfo)
+                    .hasNegotiatedProtocolThat()
+                    .isEqualTo("quic/1+spdy/3");
         }
     }
 
@@ -181,10 +185,12 @@ public class BidirectionalStreamQuicTest {
             stream.start();
             callback.blockForDone();
             assertThat(stream.isDone()).isTrue();
-            assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+            assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
             assertThat(callback.mResponseAsString)
                     .isEqualTo("This is a simple text file served by QUIC.\n");
-            assertThat(callback.mResponseInfo.getNegotiatedProtocol()).isEqualTo("quic/1+spdy/3");
+            assertThat(callback.mResponseInfo)
+                    .hasNegotiatedProtocolThat()
+                    .isEqualTo("quic/1+spdy/3");
         }
     }
 
@@ -224,10 +230,12 @@ public class BidirectionalStreamQuicTest {
             // adapter.
             stream.flush();
 
-            assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+            assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
             assertThat(callback.mResponseAsString)
                     .isEqualTo("This is a simple text file served by QUIC.\n");
-            assertThat(callback.mResponseInfo.getNegotiatedProtocol()).isEqualTo("quic/1+spdy/3");
+            assertThat(callback.mResponseInfo)
+                    .hasNegotiatedProtocolThat()
+                    .isEqualTo("quic/1+spdy/3");
         }
     }
 
@@ -254,10 +262,12 @@ public class BidirectionalStreamQuicTest {
             callback.blockForDone();
             assertThat(stream.isDone()).isTrue();
 
-            assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+            assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
             assertThat(callback.mResponseAsString)
                     .isEqualTo("This is a simple text file served by QUIC.\n");
-            assertThat(callback.mResponseInfo.getNegotiatedProtocol()).isEqualTo("quic/1+spdy/3");
+            assertThat(callback.mResponseInfo)
+                    .hasNegotiatedProtocolThat()
+                    .isEqualTo("quic/1+spdy/3");
         }
     }
 

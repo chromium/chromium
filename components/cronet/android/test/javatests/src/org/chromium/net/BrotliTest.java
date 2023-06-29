@@ -6,6 +6,8 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -57,7 +59,7 @@ public class BrotliTest {
         mCronetEngine = mTestRule.getTestFramework().startEngine();
         String url = Http2TestServer.getEchoAllHeadersUrl();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).contains("accept-encoding: gzip, deflate, br");
     }
 
@@ -73,7 +75,7 @@ public class BrotliTest {
         mCronetEngine = mTestRule.getTestFramework().startEngine();
         String url = Http2TestServer.getEchoAllHeadersUrl();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).doesNotContain("br");
     }
 
@@ -90,10 +92,11 @@ public class BrotliTest {
         mCronetEngine = mTestRule.getTestFramework().startEngine();
         String url = Http2TestServer.getServeSimpleBrotliResponse();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         String expectedResponse = "The quick brown fox jumps over the lazy dog";
         assertThat(callback.mResponseAsString).isEqualTo(expectedResponse);
-        assertThat(callback.mResponseInfo.getAllHeaders())
+        assertThat(callback.mResponseInfo)
+                .hasHeadersThat()
                 .containsEntry("content-encoding", Arrays.asList("br"));
     }
 

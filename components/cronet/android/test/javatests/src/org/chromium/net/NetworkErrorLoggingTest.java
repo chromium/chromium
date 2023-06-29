@@ -6,6 +6,8 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -58,7 +60,7 @@ public class NetworkErrorLoggingTest {
         requestBuilder.build().start();
         callback.blockForDone();
         dataProvider.assertClosed();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(Http2TestServer.getReportingCollector().containsReport(
                            "{\"type\": \"test_report\"}"))
                 .isTrue();
@@ -80,7 +82,7 @@ public class NetworkErrorLoggingTest {
                         url, callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         Http2TestServer.getReportingCollector().waitForReports(1);
         assertThat(Http2TestServer.getReportingCollector().containsReport(""
                            + "{"
@@ -144,7 +146,7 @@ public class NetworkErrorLoggingTest {
                         url, callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         Http2TestServer.getReportingCollector().waitForReports(1);
         // Note that because we don't know in advance what the server IP address is for preloaded
         // origins, we'll always get a "downgraded" dns.address_changed NEL report if we don't
