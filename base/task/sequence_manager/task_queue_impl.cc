@@ -719,6 +719,10 @@ void TaskQueueImpl::TakeImmediateIncomingQueueTasks(TaskDeque* queue, TaskDeque*
 }
 
 bool TaskQueueImpl::IsEmpty() const {
+  recordreplay::Assert("[RUN-2217-2269] TaskQueueImpl::IsEmpty %d %d %d",
+                       main_thread_only().delayed_work_queue->Empty(),
+                       main_thread_only().delayed_incoming_queue.empty(),
+                       main_thread_only().immediate_work_queue->Empty());
   if (!main_thread_only().delayed_work_queue->Empty() ||
       !main_thread_only().delayed_incoming_queue.empty() ||
       !main_thread_only().immediate_work_queue->Empty()) {
