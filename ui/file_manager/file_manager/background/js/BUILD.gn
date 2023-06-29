@@ -19,7 +19,6 @@ group("closure_compile") {
 
 group("js_modules") {
   deps = [
-    ":crostini",
     ":file_manager_base",
     ":file_operation_handler",
     ":file_operation_manager",
@@ -36,7 +35,6 @@ visibility = [ ":*" ]
 js_type_check("closure_compile_jsmodules") {
   deps = [
     ":app_window_wrapper",
-    ":crostini",
     ":entry_location_impl",
     ":file_manager_base",
     ":file_operation_handler",
@@ -98,7 +96,6 @@ js_library("app_window_wrapper") {
 
 js_library("file_manager_base") {
   deps = [
-    ":crostini",
     ":file_operation_handler",
     ":file_operation_manager",
     ":file_operation_util",
@@ -120,35 +117,9 @@ js_library("file_manager_base") {
   ]
 }
 
-js_library("crostini") {
-  deps = [
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:crostini",
-  ]
-}
-
 js_library("mock_crostini") {
   testonly = true
-  deps = [
-    ":crostini",
-    "//ui/file_manager/file_manager/externs/background:crostini",
-  ]
-}
-
-js_unittest("crostini_unittest") {
-  deps = [
-    ":mock_crostini",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:entry_location",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:crostini",
-  ]
+  deps = [ "//ui/file_manager/file_manager/externs/background:crostini" ]
 }
 
 js_library("mock_drive_sync_handler") {
@@ -396,7 +367,6 @@ js_library("volume_manager_util") {
 
 js_test_type_check("js_test_type_check") {
   deps = [
-    ":crostini_unittest",
     ":file_operation_handler_unittest",
     ":file_operation_manager_unittest",
     ":volume_manager_unittest",

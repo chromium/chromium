@@ -8,28 +8,23 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {Crostini} from '../../externs/background/crostini.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {createCrostiniForTest} from './mock_crostini.js';
+import {CrostiniImpl} from './crostini.js';
 
 /**
  * Mock metrics.
- * @type {!Object}
  */
-window.metrics = {
+(window as any).metrics = {
   recordSmallCount: function() {},
 };
 
-/** @type {!VolumeManagerCommon.RootType<string>} */
-let volumeManagerRootType;
+let volumeManagerRootType: VolumeManagerCommon.RootType;
 
-/** @type {!VolumeManager} */
-let volumeManager;
+let volumeManager: VolumeManager;
 
-/** @type {!Crostini} */
-let crostini;
+let crostini: CrostiniImpl;
 
 // Set up the test components.
 export function setUp() {
@@ -37,27 +32,26 @@ export function setUp() {
   const mockChrome = {
     fileManagerPrivate: {
       onCrostiniChanged: {
-        addListener: (callback) => {},
+        addListener: () => {},
       },
     },
   };
   installMockChrome(mockChrome);
 
   // Create a fake volume manager that provides entry location info.
-  volumeManager = /** @type {!VolumeManager} */ ({
-    getLocationInfo: (entry) => {
-      return /** @type {!EntryLocation} */ ({
+  volumeManager = {
+    getLocationInfo: (_: Entry) => {
+      return {
         rootType: volumeManagerRootType,
-      });
+      } as EntryLocation;
     },
-  });
+  } as VolumeManager;
 
   // Reset initial root type.
-  volumeManagerRootType =
-      /** @type {!VolumeManagerCommon.RootType<string>} */ ('testroot');
+  volumeManagerRootType = 'testroot';
 
   // Create and initialize Crostini.
-  crostini = createCrostiniForTest();
+  crostini = new CrostiniImpl();
   crostini.initVolumeManager(volumeManager);
 }
 
@@ -182,9 +176,9 @@ export function testCanSharePath() {
 
   const mockFileSystem = new MockFileSystem('test');
   const root = MockDirectoryEntry.create(mockFileSystem, '/');
-  const rootFile = new MockEntry(mockFileSystem, '/file');
+  const rootFile = new MockEntry(mockFileSystem, '/file') as any as Entry;
   const rootFolder = MockDirectoryEntry.create(mockFileSystem, '/folder');
-  const fooFile = new MockEntry(mockFileSystem, '/foo/file');
+  const fooFile = new MockEntry(mockFileSystem, '/foo/file') as any as Entry;
   const fooFolder = MockDirectoryEntry.create(mockFileSystem, '/foo/folder');
 
   // TODO(crbug.com/917920): Add computers_grand_root and computers when DriveFS
