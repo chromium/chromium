@@ -1,0 +1,67 @@
+<style include="history-clusters-shared-style cr-icons">
+  :host {
+    display: flex;
+  }
+
+  :host-context([chrome-refresh-2023]):host([in-side-panel]) {
+    --cr-icon-button-margin-start: 0px;
+    --pill-height_: 28px;
+    --icon-radius_: calc(var(--pill-height_) / 2);
+    margin: 16px;
+    position: relative;
+    padding: 0;
+  }
+
+  :host-context([chrome-refresh-2023]) .carousel-button-container {
+    --cr-icon-button-size: var(--pill-height_);
+    background-color: var(--color-side-panel-content-background);
+    border-radius: 50%;
+    position: absolute;
+    /* Set z-index so the buttons hide the overflowing text that have z-index
+       of 1. */
+    z-index: 2;
+  }
+
+  :host-context([chrome-refresh-2023]) #carouselForwardButton {
+    right: 8px;
+  }
+
+  :host-context([chrome-refresh-2023]) .carousel-button-icon {
+    margin: auto;
+  }
+
+  #carouselContainer {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  :host-context([chrome-refresh-2023]) #carouselContainer {
+    flex-wrap: nowrap;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  :host-context([chrome-refresh-2023]):host([show-forward-button_]) #carouselContainer {
+    border-bottom-right-radius: var(--icon-radius_);
+    border-top-right-radius: var(--icon-radius_);
+  }
+
+  :host-context([chrome-refresh-2023]):host([show-back-button_]) #carouselContainer {
+    border-bottom-left-radius: var(--icon-radius_);
+    border-top-left-radius: var(--icon-radius_);
+  }
+</style>
+<cr-icon-button id="carouselBackButton" class="carousel-button-container"
+                on-click="onCarouselBackClick_" iron-icon="cr:chevron-left"
+                hidden$="[[!showBackButton_]]">
+  <div class="cr-icon carousel-button-icon"></div>
+</cr-icon-button>
+<cr-icon-button id="carouselForwardButton" class="carousel-button-container"
+                on-click="onCarouselForwardClick_" iron-icon="cr:chevron-right"
+                hidden$="[[!showForwardButton_]]">
+  <div class="cr-icon carousel-button-icon"></div>
+</cr-icon-button>
+<div id="carouselContainer">
+  <slot></slot>
+</div>
+

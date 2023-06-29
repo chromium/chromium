@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import './cluster_menu.js';
-import './search_query.js';
 import './history_clusters_shared_style.css.js';
+import './horizontal_carousel.js';
+import './search_query.js';
 import './shared_vars.css.js';
 import './url_visit.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
@@ -69,7 +70,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
       /**
        * Whether the cluster is in the side panel.
        */
-      inSidePanel_: {
+      inSidePanel: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('inSidePanel'),
         reflectToAttribute: true,
@@ -118,7 +119,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
   query: string;
   private callbackRouter_: PageCallbackRouter;
 
-  private inSidePanel_: boolean;
+  inSidePanel: boolean;
   private onVisitsHiddenListenerId_: number|null = null;
   private onVisitsRemovedListenerId_: number|null = null;
   private unusedLabel_: string;
@@ -318,7 +319,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
   private computeRelatedSearches_(): SearchQuery[] {
     return this.cluster.relatedSearches.filter(
         (query: SearchQuery, index: number) => {
-          return query && !(this.inSidePanel_ && index > 2);
+          return query && !(this.inSidePanel && index > 2);
         });
   }
 
