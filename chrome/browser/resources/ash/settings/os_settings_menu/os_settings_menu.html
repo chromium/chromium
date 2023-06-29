@@ -158,8 +158,7 @@
     on-click="onLinkClick_"
     selected="[[selectedUrl_]]">
   <template is="dom-repeat" items="[[basicMenuItems_]]" id="topMenuRepeat">
-    <a href="[[item.href]]" class="item"
-        data-section$="[[item.pageName]]">
+    <a href="[[item.href]]" class="item">
       <iron-icon icon="[[item.icon]]"></iron-icon>
       [[item.label]]
     </a>
@@ -179,8 +178,7 @@
         on-click="onLinkClick_"
         selected="[[selectedUrl_]]">
       <template is="dom-repeat" items="[[advancedMenuItems_]]">
-        <a href="[[item.href]]" class="item"
-            data-section$="[[item.pageName]]">
+        <a href="[[item.href]]" class="item">
           <iron-icon icon="[[item.icon]]"></iron-icon>
           [[item.label]]
         </a>
@@ -188,9 +186,7 @@
     </iron-selector>
   </iron-collapse>
   <div id="menuSeparator"></div>
-  <a id="aboutItem" class="item"
-      href$="[[aboutMenuItemData_.href]]"
-      data-section$="[[aboutMenuItemData_.pageName]]">
+  <a id="aboutItem" href="[[aboutMenuItemHref_]]" class="item" >
     $i18n{aboutOsPageTitle}
   </a>
 </iron-selector>

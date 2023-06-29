@@ -15,11 +15,11 @@ import {createRoutesForTesting, CrSettingsPrefs, MainPageContainerElement, OsSet
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 const {Section} = routesMojom;
-type PageName = keyof typeof Section;
+type SectionName = keyof typeof Section;
 
 suite('<os-settings-ui> page visibility', () => {
   let ui: OsSettingsUiElement;
@@ -57,9 +57,9 @@ suite('<os-settings-ui> page visibility', () => {
     flush();
   }
 
-  function queryMenuItem(pageName: PageName): HTMLElement|null {
+  function queryMenuItemByHref(href: string): HTMLElement|null {
     return menu.shadowRoot!.querySelector<HTMLElement>(
-        `a.item[data-section="${Section[pageName]}"]`);
+        `a.item[href="${href}"]`);
   }
 
   /**
@@ -69,19 +69,18 @@ suite('<os-settings-ui> page visibility', () => {
    * - Active page does not have style "display: none"
    * - Inactive pages have style "display: none"
    */
-  function assertOnlyVisiblePage(pageName: PageName): void {
+  function assertOnlyVisiblePage(sectionName: SectionName): void {
     const pages =
         mainPageContainer.shadowRoot!.querySelectorAll('page-displayer');
     let numActive = 0;
 
     for (const page of pages) {
-      const displayStyle = getComputedStyle(page).display;
       if (page.hasAttribute('active')) {
         numActive++;
-        assertNotEquals('none', displayStyle);
-        assertEquals(Section[pageName], page.section);
+        assertTrue(isVisible(page));
+        assertEquals(Section[sectionName], page.section);
       } else {
-        assertEquals('none', displayStyle);
+        assertFalse(isVisible(page));
       }
     }
 
@@ -89,11 +88,11 @@ suite('<os-settings-ui> page visibility', () => {
   }
 
   /**
-   * Asserts the page with the given |pageName| is focused.
+   * Asserts the page with the given |sectionName| is focused.
    */
-  function assertPageIsFocused(pageName: PageName): void {
+  function assertPageIsFocused(sectionName: SectionName): void {
     const page = mainPageContainer.shadowRoot!.querySelector(
-        `page-displayer[section="${Section[pageName]}"`);
+        `page-displayer[section="${Section[sectionName]}"`);
     assertEquals(page, mainPageContainer.shadowRoot!.activeElement);
   }
 
@@ -123,41 +122,99 @@ suite('<os-settings-ui> page visibility', () => {
     assertOnlyVisiblePage('kNetwork');
   });
 
-  const pageNames: PageName[] = [
-    'kAboutChromeOs',
-    'kAccessibility',
-    'kApps',
-    'kBluetooth',
-    'kCrostini',
-    'kDateAndTime',
-    'kDevice',
-    'kFiles',
-    'kKerberos',
-    'kMultiDevice',
-    'kLanguagesAndInput',
-    'kNetwork',
-    'kPeople',
-    'kPersonalization',
-    'kPrinting',
-    'kPrivacyAndSecurity',
-    'kReset',
-    'kSearchAndAssistant',
-  ];
-  for (const pageName of pageNames) {
-    test(
-        `Clicking menu item for ${pageName} page should show only that page`,
-        async () => {
-          const pageReadyPromise = eventToPromise('show-container', window);
+  interface MenuItemData {
+    sectionName: SectionName;
+    href: string;
+  }
 
-          const menuItem = queryMenuItem(pageName);
+  const menuItemData: MenuItemData[] = [
+    // Basic pages
+    {
+      sectionName: 'kNetwork',
+      href: `/${routesMojom.NETWORK_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kBluetooth',
+      href: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kMultiDevice',
+      href: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kPeople',
+      href: `/${routesMojom.PEOPLE_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kKerberos',
+      href: `/${routesMojom.KERBEROS_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kDevice',
+      href: `/${routesMojom.DEVICE_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kPersonalization',
+      href: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kSearchAndAssistant',
+      href: `/${routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kPrivacyAndSecurity',
+      href: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kApps',
+      href: `/${routesMojom.APPS_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kAccessibility',
+      href: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
+    },
+
+    // Advanced pages
+    {
+      sectionName: 'kDateAndTime',
+      href: `/${routesMojom.DATE_AND_TIME_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kLanguagesAndInput',
+      href: `/${routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kFiles',
+      href: `/${routesMojom.FILES_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kPrinting',
+      href: `/${routesMojom.PRINTING_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kCrostini',
+      href: `/${routesMojom.CROSTINI_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kReset',
+      href: `/${routesMojom.RESET_SECTION_PATH}`,
+    },
+  ];
+
+  for (const {sectionName, href} of menuItemData) {
+    test(
+        `Clicking menu item for ${sectionName} page should show only that page`,
+        async () => {
+          const menuItem = queryMenuItemByHref(href);
           assert(menuItem);
+
+          const pageReadyPromise = eventToPromise('show-container', window);
           menuItem.click();
           flush();
-
           await pageReadyPromise;
 
-          assertOnlyVisiblePage(pageName);
-          assertPageIsFocused(pageName);
+          assertOnlyVisiblePage(sectionName);
+          assertPageIsFocused(sectionName);
         });
   }
 });

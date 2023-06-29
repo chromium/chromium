@@ -17,8 +17,6 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-const {Section} = routesMojom;
-
 suite('<os-settings-ui> About page', () => {
   let ui: OsSettingsUiElement;
   let mainPageContainer: MainPageContainerElement;
@@ -43,6 +41,7 @@ suite('<os-settings-ui> About page', () => {
     assert(menuEl);
     menu = menuEl;
     menu.advancedOpened = true;
+    flush();
 
     // Force load advanced page container
     const advancedPageTemplateEl =
@@ -53,16 +52,14 @@ suite('<os-settings-ui> About page', () => {
     flush();
   }
 
-  function queryMenuItem(section: routesMojom.Section): HTMLElement|null {
+  function queryMenuItemByHref(href: string): HTMLElement|null {
     return menu.shadowRoot!.querySelector<HTMLElement>(
-        `a.item[data-section="${section}"]`);
+        `a.item[href="${href}"]`);
   }
 
-  async function clickMenuItemAndWaitForPage(section: routesMojom.Section):
+  async function clickMenuItemAndWaitForPage(menuItem: HTMLElement):
       Promise<void> {
     const pageVisiblePromise = eventToPromise('show-container', window);
-    const menuItem = queryMenuItem(section);
-    assertTrue(!!menuItem);
     menuItem.click();
     flush();
     await pageVisiblePromise;
@@ -95,25 +92,37 @@ suite('<os-settings-ui> About page', () => {
         assertTrue(!!aboutPageContainer);
 
         // Show basic page
-        await clickMenuItemAndWaitForPage(Section.kBluetooth);
+        let menuItem =
+            queryMenuItemByHref(`/${routesMojom.BLUETOOTH_SECTION_PATH}`);
+        assertTrue(!!menuItem);
+        await clickMenuItemAndWaitForPage(menuItem);
         assertTrue(isVisible(basicPageContainer));
         assertTrue(isVisible(advancedPageContainer));
         assertFalse(isVisible(aboutPageContainer));
 
         // Show about page
-        await clickMenuItemAndWaitForPage(Section.kAboutChromeOs);
+        menuItem =
+            queryMenuItemByHref(`/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`);
+        assertTrue(!!menuItem);
+        await clickMenuItemAndWaitForPage(menuItem);
         assertFalse(isVisible(basicPageContainer));
         assertFalse(isVisible(advancedPageContainer));
         assertTrue(isVisible(aboutPageContainer));
 
         // Show advanced page
-        await clickMenuItemAndWaitForPage(Section.kDateAndTime);
+        menuItem =
+            queryMenuItemByHref(`/${routesMojom.DATE_AND_TIME_SECTION_PATH}`);
+        assertTrue(!!menuItem);
+        await clickMenuItemAndWaitForPage(menuItem);
         assertTrue(isVisible(basicPageContainer));
         assertTrue(isVisible(advancedPageContainer));
         assertFalse(isVisible(aboutPageContainer));
 
         // Show about page
-        await clickMenuItemAndWaitForPage(Section.kAboutChromeOs);
+        menuItem =
+            queryMenuItemByHref(`/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`);
+        assertTrue(!!menuItem);
+        await clickMenuItemAndWaitForPage(menuItem);
         assertFalse(isVisible(basicPageContainer));
         assertFalse(isVisible(advancedPageContainer));
         assertTrue(isVisible(aboutPageContainer));

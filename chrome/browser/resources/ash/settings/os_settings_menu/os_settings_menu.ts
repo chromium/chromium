@@ -29,7 +29,7 @@ import {getTemplate} from './os_settings_menu.html.js';
 const {Section} = routesMojom;
 
 interface MenuItemData {
-  pageName: routesMojom.Section;
+  section: routesMojom.Section;
   href: string;
   icon: string;
   label: string;
@@ -48,7 +48,7 @@ const OsSettingsMenuElementBase = RouteObserverMixin(I18nMixin(PolymerElement));
 
 export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   static get is() {
-    return 'os-settings-menu';
+    return 'os-settings-menu' as const;
   }
 
   static get template() {
@@ -91,14 +91,9 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         value: '',
       },
 
-      aboutMenuItemData_: {
-        type: Object,
-        value: () => {
-          return {
-            pageName: Section.kAboutChromeOs,
-            href: `/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`,
-          };
-        },
+      aboutMenuItemHref_: {
+        type: String,
+        value: `/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`,
       },
     };
   }
@@ -151,67 +146,67 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   private computeBasicMenuItems_(): MenuItemData[] {
     const basicMenuItems: MenuItemData[] = [
       {
-        pageName: Section.kNetwork,
+        section: Section.kNetwork,
         href: `/${routesMojom.NETWORK_SECTION_PATH}`,
         icon: 'os-settings:network-wifi',
         label: this.i18n('internetPageTitle'),
       },
       {
-        pageName: Section.kBluetooth,
+        section: Section.kBluetooth,
         href: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
         icon: 'cr:bluetooth',
         label: this.i18n('bluetoothPageTitle'),
       },
       {
-        pageName: Section.kMultiDevice,
+        section: Section.kMultiDevice,
         href: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
         icon: 'os-settings:multidevice-better-together-suite',
         label: this.i18n('multidevicePageTitle'),
       },
       {
-        pageName: Section.kPeople,
+        section: Section.kPeople,
         href: `/${routesMojom.PEOPLE_SECTION_PATH}`,
         icon: 'cr:person',
         label: this.i18n('osPeoplePageTitle'),
       },
       {
-        pageName: Section.kKerberos,
+        section: Section.kKerberos,
         href: `/${routesMojom.KERBEROS_SECTION_PATH}`,
         icon: 'os-settings:auth-key',
         label: this.i18n('kerberosPageTitle'),
       },
       {
-        pageName: Section.kDevice,
+        section: Section.kDevice,
         href: `/${routesMojom.DEVICE_SECTION_PATH}`,
         icon: 'os-settings:laptop-chromebook',
         label: this.i18n('devicePageTitle'),
       },
       {
-        pageName: Section.kPersonalization,
+        section: Section.kPersonalization,
         href: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
         icon: 'os-settings:paint-brush',
         label: this.i18n('personalizationPageTitle'),
       },
       {
-        pageName: Section.kSearchAndAssistant,
+        section: Section.kSearchAndAssistant,
         href: `/${routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH}`,
         icon: 'cr:search',
         label: this.i18n('osSearchPageTitle'),
       },
       {
-        pageName: Section.kPrivacyAndSecurity,
+        section: Section.kPrivacyAndSecurity,
         href: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
         icon: 'cr:security',
         label: this.i18n('privacyPageTitle'),
       },
       {
-        pageName: Section.kApps,
+        section: Section.kApps,
         href: `/${routesMojom.APPS_SECTION_PATH}`,
         icon: 'os-settings:apps',
         label: this.i18n('appsPageTitle'),
       },
       {
-        pageName: Section.kAccessibility,
+        section: Section.kAccessibility,
         href: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
         icon: 'os-settings:accessibility',
         label: this.i18n('a11yPageTitle'),
@@ -219,43 +214,43 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     ];
 
     return basicMenuItems.filter(
-        ({pageName}) => !!this.pageAvailability[pageName]);
+        ({section}) => !!this.pageAvailability[section]);
   }
 
   private computeAdvancedMenuItems_(): MenuItemData[] {
     const advancedMenuItems: MenuItemData[] = [
       {
-        pageName: Section.kDateAndTime,
+        section: Section.kDateAndTime,
         href: `/${routesMojom.DATE_AND_TIME_SECTION_PATH}`,
         icon: 'os-settings:access-time',
         label: this.i18n('dateTimePageTitle'),
       },
       {
-        pageName: Section.kLanguagesAndInput,
+        section: Section.kLanguagesAndInput,
         href: `/${routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH}`,
         icon: 'os-settings:language',
         label: this.i18n('osLanguagesPageTitle'),
       },
       {
-        pageName: Section.kFiles,
+        section: Section.kFiles,
         href: `/${routesMojom.FILES_SECTION_PATH}`,
         icon: 'os-settings:folder-outline',
         label: this.i18n('filesPageTitle'),
       },
       {
-        pageName: Section.kPrinting,
+        section: Section.kPrinting,
         href: `/${routesMojom.PRINTING_SECTION_PATH}`,
         icon: 'os-settings:print',
         label: this.i18n('printingPageTitle'),
       },
       {
-        pageName: Section.kCrostini,
+        section: Section.kCrostini,
         href: `/${routesMojom.CROSTINI_SECTION_PATH}`,
         icon: 'os-settings:developer-tags',
         label: this.i18n('crostiniPageTitle'),
       },
       {
-        pageName: Section.kReset,
+        section: Section.kReset,
         href: `/${routesMojom.RESET_SECTION_PATH}`,
         icon: 'os-settings:restore',
         label: this.i18n('resetPageTitle'),
@@ -263,7 +258,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     ];
 
     return advancedMenuItems.filter(
-        ({pageName}) => !!this.pageAvailability[pageName]);
+        ({section}) => !!this.pageAvailability[section]);
   }
 
   private onAdvancedButtonToggle_() {
@@ -315,7 +310,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'os-settings-menu': OsSettingsMenuElement;
+    [OsSettingsMenuElement.is]: OsSettingsMenuElement;
   }
 }
 

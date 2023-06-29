@@ -7,7 +7,7 @@ import 'chrome://os-settings/os_settings.js';
 import {createPageAvailabilityForTesting, OsSettingsMenuElement, Router, routes, routesMojom} from 'chrome://os-settings/os_settings.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 /** @fileoverview Runs tests for the OS settings menu. */
@@ -132,15 +132,16 @@ suite('<os-settings-menu> reset', () => {
   });
 });
 
-suite('<os-settings-menu> page availability', () => {
+suite('<os-settings-menu> menu item visibility', () => {
   let settingsMenu: OsSettingsMenuElement;
 
   const {Section} = routesMojom;
-  type PageName = keyof typeof Section;
+  type SectionName = keyof typeof Section;
 
   setup(() => {
     settingsMenu = document.createElement('os-settings-menu');
     settingsMenu.pageAvailability = createPageAvailabilityForTesting();
+    settingsMenu.advancedOpened = true;
     document.body.appendChild(settingsMenu);
     flush();
   });
@@ -149,58 +150,123 @@ suite('<os-settings-menu> page availability', () => {
     settingsMenu.remove();
   });
 
-  function queryMenuItem(pageName: PageName): HTMLElement|null {
+  function queryMenuItemByHref(href: string): HTMLElement|null {
     return settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-        `a.item[data-section="${Section[pageName]}"]`);
+        `a.item[href="${href}"]`);
   }
 
   test('About page menu item should always be visible', () => {
-    const menuItem = queryMenuItem('kAboutChromeOs');
+    const href = `/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`;
+    const menuItem = queryMenuItemByHref(href);
     assertTrue(isVisible(menuItem));
   });
 
-  const pageNames: PageName[] = [
+  interface MenuItemData {
+    sectionName: SectionName;
+    href: string;
+  }
+
+  const menuItemData: MenuItemData[] = [
     // Basic pages
-    'kNetwork',
-    'kBluetooth',
-    'kMultiDevice',
-    'kKerberos',
-    'kPeople',
-    'kDevice',
-    'kPersonalization',
-    'kSearchAndAssistant',
-    'kPrivacyAndSecurity',
-    'kApps',
-    'kAccessibility',
-    // Advanced section pages
-    'kDateAndTime',
-    'kLanguagesAndInput',
-    'kFiles',
-    'kPrinting',
-    'kCrostini',
-    'kReset',
+    {
+      sectionName: 'kNetwork',
+      href: `/${routesMojom.NETWORK_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kBluetooth',
+      href: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kMultiDevice',
+      href: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kPeople',
+      href: `/${routesMojom.PEOPLE_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kKerberos',
+      href: `/${routesMojom.KERBEROS_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kDevice',
+      href: `/${routesMojom.DEVICE_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kPersonalization',
+      href: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kSearchAndAssistant',
+      href: `/${routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kPrivacyAndSecurity',
+      href: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kApps',
+      href: `/${routesMojom.APPS_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kAccessibility',
+      href: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
+    },
+
+    // Advanced pages
+    {
+      sectionName: 'kDateAndTime',
+      href: `/${routesMojom.DATE_AND_TIME_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kLanguagesAndInput',
+      href: `/${routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kFiles',
+      href: `/${routesMojom.FILES_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kPrinting',
+      href: `/${routesMojom.PRINTING_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kCrostini',
+      href: `/${routesMojom.CROSTINI_SECTION_PATH}`,
+    },
+    {
+      sectionName: 'kReset',
+      href: `/${routesMojom.RESET_SECTION_PATH}`,
+    },
   ];
-  for (const pageName of pageNames) {
-    test(`${pageName} menu item is controlled by pageAvailability`, () => {
-      // Make page available
-      settingsMenu.pageAvailability = {
-        ...settingsMenu.pageAvailability,
-        [Section[pageName]]: true,
-      };
-      flush();
 
-      let menuItem = queryMenuItem(pageName);
-      assertTrue(!!menuItem, `Menu item for ${pageName} should be stamped.`);
+  for (const {sectionName, href} of menuItemData) {
+    test(
+        `${sectionName} menu item is visible if corresponding page is available`,
+        () => {
+          // Make page available
+          settingsMenu.pageAvailability = {
+            ...settingsMenu.pageAvailability,
+            [Section[sectionName]]: true,
+          };
+          flush();
 
-      // Make page unavailable
-      settingsMenu.pageAvailability = {
-        ...settingsMenu.pageAvailability,
-        [Section[pageName]]: false,
-      };
-      flush();
+          let menuItem = queryMenuItemByHref(href);
+          assertTrue(
+              isVisible(menuItem),
+              `Menu item for ${sectionName} should be visible.`);
 
-      menuItem = queryMenuItem(pageName);
-      assertNull(menuItem, `Menu item for ${pageName} should not be stamped.`);
-    });
+          // Make page unavailable
+          settingsMenu.pageAvailability = {
+            ...settingsMenu.pageAvailability,
+            [Section[sectionName]]: false,
+          };
+          flush();
+
+          menuItem = queryMenuItemByHref(href);
+          assertFalse(
+              isVisible(menuItem),
+              `Menu item for ${sectionName} should not be visible.`);
+        });
   }
 });
