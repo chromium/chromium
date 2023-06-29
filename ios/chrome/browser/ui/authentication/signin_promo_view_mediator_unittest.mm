@@ -114,6 +114,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
                                       chrome_browser_state_.get())
                   authService:GetAuthenticationService()
                   prefService:chrome_browser_state_.get()->GetPrefs()
+                  syncService:GetSyncService()
                   accessPoint:access_point
                     presenter:nil
            baseViewController:nil];
@@ -142,6 +143,10 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   AuthenticationService* GetAuthenticationService() {
     return AuthenticationServiceFactory::GetForBrowserState(
         chrome_browser_state_.get());
+  }
+
+  syncer::SyncService* GetSyncService() {
+    return SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get());
   }
 
   // Creates the default identity and adds it into the ChromeIdentityService.
@@ -475,6 +480,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
                            signin_metrics::PromoAction::
                                PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
                         completion:completion_arg]);
+  OCMExpect([consumer_ promoProgressStateDidChange]);
   ExpectConfiguratorNotification(NO /* identity changed */);
   [mediator_ signinPromoViewDidTapSigninWithNewAccount:signin_promo_view_];
   EXPECT_TRUE(mediator_.signinInProgress);
@@ -482,6 +488,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
             mediator_.signinPromoViewState);
   EXPECT_NE(nil, (id)completion);
   // Stop sign-in.
+  OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(NO /* identity changed */);
   completion(YES);
@@ -509,6 +516,7 @@ TEST_F(SigninPromoViewMediatorTest,
                            signin_metrics::PromoAction::
                                PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
                         completion:completion_arg]);
+  OCMExpect([consumer_ promoProgressStateDidChange]);
   ExpectConfiguratorNotification(NO /* identity changed */);
   // Starts sign-in without identity.
   [mediator_ signinPromoViewDidTapSigninWithNewAccount:signin_promo_view_];
@@ -517,6 +525,7 @@ TEST_F(SigninPromoViewMediatorTest,
   // No consumer notification should be expected.
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   // Finishs the sign-in.
+  OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(NO /* identity changed */);
   completion(YES);
@@ -540,6 +549,7 @@ TEST_F(SigninPromoViewMediatorTest,
                                    promoAction:signin_metrics::PromoAction::
                                                    PROMO_ACTION_WITH_DEFAULT
                                     completion:completion_arg]);
+  OCMExpect([consumer_ promoProgressStateDidChange]);
   ExpectConfiguratorNotification(NO /* identity changed */);
   // Starts sign-in with an identity.
   [mediator_ signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];
@@ -552,6 +562,7 @@ TEST_F(SigninPromoViewMediatorTest,
   // Spins the run loop to wait for the profile image update.
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   // Finishs the sign-in.
+  OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(NO /* identity changed */);
   completion(YES);
@@ -614,6 +625,7 @@ TEST_F(SigninPromoViewMediatorTest,
                                    promoAction:signin_metrics::PromoAction::
                                                    PROMO_ACTION_WITH_DEFAULT
                                     completion:completion_arg]);
+  OCMExpect([consumer_ promoProgressStateDidChange]);
   ExpectConfiguratorNotification(NO /* identity changed */);
   // Start sign-in with an identity.
   [mediator_ signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];
@@ -646,6 +658,7 @@ TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
                                    promoAction:signin_metrics::PromoAction::
                                                    PROMO_ACTION_WITH_DEFAULT
                                     completion:completion_arg]);
+  OCMExpect([consumer_ promoProgressStateDidChange]);
   ExpectConfiguratorNotification(NO /* identity changed */);
   // Start sign-in with an identity.
   [mediator_ signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];

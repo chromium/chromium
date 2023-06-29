@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/sync/base/model_type.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
 
@@ -21,6 +22,10 @@ class PrefService;
 
 namespace signin_metrics {
 enum class AccessPoint;
+}
+
+namespace syncer {
+class SyncService;
 }
 
 namespace ios {
@@ -100,6 +105,7 @@ class PrefRegistrySyncable;
               (ChromeAccountManagerService*)accountManagerService
                     authService:(AuthenticationService*)authService
                     prefService:(PrefService*)prefService
+                    syncService:(syncer::SyncService*)syncService
                     accessPoint:(signin_metrics::AccessPoint)accessPoint
                       presenter:(id<SigninPresenter>)presenter
              baseViewController:(UIViewController*)baseViewController
@@ -115,6 +121,9 @@ class PrefRegistrySyncable;
 // Called when the sign-in promo view is hidden. If the sign-in promo view has
 // never been shown, or it is already hidden, this method does nothing.
 - (void)signinPromoViewIsHidden;
+
+// Set the data type that should be synced before the sign-in completes.
+- (void)setDataTypeToWaitForInitialSync:(syncer::ModelType)dataType;
 
 // Disconnects the mediator, this method needs to be called when the sign-in
 // promo view is removed from the view hierarchy (it or one of its superviews is

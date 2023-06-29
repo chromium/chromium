@@ -705,8 +705,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
             (SigninPromoViewConfigurator*)promoConfigurator
                              identityChanged:(BOOL)identityChanged {
   if (![self.tableViewModel
-          hasSectionForSectionIdentifier:kSectionIdentifierSignInPromo] ||
-      !identityChanged) {
+          hasSectionForSectionIdentifier:kSectionIdentifierSignInPromo]) {
     return;
   }
 
