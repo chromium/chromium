@@ -148,10 +148,6 @@ void GestureListenerManager::SetRootScrollOffsetUpdateFrequency(
     jint frequency) {
   auto new_frequency =
       static_cast<cc::mojom::RootScrollOffsetUpdateFrequency>(frequency);
-  if (root_scroll_offset_update_frequency_ == new_frequency) {
-    return;
-  }
-
   root_scroll_offset_update_frequency_ = new_frequency;
   if (rwhva_)
     rwhva_->UpdateRootScrollOffsetUpdateFrequency();

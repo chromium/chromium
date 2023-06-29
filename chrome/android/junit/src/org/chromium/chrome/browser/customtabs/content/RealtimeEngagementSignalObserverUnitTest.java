@@ -882,6 +882,40 @@ public class RealtimeEngagementSignalObserverUnitTest {
                 .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
     }
 
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
+    public void sendInitialOffsetUpdate_AltImplDisabled() {
+        initializeTabForTest();
+        // When the alternative impl flag is enabled, the listener should be added with `NONE`.
+        var listener = captureGestureStateListener(NONE);
+
+        // Simulate renderer sending the offset update.
+        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(42);
+        listener.onScrollOffsetOrExtentChanged(42, SCROLL_EXTENT);
+
+        // TODO(sinansahin): Update this test and the one below in the next CL.
+        // We shouldn't get a notification if we didn't have a scroll start.
+        verify(mEngagementSignalsCallback, never())
+                .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
+    public void sendInitialOffsetUpdate_AltImplEnabled() {
+        initializeTabForTest();
+        // When the alternative impl flag is enabled, the listener should be added with
+        // `ON_SCROLL_END`.
+        var listener = captureGestureStateListener(ON_SCROLL_END);
+
+        // Simulate renderer sending the offset update.
+        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(35);
+        listener.onScrollOffsetOrExtentChanged(35, SCROLL_EXTENT);
+
+        // We shouldn't get a notification if we didn't have a scroll start.
+        verify(mEngagementSignalsCallback, never())
+                .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
+    }
+
     private void advanceTime(long millis) {
         SystemClock.setCurrentTimeMillis(CURRENT_TIME_MS + millis);
     }

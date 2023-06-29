@@ -588,6 +588,12 @@
       base_feature: "none",
     },
     {
+      // Kill switch for changes to RenderFrameMetadataObserverImpl in connection with Engagement
+      // Signals. See https://crrev.com/c/4544201 and https://crbug.com/1458640.
+      name: "CCTNewRFMPushBehavior",
+      base_feature_status: "enabled",
+    },
+    {
       name: "checkVisibility",
       status: "stable",
       base_feature: "none",

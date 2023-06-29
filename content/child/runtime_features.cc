@@ -348,6 +348,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      raw_ref(features::kPrivacySandboxAdsAPIsOverride), kSetOnlyIfOverridden},
     {"AndroidDownloadableFontsMatching",
      raw_ref(features::kAndroidDownloadableFontsMatching)},
+#if BUILDFLAG(IS_ANDROID)
+    {"CCTNewRFMPushBehavior", raw_ref(blink::features::kCCTNewRFMPushBehavior)},
+#endif
     {"Fledge", raw_ref(blink::features::kFledge), kSetOnlyIfOverridden},
     {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
      kSetOnlyIfOverridden},

@@ -132,17 +132,20 @@ public class GestureListenerManagerImplUnitTest {
     @Test
     public void updateFrequency() {
         // This will be ALL_UPDATES because of the listener we add in setup.
-        Assert.assertEquals(ALL_UPDATES, mGestureManager.getRootScrollOffsetUpdateFrequency());
+        Assert.assertEquals(
+                ALL_UPDATES, mGestureManager.getRootScrollOffsetUpdateFrequencyForTesting());
 
         // Adding listeners with lower frequency will not change the result.
         mGestureManager.addListener(new GestureStateListener() {}, NONE);
         mGestureManager.addListener(new GestureStateListener() {}, NONE);
         mGestureManager.addListener(new GestureStateListener() {}, ON_SCROLL_END);
-        Assert.assertEquals(ALL_UPDATES, mGestureManager.getRootScrollOffsetUpdateFrequency());
+        Assert.assertEquals(
+                ALL_UPDATES, mGestureManager.getRootScrollOffsetUpdateFrequencyForTesting());
 
         // Now, remove the ALL_UPDATES listener. This will leave us with ON_SCROLL_END.
         mGestureManager.removeListener(mGestureStateListener);
-        Assert.assertEquals(ON_SCROLL_END, mGestureManager.getRootScrollOffsetUpdateFrequency());
+        Assert.assertEquals(
+                ON_SCROLL_END, mGestureManager.getRootScrollOffsetUpdateFrequencyForTesting());
     }
 
     private void setupMockWebContents() {

@@ -56,7 +56,8 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
       jboolean enabled);
   cc::mojom::RootScrollOffsetUpdateFrequency
   root_scroll_offset_update_frequency() const {
-    return root_scroll_offset_update_frequency_;
+    return root_scroll_offset_update_frequency_.value_or(
+        cc::mojom::RootScrollOffsetUpdateFrequency::kNone);
   }
   void SetRootScrollOffsetUpdateFrequency(JNIEnv* env, jint frequency);
   void GestureEventAck(const blink::WebGestureEvent& event,
@@ -103,9 +104,8 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
   JavaObjectWeakGlobalRef java_ref_;
 
   // Highest update frequency requested by any of the listeners.
-  cc::mojom::RootScrollOffsetUpdateFrequency
-      root_scroll_offset_update_frequency_ =
-          cc::mojom::RootScrollOffsetUpdateFrequency::kNone;
+  absl::optional<cc::mojom::RootScrollOffsetUpdateFrequency>
+      root_scroll_offset_update_frequency_;
 };
 
 }  // namespace content

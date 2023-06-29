@@ -74,9 +74,8 @@ class PLATFORM_EXPORT RenderFrameMetadataObserverImpl
   // |render_frame_metadata_observer_client_| of the frame submissions that
   // involve a root scroll offset change. See |RootScrollOffsetUpdateFrequency|
   // for details.
-  cc::mojom::blink::RootScrollOffsetUpdateFrequency
-      root_scroll_offset_update_frequency_ =
-          cc::mojom::blink::RootScrollOffsetUpdateFrequency::kNone;
+  absl::optional<cc::mojom::blink::RootScrollOffsetUpdateFrequency>
+      root_scroll_offset_update_frequency_;
   absl::optional<gfx::PointF> last_root_scroll_offset_android_;
 #endif
 

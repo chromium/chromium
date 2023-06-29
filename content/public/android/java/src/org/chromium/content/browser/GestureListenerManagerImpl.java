@@ -78,6 +78,8 @@ public class GestureListenerManagerImpl
      */
     private boolean mHasActiveFlingScroll;
 
+    private @RootScrollOffsetUpdateFrequency.EnumType Integer mRootScrollOffsetUpdateFrequency;
+
     /**
      * @param webContents {@link WebContents} object.
      * @return {@link GestureListenerManager} object used for the give WebContents.
@@ -131,7 +133,13 @@ public class GestureListenerManagerImpl
         final boolean didAdd = mListeners.addObserver(listener);
         if (mNativeGestureListenerManager != 0 && didAdd) {
             mListenerFrequency.put(listener, frequency);
-            updateRootScrollOffsetUpdateFrequency();
+            boolean frequencyChanged = updateRootScrollOffsetUpdateFrequency();
+            if (!frequencyChanged) {
+                // If the frequency changed, this update will come from the renderer, so we don't
+                // need to call this with the cached offset.
+                listener.onScrollOffsetOrExtentChanged(
+                        verticalScrollOffset(), verticalScrollExtent());
+            }
         }
     }
 
@@ -150,11 +158,20 @@ public class GestureListenerManagerImpl
         return mListeners.hasObserver(listener);
     }
 
-    private void updateRootScrollOffsetUpdateFrequency() {
-        @RootScrollOffsetUpdateFrequency.EnumType
-        int maxFrequency = calculateMaxRootScrollOffsetUpdateFrequency();
+    /**
+     * Calculates and updates the root scroll offset update frequency.
+     * @return Whether the root scroll offset update frequency changed.
+     */
+    private boolean updateRootScrollOffsetUpdateFrequency() {
+        int newFrequency = calculateMaxRootScrollOffsetUpdateFrequency();
+        boolean frequencyChanged = mRootScrollOffsetUpdateFrequency == null
+                || !mRootScrollOffsetUpdateFrequency.equals(newFrequency);
+        mRootScrollOffsetUpdateFrequency = newFrequency;
+        if (!frequencyChanged) return false;
+
         GestureListenerManagerImplJni.get().setRootScrollOffsetUpdateFrequency(
-                mNativeGestureListenerManager, maxFrequency);
+                mNativeGestureListenerManager, mRootScrollOffsetUpdateFrequency);
+        return true;
     }
 
     private @RootScrollOffsetUpdateFrequency.EnumType
@@ -190,7 +207,8 @@ public class GestureListenerManagerImpl
     }
 
     @VisibleForTesting
-    public @RootScrollOffsetUpdateFrequency.EnumType int getRootScrollOffsetUpdateFrequency() {
+    @RootScrollOffsetUpdateFrequency.EnumType
+    public int getRootScrollOffsetUpdateFrequencyForTesting() {
         return calculateMaxRootScrollOffsetUpdateFrequency();
     }
 
