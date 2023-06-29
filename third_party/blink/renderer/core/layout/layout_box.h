@@ -1739,9 +1739,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void InvalidatePaint(const PaintInvalidatorContext&) const override;
 
-  bool ColumnFlexItemHasStretchAlignment() const;
-  bool IsStretchingColumnFlexItem() const;
-
   void ExcludeScrollbars(
       PhysicalRect&,
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,

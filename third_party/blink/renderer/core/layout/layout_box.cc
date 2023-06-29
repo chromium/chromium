@@ -3297,34 +3297,6 @@ void LayoutBox::InflateVisualRectForFilter(
       gfx::QuadF(gfx::RectF(Layer()->MapRectForFilter(rect))));
 }
 
-bool LayoutBox::ColumnFlexItemHasStretchAlignment() const {
-  NOT_DESTROYED();
-  // auto margins mean we don't stretch. Note that this function will only be
-  // used for widths, so we don't have to check marginBefore/marginAfter.
-  const auto& parent_style = Parent()->StyleRef();
-  DCHECK(parent_style.ResolvedIsColumnFlexDirection());
-  if (StyleRef().MarginStart().IsAuto() || StyleRef().MarginEnd().IsAuto())
-    return false;
-  return StyleRef()
-             .ResolvedAlignSelf(
-                 ContainingBlock()->SelfAlignmentNormalBehavior(),
-                 &parent_style)
-             .GetPosition() == ItemPosition::kStretch;
-}
-
-bool LayoutBox::IsStretchingColumnFlexItem() const {
-  NOT_DESTROYED();
-  LayoutObject* parent = Parent();
-  // We don't stretch multiline flexboxes because they need to apply line
-  // spacing (align-content) first.
-  if (parent->IsFlexibleBoxIncludingNG() &&
-      parent->StyleRef().FlexWrap() == EFlexWrap::kNowrap &&
-      parent->StyleRef().ResolvedIsColumnFlexDirection() &&
-      ColumnFlexItemHasStretchAlignment())
-    return true;
-  return false;
-}
-
 bool LayoutBox::AutoWidthShouldFitContent() const {
   NOT_DESTROYED();
   return GetNode() &&
