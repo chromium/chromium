@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
 #include "content/child/child_thread_impl.h"
-#include "content/common/android/cpu_time_metrics.h"
 #include "content/common/mojo_core_library_support.h"
 #include "content/common/process_visibility_tracker.h"
 #include "content/public/common/content_switches.h"
@@ -32,6 +31,10 @@
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 #include "base/test/clang_profiling.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/common/android/cpu_time_metrics.h"
 #endif
 
 namespace content {

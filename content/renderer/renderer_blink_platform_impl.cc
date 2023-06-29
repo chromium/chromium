@@ -36,7 +36,6 @@
 #include "components/url_formatter/url_formatter.h"
 #include "components/viz/common/features.h"
 #include "content/child/child_process.h"
-#include "content/common/android/sync_compositor_statics.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
@@ -120,6 +119,10 @@
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/file_descriptor_posix.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/common/android/sync_compositor_statics.h"
 #endif
 
 using blink::Platform;

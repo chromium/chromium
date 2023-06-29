@@ -67,7 +67,6 @@
 #include "content/browser/tracing/memory_instrumentation_util.h"
 #include "content/browser/utility_process_host.h"
 #include "content/child/field_trial.h"
-#include "content/common/android/cpu_time_metrics.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/mojo_core_library_support.h"
 #include "content/common/process_visibility_tracker.h"
@@ -191,6 +190,7 @@
 #include "base/system/sys_info.h"
 #include "content/browser/android/battery_metrics.h"
 #include "content/browser/android/browser_startup_controller.h"
+#include "content/common/android/cpu_time_metrics.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
