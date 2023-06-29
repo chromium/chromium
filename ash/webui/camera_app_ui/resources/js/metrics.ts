@@ -164,6 +164,7 @@ export enum MetricDimension {
   DOC_PAGE_COUNT = 36,
   TIME_LAPSE_SPEED = 37,
   IS_TEST_IMAGE = 38,
+  DEVICE_PIXEL_RATIO = 39,
 }
 
 /**

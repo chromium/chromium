@@ -169,6 +169,10 @@ function sendGaEvent(
   for (const [key, value] of [...gaBaseDimensions, ...eventDimensions]) {
     event[`dimension${key}`] = value;
   }
+  // TODO(b/267265966): Move `MetricDimension` to this file. Hardcode the
+  // property (MetricDimension.DEVICE_PIXEL_RATIO = 39) as some files imported
+  // by `metrics.ts` cannot be imported under chrome-untrusted://.
+  event.dimension39 = getDevicePixelRatio();
   window.ga('send', 'event', event);
 }
 
@@ -182,16 +186,21 @@ function sendGa4Event(
     name: string, eventParams: Record<string, number|string>): void {
   const {apiSecret, baseParams, clientId, measurementId, sessionId} =
       assertExists(ga4Config);
-  // TODO(b/267265966): GA4 uses `engagement_time_msec` and `session_id` to
-  // calculate user activity. Remove these parameters as they are sent
-  // automatically by gtag.js.
   const params = {
     ...baseParams,
     ...eventParams,
+    ['device_pixel_ratio']: getDevicePixelRatio(),
+    language: navigator.language,
+    ['screen_resolution']: getScreenResolution(),
     // Set '1' here as it's enough for GA4 to generate the metrics for n-day
     // active users and we don't want to reimplement how gtag.js calculate the
     // engagement time for each event.
+    // See
+    // https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?client_type=gtag#recommended_parameters_for_reports.
     ['engagement_time_msec']: '1',
+    // Send this to create a session in GA4.
+    // See
+    // https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?client_type=gtag#recommended_parameters_for_reports.
     ['session_id']: sessionId,
   };
   void fetch(
@@ -214,6 +223,15 @@ function sendGa4Event(
  */
 function setGaEnabled(id: string, enabled: boolean): void {
   window[`ga-disable-${id}`] = !enabled;
+}
+
+function getDevicePixelRatio() {
+  return window.devicePixelRatio.toFixed(2);
+}
+
+function getScreenResolution() {
+  const {width, height} = window.screen;
+  return `${width}x${height}`;
 }
 
 export interface GaHelper {
