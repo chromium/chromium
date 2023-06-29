@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.StrictMode;
-import android.os.SystemClock;
 import android.util.AndroidRuntimeException;
 import android.util.Log;
 import android.webkit.ValueCallback;
@@ -68,11 +67,6 @@ public class WebLayer {
 
     @NonNull
     private final IWebLayer mImpl;
-
-    // Times used for logging UMA histograms.
-    private static long sClassLoaderCreationTime;
-    private static long sContextCreationTime;
-    private static long sWebLayerLoaderCreationTime;
 
     /**
      * Returns true if WebLayer is available. This tries to load WebLayer, but does no
@@ -263,13 +257,11 @@ public class WebLayer {
             try {
                 Class factoryClass = loadRemoteClass(
                         mContext, "org.chromium.weblayer_private.WebLayerFactoryImpl");
-                long start = SystemClock.elapsedRealtime();
                 mFactory = IWebLayerFactory.Stub.asInterface(
                         (IBinder) factoryClass
                                 .getMethod("create", String.class, int.class, int.class)
                                 .invoke(null, WebLayerClientVersionConstants.PRODUCT_VERSION,
                                         WebLayerClientVersionConstants.PRODUCT_MAJOR_VERSION, -1));
-                sWebLayerLoaderCreationTime = SystemClock.elapsedRealtime() - start;
                 available = mFactory.isClientSupported();
                 majorVersion = mFactory.getImplementationMajorVersion();
                 version = mFactory.getImplementationVersion();
@@ -553,7 +545,6 @@ public class WebLayer {
             return sRemoteClassLoader.loadClass(className);
         }
 
-        long start = SystemClock.elapsedRealtime();
         // Child processes do not need WebView compatibility since there is no chance
         // WebView will run in the same process.
         if (sDisableWebViewCompatibilityMode) {
@@ -579,7 +570,6 @@ public class WebLayer {
         } else {
             sRemoteClassLoader = WebViewCompatibilityHelper.initialize(appContext);
         }
-        sClassLoaderCreationTime = SystemClock.elapsedRealtime() - start;
         return sRemoteClassLoader.loadClass(className);
     }
 
@@ -591,7 +581,6 @@ public class WebLayer {
         if (sRemoteContext != null) {
             return sRemoteContext;
         }
-        long start = SystemClock.elapsedRealtime();
         Class<?> webViewFactoryClass = Class.forName("android.webkit.WebViewFactory");
         String implPackageName = getImplPackageName(appContext);
         sAppContext = appContext;
@@ -603,7 +592,6 @@ public class WebLayer {
             getContext.setAccessible(true);
             sRemoteContext = (Context) getContext.invoke(null);
         }
-        sContextCreationTime = SystemClock.elapsedRealtime() - start;
         return sRemoteContext;
     }
 
@@ -674,21 +662,6 @@ public class WebLayer {
             StrictModeWorkaround.apply();
             // The id is part of the public library to avoid conflicts.
             return R.id.weblayer_media_session_notification;
-        }
-
-        @Override
-        public long getClassLoaderCreationTime() {
-            return sClassLoaderCreationTime;
-        }
-
-        @Override
-        public long getContextCreationTime() {
-            return sContextCreationTime;
-        }
-
-        @Override
-        public long getWebLayerLoaderCreationTime() {
-            return sWebLayerLoaderCreationTime;
         }
 
         @Override

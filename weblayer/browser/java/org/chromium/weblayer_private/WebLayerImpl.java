@@ -47,7 +47,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
@@ -475,19 +474,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     public void setClient(IWebLayerClient client) {
         StrictModeWorkaround.apply();
         sClient = client;
-
-        if (WebLayerFactoryImpl.getClientMajorVersion() >= 88) {
-            try {
-                RecordHistogram.recordTimesHistogram("WebLayer.Startup.ClassLoaderCreationTime",
-                        sClient.getClassLoaderCreationTime());
-                RecordHistogram.recordTimesHistogram(
-                        "WebLayer.Startup.ContextCreationTime", sClient.getContextCreationTime());
-                RecordHistogram.recordTimesHistogram("WebLayer.Startup.WebLayerLoaderCreationTime",
-                        sClient.getWebLayerLoaderCreationTime());
-            } catch (RemoteException e) {
-                throw new APICallException(e);
-            }
-        }
     }
 
     @Override
