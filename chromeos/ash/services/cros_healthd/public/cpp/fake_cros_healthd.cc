@@ -635,11 +635,11 @@ void FakeCrosHealthd::RunPrivacyScreenRoutine(
       callback_delay_);
 }
 
-void FakeCrosHealthd::RunLedLitUpRoutine(
-    mojom::LedName name,
-    mojom::LedColor color,
-    mojo::PendingRemote<mojom::LedLitUpRoutineReplier> replier,
-    RunLedLitUpRoutineCallback callback) {
+void FakeCrosHealthd::DEPRECATED_RunLedLitUpRoutine(
+    mojom::DEPRECATED_LedName name,
+    mojom::DEPRECATED_LedColor color,
+    mojo::PendingRemote<mojom::DEPRECATED_LedLitUpRoutineReplier> replier,
+    DEPRECATED_RunLedLitUpRoutineCallback callback) {
   actual_passed_parameters_.clear();
   actual_passed_parameters_.Set("name", static_cast<int32_t>(name));
   actual_passed_parameters_.Set("color", static_cast<int32_t>(color));

@@ -617,8 +617,9 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  [MinVersion=5] RunLedLitUpRoutine@37(LedName name, LedColor color,
-    pending_remote<LedLitUpRoutineReplier> replier)
+  [MinVersion=5] DEPRECATED_RunLedLitUpRoutine@37(DEPRECATED_LedName name,
+    DEPRECATED_LedColor color,
+    pending_remote<DEPRECATED_LedLitUpRoutineReplier> replier)
         => (RunRoutineResponse response);
 
   // Requests that the EmmcLifetime routine is created and started on the

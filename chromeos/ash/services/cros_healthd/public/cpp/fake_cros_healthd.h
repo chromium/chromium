@@ -271,11 +271,11 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   void RunPrivacyScreenRoutine(
       bool target_state,
       RunPrivacyScreenRoutineCallback callback) override;
-  void RunLedLitUpRoutine(
-      mojom::LedName name,
-      mojom::LedColor color,
-      mojo::PendingRemote<mojom::LedLitUpRoutineReplier> replier,
-      RunLedLitUpRoutineCallback callback) override;
+  void DEPRECATED_RunLedLitUpRoutine(
+      mojom::DEPRECATED_LedName name,
+      mojom::DEPRECATED_LedColor color,
+      mojo::PendingRemote<mojom::DEPRECATED_LedLitUpRoutineReplier> replier,
+      DEPRECATED_RunLedLitUpRoutineCallback callback) override;
   void RunEmmcLifetimeRoutine(RunEmmcLifetimeRoutineCallback callback) override;
   void RunAudioSetVolumeRoutine(
       uint64_t node_id,
