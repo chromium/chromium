@@ -3405,7 +3405,10 @@ if (!is_android) {
           "../browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_apitest.cc",
           "../browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_browsertest.cc",
         ]
-        deps += [ "//chrome/browser/enterprise/connectors/test:test_support" ]
+        deps += [
+          "//chrome/browser/enterprise/connectors/test:test_support",
+          "//components/enterprise/buildflags",
+        ]
       }
       if (is_win || is_linux || is_mac || is_chromeos_ash) {
         sources += [ "../browser/enterprise/connectors/device_trust/device_trust_browsertest.cc" ]

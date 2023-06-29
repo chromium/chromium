@@ -240,6 +240,9 @@ void PrintViewManager::PrintPreviewDone() {
   }
   print_preview_state_ = NOT_PREVIEWING;
   print_preview_rfh_ = nullptr;
+  for (auto& observer : GetTestObservers()) {
+    observer.OnPrintPreviewDone();
+  }
 }
 
 void PrintViewManager::RejectPrintPreviewRequestIfRestricted(
@@ -295,8 +298,9 @@ void PrintViewManager::RejectPrintPreviewRequestIfRestrictedByContentAnalysis(
     content::GlobalRenderFrameHostId rfh_id,
     base::OnceCallback<void(bool should_proceed)> callback) {
   absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
-      scanning_data = enterprise_connectors::GetBeforePrintPreviewAnalysisData(
-          web_contents());
+      scanning_data = enterprise_connectors::GetPrintAnalysisData(
+          web_contents(),
+          enterprise_connectors::PrintScanningContext::kBeforePreview);
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
   if (rfh && scanning_data) {
     GetPrintRenderFrame(rfh)->SnapshotForContentAnalysis(base::BindOnce(

@@ -61,6 +61,9 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
     // This method is never called unless `ENABLE_PRINT_PREVIEW`.
     virtual void OnPrintPreview(const content::RenderFrameHost* rfh) {}
 
+    // This method is never called unless `ENABLE_PRINT_PREVIEW`.
+    virtual void OnPrintPreviewDone() {}
+
     // This method is never called unless `ENABLE_OOP_PRINTING`.
     virtual void OnRegisterSystemPrintClient(bool succeeded) {}
 

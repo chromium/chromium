@@ -30,8 +30,22 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
                             base::OnceCallback<void(bool)> on_verdict,
                             base::OnceClosure hide_preview);
 
-absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
-GetBeforePrintPreviewAnalysisData(content::WebContents* web_contents);
+// Represents context for the kind of print workflow that needs to check if
+// scanning should happen. This is used in conjunction with the
+// `kEnableCloudScanAfterPreview` and `kEnableLocalScanAfterPreview` to control
+// the timing at which scanning occurs.
+enum class PrintScanningContext {
+  kBeforeSystemDialog,
+  kBeforePreview,
+  kSystemPrintAfterPreview,
+  kNormalPrintAfterPreview,
+};
+
+// Returns a `ContentAnalysisDelegate::Data` object with information about how
+// content scanning should proceed, or nullopt if it shouldn't.
+absl::optional<ContentAnalysisDelegate::Data> GetPrintAnalysisData(
+    content::WebContents* web_contents,
+    PrintScanningContext context);
 
 }  // namespace enterprise_connectors
 

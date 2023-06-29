@@ -83,8 +83,9 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
   std::move(on_verdict).Run(/*allowed=*/true);
 }
 
-absl::optional<ContentAnalysisDelegate::Data> GetBeforePrintPreviewAnalysisData(
-    content::WebContents* web_contents) {
+absl::optional<ContentAnalysisDelegate::Data> GetPrintAnalysisData(
+    content::WebContents* web_contents,
+    PrintScanningContext context) {
   ContentAnalysisDelegate::Data scanning_data;
 
   if (!ContentAnalysisDelegate::IsEnabled(
@@ -94,7 +95,11 @@ absl::optional<ContentAnalysisDelegate::Data> GetBeforePrintPreviewAnalysisData(
     return absl::nullopt;
   }
 
-  if (base::FeatureList::IsEnabled(
+  // TODO(b/281087582): Update condition for cloud system print.
+  // Printing directly with a system dialog results in an immediate scan, so
+  // applying any post-preview feature should only be done in other contexts.
+  if (context != PrintScanningContext::kBeforeSystemDialog &&
+      base::FeatureList::IsEnabled(
           printing::features::kEnableLocalScanAfterPreview) &&
       scanning_data.settings.cloud_or_local_settings.is_local_analysis()) {
     return absl::nullopt;
