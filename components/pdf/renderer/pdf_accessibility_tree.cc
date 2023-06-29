@@ -2159,8 +2159,6 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   // Copy nodes from `AXTreeUpdate` from OCR results and update their relative
   // bounds. PDF accessibility tree assumes that all nodes have bounds relative
   // to the root node.
-  // TODO(crbug.com/1278249): add an attribute to indicate that these nodes
-  // are auto-generated and have a way to notify the user of that.
   for (const auto& node_from_ocr : tree_update.nodes) {
     std::unique_ptr<ui::AXNodeData> new_node =
         std::make_unique<ui::AXNodeData>(node_from_ocr);
