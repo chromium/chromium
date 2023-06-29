@@ -342,6 +342,9 @@ class VideoAcceleratorUtil {
                         && videoCapabilities.isSizeSupported(
                                 supportedHeights.getUpper(), supportedWidths.getUpper());
 
+                // See video_codecs.h
+                final int kNoVideoCodecLevel = 0;
+
                 // The map from supported profile to the highest supported level. We just attach
                 // the same min/max to every profile, level pair.
                 HashMap<Integer, Integer> supportedProfileLevels = new HashMap<>();
@@ -350,18 +353,31 @@ class VideoAcceleratorUtil {
                     try {
                         int profile = CodecProfileLevelList.mediaCodecProfileToChromiumMediaProfile(
                                 codec, cpl.profile);
-                        int level = CodecProfileLevelList.mediaCodecLevelToChromiumMediaLevel(
-                                codec, cpl.level);
-                        int supportedLevel = supportedProfileLevels.getOrDefault(profile, -1);
+
+                        // Some devices don't provide valid level information, zero means
+                        // no level.
+                        int level = kNoVideoCodecLevel;
+                        try {
+                            level = CodecProfileLevelList.mediaCodecLevelToChromiumMediaLevel(
+                                    codec, cpl.level);
+                        } catch (RuntimeException e) {
+                            // This may mean mediaCodecLevelToChromiumMediaLevel() needs updating,
+                            // but may also just mean the device has invalid levels.
+                            Log.w(TAG,
+                                    "Unknown level: " + cpl.level + " for profile " + cpl.profile
+                                            + " of codec " + type);
+                        }
+
+                        // We use kNoVideoCodecLevel -1 here so level == kNoVideoCodecLevel adds a
+                        // supportedProfileLevels entry.
+                        int supportedLevel = supportedProfileLevels.getOrDefault(
+                                profile, kNoVideoCodecLevel - 1);
                         if (level > supportedLevel) {
                             supportedProfileLevels.put(profile, level);
                         }
                     } catch (RuntimeException e) {
-                        // This means mediaCodecProfileToChromiumMediaProfile() or
-                        // mediaCodecLevelToChromiumMediaLevel() needs updating.
-                        Log.w(TAG,
-                                "Unknown profile: " + cpl.profile + " or level: " + cpl.level
-                                        + " for codec " + type);
+                        // This means mediaCodecProfileToChromiumMediaProfile() needs updating.
+                        Log.w(TAG, "Unknown profile: " + cpl.profile + " for codec " + type);
                         continue;
                     }
                 }
@@ -371,35 +387,34 @@ class VideoAcceleratorUtil {
                 // https://developer.android.com/guide/topics/media/media-formats
                 //
                 // The decoder selection will choose the decoder if the supported level is
-                // larger than or equal to the requested level. So here we use a large number to
-                // let the decoder selection succeed, if Android doesn't list required levels.
-                int maxLevel = Integer.MAX_VALUE;
+                // larger than or equal to the requested level. So here we the 'no level'
+                // sentinel value, if Android doesn't list required levels.
                 if (supportedProfileLevels.isEmpty()) {
                     Log.d(TAG,
                             "CodecCapabilities.profileLevels is missing for codec " + type
                                     + ". Assuming default support.");
                     switch (codec) {
                         case VideoCodec.VP8:
-                            supportedProfileLevels.put(VideoCodecProfile.VP8PROFILE_ANY, maxLevel);
+                            supportedProfileLevels.put(
+                                    VideoCodecProfile.VP8PROFILE_ANY, kNoVideoCodecLevel);
                             break;
                         case VideoCodec.VP9:
                             supportedProfileLevels.put(
-                                    VideoCodecProfile.VP9PROFILE_PROFILE0, maxLevel);
+                                    VideoCodecProfile.VP9PROFILE_PROFILE0, kNoVideoCodecLevel);
                             break;
                         case VideoCodec.HEVC:
-                            // Main Profile Level 3 (90) for mobile devices and Main Profile
-                            // Level 4.1 (123) for Android TV.
-                            supportedProfileLevels.put(VideoCodecProfile.HEVCPROFILE_MAIN, 90);
+                            supportedProfileLevels.put(
+                                    VideoCodecProfile.HEVCPROFILE_MAIN, kNoVideoCodecLevel);
                             break;
                         case VideoCodec.H264:
                             supportedProfileLevels.put(
-                                    VideoCodecProfile.H264PROFILE_BASELINE, maxLevel);
+                                    VideoCodecProfile.H264PROFILE_BASELINE, kNoVideoCodecLevel);
                             supportedProfileLevels.put(
-                                    VideoCodecProfile.H264PROFILE_MAIN, maxLevel);
+                                    VideoCodecProfile.H264PROFILE_MAIN, kNoVideoCodecLevel);
                             break;
                         case VideoCodec.AV1:
                             supportedProfileLevels.put(
-                                    VideoCodecProfile.AV1PROFILE_PROFILE_MAIN, maxLevel);
+                                    VideoCodecProfile.AV1PROFILE_PROFILE_MAIN, kNoVideoCodecLevel);
                             break;
                     }
                 }
@@ -407,7 +422,8 @@ class VideoAcceleratorUtil {
                 // Prior to Oreo, high profile support wasn't advertised properly.
                 if (codec == VideoCodec.H264 && Build.VERSION.SDK_INT < Build.VERSION_CODES.O
                         && hasHighProfileSupport(info.getName())) {
-                    supportedProfileLevels.put(VideoCodecProfile.H264PROFILE_HIGH, maxLevel);
+                    supportedProfileLevels.put(
+                            VideoCodecProfile.H264PROFILE_HIGH, kNoVideoCodecLevel);
                 }
 
                 boolean isSoftwareCodec = MediaCodecUtil.isSoftwareCodec(info);
