@@ -472,9 +472,10 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
   EXPECT_TRUE(builder->MatchesNothing());
   // `builder` produces a malformed filter, so it fails a CHECK in
   // `BrowsingDataRemoverImpl`.
-  EXPECT_DEATH(RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
-                                       std::move(builder)),
-               "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
+                              std::move(builder)),
+      "");
 
   EXPECT_EQ(1u, GetAllCookies().size());
 }
