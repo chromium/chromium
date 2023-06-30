@@ -63,6 +63,32 @@ class SafeBrowsingPrefsTest : public ::testing::Test {
   TestingPrefServiceSimple prefs_;
 };
 
+TEST_F(SafeBrowsingPrefsTest,
+       TailoredSecuritySyncFlowLastRunTimeIsInitialized) {
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+  EXPECT_EQ(prefs.GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
+            base::Time());
+}
+
+TEST_F(SafeBrowsingPrefsTest,
+       TailoredSecuritySyncLastUserInteractionStateIsInitialized) {
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+  EXPECT_EQ(
+      prefs.GetValue(prefs::kTailoredSecuritySyncFlowLastUserInteractionState),
+      TailoredSecurityUserInteractionState::UNSET);
+}
+
+TEST_F(SafeBrowsingPrefsTest,
+       TailoredSecuritySyncUserObservedOutcomeUnsetTimestampIsInitialized) {
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+  EXPECT_EQ(prefs.GetTime(
+                prefs::kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp),
+            base::Time());
+}
+
 TEST_F(SafeBrowsingPrefsTest, GetSafeBrowsingExtendedReportingLevel) {
   // By Default, extended reporting is off.
   EXPECT_EQ(SBER_LEVEL_OFF, GetExtendedReportingLevel(prefs_));

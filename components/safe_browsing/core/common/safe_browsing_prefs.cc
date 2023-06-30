@@ -120,6 +120,12 @@ const char kAccountTailoredSecurityUpdateTimestamp[] =
     "safebrowsing.aesb_update_time_windows_epoch_micros";
 const char kAccountTailoredSecurityShownNotification[] =
     "safebrowsing.aesb_shown_notification";
+const char kTailoredSecuritySyncFlowLastRunTime[] =
+    "safebrowsing.aesb_sync_flow_start_timestamp";
+const char kTailoredSecuritySyncFlowLastUserInteractionState[] =
+    "safebrowsing.aesb_sync_flow_last_user_interaction_state";
+const char kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp[] =
+    "safebrowsing.aesb_sync_flow_observed_outcome_unset_timestamp";
 const char kEnhancedProtectionEnabledViaTailoredSecurity[] =
     "safebrowsing.esb_enabled_via_tailored_security";
 const char kExtensionTelemetryLastUploadTime[] =
@@ -280,6 +286,15 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kAccountTailoredSecurityShownNotification, false);
   registry->RegisterBooleanPref(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
+  registry->RegisterTimePref(prefs::kTailoredSecuritySyncFlowLastRunTime,
+                             base::Time());
+  registry->RegisterIntegerPref(
+      prefs::kTailoredSecuritySyncFlowLastUserInteractionState,
+      TailoredSecurityUserInteractionState::UNSET);
+  registry->RegisterTimePref(
+      prefs::kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp,
+      base::Time());
+
   registry->RegisterTimePref(prefs::kExtensionTelemetryLastUploadTime,
                              base::Time::Now());
   registry->RegisterDictionaryPref(prefs::kExtensionTelemetryConfig);
