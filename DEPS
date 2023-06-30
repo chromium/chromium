@@ -5307,8 +5307,7 @@ hooks = [
                '--default-bucket', 'fuchsia-sdk',
                '--image-root-dir',
                'src/third_party/fuchsia-sdk/images-internal',
-               '--boot-images', '{checkout_fuchsia_internal_images}',
-               '--allow-override=False'
+               '--boot-images', '{checkout_fuchsia_internal_images}'
     ],
   },
 

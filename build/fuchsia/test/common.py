@@ -130,6 +130,16 @@ def set_ffx_isolate_dir(isolate_dir: str) -> None:
     os.environ['FFX_ISOLATE_DIR'] = isolate_dir
 
 
+def get_hash_from_sdk():
+    """Retrieve version info from the SDK."""
+
+    version_file = os.path.join(SDK_ROOT, 'meta', 'manifest.json')
+    assert os.path.exists(version_file), \
+           'Could not detect version file. Make sure the SDK is downloaded.'
+    with open(version_file, 'r') as f:
+        return json.load(f)['id']
+
+
 def get_host_tool_path(tool):
     """Get a tool from the SDK."""
 

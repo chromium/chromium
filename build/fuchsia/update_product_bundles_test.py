@@ -31,7 +31,7 @@ class TestUpdateProductBundles(unittest.TestCase):
 
   def testConvertToProductBundleDefaultsUnknownImage(self):
     self.assertEqual(
-        update_product_bundles.convert_to_product_bundle(['unknown-image']),
+        update_product_bundles.convert_to_products(['unknown-image']),
         ['unknown-image'])
 
   def testConvertToProductBundleWarnsDeprecated(self):
@@ -41,7 +41,7 @@ class TestUpdateProductBundles(unittest.TestCase):
           'workstation_eng.chromebook-x64-release'
       ]
       self.assertEqual(
-          update_product_bundles.convert_to_product_bundle(deprecated_images), [
+          update_product_bundles.convert_to_products(deprecated_images), [
               'terminal.qemu-arm64', 'terminal.qemu-x64', 'core.x64-dfv2',
               'workstation_eng.chromebook-x64'
           ])
@@ -49,25 +49,6 @@ class TestUpdateProductBundles(unittest.TestCase):
         self.assertIn(f'Image name {deprecated_image} has been deprecated',
                       logs.output[i])
 
-  @mock.patch('builtins.open')
-  @mock.patch('os.path.exists')
-  def testGetHashFromSDK(self, mock_exists, mock_open):
-    mock_open.return_value = io.StringIO(json.dumps({'id': 'foo-bar'}))
-    mock_exists.return_value = True
-
-    self.assertEqual(update_product_bundles.get_hash_from_sdk(), 'foo-bar')
-
-    manifest_file = os.path.join(common.SDK_ROOT, 'meta', 'manifest.json')
-    mock_exists.assert_called_once_with(manifest_file)
-    mock_open.assert_called_once_with(manifest_file, 'r')
-
-  @mock.patch('builtins.open')
-  @mock.patch('os.path.exists')
-  def testGetHashFromSDKRaisesErrorIfNoManifestExists(self, mock_exists,
-                                                      mock_open):
-    mock_exists.return_value = False
-
-    self.assertRaises(RuntimeError, update_product_bundles.get_hash_from_sdk)
 
   @mock.patch('common.run_ffx_command')
   def testRemoveRepositoriesRunsRemoveOnGivenRepos(self, ffx_mock):
@@ -208,81 +189,6 @@ class TestUpdateProductBundles(unittest.TestCase):
         mock.call(cmd=('product-bundle', 'remove', '-f', 'core.x64-dfv2')),
     ],
                                     any_order=True)
-
-  @mock.patch('common.run_ffx_command')
-  @mock.patch('update_product_bundles.update_repositories_list')
-  def testDownloadProductBundleUpdatesRepoListBeforeCall(
-      self, mock_update_repo, mock_ffx):
-    mock_sequence = mock.Mock()
-    mock_sequence.attach_mock(mock_update_repo, 'update_repo_list')
-    mock_sequence.attach_mock(mock_ffx, 'run_ffx_command')
-
-    update_product_bundles.download_product_bundle('some-bundle', None)
-
-    mock_sequence.assert_has_calls([
-        mock.call.update_repo_list(),
-        mock.call.run_ffx_command(cmd=('product-bundle', 'get', 'some-bundle',
-                                       '--force-repo'),
-                                  configs=None)
-    ])
-
-  @mock.patch('common.run_ffx_command')
-  @mock.patch('update_product_bundles.get_product_bundle_urls')
-  def testFilterProductBundleURLsRemovesBundlesWithoutGivenString(
-      self, mock_get_urls, mock_ffx):
-    mock_get_urls.return_value = [
-        {
-            'url': 'some-url-has-buzz',
-            'downloaded': True,
-        },
-        {
-            'url': 'some-url-to-remove-has-foo',
-            'downloaded': True,
-        },
-        {
-            'url': 'some-url-to-not-remove-has-foo',
-            'downloaded': False,
-        },
-    ]
-    update_product_bundles.keep_product_bundles_by_sdk_version('buzz')
-    mock_ffx.assert_called_once_with(cmd=('product-bundle', 'remove', '-f',
-                                          'some-url-to-remove-has-foo'))
-
-  @mock.patch('update_product_bundles.get_repositories')
-  def testGetCurrentSignatureReturnsNoneIfNoProductBundles(
-      self, mock_get_repos):
-    self._InitFFXRunWithProductBundleList()
-
-    # Forces no product-bundles
-    mock_get_repos.return_value = []
-
-    # Mutes logs
-    with self.assertLogs():
-      self.assertIsNone(update_product_bundles.get_current_signature())
-
-  @mock.patch('update_product_bundles.get_repositories')
-  def testGetCurrentSignatureParsesVersionCorrectly(self, mock_get_repos):
-    self._InitFFXRunWithProductBundleList()
-    mock_get_repos.return_value = [{
-        'name': 'workstation-eng.chromebook-x64'
-    }, {
-        'name': 'terminal.qemu-x64'
-    }]
-
-    self.assertEqual('10.20221114.2.1',
-                     update_product_bundles.get_current_signature())
-
-  @mock.patch('update_product_bundles.get_repositories')
-  def testGetCurrentSignatureParsesCustomArtifactsCorrectlys(
-      self, mock_get_repos):
-    self._InitFFXRunWithProductBundleList(sdk_version='51390009')
-    mock_get_repos.return_value = [{
-        'name': 'workstation-eng.chromebook-x64'
-    }, {
-        'name': 'terminal.qemu-x64'
-    }]
-
-    self.assertEqual('51390009', update_product_bundles.get_current_signature())
 
 
 if __name__ == '__main__':

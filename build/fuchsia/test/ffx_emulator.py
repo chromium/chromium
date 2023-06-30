@@ -13,9 +13,9 @@ import subprocess
 
 from contextlib import AbstractContextManager
 
-from common import find_image_in_sdk, get_system_info, run_ffx_command, \
-                   SDK_ROOT
-from compatible_utils import get_host_arch, get_sdk_hash
+from common import get_hash_from_sdk, get_system_info, run_ffx_command, \
+                   IMAGES_ROOT, SDK_ROOT
+from compatible_utils import get_host_arch
 
 _EMU_COMMAND_RETRIES = 3
 
@@ -23,10 +23,10 @@ _EMU_COMMAND_RETRIES = 3
 class FfxEmulator(AbstractContextManager):
     """A helper for managing emulators."""
     def __init__(self, args: argparse.Namespace) -> None:
-        if args.product_bundle:
-            self._product_bundle = args.product_bundle
+        if args.product:
+            self._product = args.product
         else:
-            self._product_bundle = 'terminal.qemu-' + get_host_arch()
+            self._product = 'terminal.qemu-' + get_host_arch()
 
         self._enable_graphics = args.enable_graphics
         self._hardware_gpu = args.hardware_gpu
@@ -44,20 +44,15 @@ class FfxEmulator(AbstractContextManager):
             self._node_name = 'fuchsia-emulator-' + str(random.randint(
                 1, 9999))
 
-        # Set the download path parallel to Fuchsia SDK directory
-        # permanently so that scripts can always find the product bundles.
-        run_ffx_command(cmd=('config', 'set', 'pbms.storage.path',
-                             os.path.join(SDK_ROOT, os.pardir, 'images')))
-
     def _everlasting(self) -> bool:
         return self._node_name == 'fuchsia-everlasting-emulator'
 
     def _start_emulator(self) -> None:
         """Start the emulator."""
         logging.info('Starting emulator %s', self._node_name)
-        emu_command = [
-            'emu', 'start', self._product_bundle, '--name', self._node_name
-        ]
+        prod, board = self._product.split('.', 1)
+        image_dir = os.path.join(IMAGES_ROOT, prod, board)
+        emu_command = ['emu', 'start', image_dir, '--name', self._node_name]
         if not self._enable_graphics:
             emu_command.append('-H')
         if self._hardware_gpu:
@@ -142,7 +137,7 @@ class FfxEmulator(AbstractContextManager):
         """
 
         if self._everlasting():
-            sdk_hash = get_sdk_hash(find_image_in_sdk(self._product_bundle))
+            sdk_hash = get_hash_from_sdk()
             sys_info = get_system_info(self._node_name)
             if sdk_hash == sys_info:
                 return self._node_name

@@ -38,7 +38,7 @@ def register_emulator_args(parser: argparse.ArgumentParser,
         action='store_true',
         help='Use host GPU hardware instead of Swiftshader.')
     femu_args.add_argument(
-        '--product-bundle',
+        '--product',
         help='Specify a product bundle used for booting the '
         'emulator. Defaults to the terminal product.')
     femu_args.add_argument('--with-network',
