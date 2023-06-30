@@ -24,8 +24,6 @@ declare_args() {
   # should not be removed.
   enable_rust =
       build_with_chromium &&
-      # TODO(crbug.com/1446796): Mac and iOS official.
-      !(is_official_build && (is_mac || is_ios)) &&
       # TODO(crbug.com/1453618): Windows ARM64 is missing clang_rt libs, and
       # clang_rt.profile is needed when coverage is enabled.
       !(is_win && use_clang_coverage && target_cpu == "arm64")
@@ -90,6 +88,8 @@ declare_args() {
   enable_rust_json = enable_all_rust_features
 
   # Support for chrome://crash-rust to check crash dump collection works.
+  # TODO(crbug.com/1386212): On Apple, we need to exclude Rust symbols from the
+  # compiled framework dlls, as all symbols are exported by default.
   enable_rust_crash = !(is_chromeos || is_mac) || enable_all_rust_features
 
   # Support for QR code generation - see https://crbug.com/1431991.
