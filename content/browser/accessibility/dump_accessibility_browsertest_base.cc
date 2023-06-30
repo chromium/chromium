@@ -274,20 +274,20 @@ void DumpAccessibilityTestBase::RunTest(
 // WaitForAccessibiltiyClean(), Action::kRequestAccessibilityCleanNotification,
 // Event::kAccessibilityClean, etc. because this can be used multiple times
 // per test.
-// TODO(accessibility) A potential test flakiness fix would be to
-// WaitForEndOfTest on all descendant documents. This currently only
-// ensures a clean state for the root document. However, the code in
-// RenderAccessibilityImpl would not be able to perfectly check all child
-// documents because some frames are remote, aka in another process. This does
-// not appear to be necessary for our current tests. It may be necessary if we
-// end up with <portal> or <iframe> tests that have more complex content.
 void DumpAccessibilityTestBase::WaitForEndOfTest(ui::AXMode mode) const {
   // To make sure we've handled all accessibility events, add a sentinel by
-  // calling SignalEndOfTest and waiting for a kEndOfTest event in response.
+  // calling SignalEndOfTest on each frame and waiting for a kEndOfTest event
+  // in response.
+  auto hosts = content::CollectAllRenderFrameHosts(GetWebContents());
+  for (auto* host : hosts) {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kSignalEndOfTest;
+    host->AccessibilityPerformAction(action_data);
+  }
+
   AccessibilityNotificationWaiter waiter(GetWebContents(), mode,
                                          ax::mojom::Event::kEndOfTest);
-  GetManager()->SignalEndOfTest();
-  ASSERT_TRUE(waiter.WaitForNotification());
+  ASSERT_TRUE(waiter.WaitForNotification(true));
 }
 
 void DumpAccessibilityTestBase::PerformAndWaitForDefaultActions(

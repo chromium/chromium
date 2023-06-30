@@ -2747,10 +2747,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityObjectImage) {
   RunHtmlTest(FILE_PATH_LITERAL("object-image.html"));
 }
 
+#if BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityObjectImageError) {
   RunHtmlTest(FILE_PATH_LITERAL("object-image-error.html"));
 }
+#endif
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityOffscreen) {
   RunHtmlTest(FILE_PATH_LITERAL("offscreen.html"));

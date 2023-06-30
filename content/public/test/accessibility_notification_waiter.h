@@ -53,7 +53,10 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   // AccessibilityNotificationWaiter is received. Ignores notifications for
   // "about:blank". Returns true if an event was received, false if waiting
   // ended for some other reason.
-  [[nodiscard]] bool WaitForNotification();
+  // Pass true for |all_frames| to wait for a notification on all frames
+  // before returning, rather than waiting for only a single notification
+  // from any frame.
+  [[nodiscard]] bool WaitForNotification(bool all_frames = false);
 
   // Blocks until the notification is received, or the given timeout passes.
   // Returns true if an event was received, false if waiting ended for some
@@ -136,6 +139,8 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   raw_ptr<BrowserAccessibilityManager, DanglingAcrossTasks>
       event_browser_accessibility_manager_ = nullptr;
   bool notification_received_ = false;
+  int frame_count_ = 0;
+  int notification_count_ = 0;
 
   base::WeakPtrFactory<AccessibilityNotificationWaiter> weak_factory_{this};
 };
