@@ -30,6 +30,6 @@
     }
   ],
   "scope": ".",
-  "start_url": "manifest_test_page.html",
+  "start_url": "manifest_test_page_screenshots.html",
   "display": "standalone"
 }

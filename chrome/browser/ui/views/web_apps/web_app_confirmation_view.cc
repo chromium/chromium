@@ -123,6 +123,12 @@ WebAppConfirmationView::WebAppConfirmationView(
               l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_BUTTON_LABEL))
           .SetModalType(ui::MODAL_TYPE_CHILD)
           .SetTitle(IDS_ADD_TO_OS_LAUNCH_SURFACE_BUBBLE_TITLE)
+          .SetAcceptCallback(base::BindOnce(&WebAppConfirmationView::OnAccept,
+                                            weak_ptr_factory_.GetWeakPtr()))
+          .SetCloseCallback(base::BindOnce(&WebAppConfirmationView::OnClose,
+                                           weak_ptr_factory_.GetWeakPtr()))
+          .SetCancelCallback(base::BindOnce(&WebAppConfirmationView::OnCancel,
+                                            weak_ptr_factory_.GetWeakPtr()))
           .set_margins(layout_provider->GetDialogInsetsForContentType(
               views::DialogContentType::kControl,
               views::DialogContentType::kText))
@@ -200,17 +206,26 @@ bool WebAppConfirmationView::ShouldShowCloseButton() const {
   return false;
 }
 
-void WebAppConfirmationView::WindowClosing() {
-  if (callback_) {
-    CHECK(web_app_info_);
-    CHECK(install_tracker_);
-    install_tracker_->ReportResult(webapps::MlInstallUserResponse::kCancelled);
-    std::move(callback_).Run(false, std::move(web_app_info_));
-  }
+bool WebAppConfirmationView::IsDialogButtonEnabled(
+    ui::DialogButton button) const {
+  return button == ui::DIALOG_BUTTON_OK ? !GetTrimmedTitle().empty() : true;
 }
 
-bool WebAppConfirmationView::Accept() {
-  DCHECK(web_app_info_);
+void WebAppConfirmationView::ContentsChanged(
+    views::Textfield* sender,
+    const std::u16string& new_contents) {
+  DCHECK_EQ(title_tf_, sender);
+  DialogModelChanged();
+}
+
+std::u16string WebAppConfirmationView::GetTrimmedTitle() const {
+  std::u16string title(title_tf_->GetText());
+  base::TrimWhitespace(title, base::TRIM_ALL, &title);
+  return title;
+}
+
+void WebAppConfirmationView::OnAccept() {
+  CHECK(web_app_info_);
   web_app_info_->title = GetTrimmedTitle();
   if (ShowRadioButtons()) {
     if (open_as_tabbed_window_radio_->GetChecked()) {
@@ -233,25 +248,25 @@ bool WebAppConfirmationView::Accept() {
   // is destroyed for subsequent calls. So reset the tracker manually here.
   install_tracker_.reset();
   std::move(callback_).Run(true, std::move(web_app_info_));
-  return true;
 }
 
-bool WebAppConfirmationView::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  return button == ui::DIALOG_BUTTON_OK ? !GetTrimmedTitle().empty() : true;
+void WebAppConfirmationView::OnClose() {
+  CHECK(install_tracker_);
+  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
+  RunCloseCallbackIfExists();
 }
 
-void WebAppConfirmationView::ContentsChanged(
-    views::Textfield* sender,
-    const std::u16string& new_contents) {
-  DCHECK_EQ(title_tf_, sender);
-  DialogModelChanged();
+void WebAppConfirmationView::OnCancel() {
+  CHECK(install_tracker_);
+  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kCancelled);
+  RunCloseCallbackIfExists();
 }
 
-std::u16string WebAppConfirmationView::GetTrimmedTitle() const {
-  std::u16string title(title_tf_->GetText());
-  base::TrimWhitespace(title, base::TRIM_ALL, &title);
-  return title;
+void WebAppConfirmationView::RunCloseCallbackIfExists() {
+  if (callback_) {
+    CHECK(web_app_info_);
+    std::move(callback_).Run(false, std::move(web_app_info_));
+  }
 }
 
 BEGIN_METADATA(WebAppConfirmationView, views::DialogDelegateView)
@@ -273,7 +288,7 @@ void ShowWebAppInstallDialog(
   constrained_window::ShowWebModalDialogViews(dialog, web_contents);
 
   if (g_auto_accept_web_app_for_testing) {
-    dialog->AcceptDialog();
+    dialog->Accept();
   }
 }
 

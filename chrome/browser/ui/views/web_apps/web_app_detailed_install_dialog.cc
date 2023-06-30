@@ -341,7 +341,7 @@ void ShowWebAppDetailedInstallDialog(
       std::make_unique<web_app::WebAppDetailedInstallDialogDelegate>(
           web_contents, std::move(install_info), std::move(install_tracker),
           std::move(callback), std::move(iph_state), prefs, tracker);
-  auto* delegate_ptr = delegate.get();
+  auto delegate_weak_ptr = delegate->AsWeakPtr();
   auto dialog_model =
       ui::DialogModel::Builder(std::move(delegate))
           .SetInternalName("WebAppDetailedInstallDialog")
@@ -355,21 +355,22 @@ void ShowWebAppDetailedInstallDialog(
           .AddOkButton(
               base::BindOnce(
                   &web_app::WebAppDetailedInstallDialogDelegate::OnAccept,
-                  base::Unretained(delegate_ptr)),
+                  delegate_weak_ptr),
               ui::DialogModelButton::Params().SetLabel(
                   l10n_util::GetStringUTF16(IDS_INSTALL)))
           .AddCancelButton(base::BindOnce(
               &web_app::WebAppDetailedInstallDialogDelegate::OnCancel,
-              base::Unretained(delegate_ptr)))
+              delegate_weak_ptr))
+          .SetCloseActionCallback(base::BindOnce(
+              &web_app::WebAppDetailedInstallDialogDelegate::OnClose,
+              delegate_weak_ptr))
           .AddCustomField(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(
                   std::make_unique<ImageCarouselView>(screenshots),
                   views::BubbleDialogModelHost::FieldType::kControl))
           .SetDialogDestroyingCallback(base::BindOnce(
-              [](web_app::WebAppDetailedInstallDialogDelegate* delegate) {
-                delegate->OnCancel();
-              },
-              base::Unretained(delegate_ptr)))
+              &web_app::WebAppDetailedInstallDialogDelegate::OnClose,
+              delegate_weak_ptr))
           .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
           .Build();
 
@@ -437,26 +438,22 @@ void WebAppDetailedInstallDialogDelegate::OnAccept() {
     tracker_->NotifyEvent(feature_engagement::events::kDesktopPwaInstalled);
   }
 
+  CHECK(callback_);
+  CHECK(install_tracker_);
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
-
   std::move(callback_).Run(true, std::move(install_info_));
 }
 
 void WebAppDetailedInstallDialogDelegate::OnCancel() {
-  if (callback_.is_null()) {
-    return;
-  }
-
-  base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallCancelled"));
-  if (iph_state_ == chrome::PwaInProductHelpState::kShown && install_info_) {
-    web_app::AppId app_id =
-        web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
-    web_app::RecordInstallIphIgnored(prefs_, app_id, base::Time::Now());
-  }
-
+  CHECK(install_tracker_);
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kCancelled);
+  MeasureIphOnDialogClose();
+}
 
-  std::move(callback_).Run(false, std::move(install_info_));
+void WebAppDetailedInstallDialogDelegate::OnClose() {
+  CHECK(install_tracker_);
+  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
+  MeasureIphOnDialogClose();
 }
 
 void WebAppDetailedInstallDialogDelegate::OnVisibilityChanged(
@@ -486,11 +483,28 @@ void WebAppDetailedInstallDialogDelegate::DidFinishNavigation(
 }
 
 void WebAppDetailedInstallDialogDelegate::CloseDialogAsIgnored() {
-  if (install_info_) {
-    install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
-  }
+  CHECK(install_tracker_);
+  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
   if (dialog_model() && dialog_model()->host()) {
     dialog_model()->host()->Close();
+  }
+}
+
+void WebAppDetailedInstallDialogDelegate::MeasureIphOnDialogClose() {
+  if (callback_.is_null()) {
+    return;
+  }
+
+  base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallCancelled"));
+
+  if (iph_state_ == chrome::PwaInProductHelpState::kShown && install_info_) {
+    web_app::AppId app_id =
+        web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
+    web_app::RecordInstallIphIgnored(prefs_, app_id, base::Time::Now());
+  }
+
+  if (install_info_) {
+    std::move(callback_).Run(false, std::move(install_info_));
   }
 }
 

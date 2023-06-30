@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_INSTALLABLE_ML_PROMOTION_BROWSERTEST_BASE_H_
 #define CHROME_BROWSER_INSTALLABLE_ML_PROMOTION_BROWSERTEST_BASE_H_
 
+#include <string>
+
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -45,7 +47,8 @@ class MLPromotionBrowserTestBase : public PlatformBrowserTest {
   // install ux. If `accept_install` is true, then this will accept the install
   // & continue. If it is false, then it will cancel the install.
   // Returns if the installation went as expected.
-  bool InstallAppFromUserInitiation(bool accept_install);
+  bool InstallAppFromUserInitiation(bool accept_install,
+                                    std::string dialog_name);
 
   bool NavigateAndAwaitInstallabilityCheck(const GURL& url);
   segmentation_platform::MockSegmentationPlatformService* GetMockSegmentation(

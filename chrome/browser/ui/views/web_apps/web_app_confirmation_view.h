@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -44,10 +45,8 @@ class WebAppConfirmationView : public views::DialogDelegateView,
   // Overridden from views::WidgetDelegate:
   views::View* GetInitiallyFocusedView() override;
   bool ShouldShowCloseButton() const override;
-  void WindowClosing() override;
 
   // Overriden from views::DialogDelegateView:
-  bool Accept() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
 
   // Overridden from views::TextfieldController:
@@ -56,6 +55,12 @@ class WebAppConfirmationView : public views::DialogDelegateView,
 
   // Get the trimmed contents of the title text field.
   std::u16string GetTrimmedTitle() const;
+
+  void OnAccept();
+  void OnClose();
+  void OnCancel();
+
+  void RunCloseCallbackIfExists();
 
   // The WebAppInstallInfo that the user is editing.
   // Cleared when the dialog completes (Accept/WindowClosing).
@@ -86,6 +91,8 @@ class WebAppConfirmationView : public views::DialogDelegateView,
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION views::Textfield* title_tf_ = nullptr;
+
+  base::WeakPtrFactory<WebAppConfirmationView> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(, WebAppConfirmationView, views::DialogDelegateView)

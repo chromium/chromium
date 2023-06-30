@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "chrome/browser/installable/ml_promotion_browsertest_base.h"
 
 #include "base/functional/callback_helpers.h"
@@ -104,7 +106,8 @@ bool MLPromotionBrowserTestBase::InstallAppForCurrentWebContents(
 }
 
 bool MLPromotionBrowserTestBase::InstallAppFromUserInitiation(
-    bool accept_install) {
+    bool accept_install,
+    std::string dialog_name) {
 #if BUILDFLAG(IS_ANDROID)
   // TODO(b/287255120) : Build functionalities for Android.
   return false;
@@ -112,7 +115,7 @@ bool MLPromotionBrowserTestBase::InstallAppFromUserInitiation(
   base::test::TestFuture<const web_app::AppId&, InstallResultCode>
       install_future;
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "PWAConfirmationBubbleView");
+                                       dialog_name);
   web_app::CreateWebAppFromManifest(
       web_contents(),
       /*bypass_service_worker_check=*/true,
