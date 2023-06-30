@@ -16,6 +16,20 @@ namespace android {
 
 namespace {
 
+// Max data url size to be displayed.
+const size_t kMaxDataURLSize = 64u;
+
+// If this is a data URL, truncate it if it is too long.
+void TruncatedDataUrlIfNeeded(GURL* url) {
+  if (url->SchemeIs(url::kDataScheme)) {
+    const std::string& data_url = url->spec();
+    if (data_url.size() > kMaxDataURLSize) {
+      GURL truncated_url(data_url.substr(0, kMaxDataURLSize));
+      url->Swap(&truncated_url);
+    }
+  }
+}
+
 // Helper method to unify the OfflineItem conversion argument list to a single
 // place.  This is meant to reduce code churn from OfflineItem member
 // modification.  The behavior is as follows:
@@ -28,6 +42,10 @@ JNI_OfflineItemBridge_createOfflineItemAndMaybeAddToList(
     JNIEnv* env,
     ScopedJavaLocalRef<jobject> jlist,
     const OfflineItem& item) {
+  GURL url = item.url;
+  TruncatedDataUrlIfNeeded(&url);
+  GURL original_url = item.original_url;
+  TruncatedDataUrlIfNeeded(&original_url);
   return Java_OfflineItemBridge_createOfflineItemAndMaybeAddToList(
       env, jlist, ConvertUTF8ToJavaString(env, item.id.name_space),
       ConvertUTF8ToJavaString(env, item.id.id),
@@ -39,8 +57,8 @@ JNI_OfflineItemBridge_createOfflineItemAndMaybeAddToList(
       item.completion_time.ToJavaTime(), item.last_accessed_time.ToJavaTime(),
       item.is_openable, ConvertUTF8ToJavaString(env, item.file_path.value()),
       ConvertUTF8ToJavaString(env, item.mime_type),
-      url::GURLAndroid::FromNativeGURL(env, item.url),
-      url::GURLAndroid::FromNativeGURL(env, item.original_url),
+      url::GURLAndroid::FromNativeGURL(env, url),
+      url::GURLAndroid::FromNativeGURL(env, original_url),
       item.is_off_the_record, ConvertUTF8ToJavaString(env, item.otr_profile_id),
       static_cast<jint>(item.state), static_cast<jint>(item.fail_state),
       static_cast<jint>(item.pending_state), item.is_resumable,
