@@ -154,6 +154,8 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
                            TestCleanUpExpiredVerdictInBackground);
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
                            TestCleanUpVerdictOlderThanUpperBound);
+  FRIEND_TEST_ALL_PREFIXES(ArtificialHashRealTimeVerdictCacheManagerTest,
+                           TestCachePopulated);
 
   // Enum representing the reason why page load tokens are cleared. Used to log
   // histograms. Entries must not be removed or reordered.
@@ -196,12 +198,20 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   size_t GetStoredRealTimeUrlCheckVerdictCount();
 
   // This adds a cached verdict for a URL that has artificially been marked as
-  // unsafe using the command line flag "mark_as_real_time_phishing".
-  void CacheArtificialRealTimeUrlVerdict();
+  // unsafe using the command line flag "mark_as_real_time_phishing". This
+  // applies to URL real-time lookups.
+  void CacheArtificialUnsafeRealTimeUrlVerdictFromSwitch();
 
   // This adds a cached verdict for a URL that has artificially been marked as
-  // unsafe using the command line flag "mark_as_phish_guard_phishing".
-  void CacheArtificialPhishGuardVerdict();
+  // unsafe using the command line flag "mark_as_phish_guard_phishing". This
+  // applies to Phishguard pings.
+  void CacheArtificialUnsafePhishGuardVerdictFromSwitch();
+
+  // This adds a cached verdict for a URL that has artificially been marked as
+  // unsafe using the command line flag
+  // "mark_as_hash_prefix_real_time_phishing". This applies to hash-prefix
+  // real-time lookups.
+  void CacheArtificialUnsafeHashRealTimeLookupVerdictFromSwitch();
 
   // Number of verdict stored for this profile for password on focus pings.
   absl::optional<size_t> stored_verdict_count_password_on_focus_;

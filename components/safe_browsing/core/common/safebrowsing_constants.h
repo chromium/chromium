@@ -31,6 +31,10 @@ extern const char kSafeBrowsingEnabledHistogramName[];
 // Command-line flag for caching an artificial PhishGuard unsafe verdict.
 extern const char kArtificialCachedPhishGuardVerdictFlag[];
 
+// Command-line flag for caching an artificial unsafe verdict for hash-prefix
+// real-time lookups.
+extern const char kArtificialCachedHashPrefixRealTimeVerdictFlag[];
+
 // Countries that has no endpoint for Safe Browsing.
 const std::vector<std::string> GetExcludedCountries();
 

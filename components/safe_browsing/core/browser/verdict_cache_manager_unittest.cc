@@ -5,16 +5,20 @@
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/safe_browsing_sync_observer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,6 +27,8 @@ namespace safe_browsing {
 namespace {
 
 using testing::SizeIs;
+
+const char kArtificialHashRealTimeUnsafeUrl[] = "https://example.test";
 
 class MockSafeBrowsingSyncObserver : public SafeBrowsingSyncObserver {
  public:
@@ -144,6 +150,17 @@ class VerdictCacheManagerTest : public ::testing::Test {
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   raw_ptr<MockSafeBrowsingSyncObserver, DanglingUntriaged> raw_sync_observer_ =
       nullptr;
+};
+
+class ArtificialHashRealTimeVerdictCacheManagerTest
+    : public VerdictCacheManagerTest {
+ public:
+  ArtificialHashRealTimeVerdictCacheManagerTest() {
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(
+        safe_browsing::kArtificialCachedHashPrefixRealTimeVerdictFlag,
+        kArtificialHashRealTimeUnsafeUrl);
+  }
 };
 
 TEST_F(VerdictCacheManagerTest, TestCanRetrieveCachedVerdict) {
@@ -1050,6 +1067,21 @@ TEST_F(VerdictCacheManagerTest, TestIsVerdictFromPastInitialization) {
             cache_manager_->GetCachedRealTimeUrlVerdict(
                 url, &out_verdict2, &is_verdict_from_past_initialization2));
   EXPECT_TRUE(is_verdict_from_past_initialization2.value());
+}
+
+TEST_F(ArtificialHashRealTimeVerdictCacheManagerTest, TestCachePopulated) {
+  ASSERT_TRUE(VerdictCacheManager::has_artificial_unsafe_url_);
+
+  std::vector<FullHashStr> full_hashes;
+  V4ProtocolManagerUtil::UrlToFullHashes(GURL(kArtificialHashRealTimeUnsafeUrl),
+                                         &full_hashes);
+  ASSERT_EQ(full_hashes.size(), 1u);
+  FullHashStr full_hash = full_hashes[0];
+
+  std::string hash_prefix = hash_realtime_utils::GetHashPrefix(full_hash);
+  auto cache_results = cache_manager_->GetCachedHashPrefixRealTimeLookupResults(
+      {hash_prefix}, /*skip_logging=*/true);
+  EXPECT_EQ(cache_results[hash_prefix][0].full_hash(), full_hash);
 }
 
 }  // namespace safe_browsing

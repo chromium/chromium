@@ -145,6 +145,9 @@ bool HashRealTimeService::IsEnhancedProtectionEnabled() {
 bool HashRealTimeService::CanCheckUrl(
     const GURL& url,
     network::mojom::RequestDestination request_destination) {
+  if (VerdictCacheManager::has_artificial_unsafe_url()) {
+    return true;
+  }
   return request_destination == network::mojom::RequestDestination::kDocument &&
          CanGetReputationOfUrl(url);
 }
