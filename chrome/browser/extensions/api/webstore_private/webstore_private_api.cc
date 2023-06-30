@@ -398,7 +398,6 @@ void ReportWebStoreInstallNotAllowlistedInstalled(bool installed,
         installed);
   }
 }
-
 }  // namespace
 
 // static
@@ -747,6 +746,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(
     case ExtensionInstallPrompt::Result::ACCEPTED:
     case ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS: {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+      // TODO(b/202064235): The only user of this branch is ChromeOs v1 flow.
       supervised_user::SupervisedUserService* service =
           SupervisedUserServiceFactory::GetForProfile(profile_);
       // Handle parent permission for child accounts on ChromeOS.
@@ -917,6 +917,13 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
         RequestExtensionApproval(contents);
         return;
       }
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+      // Shows a parental permission dialog directly bypassing the extension
+      // install dialog view. The parental permission dialog contains a superset
+      // of data from the extension install dialog: requested extension
+      // permissions and also parent's password input.
+      PromptForParentApproval();
+      return;
 #endif  // BUILDFLAG(IS_CHROMEOS)
     }
   }

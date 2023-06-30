@@ -512,6 +512,8 @@ class SupervisedUserExtensionWebstorePrivateApiTest
  private:
   // Create another embedded test server to avoid starting the same one twice.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
+  // TODO(b/289179073): Replace ash::LoggedInUserMixin with
+  // supervised_user::SupervisionMixin so this fixture runs everywhere.
   ash::LoggedInUserMixin logged_in_user_mixin_;
   absl::optional<NextDialogAction> next_dialog_action_;
   base::test::ScopedFeatureList feature_list_;
