@@ -122,23 +122,6 @@ void CrostiniApps::LaunchAppWithIntent(const std::string& app_id,
           std::move(callback)));
 }
 
-void CrostiniApps::LaunchAppWithParams(AppLaunchParams&& params,
-                                       LaunchCallback callback) {
-  auto event_flags = apps::GetEventFlags(params.disposition,
-                                         /*prefer_container=*/false);
-  if (params.intent) {
-    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
-                        params.launch_source,
-                        std::make_unique<WindowInfo>(params.display_id),
-                        std::move(callback));
-  } else {
-    Launch(params.app_id, event_flags, params.launch_source,
-           std::make_unique<WindowInfo>(params.display_id));
-    // TODO(crbug.com/1244506): Add launch return value.
-    std::move(callback).Run(LaunchResult());
-  }
-}
-
 void CrostiniApps::Uninstall(const std::string& app_id,
                              UninstallSource uninstall_source,
                              bool clear_site_data,

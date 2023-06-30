@@ -58,6 +58,8 @@ class GuestOSApps : public KeyedService,
                              int32_t size_in_dip,
                              ui::ResourceScaleFactor scale_factor,
                              LoadIconCallback callback) override;
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override;
 
   // GuestOsRegistryService::Observer overrides.
   void OnRegistryUpdated(

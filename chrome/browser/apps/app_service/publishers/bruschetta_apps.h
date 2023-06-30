@@ -50,8 +50,6 @@ class BruschettaApps : public GuestOSApps {
                            LaunchSource launch_source,
                            WindowInfoPtr window_info,
                            LaunchCallback callback) override;
-  void LaunchAppWithParams(AppLaunchParams&& params,
-                           LaunchCallback callback) override;
   void GetMenuModel(const std::string& app_id,
                     MenuType menu_type,
                     int64_t display_id,

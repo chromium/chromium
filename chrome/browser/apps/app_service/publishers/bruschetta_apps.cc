@@ -258,11 +258,6 @@ void BruschettaApps::LaunchAppWithIntent(const std::string& app_id,
       std::move(args), vm_name, std::move(callback)));
 }
 
-void BruschettaApps::LaunchAppWithParams(AppLaunchParams&& params,
-                                         LaunchCallback callback) {
-  // TODO(b/265601951): Implement this.
-}
-
 void BruschettaApps::CreateAppOverrides(
     const guest_os::GuestOsRegistryService::Registration& registration,
     App* app) {

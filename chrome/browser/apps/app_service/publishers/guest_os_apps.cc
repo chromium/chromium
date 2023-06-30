@@ -9,9 +9,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check_is_test.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -87,6 +89,23 @@ void GuestOSApps::OnRegistryUpdated(
       AppPublisher::Publish(
           CreateApp(*registration, /*generate_new_icon_key=*/true));
     }
+  }
+}
+
+void GuestOSApps::LaunchAppWithParams(AppLaunchParams&& params,
+                                      LaunchCallback callback) {
+  auto event_flags = apps::GetEventFlags(params.disposition,
+                                         /*prefer_container=*/false);
+  if (params.intent) {
+    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
+                        params.launch_source,
+                        std::make_unique<WindowInfo>(params.display_id),
+                        std::move(callback));
+  } else {
+    Launch(params.app_id, event_flags, params.launch_source,
+           std::make_unique<WindowInfo>(params.display_id));
+    // TODO(crbug.com/1244506): Add launch return value.
+    std::move(callback).Run(LaunchResult());
   }
 }
 

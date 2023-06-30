@@ -20,8 +20,6 @@
 
 namespace apps {
 
-struct AppLaunchParams;
-
 // An app publisher (in the App Service sense) of Crostini apps,
 // See components/services/app_service/README.md.
 class CrostiniApps : public GuestOSApps {
@@ -52,8 +50,6 @@ class CrostiniApps : public GuestOSApps {
                            IntentPtr intent,
                            LaunchSource launch_source,
                            WindowInfoPtr window_info,
-                           LaunchCallback callback) override;
-  void LaunchAppWithParams(AppLaunchParams&& params,
                            LaunchCallback callback) override;
   void Uninstall(const std::string& app_id,
                  UninstallSource uninstall_source,
