@@ -1822,3 +1822,77 @@ IN_PROC_BROWSER_TEST_F(
             SidePanelEntry::Id::kSearchCompanion);
   EXPECT_EQ(1u, requests_received_on_server());
 }
+
+class SidePanelCompanion2BrowserEnabledTest : public CompanionPageBrowserTest {
+ public:
+  SidePanelCompanion2BrowserEnabledTest() : CompanionPageBrowserTest() {
+    enable_feature_side_panel_companion_ = true;
+  }
+
+ private:
+  void SetUpFeatureList() override {
+    base::FieldTrialParams enabled_params;
+    enabled_params["companion-homepage-url"] =
+        companion_server_.GetURL("/companion_iframe.html").spec();
+    enabled_params["companion-image-upload-url"] =
+        companion_server_.GetURL("/upload").spec();
+    enabled_params["open-links-in-current-tab"] = ShouldOpenLinkInCurrentTab();
+
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (enable_feature_side_panel_companion_) {
+      enabled_features.emplace_back(
+          companion::features::internal::kSidePanelCompanion2, enabled_params);
+      feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                  disabled_features);
+      EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
+    } else {
+      disabled_features.emplace_back(
+          companion::features::internal::kSidePanelCompanion);
+      disabled_features.emplace_back(
+          companion::features::internal::kSidePanelCompanion2);
+      disabled_features.emplace_back(
+          companion::features::internal::
+              kCompanionEnabledByObservingExpsNavigations);
+      feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                  disabled_features);
+      EXPECT_FALSE(companion::IsCompanionFeatureEnabled());
+    }
+  }
+};
+
+class SidePanelCompanion2BrowserDisabledTest
+    : public SidePanelCompanion2BrowserEnabledTest {
+ public:
+  SidePanelCompanion2BrowserDisabledTest() {
+    enable_feature_side_panel_companion_ = false;
+  }
+};
+
+// Verify that Companion is disabled when `kSidePanelCompanion2` is disabled.
+IN_PROC_BROWSER_TEST_F(SidePanelCompanion2BrowserDisabledTest,
+                       FeatureDisabled) {
+  EXPECT_FALSE(companion::IsCompanionFeatureEnabled());
+  // Load a page on the active tab and open companion side panel
+  WaitForMainPageToBeLoaded(kRelativeUrl1);
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  EXPECT_FALSE(side_panel_coordinator()->GetCurrentEntryId().has_value());
+  EXPECT_EQ(0u, requests_received_on_server());
+}
+
+// Verify that Companion is enabled when `kSidePanelCompanion2` is enabled.
+IN_PROC_BROWSER_TEST_F(SidePanelCompanion2BrowserEnabledTest, FeatureEnabled) {
+  EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_EQ(1u, requests_received_on_server());
+}

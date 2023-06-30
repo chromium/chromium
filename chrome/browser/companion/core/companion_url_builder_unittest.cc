@@ -6,7 +6,9 @@
 
 #include "base/base64.h"
 #include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/companion/core/constants.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/mock_signin_delegate.h"
 #include "chrome/browser/companion/core/promo_handler.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
@@ -31,7 +33,9 @@ constexpr char kOrigin[] = "chrome-untrusted://companion-side-panel.top-chrome";
 
 class CompanionUrlBuilderTest : public testing::Test {
  public:
-  CompanionUrlBuilderTest() = default;
+  CompanionUrlBuilderTest() {
+    scoped_list_.InitAndEnableFeature(features::internal::kSidePanelCompanion);
+  }
   ~CompanionUrlBuilderTest() override = default;
 
   void SetUp() override {
@@ -94,6 +98,7 @@ class CompanionUrlBuilderTest : public testing::Test {
         base::Value(msbb_pref_enabled));
   }
 
+  base::test::ScopedFeatureList scoped_list_;
   TestingPrefServiceSimple pref_service_;
   MockSigninDelegate signin_delegate_;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;

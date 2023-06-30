@@ -19,8 +19,15 @@ namespace features {
 namespace internal {
 // This differs from the search companion by providing a separate WebUI that
 // contains untrusted content in an iframe.
+// Companion can be directly enabled by either `kSidePanelCompanion` or
+// `kSidePanelCompanion2`. This makes it possible for Companion to be
+// enabled via multiple field trials (e.g., one that's session consistent, other
+// that's permanent consistent).
 BASE_FEATURE(kSidePanelCompanion,
              "SidePanelCompanion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSidePanelCompanion2,
+             "SidePanelCompanion2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Dynamically enables the search companion if the user has experiments
 // enabled.
