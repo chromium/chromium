@@ -446,6 +446,10 @@ class DriveIntegrationService : public KeyedService,
                                      base::OnceClosure callback,
                                      drive::FileError error);
 
+  void OnGetOfflineFilesSpaceUsage(base::OnceCallback<void(int64_t)> callback,
+                                   drive::FileError error,
+                                   int64_t total_size);
+
   friend class DriveIntegrationServiceFactory;
 
   raw_ptr<Profile, ExperimentalAsh> profile_;
@@ -482,6 +486,9 @@ class DriveIntegrationService : public KeyedService,
   std::unique_ptr<google_apis::AuthServiceInterface> auth_service_;
 
   base::TimeTicks mount_start_;
+
+  base::Time last_offline_storage_size_time_;
+  int64_t last_offline_storage_size_result_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
