@@ -409,10 +409,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // Called when a user changes the syncing state.
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
-      if (IsIOSSetUpListEnabled() && _authenticationService->GetPrimaryIdentity(
-                                         signin::ConsentLevel::kSignin)) {
+      if (IsIOSSetUpListEnabled()) {
         // User has signed in, mark SetUpList item complete. Delayed to allow
         // Signin UI flow to be fully dismissed before starting SetUpList
         // completion animation.
