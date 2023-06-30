@@ -5,6 +5,8 @@
 #include "media/gpu/v4l2/v4l2_stateful_video_decoder.h"
 
 #include <fcntl.h>
+#include <poll.h>
+#include <sys/eventfd.h>
 #include <sys/ioctl.h>
 
 #include "base/files/file_util.h"
@@ -18,6 +20,9 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace {
+// Numerical value of ioctl() OK return value;
+constexpr int kIoctlOk = 0;
+
 int HandledIoctl(int fd, int request, void* arg) {
   return HANDLE_EINTR(ioctl(fd, request, arg));
 }
@@ -181,14 +186,78 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
     std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
     return;
   }
+
+  // Subscribe to the resolution change event. This is needed for resolution
+  // changes mid stream but also to initialize the |CAPTURE_queue|.
+  struct v4l2_event_subscription sub = {.type = V4L2_EVENT_SOURCE_CHANGE};
+  if (HandledIoctl(device_fd_.get(), VIDIOC_SUBSCRIBE_EVENT, &sub) !=
+      kIoctlOk) {
+    PLOG(ERROR) << "Failed to subscribe to V4L2_EVENT_SOURCE_CHANGE";
+    std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
+    return;
+  }
+
+  profile_ = config.profile();
   std::move(init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                       DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(OUTPUT_queue_)
+      << "V4L2StatefulVideoDecoder has not been Initialize()d.";
   DVLOGF(3) << buffer->AsHumanReadableString(/*verbose=*/false);
-  NOTIMPLEMENTED();
+
+  if (buffer->end_of_stream()) {
+    NOTIMPLEMENTED() << "EOS is not supported yet";
+    std::move(decode_cb).Run(DecoderStatus::Codes::kAborted);
+    return;
+  }
+
+  if (profile_ == H264PROFILE_BASELINE || profile_ == H264PROFILE_MAIN ||
+      profile_ == H264PROFILE_HIGH || profile_ == HEVCPROFILE_MAIN) {
+    // We need to instantiate an InputBufferFragmentSplitter.
+    NOTIMPLEMENTED();
+    std::move(decode_cb).Run(DecoderStatus::Codes::kAborted);
+    return;
+  }
+
+  // Ideally we should be able to get some resources back that were queued in
+  // during a previous Decode().
+  while (OUTPUT_queue_->QueuedBuffersCount()) {
+    const auto result = OUTPUT_queue_->DequeueBuffer();
+    if (!result.first || !result.second) {
+      break;
+    }
+  }
+
+  absl::optional<V4L2WritableBufferRef> v4l2_buffer =
+      OUTPUT_queue_->GetFreeBuffer();
+  if (!v4l2_buffer) {
+    // |OUTPUT_queue_| has no free slots. Store |buffer| and |decode_cb| and
+    // try again later.
+    NOTIMPLEMENTED();
+    return;
+  }
+
+  CHECK_EQ(v4l2_buffer->PlanesCount(), 1u);
+  uint8_t* dst = static_cast<uint8_t*>(v4l2_buffer->GetPlaneMapping(0));
+  CHECK_GE(v4l2_buffer->GetPlaneSize(/*plane=*/0), buffer->data_size());
+  memcpy(dst, buffer->data(), buffer->data_size());
+  v4l2_buffer->SetPlaneBytesUsed(0, buffer->data_size());
+
+  if (!std::move(*v4l2_buffer).QueueMMap()) {
+    LOG(ERROR) << "Error while queuing input buffer!";
+    std::move(decode_cb).Run(DecoderStatus::Codes::kPlatformDecodeFailure);
+    return;
+  }
+
+  if (PollOnceForResolutionChangeEvent()) {
+    VLOGF(3) << "Got a resolution change event.";
+    // TODO(mcasas): Initialize |CAPTURE_queue|.
+  }
+
+  std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
@@ -259,6 +328,33 @@ V4L2StatefulVideoDecoder::V4L2StatefulVideoDecoder(
 V4L2StatefulVideoDecoder::~V4L2StatefulVideoDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(1);
+}
+
+bool V4L2StatefulVideoDecoder::PollOnceForResolutionChangeEvent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  struct pollfd pollfds[1] = {
+      {.fd = device_fd_.get(), .events = POLLIN | POLLOUT | POLLERR | POLLPRI}};
+  if (HANDLE_EINTR(poll(pollfds, std::size(pollfds), /*timeout=*/0)) <
+      kIoctlOk) {
+    PLOG(ERROR) << "Polling for events failed";
+    return false;
+  }
+  if (!(pollfds[0].revents & POLLPRI)) {
+    return false;
+  }
+
+  // There is an event: dequeue it.
+  struct v4l2_event event;
+  memset(&event, 0, sizeof(event));  // Must do: v4l2_event has a union.
+  if (HandledIoctl(device_fd_.get(), VIDIOC_DQEVENT, &event) != kIoctlOk) {
+    PLOG(ERROR) << "Failed dequeing an event";
+    return false;
+  }
+  // If we get an event, it must be an V4L2_EVENT_SOURCE_CHANGE since it's the
+  // only one we're subscribed to.
+  DCHECK_EQ(event.type, static_cast<unsigned int>(V4L2_EVENT_SOURCE_CHANGE));
+  DCHECK(event.u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION);
+  return true;
 }
 
 }  // namespace media

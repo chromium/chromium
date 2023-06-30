@@ -395,6 +395,20 @@ TEST_F(VideoDecoderTest, DestroyBeforeInitialize) {
   EXPECT_NE(tvp, nullptr);
 }
 
+// This test case calls Decode() a number of times and expect OK DecodeCBs. This
+// test only makes sense for V4L2 (VA-API doesn't have an input queue).
+#if BUILDFLAG(USE_V4L2_CODEC)
+TEST_F(VideoDecoderTest, Decode) {
+  auto tvp = CreateDecoderListener(g_env->Video());
+
+  tvp->Play();
+  // We usually allocate at least 8 buffers for input queues.
+  const size_t kNumDecodeBuffers = 8;
+  EXPECT_TRUE(tvp->WaitForEvent(DecoderListener::Event::kDecoderBufferAccepted,
+                                /*times=*/kNumDecodeBuffers));
+}
+#endif
+
 // Play video from start to end. Wait for the kFlushDone event at the end of the
 // stream, that notifies us all frames have been decoded.
 TEST_F(VideoDecoderTest, FlushAtEndOfStream) {

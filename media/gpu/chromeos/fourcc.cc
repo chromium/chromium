@@ -39,7 +39,7 @@ absl::optional<Fourcc> Fourcc::FromUint32(uint32_t fourcc) {
     case Q10C:
       return Fourcc(static_cast<Value>(fourcc));
   }
-  DVLOGF(3) << "Unmapped fourcc: " << FourccToString(fourcc);
+  DVLOGF(4) << "Unmapped fourcc: " << FourccToString(fourcc);
   return absl::nullopt;
 }
 

@@ -367,6 +367,7 @@ void DecoderWrapper::OnDecodeDoneTask(DecoderStatus status) {
       base::Milliseconds(0)
 #endif
   );
+  FireEvent(DecoderListener::Event::kDecoderBufferAccepted);
 }
 
 void DecoderWrapper::OnFrameReadyTask(scoped_refptr<VideoFrame> video_frame) {

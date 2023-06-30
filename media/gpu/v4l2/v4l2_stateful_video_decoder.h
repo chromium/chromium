@@ -66,10 +66,18 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
                            base::WeakPtr<VideoDecoderMixin::Client> client);
   ~V4L2StatefulVideoDecoder() override;
 
+  // Checks whether there is a pending V4L2_EVENT_SOURCE_CHANGE in |device_fd_|,
+  // returning true if so, or false if there's no event or any error.
+  bool PollOnceForResolutionChangeEvent();
+
   base::ScopedFD device_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // OUTPUT in V4L2 terminology is the queue holding encoded chunks of bistream.
-  // See e.g. [1].
+  // Bitstream information, written during Initialize().
+  VideoCodecProfile profile_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      VIDEO_CODEC_PROFILE_UNKNOWN;
+
+  // OUTPUT in V4L2 terminology is the queue holding encoded chunks of
+  // bitstream. See e.g. [1].
   // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/dev-decoder.html#glossary
   scoped_refptr<V4L2Queue> OUTPUT_queue_ GUARDED_BY_CONTEXT(sequence_checker_);
 
