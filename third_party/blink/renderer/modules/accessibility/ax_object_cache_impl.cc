@@ -3758,13 +3758,16 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
   MarkElementDirty(&node);
   // If the ignored state changes, the parent's children may have changed.
   if (AXObject* obj = SafeGet(&node)) {
-    if (obj->CachedParentObject())
-      ChildrenChanged(obj->CachedParentObject());
-    // The role of an element depends on whether it has an event listener, so
-    // check if the role changed, and if so re-create the object.
-    if (obj->RoleValue() != obj->DetermineAccessibilityRole()) {
-      DeferTreeUpdate(&AXObjectCacheImpl::HandleRoleMaybeChangedWithCleanLayout,
-                      &node);
+    if (!obj->IsDetached()) {
+      if (obj->CachedParentObject()) {
+        ChildrenChanged(obj->CachedParentObject());
+      }
+      // The role of an element depends on whether it has an event listener, so
+      // check if the role changed, and if so re-create the object.
+      if (obj->RoleValue() != obj->DetermineAccessibilityRole()) {
+        DeferTreeUpdate(
+            &AXObjectCacheImpl::HandleRoleMaybeChangedWithCleanLayout, &node);
+      }
     }
   }
 }
