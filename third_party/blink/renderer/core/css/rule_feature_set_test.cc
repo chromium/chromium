@@ -2041,7 +2041,7 @@ RefTestData ref_scope_equal_test_data[] = {
 
     // Using "to" keyword:
     {"@scope (.a, .b) to (.c, .d) { div {} }",
-     ":is(.a, .b, .c, .d) div, :is(.a, .b):is(div) {}"},
+     ":is(.a, .b, .c, .d) div, :is(.a, .b):is(.c, .d):is(div) {}"},
 
     // TODO(crbug.com/1280240): Many of the following tests current expect
     // whole-subtree invalidation, because we don't extract any features from
@@ -2063,7 +2063,7 @@ RefTestData ref_scope_equal_test_data[] = {
     {"@scope (.a, .b) { @scope (:scope, .c) { :scope {} } }",
      ":is(.a, .b, .c) *, :is(.a, .b, .c) {}"},
     {"@scope (.a) to (.b) { @scope (.c) to (.d) { .e {} } }",
-     ":is(.a, .b, .c, .d) .e, :is(.a, .c):is(.e) {}"},
+     ":is(.a, .b, .c, .d) .e, :is(.a, .b):is(.c, .d):is(.e) {}"},
 };
 
 class RuleFeatureSetScopeRefTest
