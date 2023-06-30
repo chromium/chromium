@@ -21,6 +21,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
+using message_center::HandleNotificationClickDelegate;
 using message_center::MessageCenter;
 using message_center::Notification;
 
@@ -62,6 +63,50 @@ message_center::SystemNotificationWarningLevel GetWarningLevelMD(
   }
 }
 
+std::u16string GetLowBatteryTitle(
+    const PowerStatus& status,
+    PowerNotificationController::NotificationState notification_state) {
+  const bool critical_battery =
+      notification_state == PowerNotificationController::NOTIFICATION_CRITICAL;
+  const bool low_battery =
+      notification_state == PowerNotificationController::NOTIFICATION_LOW_POWER;
+  const bool bsm_active = status.IsBatterySaverActive();
+
+  if (critical_battery) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_CRITICAL_BATTERY_TITLE);
+  } else if (low_battery && bsm_active) {
+    return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_TITLE);
+  }
+
+  return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOW_BATTERY_TITLE);
+}
+
+std::u16string GetLowBatteryMessage(
+    const PowerStatus& status,
+    PowerNotificationController::NotificationState notification_state,
+    const std::u16string& duration,
+    double battery_percentage) {
+  const bool bsm_active = status.IsBatterySaverActive();
+  const bool low_power_notification =
+      notification_state ==
+      PowerNotificationController::NotificationState::NOTIFICATION_LOW_POWER;
+
+  auto message = low_power_notification && bsm_active
+                     ? IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE
+                     : IDS_ASH_STATUS_TRAY_LOW_BATTERY_MESSAGE;
+
+  return l10n_util::GetStringFUTF16(message, duration,
+                                    base::NumberToString16(battery_percentage));
+}
+
+void HandleDisableBatterySaverModeClick(
+    const absl::optional<int> button_index) {
+  power_manager::SetBatterySaverModeStateRequest bsm_request;
+  bsm_request.set_enabled(false);
+  chromeos::PowerManagerClient::Get()->SetBatterySaverModeState(bsm_request);
+}
+
 std::unique_ptr<Notification> CreateNotification(
     PowerNotificationController::NotificationState notification_state) {
   const PowerStatus& status = *PowerStatus::Get();
@@ -96,18 +141,26 @@ std::unique_ptr<Notification> CreateNotification(
           IDS_ASH_STATUS_TRAY_BATTERY_TIME_UNTIL_FULL, duration);
     } else {
       // This is a low battery warning prompting the user in minutes.
-      title = notification_state ==
-                      PowerNotificationController::NOTIFICATION_CRITICAL
-                  ? l10n_util::GetStringUTF16(
-                        IDS_ASH_STATUS_TRAY_CRITICAL_BATTERY_TITLE)
-                  : l10n_util::GetStringUTF16(
-                        IDS_ASH_STATUS_TRAY_LOW_BATTERY_TITLE);
-      message = l10n_util::GetStringFUTF16(
-          IDS_ASH_STATUS_TRAY_LOW_BATTERY_MESSAGE, duration,
-          base::NumberToString16(battery_percentage));
+      title = GetLowBatteryTitle(status, notification_state);
+      message = GetLowBatteryMessage(status, notification_state, duration,
+                                     battery_percentage);
+
       // Low battery notifications should display on fullscreen windows.
       rich_notification_data.fullscreen_visibility =
           message_center::FullscreenVisibility::OVER_USER;
+
+      // Display the 'turn off battery saver' button only on the low battery
+      // notification.
+      if (notification_state == PowerNotificationController::NotificationState::
+                                    NOTIFICATION_LOW_POWER &&
+          status.IsBatterySaverActive()) {
+        message_center::ButtonInfo bsm_button{l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_BUTTON)};
+        rich_notification_data.buttons =
+            std::vector<message_center::ButtonInfo>{bsm_button};
+        rich_notification_data.settings_button_handler =
+            message_center::SettingsButtonHandler::DELEGATE;
+      }
     }
   }
 
@@ -118,7 +171,10 @@ std::unique_ptr<Notification> CreateNotification(
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierBattery,
                                  NotificationCatalogName::kBatteryNotifier),
-      rich_notification_data, nullptr, GetBatteryImageMD(notification_state),
+      rich_notification_data,
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&HandleDisableBatterySaverModeClick)),
+      GetBatteryImageMD(notification_state),
       GetWarningLevelMD(notification_state));
   if (notification_state ==
       PowerNotificationController::NOTIFICATION_CRITICAL) {
