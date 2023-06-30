@@ -176,7 +176,7 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.bounds = CalculateOverlayBounds();
   params.parent =
-      root_window_->GetChildById(kShellWindowId_DragImageAndTooltipContainer);
+      root_window_->GetChildById(kShellWindowId_SettingBubbleContainer);
   overlay_widget_->Init(std::move(params));
   overlay_widget_->SetVisibilityChangedAnimationsEnabled(true);
   overlay_widget_->SetContentsView(overlay_view_.get());
