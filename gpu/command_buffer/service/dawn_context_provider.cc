@@ -52,7 +52,7 @@ wgpu::BackendType GetDefaultBackendType() {
              : wgpu::BackendType::D3D11;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return wgpu::BackendType::Vulkan;
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   return wgpu::BackendType::Metal;
 #else
   NOTREACHED();
