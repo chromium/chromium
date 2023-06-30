@@ -43,6 +43,8 @@
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_stretch.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_text_rendering.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_will_read_frequently.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -784,24 +786,17 @@ void CanvasRenderingContext2D::setTextRendering(
   if (!GetState().HasRealizedFont())
     setFont(font());
 
-  TextRenderingMode text_rendering_mode;
-  String text_rendering = text_rendering_string.LowerASCII();
+  absl::optional<blink::V8CanvasTextRendering> text_value =
+      V8CanvasTextRendering::Create(text_rendering_string);
 
-  if (text_rendering == kAutoRendering)
-    text_rendering_mode = TextRenderingMode::kAutoTextRendering;
-  else if (text_rendering == kOptimizeSpeedRendering)
-    text_rendering_mode = TextRenderingMode::kOptimizeSpeed;
-  else if (text_rendering == kOptimizeLegibilityRendering)
-    text_rendering_mode = TextRenderingMode::kOptimizeLegibility;
-  else if (text_rendering == kGeometricPrecisionRendering)
-    text_rendering_mode = TextRenderingMode::kGeometricPrecision;
-  else
+  if (!text_value.has_value()) {
     return;
+  }
 
-  if (GetState().GetTextRendering() == text_rendering_mode)
+  if (GetState().GetTextRendering() == text_value.value()) {
     return;
-
-  GetState().SetTextRendering(text_rendering_mode, Host()->GetFontSelector());
+  }
+  GetState().SetTextRendering(text_value.value(), Host()->GetFontSelector());
 }
 
 void CanvasRenderingContext2D::setFontKerning(
@@ -837,33 +832,16 @@ void CanvasRenderingContext2D::setFontStretch(const String& font_stretch) {
   if (!GetState().HasRealizedFont())
     setFont(font());
 
-  String font_stretch_string = font_stretch.LowerASCII();
-  FontSelectionValue stretch_vale;
-  if (font_stretch_string == kUltraCondensedString)
-    stretch_vale = UltraCondensedWidthValue();
-  else if (font_stretch_string == kExtraCondensedString)
-    stretch_vale = ExtraCondensedWidthValue();
-  else if (font_stretch_string == kCondensedString)
-    stretch_vale = CondensedWidthValue();
-  else if (font_stretch_string == kSemiCondensedString)
-    stretch_vale = SemiCondensedWidthValue();
-  else if (font_stretch_string == kNormalStretchString)
-    stretch_vale = NormalWidthValue();
-  else if (font_stretch_string == kSemiExpandedString)
-    stretch_vale = SemiExpandedWidthValue();
-  else if (font_stretch_string == kExpandedString)
-    stretch_vale = ExpandedWidthValue();
-  else if (font_stretch_string == kExtraExpandedString)
-    stretch_vale = ExtraExpandedWidthValue();
-  else if (font_stretch_string == kUltraExpandedString)
-    stretch_vale = UltraExpandedWidthValue();
-  else
-    return;
+  absl::optional<blink::V8CanvasFontStretch> font_value =
+      V8CanvasFontStretch::Create(font_stretch);
 
-  if (GetState().GetFontStretch() == stretch_vale)
+  if (!font_value.has_value()) {
     return;
-
-  GetState().SetFontStretch(stretch_vale, Host()->GetFontSelector());
+  }
+  if (GetState().GetFontStretch() == font_value.value()) {
+    return;
+  }
+  GetState().SetFontStretch(font_value.value(), Host()->GetFontSelector());
 }
 
 void CanvasRenderingContext2D::setFontVariantCaps(

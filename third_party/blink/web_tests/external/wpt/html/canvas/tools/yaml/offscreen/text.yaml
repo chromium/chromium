@@ -1554,6 +1554,67 @@
 
     t.done();
 
+- name: 2d.text.drawing.style.fontStretch.settings
+  desc: Testing value setting of fontStretch in Canvas
+  code: |
+    // Setting textRendering with lower cases
+    ctx.fontStretch = "ultra-condensed";
+    @assert ctx.fontStretch === "ultra-condensed";
+
+    ctx.fontStretch = "extra-condensed";
+    @assert ctx.fontStretch === "extra-condensed";
+
+    ctx.fontStretch = "condensed";
+    @assert ctx.fontStretch === "condensed";
+
+    ctx.fontStretch = "semi-condensed";
+    @assert ctx.fontStretch === "semi-condensed";
+
+    ctx.fontStretch = "normal";
+    @assert ctx.fontStretch === "normal";
+
+    ctx.fontStretch = "semi-expanded";
+    @assert ctx.fontStretch === "semi-expanded";
+
+    ctx.fontStretch = "expanded";
+    @assert ctx.fontStretch === "expanded";
+
+    ctx.fontStretch = "extra-expanded";
+    @assert ctx.fontStretch === "extra-expanded";
+
+    ctx.fontStretch = "ultra-expanded";
+    @assert ctx.fontStretch === "ultra-expanded";
+
+    // Setting fontStretch with lower cases and upper cases word,
+    // these values should be ignored.
+    ctx.fontStretch = "ulTra-condensed";
+    @assert ctx.fontStretch === "ultra-expanded";
+
+    ctx.fontStretch = "Extra-condensed";
+    @assert ctx.fontStretch === "ultra-expanded";
+
+    ctx.fontStretch = "cOndensed";
+    @assert ctx.fontStretch === "ultra-expanded";
+
+    ctx.fontStretch = "Semi-Condensed";
+    @assert ctx.fontStretch === "ultra-expanded";
+
+    ctx.fontStretch = "normaL";
+    @assert ctx.fontStretch === "ultra-expanded";
+
+    ctx.fontStretch = "semi-Expanded";
+    @assert ctx.fontStretch === "ultra-expanded";
+
+    ctx.fontStretch = "Expanded";
+    @assert ctx.fontStretch === "ultra-expanded";
+
+    ctx.fontStretch = "eXtra-expanded";
+    @assert ctx.fontStretch === "ultra-expanded";
+
+    ctx.fontStretch = "abcd";
+    @assert ctx.fontStretch === "ultra-expanded";
+    t.done();
+
 - name: 2d.text.drawing.style.measure.rtl.text
   desc: Measurement should follow canvas direction instead text direction
   code: |
