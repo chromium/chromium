@@ -49,5 +49,19 @@ describe('Deferred', () => {
       await expect(deferredThen).to.eventually.be.rejectedWith('some error');
       await expect(deferredCatch).to.eventually.equal('some error');
     });
+
+    it('finally', async () => {
+      const deferred = new Deferred<string>();
+      const deferredFinally = deferred.finally(() => {
+        // Intentionally empty.
+      });
+
+      expect(deferred.isFinished).to.be.false;
+
+      deferred.resolve('done');
+      expect(deferred.isFinished).to.be.true;
+
+      await expect(deferredFinally).to.eventually.equal('done');
+    });
   });
 });

@@ -281,7 +281,7 @@ const STRING_FORMAT_TEST_CASES = [
 function testPattern(
   formatString: string,
   argument: unknown,
-  expectedResult: string
+  expected: string
 ) {
   const inputArgs = [
     {
@@ -293,7 +293,7 @@ function testPattern(
   const result = logMessageFormatter(
     inputArgs as CommonDataTypes.RemoteValue[]
   );
-  expect(result).to.equal(expectedResult);
+  expect(result).to.equal(expected);
 }
 
 describe('logMessageFormatter', () => {

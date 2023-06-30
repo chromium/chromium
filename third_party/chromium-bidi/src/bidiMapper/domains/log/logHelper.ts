@@ -169,8 +169,6 @@ function stringFromArg(arg: CommonDataTypes.RemoteValue): string {
       return `Map(${arg.value.length})`;
     case 'set':
       return `Set(${arg.value.length})`;
-    case 'node':
-      return 'node';
 
     default:
       return arg.type;

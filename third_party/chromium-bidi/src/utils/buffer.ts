@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-/**
- * Implements a FIFO buffer with a fixed size.
- */
+/** Implements a FIFO buffer with a fixed size. */
 export class Buffer<T> {
   readonly #capacity: number;
   readonly #entries: T[] = [];
   readonly #onItemRemoved?: (value: T) => void;
 
   /**
-   * @param capacity
-   * @param onItemRemoved optional delegate called for each removed element.
+   * @param capacity The buffer capacity.
+   * @param onItemRemoved Delegate called for each removed element.
    */
   constructor(capacity: number, onItemRemoved?: (value: T) => void) {
     this.#capacity = capacity;
@@ -36,7 +34,7 @@ export class Buffer<T> {
     return this.#entries;
   }
 
-  add(value: T): void {
+  add(value: T) {
     this.#entries.push(value);
     while (this.#entries.length > this.#capacity) {
       const item = this.#entries.shift();

@@ -39,7 +39,7 @@ export class NetworkRequest {
   requestId: Network.Request;
 
   #servedFromCache = false;
-  #redirectCount: number;
+  #redirectCount = 0;
 
   #eventManager: IEventManager;
 
@@ -53,7 +53,6 @@ export class NetworkRequest {
 
   constructor(requestId: Network.Request, eventManager: IEventManager) {
     this.requestId = requestId;
-    this.#redirectCount = 0;
     this.#eventManager = eventManager;
   }
 

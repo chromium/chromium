@@ -18,9 +18,8 @@
 export class Deferred<T> implements Promise<T> {
   #isFinished = false;
   #promise: Promise<T>;
-
   #resolve?: (value: T) => void;
-  #reject?: (value: unknown) => void;
+  #reject?: (reason: unknown) => void;
 
   get isFinished(): boolean {
     return this.#isFinished;
@@ -61,7 +60,7 @@ export class Deferred<T> implements Promise<T> {
     this.#reject?.(reason);
   }
 
-  finally(onFinally?: () => void | null): Promise<T> {
+  finally(onFinally?: (() => void) | null): Promise<T> {
     return this.#promise.finally(onFinally);
   }
 

@@ -31,7 +31,8 @@ describe('Buffer', () => {
     buffer.add(3);
     expect(buffer.get()).to.deep.equal([2, 3]);
   });
-  it('should call "onRemoved"', () => {
+
+  it('should call `onItemRemoved`', () => {
     const onRemoved = sinon.mock();
     const buffer = new Buffer<number>(2, onRemoved);
     buffer.add(1);

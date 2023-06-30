@@ -508,7 +508,7 @@ export class BrowsingContextProcessor {
     );
     if (!context.isTopLevelContext()) {
       throw new Message.InvalidArgumentException(
-        'A top-level browsing context cannot be closed.'
+        `Non top-level browsing context ${context.id} cannot be closed.`
       );
     }
 
