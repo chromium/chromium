@@ -87,6 +87,7 @@ shopping_list::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
 
   bookmark_info->info->product_url = node->url();
   bookmark_info->info->image_url = GURL(meta->lead_image().url());
+  bookmark_info->info->cluster_id = specifics.product_cluster_id();
 
   const power_bookmarks::ProductPrice price = specifics.current_price();
   std::string currency_code = price.currency_code();
@@ -311,11 +312,11 @@ void ShoppingListHandler::HandleSubscriptionChange(
   std::vector<const bookmarks::BookmarkNode*> bookmarks =
       GetBookmarksWithClusterId(bookmark_model_, cluster_id);
   for (auto* node : bookmarks) {
+    auto product = BookmarkNodeToMojoProduct(*bookmark_model_, node, locale_);
     if (is_tracking) {
-      remote_page_->PriceTrackedForBookmark(
-          BookmarkNodeToMojoProduct(*bookmark_model_, node, locale_));
+      remote_page_->PriceTrackedForBookmark(std::move(product));
     } else {
-      remote_page_->PriceUntrackedForBookmark(node->id());
+      remote_page_->PriceUntrackedForBookmark(std::move(product));
     }
   }
 }
@@ -344,17 +345,19 @@ void ShoppingListHandler::onPriceTrackResult(int64_t bookmark_id,
   // with, we assume success. In the event it failed, we switch things back.
   // So in this case, if we were trying to untrack and that action failed, set
   // the UI back to "tracking".
+  auto* node = bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id);
+  auto product = BookmarkNodeToMojoProduct(*bookmark_model_, node, locale_);
+
   if (!is_tracking) {
-    auto* node = bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id);
-    remote_page_->PriceTrackedForBookmark(
-        BookmarkNodeToMojoProduct(*model, node, locale_));
+    remote_page_->PriceTrackedForBookmark(std::move(product));
   } else {
-    remote_page_->PriceUntrackedForBookmark(bookmark_id);
+    remote_page_->PriceUntrackedForBookmark(std::move(product));
   }
   // Pass in whether the failed operation was to track or untrack price. It
   // should be the reverse of the current tracking status since the operation
   // failed.
-  remote_page_->OperationFailedForBookmark(bookmark_id, is_tracking);
+  remote_page_->OperationFailedForBookmark(
+      BookmarkNodeToMojoProduct(*bookmark_model_, node, locale_), is_tracking);
 }
 
 void ShoppingListHandler::GetProductInfoForCurrentUrl(

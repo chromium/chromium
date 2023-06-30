@@ -75,6 +75,7 @@ suite('SidePanelBookmarksListTest', () => {
       productUrl: {url: 'https://foo.com/product'},
       currentPrice: '$12',
       previousPrice: '$34',
+      clusterId: BigInt(12345),
     },
   }];
 

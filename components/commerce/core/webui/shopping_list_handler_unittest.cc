@@ -42,9 +42,11 @@ class MockPage : public shopping_list::mojom::Page {
 
   MOCK_METHOD1(PriceTrackedForBookmark,
                void(shopping_list::mojom::BookmarkProductInfoPtr product));
-  MOCK_METHOD1(PriceUntrackedForBookmark, void(int64_t bookmark_id));
+  MOCK_METHOD1(PriceUntrackedForBookmark,
+               void(shopping_list::mojom::BookmarkProductInfoPtr product));
   MOCK_METHOD2(OperationFailedForBookmark,
-               void(int64_t bookmark_id, bool is_tracked));
+               void(shopping_list::mojom::BookmarkProductInfoPtr product,
+                    bool is_tracked));
 };
 
 class MockDelegate : public ShoppingListHandler::Delegate {
@@ -222,7 +224,9 @@ TEST_F(ShoppingListHandlerTest, TestUntrackProductSuccess) {
   EXPECT_CALL(*shopping_service_,
               Unsubscribe(VectorHasSubscriptionWithId("123"), testing::_))
       .Times(1);
-  EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(1);
+  EXPECT_CALL(page_,
+              PriceUntrackedForBookmark(MojoBookmarkInfoWithId(product->id())))
+      .Times(1);
   EXPECT_CALL(page_, OperationFailedForBookmark(testing::_, testing::_))
       .Times(0);
 
@@ -245,9 +249,13 @@ TEST_F(ShoppingListHandlerTest, TestTrackProductFailure) {
   shopping_service_->SetUnsubscribeCallbackValue(false);
 
   // "untrack" should be called once to undo the "track" change in the UI.
-  EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(1);
+  EXPECT_CALL(page_,
+              PriceUntrackedForBookmark(MojoBookmarkInfoWithId(product->id())))
+      .Times(1);
   EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(0);
-  EXPECT_CALL(page_, OperationFailedForBookmark(product->id(), true)).Times(1);
+  EXPECT_CALL(page_, OperationFailedForBookmark(
+                         MojoBookmarkInfoWithId(product->id()), true))
+      .Times(1);
 
   handler_->TrackPriceForBookmark(product->id());
 
@@ -269,8 +277,12 @@ TEST_F(ShoppingListHandlerTest, TestUntrackProductFailure) {
 
   // "track" should be called once to undo the "untrack" change in the UI.
   EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(1);
-  EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(0);
-  EXPECT_CALL(page_, OperationFailedForBookmark(product->id(), false)).Times(1);
+  EXPECT_CALL(page_,
+              PriceUntrackedForBookmark(MojoBookmarkInfoWithId(product->id())))
+      .Times(0);
+  EXPECT_CALL(page_, OperationFailedForBookmark(
+                         MojoBookmarkInfoWithId(product->id()), false))
+      .Times(1);
 
   handler_->UntrackPriceForBookmark(product->id());
 
@@ -285,7 +297,8 @@ TEST_F(ShoppingListHandlerTest, PageUpdateForPriceTrackChange) {
       bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
       true, 1230000, "usd");
 
-  EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id()));
+  EXPECT_CALL(page_,
+              PriceUntrackedForBookmark(MojoBookmarkInfoWithId(product->id())));
 
   // Assume the plumbing for subscriptions works and fake an unsubscribe event.
   handler_->OnUnsubscribe(CreateUserTrackedSubscription(123L), true);

@@ -38,6 +38,7 @@ suite('SidePanelShoppingListTest', () => {
         productUrl: {url: 'https://foo.com/product'},
         currentPrice: '$12',
         previousPrice: '$34',
+        clusterId: BigInt(12345),
       },
     },
     {
@@ -50,6 +51,7 @@ suite('SidePanelShoppingListTest', () => {
         productUrl: {url: 'https://foo.com/product'},
         currentPrice: '$15',
         previousPrice: '',
+        clusterId: BigInt(12345),
       },
     },
   ];
@@ -292,6 +294,7 @@ suite('SidePanelShoppingListTest', () => {
         productUrl: {url: 'https://baz.com/product'},
         currentPrice: '$56',
         previousPrice: '$78',
+        clusterId: BigInt(12345),
       },
     };
 
@@ -310,7 +313,7 @@ suite('SidePanelShoppingListTest', () => {
     }
 
     shoppingListApi.getCallbackRouterRemote().priceUntrackedForBookmark(
-        newProduct.bookmarkId);
+        newProduct);
     await flushTasks();
     checkActionButtonStatus(actionButtons[0]!, true);
     checkActionButtonStatus(actionButtons[1]!, true);
@@ -333,7 +336,7 @@ suite('SidePanelShoppingListTest', () => {
     checkActionButtonStatus(actionButtonA, true);
 
     shoppingListApi.getCallbackRouterRemote().priceUntrackedForBookmark(
-        product.bookmarkId);
+        product);
     await flushTasks();
     checkActionButtonStatus(actionButtonA, false);
 
@@ -360,6 +363,7 @@ suite('SidePanelShoppingListTest', () => {
         productUrl: {url: 'https://baz.com/product'},
         currentPrice: '$56',
         previousPrice: '$78',
+        clusterId: BigInt(12345),
       },
     };
     shoppingListApi.getCallbackRouterRemote().priceTrackedForBookmark(
@@ -393,7 +397,7 @@ suite('SidePanelShoppingListTest', () => {
 
   test('ShowErrorToastWhenTrackAndUntrackFailed', async () => {
     shoppingListApi.getCallbackRouterRemote().operationFailedForBookmark(
-        products[0]!.bookmarkId, true);
+        products[0]!, true);
     await flushTasks();
 
     assertTrue(shoppingList.$.errorToast.open);
@@ -403,7 +407,7 @@ suite('SidePanelShoppingListTest', () => {
     assertFalse(shoppingList.$.errorToast.open);
 
     shoppingListApi.getCallbackRouterRemote().operationFailedForBookmark(
-        products[1]!.bookmarkId, false);
+        products[1]!, false);
     await flushTasks();
 
     assertTrue(shoppingList.$.errorToast.open);

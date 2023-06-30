@@ -26,6 +26,7 @@ suite('ShoppingInsightsAppTest', () => {
     productUrl: {url: 'https://foo.com/product'},
     currentPrice: '$12',
     previousPrice: '$34',
+    clusterId: BigInt(12345),
   };
   const priceInsights1: PriceInsightsInfo = {
     clusterId: BigInt(123),

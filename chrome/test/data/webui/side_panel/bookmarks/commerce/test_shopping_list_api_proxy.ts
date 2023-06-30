@@ -19,6 +19,7 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
     productUrl: {url: 'https://foo.com/product'},
     currentPrice: '$12',
     previousPrice: '$34',
+    clusterId: BigInt(12345),
   };
   private priceInsights_: PriceInsightsInfo = {
     clusterId: BigInt(123),
