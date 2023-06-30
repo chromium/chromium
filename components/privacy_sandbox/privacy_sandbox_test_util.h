@@ -182,6 +182,8 @@ enum class OutputKey {
   kM1RestrictedNoticeAcknowledged = 31,
   kIsEventReportingDestinationAttestedForFledge = 32,
   kIsEventReportingDestinationAttestedForSharedStorage = 33,
+  kIsEventReportingDestinationAttestedForFledgeMetric = 34,
+  kIsEventReportingDestinationAttestedForSharedStorageMetric = 35,
 };
 
 // To allow multiple input keys to map to the same value, without having to

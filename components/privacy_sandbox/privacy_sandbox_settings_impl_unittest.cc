@@ -113,6 +113,10 @@ constexpr auto kIsEventReportingDestinationAttestedForFledge =
     OutputKey::kIsEventReportingDestinationAttestedForFledge;
 constexpr auto kIsEventReportingDestinationAttestedForSharedStorage =
     OutputKey::kIsEventReportingDestinationAttestedForSharedStorage;
+constexpr auto kIsEventReportingDestinationAttestedForFledgeMetric =
+    OutputKey::kIsEventReportingDestinationAttestedForFledgeMetric;
+constexpr auto kIsEventReportingDestinationAttestedForSharedStorageMetric =
+    OutputKey::kIsEventReportingDestinationAttestedForSharedStorageMetric;
 
 // using enum ContentSetting;
 constexpr auto CONTENT_SETTING_ALLOW = ContentSetting::CONTENT_SETTING_ALLOW;
@@ -1789,12 +1793,14 @@ TEST_F(PrivacySandboxAttestationsTest, AttestationsNotLoaded) {
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed},
            false},
-          {MultipleOutputKeys{kIsTopicsAllowedForContextMetric,
-                              kIsAttributionReportingAllowedMetric,
-                              kMaySendAttributionReportMetric,
-                              kIsFledgeAllowedMetric,
-                              kIsSharedStorageAllowedMetric,
-                              kIsPrivateAggregationAllowedMetric},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContextMetric,
+               kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsFledgeAllowedMetric,
+               kIsSharedStorageAllowedMetric,
+               kIsPrivateAggregationAllowedMetric,
+               kIsEventReportingDestinationAttestedForSharedStorageMetric,
+               kIsEventReportingDestinationAttestedForFledgeMetric},
            static_cast<int>(Status::kAttestationsNotLoaded)}});
 }
 
@@ -1828,12 +1834,14 @@ TEST_F(PrivacySandboxAttestationsTest, NoEnrollments) {
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed},
            false},
-          {MultipleOutputKeys{kIsTopicsAllowedForContextMetric,
-                              kIsAttributionReportingAllowedMetric,
-                              kMaySendAttributionReportMetric,
-                              kIsFledgeAllowedMetric,
-                              kIsSharedStorageAllowedMetric,
-                              kIsPrivateAggregationAllowedMetric},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContextMetric,
+               kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsFledgeAllowedMetric,
+               kIsSharedStorageAllowedMetric,
+               kIsPrivateAggregationAllowedMetric,
+               kIsEventReportingDestinationAttestedForSharedStorageMetric,
+               kIsEventReportingDestinationAttestedForFledgeMetric},
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
@@ -1869,12 +1877,14 @@ TEST_F(PrivacySandboxAttestationsTest, EnrollmentWithoutAttestations) {
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed},
            false},
-          {MultipleOutputKeys{kIsTopicsAllowedForContextMetric,
-                              kIsAttributionReportingAllowedMetric,
-                              kMaySendAttributionReportMetric,
-                              kIsFledgeAllowedMetric,
-                              kIsSharedStorageAllowedMetric,
-                              kIsPrivateAggregationAllowedMetric},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContextMetric,
+               kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsFledgeAllowedMetric,
+               kIsSharedStorageAllowedMetric,
+               kIsPrivateAggregationAllowedMetric,
+               kIsEventReportingDestinationAttestedForSharedStorageMetric,
+               kIsEventReportingDestinationAttestedForFledgeMetric},
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
@@ -1901,22 +1911,25 @@ TEST_F(PrivacySandboxAttestationsTest, TopicsAttestation) {
           {kAdMeasurementDestinationOrigin,
            url::Origin::Create(GURL(top_frame_url))},
           {kAccessingOrigin, url::Origin::Create(enrollee_url)}},
-      TestOutput{{kIsTopicsAllowedForContext, true},
-                 {MultipleOutputKeys{
-                      kIsAttributionReportingAllowed, kMaySendAttributionReport,
-                      kIsFledgeAllowed, kIsSharedStorageAllowed,
-                      kIsEventReportingDestinationAttestedForFledge,
-                      kIsEventReportingDestinationAttestedForSharedStorage,
-                      kIsPrivateAggregationAllowed},
-                  false},
-                 {kIsTopicsAllowedForContextMetric,
-                  static_cast<int>(Status::kAllowed)},
-                 {MultipleOutputKeys{kIsAttributionReportingAllowedMetric,
-                                     kMaySendAttributionReportMetric,
-                                     kIsFledgeAllowedMetric,
-                                     kIsSharedStorageAllowedMetric,
-                                     kIsPrivateAggregationAllowedMetric},
-                  static_cast<int>(Status::kAttestationFailed)}});
+      TestOutput{
+          {kIsTopicsAllowedForContext, true},
+          {MultipleOutputKeys{
+               kIsAttributionReportingAllowed, kMaySendAttributionReport,
+               kIsFledgeAllowed, kIsSharedStorageAllowed,
+               kIsEventReportingDestinationAttestedForFledge,
+               kIsEventReportingDestinationAttestedForSharedStorage,
+               kIsPrivateAggregationAllowed},
+           false},
+          {kIsTopicsAllowedForContextMetric,
+           static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{
+               kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsFledgeAllowedMetric,
+               kIsSharedStorageAllowedMetric,
+               kIsPrivateAggregationAllowedMetric,
+               kIsEventReportingDestinationAttestedForSharedStorageMetric,
+               kIsEventReportingDestinationAttestedForFledgeMetric},
+           static_cast<int>(Status::kAttestationFailed)}});
 }
 
 TEST_F(PrivacySandboxAttestationsTest, PrivateAggregationAttestation) {
@@ -1954,11 +1967,13 @@ TEST_F(PrivacySandboxAttestationsTest, PrivateAggregationAttestation) {
            false},
           {kIsPrivateAggregationAllowedMetric,
            static_cast<int>(Status::kAllowed)},
-          {MultipleOutputKeys{kIsTopicsAllowedForContextMetric,
-                              kIsAttributionReportingAllowedMetric,
-                              kMaySendAttributionReportMetric,
-                              kIsFledgeAllowedMetric,
-                              kIsSharedStorageAllowedMetric},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContextMetric,
+               kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsFledgeAllowedMetric,
+               kIsSharedStorageAllowedMetric,
+               kIsEventReportingDestinationAttestedForSharedStorageMetric,
+               kIsEventReportingDestinationAttestedForFledgeMetric},
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
@@ -1996,12 +2011,16 @@ TEST_F(PrivacySandboxAttestationsTest, SharedStorageAttestation) {
                               kIsEventReportingDestinationAttestedForFledge,
                               kIsPrivateAggregationAllowed},
            false},
-          {kIsSharedStorageAllowedMetric, static_cast<int>(Status::kAllowed)},
-          {MultipleOutputKeys{kIsTopicsAllowedForContextMetric,
-                              kIsAttributionReportingAllowedMetric,
-                              kMaySendAttributionReportMetric,
-                              kIsFledgeAllowedMetric,
-                              kIsPrivateAggregationAllowedMetric},
+          {MultipleOutputKeys{
+               kIsSharedStorageAllowedMetric,
+               kIsEventReportingDestinationAttestedForSharedStorageMetric},
+           static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContextMetric,
+               kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsFledgeAllowedMetric,
+               kIsPrivateAggregationAllowedMetric,
+               kIsEventReportingDestinationAttestedForFledgeMetric},
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
@@ -2041,12 +2060,16 @@ TEST_F(PrivacySandboxAttestationsTest, FledgeAttestation) {
                kIsPrivateAggregationAllowed,
                kIsEventReportingDestinationAttestedForSharedStorage},
            false},
-          {kIsFledgeAllowedMetric, static_cast<int>(Status::kAllowed)},
-          {MultipleOutputKeys{kIsTopicsAllowedForContextMetric,
-                              kIsAttributionReportingAllowedMetric,
-                              kMaySendAttributionReportMetric,
-                              kIsSharedStorageAllowedMetric,
-                              kIsPrivateAggregationAllowedMetric},
+          {MultipleOutputKeys{
+               kIsFledgeAllowedMetric,
+               kIsEventReportingDestinationAttestedForFledgeMetric},
+           static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContextMetric,
+               kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
+               kIsPrivateAggregationAllowedMetric,
+               kIsEventReportingDestinationAttestedForSharedStorageMetric},
            static_cast<int>(Status::kAttestationFailed)}});
 }
 
@@ -2074,24 +2097,27 @@ TEST_F(PrivacySandboxAttestationsTest, AttributionReportingAttestation) {
           {kAdMeasurementDestinationOrigin,
            url::Origin::Create(GURL(top_frame_url))},
           {kAccessingOrigin, url::Origin::Create(enrollee_url)}},
-      TestOutput{{MultipleOutputKeys{kIsAttributionReportingAllowed,
-                                     kMaySendAttributionReport},
-                  true},
-                 {MultipleOutputKeys{
-                      kIsTopicsAllowedForContext, kIsFledgeAllowed,
-                      kIsSharedStorageAllowed,
-                      kIsEventReportingDestinationAttestedForFledge,
-                      kIsEventReportingDestinationAttestedForSharedStorage,
-                      kIsPrivateAggregationAllowed},
-                  false},
-                 {MultipleOutputKeys{kIsAttributionReportingAllowedMetric,
-                                     kMaySendAttributionReportMetric},
-                  static_cast<int>(Status::kAllowed)},
-                 {MultipleOutputKeys{kIsTopicsAllowedForContextMetric,
-                                     kIsFledgeAllowedMetric,
-                                     kIsSharedStorageAllowedMetric,
-                                     kIsPrivateAggregationAllowedMetric},
-                  static_cast<int>(Status::kAttestationFailed)}});
+      TestOutput{
+          {MultipleOutputKeys{kIsAttributionReportingAllowed,
+                              kMaySendAttributionReport},
+           true},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContext, kIsFledgeAllowed,
+               kIsSharedStorageAllowed,
+               kIsEventReportingDestinationAttestedForFledge,
+               kIsEventReportingDestinationAttestedForSharedStorage,
+               kIsPrivateAggregationAllowed},
+           false},
+          {MultipleOutputKeys{kIsAttributionReportingAllowedMetric,
+                              kMaySendAttributionReportMetric},
+           static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContextMetric, kIsFledgeAllowedMetric,
+               kIsSharedStorageAllowedMetric,
+               kIsPrivateAggregationAllowedMetric,
+               kIsEventReportingDestinationAttestedForSharedStorageMetric,
+               kIsEventReportingDestinationAttestedForFledgeMetric},
+           static_cast<int>(Status::kAttestationFailed)}});
 }
 
 TEST_F(PrivacySandboxAttestationsTest, SetOverrideFromDevtools) {

@@ -369,6 +369,25 @@ void CheckOutput(
                         kProtectedAudience));
       return;
     }
+    case (OutputKey::kIsEventReportingDestinationAttestedForFledgeMetric): {
+      SCOPED_TRACE(
+          "Check Output: "
+          "PrivacySandbox.IsPrivacySandboxReportingDestinationAttested "
+          "(FLEDGE)");
+      base::HistogramTester histogram_tester;
+      auto event_reporting_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kEventReportingDestinationOrigin, input);
+      std::ignore =
+          privacy_sandbox_settings->IsEventReportingDestinationAttested(
+              event_reporting_origin,
+              privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                  kProtectedAudience);
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample(
+          "PrivacySandbox.IsPrivacySandboxReportingDestinationAttested",
+          histogram_value, 1);
+      return;
+    }
     case (OutputKey::kIsEventReportingDestinationAttestedForSharedStorage): {
       SCOPED_TRACE(
           "Check Output: "
@@ -381,6 +400,26 @@ void CheckOutput(
                     event_reporting_origin,
                     privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
                         kSharedStorage));
+      return;
+    }
+    case (OutputKey::
+              kIsEventReportingDestinationAttestedForSharedStorageMetric): {
+      SCOPED_TRACE(
+          "Check Output: "
+          "PrivacySandbox.IsPrivacySandboxReportingDestinationAttested "
+          "(SharedStorage)");
+      base::HistogramTester histogram_tester;
+      auto event_reporting_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kEventReportingDestinationOrigin, input);
+      std::ignore =
+          privacy_sandbox_settings->IsEventReportingDestinationAttested(
+              event_reporting_origin,
+              privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                  kSharedStorage);
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample(
+          "PrivacySandbox.IsPrivacySandboxReportingDestinationAttested",
+          histogram_value, 1);
       return;
     }
     case (OutputKey::kIsAttributionReportingAllowed): {
