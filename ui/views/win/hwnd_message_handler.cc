@@ -319,6 +319,19 @@ gfx::Rect ScaleWindowBoundsMaybe(HWND hwnd, const gfx::Rect& bounds) {
   return bounds;
 }
 
+// Returns true if the window is arranged via Snap. For example, the browser
+// window is snapped via buttons shown when the mouse is hovered over window
+// maximize button.
+bool IsWindowArranged(HWND window) {
+  // IsWindowArranged() is not a part of any header file.
+  // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-iswindowarranged
+  using IsWindowArrangedFuncType = BOOL(WINAPI*)(HWND);
+  static const auto is_window_arranged_func =
+      reinterpret_cast<IsWindowArrangedFuncType>(
+          base::win::GetUser32FunctionPointer("IsWindowArranged"));
+  return is_window_arranged_func ? is_window_arranged_func(window) : false;
+}
+
 }  // namespace
 
 // A scoping class that prevents a window from being able to redraw in response
@@ -3054,8 +3067,12 @@ void HWNDMessageHandler::OnWindowPosChanging(WINDOWPOS* window_pos) {
       const bool fullscreen_without_hack =
           IsFullscreen() && !background_fullscreen_hack_;
 
-      if (same_monitor && (incorrect_maximized_bounds ||
-                           fullscreen_without_hack || work_area_changed)) {
+      // If the browser window is arranged by Snap, then we should not change
+      // its position but let Windows do it.
+      if (same_monitor &&
+          (incorrect_maximized_bounds || fullscreen_without_hack ||
+           work_area_changed) &&
+          !IsWindowArranged(hwnd())) {
         // A rect for the monitor we're on changed.  Normally Windows notifies
         // us about this (and thus we're reaching here due to the SetWindowPos()
         // call in OnSettingChange() above), but with some software (e.g.
