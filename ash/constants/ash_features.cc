@@ -2835,7 +2835,8 @@ bool IsInputDeviceSettingsSplitEnabled() {
 }
 
 bool IsPeripheralCustomizationEnabled() {
-  return base::FeatureList::IsEnabled(kPeripheralCustomization);
+  return base::FeatureList::IsEnabled(kPeripheralCustomization) &&
+         IsInputDeviceSettingsSplitEnabled();
 }
 
 bool IsDisplayAlignmentAssistanceEnabled() {
