@@ -126,9 +126,22 @@ bool IsDiscoverFeedTopSyncPromoEnabled() {
 
 SigninPromoViewStyle GetTopOfFeedPromoStyle() {
   CHECK(IsDiscoverFeedTopSyncPromoEnabled());
-  // Defaults to Compact Vertical.
-  return (SigninPromoViewStyle)base::GetFieldTrialParamByFeatureAsInt(
-      kEnableDiscoverFeedTopSyncPromo, kDiscoverFeedTopSyncPromoStyle, 2);
+  SigninPromoViewStyle promoStyle =
+      static_cast<SigninPromoViewStyle>(base::GetFieldTrialParamByFeatureAsInt(
+          kEnableDiscoverFeedTopSyncPromo, kDiscoverFeedTopSyncPromoStyle,
+          SigninPromoViewStyleCompactVertical));
+  // Don't handle default to force a compile-time failure if a value is added to
+  // the enum without being handled here.
+  switch (promoStyle) {
+    case SigninPromoViewStyleStandard:
+    case SigninPromoViewStyleCompactHorizontal:
+    case SigninPromoViewStyleCompactVertical:
+      return promoStyle;
+  }
+  // If no compile-time error was triggered above, it likely means that the
+  // value was incorrectly set through Finch. In this case, return the default
+  // vertical style.
+  return SigninPromoViewStyleCompactVertical;
 }
 
 bool ShouldIgnoreFeedEngagementConditionForTopSyncPromo() {

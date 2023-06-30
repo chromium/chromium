@@ -25,11 +25,6 @@ using base::SysNSStringToUTF16;
 using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
 
-namespace {
-// The image name of the SigninPromoViewStyleCompactTitled view's icon.
-NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
-}  // namespace
-
 @interface SigninPromoViewConfigurator ()
 
 // User email used for the secondary button, and also for the primary button if
