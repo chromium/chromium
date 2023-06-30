@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.text.format.DateUtils;
+import android.util.Pair;
 
 import androidx.test.filters.MediumTest;
 
@@ -31,8 +32,8 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -112,6 +113,24 @@ public class WebApkUpdateManagerTest {
     private static final int WEBAPK_SHELL_VERSION = 1000;
     private static final long WEBAPK_THEME_COLOR = 2147483648L;
     private static final long WEBAPK_BACKGROUND_COLOR = 2147483648L;
+
+    private static final String HISTOGRAM = "WebApk.AppIdentityDialog.PendingImageUpdateDiffValue";
+    private static final String HISTOGRAM_SCALED =
+            "WebApk.AppIdentityDialog.PendingImageUpdateDiffValueScaled";
+
+    private static final Bitmap BLACK_1X1 =
+            Bitmap.createBitmap(new int[] {0x00000000, 0x00000000}, 1, 1, Bitmap.Config.ARGB_8888);
+    private static final Bitmap BLACK_2X2 =
+            Bitmap.createBitmap(new int[] {0x00000000, 0x00000000, 0x00000000, 0x00000000}, 2, 2,
+                    Bitmap.Config.ARGB_8888);
+    private static final Bitmap WHITE_2X2 =
+            Bitmap.createBitmap(new int[] {0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff}, 2, 2,
+                    Bitmap.Config.ARGB_8888);
+    private static final Bitmap CHECKERED_2X2 =
+            Bitmap.createBitmap(new int[] {0x00000000, 0xffffffff, 0x00000000, 0xffffffff}, 2, 2,
+                    Bitmap.Config.ARGB_8888);
+    private static final Bitmap CONFIG_MISMATCH_2X2 = Bitmap.createBitmap(
+            new int[] {0x00000000, 0x00000000, 0x00000000, 0x00000000}, 2, 2, Config.ALPHA_8);
 
     private ChromeActivity mActivity;
     private Tab mTab;
@@ -805,51 +824,53 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @Feature({"WebApk"})
     public void testImageDiff() throws Exception {
-        Bitmap allBlack2x2 =
-                Bitmap.createBitmap(new int[] {0x00000000, 0x00000000, 0x00000000, 0x00000000}, 2,
-                        2, Bitmap.Config.ARGB_8888);
-        Bitmap allWhite2x2 =
-                Bitmap.createBitmap(new int[] {0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff}, 2,
-                        2, Bitmap.Config.ARGB_8888);
-        Bitmap blackAndWhite2x2 =
-                Bitmap.createBitmap(new int[] {0x00000000, 0xffffffff, 0x00000000, 0xffffffff}, 2,
-                        2, Bitmap.Config.ARGB_8888);
-        Bitmap differentConfig2x2 = Bitmap.createBitmap(
-                new int[] {0x00000000, 0x00000000, 0x00000000, 0x00000000}, 2, 2, Config.ALPHA_8);
-
         // A black image compared against a white one should register as all changed.
-        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(allBlack2x2, allWhite2x2));
+        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(BLACK_2X2, WHITE_2X2));
         // Alternating black and white pixels should show as half changed when compared against all
         // black image.
-        assertEquals(50, TestWebApkUpdateManager.imageDiffValue(allBlack2x2, blackAndWhite2x2));
+        assertEquals(50, TestWebApkUpdateManager.imageDiffValue(BLACK_2X2, CHECKERED_2X2));
         // Alternating black and white pixels should show as half changed when compared against all
         // white image.
-        assertEquals(50, TestWebApkUpdateManager.imageDiffValue(blackAndWhite2x2, allWhite2x2));
+        assertEquals(50, TestWebApkUpdateManager.imageDiffValue(CHECKERED_2X2, WHITE_2X2));
         // Two all black images should register as unchanged.
-        assertEquals(0, TestWebApkUpdateManager.imageDiffValue(blackAndWhite2x2, blackAndWhite2x2));
+        assertEquals(0, TestWebApkUpdateManager.imageDiffValue(CHECKERED_2X2, CHECKERED_2X2));
 
         // Two null images register as unchanged.
         assertEquals(0, TestWebApkUpdateManager.imageDiffValue(null, null));
         // If 'before' is provided, but 'after' is null, they should register as 100% different.
-        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(allBlack2x2, null));
+        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(BLACK_2X2, null));
         // If 'after' is provided, but 'before' is null, they should register as 100% different.
-        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(null, allWhite2x2));
+        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(null, WHITE_2X2));
         // Images with different color configurations should register as 100% different.
-        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(allBlack2x2, differentConfig2x2));
+        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(BLACK_2X2, CONFIG_MISMATCH_2X2));
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     @MediumTest
     @Feature({"WebApk"})
-    @DisabledTest(message = "See crbug.com/1455260") // Disabled because it is flaky
-    public void testImageDiffDifferentDimensions() throws Exception {
-        Bitmap allBlack1x1 = Bitmap.createBitmap(
-                new int[] {0x00000000, 0x00000000}, 1, 1, Bitmap.Config.ARGB_8888);
-        Bitmap allBlack2x2 =
-                Bitmap.createBitmap(new int[] {0x00000000, 0x00000000, 0x00000000, 0x00000000}, 2,
-                        2, Bitmap.Config.ARGB_8888);
+    public void testImageDiffHistograms() throws Exception {
+        // Comparing two identical bitmaps should record a 0% change on the main histogram.
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder().expectIntRecord(HISTOGRAM, 0).build();
+        TestWebApkUpdateManager.logIconDiffs(new Pair<>(BLACK_2X2, BLACK_2X2));
+        histograms.assertExpected();
 
-        // Images of different dimensions should fire an assert (see test annotation above).
-        TestWebApkUpdateManager.imageDiffValue(allBlack1x1, allBlack2x2);
+        // Comparing two black bitmaps of different dimensions should procude a 0% change on the
+        // scaled histogram.
+        histograms = HistogramWatcher.newBuilder().expectIntRecord(HISTOGRAM_SCALED, 0).build();
+        TestWebApkUpdateManager.logIconDiffs(new Pair<>(BLACK_1X1, BLACK_2X2));
+        histograms.assertExpected();
+
+        // Comparing a black bitmap to a larger white bitmap should produce a 100% change
+        // on the scaled histogram.
+        histograms = HistogramWatcher.newBuilder().expectIntRecord(HISTOGRAM_SCALED, 100).build();
+        TestWebApkUpdateManager.logIconDiffs(new Pair<>(BLACK_1X1, WHITE_2X2));
+        histograms.assertExpected();
+
+        // A checkered image compared to a white one should produce a 50% change
+        // on the main histogram.
+        histograms = HistogramWatcher.newBuilder().expectIntRecord(HISTOGRAM, 50).build();
+        TestWebApkUpdateManager.logIconDiffs(new Pair<>(CHECKERED_2X2, WHITE_2X2));
+        histograms.assertExpected();
     }
 }

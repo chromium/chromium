@@ -211,7 +211,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
      * via `iconDiffPair` is null.
      * @param iconDiffPair a pair of Bitmaps to compare to each other.
      */
-    private void logIconDiffs(Pair<Bitmap, Bitmap> iconDiffPair) {
+    static void logIconDiffs(Pair<Bitmap, Bitmap> iconDiffPair) {
         ThreadUtils.assertOnBackgroundThread();
 
         Bitmap before = iconDiffPair.first;
