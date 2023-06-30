@@ -54,6 +54,7 @@ using ::testing::IsEmpty;
 using ::testing::MockFunction;
 using ::testing::Not;
 using ::testing::Property;
+using testing::SizeIs;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
 
@@ -106,7 +107,7 @@ class UploadClientTest : public ::testing::TestWithParam<
 
   bool force_confirm() const { return std::get<1>(GetParam()); }
 
-  content::BrowserTaskEnvironment task_envrionment_;
+  content::BrowserTaskEnvironment task_environment_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
@@ -163,8 +164,6 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
                           base::Unretained(&encryption_key_attached));
 
   ReportingServerConnector::TestEnvironment test_env;
-  test_env.client()->SetDMToken(
-      policy::DMToken::CreateValidToken("FAKE_DM_TOKEN").value());
 
   static constexpr char matched_record_template[] =
       R"JSON(
@@ -176,9 +175,28 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   }
 }
 )JSON";
-  EXPECT_CALL(
-      *test_env.client(),
-      UploadEncryptedReport(AllOf(IsDataUploadRequestValid(),
+
+  test::TestMultiEvent<SequenceInformation, bool> upload_success_event;
+
+  // Save last record seq info for verification.
+  const SequenceInformation last_record_seq_info =
+      records.back().sequence_information();
+
+  test::TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
+  UploadClient::Create(e.cb());
+  StatusOr<std::unique_ptr<UploadClient>> upload_client_result = e.result();
+  ASSERT_OK(upload_client_result) << upload_client_result.status();
+
+  auto upload_client = std::move(upload_client_result.ValueOrDie());
+  auto enqueue_result = upload_client->EnqueueUpload(
+      need_encryption_key(), std::move(records), std::move(total_reservation),
+      upload_success_event.repeating_cb(), encryption_key_attached_cb);
+  EXPECT_TRUE(enqueue_result.ok());
+  task_environment_.RunUntilIdle();
+
+  ASSERT_THAT(*test_env.url_loader_factory()->pending_requests(), SizeIs(1));
+  base::Value::Dict request_body = test_env.request_body(0);
+  EXPECT_THAT(request_body, AllOf(IsDataUploadRequestValid(),
                                   DoesRequestContainRecord(base::StringPrintf(
                                       matched_record_template, 0)),
                                   DoesRequestContainRecord(base::StringPrintf(
@@ -198,27 +216,12 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
                                   DoesRequestContainRecord(base::StringPrintf(
                                       matched_record_template, 8)),
                                   DoesRequestContainRecord(base::StringPrintf(
-                                      matched_record_template, 9))),
-                            _, _))
-      .WillOnce(MakeUploadEncryptedReportAction(
-          std::move(ResponseBuilder().SetForceConfirm(force_confirm()))));
+                                      matched_record_template, 9))));
 
-  test::TestMultiEvent<SequenceInformation, bool> upload_success_event;
-
-  // Save last record seq info for verification.
-  const SequenceInformation last_record_seq_info =
-      records.back().sequence_information();
-
-  test::TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
-  UploadClient::Create(e.cb());
-  StatusOr<std::unique_ptr<UploadClient>> upload_client_result = e.result();
-  ASSERT_OK(upload_client_result) << upload_client_result.status();
-
-  auto upload_client = std::move(upload_client_result.ValueOrDie());
-  auto enqueue_result = upload_client->EnqueueUpload(
-      need_encryption_key(), std::move(records), std::move(total_reservation),
-      upload_success_event.repeating_cb(), encryption_key_attached_cb);
-  EXPECT_TRUE(enqueue_result.ok());
+  test_env.SimulateCustomResponseForRequest(
+      0, ResponseBuilder(std::move(request_body))
+             .SetForceConfirm(force_confirm())
+             .Build());
 
   auto upload_success_result = upload_success_event.result();
   EXPECT_THAT(std::get<0>(upload_success_result),
