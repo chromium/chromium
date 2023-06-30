@@ -63,8 +63,8 @@ bool ContainsFileTypeIcon(const gfx::ImageSkia& image,
 
 bool ContainsFolderTypeIcon(const gfx::ImageSkia& image) {
   gfx::ImageSkia actual = ExtractFileTypeIcon(image);
-  gfx::ImageSkia expected = gfx::CreateVectorIcon(
-      chromeos::kFiletypeFolderIcon, kFileTypeIconSize, gfx::kGoogleGrey900);
+  gfx::ImageSkia expected = chromeos::GetIconFromType(
+      chromeos::IconType::kFolder, /*dark_background=*/false);
   return gfx::test::AreImagesEqual(gfx::Image(actual), gfx::Image(expected));
 }
 
