@@ -26,7 +26,8 @@ import {OobeContentDialog} from '../../components/dialogs/oobe_content_dialog.js
 
 
 const DEFAULT_EMAIL_DOMAIN = '@gmail.com';
-const INPUT_EMAIL_PATTERN = '^[a-zA-Z0-9.!#$%&\'*+=?^_`{|}~-]+(@[^\\s@]+)?$';
+const INPUT_EMAIL_PATTERN =
+    '^[a-zA-Z0-9.!#$%&\'*+=?^_`\\{\\|\\}~\\-]+(@[^\\s@]+)?$';
 
 const LOGIN_SECTION = {
   EMAIL: 'emailSection',
