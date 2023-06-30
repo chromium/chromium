@@ -62,9 +62,12 @@ def CheckLintLuciMilo(input_api, output_api):
   return []
 
 def CheckTestingBuildbot(input_api, output_api):
-  if ('infra/config/generated/luci/luci-milo.cfg' in input_api.LocalPaths() or
-      'infra/config/generated/luci/luci-milo-dev.cfg' in input_api.LocalPaths()
-      ):
+  relevant_paths = [
+      'infra/config/generated/luci/luci-milo.cfg',
+      'infra/config/generated/luci/luci-milo-dev.cfg',
+      'infra/config/generated/testing/mixins.pyl',
+  ]
+  if any([p in input_api.LocalPaths() for p in relevant_paths]):
     return input_api.RunTests([
         input_api.Command(name='testing/buildbot config checks',
                           cmd=[
