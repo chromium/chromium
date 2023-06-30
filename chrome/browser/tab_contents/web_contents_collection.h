@@ -31,6 +31,7 @@ class WebContentsCollection {
     virtual void DidFinishNavigation(
         content::WebContents* web_contents,
         content::NavigationHandle* navigation_handle) {}
+    virtual void DidStartLoading(content::WebContents* web_contents) {}
 
    protected:
     virtual ~Observer() = default;

@@ -51,6 +51,7 @@
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/sessions/tab_loader_delegate.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -95,8 +96,6 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -361,56 +360,19 @@ class SessionRestoreTest : public InProcessBrowserTest {
       fake_memory_pressure_monitor_;
 };
 
-// Activates the smart restore behaviour and tracks the loading of tabs.
-class SmartSessionRestoreTest : public SessionRestoreTest,
-                                public content::NotificationObserver {
+// Activates the smart restore behaviour.
+class SmartSessionRestoreTest : public SessionRestoreTest {
  public:
   SmartSessionRestoreTest() = default;
 
   SmartSessionRestoreTest(const SmartSessionRestoreTest&) = delete;
   SmartSessionRestoreTest& operator=(const SmartSessionRestoreTest&) = delete;
 
-  void StartObserving(size_t num_tabs) {
-    // Start by clearing everything so it can be reused in the same test.
-    web_contents_.clear();
-    registrar_.RemoveAll();
-    num_tabs_ = num_tabs;
-    registrar_.Add(this, content::NOTIFICATION_LOAD_START,
-                   content::NotificationService::AllSources());
-  }
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    switch (type) {
-      case content::NOTIFICATION_LOAD_START: {
-        content::NavigationController* controller =
-            content::Source<content::NavigationController>(source).ptr();
-        web_contents_.push_back(controller->DeprecatedGetWebContents());
-        if (web_contents_.size() == num_tabs_)
-          message_loop_runner_->Quit();
-        break;
-      }
-    }
-  }
-  const std::vector<content::WebContents*>& web_contents() const {
-    return web_contents_;
-  }
-
-  void WaitForAllTabsToStartLoading() {
-    message_loop_runner_ = new content::MessageLoopRunner;
-    message_loop_runner_->Run();
-  }
-
  protected:
   static const size_t kExpectedNumTabs;
   static const char* const kUrls[];
 
  private:
-  content::NotificationRegistrar registrar_;
-  // Ordered by load start order.
-  std::vector<content::WebContents*> web_contents_;
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-  size_t num_tabs_;
   testing::ScopedAlwaysLoadSessionRestoreTestPolicy test_policy_;
 };
 
@@ -2324,6 +2286,68 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Tracks the load order of tabs in a new browser.
+class LoadOrderObserver : public BrowserListObserver,
+                          public TabStripModelObserver,
+                          public WebContentsCollection::Observer {
+ public:
+  explicit LoadOrderObserver(int expected_tabs)
+      : expected_tabs_(expected_tabs) {
+    BrowserList::AddObserver(this);
+  }
+
+  ~LoadOrderObserver() override {
+    browser_->tab_strip_model()->RemoveObserver(this);
+    BrowserList::RemoveObserver(this);
+  }
+
+  void WaitForAllTabsToStartLoading() { run_loop_.Run(); }
+
+  const std::vector<content::WebContents*>& web_contents() const {
+    return web_contents_;
+  }
+
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override {
+    ASSERT_EQ(browser_, nullptr);
+    browser_ = browser;
+    EXPECT_TRUE(browser_->tab_strip_model()->empty());
+    browser_->tab_strip_model()->AddObserver(this);
+  }
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() != TabStripModelChange::kInserted) {
+      return;
+    }
+
+    for (auto& contents : change.GetInsert()->contents) {
+      content::WebContents* new_contents = contents.contents;
+      EXPECT_FALSE(new_contents->IsLoading());
+      web_contents_collection_.StartObserving(contents.contents);
+    }
+  }
+
+  // WebContentsCollection::Observer:
+  void DidStartLoading(content::WebContents* web_contents) override {
+    web_contents_.push_back(web_contents);
+    if (web_contents_.size() == expected_tabs_) {
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  const size_t expected_tabs_;
+  raw_ptr<Browser> browser_ = nullptr;
+  base::RunLoop run_loop_;
+  WebContentsCollection web_contents_collection_{this};
+  // Ordered by load start order.
+  std::vector<content::WebContents*> web_contents_;
+};
+
 // PRE_CorrectLoadingOrder is flaky on ChromeOS MSAN and Mac.
 // See http://crbug.com/493167.
 #if (BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)) || \
@@ -2363,26 +2387,28 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_PRE_CorrectLoadingOrder) {
       profile, ProfileKeepAliveOrigin::kBrowserWindow);
   CloseBrowserSynchronously(browser());
 
-  StartObserving(kExpectedNumTabs);
+  LoadOrderObserver load_order_observer(kExpectedNumTabs);
 
   // Create a new window, which should trigger session restore.
   chrome::NewEmptyWindow(profile);
   Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(new_browser);
-  WaitForAllTabsToStartLoading();
+  load_order_observer.WaitForAllTabsToStartLoading();
   keep_alive.reset();
   profile_keep_alive.reset();
 
-  ASSERT_EQ(kExpectedNumTabs, web_contents().size());
+  const auto& web_contents = load_order_observer.web_contents();
+
+  ASSERT_EQ(kExpectedNumTabs, web_contents.size());
   // Test that we have observed the tabs being loaded in the inverse order of
   // their activation (MRU). Also validate that their last active time is in the
   // correct order.
-  for (size_t i = 0; i < web_contents().size(); i++) {
+  for (size_t i = 0; i < web_contents.size(); i++) {
     GURL expected_url = GURL(kUrls[activation_order[kExpectedNumTabs - i - 1]]);
-    ASSERT_EQ(expected_url, web_contents()[i]->GetLastCommittedURL());
+    ASSERT_EQ(expected_url, web_contents[i]->GetLastCommittedURL());
     if (i > 0) {
-      ASSERT_GT(web_contents()[i - 1]->GetLastActiveTime(),
-                web_contents()[i]->GetLastActiveTime());
+      ASSERT_GT(web_contents[i - 1]->GetLastActiveTime(),
+                web_contents[i]->GetLastActiveTime());
     }
   }
 
@@ -2406,17 +2432,19 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_CorrectLoadingOrder) {
   CloseBrowserSynchronously(browser());
   // We have an extra tab that is added when the test starts, which gets ignored
   // later when we test for proper order.
-  StartObserving(kExpectedNumTabs + 1);
+  LoadOrderObserver load_order_observer(kExpectedNumTabs + 1);
 
   // Create a new window, which should trigger session restore.
   chrome::NewEmptyWindow(profile);
   Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(new_browser);
-  WaitForAllTabsToStartLoading();
+  load_order_observer.WaitForAllTabsToStartLoading();
   keep_alive.reset();
   profile_keep_alive.reset();
 
-  ASSERT_EQ(kExpectedNumTabs + 1, web_contents().size());
+  const auto& web_contents = load_order_observer.web_contents();
+
+  ASSERT_EQ(kExpectedNumTabs + 1, web_contents.size());
 
   // Test that we have observed the tabs being loaded in the inverse order of
   // their activation (MRU). Also validate that their last active time is in the
@@ -2424,12 +2452,12 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_CorrectLoadingOrder) {
   //
   // Note that we ignore the first tab as it's an empty one that is added
   // automatically at the start of the test.
-  for (size_t i = 1; i < web_contents().size(); i++) {
+  for (size_t i = 1; i < web_contents.size(); i++) {
     GURL expected_url = GURL(kUrls[activation_order[kExpectedNumTabs - i]]);
-    ASSERT_EQ(expected_url, web_contents()[i]->GetLastCommittedURL());
+    ASSERT_EQ(expected_url, web_contents[i]->GetLastCommittedURL());
     if (i > 0) {
-      ASSERT_GT(web_contents()[i - 1]->GetLastActiveTime(),
-                web_contents()[i]->GetLastActiveTime());
+      ASSERT_GT(web_contents[i - 1]->GetLastActiveTime(),
+                web_contents[i]->GetLastActiveTime());
     }
   }
 }
