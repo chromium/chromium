@@ -2105,9 +2105,8 @@ bool ChromeContentBrowserClient::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
   // This is needed to bypass the normal SameSite rules for any chrome:// page
   // embedding a secure origin, regardless of the registrable domains of any
   // intervening frames. For example, this is needed for browser UI to interact
-  // with SameSite cookies on accounts.google.com, which are used for logging
-  // into Cloud Print from chrome://print, for displaying a list of available
-  // accounts on the NTP (chrome://new-tab-page), etc.
+  // with SameSite cookies on accounts.google.com, which is used for displaying
+  // a list of available accounts on the NTP (chrome://new-tab-page), etc.
   if (is_embedded_origin_secure && scheme == content::kChromeUIScheme)
     return true;
 #if BUILDFLAG(ENABLE_EXTENSIONS)

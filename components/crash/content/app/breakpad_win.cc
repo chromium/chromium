@@ -295,14 +295,6 @@ long WINAPI ChromeExceptionFilter(EXCEPTION_POINTERS* info) {
   return EXCEPTION_EXECUTE_HANDLER;
 }
 
-// Exception filter for the Cloud Print service process used when breakpad is
-// not enabled. We just display the "Do you want to restart" message and then
-// die (without calling the previous filter).
-long WINAPI CloudPrintServiceExceptionFilter(EXCEPTION_POINTERS* info) {
-  DumpDoneCallback(nullptr, nullptr, nullptr, info, nullptr, false);
-  return EXCEPTION_EXECUTE_HANDLER;
-}
-
 }  // namespace
 
 static bool WrapMessageBoxWithSEH(const wchar_t* text, const wchar_t* caption,
@@ -437,14 +429,11 @@ void InitCrashReporter(const std::string& process_type_switch) {
 
   google_breakpad::ExceptionHandler::MinidumpCallback callback = nullptr;
   LPTOP_LEVEL_EXCEPTION_FILTER default_filter = nullptr;
-  // We install the post-dump callback only for the browser and service
-  // processes. It spawns a new browser/service process.
+  // This installs the post-dump callback only for the browser process. It
+  // spawns a new browser process.
   if (process_type == L"browser") {
     callback = &DumpDoneCallback;
     default_filter = &ChromeExceptionFilter;
-  } else if (process_type == L"service") {
-    callback = &DumpDoneCallback;
-    default_filter = &CloudPrintServiceExceptionFilter;
   }
 
   if (GetCrashReporterClient()->ShouldCreatePipeName(process_type))

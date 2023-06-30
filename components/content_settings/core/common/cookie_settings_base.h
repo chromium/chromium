@@ -151,10 +151,10 @@ class CookieSettingsBase {
   // the context should be treated as "first party" even if URLs have different
   // sites (or even different schemes).
   //
-  // (One such situation is e.g. chrome://print embedding some content from
-  // https://accounts.google.com for Cloud Print login. Because we trust the
-  // chrome:// scheme, and the embedded content is https://, we can treat this
-  // as effectively first-party for the purposes of SameSite cookies.)
+  // This situation can happen when chrome:// URLs embed content from https://
+  // URLs. Because we trust the chrome:// scheme, and the embedded content is
+  // https://, we can treat this as effectively first-party for the purposes of
+  // SameSite cookies.
   //
   // This differs from "legacy SameSite behavior" because rather than the
   // requested URL, this bypass is based on the site_for_cookies, i.e. the

@@ -2,7 +2,7 @@
 
 This directory contains browser-side code for printing infrastructure in
 ChromeOS.  This directory primarily contains code dealing with local printing
-via the Common Unix Printing System (CUPS), *not* Cloud Print.
+via the Common Unix Printing System (CUPS).
 
 ## Other Related Directories
 
