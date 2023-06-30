@@ -548,6 +548,13 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     }
     SetHideInkDropWhenShowingContextMenu(false);
 
+    views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
+
+    if (features::IsChromeRefresh2023()) {
+      SetImageLabelSpacing(
+          GetLayoutConstant(BOOKMARK_BAR_BUTTON_IMAGE_LABEL_PADDING));
+    }
+
     // ui::EF_MIDDLE_MOUSE_BUTTON opens all bookmarked links in separate tabs.
     SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                              ui::EF_MIDDLE_MOUSE_BUTTON);
@@ -1756,7 +1763,7 @@ std::unique_ptr<MenuButton> BookmarkBarView::CreateOverflowButton() {
   // text and flipping the gfx::Canvas object will break text rendering. Since
   // the overflow button does not contain text, we can safely flip it.
   button->SetFlipCanvasOnPaintForRTLUI(true);
-
+  views::FocusRing::Get(button.get())->SetOutsetFocusRingDisabled(true);
   // Make visible as necessary.
   button->SetVisible(false);
   // Set accessibility name.
