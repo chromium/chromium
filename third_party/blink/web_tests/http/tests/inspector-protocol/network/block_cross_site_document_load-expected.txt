@@ -1,4 +1,4 @@
-Tests the blockedCrossSiteDocumentLoad bit available as a part of the loading finished signal.
+Tests that CORB/ORB blocking gets reported as an issue to DevTools.
 Blocking cross-site document at http://devtools.oopif.test:8000/inspector-protocol/network/resources/nosniff.pl: shouldReportCorbBlocking=true.
 Blocking cross-site document at http://devtools.oopif.test:8000/inspector-protocol/network/resources/simple-iframe.html: shouldReportCorbBlocking=true.
 Blocking, but not reporting cross-site document at http://devtools.oopif.test:8000/inspector-protocol/network/resources/204.pl: shouldReportCorbBlocking=false.

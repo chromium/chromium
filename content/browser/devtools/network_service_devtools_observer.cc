@@ -27,6 +27,16 @@ void DispatchToAgents(DevToolsAgentHostImpl* agent_host,
     (h->*method)(std::forward<Args>(args)...);
 }
 
+RenderFrameHostImpl* GetRenderFrameHostImplFrom(int frame_tree_node_id) {
+  auto* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (!ftn) {
+    return nullptr;
+  }
+
+  RenderFrameHostImpl* rfhi = ftn->current_frame_host();
+  return rfhi;
+}
+
 }  // namespace
 
 NetworkServiceDevToolsObserver::NetworkServiceDevToolsObserver(
@@ -193,14 +203,7 @@ void NetworkServiceDevToolsObserver::OnCorsError(
     const GURL& url,
     const network::CorsErrorStatus& cors_error_status,
     bool is_warning) {
-  if (frame_tree_node_id_ == FrameTreeNode::kFrameTreeNodeInvalidId)
-    return;
-
-  auto* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
-  if (!ftn)
-    return;
-
-  RenderFrameHostImpl* rfhi = ftn->current_frame_host();
+  RenderFrameHostImpl* rfhi = GetRenderFrameHostImplFrom(frame_tree_node_id_);
   if (!rfhi)
     return;
 
@@ -253,6 +256,36 @@ void NetworkServiceDevToolsObserver::OnCorsError(
                    .SetDetails(std::move(details))
                    .SetIssueId(cors_error_status.issue_id.ToString())
                    .Build();
+  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
+}
+
+void NetworkServiceDevToolsObserver::OnCorbError(
+    const absl::optional<std::string>& devtools_request_id,
+    const GURL& url) {
+  RenderFrameHostImpl* rfhi = GetRenderFrameHostImplFrom(frame_tree_node_id_);
+  if (!rfhi) {
+    return;
+  }
+
+  std::unique_ptr<protocol::Audits::AffectedRequest> affected_request =
+      protocol::Audits::AffectedRequest::Create()
+          .SetRequestId(devtools_request_id.value_or(""))
+          .SetUrl(url.spec())
+          .Build();
+  auto generic_details =
+      protocol::Audits::GenericIssueDetails::Create()
+          .SetErrorType(protocol::Audits::GenericIssueErrorTypeEnum::
+                            ResponseWasBlockedByORB)
+          .SetRequest(std::move(affected_request))
+          .Build();
+  auto details = protocol::Audits::InspectorIssueDetails::Create()
+                     .SetGenericIssueDetails(std::move(generic_details))
+                     .Build();
+  auto issue =
+      protocol::Audits::InspectorIssue::Create()
+          .SetCode(protocol::Audits::InspectorIssueCodeEnum::GenericIssue)
+          .SetDetails(std::move(details))
+          .Build();
   devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
 }
 

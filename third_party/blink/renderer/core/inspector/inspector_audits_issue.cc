@@ -135,6 +135,9 @@ AuditsIssue::GenericIssueErrorTypeToProtocol(
         kFormInputHasWrongButWellIntendedAutocompleteValueError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormInputHasWrongButWellIntendedAutocompleteValueError;
+    case mojom::blink::GenericIssueErrorType::kResponseWasBlockedByORB:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          ResponseWasBlockedByORB;
   }
 }
 

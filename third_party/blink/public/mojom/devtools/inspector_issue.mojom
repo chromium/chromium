@@ -253,6 +253,7 @@ enum GenericIssueErrorType {
   kFormLabelHasNeitherForNorNestedInput,
   kFormLabelForMatchesNonExistingIdError,
   kFormInputHasWrongButWellIntendedAutocompleteValueError,
+  kResponseWasBlockedByORB,
 };
 
 struct GenericIssueDetails {

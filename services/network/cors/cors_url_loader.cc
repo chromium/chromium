@@ -818,6 +818,10 @@ void CorsURLLoader::ReportCorsErrorToDevTools(const CorsErrorStatus& status,
       CloneClientSecurityState(), request_.url, status, is_warning);
 }
 
+void CorsURLLoader::ReportCorbErrorToDevTools() {
+  devtools_observer_->OnCorbError(request_.devtools_request_id, request_.url);
+}
+
 absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
     int net_error,
     absl::optional<CorsErrorStatus> status) {
@@ -999,6 +1003,9 @@ void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
 
   if (devtools_observer_ && status.cors_error_status) {
     ReportCorsErrorToDevTools(*status.cors_error_status);
+  }
+  if (devtools_observer_ && status.should_report_corb_blocking) {
+    ReportCorbErrorToDevTools();
   }
 
   // If we detect a private network access when we were not expecting one, we

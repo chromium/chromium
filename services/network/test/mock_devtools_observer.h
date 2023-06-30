@@ -111,6 +111,12 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
                    const network::CorsErrorStatus& status,
                    bool is_warning) override;
 
+  MOCK_METHOD(void,
+              OnCorbError,
+              (const absl::optional<std::string>& devtools_request_id,
+               const GURL& url),
+              (override));
+
   void Clone(mojo::PendingReceiver<DevToolsObserver> observer) override;
 
   void WaitUntilRawResponse(size_t goal);
