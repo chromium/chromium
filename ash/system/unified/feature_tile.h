@@ -116,6 +116,11 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Sets visibility of `sub_label_`.
   void SetSubLabelVisibility(bool visible);
 
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
+  void RemoveLayerFromRegions(ui::Layer* layer) override;
+
   bool is_icon_clickable() const { return is_icon_clickable_; }
   views::ImageButton* icon_button() { return icon_button_; }
   views::Label* label() { return label_; }
@@ -126,10 +131,6 @@ class ASH_EXPORT FeatureTile : public views::Button {
   friend class BluetoothFeaturePodControllerTest;
   friend class HotspotFeaturePodControllerTest;
   friend class NotificationCounterViewTest;
-
-  // views::View:
-  void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
-  void RemoveLayerFromRegions(ui::Layer* layer) override;
 
   // Returns the color id to use for the `icon_button_` and `drill_in_arrow_`
   // based on the tile's enabled and toggled state.
