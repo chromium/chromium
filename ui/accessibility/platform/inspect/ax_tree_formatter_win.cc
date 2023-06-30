@@ -478,7 +478,7 @@ void AXTreeFormatterWin::AddSimpleDOMNodeProperties(
     return;
 
   base::win::ScopedBstr bstr;
-  if (SUCCEEDED(simple_dom_node->get_innerHTML(bstr.Receive()))) {
+  if (S_OK == simple_dom_node->get_innerHTML(bstr.Receive())) {
     dict->Set("inner_html", base::WideToUTF8(bstr.Get()));
   }
   bstr.Reset();
