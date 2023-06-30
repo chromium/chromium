@@ -7,7 +7,7 @@ found in the LICENSE file.
 
 <resources>
     <!-- General dimensions. -->
-    <dimen name="restore_tabs_sheet_padding">10dp</dimen>
+    <dimen name="restore_tabs_sheet_padding">24dp</dimen>
     <dimen name="restore_tabs_sheet_padding_content">24dp</dimen>
     <dimen name="restore_tabs_device_icon">20dp</dimen>
     <dimen name="restore_tabs_device_icon_margin_horizontal">18dp</dimen>
@@ -15,7 +15,7 @@ found in the LICENSE file.
     <dimen name="restore_tabs_fre_logo_height">100dp</dimen>
     <dimen name="restore_tabs_inner_corner_radius">4dp</dimen>
     <dimen name="restore_tabs_outer_corner_radius">16dp</dimen>
-    <dimen name="restore_tabs_bottom_sheet_padding">24dp</dimen>
+    <dimen name="restore_tabs_bottom_sheet_padding">16dp</dimen>
 
     <!-- Home sheet dimensions. -->
     <dimen name="restore_tabs_promo_sheet_device_card_padding">16dp</dimen>
