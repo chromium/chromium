@@ -22,30 +22,38 @@ base::flat_set<T> VectorToSet(const std::vector<T>& v) {
 }
 
 void OnKeySystemCapability(
-    CdmCapabilityCB cdm_capability_cb,
+    bool is_hw_secure,
+    media::CdmCapabilityCB cdm_capability_cb,
     bool is_supported,
     media::mojom::KeySystemCapabilityPtr key_system_capability) {
   // Key system must support at least 1 video codec, 1 encryption scheme,
   // and 1 encryption scheme to be considered. Support for audio codecs is
   // optional.
-  if (!is_supported || !key_system_capability ||
-      !key_system_capability->hw_secure_capability ||
-      key_system_capability->hw_secure_capability->video_codecs.empty() ||
-      key_system_capability->hw_secure_capability->encryption_schemes.empty() ||
-      key_system_capability->hw_secure_capability->session_types.empty()) {
+  if (!is_supported || !key_system_capability) {
+    std::move(cdm_capability_cb).Run(absl::nullopt);
+    return;
+  }
+  const absl::optional<media::CdmCapability>& capability =
+      is_hw_secure ? key_system_capability->hw_secure_capability
+                   : key_system_capability->sw_secure_capability;
+
+  if (!capability || capability->video_codecs.empty() ||
+      capability->encryption_schemes.empty() ||
+      capability->session_types.empty()) {
     std::move(cdm_capability_cb).Run(absl::nullopt);
     return;
   }
 
-  std::move(cdm_capability_cb).Run(key_system_capability->hw_secure_capability);
+  std::move(cdm_capability_cb).Run(capability);
 }
 
 }  // namespace
 
-void GetMediaFoundationServiceHardwareSecureCdmCapability(
+void GetMediaFoundationServiceCdmCapability(
     const std::string& key_system,
     const base::FilePath& cdm_path,
-    CdmCapabilityCB cdm_capability_cb) {
+    bool is_hw_secure,
+    media::CdmCapabilityCB cdm_capability_cb) {
   if (!media::MediaFoundationCdm::IsAvailable()) {
     DVLOG(1) << "MediaFoundationCdm not available!";
     std::move(cdm_capability_cb).Run(absl::nullopt);
@@ -55,10 +63,10 @@ void GetMediaFoundationServiceHardwareSecureCdmCapability(
   // CDM capability is global, use a generic BrowserContext and Site to query.
   auto& mf_service = GetMediaFoundationService(nullptr, GURL(), cdm_path);
   mf_service.IsKeySystemSupported(
-      key_system,
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&OnKeySystemCapability, std::move(cdm_capability_cb)),
-          false, nullptr));
+      key_system, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                      base::BindOnce(&OnKeySystemCapability, is_hw_secure,
+                                     std::move(cdm_capability_cb)),
+                      false, nullptr));
 }
 
 }  // namespace content
