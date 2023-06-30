@@ -116,11 +116,10 @@ class UninstallCheckboxView : public views::View,
   View* TargetForRect(View* root, const gfx::Rect& rect) override {
     views::View* target =
         views::ViewTargeterDelegate::TargetForRect(root, rect);
-
-    if (target->parent() != this)
-      return target;
-
-    return checkbox_;
+    if (target->parent() == this || target->parent() == checkbox_) {
+      return checkbox_;
+    }
+    return target;
   }
 
   views::Checkbox* checkbox() { return checkbox_; }
