@@ -724,17 +724,9 @@ TEST_P(MAYBE_BidirectionalStreamTest, StreamFailAfterStreamReadyCallback) {
   bidirectional_stream_destroy(test.stream);
 }
 
-// TODO(crbug.com/1246489): Flaky on Win64.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_StreamFailBeforeWriteIsExecutedOnNetworkThread \
-  DISABLED_StreamFailBeforeWriteIsExecutedOnNetworkThread
-#else
-#define MAYBE_StreamFailBeforeWriteIsExecutedOnNetworkThread \
-  StreamFailBeforeWriteIsExecutedOnNetworkThread
-#endif
-
+// TODO(crbug.com/1457033): deflake this test.
 TEST_P(MAYBE_BidirectionalStreamTest,
-       MAYBE_StreamFailBeforeWriteIsExecutedOnNetworkThread) {
+       DISABLED_StreamFailBeforeWriteIsExecutedOnNetworkThread) {
   class CustomTestBidirectionalStreamCallback
       : public TestBidirectionalStreamCallback {
     bool MaybeCancel(bidirectional_stream* stream, ResponseStep step) override {
