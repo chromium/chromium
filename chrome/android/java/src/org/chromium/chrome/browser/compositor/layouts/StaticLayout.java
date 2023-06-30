@@ -69,7 +69,8 @@ public class StaticLayout extends Layout {
             animator.addListener(new CancelAwareAnimatorListener() {
                 @Override
                 public void onEnd(Animator animation) {
-                    updateVisibleIdsLiveLayerOnly();
+                    updateVisibleIdsCheckingLiveLayer(mModel.get(LayoutTab.TAB_ID),
+                            mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
                 }
             });
             animator.start();
@@ -219,23 +220,23 @@ public class StaticLayout extends Layout {
                 if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) {
                     setStaticTab(tab);
                 } else {
-                    updateStaticTab(tab);
+                    updateStaticTab(tab, /*skipUpdateVisibleIds=*/false);
                 }
             }
 
             @Override
             public void onContentChanged(Tab tab) {
-                updateStaticTab(tab);
+                updateStaticTab(tab, /*skipUpdateVisibleIds=*/false);
             }
 
             @Override
             public void onBackgroundColorChanged(Tab tab, int color) {
-                updateStaticTab(tab);
+                updateStaticTab(tab, /*skipUpdateVisibleIds=*/false);
             }
 
             @Override
             public void onDidChangeThemeColor(Tab tab, int color) {
-                updateStaticTab(tab);
+                updateStaticTab(tab, /*skipUpdateVisibleIds=*/false);
             }
         };
     }
@@ -304,34 +305,40 @@ public class StaticLayout extends Layout {
         if (mIsActive && tab.getView() != null) tab.getView().requestFocus();
     }
 
-    private void updateVisibleIdsLiveLayerOnly() {
+    private void updateVisibleIdsCheckingLiveLayer(int tabId, boolean useLiveTexture) {
         // May be called when inactive. Prevent this from updating until the layout is shown.
         if (!isActive()) return;
 
         // Check if we can use the live texture as frozen or native pages don't support live layer.
-        if (mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE)) {
-            updateCacheVisibleIdsAndPrimary(Collections.emptyList(), mModel.get(LayoutTab.TAB_ID));
+        if (useLiveTexture) {
+            updateCacheVisibleIdsAndPrimary(Collections.emptyList(), tabId);
         } else {
-            updateVisibleIds();
+            updateCacheVisibleIdsAndPrimary(Collections.singletonList(tabId), tabId);
         }
     }
 
-    private void updateVisibleIds() {
+    private void updateVisibleIdsFromTab(Tab tab) {
         // May be called when inactive. Prevent this from updating until the layout is shown.
         if (!isActive()) return;
 
-        final int tabId = mModel.get(LayoutTab.TAB_ID);
-        updateCacheVisibleIdsAndPrimary(Collections.singletonList(tabId), tabId);
+        final int tabId = tab.getId();
+        if (shouldStall(tab)) {
+            updateCacheVisibleIdsAndPrimary(Collections.singletonList(tabId), tabId);
+        } else {
+            updateVisibleIdsCheckingLiveLayer(tabId, canUseLiveTexture(tab));
+        }
     }
 
     private void setStaticTab(Tab tab) {
         assert tab != null;
 
         if (mModel.get(LayoutTab.TAB_ID) == tab.getId() && !mModel.get(LayoutTab.SHOULD_STALL)) {
+            updateVisibleIdsCheckingLiveLayer(tab.getId(), canUseLiveTexture(tab));
             setPostHideState();
-            updateVisibleIdsLiveLayerOnly();
             return;
         }
+
+        updateVisibleIdsFromTab(tab);
 
         mModel.set(LayoutTab.TAB_ID, tab.getId());
         mModel.set(LayoutTab.IS_INCOGNITO, tab.isIncognito());
@@ -340,7 +347,7 @@ public class StaticLayout extends Layout {
         mModel.set(LayoutTab.MAX_CONTENT_WIDTH, mViewHost.getWidth() * mPxToDp);
         mModel.set(LayoutTab.MAX_CONTENT_HEIGHT, mViewHost.getHeight() * mPxToDp);
 
-        updateStaticTab(tab);
+        updateStaticTab(tab, /*skipUpdateVisibleIds=*/true);
 
         if (mModel.get(LayoutTab.SHOULD_STALL)) {
             setPreHideState();
@@ -350,31 +357,19 @@ public class StaticLayout extends Layout {
         }
     }
 
-    private void updateStaticTab(Tab tab) {
+    private void updateStaticTab(Tab tab, boolean skipUpdateVisibleIds) {
         if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
+
+        if (!skipUpdateVisibleIds) {
+            updateVisibleIdsFromTab(tab);
+        }
 
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
         mModel.set(LayoutTab.BACKGROUND_COLOR, topUiTheme.getBackgroundColor(tab));
         mModel.set(LayoutTab.TOOLBAR_BACKGROUND_COLOR, topUiTheme.getSceneLayerBackground(tab));
         mModel.set(LayoutTab.SHOULD_STALL, shouldStall(tab));
         mModel.set(LayoutTab.TEXT_BOX_BACKGROUND_COLOR, getToolbarTextBoxBackgroundColor(tab));
-
-        GURL url = tab.getUrl();
-        boolean isNativePage =
-                tab.isNativePage() || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
-        boolean canUseLiveTexture =
-                tab.getWebContents() != null && !SadTab.isShowing(tab) && !isNativePage;
-        mModel.set(LayoutTab.CAN_USE_LIVE_TEXTURE, canUseLiveTexture);
-
-        // TODO(crbug/1402843): Move SHOULD_STALL checks inside the updateVisibleId* methods.
-        if (mModel.get(LayoutTab.SHOULD_STALL)) {
-            // TODO(crbug/1402843): if canUseLiveTexture is true it should be possible to use
-            // updateVisibleIdsLiveLayerOnly(). However, this was causing previous content
-            // to show when undoing a tab closure originating from the tab group bottom bar.
-            updateVisibleIds();
-        } else {
-            updateVisibleIdsLiveLayerOnly();
-        }
+        mModel.set(LayoutTab.CAN_USE_LIVE_TEXTURE, canUseLiveTexture(tab));
     }
 
     private int getToolbarTextBoxBackgroundColor(Tab tab) {
@@ -395,6 +390,13 @@ public class StaticLayout extends Layout {
     private boolean shouldStall(Tab tab) {
         return (tab.isFrozen() || tab.needsReload())
                 && !NativePage.isNativePageUrl(tab.getUrl(), tab.isIncognito());
+    }
+
+    private boolean canUseLiveTexture(Tab tab) {
+        final GURL url = tab.getUrl();
+        final boolean isNativePage =
+                tab.isNativePage() || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
+        return tab.getWebContents() != null && !SadTab.isShowing(tab) && !isNativePage;
     }
 
     @Override
