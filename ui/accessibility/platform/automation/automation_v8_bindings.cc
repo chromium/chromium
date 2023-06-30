@@ -561,6 +561,16 @@ void AutomationV8Bindings::SendTreeDestroyedEvent(const AXTreeID& tree_id) {
       "automationInternal.onAccessibilityTreeDestroyed", args);
 }
 
+void AutomationV8Bindings::SendActionResultEvent(const ui::AXActionData& data,
+                                                 bool result) {
+  base::Value::List args;
+  args.Append(data.target_tree_id.ToString());
+  args.Append(data.request_id);
+  args.Append(result);
+  automation_v8_router_->DispatchEvent("automationInternal.onActionResult",
+                                       args);
+}
+
 void AutomationV8Bindings::SendAutomationEvent(
     const AXTreeID& tree_id,
     const AXEvent& event,

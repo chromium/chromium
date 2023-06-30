@@ -45,7 +45,7 @@ class FakeAccessibilityService
 
   // ax::mojom::Automation:
   void DispatchTreeDestroyedEvent(const ui::AXTreeID& tree_id) override;
-  void DispatchActionResult(const ui::AXActionData& data, bool result);
+  void DispatchActionResult(const ui::AXActionData& data, bool result) override;
   void DispatchAccessibilityEvents(
       const ui::AXTreeID& tree_id,
       const std::vector<ui::AXTreeUpdate>& updates,

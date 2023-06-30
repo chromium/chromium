@@ -103,7 +103,6 @@ class AutomationInternalBindings : public ui::AutomationTreeManagerOwner,
 
   // TODO(crbug.com/1355633): Remove these and implement them in
   // ui::AutomationTreeManagerOwner:
-  void DispatchActionResult(const ui::AXActionData& data, bool result);
   void DispatchAccessibilityEvents(
       const ui::AXTreeID& tree_id,
       const std::vector<ui::AXTreeUpdate>& updates,

@@ -24,10 +24,10 @@ interface Automation {
   // from client to the accessibility service.
   DispatchTreeDestroyedEvent(ax.mojom.AXTreeID tree_id);
 
-  // // Forwards an action result from any accessibility tree from client
-  // // (e.g. Chrome OS Ash, Chrome browser process) to the service.
-  // DispatchActionResult(
-  //   ax.mojom.AXActionData data, bool result);
+  // Forwards an action result from any accessibility tree from client ( e.g.
+  // Chrome OS Ash, Chrome browser process) to the service. This is sent in
+  //response to a call to performAction (in some cases).
+  DispatchActionResult(ax.mojom.AXActionData data, bool result);
 
   // Forwards an event from any accessibility tree to the service.
   DispatchAccessibilityEvents(

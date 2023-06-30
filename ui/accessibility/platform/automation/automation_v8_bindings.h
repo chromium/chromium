@@ -40,6 +40,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings {
                              const std::vector<int>& ids);
   void SendChildTreeIDEvent(const ui::AXTreeID& child_tree_id);
   void SendTreeDestroyedEvent(const AXTreeID& tree_id);
+  void SendActionResultEvent(const ui::AXActionData& data, bool result);
   void SendAutomationEvent(
       const AXTreeID& tree_id,
       const AXEvent& event,

@@ -204,6 +204,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
       const ui::AXTreeID& tree_id,
       int32_t node_id,
       const ui::AXRelativeBounds& bounds) override;
+  void DispatchActionResult(const ui::AXActionData& data, bool result) override;
 
   // Mojo receiver to the Automation interface, implemented by this class.
   // Listed as a protected member so that derived classes can reset its status

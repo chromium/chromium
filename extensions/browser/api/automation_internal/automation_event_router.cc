@@ -131,21 +131,13 @@ void AutomationEventRouter::DispatchActionResult(
     const ui::AXActionData& data,
     bool result,
     content::BrowserContext* browser_context) {
-  // TODO(crbug.com/1441703): Implement remaining of ax::mojom::Automation API.
   CHECK(!data.source_extension_id.empty());
 
   browser_context = browser_context ? browser_context : active_context_.get();
-  if (listeners_.empty())
-    return;
 
-  auto args(api::automation_internal::OnActionResult::Create(
-      data.target_tree_id.ToString(), data.request_id, result));
-  auto event = std::make_unique<Event>(
-      events::AUTOMATION_INTERNAL_ON_ACTION_RESULT,
-      api::automation_internal::OnActionResult::kEventName, std::move(args),
-      browser_context);
-  EventRouter::Get(browser_context)
-      ->DispatchEventToExtension(data.source_extension_id, std::move(event));
+  for (const auto& remote : automation_remote_set_) {
+    remote->DispatchActionResult(data, result);
+  }
 }
 
 void AutomationEventRouter::DispatchGetTextLocationDataResult(

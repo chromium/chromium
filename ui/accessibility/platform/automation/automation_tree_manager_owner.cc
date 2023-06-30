@@ -1171,4 +1171,10 @@ void AutomationTreeManagerOwner::DispatchAccessibilityLocationChange(
   OnAccessibilityLocationChange(tree_id, node_id, bounds);
 }
 
+void AutomationTreeManagerOwner::DispatchActionResult(
+    const ui::AXActionData& data,
+    bool result) {
+  GetAutomationV8Bindings()->SendActionResultEvent(data, result);
+}
+
 }  // namespace ui

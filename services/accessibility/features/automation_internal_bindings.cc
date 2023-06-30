@@ -209,14 +209,6 @@ void AutomationInternalBindings::Bind(
           GetPendingRemote()));
 }
 
-void AutomationInternalBindings::DispatchActionResult(
-    const ui::AXActionData& data,
-    bool result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1357889): Dispatch to V8 paralleling the implementation
-  // in extensions/browser/api/automation_internal/automation_event_router.cc.
-}
-
 void AutomationInternalBindings::DispatchAccessibilityEvents(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,

@@ -49,6 +49,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"  // nogncheck
@@ -57,6 +58,19 @@
 namespace extensions {
 
 class AutomationApiTest : public ExtensionApiTest {
+ public:
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    extensions::ExtensionApiTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        extensions::switches::kAllowlistedExtensionID,
+        "ddchlicdkolnonkihahngkmmmjnjlkkf");
+  }
+
  protected:
   GURL GetURLForPath(const std::string& host, const std::string& path) {
     std::string port = base::NumberToString(embedded_test_server()->port());
@@ -75,19 +89,6 @@ class AutomationApiTest : public ExtensionApiTest {
     embedded_test_server()->ServeFilesFromDirectory(
         test_data.AppendASCII("extensions/api_test").AppendASCII(kSitesDir));
     ASSERT_TRUE(ExtensionApiTest::StartEmbeddedTestServer());
-  }
-
- public:
-  void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    extensions::ExtensionApiTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        extensions::switches::kAllowlistedExtensionID,
-        "ddchlicdkolnonkihahngkmmmjnjlkkf");
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -641,6 +642,47 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_AddRemoveEventListeners) {
   ASSERT_TRUE(
       RunExtensionTest("automation/tests/desktop",
                        {.extension_url = "add_remove_event_listeners.html"}))
+      << message_;
+}
+
+class AutomationApiTestWithMockedSourceRenderer
+    : public AutomationApiTest,
+      public ui::AXActionHandlerObserver {
+ protected:
+  // This method is used to intercept AXActions dispatched from extensions.
+  // Because `DispatchActionResult`, from the automation API, is only used in
+  // specific source renderers (e.g. arc++), we mock the behavior here so we can
+  // test that the behavior in the automation api works correctly.
+  void InterceptAXActions() {
+    ui::AXActionHandlerRegistry* registry =
+        ui::AXActionHandlerRegistry ::GetInstance();
+    ASSERT_TRUE(registry);
+    registry->AddObserver(this);
+  }
+
+ private:
+  // ui::AXActionHandlerObserver :
+  void PerformAction(const ui::AXActionData& action_data) override {
+    extensions::AutomationEventRouter* router =
+        extensions::AutomationEventRouter::GetInstance();
+    ASSERT_TRUE(router);
+    EXPECT_EQ(action_data.action, ax::mojom::Action::kScrollBackward);
+    router->DispatchActionResult(action_data, /*result=*/true);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTestWithMockedSourceRenderer,
+                       ActionResult) {
+  StartEmbeddedTestServer();
+
+  // Intercept AXActions for this test in order to test the behavior of
+  // DispatchActionResult. Here, we mock the action logic to always return true
+  // to return to the extension test that the action was handled and that the
+  // result is true. This will make sure that the passing of messages between
+  // processes is correct.
+  InterceptAXActions();
+  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
+                               {.extension_url = "action_result.html"}))
       << message_;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
