@@ -90,7 +90,7 @@ declare_args() {
   enable_rust_json = enable_all_rust_features
 
   # Support for chrome://crash-rust to check crash dump collection works.
-  enable_rust_crash = !is_mac || enable_all_rust_features
+  enable_rust_crash = !(is_chromeos || is_mac) || enable_all_rust_features
 
   # Support for QR code generation - see https://crbug.com/1431991.
   enable_rust_qr = is_linux || is_android || enable_all_rust_features
