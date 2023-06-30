@@ -69657,6 +69657,7 @@ Called by update_use_counter_css.py.-->
   <int value="762" label="timeline-scope"/>
   <int value="763" label="scrollbar-color"/>
   <int value="764" label="word-boundary-detection"/>
+  <int value="765" label="position-fallback-bounds"/>
 </enum>
 
 <enum name="MappedEditingCommands">

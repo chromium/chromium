@@ -1842,6 +1842,17 @@ ScopedCSSName* StyleBuilderConverter::ConvertNoneOrCustomIdent(
   return ConvertCustomIdent(state, value);
 }
 
+ScopedCSSName* StyleBuilderConverter::ConvertNormalOrCustomIdent(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  DCHECK(value.IsScopedValue());
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNormal);
+    return nullptr;
+  }
+  return ConvertCustomIdent(state, value);
+}
+
 ScopedCSSName* StyleBuilderConverter::ConvertCustomIdent(
     StyleResolverState&,
     const CSSValue& value) {

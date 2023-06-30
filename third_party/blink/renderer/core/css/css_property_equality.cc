@@ -582,6 +582,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GetPosition() == b.GetPosition();
     case CSSPropertyID::kPositionFallback:
       return base::ValuesEquivalent(a.PositionFallback(), b.PositionFallback());
+    case CSSPropertyID::kPositionFallbackBounds:
+      return base::ValuesEquivalent(a.PositionFallbackBounds(),
+                                    b.PositionFallbackBounds());
     case CSSPropertyID::kQuotes:
       return a.Quotes() == b.Quotes();
     case CSSPropertyID::kResize:

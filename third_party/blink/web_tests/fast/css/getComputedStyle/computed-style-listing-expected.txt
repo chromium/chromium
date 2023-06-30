@@ -292,6 +292,7 @@ popover-hide-delay: infinity * 1s
 popover-show-delay: 0.5s
 position: static
 position-fallback: none
+position-fallback-bounds: normal
 r: 0px
 resize: none
 right: auto

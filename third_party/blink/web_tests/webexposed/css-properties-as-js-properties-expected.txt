@@ -348,6 +348,7 @@ popoverHideDelay
 popoverShowDelay
 position
 positionFallback
+positionFallbackBounds
 prefix
 quotes
 r

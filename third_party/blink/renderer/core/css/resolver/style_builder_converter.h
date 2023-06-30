@@ -216,6 +216,8 @@ class StyleBuilderConverter {
                             const CSSValue&);  // clamps to [0,1]
   static ScopedCSSName* ConvertNoneOrCustomIdent(StyleResolverState&,
                                                  const CSSValue&);
+  static ScopedCSSName* ConvertNormalOrCustomIdent(StyleResolverState&,
+                                                   const CSSValue&);
   static ScopedCSSName* ConvertCustomIdent(StyleResolverState&,
                                            const CSSValue&);
   static ScopedCSSName* ConvertAnchorDefault(StyleResolverState&,

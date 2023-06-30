@@ -1,0 +1,42 @@
+This is a testharness.js-based test.
+PASS e.style['position-fallback-bounds'] = "normal" should set the property value
+PASS e.style['position-fallback-bounds'] = "--foo" should set the property value
+PASS e.style['position-fallback-bounds'] = "foo-bar" should not set the property value
+PASS e.style['position-fallback-bounds'] = "--foo --bar" should not set the property value
+PASS e.style['position-fallback-bounds'] = "--foo, --bar" should not set the property value
+PASS e.style['position-fallback-bounds'] = "100px" should not set the property value
+PASS e.style['position-fallback-bounds'] = "100%" should not set the property value
+PASS Property position-fallback-bounds value 'normal'
+PASS Property position-fallback-bounds value '--foo'
+PASS Property position-fallback-bounds has initial value normal
+PASS Property position-fallback-bounds does not inherit
+FAIL CSS Transitions: property <position-fallback-bounds> from [--foo] to [normal] at (-0.3) should be [normal] assert_equals: expected "normal " but got "- - foo "
+FAIL CSS Transitions: property <position-fallback-bounds> from [--foo] to [normal] at (0) should be [normal] assert_equals: expected "normal " but got "- - foo "
+FAIL CSS Transitions: property <position-fallback-bounds> from [--foo] to [normal] at (0.3) should be [normal] assert_equals: expected "normal " but got "- - foo "
+PASS CSS Transitions: property <position-fallback-bounds> from [--foo] to [normal] at (0.5) should be [normal]
+PASS CSS Transitions: property <position-fallback-bounds> from [--foo] to [normal] at (0.6) should be [normal]
+PASS CSS Transitions: property <position-fallback-bounds> from [--foo] to [normal] at (1) should be [normal]
+PASS CSS Transitions: property <position-fallback-bounds> from [--foo] to [normal] at (1.5) should be [normal]
+PASS CSS Transitions with transition: all: property <position-fallback-bounds> from [--foo] to [normal] at (-0.3) should be [normal]
+PASS CSS Transitions with transition: all: property <position-fallback-bounds> from [--foo] to [normal] at (0) should be [normal]
+PASS CSS Transitions with transition: all: property <position-fallback-bounds> from [--foo] to [normal] at (0.3) should be [normal]
+PASS CSS Transitions with transition: all: property <position-fallback-bounds> from [--foo] to [normal] at (0.5) should be [normal]
+PASS CSS Transitions with transition: all: property <position-fallback-bounds> from [--foo] to [normal] at (0.6) should be [normal]
+PASS CSS Transitions with transition: all: property <position-fallback-bounds> from [--foo] to [normal] at (1) should be [normal]
+PASS CSS Transitions with transition: all: property <position-fallback-bounds> from [--foo] to [normal] at (1.5) should be [normal]
+PASS CSS Animations: property <position-fallback-bounds> from [--foo] to [normal] at (-0.3) should be [--foo]
+PASS CSS Animations: property <position-fallback-bounds> from [--foo] to [normal] at (0) should be [--foo]
+PASS CSS Animations: property <position-fallback-bounds> from [--foo] to [normal] at (0.3) should be [--foo]
+PASS CSS Animations: property <position-fallback-bounds> from [--foo] to [normal] at (0.5) should be [normal]
+PASS CSS Animations: property <position-fallback-bounds> from [--foo] to [normal] at (0.6) should be [normal]
+PASS CSS Animations: property <position-fallback-bounds> from [--foo] to [normal] at (1) should be [normal]
+PASS CSS Animations: property <position-fallback-bounds> from [--foo] to [normal] at (1.5) should be [normal]
+PASS Web Animations: property <position-fallback-bounds> from [--foo] to [normal] at (-0.3) should be [--foo]
+PASS Web Animations: property <position-fallback-bounds> from [--foo] to [normal] at (0) should be [--foo]
+PASS Web Animations: property <position-fallback-bounds> from [--foo] to [normal] at (0.3) should be [--foo]
+PASS Web Animations: property <position-fallback-bounds> from [--foo] to [normal] at (0.5) should be [normal]
+PASS Web Animations: property <position-fallback-bounds> from [--foo] to [normal] at (0.6) should be [normal]
+PASS Web Animations: property <position-fallback-bounds> from [--foo] to [normal] at (1) should be [normal]
+PASS Web Animations: property <position-fallback-bounds> from [--foo] to [normal] at (1.5) should be [normal]
+Harness: the test ran to completion.
+
