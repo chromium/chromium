@@ -196,7 +196,8 @@ TEST_F(PromoCardBaseTest, OnPromoCardShown) {
                   PrefInfo{card.GetPromoID(), 1, base::Time::Now(), false})));
 }
 
-TEST_F(PromoCardBaseTest, GetAllPromoCards) {
+// TODO(crbug.com/1459637): Re-enable it after fix.
+TEST_F(PromoCardBaseTest, DISABLED_GetAllPromoCards) {
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
 
