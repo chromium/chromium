@@ -62,7 +62,7 @@
   .md-select {
     width: 336px;
   }
-  
+ 
   #skuIconContainer {
     align-items: center;
     display: inline-flex;
@@ -220,11 +220,12 @@
         </div>
         <div hidden="[[isComplianceStatusKnown_(featureLevel_)]]">
           <div class="input-row">
-            <label class="cr-form-field-label">
+            <label id="isChassisBrandedLabel" class="cr-form-field-label">
               [[i18n('confirmDeviceInfoDeviceQuestionIsBranded')]]
             </label>
             <div class="input-holder">
               <select id="isChassisBranded" class="md-select"
+                  aria-labelledby="isChassisBrandedLabel"
                   disabled="[[allButtonsDisabled]]">
                 <option value="no">
                   [[i18n('confirmDeviceInfoDeviceAnswerNo')]]
@@ -236,11 +237,12 @@
             </div>
           </div>
           <div class="input-row">
-            <label class="cr-form-field-label">
+            <label id="doesMeetRequirementsLabel" class="cr-form-field-label">
               [[i18n('confirmDeviceInfoDeviceQuestionDoesMeetRequirements')]]
             </label>
             <div class="input-holder">
               <select id="doesMeetRequirements" class="md-select"
+                  aria-labelledby="doesMeetRequirementsLabel"
                   disabled="[[allButtonsDisabled]]">
                 <option value="no">
                   [[i18n('confirmDeviceInfoDeviceAnswerNo')]]
