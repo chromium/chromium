@@ -90,8 +90,9 @@ class ChildAccountService : public KeyedService,
       SupervisedUserService& supervised_user_service,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      base::RepeatingCallback<std::unique_ptr<PermissionRequestCreator>()>
+          permission_creator_callback,
       base::OnceCallback<void(bool)> check_user_child_status_callback,
-      std::unique_ptr<PermissionRequestCreator> permission_creator,
       ListFamilyMembersService& list_family_members_service);
 
  private:
@@ -130,9 +131,11 @@ class ChildAccountService : public KeyedService,
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  std::unique_ptr<PermissionRequestCreator> permission_creator_;
-
   base::RepeatingClosureList google_auth_state_observers_;
+
+  // Creates a new instance of a PermissionRequestCreator.
+  base::RepeatingCallback<std::unique_ptr<PermissionRequestCreator>()>
+      permission_creator_callback_;
 
   // Callback relevant on Chrome OS platform.
   // Asserts that a supervised user matches the child status of the primary

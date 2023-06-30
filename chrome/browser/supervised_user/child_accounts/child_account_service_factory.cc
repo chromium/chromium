@@ -20,6 +20,28 @@
 #include "components/supervised_user/core/browser/permission_request_creator_impl.h"
 #include "components/supervised_user/core/common/features.h"
 
+namespace {
+
+// Produces a new instance of a PermissionRequestCreator, which
+// is used to allow remote approvals through ChildAccountService.
+std::unique_ptr<supervised_user::PermissionRequestCreator>
+CreatePermissionCreator(Profile* profile) {
+  std::unique_ptr<supervised_user::PermissionRequestCreator> permission_creator;
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kEnableCreatePermissionRequestFetcher)) {
+    permission_creator =
+        std::make_unique<supervised_user::PermissionRequestCreatorImpl>(
+            IdentityManagerFactory::GetForProfile(profile),
+            profile->GetURLLoaderFactory());
+  } else {
+    permission_creator =
+        PermissionRequestCreatorApiary::CreateWithProfile(profile);
+  }
+  return permission_creator;
+}
+
+}  // namespace
+
 // static
 supervised_user::ChildAccountService* ChildAccountServiceFactory::GetForProfile(
     Profile* profile) {
@@ -52,18 +74,6 @@ KeyedService* ChildAccountServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
 
-  std::unique_ptr<supervised_user::PermissionRequestCreator> permission_creator;
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kEnableCreatePermissionRequestFetcher)) {
-    permission_creator =
-        std::make_unique<supervised_user::PermissionRequestCreatorImpl>(
-            IdentityManagerFactory::GetForProfile(profile),
-            profile->GetURLLoaderFactory());
-  } else {
-    permission_creator =
-        PermissionRequestCreatorApiary::CreateWithProfile(profile);
-  }
-  CHECK(permission_creator);
   CHECK(profile->GetPrefs());
   CHECK(SupervisedUserServiceFactory::GetForProfile(profile));
   CHECK(
@@ -74,8 +84,8 @@ KeyedService* ChildAccountServiceFactory::BuildServiceInstanceFor(
       *SupervisedUserServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory(),
+      base::BindRepeating(&CreatePermissionCreator, profile),
       base::BindOnce(&supervised_user::AssertChildStatusOfTheUser, profile),
-      std::move(permission_creator),
       *supervised_user::ListFamilyMembersServiceFactory::GetForProfile(
           profile));
 }

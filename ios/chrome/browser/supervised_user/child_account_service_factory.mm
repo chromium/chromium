@@ -17,6 +17,22 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Produces a new instance of a PermissionRequestCreator, which
+// is used to allow remote approvals through ChildAccountService.
+std::unique_ptr<supervised_user::PermissionRequestCreator>
+CreatePermissionCreator(ChromeBrowserState* browser_state) {
+  std::unique_ptr<supervised_user::PermissionRequestCreator>
+      permission_creator =
+          std::make_unique<supervised_user::PermissionRequestCreatorImpl>(
+              IdentityManagerFactory::GetForBrowserState(browser_state),
+              browser_state->GetSharedURLLoaderFactory());
+  return permission_creator;
+}
+
+}  // namespace
+
 // static
 supervised_user::ChildAccountService*
 ChildAccountServiceFactory::GetForBrowserState(
@@ -54,18 +70,13 @@ ChildAccountServiceFactory::BuildServiceInstanceFor(
   supervised_user::ListFamilyMembersService* list_family_members_service =
       ListFamilyMembersServiceFactory::GetForBrowserState(browser_state);
   CHECK(list_family_members_service);
-  std::unique_ptr<supervised_user::PermissionRequestCreator>
-      permission_creator =
-          std::make_unique<supervised_user::PermissionRequestCreatorImpl>(
-              IdentityManagerFactory::GetForBrowserState(browser_state),
-              browser_state->GetSharedURLLoaderFactory());
-  CHECK(permission_creator);
 
   return std::make_unique<supervised_user::ChildAccountService>(
       *user_prefs, *supervised_user_service,
       IdentityManagerFactory::GetForBrowserState(browser_state),
       browser_state->GetSharedURLLoaderFactory(),
+      base::BindRepeating(&CreatePermissionCreator, browser_state),
       // Callback relevant only for Chrome OS.
       /*check_user_child_status_callback=*/base::DoNothing(),
-      std::move(permission_creator), *list_family_members_service);
+      *list_family_members_service);
 }
