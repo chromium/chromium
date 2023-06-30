@@ -126,10 +126,6 @@ class CORE_EXPORT AuditsIssue {
                                      const String& request_id,
                                      const String& invalid_parameter);
 
-  static void ReportNavigatorUserAgentAccess(
-      ExecutionContext* execution_context,
-      WTF::String url);
-
   static void ReportSharedArrayBufferIssue(
       ExecutionContext* execution_context,
       bool shared_buffer_transfer_allowed,
