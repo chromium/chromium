@@ -25,18 +25,6 @@ BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionIgnoreEnabled);
 // Controls whether force translate is enabled on iOS.
 BASE_DECLARE_FEATURE(kIOSForceTranslateEnabled);
 
-// Controls whether the Partial Translate function is available.
-BASE_DECLARE_FEATURE(kDesktopPartialTranslate);
-// The maximum number of characters allowed for a text selection in Partial
-// Translate. Longer selections will be truncated down to the first valid word
-// break respecting the threshold.
-extern const base::FeatureParam<int>
-    kDesktopPartialTranslateTextSelectionMaxCharacters;
-// The number of milliseconds to wait before showing the Partial Translate
-// bubble, even if no response has been received. In this case, a waiting view
-// is shown.
-extern const base::FeatureParam<int> kDesktopPartialTranslateBubbleShowDelayMs;
-
 // When enabled, language detection is attempted when the page finishes loading
 // if no page content is captured when parsing completes.
 BASE_DECLARE_FEATURE(kRetryLanguageDetection);

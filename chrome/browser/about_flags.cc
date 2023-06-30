@@ -9766,14 +9766,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBackgroundResourceFetchDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kBackgroundResourceFetch)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"desktop-partial-translate",
-     flag_descriptions::kDesktopPartialTranslateName,
-     flag_descriptions::kDesktopPartialTranslateDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(translate::kDesktopPartialTranslate)},
-#endif
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     {"biometric-authentication-for-filling",
      flag_descriptions::kBiometricAuthenticationForFillingName,

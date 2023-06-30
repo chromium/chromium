@@ -4509,12 +4509,6 @@ const char kCopyLinkToTextDescription[] =
     "Adds an item to the context menu to allow a user to copy a link to the "
     "page with the selected text highlighted.";
 
-const char kDesktopPartialTranslateName[] = "Desktop Partial Translate";
-const char kDesktopPartialTranslateDescription[] =
-    "Enables the Partial Translate feature on Desktop, which allows users to "
-    "translate text selections on the page through the right click context "
-    "menu.";
-
 const char kEnableAccessibilityLiveCaptionName[] = "Live Caption";
 const char kEnableAccessibilityLiveCaptionDescription[] =
     "Enables the live caption feature which generates captions for "

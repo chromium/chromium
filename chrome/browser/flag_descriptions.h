@@ -2593,9 +2593,6 @@ extern const char kEnablePolicyTestPageDescription[];
 extern const char kCopyLinkToTextName[];
 extern const char kCopyLinkToTextDescription[];
 
-extern const char kDesktopPartialTranslateName[];
-extern const char kDesktopPartialTranslateDescription[];
-
 extern const char kEnableAccessibilityLiveCaptionName[];
 extern const char kEnableAccessibilityLiveCaptionDescription[];
 

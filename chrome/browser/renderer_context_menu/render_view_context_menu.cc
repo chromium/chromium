@@ -1104,8 +1104,7 @@ void RenderViewContextMenu::InitMenu() {
 
   // Partial Translate is not supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(translate::kDesktopPartialTranslate) &&
-      content_type_->SupportsGroup(
+  if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_PARTIAL_TRANSLATE) &&
       search::DefaultSearchProviderIsGoogle(GetProfile()) &&
       CanTranslate(/*menu_logging=*/false)) {

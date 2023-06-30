@@ -48,16 +48,6 @@ BASE_FEATURE(kIOSForceTranslateEnabled,
              "IOSForceTranslateEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDesktopPartialTranslate,
-             "DesktopPartialTranslate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int>
-    kDesktopPartialTranslateTextSelectionMaxCharacters{
-        &kDesktopPartialTranslate,
-        "DesktopPartialTranslateTextSelectionMaxCharacters", 500};
-const base::FeatureParam<int> kDesktopPartialTranslateBubbleShowDelayMs{
-    &kDesktopPartialTranslate, "DesktopPartialTranslateBubbleShowDelayMs", 500};
-
 BASE_FEATURE(kRetryLanguageDetection,
              "RetryLanguageDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
