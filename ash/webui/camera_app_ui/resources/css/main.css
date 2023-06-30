@@ -1501,3 +1501,9 @@ body:not(.video) #settings-video-resolution {
 #view-settings {
   background: var(--cros-sys-scrim);
 }
+
+body.hide-floating-ui-for-testing
+  :is(#nudge, #toast, #tooltip, .custom-toast, .no-document-toast) {
+  /* TODO(b/289342383): Use CSS layering so we don't need to use !important. */
+  display: none !important;
+}

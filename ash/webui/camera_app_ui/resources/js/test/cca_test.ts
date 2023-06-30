@@ -448,6 +448,13 @@ export class CCATest {
   }
 
   /**
+   * Hides all toasts, nudges and tooltips.
+   */
+  static hideFloatingUI(): void {
+    state.set(state.State.HIDE_FLOATING_UI_FOR_TESTING, true);
+  }
+
+  /**
    * Sets input value of the component. Throws an error if the component is not
    * HTMLInputElement with type "range", or the value is not within [min, max]
    * range.

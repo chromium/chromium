@@ -31,6 +31,9 @@ export enum State {
   HAS_PAN_SUPPORT = 'has-pan-support',
   HAS_TILT_SUPPORT = 'has-tilt-support',
   HAS_ZOOM_SUPPORT = 'has-zoom-support',
+  // Hides all toasts, nudges and tooltips for tests that relies on visual and
+  // might be affected by these UIs appearing at incorrect timing.
+  HIDE_FLOATING_UI_FOR_TESTING = 'hide-floating-ui-for-testing',
   INTENT = 'intent',
   KEYBOARD_NAVIGATION = 'keyboard-navigation',
   MAX_WND = 'max-wnd',
