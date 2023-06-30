@@ -263,7 +263,7 @@ BASE_FEATURE(kTouchscreenEmulation,
 // specific apps.
 BASE_FEATURE(kTrackpadScrollTouchscreenEmulation,
              "ArcTrackpadScrollTouchscreenEmulation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls ARC USB Storage UI feature.
 // When enabled, chrome://settings and Files.app will ask if the user wants
