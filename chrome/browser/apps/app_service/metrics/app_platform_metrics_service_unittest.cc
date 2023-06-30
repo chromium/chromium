@@ -2124,8 +2124,8 @@ TEST_P(AppPlatformMetricsServiceTest,
   const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
   ModifyInstance(kInstanceId, kAndroidAppId, window.get(),
                  ::apps::InstanceState::kActive);
-  static constexpr base::TimeDelta kAppRunningDuration = base::Minutes(5);
-  task_environment_.FastForwardBy(kAppRunningDuration);
+  static constexpr base::TimeDelta kExpectedRunningDuration = base::Minutes(5);
+  task_environment_.FastForwardBy(kExpectedRunningDuration);
 
   // Close app window to stop tracking further usage and verify usage info is
   // persisted in the pref store.
@@ -2140,12 +2140,12 @@ TEST_P(AppPlatformMetricsServiceTest,
   EXPECT_THAT(
       base::ValueToTimeDelta(usage_dict_pref.FindDict(kInstanceId.ToString())
                                  ->Find(kUsageTimeDurationKey)),
-      Eq(kAppRunningDuration));
+      Eq(kExpectedRunningDuration));
 
   // Fast forward by two hours so it reports usage data and we can verify usage
   // info is cleared from the pref store.
   task_environment_.FastForwardBy(base::Hours(2));
-  VerifyAppRunningDuration(kAppRunningDuration, AppTypeName::kArc);
+  VerifyAppRunningDuration(kExpectedRunningDuration, AppTypeName::kArc);
   ASSERT_TRUE(GetPrefService()->GetDict(kAppUsageTime).empty());
 }
 
@@ -2182,8 +2182,8 @@ TEST_P(AppPlatformMetricsServiceTest,
   const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
   ModifyInstance(kInstanceId, kAndroidAppId, window.get(),
                  ::apps::InstanceState::kActive);
-  static constexpr base::TimeDelta kAppRunningDuration = base::Minutes(5);
-  task_environment_.FastForwardBy(kAppRunningDuration);
+  static constexpr base::TimeDelta kExpectedRunningDuration = base::Minutes(5);
+  task_environment_.FastForwardBy(kExpectedRunningDuration);
 
   // Close app window to stop tracking further usage and verify usage info is
   // persisted in the pref store.
@@ -2198,7 +2198,7 @@ TEST_P(AppPlatformMetricsServiceTest,
   EXPECT_THAT(
       base::ValueToTimeDelta(usage_dict_pref.FindDict(kInstanceId.ToString())
                                  ->Find(kUsageTimeDurationKey)),
-      Eq(kAppRunningDuration));
+      Eq(kExpectedRunningDuration));
 
   // Set reporting usage time for the current app instance and persist it in the
   // pref store.
@@ -2206,7 +2206,7 @@ TEST_P(AppPlatformMetricsServiceTest,
     ScopedDictPrefUpdate usage_dict(GetPrefService(), kAppUsageTime);
     usage_dict->FindDictByDottedPath(kInstanceId.ToString())
         ->Set(kReportingUsageTimeDurationKey,
-              base::TimeDeltaToValue(kAppRunningDuration));
+              base::TimeDeltaToValue(kExpectedRunningDuration));
     usage_dict->FindDictByDottedPath(kInstanceId.ToString())
         ->Set(kUsageTimeAppPublisherIdKey, kAndroidAppPublisherId);
   }
@@ -2214,7 +2214,7 @@ TEST_P(AppPlatformMetricsServiceTest,
   // Fast forward by two hours so it reports usage data and we can verify usage
   // info is not cleared from the pref store.
   task_environment_.FastForwardBy(base::Hours(2));
-  VerifyAppRunningDuration(kAppRunningDuration, AppTypeName::kArc);
+  VerifyAppRunningDuration(kExpectedRunningDuration, AppTypeName::kArc);
   const auto& updated_usage_dict_pref =
       GetPrefService()->GetDict(kAppUsageTime);
   ASSERT_THAT(updated_usage_dict_pref.size(), Eq(1UL));
@@ -2232,7 +2232,7 @@ TEST_P(AppPlatformMetricsServiceTest,
   EXPECT_THAT(
       base::ValueToTimeDelta(usage_dict_pref.FindDict(kInstanceId.ToString())
                                  ->Find(kReportingUsageTimeDurationKey)),
-      Eq(kAppRunningDuration));
+      Eq(kExpectedRunningDuration));
 }
 
 TEST_P(AppPlatformMetricsServiceTest, ShouldNotPersistUsageDataIfSyncDisabled) {
@@ -2248,8 +2248,8 @@ TEST_P(AppPlatformMetricsServiceTest, ShouldNotPersistUsageDataIfSyncDisabled) {
   const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
   ModifyInstance(kInstanceId, kAndroidAppId, window.get(),
                  ::apps::InstanceState::kActive);
-  static constexpr base::TimeDelta kAppRunningDuration = base::Minutes(5);
-  task_environment_.FastForwardBy(kAppRunningDuration);
+  static constexpr base::TimeDelta kExpectedRunningDuration = base::Minutes(5);
+  task_environment_.FastForwardBy(kExpectedRunningDuration);
 
   // Close app window to stop tracking further usage and verify usage info is
   // not persisted in the pref store.
