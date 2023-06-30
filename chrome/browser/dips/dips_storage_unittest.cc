@@ -6,12 +6,14 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_state.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -246,6 +248,10 @@ class DIPSStorageTest : public testing::Test {
  public:
   DIPSStorageTest() = default;
 
+  TimestampRange ToRange(base::Time first, base::Time last) {
+    return {{first, last}};
+  }
+
  protected:
   base::test::TaskEnvironment env_;
   ScopedDIPSFeatureEnabledWithParams feature{{{"interaction_ttl", "inf"}}};
@@ -353,6 +359,106 @@ TEST_F(DIPSStorageTest, DifferentSiteDifferentState) {
             absl::make_optional(time1));
   EXPECT_EQ(storage_.Read(url2).site_storage_times()->first,
             absl::make_optional(time2));
+}
+
+// This test is not all-inclusive as only fucuses on some (deemed) important
+// overlapping scenarios.
+TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::FromDoubleT(100));
+  auto tiny_delta = base::Milliseconds(1);
+  auto delete_begin = clock.Now();
+  auto delete_end = delete_begin + tiny_delta * 100;
+  auto i = 0;
+
+  {
+    const GURL url(base::StringPrintf("case%d.test", ++i));
+    storage_.WriteForTesting(
+        url, {{}, {}, {}, {}, ToRange(delete_begin, delete_end)});
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_FALSE(storage_.Read(url).was_loaded());
+  }
+
+  {
+    const GURL url(base::StringPrintf("case%d.test", ++i));
+    storage_.WriteForTesting(
+        url, {{}, {}, {}, {}, ToRange(delete_begin + tiny_delta, delete_end)});
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_FALSE(storage_.Read(url).was_loaded());
+  }
+
+  {
+    const GURL url(base::StringPrintf("case%d.test", ++i));
+    storage_.WriteForTesting(
+        url, {{}, {}, {}, {}, ToRange(delete_begin, delete_end - tiny_delta)});
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_FALSE(storage_.Read(url).was_loaded());
+  }
+
+  {
+    const GURL url(base::StringPrintf("case%d.test", ++i));
+    StateValue init_state;
+    init_state.web_authn_assertion_times =
+        ToRange(delete_begin, delete_end + tiny_delta);
+    storage_.WriteForTesting(url, init_state);
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_EQ(
+        storage_.Read(url).web_authn_assertion_times(),
+        ToRange(delete_end, init_state.web_authn_assertion_times->second));
+  }
+
+  {
+    const GURL url(base::StringPrintf("case%d.test", ++i));
+    StateValue init_state;
+    init_state.web_authn_assertion_times =
+        ToRange(delete_begin - tiny_delta, delete_end);
+    storage_.WriteForTesting(url, init_state);
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_EQ(
+        storage_.Read(url).web_authn_assertion_times(),
+        ToRange(init_state.web_authn_assertion_times->first, delete_begin));
+  }
+
+  {
+    const GURL url(base::StringPrintf("case%d.test", ++i));
+    StateValue init_state;
+    init_state.web_authn_assertion_times =
+        ToRange(delete_begin - tiny_delta, delete_end + tiny_delta);
+    storage_.WriteForTesting(url, init_state);
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_EQ(storage_.Read(url).web_authn_assertion_times(),
+              init_state.web_authn_assertion_times);
+  }
+
+  {
+    const GURL url(base::StringPrintf("case%d.test", ++i));
+    StateValue init_state;
+    init_state.web_authn_assertion_times =
+        ToRange(delete_end + tiny_delta, delete_end + tiny_delta * 2);
+    storage_.WriteForTesting(url, init_state);
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_EQ(storage_.Read(url).web_authn_assertion_times(),
+              init_state.web_authn_assertion_times);
+  }
+
+  {
+    const GURL url(base::StringPrintf("case%d.test", ++i));
+    StateValue init_state;
+    init_state.web_authn_assertion_times =
+        ToRange(delete_begin - tiny_delta * 2, delete_begin - tiny_delta);
+    storage_.WriteForTesting(url, init_state);
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_EQ(storage_.Read(url).web_authn_assertion_times(),
+              init_state.web_authn_assertion_times);
+  }
 }
 
 TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeEndTime) {

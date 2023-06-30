@@ -842,6 +842,24 @@ bool DIPSDatabase::ClearTimestamps(const base::Time& delete_begin,
     if (!s_clear_interaction.Run()) {
       return false;
     }
+
+    static constexpr char kClearWaaSql[] =  // clang-format off
+        "UPDATE bounces SET "
+            "first_web_authn_assertion_time=NULL,"
+            "last_web_authn_assertion_time=NULL "
+            "WHERE first_web_authn_assertion_time>=? AND "
+                  "last_web_authn_assertion_time<=?";
+    // clang-format on
+    DCHECK(db_->IsSQLValid(kClearWaaSql));
+
+    sql::Statement s_clear_waa(
+        db_->GetCachedStatement(SQL_FROM_HERE, kClearWaaSql));
+    s_clear_waa.BindTime(0, delete_begin);
+    s_clear_waa.BindTime(1, delete_end);
+
+    if (!s_clear_waa.Run()) {
+      return false;
+    }
   }
 
   if ((type & DIPSEventRemovalType::kStorage) ==
@@ -939,6 +957,22 @@ bool DIPSDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
     if (!s_first_interaction.Run()) {
       return false;
     }
+
+    static constexpr char kUpdateFirstWaaSql[] =  // clang-format off
+        "UPDATE bounces SET first_web_authn_assertion_time=?2 "
+            "WHERE first_web_authn_assertion_time>=?1 AND "
+                  "first_web_authn_assertion_time<?2";
+    // clang-format on
+    DCHECK(db_->IsSQLValid(kUpdateFirstWaaSql));
+
+    sql::Statement s_first_waa(
+        db_->GetCachedStatement(SQL_FROM_HERE, kUpdateFirstWaaSql));
+    s_first_waa.BindTime(0, delete_begin);
+    s_first_waa.BindTime(1, delete_end);
+
+    if (!s_first_waa.Run()) {
+      return false;
+    }
   }
 
   if ((type & DIPSEventRemovalType::kStorage) ==
@@ -1026,6 +1060,22 @@ bool DIPSDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
     s_last_interaction.BindTime(1, delete_end);
 
     if (!s_last_interaction.Run()) {
+      return false;
+    }
+
+    static constexpr char kUpdateLastWaaSql[] =  // clang-format off
+        "UPDATE bounces SET last_web_authn_assertion_time=?1 "
+            "WHERE last_web_authn_assertion_time>?1 AND "
+                  "last_web_authn_assertion_time<=?2";
+    // clang-format on
+    DCHECK(db_->IsSQLValid(kUpdateLastWaaSql));
+
+    sql::Statement s_last_waa(
+        db_->GetCachedStatement(SQL_FROM_HERE, kUpdateLastWaaSql));
+    s_last_waa.BindTime(0, delete_begin);
+    s_last_waa.BindTime(1, delete_end);
+
+    if (!s_last_waa.Run()) {
       return false;
     }
   }
