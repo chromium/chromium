@@ -28,7 +28,8 @@ export enum WiFiSecurityType {
 }
 
 const MIN_WIFI_PASSWORD_LENGTH = 8;
-const MAX_WIFI_PASSWORD_LENGTH = 64;
+const MAX_WIFI_PASSWORD_LENGTH = 63;
+const MAX_HOTSPOT_SSID_LENGTH = 32;
 
 export interface HotspotConfigDialogElement {
   $: {
@@ -56,6 +57,12 @@ export class HotspotConfigDialogElement extends HotspotConfigDialogElementBase {
       hotspotSsid_: {
         type: String,
         value: '',
+        observer: 'onSsidChanged_',
+      },
+
+      isSsidInvalid_: {
+        type: Boolean,
+        value: false,
       },
 
       hotspotPassword_: {
@@ -93,6 +100,7 @@ export class HotspotConfigDialogElement extends HotspotConfigDialogElementBase {
 
   hotspotInfo: HotspotInfo;
   private hotspotSsid_: string;
+  private isSsidInvalid_: boolean;
   private hotspotPassword_: string;
   private isPasswordInvalid_: boolean;
   private securityType_: string;
@@ -115,6 +123,11 @@ export class HotspotConfigDialogElement extends HotspotConfigDialogElementBase {
         this.hotspotInfo.config!.band === WiFiBand.k2_4GHz;
     this.securityType_ = this.getWifiSecurityTypeString_(
         castExists(this.hotspotInfo.config!.security));
+  }
+
+  private onSsidChanged_(): void {
+    this.isSsidInvalid_ = this.hotspotSsid_.length === 0 ||
+        this.hotspotSsid_.length > MAX_HOTSPOT_SSID_LENGTH;
   }
 
   private onPasswordChanged_(): void {
@@ -153,6 +166,34 @@ export class HotspotConfigDialogElement extends HotspotConfigDialogElementBase {
     return this.hotspotInfo!.allowedWifiSecurityModes.map(security => {
       return this.getWifiSecurityTypeString_(security);
     });
+  }
+
+  private getSsidInputInfoClass_(): string {
+    if (!this.isSsidInvalid_) {
+      return 'input-info';
+    }
+    return 'input-info error';
+  }
+
+  private getSsidInputInfo_(): string {
+    if (this.hotspotSsid_.length === 0) {
+      return this.i18n('hotspotConfigNameEmptyInfo');
+    }
+    if (this.hotspotSsid_.length > MAX_HOTSPOT_SSID_LENGTH) {
+      return this.i18n('hotspotConfigNameTooLongInfo');
+    }
+    return this.i18n('hotspotConfigNameInfo');
+  }
+
+  private getPasswordInputInfoClass_(): string {
+    if (!this.isPasswordInvalid_) {
+      return 'input-info';
+    }
+    return 'input-info error';
+  }
+
+  private isSaveButtonDisabled_(): boolean {
+    return this.isSsidInvalid_ || this.isPasswordInvalid_;
   }
 
   private onCancelClick_(): void {

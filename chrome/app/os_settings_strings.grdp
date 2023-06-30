@@ -3489,7 +3489,7 @@ Press an assigned switch or key to remove assignment.
     Hotspot details
   </message>
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_SUBTITLE_WITH_LEARN_MORE_LINK" desc="Subtitle of the hotspot subpage which explains how hotspot may affect your Chromebook.">
-    Uses your Chromebook’s mobile data and your carrier may charge additional fees. May increase battery usage. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+    Uses your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>’s mobile data and your carrier may charge additional fees. May increase battery usage. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$2"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_MOBILE_DATA_NOT_SUPPORTED_SUBLABEL_WITH_LEARN_MORE_LINK" desc="Sublabel of the hotspot summary which explains the hostpost toggle is disabled because the mobile data plan doesn't support hotspot.">
     Your mobile data may not support hotspot. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
@@ -3534,16 +3534,22 @@ Press an assigned switch or key to remove assignment.
     When no devices are connected
   </message>
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_TITLE" desc="Settings > Network > Hotspot > Configure hotspot dialog: Title for the hotspot configuration dialog.">
-    Hotspot Settings
+    Configure <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> Hotspot
   </message>
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_SUBTITLE_WITH_LEARN_MORE_LINK" desc="Subtitle of the hotspot configuration dialog which explains that creating a WiFi hotspot to provide internet to other devices.">
-    Create a Wi-Fi hotspot to provide internet to other deivces. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+    Create a Wi-Fi hotspot using your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>'s mobile data to provide internet to other devices. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$2"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_LABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Label for the hotspot name input.">
     Hotspot name
   </message>
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_INFO" desc="Settings > Network > Hotspot > Configure hotspot dialog: Info label under the hotspot name input to inform users that the hotspot name will be visible to others.">
     This will be visible to others
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_EMPTY_INFO" desc="Settings > Network > Hotspot > Configure hotspot dialog: Info label under the hotspot name input to inform users that the hotspot name will be visible to others.">
+    Name cannot be empty
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_TOO_LONG_INFO" desc="Settings > Network > Hotspot > Configure hotspot dialog: Info label under the hotspot name input to inform users that the hotspot name will be visible to others.">
+    Name cannot exceed 32 characters
   </message>
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_PASSWORD_LABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Label for the hotspot password input.">
     Password

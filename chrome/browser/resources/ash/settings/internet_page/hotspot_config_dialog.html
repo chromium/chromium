@@ -42,13 +42,17 @@
     font-size: var(--cr-form-field-label-font-size);
     height: 20px;
     position: relative;
-    top: -18px;
+    top: -16px;
   }
 
   .error {
     color: var(--cros-text-color-alert);
+  }
+
+  #errorMessage {
     font-weight: 500;
   }
+
 </style>
 
 <cr-dialog id="dialog" show-on-attach>
@@ -65,17 +69,19 @@
 
   <div id="body" slot="body">
     <network-config-input id="hotspotName" label="$i18n{hotspotConfigNameLabel}"
-        value="{{hotspotSsid_}}">
+        value="{{hotspotSsid_}}" invalid="[[isSsidInvalid_]]">
     </network-config-input>
-    <div id="hotspotNameInputInfo" class="secondary info input-info"
+    <div id="hotspotNameInputInfo"
+        class$="[[getSsidInputInfoClass_(isSsidInvalid_)]]"
         aria-hidden="true">
-      $i18n{hotspotConfigNameInfo}
+      [[getSsidInputInfo_(hotspotSsid_)]]
     </div>
     <network-password-input id="hotspotPassword"
         label="$i18n{hotspotConfigPasswordLabel}" value="{{hotspotPassword_}}"
         invalid="[[isPasswordInvalid_]]">
     </network-password-input>
-    <div id="hotspotPasswordInputInfo" class="secondary info input-info"
+    <div id="hotspotPasswordInputInfo"
+        class$="[[getPasswordInputInfoClass_(isPasswordInvalid_)]]"
         aria-hidden="true">
       $i18n{hotspotConfigPasswordInfo}
     </div>
@@ -109,8 +115,8 @@
     <cr-button id="cancelButton" class="cancel-button" on-click="onCancelClick_">
       $i18n{hotspotConfigCancelButton}
     </cr-button>
-    <cr-button id="saveButton" class="action-button"
-        on-click="onSaveClick_" disabled="[[isPasswordInvalid_]]">
+    <cr-button id="saveButton" class="action-button" on-click="onSaveClick_"
+        disabled="[[isSaveButtonDisabled_(isSsidInvalid_, isPasswordInvalid_)]]">
       $i18n{hotspotConfigSaveButton}
     </cr-button>
   </div>

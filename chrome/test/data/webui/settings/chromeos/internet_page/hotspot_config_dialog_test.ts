@@ -8,6 +8,7 @@ import {HotspotConfigDialogElement, Router, routes, WiFiSecurityType} from 'chro
 import {setHotspotConfigForTesting} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {HotspotAllowStatus, HotspotState, SetHotspotConfigResult, WiFiBand, WiFiSecurityMode} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
+import {NetworkConfigInputElement} from 'chrome://resources/ash/common/network/network_config_input.js';
 import {NetworkConfigSelectElement} from 'chrome://resources/ash/common/network/network_config_select.js';
 import {NetworkPasswordInputElement} from 'chrome://resources/ash/common/network/network_password_input.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -62,15 +63,19 @@ suite('<hotspot-config-dialog>', () => {
     await flushAsync();
   }
 
-  test('Name input should show and update hotspot SSID', async () => {
+  test('Name validation and update hotspot SSID', async () => {
     await init();
 
     const hotspotNameInput =
-        hotspotConfigDialog.shadowRoot!.querySelector<HTMLInputElement>(
-            '#hotspotName');
+        hotspotConfigDialog.shadowRoot!
+            .querySelector<NetworkConfigInputElement>('#hotspotName');
     assertTrue(!!hotspotNameInput, 'Hotspot name input doesn\'t exist');
     assertEquals('test_ssid', hotspotNameInput.value);
-    hotspotNameInput.value = 'new_ssid';
+
+    const hotspotNameInputInfo =
+        hotspotConfigDialog.shadowRoot!.querySelector('#hotspotNameInputInfo');
+    assertTrue(
+        !!hotspotNameInputInfo, 'Hotspot name input info doesn\'t exist');
 
     const saveBtn =
         hotspotConfigDialog.shadowRoot!.querySelector<HTMLButtonElement>(
@@ -80,8 +85,24 @@ suite('<hotspot-config-dialog>', () => {
         hotspotConfigDialog.shadowRoot!.querySelector<HTMLButtonElement>(
             '#cancelButton');
     assertTrue(!!cancelBtn);
+
+    hotspotNameInput.value = '';
+    assertTrue(hotspotNameInput.invalid);
+    assertTrue(saveBtn.disabled);
+    assertFalse(cancelBtn.disabled);
+    assertEquals(
+        hotspotConfigDialog.i18n('hotspotConfigNameEmptyInfo'),
+        hotspotNameInputInfo.textContent!.trim());
+    assertTrue(hotspotNameInputInfo.classList.contains('error'));
+
+    hotspotNameInput.value = 'new_ssid';
+    assertFalse(hotspotNameInput.invalid);
     assertFalse(saveBtn.disabled);
     assertFalse(cancelBtn.disabled);
+    assertEquals(
+        hotspotConfigDialog.i18n('hotspotConfigNameInfo'),
+        hotspotNameInputInfo.textContent!.trim());
+    assertFalse(hotspotNameInputInfo.classList.contains('error'));
 
     hotspotConfig.setFakeSetHotspotConfigResult(
         SetHotspotConfigResult.kSuccess);
@@ -111,16 +132,28 @@ suite('<hotspot-config-dialog>', () => {
             '#cancelButton');
     assertTrue(!!cancelBtn);
 
+    const hotspotPasswordInputInfo =
+        hotspotConfigDialog.shadowRoot!.querySelector(
+            '#hotspotPasswordInputInfo');
+    assertTrue(
+        !!hotspotPasswordInputInfo,
+        'Hotspot password input info doesn\'t exist');
+
     // Verifies that password has to be at least 8 chars long.
     hotspotPasswordInput.value = 'short';
     assertTrue(hotspotPasswordInput.invalid);
     assertTrue(saveBtn.disabled);
     assertFalse(cancelBtn.disabled);
+    assertTrue(hotspotPasswordInputInfo.classList.contains('error'));
 
     hotspotPasswordInput.value = 'validlong_password';
     assertFalse(hotspotPasswordInput.invalid);
     assertFalse(saveBtn.disabled);
     assertFalse(cancelBtn.disabled);
+    assertEquals(
+        hotspotConfigDialog.i18n('hotspotConfigPasswordInfo'),
+        hotspotPasswordInputInfo.textContent!.trim());
+    assertFalse(hotspotPasswordInputInfo.classList.contains('error'));
 
     hotspotConfig.setFakeSetHotspotConfigResult(
         SetHotspotConfigResult.kSuccess);

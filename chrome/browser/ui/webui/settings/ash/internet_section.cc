@@ -32,6 +32,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 
@@ -982,10 +983,13 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_HOTSPOT_AUTO_DISABLED_LABEL},
       {"hotspotAutoDisableSublabel",
        IDS_SETTINGS_INTERNET_HOTSPOT_AUTO_DISABLED_SUBLABEL},
-      {"hotspotSettingsTitle", IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_TITLE},
       {"hotspotConfigNameLabel",
        IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_LABEL},
       {"hotspotConfigNameInfo", IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_INFO},
+      {"hotspotConfigNameEmptyInfo",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_EMPTY_INFO},
+      {"hotspotConfigNameTooLongInfo",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_TOO_LONG_INFO},
       {"hotspotConfigPasswordLabel",
        IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_PASSWORD_LABEL},
       {"hotspotConfigPasswordInfo",
@@ -1110,6 +1114,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "hotspotSubpageSubtitle",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_SUBTITLE_WITH_LEARN_MORE_LINK,
+          ui::GetChromeOSDeviceName(),
           GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
   html_source->AddString(
       "hotspotMobileDataNotSupportedSublabelWithLink",
@@ -1122,9 +1127,14 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
           IDS_SETTINGS_INTERNET_HOTSPOT_NO_MOBILE_DATA_SUBLABEL_WITH_LEARN_MORE_LINK,
           GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
   html_source->AddString(
+      "hotspotSettingsTitle",
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_TITLE,
+                                 ui::GetChromeOSDeviceName()));
+  html_source->AddString(
       "hotspotSettingsSubtitle",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_SUBTITLE_WITH_LEARN_MORE_LINK,
+          ui::GetChromeOSDeviceName(),
           GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
   html_source->AddBoolean("isUserLoggedIn", IsUserLoggedIn());
 }
