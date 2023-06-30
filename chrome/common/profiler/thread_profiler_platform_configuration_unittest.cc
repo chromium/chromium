@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/profiler/profiler_buildflags.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
@@ -144,7 +145,23 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
          ++j) {
       const auto thread =
           static_cast<metrics::CallStackProfileParams::Thread>(j);
-      EXPECT_TRUE(config()->IsEnabledForThread(process, thread));
+      EXPECT_TRUE(config()->IsEnabledForThread(process, thread,
+                                               version_info::Channel::CANARY));
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
+      auto android_config1 = ThreadProfilerPlatformConfiguration::Create(
+          /* browser_test_mode_enabled=*/false,
+          base::BindLambdaForTesting([](double probability) { return true; }));
+      EXPECT_TRUE(android_config1->IsEnabledForThread(
+          process, thread, version_info::Channel::DEV));
+      auto android_config2 = ThreadProfilerPlatformConfiguration::Create(
+          /* browser_test_mode_enabled=*/false,
+          base::BindLambdaForTesting([](double probability) { return false; }));
+      EXPECT_FALSE(android_config2->IsEnabledForThread(
+          process, thread, version_info::Channel::DEV));
+#else
+      EXPECT_TRUE(config()->IsEnabledForThread(process, thread,
+                                               version_info::Channel::DEV));
+#endif
     }
   }
 }
