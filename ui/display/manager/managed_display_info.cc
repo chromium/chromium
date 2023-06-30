@@ -470,6 +470,7 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   drm_formats_and_modifiers_ = native_info.drm_formats_and_modifiers_;
   variable_refresh_rate_state_ = native_info.variable_refresh_rate_state_;
   vsync_rate_min_ = native_info.vsync_rate_min_;
+  detected_ = native_info.detected_;
 
   // Rotation, color_profile and overscan are given by preference,
   // or unit tests. Don't copy if this native_info came from
@@ -577,7 +578,7 @@ std::string ManagedDisplayInfo::ToString() const {
   std::string result = base::StringPrintf(
       "ManagedDisplayInfo[%lld] native bounds=%s, size=%s, device-scale=%g, "
       "display-zoom=%g, overscan=%s, rotation=%d, touchscreen=%s, "
-      "panel_corners_radii=%s, panel_orientation=%s",
+      "panel_corners_radii=%s, panel_orientation=%s, detected=%s",
       static_cast<long long int>(id_), bounds_in_native_.ToString().c_str(),
       size_in_pixel_.ToString().c_str(), device_scale_factor_, zoom_factor_,
       overscan_insets_in_dip_.ToString().c_str(), rotation_degree,
@@ -585,7 +586,8 @@ std::string ManagedDisplayInfo::ToString() const {
       : touch_support_ == Display::TouchSupport::UNAVAILABLE ? "no"
                                                              : "unknown",
       panel_corners_radii_.ToString().c_str(),
-      PanelOrientationToString(panel_orientation_).c_str());
+      PanelOrientationToString(panel_orientation_).c_str(),
+      detected_ ? "true" : "false");
 
   return result;
 }

@@ -226,6 +226,9 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
     return active_rotation_source_;
   }
 
+  bool detected() const { return detected_; }
+  void set_detected(bool detected) { detected_ = detected; }
+
   // Returns the rotation set by a given |source|.
   Display::Rotation GetRotation(Display::RotationSource source) const;
 
@@ -426,6 +429,11 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // True if the displays' overscan inset should be cleared. This is
   // to distinguish the empty overscan insets from native display info.
   bool clear_overscan_insets_;
+
+  // True if the display is detected by the system. The system will keep at
+  // least one display available even if all displays are disconnected, and this
+  // field is set to false in such a case.
+  bool detected_ = true;
 
   // The list of modes supported by this display.
   ManagedDisplayModeList display_modes_;

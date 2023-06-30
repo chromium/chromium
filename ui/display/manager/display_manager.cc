@@ -750,10 +750,12 @@ void DisplayManager::OnNativeDisplaysChanged(
       DisplayInfoList init_displays;
       init_displays.push_back(
           ManagedDisplayInfo::CreateFromSpec(std::string()));
+      init_displays[0].set_detected(false);
       MaybeInitInternalDisplay(&init_displays[0]);
       OnNativeDisplaysChanged(init_displays);
     } else {
-      // Otherwise don't update the displays when all displays are disconnected.
+      // Otherwise just update the displays' detected state when all displays
+      // are disconnected.
       // This happens when:
       // - the device is idle and powerd requested to turn off all displays.
       // - the device is suspended. (kernel turns off all displays)
@@ -763,6 +765,17 @@ void DisplayManager::OnNativeDisplaysChanged(
       //   disconnected.
       // The display will be updated when one of displays is turned on, and the
       // display list will be updated correctly.
+
+      for (auto& display : active_display_list_) {
+        if (display.detected()) {
+          ManagedDisplayInfo info = GetDisplayInfo(display.id());
+          info.set_detected(false);
+          display.set_detected(false);
+          InsertAndUpdateDisplayInfo(info);
+          NotifyMetricsChanged(display,
+                               DisplayObserver::DISPLAY_METRIC_DETECTED);
+        }
+      }
     }
     return;
   }
@@ -999,6 +1012,9 @@ void DisplayManager::UpdateDisplaysWith(
               new_display_info.vsync_rate_min()) {
         metrics |= DisplayObserver::DISPLAY_METRIC_VRR;
       }
+      if (current_display_info.detected() != new_display_info.detected()) {
+        metrics |= DisplayObserver::DISPLAY_METRIC_DETECTED;
+      }
 
       if (metrics != DisplayObserver::DISPLAY_METRIC_NONE) {
         display_changes.insert(
@@ -1097,12 +1113,16 @@ void DisplayManager::UpdateDisplaysWith(
   for (auto iter = display_changes.begin(); iter != display_changes.end();
        ++iter) {
     uint32_t metrics = iter->second;
-    const Display& updated_display = active_display_list_[iter->first];
+    Display& updated_display = active_display_list_[iter->first];
 
     if (notify_primary_change &&
         updated_display.id() == screen_->GetPrimaryDisplay().id()) {
       metrics |= DisplayObserver::DISPLAY_METRIC_PRIMARY;
       notify_primary_change = false;
+    }
+    if (!updated_display.detected()) {
+      updated_display.set_detected(true);
+      metrics |= DisplayObserver::DISPLAY_METRIC_DETECTED;
     }
     NotifyMetricsChanged(updated_display, metrics);
   }
@@ -2093,6 +2113,7 @@ Display DisplayManager::CreateDisplayFromDisplayInfoById(int64_t id) {
   new_display.set_label(display_info.name());
   new_display.SetDRMFormatsAndModifiers(
       display_info.GetDRMFormatsAndModifiers());
+  new_display.set_detected(display_info.detected());
 
   constexpr uint32_t kNormalBitDepthNumBitsPerChannel = 8u;
   if (display_info.bits_per_channel() > kNormalBitDepthNumBitsPerChannel) {

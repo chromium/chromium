@@ -58,6 +58,14 @@ declare global {
         }
 
         /**
+         * @see https://developer.chrome.com/extensions/system.display#type-ActiveState
+         */
+        export enum ActiveState {
+          ACTIVE = 'active',
+          INACTIVE = 'inactive',
+        }
+
+        /**
          * @see https://developer.chrome.com/extensions/system.display#type-DisplayLayout
          */
         export interface DisplayLayout {
@@ -87,6 +95,7 @@ declare global {
           mirroringDestinationIds: string[];
           isPrimary: boolean;
           isInternal: boolean;
+          activeState: ActiveState;
           isEnabled: boolean;
           isUnified: boolean;
           isAutoRotationAllowed?: boolean;

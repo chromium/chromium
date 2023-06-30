@@ -203,6 +203,16 @@ class DISPLAY_EXPORT Display final {
   // True if the display corresponds to internal panel.
   bool IsInternal() const;
 
+  // Returns true if the display is detected by the system. A display can
+  // stay 'active' when all displays are disconnected from SW point of view,
+  // because this can happen when the display went to sleep mode, or the
+  // device went to sleep mode, and in that case, we do not want to change
+  // the display configuration (so that it starts in the same state when
+  // resumed). Use this if you want to check if the display is detected by the
+  // system.
+  bool detected() const { return detected_; }
+  void set_detected(bool detected) { detected_ = detected; }
+
   // [Deprecated] Use `display::GetInternalDisplayIds()`.
   // Gets an id of display corresponding to internal panel.
   static int64_t InternalDisplayId();
@@ -294,6 +304,7 @@ class DISPLAY_EXPORT Display final {
   int color_depth_;
   int depth_per_component_;
   bool is_monochrome_ = false;
+  bool detected_ = true;
   int display_frequency_ = 0;
   std::string label_;
   uint32_t audio_formats_ = 0;

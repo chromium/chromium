@@ -8,6 +8,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/display/mojom/display.mojom";
 
 // This API is used for communication between Settings WebUI and Ash C++ code.
+// Next MinVersion: 2
 
 // All points, bounds, and insets are in display pixels unless otherwise
 // sepcified.
@@ -259,6 +260,8 @@ struct DisplayUnitInfo {
   double display_zoom_factor@17;
   // The list of allowed zoom factor values for the display.
   array<double> available_display_zoom_factors@18;
+  // True if the display was detected by the system.
+  [MinVersion=1] bool is_detected@19;
 };
 
 // Properties for configuring an individual display, used in

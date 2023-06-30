@@ -315,6 +315,7 @@ crosapi::mojom::DisplayUnitInfoPtr GetDisplayUnitInfo(
   info->is_primary = display.id() == primary_id;
   info->is_internal = display.IsInternal();
   info->is_enabled = true;
+  info->is_detected = display.detected();
   info->is_auto_rotation_allowed =
       Shell::Get()->screen_orientation_controller()->IsAutoRotationAllowed() &&
       display.IsInternal();

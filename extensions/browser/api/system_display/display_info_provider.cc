@@ -79,6 +79,9 @@ api::system_display::DisplayUnitInfo DisplayInfoProvider::CreateDisplayUnitInfo(
   unit.id = base::NumberToString(display.id());
   unit.is_primary = (display.id() == primary_display_id);
   unit.is_internal = display.IsInternal();
+  unit.active_state = display.detected()
+                          ? api::system_display::ActiveState::kActive
+                          : api::system_display::ActiveState::kInactive;
   unit.is_enabled = true;
   unit.is_unified = false;
   unit.rotation = RotationToDegrees(display.rotation());
@@ -134,7 +137,6 @@ void DisplayInfoProvider::GetAllDisplaysInfo(
       provided_screen_ ? provided_screen_.get() : display::Screen::GetScreen();
   int64_t primary_id = screen->GetPrimaryDisplay().id();
   std::vector<display::Display> displays = screen->GetAllDisplays();
-  DisplayUnitInfoList all_displays;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&DisplayInfoProvider::GetAllDisplaysInfoList,

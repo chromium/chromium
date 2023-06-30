@@ -220,6 +220,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetBasic) {
   EXPECT_EQ(96, result[0].dpi_y);
   EXPECT_TRUE(result[0].mirroring_source_id.empty());
   EXPECT_TRUE(result[0].is_enabled);
+  EXPECT_EQ(api::system_display::ActiveState::kActive, result[0].active_state);
 
   ASSERT_TRUE(base::StringToInt64(result[1].id, &display_id))
       << "Display id must be convertible to integer: " << result[0].id;
@@ -237,6 +238,39 @@ TEST_F(DisplayInfoProviderChromeosTest, GetBasic) {
   EXPECT_EQ(96, result[1].dpi_y);
   EXPECT_TRUE(result[1].mirroring_source_id.empty());
   EXPECT_TRUE(result[1].is_enabled);
+  EXPECT_EQ(api::system_display::ActiveState::kActive, result[1].active_state);
+
+  // Disconnect all displays.
+  UpdateDisplay("");
+  result = GetAllDisplaysInfo();
+
+  ASSERT_EQ(2u, result.size());
+
+  ASSERT_TRUE(base::StringToInt64(result[0].id, &display_id))
+      << "Display id must be convertible to integer: " << result[0].id;
+  ASSERT_TRUE(DisplayExists(display_id)) << display_id << " not found";
+  EXPECT_TRUE(result[0].is_primary);
+  EXPECT_EQ(api::system_display::ActiveState::kInactive,
+            result[0].active_state);
+
+  ASSERT_TRUE(base::StringToInt64(result[1].id, &display_id))
+      << "Display id must be convertible to integer: " << result[0].id;
+  ASSERT_TRUE(DisplayExists(display_id)) << display_id << " not found";
+  EXPECT_EQ("500,0 400x520", SystemInfoDisplayBoundsToString(result[1].bounds));
+  EXPECT_FALSE(result[1].is_primary);
+  EXPECT_EQ(api::system_display::ActiveState::kInactive,
+            result[1].active_state);
+
+  // Reconnect first display.
+  UpdateDisplay("500x600");
+  result = GetAllDisplaysInfo();
+  ASSERT_EQ(1u, result.size());
+
+  ASSERT_TRUE(base::StringToInt64(result[0].id, &display_id))
+      << "Display id must be convertible to integer: " << result[0].id;
+  ASSERT_TRUE(DisplayExists(display_id)) << display_id << " not found";
+  EXPECT_TRUE(result[0].is_primary);
+  EXPECT_EQ(api::system_display::ActiveState::kActive, result[0].active_state);
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, GetWithUnifiedDesktop) {
