@@ -236,6 +236,11 @@ uint32_t RTCEncodedVideoFrame::timestamp() const {
   return delegate_->Timestamp();
 }
 
+void RTCEncodedVideoFrame::setTimestamp(uint32_t timestamp,
+                                        ExceptionState& exception_state) {
+  delegate_->SetTimestamp(timestamp, exception_state);
+}
+
 DOMArrayBuffer* RTCEncodedVideoFrame::data() const {
   if (!frame_data_)
     frame_data_ = delegate_->CreateDataBuffer();
