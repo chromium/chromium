@@ -2337,12 +2337,6 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
 // Tests that launching the same desk template multiple times creates desks with
 // different/incremented names.
 IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchMultipleDeskTemplates) {
-  if (GetParam()) {
-    // TODO(b/289300705): Test is starting an animation that doesn't complete
-    // and causes a crash on Shell teardown.
-    SUCCEED();
-    return;
-  }
   const base::Uuid kDeskUuid = base::Uuid::GenerateRandomV4();
   const std::u16string kDeskName(u"Test Desk Name");
 

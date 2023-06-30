@@ -375,7 +375,14 @@ class DeskIconButtonScaleAnimation {
       delete;
 
   ~DeskIconButtonScaleAnimation() {
-    if (Shell::Get()->overview_controller()->InOverviewSession()) {
+    const auto* overview_controller = Shell::Get()->overview_controller();
+    if (!overview_controller) {
+      // If the OverviewController is null, things are being torn down and
+      // there's nothing to finish.
+      return;
+    }
+
+    if (overview_controller->InOverviewSession()) {
       desk_icon_button_->layer()->SetRoundedCornerRadius(
           gfx::RoundedCornersF());
       desk_icon_button_->SetBackground(views::CreateRoundedRectBackground(
