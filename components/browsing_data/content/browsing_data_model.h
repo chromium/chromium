@@ -15,6 +15,7 @@
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/interest_group_manager.h"
+#include "content/public/browser/private_aggregation_data_model.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -46,6 +47,7 @@ class BrowsingDataModel {
     kLocalStorage,
     kInterestGroup,
     kAttributionReporting,
+    kPrivateAggregation,
     kQuotaStorage,
 
     kFirstType = kTrustTokens,
@@ -64,7 +66,8 @@ class BrowsingDataModel {
   typedef absl::variant<url::Origin,        // Single origin, e.g. Trust Tokens
                         blink::StorageKey,  // Partitioned JS storage
                         content::InterestGroupManager::InterestGroupDataKey,
-                        content::AttributionDataModel::DataKey
+                        content::AttributionDataModel::DataKey,
+                        content::PrivateAggregationDataModel::DataKey
                         // TODO(crbug.com/1271155): Additional backend keys.
                         >
       DataKey;

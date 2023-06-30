@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string>
+
+#include "base/check.h"
+#include "base/run_loop.h"
+#include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,9 +36,11 @@
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -40,7 +49,9 @@
 #include "services/network/test/trust_token_request_handler.h"
 #include "services/network/test/trust_token_test_server_handler_registration.h"
 #include "services/network/test/trust_token_test_util.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 using base::test::FeatureRef;
@@ -131,6 +142,33 @@ void RunAdAuction(const content::ToRenderFrameHost& adapter,
   EXPECT_EQ("Success", EvalJs(adapter, command));
 }
 
+void ExecuteScriptInSharedStorageWorklet(
+    const content::ToRenderFrameHost& execution_target,
+    const std::string& script,
+    GURL* out_module_script_url,
+    net::EmbeddedTestServer* https_server) {
+  CHECK(out_module_script_url);
+
+  base::StringPairs run_function_body_replacement;
+  run_function_body_replacement.emplace_back("{{RUN_FUNCTION_BODY}}", script);
+
+  std::string host =
+      execution_target.render_frame_host()->GetLastCommittedOrigin().host();
+
+  *out_module_script_url =
+      https_server->GetURL(host, net::test_server::GetFilePathWithReplacements(
+                                     "/shared_storage/customizable_module.js",
+                                     run_function_body_replacement));
+
+  EXPECT_TRUE(ExecJs(execution_target,
+                     content::JsReplace("sharedStorage.worklet.addModule($1)",
+                                        *out_module_script_url)));
+
+  testing::AssertionResult result =
+      ExecJs(execution_target,
+             "sharedStorage.run('test-operation', {keepAlive: true});");
+}
+
 void AccessTopics(const content::ToRenderFrameHost& adapter) {
   std::string command =
       R"(
@@ -202,6 +240,7 @@ class BrowsingDataModelBrowserTest
         {features::kIsolatedWebAppDevMode, {}},
         {blink::features::kSharedStorageAPI, {}},
         {blink::features::kInterestGroupStorage, {}},
+        {blink::features::kPrivateAggregationApi, {}},
         {blink::features::kAdInterestGroupAPI, {}},
         {blink::features::kFledge, {}},
         {blink::features::kFencedFrames, {}},
@@ -575,6 +614,50 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
            /*storage_size=*/0,
            /*cookie_count=*/0}}});
   }
+}
+
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+                       PrivateAggregationHandledCorrectly) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+
+  // Validate that there are no entries in the browsing data model.
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+
+  GURL out_script_url;
+  ExecuteScriptInSharedStorageWorklet(web_contents(), R"(
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
+    )",
+                                      &out_script_url, https_test_server());
+
+  do {
+    browsing_data_model = BuildBrowsingDataModel();
+    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  } while (browsing_data_model->size() < 1);
+
+  // Validate that a private aggregation data key is added.
+  url::Origin test_origin = https_test_server()->GetOrigin(kTestHost);
+  content::PrivateAggregationDataModel::DataKey data_key{test_origin};
+
+  ValidateBrowsingDataEntries(
+      browsing_data_model.get(),
+      {{kTestHost,
+        data_key,
+        {{BrowsingDataModel::StorageType::kPrivateAggregation},
+         /*storage_size=*/100,
+         /*cookie_count=*/0}}});
+
+  // Remove datakey from aggregation service and private budgeter.
+  {
+    base::RunLoop run_loop;
+    browsing_data_model->RemoveBrowsingData(kTestHost, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Rebuild Browsing Data Model and verify entries are empty.
+  browsing_data_model = BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }
 
 IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,

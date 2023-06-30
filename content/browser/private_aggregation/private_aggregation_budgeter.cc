@@ -314,6 +314,8 @@ void PrivateAggregationBudgeter::GetAllDataKeys(
         callback) {
   OnUserVisibleTaskStarted();
 
+  EnsureStorageInitializationBegun();
+
   base::OnceCallback<void(std::set<PrivateAggregationDataModel::DataKey>)>
       impl_callback = std::move(callback).Then(
           base::BindOnce(&PrivateAggregationBudgeter::OnUserVisibleTaskComplete,

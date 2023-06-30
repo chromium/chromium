@@ -5,9 +5,13 @@
 #include "components/browsing_data/content/browsing_data_model.h"
 
 #include <set>
+#include <string>
 
 #include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/containers/enum_set.h"
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
@@ -18,6 +22,7 @@
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -100,15 +105,23 @@ template <>
 std::string GetDataOwner::GetOwningHost<
     content::InterestGroupManager::InterestGroupDataKey>(
     const content::InterestGroupManager::InterestGroupDataKey& data_key) const {
-  DCHECK_EQ(BrowsingDataModel::StorageType::kInterestGroup, storage_type_);
+  CHECK_EQ(BrowsingDataModel::StorageType::kInterestGroup, storage_type_);
   return data_key.owner.host();
 }
 
 template <>
 std::string GetDataOwner::GetOwningHost<content::AttributionDataModel::DataKey>(
     const content::AttributionDataModel::DataKey& data_key) const {
-  DCHECK_EQ(BrowsingDataModel::StorageType::kAttributionReporting,
-            storage_type_);
+  CHECK_EQ(BrowsingDataModel::StorageType::kAttributionReporting,
+           storage_type_);
+  return data_key.reporting_origin().host();
+}
+
+template <>
+std::string
+GetDataOwner::GetOwningHost<content::PrivateAggregationDataModel::DataKey>(
+    const content::PrivateAggregationDataModel::DataKey& data_key) const {
+  CHECK_EQ(BrowsingDataModel::StorageType::kPrivateAggregation, storage_type_);
   return data_key.reporting_origin().host();
 }
 
@@ -234,30 +247,32 @@ template <>
 void StorageRemoverHelper::Visitor::operator()<
     content::InterestGroupManager::InterestGroupDataKey>(
     const content::InterestGroupManager::InterestGroupDataKey& data_key) {
-  if (types.Has(BrowsingDataModel::StorageType::kInterestGroup)) {
-    helper->storage_partition_->GetInterestGroupManager()
-        ->RemoveInterestGroupsByDataKey(
-            data_key, base::BindOnce(
-                          [](base::OnceClosure complete_callback) {
-                            std::move(complete_callback).Run();
-                          },
-                          helper->GetCompleteCallback()));
-  } else {
-    NOTREACHED();
-  }
+  CHECK(types.Has(BrowsingDataModel::StorageType::kInterestGroup));
+  helper->storage_partition_->GetInterestGroupManager()
+      ->RemoveInterestGroupsByDataKey(
+          data_key, base::BindOnce(
+                        [](base::OnceClosure complete_callback) {
+                          std::move(complete_callback).Run();
+                        },
+                        helper->GetCompleteCallback()));
 }
 
 template <>
 void StorageRemoverHelper::Visitor::operator()<
     content::AttributionDataModel::DataKey>(
     const content::AttributionDataModel::DataKey& data_key) {
-  if (types.Has(BrowsingDataModel::StorageType::kAttributionReporting)) {
-    helper->storage_partition_->GetAttributionDataModel()
-        ->RemoveAttributionDataByDataKey(data_key,
-                                         helper->GetCompleteCallback());
-  } else {
-    NOTREACHED();
-  }
+  CHECK(types.Has(BrowsingDataModel::StorageType::kAttributionReporting));
+  helper->storage_partition_->GetAttributionDataModel()
+      ->RemoveAttributionDataByDataKey(data_key, helper->GetCompleteCallback());
+}
+
+template <>
+void StorageRemoverHelper::Visitor::operator()<
+    content::PrivateAggregationDataModel::DataKey>(
+    const content::PrivateAggregationDataModel::DataKey& data_key) {
+  CHECK(types.Has(BrowsingDataModel::StorageType::kPrivateAggregation));
+  helper->storage_partition_->GetPrivateAggregationDataModel()
+      ->RemovePendingDataKey(data_key, helper->GetCompleteCallback());
 }
 
 base::OnceClosure StorageRemoverHelper::GetCompleteCallback() {
@@ -325,6 +340,19 @@ void OnAttributionReportingLoaded(
     model->AddBrowsingData(
         data_key, BrowsingDataModel::StorageType::kAttributionReporting,
         kSmallAmountOfDataInBytes);
+  }
+  std::move(loaded_callback).Run();
+}
+
+void OnPrivateAggregationLoaded(
+    BrowsingDataModel* model,
+    base::OnceClosure loaded_callback,
+    std::set<content::PrivateAggregationDataModel::DataKey>
+        private_aggregation) {
+  for (const auto& data_key : private_aggregation) {
+    model->AddBrowsingData(data_key,
+                           BrowsingDataModel::StorageType::kPrivateAggregation,
+                           kSmallAmountOfDataInBytes);
   }
   std::move(loaded_callback).Run();
 }
@@ -556,6 +584,8 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
       base::FeatureList::IsEnabled(blink::features::kAdInterestGroupAPI);
   bool is_attribution_reporting_enabled =
       base::FeatureList::IsEnabled(blink::features::kConversionMeasurement);
+  bool is_private_aggregation_enabled =
+      base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi);
   bool is_cookies_tree_model_deprecated = base::FeatureList::IsEnabled(
       browsing_data::features::kDeprecateCookiesTreeModel);
 
@@ -588,6 +618,12 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   if (is_attribution_reporting_enabled) {
     storage_partition_->GetAttributionDataModel()->GetAllDataKeys(
         base::BindOnce(&OnAttributionReportingLoaded, this, completion));
+  }
+
+  // Private Aggregation
+  if (is_private_aggregation_enabled) {
+    storage_partition_->GetPrivateAggregationDataModel()->GetAllDataKeys(
+        base::BindOnce(&OnPrivateAggregationLoaded, this, completion));
   }
 
   if (is_cookies_tree_model_deprecated) {
