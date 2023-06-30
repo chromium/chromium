@@ -26,6 +26,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
+#include "components/device_event_log/device_event_log.h"
 #include "ui/display/display.h"
 #include "ui/display/display_change_notifier.h"
 #include "ui/display/util/display_util.h"
@@ -548,6 +549,14 @@ class ScreenMac : public Screen {
   void UpdateDisplays() {
     displays_mac_ = BuildDisplaysFromQuartz();
 
+    std::vector<Display> displays = DisplaysFromDisplaysMac(displays_mac_);
+    if (displays != displays_) {
+      DISPLAY_LOG(EVENT) << "Displays updated, count: " << displays.size();
+      for (const auto& display : displays) {
+        DISPLAY_LOG(EVENT) << display.ToString();
+      }
+    }
+
     // Keep |displays_| in sync with |displays_mac_|. It would be better to have
     // only the |displays_mac_| data structure and generate an array of Displays
     // from it as needed but GetAllDisplays() is defined as returning a
@@ -555,7 +564,7 @@ class ScreenMac : public Screen {
     // GetAllDisplays() can hold onto the reference so we have to assume callers
     // expect the vector's contents to always reflect the current state of the
     // world. Therefore update |displays_| whenever we update |displays_mac_|.
-    displays_ = DisplaysFromDisplaysMac(displays_mac_);
+    displays_ = std::move(displays);
   }
 
   Display GetCachedDisplayForScreen(NSScreen* screen) const {

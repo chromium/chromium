@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/device_event_log/device_event_log.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
@@ -85,6 +86,14 @@ void XDisplayManager::FetchDisplayList() {
   } else {
     displays = GetFallbackDisplayList(scale);
   }
+
+  if (displays != displays_) {
+    DISPLAY_LOG(EVENT) << "Displays updated, count: " << displays.size();
+    for (const auto& display : displays) {
+      DISPLAY_LOG(EVENT) << display.ToString();
+    }
+  }
+
   SetDisplayList(std::move(displays));
 }
 

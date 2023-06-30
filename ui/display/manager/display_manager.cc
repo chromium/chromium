@@ -31,6 +31,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ui/base/display_util.h"
+#include "components/device_event_log/device_event_log.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
@@ -740,9 +741,9 @@ gfx::Insets DisplayManager::GetOverscanInsets(int64_t display_id) const {
 
 void DisplayManager::OnNativeDisplaysChanged(
     const DisplayInfoList& updated_displays) {
+  DISPLAY_LOG(EVENT) << "Displays updated, count:" << updated_displays.size()
+                     << " active:" << active_display_list_.size();
   if (updated_displays.empty()) {
-    VLOG(1) << __func__
-            << "(0): # of current displays=" << active_display_list_.size();
     // If the device is booted without display, or chrome is started
     // without --ash-host-window-bounds on linux desktop, use the
     // default display.
@@ -779,12 +780,9 @@ void DisplayManager::OnNativeDisplaysChanged(
     }
     return;
   }
-  VLOG_IF(1, updated_displays.size() == 1)
-      << __func__ << "(1):" << updated_displays[0].ToString();
-  VLOG_IF(1, updated_displays.size() > 1)
-      << __func__ << "(" << updated_displays.size()
-      << ") [0]=" << updated_displays[0].ToString()
-      << ", [1]=" << updated_displays[1].ToString();
+  for (const auto& display : updated_displays) {
+    DISPLAY_LOG(EVENT) << display.ToString();
+  }
 
   first_display_id_ = updated_displays[0].id();
   std::map<gfx::Point, int64_t> origins;
@@ -1072,6 +1070,13 @@ void DisplayManager::UpdateDisplaysWith(
         metrics |= display_changes[updated_index];
 
       display_changes[updated_index] = metrics;
+    }
+  }
+
+  if (new_displays != active_display_list_) {
+    DISPLAY_LOG(EVENT) << "Displays updated, count:" << new_displays.size();
+    for (const auto& display : new_displays) {
+      DISPLAY_LOG(EVENT) << display.ToString();
     }
   }
 

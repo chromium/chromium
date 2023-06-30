@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "components/device_event_log/device_event_log.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
@@ -844,7 +845,15 @@ void ScreenWin::UpdateFromDisplayInfos(
     const std::vector<internal::DisplayInfo>& display_infos) {
   screen_win_displays_ = DisplayInfosToScreenWinDisplays(
       display_infos, color_profile_reader_.get(), dxgi_info_.get());
-  displays_ = ScreenWinDisplaysToDisplays(screen_win_displays_);
+  std::vector<Display> displays =
+      ScreenWinDisplaysToDisplays(screen_win_displays_);
+  if (displays != displays_) {
+    DISPLAY_LOG(EVENT) << "Displays updated, count: " << displays.size();
+    for (const auto& display : displays) {
+      DISPLAY_LOG(EVENT) << display.ToString();
+    }
+  }
+  displays_ = std::move(displays);
   std::vector<int64_t> internal_display_ids;
   for (const auto& display_info : display_infos) {
     if (IsInternalOutputTechnology(display_info.output_technology())) {

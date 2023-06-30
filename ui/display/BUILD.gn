@@ -115,6 +115,7 @@ component("display") {
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
+    "//components/device_event_log",
     "//mojo/public/cpp/bindings:struct_traits",
     "//ui/display/mojom:mojom_shared_cpp_sources",
     "//ui/display/util",

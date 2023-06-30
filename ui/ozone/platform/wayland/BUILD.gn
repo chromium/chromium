@@ -240,6 +240,7 @@ source_set("wayland") {
     "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//components/crash/core/common:crash_key",
+    "//components/device_event_log",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//components/exo/wayland/protocol:chrome_color_management_protocol",
     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",

@@ -13529,6 +13529,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DEVICE_LOG_TYPE_EXTENSIONS" desc="Checkbox to enable showing events reported by extensions">
         Extensions
       </message>
+      <message name="IDS_DEVICE_LOG_TYPE_DISPLAY" desc="Checkbox to enable showing events of type Display">
+        Display
+      </message>
       <message name="IDS_DEVICE_LOG_FILEINFO" desc="File info checkbox in device event log">
         File Info
       </message>
