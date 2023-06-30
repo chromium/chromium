@@ -169,7 +169,7 @@ BASE_FEATURE(kPasswordsImportM2,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kPasswordManagerRedesign,
              "PasswordManagerRedesign",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables password reuse detection.
@@ -190,7 +190,7 @@ BASE_FEATURE(kPasswordGenerationExperiment,
 // TODO(crbug.com/1359392): Remove once launched on all platforms.
 BASE_FEATURE(kPasswordsGrouping,
              "PasswordsGrouping",
-#if (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(USE_BLINK)
              base::FEATURE_DISABLED_BY_DEFAULT
 #else
              base::FEATURE_ENABLED_BY_DEFAULT

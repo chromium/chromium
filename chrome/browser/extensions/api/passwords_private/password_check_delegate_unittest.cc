@@ -33,7 +33,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
@@ -349,7 +349,7 @@ class PasswordCheckDelegateTest : public ::testing::Test {
   raw_ptr<syncer::TestSyncService> sync_service_ =
       CreateAndUseSyncService(&profile_);
   IdGenerator credential_id_generator_;
-  password_manager::FakeAffiliationService affiliation_service_;
+  password_manager::MockAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      account_store_};
   PasswordCheckDelegate delegate_{&profile_, &presenter_,
@@ -438,26 +438,22 @@ TEST_F(PasswordCheckDelegateTest, GetInsecureCredentialsHandlesTimes) {
                       "example.com", "https://example.com/",
                       "https://example.com/.well-known/change-password",
                       kUsername1, base::Seconds(59), "Just now",
-                      {api::passwords_private::COMPROMISE_TYPE_LEAKED,
-                       api::passwords_private::COMPROMISE_TYPE_REUSED}),
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED}),
                   ExpectCompromisedCredential(
                       "example.com", "https://example.com/",
                       "https://example.com/.well-known/change-password",
                       kUsername2, base::Seconds(60), "1 minute ago",
-                      {api::passwords_private::COMPROMISE_TYPE_LEAKED,
-                       api::passwords_private::COMPROMISE_TYPE_REUSED}),
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED}),
                   ExpectCompromisedCredential(
                       "example.org", "http://www.example.org/",
                       "http://www.example.org/.well-known/change-password",
                       kUsername1, base::Days(100), "3 months ago",
-                      {api::passwords_private::COMPROMISE_TYPE_LEAKED,
-                       api::passwords_private::COMPROMISE_TYPE_REUSED}),
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED}),
                   ExpectCompromisedCredential(
                       "example.org", "http://www.example.org/",
                       "http://www.example.org/.well-known/change-password",
                       kUsername2, base::Days(800), "2 years ago",
-                      {api::passwords_private::COMPROMISE_TYPE_LEAKED,
-                       api::passwords_private::COMPROMISE_TYPE_REUSED})));
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED})));
 }
 
 // Verifies that both leaked and phished credentials are ordered correctly
@@ -493,27 +489,23 @@ TEST_F(PasswordCheckDelegateTest,
                       "https://example.com/.well-known/change-password",
                       kUsername1, base::Minutes(1), "1 minute ago",
                       {api::passwords_private::COMPROMISE_TYPE_LEAKED,
-                       api::passwords_private::COMPROMISE_TYPE_PHISHED,
-                       api::passwords_private::COMPROMISE_TYPE_REUSED}),
+                       api::passwords_private::COMPROMISE_TYPE_PHISHED}),
                   ExpectCompromisedCredential(
                       "example.org", "http://www.example.org/",
                       "http://www.example.org/.well-known/change-password",
                       kUsername1, base::Minutes(3), "3 minutes ago",
-                      {api::passwords_private::COMPROMISE_TYPE_PHISHED,
-                       api::passwords_private::COMPROMISE_TYPE_REUSED}),
+                      {api::passwords_private::COMPROMISE_TYPE_PHISHED}),
                   ExpectCompromisedCredential(
                       "example.org", "http://www.example.org/",
                       "http://www.example.org/.well-known/change-password",
                       kUsername2, base::Minutes(4), "4 minutes ago",
                       {api::passwords_private::COMPROMISE_TYPE_LEAKED,
-                       api::passwords_private::COMPROMISE_TYPE_PHISHED,
-                       api::passwords_private::COMPROMISE_TYPE_REUSED}),
+                       api::passwords_private::COMPROMISE_TYPE_PHISHED}),
                   ExpectCompromisedCredential(
                       "example.com", "https://example.com/",
                       "https://example.com/.well-known/change-password",
                       kUsername2, base::Minutes(2), "2 minutes ago",
-                      {api::passwords_private::COMPROMISE_TYPE_LEAKED,
-                       api::passwords_private::COMPROMISE_TYPE_REUSED})));
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED})));
 }
 
 TEST_F(PasswordCheckDelegateTest, GetInsecureCredentialsInjectsAndroid) {
@@ -543,20 +535,17 @@ TEST_F(PasswordCheckDelegateTest, GetInsecureCredentialsInjectsAndroid) {
               "https://play.google.com/store/apps/details?id=com.example.app",
               "https://example.com/.well-known/change-password", kUsername2,
               base::Days(3), "3 days ago",
-              {api::passwords_private::COMPROMISE_TYPE_PHISHED,
-               api::passwords_private::COMPROMISE_TYPE_REUSED}),
+              {api::passwords_private::COMPROMISE_TYPE_PHISHED}),
           ExpectCompromisedCredential(
               "app.example.com",
               "https://play.google.com/store/apps/details?id=com.example.app",
               absl::nullopt, kUsername1, base::Days(4), "4 days ago",
-              {api::passwords_private::COMPROMISE_TYPE_PHISHED,
-               api::passwords_private::COMPROMISE_TYPE_REUSED}),
+              {api::passwords_private::COMPROMISE_TYPE_PHISHED}),
           ExpectCompromisedCredential(
               "example.com", "https://example.com/",
               "https://example.com/.well-known/change-password", kUsername1,
               base::Minutes(5), "5 minutes ago",
-              {api::passwords_private::COMPROMISE_TYPE_LEAKED,
-               api::passwords_private::COMPROMISE_TYPE_REUSED})));
+              {api::passwords_private::COMPROMISE_TYPE_LEAKED})));
 }
 
 // Test that a change to compromised credential notifies observers.
@@ -1128,7 +1117,7 @@ TEST_F(PasswordCheckDelegateTest,
 
   // Use a local delegate instead of |delegate()| so that the Password Store can
   // be set-up prior to constructing the object.
-  password_manager::FakeAffiliationService affiliation_service;
+  password_manager::MockAffiliationService affiliation_service;
   SavedPasswordsPresenter new_presenter(&affiliation_service, &store(),
                                         /*account_store=*/nullptr);
   PasswordCheckDelegate delegate = CreateDelegate(&new_presenter);

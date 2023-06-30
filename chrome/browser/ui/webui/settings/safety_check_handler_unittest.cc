@@ -32,7 +32,7 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -139,9 +139,14 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
   TestPasswordsDelegate() {
     store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
     presenter_.Init();
+    base::RunLoop().RunUntilIdle();
   }
 
-  void TearDown() { store_->ShutdownOnUIThread(); }
+  void TearDown() {
+    store_->ShutdownOnUIThread();
+    // Needs to be invoked in the test's TearDown() - before the destructor.
+    base::RunLoop().RunUntilIdle();
+  }
 
   void SetBulkLeakCheckService(
       password_manager::BulkLeakCheckService* leak_service) {
@@ -177,7 +182,7 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
     total_ = total;
   }
 
-  void StoreCompromisedPassword() {
+  void InvokeOnCompromisedCredentialsChanged() {
     // Compromised credentials can be added only after password form to which
     // they corresponds exists.
     password_manager::PasswordForm form;
@@ -188,12 +193,13 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
         "test" + base::NumberToString(test_credential_counter_++));
     form.password_value = u"password";
     form.username_element = u"username_element";
+    store_->AddLogin(form);
     form.password_issues = {
         {password_manager::InsecureType::kLeaked,
          password_manager::InsecurityMetadata(
              base::Time(), password_manager::IsMuted(false),
              password_manager::TriggerBackendNotification(false))}};
-    store_->AddLogin(form);
+    base::RunLoop().RunUntilIdle();
   }
 
   std::vector<extensions::api::passwords_private::PasswordUiEntry>
@@ -256,7 +262,7 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
       extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE;
   scoped_refptr<password_manager::TestPasswordStore> store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
-  password_manager::FakeAffiliationService affiliation_service_;
+  password_manager::MockAffiliationService affiliation_service_;
   password_manager::SavedPasswordsPresenter presenter_{
       &affiliation_service_, store_, /*account_store=*/nullptr};
   password_manager::InsecureCredentialsManager credentials_manager_{
@@ -376,7 +382,6 @@ void SafetyCheckHandlerTest::SetUp() {
 
 void SafetyCheckHandlerTest::TearDown() {
   test_passwords_delegate_->TearDown();
-  browser_task_environment_.RunUntilIdle();
 }
 
 const base::Value::Dict*
@@ -910,12 +915,11 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_StaleSafeThenCompromised) {
   // An InsecureCredentialsManager callback fires once the compromised passwords
   // get written to disk.
   test_passwords_delegate_->SetNumLeakedCredentials(kCompromised);
-  test_passwords_delegate_->StoreCompromisedPassword();
-  browser_task_environment_.RunUntilIdle();
+  test_passwords_delegate_->InvokeOnCompromisedCredentialsChanged();
   const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
       kPasswords,
       static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
-  ASSERT_TRUE(event2);
+  EXPECT_TRUE(event2);
   VerifyDisplayString(
       event2, base::NumberToString(kCompromised) + " compromised passwords");
 }
@@ -933,8 +937,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_SafeStateThenMoreEvents) {
 
   // Previous safe state got loaded.
   test_passwords_delegate_->SetNumLeakedCredentials(0);
-  test_passwords_delegate_->StoreCompromisedPassword();
-  browser_task_environment_.RunUntilIdle();
+  test_passwords_delegate_->InvokeOnCompromisedCredentialsChanged();
   // The event should get ignored, since the state is still running.
   const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
       kPasswords, static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
@@ -953,8 +956,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_SafeStateThenMoreEvents) {
   // After some time, some compromises were discovered (unrelated to SC).
   constexpr int kCompromised = 7;
   test_passwords_delegate_->SetNumLeakedCredentials(kCompromised);
-  test_passwords_delegate_->StoreCompromisedPassword();
-  browser_task_environment_.RunUntilIdle();
+  test_passwords_delegate_->InvokeOnCompromisedCredentialsChanged();
   // The new event should get ignored, since the safe state was final.
   const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
       kPasswords,
@@ -1291,8 +1293,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error_FutureEventsIgnored) {
   // An InsecureCredentialsManager callback fires once the compromised passwords
   // get written to disk.
   test_passwords_delegate_->SetNumLeakedCredentials(kCompromised);
-  test_passwords_delegate_->StoreCompromisedPassword();
-  browser_task_environment_.RunUntilIdle();
+  test_passwords_delegate_->InvokeOnCompromisedCredentialsChanged();
   const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
       kPasswords,
       static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
