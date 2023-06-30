@@ -8,7 +8,7 @@ import {assert} from '//resources/js/assert_ts.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ImageQuery, MethodType, PromoAction, PromoType, VisualSearchResult} from './companion.mojom-webui.js';
+import {ImageQuery, LinkOpenMetadata, MethodType, PromoAction, PromoType, VisualSearchResult} from './companion.mojom-webui.js';
 import {CompanionProxy, CompanionProxyImpl} from './companion_proxy.js';
 
 /**
@@ -60,7 +60,7 @@ enum ParamType {
   // Arguments for MethodType.kNotifyLinkOpen for browser -> iframe
   // communication.
   LINK_OPEN_OPENED_URL = 'openedUrl',
-  LINK_OPEN_WAS_HANDLED = 'wasHandled',
+  LINK_OPEN_METADATA = 'openMetadata',
 
   // Arguments for browser -> iframe communication.
   COMPANION_UPDATE_PARAMS = 'companionUpdateParams',
@@ -213,13 +213,13 @@ function initialize() {
   });
 
   companionProxy.callbackRouter.notifyLinkOpen.addListener(
-      (openedUrl: Url, wasHandled: boolean) => {
+      (openedUrl: Url, metadata: LinkOpenMetadata) => {
         const companionOrigin =
             new URL(loadTimeData.getString('companion_origin')).origin;
         const message = {
           [ParamType.METHOD_TYPE]: MethodType.kNotifyLinkOpen,
           [ParamType.LINK_OPEN_OPENED_URL]: openedUrl.url,
-          [ParamType.LINK_OPEN_WAS_HANDLED]: wasHandled,
+          [ParamType.LINK_OPEN_METADATA]: metadata,
         };
 
         const frame = document.body.querySelector('iframe');
