@@ -7586,7 +7586,8 @@ TEST_P(DesksTest, RemoveDeskWhileDragging) {
 
 // Regression test for the asan failure at https://crbug.com/1274641.
 // TODO(crbug.com/1459376): Re-enable this test
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && \
+    (defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER))
 #define MAYBE_DragMiniViewWhileRemoving DISABLED_DragMiniViewWhileRemoving
 #else
 #define MAYBE_DragMiniViewWhileRemoving DragMiniViewWhileRemoving

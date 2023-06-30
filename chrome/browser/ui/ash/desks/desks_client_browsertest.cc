@@ -2336,7 +2336,10 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
 
 // Tests that launching the same desk template multiple times creates desks with
 // different/incremented names.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchMultipleDeskTemplates) {
+//
+// TODO(crbug.com/1459519): Disabled by sheriff 2023-06-30 due to failures
+IN_PROC_BROWSER_TEST_P(DesksClientTest,
+                       DISABLED_SystemUILaunchMultipleDeskTemplates) {
   const base::Uuid kDeskUuid = base::Uuid::GenerateRandomV4();
   const std::u16string kDeskName(u"Test Desk Name");
 
@@ -2659,7 +2662,9 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, ThrottleImmediateDeskAction) {
 }
 
 // Tests save an empty desk should fail.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SaveEmptyDesk) {
+//
+// TODO(crbug.com/1459519): Disabled by sheriff 2023-06-30 due to failures
+IN_PROC_BROWSER_TEST_P(DesksClientTest, DISABLED_SaveEmptyDesk) {
   // Create a new browser and add a few tabs to it.
   Browser* browser = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
   aura::Window* window = browser->window()->GetNativeWindow();
@@ -2687,7 +2692,9 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SaveEmptyDesk) {
 }
 
 // Tests save an active desk to library and remove it from desk list.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SaveActiveDesk) {
+//
+// TODO(crbug.com/1459519): Disabled by sheriff 2023-06-30 due to failures
+IN_PROC_BROWSER_TEST_P(DesksClientTest, DISABLED_SaveActiveDesk) {
   // Create a new browser and add a few tabs to it.
   Browser* browser = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
   aura::Window* window = browser->window()->GetNativeWindow();
