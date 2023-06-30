@@ -22,7 +22,7 @@ struct PrecedenceOverAutocompleteParams {
   const HtmlFieldType html_field_type;
   const ServerFieldType server_type;
   const ServerFieldType heuristic_type;
-  // This value denotes what should `ComputedType` return as field type.
+  // This value denotes what `ComputedType` should return as field type.
   const ServerFieldType expected_result;
 };
 
@@ -325,6 +325,98 @@ INSTANTIATE_TEST_SUITE_P(
         AutocompleteUnrecognizedTypeTestCase{
             .predicted_type = CREDIT_CARD_NUMBER,
             .expect_should_suppress_suggestions_and_filling = false}));
+
+// Parameters for `AutofillLocalHeuristicsOverridesTest`
+struct AutofillLocalHeuristicsOverridesParams {
+  // These values denote what type the field was classified as html, server and
+  // heuristic prediction.
+  const HtmlFieldType html_field_type;
+  const ServerFieldType server_type;
+  const ServerFieldType heuristic_type;
+  // This value denotes what `ComputedType` should return as field type.
+  const ServerFieldType expected_result;
+};
+
+class AutofillLocalHeuristicsOverridesTest
+    : public testing::TestWithParam<AutofillLocalHeuristicsOverridesParams> {
+ public:
+  AutofillLocalHeuristicsOverridesTest() = default;
+};
+
+// Tests the correctness of local heuristic overrides while computing the
+// overall field type.
+TEST_P(AutofillLocalHeuristicsOverridesTest,
+       AutofillLocalHeuristicsOverridesParams) {
+  AutofillLocalHeuristicsOverridesParams test_case = GetParam();
+  AutofillField field;
+  field.SetHtmlType(test_case.html_field_type, HtmlFieldMode::kNone);
+  field.set_server_predictions(
+      {test::CreateFieldPrediction(test_case.server_type)});
+  field.set_heuristic_type(GetActivePatternSource(), test_case.heuristic_type);
+  EXPECT_EQ(test_case.expected_result, field.ComputedType().GetStorableType());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillHeuristicsOverrideTest,
+    AutofillLocalHeuristicsOverridesTest,
+    testing::Values(
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = ADDRESS_HOME_CITY,
+            .heuristic_type = ADDRESS_HOME_ADMIN_LEVEL2,
+            .expected_result = ADDRESS_HOME_ADMIN_LEVEL2},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = ADDRESS_HOME_HOUSE_NUMBER,
+            .heuristic_type = ADDRESS_HOME_APT_NUM,
+            .expected_result = ADDRESS_HOME_APT_NUM},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = ADDRESS_HOME_STREET_ADDRESS,
+            .heuristic_type = ADDRESS_HOME_BETWEEN_STREETS,
+            .expected_result = ADDRESS_HOME_BETWEEN_STREETS},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kAddressLevel1,
+            .server_type = ADDRESS_HOME_STREET_ADDRESS,
+            .heuristic_type = ADDRESS_HOME_ADMIN_LEVEL2,
+            .expected_result = ADDRESS_HOME_ADMIN_LEVEL2},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kAddressLevel2,
+            .server_type = ADDRESS_HOME_STREET_ADDRESS,
+            .heuristic_type = ADDRESS_HOME_APT_NUM,
+            .expected_result = ADDRESS_HOME_APT_NUM},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kAddressLevel2,
+            .server_type = ADDRESS_HOME_STREET_ADDRESS,
+            .heuristic_type = ADDRESS_HOME_BETWEEN_STREETS,
+            .expected_result = ADDRESS_HOME_BETWEEN_STREETS},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kAddressLevel1,
+            .server_type = ADDRESS_HOME_STREET_ADDRESS,
+            .heuristic_type = ADDRESS_HOME_DEPENDENT_LOCALITY,
+            .expected_result = ADDRESS_HOME_DEPENDENT_LOCALITY},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kAddressLine1,
+            .server_type = ADDRESS_HOME_STREET_ADDRESS,
+            .heuristic_type = ADDRESS_HOME_DEPENDENT_LOCALITY,
+            .expected_result = ADDRESS_HOME_DEPENDENT_LOCALITY},
+        // Final type is unknown if the html type is not valid.
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnrecognized,
+            .server_type = ADDRESS_HOME_CITY,
+            .heuristic_type = ADDRESS_HOME_ADMIN_LEVEL2,
+            .expected_result = UNKNOWN_TYPE},
+        // Test non-override behaviour.
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kStreetAddress,
+            .server_type = ADDRESS_HOME_STREET_ADDRESS,
+            .heuristic_type = ADDRESS_HOME_STREET_ADDRESS,
+            .expected_result = ADDRESS_HOME_STREET_ADDRESS},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = ADDRESS_HOME_CITY,
+            .heuristic_type = ADDRESS_HOME_APT_NUM,
+            .expected_result = ADDRESS_HOME_CITY}));
 
 }  // namespace
 }  // namespace autofill

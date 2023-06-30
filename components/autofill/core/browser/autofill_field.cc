@@ -8,6 +8,7 @@
 #include <iterator>
 
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -35,6 +36,42 @@ struct DenseSetTraits<FieldPrediction::Source> {
 };
 
 namespace {
+
+// This list includes pairs (heuristic_type, html_type) that express which
+// heuristic predictions should be prioritized over HTML. The list is used for
+// new field types that do not have a clear corresponding HTML type. In these
+// cases, the local heuristics predictions will be used to determine the field
+// overall type.
+static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
+    base::MakeFixedFlatSet<std::pair<ServerFieldType, HtmlFieldType>>(
+        {{ADDRESS_HOME_ADMIN_LEVEL2, HtmlFieldType::kAddressLevel1},
+         {ADDRESS_HOME_ADMIN_LEVEL2, HtmlFieldType::kAddressLevel2},
+         {ADDRESS_HOME_APT_NUM, HtmlFieldType::kAddressLevel2},
+         {ADDRESS_HOME_BETWEEN_STREETS, HtmlFieldType::kAddressLevel2},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLevel1},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLevel2},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLevel3},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine1},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine2},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine3}});
+
+// This list includes pairs (heuristic_type, server_type) that express which
+// heuristics predictions should be prioritized over server predictions. The
+// list is used for new field types that the server may have learned
+// incorrectly. In these cases, the local heuristics predictions will be used to
+// determine the field type.
+static constexpr auto kAutofillHeuristicsVsServerOverrides =
+    base::MakeFixedFlatSet<std::pair<ServerFieldType, ServerFieldType>>(
+        {{ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_CITY},
+         {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_LINE2},
+         {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_HOUSE_NUMBER},
+         {ADDRESS_HOME_BETWEEN_STREETS, ADDRESS_HOME_STREET_ADDRESS},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_STATE},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_LINE1},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_LINE2},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_LINE3},
+         {ADDRESS_HOME_LANDMARK, ADDRESS_HOME_LINE2}});
 
 // Returns true, if the prediction is non-experimental and should be used by
 // autofill or password manager.
@@ -111,6 +148,26 @@ bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
 
   NOTREACHED();
   return false;
+}
+
+// Returns whether the `heuristic_type` should be preferred over the
+// `html_type`. For certain field types that have been recently introduced, we
+// want to prioritize local heuristics over the autocomplete type.
+bool PreferHeuristicOverHtml(ServerFieldType heuristic_type,
+                             HtmlFieldType html_type) {
+  return base::Contains(kAutofillHeuristicsVsHtmlOverrides,
+                        std::make_pair(heuristic_type, html_type));
+}
+
+// Returns whether the `heuristic_type` should be preferred over the
+// `server_type`. For certain field types that have been recently introduced, we
+// want to prioritize the local heuristics predictions because they are more
+// likely to be accurate. By prioritizing the local heuristics predictions, we
+// can help the server to "learn" the correct classification for these fields.
+bool PreferHeuristicOverServer(ServerFieldType heuristic_type,
+                               ServerFieldType server_type) {
+  return base::Contains(kAutofillHeuristicsVsServerOverrides,
+                        std::make_pair(heuristic_type, server_type));
 }
 
 // Util function for `ComputedType`. Returns the values of HtmlFieldType that
@@ -348,15 +405,22 @@ AutofillType AutofillField::ComputedType() const {
       return AutofillType(heuristic_type());
     }
   }
+
   // In general, the autocomplete attribute has precedence over the other types
-  // of field detection. Except for cases detailed in `BelievedHtmlTypes()`
+  // of field detection. Except for specific cases in PreferHeuristicOverHtml
+  // and also those detailed in `BelievedHtmlTypes()`.
+  if (PreferHeuristicOverHtml(heuristic_type(), html_type())) {
+    return AutofillType(heuristic_type());
+  }
+
   if (BelievedHtmlTypes(heuristic_type(), server_type(),
                         IsCreditCardPrediction())
           .contains(html_type())) {
     return AutofillType(html_type_, html_mode_);
   }
 
-  if (server_type() != NO_SERVER_DATA) {
+  if (server_type() != NO_SERVER_DATA &&
+      !PreferHeuristicOverServer(heuristic_type(), server_type())) {
     // Sometimes the server and heuristics disagree on whether a name field
     // should be associated with an address or a credit card. There was a
     // decision to prefer the heuristics in these cases, but it looks like
