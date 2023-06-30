@@ -8,7 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/media_session/public/mojom/media_session.mojom";
 
-// Next MinVersion: 5
+// Next MinVersion: 6
 
 // Next Method ID: 3
 [Stable, Uuid="1ed3225e-33c8-487b-b79f-4c3ec13ad623"]
@@ -33,7 +33,7 @@ interface MediaControllerManager {
 // session, otherwise media sessions will be associated with a particular media
 // session provided to the service when creating the media controller. If the
 // media session is not controllable then the commands will be no-ops.
-// Next Method ID: 20
+// Next Method ID: 21
 [Stable]
 interface MediaController {
   // Suspend the media session.
@@ -115,6 +115,10 @@ interface MediaController {
 
   // Start Media Remoting once there are available sinks.
   [MinVersion=4] RequestMediaRemoting@19();
+
+  // Automatically enter picture-in-picture from a non-user source (e.g. in
+  // reaction to content being hidden).
+  [MinVersion=5] EnterAutoPictureInPicture@20();
 };
 
 // The observer for observing media controller events. This is different to a

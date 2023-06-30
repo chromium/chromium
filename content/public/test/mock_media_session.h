@@ -70,6 +70,7 @@ class MockMediaSession : public MediaSession {
   MOCK_METHOD(void, RequestMediaRemoting, (), (override));
   MOCK_METHOD(void, PreviousSlide, (), (override));
   MOCK_METHOD(void, NextSlide, (), (override));
+  MOCK_METHOD(void, EnterAutoPictureInPicture, (), (override));
 };
 
 }  // namespace content

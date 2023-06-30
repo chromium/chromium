@@ -167,6 +167,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   void Raise() override {}
   void SetMute(bool mute) override {}
   void RequestMediaRemoting() override;
+  void EnterAutoPictureInPicture() override {}
 
   int toggle_suspend_resume_count() const {
     return toggle_suspend_resume_count_;

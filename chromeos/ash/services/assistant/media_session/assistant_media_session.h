@@ -65,6 +65,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   void Raise() override {}
   void SetMute(bool mute) override {}
   void RequestMediaRemoting() override {}
+  void EnterAutoPictureInPicture() override {}
 
   // Requests/abandons audio focus to the AudioFocusManager.
   void RequestAudioFocus(media_session::mojom::AudioFocusType audio_focus_type);

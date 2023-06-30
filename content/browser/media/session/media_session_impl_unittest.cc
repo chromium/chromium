@@ -25,6 +25,7 @@
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "third_party/blink/public/common/features.h"
 
 using ::testing::_;
 
@@ -108,7 +109,8 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {media_session::features::kMediaSessionService,
-         media_session::features::kAudioFocusEnforcement},
+         media_session::features::kAudioFocusEnforcement,
+         blink::features::kMediaSessionEnterPictureInPicture},
         {});
 
     RenderViewHostTestHarness::SetUp();
@@ -785,6 +787,26 @@ TEST_F(MediaSessionImplTest, RaiseActivatesWebContents) {
   // When the WebContents does not have a delegate, |Raise()| should not crash.
   web_contents()->SetDelegate(nullptr);
   GetMediaSession()->Raise();
+}
+
+TEST_F(MediaSessionImplTest,
+       RegisteredEnterPictureInPictureExposesAutoPictureInPicture) {
+  // When the website has registered for 'enterpictureinpicture',
+  // MediaSessionImpl should expose both kEnterPictureInPicture and
+  // kEnterAutoPictureInPicture to the internal MediaSession service.
+  StartNewPlayer();
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *GetMediaSession());
+  mock_media_session_service().EnableAction(
+      media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
+  mock_media_session_service().FlushForTesting();
+
+  EXPECT_TRUE(base::Contains(
+      observer.actions(),
+      media_session::mojom::MediaSessionAction::kEnterPictureInPicture));
+  EXPECT_TRUE(base::Contains(
+      observer.actions(),
+      media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture));
 }
 
 // Tests for throttling duration updates.

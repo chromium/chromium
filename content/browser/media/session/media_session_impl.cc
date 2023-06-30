@@ -1203,6 +1203,23 @@ void MediaSessionImpl::ExitPictureInPicture() {
   static_cast<WebContentsImpl*>(web_contents())->ExitPictureInPicture();
 }
 
+void MediaSessionImpl::EnterAutoPictureInPicture() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kMediaSessionEnterPictureInPicture)) {
+    return;
+  }
+  if (!ShouldRouteAction(
+          media_session::mojom::MediaSessionAction::kEnterPictureInPicture)) {
+    return;
+  }
+
+  DidReceiveAction(
+      media_session::mojom::MediaSessionAction::kEnterPictureInPicture,
+      blink::mojom::MediaSessionActionDetails::NewPictureInPicture(
+          blink::mojom::MediaSessionPictureInPictureActionDetails::New(
+              /*automatic=*/true)));
+}
+
 void MediaSessionImpl::SetAudioSinkId(const absl::optional<std::string>& id) {
   audio_device_id_for_origin_ = id;
 
@@ -1616,6 +1633,17 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
     actions.insert(media_session::mojom::MediaSessionAction::kStop);
     actions.insert(media_session::mojom::MediaSessionAction::kSeekTo);
     actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
+  }
+
+  // If the website has specified an action handler for 'enterpictureinpicture',
+  // then we should expose EnterAutoPictureInPicture as an available action.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kMediaSessionEnterPictureInPicture) &&
+      base::Contains(
+          actions,
+          media_session::mojom::MediaSessionAction::kEnterPictureInPicture)) {
+    actions.insert(
+        media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture);
   }
 
   if (base::FeatureList::IsEnabled(

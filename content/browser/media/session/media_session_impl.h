@@ -273,6 +273,10 @@ class MediaSessionImpl : public MediaSession,
   // Exit picture-in-picture.
   void ExitPictureInPicture() override;
 
+  // Automatically enter picture-in-picture from a non-user source (e.g. in
+  // reaction to content being hidden).
+  void EnterAutoPictureInPicture() override;
+
   // Routes the audio from this Media Session to the given output device. If
   // |id| is null, we will route to the default output device.
   // Players created after this setting has been set will also have their audio
