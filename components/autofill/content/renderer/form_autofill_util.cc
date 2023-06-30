@@ -124,21 +124,6 @@ constexpr int kMaxConsecutiveInFourDigitCombinationMatches = 2;
 // Maximum number of four digit combination matches to find in the DOM.
 constexpr size_t kMaxFourDigitCombinationMatches = 5;
 
-// A bit field mask for FillForm functions to not fill some fields.
-enum FieldFilterMask {
-  FILTER_NONE = 0,
-  FILTER_DISABLED_ELEMENTS = 1 << 0,
-  FILTER_READONLY_ELEMENTS = 1 << 1,
-  // Filters non-focusable elements with the exception of select elements, which
-  // are sometimes made non-focusable because they are present for accessibility
-  // while a prettier, non-<select> dropdown is shown. We still want to autofill
-  // the non-focusable <select>.
-  FILTER_NON_FOCUSABLE_ELEMENTS = 1 << 2,
-  FILTER_ALL_NON_EDITABLE_ELEMENTS = FILTER_DISABLED_ELEMENTS |
-                                     FILTER_READONLY_ELEMENTS |
-                                     FILTER_NON_FOCUSABLE_ELEMENTS,
-};
-
 // Constants to be passed to GetWebString<kConstant>().
 constexpr base::StringPiece kAnchor = "a";
 constexpr base::StringPiece kAutocomplete = "autocomplete";
@@ -1066,7 +1051,6 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     std::vector<WebFormControlElement>& control_elements,
     const WebElement& initiating_element,
     const FormData& data,
-    FieldFilterMask filters,
     mojom::RendererFormDataAction action,
     const Callback& callback) {
   const bool num_elements_matches_num_fields =
@@ -1121,11 +1105,8 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     // user is currently editing and interacting with.
     const WebInputElement input_element = element.DynamicTo<WebInputElement>();
 
-    if (((filters & FILTER_DISABLED_ELEMENTS) && !element.IsEnabled()) ||
-        ((filters & FILTER_READONLY_ELEMENTS) && element.IsReadOnly()) ||
-        // See description for FILTER_NON_FOCUSABLE_ELEMENTS.
-        ((filters & FILTER_NON_FOCUSABLE_ELEMENTS) &&
-         !IsWebElementFocusableForAutofill(element) &&
+    if (!element.IsEnabled() || element.IsReadOnly() ||
+        (!IsWebElementFocusableForAutofill(element) &&
          !IsSelectOrSelectMenuElement(element))) {
       continue;
     }
@@ -1229,13 +1210,12 @@ std::vector<WebFormControlElement> ForEachMatchingFormField(
     const WebFormElement& form_element,
     const WebElement& initiating_element,
     const FormData& data,
-    FieldFilterMask filters,
     mojom::RendererFormDataAction action,
     const Callback& callback) {
   std::vector<WebFormControlElement> control_elements =
       ExtractAutofillableElementsInForm(form_element);
   return ForEachMatchingFormFieldCommon(control_elements, initiating_element,
-                                        data, filters, action, callback);
+                                        data, action, callback);
 }
 
 // For each autofillable field in |data| that matches a field in the set of
@@ -1244,7 +1224,6 @@ std::vector<WebFormControlElement> ForEachMatchingFormField(
 std::vector<WebFormControlElement> ForEachMatchingUnownedFormField(
     const WebElement& initiating_element,
     const FormData& data,
-    FieldFilterMask filters,
     mojom::RendererFormDataAction action,
     const Callback& callback) {
   if (initiating_element.IsNull())
@@ -1256,7 +1235,7 @@ std::vector<WebFormControlElement> ForEachMatchingUnownedFormField(
     return {};
 
   return ForEachMatchingFormFieldCommon(control_elements, initiating_element,
-                                        data, filters, action, callback);
+                                        data, action, callback);
 }
 
 // Sets the |field|'s value to the value in |data|, and specifies the section
@@ -2546,11 +2525,9 @@ std::vector<WebFormControlElement> FillOrPreviewForm(
                           ? &PreviewFormField
                           : &FillFormField;
   if (form_element.IsNull()) {
-    return ForEachMatchingUnownedFormField(
-        element, form, FILTER_ALL_NON_EDITABLE_ELEMENTS, action, callback);
+    return ForEachMatchingUnownedFormField(element, form, action, callback);
   }
-  return ForEachMatchingFormField(form_element, element, form,
-                                  FILTER_ALL_NON_EDITABLE_ELEMENTS, action,
+  return ForEachMatchingFormField(form_element, element, form, action,
                                   callback);
 }
 
