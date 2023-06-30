@@ -124,6 +124,10 @@ class CONTENT_EXPORT ServiceWorkerContext {
                       ServiceWorkerContext* service_worker_context,
                       base::OnceClosure task);
 
+  // Returns the delay from navigation to starting an update of a service
+  // worker's script.
+  static base::TimeDelta GetUpdateDelay();
+
   virtual void AddObserver(ServiceWorkerContextObserver* observer) = 0;
   virtual void RemoveObserver(ServiceWorkerContextObserver* observer) = 0;
 

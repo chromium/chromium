@@ -419,6 +419,12 @@ bool ContentBrowserClient::MayDeleteServiceWorkerRegistration(
   return true;
 }
 
+bool ContentBrowserClient::ShouldTryToUpdateServiceWorkerRegistration(
+    const GURL& scope,
+    BrowserContext* browser_context) {
+  return true;
+}
+
 void ContentBrowserClient::UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
     BrowserContext* context,
     const GURL& script_url,

@@ -764,6 +764,14 @@ class CONTENT_EXPORT ContentBrowserClient {
       const GURL& scope,
       BrowserContext* browser_context);
 
+  // Returns true if the content layer should attempt to update the service
+  // worker associated with the given `scope`. This can return false if the
+  // service worker is tied to another service that handles the update flow
+  // (today, this is limited to extensions).
+  virtual bool ShouldTryToUpdateServiceWorkerRegistration(
+      const GURL& scope,
+      BrowserContext* browser_context);
+
   // Allows the embedder to enable process-wide blink features before starting a
   // service worker. This is similar to
   // `blink.mojom.CommitNavigationParams.force_enabled_origin_trials` but for

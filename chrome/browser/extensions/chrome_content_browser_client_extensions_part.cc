@@ -203,6 +203,33 @@ bool AllowServiceWorker(const GURL& scope,
   return script_url == extension->GetResourceURL(sw_script);
 }
 
+// Returns the extension associated with the given `scope` if and only if it's
+// a service worker-based extension.
+const Extension* GetServiceWorkerBasedExtensionForScope(
+    const GURL& scope,
+    BrowserContext* browser_context) {
+  // We only care about extension urls.
+  if (!scope.SchemeIs(kExtensionScheme)) {
+    return nullptr;
+  }
+
+  const Extension* extension = ExtensionRegistry::Get(browser_context)
+                                   ->enabled_extensions()
+                                   .GetExtensionOrAppByURL(scope);
+  if (!extension) {
+    return nullptr;
+  }
+
+  // We only consider service workers that are root-scoped and for service
+  // worker-based extensions.
+  if (scope != extension->url() ||
+      !BackgroundInfo::IsServiceWorkerBased(extension)) {
+    return nullptr;
+  }
+
+  return extension;
+}
+
 // Returns the number of processes containing extension background pages across
 // all profiles. If this is large enough (e.g., at browser startup time), it can
 // pose a risk that normal web processes will be overly constrained by the
@@ -581,32 +608,21 @@ bool ChromeContentBrowserClientExtensionsPart::AllowServiceWorker(
   return ::extensions::AllowServiceWorker(scope, script_url, extension);
 }
 
+// static
 bool ChromeContentBrowserClientExtensionsPart::
     MayDeleteServiceWorkerRegistration(
         const GURL& scope,
         content::BrowserContext* browser_context) {
-  // We only care about extension urls.
-  if (!scope.SchemeIs(kExtensionScheme)) {
-    return true;
-  }
-
   // Check if we're allowed to unregister this worker for testing purposes.
   if (g_allow_service_worker_unregistration_scope &&
       *g_allow_service_worker_unregistration_scope == scope) {
     return true;
   }
 
-  const Extension* extension = ExtensionRegistry::Get(browser_context)
-                                   ->enabled_extensions()
-                                   .GetExtensionOrAppByURL(scope);
-  if (!extension) {
-    return true;
-  }
+  const Extension* extension =
+      GetServiceWorkerBasedExtensionForScope(scope, browser_context);
 
-  // We only consider service workers that are root-scoped and for service
-  // worker-based extensions.
-  if (scope != extension->url() ||
-      !BackgroundInfo::IsServiceWorkerBased(extension)) {
+  if (!extension) {
     return true;
   }
 
@@ -626,6 +642,18 @@ bool ChromeContentBrowserClientExtensionsPart::
   // extension's enablement; it is unregistered when the extension is disabled
   // or uninstalled.
   return registered_version != extension->version();
+}
+
+bool ChromeContentBrowserClientExtensionsPart::
+    ShouldTryToUpdateServiceWorkerRegistration(
+        const GURL& scope,
+        content::BrowserContext* browser_context) {
+  const Extension* extension =
+      GetServiceWorkerBasedExtensionForScope(scope, browser_context);
+  // Only allow updates through the service worker layer for non-extension
+  // service workers. Extension service workers are updated through the
+  // extensions system, along with the rest of the extension.
+  return extension == nullptr;
 }
 
 // static

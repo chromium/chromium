@@ -551,6 +551,16 @@ void ServiceWorkerContextCore::UpdateServiceWorker(
     ServiceWorkerRegistration* registration,
     bool force_bypass_cache) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  BrowserContext* browser_context = wrapper_->browser_context();
+  CHECK(browser_context);
+  if (!GetContentClient()
+           ->browser()
+           ->ShouldTryToUpdateServiceWorkerRegistration(registration->scope(),
+                                                        browser_context)) {
+    return;
+  }
+
   job_coordinator_->Update(registration, force_bypass_cache);
 }
 
@@ -562,6 +572,16 @@ void ServiceWorkerContextCore::UpdateServiceWorker(
         outside_fetch_client_settings_object,
     UpdateCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  BrowserContext* browser_context = wrapper_->browser_context();
+  CHECK(browser_context);
+  if (!GetContentClient()
+           ->browser()
+           ->ShouldTryToUpdateServiceWorkerRegistration(registration->scope(),
+                                                        browser_context)) {
+    return;
+  }
+
   job_coordinator_->Update(
       registration, force_bypass_cache, skip_script_comparison,
       std::move(outside_fetch_client_settings_object),

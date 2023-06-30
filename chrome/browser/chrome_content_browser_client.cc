@@ -3118,6 +3118,22 @@ bool ChromeContentBrowserClient::MayDeleteServiceWorkerRegistration(
   return true;
 }
 
+bool ChromeContentBrowserClient::ShouldTryToUpdateServiceWorkerRegistration(
+    const GURL& scope,
+    content::BrowserContext* browser_context) {
+  DCHECK(browser_context);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (!ChromeContentBrowserClientExtensionsPart::
+          ShouldTryToUpdateServiceWorkerRegistration(scope, browser_context)) {
+    return false;
+  }
+#endif
+
+  return true;
+}
+
 void ChromeContentBrowserClient::
     UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
         content::BrowserContext* context,

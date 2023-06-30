@@ -46,6 +46,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_external_request_result.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -58,7 +59,6 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -68,9 +68,6 @@ namespace {
 
 // Timeout for an installed worker to start.
 constexpr base::TimeDelta kStartInstalledWorkerTimeout = base::Seconds(60);
-
-const base::FeatureParam<int> kUpdateDelayParam{
-    &blink::features::kServiceWorkerUpdateDelay, "update_delay_in_ms", 1000};
 
 const char kClaimClientsStateErrorMesage[] =
     "Only the active worker can claim clients.";
@@ -188,10 +185,6 @@ void DidNavigateClient(
     error_msg.emplace("Cannot navigate to URL: " + url.spec());
   }
   std::move(callback).Run(success, std::move(client), error_msg);
-}
-
-base::TimeDelta GetUpdateDelay() {
-  return base::Milliseconds(kUpdateDelayParam.Get());
 }
 
 const char* FetchHandlerTypeToSuffix(
@@ -669,7 +662,7 @@ void ServiceWorkerVersion::ScheduleUpdate() {
   // and soon no one might hold a reference to us.
   context_->ProtectVersion(base::WrapRefCounted(this));
 
-  update_timer_.Start(FROM_HERE, GetUpdateDelay(),
+  update_timer_.Start(FROM_HERE, ServiceWorkerContext::GetUpdateDelay(),
                       base::BindOnce(&ServiceWorkerVersion::StartUpdate,
                                      weak_factory_.GetWeakPtr()));
 }

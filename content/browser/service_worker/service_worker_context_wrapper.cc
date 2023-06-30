@@ -63,6 +63,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -84,6 +85,9 @@ BASE_FEATURE(kServiceWorkerStorageControlOnIOThread,
 BASE_FEATURE(kServiceWorkerStorageControlOnThreadPool,
              "ServiceWorkerStorageControlOnThreadPool",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kUpdateDelayParam{
+    &blink::features::kServiceWorkerUpdateDelay, "update_delay_in_ms", 1000};
 
 base::LazyInstance<ServiceWorkerContextWrapper::URLLoaderFactoryInterceptor>::
     Leaky g_loader_factory_interceptor = LAZY_INSTANCE_INITIALIZER;
@@ -229,6 +233,11 @@ void ServiceWorkerContext::RunTask(
   task_runner->PostTask(
       from_here,
       base::BindOnce(&RunOnceClosure, std::move(ref), std::move(task)));
+}
+
+// static
+base::TimeDelta ServiceWorkerContext::GetUpdateDelay() {
+  return base::Milliseconds(kUpdateDelayParam.Get());
 }
 
 ServiceWorkerContextWrapper::ServiceWorkerContextWrapper(
