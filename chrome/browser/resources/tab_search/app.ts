@@ -517,6 +517,9 @@ export class TabSearchAppElement extends PolymerElement {
     this.recentlyClosedTitleItem_.expanded =
         profileData.recentlyClosedSectionExpanded;
 
+    this.$.tabsList.setAttribute(
+        'expanded-list', profileData.recentlyClosedSectionExpanded.toString());
+
     this.updateFilteredTabs_();
   }
 
@@ -537,6 +540,8 @@ export class TabSearchAppElement extends PolymerElement {
     const titleItem = e.model.item;
     titleItem.expanded = expanded;
     this.apiProxy_.saveRecentlyClosedExpandedPref(expanded);
+
+    this.$.tabsList.setAttribute('expanded-list', expanded.toString());
 
     this.updateFilteredTabs_();
 
