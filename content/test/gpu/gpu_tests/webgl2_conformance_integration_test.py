@@ -60,6 +60,7 @@ class WebGL2ConformanceIntegrationTest(
         'WEBGL_multi_draw',
         'WEBGL_multi_draw_instanced_base_vertex_base_instance',
         'WEBGL_provoking_vertex',
+        'WEBGL_shader_pixel_local_storage',
         'WEBGL_video_texture',
         'WEBGL_webcodecs_video_frame',
     ]

@@ -966,6 +966,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_sampler.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_shader.idl",
+          "//third_party/blink/renderer/modules/webgl/webgl_shader_pixel_local_storage.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_shader_precision_format.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_sync.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_texture.idl",

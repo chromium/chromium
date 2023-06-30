@@ -32,6 +32,7 @@ class WebGLLoseContext;
 class WebGLMultiDraw;
 class WebGLMultiDrawInstancedBaseVertexBaseInstance;
 class WebGLProvokingVertex;
+class WebGLShaderPixelLocalStorage;
 class WebGLVideoTexture;
 class WebGLWebCodecsVideoFrame;
 
@@ -101,6 +102,7 @@ class WebGL2RenderingContext : public WebGL2RenderingContextBase {
   Member<WebGLMultiDrawInstancedBaseVertexBaseInstance>
       webgl_multi_draw_instanced_base_vertex_base_instance_;
   Member<WebGLProvokingVertex> webgl_provoking_vertex_;
+  Member<WebGLShaderPixelLocalStorage> webgl_shader_pixel_local_storage_;
   Member<WebGLVideoTexture> webgl_video_texture_;
   Member<WebGLWebCodecsVideoFrame> webgl_webcodecs_video_frame_;
 };

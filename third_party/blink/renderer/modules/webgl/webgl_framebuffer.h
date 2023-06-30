@@ -125,6 +125,10 @@ class WebGLFramebuffer final : public WebGLContextObject {
 
   GLenum GetDrawBuffer(GLenum);
 
+  // WEBGL_shader_pixel_local_storage.
+  void SetPLSTexture(GLint plane, WebGLTexture*);
+  WebGLTexture* GetPLSTexture(GLint plane) const;
+
   void ReadBuffer(const GLenum color_buffer) { read_buffer_ = color_buffer; }
 
   GLenum GetReadBuffer() const { return read_buffer_; }
@@ -177,6 +181,11 @@ class WebGLFramebuffer final : public WebGLContextObject {
 
   Vector<GLenum> draw_buffers_;
   Vector<GLenum> filtered_draw_buffers_;
+
+  // WEBGL_shader_pixel_local_storage.
+  typedef HeapHashMap<GLint, Member<WebGLTexture>> PLSTextureMap;
+
+  PLSTextureMap pls_textures_;
 
   GLenum read_buffer_;
 };

@@ -94,6 +94,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     // Returns true if the DrawingBuffer is currently bound for draw.
     virtual bool DrawingBufferClientIsBoundForDraw() = 0;
     virtual void DrawingBufferClientRestoreScissorTest() = 0;
+    // Interrupt and restore pixel local storage, if it was active.
+    virtual void DrawingBufferClientInterruptPixelLocalStorage() = 0;
+    virtual void DrawingBufferClientRestorePixelLocalStorage() = 0;
     // Restores the mask and clear value for color, depth, and stencil buffers.
     virtual void DrawingBufferClientRestoreMaskAndClearValues() = 0;
     // Assume client knows the GL/WebGL version and restore necessary params

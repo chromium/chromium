@@ -402,6 +402,9 @@ void WebGLFramebuffer::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
   if (!DestructionInProgress()) {
     for (const auto& attachment : attachments_)
       attachment.value->OnDetached(gl);
+    for (const auto& tex : pls_textures_) {
+      tex.value->OnDetached(gl);
+    }
   }
 
   gl->DeleteFramebuffers(1, &object_);
@@ -561,8 +564,27 @@ GLenum WebGLFramebuffer::GetDrawBuffer(GLenum draw_buffer) {
   return GL_NONE;
 }
 
+// HeapHashMap does not allow keys with a value of 0.
+constexpr static GLint PlaneKey(GLint plane) {
+  return plane + 1;
+}
+
+void WebGLFramebuffer::SetPLSTexture(GLint plane, WebGLTexture* texture) {
+  if (texture == nullptr) {
+    pls_textures_.erase(PlaneKey(plane));
+  } else {
+    pls_textures_.Set(PlaneKey(plane), texture);
+  }
+}
+
+WebGLTexture* WebGLFramebuffer::GetPLSTexture(GLint plane) const {
+  const auto it = pls_textures_.find(PlaneKey(plane));
+  return (it != pls_textures_.end()) ? it->value.Get() : nullptr;
+}
+
 void WebGLFramebuffer::Trace(Visitor* visitor) const {
   visitor->Trace(attachments_);
+  visitor->Trace(pls_textures_);
   WebGLContextObject::Trace(visitor);
 }
 

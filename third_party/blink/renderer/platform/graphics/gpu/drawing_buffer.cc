@@ -327,6 +327,9 @@ void DrawingBuffer::SetIsInHiddenPage(bool hidden) {
   if (is_hidden_)
     recycled_color_buffer_queue_.clear();
 
+  // Make sure to interrupt pixel local storage.
+  ScopedStateRestorer scoped_state_restorer(this);
+
   if (base::FeatureList::IsEnabled(features::kCanvasFreeMemoryWhenHidden)) {
     auto* context_support = ContextProvider()->ContextSupport();
     if (context_support)
@@ -2086,6 +2089,12 @@ DrawingBuffer::ScopedStateRestorer::ScopedStateRestorer(
   // If this is a nested restorer, save the previous restorer.
   previous_state_restorer_ = drawing_buffer->state_restorer_;
   drawing_buffer_->state_restorer_ = this;
+
+  Client* client = drawing_buffer_->client_;
+  if (!client) {
+    return;
+  }
+  client->DrawingBufferClientInterruptPixelLocalStorage();
 }
 
 DrawingBuffer::ScopedStateRestorer::~ScopedStateRestorer() {
@@ -2111,6 +2120,7 @@ DrawingBuffer::ScopedStateRestorer::~ScopedStateRestorer() {
     client->DrawingBufferClientRestorePixelUnpackBufferBinding();
   if (pixel_pack_buffer_binding_dirty_)
     client->DrawingBufferClientRestorePixelPackBufferBinding();
+  client->DrawingBufferClientRestorePixelLocalStorage();
 }
 
 bool DrawingBuffer::ShouldUseChromiumImage() {

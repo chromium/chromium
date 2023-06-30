@@ -408,6 +408,33 @@ class ReplaceNonASCII {
 static bool g_should_fail_context_creation_for_testing = false;
 }  // namespace
 
+// This class interrupts any active pixel local storage rendering pass, if the
+// extension has been used by the context.
+class ScopedPixelLocalStorageInterrupt {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ScopedPixelLocalStorageInterrupt(WebGLRenderingContextBase* context)
+      : context_(context),
+        needs_interrupt_(context_->has_activated_pixel_local_storage_) {
+    if (needs_interrupt_) {
+      context_->ContextGL()->FramebufferPixelLocalStorageInterruptANGLE();
+    }
+  }
+
+  ~ScopedPixelLocalStorageInterrupt() {
+    // The context should never activate PLS during an interrupt.
+    DCHECK_EQ(context_->has_activated_pixel_local_storage_, needs_interrupt_);
+    if (needs_interrupt_) {
+      context_->ContextGL()->FramebufferPixelLocalStorageRestoreANGLE();
+    }
+  }
+
+ private:
+  WebGLRenderingContextBase* context_;
+  bool needs_interrupt_;
+};
+
 class ScopedTexture2DRestorer {
   STACK_ALLOCATED();
 
@@ -737,6 +764,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
   if (!GetDrawingBuffer())
     return nullptr;
 
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ScopedFramebufferRestorer fbo_restorer(this);
   // In rare situations on macOS the drawing buffer can be destroyed
   // during the resolve process, specifically during automatic
@@ -1223,6 +1251,7 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
       context_provider->GetCapabilities().shared_image_swap_chain &&
       desynchronized;
 
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   return DrawingBuffer::Create(
       std::move(context_provider), graphics_info, using_swap_chain, this,
       ClampedCanvasSize(), premultiplied_alpha, want_alpha_channel,
@@ -1452,6 +1481,12 @@ void WebGLRenderingContextBase::DestroyContext() {
   if (!GetDrawingBuffer())
     return;
 
+  // Ensure pixel local storage isn't active and blocking calls during our
+  // destruction process.
+  if (has_activated_pixel_local_storage_) {
+    ContextGL()->FramebufferPixelLocalStorageInterruptANGLE();
+  }
+
   clearProgramCompletionQueries();
 
   extensions_util_.reset();
@@ -1595,6 +1630,8 @@ WebGLRenderingContextBase::ClearIfComposited(
     // Unlikely, but context was lost.
     return kSkipped;
   }
+
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
 
   // Determine if it's possible to combine the clear the user asked for and this
   // clear.
@@ -1759,6 +1796,7 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     return true;
   }
 
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   // TODO(sunnyps): Why is a texture restorer needed? See if it can be removed.
   ScopedTexture2DRestorer restorer(this);
   ScopedFramebufferRestorer fbo_restorer(this);
@@ -1788,6 +1826,7 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   if (!GetDrawingBuffer())
     return false;
 
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ScopedFramebufferRestorer fbo_restorer(this);
   // In rare situations on macOS the drawing buffer can be destroyed
   // during the resolve process, specifically during automatic
@@ -1853,6 +1892,7 @@ bool WebGLRenderingContextBase::CopyRenderingResultsToVideoFrame(
   if (!drawing_buffer)
     return false;
 
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ScopedFramebufferRestorer fbo_restorer(this);
   if (!drawing_buffer->ResolveAndBindForReadAndDraw())
     return false;
@@ -1872,6 +1912,7 @@ sk_sp<SkData> WebGLRenderingContextBase::PaintRenderingResultsToDataArray(
     SourceDrawingBuffer source_buffer) {
   if (isContextLost())
     return nullptr;
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ClearIfComposited(kClearCallerOther);
   // In rare situations on macOS the drawing buffer can be destroyed
   // during the resolve process, specifically during automatic
@@ -5824,6 +5865,7 @@ void WebGLRenderingContextBase::TexImageViaGPU(
   if (params.function_id == kTexImage2D)
     TexImageBase(params, nullptr);
 
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ScopedTexture2DRestorer restorer(this);
 
   GLuint target_texture = texture->Object();
@@ -7366,6 +7408,33 @@ void WebGLRenderingContextBase::Stop() {
     // Never attempt to restore the context because the page is being torn down.
     ForceLostContext(kSyntheticLostContext, kManual);
   }
+}
+
+void WebGLRenderingContextBase::
+    DrawingBufferClientInterruptPixelLocalStorage() {
+  if (destruction_in_progress_) {
+    return;
+  }
+  if (!ContextGL()) {
+    return;
+  }
+  if (!has_activated_pixel_local_storage_) {
+    return;
+  }
+  ContextGL()->FramebufferPixelLocalStorageInterruptANGLE();
+}
+
+void WebGLRenderingContextBase::DrawingBufferClientRestorePixelLocalStorage() {
+  if (destruction_in_progress_) {
+    return;
+  }
+  if (!ContextGL()) {
+    return;
+  }
+  if (!has_activated_pixel_local_storage_) {
+    return;
+  }
+  ContextGL()->FramebufferPixelLocalStorageRestoreANGLE();
 }
 
 bool WebGLRenderingContextBase::DrawingBufferClientIsBoundForDraw() {
