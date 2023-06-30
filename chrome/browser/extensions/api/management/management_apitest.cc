@@ -7,7 +7,6 @@
 #include "base/auto_reset.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_tags.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
@@ -198,32 +196,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, GenerateAppForLink) {
   ASSERT_TRUE(RunExtensionTest("management/generate_app_for_link"));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class GenerateAppForLinkWithLacrosWebAppsApiTest
-    : public ExtensionManagementApiTest {
- public:
-  GenerateAppForLinkWithLacrosWebAppsApiTest() {
-    features_.InitAndEnableFeature(features::kWebAppsCrosapi);
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         GenerateAppForLinkWithLacrosWebAppsApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         GenerateAppForLinkWithLacrosWebAppsApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(GenerateAppForLinkWithLacrosWebAppsApiTest,
-                       GenerateAppForLink) {
-  web_app::test::WaitUntilReady(web_app::WebAppProvider::GetForTest(profile()));
-  ASSERT_TRUE(RunExtensionTest("management/generate_app_for_link_lacros"));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
  public:
   InstallReplacementWebAppApiTest()
@@ -387,42 +359,6 @@ IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest, InstallableWebApp) {
   RunInstallableWebAppTest(kManifest, kGoodWebAppURL, kGoodWebAppURL);
 }
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class InstallReplacementWebAppWithLacrosWebAppsApiTest
-    : public InstallReplacementWebAppApiTest {
- public:
-  InstallReplacementWebAppWithLacrosWebAppsApiTest() {
-    features_.InitAndEnableFeature(features::kWebAppsCrosapi);
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         InstallReplacementWebAppWithLacrosWebAppsApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         InstallReplacementWebAppWithLacrosWebAppsApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppWithLacrosWebAppsApiTest,
-                       InstallableWebApp) {
-  static constexpr char kGoodWebAppURL[] =
-      "/management/install_replacement_web_app/acceptable_web_app/index.html";
-  static constexpr char kBackground[] =
-      R"(chrome.test.runWithUserGesture(function() {
-           chrome.management.installReplacementWebApp(function() {
-             chrome.test.assertLastError(
-                 'Web apps can\'t be installed in the current user profile.');
-             chrome.test.notifyPass();
-           });
-         });)";
-
-  RunTest(kManifest, kGoodWebAppURL, kBackground, true /* from_webstore */);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(crbug.com/1288199): Run these tests on Chrome OS with both Ash and
