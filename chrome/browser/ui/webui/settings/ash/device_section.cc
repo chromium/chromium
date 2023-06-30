@@ -1759,6 +1759,10 @@ void DeviceSection::AddDevicePointersStrings(
 void DeviceSection::AddDeviceGraphicsTabletStrings(
     content::WebUIDataSource* html_source) const {
   static constexpr webui::LocalizedString kGraphicsTabletStrings[] = {
+      {"customizePenButtonsLabel",
+       IDS_SETTINGS_GRAPHICS_TABLET_CUSTOMIZE_PEN_BUTTONS_LABEL},
+      {"customizeTabletButtonsLabel",
+       IDS_SETTINGS_GRAPHICS_TABLET_CUSTOMIZE_TABLET_BUTTONS_LABEL},
       {"tabletTitle", IDS_SETTINGS_GRAPHICS_TABLET_TITLE},
   };
   html_source->AddLocalizedStrings(kGraphicsTabletStrings);

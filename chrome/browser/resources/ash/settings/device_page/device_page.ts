@@ -46,7 +46,7 @@ import {getTemplate} from './device_page.html.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Keyboard, Mouse, PointingStick, Touchpad} from './input_device_settings_types.js';
+import {GraphicsTablet, InputDeviceSettingsProviderInterface, Keyboard, Mouse, PointingStick, Touchpad} from './input_device_settings_types.js';
 import {SettingsPerDeviceKeyboardRemapKeysElement} from './per_device_keyboard_remap_keys.js';
 
 interface SettingsDevicePageElement {
@@ -228,6 +228,10 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       mousePolicies: {
         type: Object,
       },
+
+      graphicsTablets: {
+        type: Array,
+      },
     };
   }
 
@@ -246,6 +250,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   protected touchpads: Touchpad[];
   protected mice: Mouse[];
   protected mousePolicies: MousePolicies;
+  protected graphicsTablets: GraphicsTablet[];
   private browserProxy_: DevicePageBrowserProxy;
   private hasMouse_: boolean;
   private hasPointingStick_: boolean;
@@ -271,6 +276,13 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       this.observeKeyboardSettings();
       this.observeTouchpadSettings();
       this.observeMouseSettings();
+    }
+
+    if (this.isPeripheralCustomizationEnabled) {
+      // The flag `isPeripheralCustomizationEnabled` should only be enabled
+      // when `isDeviceSettingsSplitEnabled_` is enabled. Will not call
+      // `getInputDeviceSettingsProvider` here again.
+      this.observeGraphicsTabletSettings();
     }
   }
 
@@ -380,6 +392,17 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
 
   onMousePoliciesUpdated(mousePolicies: MousePolicies): void {
     this.mousePolicies = mousePolicies;
+  }
+
+  private observeGraphicsTabletSettings(): void {
+    if (this.inputDeviceSettingsProvider instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider.observeGraphicsTabletSettings(this);
+    }
+  }
+
+  onGraphicsTabletListUpdated(graphicsTablets: GraphicsTablet[]): void {
+    this.graphicsTablets = graphicsTablets;
   }
 
   private getPointersTitle_(): string {

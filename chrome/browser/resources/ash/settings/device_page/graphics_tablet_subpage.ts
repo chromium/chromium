@@ -10,14 +10,17 @@
 
 import '../icons.html.js';
 import '../settings_shared.css.js';
+import './input_device_settings_shared.css.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {getTemplate} from './graphics_tablet_subpage.html.js';
+import {GraphicsTablet} from './input_device_settings_types.js';
 
 const SettingsGraphicsTabletSubpageElementBase =
     RouteObserverMixin(I18nMixin(PolymerElement)) as {
@@ -34,11 +37,31 @@ export class SettingsGraphicsTabletSubpageElement extends
     return getTemplate();
   }
 
+  static get properties(): PolymerElementProperties {
+    return {
+      graphicsTablets: {
+        type: Array,
+      },
+    };
+  }
+
+  private graphicsTablets: GraphicsTablet[];
+
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.GRAPHICS_TABLET) {
       return;
     }
+  }
+
+  private onCustomizeTabletButtonsClick(): void {
+    // TODO(yyhyyh@): Implement the function to redirect to the customize
+    // graphics tablet subpage with the clicked graphicsTabletId.
+  }
+
+  private onCustomizePenButtonsClick(): void {
+    // TODO(yyhyyh@): Implement the function to redirect to the customize
+    // graphics pen subpage with the clicked graphicsTabletId.
   }
 }
 

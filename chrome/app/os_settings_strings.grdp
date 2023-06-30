@@ -2590,6 +2590,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_GRAPHICS_TABLET_TITLE" translateable="false" desc="Title of Graphics tablet settings page">
     Graphics tablet
   </message>
+  <message name="IDS_SETTINGS_GRAPHICS_TABLET_CUSTOMIZE_TABLET_BUTTONS_LABEL" translateable="false" desc="Label of customize tablet buttons link row in graphics tablet page.">
+    Customize tablet buttons
+  </message>
+  <message name="IDS_SETTINGS_GRAPHICS_TABLET_CUSTOMIZE_PEN_BUTTONS_LABEL" translateable="false" desc="Label of customize pen buttons link row in graphics tablet page.">
+    Customize pen buttons
+  </message>
 
   <!-- Bluetooth page (OS settings) -->
   <message name="IDS_SETTINGS_BLUETOOTH_CONNECTED" desc="In Bluetooth device list, this label is shown below a device which is already connected.">

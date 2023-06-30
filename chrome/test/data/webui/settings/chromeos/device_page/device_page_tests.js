@@ -4,7 +4,7 @@
 
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {crosAudioConfigMojom, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/os_settings.js';
+import {crosAudioConfigMojom, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
@@ -2080,13 +2080,36 @@ suite('SettingsDevicePage', function() {
       assert(page);
       return Promise.resolve(page).then(function(page) {
         graphicsTabletPage = page;
+        graphicsTabletPage.set('graphicsTablets', fakeGraphicsTablets);
       });
     });
 
     test('graphics tablet subpage visibility', function() {
       assertEquals(routes.GRAPHICS_TABLET, Router.getInstance().currentRoute);
-      assertTrue(isVisible(graphicsTabletPage.shadowRoot.querySelector(
-          '#graphicsTabletSubpageTitle')));
+      const items = graphicsTabletPage.shadowRoot.querySelectorAll('.device');
+      // Verify that all graphics tablets are displayed and their ids are same
+      // with the data in the provider.
+      assertEquals(items.length, fakeGraphicsTablets.length);
+      assertTrue(isVisible(items[0]));
+      assertEquals(
+          Number(items[0].getAttribute('data-evdev-id')),
+          fakeGraphicsTablets[0].id);
+      assertTrue(isVisible(items[1]));
+      assertEquals(
+          Number(items[1].getAttribute('data-evdev-id')),
+          fakeGraphicsTablets[1].id);
+
+      // Verify that the customize-tablet-buttons and customize-pen-buttons
+      // crLinkRow are visible.
+      const customizeTabletButtons =
+          graphicsTabletPage.shadowRoot.querySelector(
+              '#customizeTabletButtons');
+      const customizePenButtons =
+          graphicsTabletPage.shadowRoot.querySelector('#customizePenButtons');
+      assert(customizeTabletButtons);
+      assert(customizePenButtons);
+      assertTrue(isVisible(customizeTabletButtons));
+      assertTrue(isVisible(customizePenButtons));
     });
   });
 
