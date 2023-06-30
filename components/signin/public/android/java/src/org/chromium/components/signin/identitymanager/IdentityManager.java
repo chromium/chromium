@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.CalledByNativeForTesting;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
@@ -56,7 +57,7 @@ public class IdentityManager {
     private final ProfileOAuth2TokenServiceDelegate mProfileOAuth2TokenServiceDelegate;
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    private Callback<CoreAccountInfo> mRefreshTokenUpdateObserver;
+    private Callback<CoreAccountInfo> mRefreshTokenUpdateObserverForTesting;
 
     /**
      * Called by native to create an instance of IdentityManager.
@@ -131,10 +132,10 @@ public class IdentityManager {
     /**
      * Called when the refresh token of the give account gets updated.
      */
-    @CalledByNative
+    @CalledByNativeForTesting
     private void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {
-        if (mRefreshTokenUpdateObserver != null) {
-            mRefreshTokenUpdateObserver.onResult(coreAccountInfo);
+        if (mRefreshTokenUpdateObserverForTesting != null) {
+            mRefreshTokenUpdateObserverForTesting.onResult(coreAccountInfo);
         }
     }
 
@@ -211,9 +212,8 @@ public class IdentityManager {
         mProfileOAuth2TokenServiceDelegate.invalidateAccessToken(accessToken);
     }
 
-    @VisibleForTesting
     public void setRefreshTokenUpdateObserverForTests(Callback<CoreAccountInfo> callback) {
-        mRefreshTokenUpdateObserver = callback;
+        mRefreshTokenUpdateObserverForTesting = callback;
     }
 
     @NativeMethods
