@@ -271,8 +271,9 @@ bool MockPrinter::SaveBitmap(unsigned int page,
 
 void MockPrinter::CreateDocumentCookie() {
   EXPECT_FALSE(document_cookie_.has_value());
-  document_cookie_ =
-      use_invalid_settings_ ? 0 : printing::PrintSettings::NewCookie();
+  document_cookie_ = use_invalid_settings_
+                         ? printing::PrintSettings::NewInvalidCookie()
+                         : printing::PrintSettings::NewCookie();
 }
 
 void MockPrinter::SetPrintParams(printing::mojom::PrintParams* params) {

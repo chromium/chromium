@@ -433,7 +433,7 @@ void PrintViewManagerBase::GetDefaultPrintSettingsReply(
     set_cookie(params->document_cookie);
     std::move(callback).Run(std::move(params));
   } else {
-    set_cookie(0);
+    set_cookie(PrintSettings::NewInvalidCookie());
     std::move(callback).Run(nullptr);
   }
 }
@@ -460,7 +460,7 @@ void PrintViewManagerBase::ScriptedPrintReply(
     set_cookie(params->params->document_cookie);
     std::move(callback).Run(std::move(params));
   } else {
-    set_cookie(0);
+    set_cookie(PrintSettings::NewInvalidCookie());
     std::move(callback).Run(nullptr);
   }
 }
@@ -619,7 +619,8 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
   auto callback_wrapper =
       base::BindOnce(&PrintViewManagerBase::GetDefaultPrintSettingsReply,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  std::unique_ptr<PrinterQuery> printer_query = queue_->PopPrinterQuery(0);
+  std::unique_ptr<PrinterQuery> printer_query =
+      queue_->PopPrinterQuery(PrintSettings::NewInvalidCookie());
   if (!printer_query) {
     printer_query =
         queue_->CreatePrinterQuery(render_frame_host->GetGlobalId());
@@ -1212,7 +1213,7 @@ void PrintViewManagerBase::ReleasePrinterQuery() {
   if (!current_cookie)
     return;
 
-  set_cookie(0);
+  set_cookie(PrintSettings::NewInvalidCookie());
 
   PrintJobManager* print_job_manager = g_browser_process->print_job_manager();
   // May be NULL in tests.

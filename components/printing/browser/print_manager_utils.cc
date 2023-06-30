@@ -54,7 +54,7 @@ void RenderParamsFromPrintSettings(const PrintSettings& settings,
   params->rasterize_pdf = settings.rasterize_pdf();
   params->rasterize_pdf_dpi = settings.rasterize_pdf_dpi();
   // Always use an invalid cookie.
-  params->document_cookie = 0;
+  params->document_cookie = PrintSettings::NewInvalidCookie();
   params->selection_only = settings.selection_only();
   params->supports_alpha_blend = settings.supports_alpha_blend();
   params->should_print_backgrounds = settings.should_print_backgrounds();

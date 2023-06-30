@@ -143,7 +143,7 @@ void PrinterQuery::GetSettingsDone(base::OnceClosure callback,
     cookie_ = PrintSettings::NewCookie();
   } else {
     // Failure.
-    cookie_ = 0;
+    cookie_ = PrintSettings::NewInvalidCookie();
   }
 
   std::move(callback).Run();

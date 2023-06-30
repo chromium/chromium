@@ -535,9 +535,15 @@ void PrintSettings::SetCustomMargins(
   margin_type_ = mojom::MarginType::kCustomMargins;
 }
 
+// static
 int PrintSettings::NewCookie() {
   // A cookie of 0 is used to mark a document as unassigned, count from 1.
   return cookie_seq.GetNext() + 1;
+}
+
+// static
+int PrintSettings::NewInvalidCookie() {
+  return 0;
 }
 
 void PrintSettings::SetOrientation(bool landscape) {

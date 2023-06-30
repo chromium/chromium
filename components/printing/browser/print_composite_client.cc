@@ -20,6 +20,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_process_host.h"
 #include "printing/common/metafile_utils.h"
+#include "printing/print_settings.h"
 #include "printing/printing_utils.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
@@ -362,7 +363,7 @@ mojom::PrintCompositor* PrintCompositeClient::CreateCompositeRequest(
 void PrintCompositeClient::RemoveCompositeRequest(int cookie) {
   DCHECK_EQ(document_cookie_, cookie);
   compositor_.reset();
-  document_cookie_ = 0;
+  document_cookie_ = PrintSettings::NewInvalidCookie();
   initiator_frame_ = nullptr;
 
   // Reset state of the client.

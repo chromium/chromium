@@ -297,6 +297,10 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   // is correctly associated with its corresponding `PrintedDocument`.
   static int NewCookie();
 
+  // Creates an invalid cookie for use in situations where the cookie needs to
+  // be marked as invalid.
+  static int NewInvalidCookie();
+
  private:
 #if BUILDFLAG(IS_MAC)
   static constexpr int kMacDeviceUnitsPerInch = 72;
