@@ -259,6 +259,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="AccessCodeCast.Session.SavedDeviceRouteCreationDuration"
+    units="ms" expires_after="2023-11-12">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    The amount of time in milliseconds that it takes to connect to a saved
+    device. It is a combination of the time to request a mirroring route +
+    waiting for a success. It is only recorded if the request was successful;
+    not recorded for non-local routes. Logged only on desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="AccessCodeCast.Ui.AccessCodeInputTime" units="ms"
     expires_after="2023-11-12">
   <owner>bzielinski@google.com</owner>

@@ -37,6 +37,8 @@ const char AccessCodeCastMetrics::kHistogramRouteDiscoveryTypeAndSource[] =
     "AccessCodeCast.Session.RouteDiscoveryTypeAndSource";
 const char AccessCodeCastMetrics::kHistogramRouteDuration[] =
     "AccessCodeCast.Session.RouteDuration";
+const char AccessCodeCastMetrics::kHistogramSavedDeviceRouteCreationDuration[] =
+    "AccessCodeCast.Session.SavedDeviceRouteCreationDuration";
 const char AccessCodeCastMetrics::kHistogramUiTabSwitcherUsageType[] =
     "AccessCodeCast.Ui.TabSwitcherUsageType";
 const char AccessCodeCastMetrics::kHistogramUiTabSwitchingCount[] =
@@ -53,8 +55,9 @@ void AccessCodeCastMetrics::OnCastSessionResult(int route_request_result_code,
 // static
 void AccessCodeCastMetrics::RecordAccessCodeNotFoundCount(int count) {
   // Do not record if there were no incorrect codes.
-  if (count <= 0)
+  if (count <= 0) {
     return;
+  }
 
   base::UmaHistogramCounts100(kHistogramAccessCodeNotFoundCount, count);
 }
@@ -183,4 +186,12 @@ void AccessCodeCastMetrics::RecordTabSwitchesCountInTabSession(int count) {
 void AccessCodeCastMetrics::RecordTabSwitcherUsageCase(
     AccessCodeCastUiTabSwitcherUsage usage) {
   base::UmaHistogramEnumeration(kHistogramUiTabSwitcherUsageType, usage);
+}
+
+// static
+void AccessCodeCastMetrics::RecordSavedDeviceConnectDuration(
+    base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes(
+      /*name=*/kHistogramSavedDeviceRouteCreationDuration,
+      /*sample=*/duration);
 }

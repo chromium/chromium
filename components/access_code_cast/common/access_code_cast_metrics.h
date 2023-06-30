@@ -120,6 +120,7 @@ class AccessCodeCastMetrics {
   static const char kHistogramRememberedDevicesCount[];
   static const char kHistogramRouteDiscoveryTypeAndSource[];
   static const char kHistogramRouteDuration[];
+  static const char kHistogramSavedDeviceRouteCreationDuration[];
   static const char kHistogramUiTabSwitcherUsageType[];
   static const char kHistogramUiTabSwitchingCount[];
 
@@ -176,6 +177,11 @@ class AccessCodeCastMetrics {
   // shown and actually used to switch tabs.
   static void RecordTabSwitcherUsageCase(
       AccessCodeCastUiTabSwitcherUsage usage);
+
+  // Records the time that it takes to connect to a saved device. It is a
+  // combination of the time to request a mirroring route + waiting for a
+  // success. It is only recorded if the request was successful.
+  static void RecordSavedDeviceConnectDuration(base::TimeDelta duration);
 };
 
 #endif  // COMPONENTS_ACCESS_CODE_CAST_COMMON_ACCESS_CODE_CAST_METRICS_H_

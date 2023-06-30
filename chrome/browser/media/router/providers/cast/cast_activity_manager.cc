@@ -25,6 +25,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "chrome/browser/media/router/providers/cast/mirroring_activity.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/common/media_source.h"
@@ -44,6 +45,13 @@ namespace media_router {
 namespace {
 
 constexpr char kLoggerComponent[] = "CastActivityManager";
+
+void RecordSavedDeviceConnectDurationMetric(
+    base::Time route_request_creation_timestamp) {
+  base::TimeDelta route_success_time =
+      base::Time::Now() - route_request_creation_timestamp;
+  AccessCodeCastMetrics::RecordSavedDeviceConnectDuration(route_success_time);
+}
 
 }  // namespace
 
@@ -932,6 +940,11 @@ void CastActivityManager::HandleLaunchSessionResponse(
                    "Successfully Launched the session.", sink.id(),
                    cast_source.source_id(),
                    MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+
+  if (sink.cast_data().discovery_type ==
+      CastDiscoveryType::kAccessCodeRememberedDevice) {
+    RecordSavedDeviceConnectDurationMetric(params.creation_time);
+  }
 
   std::move(params.callback)
       .Run(route, std::move(presentation_connection),
