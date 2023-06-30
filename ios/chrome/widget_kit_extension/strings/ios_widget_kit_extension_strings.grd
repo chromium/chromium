@@ -290,7 +290,7 @@ type URL
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_OPEN_SHORTCUT_LABEL" desc="Open shortcut label for the shortcuts widget, please use WEBSITE_PLACEHOLDER in the translated string as a placeholder for the title of the website which is to be opened [CHAR_LIMIT=40]" meaning="Open shortcut label for the shortcuts widget [CHAR_LIMIT=40][iOS only]">
             Open WEBSITE_PLACEHOLDER
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_NO_SHORTCUTS_AVAILABLE_LABEL" desc="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=40]" meaning="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=40][iOS only]">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_NO_SHORTCUTS_AVAILABLE_LABEL" desc="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=70]" meaning="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=70][iOS only]">
           Your most visited sites will show up here.
       </message>
     </messages>
