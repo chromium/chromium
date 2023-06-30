@@ -2811,6 +2811,26 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Stability.{Severity}" enum="CrashSeverityProductType"
+    expires_after="2024-01-31">
+  <owner>mutexlox@google.com</owner>
+  <owner>palaksh@google.com</owner>
+  <owner>kendraketsui@google.com</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    Records the severity of crashes reported by the ChromeOS crash-reporter,
+    broken down by the product type that reported the crash. This is recorded
+    from the CrashCollector::FinishCrash() method - refer to it for more
+    details.
+  </summary>
+  <token key="Severity">
+    <variant name="Error"/>
+    <variant name="Fatal"/>
+    <variant name="Info"/>
+    <variant name="Warning"/>
+  </token>
+</histogram>
+
 <histogram base="true" name="ChromeOS.SystemTray.AnimationSmoothness" units="%"
     expires_after="2023-10-22">
 <!-- Name completed by histogram suffixes
