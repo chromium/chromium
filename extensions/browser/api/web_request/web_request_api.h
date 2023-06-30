@@ -89,7 +89,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // An interface which is held by ProxySet defined below.
   class Proxy {
    public:
-    virtual ~Proxy() {}
+    virtual ~Proxy() = default;
 
     // Asks the Proxy to handle an auth request on behalf of one of its known
     // in-progress network requests. If the request will *not* be handled by
@@ -602,7 +602,7 @@ class ExtensionWebRequestEventRouter {
       int64_t service_worker_version_id;
     };
 
-    EventListener(ID id);
+    explicit EventListener(ID id);
 
     EventListener(const EventListener&) = delete;
     EventListener& operator=(const EventListener&) = delete;
@@ -853,10 +853,10 @@ class ExtensionWebRequestEventRouter {
 
 class WebRequestInternalFunction : public ExtensionFunction {
  public:
-  WebRequestInternalFunction() {}
+  WebRequestInternalFunction() = default;
 
  protected:
-  ~WebRequestInternalFunction() override {}
+  ~WebRequestInternalFunction() override = default;
 
   const std::string& extension_id_safe() const {
     return extension() ? extension_id() : base::EmptyString();
@@ -870,7 +870,7 @@ class WebRequestInternalAddEventListenerFunction
                              WEBREQUESTINTERNAL_ADDEVENTLISTENER)
 
  protected:
-  ~WebRequestInternalAddEventListenerFunction() override {}
+  ~WebRequestInternalAddEventListenerFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -883,7 +883,7 @@ class WebRequestInternalEventHandledFunction
                              WEBREQUESTINTERNAL_EVENTHANDLED)
 
  protected:
-  ~WebRequestInternalEventHandledFunction() override {}
+  ~WebRequestInternalEventHandledFunction() override = default;
 
  private:
   // Unblocks the network request. Use this function when handling incorrect
@@ -908,7 +908,7 @@ class WebRequestHandlerBehaviorChangedFunction
                              WEBREQUEST_HANDLERBEHAVIORCHANGED)
 
  protected:
-  ~WebRequestHandlerBehaviorChangedFunction() override {}
+  ~WebRequestHandlerBehaviorChangedFunction() override = default;
 
   // ExtensionFunction:
   void GetQuotaLimitHeuristics(

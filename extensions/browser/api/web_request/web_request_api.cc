@@ -649,8 +649,7 @@ WebRequestAPI::WebRequestAPI(content::BrowserContext* context)
   extensions::ExtensionRegistry::Get(browser_context_)->AddObserver(this);
 }
 
-WebRequestAPI::~WebRequestAPI() {
-}
+WebRequestAPI::~WebRequestAPI() = default;
 
 void WebRequestAPI::Shutdown() {
   proxies_.reset();
@@ -1082,8 +1081,7 @@ ExtensionWebRequestEventRouter::EventResponse::EventResponse(
       cancel(false) {
 }
 
-ExtensionWebRequestEventRouter::EventResponse::~EventResponse() {
-}
+ExtensionWebRequestEventRouter::EventResponse::~EventResponse() = default;
 
 ExtensionWebRequestEventRouter::RequestFilter::RequestFilter()
     : tab_id(-1), window_id(-1) {}
