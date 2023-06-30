@@ -230,11 +230,10 @@ void VideoToolboxDecompressionInterface::OnOutput(
     return;
   }
 
-  if (!image || CFGetTypeID(image) != CVPixelBufferGetTypeID()) {
+  if (flags & kVTDecodeInfo_FrameDropped) {
+    CHECK(!image);
+  } else if (!image || CFGetTypeID(image) != CVPixelBufferGetTypeID()) {
     MEDIA_DLOG_ERROR("Decoded image is not a CVPixelBuffer");
-    // TODO(crbug.com/1331597): Potentially allow intentional dropped frames.
-    // (signaled in |flags|). It might make sense to dump without crashing to
-    // help track down why this happens.
     NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);
     return;
   }

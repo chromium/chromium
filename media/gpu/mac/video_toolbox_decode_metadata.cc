@@ -6,10 +6,7 @@
 
 namespace media {
 
-VideoToolboxDecodeMetadata::VideoToolboxDecodeMetadata(
-    scoped_refptr<CodecPicture> picture,
-    base::TimeDelta timestamp)
-    : picture(std::move(picture)), timestamp(timestamp) {}
+VideoToolboxDecodeMetadata::VideoToolboxDecodeMetadata() = default;
 
 VideoToolboxDecodeMetadata::~VideoToolboxDecodeMetadata() = default;
 

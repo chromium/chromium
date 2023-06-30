@@ -28,8 +28,9 @@ MATCHER_P(MetadataEq, id, "") {
 }
 
 std::unique_ptr<VideoToolboxDecodeMetadata> CreateMetadata(int id) {
-  return std::make_unique<VideoToolboxDecodeMetadata>(nullptr,
-                                                      base::Microseconds(id));
+  auto metadata = std::make_unique<VideoToolboxDecodeMetadata>();
+  metadata->timestamp = base::Microseconds(id);
+  return metadata;
 }
 
 base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateFormat() {

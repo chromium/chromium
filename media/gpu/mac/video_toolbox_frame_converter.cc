@@ -19,6 +19,7 @@
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/mac/video_toolbox_decode_metadata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -40,6 +41,20 @@ constexpr uint32_t kSharedImageUsage =
     gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2;
 
 constexpr char kSharedImageDebugLabel[] = "VideoToolboxVideoDecoder";
+
+absl::optional<viz::SharedImageFormat> PixelFormatToImageFormat(
+    OSType pixel_format) {
+  switch (pixel_format) {
+    case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+      return viz::MultiPlaneFormat::kNV12;
+    default:
+      return absl::nullopt;
+  }
+}
+
+bool IsWebGPUCompatible(OSType pixel_format) {
+  return pixel_format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+}
 
 }  // namespace
 
@@ -130,18 +145,14 @@ void VideoToolboxFrameConverter::Convert(
   if (!stub_) {
     MEDIA_DLOG_ERROR("Command buffer stub is missing");
     std::move(output_cb).Run(nullptr, std::move(metadata));
+    return;
   }
 
-  // TODO(crbug.com/1331597): Is this different from
-  // CVImageBufferGetEncodedSize()?
   const gfx::Size coded_size(CVPixelBufferGetWidth(image),
                              CVPixelBufferGetHeight(image));
   const gfx::Rect visible_rect(CVImageBufferGetCleanRect(image));
-  // TODO(crbug.com/1331597): Apply aspect ratio from configuration.
-  const gfx::Size natural_size(CVImageBufferGetDisplaySize(image));
-  // TODO(crbug.com/1331597): Get the color space from |image|, possibly
-  // override from the configuration.
-  const gfx::ColorSpace color_space = gfx::ColorSpace::CreateREC709();
+  const gfx::Size natural_size =
+      metadata->aspect_ratio.GetNaturalSize(visible_rect);
 
   gfx::GpuMemoryBufferHandle handle;
   handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
@@ -149,17 +160,24 @@ void VideoToolboxFrameConverter::Convert(
   handle.io_surface.reset(CVPixelBufferGetIOSurface(image),
                           base::scoped_policy::RETAIN);
 
-  // TODO(crbug.com/1331597): Query from |image|.
-  viz::SharedImageFormat format = viz::MultiPlaneFormat::kNV12;
+  OSType pixel_format = IOSurfaceGetPixelFormat(handle.io_surface);
+  absl::optional<viz::SharedImageFormat> format =
+      PixelFormatToImageFormat(pixel_format);
+  if (!format) {
+    MEDIA_DLOG_ERROR("Unknown pixel format " << pixel_format);
+    std::move(output_cb).Run(nullptr, std::move(metadata));
+    return;
+  }
 
   gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
   bool result = sis_->CreateSharedImage(
-      mailbox, std::move(handle), format, coded_size, color_space,
+      mailbox, std::move(handle), *format, coded_size, metadata->color_space,
       kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, kSharedImageUsage,
       kSharedImageDebugLabel);
   if (!result) {
     MEDIA_DLOG_ERROR("Failed to create shared image");
     std::move(output_cb).Run(nullptr, std::move(metadata));
+    return;
   }
 
   GLenum target = texture_rectangle_ ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
@@ -167,7 +185,7 @@ void VideoToolboxFrameConverter::Convert(
   gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
   mailbox_holders[0] = gpu::MailboxHolder(mailbox, gpu::SyncToken(), target);
 
-  // |image| must be ratained until after the release sync token passes.
+  // |image| must be retained until after the release sync token passes.
   VideoFrame::ReleaseMailboxCB release_cb = base::BindPostTask(
       gpu_task_runner_,
       base::BindOnce(&VideoToolboxFrameConverter::OnVideoFrameReleased, this,
@@ -192,19 +210,20 @@ void VideoToolboxFrameConverter::Convert(
     return;
   }
 
-  // TODO(crbug.com/1331597): Apply the color space to the IOSurface, so that
-  // overlay behavior is reliable.
-  frame->set_color_space(color_space);
-  // Note: kSharedImageFormat is only for multiplanar.
+  // TODO(crbug.com/1331597): Ensure that the frame color space matches the
+  // IOSurface color space. There doesn't seem to be a way to specify it for
+  // H.264 unless we create the format description manually.
+  frame->set_color_space(metadata->color_space);
   frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
-  // TODO(crbug.com/1331597): Does |allow_overlay| do anything on mac?
+      IsMultiPlaneFormatForHardwareVideoEnabled()
+          ? SharedImageFormatType::kSharedImageFormat
+          : SharedImageFormatType::kLegacy);
+  frame->metadata().frame_duration = metadata->duration;
   frame->metadata().allow_overlay = true;
   // Releasing |image| must happen after command buffer commands are complete
   // (not just submitted).
   frame->metadata().read_lock_fences_enabled = true;
-  // Note: only NV12 is WebGPU compatible.
-  frame->metadata().is_webgpu_compatible = true;
+  frame->metadata().is_webgpu_compatible = IsWebGPUCompatible(pixel_format);
   // TODO(crbug.com/1331597): VideoToolbox can report software usage, should
   // we plumb that through?
   frame->metadata().power_efficient = true;

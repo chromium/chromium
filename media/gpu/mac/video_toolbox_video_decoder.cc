@@ -92,6 +92,7 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                           const OutputCB& output_cb,
                                           const WaitingCB& waiting_cb) {
   DVLOG(1) << __func__;
+  DCHECK(decode_cbs_.empty());
   DCHECK(config.IsValidConfig());
 
   if (has_error_) {
@@ -118,31 +119,20 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  if (!accelerator_) {
-    accelerator_ = std::make_unique<H264Decoder>(
-        std::make_unique<VideoToolboxH264Accelerator>(
-            media_log_->Clone(),
-            base::BindRepeating(&VideoToolboxVideoDecoder::OnAcceleratorDecode,
-                                base::Unretained(this)),
-            base::BindRepeating(&VideoToolboxVideoDecoder::OnAcceleratorOutput,
-                                base::Unretained(this))),
-        config.profile(), config.color_space_info());
-
-    converter_ = base::MakeRefCounted<VideoToolboxFrameConverter>(
-        gpu_task_runner_, media_log_->Clone(), std::move(get_stub_cb_));
-  } else {
-    // TODO(crbug.com/1331597): Support codec changes.
-    // TODO(crbug.com/1331597): Handle color space changes.
-    if (config.codec() != config_.codec()) {
-      task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(std::move(init_cb),
-                                    DecoderStatus::Codes::kCantChangeCodec));
-      NotifyError(DecoderStatus::Codes::kCantChangeCodec);
-      return;
-    }
+  // If this is a reconfiguration, drop in-flight outputs.
+  if (accelerator_) {
+    ResetInternal(DecoderStatus::Codes::kAborted);
   }
 
   config_ = config;
+  accelerator_ = std::make_unique<H264Decoder>(
+      std::make_unique<VideoToolboxH264Accelerator>(
+          media_log_->Clone(),
+          base::BindRepeating(&VideoToolboxVideoDecoder::OnAcceleratorDecode,
+                              base::Unretained(this)),
+          base::BindRepeating(&VideoToolboxVideoDecoder::OnAcceleratorOutput,
+                              base::Unretained(this))),
+      config.profile(), config.color_space_info());
   output_queue_.SetOutputCB(output_cb);
 
   task_runner_->PostTask(
@@ -160,7 +150,7 @@ void VideoToolboxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
-  // Flushes are not actually decodes.
+  // Flushes are handled differently from ordinary decodes.
   if (buffer->end_of_stream()) {
     if (!accelerator_->Flush()) {
       task_runner_->PostTask(
@@ -263,8 +253,19 @@ void VideoToolboxVideoDecoder::OnAcceleratorDecode(
   DVLOG(4) << __func__;
   DCHECK(active_decode_);
 
-  auto metadata = std::make_unique<VideoToolboxDecodeMetadata>(
-      std::move(picture), active_decode_->timestamp());
+  auto metadata = std::make_unique<VideoToolboxDecodeMetadata>();
+  metadata->picture = std::move(picture);
+  metadata->timestamp = active_decode_->timestamp();
+  metadata->duration = active_decode_->duration();
+  metadata->aspect_ratio = config_.aspect_ratio();
+  metadata->color_space = accelerator_->GetVideoColorSpace().ToGfxColorSpace();
+  if (!metadata->color_space.IsValid()) {
+    metadata->color_space = config_.color_space_info().ToGfxColorSpace();
+  }
+  metadata->hdr_metadata = accelerator_->GetHDRMetadata();
+  if (!metadata->hdr_metadata) {
+    metadata->hdr_metadata = config_.hdr_metadata();
+  }
 
   video_toolbox_.Decode(std::move(sample), std::move(metadata));
 }
@@ -284,6 +285,20 @@ void VideoToolboxVideoDecoder::OnVideoToolboxOutput(
     return;
   }
 
+  // Presumably there is at least one decode callback to release.
+  ReleaseDecodeCallbacks();
+
+  // Check if the frame was dropped.
+  if (!image) {
+    return;
+  }
+
+  // Lazily create `converter_`.
+  if (!converter_) {
+    converter_ = base::MakeRefCounted<VideoToolboxFrameConverter>(
+        gpu_task_runner_, media_log_->Clone(), std::move(get_stub_cb_));
+  }
+
   gpu_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -293,9 +308,6 @@ void VideoToolboxVideoDecoder::OnVideoToolboxOutput(
               task_runner_,
               base::BindOnce(&VideoToolboxVideoDecoder::OnConverterOutput,
                              converter_weak_this_factory_.GetWeakPtr()))));
-
-  // Presumably there is at least one decode callback to release.
-  ReleaseDecodeCallbacks();
 }
 
 void VideoToolboxVideoDecoder::OnVideoToolboxError(DecoderStatus status) {
