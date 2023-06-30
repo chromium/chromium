@@ -135,6 +135,11 @@ class CupsPrintersManager : public PrinterInstallationManager,
   virtual void RecordNearbyNetworkPrinterCounts() const = 0;
 
   virtual PrintServersManager* GetPrintServersManager() const = 0;
+
+  // Performs an IPP query on `printer` for autoconf compatibility.
+  virtual void QueryPrinterForAutoConf(
+      const chromeos::Printer& printer,
+      base::OnceCallback<void(bool)> callback) = 0;
 };
 
 }  // namespace ash

@@ -116,4 +116,10 @@ bool FakeCupsPrintersManager::IsMarkedAsNotAutoconfigurable(
   return printers_marked_as_not_autoconf_.contains(printer.id());
 }
 
+void FakeCupsPrintersManager::QueryPrinterForAutoConf(
+    const Printer& printer,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(!IsMarkedAsNotAutoconfigurable(printer));
+}
+
 }  // namespace ash

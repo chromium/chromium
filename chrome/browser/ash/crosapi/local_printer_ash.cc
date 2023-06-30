@@ -92,6 +92,29 @@ mojom::CapabilitiesResponsePtr OnSetUpPrinter(
       printing::mojom::PinModeRestriction::kUnset);    // deprecated
 }
 
+void SetUpPrinter(ash::CupsPrintersManager* printers_manager,
+                  const chromeos::Printer& printer,
+                  mojom::LocalPrinter::GetCapabilityCallback callback) {
+  ash::printing::SetUpPrinter(
+      printers_manager, printer,
+      base::BindOnce(OnSetUpPrinter, printer).Then(std::move(callback)));
+}
+
+// Mark if a not yet installed printer is autoconf then continue with setup.
+void OnPrinterQueriedForAutoConf(
+    ash::CupsPrintersManager* printers_manager,
+    mojom::LocalPrinter::GetCapabilityCallback callback,
+    chromeos::Printer printer,
+    bool is_printer_autoconf) {
+  if (!is_printer_autoconf) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  printer.mutable_ppd_reference()->autoconf = true;
+  SetUpPrinter(printers_manager, printer, std::move(callback));
+}
+
 // This function is called when user's rights to access the printer were
 // verified. The user can use the printer <=> `status` == StatusCode::kOK.
 // Other values of `status` mean that the access was denied or an error
@@ -110,9 +133,41 @@ void OnPrinterAuthenticated(
     std::move(callback).Run(nullptr);
     return;
   }
-  ash::printing::SetUpPrinter(
-      printers_manager, printer,
-      base::BindOnce(OnSetUpPrinter, printer).Then(std::move(callback)));
+
+  // In order for an IPP printer to be valid for set up, it needs to either be
+  // previously installed, be autoconf compatible, or have a valid PPD
+  // reference. If necessary, the printer is queried to determine its autoconf
+  // compatibility.
+  if (ash::features::IsPrintPreviewDiscoveredPrintersEnabled() &&
+      !printers_manager->IsPrinterInstalled(printer)) {
+    if (!printer.HasUri()) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
+
+    // If the printer is autoconf compatible or has a valid PPD reference then
+    // continue with normal setup.
+    if (printer.ppd_reference().autoconf ||
+        !printer.ppd_reference().effective_make_and_model.empty() ||
+        !printer.ppd_reference().user_supplied_ppd_url.empty()) {
+      SetUpPrinter(printers_manager, printer, std::move(callback));
+      return;
+    }
+
+    // CupsPrintersManager should have marked compatible USB printers as having
+    // a valid PPD reference or autoconf, so this USB printer is incompatible.
+    if (printer.IsUsbProtocol()) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
+
+    printers_manager->QueryPrinterForAutoConf(
+        printer, base::BindOnce(OnPrinterQueriedForAutoConf, printers_manager,
+                                std::move(callback), printer));
+    return;
+  }
+
+  SetUpPrinter(printers_manager, printer, std::move(callback));
 }
 
 void OnOAuthAccessTokenObtained(
@@ -322,6 +377,17 @@ void LocalPrinterAsh::GetPrinters(GetPrintersCallback callback) {
        {chromeos::PrinterClass::kSaved, chromeos::PrinterClass::kEnterprise,
         chromeos::PrinterClass::kAutomatic}) {
     for (const chromeos::Printer& p : printers_manager->GetPrinters(pc)) {
+      VLOG(1) << "Found printer " << p.display_name() << " with device name "
+              << p.id();
+      printers.push_back(PrinterToMojom(p));
+    }
+  }
+
+  // TODO(b/278621575): Add chromeos::PrinterClass::kDiscovered as a printer
+  // class to the main for loop once the feature flag is removed.
+  if (ash::features::IsPrintPreviewDiscoveredPrintersEnabled()) {
+    for (const chromeos::Printer& p :
+         printers_manager->GetPrinters(chromeos::PrinterClass::kDiscovered)) {
       VLOG(1) << "Found printer " << p.display_name() << " with device name "
               << p.id();
       printers.push_back(PrinterToMojom(p));

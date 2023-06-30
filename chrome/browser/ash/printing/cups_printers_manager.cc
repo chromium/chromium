@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -545,6 +546,41 @@ class CupsPrintersManagerImpl
         break;
       }
     }
+  }
+
+  void QueryPrinterForAutoConf(
+      const Printer& printer,
+      base::OnceCallback<void(bool)> callback) override {
+    CHECK(ash::features::IsPrintPreviewDiscoveredPrintersEnabled());
+
+    if (!IsIppUri(printer.uri())) {
+      std::move(callback).Run(false);
+      return;
+    }
+
+    QueryIppPrinter(
+        printer.uri().GetHostEncoded(), printer.uri().GetPort(),
+        printer.uri().GetPathEncodedAsString(),
+        printer.uri().GetScheme() == chromeos::kIppsScheme,
+        base::BindOnce(&CupsPrintersManagerImpl::OnQueryPrinterForAutoConf,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  // Callback for QueryPrinterForAutoConf
+  void OnQueryPrinterForAutoConf(
+      base::OnceCallback<void(bool)> callback,
+      PrinterQueryResult result,
+      const ::printing::PrinterStatus& printer_status,
+      const std::string& make_and_model,
+      const std::vector<std::string>& document_formats,
+      bool ipp_everywhere,
+      const chromeos::PrinterAuthenticationInfo& auth_info) {
+    if (result != PrinterQueryResult::kSuccess) {
+      std::move(callback).Run(false);
+      return;
+    }
+
+    std::move(callback).Run(ipp_everywhere);
   }
 
  private:

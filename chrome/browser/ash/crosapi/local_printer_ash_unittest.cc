@@ -373,6 +373,8 @@ class LocalPrinterAshTestBase : public testing::Test {
     return local_printer_ash_.get();
   }
 
+  base::test::ScopedFeatureList& feature_list() { return feature_list_; }
+
  private:
   // Must outlive `profile_`.
   content::BrowserTaskEnvironment task_environment_;
@@ -385,10 +387,10 @@ class LocalPrinterAshTestBase : public testing::Test {
       nullptr;
   scoped_refptr<FakePpdProvider> ppd_provider_;
   std::unique_ptr<crosapi::LocalPrinterAsh> local_printer_ash_;
+  base::test::ScopedFeatureList feature_list_;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Support for testing via a service instead of with a local task runner.
-  base::test::ScopedFeatureList feature_list_;
   mojo::Remote<mojom::PrintBackendService> sandboxed_test_remote_;
   mojo::Remote<mojom::PrintBackendService> unsandboxed_test_remote_;
   std::unique_ptr<PrintBackendServiceTestImpl> sandboxed_print_backend_service_;
@@ -517,6 +519,50 @@ TEST_F(LocalPrinterAshTest, GetPrinters) {
   EXPECT_FALSE(printers[2]->configured_via_policy);
   ASSERT_TRUE(printers[2]->uri);
   EXPECT_EQ(kPrinterUri, *printers[2]->uri);
+}
+
+// Tests that fetching capabilities for non-installed printers is successful
+// depending on its autoconf compatibility.
+TEST_F(LocalPrinterAshTest, GetCapabilityForNonInstalledPrinters) {
+  feature_list().Reset();
+  feature_list().InitAndEnableFeature(
+      ash::features::kPrintPreviewDiscoveredPrinters);
+
+  const std::string autoconf_printer_id = "printer1";
+  Printer autoconf_printer =
+      CreateTestPrinter(autoconf_printer_id, "discovered", "description1");
+  const std::string non_autoconf_printer_id = "printer2";
+  Printer non_autoconf_printer =
+      CreateTestPrinter(non_autoconf_printer_id, "discovered", "description2");
+
+  printers_manager().AddPrinter(autoconf_printer, PrinterClass::kDiscovered);
+  printers_manager().AddPrinter(non_autoconf_printer,
+                                PrinterClass::kDiscovered);
+  printers_manager().PrinterIsNotAutoconfigurable(non_autoconf_printer);
+
+  // Add printer capabilities to `test_backend_`.
+  AddPrinter(autoconf_printer_id, "discovered", "description1",
+             /*is_default=*/true,
+             /*requires_elevated_permissions=*/false);
+  AddPrinter(non_autoconf_printer_id, "discovered", "description2",
+             /*is_default=*/true,
+             /*requires_elevated_permissions=*/false);
+
+  // Try to fetch capabilities for both printers but only the autoconf printer
+  // should succeed.
+  crosapi::mojom::CapabilitiesResponsePtr autoconf_fetched_caps;
+  local_printer_ash()->GetCapability(
+      autoconf_printer_id,
+      base::BindOnce(&RecordGetCapability, std::ref(autoconf_fetched_caps)));
+  crosapi::mojom::CapabilitiesResponsePtr non_autoconf_fetched_caps;
+  local_printer_ash()->GetCapability(
+      non_autoconf_printer_id,
+      base::BindOnce(&RecordGetCapability,
+                     std::ref(non_autoconf_fetched_caps)));
+  RunUntilIdle();
+
+  EXPECT_TRUE(autoconf_fetched_caps);
+  EXPECT_FALSE(non_autoconf_fetched_caps);
 }
 
 // Tests that fetching capabilities for an existing installed printer is
