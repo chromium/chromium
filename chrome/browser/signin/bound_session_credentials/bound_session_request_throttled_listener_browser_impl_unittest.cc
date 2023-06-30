@@ -10,9 +10,19 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
 #include "chrome/common/bound_session_request_throttled_listener.h"
 #include "chrome/common/renderer_configuration.mojom.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace network {
+class SimpleURLLoader;
+}  // namespace network
+
+namespace unexportable_keys {
+class UnexportableKeyService;
+}
 
 namespace {
 class FakeBoundSessionCookieRefreshService
@@ -38,6 +48,10 @@ class FakeBoundSessionCookieRefreshService
       OnRequestBlockedOnCookieCallback resume_blocked_request) override {
     resume_blocked_request_ = std::move(resume_blocked_request);
   }
+
+  void CreateRegistrationRequest(
+      BoundSessionRegistrationFetcherParam registration_params,
+      unexportable_keys::UnexportableKeyService* key_service) override {}
 
   base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

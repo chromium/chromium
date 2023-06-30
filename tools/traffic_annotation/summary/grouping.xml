@@ -377,6 +377,7 @@ after discussions on the right group.
     <sender name="Accounts, Identity, and Authentication">
       <annotation id="accounts_image_fetcher"/>
       <annotation id="affiliation_lookup_by_hash"/>
+      <annotation id="device_bound_session_register"/>
       <annotation id="device_management_service"/>
       <annotation id="lookup_single_password_leak"/>
     </sender>

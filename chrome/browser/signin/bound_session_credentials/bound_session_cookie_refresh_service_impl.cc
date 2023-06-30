@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -23,6 +24,7 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using signin::ConsentLevel;
 using signin::IdentityManager;
@@ -265,9 +267,37 @@ void BoundSessionCookieRefreshServiceImpl::OnRequestBlockedOnCookie(
       std::move(resume_blocked_request));
 }
 
+void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
+    BoundSessionRegistrationFetcherParam registration_params,
+    unexportable_keys::UnexportableKeyService* key_service) {
+  BoundSessionRegistrationFetcher::Id id =
+      registration_request_id_generator_.GenerateNextId();
+  auto [it, was_inserted] = active_registration_requests_.emplace(
+      id, std::make_unique<BoundSessionRegistrationFetcherImpl>(
+              std::move(registration_params), client_->GetURLLoaderFactory(),
+              key_service, id));
+  // `base::Unretained(this)` is safe here because `this` owns the fetcher via
+  // `active_registration_requests_`
+  it->second->Start(base::BindOnce(
+      &BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete,
+      base::Unretained(this)));
+}
+
 base::WeakPtr<BoundSessionCookieRefreshService>
 BoundSessionCookieRefreshServiceImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete(
+    BoundSessionRegistrationFetcher::Id id,
+    absl::optional<bound_session_credentials::RegistrationParams>
+        registration_params) {
+  if (registration_params.has_value() &&
+      base::FeatureList::IsEnabled(kBoundSessionExplicitRegistration)) {
+    RegisterNewBoundSession(*registration_params);
+  }
+
+  active_registration_requests_.erase(id);
 }
 
 void BoundSessionCookieRefreshServiceImpl::OnCookieExpirationDateChanged() {

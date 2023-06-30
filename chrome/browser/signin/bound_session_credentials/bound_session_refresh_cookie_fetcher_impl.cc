@@ -64,8 +64,11 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest() {
           cookies_allowed: YES
           cookies_store: "user"
           setting:
-            "This feature is under development and must be enabled by user"
-            " action."
+            "This is a new feature being developed behind a flag that is"
+            " disabled by default (kEnableBoundSessionCredentials). This"
+            " request will only be sent if the feature is enabled and once"
+            " a server requests it with a special header."
+
           policy_exception_justification:
             "Not implemented. "
             "If the feature is on, this request must be made to ensure the user"

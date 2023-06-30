@@ -7,10 +7,15 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+
+namespace unexportable_keys {
+class UnexportableKeyService;
+}  // namespace unexportable_keys
 
 // BoundSessionCookieRefreshService is responsible for maintaining cookies
 // associated with bound sessions. This class does the following:
@@ -44,6 +49,10 @@ class BoundSessionCookieRefreshService
   // Returns bound session params.
   virtual chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams()
       const = 0;
+
+  virtual void CreateRegistrationRequest(
+      BoundSessionRegistrationFetcherParam registration_params,
+      unexportable_keys::UnexportableKeyService* key_service) = 0;
 
   virtual base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() = 0;
 

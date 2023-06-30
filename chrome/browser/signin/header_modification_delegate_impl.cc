@@ -24,6 +24,7 @@
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/storage_partition.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -32,6 +33,13 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/account_manager_core/pref_names.h"
+#endif
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.h"
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #endif
 
 namespace signin {
@@ -141,6 +149,23 @@ void HeaderModificationDelegateImpl::ProcessResponse(
     ResponseAdapter* response_adapter,
     const GURL& redirect_url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  if (switches::IsBoundSessionCredentialsEnabled()) {
+    BoundSessionCookieRefreshService* bound_session_cookie_refresh_service =
+        BoundSessionCookieRefreshServiceFactory::GetForProfile(profile_);
+    if (bound_session_cookie_refresh_service) {
+      auto params = BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
+          response_adapter->GetUrl(), response_adapter->GetHeaders());
+      if (params.has_value()) {
+        bound_session_cookie_refresh_service->CreateRegistrationRequest(
+            std::move(params).value(),
+            UnexportableKeyServiceFactory::GetForProfile(profile_));
+      }
+    }
+  }
+#endif
+
   if (profile_->IsOffTheRecord()) {
     // We expect seeing traffic from OTR profiles only if the feature is
     // enabled.
