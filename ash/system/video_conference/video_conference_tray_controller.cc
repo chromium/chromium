@@ -216,7 +216,7 @@ void VideoConferenceTrayController::MaybeShowSpeakOnMuteOptInNudge(
       &VideoConferenceTrayController::OnSpeakOnMuteNudgeOptInAction,
       weak_ptr_factory_.GetWeakPtr(), /*opt_in=*/true);
 
-  nudge_data.has_infinite_duration = true;
+  nudge_data.has_long_duration = true;
   nudge_data.anchored_to_shelf = true;
 
   AnchoredNudgeManager::Get()->Show(nudge_data);

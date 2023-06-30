@@ -62,8 +62,12 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   views::LabelButton* GetNudgeSecondButtonForTest(const std::string& id);
   AnchoredNudge* GetShownNudgeForTest(const std::string& id);
 
-  // Default nudge duration that is used for nudges that expire.
-  static constexpr base::TimeDelta kAnchoredNudgeDuration = base::Seconds(6);
+  // Default duration that is used for nudges that expire.
+  static constexpr base::TimeDelta kNudgeDefaultDuration = base::Seconds(6);
+
+  // Duration for nudges that are meant to persist until user has interacted
+  // with them.
+  static constexpr base::TimeDelta kNudgeLongDuration = base::Minutes(30);
 
   // Resets the registry map that records the time a nudge was last shown.
   void ResetNudgeRegistryForTesting();
@@ -73,6 +77,7 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   class AnchorViewObserver;
   class NudgeWidgetObserver;
   class NudgeHoverObserver;
+  class PausableTimer;
 
   // Returns the registry which keeps track of when a nudge was last shown.
   static std::vector<std::pair<NudgeCatalogName, base::TimeTicks>>&
@@ -87,10 +92,6 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // empty, only a `Cancel()` callback will be returned.
   base::RepeatingClosure ChainCancelCallback(base::RepeatingClosure callback,
                                              const std::string& id);
-
-  // Manage the dismiss timer for the nudge with given `id`.
-  void StartDismissTimer(const std::string& id);
-  void StopDismissTimer(const std::string& id);
 
   // Maps an `AnchoredNudge` `id` to pointer to the nudge with that id.
   // Used to cache and keep track of nudges that are currently displayed, so
@@ -113,8 +114,8 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
       nudge_widget_observers_;
 
   // Maps an `AnchoredNudge` `id` to a timer that's used to dismiss the nudge
-  // after `kAnchoredNudgeDuration` has passed.
-  std::map<std::string, base::OneShotTimer> dismiss_timers_;
+  // after its duration has passed. Hovering over the nudge pauses the timer.
+  std::map<std::string, PausableTimer> dismiss_timers_;
 
   base::WeakPtrFactory<AnchoredNudgeManagerImpl> weak_ptr_factory_{this};
 };

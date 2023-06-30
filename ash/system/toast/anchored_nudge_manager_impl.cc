@@ -46,8 +46,48 @@ std::string GetNudgeTimeToActionHistogramName(const base::TimeDelta& time) {
 
 }  // namespace
 
-///////////////////////////////////////////////////////////////////////////////
-//  NudgeHoverObserver
+// Owns a `base::OneShotTimer` that can be paused and resumed.
+class AnchoredNudgeManagerImpl::PausableTimer {
+ public:
+  PausableTimer() = default;
+  PausableTimer(const PausableTimer&) = delete;
+  PausableTimer& operator=(const PausableTimer&) = delete;
+  ~PausableTimer() = default;
+
+  void Start(base::TimeDelta duration, base::RepeatingClosure task) {
+    DCHECK(!timer_.IsRunning());
+    task_ = task;
+    remaining_duration_ = duration;
+    time_last_started_ = base::TimeTicks::Now();
+    timer_.Start(FROM_HERE, remaining_duration_, task_);
+  }
+
+  void Pause() {
+    DCHECK(timer_.IsRunning());
+    timer_.Stop();
+    remaining_duration_ -= base::TimeTicks::Now() - time_last_started_;
+  }
+
+  void Resume() {
+    time_last_started_ = base::TimeTicks::Now();
+    timer_.Start(FROM_HERE, remaining_duration_, task_);
+  }
+
+  void Stop() {
+    remaining_duration_ = base::Seconds(0);
+    task_.Reset();
+    timer_.Stop();
+  }
+
+ private:
+  base::OneShotTimer timer_;
+  base::RepeatingClosure task_;
+  base::TimeDelta remaining_duration_;
+  base::TimeTicks time_last_started_;
+};
+
+// A hover observer used to pause or resume the dismiss timer, and to run
+// provided callbacks that execute on hover state changes.
 class AnchoredNudgeManagerImpl::NudgeHoverObserver : public ui::EventObserver {
  public:
   NudgeHoverObserver(aura::Window* widget_window,
@@ -271,11 +311,10 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
       anchored_nudge_widget->GetNativeWindow(), id,
       std::move(nudge_data.hover_state_change_callback), this);
 
-  // Only nudges that expire should be able to persist on hover (i.e. nudges
-  // with infinite duration persist regardless of hover).
-  if (!nudge_data.has_infinite_duration) {
-    StartDismissTimer(id);
-  }
+  dismiss_timers_[id].Start(
+      nudge_data.has_long_duration ? kNudgeLongDuration : kNudgeDefaultDuration,
+      base::BindRepeating(&AnchoredNudgeManagerImpl::Cancel,
+                          base::Unretained(this), id));
 }
 
 void AnchoredNudgeManagerImpl::Cancel(const std::string& id) {
@@ -326,15 +365,10 @@ void AnchoredNudgeManagerImpl::HandleNudgeWidgetDestroying(
 
 void AnchoredNudgeManagerImpl::OnNudgeHoverStateChanged(const std::string& id,
                                                         bool is_hovering) {
-  // If |has_infinite_duration| is true then no dismiss timer will be created
-  // for the nudge. Adding the check to prevent stopping a non-exist timer or
-  // creating new timer when hover event happens.
-  if (base::Contains(dismiss_timers_, id)) {
-    if (is_hovering) {
-      StopDismissTimer(id);
-    } else {
-      StartDismissTimer(id);
-    }
+  if (is_hovering) {
+    dismiss_timers_[id].Pause();
+  } else {
+    dismiss_timers_[id].Resume();
   }
 }
 
@@ -417,20 +451,6 @@ base::RepeatingClosure AnchoredNudgeManagerImpl::ChainCancelCallback(
                                             base::Unretained(this), id))
                   : base::BindRepeating(&AnchoredNudgeManagerImpl::Cancel,
                                         base::Unretained(this), id);
-}
-
-void AnchoredNudgeManagerImpl::StartDismissTimer(const std::string& id) {
-  // TODO(b/282805060): Use a `PausableTimer` instead of restarting timer.
-  dismiss_timers_[id].Start(FROM_HERE, kAnchoredNudgeDuration,
-                            base::BindOnce(&AnchoredNudgeManagerImpl::Cancel,
-                                           base::Unretained(this), id));
-}
-
-void AnchoredNudgeManagerImpl::StopDismissTimer(const std::string& id) {
-  if (!base::Contains(dismiss_timers_, id)) {
-    return;
-  }
-  dismiss_timers_[id].Stop();
 }
 
 }  // namespace ash

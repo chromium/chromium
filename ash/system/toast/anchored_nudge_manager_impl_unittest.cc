@@ -490,8 +490,7 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnShutdown) {
   // Nudge is left open, no crash.
 }
 
-// Tests that nudges with `has_infinite_duration` set to false expire after
-// their default duration reaches its end.
+// Tests that nudges expire after their dismiss timer reaches its end.
 TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenDismissTimerExpires) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
@@ -500,14 +499,27 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenDismissTimerExpires) {
   auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
-  // Show a nudge.
+  // Show a nudge with default duration.
   anchored_nudge_manager()->Show(nudge_data);
   EXPECT_TRUE(GetShownNudges()[id]);
 
-  // Fast forward `kNudgeDefaultDuration` plus one second, the nudge should have
-  // expired.
+  // The nudge should expire after `kNudgeDefaultDuration` has passed.
   task_environment()->FastForwardBy(
-      AnchoredNudgeManagerImpl::kAnchoredNudgeDuration + base::Seconds(1));
+      AnchoredNudgeManagerImpl::kNudgeDefaultDuration + base::Seconds(1));
+  EXPECT_FALSE(GetShownNudges()[id]);
+
+  // Test that a nudge with long duration persists and lasts more than
+  // `kNudgeDefaultDuration` but expires after `kNudgeLongDuration`.
+  nudge_data.has_long_duration = true;
+  anchored_nudge_manager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeDefaultDuration + base::Seconds(1));
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeLongDuration);
   EXPECT_FALSE(GetShownNudges()[id]);
 }
 
@@ -537,28 +549,37 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnSessionStateChanged) {
   EXPECT_FALSE(GetShownNudges()[id]);
 }
 
-// Tests that nudges with `has_infinite_duration` set to true will not expire
-// after the default duration time has passed.
-TEST_F(AnchoredNudgeManagerImplTest, NudgeWithInfiniteDuration) {
+// Tests that the dismiss timer is paused on hover so the nudge won't close.
+TEST_F(AnchoredNudgeManagerImplTest, NudgePersistsOnHover) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
   const std::string id = "id";
   auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
-  nudge_data.has_infinite_duration = true;
 
   // Show a nudge.
   anchored_nudge_manager()->Show(nudge_data);
   EXPECT_TRUE(GetShownNudges()[id]);
 
-  // Fast forward `kNudgeDefaultDuration` plus one second, the nudge should not
-  // have expired.
+  // Wait for half of the nudge's duration.
   task_environment()->FastForwardBy(
-      AnchoredNudgeManagerImpl::kAnchoredNudgeDuration + base::Seconds(1));
+      AnchoredNudgeManagerImpl::kNudgeDefaultDuration / 2);
+
+  // Hover on the nudge and wait for its full duration. It should persist.
+  GetEventGenerator()->MoveMouseTo(
+      GetShownNudges()[id]->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(GetShownNudges()[id]->IsMouseHovered());
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeDefaultDuration);
   EXPECT_TRUE(GetShownNudges()[id]);
 
-  // Nudge with infinite duration is left open, no crash on shutdown.
+  // Hover out of the nudge and wait its duration. It should be dismissed.
+  GetEventGenerator()->MoveMouseTo(gfx::Point(-100, -100));
+  EXPECT_FALSE(GetShownNudges()[id]->IsMouseHovered());
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeDefaultDuration / 2 + base::Seconds(1));
+  EXPECT_FALSE(GetShownNudges()[id]);
 }
 
 // Tests that attempting to cancel a nudge with an invalid `id` should not

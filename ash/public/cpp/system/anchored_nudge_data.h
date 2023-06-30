@@ -75,11 +75,9 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   // bottom center to the anchor view.
   views::BubbleBorder::Arrow arrow = views::BubbleBorder::BOTTOM_CENTER;
 
-  // To disable dismiss via timer, set `has_infinite_duration_` to true.
-  // A nudge with infinite duration will be displayed until the dismiss button
-  // on the nudge is clicked, or when it is destroyed due to other reasons (e.g.
-  // anchor view is deleted, user locks session, etc.)
-  bool has_infinite_duration = false;
+  // Nudges with long duration are meant to persist and expect an action from
+  // the user for them to be dismissed. They have a duration of 30 minutes.
+  bool has_long_duration = false;
 
   // If true, `arrow` will be set based on the current shelf alignment, and the
   // nudge will listen to shelf alignment changes to readjust its `arrow`.
