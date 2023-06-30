@@ -243,6 +243,12 @@ const StringWithRedaction kStringsWithRedactions[] = {
     // Random data before and after a valid IBAN shouldn't match.
     {"base64DataGB82-WEST-1234-5698-7654-32+base64Data",
      "base64DataGB82-WEST-1234-5698-7654-32+base64Data", PIIType::kNone},
+    // Redacted Crash IDs.
+    {"Crash report receipt ID 153c963587d8d8d4",
+     "Crash report receipt ID (Crash ID: 1)", PIIType::kCrashId},
+    {"with prefixCrash report receipt ID 153C963587D8D8D4b with trailing text",
+     "with prefixCrash report receipt ID (Crash ID: 2) with trailing text",
+     PIIType::kCrashId},
 #if BUILDFLAG(IS_CHROMEOS_ASH)  // We only redact Android paths on Chrome OS.
     // Allowed android storage path.
     {"112K\t/home/root/deadbeef1234/android-data/data/system_de",
@@ -852,9 +858,10 @@ TEST_F(RedactionToolTest, DetectPII) {
          }},
         {PIIType::kCreditCard,
          {"4012888888881881", "5019717010103742", "5019717010103742787"}},
+        {PIIType::kIBAN, {"GB82WEST12345698765432", "GB33BUKB20201555555555"}},
     {
-      PIIType::kIBAN, {
-        "GB82WEST12345698765432", "GB33BUKB20201555555555"
+      PIIType::kCrashId, {
+        "153c963587d8d8d4", "153C963587D8D8D4b"
       }
     }
   };

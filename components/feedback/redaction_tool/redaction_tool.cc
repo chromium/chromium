@@ -149,6 +149,10 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
 
     // IPP (Internet Printing Protocol) Addresses
     {"IPP Address", R"xxx((ipp:\/\/)(.+?)(\/ipp))xxx", PIIType::kIPPAddress},
+    // Crash ID. This pattern only applies to ChromeOS and it matches the
+    // log entries from ChromeOS's crash_sender program.
+    {"Crash ID", R"xxx((Crash report receipt ID )([0-9a-fA-F]+)(.+?))xxx",
+     PIIType::kCrashId},
 };
 
 bool MaybeUnmapAddress(IPAddress* addr) {
