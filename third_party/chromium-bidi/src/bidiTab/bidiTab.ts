@@ -17,17 +17,8 @@
  * @license
  */
 
-import * as Parser from '../protocol-parser/protocol-parser.js';
+import {Message} from '../protocol/protocol';
 import {
-  type BrowsingContext,
-  type Cdp,
-  type Input,
-  Message,
-  type Script,
-  type Session,
-} from '../protocol/protocol';
-import {
-  type BidiParser,
   BidiServer,
   type BidiTransport,
   OutgoingBidiMessage,
@@ -36,6 +27,7 @@ import {CdpConnection} from '../cdp/cdpConnection.js';
 import type {ITransport} from '../utils/transport.js';
 import {LogType} from '../utils/log.js';
 
+import {BidiParserImpl} from './BidiParserImpl';
 import {generatePage, log} from './mapperTabPage.js';
 
 declare global {
@@ -264,76 +256,6 @@ function createBidiServer(selfTargetId: string) {
     new BidiParserImpl(),
     log
   );
-}
-
-class BidiParserImpl implements BidiParser {
-  parseAddPreloadScriptParams(
-    params: object
-  ): Script.AddPreloadScriptParameters {
-    return Parser.Script.parseAddPreloadScriptParams(params);
-  }
-  parseRemovePreloadScriptParams(
-    params: object
-  ): Script.RemovePreloadScriptParameters {
-    return Parser.Script.parseRemovePreloadScriptParams(params);
-  }
-
-  parseGetRealmsParams(params: object): Script.GetRealmsParameters {
-    return Parser.Script.parseGetRealmsParams(params);
-  }
-  parseCallFunctionParams(params: object): Script.CallFunctionParameters {
-    return Parser.Script.parseCallFunctionParams(params);
-  }
-  parseEvaluateParams(params: object): Script.EvaluateParameters {
-    return Parser.Script.parseEvaluateParams(params);
-  }
-  parseDisownParams(params: object): Script.DisownParameters {
-    return Parser.Script.parseDisownParams(params);
-  }
-  parseSendCommandParams(params: object): Cdp.SendCommandParams {
-    return Parser.Cdp.parseSendCommandParams(params);
-  }
-  parseGetSessionParams(params: object): Cdp.GetSessionParams {
-    return Parser.Cdp.parseGetSessionParams(params);
-  }
-  parseSubscribeParams(params: object): Session.SubscriptionRequest {
-    return Parser.Session.parseSubscribeParams(params);
-  }
-  parseNavigateParams(params: object): BrowsingContext.NavigateParameters {
-    return Parser.BrowsingContext.parseNavigateParams(params);
-  }
-  parseReloadParams(params: object): BrowsingContext.ReloadParameters {
-    return Parser.BrowsingContext.parseReloadParams(params);
-  }
-  parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters {
-    return Parser.BrowsingContext.parseGetTreeParams(params);
-  }
-  parseCreateParams(params: object): BrowsingContext.CreateParameters {
-    return Parser.BrowsingContext.parseCreateParams(params);
-  }
-  parseCloseParams(params: object): BrowsingContext.CloseParameters {
-    return Parser.BrowsingContext.parseCloseParams(params);
-  }
-  parseCaptureScreenshotParams(
-    params: object
-  ): BrowsingContext.CaptureScreenshotParameters {
-    return Parser.BrowsingContext.parseCaptureScreenshotParams(params);
-  }
-  parsePrintParams(params: object): BrowsingContext.PrintParameters {
-    return Parser.BrowsingContext.parsePrintParams(params);
-  }
-
-  parsePerformActionsParams(params: object): Input.PerformActionsParameters {
-    return Parser.Input.parsePerformActionsParams(params);
-  }
-  parseReleaseActionsParams(params: object): Input.ReleaseActionsParameters {
-    return Parser.Input.parseReleaseActionsParams(params);
-  }
-  parseSetViewportParams(
-    params: object
-  ): BrowsingContext.SetViewportParameters {
-    return Parser.BrowsingContext.parseSetViewportParams(params);
-  }
 }
 
 // Needed to filter out info related to BiDi target.

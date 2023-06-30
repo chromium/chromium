@@ -426,7 +426,7 @@ describe('SubscriptionManager', () => {
 
   describe('unroll events', () => {
     it('all Browsing Context events', () => {
-      expect(unrollEvents([BrowsingContext.AllEvents])).to.deep.equal([
+      expect(unrollEvents([BrowsingContext.AllEvents])).to.have.members([
         BrowsingContext.EventNames.ContextCreatedEvent,
         BrowsingContext.EventNames.ContextDestroyedEvent,
         BrowsingContext.EventNames.DomContentLoadedEvent,
@@ -437,22 +437,22 @@ describe('SubscriptionManager', () => {
     });
 
     it('all Log events', () => {
-      expect(unrollEvents([Log.AllEvents])).to.deep.equal([
+      expect(unrollEvents([Log.AllEvents])).to.have.members([
         Log.EventNames.LogEntryAddedEvent,
       ]);
     });
 
     it('all Network events', () => {
-      expect(unrollEvents([Network.AllEvents])).to.deep.equal([
+      expect(unrollEvents([Network.AllEvents])).to.have.members([
         Network.EventNames.BeforeRequestSentEvent,
         Network.EventNames.FetchErrorEvent,
-        Network.EventNames.ResponseStartedEvent,
         Network.EventNames.ResponseCompletedEvent,
+        Network.EventNames.ResponseStartedEvent,
       ]);
     });
 
     it('all Script events', () => {
-      expect(unrollEvents([Script.AllEvents])).to.deep.equal([
+      expect(unrollEvents([Script.AllEvents])).to.have.members([
         Script.EventNames.MessageEvent,
         Script.EventNames.RealmCreated,
         Script.EventNames.RealmDestroyed,
@@ -465,7 +465,7 @@ describe('SubscriptionManager', () => {
           Script.EventNames.RealmCreated,
           Log.EventNames.LogEntryAddedEvent,
         ])
-      ).to.deep.equal([
+      ).to.have.members([
         Script.EventNames.RealmCreated,
         Log.EventNames.LogEntryAddedEvent,
       ]);
@@ -474,7 +474,7 @@ describe('SubscriptionManager', () => {
     it('all and discrete events', () => {
       expect(
         unrollEvents([Log.AllEvents, Log.EventNames.LogEntryAddedEvent])
-      ).to.deep.equal([Log.EventNames.LogEntryAddedEvent]);
+      ).to.have.members([Log.EventNames.LogEntryAddedEvent]);
     });
   });
 });

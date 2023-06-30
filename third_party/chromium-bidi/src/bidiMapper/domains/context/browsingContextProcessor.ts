@@ -21,6 +21,7 @@ import {
   type Cdp,
   Input,
   Message,
+  type Network,
   type Script,
 } from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
@@ -543,6 +544,16 @@ export class BrowsingContextProcessor {
     return ['page', 'iframe'].includes(target.type);
   }
 
+  process_cdp_getSession(params: Cdp.GetSessionParams): Cdp.GetSessionResult {
+    const context = params.context;
+    const sessionId =
+      this.#browsingContextStorage.getContext(context).cdpTarget.cdpSessionId;
+    if (sessionId === undefined) {
+      return {result: {session: null}};
+    }
+    return {result: {session: sessionId}};
+  }
+
   async process_cdp_sendCommand(
     params: Cdp.SendCommandParams
   ): Promise<Cdp.SendCommandResult> {
@@ -559,13 +570,56 @@ export class BrowsingContextProcessor {
     };
   }
 
-  process_cdp_getSession(params: Cdp.GetSessionParams): Cdp.GetSessionResult {
-    const context = params.context;
-    const sessionId =
-      this.#browsingContextStorage.getContext(context).cdpTarget.cdpSessionId;
-    if (sessionId === undefined) {
-      return {result: {session: null}};
-    }
-    return {result: {session: sessionId}};
+  process_network_addIntercept(
+    _params: Network.AddInterceptParameters
+  ): Network.AddInterceptResult {
+    // TODO: Implement.
+    return {
+      result: {
+        intercept: '',
+      },
+    };
+  }
+
+  process_network_continueRequest(
+    _params: Network.ContinueRequestParameters
+  ): Message.EmptyResult {
+    // TODO: Implement.
+    return {result: {}};
+  }
+
+  process_network_continueResponse(
+    _params: Network.ContinueResponseParameters
+  ): Message.EmptyResult {
+    // TODO: Implement.
+    return {result: {}};
+  }
+
+  process_network_continueWithAuth(
+    _params: Network.ContinueWithAuthParameters
+  ): Message.EmptyResult {
+    // TODO: Implement.
+    return {result: {}};
+  }
+
+  process_network_failRequest(
+    _params: Network.FailRequestParameters
+  ): Message.EmptyResult {
+    // TODO: Implement.
+    return {result: {}};
+  }
+
+  process_network_provideResponse(
+    _params: Network.ProvideResponseParameters
+  ): Message.EmptyResult {
+    // TODO: Implement.
+    return {result: {}};
+  }
+
+  process_network_removeIntercept(
+    _params: Network.RemoveInterceptParameters
+  ): Message.EmptyResult {
+    // TODO: Implement.
+    return {result: {}};
   }
 }

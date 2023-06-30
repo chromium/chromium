@@ -17,7 +17,7 @@
 
 import type {Message} from '../protocol/protocol.js';
 
-export interface BidiTransport {
+export interface IBidiTransport {
   setOnMessage: (
     handler: (message: Message.RawCommandRequest) => Promise<void> | void
   ) => void;

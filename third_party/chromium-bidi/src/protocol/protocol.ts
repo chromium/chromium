@@ -106,6 +106,7 @@ export namespace Message {
     NoSuchElement = 'no such element',
     NoSuchFrame = 'no such frame',
     NoSuchHandle = 'no such handle',
+    NoSuchIntercept = 'no such intercept',
     NoSuchNode = 'no such node',
     NoSuchScript = 'no such script',
     SessionNotCreated = 'session not created',
@@ -183,6 +184,12 @@ export namespace Message {
   export class NoSuchElementException extends ErrorResponse {
     constructor(message: string, stacktrace?: string) {
       super(ErrorCode.NoSuchElement, message, stacktrace);
+    }
+  }
+
+  export class NoSuchInterceptException extends ErrorResponse {
+    constructor(message: string, stacktrace?: string) {
+      super(ErrorCode.NoSuchIntercept, message, stacktrace);
     }
   }
 
@@ -1097,7 +1104,14 @@ export namespace Log {
 }
 
 export namespace Network {
-  export type Command = Message.EmptyCommand;
+  export type Command =
+    | AddInterceptCommand
+    | ContinueRequestCommand
+    | ContinueResponseCommand
+    | ContinueWithAuthCommand
+    | FailRequestCommand
+    | ProvideResponseCommand
+    | RemoveInterceptCommand;
 
   export type Result = Message.EmptyResult;
 
@@ -1127,11 +1141,17 @@ export namespace Network {
     FetchErrorParams
   >;
 
+  export type StringHeaderValue = {
+    value: string;
+  };
+
+  export type BinaryHeaderValue = {
+    binaryValue: number[];
+  };
+
   export type Header = {
     name: string;
-    value?: string;
-    binaryValue?: number[];
-  };
+  } & (StringHeaderValue | BinaryHeaderValue);
 
   export type Cookie = {
     name: string;
@@ -1175,12 +1195,16 @@ export namespace Network {
     timings: FetchTimingInfo;
   };
 
+  export type Intercept = string;
+
   export type BaseParameters = {
     context: CommonDataTypes.BrowsingContext | null;
+    isBlocked: boolean;
     navigation: BrowsingContext.Navigation | null;
     redirectCount: number;
     request: RequestData;
     timestamp: number;
+    intercepts?: Intercept[];
   };
 
   export type Initiator = {
@@ -1207,6 +1231,7 @@ export namespace Network {
     headersSize: number | null;
     bodySize: number | null;
     content: ResponseContent;
+    authChallenge?: AuthChallenge;
   };
 
   export type BeforeRequestSentParams = BaseParameters & {
@@ -1225,13 +1250,134 @@ export namespace Network {
     errorText: string;
   };
 
+  export type AuthChallenge = {
+    scheme: string;
+    realm: string;
+  };
+
+  export type AuthCredentials = {
+    type: 'password'; // XXX: 'credentials'?
+    username: string;
+    password: string;
+  };
+
+  export type Body = StringBody | Base64Body;
+
+  export type StringBody = {
+    type: 'string';
+    value: string;
+  };
+
+  export type Base64Body = {
+    type: 'base64';
+    value: string;
+  };
+
+  export type InterceptPhase =
+    | 'beforeRequestSent'
+    | 'responseStarted'
+    | 'authRequired';
+
+  export type AddInterceptCommand = {
+    method: 'network.addIntercept';
+    params: AddInterceptParameters;
+  };
+
+  export type AddInterceptParameters = {
+    phases: InterceptPhase[];
+    urlPatterns?: string[];
+  };
+
+  export type AddInterceptResult = {
+    result: {
+      intercept: Intercept;
+    };
+  };
+
+  export type ContinueRequestCommand = {
+    method: 'network.continueRequest';
+    params: ContinueRequestParameters;
+  };
+
+  export type ContinueRequestParameters = {
+    request: Request;
+    body?: Body;
+    headers?: Header[];
+    method?: string;
+    url?: string;
+  };
+
+  export type ContinueResponseCommand = {
+    method: 'network.continueResponse';
+    params: ContinueResponseParameters;
+  };
+
+  export type ContinueResponseParameters = {
+    request: Request;
+    credentials?: AuthCredentials;
+    headers?: Header[];
+    reasonPhrase?: string;
+    statusCode?: number;
+  };
+
+  export type ContinueWithAuthCommand = {
+    method: 'network.continueWithAuth';
+    params: ContinueWithAuthParameters;
+  };
+
+  export type ContinueWithAuthParameters = {
+    request: Request;
+  } & (ContinueWithAuthCredentials | ContinueWithAuthNoCredentials);
+
+  export type ContinueWithAuthCredentials = {
+    action: 'provideCredentials';
+    credentials: AuthCredentials;
+  };
+
+  export type ContinueWithAuthNoCredentials = {
+    action: 'default' | 'cancel';
+  };
+
+  export type FailRequestCommand = {
+    method: 'network.failRequest';
+    params: FailRequestParameters;
+  };
+
+  export type FailRequestParameters = {
+    request: Request;
+  };
+
+  export type ProvideResponseCommand = {
+    method: 'network.provideResponse';
+    params: ProvideResponseParameters;
+  };
+
+  export type ProvideResponseParameters = {
+    request: Request;
+    body?: Body;
+    headers?: Header[];
+    reasonPhrase?: string;
+    statusCode?: number;
+  };
+
+  export type RemoveInterceptCommand = {
+    method: 'network.removeIntercept';
+    params: RemoveInterceptParameters;
+  };
+
+  export type RemoveInterceptParameters = {
+    intercept: Intercept;
+  };
+
   export const AllEvents = 'network';
 
   export enum EventNames {
+    // keep-sorted start
     BeforeRequestSentEvent = 'network.beforeRequestSent',
     FetchErrorEvent = 'network.fetchError',
-    ResponseStartedEvent = 'network.responseStarted',
     ResponseCompletedEvent = 'network.responseCompleted',
+    ResponseStartedEvent = 'network.responseStarted',
+    // keep-sorted end
   }
 }
 

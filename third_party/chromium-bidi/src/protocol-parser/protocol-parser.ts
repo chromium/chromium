@@ -47,7 +47,7 @@ export function parseObject<T extends ZodType>(
     .map(
       (e) =>
         `${e.message} in ` +
-        `${e.path.map((p) => JSON.stringify(p)).join('/')}.`
+        `${e.path.map((p: unknown) => JSON.stringify(p)).join('/')}.`
     )
     .join(' ');
 
@@ -630,7 +630,7 @@ export namespace Session {
 
   // BiDi+ events
   const CdpSubscriptionRequestParametersEventsSchema =
-    zod.custom<CdpTypes.EventNames>((value) => {
+    zod.custom<CdpTypes.EventNames>((value: unknown) => {
       return typeof value === 'string' && value.startsWith('cdp.');
     }, 'Not a CDP event');
 
@@ -652,6 +652,136 @@ export namespace Session {
     params: object
   ): SessionTypes.SubscriptionRequest {
     return parseObject(params, SubscriptionRequestParametersSchema);
+  }
+}
+
+/** @see https://w3c.github.io/webdriver-bidi/#module-network */
+export namespace Network {
+  const InterceptPhaseSchema = zod.enum([
+    'beforeRequestSent',
+    'responseStarted',
+    'authRequired',
+  ]);
+
+  const AddInterceptParametersSchema = zod.object({
+    phases: zod.array(InterceptPhaseSchema),
+    urlPatterns: zod.array(zod.string()).optional(),
+  });
+
+  export function parseAddInterceptParams(params: object) {
+    return parseObject(params, AddInterceptParametersSchema);
+  }
+
+  const RequestSchema = zod.string();
+
+  const StringBodySchema = zod.object({
+    type: zod.literal('string'),
+    value: zod.string(),
+  });
+
+  const Base64BodySchema = zod.object({
+    type: zod.literal('base64'),
+    value: zod.string(),
+  });
+
+  const BodySchema = zod.union([StringBodySchema, Base64BodySchema]);
+
+  const StringHeaderValueSchema = zod.object({
+    value: zod.string(),
+  });
+
+  const BinaryHeaderValueSchema = zod.object({
+    binaryValue: zod.array(zod.number().int().min(0).max(255)),
+  });
+
+  const HeaderSchema = zod
+    .object({
+      name: zod.string(),
+    })
+    .and(zod.union([StringHeaderValueSchema, BinaryHeaderValueSchema]));
+
+  const ContinueRequestParametersSchema = zod.object({
+    request: RequestSchema,
+    body: BodySchema.optional(),
+    headers: zod.array(HeaderSchema).optional(),
+    method: zod.string().optional(),
+    url: zod.string().optional(),
+  });
+
+  export function parseContinueRequestParams(params: object) {
+    return parseObject(params, ContinueRequestParametersSchema);
+  }
+
+  const AuthCredentialsSchema = zod.object({
+    type: zod.literal('password'),
+    username: zod.string(),
+    password: zod.string(),
+  });
+
+  const ContinueResponseParametersSchema = zod.object({
+    request: RequestSchema,
+    credentials: AuthCredentialsSchema.optional(),
+    headers: zod.array(HeaderSchema).optional(),
+    reasonPhrase: zod.string().optional(),
+    statusCode: zod.number().int().nonnegative().optional(),
+  });
+
+  export function parseContinueResponseParams(params: object) {
+    return parseObject(params, ContinueResponseParametersSchema);
+  }
+
+  const ContinueWithAuthCredentialsSchema = zod.object({
+    action: zod.literal('provideCredentials'),
+    credentials: AuthCredentialsSchema,
+  });
+
+  const ContinueWithAuthNoCredentialsSchema = zod.object({
+    action: zod.union([zod.literal('default'), zod.literal('cancel')]),
+  });
+
+  const ContinueWithAuthParametersSchema = zod
+    .object({
+      request: RequestSchema,
+    })
+    .and(
+      zod.union([
+        ContinueWithAuthCredentialsSchema,
+        ContinueWithAuthNoCredentialsSchema,
+      ])
+    );
+
+  export function parseContinueWithAuthParams(params: object) {
+    return parseObject(params, ContinueWithAuthParametersSchema);
+  }
+
+  const FailRequestParametersSchema = zod.object({
+    request: RequestSchema,
+  });
+
+  export function parseFailRequestParams(params: object) {
+    return parseObject(params, FailRequestParametersSchema);
+  }
+
+  const ProvideResponseParametersSchema = zod.object({
+    request: RequestSchema,
+    body: BodySchema.optional(),
+    headers: zod.array(HeaderSchema).optional(),
+    reasonPhrase: zod.string().optional(),
+    statusCode: zod.number().int().nonnegative().optional(),
+  });
+
+  export function parseProvideResponseParams(params: object) {
+    return parseObject(params, ProvideResponseParametersSchema);
+  }
+
+  const InterceptSchema = zod.string();
+
+  const RemoveInterceptParametersSchema = zod.object({
+    intercept: InterceptSchema,
+  });
+
+  export function parseRemoveInterceptParams(params: object) {
+    return parseObject(params, RemoveInterceptParametersSchema);
   }
 }
 

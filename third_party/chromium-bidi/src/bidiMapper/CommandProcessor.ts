@@ -15,18 +15,13 @@
  * limitations under the License.
  */
 
-import {
-  type BrowsingContext,
-  type Cdp,
-  type Input,
-  Message,
-  type Script,
-  type Session,
-} from '../protocol/protocol.js';
+import {Message, type Session} from '../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import type {ICdpConnection} from '../cdp/cdpConnection.js';
 
+import type {IBidiParser} from './BidiParser.js';
+import {BidiNoOpParser} from './BidiNoOpParser.js';
 import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor.js';
 import type {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 import type {IEventManager} from './domains/events/EventManager.js';
@@ -37,115 +32,17 @@ type CommandProcessorEvents = {
   response: Promise<OutgoingBidiMessage>;
 };
 
-export interface BidiParser {
-  parseAddPreloadScriptParams(
-    params: object
-  ): Script.AddPreloadScriptParameters;
-  parseRemovePreloadScriptParams(
-    params: object
-  ): Script.RemovePreloadScriptParameters;
-  parseGetRealmsParams(params: object): Script.GetRealmsParameters;
-  parseCallFunctionParams(params: object): Script.CallFunctionParameters;
-  parseEvaluateParams(params: object): Script.EvaluateParameters;
-  parseDisownParams(params: object): Script.DisownParameters;
-  parseSendCommandParams(params: object): Cdp.SendCommandParams;
-  parseGetSessionParams(params: object): Cdp.GetSessionParams;
-  parseSubscribeParams(params: object): Session.SubscriptionRequest;
-  parseNavigateParams(params: object): BrowsingContext.NavigateParameters;
-  parseReloadParams(params: object): BrowsingContext.ReloadParameters;
-  parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters;
-  parseCreateParams(params: object): BrowsingContext.CreateParameters;
-  parseCloseParams(params: object): BrowsingContext.CloseParameters;
-  parseCaptureScreenshotParams(
-    params: object
-  ): BrowsingContext.CaptureScreenshotParameters;
-  parsePrintParams(params: object): BrowsingContext.PrintParameters;
-  parseSetViewportParams(params: object): BrowsingContext.SetViewportParameters;
-  parsePerformActionsParams(params: object): Input.PerformActionsParameters;
-  parseReleaseActionsParams(params: object): Input.ReleaseActionsParameters;
-}
-
-class BidiNoOpParser implements BidiParser {
-  parseAddPreloadScriptParams(
-    params: object
-  ): Script.AddPreloadScriptParameters {
-    return params as Script.AddPreloadScriptParameters;
-  }
-
-  parseRemovePreloadScriptParams(
-    params: object
-  ): Script.RemovePreloadScriptParameters {
-    return params as Script.RemovePreloadScriptParameters;
-  }
-
-  parseGetRealmsParams(params: object): Script.GetRealmsParameters {
-    return params as Script.GetRealmsParameters;
-  }
-  parseCallFunctionParams(params: object): Script.CallFunctionParameters {
-    return params as Script.CallFunctionParameters;
-  }
-  parseEvaluateParams(params: object): Script.EvaluateParameters {
-    return params as Script.EvaluateParameters;
-  }
-  parseDisownParams(params: object): Script.DisownParameters {
-    return params as Script.DisownParameters;
-  }
-  parseSendCommandParams(params: object): Cdp.SendCommandParams {
-    return params as Cdp.SendCommandParams;
-  }
-  parseGetSessionParams(params: object): Cdp.GetSessionParams {
-    return params as Cdp.GetSessionParams;
-  }
-  parseSubscribeParams(params: object): Session.SubscriptionRequest {
-    return params as Session.SubscriptionRequest;
-  }
-  parseNavigateParams(params: object): BrowsingContext.NavigateParameters {
-    return params as BrowsingContext.NavigateParameters;
-  }
-  parseReloadParams(params: object): BrowsingContext.ReloadParameters {
-    return params as BrowsingContext.ReloadParameters;
-  }
-  parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters {
-    return params as BrowsingContext.GetTreeParameters;
-  }
-  parseCreateParams(params: object): BrowsingContext.CreateParameters {
-    return params as BrowsingContext.CreateParameters;
-  }
-  parseCloseParams(params: object): BrowsingContext.CloseParameters {
-    return params as BrowsingContext.CloseParameters;
-  }
-  parseCaptureScreenshotParams(
-    params: object
-  ): BrowsingContext.CaptureScreenshotParameters {
-    return params as BrowsingContext.CaptureScreenshotParameters;
-  }
-  parsePrintParams(params: object): BrowsingContext.PrintParameters {
-    return params as BrowsingContext.PrintParameters;
-  }
-  parsePerformActionsParams(params: object): Input.PerformActionsParameters {
-    return params as Input.PerformActionsParameters;
-  }
-  parseReleaseActionsParams(params: object): Input.ReleaseActionsParameters {
-    return params as Input.ReleaseActionsParameters;
-  }
-  parseSetViewportParams(
-    params: object
-  ): BrowsingContext.SetViewportParameters {
-    return params as BrowsingContext.SetViewportParameters;
-  }
-}
-
 export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   #contextProcessor: BrowsingContextProcessor;
   #eventManager: IEventManager;
-  #parser: BidiParser;
+  #parser: IBidiParser;
   #logger?: LoggerFn;
 
   constructor(
     cdpConnection: ICdpConnection,
     eventManager: IEventManager,
     selfTargetId: string,
-    parser: BidiParser = new BidiNoOpParser(),
+    parser: IBidiParser = new BidiNoOpParser(),
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     logger?: LoggerFn
@@ -196,19 +93,6 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     commandData: Message.RawCommandRequest
   ): Promise<Message.ResultData> {
     switch (commandData.method) {
-      case 'session.status':
-        return CommandProcessor.#process_session_status();
-      case 'session.subscribe':
-        return this.#process_session_subscribe(
-          this.#parser.parseSubscribeParams(commandData.params),
-          commandData.channel ?? null
-        );
-      case 'session.unsubscribe':
-        return this.#process_session_unsubscribe(
-          this.#parser.parseSubscribeParams(commandData.params),
-          commandData.channel ?? null
-        );
-
       case 'browsingContext.create':
         return this.#contextProcessor.process_browsingContext_create(
           this.#parser.parseCreateParams(commandData.params)
@@ -242,6 +126,53 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
           this.#parser.parseSetViewportParams(commandData.params)
         );
 
+      case 'cdp.sendCommand':
+        return this.#contextProcessor.process_cdp_sendCommand(
+          this.#parser.parseSendCommandParams(commandData.params)
+        );
+      case 'cdp.getSession':
+        return this.#contextProcessor.process_cdp_getSession(
+          this.#parser.parseGetSessionParams(commandData.params)
+        );
+
+      case 'input.performActions':
+        return this.#contextProcessor.process_input_performActions(
+          this.#parser.parsePerformActionsParams(commandData.params)
+        );
+      case 'input.releaseActions':
+        return this.#contextProcessor.process_input_releaseActions(
+          this.#parser.parseReleaseActionsParams(commandData.params)
+        );
+
+      case 'network.addIntercept':
+        return this.#contextProcessor.process_network_addIntercept(
+          this.#parser.parseAddInterceptParams(commandData.params)
+        );
+      case 'network.continueRequest':
+        return this.#contextProcessor.process_network_continueRequest(
+          this.#parser.parseContinueRequestParams(commandData.params)
+        );
+      case 'network.continueResponse':
+        return this.#contextProcessor.process_network_continueResponse(
+          this.#parser.parseContinueResponseParams(commandData.params)
+        );
+      case 'network.continueWithAuth':
+        return this.#contextProcessor.process_network_continueWithAuth(
+          this.#parser.parseContinueWithAuthParams(commandData.params)
+        );
+      case 'network.failRequest':
+        return this.#contextProcessor.process_network_failRequest(
+          this.#parser.parseFailRequestParams(commandData.params)
+        );
+      case 'network.provideResponse':
+        return this.#contextProcessor.process_network_provideResponse(
+          this.#parser.parseProvideResponseParams(commandData.params)
+        );
+      case 'network.removeIntercept':
+        return this.#contextProcessor.process_network_removeIntercept(
+          this.#parser.parseRemoveInterceptParams(commandData.params)
+        );
+
       case 'script.addPreloadScript':
         return this.#contextProcessor.process_script_addPreloadScript(
           this.#parser.parseAddPreloadScriptParams(commandData.params)
@@ -267,22 +198,17 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
           this.#parser.parseDisownParams(commandData.params)
         );
 
-      case 'input.performActions':
-        return this.#contextProcessor.process_input_performActions(
-          this.#parser.parsePerformActionsParams(commandData.params)
+      case 'session.status':
+        return CommandProcessor.#process_session_status();
+      case 'session.subscribe':
+        return this.#process_session_subscribe(
+          this.#parser.parseSubscribeParams(commandData.params),
+          commandData.channel ?? null
         );
-      case 'input.releaseActions':
-        return this.#contextProcessor.process_input_releaseActions(
-          this.#parser.parseReleaseActionsParams(commandData.params)
-        );
-
-      case 'cdp.sendCommand':
-        return this.#contextProcessor.process_cdp_sendCommand(
-          this.#parser.parseSendCommandParams(commandData.params)
-        );
-      case 'cdp.getSession':
-        return this.#contextProcessor.process_cdp_getSession(
-          this.#parser.parseGetSessionParams(commandData.params)
+      case 'session.unsubscribe':
+        return this.#process_session_unsubscribe(
+          this.#parser.parseSubscribeParams(commandData.params),
+          commandData.channel ?? null
         );
     }
 
