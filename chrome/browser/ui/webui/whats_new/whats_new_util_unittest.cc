@@ -41,20 +41,33 @@ class WhatsNewUtilTests : public testing::Test {
         {features::kChromeWhatsNewUI, features::kChromeRefresh2023}, {});
     prefs_.registry()->RegisterBooleanPref(prefs::kHasShownRefreshWhatsNew,
                                            false);
-    prefs_.registry()->RegisterIntegerPref(prefs::kLastWhatsNewVersion, 116);
+    prefs_.registry()->RegisterIntegerPref(prefs::kLastWhatsNewVersion,
+                                           CHROME_VERSION_MAJOR);
   }
 
   void ToggleRefresh(bool enabled) {
     scoped_feature_list_.Reset();
     if (enabled) {
-      scoped_feature_list_.InitAndEnableFeature(features::kChromeRefresh2023);
+      scoped_feature_list_.InitWithFeatures(
+          {features::kChromeWhatsNewUI, features::kChromeRefresh2023}, {});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kChromeRefresh2023);
+      scoped_feature_list_.InitWithFeatures({features::kChromeWhatsNewUI},
+                                            {features::kChromeRefresh2023});
     }
   }
 
   void ToggleHasShownRefresh(bool has_shown) {
     prefs()->SetBoolean(prefs::kHasShownRefreshWhatsNew, has_shown);
+  }
+
+  // The check in whats_new_util.cc compares the CHROME_VERSION_MAJOR
+  // macro to the value stored in the kLastWhatsNewVersion pref. This
+  // method sets whether that check should pass (should show milestone
+  // WNP) or fail (current milestone WNP has already been shown).
+  void SetHasNewWhatsNewVersion(const bool& has_new_version) {
+    prefs_.SetInteger(
+        prefs::kLastWhatsNewVersion,
+        has_new_version ? CHROME_VERSION_MAJOR - 1 : CHROME_VERSION_MAJOR);
   }
 
   PrefService* prefs() { return &prefs_; }
@@ -87,9 +100,7 @@ TEST_F(WhatsNewUtilTests, ShouldShowRefresh) {
   EXPECT_FALSE(whats_new::ShouldShowRefresh(prefs()));
 }
 
-// TODO(crbug.com/1456594): Fix the test.
-TEST_F(WhatsNewUtilTests,
-       DISABLED_ShouldShowForStateUsesChromeVersionForRefresh) {
+TEST_F(WhatsNewUtilTests, ShouldShowForStateUsesChromeVersionForRefresh) {
   // kChromeRefresh2023=enabled && hasShownRefreshWhatsNew=false
   whats_new::SetChromeVersionForTests(117);
   // Refresh page should show
@@ -104,11 +115,13 @@ TEST_F(WhatsNewUtilTests,
   // kChromeRefresh2023=enabled && hasShownRefreshWhatsNew=false
   whats_new::SetChromeVersionForTests(116);
   ToggleHasShownRefresh(false);
+  SetHasNewWhatsNewVersion(false);
   // Refresh page should not show previous to 117
   EXPECT_FALSE(whats_new::ShouldShowForState(prefs(), true));
 
   // kChromeRefresh2023=enabled && hasShownRefreshWhatsNew=false
   whats_new::SetChromeVersionForTests(119);
+  SetHasNewWhatsNewVersion(true);
   // Refresh page should show for versions after 118 if it has not been
   // shown yet
   EXPECT_TRUE(whats_new::ShouldShowForState(prefs(), true));
