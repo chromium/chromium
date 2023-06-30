@@ -80366,14 +80366,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Filtered"/>
 </enum>
 
-<enum name="P2PServerResult">
-  <int value="0" label="Response Sent"/>
-  <int value="1" label="Response Interrupted"/>
-  <int value="2" label="Malformed"/>
-  <int value="3" label="Not Found"/>
-  <int value="4" label="Index"/>
-</enum>
-
 <enum name="PacResultForStrippedUrl">
   <obsolete>
     Deprecated 4/27/2016. No longer tracked.

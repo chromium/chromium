@@ -9022,59 +9022,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="P2P.Server.ContentServedSuccessfullyMB" units="MB"
-    expires_after="2021-12-29">
-  <owner>ahassani@chromium.org</owner>
-  <owner>chromeos-core-services@google.com</owner>
-  <summary>
-    Number of megabytes (1,000,000 bytes) served from the device (via HTTP).
-    This is reported every time a file have been served successfully.
-  </summary>
-</histogram>
-
-<histogram name="P2P.Server.DownloadSpeedKBps" units="kB/s"
-    expires_after="2021-12-29">
-  <owner>ahassani@chromium.org</owner>
-  <owner>chromeos-core-services@google.com</owner>
-  <summary>
-    The average speed at which the download was served at, in kB/s. This is
-    reported every time a file have been served successfully.
-  </summary>
-</histogram>
-
 <histogram name="P2P.Server.FileCount" units="count" expires_after="2021-12-29">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
     The number of files available via p2p. This is reported every time a file is
     added or removed to the /var/cache/p2p directory.
-  </summary>
-</histogram>
-
-<histogram name="P2P.Server.RangeBeginPercentage" units="%"
-    expires_after="2021-12-29">
-  <owner>ahassani@chromium.org</owner>
-  <owner>chromeos-core-services@google.com</owner>
-  <summary>
-    When a client resumes a download, the HTTP request includes range specifier
-    to skip the bytes it already has. This metric conveys this as a percentage
-    of the file size. This is reported every time a file is served, even if the
-    request does not include a range specifier (in which case 0 is reported).
-  </summary>
-</histogram>
-
-<histogram name="P2P.Server.RequestResult" enum="P2PServerResult"
-    expires_after="2021-12-29">
-  <owner>ahassani@chromium.org</owner>
-  <owner>chromeos-core-services@google.com</owner>
-  <summary>
-    The result of the HTTP request. Possible values include &quot;Response
-    Sent&quot; (the resource was found and the response was successfully sent),
-    &quot;Response Interrupted&quot; (the resource was found but the client
-    disconnected), &quot;Malformed&quot; (the request was malformed), &quot;Not
-    Found&quot; (the request was for a resource that was not found), and
-    &quot;Index&quot; (the request was for the '/' or '/index.html' resource).
-    This is reported for every HTTP request handled.
   </summary>
 </histogram>
 
