@@ -383,6 +383,7 @@ void Connection::DecodeData(DecoderMethod<T> decoder_method,
                             absl::optional<std::vector<uint8_t>> data) {
   if (!data.has_value()) {
     QS_LOG(ERROR) << "No data received from phone.";
+    // TODO(b/288451775) Call decoder method when data is empty.
     std::move(on_decoding_complete).Run(absl::nullopt);
     return;
   }

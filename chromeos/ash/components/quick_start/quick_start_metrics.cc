@@ -3,8 +3,18 @@
 // found in the LICENSE file.
 
 #include "quick_start_metrics.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace ash::quick_start::quick_start_metrics {
+
+namespace {
+
+constexpr const char kWifiTransferResultHistogramName[] =
+    "QuickStart.WifiTransferResult";
+constexpr const char kWifiTransferResultFailureReasonHistogramName[] =
+    "QuickStart.WifiTransferResult.FailureReason";
+
+}  // namespace
 
 void RecordScreenOpened(Screen screen,
                         int32_t session_id,
@@ -83,15 +93,17 @@ void RecordAttestationCertificateRequestEnded(
   // TODO(279614284): Add FIDO assertion metrics.
 }
 
-void RecordWifiTransferAttempted(int32_t session_id) {
-  // TODO(279611916): Add Wifi Credentials transfer metrics.
-}
-
 void RecordWifiTransferResult(
-    int32_t session_id,
     bool succeeded,
     absl::optional<WifiTransferResultFailureReason> failure_reason) {
-  // TODO(279611916): Add Wifi Credentials transfer metrics.
+  if (succeeded) {
+    CHECK(!failure_reason.has_value());
+  } else {
+    CHECK(failure_reason.has_value());
+    base::UmaHistogramEnumeration(kWifiTransferResultFailureReasonHistogramName,
+                                  failure_reason.value());
+  }
+  base::UmaHistogramBoolean(kWifiTransferResultHistogramName, succeeded);
 }
 
 void RecordGaiaTransferAttempted(int32_t session_id) {

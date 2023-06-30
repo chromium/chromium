@@ -7,10 +7,12 @@
 #include "base/base64.h"
 #include "base/json/json_writer.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "components/cbor/values.h"
@@ -74,6 +76,10 @@ constexpr int kUserVerifiedStatusCode = 0;
 const std::vector<uint8_t> kValidCredentialId = {0x01, 0x02, 0x03};
 const std::vector<uint8_t> kValidAuthData = {0x02, 0x03, 0x04};
 const std::vector<uint8_t> kValidSignature = {0x03, 0x04, 0x05};
+
+const char kWifiTransferResultHistogramName[] = "QuickStart.WifiTransferResult";
+const char kWifiTransferResultFailureReasonHistogramName[] =
+    "QuickStart.WifiTransferResult.FailureReason";
 
 using GetAssertionStatus = mojom::GetAssertionResponse::GetAssertionStatus;
 
@@ -147,6 +153,7 @@ class QuickStartDecoderTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   mojo::Remote<mojom::QuickStartDecoder> remote_;
   std::unique_ptr<QuickStartDecoder> decoder_;
+  base::HistogramTester histogram_tester_;
 
   std::vector<uint8_t> ConvertMessageToBytes(QuickStartMessage* message) {
     std::string json;
@@ -523,6 +530,13 @@ TEST_F(QuickStartDecoderTest,
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  histogram_tester_.ExpectBucketCount(
+      kWifiTransferResultFailureReasonHistogramName,
+      quick_start_metrics::WifiTransferResultFailureReason::
+          kPasswordFoundAndOpenNetwork,
+      1);
+  histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, false,
+                                      1);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -546,6 +560,13 @@ TEST_F(QuickStartDecoderTest,
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  histogram_tester_.ExpectBucketCount(
+      kWifiTransferResultFailureReasonHistogramName,
+      quick_start_metrics::WifiTransferResultFailureReason::
+          kPasswordNotFoundAndNotOpenNetwork,
+      1);
+  histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, false,
+                                      1);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -569,6 +590,13 @@ TEST_F(QuickStartDecoderTest,
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  histogram_tester_.ExpectBucketCount(
+      kWifiTransferResultFailureReasonHistogramName,
+      quick_start_metrics::WifiTransferResultFailureReason::
+          kPasswordNotFoundAndNotOpenNetwork,
+      1);
+  histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, false,
+                                      1);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -592,6 +620,13 @@ TEST_F(QuickStartDecoderTest,
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  histogram_tester_.ExpectBucketCount(
+      kWifiTransferResultFailureReasonHistogramName,
+      quick_start_metrics::WifiTransferResultFailureReason::
+          kPasswordNotFoundAndNotOpenNetwork,
+      1);
+  histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, false,
+                                      1);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -615,6 +650,13 @@ TEST_F(QuickStartDecoderTest,
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  histogram_tester_.ExpectBucketCount(
+      kWifiTransferResultFailureReasonHistogramName,
+      quick_start_metrics::WifiTransferResultFailureReason::
+          kPasswordNotFoundAndNotOpenNetwork,
+      1);
+  histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, false,
+                                      1);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -638,6 +680,13 @@ TEST_F(QuickStartDecoderTest,
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  histogram_tester_.ExpectBucketCount(
+      kWifiTransferResultFailureReasonHistogramName,
+      quick_start_metrics::WifiTransferResultFailureReason::
+          kPasswordNotFoundAndNotOpenNetwork,
+      1);
+  histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, false,
+                                      1);
 }
 
 TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsIfSSIDLengthIsZero) {
@@ -661,6 +710,11 @@ TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsIfSSIDLengthIsZero) {
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  histogram_tester_.ExpectBucketCount(
+      kWifiTransferResultFailureReasonHistogramName,
+      quick_start_metrics::WifiTransferResultFailureReason::kEmptySsid, 1);
+  histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, false,
+                                      1);
 }
 
 TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsWhenMissingSSID) {
@@ -683,6 +737,11 @@ TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsWhenMissingSSID) {
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  histogram_tester_.ExpectBucketCount(
+      kWifiTransferResultFailureReasonHistogramName,
+      quick_start_metrics::WifiTransferResultFailureReason::kSsidNotFound, 1);
+  histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, false,
+                                      1);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -706,6 +765,13 @@ TEST_F(QuickStartDecoderTest,
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  histogram_tester_.ExpectBucketCount(
+      kWifiTransferResultFailureReasonHistogramName,
+      quick_start_metrics::WifiTransferResultFailureReason::
+          kSecurityTypeNotFound,
+      1);
+  histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, false,
+                                      1);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -730,6 +796,13 @@ TEST_F(QuickStartDecoderTest,
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  histogram_tester_.ExpectBucketCount(
+      kWifiTransferResultFailureReasonHistogramName,
+      quick_start_metrics::WifiTransferResultFailureReason::
+          kInvalidSecurityType,
+      1);
+  histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, false,
+                                      1);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -753,6 +826,13 @@ TEST_F(QuickStartDecoderTest,
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  histogram_tester_.ExpectBucketCount(
+      kWifiTransferResultFailureReasonHistogramName,
+      quick_start_metrics::WifiTransferResultFailureReason::
+          kWifiHideStatusNotFound,
+      1);
+  histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, false,
+                                      1);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -769,6 +849,13 @@ TEST_F(QuickStartDecoderTest,
   EXPECT_TRUE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<1>(),
             mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  histogram_tester_.ExpectBucketCount(
+      kWifiTransferResultFailureReasonHistogramName,
+      quick_start_metrics::WifiTransferResultFailureReason::
+          kWifiNetworkInformationNotFound,
+      1);
+  histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, false,
+                                      1);
 }
 
 TEST_F(QuickStartDecoderTest, DecodeNotifySourceOfUpdateResponseSuccess) {

@@ -90316,6 +90316,20 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="Invalid advertisement error code"/>
 </enum>
 
+<enum name="QuickStartWifiTransferResultFailureReason">
+  <int value="0" label="Connection dropped while attempting transfer"/>
+  <int value="1" label="Empty response bytes"/>
+  <int value="2" label="Unable to read as JSON"/>
+  <int value="3" label="Wifi network information not found"/>
+  <int value="4" label="SSID not found in response"/>
+  <int value="5" label="SSID has length of 0"/>
+  <int value="6" label="Security type not found in response"/>
+  <int value="7" label="Invalid security type"/>
+  <int value="8" label="Password found for open network"/>
+  <int value="9" label="Password not found on a non-open network"/>
+  <int value="10" label="Wifi hide status not found"/>
+</enum>
+
 <enum name="QuicNotReusableReason">
   <int value="0" label="NULLPTR"/>
   <int value="1" label="TOO_SMALL"/>

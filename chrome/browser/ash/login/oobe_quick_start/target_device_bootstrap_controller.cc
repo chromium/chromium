@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/quick_start/logging.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
@@ -202,6 +203,11 @@ void TargetDeviceBootstrapController::OnConnectionRejected() {
 
 void TargetDeviceBootstrapController::OnConnectionClosed(
     TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
+  if (status_.step == Step::CONNECTING_TO_WIFI) {
+    quick_start_metrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+            WifiTransferResultFailureReason::kConnectionDroppedDuringAttempt);
+  }
   status_.step = Step::ERROR;
   status_.payload = ErrorCode::CONNECTION_CLOSED;
   authenticated_connection_.reset();
@@ -316,6 +322,11 @@ void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
   status_.ssid = credentials->ssid;
   status_.password = credentials->password;
   NotifyObservers();
+
+  // Record successful wifi credentials transfer. Failures will be
+  // logged from the QuickStartDecoder class.
+  quick_start_metrics::RecordWifiTransferResult(
+      /*succeeded=*/true, /*failure_reason=*/absl::nullopt);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kQuickStartTestForcedUpdateSwitch)) {

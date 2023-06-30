@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_message_type.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
@@ -372,6 +373,9 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
     LOG(ERROR) << "Message cannot be parsed as a JSON Dictionary.";
     std::move(callback).Run(nullptr,
                             mojom::QuickStartDecoderError::kUnableToReadAsJSON);
+    quick_start_metrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+            WifiTransferResultFailureReason::kUnableToReadAsJSON);
     return;
   }
 
@@ -381,6 +385,9 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
     LOG(ERROR) << "Wifi Network information not present in payload";
     std::move(callback).Run(
         nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    quick_start_metrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+            WifiTransferResultFailureReason::kWifiNetworkInformationNotFound);
     return;
   }
 
@@ -389,6 +396,9 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
     LOG(ERROR) << "SSID cannot be found within WifiCredentialsResponse.";
     std::move(callback).Run(
         nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    quick_start_metrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+            WifiTransferResultFailureReason::kSsidNotFound);
     return;
   }
 
@@ -396,6 +406,9 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
     LOG(ERROR) << "SSID has a length of 0.";
     std::move(callback).Run(
         nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    quick_start_metrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+            WifiTransferResultFailureReason::kEmptySsid);
     return;
   }
 
@@ -406,6 +419,9 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
         << "Security Type cannot be found within WifiCredentialsResponse";
     std::move(callback).Run(
         nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    quick_start_metrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+            WifiTransferResultFailureReason::kSecurityTypeNotFound);
     return;
   }
 
@@ -413,12 +429,13 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
       WifiSecurityTypeFromString(*security_type_string);
 
   if (!maybe_security_type.has_value()) {
-    {
-      LOG(ERROR) << "Security type was not a valid value.";
-      std::move(callback).Run(
-          nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
-      return;
-    }
+    LOG(ERROR) << "Security type was not a valid value.";
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    quick_start_metrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+            WifiTransferResultFailureReason::kInvalidSecurityType);
+    return;
   }
 
   mojom::WifiSecurityType security_type = maybe_security_type.value();
@@ -432,6 +449,9 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
     LOG(ERROR) << "Password is found but network security type is open.";
     std::move(callback).Run(
         nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    quick_start_metrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+            WifiTransferResultFailureReason::kPasswordFoundAndOpenNetwork);
     return;
   }
 
@@ -441,6 +461,10 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
                << security_type;
     std::move(callback).Run(
         nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    quick_start_metrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+            WifiTransferResultFailureReason::
+                kPasswordNotFoundAndNotOpenNetwork);
     return;
   }
 
@@ -455,6 +479,9 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
         << "Wifi Hide Status cannot be found within WifiCredentialsResponse";
     std::move(callback).Run(
         nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    quick_start_metrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+            WifiTransferResultFailureReason::kWifiHideStatusNotFound);
     return;
   }
 

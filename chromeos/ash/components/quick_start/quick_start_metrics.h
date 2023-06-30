@@ -64,9 +64,23 @@ enum class AttestationCertificateRequestErrorCode {
   kCertificateNotObtained,
 };
 
+// This enum is tied directly to a UMA enum defined in
+// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+// change one without changing the other). Entries should be never modified
+// or deleted. Only additions possible.
 enum class WifiTransferResultFailureReason {
-  kUnableToConnect,
-  kNoCredentialsReceivedFromPhone,
+  kConnectionDroppedDuringAttempt = 0,
+  kEmptyResponseBytes = 1,
+  kUnableToReadAsJSON = 2,
+  kWifiNetworkInformationNotFound = 3,
+  kSsidNotFound = 4,
+  kEmptySsid = 5,
+  kSecurityTypeNotFound = 6,
+  kInvalidSecurityType = 7,
+  kPasswordFoundAndOpenNetwork = 8,
+  kPasswordNotFoundAndNotOpenNetwork = 9,
+  kWifiHideStatusNotFound = 10,
+  kMaxValue = kWifiHideStatusNotFound,
 };
 
 enum class GaiaTransferResultFailureReason {
@@ -140,10 +154,7 @@ void RecordAttestationCertificateRequestEnded(
     int duration,
     absl::optional<AttestationCertificateRequestErrorCode> error_code);
 
-void RecordWifiTransferAttempted(int32_t session_id);
-
 void RecordWifiTransferResult(
-    int32_t session_id,
     bool succeeded,
     absl::optional<WifiTransferResultFailureReason> failure_reason);
 

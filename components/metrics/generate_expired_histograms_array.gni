@@ -142,6 +142,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/profile/histograms.xml",
       "//tools/metrics/histograms/metadata/quick_answers/histograms.xml",
       "//tools/metrics/histograms/metadata/quickoffice/histograms.xml",
+      "//tools/metrics/histograms/metadata/quickstart/histograms.xml",
       "//tools/metrics/histograms/metadata/quota/histograms.xml",
       "//tools/metrics/histograms/metadata/renderer/histograms.xml",
       "//tools/metrics/histograms/metadata/renderer4/histograms.xml",
