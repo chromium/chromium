@@ -741,7 +741,7 @@ void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<omnibox::mojom::PageHandler> pending_page_handler) {
   realbox_handler_ = std::make_unique<RealboxHandler>(
       std::move(pending_page_handler), profile_, web_contents(),
-      &metrics_reporter_, /*is_omnibox_popup_handler=*/false);
+      &metrics_reporter_, /*omnibox_controller=*/nullptr);
 }
 
 void NewTabPageUI::BindInterface(

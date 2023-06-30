@@ -16,6 +16,25 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
+namespace {
+
+// This exists to avoid a race condition in RealboxHandler. It's better to
+// rely on a specific variable controlled by local omnibox logic than to
+// get the last active browser which could be changed by anything at any time.
+// This can be eliminated if we find a way to cleanly pass pointers into WebUI
+// construction, but currently they appear designed to avoid such things,
+// sensibly relying on the URL only.
+OmniboxController* g_omnibox_controller = nullptr;
+
+}  // namespace
+
+// static
+void OmniboxPopupUI::SetOmniboxController(
+    OmniboxController* omnibox_controller) {
+  CHECK(!g_omnibox_controller);
+  g_omnibox_controller = omnibox_controller;
+}
+
 OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
       profile_(Profile::FromWebUI(web_ui)) {
@@ -44,10 +63,11 @@ WEB_UI_CONTROLLER_TYPE_IMPL(OmniboxPopupUI)
 
 void OmniboxPopupUI::BindInterface(
     mojo::PendingReceiver<omnibox::mojom::PageHandler> pending_page_handler) {
+  CHECK(g_omnibox_controller);
   webui_handler_ = std::make_unique<RealboxHandler>(
       std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
-      web_ui()->GetWebContents(), &metrics_reporter_,
-      /*is_omnibox_popup_handler=*/true);
+      web_ui()->GetWebContents(), &metrics_reporter_, g_omnibox_controller);
+  g_omnibox_controller = nullptr;
 }
 
 void OmniboxPopupUI::BindInterface(

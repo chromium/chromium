@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/realbox/realbox_handler.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/omnibox/browser/omnibox_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 WebUIOmniboxPopupView::WebUIOmniboxPopupView(LocationBarView* location_bar_view)
@@ -18,6 +19,12 @@ WebUIOmniboxPopupView::WebUIOmniboxPopupView(LocationBarView* location_bar_view)
       location_bar_view_(location_bar_view),
       widget_(nullptr) {
   set_owned_by_client();
+
+  // Prepare for instantiation of a RealboxHandler that will connect with
+  // this omnibox controller.
+  OmniboxPopupUI::SetOmniboxController(
+      location_bar_view->GetOmniboxView()->controller());
+  LoadInitialURL(GURL(chrome::kChromeUIOmniboxPopupURL));
 }
 
 WebUIOmniboxPopupView::~WebUIOmniboxPopupView() {
@@ -52,7 +59,6 @@ void WebUIOmniboxPopupView::Show() {
     // TODO(crbug.com/1396174): Should be dynamically sized based on
     // WebContents.
     SetPreferredSize(gfx::Size(640, 480));
-    LoadInitialURL(GURL(chrome::kChromeUIOmniboxPopupURL));
 
     widget_->SetBounds(GetTargetBounds());
   }

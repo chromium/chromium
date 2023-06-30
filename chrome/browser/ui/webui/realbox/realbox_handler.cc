@@ -755,7 +755,7 @@ RealboxHandler::RealboxHandler(
     Profile* profile,
     content::WebContents* web_contents,
     MetricsReporter* metrics_reporter,
-    bool is_omnibox_popup_handler)
+    OmniboxController* omnibox_controller)
     : profile_(profile),
       web_contents_(web_contents),
       metrics_reporter_(metrics_reporter),
@@ -764,11 +764,8 @@ RealboxHandler::RealboxHandler(
   // when the handler is being used in the context of the omnibox popup.
   // Otherwise, create own instance of OmniboxController. Either way, observe
   // the AutocompleteController instance owned by the OmniboxController.
-  if (is_omnibox_popup_handler) {
-    // TODO(crbug.com/1396174): This seems hacky. But currently there is no API
-    //  for getting the browser instance from the web contents in top chrome.
-    Browser* active_browser = chrome::FindLastActive();
-    controller_ = search::GetOmniboxView(active_browser)->controller();
+  if (omnibox_controller) {
+    controller_ = omnibox_controller;
   } else {
     owned_controller_ = std::make_unique<OmniboxController>(
         /*view=*/nullptr,

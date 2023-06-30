@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadBrowserTest, SearchPreloadSuccess) {
   RealboxHandler realbox_handler = RealboxHandler(
       remote_page_handler.BindNewPipeAndPassReceiver(), browser()->profile(),
       GetWebContents(), /*metrics_reporter=*/nullptr,
-      /*is_omnibox_popup_handler=*/false);
+      /*omnibox_controller=*/nullptr);
   realbox_handler.SetPage(page.GetRemotePage());
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetWebContents());

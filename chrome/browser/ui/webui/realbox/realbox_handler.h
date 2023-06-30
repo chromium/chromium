@@ -52,12 +52,14 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
       const gfx::VectorIcon& icon);
   static std::string PedalVectorIconToResourceName(const gfx::VectorIcon& icon);
 
+  // Note: `omnibox_controller` may be null for the Realbox, in which case
+  //  an internally owned controller is created and used.
   RealboxHandler(
       mojo::PendingReceiver<omnibox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents,
       MetricsReporter* metrics_reporter,
-      bool is_omnibox_popup_handler);
+      OmniboxController* omnibox_controller);
 
   RealboxHandler(const RealboxHandler&) = delete;
   RealboxHandler& operator=(const RealboxHandler&) = delete;
