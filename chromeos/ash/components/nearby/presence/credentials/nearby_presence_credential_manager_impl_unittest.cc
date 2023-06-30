@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/nearby/presence/credentials/fake_nearby_presence_server_client.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
+#include "chromeos/ash/components/nearby/presence/credentials/proto_conversions.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_nearby_presence.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -31,9 +32,11 @@
 
 namespace {
 
+const std::string kUserEmail = "testtester@gmail.com";
+const std::string kDeviceName = "Test's Chromebook";
 const std::string kUserName = "Test Tester";
-const std::string kDeviceId = "0123456789";
 const std::string kProfileUrl = "https://example.com";
+const std::string kDeviceId = "0123456789";
 const base::TimeDelta kServerResponseTimeout = base::Seconds(5);
 constexpr int kServerCommunicationMaxAttempts = 5;
 const std::vector<uint8_t> kSecretId1 = {0x11, 0x11, 0x11, 0x11, 0x11, 0x11};
@@ -63,6 +66,16 @@ BuildSharedCredentials() {
   shared_credentials.push_back(BuildSharedCredential(kSecretId2));
   shared_credentials.push_back(BuildSharedCredential(kSecretId3));
   return shared_credentials;
+}
+
+::nearby::internal::Metadata BuildTestMetadata() {
+  return ash::nearby::presence::BuildMetadata(
+      /*device_type=*/::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS,
+      /*account_name=*/kUserEmail,
+      /*device_name=*/kDeviceName,
+      /*user_name=*/kUserName,
+      /*profile_url=*/kProfileUrl,
+      /*mac_address=*/std::string());
 }
 
 }  // namespace
@@ -219,6 +232,35 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
   ash::nearby::FakeNearbySchedulerFactory scheduler_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
+
+TEST_F(NearbyPresenceCredentialManagerImplTest, SetDeviceMetadata) {
+  // Simulate that it is not first time registration flow.
+  fake_local_device_data_provider_->SetRegistrationComplete(true);
+  fake_local_device_data_provider_->SetDeviceMetadata(BuildTestMetadata());
+  fake_local_device_data_provider_->SaveUserRegistrationInfo(
+      /*display_name=*/kUserName, /*image_url=*/kProfileUrl);
+
+  base::RunLoop update_local_device_metadata_run_loop;
+  fake_nearby_presence_.SetUpdateLocalDeviceMetadataCallback(
+      update_local_device_metadata_run_loop.QuitClosure());
+
+  base::RunLoop create_credential_run_loop;
+  CreateCredentialManager(create_credential_run_loop.QuitClosure());
+  create_credential_run_loop.Run();
+
+  EXPECT_TRUE(credential_manager_);
+
+  update_local_device_metadata_run_loop.Run();
+
+  auto* local_device_metadata = fake_nearby_presence_.GetLocalDeviceMetadata();
+  EXPECT_TRUE(local_device_metadata);
+  EXPECT_EQ(kProfileUrl, local_device_metadata->device_profile_url);
+  EXPECT_EQ(kUserName, local_device_metadata->user_name);
+  EXPECT_EQ(kUserEmail, local_device_metadata->account_name);
+  EXPECT_EQ(mojom::PresenceDeviceType::kChromeos,
+            local_device_metadata->device_type);
+  EXPECT_EQ(kDeviceName, local_device_metadata->device_name);
+}
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, RegistrationSuccess) {
   // Wait until after the generated credentials are saved to continue the test.

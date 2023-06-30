@@ -61,12 +61,22 @@ class FakeNearbyPresence : public mojom::NearbyPresence,
   void SetGenerateCredentialsResponse(
       std::vector<mojom::SharedCredentialPtr> shared_credentials,
       mojom::StatusCode status) {
-    shared_credentials_ = std::move(shared_credentials);
-    status_ = status;
+    generated_shared_credentials_response_ = std::move(shared_credentials);
+    generate_credentials_response_status_ = status;
+  }
+
+  mojom::Metadata* GetLocalDeviceMetadata() {
+    return local_device_metadata_.get();
+  }
+
+  void SetUpdateLocalDeviceMetadataCallback(base::OnceClosure callback) {
+    update_local_device_metadata_callback_ = std::move(callback);
   }
 
  private:
   mojo::SharedRemote<mojom::ScanObserver> scan_observer_remote_;
+  mojom::MetadataPtr local_device_metadata_;
+  base::OnceClosure update_local_device_metadata_callback_;
 
   mojo::ReceiverSet<::ash::nearby::presence::mojom::NearbyPresence>
       receiver_set_;
@@ -77,8 +87,10 @@ class FakeNearbyPresence : public mojom::NearbyPresence,
   mojo::PendingRemote<mojom::ScanSession> scan_session_remote_;
 
   bool on_disconnect_called_ = false;
-  std::vector<mojom::SharedCredentialPtr> shared_credentials_;
-  mojom::StatusCode status_ = mojom::StatusCode::kFailure;
+  std::vector<mojom::SharedCredentialPtr>
+      generated_shared_credentials_response_;
+  mojom::StatusCode generate_credentials_response_status_ =
+      mojom::StatusCode::kFailure;
   base::WeakPtrFactory<FakeNearbyPresence> weak_ptr_factory_{this};
 };
 

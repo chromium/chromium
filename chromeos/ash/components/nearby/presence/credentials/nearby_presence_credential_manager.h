@@ -44,6 +44,14 @@ class NearbyPresenceCredentialManager {
   // Schedules an immediate task to upload/download credentials to/from the
   // server.
   virtual void UpdateCredentials() = 0;
+
+  // Retrieves local device metadata from the `LocalDeviceDataProvider`
+  // via `LocalDeviceDataProvider::GetDeviceMetadata()` and sets it
+  // in the NP library over the mojo pipe. This needs to be called on start up
+  // every time, unless we are in the first time registration flow (as indicated
+  // by `IsLocalDeviceRegistered()` returning true).
+  virtual void InitializeDeviceMetadata(
+      base::OnceClosure on_metadata_initialized_callback) = 0;
 };
 
 }  // namespace ash::nearby::presence

@@ -50,13 +50,18 @@ void FakeNearbyPresence::OnDisconnect() {
 }
 
 void FakeNearbyPresence::UpdateLocalDeviceMetadata(
-    mojom::MetadataPtr metadata) {}
+    mojom::MetadataPtr metadata) {
+  local_device_metadata_ = std::move(metadata);
+  std::move(update_local_device_metadata_callback_).Run();
+}
 
 void FakeNearbyPresence::UpdateLocalDeviceMetadataAndGenerateCredentials(
     mojom::MetadataPtr metadata,
     FakeNearbyPresence::UpdateLocalDeviceMetadataAndGenerateCredentialsCallback
         callback) {
-  std::move(callback).Run(std::move(shared_credentials_), status_);
+  local_device_metadata_ = std::move(metadata);
+  std::move(callback).Run(std::move(generated_shared_credentials_response_),
+                          generate_credentials_response_status_);
 }
 
 }  // namespace ash::nearby::presence

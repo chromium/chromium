@@ -227,6 +227,16 @@ TEST_F(NearbyPresenceTest, RunStartScan_DeviceLostCallback) {
   EXPECT_EQ(1, num_devices_lost_);
 }
 
+TEST_F(NearbyPresenceTest, RunUpdateLocalDeviceMetadata) {
+  nearby_presence_->UpdateLocalDeviceMetadata(BuildTestMetadata());
+
+  ::nearby::internal::Metadata local_device_metadata =
+      fake_presence_service_->GetLocalDeviceMetadata();
+  EXPECT_EQ(kAccountName, local_device_metadata.account_name());
+  EXPECT_EQ(kDeviceName, local_device_metadata.device_name());
+  EXPECT_EQ(kProfileUrl, local_device_metadata.device_profile_url());
+}
+
 TEST_F(NearbyPresenceTest,
        UpdateLocalDeviceMetadataAndGenerateCredentials_Success) {
   ::nearby::internal::SharedCredential shared_credential1;

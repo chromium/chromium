@@ -63,6 +63,7 @@ class NearbyPresence : public mojom::NearbyPresence {
   FRIEND_TEST_ALL_PREFIXES(
       NearbyPresenceTest,
       UpdateLocalDeviceMetadataAndGenerateCredentials_Fail);
+  FRIEND_TEST_ALL_PREFIXES(NearbyPresenceTest, RunUpdateLocalDeviceMetadata);
 
   // mojom::NearbyPresence:
   void SetScanObserver(

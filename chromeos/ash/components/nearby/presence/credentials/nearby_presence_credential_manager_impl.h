@@ -103,6 +103,7 @@ class NearbyPresenceCredentialManagerImpl
     friend class base::NoDestructor<Creator>;
 
     void OnCredentialManagerRegistered(bool success);
+    void OnCredentialManagerInitialized();
 
     // While a new CredentialManager is being initialized the factory retains a
     // reference to it. After initialization is complete |on_created_|
@@ -128,6 +129,8 @@ class NearbyPresenceCredentialManagerImpl
   void RegisterPresence(
       base::OnceCallback<void(bool)> on_registered_callback) override;
   void UpdateCredentials() override;
+  void InitializeDeviceMetadata(
+      base::OnceClosure on_metadata_initialized_callback) override;
 
  protected:
   NearbyPresenceCredentialManagerImpl(

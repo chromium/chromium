@@ -102,9 +102,10 @@ void NearbyPresenceCredentialManagerImpl::Creator::Create(
     return;
   }
 
-  // TODO(b/276307539): Implement the second case where the local device
-  // is already registered and the CredentialManagerFactory needs to
-  // set the metadata.
+  credential_manager_under_initialization_->InitializeDeviceMetadata(
+      base::BindOnce(&NearbyPresenceCredentialManagerImpl::Creator::
+                         OnCredentialManagerInitialized,
+                     base::Unretained(this)));
 }
 
 // static
@@ -135,6 +136,15 @@ void NearbyPresenceCredentialManagerImpl::Creator::
   std::move(on_created_)
       .Run(std::move(credential_manager_under_initialization_));
   credential_manager_under_initialization_ = nullptr;
+}
+
+void NearbyPresenceCredentialManagerImpl::Creator::
+    OnCredentialManagerInitialized() {
+  CHECK(on_created_);
+  CHECK(credential_manager_under_initialization_);
+  CHECK(credential_manager_under_initialization_->IsLocalDeviceRegistered());
+  std::move(on_created_)
+      .Run(std::move(credential_manager_under_initialization_));
 }
 
 NearbyPresenceCredentialManagerImpl::NearbyPresenceCredentialManagerImpl(
@@ -182,6 +192,13 @@ void NearbyPresenceCredentialManagerImpl::RegisterPresence(
 
 void NearbyPresenceCredentialManagerImpl::UpdateCredentials() {
   // TODO(b/276307539): Implement `UpdateCredentials`.
+}
+
+void NearbyPresenceCredentialManagerImpl::InitializeDeviceMetadata(
+    base::OnceClosure on_metadata_initialized_callback) {
+  nearby_presence_->UpdateLocalDeviceMetadata(
+      MetadataToMojom(local_device_data_provider_->GetDeviceMetadata()));
+  std::move(on_metadata_initialized_callback).Run();
 }
 
 void NearbyPresenceCredentialManagerImpl::StartFirstTimeRegistration() {
