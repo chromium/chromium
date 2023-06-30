@@ -27,7 +27,6 @@
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
-using ::testing::SizeIs;
 using ::testing::WithArgs;
 
 namespace reporting {
@@ -106,7 +105,7 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
   }
 
   // Must be initialized before any other class member.
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_envrionment_;
 
   ReportingServerConnector::TestEnvironment test_env_;
   EncryptedRecord record_;
@@ -122,6 +121,9 @@ TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
       .WillOnce([&uploaded_event](SequenceInformation seq_info, bool force) {
         std::move(uploaded_event.cb()).Run(std::move(seq_info), force);
       });
+  EXPECT_CALL(*test_env_.client(),
+              UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
+      .WillOnce(MakeUploadEncryptedReportAction());
 
   std::vector<EncryptedRecord> records;
   records.emplace_back(record_);
@@ -132,14 +134,6 @@ TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
       /*need_encryption_key=*/false, std::move(records),
       std::move(record_reservation));
   EXPECT_OK(status) << status;
-  task_environment_.RunUntilIdle();
-
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
-  base::Value::Dict request_body = test_env_.request_body(0);
-  EXPECT_THAT(request_body, IsDataUploadRequestValid());
-
-  test_env_.SimulateResponseForRequest(0);
-
   auto uploaded_result = uploaded_event.result();
   EXPECT_THAT(std::get<0>(uploaded_result),
               EqualsProto(record_.sequence_information()));

@@ -168,20 +168,16 @@ TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
   EXPECT_CALL(*this, ReportSuccessfulUpload(
                          EqualsProto(record_.sequence_information()), _))
       .Times(1);
+  EXPECT_CALL(
+      *test_env_.client(),
+      UploadEncryptedReport(::reporting::IsDataUploadRequestValid(), _, _))
+      .WillOnce(::reporting::MakeUploadEncryptedReportAction());
 
   ::reporting::UploadEncryptedRecordRequest request;
   request.add_encrypted_record()->CheckTypeAndMergeFrom(record_);
 
   ::reporting::UploadEncryptedRecordResponse response;
   CallRequestUploadEncryptedRecord(request, &response);
-  task_environment_.RunUntilIdle();
-
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(),
-              testing::SizeIs(1));
-  EXPECT_THAT(test_env_.request_body(0),
-              ::reporting::IsDataUploadRequestValid());
-
-  test_env_.SimulateResponseForRequest(0);
 
   EXPECT_THAT(response.status().code(), Eq(::reporting::error::OK));
 }
@@ -189,6 +185,7 @@ TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
 TEST_F(EncryptedReportingServiceProviderTest,
        NoRecordUploadWhenUploaderDisabled) {
   SetupForRequestUploadEncryptedRecord();
+  EXPECT_CALL(*test_env_.client(), UploadEncryptedReport(_, _, _)).Times(0);
 
   ::reporting::UploadEncryptedRecordRequest request;
   request.add_encrypted_record()->CheckTypeAndMergeFrom(record_);
@@ -198,10 +195,6 @@ TEST_F(EncryptedReportingServiceProviderTest,
 
   ::reporting::UploadEncryptedRecordResponse response;
   CallRequestUploadEncryptedRecord(request, &response);
-  task_environment_.RunUntilIdle();
-
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(),
-              testing::IsEmpty());
 }
 
 }  // namespace
