@@ -5265,6 +5265,8 @@ static_library("ui") {
       "views/shopping_bubble/shopping_prompt_impl.h",
       "views/side_panel/bookmarks/bookmarks_side_panel_coordinator.cc",
       "views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h",
+      "views/side_panel/companion_side_panel_web_view.cc",
+      "views/side_panel/companion_side_panel_web_view.h",
       "views/side_panel/customize_chrome/customize_chrome_side_panel_controller.cc",
       "views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h",
       "views/side_panel/customize_chrome/customize_chrome_side_panel_controller_utils.cc",

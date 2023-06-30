@@ -7,14 +7,12 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
 class CompanionSidePanelUntrustedUI
-    : public content::WebContentsDelegate,
-      public ui::UntrustedBubbleWebUIController,
+    : public ui::UntrustedBubbleWebUIController,
       public side_panel::mojom::CompanionPageHandlerFactory {
  public:
   explicit CompanionSidePanelUntrustedUI(content::WebUI* web_ui);
@@ -33,22 +31,11 @@ class CompanionSidePanelUntrustedUI
   // Gets a weak pointer to this object.
   base::WeakPtr<CompanionSidePanelUntrustedUI> GetWeakPtr();
 
-  // content::WebContentsDelegate:
-  content::WebContents* OpenURLFromTab(
-      content::WebContents* source,
-      const content::OpenURLParams& params) override;
-
  private:
   // side_panel::mojom::CompanionPageHandlerFactory:
   void CreateCompanionPageHandler(
       mojo::PendingReceiver<side_panel::mojom::CompanionPageHandler> receiver,
       mojo::PendingRemote<side_panel::mojom::CompanionPage> page) override;
-
-  // content::WebContentsDelegate:
-  void RequestMediaAccessPermission(
-      content::WebContents* web_contents,
-      const content::MediaStreamRequest& request,
-      content::MediaResponseCallback callback) override;
 
   std::unique_ptr<side_panel::mojom::CompanionPageHandler>
       companion_page_handler_;

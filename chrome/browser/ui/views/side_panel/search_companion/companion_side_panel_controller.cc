@@ -11,10 +11,10 @@
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/companion_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
@@ -94,16 +94,8 @@ CompanionSidePanelController::GetCompanionWebContentsForTesting() {
 
 std::unique_ptr<views::View>
 CompanionSidePanelController::CreateCompanionWebView() {
-  auto wrapper =
-      std::make_unique<BubbleContentsWrapperT<CompanionSidePanelUntrustedUI>>(
-          GURL(chrome::kChromeUIUntrustedCompanionSidePanelURL),
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-          /*webui_resizes_host=*/false,
-          /*esc_closes_ui=*/false);
-  auto companion_web_view =
-      std::make_unique<SidePanelWebUIViewT<CompanionSidePanelUntrustedUI>>(
-          base::RepeatingClosure(), base::RepeatingClosure(),
-          std::move(wrapper));
+  auto companion_web_view = std::make_unique<CompanionSidePanelWebView>(
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
 
   // Observe on the webcontents for opening links in new tab.
   Observe(companion_web_view->GetWebContents());
@@ -152,7 +144,7 @@ void CompanionSidePanelController::DidOpenRequestedURL(
   // redirecting to main browser.
   if (!IsSiteTrusted(source_render_frame_host->GetLastCommittedURL())) {
     return;
-  };
+  }
 
   // The window.open from the Search Companion is caught here and ignored.
   // Instead we create another navigation toward the same URL targeting a frame
