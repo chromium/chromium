@@ -357,6 +357,7 @@
 <translation id="256712445991462162">ଡକ୍ ହୋଇଥିବା ମ୍ୟାଗ୍ନିଫାୟାର୍</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> ସହ ସଂଯୋଗ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="2575685495496069081">ଏକାଧିକ ସାଇନ୍‌ ଇନ୍‌ ଅକ୍ଷମ କରାଯାଇଛି</translation>
+<translation id="2579264398927991698">ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ</translation>
 <translation id="2582112259361606227">ଅପ୍‍‍ଡେଟ୍ କରିବା ପାଇଁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> ସହ ଏକତ୍ରିତ କରିବାକୁ Ctrl + W ଦବାନ୍ତୁ। ଡେସ୍କ ଏବଂ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ବନ୍ଦ କରିବା ପାଇଁ Ctrl + Shift + W ଦବାନ୍ତୁ।</translation>
 <translation id="2595239820337756193">5K ମାଇଲରେ</translation>
@@ -688,6 +689,7 @@
 <translation id="4028481283645788203">ଅଧିକ ସୁରକ୍ଷା ପାଇଁ ପାସୱାର୍ଡ ଆବଶ୍ୟକ</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">ଆପଣ, ଆପଣଙ୍କର ସ୍କ୍ରିନ୍ ସେୟାର୍ କରୁଛନ୍ତି</translation>
+<translation id="404437169852192935">ଅପଡେଟଗୁଡ଼ିକ ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="4049230407053723315">କୁଇକ ସେଟିଂସ</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" />ଟିରୁ <ph name="INDEX" /> ନମ୍ବର ବ୍ରାଉଜର୍ ଟାବ୍। <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ଏକ ଆପ୍ ପାଇଁ ବନ୍ଦ ଅଛି}other{#ଟି ଆପ୍ସ ପାଇଁ ବନ୍ଦ ଅଛି}}</translation>
@@ -1021,11 +1023,13 @@
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> କିମ୍ବା <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="5503884284981862082">Google Assistant ଖୋଲନ୍ତୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="550391772491508736">କାଷ୍ଟିଂ ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="5506975627792768506">ମେଗ୍ନିଫାୟାରକୁ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5512042095225963688">ପୂର୍ବବର୍ତ୍ତୀ ଶବ୍ଦକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ସମସ୍ତ eSIM ପ୍ରୋଫାଇଲକୁ କାଢ଼ି ଦେଇଛନ୍ତି। ଅଧିକ ସୂଚନା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" />କୁ ସଂଯୋଗ କରାଯାଉଛି।</translation>
+<translation id="5529587891732734495">କାଷ୍ଟିଂକୁ ବିରତ କରନ୍ତୁ</translation>
 <translation id="5532994612895037630">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ରେକର୍ଡ କରିବାକୁ ସ୍କ୍ରିନର ଯେ କୌଣସି ସ୍ଥାନରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="5536723544185013515">ବର୍ତ୍ତମାନର ଆପ୍ସ, ବର୍ତ୍ତମାନର ସମସ୍ତ ଆପକୁ ଆକ୍ସେସ କରିବା ପାଇଁ ବାମ କିମ୍ବା ଡାହାଣ ତୀର କୀ ସହ ନାଭିଗେଟ କରନ୍ତୁ</translation>
 <translation id="553675580533261935">ସମୟ ଅବଧିରୁ ପ୍ରସ୍ଥାନ କରୁଛି</translation>

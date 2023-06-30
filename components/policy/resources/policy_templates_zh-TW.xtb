@@ -416,7 +416,7 @@
 <translation id="1384459581748403878">參考頁面：<ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">如果啟用這項政策，只要任何網址符合政策指定 (使用 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 篩選器格式) 的一或多個模式，就不會遭瀏覽器捨棄。這項政策會套用至用於釋放記憶體壓力及高效率模式的捨棄功能。系統會卸載捨棄的網頁，並完整收回該網頁的資源。與網頁殘餘資料相關聯的分頁仍會保留在分頁列中，當使用者切換到該分頁時，就會觸發系統完整重新載入該分頁。
       </translation>
-<translation id="138847842893090358">回報作業系統的更新狀態</translation>
+<translation id="138847842893090358">回報 OS 更新狀態</translation>
 <translation id="1390529781843037070">如果將這項政策設為啟用或不設定，使用者將可透過 <ph name="PRODUCT_NAME" /> 列印對話方塊把列印工作提交至 <ph name="CLOUD_PRINT_NAME" />。<ph name="PRODUCT_NAME" /> 可將文件提交至 <ph name="CLOUD_PRINT_NAME" />進行列印。這並不會禁止使用者在網站上提交列印工作。
 
       如果將這項政策設為停用，則使用者無法透過 <ph name="PRODUCT_NAME" /> 列印對話方塊把列印工作提交至 <ph name="CLOUD_PRINT_NAME" />。
