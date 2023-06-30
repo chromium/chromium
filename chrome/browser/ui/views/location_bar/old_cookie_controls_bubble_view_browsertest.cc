@@ -213,6 +213,31 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, BlockingDisabled) {
   EXPECT_FALSE(cookie_settings()->IsThirdPartyAccessAllowed(origin, nullptr));
 }
 
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, NonAllowedCookieSite) {
+  // Regression test for crbug.com/1459383. Activating a tab where cookies are
+  // blocked, such as an internal chrome:// url, while the UI is shown, should
+  // not crash.
+  SetThirdPartyCookieBlocking(true);
+  NavigateToUrlWithThirdPartyCookies();
+
+  // Open chrome://about in the background.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome://about"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // Open bubble on the page with 3PC blocked.
+  ShowUi("NotWorkingClicked");
+
+  // While bubble is open, activate the chrome://about tab.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+
+  // The crash would have already occurred, but navigate to another chrome://
+  // url to be sure.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+}
+
 // ==================== Pixel tests ====================
 
 // Test opening cookie controls bubble with blocked cookies present.

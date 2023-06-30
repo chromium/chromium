@@ -205,8 +205,10 @@ void OldCookieControlsBubbleView::UpdateUi() {
 }
 
 void OldCookieControlsBubbleView::CloseBubble() {
-  // Widget's Close() is async, but we don't want to use cookie_bubble_ after
-  // this. Additionally web_contents() may have been destroyed.
+  // Widget's Close() is async, but we don't want to use cookie_bubble_, or
+  // receive CookieControls updates after this. Additionally web_contents() may
+  // have been destroyed.
+  controller_observation_.Reset();
   g_instance = nullptr;
   LocationBarBubbleDelegateView::CloseBubble();
 }
