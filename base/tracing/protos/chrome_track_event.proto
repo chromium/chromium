@@ -46,10 +46,16 @@ message BlinkTaskScope {
 }
 
 message ChromeTaskAnnotator {
+  enum DelayPolicy {
+    FLEXIBLE_NO_SOONER = 0;
+    FLEXIBLE_PREFER_EARLY = 1;
+    PRECISE = 2;
+  }
   optional uint32 ipc_hash = 1;
   // The delay in microseconds that was specified, if any, when this task was
   // posted. This is only valid for delayed tasks.
   optional uint64 task_delay_us = 2;
+  optional DelayPolicy delay_policy = 3;
 }
 
 message ChromeBrowserContext {
