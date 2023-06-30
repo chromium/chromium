@@ -2759,12 +2759,6 @@ extern const char kOmniboxDriveSuggestionsDescription[];
 extern const char kOmniboxDriveSuggestionsNoSettingName[];
 extern const char kOmniboxDriveSuggestionsNoSettingDescription[];
 
-extern const char kPasswordsGroupingName[];
-extern const char kPasswordsGroupingDescription[];
-
-extern const char kPasswordManagerRedesignName[];
-extern const char kPasswordManagerRedesignDescription[];
-
 extern const char kPermissionStorageAccessAPIName[];
 extern const char kPermissionStorageAccessAPIDescription[];
 

@@ -4793,15 +4793,6 @@ const char kOmniboxDriveSuggestionsNoSettingDescription[] =
     "however, the existing 'Improve search suggestions' setting can still be "
     "used to disable all server-side suggestions altogether.";
 
-const char kPasswordsGroupingName[] = "Passwords grouping";
-const char kPasswordsGroupingDescription[] =
-    "Enables displaying passwords grouped together using information from "
-    "the affiliation service.";
-
-const char kPasswordManagerRedesignName[] = "Password Manager new UI";
-const char kPasswordManagerRedesignDescription[] =
-    "Enables new Password Manager UI on Desktop";
-
 const char kPermissionStorageAccessAPIName[] =
     "Storage Access API permission UI";
 const char kPermissionStorageAccessAPIDescription[] =
