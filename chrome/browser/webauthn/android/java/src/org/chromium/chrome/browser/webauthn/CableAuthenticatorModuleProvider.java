@@ -254,7 +254,7 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
     }
 
     @CalledByNative
-    public static void getLinkingInformation() {
+    public static void getLinkingInformation(long pointer) {
         boolean ok = true;
         if (!ExternalAuthUtils.getInstance().canUseFirstPartyGooglePlayServices()) {
             Log.i(TAG, "Cannot get linking information from Play Services without 1p access.");
@@ -265,7 +265,7 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
         }
 
         if (!ok) {
-            CableAuthenticatorModuleProviderJni.get().onHaveLinkingInformation(null);
+            CableAuthenticatorModuleProviderJni.get().onHaveLinkingInformation(pointer, null);
             return;
         }
 
@@ -277,10 +277,11 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
         Task<byte[]> task = call.run(Fido2ApiCall.METHOD_GET_LINK_INFO,
                 Fido2ApiCall.TRANSACTION_GET_LINK_INFO, args, result);
         task.addOnSuccessListener(linkInfo -> {
-                CableAuthenticatorModuleProviderJni.get().onHaveLinkingInformation(linkInfo);
+                CableAuthenticatorModuleProviderJni.get().onHaveLinkingInformation(
+                        pointer, linkInfo);
             }).addOnFailureListener(exception -> {
             Log.e(TAG, "Call to get linking information from Play Services failed", exception);
-            CableAuthenticatorModuleProviderJni.get().onHaveLinkingInformation(null);
+            CableAuthenticatorModuleProviderJni.get().onHaveLinkingInformation(pointer, null);
         });
     }
 
@@ -303,6 +304,6 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
         // onHaveLinkingInformation is called when pre-link information has been received from Play
         // Services. The argument is a CBOR-encoded linking structure, as defined in CTAP 2.2, or is
         // null on error.
-        void onHaveLinkingInformation(byte[] cbor);
+        void onHaveLinkingInformation(long pointer, byte[] cbor);
     }
 }

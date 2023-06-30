@@ -7,7 +7,7 @@
 #include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-TEST(CableModuleAndroidTest, PaaskInfoFromCBOr) {
+TEST(CableModuleAndroidTest, PaaskInfoFromCBOR) {
   // This CBOR was captured from Play Services.
   constexpr uint8_t kCBOR[] = {
       0xa6, 0x01, 0x58, 0x98, 0x63, 0x5f, 0x31, 0x48, 0x4f, 0x56, 0x39, 0x47,

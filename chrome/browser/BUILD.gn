@@ -3245,6 +3245,8 @@ static_library("browser") {
       "usb/android/web_usb_chooser_android.h",
       "webapps/web_app_offline_android.cc",
       "webauthn/android/cable_module_android.cc",
+      "webauthn/android/cable_registration_state.cc",
+      "webauthn/android/cable_registration_state.h",
       "webauthn/android/chrome_webauthn_client_android.cc",
       "webauthn/android/chrome_webauthn_client_android.h",
       "webauthn/android/webauthn_request_delegate_android.cc",

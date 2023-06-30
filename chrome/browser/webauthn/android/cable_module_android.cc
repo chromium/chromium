@@ -17,6 +17,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/webauthn/android/cable_registration_state.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
@@ -25,7 +26,6 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "content/public/browser/browser_thread.h"
-#include "crypto/random.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/v2_registration.h"
@@ -56,243 +56,98 @@ namespace {
 // the authenticator.
 const char kRootSecretPrefName[] = "webauthn.authenticator_root_secret";
 
-// RegistrationState is a singleton object that loads an install-wide secret at
-// startup and holds two FCM registrations. One registration, the "linking"
-// registration, is used when the user links with another device by scanning a
-// QR code. The second is advertised via Sync for other devices signed into the
-// same account. The reason for having two registrations is that the linking
-// registration can be rotated if the user wishes to unlink all QR-linked
-// devices. But we don't want to break synced peers when that happens. Instead,
-// for synced peers we require that they have received a recent sync status from
-// this device, i.e. we rotate them automatically.
-class RegistrationState {
+// SystemInterface connects a `RegistrationState` to the rest of the system.
+// This object is owned by the `RegistrationState`, and that is a singleton
+// object. So this object is a singleton too and so can do things like pass a
+// pointer to itself to Java functions to route the eventual callback.
+class SystemInterface : public RegistrationState::SystemInterface {
  public:
-  void Register() {
-    DCHECK(!linking_registration_);
-    DCHECK(!sync_registration_);
+  std::unique_ptr<device::cablev2::authenticator::Registration> NewRegistration(
+      device::cablev2::authenticator::Registration::Type type,
+      base::OnceCallback<void()> on_ready,
+      base::RepeatingCallback<void(
+          std::unique_ptr<device::cablev2::authenticator::Registration::Event>)>
+          event_callback) override {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    return device::cablev2::authenticator::Register(
+        GetDriver(), type, std::move(on_ready), std::move(event_callback));
+  }
 
-    prelink_play_services_ =
-        base::FeatureList::IsEnabled(device::kWebAuthnPrelinkPlayServices);
+  std::string GetRootSecret() override {
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    return g_browser_process->local_state()->GetString(kRootSecretPrefName);
+  }
 
-    instance_id::InstanceIDDriver* const driver =
-        instance_id::InstanceIDProfileServiceFactory::GetForProfile(
-            g_browser_process->profile_manager()->GetPrimaryUserProfile())
-            ->driver();
-    linking_registration_ = device::cablev2::authenticator::Register(
-        driver, device::cablev2::authenticator::Registration::Type::LINKING,
-        base::BindOnce(&RegistrationState::OnLinkingRegistrationReady,
-                       base::Unretained(this)),
-        base::BindRepeating(&RegistrationState::OnEvent,
-                            base::Unretained(this)));
-    sync_registration_ = device::cablev2::authenticator::Register(
-        driver, device::cablev2::authenticator::Registration::Type::SYNC,
-        base::BindOnce(&RegistrationState::OnSyncRegistrationReady,
-                       base::Unretained(this)),
-        base::BindRepeating(&RegistrationState::OnEvent,
-                            base::Unretained(this)));
+  void SetRootSecret(std::string secret) override {
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    g_browser_process->local_state()->SetString(kRootSecretPrefName,
+                                                std::move(secret));
+  }
+
+  void CanDeviceSupportCable(base::OnceCallback<void(bool)> callback) override {
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
-            &RegistrationState::GetCanDeviceSupportCableOnBackgroundSequence),
-        base::BindOnce(&RegistrationState::OnDeviceSupportResult,
-                       base::Unretained(this)));
+            &SystemInterface::GetCanDeviceSupportCableOnBackgroundSequence),
+        std::move(callback));
+  }
 
-    PrefService* const local_state = g_browser_process->local_state();
-    std::string secret_base64 = local_state->GetString(kRootSecretPrefName);
-
-    if (!secret_base64.empty()) {
-      std::string secret_str;
-      if (base::Base64Decode(secret_base64, &secret_str) &&
-          secret_str.size() == secret_.size()) {
-        memcpy(secret_.data(), secret_str.data(), secret_.size());
-      } else {
-        secret_base64.clear();
-      }
-    }
-
-    if (secret_base64.empty()) {
-      crypto::RandBytes(secret_);
-      local_state->SetString(kRootSecretPrefName, base::Base64Encode(secret_));
-    }
-
+  void CalculateIdentityKey(
+      const std::array<uint8_t, 32>& secret,
+      base::OnceCallback<void(bssl::UniquePtr<EC_KEY>)> callback) override {
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
-            &RegistrationState::CalculateIdentityKeyOnBackgroundSequence,
-            secret_),
-        base::BindOnce(&RegistrationState::OnIdentityKeyReady,
-                       base::Unretained(this)));
+            &SystemInterface::CalculateIdentityKeyOnBackgroundSequence, secret),
+        std::move(callback));
   }
 
-  bool is_registered_for_linking() const {
-    return linking_registration_ != nullptr;
-  }
-  bool is_registered_for_sync() const { return sync_registration_ != nullptr; }
-
-  Registration* linking_registration() const {
-    return linking_registration_.get();
-  }
-
-  Registration* sync_registration() const { return sync_registration_.get(); }
-
-  const std::array<uint8_t, 32>& secret() const { return secret_; }
-
-  // have_data_for_sync returns true if this object has loaded enough state to
-  // put information into sync's DeviceInfo.
-  bool have_data_for_sync() const {
-    return device_supports_cable_.has_value() && identity_key_ &&
-           sync_registration_ != nullptr && sync_registration_->contact_id() &&
-           have_play_services_data();
-  }
-
-  const EC_KEY* identity_key() const {
-    DCHECK(identity_key_);
-    return identity_key_.get();
-  }
-
-  bool device_supports_cable() const { return *device_supports_cable_; }
-  bool prelink_play_services() const { return prelink_play_services_; }
-
-  const absl::optional<std::vector<uint8_t>>& link_data_from_play_services()
-      const {
-    DCHECK(prelink_play_services_);
-    DCHECK(have_link_data_from_play_services_);
-    return link_data_from_play_services_;
-  }
-
-  void SignalSyncWhenReady() {
-    if (sync_registration_ && !sync_registration_->contact_id()) {
-      sync_registration_->PrepareContactID();
-    }
-    if (!have_play_services_data() && !play_services_query_pending_) {
-      QueryPlayServices();
-    }
-    signal_sync_when_ready_ = true;
-  }
-
-  void OnHavePlayServicesLinkingInformation(
-      absl::optional<std::vector<uint8_t>> cbor) {
+  void GetPrelinkFromPlayServices(
+      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback)
+      override {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-    DCHECK(play_services_query_pending_);
-
-    play_services_query_pending_ = false;
-    link_data_from_play_services_ = std::move(cbor);
-    have_link_data_from_play_services_ = true;
-    link_data_from_play_services_timeticks_ = base::TimeTicks::Now();
-    MaybeSignalSync();
-  }
-
- private:
-  bool have_play_services_data() const {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-
-    // If querying Play Services is disabled then it's always "ready".
-    if (!prelink_play_services_) {
-      return true;
-    }
-    // If there's no result, then we're not ready.
-    if (!have_link_data_from_play_services_) {
-      return false;
-    }
-    // If there's a query already pending then the result must be stale and
-    // there's nothing more to do here.
-    if (play_services_query_pending_) {
-      return false;
-    }
-    const base::TimeDelta staleness =
-        base::TimeTicks::Now() - link_data_from_play_services_timeticks_;
-    return staleness < base::Hours(12);
-  }
-
-  void QueryPlayServices() {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-    DCHECK(!play_services_query_pending_);
-
-    play_services_query_pending_ = true;
+    DCHECK(!prelink_callback_);
+    prelink_callback_ = std::move(callback);
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&RegistrationState::
-                           GetPrelinkFromPlayServicesOnBackgroundSequence));
+        base::BindOnce(
+            &SystemInterface::GetPrelinkFromPlayServicesOnBackgroundSequence,
+            // Passing this pointer is reasonable because this object is owned
+            // by a singleton.
+            reinterpret_cast<uintptr_t>(this)));
   }
 
-  void OnLinkingRegistrationReady() { MaybeFlushPendingEvent(); }
-
-  void OnSyncRegistrationReady() { MaybeSignalSync(); }
-
-  // OnEvent is called when a GCM message is received.
-  void OnEvent(std::unique_ptr<Registration::Event> event) {
+  void OnCloudMessage(std::vector<uint8_t> serialized,
+                      bool is_make_credential) override {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-
-    pending_event_ = std::move(event);
-
-    MaybeFlushPendingEvent();
-  }
-
-  void MaybeFlushPendingEvent() {
-    if (!pending_event_) {
-      return;
-    }
-
-    if (pending_event_->source == Registration::Type::LINKING &&
-        !pending_event_->contact_id) {
-      // This GCM message is from a QR-linked peer so it needs the contact ID
-      // to be processed.
-      pending_event_->contact_id = linking_registration_->contact_id();
-
-      if (!pending_event_->contact_id) {
-        // The contact ID isn't ready yet. Wait until it is.
-        linking_registration_->PrepareContactID();
-        return;
-      }
-    }
-
-    std::unique_ptr<Registration::Event> event(std::move(pending_event_));
-    if (event->source == Registration::Type::SYNC) {
-      // If this is from a synced peer then we limit how old the keys can be.
-      // Clank will update its device information once per day (when launched)
-      // and we piggyback on that to transmit fresh keys. Therefore syncing
-      // peers should have reasonably recent information.
-      uint64_t id;
-      static_assert(EXTENT(event->pairing_id) == sizeof(id), "");
-      memcpy(&id, event->pairing_id.data(), sizeof(id));
-
-      // A maximum age is enforced for sync secrets so that any leak of
-      // information isn't valid forever. The desktop ignores DeviceInfo
-      // records with information that is too old so this should never happen
-      // with honest clients.
-      if (id > std::numeric_limits<uint32_t>::max() ||
-          device::cablev2::sync::IDIsMoreThanNPeriodsOld(
-              static_cast<uint32_t>(id),
-              device::cablev2::kMaxSyncInfoDaysForProducer)) {
-        LOG(ERROR) << "Pairing ID " << id << " is too old. Dropping.";
-        return;
-      }
-    }
-
-    const absl::optional<std::vector<uint8_t>> serialized(event->Serialize());
-    if (!serialized) {
-      return;
-    }
-
     JNIEnv* const env = base::android::AttachCurrentThread();
     Java_CableAuthenticatorModuleProvider_onCloudMessage(
-        env, base::android::ToJavaByteArray(env, *serialized),
-        event->request_type == device::FidoRequestType::kMakeCredential);
+        env, base::android::ToJavaByteArray(env, serialized),
+        is_make_credential);
   }
 
-  // MaybeSignalSync prompts the Sync system to refresh local-device data if
-  // the Sync data is now ready and |signal_sync_when_ready_| has been set to
-  // indicate that the Sync data was not available last time Sync queried it.
-  void MaybeSignalSync() {
-    if (!signal_sync_when_ready_ || !have_data_for_sync()) {
-      return;
-    }
-    signal_sync_when_ready_ = false;
-
+  void RefreshLocalDeviceInfo() override {
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     DeviceInfoSyncServiceFactory::GetForProfile(
         ProfileManager::GetPrimaryUserProfile())
         ->RefreshLocalDeviceInfo();
+  }
+
+  // Called when the Java code has finished getting linking information from
+  // Play Services.
+  void OnHavePlayServicesLinkingInformation(
+      absl::optional<std::vector<uint8_t>> cbor) {
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    std::move(prelink_callback_).Run(std::move(cbor));
+  }
+
+ private:
+  static instance_id::InstanceIDDriver* GetDriver() {
+    return instance_id::InstanceIDProfileServiceFactory::GetForProfile(
+               g_browser_process->profile_manager()->GetPrimaryUserProfile())
+        ->driver();
   }
 
   static bool GetCanDeviceSupportCableOnBackgroundSequence() {
@@ -302,21 +157,6 @@ class RegistrationState {
         base::android::AttachCurrentThread());
   }
 
-  static void GetPrelinkFromPlayServicesOnBackgroundSequence() {
-    // This runs on a worker thread because this Java function can take a
-    // little while and it shouldn't block the UI thread.
-    Java_CableAuthenticatorModuleProvider_getLinkingInformation(
-        base::android::AttachCurrentThread());
-  }
-
-  // OnCanDeviceSupportCable is run with the result of `TestDeviceSupport`.
-  void OnDeviceSupportResult(bool result) {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-
-    device_supports_cable_ = result;
-    MaybeSignalSync();
-  }
-
   static bssl::UniquePtr<EC_KEY> CalculateIdentityKeyOnBackgroundSequence(
       std::array<uint8_t, 32> secret) {
     // This runs on a worker thread because the scalar multiplication takes a
@@ -324,53 +164,21 @@ class RegistrationState {
     return device::cablev2::IdentityKey(secret);
   }
 
-  // OnIdentityKeyReady is run with the result of `CalculateIdentityKey`.
-  void OnIdentityKeyReady(bssl::UniquePtr<EC_KEY> identity_key) {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-
-    identity_key_ = std::move(identity_key);
-    MaybeSignalSync();
+  static void GetPrelinkFromPlayServicesOnBackgroundSequence(
+      uintptr_t this_pointer) {
+    // This runs on a worker thread because this Java function can take a
+    // little while and it shouldn't block the UI thread.
+    Java_CableAuthenticatorModuleProvider_getLinkingInformation(
+        base::android::AttachCurrentThread(), this_pointer);
   }
 
-  std::unique_ptr<Registration> linking_registration_;
-  std::unique_ptr<Registration> sync_registration_;
-  std::array<uint8_t, 32> secret_;
-  // identity_key_ is a public/private P-256 key that is calculated from
-  // `secret_`. It's cached because it takes some time to compute.
-  bssl::UniquePtr<EC_KEY> identity_key_;
-  std::unique_ptr<Registration::Event> pending_event_;
-  // device_supports_cable_ caches the result of a Java function that checks
-  // some prerequisites: that the device has Bluetooth and a screenlock. If
-  // this value is |nullopt| then its value has not yet been determined.
-  //
-  // The presence of a screen lock could change but, because of this caching,
-  // Clank won't notice in this context until the process restarts. Users can
-  // always use a QR code if pre-linking hasn't worked by the time they need
-  // it.
-  absl::optional<bool> device_supports_cable_;
-  // link_data_from_play_services_ contains the response from Play Services, as
-  // CBOR-encoded linking information, or `nullopt` if the call was
-  // unsuccessful. This field is only meaningful if
-  // `have_link_data_from_play_services_` is true.
-  absl::optional<std::vector<uint8_t>> link_data_from_play_services_;
-  // have_link_data_from_play_services_ is true if any call to Play Services has
-  // ever completed, successful or not.
-  bool have_link_data_from_play_services_ = false;
-  // link_data_from_play_services_timeticks_ contains the timestamp when
-  // `link_data_from_play_services_` was set.
-  base::TimeTicks link_data_from_play_services_timeticks_;
-  // play_services_query_pending_ is true if a request to Play Services is
-  // currently outstanding.
-  bool play_services_query_pending_ = false;
-  bool signal_sync_when_ready_ = false;
-  // prelink_play_services_ records the value of the feature flag
-  // `kWebAuthnPrelinkPlayServices`. It's recorded here because its value could
-  // change at run-time, but this code doesn't handle that.
-  bool prelink_play_services_ = false;
+  base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
+      prelink_callback_;
 };
 
 RegistrationState* GetRegistrationState() {
-  static base::NoDestructor<RegistrationState> state;
+  static base::NoDestructor<RegistrationState> state(
+      std::make_unique<SystemInterface>());
   return state.get();
 }
 
@@ -518,6 +326,8 @@ GetSyncDataIfRegistered() {
 }  // namespace authenticator
 }  // namespace webauthn
 
+using webauthn::authenticator::SystemInterface;
+
 // JNI callbacks.
 
 static jlong JNI_CableAuthenticatorModuleProvider_GetSystemNetworkContext(
@@ -550,15 +360,9 @@ JNI_CableAuthenticatorModuleProvider_GetSecret(JNIEnv* env) {
       env, webauthn::authenticator::GetRegistrationState()->secret());
 }
 
-static void OnHavePlayServicesLinkingInformation(
-    absl::optional<std::vector<uint8_t>> cbor) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  webauthn::authenticator::GetRegistrationState()
-      ->OnHavePlayServicesLinkingInformation(std::move(cbor));
-}
-
 static void JNI_CableAuthenticatorModuleProvider_OnHaveLinkingInformation(
     JNIEnv* env,
+    jlong system_interface_pointer,
     const base::android::JavaParamRef<jbyteArray>& cbor_java) {
   absl::optional<std::vector<uint8_t>> optional_cbor;
 
@@ -569,9 +373,12 @@ static void JNI_CableAuthenticatorModuleProvider_OnHaveLinkingInformation(
   }
 
   content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(&OnHavePlayServicesLinkingInformation,
-                                std::move(optional_cbor)));
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&SystemInterface::OnHavePlayServicesLinkingInformation,
+                         base::Unretained(reinterpret_cast<SystemInterface*>(
+                             static_cast<uintptr_t>(system_interface_pointer))),
+                         std::move(optional_cbor)));
 }
 
 static void JNI_PrivacySettingsFragment_RevokeAllLinkedDevices(JNIEnv* env) {
