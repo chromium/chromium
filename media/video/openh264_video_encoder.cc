@@ -386,9 +386,12 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   picture.iPicHeight = frame->visible_rect().height();
   picture.iColorFormat = EVideoFormatType::videoFormatI420;
   picture.uiTimeStamp = frame->timestamp().InMilliseconds();
-  picture.pData[0] = frame->GetWritableVisibleData(VideoFrame::kYPlane);
-  picture.pData[1] = frame->GetWritableVisibleData(VideoFrame::kUPlane);
-  picture.pData[2] = frame->GetWritableVisibleData(VideoFrame::kVPlane);
+  picture.pData[0] =
+      const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane));
+  picture.pData[1] =
+      const_cast<uint8_t*>(frame->visible_data(VideoFrame::kUPlane));
+  picture.pData[2] =
+      const_cast<uint8_t*>(frame->visible_data(VideoFrame::kVPlane));
   picture.iStride[0] = frame->stride(VideoFrame::kYPlane);
   picture.iStride[1] = frame->stride(VideoFrame::kUPlane);
   picture.iStride[2] = frame->stride(VideoFrame::kVPlane);

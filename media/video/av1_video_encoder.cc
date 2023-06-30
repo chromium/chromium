@@ -359,20 +359,20 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   switch (frame->format()) {
     case PIXEL_FORMAT_I420:
       image->planes[AOM_PLANE_Y] =
-          frame->GetWritableVisibleData(VideoFrame::kYPlane);
+          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane));
       image->planes[AOM_PLANE_U] =
-          frame->GetWritableVisibleData(VideoFrame::kUPlane);
+          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kUPlane));
       image->planes[AOM_PLANE_V] =
-          frame->GetWritableVisibleData(VideoFrame::kVPlane);
+          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kVPlane));
       image->stride[AOM_PLANE_Y] = frame->stride(VideoFrame::kYPlane);
       image->stride[AOM_PLANE_U] = frame->stride(VideoFrame::kUPlane);
       image->stride[AOM_PLANE_V] = frame->stride(VideoFrame::kVPlane);
       break;
     case PIXEL_FORMAT_NV12:
       image->planes[AOM_PLANE_Y] =
-          frame->GetWritableVisibleData(VideoFrame::kYPlane);
+          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane));
       image->planes[AOM_PLANE_U] =
-          frame->GetWritableVisibleData(VideoFrame::kUVPlane);
+          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kUVPlane));
       image->planes[AOM_PLANE_V] = nullptr;
       image->stride[AOM_PLANE_Y] = frame->stride(VideoFrame::kYPlane);
       image->stride[AOM_PLANE_U] = frame->stride(VideoFrame::kUVPlane);
