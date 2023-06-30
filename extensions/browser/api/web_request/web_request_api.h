@@ -609,6 +609,17 @@ class ExtensionWebRequestEventRouter {
 
     ~EventListener();
 
+    bool HasExtraHeaders() const {
+      using extension_web_request_api_helpers::ExtraInfoSpec;
+      return extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS;
+    }
+
+    bool IsBlocking() const {
+      using extension_web_request_api_helpers::ExtraInfoSpec;
+      return extra_info_spec &
+             (ExtraInfoSpec::BLOCKING | ExtraInfoSpec::ASYNC_BLOCKING);
+    }
+
     ID id;
     std::string extension_name;
     events::HistogramValue histogram_value = events::UNKNOWN;

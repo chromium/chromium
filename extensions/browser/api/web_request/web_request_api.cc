@@ -1663,8 +1663,7 @@ bool ExtensionWebRequestEventRouter::DispatchEvent(
   listeners_to_dispatch->reserve(listeners.size());
   for (EventListener* listener : listeners) {
     listeners_to_dispatch->push_back(listener->id);
-    if (listener->extra_info_spec &
-        (ExtraInfoSpec::BLOCKING | ExtraInfoSpec::ASYNC_BLOCKING)) {
+    if (listener->IsBlocking()) {
       listener->blocked_requests.insert(request->id);
       ++num_handlers_blocking;
     }
@@ -1902,14 +1901,14 @@ bool ExtensionWebRequestEventRouter::AddEventListener(
     is_reactivated = erased > 0u;
   }
 
-  data_[browser_context_id].active_listeners[event_name].push_back(
-      std::move(listener));
-
   // If the listener was previously registered, there's no need to adjust the
   // extra headers count.
-  if (!is_reactivated && extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS) {
+  if (!is_reactivated && listener->HasExtraHeaders()) {
     IncrementExtraHeadersListenerCount(browser_context);
   }
+
+  data_[browser_context_id].active_listeners[event_name].push_back(
+      std::move(listener));
 
   return true;
 }
@@ -2069,7 +2068,7 @@ void ExtensionWebRequestEventRouter::CleanUpForListener(
   // Update the extra headers count and clear the cache only if the listener is
   // fully removed; otherwise, these values are still correct.
   if (update_type == ListenerUpdateType::kRemove) {
-    if (listener.extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS) {
+    if (listener.HasExtraHeaders()) {
       DecrementExtraHeadersListenerCount(listener.id.browser_context);
     }
     helpers::ClearCacheOnNavigation();
@@ -2236,8 +2235,6 @@ ExtensionWebRequestEventRouter::GetMatchingListeners(
     const std::string& event_name,
     const WebRequestInfo* request,
     int* extra_info_spec) {
-  // TODO(mpcomplete): handle browser_context == NULL (should collect all
-  // listeners).
   *extra_info_spec = 0;
 
   bool is_request_from_extension =
@@ -2352,10 +2349,6 @@ bool ExtensionWebRequestEventRouter::ListenerMatchesRequest(
     }
   }
 
-  bool blocking_listener =
-      (listener.extra_info_spec &
-       (ExtraInfoSpec::BLOCKING | ExtraInfoSpec::ASYNC_BLOCKING)) != 0;
-
   // We do not want to notify extensions about XHR requests that are
   // triggered by themselves. This is a workaround to prevent deadlocks
   // in case of synchronous XHR requests that block the extension renderer
@@ -2365,7 +2358,7 @@ bool ExtensionWebRequestEventRouter::ListenerMatchesRequest(
   bool synchronous_xhr_from_extension =
       !request.is_async && is_request_from_extension &&
       request.web_request_type == WebRequestResourceType::XHR;
-  return !blocking_listener || !synchronous_xhr_from_extension;
+  return !listener.IsBlocking() || !synchronous_xhr_from_extension;
 }
 
 void ExtensionWebRequestEventRouter::GetMatchingListenersForRequest(
