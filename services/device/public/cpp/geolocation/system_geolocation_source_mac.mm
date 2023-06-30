@@ -110,8 +110,7 @@ LocationSystemPermissionStatus SystemGeolocationSourceMac::GetSystemPermission()
   return LocationSystemPermissionStatus::kDenied;
 }
 
-void SystemGeolocationSourceMac::TrackGeolocationAttempted(
-    const std::string& app_name) {
+void SystemGeolocationSourceMac::TrackGeolocationAttempted() {
 #if BUILDFLAG(IS_IOS)
   if (@available(ios 8.0, macOS 10.15, *)) {
     [location_manager_ requestWhenInUseAuthorization];

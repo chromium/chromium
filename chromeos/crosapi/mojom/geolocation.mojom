@@ -27,4 +27,18 @@ interface GeolocationService {
     bool data_available,
     mojo_base.mojom.TimeDelta time_since_last_updated,
     array<AccessPointData> ap_data);
+  // Informs the ChromeOS that some client code identified as `origin` wants to
+  // use geolocation. ChromeOS can use this to display a warning message if the
+  // geolocation is blocked on the OS level.
+  [MinVersion=2]
+  TrackGeolocationAttempted@1(
+    string origin
+  );
+  // Informs the ChromeOS that the client code identified as `origin` does not
+  // need to use geolocation any more. This information is used by the OS to
+  // update notifications.
+  [MinVersion=2]
+  TrackGeolocationRelinquished@2(
+    string origin
+  );
 };

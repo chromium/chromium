@@ -5,6 +5,7 @@
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/shell.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
@@ -12,6 +13,17 @@ namespace ash {
 PrivacyHubController::PrivacyHubController() = default;
 
 PrivacyHubController::~PrivacyHubController() = default;
+
+// static
+PrivacyHubController* PrivacyHubController::Get() {
+  // TODO(b/288854399): Remove this if.
+  if (!Shell::HasInstance()) {
+    // Shell may not be available when used from a test.
+    return nullptr;
+  }
+  Shell* const shell = Shell::Get();
+  return shell->privacy_hub_controller();
+}
 
 // static
 void PrivacyHubController::RegisterLocalStatePrefs(

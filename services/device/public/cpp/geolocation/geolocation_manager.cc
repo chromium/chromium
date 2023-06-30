@@ -102,17 +102,15 @@ SystemGeolocationSource& GeolocationManager::SystemGeolocationSourceForTest() {
 
 #endif
 
-void GeolocationManager::TrackGeolocationAttempted(
-    const std::string& app_name) {
+void GeolocationManager::TrackGeolocationAttempted() {
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-  system_geolocation_source_->TrackGeolocationAttempted(app_name);
+  system_geolocation_source_->TrackGeolocationAttempted();
 #endif
 }
 
-void GeolocationManager::TrackGeolocationRelinquished(
-    const std::string& app_name) {
+void GeolocationManager::TrackGeolocationRelinquished() {
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-  system_geolocation_source_->TrackGeolocationRelinquished(app_name);
+  system_geolocation_source_->TrackGeolocationRelinquished();
 #endif
 }
 

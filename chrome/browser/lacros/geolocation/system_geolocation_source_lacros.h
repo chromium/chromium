@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_LACROS_GEOLOCATION_SYSTEM_GEOLOCATION_SOURCE_LACROS_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/crosapi/mojom/geolocation.mojom.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -54,6 +56,8 @@ class SystemGeolocationSourceLacros : public device::SystemGeolocationSource,
   // device::SystemGeolocationSource
   void RegisterPermissionUpdateCallback(
       PermissionUpdateCallback callback) override;
+  void TrackGeolocationAttempted() override;
+  void TrackGeolocationRelinquished() override;
 
   // crosapi::mojom::PrefObserver
   // This is called from the receiver and all calls are scheduled under the
@@ -65,7 +69,7 @@ class SystemGeolocationSourceLacros : public device::SystemGeolocationSource,
   device::LocationSystemPermissionStatus current_status_ =
       device::LocationSystemPermissionStatus::kNotDetermined;
   // Receives mojo messages from ash.
-  mojo::Receiver<crosapi::mojom::PrefObserver> receiver_{this};
+  mojo::Receiver<crosapi::mojom::PrefObserver> pref_receiver_{this};
   base::WeakPtrFactory<SystemGeolocationSourceLacros> weak_factory_{this};
 };
 

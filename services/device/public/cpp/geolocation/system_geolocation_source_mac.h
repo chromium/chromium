@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceMac
   void StopWatchingPosition() override;
 
   // Calls requestWhenInUseAuthorization from CLLocationManager.
-  void TrackGeolocationAttempted(const std::string& app_name) override;
+  void TrackGeolocationAttempted() override;
 
  private:
   LocationSystemPermissionStatus GetSystemPermission() const;

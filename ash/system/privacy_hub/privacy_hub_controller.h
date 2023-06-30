@@ -39,6 +39,10 @@ class ASH_EXPORT PrivacyHubController {
 
   ~PrivacyHubController();
 
+  // Returns the PrivacyHubController instance from the Shell if it exists,
+  // otherwise returns nullptr.
+  static PrivacyHubController* Get();
+
   CameraPrivacySwitchController& camera_controller() {
     return camera_controller_;
   }

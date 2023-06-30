@@ -22,6 +22,12 @@ bool MicrophoneSwitchState();
 // Needs to be called for the Privacy Hub to be aware of the camera count.
 void SetUpCameraCountObserver();
 
+// Notifies the Privacy Hub controller.
+void TrackGeolocationAttempted(const std::string& name);
+
+// Notifies the Privacy Hub controller.
+void TrackGeolocationRelinquished(const std::string& name);
+
 }  // namespace privacy_hub_util
 
 }  // namespace ash

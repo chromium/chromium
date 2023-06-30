@@ -10,9 +10,9 @@
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -50,30 +50,16 @@ void SystemGeolocationSource::RegisterPermissionUpdateCallback(
   }
 }
 
-void SystemGeolocationSource::TrackGeolocationAttempted(
-    const std::string& app_name) {
-  if (auto* controller = GeolocationPrivacySwitchController::Get()) {
-    if (!app_name.empty()) {
-      controller->TrackGeolocationAttempted(app_name);
-    } else {
-      // Use the default name for this app.
-      controller->TrackGeolocationAttempted(
-          l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
-    }
-  }
+void SystemGeolocationSource::TrackGeolocationAttempted() {
+  // Use the default name for the browser.
+  ash::privacy_hub_util::TrackGeolocationAttempted(
+      l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
 }
 
-void SystemGeolocationSource::TrackGeolocationRelinquished(
-    const std::string& app_name) {
-  if (auto* controller = GeolocationPrivacySwitchController::Get()) {
-    if (!app_name.empty()) {
-      controller->TrackGeolocationRelinquished(app_name);
-    } else {
-      // Use the default id for this app.
-      controller->TrackGeolocationAttempted(
-          l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
-    }
-  }
+void SystemGeolocationSource::TrackGeolocationRelinquished() {
+  // Use the default name for the browser.
+  ash::privacy_hub_util::TrackGeolocationRelinquished(
+      l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
 }
 
 void SystemGeolocationSource::OnActiveUserPrefServiceChanged(

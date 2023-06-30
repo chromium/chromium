@@ -38,8 +38,8 @@ class SystemGeolocationSource : public device::SystemGeolocationSource,
   // device::SystemGeolocationSource:
   void RegisterPermissionUpdateCallback(
       PermissionUpdateCallback callback) override;
-  void TrackGeolocationAttempted(const std::string& app_name) override;
-  void TrackGeolocationRelinquished(const std::string& app_name) override;
+  void TrackGeolocationAttempted() override;
+  void TrackGeolocationRelinquished() override;
 
  private:
   // SessionObserver:
