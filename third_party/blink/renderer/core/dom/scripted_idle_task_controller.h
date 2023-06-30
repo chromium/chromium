@@ -105,8 +105,12 @@ class CORE_EXPORT ScriptedIdleTaskController
     idle_tasks_.clear();
     pending_timeouts_.clear();
   }
-  // [RUN-1335] We want to check for callback existence before firing.
-  bool ContainsCallback(CallbackId id) { return idle_tasks_.Contains(id); }
+  // RUN-1335 We want to check for callback existence before firing.
+  bool ContainsIdleTask(CallbackId id) { return idle_tasks_.Contains(id); }
+  // RUN-2227
+  bool ContainsPendingTimeout(CallbackId id) {
+    return pending_timeouts_.Contains(id);
+  }
 
  private:
   friend class internal::IdleRequestCallbackWrapper;
