@@ -95,6 +95,8 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
               browser_state_),
           PowerBookmarkServiceFactory::GetForBrowserState(browser_state_));
 
+  // TODO(crbug.com/1434661): introduce ios version of
+  // TrustedVaultServiceFactory.
   trusted_vault_client_ = std::make_unique<IOSTrustedVaultClient>(
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state_),
       GetIdentityManager(),

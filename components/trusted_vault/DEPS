@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/keyed_service/core",
   "+components/os_crypt/sync",
   "+components/signin/public",
   "+crypto",

@@ -599,6 +599,8 @@ void SyncServiceImpl::Shutdown() {
   DCHECK(!data_type_manager_);
   data_type_controllers_.clear();
 
+  crypto_.StopObservingTrustedVaultClient();
+
   // All observers must be gone now: All KeyedServices should have unregistered
   // their observers already before, in their own Shutdown(), and all others
   // should have done it now when they got the shutdown notification.

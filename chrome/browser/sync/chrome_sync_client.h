@@ -15,7 +15,6 @@
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/sync/model/model_type_store_service.h"
-#include "components/trusted_vault/trusted_vault_client.h"
 #include "extensions/buildflags/buildflags.h"
 
 class Profile;
@@ -94,8 +93,6 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
 
   // The sync api component factory in use by this client.
   std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;
-
-  std::unique_ptr<trusted_vault::TrustedVaultClient> trusted_vault_client_;
 
   // Members that must be fetched on the UI thread but accessed on their
   // respective backend threads.

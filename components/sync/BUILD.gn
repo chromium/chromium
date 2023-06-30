@@ -13,9 +13,6 @@ group("sync") {
     "//components/sync/nigori",
     "//components/sync/service",
   ]
-  if (!is_android) {
-    public_deps += [ "//components/trusted_vault" ]
-  }
   if (is_chromeos) {
     public_deps += [ "//components/sync/chromeos" ]
   }

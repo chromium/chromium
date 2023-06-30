@@ -185,12 +185,14 @@ SyncServiceCrypto::SyncServiceCrypto(
   trusted_vault_client_->AddObserver(this);
 }
 
-SyncServiceCrypto::~SyncServiceCrypto() {
-  trusted_vault_client_->RemoveObserver(this);
-}
+SyncServiceCrypto::~SyncServiceCrypto() = default;
 
 void SyncServiceCrypto::Reset() {
   state_ = State();
+}
+
+void SyncServiceCrypto::StopObservingTrustedVaultClient() {
+  trusted_vault_client_->RemoveObserver(this);
 }
 
 base::Time SyncServiceCrypto::GetExplicitPassphraseTime() const {

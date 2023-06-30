@@ -1635,6 +1635,7 @@ if (!is_android) {
       "//components/translate/content/renderer",
       "//components/translate/core/common",
       "//components/translate/core/language_detection",
+      "//components/trusted_vault",
       "//components/ukm/content",
       "//components/unified_consent",
       "//components/url_formatter/spoof_checks/top_domains:browsertest_top500_domains",
@@ -10938,6 +10939,7 @@ source_set("sync_integration_test_support") {
       "//chrome/browser/apps/app_service",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/send_tab_to_self",
+      "//components/trusted_vault",
       "//components/webapps/browser",
       "//components/webauthn/core/browser",
     ]
@@ -10994,6 +10996,7 @@ if (!is_android) {
       "//components/sync_bookmarks",
       "//components/sync_device_info:test_support",
       "//components/sync_preferences:common_syncable_prefs_database",
+      "//components/trusted_vault",
       "//components/trusted_vault:test_support",
       "//components/undo",
       "//components/webapps/browser",

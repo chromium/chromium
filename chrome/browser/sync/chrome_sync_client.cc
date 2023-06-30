@@ -43,6 +43,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
+#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_data_service_factory.h"
@@ -89,9 +90,9 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_user_events/user_event_service.h"
+#include "components/trusted_vault/trusted_vault_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/storage_partition.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -119,12 +120,6 @@
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "components/spellcheck/browser/pref_names.h"
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/trusted_vault/trusted_vault_client_android.h"
-#else
-#include "components/trusted_vault/standalone_trusted_vault_client.h"  // nogncheck
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
@@ -167,13 +162,6 @@ using browser_sync::ExtensionModelTypeController;
 namespace browser_sync {
 
 namespace {
-
-#if !BUILDFLAG(IS_ANDROID)
-constexpr base::FilePath::CharType kTrustedVaultFilename[] =
-    FILE_PATH_LITERAL("trusted_vault.pb");
-constexpr base::FilePath::CharType kDeprecatedTrustedVaultFilename[] =
-    FILE_PATH_LITERAL("Trusted Vault");
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 constexpr base::FilePath::CharType kLoopbackServerBackendFilename[] =
@@ -271,27 +259,6 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       account_password_store_,
       BookmarkSyncServiceFactory::GetForProfile(profile_), nullptr,
       PowerBookmarkServiceFactory::GetForBrowserContext(profile_));
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-
-#if BUILDFLAG(IS_ANDROID)
-  trusted_vault_client_ = std::make_unique<TrustedVaultClientAndroid>(
-      /*gaia_account_info_by_gaia_id_cb=*/base::BindRepeating(
-          [](signin::IdentityManager* identity_manager,
-             const std::string& gaia_id) -> CoreAccountInfo {
-            return identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
-          },
-          identity_manager));
-#else
-  trusted_vault_client_ =
-      std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
-          profile_->GetPath().Append(kTrustedVaultFilename),
-          profile_->GetPath().Append(kDeprecatedTrustedVaultFilename),
-          identity_manager,
-          profile_->GetDefaultStoragePartition()
-              ->GetURLLoaderFactoryForBrowserProcess());
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ChromeSyncClient::~ChromeSyncClient() = default;
@@ -580,7 +547,8 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
 }
 
 trusted_vault::TrustedVaultClient* ChromeSyncClient::GetTrustedVaultClient() {
-  return trusted_vault_client_.get();
+  return TrustedVaultServiceFactory::GetForProfile(profile_)
+      ->GetTrustedVaultClient();
 }
 
 invalidation::InvalidationService* ChromeSyncClient::GetInvalidationService() {

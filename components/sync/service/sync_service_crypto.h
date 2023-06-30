@@ -52,6 +52,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   ~SyncServiceCrypto() override;
 
   void Reset();
+  void StopObservingTrustedVaultClient();
 
   // See the SyncUserSettings header.
   base::Time GetExplicitPassphraseTime() const;
