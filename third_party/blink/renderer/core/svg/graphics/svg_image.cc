@@ -878,7 +878,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
     return kSizeUnavailable;
 
   // Set the concrete object size before a container size is available.
-  intrinsic_size_ = RoundedLayoutSize(ConcreteObjectSize(gfx::SizeF(
+  intrinsic_size_ = PhysicalSize::FromSizeFFloor(ConcreteObjectSize(gfx::SizeF(
       LayoutReplaced::kDefaultWidth, LayoutReplaced::kDefaultHeight)));
 
   if (load_state_ == kWaitingForAsyncLoadCompletion)
