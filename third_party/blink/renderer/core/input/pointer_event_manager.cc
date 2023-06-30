@@ -419,9 +419,9 @@ void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event,
         (device_scale_factor / page_scale_factor);
   }
 
-  LayoutSize hit_rect_size = GetHitTestRectForAdjustment(
-      *frame_,
-      LayoutSize(LayoutUnit(adjustment_width), LayoutUnit(adjustment_height)));
+  PhysicalSize hit_rect_size = GetHitTestRectForAdjustment(
+      *frame_, PhysicalSize(LayoutUnit(adjustment_width),
+                            LayoutUnit(adjustment_height)));
 
   if (hit_rect_size.IsEmpty())
     return;
@@ -433,7 +433,8 @@ void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event,
   // TODO(szager): Shouldn't this be PositionInScreen() ?
   PhysicalOffset hit_test_point =
       PhysicalOffset::FromPointFRound(pointer_event.PositionInWidget());
-  hit_test_point -= PhysicalOffset(hit_rect_size * 0.5f);
+  hit_test_point -= PhysicalOffset(LayoutUnit(hit_rect_size.width * 0.5f),
+                                   LayoutUnit(hit_rect_size.height * 0.5f));
   HitTestLocation location(PhysicalRect(hit_test_point, hit_rect_size));
   HitTestResult hit_test_result =
       root_frame.GetEventHandler().HitTestResultAtLocation(location, hit_type);

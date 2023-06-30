@@ -9,6 +9,23 @@
 
 namespace blink {
 
+TEST(PhysicalSizeTest, MultipleFloat) {
+  EXPECT_EQ(PhysicalSize(100, 7), PhysicalSize(200, 14) * 0.5f);
+  EXPECT_EQ(PhysicalSize(-100, -7), PhysicalSize(200, 14) * -0.5f);
+  EXPECT_EQ(PhysicalSize(0, 0),
+            PhysicalSize(200, 14) * std::numeric_limits<float>::quiet_NaN());
+}
+
+TEST(PhysicalSizeTest, ExpandedTo) {
+  EXPECT_EQ(PhysicalSize(13, 7), PhysicalSize(13, 1).ExpandedTo({10, 7}));
+  EXPECT_EQ(PhysicalSize(17, 1), PhysicalSize(13, 1).ExpandedTo({17, 1}));
+}
+
+TEST(PhysicalSizeTest, ShrunkTo) {
+  EXPECT_EQ(PhysicalSize(10, 1), PhysicalSize(13, 1).ShrunkTo({10, 7}));
+  EXPECT_EQ(PhysicalSize(13, -1), PhysicalSize(13, 1).ShrunkTo({14, -1}));
+}
+
 TEST(PhysicalSizeTest, FitToAspectRatioShrink) {
   PhysicalSize aspect_ratio(50000, 40000);
   EXPECT_EQ(PhysicalSize(1250, 1000),

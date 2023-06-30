@@ -581,18 +581,18 @@ bool FindBestTouchAdjustmentCandidate(
                            append_subtargets_for_node);
 }
 
-LayoutSize GetHitTestRectForAdjustment(LocalFrame& frame,
-                                       const LayoutSize& touch_area) {
+PhysicalSize GetHitTestRectForAdjustment(LocalFrame& frame,
+                                         const PhysicalSize& touch_area) {
   ChromeClient& chrome_client = frame.GetChromeClient();
   float device_scale_factor =
       chrome_client.GetScreenInfo(frame).device_scale_factor;
 
   float page_scale_factor = frame.GetPage()->PageScaleFactor();
-  const LayoutSize max_size_in_dip(touch_adjustment::kMaxAdjustmentSizeDip,
-                                   touch_adjustment::kMaxAdjustmentSizeDip);
+  const PhysicalSize max_size_in_dip(touch_adjustment::kMaxAdjustmentSizeDip,
+                                     touch_adjustment::kMaxAdjustmentSizeDip);
 
-  const LayoutSize min_size_in_dip(touch_adjustment::kMinAdjustmentSizeDip,
-                                   touch_adjustment::kMinAdjustmentSizeDip);
+  const PhysicalSize min_size_in_dip(touch_adjustment::kMinAdjustmentSizeDip,
+                                     touch_adjustment::kMinAdjustmentSizeDip);
   // (when use-zoom-for-dsf enabled) touch_area is in physical pixel scaled,
   // max_size_in_dip should be converted to physical pixel and scale too.
   return touch_area

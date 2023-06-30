@@ -65,6 +65,12 @@ struct CORE_EXPORT PhysicalSize {
     return *this;
   }
 
+  // Returns a new PhysicalSize scaling `this` by `scale`.
+  PhysicalSize operator*(float scale) const {
+    return PhysicalSize(LayoutUnit(this->width * scale),
+                        LayoutUnit(this->height * scale));
+  }
+
   constexpr bool operator==(const PhysicalSize& other) const {
     return std::tie(other.width, other.height) == std::tie(width, height);
   }
@@ -89,6 +95,20 @@ struct CORE_EXPORT PhysicalSize {
   void Scale(LayoutUnit s) {
     width *= s;
     height *= s;
+  }
+
+  // Returns a new PhysicalSize with the maximum width of `this` and `other`,
+  // and the maximum height of `this` and `other`.
+  PhysicalSize ExpandedTo(const PhysicalSize& other) const {
+    return {std::max(this->width, other.width),
+            std::max(this->height, other.height)};
+  }
+
+  // Returns a new PhysicalSize with the minimum width of `this` and `other`,
+  // and the minimum height of `this` and `other`.
+  PhysicalSize ShrunkTo(const PhysicalSize& other) const {
+    return {std::min(this->width, other.width),
+            std::min(this->height, other.height)};
   }
 
   void ClampNegativeToZero() {

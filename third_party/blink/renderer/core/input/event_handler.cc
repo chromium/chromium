@@ -1882,7 +1882,7 @@ GestureEventWithHitTestResults EventHandler::HitTestResultForGestureEvent(
   // it to the final adjusted node.
   hit_type |= HitTestRequest::kReadOnly;
   WebGestureEvent adjusted_event = gesture_event;
-  LayoutSize hit_rect_size;
+  PhysicalSize hit_rect_size;
   if (ShouldApplyTouchAdjustment(gesture_event)) {
     // If gesture_event unique id matches the stored touch event result, do
     // point-base hit test. Otherwise add padding and do rect-based hit test.
@@ -1890,8 +1890,10 @@ GestureEventWithHitTestResults EventHandler::HitTestResultForGestureEvent(
       adjusted_event.ApplyTouchAdjustment(
           touch_adjustment_result_.adjusted_point);
     } else {
+      gfx::SizeF tap_area = adjusted_event.TapAreaInRootFrame();
       hit_rect_size = GetHitTestRectForAdjustment(
-          *frame_, LayoutSize(adjusted_event.TapAreaInRootFrame()));
+          *frame_, PhysicalSize(LayoutUnit(tap_area.width()),
+                                LayoutUnit(tap_area.height())));
       if (!hit_rect_size.IsEmpty())
         hit_type |= HitTestRequest::kListBased;
     }
@@ -1907,7 +1909,8 @@ GestureEventWithHitTestResults EventHandler::HitTestResultForGestureEvent(
   } else {
     PhysicalOffset top_left =
         PhysicalOffset::FromPointFRound(adjusted_event.PositionInRootFrame());
-    top_left -= PhysicalOffset(hit_rect_size * 0.5f);
+    top_left -= PhysicalOffset(LayoutUnit(hit_rect_size.width * 0.5f),
+                               LayoutUnit(hit_rect_size.height * 0.5f));
     location = HitTestLocation(PhysicalRect(top_left, hit_rect_size));
     hit_test_result = root_frame.GetEventHandler().HitTestResultAtLocation(
         location, hit_type);
