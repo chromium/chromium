@@ -125,6 +125,7 @@
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
@@ -7584,15 +7585,41 @@ TEST_P(DesksTest, RemoveDeskWhileDragging) {
   ExitOverview();
 }
 
+// Used to wait for all animations to complete in a `LayerAnimator`.
+class LayerAnimationWaiter : public ui::LayerAnimationObserver {
+ public:
+  explicit LayerAnimationWaiter(ui::LayerAnimator* animator)
+      : animator_(animator) {
+    animator_->AddObserver(this);
+  }
+
+  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
+    OnAnimationCompleted();
+  }
+
+  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {
+    OnAnimationCompleted();
+  }
+
+  void OnLayerAnimationScheduled(
+      ui::LayerAnimationSequence* sequence) override {}
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  void OnAnimationCompleted() {
+    if (animator_->is_animating() == false) {
+      animator_->RemoveObserver(this);
+      run_loop_.Quit();
+    }
+  }
+
+  raw_ptr<ui::LayerAnimator, ExperimentalAsh> animator_;
+  base::RunLoop run_loop_;
+};
+
 // Regression test for the asan failure at https://crbug.com/1274641.
-// TODO(crbug.com/1459376): Re-enable this test
-#if BUILDFLAG(IS_LINUX) && \
-    (defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER))
-#define MAYBE_DragMiniViewWhileRemoving DISABLED_DragMiniViewWhileRemoving
-#else
-#define MAYBE_DragMiniViewWhileRemoving DragMiniViewWhileRemoving
-#endif
-TEST_P(DesksTest, MAYBE_DragMiniViewWhileRemoving) {
+TEST_P(DesksTest, DragMiniViewWhileRemoving) {
   NewDesk();
   NewDesk();
 
@@ -7609,6 +7636,7 @@ TEST_P(DesksTest, MAYBE_DragMiniViewWhileRemoving) {
   const gfx::Point desk_preview_center =
       mini_view->GetPreviewBoundsInScreen().CenterPoint();
 
+  LayerAnimationWaiter animation_waiter(mini_view->layer()->GetAnimator());
   {
     // This test requires animation to repro the asan failure.
     ui::ScopedAnimationDurationScaleMode animation_scale(
@@ -7625,6 +7653,8 @@ TEST_P(DesksTest, MAYBE_DragMiniViewWhileRemoving) {
     event_generator->MoveMouseBy(0, 50);
     EXPECT_FALSE(desks_bar_view->IsDraggingDesk());
   }
+
+  animation_waiter.Wait();
 }
 
 // Tests that the right desk containers are visible when switching between desks
