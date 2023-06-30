@@ -331,9 +331,25 @@ void HlsManifestDemuxerEngine::OnMultivariantPlaylist(
       rendition_selector_->GetPreferredVariants(video_preferences_,
                                                 audio_preferences_);
 
-  if (streams.audio_override_rendition &&
-      !streams.audio_override_rendition->GetUri().has_value()) {
-    return Abort(HlsDemuxerStatus::Codes::kPlaylistUrlInvalid);
+  // Possible outcomes of the rendition selector:
+  // | AOVariant | SelVariant | AORend  | primary=? | secondary=? |
+  // |-----------|------------|---------|-----------|-------------|
+  // | null      | null       | null    | X         | X           |
+  // |-----------|------------|---------|-----------|-------------|
+  // | null      | present    | null    | SV        | X           |
+  // |-----------|------------|---------|-----------|-------------|
+  // | present   | null       | present | AOV       | X           |
+  // |-----------|------------|---------|-----------|-------------|
+  // | present   | present    | null    | SV        | X           |
+  // |-----------|------------|---------|-----------|-------------|
+  // | present   | present    | present | SV        | AOV         |
+  // |-----------|------------|---------|-----------|-------------|
+  absl::optional<GURL> audio_override_uri;
+  const GURL& primary_uri = streams.selected_variant->GetPrimaryRenditionUri();
+  if (streams.audio_override_rendition) {
+    CHECK_NE(streams.audio_override_variant, nullptr);
+    audio_override_uri = streams.audio_override_rendition->GetUri().value_or(
+        streams.audio_override_variant->GetPrimaryRenditionUri());
   }
 
   std::vector<PlaylistParseInfo> renditions_to_parse;
@@ -344,16 +360,18 @@ void HlsManifestDemuxerEngine::OnMultivariantPlaylist(
         streams.selected_variant->GetPrimaryRenditionUri(),
         streams.selected_variant->GetCodecs().value_or(no_codecs), kPrimary);
 
-    if (streams.audio_override_rendition) {
+    if (streams.audio_override_rendition &&
+        primary_uri != audio_override_uri.value_or(primary_uri)) {
       CHECK_NE(streams.audio_override_variant, nullptr);
       renditions_to_parse.emplace_back(
-          streams.audio_override_rendition->GetUri().value_or(GURL{}),
+          *audio_override_uri,
           streams.audio_override_variant->GetCodecs().value_or(no_codecs),
           kAudioOverride);
     }
-  } else if (streams.audio_override_rendition) {
+  } else if (streams.audio_override_rendition &&
+             primary_uri != audio_override_uri.value_or(primary_uri)) {
     renditions_to_parse.emplace_back(
-        streams.audio_override_rendition->GetUri().value_or(GURL{}),
+        *audio_override_uri,
         streams.audio_override_variant->GetCodecs().value_or(no_codecs),
         kPrimary);
   } else {
