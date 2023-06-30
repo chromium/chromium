@@ -986,6 +986,52 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, Navigation) {
                 .ExtractString());
 }
 
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, IframeNavigation) {
+  Shell* target_shell = GetBrowserType() == BrowserType::kNormal
+                            ? shell()
+                            : CreateOffTheRecordBrowser();
+  RunWriteDictionaryTest(
+      target_shell, FetchType::kFetchApi,
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
+      embedded_test_server()->GetURL("/shared_dictionary/test.dict"),
+      GetBrowserType() == BrowserType::kNormal
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+          : "Net.SharedDictionaryWriterInMemory.DictionarySize",
+      /*expect_success=*/true);
+
+  const GURL target_url =
+      embedded_test_server()->GetURL("/shared_dictionary/path/test?html");
+
+  base::RunLoop loop;
+  auto observer = std::make_unique<SharedDictionaryAccessObserver>(
+      target_shell->web_contents(), loop.QuitClosure());
+
+  EXPECT_EQ(kCompressedDataOriginalString,
+            EvalJs(target_shell->web_contents()->GetPrimaryMainFrame(),
+                   R"(
+  (async () => {
+    const iframe = document.createElement('iframe');
+    iframe.src = '/shared_dictionary/path/test?html';
+    const promise =
+        new Promise(resolve => { iframe.addEventListener('load', resolve); });
+    document.body.appendChild(iframe);
+    await promise;
+    return iframe.contentDocument.body.innerText;
+  })()
+                  )")
+                .ExtractString());
+  loop.Run();
+
+  ASSERT_TRUE(observer->details());
+  EXPECT_EQ(network::mojom::SharedDictionaryAccessDetails::Type::kRead,
+            observer->details()->type);
+  EXPECT_EQ(target_url, observer->details()->url);
+  EXPECT_EQ(net::SharedDictionaryIsolationKey(url::Origin::Create(target_url),
+                                              net::SchemefulSite(target_url)),
+            observer->details()->isolation_key);
+  EXPECT_FALSE(observer->details()->is_blocked);
+}
+
 IN_PROC_BROWSER_TEST_P(
     SharedDictionaryBrowserTest,
     GetUsageInfoAndClearSharedDictionaryCacheForIsolationKey) {

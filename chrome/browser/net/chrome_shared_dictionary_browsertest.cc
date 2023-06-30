@@ -153,6 +153,31 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
         loop, observer, expect_blocked);
   }
 
+  bool CheckDictionaryHeaderByIframeNavigation(const GURL& url,
+                                               bool expect_blocked) {
+    base::RunLoop loop;
+    SharedDictionaryAccessObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        loop.QuitClosure());
+
+    return CheckResultOfDictionaryHeaderAndObserver(
+        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+               content::JsReplace(R"(
+  (async () => {
+    const iframe = document.createElement('iframe');
+    iframe.src = $1;
+    const promise =
+        new Promise(resolve => { iframe.addEventListener('load', resolve); });
+    document.body.appendChild(iframe);
+    await promise;
+    return iframe.contentDocument.body.innerText;
+  })()
+           )",
+                                  url))
+            .ExtractString(),
+        loop, observer, expect_blocked);
+  }
+
   bool CheckResultOfDictionaryHeaderAndObserver(
       const std::string& check_result,
       base::RunLoop& loop,
@@ -293,6 +318,27 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
                              CONTENT_SETTING_BLOCK);
 
   EXPECT_FALSE(CheckDictionaryHeaderByNavigation(
+      embedded_test_server()->GetURL("/path/check_header2.html"),
+      /*expect_blocked=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+                       BlockReadingWhileIframeNavigation) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_TRUE(TryRegisterDictionary(*embedded_test_server()));
+  WaitForDictionaryReady(*embedded_test_server());
+
+  EXPECT_TRUE(CheckDictionaryHeaderByIframeNavigation(
+      embedded_test_server()->GetURL("/path/check_header1.html"),
+      /*expect_blocked=*/false));
+
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+  settings->SetCookieSetting(embedded_test_server()->GetURL("/"),
+                             CONTENT_SETTING_BLOCK);
+
+  EXPECT_FALSE(CheckDictionaryHeaderByIframeNavigation(
       embedded_test_server()->GetURL("/path/check_header2.html"),
       /*expect_blocked=*/true));
 }
