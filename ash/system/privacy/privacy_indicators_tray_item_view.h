@@ -8,9 +8,8 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/throughput_tracker.h"
 
@@ -177,6 +176,10 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   // Used to record metrics of repeated shows per 100 ms.
   int count_repeated_shows_ = 0;
   base::DelayTimer repeated_shows_timer_;
+
+  // Keeps track of the last time the indicator starts showing. Used to record
+  // visibility duration metrics.
+  base::Time start_showing_time_;
 
   // Measure animation smoothness metrics for all the animations.
   absl::optional<ui::ThroughputTracker> throughput_tracker_;

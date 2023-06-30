@@ -43,6 +43,8 @@ constexpr char kCountAppsAccessMicrophoneHistogramName[] =
     "Ash.PrivacyIndicators.NumberOfAppsAccessingMicrophone";
 constexpr char kRepeatedShowsHistogramName[] =
     "Ash.PrivacyIndicators.NumberOfRepeatedShows";
+constexpr char kVisibilityDurationHistogramName[] =
+    "Ash.PrivacyIndicators.IndicatorShowsDuration";
 
 // Update the state of accessing camera and microphone using the
 // `PrivacyIndicatorsController`.
@@ -819,6 +821,46 @@ TEST_P(PrivacyIndicatorsTrayItemViewTest, RecordRepeatedShows) {
 
   flicker_indicator(1, task_environment());
   histograms.ExpectBucketCount(kRepeatedShowsHistogramName, 1, 2);
+}
+
+TEST_P(PrivacyIndicatorsTrayItemViewTest, RecordVisibilityDuration) {
+  // Set up 2 displays. Note that only one instance should be recorded for the
+  // primary display.
+  UpdateDisplay("100x200,300x400");
+
+  base::HistogramTester histograms;
+
+  auto start_time = base::Time::Now();
+
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/false);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/false,
+      /*is_microphone_used=*/false);
+
+  auto expected_sample1 = base::Time::Now() - start_time;
+  histograms.ExpectTimeBucketCount(kVisibilityDurationHistogramName,
+                                   expected_sample1, 1);
+
+  start_time = base::Time::Now();
+
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/false);
+  task_environment()->FastForwardBy(base::Minutes(10));
+
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/false,
+      /*is_microphone_used=*/false);
+  histograms.ExpectTimeBucketCount(kVisibilityDurationHistogramName,
+                                   base::Time::Now() - start_time, 1);
+
+  // No new entries for previous bucket.
+  histograms.ExpectTimeBucketCount(kVisibilityDurationHistogramName,
+                                   expected_sample1, 1);
 }
 
 }  // namespace ash

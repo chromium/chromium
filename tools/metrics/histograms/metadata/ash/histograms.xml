@@ -5127,6 +5127,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.PrivacyIndicators.IndicatorShowsDuration" units="ms"
+    expires_after="2023-11-19">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the duration of showing for privacy indicators. Emitted when the
+    privacy indicators view is hidden after a show in the status tray.
+  </summary>
+</histogram>
+
 <histogram name="Ash.PrivacyIndicators.LaunchSettings" enum="AppType"
     expires_after="2023-11-19">
   <owner>leandre@chromium.org</owner>
