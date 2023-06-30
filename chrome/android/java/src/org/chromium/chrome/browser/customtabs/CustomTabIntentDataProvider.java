@@ -1082,7 +1082,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public int getAnimationExitRes() {
-        return shouldAnimateOnFinish() && !isPartialHeightCustomTab()
+        return shouldAnimateOnFinish() && !isPartialCustomTab()
                 ? mAnimationBundle.getInt(BUNDLE_EXIT_ANIMATION_RESOURCE)
                 : 0;
     }
