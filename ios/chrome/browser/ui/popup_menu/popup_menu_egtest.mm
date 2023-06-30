@@ -186,6 +186,10 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 // Navigates to a pdf page and verifies that the "Find in Page..." tool
 // is not enabled
 - (void)testNoSearchForPDF {
+  // Disabled for iOS 16.1.1+ since Native Find in Page supports PDFs.
+  if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
+    return;
+  }
   const GURL URL = web::test::HttpServer::MakeUrl(kPDFURL);
 
   // Navigate to a mock pdf and verify that the find button is disabled.

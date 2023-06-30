@@ -77,16 +77,15 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
 
 #pragma mark - XCTest.
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_disabled.push_back(kNativeFindInPage);
-  return config;
-}
-
 // After setup, a page with `kFindInPageResponse` is displayed and Find In Page
 // bar is opened.
 - (void)setUp {
   [super setUp];
+
+  // Disabled for iOS 16.1.1+.
+  if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
+    return;
+  }
 
   // Clear saved search term.
   [JavaScriptFindInPageControllerAppInterface clearSearchTerm];
@@ -103,6 +102,12 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
 }
 
 - (void)tearDown {
+  // Disabled for iOS 16.1.1+.
+  if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
+    [super tearDown];
+    return;
+  }
+
   // Close find in page view.
   [self closeFindInPage];
 
@@ -114,6 +119,10 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
 // Tests that find in page allows iteration between search results and displays
 // correct number of results.
 - (void)testFindInPage {
+  // Disabled for iOS 16.1.1+.
+  if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
+    return;
+  }
   // Type "find".
   [self typeFindInPageText:@"find"];
   // Should be highlighting result 1 of 2.
@@ -131,6 +140,10 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
 // the search term is persisted between FIP runs, but in incognito search term
 // is not retained and not autofilled.
 - (void)testFindInPageRetainsSearchTerm {
+  // Disabled for iOS 16.1.1+.
+  if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
+    return;
+  }
   // Type "find".
   [self typeFindInPageText:@"find"];
   [self assertResultStringIsResult:1 outOfTotal:2];
@@ -172,6 +185,10 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
 
 // Tests accessibility of the Find in Page screen.
 - (void)testAccessibilityOnFindInPage {
+  // Disabled for iOS 16.1.1+.
+  if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
+    return;
+  }
   if (@available(iOS 16, *)) {
     [self typeFindInPageText:@"find"];
   } else {
