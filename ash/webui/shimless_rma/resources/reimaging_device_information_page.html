@@ -7,9 +7,12 @@
     width: 100%;
   }
 
-  .input-row {
-    /* Input should always be interactable over the footer. */
-    z-index: 1;
+  /* Include div selector to increase specificity. */
+  div.input-wrapper-overflow {
+    justify-content: flex-start;
+    overflow-y: auto;
+    /* Add padding on the left so the inputs don't get visually cropped. */
+    padding-inline-start: 2px;
   }
 
   hr,
@@ -100,10 +103,10 @@
     </div>
   </div>
   <div slot="right-pane">
-    <div class="input-wrapper">
+    <div class="input-wrapper input-wrapper-overflow">
       <div class="input-row">
         <div class="input-holder">
-          <cr-input id="serialNumber" value="{{serialNumber_}}" 
+          <cr-input id="serialNumber" value="{{serialNumber_}}"
               label="[[i18n('confirmDeviceInfoSerialNumberLabel')]]"
               disabled="[[allButtonsDisabled]]">
           </cr-input>
