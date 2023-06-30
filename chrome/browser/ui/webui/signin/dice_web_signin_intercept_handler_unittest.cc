@@ -169,6 +169,27 @@ const TestParam kTestParams[] = {
           };
         }),
     },
+    {
+        WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
+        policy::EnterpriseManagementAuthority::NONE,
+        /*expected_strings=*/base::BindRepeating([] {
+          return BubbleStrings{
+              /*header_text=*/intercepted_account.given_name,
+              /*body_title=*/
+              l10n_util::GetStringUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_TITLE),
+              /*body_text=*/
+              l10n_util::GetStringUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC),
+              /*confirm_button_label=*/
+              l10n_util::GetStringUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CONFIRM_SWITCH_BUTTON_LABEL),
+              /*cancel_button_label=*/
+              l10n_util::GetStringUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_SWITCH_BUTTON_LABEL),
+          };
+        }),
+    },
 };
 
 }  // namespace
@@ -228,7 +249,10 @@ class DiceWebSigninInterceptHandlerTest
 TEST_P(DiceWebSigninInterceptHandlerTest, CheckStrings) {
   base::Value::Dict parameters = GetInterceptionParameters();
 
-  EXPECT_TRUE(*parameters.FindBool("useV2Design"));
+  if (GetParam().interception_type !=
+      WebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
+    EXPECT_TRUE(*parameters.FindBool("useV2Design"));
+  }
   ExpectStringsMatch(parameters, GetParam().expected_strings.Run());
 }
 
