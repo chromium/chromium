@@ -240,10 +240,12 @@ class BatteryIconView : public BatteryInfoViewBase {
         ContentLayerType::kBatterySystemInfoBackgroundColor);
 
     PowerStatus::BatteryImageInfo info =
-        PowerStatus::Get()->GetBatteryImageInfo();
+        PowerStatus::Get()->GenerateBatteryImageInfo(battery_icon_color,
+                                                     badge_color);
     info.alert_if_low = false;
+
     battery_image_->SetImage(PowerStatus::GetBatteryImage(
-        info, kUnifiedTrayBatteryIconSize, battery_icon_color, badge_color));
+        info, kUnifiedTrayBatteryIconSize, battery_image_->GetColorProvider()));
   }
 
   // Owned by this view, which is owned by views hierarchy.

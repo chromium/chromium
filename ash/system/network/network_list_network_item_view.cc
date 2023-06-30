@@ -395,13 +395,14 @@ void NetworkListNetworkItemView::AddPowerStatusView() {
       AshColorProvider::ContentLayerType::kIconColorPrimary);
   image_icon->SetPreferredSize(gfx::Size(kMenuIconSize, kMenuIconSize));
   image_icon->SetFlipCanvasOnPaintForRTLUI(true);
-  PowerStatus::BatteryImageInfo icon_info;
 
   int battery_percentage =
       network_properties()->type_state->get_tether()->battery_percentage;
+  PowerStatus::BatteryImageInfo icon_info(icon_color);
   icon_info.charge_percent = battery_percentage;
-  image_icon->SetImage(PowerStatus::GetBatteryImage(
-      icon_info, kMobileNetworkBatteryIconSize, icon_color));
+  image_icon->SetImage(
+      PowerStatus::GetBatteryImage(icon_info, kMobileNetworkBatteryIconSize,
+                                   image_icon->GetColorProvider()));
 
   // Show the numeric battery percentage on hover.
   image_icon->SetTooltipText(base::FormatPercent(battery_percentage));

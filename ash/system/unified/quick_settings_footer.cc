@@ -173,12 +173,13 @@ void QsBatteryIconView::ConfigureIcon() {
       GetColorProvider()->GetColor(cros_tokens::kCrosSysOnPositiveContainer);
 
   PowerStatus::BatteryImageInfo info =
-      PowerStatus::Get()->GetBatteryImageInfo();
+      PowerStatus::Get()->GenerateBatteryImageInfo(battery_icon_color);
   info.alert_if_low = false;
 
-  SetImageModel(ButtonState::STATE_NORMAL,
-                ui::ImageModel::FromImageSkia(PowerStatus::GetBatteryImage(
-                    info, kUnifiedTrayBatteryIconSize, battery_icon_color)));
+  SetImageModel(
+      ButtonState::STATE_NORMAL,
+      ui::ImageModel::FromImageSkia(PowerStatus::GetBatteryImage(
+          info, kUnifiedTrayBatteryIconSize, this->GetColorProvider())));
 }
 
 QuickSettingsFooter::QuickSettingsFooter(

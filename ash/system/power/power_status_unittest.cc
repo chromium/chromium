@@ -7,13 +7,18 @@
 #include <memory>
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/widget/widget.h"
 
 using power_manager::PowerSupplyProperties;
 
@@ -85,41 +90,41 @@ TEST_F(PowerStatusTest, InitializeAndUpdate) {
   EXPECT_EQ(2, test_observer_->power_changed_count());
 }
 
-TEST_F(PowerStatusTest, GetBatteryImageInfo) {
+TEST_F(PowerStatusTest, GenerateBatteryImageInfo) {
   PowerSupplyProperties prop;
   prop.set_external_power(PowerSupplyProperties::AC);
   prop.set_battery_state(PowerSupplyProperties::CHARGING);
   prop.set_battery_percent(98.0);
   power_status_->SetProtoForTesting(prop);
-  const PowerStatus::BatteryImageInfo info_charging_98 =
-      power_status_->GetBatteryImageInfo();
+  const PowerStatus* power_status = power_status_;
+  auto get_battery_info = [&power_status]() {
+    return power_status->GenerateBatteryImageInfo(SK_ColorWHITE);
+  };
+
+  const PowerStatus::BatteryImageInfo info_charging_98 = get_battery_info();
 
   // 99% should use the same icon as 98%.
   prop.set_battery_percent(99.0);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_TRUE(info_charging_98.ApproximatelyEqual(
-      power_status_->GetBatteryImageInfo()));
+  EXPECT_TRUE(info_charging_98.ApproximatelyEqual(get_battery_info()));
 
   // A different icon should be used when the battery is full.
   prop.set_battery_state(PowerSupplyProperties::FULL);
   prop.set_battery_percent(100.0);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_FALSE(info_charging_98.ApproximatelyEqual(
-      power_status_->GetBatteryImageInfo()));
+  EXPECT_FALSE(info_charging_98.ApproximatelyEqual(get_battery_info()));
 
   // A much-lower battery level should use a different icon.
   prop.set_battery_state(PowerSupplyProperties::CHARGING);
   prop.set_battery_percent(20.0);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_FALSE(info_charging_98.ApproximatelyEqual(
-      power_status_->GetBatteryImageInfo()));
+  EXPECT_FALSE(info_charging_98.ApproximatelyEqual(get_battery_info()));
 
   // Ditto for 98%, but on USB instead of AC.
   prop.set_external_power(PowerSupplyProperties::USB);
   prop.set_battery_percent(98.0);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_FALSE(info_charging_98.ApproximatelyEqual(
-      power_status_->GetBatteryImageInfo()));
+  EXPECT_FALSE(info_charging_98.ApproximatelyEqual(get_battery_info()));
 }
 
 // Tests that the |icon_badge| member of BatteryImageInfo is set correctly
@@ -132,22 +137,26 @@ TEST_F(PowerStatusTest, BatteryImageInfoIconBadge) {
   prop.set_battery_state(PowerSupplyProperties::CHARGING);
   prop.set_battery_percent(98.0);
   power_status_->SetProtoForTesting(prop);
-  const gfx::VectorIcon* bolt_icon =
-      power_status_->GetBatteryImageInfo().icon_badge;
+
+  const PowerStatus* power_status = power_status_;
+  const auto get_battery_icon = [&power_status]() {
+    return power_status->GenerateBatteryImageInfo(SK_ColorWHITE).icon_badge;
+  };
+
+  const gfx::VectorIcon* bolt_icon = get_battery_icon();
   EXPECT_TRUE(bolt_icon);
 
   // A discharging battery connected to AC should also have a bolt badge.
   prop.set_battery_state(PowerSupplyProperties::DISCHARGING);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_EQ(bolt_icon, power_status_->GetBatteryImageInfo().icon_badge);
+  EXPECT_EQ(bolt_icon, get_battery_icon());
 
   // A charging battery connected to USB power should have an
   // unreliable badge.
   prop.set_external_power(PowerSupplyProperties::USB);
   prop.set_battery_state(PowerSupplyProperties::CHARGING);
   power_status_->SetProtoForTesting(prop);
-  const gfx::VectorIcon* unreliable_icon =
-      power_status_->GetBatteryImageInfo().icon_badge;
+  const gfx::VectorIcon* unreliable_icon = get_battery_icon();
   EXPECT_NE(unreliable_icon, bolt_icon);
   EXPECT_TRUE(unreliable_icon);
 
@@ -155,14 +164,13 @@ TEST_F(PowerStatusTest, BatteryImageInfoIconBadge) {
   // unreliable badge.
   prop.set_battery_state(PowerSupplyProperties::DISCHARGING);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_EQ(unreliable_icon, power_status_->GetBatteryImageInfo().icon_badge);
+  EXPECT_EQ(unreliable_icon, get_battery_icon());
 
   // Show the right icon when no battery is present.
   prop.set_external_power(PowerSupplyProperties::DISCONNECTED);
   prop.set_battery_state(PowerSupplyProperties::NOT_PRESENT);
   power_status_->SetProtoForTesting(prop);
-  const gfx::VectorIcon* x_icon =
-      power_status_->GetBatteryImageInfo().icon_badge;
+  const gfx::VectorIcon* x_icon = get_battery_icon();
   EXPECT_TRUE(x_icon);
   EXPECT_NE(bolt_icon, x_icon);
   EXPECT_NE(unreliable_icon, x_icon);
@@ -170,17 +178,16 @@ TEST_F(PowerStatusTest, BatteryImageInfoIconBadge) {
   // Do not show a badge when the battery is discharging.
   prop.set_battery_state(PowerSupplyProperties::DISCHARGING);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_FALSE(power_status_->GetBatteryImageInfo().icon_badge);
+  EXPECT_FALSE(get_battery_icon());
 
   // Show the right icon for a discharging battery when it falls below
   // a charge level of PowerStatus::kCriticalBatteryChargePercentage.
   prop.set_battery_percent(PowerStatus::kCriticalBatteryChargePercentage);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_FALSE(power_status_->GetBatteryImageInfo().icon_badge);
+  EXPECT_FALSE(get_battery_icon());
   prop.set_battery_percent(PowerStatus::kCriticalBatteryChargePercentage - 1);
   power_status_->SetProtoForTesting(prop);
-  const gfx::VectorIcon* alert_icon =
-      power_status_->GetBatteryImageInfo().icon_badge;
+  const gfx::VectorIcon* alert_icon = get_battery_icon();
   EXPECT_TRUE(alert_icon);
   EXPECT_NE(bolt_icon, alert_icon);
   EXPECT_NE(unreliable_icon, alert_icon);
@@ -190,46 +197,52 @@ TEST_F(PowerStatusTest, BatteryImageInfoIconBadge) {
 // Tests that the battery image changes appropriately with various power supply
 // property values.
 TEST_F(PowerStatusTest, BatteryImageInfoChargeLevel) {
+  const std::unique_ptr<views::Widget> test_widget = CreateTestWidget();
   PowerSupplyProperties prop;
 
   // No charge level is drawn when the battery is not present.
   prop.set_external_power(PowerSupplyProperties::DISCONNECTED);
   prop.set_battery_state(PowerSupplyProperties::NOT_PRESENT);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_EQ(0, power_status_->GetBatteryImageInfo().charge_percent);
+  const PowerStatus* power_status = power_status_;
+  const auto get_battery_charge_percent = [&power_status]() {
+    return power_status->GenerateBatteryImageInfo(SK_ColorWHITE).charge_percent;
+  };
+  EXPECT_EQ(0, get_battery_charge_percent());
 
-  PowerStatus* power_status = power_status_;
-  auto get_battery_image = [&power_status]() {
-    return gfx::Image(power_status->GetBatteryImage(
-        power_status->GetBatteryImageInfo(), 16, SK_ColorGREEN));
+  auto get_battery_image = [&power_status, &test_widget]() {
+    const ui::ColorProvider* color_provider = test_widget->GetColorProvider();
+    PowerStatus::BatteryImageInfo info =
+        power_status->GenerateBatteryImageInfo(SK_ColorGREEN);
+    return gfx::Image(power_status->GetBatteryImage(info, 16, color_provider));
   };
 
   prop.set_external_power(PowerSupplyProperties::AC);
   prop.set_battery_state(PowerSupplyProperties::CHARGING);
   prop.set_battery_percent(0.0);
-  EXPECT_EQ(0, power_status_->GetBatteryImageInfo().charge_percent);
+  EXPECT_EQ(0, get_battery_charge_percent());
   gfx::Image empty_image = get_battery_image();
 
   // 10% and 20% look different.
   prop.set_battery_percent(10.0);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_EQ(10.0, power_status_->GetBatteryImageInfo().charge_percent);
+  EXPECT_EQ(10.0, get_battery_charge_percent());
   gfx::Image image_10 = get_battery_image();
   EXPECT_FALSE(gfx::test::AreImagesEqual(empty_image, image_10));
   prop.set_battery_percent(20.0);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_EQ(20.0, power_status_->GetBatteryImageInfo().charge_percent);
+  EXPECT_EQ(20.0, get_battery_charge_percent());
   gfx::Image image_20 = get_battery_image();
   EXPECT_FALSE(gfx::test::AreImagesEqual(image_10, image_20));
 
   // 99% and 100% look different.
   prop.set_battery_percent(99.0);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_EQ(99, power_status_->GetBatteryImageInfo().charge_percent);
+  EXPECT_EQ(99, get_battery_charge_percent());
   gfx::Image image_99 = get_battery_image();
   prop.set_battery_percent(100.0);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_EQ(100, power_status_->GetBatteryImageInfo().charge_percent);
+  EXPECT_EQ(100, get_battery_charge_percent());
   gfx::Image image_100 = get_battery_image();
   EXPECT_FALSE(gfx::test::AreImagesEqual(image_99, image_100));
 }
@@ -297,6 +310,76 @@ TEST_F(PowerStatusTest, PreferredMinimumExternalPower) {
   power_status_->SetProtoForTesting(prop);
 
   EXPECT_EQ(23.45, power_status_->GetPreferredMinimumPower());
+}
+
+TEST_F(PowerStatusTest, BatteryImageColorResolution) {
+  // Set up Color Resolution Testing
+  PowerSupplyProperties prop;
+  prop.set_external_power(PowerSupplyProperties::DISCONNECTED);
+  prop.set_battery_state(PowerSupplyProperties::DISCHARGING);
+  power_status_->SetProtoForTesting(prop);
+  const std::unique_ptr<views::Widget> test_widget = CreateTestWidget();
+  const ui::ColorProvider* color_provider =
+      test_widget->GetRootView()->GetColorProvider();
+
+  BatteryColors resolved_colors = PowerStatus::BatteryImageInfo::ResolveColors(
+      power_status_->GenerateBatteryImageInfo(SK_ColorRED, SK_ColorBLUE),
+      color_provider);
+
+  // Ensure preferences are honored.
+  EXPECT_EQ(resolved_colors.foreground_color, SK_ColorRED);
+  EXPECT_EQ(resolved_colors.badge_color, SK_ColorBLUE);
+
+  // Test Badge Color Resolution
+  prop.set_external_power(PowerSupplyProperties::AC);
+  prop.set_battery_state(PowerSupplyProperties::CHARGING);
+  prop.set_battery_percent(51);
+  power_status_->SetProtoForTesting(prop);
+
+  // Test badge color resolution with Jelly (>50%).
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(chromeos::features::kJelly);
+  resolved_colors = PowerStatus::BatteryImageInfo::ResolveColors(
+      power_status_->GenerateBatteryImageInfo(SK_ColorRED), color_provider);
+
+  EXPECT_EQ(resolved_colors.badge_color,
+            test_widget->GetRootView()->GetColorProvider()->GetColor(
+                cros_tokens::kButtonLabelColorPrimary));
+
+  // Test badge color resolution without Jelly (>50%).
+  features.Reset();
+  features.InitAndDisableFeature(chromeos::features::kJelly);
+  resolved_colors = PowerStatus::BatteryImageInfo::ResolveColors(
+      power_status_->GenerateBatteryImageInfo(SK_ColorRED), color_provider);
+  EXPECT_EQ(resolved_colors.badge_color,
+            ash::AshColorProvider::Get()->GetContentLayerColor(
+                ash::AshColorProvider::ContentLayerType::kBatteryBadgeColor));
+
+  // Test badge color with <= 50%.
+  prop.set_battery_percent(50);
+  power_status_->SetProtoForTesting(prop);
+  resolved_colors = PowerStatus::BatteryImageInfo::ResolveColors(
+      power_status_->GenerateBatteryImageInfo(SK_ColorRED), color_provider);
+  EXPECT_EQ(resolved_colors.badge_color, SK_ColorRED);
+
+  // Test alert color resolution with Jelly.
+  features.Reset();
+  features.InitAndEnableFeature(chromeos::features::kJelly);
+  resolved_colors = PowerStatus::BatteryImageInfo::ResolveColors(
+      power_status_->GenerateBatteryImageInfo(SK_ColorRED), color_provider);
+
+  EXPECT_EQ(resolved_colors.alert_color,
+            test_widget->GetRootView()->GetColorProvider()->GetColor(
+                cros_tokens::kColorAlert));
+
+  // Test alert color resolution without Jelly.
+  features.Reset();
+  features.InitAndDisableFeature(chromeos::features::kJelly);
+  resolved_colors = PowerStatus::BatteryImageInfo::ResolveColors(
+      power_status_->GenerateBatteryImageInfo(SK_ColorRED), color_provider);
+  EXPECT_EQ(resolved_colors.alert_color,
+            ash::AshColorProvider::Get()->GetContentLayerColor(
+                ash::AshColorProvider::ContentLayerType::kIconColorAlert));
 }
 
 // Tests that toggling battery saver state sends notifications to observers and

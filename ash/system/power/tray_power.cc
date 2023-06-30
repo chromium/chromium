@@ -14,6 +14,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/system/power/battery_notification.h"
 #include "ash/system/power/dual_role_notification.h"
+#include "ash/system/power/power_status.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_item_view.h"
@@ -99,10 +100,11 @@ void PowerTrayView::UpdateLabelOrImageViewColor(bool active) {
   const SkColor icon_fg_color = GetColorProvider()->GetColor(
       active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
              : cros_tokens::kCrosSysOnSurface);
-  const PowerStatus::BatteryImageInfo& info =
-      PowerStatus::Get()->GetBatteryImageInfo();
+  PowerStatus::BatteryImageInfo info =
+      PowerStatus::Get()->GenerateBatteryImageInfo(icon_fg_color);
+
   image_view()->SetImage(PowerStatus::GetBatteryImage(
-      info, kUnifiedTrayBatteryIconSize, icon_fg_color));
+      info, kUnifiedTrayBatteryIconSize, GetColorProvider()));
 }
 
 void PowerTrayView::OnPowerStatusChanged() {
@@ -120,8 +122,18 @@ void PowerTrayView::UpdateStatus() {
 }
 
 void PowerTrayView::UpdateImage(bool icon_color_changed) {
-  const PowerStatus::BatteryImageInfo& info =
-      PowerStatus::Get()->GetBatteryImageInfo();
+  SkColor prev_foreground_color = SK_ColorWHITE,
+          prev_badge_color = SK_ColorWHITE;
+  if (info_) {
+    prev_foreground_color = info_->battery_color_preferences.foreground_color;
+    prev_badge_color =
+        info_->battery_color_preferences.badge_color.value_or(SK_ColorWHITE);
+  }
+
+  PowerStatus::BatteryImageInfo info =
+      PowerStatus::Get()->GenerateBatteryImageInfo(prev_foreground_color,
+                                                   prev_badge_color);
+
   // Only change the image when the info changes or the icon color has
   // changed. http://crbug.com/589348
   if (info_ && info_->ApproximatelyEqual(info) && !icon_color_changed)
@@ -132,8 +144,10 @@ void PowerTrayView::UpdateImage(bool icon_color_changed) {
     // Note: The icon color changes when the UI is in OOBE mode.
     const SkColor icon_fg_color =
         GetColorProvider()->GetColor(kColorAshIconColorPrimary);
+    info = PowerStatus::Get()->GenerateBatteryImageInfo(icon_fg_color);
+    info_ = info;
     image_view()->SetImage(PowerStatus::GetBatteryImage(
-        info, kUnifiedTrayBatteryIconSize, icon_fg_color));
+        info, kUnifiedTrayBatteryIconSize, GetColorProvider()));
     return;
   }
   UpdateLabelOrImageViewColor(is_active());
