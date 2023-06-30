@@ -4938,6 +4938,8 @@ static_library("ui") {
       "views/location_bar/cookie_controls/cookie_controls_bubble_view.h",
       "views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.cc",
       "views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h",
+      "views/location_bar/cookie_controls/cookie_controls_content_view.cc",
+      "views/location_bar/cookie_controls/cookie_controls_content_view.h",
       "views/location_bar/cookie_controls_icon_view.cc",
       "views/location_bar/cookie_controls_icon_view.h",
       "views/location_bar/custom_tab_bar_view.cc",

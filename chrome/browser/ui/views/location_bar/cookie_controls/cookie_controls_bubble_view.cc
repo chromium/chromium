@@ -10,7 +10,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 
@@ -34,8 +33,6 @@ void CookieControlsBubbleView::Init() {
   set_margins(gfx::Insets::VH(vertical_margin, 0));
   set_fixed_width(provider->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-
-  AddChildView(std::make_unique<views::Separator>());
 }
 
 void CookieControlsBubbleView::UpdateTitle(const std::u16string& title) {
@@ -45,4 +42,8 @@ void CookieControlsBubbleView::UpdateTitle(const std::u16string& title) {
 
 void CookieControlsBubbleView::UpdateSubtitle(const std::u16string& subtitle) {
   SetSubtitle(subtitle);
+}
+
+void CookieControlsBubbleView::ChildPreferredSizeChanged(views::View* child) {
+  SizeToContents();
 }

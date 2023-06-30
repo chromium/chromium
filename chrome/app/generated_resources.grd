@@ -3700,6 +3700,12 @@ You can send it to Google Safe Browsing to check if it's unsafe. Scans usually t
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE" translateable="false"  desc="">
         Third-party cookies allowed
       </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE " translateable="false"  desc="">
+        Site not working?
+      </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" translateable="false"  desc="">
+        Try temporarily allowing third-party cookies, which means less protection but site features are more likely to work
+      </message>
 
       <!-- Win certificate selector dialog strings.  -->
       <if expr="toolkit_views">

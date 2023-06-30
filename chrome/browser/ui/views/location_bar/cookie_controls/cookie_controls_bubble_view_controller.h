@@ -14,6 +14,7 @@
 #include "components/content_settings/core/common/cookie_controls_status.h"
 
 class CookieControlsBubbleView;
+class CookieControlsContentView;
 
 class CookieControlsBubbleViewController
     : public content_settings::CookieControlsObserver {
@@ -36,7 +37,8 @@ class CookieControlsBubbleViewController
       CookieControlsBreakageConfidenceLevel level) override;
 
  private:
-  raw_ptr<CookieControlsBubbleView> bubble_view_;
+  raw_ptr<CookieControlsBubbleView> bubble_view_ = nullptr;
+  raw_ptr<CookieControlsContentView> content_view_ = nullptr;
   base::WeakPtr<content_settings::CookieControlsController> controller_;
 
   std::u16string GetSubjectUrlName(content::WebContents* web_contents);

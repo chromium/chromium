@@ -30,6 +30,9 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView {
  private:
   // LocationBarBubbleDelegateView:
   void Init() override;
+
+  // views::View:
+  void ChildPreferredSizeChanged(views::View* child) override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_VIEW_H_
