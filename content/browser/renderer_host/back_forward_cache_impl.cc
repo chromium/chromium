@@ -60,18 +60,13 @@ class RenderProcessHostInternalObserver;
 
 // Allows overriding the sizes of back/forward cache.
 // Sizes set via this feature's parameters take precedence over others.
+// Enables BackForwardCache size for
+//  - desktop: https://crbug.com/1291435.
+//  - android: https://crbug.com/1395281.
 BASE_FEATURE(kBackForwardCacheSize,
              "BackForwardCacheSize",
-// Sets the BackForwardCache size for desktop.
-// See crbug.com/1291435.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-// Sets BackForwardCache cache_size=6 per crbug.com/1291435.
+             base::FEATURE_ENABLED_BY_DEFAULT);
+// Sets BackForwardCache cache_size=6.
 const base::FeatureParam<int> kBackForwardCacheSizeCacheSize{
     &kBackForwardCacheSize, "cache_size", 6};
 // Disables EnforceCacheSizeLimitInternal() with foreground_cache_size=0, as

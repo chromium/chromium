@@ -108,18 +108,11 @@ class BackForwardCacheActiveSizeTest : public ::testing::Test {
 };
 
 TEST_F(BackForwardCacheActiveSizeTest, ActiveCacheSize) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS)
   // The default cache sizes specified by kBackForwardCacheSize takes precedence
   // over kBackForwardCache.
   EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 6u);
   EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 0u);
   EXPECT_FALSE(BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit());
-#else
-  EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 6u);
-  EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 2u);
-  EXPECT_TRUE(BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit());
-#endif
 }
 
 // Covers overwriting BackForwardCache's cache size-related values.
@@ -169,17 +162,10 @@ class BackForwardCacheDefaultSizeTest : public ::testing::Test {
 };
 
 TEST_F(BackForwardCacheDefaultSizeTest, DefaultCacheSize) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS)
   // Default cache sizes are specified by kBackForwardCacheSize.
   EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 6u);
   EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 0u);
   EXPECT_FALSE(BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit());
-#else
-  EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 1u);
-  EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 0u);
-  EXPECT_FALSE(BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit());
-#endif
 }
 
 }  // namespace content
