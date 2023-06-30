@@ -276,6 +276,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.mediator = nil;
   self.browser = nullptr;
   self.browserState = nullptr;
+  [self.searchController dismissViewControllerAnimated:YES completion:nil];
   _profileBookmarkModel = nullptr;
   _profileBookmarkModelBridge.reset();
   _accountBookmarkModel = nullptr;
