@@ -33,6 +33,7 @@ class PrefRegistrySyncable;
 namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
+class ExtensionsManager;
 class IsolatedWebAppCommandLineInstallManager;
 class ManifestUpdateManager;
 class OsIntegrationManager;
@@ -168,6 +169,8 @@ class WebAppProvider : public KeyedService {
 
   PreinstalledWebAppManager& preinstalled_web_app_manager();
 
+  ExtensionsManager& extensions_manager();
+
   AbstractWebAppDatabaseFactory& database_factory();
 
   // KeyedService:
@@ -233,6 +236,7 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppCommandScheduler> command_scheduler_;
   std::unique_ptr<WebAppOriginAssociationManager> origin_association_manager_;
   std::unique_ptr<WebContentsManager> web_contents_manager_;
+  std::unique_ptr<ExtensionsManager> extensions_manager_;
 
   base::OneShotEvent on_registry_ready_;
   base::OneShotEvent on_external_managers_synchronized_;

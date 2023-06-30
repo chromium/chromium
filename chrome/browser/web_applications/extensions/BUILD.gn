@@ -13,6 +13,7 @@ source_set("extensions") {
     "bookmark_app_util.cc",
     "bookmark_app_util.h",
     "extension_status_utils.cc",
+    "extensions_manager.cc",
     "web_app_extension_shortcut.cc",
     "web_app_extension_shortcut.h",
     "web_app_uninstall_and_replace_job.cc",

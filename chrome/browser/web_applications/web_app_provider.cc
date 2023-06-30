@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
@@ -247,6 +248,10 @@ PreinstalledWebAppManager& WebAppProvider::preinstalled_web_app_manager() {
   return *preinstalled_web_app_manager_;
 }
 
+ExtensionsManager& WebAppProvider::extensions_manager() {
+  return *extensions_manager_;
+}
+
 AbstractWebAppDatabaseFactory& WebAppProvider::database_factory() {
   return *database_factory_;
 }
@@ -280,6 +285,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile);
   iwa_command_line_install_manager_ =
       std::make_unique<IsolatedWebAppCommandLineInstallManager>(*profile);
+  extensions_manager_ = std::make_unique<ExtensionsManager>(profile);
 
   database_factory_ = std::make_unique<WebAppDatabaseFactory>(profile);
 
