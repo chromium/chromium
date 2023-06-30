@@ -14,7 +14,11 @@
       {
         "id": "AccessLevel",
         "type": "string",
-        "enum": ["TRUSTED_CONTEXTS", "TRUSTED_AND_UNTRUSTED_CONTEXTS"],
+        "enum": [
+          {"name": "TRUSTED_CONTEXTS", "description": "Specifies contexts originating from the extension itself."},
+          {"name": "TRUSTED_AND_UNTRUSTED_CONTEXTS", "description": "Specifies contexts originating from outside the extension."}
+         // 
+         ],
         "description": "The storage area's access level."
       },
       {
