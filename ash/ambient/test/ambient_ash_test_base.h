@@ -170,6 +170,9 @@ class AmbientAshTestBase : public AshTestBase {
   void FastForwardByBackgroundLockScreenTimeout(
       float factor = kDefaultFastForwardFactor);
 
+  // Advance the task environment timer to screen saver duration in minutes.
+  void FastForwardByDurationInMinutes(int minutes);
+
   void SetPowerStateCharging();
   void SetPowerStateDischarging();
   void SetPowerStateFull();

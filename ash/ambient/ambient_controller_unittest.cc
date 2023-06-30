@@ -2154,8 +2154,7 @@ TEST_F(AmbientControllerDurationTest, AcquireWakeLockAfterScreenSaverStarts) {
   // Simulate a device being connected to a charger initially.
   SetPowerStateCharging();
 
-  // Lock screen to start ambient mode, and flush the loop to ensure
-  // the acquire wake lock request has reached the wake lock provider.
+  // Lock screen to start ambient mode.
   LockScreen();
   FastForwardByLockScreenInactivityTimeout();
   FastForwardTiny();
@@ -2180,6 +2179,71 @@ TEST_F(AmbientControllerDurationTest, AcquireWakeLockAfterScreenSaverStarts) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(0, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+}
+
+TEST_F(AmbientControllerDurationTest, ReleaseWakeLockWhenDurationIsReached) {
+  // Simulate User logged in.
+  ClearLogin();
+  SimulateUserLogin(kUser1);
+
+  // Simulate a device being connected to a charger initially.
+  SetPowerStateCharging();
+
+  // Set screen saver duration to any option that is not kForever.
+  const int duration_minutes = 5;
+  SetAmbientModeEnabled(true);
+  SetScreenSaverDuration(duration_minutes);
+  EXPECT_EQ(duration_minutes, GetScreenSaverDuration());
+
+  // Lock screen to start ambient mode.
+  LockScreen();
+  FastForwardByLockScreenInactivityTimeout();
+  FastForwardTiny();
+
+  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+
+  // Fast forward to when duration is reached. Verify that the wake lock has
+  // been released.
+  FastForwardByDurationInMinutes(duration_minutes);
+  FastForwardTiny();
+  EXPECT_EQ(0, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+}
+
+TEST_F(AmbientControllerDurationTest, HoldWakeLockIfDurationIsSetToForever) {
+  // Simulate User logged in.
+  ClearLogin();
+  SimulateUserLogin(kUser1);
+
+  // Simulate a device being connected to a charger initially.
+  SetPowerStateCharging();
+
+  // Set screen saver duration to kForever.
+  constexpr int kForever = 0;
+  SetAmbientModeEnabled(true);
+  SetScreenSaverDuration(kForever);
+  EXPECT_EQ(kForever, GetScreenSaverDuration());
+
+  // Lock screen to start ambient mode.
+  LockScreen();
+  FastForwardByLockScreenInactivityTimeout();
+  FastForwardTiny();
+
+  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+
+  // Fast forward to a time very long afterwards. Verify that screen saver is
+  // still running.
+  // Use 61 minutes because it is longer than any duration options but not too
+  // long so that this test could complete within a few seconds.
+  const int kLongTimeInMinutes = 61;
+  FastForwardByDurationInMinutes(kLongTimeInMinutes);
+  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventDisplaySleep));
 }
 

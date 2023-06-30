@@ -494,6 +494,10 @@ void AmbientAshTestBase::FastForwardByBackgroundLockScreenTimeout(
                                         ->background_lock_screen_timeout());
 }
 
+void AmbientAshTestBase::FastForwardByDurationInMinutes(int minutes) {
+  task_environment()->FastForwardBy(base::Minutes(minutes));
+}
+
 void AmbientAshTestBase::SetPowerStateCharging() {
   proto_.set_battery_state(
       power_manager::PowerSupplyProperties_BatteryState_CHARGING);
