@@ -492,11 +492,6 @@ const char kAutofillEnableStickyManualFallbackForCardsDescription[] =
     "When enabled, if the user interacts with the manual fallback bottom "
     "sheet, it'll remain sticky until the user dismisses it.";
 
-const char kAutofillEnableSupportForLandmarkName[] =
-    "Enable autofill support for landmark fields";
-const char kAutofillEnableSupportForLandmarkDescription[] =
-    "Enables support for filling and importing landmark fields.";
-
 const char kAutofillEnableUpdateVirtualCardEnrollmentName[] =
     "Enable Update Virtual Card Enrollment";
 const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[] =

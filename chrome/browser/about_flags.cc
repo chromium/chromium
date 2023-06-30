@@ -8809,11 +8809,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableStickyManualFallbackForCards)},
 
-    {"autofill-enable-support-for-landmark",
-     flag_descriptions::kAutofillEnableSupportForLandmarkName,
-     flag_descriptions::kAutofillEnableSupportForLandmarkDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableSupportForLandmark)},
-
     {"autofill-auto-trigger-manual-fallback-for-cards",
      flag_descriptions::kAutofillAutoTriggerManualFallbackForCardsName,
      flag_descriptions::kAutofillAutoTriggerManualFallbackForCardsDescription,
