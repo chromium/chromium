@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/view_transition_element_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -44,7 +43,7 @@ class ViewTransitionStyleTracker
   // Properties that transition on container elements.
   struct ContainerProperties {
     ContainerProperties() = default;
-    ContainerProperties(const LayoutSize& size, const gfx::Transform& matrix)
+    ContainerProperties(const PhysicalSize& size, const gfx::Transform& matrix)
         : border_box_size_in_css_space(size), snapshot_matrix(matrix) {}
 
     bool operator==(const ContainerProperties& other) const {
@@ -56,7 +55,7 @@ class ViewTransitionStyleTracker
       return !(*this == other);
     }
 
-    LayoutSize border_box_size_in_css_space;
+    PhysicalSize border_box_size_in_css_space;
 
     // Transforms a point from local space into the snapshot viewport. For
     // details of the snapshot viewport, see README.md.

@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -263,12 +262,11 @@ gfx::Transform ComputeViewportTransform(const LayoutObject& object) {
 
 gfx::Transform ConvertFromTopLeftToCenter(
     const gfx::Transform& transform_from_top_left,
-    const LayoutSize& box_size) {
+    const PhysicalSize& box_size) {
   gfx::Transform transform_from_center;
-  transform_from_center.Translate(-box_size.Width() / 2,
-                                  -box_size.Height() / 2);
+  transform_from_center.Translate(-box_size.width / 2, -box_size.height / 2);
   transform_from_center.PreConcat(transform_from_top_left);
-  transform_from_center.Translate(box_size.Width() / 2, box_size.Height() / 2);
+  transform_from_center.Translate(box_size.width / 2, box_size.height / 2);
 
   return transform_from_center;
 }
@@ -394,7 +392,8 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     auto* element_data = MakeGarbageCollected<ElementData>();
 
     element_data->container_properties.emplace_back(
-        LayoutSize(transition_state_element.border_box_size_in_css_space),
+        PhysicalSize::FromSizeFFloor(
+            transition_state_element.border_box_size_in_css_space),
         transition_state_element.viewport_matrix);
     element_data->old_snapshot_id = transition_state_element.snapshot_id;
 
@@ -1153,7 +1152,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     auto snapshot_matrix_in_css_space = snapshot_matrix_in_layout_space;
     snapshot_matrix_in_css_space.Zoom(1.0 / device_pixel_ratio_);
 
-    LayoutSize border_box_size_in_css_space;
+    PhysicalSize border_box_size_in_css_space;
     if (layout_object->IsSVGChild() || IsA<LayoutBox>(layout_object)) {
       // ResizeObserverEntry is created to reuse the logic for parsing object
       // size for different types of LayoutObjects. However, this works only
@@ -1163,14 +1162,14 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       auto entry_size = resize_observer_entry->borderBoxSize()[0];
       border_box_size_in_css_space =
           layout_object->IsHorizontalWritingMode()
-              ? LayoutSize(LayoutUnit(entry_size->inlineSize()),
-                           LayoutUnit(entry_size->blockSize()))
-              : LayoutSize(LayoutUnit(entry_size->blockSize()),
-                           LayoutUnit(entry_size->inlineSize()));
+              ? PhysicalSize(LayoutUnit(entry_size->inlineSize()),
+                             LayoutUnit(entry_size->blockSize()))
+              : PhysicalSize(LayoutUnit(entry_size->blockSize()),
+                             LayoutUnit(entry_size->inlineSize()));
     } else if (auto* box_model =
                    DynamicTo<LayoutBoxModelObject>(layout_object)) {
       border_box_size_in_css_space =
-          LayoutSize(box_model->BorderBoundingBox().size());
+          PhysicalSize(box_model->BorderBoundingBox().size());
     }
 
     // If the object's effective zoom differs from device_pixel_ratio, adjust
@@ -1562,11 +1561,8 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
     auto& element = transition_state.elements.emplace_back();
     // TODO(khushalsagar): What about non utf8 strings?
     element.tag_name = entry.key.Utf8();
-    element.border_box_size_in_css_space =
-        gfx::SizeF(element_data->container_properties[0]
-                       .border_box_size_in_css_space.Width(),
-                   element_data->container_properties[0]
-                       .border_box_size_in_css_space.Height());
+    element.border_box_size_in_css_space = gfx::SizeF(
+        element_data->container_properties[0].border_box_size_in_css_space);
     element.viewport_matrix =
         element_data->container_properties[0].snapshot_matrix;
     element.overflow_rect_in_layout_space =
@@ -1772,7 +1768,7 @@ const String& ViewTransitionStyleTracker::UAStyleSheet() {
         builder.AddAnimationAndBlending(
             view_transition_name, element_data->cached_container_properties);
       } else if (element_data->new_snapshot_id.IsValid() && name_is_old_root) {
-        auto layout_view_size = LayoutSize(GetSnapshotRootSize());
+        auto layout_view_size = PhysicalSize(GetSnapshotRootSize());
         // Note that we want the size in css space, which means we need to undo
         // the effective zoom.
         layout_view_size.Scale(1 / device_pixel_ratio_);
@@ -1836,12 +1832,12 @@ gfx::RectF ViewTransitionStyleTracker::ElementData::GetBorderBoxRect(
   if (!use_cached_data && container_properties.size() == 0) {
     return gfx::RectF();
   }
-  LayoutSize border_box_size_in_layout_space =
+  PhysicalSize border_box_size_in_layout_space =
       use_cached_data
           ? cached_container_properties.border_box_size_in_css_space
           : container_properties.back().border_box_size_in_css_space;
   border_box_size_in_layout_space.Scale(device_scale_factor);
-  return gfx::RectF(LayoutRect(LayoutPoint(), border_box_size_in_layout_space));
+  return gfx::RectF(gfx::SizeF(border_box_size_in_layout_space));
 }
 
 void ViewTransitionStyleTracker::ElementData::CacheGeometryState() {

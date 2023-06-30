@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_builder.h"
 
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -96,8 +95,8 @@ String ViewTransitionStyleBuilder::AddKeyframes(
           ->CssText()
           .Utf8()
           .c_str(),
-      source_properties.border_box_size_in_css_space.Width().ToFloat(),
-      source_properties.border_box_size_in_css_space.Height().ToFloat());
+      source_properties.border_box_size_in_css_space.width.ToFloat(),
+      source_properties.border_box_size_in_css_space.height.ToFloat());
   return keyframe_name;
 }
 
@@ -121,8 +120,8 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
         transform: %s;
         writing-mode: %s;
       )CSS",
-      properties.border_box_size_in_css_space.Width().ToFloat(),
-      properties.border_box_size_in_css_space.Height().ToFloat(),
+      properties.border_box_size_in_css_space.width.ToFloat(),
+      properties.border_box_size_in_css_space.height.ToFloat(),
       ComputedStyleUtils::ValueForTransform(properties.snapshot_matrix, 1,
                                             false)
           ->CssText()
