@@ -7,7 +7,7 @@ source_set("unit_tests") {
   sources = []
   deps = [ "core" ]
 
-  if (!is_ios) {
+  if (!is_ios && !is_android) {
     deps += [
       "core:unit_tests",
       "text_finder:unit_tests",

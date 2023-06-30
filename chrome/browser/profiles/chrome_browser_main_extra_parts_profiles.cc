@@ -613,9 +613,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   ClipboardRestrictionServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   ClosedTabCacheServiceFactory::GetInstance();
-#endif
   companion::visual_search::VisualSearchSuggestionsServiceFactory::
       GetInstance();
+#endif
   ConsentAuditorFactory::GetInstance();
   ContentIndexProviderFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
