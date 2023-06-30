@@ -382,7 +382,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   EXPECT_FALSE(GetHistoryItemViewForIndex(/*index=*/0)
                    ->GetViewByID(MenuViewID::kDeleteButtonViewID)
                    ->GetVisible());
-  EXPECT_EQ(gfx::Size(256, 36), first_menu_item_view->size());
 
   // Move the mouse to the second menu item.
   const views::MenuItemView* const second_menu_item_view =

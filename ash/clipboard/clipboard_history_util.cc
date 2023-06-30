@@ -52,6 +52,9 @@ constexpr ui::ClipboardInternalFormat kPrioritizedFormats[] = {
     ui::ClipboardInternalFormat::kWeb,
     ui::ClipboardInternalFormat::kCustom};
 
+// The clipboard history menu's width, in pixels.
+constexpr int kPreferredMenuWidth = 320;
+
 // Helper classes --------------------------------------------------------------
 
 // Used to draw a placeholder HTML preview to be shown while the real HTML is
@@ -254,7 +257,12 @@ crosapi::mojom::ClipboardHistoryItemDescriptor ItemToDescriptor(
 }
 
 int GetPreferredItemViewWidth() {
-  return views::MenuConfig::instance().touchable_menu_min_width;
+  const auto& menu_config = views::MenuConfig::instance();
+  return chromeos::features::IsClipboardHistoryRefreshEnabled()
+             ? std::clamp(kPreferredMenuWidth,
+                          menu_config.touchable_menu_min_width,
+                          menu_config.touchable_menu_max_width)
+             : menu_config.touchable_menu_min_width;
 }
 
 }  // namespace ash::clipboard_history_util
