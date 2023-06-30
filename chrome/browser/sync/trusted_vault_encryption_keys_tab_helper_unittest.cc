@@ -29,6 +29,7 @@
 
 namespace {
 
+// TODO(crbug.com/1434661): rename to TrustedVaultEncryptionKeysTabHelperTest.
 class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
   SyncEncryptionKeysTabHelperTest() {
@@ -85,8 +86,6 @@ class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {{TrustedVaultServiceFactory::GetInstance(),
              TrustedVaultServiceFactory::GetDefaultFactory()},
-            {SyncServiceFactory::GetInstance(),
-             SyncServiceFactory::GetDefaultFactory()},
             {ChromeSigninClientFactory::GetInstance(),
              base::BindRepeating(&signin::BuildTestSigninClient)}};
   }
@@ -163,6 +162,8 @@ TEST_F(SyncEncryptionKeysTabHelperTest,
   EXPECT_FALSE(HasEncryptionKeysApiInMainFrame());
 }
 
+// TODO(crbug.com/1434661): rename to
+// TrustedVaultEncryptionKeysTabHelperPrerenderingTest.
 class SyncEncryptionKeysTabHelperPrerenderingTest
     : public SyncEncryptionKeysTabHelperTest {
  public:

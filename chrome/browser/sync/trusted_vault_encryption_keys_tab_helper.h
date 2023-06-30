@@ -16,13 +16,14 @@ class WebContents;
 class NavigationHandle;
 }  // namespace content
 
-namespace syncer {
-class SyncService;
-}  // namespace syncer
+namespace trusted_vault {
+class TrustedVaultService;
+}  // namespace trusted_vault
 
 // TrustedVaultEncryptionKeysTabHelper is responsible for installing Mojo API in
 // order to receive client encryption keys for //components/trusted_vault from
 // the renderer process.
+// TODO(crbug.com/1434661): move under chrome/browser/trusted_vault.
 class TrustedVaultEncryptionKeysTabHelper
     : public content::WebContentsUserData<TrustedVaultEncryptionKeysTabHelper>,
       public content::WebContentsObserver {
@@ -54,13 +55,15 @@ class TrustedVaultEncryptionKeysTabHelper
   friend class content::WebContentsUserData<
       TrustedVaultEncryptionKeysTabHelper>;
 
-  // Null `sync_service` is interpreted as incognito (when it comes to metrics).
-  TrustedVaultEncryptionKeysTabHelper(content::WebContents* web_contents,
-                                      syncer::SyncService* sync_service);
-
-  // Null `sync_service_` is interpreted as incognito (when it comes to
+  // Null `trusted_vault_service_` is interpreted as incognito (when it comes to
   // metrics).
-  const raw_ptr<syncer::SyncService> sync_service_;
+  TrustedVaultEncryptionKeysTabHelper(
+      content::WebContents* web_contents,
+      trusted_vault::TrustedVaultService* trusted_vault_service);
+
+  // Null `trusted_vault_service_` is interpreted as incognito (when it comes to
+  // metrics).
+  const raw_ptr<trusted_vault::TrustedVaultService> trusted_vault_service_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

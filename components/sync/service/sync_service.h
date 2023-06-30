@@ -447,6 +447,8 @@ class SyncService : public KeyedService {
   // ignored on platforms where keys are retrieved by other means.
   // |last_key_version| represents the key version of the last element in
   // |keys| (unused if empty).
+  // TODO(crbug.com/1434661): avoid remaining usages and delete this method.
+  // Callers can use TrustedVaultService directly.
   virtual void AddTrustedVaultDecryptionKeysFromWeb(
       const std::string& gaia_id,
       const std::vector<std::vector<uint8_t>>& keys,
@@ -454,6 +456,8 @@ class SyncService : public KeyedService {
 
   // Registers a new trusted recovery method that can be used to retrieve
   // trusted vault encryption keys.
+  // TODO(crbug.com/1434661): avoid remaining usages and delete this method.
+  // Callers can use TrustedVaultService directly.
   virtual void AddTrustedVaultRecoveryMethodFromWeb(
       const std::string& gaia_id,
       const std::vector<uint8_t>& public_key,

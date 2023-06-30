@@ -12,15 +12,15 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/service/sync_service_impl.h"
 #include "components/trusted_vault/features.h"
 #include "components/trusted_vault/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -180,21 +180,18 @@ void ExecJsAddTrustedSyncEncryptionRecoveryMethod(
 std::vector<std::vector<uint8_t>> FetchTrustedVaultKeysForProfile(
     Profile* profile,
     const AccountInfo& account_info) {
-  syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(profile);
-  trusted_vault::TrustedVaultClient* trusted_vault_client =
-      sync_service->GetSyncClientForTest()->GetTrustedVaultClient();
-
   // Waits until the sync trusted vault keys have been received and stored.
   base::RunLoop loop;
   std::vector<std::vector<uint8_t>> actual_keys;
 
-  trusted_vault_client->FetchKeys(
-      account_info, base::BindLambdaForTesting(
-                        [&](const std::vector<std::vector<uint8_t>>& keys) {
-                          actual_keys = keys;
-                          loop.Quit();
-                        }));
+  TrustedVaultServiceFactory::GetForProfile(profile)
+      ->GetTrustedVaultClient()
+      ->FetchKeys(account_info,
+                  base::BindLambdaForTesting(
+                      [&](const std::vector<std::vector<uint8_t>>& keys) {
+                        actual_keys = keys;
+                        loop.Quit();
+                      }));
   loop.Run();
   return actual_keys;
 }
@@ -605,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   std::vector<std::vector<uint8_t>> actual_keys =
       FetchTrustedVaultKeysForProfile(browser()->profile(), account);
   // In incognito, the keys should actually be ignored, never forwarded to
-  // SyncService.
+  // TrustedVaultService.
   EXPECT_THAT(actual_keys, testing::IsEmpty());
 }
 
@@ -663,7 +660,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   std::vector<std::vector<uint8_t>> actual_keys =
       FetchTrustedVaultKeysForProfile(browser()->profile(), account);
   // In incognito, the keys should actually be ignored, never forwarded to
-  // SyncService.
+  // TrustedVaultService.
   EXPECT_THAT(actual_keys, testing::IsEmpty());
 }
 

@@ -8,19 +8,18 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/google_accounts_private_api_util.h"
-#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
-#include "components/sync/base/features.h"
-#include "components/sync/service/sync_service.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "components/trusted_vault/trusted_vault_service.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
@@ -98,28 +97,29 @@ class EncryptionKeyApi
 
     base::UmaHistogramBoolean(
         "Sync.TrustedVaultJavascriptAddRecoveryMethodIsIncognito",
-        sync_service_ == nullptr);
+        trusted_vault_service_ == nullptr);
 
-    // Handle incognito separately (where `sync_service_` is null).
-    if (!sync_service_) {
+    // Handle incognito separately (where `trusted_vault_service_` is null).
+    if (!trusted_vault_service_) {
       std::move(callback).Run();
       return;
     }
 
-    sync_service_->AddTrustedVaultRecoveryMethodFromWeb(
+    trusted_vault_service_->GetTrustedVaultClient()->AddTrustedRecoveryMethod(
         gaia_id, public_key, method_type_hint, std::move(callback));
   }
 
  private:
-  // Null `sync_service` is interpreted as incognito (when it comes to metrics).
+  // Null `trusted_vault_service` is interpreted as incognito (when it comes to
+  // metrics).
   EncryptionKeyApi(content::RenderFrameHost* rfh,
-                   syncer::SyncService* sync_service)
+                   trusted_vault::TrustedVaultService* trusted_vault_service)
       : DocumentUserData<EncryptionKeyApi>(rfh),
         is_off_the_record_for_uma_(
             content::WebContents::FromRenderFrameHost(rfh)
                 ->GetBrowserContext()
                 ->IsOffTheRecord()),
-        sync_service_(sync_service),
+        trusted_vault_service_(trusted_vault_service),
         receivers_(content::WebContents::FromRenderFrameHost(rfh), this) {}
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -132,10 +132,10 @@ class EncryptionKeyApi
       case trusted_vault::SecurityDomainId::kChromeSync: {
         base::UmaHistogramBoolean(
             "Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito",
-            sync_service_ == nullptr);
+            trusted_vault_service_ == nullptr);
 
-        // Guard against incognito (where `sync_service_` is null).
-        if (!sync_service_) {
+        // Guard against incognito (where `trusted_vault_service_` is null).
+        if (!trusted_vault_service_) {
           return;
         }
         std::vector<std::vector<uint8_t>> keys_as_bytes(keys.size());
@@ -144,7 +144,7 @@ class EncryptionKeyApi
                          return key->bytes;
                        });
         const int32_t version = keys.back()->version;
-        sync_service_->AddTrustedVaultDecryptionKeysFromWeb(
+        trusted_vault_service_->GetTrustedVaultClient()->StoreKeys(
             gaia_id, keys_as_bytes, version);
       }
     }
@@ -156,7 +156,7 @@ class EncryptionKeyApi
 
   const bool is_off_the_record_for_uma_;
 
-  const raw_ptr<syncer::SyncService> sync_service_;
+  const raw_ptr<trusted_vault::TrustedVaultService> trusted_vault_service_;
 
   content::RenderFrameHostReceiverSet<
       chrome::mojom::TrustedVaultEncryptionKeysExtension>
@@ -176,23 +176,21 @@ void TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(
     return;
   }
 
-  syncer::SyncService* sync_service = nullptr;
+  trusted_vault::TrustedVaultService* trusted_vault_service = nullptr;
 
   if (!web_contents->GetBrowserContext()->IsOffTheRecord()) {
-    sync_service = SyncServiceFactory::GetForProfile(
+    trusted_vault_service = TrustedVaultServiceFactory::GetForProfile(
         Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-    if (!sync_service) {
-      // Other than incognito, there are a few advanced cases (e.g.
-      // command-line flags) that can lead to a null SyncService. In these
-      // cases, avoid instantiating the tab helper altogether to avoid polluting
-      // metrics.
+    if (!trusted_vault_service) {
+      // TODO(crbug.com/1434661): Is it possible? Ideally, this should be
+      // replaced with CHECK(trusted_vault_service).
       return;
     }
   }
 
   web_contents->SetUserData(
       UserDataKey(), base::WrapUnique(new TrustedVaultEncryptionKeysTabHelper(
-                         web_contents, sync_service)));
+                         web_contents, trusted_vault_service)));
 }
 
 // static
@@ -211,11 +209,11 @@ void TrustedVaultEncryptionKeysTabHelper::
 
 TrustedVaultEncryptionKeysTabHelper::TrustedVaultEncryptionKeysTabHelper(
     content::WebContents* web_contents,
-    syncer::SyncService* sync_service)
+    trusted_vault::TrustedVaultService* trusted_vault_service)
     : content::WebContentsUserData<TrustedVaultEncryptionKeysTabHelper>(
           *web_contents),
       content::WebContentsObserver(web_contents),
-      sync_service_(sync_service) {}
+      trusted_vault_service_(trusted_vault_service) {}
 
 TrustedVaultEncryptionKeysTabHelper::~TrustedVaultEncryptionKeysTabHelper() =
     default;
@@ -228,7 +226,7 @@ void TrustedVaultEncryptionKeysTabHelper::DidFinishNavigation(
 
   if (ShouldExposeGoogleAccountsPrivateApi(navigation_handle)) {
     EncryptionKeyApi::CreateForCurrentDocument(
-        navigation_handle->GetRenderFrameHost(), sync_service_);
+        navigation_handle->GetRenderFrameHost(), trusted_vault_service_);
   } else {
     // NavigationHandle::GetRenderFrameHost() can only be accessed after a
     // response has been delivered for processing, or after the navigation fails
