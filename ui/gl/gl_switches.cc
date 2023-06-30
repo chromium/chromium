@@ -232,6 +232,11 @@ BASE_FEATURE(kNvidiaVpSuperResolution,
              "NvidiaVpSuperResolution",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allow overlay swapchain to use NVIDIA video processor for trueHDR.
+BASE_FEATURE(kNvidiaVpTrueHDR,
+             "NvidiaVpTrueHDR",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Default to using ANGLE's OpenGL backend
 BASE_FEATURE(kDefaultANGLEOpenGL,
              "DefaultANGLEOpenGL",

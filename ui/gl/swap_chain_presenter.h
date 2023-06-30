@@ -123,8 +123,8 @@ class SwapChainPresenter : public base::PowerStateObserver {
       Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex,
       const gfx::Rect& content_rect,
       const gfx::ColorSpace& src_color_space,
-      bool content_is_hdr,
-      absl::optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata);
+      absl::optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata,
+      bool use_vp_auto_hdr);
 
   // Get the size of the monitor on which the window handle is displayed.
   gfx::Size GetMonitorSize() const;
@@ -245,6 +245,15 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // Release resources related to `PresentDCOMPSurface()`.
   void ReleaseDCOMPSurfaceResourcesIfNeeded();
 
+  bool RevertSwapChainToSDR(
+      Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device,
+      Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor,
+      Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
+          video_processor_enumerator,
+      Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3,
+      Microsoft::WRL::ComPtr<ID3D11VideoContext1> context1,
+      const gfx::ColorSpace& input_color_space);
+
   // The Direct Composition surface handle from MediaFoundationRenderer.
   HANDLE dcomp_surface_handle_ = INVALID_HANDLE_VALUE;
 
@@ -315,7 +324,8 @@ class SwapChainPresenter : public base::PowerStateObserver {
   Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain_;
   Microsoft::WRL::ComPtr<IUnknown> decode_surface_;
   bool is_on_battery_power_;
-  bool force_vp_super_resolution_off_ = false;
+  bool enable_vp_auto_hdr_ = false;
+  bool enable_vp_super_resolution_ = false;
   UINT gpu_vendor_id_ = 0;
 
   // Number of frames per second.

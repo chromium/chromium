@@ -70,6 +70,7 @@ class DCLayerTree {
                                    DCompositionInkTrailPoint>;
 
   DCLayerTree(bool disable_nv12_dynamic_textures,
+              bool disable_vp_auto_hdr,
               bool disable_vp_scaling,
               bool disable_vp_super_resolution,
               bool force_dcomp_triple_buffer_video_swap_chain,
@@ -102,6 +103,8 @@ class DCLayerTree {
   bool disable_nv12_dynamic_textures() const {
     return disable_nv12_dynamic_textures_;
   }
+
+  bool disable_vp_auto_hdr() const { return disable_vp_auto_hdr_; }
 
   bool disable_vp_scaling() const { return disable_vp_scaling_; }
 
@@ -340,6 +343,7 @@ class DCLayerTree {
       gfx::Size& resource_size_in_pixels);
 
   const bool disable_nv12_dynamic_textures_;
+  const bool disable_vp_auto_hdr_;
   const bool disable_vp_scaling_;
   const bool disable_vp_super_resolution_;
   const bool force_dcomp_triple_buffer_video_swap_chain_;

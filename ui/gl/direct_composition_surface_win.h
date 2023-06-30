@@ -48,6 +48,7 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
 
   struct Settings {
     bool disable_nv12_dynamic_textures = false;
+    bool disable_vp_auto_hdr = false;
     bool disable_vp_scaling = false;
     bool disable_vp_super_resolution = false;
     bool force_dcomp_triple_buffer_video_swap_chain = false;

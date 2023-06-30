@@ -56,6 +56,7 @@ DirectCompositionSurfaceWin::DirectCompositionSurfaceWin(
           settings.use_angle_texture_offset)),
       layer_tree_(std::make_unique<DCLayerTree>(
           settings.disable_nv12_dynamic_textures,
+          settings.disable_vp_auto_hdr,
           settings.disable_vp_scaling,
           settings.disable_vp_super_resolution,
           settings.force_dcomp_triple_buffer_video_swap_chain,

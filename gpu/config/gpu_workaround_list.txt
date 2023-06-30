@@ -63,6 +63,7 @@ disable_skia_reduce_ops_task_splitting
 disable_software_to_accelerated_canvas_upgrade
 disable_texture_storage
 disable_timestamp_queries
+disable_vp_auto_hdr
 disable_vp_scaling
 disable_vp_super_resolution
 disable_webgl_rgb_multisampling_usage

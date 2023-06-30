@@ -78,6 +78,9 @@ GL_EXPORT UINT GetDXGIWaitableSwapChainMaxQueuedFrames();
 // Returns true if there is an HDR capable display connected.
 GL_EXPORT bool DirectCompositionSystemHDREnabled();
 
+// Returns true if the window is displayed on an HDR capable display.
+GL_EXPORT bool DirectCompositionMonitorHDREnabled(HWND window);
+
 // Returns the collected DXGI information.
 GL_EXPORT gfx::mojom::DXGIInfoPtr GetDirectCompositionHDRMonitorDXGIInfo();
 

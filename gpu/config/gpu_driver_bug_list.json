@@ -4178,6 +4178,32 @@
       "features": [
         "force_dcomp_triple_buffer_video_swap_chain"
       ]
+    },
+    {
+      "id": 414,
+      "cr_bugs": [
+        1318380
+      ],
+      "description": "Only enable video processor auto HDR on NVIDIA GPUs with 545+ driver",
+      "os": {
+        "type": "win"
+      },
+      "exceptions": [
+        {
+          "vendor_id": "0x10de",
+          "os": {
+            "type": "win"
+          },
+          "driver_version": {
+            "schema": "nvidia_driver",
+            "op": ">",
+            "value": "545.00"
+          }
+        }
+      ],
+      "features": [
+        "disable_vp_auto_hdr"
+      ]
     }
 
   ]
