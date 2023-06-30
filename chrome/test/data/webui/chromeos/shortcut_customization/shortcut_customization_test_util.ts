@@ -56,3 +56,22 @@ export function createUserAcceleratorInfo(
     type: AcceleratorType.kUser,
   };
 }
+
+export function createCustomStandardAcceleratorInfo(
+    modifier: number, keycode: number, keyDisplay: string,
+    state: AcceleratorState, locked = false): StandardAcceleratorInfo {
+  return {
+    layoutProperties: {
+      standardAccelerator: {
+        keyDisplay: keyDisplay,
+        accelerator: {
+          modifiers: modifier,
+          keyCode: keycode,
+        },
+      },
+    },
+    locked: locked,
+    state: state,
+    type: AcceleratorType.kUser,
+  };
+}

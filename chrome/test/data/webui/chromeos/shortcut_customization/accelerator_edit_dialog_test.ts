@@ -14,11 +14,13 @@ import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accel
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
-import {AcceleratorInfo, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
+import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
+import {createCustomStandardAcceleratorInfo, createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
 
 suite('acceleratorEditDialogTest', function() {
   let viewElement: AcceleratorEditDialogElement|null = null;
@@ -191,7 +193,7 @@ suite('acceleratorEditDialogTest', function() {
     assertFalse(!!pendingAccelerator);
   });
 
-  test('RestoreDefaultButton', async () => {
+  test('RestoreDefaultButtonSuccess', async () => {
     const acceleratorInfo: AcceleratorInfo = createUserAcceleratorInfo(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
@@ -213,6 +215,12 @@ suite('acceleratorEditDialogTest', function() {
 
     // Expect call count for `restoreDefault` to be 0.
     assertEquals(0, provider.getRestoreDefaultCallCount());
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kSuccess,
+      shortcutName: undefined,
+    };
+
+    provider.setRestoreDefault(fakeResult);
     const restoreDefaultButton =
         dialog!.querySelector('#restoreDefault') as CrButtonElement;
     restoreDefaultButton.click();
@@ -220,6 +228,221 @@ suite('acceleratorEditDialogTest', function() {
 
     // Expect call count for `restoreDefault` to be 1.
     assertEquals(1, provider.getRestoreDefaultCallCount());
+  });
+
+  test('RestoreDefaultButtonConflict', async () => {
+    const acceleratorInfo: AcceleratorInfo =
+        createCustomStandardAcceleratorInfo(
+            Modifier.CONTROL | Modifier.SHIFT,
+            /*key=*/ 71, /*keyDisplay=*/ 'g', AcceleratorState.kDisabledByUser);
+
+    const accelerators = [acceleratorInfo];
+    const description = 'test shortcut';
+
+    viewElement!.acceleratorInfos = accelerators;
+    viewElement!.description = description;
+    await flush();
+    const dialog =
+        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    assertTrue(dialog.open);
+    const acceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
+    assertEquals(0, acceleratorElements.length);
+
+    // Expect call count for `restoreDefault` to be 0.
+    assertEquals(0, provider.getRestoreDefaultCallCount());
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kRestoreSuccessWithConflicts,
+      shortcutName: stringToMojoString16('TestDescription'),
+    };
+
+    provider.setRestoreDefault(fakeResult);
+    const restoreDefaultButton =
+        dialog!.querySelector('#restoreDefault') as CrButtonElement;
+    restoreDefaultButton.click();
+    await flushTasks();
+
+    // Expect call count for `restoreDefault` to be 1.
+    assertEquals(1, provider.getRestoreDefaultCallCount());
+
+    // Set the fake return for `GetConflictAccelerator` which is used to display
+    // the error message.
+    const fakeConflictResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflict,
+      shortcutName: stringToMojoString16('TestConflictDescription'),
+    };
+    provider.setFakeGetConflictAccelerator(fakeConflictResult);
+
+    // Simulate `UpdateDialogAccelerators`.
+    viewElement!.updateDialogAccelerators(accelerators);
+    await flushTasks();
+
+    const updatedAcceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
+    assertEquals(1, updatedAcceleratorElements.length);
+
+    // Verify conflict error message is displayed.
+    // TODO(jimmyxgong): This error message is not final, update with final
+    // string format.
+    const expectedErrorMessage =
+        'Shortcut is used by "TestConflictDescription". Remove or edit to ' +
+        'resolve the conflict.';
+    const statusMessageElement =
+        updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
+            '#acceleratorInfoText') as HTMLDivElement;
+    assertEquals(
+        expectedErrorMessage, statusMessageElement.textContent!.trim());
+  });
+
+  test('RestoreDefaultButtonIgnoreConflict', async () => {
+    const acceleratorInfo: AcceleratorInfo =
+        createCustomStandardAcceleratorInfo(
+            Modifier.CONTROL | Modifier.SHIFT,
+            /*key=*/ 71, /*keyDisplay=*/ 'g', AcceleratorState.kDisabledByUser);
+
+    const accelerators = [acceleratorInfo];
+    const description = 'test shortcut';
+
+    viewElement!.acceleratorInfos = accelerators;
+    viewElement!.description = description;
+    await flush();
+    const dialog =
+        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    assertTrue(dialog.open);
+
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kRestoreSuccessWithConflicts,
+      shortcutName: stringToMojoString16('TestDescription'),
+    };
+
+    provider.setRestoreDefault(fakeResult);
+    const restoreDefaultButton =
+        dialog!.querySelector('#restoreDefault') as CrButtonElement;
+    restoreDefaultButton.click();
+    await flushTasks();
+
+    // Set the fake return for `GetConflictAccelerator` which is used to display
+    // the error message.
+    const fakeConflictResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflict,
+      shortcutName: stringToMojoString16('TestConflictDescription'),
+    };
+    provider.setFakeGetConflictAccelerator(fakeConflictResult);
+
+    // Simulate `UpdateDialogAccelerators`.
+    viewElement!.updateDialogAccelerators(accelerators);
+    await flushTasks();
+
+    let updatedAcceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
+    assertEquals(1, updatedAcceleratorElements.length);
+
+    // Click on the trash button to effectively ignore the conflict.
+    const cancelButton =
+        updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
+            '#deleteButton') as HTMLButtonElement;
+    cancelButton!.click();
+
+    // Simulate `UpdateDialogAccelerators`.
+    viewElement!.updateDialogAccelerators(accelerators);
+    await flushTasks();
+
+    // Verify that the accelerator is now not visible.
+    updatedAcceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
+    assertEquals(0, updatedAcceleratorElements.length);
+  });
+
+  test('RestoreDefaultButtonFixConflict', async () => {
+    const acceleratorInfo: AcceleratorInfo =
+        createCustomStandardAcceleratorInfo(
+            Modifier.CONTROL | Modifier.SHIFT,
+            /*key=*/ 71, /*keyDisplay=*/ 'g', AcceleratorState.kDisabledByUser);
+
+    const accelerators = [acceleratorInfo];
+    const description = 'test shortcut';
+
+    viewElement!.acceleratorInfos = accelerators;
+    viewElement!.description = description;
+    await flush();
+    const dialog =
+        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    assertTrue(dialog.open);
+
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kRestoreSuccessWithConflicts,
+      shortcutName: stringToMojoString16('TestDescription'),
+    };
+
+    provider.setRestoreDefault(fakeResult);
+    const restoreDefaultButton =
+        dialog!.querySelector('#restoreDefault') as CrButtonElement;
+    restoreDefaultButton.click();
+    await flushTasks();
+
+    // Set the fake return for `GetConflictAccelerator` which is used to display
+    // the error message.
+    const fakeConflictResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflict,
+      shortcutName: stringToMojoString16('TestConflictDescription'),
+    };
+    provider.setFakeGetConflictAccelerator(fakeConflictResult);
+
+    // Simulate `UpdateDialogAccelerators`.
+    viewElement!.updateDialogAccelerators(accelerators);
+    await flushTasks();
+
+    let updatedAcceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
+    assertEquals(1, updatedAcceleratorElements.length);
+
+    // Click on the edit button to attempt to fix the conflict.
+    const editButton = updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
+                           '#editButton') as HTMLButtonElement;
+    editButton!.click();
+
+    // Set the fake `AddAccelerator` mojom result.
+    const fakeAddResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kSuccess,
+      shortcutName: undefined,
+    };
+    provider.setFakeAddAcceleratorResult(fakeAddResult);
+
+    // Expect no calls to be made to `AddAccelerator`.
+    assertEquals(0, provider.getAddAcceleratorCallCount());
+
+    // Simulate Ctrl + Alt + e.
+    updatedAcceleratorElements[0]!.shadowRoot!
+        .querySelector('#acceleratorItem')!.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'e',
+              keyCode: 69,
+              code: 'KeyE',
+              ctrlKey: true,
+              altKey: true,
+              shiftKey: false,
+              metaKey: false,
+            }));
+
+    await flushTasks();
+
+    // Expect one call to be made to `AddAccelerator`.
+    assertEquals(1, provider.getAddAcceleratorCallCount());
+
+    const newAcceleratorInfo: AcceleratorInfo =
+        createCustomStandardAcceleratorInfo(
+            Modifier.CONTROL | Modifier.ALT,
+            /*key=*/ 69, /*keyDisplay=*/ 'e', AcceleratorState.kEnabled);
+
+    const newAccelerators = [newAcceleratorInfo];
+    // Simulate `UpdateDialogAccelerators`.
+    viewElement!.updateDialogAccelerators(newAccelerators);
+    await flushTasks();
+
+    // Verify that the accelerator is visible.
+    updatedAcceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
+    assertEquals(1, updatedAcceleratorElements.length);
   });
 
   test('FilterDisabledAccelerators', async () => {
@@ -251,18 +474,10 @@ suite('acceleratorEditDialogTest', function() {
     const dialog =
         viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
     assertTrue(dialog.open);
-    let acceleratorElements = dialog.querySelectorAll('accelerator-edit-view');
+    const acceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
 
-    // Expect there are 3 accelerators before update.
-    assertEquals(3, acceleratorElements.length);
-
-    // Trigger updateDialogAccelerators() to filter out disabled accelerators.
-    viewElement!.updateDialogAccelerators(accelerators);
-
-    await flush();
-    acceleratorElements = dialog.querySelectorAll('accelerator-edit-view');
-
-    // Expect acceleratorInfo1 and acceleratorInfo2 are filtered out.
+    // Expect there are only 1 accelerator after being filtered.
     assertEquals(1, acceleratorElements.length);
   });
 

@@ -28,6 +28,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   private acceleratorsUpdatedPromise: Promise<void>|null = null;
   private restoreDefaultCallCount: number = 0;
   private preventProcessingAcceleratorsCallCount: number = 0;
+  private addAcceleratorCallCount: number = 0;
 
   constructor() {
     this.methods = new FakeMethodResolver();
@@ -56,6 +57,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   reset(): void {
     this.restoreDefaultCallCount = 0;
     this.preventProcessingAcceleratorsCallCount = 0;
+    this.addAcceleratorCallCount = 0;
     this.observables = new FakeObservables();
     this.registerObservables();
   }
@@ -105,6 +107,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   addAccelerator(
       _source: AcceleratorSource, _actionId: number,
       _accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
+    ++this.addAcceleratorCallCount;
     return this.methods.resolveMethod('addAccelerator');
   }
 
@@ -127,11 +130,11 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   restoreDefault(_source: AcceleratorSource, _actionId: number):
       Promise<{result: AcceleratorResultData}> {
     ++this.restoreDefaultCallCount;
-    // Always return kSuccess in this fake.
-    const result:
-        AcceleratorResultData = {result: AcceleratorConfigResult.kSuccess};
-    this.methods.setResult('restoreDefault', {result});
     return this.methods.resolveMethod('restoreDefault');
+  }
+
+  setRestoreDefault(result: AcceleratorResultData): void {
+    this.methods.setResult('restoreDefault', {result});
   }
 
   restoreAllDefaults(): Promise<{result: AcceleratorResultData}> {
@@ -152,6 +155,14 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
       _source: AcceleratorSource, _actionId: number,
       _accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
     return this.methods.resolveMethod('getConflictAccelerator');
+  }
+
+  /**
+   * Set the config result that will be returned when calling
+   * `getConflictAccelerator()`.
+   */
+  setFakeGetConflictAccelerator(result: AcceleratorResultData): void {
+    this.methods.setResult('getConflictAccelerator', {result});
   }
 
   /**
@@ -176,6 +187,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   getPreventProcessingAcceleratorsCallCount(): number {
     return this.preventProcessingAcceleratorsCallCount;
+  }
+
+  getAddAcceleratorCallCount(): number {
+    return this.addAcceleratorCallCount;
   }
 
   setFakeHasLauncherButton(hasLauncherButton: boolean): void {

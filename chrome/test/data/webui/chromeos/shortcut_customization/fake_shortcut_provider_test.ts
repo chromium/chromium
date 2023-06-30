@@ -143,6 +143,13 @@ suite('fakeShortcutProviderTest', function() {
   });
 
   test('RestoreDefaultFake', () => {
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kSuccess,
+      shortcutName: undefined,
+    };
+
+    getProvider().setRestoreDefault(fakeResult);
+
     return getProvider()
         .restoreDefault(AcceleratorSource.kAsh, 0)
         .then(({result}) => {

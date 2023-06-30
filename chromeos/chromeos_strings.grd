@@ -4032,6 +4032,10 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_VIEW_STATUS_MESSAGE" desc="Instructions to user when they're inputting a new shortcut" translateable="false">
           Press 1-4 modifiers and 1 other key on your keyboard
         </message>
+        <!-- TODO(b/286268215): Translate this string -->
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_RESTORE_DEFAULT_ERROR_MESSAGE" desc="Description text shown to users that their default shortcut is used by another shortcut action" translateable="false">
+          Shortcut is used by "<ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>". Remove or edit to resolve the conflict.
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_RESET_ALL_SHORTCUTS" desc="Button label to reset all shortcuts in the app to their default values">
           Reset all shortcuts
         </message>
