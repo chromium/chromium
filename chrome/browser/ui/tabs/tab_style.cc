@@ -23,6 +23,11 @@ constexpr int kChromeRefreshSeparatorHeight = 16;
 // TODO (crbug.com/1451400): This constant should be in LayoutConstants.
 constexpr int kChromeRefreshTabHeight = 34;
 
+// TODO (crbug.com/1451400): This constant should be in LayoutConstants.
+// Size in dips of the extension of the frame grab area into inactive tabs.
+// The value of 6 matches the value in GM2 (for non-touch - touch was 7).
+constexpr int kChromeRefreshDragHandleExtension = 6;
+
 class GM2TabStyle : public TabStyle {
  public:
   ~GM2TabStyle() override = default;
@@ -54,6 +59,7 @@ class ChromeRefresh2023TabStyle : public GM2TabStyle {
   int GetTabOverlap() const override;
   gfx::Size GetSeparatorSize() const override;
   gfx::Insets GetSeparatorMargins() const override;
+  int GetDragHandleExtension(int height) const override;
   SkColor GetTabBackgroundColor(
       TabSelectionState state,
       bool frame_active,
@@ -222,6 +228,10 @@ gfx::Insets ChromeRefresh2023TabStyle::GetContentsInsets() const {
 gfx::Insets ChromeRefresh2023TabStyle::GetSeparatorMargins() const {
   return gfx::Insets::TLBR(0, kChromeRefreshSeparatorHorizontalMargin, 6,
                            kChromeRefreshSeparatorHorizontalMargin);
+}
+
+int ChromeRefresh2023TabStyle::GetDragHandleExtension(int height) const {
+  return kChromeRefreshDragHandleExtension;
 }
 
 SkColor ChromeRefresh2023TabStyle::GetTabBackgroundColor(
