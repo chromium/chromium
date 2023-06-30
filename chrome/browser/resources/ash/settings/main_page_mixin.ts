@@ -119,10 +119,11 @@ export const MainPageMixin = dedupingMixin(
         }
 
         private async enterSubpage(route: Route): Promise<void> {
+          // Immediately record the last scroll position before continuing.
+          this.lastScrollTop_ = this.scroller_.scrollTop;
+
           // Make the parent page visible to ensure the subpage is visible
           await this.activatePage(route);
-
-          this.lastScrollTop_ = this.scroller_.scrollTop;
           this.scroller_.scrollTop = 0;
           this.classList.add('showing-subpage');
           this.dispatchCustomEvent_('showing-subpage');
