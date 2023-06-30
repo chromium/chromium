@@ -713,13 +713,6 @@ void ManagePasswordsUIController::NavigateToPasswordManagerSettingsPage(
       chrome::FindBrowserWithWebContents(web_contents()), referrer);
 }
 
-void ManagePasswordsUIController::NavigateToPasswordManagerAccountDashboard(
-    password_manager::ManagePasswordsReferrer referrer) {
-  NavigateToGooglePasswordManager(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-      referrer);
-}
-
 void ManagePasswordsUIController::NavigateToPasswordCheckup(
     password_manager::PasswordCheckReferrer referrer) {
   chrome::ShowPasswordCheck(chrome::FindBrowserWithWebContents(web_contents()));

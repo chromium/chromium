@@ -103,11 +103,6 @@ GURL GetGooglePasswordManagerURL(
     password_manager::ManagePasswordsReferrer referrer);
 
 #if !BUILDFLAG(IS_ANDROID)
-// Navigates to the Google Password Manager, i.e. passwords.google.com.
-void NavigateToGooglePasswordManager(
-    Profile* profile,
-    password_manager::ManagePasswordsReferrer referrer);
-
 // Navigates to either the Google Password Manager or the Chrome Password
 // Settings page, depending on the user's password syncing state and whether the
 // corresponding feature flag is enabled.

@@ -138,9 +138,6 @@ class PasswordsModelDelegate {
       const password_manager::PasswordForm& form,
       password_manager::CredentialType credential_type) = 0;
 
-  // Open a new tab, pointing to passwords.google.com.
-  virtual void NavigateToPasswordManagerAccountDashboard(
-      password_manager::ManagePasswordsReferrer referrer) = 0;
   // Open a new tab, pointing to the password manager settings page.
   virtual void NavigateToPasswordManagerSettingsPage(
       password_manager::ManagePasswordsReferrer referrer) = 0;
