@@ -97,6 +97,21 @@ struct AutocompleteResult {
   array<AutocompleteMatch> matches;
 };
 
+enum SelectionLineState {
+  kFocusedButtonHeader = 0,
+  kNormal = 1,
+  kKeywordMode = 2,
+  kFocusedButtonAction = 3,
+  kFocusedButtonRemoveSuggestion = 4,
+};
+
+// See components/omnibox/browser/omnibox_popup_selection.h
+struct OmniboxPopupSelection {
+  uint8 line;
+  SelectionLineState state;
+  uint8 action_index;
+};
+
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // The RealboxBrowserProxy singleton calls this when it's first initialized.
@@ -154,6 +169,6 @@ interface PageHandler {
 interface Page {
   // Updates the page with the autocomplete results.
   AutocompleteResultChanged(AutocompleteResult result);
-  // Selects the match located at |line|.
-  SelectMatchAtLine(uint8 line);
+  // Updates the UI's selected line and action based on the |selection|.
+  UpdateSelection(OmniboxPopupSelection selection);
 };

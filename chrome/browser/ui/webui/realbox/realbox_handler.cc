@@ -948,8 +948,30 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
   }
 }
 
-void RealboxHandler::SelectMatchAtLine(size_t old_line, size_t new_line) {
-  page_->SelectMatchAtLine(new_line);
+omnibox::mojom::SelectionLineState ConvertLineState(
+    OmniboxPopupSelection::LineState state) {
+  switch (state) {
+    case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_HEADER:
+      return omnibox::mojom::SelectionLineState::kFocusedButtonHeader;
+    case OmniboxPopupSelection::LineState::NORMAL:
+      return omnibox::mojom::SelectionLineState::kNormal;
+    case OmniboxPopupSelection::LineState::KEYWORD_MODE:
+      return omnibox::mojom::SelectionLineState::kKeywordMode;
+    case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION:
+      return omnibox::mojom::SelectionLineState::kFocusedButtonAction;
+    case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_REMOVE_SUGGESTION:
+      return omnibox::mojom::SelectionLineState::kFocusedButtonRemoveSuggestion;
+    default:
+      NOTREACHED();
+      break;
+  }
+  return omnibox::mojom::SelectionLineState::kNormal;
+}
+
+void RealboxHandler::UpdateSelection(OmniboxPopupSelection selection) {
+  page_->UpdateSelection(omnibox::mojom::OmniboxPopupSelection::New(
+      selection.line, ConvertLineState(selection.state),
+      selection.action_index));
 }
 
 // LocationBarModel:
