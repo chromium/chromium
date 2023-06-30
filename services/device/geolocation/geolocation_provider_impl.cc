@@ -129,12 +129,18 @@ GeolocationProviderImpl* GeolocationProviderImpl::GetInstance() {
 
 void GeolocationProviderImpl::BindGeolocationControlReceiver(
     mojo::PendingReceiver<mojom::GeolocationControl> receiver) {
-  // The |receiver_| has been bound already here means that more than one
-  // GeolocationPermissionContext in chrome tried to bind to Device Service.
-  // We only bind the first receiver. See more info in
+  // The |control_receiver_| has been bound already here means that
+  // more than one GeolocationPermissionContext in chrome tried to bind to
+  // Device Service. We only bind the first receiver. See more info in
   // geolocation_control.mojom.
-  if (!receiver_.is_bound())
-    receiver_.Bind(std::move(receiver));
+  if (!control_receiver_.is_bound()) {
+    control_receiver_.Bind(std::move(receiver));
+  }
+}
+
+void GeolocationProviderImpl::BindGeolocationInternalsReceiver(
+    mojo::PendingReceiver<mojom::GeolocationInternals> receiver) {
+  internals_receivers_.Add(this, std::move(receiver));
 }
 
 void GeolocationProviderImpl::UserDidOptIntoLocationServices() {
@@ -270,6 +276,35 @@ void GeolocationProviderImpl::Init() {
 void GeolocationProviderImpl::CleanUp() {
   DCHECK(OnGeolocationThread());
   arbitrator_.reset();
+}
+
+void GeolocationProviderImpl::GetDiagnostics(GetDiagnosticsCallback callback) {
+  CHECK(main_task_runner_->BelongsToCurrentThread());
+
+  if (!arbitrator_) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  // Using `base::Unretained` is safe here because |task_runner()| is
+  // bound to `GeolocationProviderImpl`.
+  task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          &GeolocationProviderImpl::GetInternalsDataOnGeolocationThread,
+          base::Unretained(this)),
+      std::move(callback));
+
+  return;
+}
+
+mojom::GeolocationDiagnosticsPtr
+GeolocationProviderImpl::GetInternalsDataOnGeolocationThread() {
+  CHECK(OnGeolocationThread());
+  mojom::GeolocationDiagnosticsPtr result =
+      mojom::GeolocationDiagnostics::New();
+  arbitrator_->FillDiagnostics(*result);
+  return result;
 }
 
 }  // namespace device

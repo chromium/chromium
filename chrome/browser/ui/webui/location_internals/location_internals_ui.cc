@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/location_internals/location_internals_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/location_internals/location_internals_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/location_internals_resources.h"
@@ -28,3 +29,8 @@ LocationInternalsUI::LocationInternalsUI(content::WebUI* web_ui)
 LocationInternalsUI::~LocationInternalsUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(LocationInternalsUI)
+
+void LocationInternalsUI::BindInterface(
+    mojo::PendingReceiver<mojom::LocationInternalsHandler> receiver) {
+  handler_ = std::make_unique<LocationInternalsHandler>(std::move(receiver));
+}

@@ -9,3 +9,12 @@
   padding-inline-end: 20px;
   padding-inline-start: 20px;
 }
+
+#refresh-status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 25vw;
+  font-size: 16px;
+  word-wrap: break-word;
+}

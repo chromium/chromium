@@ -292,6 +292,12 @@ void DeviceService::BindGeolocationControl(
       std::move(receiver));
 }
 
+void DeviceService::BindGeolocationInternals(
+    mojo::PendingReceiver<mojom::GeolocationInternals> receiver) {
+  GeolocationProviderImpl::GetInstance()->BindGeolocationInternalsReceiver(
+      std::move(receiver));
+}
+
 void DeviceService::BindPowerMonitor(
     mojo::PendingReceiver<mojom::PowerMonitor> receiver) {
   if (!power_monitor_message_broadcaster_) {

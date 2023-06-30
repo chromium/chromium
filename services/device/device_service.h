@@ -27,6 +27,7 @@
 #include "services/device/public/mojom/geolocation_config.mojom.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/power_monitor.mojom.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
@@ -158,6 +159,8 @@ class DeviceService : public mojom::DeviceService {
       mojo::PendingReceiver<mojom::GeolocationContext> receiver) override;
   void BindGeolocationControl(
       mojo::PendingReceiver<mojom::GeolocationControl> receiver) override;
+  void BindGeolocationInternals(
+      mojo::PendingReceiver<mojom::GeolocationInternals> receiver) override;
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
   void BindInputDeviceManager(

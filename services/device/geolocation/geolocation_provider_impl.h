@@ -15,9 +15,11 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/geolocation/geolocation_provider.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace base {
@@ -41,6 +43,7 @@ using CustomLocationProviderCallback =
 
 class GeolocationProviderImpl : public GeolocationProvider,
                                 public mojom::GeolocationControl,
+                                public mojom::GeolocationInternals,
                                 public base::Thread {
  public:
   // GeolocationProvider implementation:
@@ -84,6 +87,9 @@ class GeolocationProviderImpl : public GeolocationProvider,
   void BindGeolocationControlReceiver(
       mojo::PendingReceiver<mojom::GeolocationControl> receiver);
 
+  void BindGeolocationInternalsReceiver(
+      mojo::PendingReceiver<mojom::GeolocationInternals> receiver);
+
   // mojom::GeolocationControl implementation:
   void UserDidOptIntoLocationServices() override;
 
@@ -98,6 +104,9 @@ class GeolocationProviderImpl : public GeolocationProvider,
   // Safe to call while there are no GeolocationProviderImpl clients
   // registered.
   void SetArbitratorForTesting(std::unique_ptr<LocationProvider> arbitrator);
+
+  // mojom::GeolocationInternals implementation:
+  void GetDiagnostics(GetDiagnosticsCallback callback) override;
 
  private:
   friend struct base::DefaultSingletonTraits<GeolocationProviderImpl>;
@@ -128,6 +137,8 @@ class GeolocationProviderImpl : public GeolocationProvider,
   void Init() override;
   void CleanUp() override;
 
+  mojom::GeolocationDiagnosticsPtr GetInternalsDataOnGeolocationThread();
+
   base::RepeatingCallbackList<void(const mojom::GeopositionResult&)>
       high_accuracy_callbacks_;
   base::RepeatingCallbackList<void(const mojom::GeopositionResult&)>
@@ -145,7 +156,9 @@ class GeolocationProviderImpl : public GeolocationProvider,
   // Only to be used on the geolocation thread.
   std::unique_ptr<LocationProvider> arbitrator_;
 
-  mojo::Receiver<mojom::GeolocationControl> receiver_{this};
+  mojo::Receiver<mojom::GeolocationControl> control_receiver_{this};
+
+  mojo::ReceiverSet<mojom::GeolocationInternals> internals_receivers_;
 };
 
 }  // namespace device

@@ -44,6 +44,8 @@
 #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
 #include "chrome/browser/ui/webui/internals/internals_ui.h"
+#include "chrome/browser/ui/webui/location_internals/location_internals.mojom.h"
+#include "chrome/browser/ui/webui/location_internals/location_internals_ui.h"
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
 #include "chrome/browser/ui/webui/media/media_history_ui.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox.mojom.h"
@@ -1572,6 +1574,9 @@ void PopulateChromeWebUIFrameBinders(
   map->Add<new_window_proxy::mojom::NewWindowProxy>(
       base::BindRepeating(&BindNewWindowProxy));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  RegisterWebUIControllerInterfaceBinder<::mojom::LocationInternalsHandler,
+                                         LocationInternalsUI>(map);
 }
 
 void PopulateChromeWebUIFrameInterfaceBrokers(
