@@ -33,9 +33,6 @@ CGFloat const kCreditCardIconCornerRadius = 5;
   // Height constraint for the bottom sheet when showing all suggestions.
   NSLayoutConstraint* _heightConstraint;
 
-  // Table view for the list of suggestions.
-  UITableView* _tableView;
-
   // List of credit cards and icon for the bottom sheet.
   NSArray<id<PaymentsSuggestionBottomSheetData>>* _creditCardData;
 
@@ -59,9 +56,9 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 
   // Set the properties read by the super when constructing the
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
-  // TODO(crbug.com/1450214): Use proper strings.
   self.actionHandler = self;
 
+  // TODO(crbug.com/1450214): Use proper strings.
   self.primaryActionString = @"Continue - TEST";
   self.secondaryActionString = @"No thanks - TEST";
 
@@ -203,19 +200,20 @@ CGFloat const kCreditCardIconCornerRadius = 5;
   return [_creditCardData[row] icon];
 }
 
-// Creates the payments bottom sheet's table view, initially at minimized
-// height.
+// Creates the payments bottom sheet's table view.
 - (UITableView*)createTableView {
-  _tableView = [super createTableView];
+  UITableView* tableView = [super createTableView];
 
-  [_tableView registerClass:TableViewDetailIconCell.class
+  tableView.dataSource = self;
+  [tableView registerClass:TableViewDetailIconCell.class
       forCellReuseIdentifier:@"cell"];
 
-  _heightConstraint = [_tableView.heightAnchor
-      constraintEqualToConstant:_tableView.rowHeight * _creditCardData.count];
+  _heightConstraint = [tableView.heightAnchor
+      constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
+                                _creditCardData.count];
   _heightConstraint.active = YES;
 
-  return _tableView;
+  return tableView;
 }
 
 // Notifies the delegate that a credit card was selected by the user.
