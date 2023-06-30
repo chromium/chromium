@@ -12,12 +12,18 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
+#include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
 #include "chrome/browser/platform_util.h"
 
 class Profile;
 
 namespace file_manager {
 namespace test {
+
+static const char kODFSSampleUrl[] = "https://1drv.ms/123";
+static const char kSampleUserEmail1[] = "user1@gmail.com";
+static const char kSampleUserEmail2[] = "user2@gmail.com";
 
 // A dummy folder in a temporary path that is automatically mounted as a
 // Profile's Downloads folder.
@@ -92,6 +98,48 @@ void AddFakeWebApp(const std::string& app_id,
                    const std::string& activity_label,
                    absl::optional<bool> handles_intents,
                    apps::AppServiceProxy* app_service_proxy);
+
+// Fake provided file system implementation specific to mimic ODFS.
+// Overrides the `GetActions` method to parallel what ODFS does:
+// - If the number of entries requested is not 1, fail.
+// - If the root is requested, return ODFS metadata.
+// - If the entry is found, return constant ODFS file metadata
+// (`kODFSSampleUrl`).
+// - Otherwise, fail.
+class FakeProvidedFileSystemOneDrive
+    : public ash::file_system_provider::FakeProvidedFileSystem {
+ public:
+  explicit FakeProvidedFileSystemOneDrive(
+      const ash::file_system_provider::ProvidedFileSystemInfo&
+          file_system_info);
+
+  ash::file_system_provider::AbortCallback GetActions(
+      const std::vector<base::FilePath>& entry_paths,
+      GetActionsCallback callback) override;
+};
+
+// Fake extension provider to create a `FakeProvidedFileSystemOneDrive`.
+class FakeExtensionProviderOneDrive
+    : public ash::file_system_provider::FakeExtensionProvider {
+ public:
+  static std::unique_ptr<ProviderInterface> Create(
+      const extensions::ExtensionId& extension_id);
+
+  std::unique_ptr<ash::file_system_provider::ProvidedFileSystemInterface>
+  CreateProvidedFileSystem(
+      Profile* profile,
+      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info)
+      override;
+
+ private:
+  FakeExtensionProviderOneDrive(
+      const extensions::ExtensionId& extension_id,
+      const ash::file_system_provider::Capabilities& capabilities);
+};
+
+// Mount a `FakeProvidedFileSystemOneDrive`.
+FakeProvidedFileSystemOneDrive* CreateFakeProvidedFileSystemOneDrive(
+    Profile* profile);
 
 }  // namespace test
 }  // namespace file_manager

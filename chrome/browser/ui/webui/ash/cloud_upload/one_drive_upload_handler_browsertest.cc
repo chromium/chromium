@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -16,13 +17,10 @@
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
-#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
-#include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
@@ -109,25 +107,8 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest {
 
   // Creates and mounts fake provided file system for OneDrive.
   void SetUpODFS() {
-    file_system_provider::Service* service =
-        file_system_provider::Service::Get(profile());
-    file_system_provider::MountOptions options("odfs", "ODFS");
-    const file_system_provider::ProviderId provider_id =
-        file_system_provider::ProviderId::CreateFromExtensionId(
-            extension_misc::kODFSExtensionId);
-    service->RegisterProvider(
-        file_system_provider::FakeExtensionProvider::Create(
-            extension_misc::kODFSExtensionId));
-    EXPECT_EQ(base::File::FILE_OK,
-              service->MountFileSystem(provider_id, options));
-    std::vector<file_system_provider::ProvidedFileSystemInfo> file_systems =
-        service->GetProvidedFileSystemInfoList(provider_id);
-    // One and only one filesystem should be mounted for the ODFS extension.
-    EXPECT_EQ(1u, file_systems.size());
     provided_file_system_ =
-        static_cast<file_system_provider::FakeProvidedFileSystem*>(
-            service->GetProvidedFileSystem(provider_id,
-                                           file_systems[0].file_system_id()));
+        file_manager::test::CreateFakeProvidedFileSystemOneDrive(profile());
   }
 
   void CheckPathExistsOnODFS(const base::FilePath& path) {

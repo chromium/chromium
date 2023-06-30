@@ -15,12 +15,16 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
+#include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
+#include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/browser/extension_system.h"
@@ -247,6 +251,89 @@ void AddFakeWebApp(const std::string& app_id,
                                                      activity_label));
   AddFakeAppWithIntentFilters(app_id, std::move(filters), apps::AppType::kWeb,
                               handles_intents, app_service_proxy);
+}
+
+FakeProvidedFileSystemOneDrive::FakeProvidedFileSystemOneDrive(
+    const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info)
+    : FakeProvidedFileSystem(file_system_info) {}
+
+ash::file_system_provider::AbortCallback
+FakeProvidedFileSystemOneDrive::GetActions(
+    const std::vector<base::FilePath>& entry_paths,
+    GetActionsCallback callback) {
+  ash::file_system_provider::Actions actions;
+  // Expect only single entry requests.
+  if (entry_paths.size() != 1) {
+    std::move(callback).Run(actions, base::File::FILE_ERROR_NOT_FOUND);
+    return ash::file_system_provider::AbortCallback();
+  }
+  // If root requested, return ODFS metadata.
+  if (entry_paths[0].value() == ash::cloud_upload::kODFSMetadataQueryPath) {
+    actions.push_back(
+        {ash::cloud_upload::kUserEmailActionId, kSampleUserEmail1});
+    std::move(callback).Run(actions, base::File::FILE_OK);
+    return ash::file_system_provider::AbortCallback();
+  }
+  // Otherwise, return |kODFSSampleUrl| if entry exists.
+  ash::file_system_provider::FakeEntry* entry = GetEntry(entry_paths[0]);
+  if (!entry) {
+    std::move(callback).Run(actions, base::File::FILE_ERROR_NOT_FOUND);
+    return ash::file_system_provider::AbortCallback();
+  }
+
+  actions.push_back({ash::cloud_upload::kOneDriveUrlActionId, kODFSSampleUrl});
+
+  std::move(callback).Run(actions, base::File::FILE_OK);
+  return ash::file_system_provider::AbortCallback();
+}
+
+std::unique_ptr<ash::file_system_provider::ProviderInterface>
+FakeExtensionProviderOneDrive::Create(
+    const extensions::ExtensionId& extension_id) {
+  ash::file_system_provider::Capabilities default_capabilities(
+      false, false, false, extensions::SOURCE_NETWORK);
+  return std::unique_ptr<ProviderInterface>(
+      new FakeExtensionProviderOneDrive(extension_id, default_capabilities));
+}
+
+std::unique_ptr<ash::file_system_provider::ProvidedFileSystemInterface>
+FakeExtensionProviderOneDrive::CreateProvidedFileSystem(
+    Profile* profile,
+    const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info) {
+  DCHECK(profile);
+  std::unique_ptr<FakeProvidedFileSystemOneDrive> fake_provided_file_system =
+      std::make_unique<FakeProvidedFileSystemOneDrive>(file_system_info);
+  return fake_provided_file_system;
+}
+
+FakeExtensionProviderOneDrive::FakeExtensionProviderOneDrive(
+    const extensions::ExtensionId& extension_id,
+    const ash::file_system_provider::Capabilities& capabilities)
+    : FakeExtensionProvider(extension_id, capabilities) {}
+
+FakeProvidedFileSystemOneDrive* CreateFakeProvidedFileSystemOneDrive(
+    Profile* profile) {
+  // Create a fake ODFS.
+  ash::file_system_provider::Service* service =
+      ash::file_system_provider::Service::Get(profile);
+  service->RegisterProvider(test::FakeExtensionProviderOneDrive::Create(
+      extension_misc::kODFSExtensionId));
+  ash::file_system_provider::ProviderId provider_id =
+      ash::file_system_provider::ProviderId::CreateFromExtensionId(
+          extension_misc::kODFSExtensionId);
+  ash::file_system_provider::MountOptions options("odfs", "ODFS");
+  EXPECT_EQ(base::File::FILE_OK,
+            service->MountFileSystem(provider_id, options));
+
+  // Get a pointer to the fake ODFS.
+  std::vector<ash::file_system_provider::ProvidedFileSystemInfo> file_systems =
+      service->GetProvidedFileSystemInfoList(provider_id);
+  FakeProvidedFileSystemOneDrive* provided_file_system =
+      static_cast<test::FakeProvidedFileSystemOneDrive*>(
+          service->GetProvidedFileSystem(provider_id,
+                                         file_systems[0].file_system_id()));
+
+  return provided_file_system;
 }
 
 }  // namespace test
