@@ -407,6 +407,13 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
   }
 }
 
+GridItems::GridItems(const GridItems& other) {
+  item_data_.ReserveInitialCapacity(other.item_data_.size());
+  for (const auto& grid_item : other.item_data_) {
+    item_data_.emplace_back(std::make_unique<GridItemData>(*grid_item));
+  }
+}
+
 void GridItems::Append(GridItems* other) {
   item_data_.reserve(item_data_.size() + other->item_data_.size());
   for (auto& grid_item : other->item_data_)

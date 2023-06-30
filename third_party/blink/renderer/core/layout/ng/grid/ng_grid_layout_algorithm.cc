@@ -229,51 +229,31 @@ const NGLayoutResult* NGGridLayoutAlgorithm::Layout() {
 
 const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
-  HeapVector<Member<LayoutBox>> oof_children;
-
-  // Don't re-accumulate out-of-flow children if we're resuming layout, since
-  // that data is stored on the break token.
-  auto grid_sizing_tree = IsBreakInside(BreakToken())
-                              ? BuildGridSizingTree()
-                              : BuildGridSizingTree(&oof_children);
 
   LayoutUnit intrinsic_block_size;
-  auto& [grid_items, layout_data, tree_size] = grid_sizing_tree.TreeRootData();
+  NGGridSizingTree grid_sizing_tree;
+  HeapVector<Member<LayoutBox>> oof_children;
 
   if (IsBreakInside(BreakToken())) {
-    // TODO(layout-dev): When we support variable inline-size fragments we'll
-    // need to re-run |ComputeGridGeometry| for the different inline-size.
-    // When doing this, we'll need to make sure that we don't recalculate the
-    // automatic repetitions (this depends on available size), as this might
-    // change the grid structure significantly (e.g. pull a child up into the
-    // first row).
+    // TODO(layout-dev): When we support variable inlinesize fragments we'll
+    // need to re-run |ComputeGridGeometry| for the different inline size while
+    // making sure that we don't recalculate the automatic repetitions (which
+    // depend on the available size), as this might change the grid structure
+    // significantly (e.g., pull a child up into the first row).
     const auto* grid_data = To<NGGridBreakTokenData>(BreakToken()->TokenData());
+    grid_sizing_tree = grid_data->grid_sizing_tree.CopyForFragmentation();
     intrinsic_block_size = grid_data->intrinsic_block_size;
-    layout_data = grid_data->layout_data;
-
-    // Update `grid_items` with resolved positions and range indices stored
-    // on the break token, as these are dependent on the `layout_data` above.
-    //
-    // TODO(kschmi): If these don't change between fragmentainers, we can store
-    // them (and Columns/Rows) on `NGGridBreakTokenData` and avoid recomputing.
-    CacheGridItemsProperties(layout_data.Columns(), &grid_items,
-                             &grid_data->column_range_indices,
-                             &grid_data->resolved_positions);
-    CacheGridItemsProperties(layout_data.Rows(), &grid_items,
-                             &grid_data->row_range_indices);
   } else {
+    grid_sizing_tree = BuildGridSizingTree(&oof_children);
     ComputeGridGeometry(grid_sizing_tree, &intrinsic_block_size);
-  }
 
-  // Subgridded items must be laid out by their parent.
-  //
-  // TODO(ethavar): Removing subgridded items seems weird since there are more
-  // parts in the code where we explicitly want to ignore them. We need to allow
-  // the caller to decide whether they want to iterate over subgridded items.
-  grid_items.RemoveSubgriddedItems();
+    // Subgridded items must be laid out by their parent.
+    grid_sizing_tree.TreeRootData().grid_items.RemoveSubgriddedItems();
+  }
 
   const auto& constraint_space = ConstraintSpace();
   const auto* cached_layout_subtree = constraint_space.GridLayoutSubtree();
+  auto& [grid_items, layout_data, tree_size] = grid_sizing_tree.TreeRootData();
 
   const auto layout_subtree =
       cached_layout_subtree
@@ -375,27 +355,18 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
   if (!oof_children.empty())
     PlaceOutOfFlowItems(layout_data, block_size, oof_children);
 
-  if (ConstraintSpace().HasBlockFragmentation()) {
-    Vector<GridItemIndices> column_range_indices;
-    Vector<GridItemIndices> row_range_indices;
-    Vector<GridArea> resolved_positions;
-    for (auto& grid_item : grid_items) {
-      column_range_indices.push_back(grid_item.column_range_indices);
-      row_range_indices.push_back(grid_item.row_range_indices);
-      resolved_positions.push_back(grid_item.resolved_position);
-    }
-    container_builder_.SetBreakTokenData(
-        MakeGarbageCollected<NGGridBreakTokenData>(
-            container_builder_.GetBreakTokenData(), layout_data,
-            intrinsic_block_size, consumed_grid_block_size,
-            std::move(column_range_indices), std::move(row_range_indices),
-            std::move(resolved_positions), grid_items_placement_data,
-            row_offset_adjustments, row_break_between, oof_children));
-  }
-
   // Copy grid layout data for use in computed style and devtools.
   container_builder_.TransferGridLayoutData(
       std::make_unique<NGGridLayoutData>(layout_data));
+
+  if (constraint_space.HasBlockFragmentation()) {
+    container_builder_.SetBreakTokenData(
+        MakeGarbageCollected<NGGridBreakTokenData>(
+            container_builder_.GetBreakTokenData(), std::move(grid_sizing_tree),
+            intrinsic_block_size, consumed_grid_block_size,
+            grid_items_placement_data, row_offset_adjustments,
+            row_break_between, oof_children));
+  }
 
   NGOutOfFlowLayoutPart(node, constraint_space, &container_builder_).Run();
   return container_builder_.ToBoxFragment();

@@ -106,6 +106,8 @@ class CORE_EXPORT NGGridSizingTree {
     return *tree_data_[index];
   }
 
+  NGGridSizingTree CopyForFragmentation() const;
+
   // Creates a copy of the current grid geometry for the entire tree in a new
   // `NGGridLayoutTree` instance, which doesn't hold the grid items and its
   // stored in a `scoped_refptr` to be shared by multiple subtrees.
@@ -126,20 +128,22 @@ class CORE_EXPORT NGGridSizingTree {
 
   wtf_size_t LookupSubgridIndex(const GridItemData& subgrid_data) const;
 
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(subgrid_index_lookup_map_);
+    visitor->Trace(subgridded_item_data_lookup_map_);
+  }
+
  private:
+  // Stores a subgrid's index in the grid sizing tree; this is useful when we
+  // want to create a `NGGridSizingSubtree` for an arbitrary subgrid.
+  HeapHashMap<Member<const LayoutBox>, wtf_size_t> subgrid_index_lookup_map_;
+
   // In order to correctly determine the available space of a subgridded item,
   // which might be measured by a different grid than its parent grid, this map
   // stores the item's `NGSubgriddedItemData`, whose layout data should be used
   // to compute its span size within its parent grid's tracks.
-  using SubgriddedItemDataLookupMap =
-      HeapHashMap<Member<const LayoutBox>, NGSubgriddedItemData>;
-  Persistent<SubgriddedItemDataLookupMap> subgridded_item_data_lookup_map_;
-
-  // Stores a subgrid's index in the grid sizing tree; this is useful when we
-  // want to create a `NGGridSizingSubtree` for an arbitrary subgrid.
-  using SubgridIndexLookupMap =
-      HeapHashMap<Member<const LayoutBox>, wtf_size_t>;
-  Persistent<SubgridIndexLookupMap> subgrid_index_lookup_map_;
+  HeapHashMap<Member<const LayoutBox>, NGSubgriddedItemData>
+      subgridded_item_data_lookup_map_;
 
   Vector<std::unique_ptr<GridTreeNode>, 16> tree_data_;
 };

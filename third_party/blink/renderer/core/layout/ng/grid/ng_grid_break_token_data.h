@@ -5,8 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_BREAK_TOKEN_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_BREAK_TOKEN_DATA_H_
 
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_data.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_item.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_sizing_tree.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -32,43 +31,36 @@ struct GridItemPlacementData {
 struct NGGridBreakTokenData final : NGBlockBreakTokenData {
   NGGridBreakTokenData(
       const NGBlockBreakTokenData* break_token_data,
-      const NGGridLayoutData& layout_data,
+      NGGridSizingTree&& grid_sizing_tree,
       LayoutUnit intrinsic_block_size,
       LayoutUnit consumed_grid_block_size,
-      Vector<GridItemIndices>&& column_range_indices,
-      Vector<GridItemIndices>&& row_range_indices,
-      Vector<GridArea>&& resolved_positions,
       const Vector<GridItemPlacementData>& grid_items_placement_data,
       const Vector<LayoutUnit>& row_offset_adjustments,
       const Vector<EBreakBetween>& row_break_between,
       const HeapVector<Member<LayoutBox>>& oof_children)
       : NGBlockBreakTokenData(kGridBreakTokenData, break_token_data),
-        layout_data(layout_data),
+        grid_sizing_tree(std::move(grid_sizing_tree)),
         intrinsic_block_size(intrinsic_block_size),
         consumed_grid_block_size(consumed_grid_block_size),
-        column_range_indices(std::move(column_range_indices)),
-        row_range_indices(std::move(row_range_indices)),
-        resolved_positions(std::move(resolved_positions)),
         grid_items_placement_data(grid_items_placement_data),
         row_offset_adjustments(row_offset_adjustments),
         row_break_between(row_break_between),
         oof_children(oof_children) {}
 
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(grid_sizing_tree);
     visitor->Trace(oof_children);
     NGBlockBreakTokenData::Trace(visitor);
   }
 
-  NGGridLayoutData layout_data;
+  NGGridSizingTree grid_sizing_tree;
   LayoutUnit intrinsic_block_size;
 
   // This is similar to |NGBlockBreakTokenData::consumed_block_size|, however
   // it isn't used for determining the final block-size of the fragment and
   // won't include any block-end padding (this prevents saturation bugs).
   LayoutUnit consumed_grid_block_size;
-  Vector<GridItemIndices> column_range_indices;
-  Vector<GridItemIndices> row_range_indices;
-  Vector<GridArea> resolved_positions;
+
   Vector<GridItemPlacementData> grid_items_placement_data;
   Vector<LayoutUnit> row_offset_adjustments;
   Vector<EBreakBetween> row_break_between;
