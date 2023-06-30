@@ -9929,6 +9929,7 @@ class DeskButtonTest
         next ? GetNextDeskButton() : GetPrevDeskButton();
     ASSERT_TRUE(target_button);
     EXPECT_TRUE(target_button->GetVisible());
+    EXPECT_TRUE(target_button->GetEnabled());
     event_generator->MoveMouseTo(
         target_button->GetBoundsInScreen().CenterPoint());
     DeskSwitchAnimationWaiter waiter;
@@ -9984,8 +9985,8 @@ TEST_P(DeskButtonTest, DeskSwitchButtons) {
   views::ImageButton* next_desk_button = GetNextDeskButton();
   ASSERT_TRUE(prev_desk_button);
   ASSERT_TRUE(next_desk_button);
-  EXPECT_FALSE(prev_desk_button->GetVisible());
-  EXPECT_FALSE(next_desk_button->GetVisible());
+  EXPECT_FALSE(prev_desk_button->GetEnabled());
+  EXPECT_FALSE(next_desk_button->GetEnabled());
 
   // Hovering over the desk button should allow for the buttons to show.
   auto* event_generator = GetEventGenerator();
@@ -9995,22 +9996,22 @@ TEST_P(DeskButtonTest, DeskSwitchButtons) {
 
   // We are on the leftmost desk, so hovering over the desk button should only
   // show the next desk button.
-  EXPECT_FALSE(prev_desk_button->GetVisible());
-  EXPECT_TRUE(next_desk_button->GetVisible());
+  EXPECT_FALSE(prev_desk_button->GetEnabled());
+  EXPECT_TRUE(next_desk_button->GetEnabled());
 
   // Move the mouse away from the button to make sure the switch buttons hide
   // when the desk button is not hovered.
   event_generator->MoveMouseTo(gfx::Point(0, 0));
-  EXPECT_FALSE(prev_desk_button->GetVisible());
-  EXPECT_FALSE(next_desk_button->GetVisible());
+  EXPECT_FALSE(prev_desk_button->GetEnabled());
+  EXPECT_FALSE(next_desk_button->GetEnabled());
 
   ClickDeskSwitchButton(/*next=*/true);
 
   // The previous desk button should now be visible since we are on the
   // rightmost desk.
   EXPECT_TRUE(desk_2->is_active());
-  EXPECT_TRUE(prev_desk_button->GetVisible());
-  EXPECT_FALSE(next_desk_button->GetVisible());
+  EXPECT_TRUE(prev_desk_button->GetEnabled());
+  EXPECT_FALSE(next_desk_button->GetEnabled());
 
   // Try going back to the first desk.
   ClickDeskSwitchButton(/*next=*/false);
@@ -10138,6 +10139,47 @@ TEST_P(DeskButtonTest, SuspendShelfAutoHideWhenHovered) {
   EXPECT_FALSE(desk_button->is_activated());
   EXPECT_FALSE(desk_button->is_hovered());
   EXPECT_FALSE(shelf->disable_auto_hide());
+}
+
+// Tests that the desk button and its child components are correctly positioned
+// in each phase of the desk button's desk switch process.
+TEST_P(DeskButtonTest, ValidateDeskButtonPosition) {
+  NewDesk();
+
+  auto* desk_button = GetDeskButton();
+  ASSERT_TRUE(desk_button);
+
+  auto* prev_desk_button = GetPrevDeskButton();
+  auto* next_desk_button = GetNextDeskButton();
+  auto* desk_name_label = desk_button->desk_name_label_for_test();
+
+  if (GetParam().alignment == ShelfAlignment::kBottom) {
+    EXPECT_EQ(gfx::Rect(0, 0, 96, 36), desk_button->bounds());
+    EXPECT_EQ(gfx::Rect(0, 0, 20, 36), prev_desk_button->bounds());
+    EXPECT_EQ(gfx::Rect(76, 0, 20, 36), next_desk_button->bounds());
+    EXPECT_EQ(gfx::Rect(20, 0, 56, 36), desk_name_label->bounds());
+  } else {
+    EXPECT_EQ(gfx::Rect(0, 0, 36, 36), desk_button->bounds());
+    EXPECT_EQ(gfx::Rect(0, 0, 20, 36), prev_desk_button->bounds());
+    EXPECT_EQ(gfx::Rect(76, 0, 20, 36), next_desk_button->bounds());
+    EXPECT_EQ(gfx::Rect(0, 0, 36, 36), desk_name_label->bounds());
+  }
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(desk_button->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(next_desk_button->GetEnabled());
+  event_generator->MoveMouseTo(
+      next_desk_button->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(gfx::Rect(0, 0, 96, 36), desk_button->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 20, 36), prev_desk_button->bounds());
+  EXPECT_EQ(gfx::Rect(76, 0, 20, 36), next_desk_button->bounds());
+  EXPECT_EQ(gfx::Rect(20, 0, 56, 36), desk_name_label->bounds());
+
+  ClickDeskSwitchButton(/*next=*/true);
+  EXPECT_EQ(gfx::Rect(0, 0, 96, 36), desk_button->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 20, 36), prev_desk_button->bounds());
+  EXPECT_EQ(gfx::Rect(76, 0, 20, 36), next_desk_button->bounds());
+  EXPECT_EQ(gfx::Rect(20, 0, 56, 36), desk_name_label->bounds());
 }
 
 // TODO(afakhry): Add more tests:

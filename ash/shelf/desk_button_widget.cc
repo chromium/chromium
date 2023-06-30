@@ -101,7 +101,8 @@ DeskButtonWidget::DeskButtonWidget(Shelf* shelf)
 DeskButtonWidget::~DeskButtonWidget() = default;
 
 int DeskButtonWidget::GetPreferredLength() const {
-  return is_expanded_ ? GetPreferredExpandedWidth() : kDeskButtonHeight;
+  return is_expanded_ && is_horizontal_shelf_ ? GetPreferredExpandedWidth()
+                                              : kDeskButtonHeight;
 }
 
 int DeskButtonWidget::GetPreferredExpandedWidth() const {

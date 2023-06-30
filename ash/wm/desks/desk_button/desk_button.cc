@@ -23,7 +23,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
@@ -43,6 +42,8 @@ constexpr int kButtonCornerRadius = 12;
 // DeskSwitchButton:
 DeskSwitchButton::DeskSwitchButton(PressedCallback callback)
     : ImageButton(callback) {
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
   SetSize(gfx::Size(kDeskSwitchButtonWidth, kDeskSwitchButtonHeight));
   SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
@@ -50,11 +51,16 @@ DeskSwitchButton::DeskSwitchButton(PressedCallback callback)
       views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
   SetProperty(views::kFlexBehaviorKey,
               views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred));
-  SetVisible(false);
-  SetEnabled(true);
+  SetShown(false);
+  SetVisible(true);
 }
 
 DeskSwitchButton::~DeskSwitchButton() = default;
+
+void DeskSwitchButton::SetShown(bool show) {
+  layer()->SetOpacity(show ? 1.f : 0.f);
+  SetEnabled(show);
+}
 
 void DeskSwitchButton::OnMouseEntered(const ui::MouseEvent& event) {
   if (hovered_) {
@@ -149,7 +155,15 @@ DeskButton::~DeskButton() {
 void DeskButton::OnExpandedStateUpdate(bool expanded) {
   is_expanded_ = expanded;
   desk_name_label_->SetText(is_expanded_ ? desk_name_ : abbreviated_desk_name_);
+
+  // In the shrunk desk button the desk switch buttons should not be used in the
+  // layout.
+  prev_desk_button_->SetVisible(expanded);
+  next_desk_button_->SetVisible(expanded);
   MaybeUpdateDeskSwitchButtonVisibility();
+
+  // Re-layout the button to reflect desk switch button visibility changes.
+  Layout();
 }
 
 void DeskButton::SetActivation(bool is_activated) {
@@ -251,6 +265,13 @@ void DeskButton::OnMouseExited(const ui::MouseEvent& event) {
   MaybeUpdateDeskSwitchButtonVisibility();
 }
 
+views::View* DeskButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
+  // We override this function so that the tooltip manager ignores disabled desk
+  // switch buttons when creating tooltips.
+  views::View* tooltip_handler = Button::GetTooltipHandlerForPoint(point);
+  return tooltip_handler->GetEnabled() ? tooltip_handler : this;
+}
+
 void DeskButton::OnDeskAdded(const Desk* desk) {
   MaybeUpdateDeskSwitchButtonVisibility();
 }
@@ -342,10 +363,10 @@ void DeskButton::MaybeUpdateDeskSwitchButtonVisibility() {
   // the buttons.
   const bool can_show_desk_switch_buttons =
       is_hovered_ && !is_activated_ && is_expanded_;
-  prev_desk_button_->SetVisible(can_show_desk_switch_buttons &&
-                                can_show_prev_desk_button);
-  next_desk_button_->SetVisible(can_show_desk_switch_buttons &&
-                                can_show_next_desk_button);
+  prev_desk_button_->SetShown(can_show_desk_switch_buttons &&
+                              can_show_prev_desk_button);
+  next_desk_button_->SetShown(can_show_desk_switch_buttons &&
+                              can_show_next_desk_button);
 }
 
 void DeskButton::UpdateShelfAutoHideDisabler(

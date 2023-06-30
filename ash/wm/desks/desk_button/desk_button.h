@@ -32,6 +32,9 @@ class DeskSwitchButton : public views::ImageButton {
 
   void set_hovered(bool hovered) { hovered_ = hovered; }
 
+  // Sets opacity and enabled state based on the input `show` state.
+  void SetShown(bool show);
+
  private:
   // views::ImageButton:
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -71,6 +74,8 @@ class ASH_EXPORT DeskButton : public views::Button,
 
   std::u16string GetTitleForView(const views::View* view);
 
+  views::Label* desk_name_label_for_test() const { return desk_name_label_; }
+
   const std::u16string& GetTextForTest() const;
 
  private:
@@ -78,6 +83,7 @@ class ASH_EXPORT DeskButton : public views::Button,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
   // DesksController::Observer:
   void OnDeskAdded(const Desk* desk) override;
