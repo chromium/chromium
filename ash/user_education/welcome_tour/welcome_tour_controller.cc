@@ -13,6 +13,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/user_education/user_education_constants.h"
 #include "ash/user_education/user_education_controller.h"
+#include "ash/user_education/user_education_tutorial_controller.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
@@ -259,7 +260,8 @@ void WelcomeTourController::OnTabletModeStarting() {
   } else {
     // If the dialog is closed, and this event has been reached, then we can be
     // certain the Welcome Tour is the active tutorial, so it is safe to abort.
-    UserEducationController::Get()->AbortTutorial(UserEducationPrivateApiKey());
+    UserEducationTutorialController::Get()->AbortTutorial(
+        UserEducationPrivateApiKey());
   }
 }
 
@@ -300,7 +302,7 @@ void WelcomeTourController::MaybeShowDialog() {
 void WelcomeTourController::StartTutorial() {
   // NOTE: It is theoretically possible for the tutorial to outlive `this`
   // controller during the destruction sequence.
-  UserEducationController::Get()->StartTutorial(
+  UserEducationTutorialController::Get()->StartTutorial(
       UserEducationPrivateApiKey(), TutorialId::kWelcomeTourPrototype1,
       GetInitialElementContext(),
       /*completed_callback=*/

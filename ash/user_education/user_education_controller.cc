@@ -71,29 +71,6 @@ UserEducationController::GetElementIdentifierForAppId(
   return delegate_->GetElementIdentifierForAppId(app_id);
 }
 
-void UserEducationController::StartTutorial(
-    UserEducationPrivateApiKey,
-    TutorialId tutorial_id,
-    ui::ElementContext element_context,
-    base::OnceClosure completed_callback,
-    base::OnceClosure aborted_callback) {
-  // NOTE: User education in Ash is currently only supported for the primary
-  // user profile. This is a self-imposed restriction.
-  auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
-  CHECK(user_education_util::IsPrimaryAccountId(account_id));
-  delegate_->StartTutorial(account_id, tutorial_id, element_context,
-                           std::move(completed_callback),
-                           std::move(aborted_callback));
-}
-
-void UserEducationController::AbortTutorial(UserEducationPrivateApiKey) {
-  // NOTE: User education in Ash is currently only supported for the primary
-  // user profile. This is a self-imposed restriction.
-  auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
-  CHECK(user_education_util::IsPrimaryAccountId(account_id));
-  delegate_->AbortTutorial(account_id);
-}
-
 void UserEducationController::LaunchSystemWebAppAsync(
     UserEducationPrivateApiKey,
     SystemWebAppType system_web_app_type,
@@ -119,6 +96,7 @@ void UserEducationController::OnUserSessionAdded(const AccountId& account_id) {
 
   session_observation_.Reset();
 
+  // TODO(http://b/289292432): Move to `UserEducationTutorialController`.
   // Register all tutorials with user education services in the browser.
   for (auto& feature_controller : feature_controllers_) {
     for (auto& [tutorial_id, tutorial_description] :

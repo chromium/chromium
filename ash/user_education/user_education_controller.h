@@ -14,12 +14,11 @@
 #include "ash/user_education/user_education_help_bubble_controller.h"
 #include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/user_education_private_api_key.h"
-#include "base/functional/callback_forward.h"
+#include "ash/user_education/user_education_tutorial_controller.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
-class ElementContext;
 class ElementIdentifier;
 }  // namespace ui
 
@@ -30,7 +29,6 @@ class UserEducationDelegate;
 class UserEducationFeatureController;
 
 enum class SystemWebAppType;
-enum class TutorialId;
 
 // The controller, owned by `Shell`, for user education features in Ash.
 class ASH_EXPORT UserEducationController : public SessionObserver {
@@ -50,22 +48,6 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
   // element.
   absl::optional<ui::ElementIdentifier> GetElementIdentifierForAppId(
       const std::string& app_id) const;
-
-  // Starts the tutorial previously registered with the specified `tutorial_id`.
-  // Any running tutorial is cancelled. One of either `completed_callback` or
-  // `aborted_callback` will be run on tutorial finish.
-  // NOTE: Currently only the primary user profile is supported.
-  void StartTutorial(UserEducationPrivateApiKey,
-                     TutorialId tutorial_id,
-                     ui::ElementContext element_context,
-                     base::OnceClosure completed_callback,
-                     base::OnceClosure aborted_callback);
-
-  // Aborts the currently running tutorial, whether it was started by this
-  // controller or not. Any `aborted_callback` passed in at the time of start
-  // will be called.
-  // NOTE: Currently only the primary user profile is supported.
-  void AbortTutorial(UserEducationPrivateApiKey);
 
   // Attempts to launch the system web app associated with the given type on
   // the display associated with the given ID asynchronously.
@@ -88,6 +70,9 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
 
   // The controller responsible for creation/management of pings.
   UserEducationPingController ping_controller_;
+
+  // The controller responsible for creation/management of tutorials.
+  UserEducationTutorialController tutorial_controller_{delegate_.get()};
 
   // The set of controllers responsible for specific user education features.
   std::set<std::unique_ptr<UserEducationFeatureController>>

@@ -906,6 +906,8 @@ component("ash") {
     "user_education/user_education_ping_controller.cc",
     "user_education/user_education_ping_controller.h",
     "user_education/user_education_private_api_key.h",
+    "user_education/user_education_tutorial_controller.cc",
+    "user_education/user_education_tutorial_controller.h",
     "user_education/user_education_types.cc",
     "user_education/user_education_types.h",
     "user_education/user_education_util.cc",
