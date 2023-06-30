@@ -65,6 +65,8 @@ class ASH_EXPORT AudioDetailedView
     kAgcInfoLabel,
     // For QsRevamp: AGC information row.
     kAgcInfoView,
+    // Warning message view when an NBS device is selected.
+    kNbsWarningView,
   };
 
   using NoiseCancellationCallback =
@@ -112,6 +114,9 @@ class ASH_EXPORT AudioDetailedView
 
   // Creates the items other than the devices during initialization.
   void CreateItems();
+
+  // Creates the NBS warning view.
+  std::unique_ptr<TriView> CreateNbsWarningView();
 
   // For QsRevamp: Creates the `live_caption_view_`.
   void CreateLiveCaptionView();

@@ -47,6 +47,7 @@ constexpr uint64_t kMicJackId = 10010;
 constexpr uint64_t kInternalMicId = 10003;
 constexpr uint64_t kFrontMicId = 10012;
 constexpr uint64_t kRearMicId = 10013;
+constexpr uint64_t kNbsMicId = 10020;
 const uint64_t kInternalSpeakerId = 10001;
 const uint64_t kHeadphoneId = 10002;
 constexpr uint64_t kDualInternalMicId = 0;
@@ -84,6 +85,9 @@ const uint32_t kOutputMaxSupportedChannels = 2;
 
 const int32_t kInputNumberOfVolumeSteps = 0;
 const int32_t kOutputNumberOfVolumeSteps = 25;
+
+const AudioNodeInfo kNbsMic[] = {
+    {true, kNbsMicId, "Fake Nbs Mic", "BLUETOOTH_NB_MIC", "Nbs Mic", 0}};
 
 const AudioNodeInfo kMicJack[] = {
     {true, kMicJackId, "Fake Mic Jack", "MIC", "Mic Jack", 0}};
@@ -289,6 +293,11 @@ class UnifiedAudioDetailedViewControllerTest
     return Shell::Get()->accessibility_controller()->live_caption().enabled();
   }
 
+  views::View* nbs_warning_view() {
+    return GetAudioDetailedView()->GetViewByID(
+        AudioDetailedView::AudioDetailedViewID::kNbsWarningView);
+  }
+
   std::map<uint64_t, views::View*> input_sliders_map_;
   std::map<uint64_t, views::View*> output_sliders_map_;
   std::map<uint64_t, views::View*> toggles_map_;
@@ -313,6 +322,34 @@ class UnifiedAudioDetailedViewControllerTest
 INSTANTIATE_TEST_SUITE_P(All,
                          UnifiedAudioDetailedViewControllerTest,
                          testing::Bool() /* IsQsRevampEnabled() */);
+
+TEST_P(UnifiedAudioDetailedViewControllerTest, ToggleNbsWarning) {
+  scoped_feature_list_.Reset();
+  if (!IsQsRevampEnabled()) {
+    scoped_feature_list_.InitWithFeatures({ash::features::kAudioHFPNbsWarning},
+                                          {});
+  } else {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kAudioHFPNbsWarning, features::kQsRevamp}, {});
+  }
+
+  fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
+      GenerateAudioNodeList({kMicJack, kNbsMic}));
+
+  auto jack_mic = AudioDevice(GenerateAudioNode(kMicJack));
+  cras_audio_handler_->SwitchToDevice(jack_mic, true,
+                                      CrasAudioHandler::ACTIVATE_BY_USER);
+  EXPECT_FALSE(nbs_warning_view());
+
+  auto nbs_mic = AudioDevice(GenerateAudioNode(kNbsMic));
+  cras_audio_handler_->SwitchToDevice(nbs_mic, true,
+                                      CrasAudioHandler::ACTIVATE_BY_USER);
+  EXPECT_TRUE(nbs_warning_view());
+
+  cras_audio_handler_->SwitchToDevice(jack_mic, true,
+                                      CrasAudioHandler::ACTIVATE_BY_USER);
+  EXPECT_FALSE(nbs_warning_view());
+}
 
 TEST_P(UnifiedAudioDetailedViewControllerTest, OneInputSlider) {
   std::unique_ptr<views::View> view =
