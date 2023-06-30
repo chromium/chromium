@@ -43,6 +43,12 @@ bool FakeTabSlotController::IsFocusInTabs() const {
   return false;
 }
 
+TabSlotController::Liveness FakeTabSlotController::ContinueDrag(
+    views::View* view,
+    const ui::LocatedEvent& event) {
+  return Liveness::kAlive;
+}
+
 bool FakeTabSlotController::EndDrag(EndDragReason reason) {
   return false;
 }
