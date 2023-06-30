@@ -158,8 +158,10 @@ class SystemDialogDelegateView::ButtonContainer : public views::FlexLayoutView {
   ButtonContainer& operator=(const ButtonContainer&) = delete;
   ~ButtonContainer() override = default;
 
-  const PillButton* accept_button() { return accept_button_; }
-  const PillButton* cancel_button() { return cancel_button_; }
+  const PillButton* accept_button() const { return accept_button_; }
+  PillButton* accept_button() { return accept_button_; }
+  const PillButton* cancel_button() const { return cancel_button_; }
+  PillButton* cancel_button() { return cancel_button_; }
 
   void SetAcceptText(const std::u16string& accept_text) {
     accept_button_->SetText(accept_text);
@@ -265,6 +267,9 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded));
+
+  // Make dialog initially focus on the accept button.
+  SetInitiallyFocusedView(button_container_->accept_button());
 
   // Register the close callback.
   RegisterWindowClosingCallback(
