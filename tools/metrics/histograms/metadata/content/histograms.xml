@@ -39,32 +39,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".WebFeedListContents" summary="WebFeedListContents"/>
 </variants>
 
-<histogram name="ContentCapture.CaptureContentDelayTime" units="ms"
-    expires_after="2022-12-01">
-  <owner>michaelbai@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The time between a change in content and when the new capture is sent to the
-    browser process.
-
-    A specific content change is hard to track. This is roughly calculated as
-    the interval from the first content change after a prior capturing content
-    to the first content being sent after the next capture of content.
-  </summary>
-</histogram>
-
-<histogram name="ContentCapture.CaptureContentTime2" units="microseconds"
-    expires_after="2022-12-01">
-  <owner>michaelbai@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The time taken to capture the on-screen content and group them by document.
-
-    Note that this metrics is only recorded on clients on which a
-    high-resolution clock is available.
-  </summary>
-</histogram>
-
 <histogram name="ContentCapture.GetBoundingBox" units="microseconds"
     expires_after="2022-12-01">
   <owner>michaelbai@chromium.org</owner>
@@ -74,49 +48,6 @@ chromium-metrics-reviews@google.com.
 
     Note that this metrics is only recorded on clients on which a
     high-resolution clock is available.
-  </summary>
-</histogram>
-
-<histogram name="ContentCapture.SendContentTime" units="microseconds"
-    expires_after="2022-12-01">
-  <owner>michaelbai@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The time taken to send the content to the browser process in batch.
-
-    Note that this metrics is only recorded on clients on which a
-    high-resolution clock is available.
-  </summary>
-</histogram>
-
-<histogram name="ContentCapture.SentContentCount2" units="count"
-    expires_after="2022-12-01">
-  <owner>michaelbai@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>The total number of content captures sent for a document.</summary>
-</histogram>
-
-<histogram name="ContentCapture.TaskDelayTimeInMs" units="ms"
-    expires_after="2022-12-01">
-  <owner>michaelbai@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The time taken for the task to start after it's scheduled.
-
-    Note: The time of task that was scheduled for the retry wasn't measured
-    because it is always 500ms.
-  </summary>
-</histogram>
-
-<histogram name="ContentCapture.TaskRunsPerCapture" units="runs"
-    expires_after="2022-12-01">
-  <owner>michaelbai@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The number of the times the task runs for a content capture session.
-
-    A content capture session begins with capturing on-screen content and ends
-    in sending all changes.
   </summary>
 </histogram>
 

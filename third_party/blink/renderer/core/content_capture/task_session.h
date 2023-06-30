@@ -5,9 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CONTENT_CAPTURE_TASK_SESSION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CONTENT_CAPTURE_TASK_SESSION_H_
 
-#include <utility>
-
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/node_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -46,11 +43,7 @@ class TaskSession final : public GarbageCollected<TaskSession> {
   // document is GC-ed, see TaskSession::to_document_session_.
   class DocumentSession final : public GarbageCollected<DocumentSession> {
    public:
-    // The callback for total_sent_nodes_ metrics.
-    using SentNodeCountCallback = base::RepeatingCallback<void(int)>;
-
-    DocumentSession(const Document& document,
-                    SentNodeCountCallback& call_back);
+    explicit DocumentSession(const Document& document);
     ~DocumentSession();
     // Add the given |node| to changed node set if the node was sent, return
     // true if succeed.
@@ -109,9 +102,6 @@ class TaskSession final : public GarbageCollected<TaskSession> {
     bool first_data_has_sent_ = false;
     // This is for the metrics to record the total node that has been sent.
     int total_sent_nodes_ = 0;
-    // Histogram could be disabed in low time resolution OS, see
-    // base::TimeTicks::IsHighResolution and ContentCaptureTask.
-    absl::optional<SentNodeCountCallback> callback_;
   };
 
   TaskSession();
@@ -129,14 +119,7 @@ class TaskSession final : public GarbageCollected<TaskSession> {
 
   bool HasUnsentData() const { return has_unsent_data_; }
 
-  void SetSentNodeCountCallback(
-      DocumentSession::SentNodeCountCallback call_back) {
-    callback_ = std::move(call_back);
-  }
-
   void Trace(Visitor*) const;
-
-  void ClearDocumentSessionsForTesting();
 
  private:
   void GroupCapturedContentByDocument(
@@ -152,7 +135,6 @@ class TaskSession final : public GarbageCollected<TaskSession> {
   // DocumentSession, this is used to avoid to iterate all document sessions
   // to find out if there is any of them.
   bool has_unsent_data_ = false;
-  DocumentSession::SentNodeCountCallback callback_;
 };
 
 }  // namespace blink
