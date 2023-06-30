@@ -39,10 +39,12 @@ class VisualSearchSuggestionsServiceFactory
   VisualSearchSuggestionsServiceFactory();
 
   ~VisualSearchSuggestionsServiceFactory() override = default;
-  // BrowserContextKeyedServiceFactory:
 
+  // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 }  // namespace companion::visual_search
