@@ -89,11 +89,6 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
     arc::StabilityMetricsManager::Initialize(&local_state_);
     arc::ArcMetricsService::GetForBrowserContextForTesting(profile());
-
-    // TODO(yusukes): Stop re-creating the client here.
-    ash::ConciergeClient::Shutdown();
-    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-    fake_concierge_client_ = ash::FakeConciergeClient::Get();
   }
 
   void TearDown() override {
@@ -180,7 +175,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   void StartConciergeVm() {
     base::RunLoop run_loop;
     vm_tools::concierge::VmStartedSignal signal;
-    fake_concierge_client_->NotifyVmStarted(signal);
+    ash::FakeConciergeClient::Get()->NotifyVmStarted(signal);
     run_loop.RunUntilIdle();
   }
 
@@ -213,7 +208,6 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   // Required for initialization.
   ash::SessionTerminationManager termination_manager_;
   std::unique_ptr<LockToSingleUserManager> lock_to_single_user_manager_;
-  raw_ptr<ash::FakeConciergeClient, ExperimentalAsh> fake_concierge_client_;
   TestingPrefServiceSimple local_state_;
 };
 
