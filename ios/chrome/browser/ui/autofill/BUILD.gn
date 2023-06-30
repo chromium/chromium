@@ -113,6 +113,7 @@ source_set("autofill_shared_ui") {
     "autofill_profile_edit_mediator.h",
     "autofill_profile_edit_mediator.mm",
     "autofill_profile_edit_mediator_delegate.h",
+    "autofill_profile_edit_table_view_constants.h",
     "autofill_profile_edit_table_view_controller.h",
     "autofill_profile_edit_table_view_controller.mm",
     "autofill_profile_edit_table_view_controller_delegate.h",
