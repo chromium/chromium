@@ -1823,6 +1823,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PostRestoreDefaultBrowser.ActionOnPrompt"
+    enum="IOSPostRestoreDefaultBrowserActionOnPrompt"
+    expires_after="2024-07-21">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs a user's action on the Post Restore Default Browser promo.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PostRestoreSignin.Choice"
     enum="IOSPostRestoreSigninChoice" expires_after="2023-10-15">
   <owner>scottyoder@google.com</owner>

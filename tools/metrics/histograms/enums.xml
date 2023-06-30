@@ -55537,6 +55537,12 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="4" label="Show safe mode"/>
 </enum>
 
+<enum name="IOSPostRestoreDefaultBrowserActionOnPrompt">
+  <int value="0" label="No Thanks"/>
+  <int value="1" label="Go To Settings"/>
+  <int value="2" label="Swipe to Dismiss"/>
+</enum>
+
 <enum name="IOSPostRestoreSigninChoice">
   <int value="0" label="Continue"/>
   <int value="1" label="Dismiss"/>

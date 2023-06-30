@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/ui/default_promo/post_restore/post_restore_default_browser_promo_provider.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
+#import "ios/chrome/browser/ui/default_promo/post_restore/metrics.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -37,6 +41,11 @@
   return promos_manager::Promo::PostRestoreDefaultBrowserAlert;
 }
 
+- (void)promoWasDisplayed {
+  base::RecordAction(base::UserMetricsAction(
+      post_restore_default_browser::kPromptDisplayedUserActionName));
+}
+
 #pragma mark - StandardPromoAlertHandler
 
 - (void)standardPromoAlertDefaultAction {
@@ -44,6 +53,15 @@
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
       completionHandler:nil];
+  base::UmaHistogramEnumeration(
+      post_restore_default_browser::kPromptActionHistogramName,
+      post_restore_default_browser::PromptActionType::kGoToSettings);
+}
+
+- (void)standardPromoAlertCancelAction {
+  base::UmaHistogramEnumeration(
+      post_restore_default_browser::kPromptActionHistogramName,
+      post_restore_default_browser::PromptActionType::kNoThanks);
 }
 
 #pragma mark - StandardPromoAlertProvider
