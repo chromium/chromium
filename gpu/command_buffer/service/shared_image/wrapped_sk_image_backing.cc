@@ -14,6 +14,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
+#include "gpu/ipc/common/gpu_client_ids.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -261,23 +262,34 @@ bool WrappedSkImageBacking::InitializeWithData(
   context_state_->set_need_context_state_reset(true);
 
   textures_.resize(1);
-  if (format().IsCompressed()) {
-    textures_[0].backend_texture =
-        context_state_->gr_context()->createCompressedBackendTexture(
-            size().width(), size().height(),
-            SkTextureCompressionType::kETC1_RGB8, pixels.data(), pixels.size(),
-            GrMipMapped::kNo, GrProtected::kNo);
-  } else {
-    auto info = AsSkImageInfo();
-    if (pixels.size() != info.computeMinByteSize()) {
-      DLOG(ERROR) << "Invalid initial pixel data size";
-      return false;
+
+  {
+    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+    // ScopedCacheUse is used to avoid the empty/invalid client id DCHECKS
+    // caused while accessing GrShaderCache. Even though other clients can
+    // create shared images, the context used to create the backend texture
+    // here i.e. SharedContextState is the one used by display
+    // compositor/OOP-R, and therefore using kDisplayCompositorClientId is the
+    // right choice.
+    context_state_->UseShaderCache(cache_use, gpu::kDisplayCompositorClientId);
+    if (format().IsCompressed()) {
+      textures_[0].backend_texture =
+          context_state_->gr_context()->createCompressedBackendTexture(
+              size().width(), size().height(),
+              SkTextureCompressionType::kETC1_RGB8, pixels.data(),
+              pixels.size(), GrMipMapped::kNo, GrProtected::kNo);
+    } else {
+      auto info = AsSkImageInfo();
+      if (pixels.size() != info.computeMinByteSize()) {
+        DLOG(ERROR) << "Invalid initial pixel data size";
+        return false;
+      }
+      SkPixmap pixmap(info, pixels.data(), info.minRowBytes());
+      textures_[0].backend_texture =
+          context_state_->gr_context()->createBackendTexture(
+              pixmap, GrRenderable::kYes, GrProtected::kNo, nullptr, nullptr,
+              GetLabel(debug_label));
     }
-    SkPixmap pixmap(info, pixels.data(), info.minRowBytes());
-    textures_[0].backend_texture =
-        context_state_->gr_context()->createBackendTexture(
-            pixmap, GrRenderable::kYes, GrProtected::kNo, nullptr, nullptr,
-            GetLabel(debug_label));
   }
 
   if (!textures_[0].backend_texture.isValid()) {
