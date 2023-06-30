@@ -104,6 +104,7 @@ if (is_chromeos) {
       "//third_party/private_membership/src",
       "//third_party/shell-encryption/src",
     ]
+    proto_deps = [ "//components/policy/proto" ]
   }
 
   executable("fake_dmserver") {
