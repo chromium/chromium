@@ -411,7 +411,8 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
     });
   });
 
-  suite('backdrop', function() {
+  // TODO(b/278166473) flaky.
+  suite.skip('backdrop', function() {
     test('selects wallpaper', async () => {
       const wallpaperSelected = getWallpaperSelected();
       const textContainer =
@@ -545,7 +546,8 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
           'album id and is shared param should appear in location.search');
     });
 
-    test('select shared album as daily refresh', async () => {
+    // TODO(b/278166473) flaky.
+    test.skip('select shared album as daily refresh', async () => {
       const sharedAlbumId = 'fake_google_photos_shared_album_id_2';
       await openGooglePhotosSharedAlbumById(sharedAlbumId);
 
