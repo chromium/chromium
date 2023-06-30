@@ -1265,13 +1265,20 @@ void WebFrameWidgetImpl::SendScrollEndEventFromImplSide(
 
   Node* target_node = View()->FindNodeFromScrollableCompositorElementId(
       scroll_latched_element_id);
+  bool target_is_root_scroller = false;
+  if (View()->MainFrameImpl()) {
+    Node* document_node = View()->MainFrameImpl()->GetDocument();
+    if (target_node == document_node) {
+      target_is_root_scroller = true;
+    }
+  }
   if (target_node) {
     // Scrolls consumed entirely by the VisualViewport and not the
     // LayoutViewport should not trigger scrollends on the document. The
     // VisualViewport currently handles scroll but not scrollends. If that
     // changes, we should consider firing scrollend at the visualviewport
     // instead of simply bailing.
-    if (affects_outer_viewport || !target_node->IsDocumentNode()) {
+    if (affects_outer_viewport || !target_is_root_scroller) {
       target_node->GetDocument().EnqueueScrollEndEventForNode(target_node);
     }
   }
