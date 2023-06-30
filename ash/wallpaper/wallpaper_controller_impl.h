@@ -621,7 +621,7 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Used as the callback of wallpaper decoding. (Wallpapers of type
   // `WallpaperType::kOnline`, `WallpaperType::kDefault`,
-  // `WallpaperType::kCustom`, and `Wallpapertype::kDevice` should use their
+  // `WallpaperType::kCustomized`, and `Wallpapertype::kDevice` should use their
   // corresponding `*Decoded`, and all other types should use this.) Shows the
   // wallpaper immediately if `show_wallpaper` is true. Otherwise, only updates
   // the cache.

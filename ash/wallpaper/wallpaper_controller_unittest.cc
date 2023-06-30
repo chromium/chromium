@@ -3976,7 +3976,7 @@ TEST_F(WallpaperControllerTest,
   synced_info.collection_id = TestWallpaperControllerClient::kDummyCollectionId;
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
 
-  WallpaperInfo local_info = InfoWithType(WallpaperType::kThirdParty);
+  WallpaperInfo local_info = InfoWithType(WallpaperType::kCustomized);
   local_info.date = DayBeforeYesterdayish();
   pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info);
 
@@ -3998,7 +3998,7 @@ TEST_F(WallpaperControllerTest, ActiveUserPrefServiceChanged_SyncDisabled) {
   synced_info.collection_id = TestWallpaperControllerClient::kDummyCollectionId;
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
 
-  WallpaperInfo local_info = InfoWithType(WallpaperType::kThirdParty);
+  WallpaperInfo local_info = InfoWithType(WallpaperType::kDefault);
   local_info.date = DayBeforeYesterdayish();
   pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info);
 
@@ -4010,7 +4010,7 @@ TEST_F(WallpaperControllerTest, ActiveUserPrefServiceChanged_SyncDisabled) {
       GetProfilePrefService(kAccountId1));
   WallpaperInfo actual_info;
   EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual_info));
-  EXPECT_EQ(WallpaperType::kThirdParty, actual_info.type);
+  EXPECT_EQ(WallpaperType::kDefault, actual_info.type);
 }
 
 TEST_F(WallpaperControllerTest, HandleWallpaperInfoSyncedLocalIsPolicy) {
@@ -4030,10 +4030,10 @@ TEST_F(WallpaperControllerTest, HandleWallpaperInfoSyncedLocalIsPolicy) {
 }
 
 TEST_F(WallpaperControllerTest,
-       HandleWallpaperInfoSyncedLocalIsThirdPartyAndOlder) {
+       HandleWallpaperInfoSyncedLocalIsCustomizedAndOlder) {
   CacheOnlineWallpaper(kDummyUrl);
 
-  WallpaperInfo local_info = InfoWithType(WallpaperType::kThirdParty);
+  WallpaperInfo local_info = InfoWithType(WallpaperType::kCustomized);
   local_info.date = DayBeforeYesterdayish();
   pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info);
 
@@ -4051,10 +4051,10 @@ TEST_F(WallpaperControllerTest,
 }
 
 TEST_F(WallpaperControllerTest,
-       HandleWallpaperInfoSyncedLocalIsThirdPartyAndNewer) {
+       HandleWallpaperInfoSyncedLocalIsCustomizedAndNewer) {
   CacheOnlineWallpaper(kDummyUrl);
   pref_manager_->SetLocalWallpaperInfo(
-      kAccountId1, InfoWithType(WallpaperType::kThirdParty));
+      kAccountId1, InfoWithType(WallpaperType::kCustomized));
 
   WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
                                WallpaperType::kOnline, DayBeforeYesterdayish()};
@@ -4065,7 +4065,7 @@ TEST_F(WallpaperControllerTest,
 
   WallpaperInfo actual_info;
   EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual_info));
-  EXPECT_EQ(WallpaperType::kThirdParty, actual_info.type);
+  EXPECT_EQ(WallpaperType::kCustomized, actual_info.type);
 }
 
 TEST_F(WallpaperControllerTest, HandleWallpaperInfoSyncedOnline) {
@@ -5489,21 +5489,6 @@ TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
                                        .Append(kAccountId1.GetAccountIdKey())
                                        .Append(expected_photo_id);
   ASSERT_TRUE(base::PathExists(saved_wallpaper));
-}
-
-TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
-       ResetToDefaultWhenLoadingInvalidWallpaper) {
-  SimulateUserLogin(kAccountId1);
-
-  const WallpaperType type = WallpaperType::kCount;
-
-  WallpaperInfo info = {kFakeGooglePhotosPhotoId, WALLPAPER_LAYOUT_CENTER, type,
-                        base::Time::Now()};
-  pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
-  controller_->ShowUserWallpaper(kAccountId1);
-  RunAllTasksUntilIdle();
-
-  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
 }
 
 TEST_F(WallpaperControllerGooglePhotosWallpaperTest,

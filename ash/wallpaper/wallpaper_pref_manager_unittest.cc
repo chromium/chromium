@@ -263,7 +263,7 @@ TEST_F(WallpaperPrefManagerTest, SetWallpaperInfo_EphemeralDoesNotChangeLocal) {
 TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoLocal) {
   WallpaperInfo info(
       GetDummyFileName(account_id_1), WALLPAPER_LAYOUT_CENTER_CROPPED,
-      WallpaperType::kThirdParty, base::Time::Now().LocalMidnight());
+      WallpaperType::kCustomized, base::Time::Now().LocalMidnight());
   EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, info));
   AssertWallpaperInfoInPrefs(local_state_.get(), prefs::kUserWallpaperInfo,
                              account_id_1, info);
