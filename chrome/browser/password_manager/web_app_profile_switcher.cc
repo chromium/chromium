@@ -4,12 +4,15 @@
 
 #include "chrome/browser/password_manager/web_app_profile_switcher.h"
 
+#include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -21,6 +24,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -136,6 +140,8 @@ void WebAppProfileSwitcher::InstallAndLaunchWebApp(IconBitmaps icon_bitmaps) {
   install_params.add_to_desktop = true;
   install_params.add_to_quick_launch_bar = true;
   install_params.add_to_applications_menu = true;
+  install_params.user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(new_profile_);
   CHECK(provider);
@@ -157,18 +163,18 @@ void WebAppProfileSwitcher::LaunchAppWithId(
     return;
   }
 
-  apps::AppLaunchParams params(
-      app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromProfileMenu);
-  web_app::WebAppProvider::GetForLocalAppsUnchecked(new_profile_)
+  web_app::WebAppProvider::GetForWebApps(new_profile_)
       ->scheduler()
-      .LaunchAppWithCustomParams(
-          std::move(params),
-          base::IgnoreArgs<base::WeakPtr<Browser>,
-                           base::WeakPtr<content::WebContents>,
-                           apps::LaunchContainer>(
-              base::BindOnce(&WebAppProfileSwitcher::RunCompletionCallback,
-                             weak_factory_.GetWeakPtr())));
+      .LaunchApp(app_id, *base::CommandLine::ForCurrentProcess(),
+                 /*current_directory=*/base::FilePath(),
+                 /*url_handler_launch_url=*/absl::nullopt,
+                 /*protocol_handler_launch_url=*/absl::nullopt,
+                 /*file_launch_url=*/absl::nullopt, /*launch_files=*/{},
+                 base::IgnoreArgs<base::WeakPtr<Browser>,
+                                  base::WeakPtr<content::WebContents>,
+                                  apps::LaunchContainer>(base::BindOnce(
+                     &WebAppProfileSwitcher::RunCompletionCallback,
+                     weak_factory_.GetWeakPtr())));
 }
 
 void WebAppProfileSwitcher::RunCompletionCallback() {

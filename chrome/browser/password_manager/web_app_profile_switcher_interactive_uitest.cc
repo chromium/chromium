@@ -17,9 +17,11 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
@@ -30,6 +32,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
@@ -113,8 +116,16 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
   EXPECT_EQ(new_browser->tab_strip_model()->GetActiveWebContents(),
             new_web_contents);
 
-  ASSERT_TRUE(web_app::FindInstalledAppWithUrlInScope(second_profile,
-                                                      GURL(kTestWebUIAppURL)));
+  absl::optional<web_app::AppId> app_id =
+      web_app::FindInstalledAppWithUrlInScope(second_profile,
+                                              GURL(kTestWebUIAppURL));
+  ASSERT_TRUE(app_id);
+  EXPECT_TRUE(web_app::AppBrowserController::IsWebApp(new_browser));
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(second_profile);
+  EXPECT_EQ(provider->registrar_unsafe().GetAppUserDisplayMode(app_id.value()),
+            web_app::mojom::UserDisplayMode::kStandalone);
+
   EXPECT_TRUE(profile_switch_complete.Wait());
 }
 
