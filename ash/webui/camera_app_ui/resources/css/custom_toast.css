@@ -113,27 +113,27 @@ Use these custom properties to control the feature toasts, for example:
 
 .custom-toast {
   align-items: center;
-  background-color: var(--cros-sys-primary);
-  border-radius: 18px;
+  background-color: var(--cros-sys-tertiary_container);
+  border-radius: 16px;
   display: flex;
-  padding: 8px 16px 8px 16px;
+  padding: 8px 12px;
   position: fixed;
   white-space: nowrap;
 }
 
 .custom-toast-text {
-  color: var(--cros-sys-on_primary);
-  font: var(--cros-body-2-font);
+  color: var(--cros-sys-on_tertiary_container);
+  font: var(--cros-annotation-1-font);
 }
 
 #new-feature-toast svg-wrapper {
-  color: var(--cros-sys-on_primary);
+  color: var(--cros-sys-on_tertiary_container);
   margin-inline: 0 8px;
 }
 
 #indicator-icon {
   align-items: center;
-  color: var(--cros-sys-on_primary);
+  color: var(--cros-sys-on_tertiary_container);
   display: flex;
   height: 20px;
   justify-content: center;
@@ -144,7 +144,7 @@ Use these custom properties to control the feature toasts, for example:
 #indicator-dot {
   --dot-size: 8px;
 
-  background-color: var(--cros-sys-primary);
+  background-color: var(--cros-sys-tertiary_container);
   border-radius: 50%;
   height: var(--dot-size);
   position: absolute;

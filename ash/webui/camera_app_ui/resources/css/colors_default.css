@@ -66,6 +66,7 @@
   --cros-sys-secondary: var(--grey-400);
   --cros-sys-secondary_container: var(--grey-600);
   --cros-sys-separator: rgba(255, 255, 255, 0.14);
+  --cros-sys-tertiary_container: var(--blue-300);
   --cros-sys-warning: #ffb960;
 }
 
