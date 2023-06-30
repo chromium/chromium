@@ -68,12 +68,6 @@
     visibility: hidden;
   }
 
-  :host-context([chrome-refresh-2023]) .sp-card {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-  }
-
   .bookmarks {
     height: 100%;
     overflow-y: auto;
@@ -100,15 +94,15 @@
   }
 
   sp-empty-state {
-    margin-top: 40px;
+    padding-top: 40px;
   }
 
   #folderEmptyState {
-    margin-bottom: 40px;
+    padding-bottom: 40px;
   }
 
   sp-empty-state[guest] {
-    margin-top: 66px;
+    padding-top: 66px;
   }
 
   sp-heading {
@@ -116,7 +110,23 @@
   }
 
   :host-context([chrome-refresh-2023]) sp-heading {
-    margin: var(--sp-card-block-padding) var(--sp-card-inline-padding);
+    padding: var(--sp-card-block-padding) var(--sp-card-inline-padding);
+  }
+
+  :host-context([chrome-refresh-2023]) .card-top {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    padding-block-end: 0;
+  }
+
+  :host-context([chrome-refresh-2023]) .card-bottom:not([is-full-card]) {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    padding-block-start: 0;
+  }
+
+  :host-context([chrome-refresh-2023]) #shownBookmarksIronList[is-full-card] {
+    margin-block-end: var(--sp-body-padding);
   }
 
   .icon-button-row {
@@ -202,12 +212,10 @@
     </template>
   </div>
 
-  <div class="sp-card"
-      hidden$="[[shouldHideCard_(labels_.*, searchQuery_, shownBookmarks_,
-          guestMode_)]]">
+  <div class="sp-card card-top"
+      hidden$="[[shouldHideHeader_(
+          labels_.*, searchQuery_, shownBookmarks_)]]">
     <sp-heading
-        hidden$="[[shouldHideHeader_(
-            labels_.*, searchQuery_, shownBookmarks_)]]"
         back-button-title="$i18n{tooltipBack}"
         back-button-aria-label="[[getBackButtonLabel_(activeFolderPath_.*)]]"
         on-back-button-click="onBackClicked_"
@@ -239,10 +247,12 @@
           on-click="onShowEditMenuClicked_">
       </cr-icon-button>
     </sp-heading>
+  </div>
 
-    <div class="sp-scroller"
-        hidden="[[!shouldShowFolderEmptyState_(shownBookmarks_.length,
-                    hasLoadedData_)]]">
+  <div class="sp-scroller"
+      hidden="[[!shouldShowFolderEmptyState_(shownBookmarks_.length,
+                  hasLoadedData_)]]">
+    <div class="sp-card card-bottom">
       <sp-empty-state id="folderEmptyState"
           image-path="./images/bookmarks_empty.svg"
           dark-image-path="./images/bookmarks_empty_dark.svg"
@@ -250,17 +260,19 @@
           body="$i18n{emptyBodyFolder}">
       </sp-empty-state>
     </div>
+  </div>
 
-    <div id="bookmarks" class="bookmarks sp-scroller"
-        hidden="[[!shownBookmarks_.length]]"
-        role="[[getBookmarksListRole_(editing_)]]"
-        aria-multiselectable="[[editing_]]" scrollable>
+  <div id="bookmarks" class="bookmarks sp-scroller"
+      hidden="[[!shouldShowBookmarksList_(guestMode_, shownBookmarks_.length)]]"
+      role="[[getBookmarksListRole_(editing_)]]"
+      aria-multiselectable="[[editing_]]" scrollable>
+    <div class="sp-card card-bottom" is-full-card$="[[searchQuery_]]">
       <iron-list id="shownBookmarksIronList"
           items="[[shownBookmarks_]]" scroll-target="bookmarks">
         <template>
           <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
               description="[[getBookmarkDescription_(
-                             item, compact_, searchQuery_, item.*)]]"
+                              item, compact_, searchQuery_, item.*)]]"
               compact="[[compact_]]" trailing-icon="cr:more-vert"
               trailing-icon-aria-label="[[getBookmarkMenuA11yLabel_(
                                           item.url, item.title)]]"

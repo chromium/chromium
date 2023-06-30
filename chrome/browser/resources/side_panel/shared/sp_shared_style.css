@@ -58,18 +58,6 @@
   margin-block-end: var(--sp-body-padding);
 }
 
-:host-context([chrome-refresh-2023]) .sp-card:has(.sp-scroller) {
-  padding-block-end: 0;
-}
-
-:host-context([chrome-refresh-2023]) .sp-card .sp-scroller {
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-  box-sizing: border-box;
-  margin-inline-end: calc(-1 * var(--sp-body-padding));
-  padding-block-end: var(--sp-card-block-padding);
-}
-
 :host-context([chrome-refresh-2023]) .sp-scroller .sp-card,
 :host-context([chrome-refresh-2023]):host-context(.sp-scroller) .sp-card {
   margin-inline-end: 0; /* sp-scroller's scrollbar takes the space instead. */

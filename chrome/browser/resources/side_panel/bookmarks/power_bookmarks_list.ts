@@ -840,12 +840,12 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private shouldShowFolderEmptyState_(): boolean {
-    return this.hasLoadedData_ && this.shownBookmarks_.length === 0;
+    return !this.guestMode_ && this.hasLoadedData_ &&
+        this.shownBookmarks_.length === 0 && !this.shouldHideHeader_();
   }
 
-  private shouldHideCard_(): boolean {
-    return this.guestMode_ ||
-        (this.shouldHideHeader_() && this.shownBookmarks_.length === 0);
+  private shouldShowBookmarksList_(): boolean {
+    return !this.guestMode_ && this.shownBookmarks_.length > 0;
   }
 
   private shouldHideFilterChips_(): boolean {
@@ -853,7 +853,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private shouldHideHeader_(): boolean {
-    return this.hasActiveLabels_() || !!this.searchQuery_;
+    return this.guestMode_ || this.hasActiveLabels_() || !!this.searchQuery_;
   }
 
   private getSelectedDescription_() {
