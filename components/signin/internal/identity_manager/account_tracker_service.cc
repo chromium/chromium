@@ -377,13 +377,12 @@ void AccountTrackerService::SetAccountCapabilities(
   // Set the child account status based on the account capabilities.
   if (base::FeatureList::IsEnabled(
           supervised_user::kEnableSupervisionOnDesktopAndIOS)) {
-    // TODO(crbug.com/1458356): avoid notifying account observers and saving
-    // to prefs twice in the case where the child status and account
-    // capabilities have both changed.
-    SetIsChildAccount(
-        account_id,
-        account_info.capabilities.is_subject_to_parental_controls() ==
-            signin::Tribool::kTrue);
+    modified =
+        UpdateAccountInfoChildStatus(
+            account_info,
+            account_info.capabilities.is_subject_to_parental_controls() ==
+                signin::Tribool::kTrue) ||
+        modified;
   }
 #endif
 
@@ -401,11 +400,10 @@ void AccountTrackerService::SetIsChildAccount(const CoreAccountId& account_id,
                                               bool is_child_account) {
   DCHECK(base::Contains(accounts_, account_id)) << account_id.ToString();
   AccountInfo& account_info = accounts_[account_id];
-  signin::Tribool new_status =
-      is_child_account ? signin::Tribool::kTrue : signin::Tribool::kFalse;
-  if (account_info.is_child_account == new_status)
+  bool modified = UpdateAccountInfoChildStatus(account_info, is_child_account);
+  if (!modified) {
     return;
-  account_info.is_child_account = new_status;
+  }
   if (!account_info.gaia.empty())
     NotifyAccountUpdated(account_info);
   SaveToPrefs(account_info);
@@ -882,6 +880,18 @@ CoreAccountId AccountTrackerService::SeedAccountInfo(AccountInfo info) {
 
 void AccountTrackerService::RemoveAccount(const CoreAccountId& account_id) {
   StopTrackingAccount(account_id);
+}
+
+bool AccountTrackerService::UpdateAccountInfoChildStatus(
+    AccountInfo& account_info,
+    bool is_child_account) {
+  signin::Tribool new_status =
+      is_child_account ? signin::Tribool::kTrue : signin::Tribool::kFalse;
+  if (account_info.is_child_account == new_status) {
+    return false;
+  }
+  account_info.is_child_account = new_status;
+  return true;
 }
 
 #if BUILDFLAG(IS_ANDROID)
