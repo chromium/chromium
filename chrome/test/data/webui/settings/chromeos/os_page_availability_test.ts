@@ -4,54 +4,58 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {createPageAvailabilityForTesting, routesMojom} from 'chrome://os-settings/os_settings.js';
+import {createPageAvailabilityForTesting, createRoutesForTesting, OsPageAvailability, Router, routesMojom} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 const {Section} = routesMojom;
-type PageName = keyof typeof Section;
+type SectionName = keyof typeof Section;
+
+function initializePageAvailability(): OsPageAvailability {
+  const testRoutes = createRoutesForTesting();
+  const testRouter = new Router(testRoutes);
+  Router.resetInstanceForTesting(testRouter);
+  return createPageAvailabilityForTesting();
+}
 
 suite('Page availability', () => {
-  setup(() => {
-    // Setup consistent load time data for each test so overrides do not carry
-    // over between tests
-    loadTimeData.resetForTesting({
-      isGuest: false,
-      isKerberosEnabled: false,
-      allowPowerwash: false,
-    });
-  });
-
   /**
    * The availability of these pages depends on load time data
    */
   function runLoadTimeControlledTests() {
-    interface LoadTimeControlledPage {
-      pageName: PageName;
+    interface LoadTimeControlledData {
+      sectionName: SectionName;
       loadTimeId: string;
     }
 
-    const loadTimeControlled: LoadTimeControlledPage[] = [
-      {pageName: 'kKerberos', loadTimeId: 'isKerberosEnabled'},
-      {pageName: 'kReset', loadTimeId: 'allowPowerwash'},
+    const loadTimeControlled: LoadTimeControlledData[] = [
+      {sectionName: 'kKerberos', loadTimeId: 'isKerberosEnabled'},
+      {sectionName: 'kReset', loadTimeId: 'allowPowerwash'},
     ];
-    loadTimeControlled.forEach(({pageName, loadTimeId}) => {
-      test(`${pageName} page is available when ${loadTimeId}=true`, () => {
-        loadTimeData.overrideValues({[loadTimeId]: true});
-        const pageAvailability = createPageAvailabilityForTesting();
-        assertTrue(!!pageAvailability[Section[pageName]]);
-      });
+    loadTimeControlled.forEach(({sectionName, loadTimeId}) => {
+      test(
+          `${sectionName} page is available when ${loadTimeId} is true`, () => {
+            loadTimeData.overrideValues({[loadTimeId]: true});
+            const pageAvailability = initializePageAvailability();
+            assertTrue(pageAvailability[Section[sectionName]]);
+          });
 
-      test(`${pageName} page is unavailable when ${loadTimeId}=false`, () => {
-        loadTimeData.overrideValues({[loadTimeId]: false});
-        const pageAvailability = createPageAvailabilityForTesting();
-        assertFalse(!!pageAvailability[Section[pageName]]);
-      });
+      test(
+          `${sectionName} page is unavailable when ${loadTimeId} is false`,
+          () => {
+            loadTimeData.overrideValues({[loadTimeId]: false});
+            const pageAvailability = initializePageAvailability();
+            assertFalse(pageAvailability[Section[sectionName]]);
+          });
     });
   }
 
   suite('When signed in as user', () => {
-    const alwaysAvailable: PageName[] = [
+    setup(() => {
+      loadTimeData.overrideValues({isGuest: false});
+    });
+
+    const availablePages: SectionName[] = [
       'kAccessibility',
       'kApps',
       'kBluetooth',
@@ -68,10 +72,10 @@ suite('Page availability', () => {
       'kPrivacyAndSecurity',
       'kSearchAndAssistant',
     ];
-    alwaysAvailable.forEach((pageName) => {
-      test(`${pageName} page should always be available`, () => {
-        const pageAvailability = createPageAvailabilityForTesting();
-        assertTrue(!!pageAvailability[Section[pageName]]);
+    availablePages.forEach((sectionName) => {
+      test(`${sectionName} page should always be available`, () => {
+        const pageAvailability = initializePageAvailability();
+        assertTrue(pageAvailability[Section[sectionName]]);
       });
     });
 
@@ -83,7 +87,7 @@ suite('Page availability', () => {
       loadTimeData.overrideValues({isGuest: true});
     });
 
-    const alwaysAvailable: PageName[] = [
+    const availablePages: SectionName[] = [
       'kAccessibility',
       'kApps',
       'kBluetooth',
@@ -96,23 +100,23 @@ suite('Page availability', () => {
       'kPrivacyAndSecurity',
       'kSearchAndAssistant',
     ];
-    alwaysAvailable.forEach((pageName) => {
-      test(`${pageName} page should always be available`, () => {
-        const pageAvailability = createPageAvailabilityForTesting();
-        assertTrue(!!pageAvailability[Section[pageName]]);
+    availablePages.forEach((sectionName) => {
+      test(`${sectionName} page should always be available`, () => {
+        const pageAvailability = initializePageAvailability();
+        assertTrue(pageAvailability[Section[sectionName]]);
       });
     });
 
-    const neverAvailable: PageName[] = [
+    const unavailablePages: SectionName[] = [
       'kFiles',
       'kMultiDevice',
       'kPeople',
       'kPersonalization',
     ];
-    neverAvailable.forEach((pageName) => {
-      test(`${pageName} page should never be available`, () => {
-        const pageAvailability = createPageAvailabilityForTesting();
-        assertFalse(!!pageAvailability[Section[pageName]]);
+    unavailablePages.forEach((sectionName) => {
+      test(`${sectionName} page should never be available`, () => {
+        const pageAvailability = initializePageAvailability();
+        assertFalse(pageAvailability[Section[sectionName]]);
       });
     });
 

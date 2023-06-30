@@ -8,14 +8,14 @@
  * Separated into a separate file to mitigate test timeouts.
  */
 
-import {CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsUiElement, PageDisplayerElement, routesMojom, SettingsIdleLoadElement} from 'chrome://os-settings/os_settings.js';
+import {createRoutesForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsUiElement, PageDisplayerElement, Router, routesMojom, SettingsIdleLoadElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertGT, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 const {Section} = routesMojom;
-type PageName = keyof typeof Section;
+type SectionName = keyof typeof Section;
 
 suite('<os-settings-ui> page availability', () => {
   let ui: OsSettingsUiElement;
@@ -91,9 +91,15 @@ suite('<os-settings-ui> page availability', () => {
     suiteSetup(async () => {
       loadTimeData.overrideValues({
         isGuest: false,           // Default to normal user
-        isKerberosEnabled: true,  // Simulate kerberos page available
-        allowPowerwash: true,     // Simulate reset page available
+        isKerberosEnabled: true,  // Simulate kerberos route exists
+        allowPowerwash: true,     // Simulate reset route exists
       });
+
+      // Recreate routes based on load time data
+      const testRoutes = createRoutesForTesting();
+      const testRouter = new Router(testRoutes);
+      Router.resetInstanceForTesting(testRouter);
+
       await createUi();
     });
 
@@ -101,7 +107,7 @@ suite('<os-settings-ui> page availability', () => {
       ui.remove();
     });
 
-    const availablePages: PageName[] = [
+    const availablePages: SectionName[] = [
       'kAboutChromeOs',
       'kAccessibility',
       'kApps',
@@ -121,12 +127,12 @@ suite('<os-settings-ui> page availability', () => {
       'kReset',
       'kSearchAndAssistant',
     ];
-    for (const pageName of availablePages) {
-      test(`${pageName} page should be stamped and subpages hidden`, () => {
+    for (const sectionName of availablePages) {
+      test(`${sectionName} page should be stamped and subpages hidden`, () => {
         const page =
             mainPageContainer.shadowRoot!.querySelector<PageDisplayerElement>(
-                `page-displayer[section="${Section[pageName]}"]`);
-        assertTrue(!!page, `Expected to find ${pageName} page stamped.`);
+                `page-displayer[section="${Section[sectionName]}"]`);
+        assertTrue(!!page, `Expected to find ${sectionName} page stamped.`);
         verifySubpagesHidden(page);
       });
     }
@@ -136,9 +142,15 @@ suite('<os-settings-ui> page availability', () => {
     suiteSetup(async () => {
       loadTimeData.overrideValues({
         isGuest: true,            // Simulate guest mode
-        isKerberosEnabled: true,  // Simulate kerberos page available
-        allowPowerwash: true,     // Simulate reset page available
+        isKerberosEnabled: true,  // Simulate kerberos route exists
+        allowPowerwash: true,     // Simulate reset route exists
       });
+
+      // Recreate routes based on load time data
+      const testRoutes = createRoutesForTesting();
+      const testRouter = new Router(testRoutes);
+      Router.resetInstanceForTesting(testRouter);
+
       await createUi();
     });
 
@@ -146,22 +158,22 @@ suite('<os-settings-ui> page availability', () => {
       ui.remove();
     });
 
-    const unavailablePages: PageName[] = [
+    const unavailablePages: SectionName[] = [
       'kFiles',
       'kMultiDevice',
       'kPeople',
       'kPersonalization',
     ];
-    for (const pageName of unavailablePages) {
-      test(`${pageName} page should not be stamped`, () => {
+    for (const sectionName of unavailablePages) {
+      test(`${sectionName} page should not be stamped`, () => {
         const section =
             mainPageContainer.shadowRoot!.querySelector<PageDisplayerElement>(
-                `page-displayer[section="${Section[pageName]}"]`);
-        assertNull(section, `Found unexpected page ${pageName}.`);
+                `page-displayer[section="${Section[sectionName]}"]`);
+        assertNull(section, `Found unexpected page ${sectionName}.`);
       });
     }
 
-    const availablePages: PageName[] = [
+    const availablePages: SectionName[] = [
       'kAboutChromeOs',
       'kAccessibility',
       'kApps',
@@ -175,12 +187,12 @@ suite('<os-settings-ui> page availability', () => {
       'kReset',
       'kSearchAndAssistant',
     ];
-    for (const pageName of availablePages) {
-      test(`${pageName} page should be stamped and subpages hidden`, () => {
+    for (const sectionName of availablePages) {
+      test(`${sectionName} page should be stamped and subpages hidden`, () => {
         const page =
             mainPageContainer.shadowRoot!.querySelector<PageDisplayerElement>(
-                `page-displayer[section="${Section[pageName]}"]`);
-        assertTrue(!!page, `Expected to find ${pageName} page stamped.`);
+                `page-displayer[section="${Section[sectionName]}"]`);
+        assertTrue(!!page, `Expected to find ${sectionName} page stamped.`);
         verifySubpagesHidden(page);
       });
     }

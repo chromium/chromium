@@ -5,8 +5,8 @@
 /**
  * @fileoverview
  * This is the single source of truth for top-level page availability in
- * ChromeOS Settings. An available page is one reachable to the user via some
- * UI action. A page can be (un)available based on guest mode and/or enabled
+ * ChromeOS Settings. An available page is one reachable to the user (ie. the
+ * route exists). A page may be (un)available based on guest mode and/or enabled
  * features.
  *
  * NOTE: This is separate from page visibility, which deals with what pages are
@@ -15,8 +15,8 @@
  * visible page.
  */
 
-import {isGuest, isKerberosEnabled, isPowerwashAllowed} from './common/load_time_booleans.js';
 import {Section} from './mojom-webui/routes.mojom-webui.js';
+import {Router} from './router.js';
 
 /**
  * Defines which top-level pages/sections are available to the user. Page keys
@@ -25,31 +25,34 @@ import {Section} from './mojom-webui/routes.mojom-webui.js';
 export type OsPageAvailability = Record<Section, boolean>;
 
 /**
- * Used to create the pageAvailability object depending on load time data.
- * Can be used to create the pageAvailability object with expected values after
- * overriding load time data within tests.
+ * Used to create the page availability object depending on route existence.
+ * For example, the kAboutChromeOs page should be available if the corresponding
+ * ABOUT route exists.
+ *
+ * Note: This function can be used in tests to create the page availability
+ * object with expected values after overriding the set of available routes.
  */
 export function createPageAvailability(): OsPageAvailability {
-  const isGuestMode = isGuest();
+  const routes = Router.getInstance().routes;
 
   return {
-    [Section.kAboutChromeOs]: true,
-    [Section.kAccessibility]: true,
-    [Section.kApps]: true,
-    [Section.kBluetooth]: true,
-    [Section.kCrostini]: true,
-    [Section.kDateAndTime]: true,
-    [Section.kDevice]: true,
-    [Section.kFiles]: !isGuestMode,
-    [Section.kKerberos]: isKerberosEnabled(),
-    [Section.kLanguagesAndInput]: true,
-    [Section.kMultiDevice]: !isGuestMode,
-    [Section.kNetwork]: true,
-    [Section.kPeople]: !isGuestMode,
-    [Section.kPersonalization]: !isGuestMode,
-    [Section.kPrinting]: true,
-    [Section.kPrivacyAndSecurity]: true,
-    [Section.kReset]: isPowerwashAllowed(),
-    [Section.kSearchAndAssistant]: true,
+    [Section.kAboutChromeOs]: !!routes.ABOUT,
+    [Section.kAccessibility]: !!routes.OS_ACCESSIBILITY,
+    [Section.kApps]: !!routes.APPS,
+    [Section.kBluetooth]: !!routes.BLUETOOTH,
+    [Section.kCrostini]: !!routes.CROSTINI,
+    [Section.kDateAndTime]: !!routes.DATETIME,
+    [Section.kDevice]: !!routes.DEVICE,
+    [Section.kFiles]: !!routes.FILES,
+    [Section.kKerberos]: !!routes.KERBEROS,
+    [Section.kLanguagesAndInput]: !!routes.OS_LANGUAGES,
+    [Section.kMultiDevice]: !!routes.MULTIDEVICE,
+    [Section.kNetwork]: !!routes.INTERNET,
+    [Section.kPeople]: !!routes.OS_PEOPLE,
+    [Section.kPersonalization]: !!routes.PERSONALIZATION,
+    [Section.kPrinting]: !!routes.OS_PRINTING,
+    [Section.kPrivacyAndSecurity]: !!routes.OS_PRIVACY,
+    [Section.kReset]: !!routes.OS_RESET,
+    [Section.kSearchAndAssistant]: !!routes.OS_SEARCH,
   };
 }
