@@ -18,14 +18,19 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_separator_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/native_web_keyboard_event.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -87,7 +92,12 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-
+    profile_ = std::make_unique<TestingProfile>();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
+    web_contents_->Resize({0, 0, 1024, 768});
+    ON_CALL(autofill_popup_controller_, GetWebContents())
+        .WillByDefault(Return(web_contents_.get()));
     widget_ = CreateTestWidget();
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
@@ -104,13 +114,17 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     view_ = std::make_unique<PopupViewViews>(controller().GetWeakPtr(),
                                              widget_.get());
     widget().SetContentsView(view_.get());
-    widget().Show();
-    view().SchedulePaint();
+    view().DoShow();
   }
 
   void CreateAndShowView(const std::vector<PopupItemId>& ids) {
     controller().set_suggestions(ids);
     CreateAndShowView();
+  }
+
+  void UpdateSuggestions(const std::vector<PopupItemId>& ids) {
+    controller().set_suggestions(ids);
+    view().OnSuggestionsChanged();
   }
 
   void Paint() {
@@ -183,6 +197,9 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
   views::Widget& widget() { return *widget_; }
 
  private:
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<PopupViewViews> view_;
@@ -680,6 +697,12 @@ TEST_F(PopupViewViewsTest, VoiceOverTest) {
   GetPopupRowViewAt(0).GetContentView().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(voice_over_value,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+}
+
+TEST_F(PopupViewViewsTest, UpdateSuggestionsNoCrash) {
+  CreateAndShowView({PopupItemId::kAddressEntry, PopupItemId::kSeparator,
+                     PopupItemId::kAutofillOptions});
+  UpdateSuggestions({PopupItemId::kAddressEntry});
 }
 
 #if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS)

@@ -375,9 +375,12 @@ bool PopupViewViews::HasPopupRowViewAt(size_t index) const {
 
 void PopupViewViews::CreateChildViews() {
   // Null all pointers prior to deleting the children views to avoid temporarily
-  // dangling pointers that might be picked up by dangle detection builds.
+  // dangling pointers that might be picked up by dangle detection builds. Also,
+  // `footer_container_` is instantiated conditionally, which can make its value
+  // obsolete after `OnSuggestionsChanged()`.
   scroll_view_ = nullptr;
   body_container_ = nullptr;
+  footer_container_ = nullptr;
   rows_.clear();
   RemoveAllChildViews();
 
