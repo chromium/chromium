@@ -237,6 +237,9 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // Stores the remote support connections allowed policy value.
   bool remote_support_connections_allowed_ = true;
 
+  // Stores whether enterprise file transfer is allowed by policy.
+  bool enterprise_file_transfer_allowed_ = false;
+
   // Tracks the JID of the remote user when in a connecting state.
   std::string connecting_jid_;
 };

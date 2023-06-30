@@ -267,9 +267,9 @@ void It2MeHost::ConnectOnNetworkThread(
         chrome_os_enterprise_params_->terminate_upon_input);
     options.set_enable_curtaining(
         chrome_os_enterprise_params_->curtain_local_user_session);
-    // TODO(b/286835721): Inform in UI when file transfer is disabled by policy.
     options.set_enable_file_transfer(
-        chrome_os_enterprise_params_->allow_file_transfer);
+        chrome_os_enterprise_params_->allow_file_transfer &&
+        enterprise_file_transfer_allowed_);
   }
 #endif
 
@@ -372,6 +372,13 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
   // the connection process.
   remote_support_connections_allowed_ =
       policies.FindBool(GetRemoteSupportPolicyKey()).value_or(true);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  enterprise_file_transfer_allowed_ =
+      policies
+          .FindBool(policy::key::kRemoteAccessHostAllowEnterpriseFileTransfer)
+          .value_or(false);
+#endif
 
   absl::optional<bool> nat_policy_value =
       policies.FindBool(policy::key::kRemoteAccessHostFirewallTraversal);

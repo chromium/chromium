@@ -573,13 +573,9 @@ bool DeviceCommandStartCrdSessionJob::ShouldAllowTroubleshootingTools() const {
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldAllowFileTransfer() const {
-  if (!IsKioskSession(GetCurrentUserSessionType())) {
-    return false;
-  }
-
-  // TODO(b/284944528): Add check here for policy.
-  return base::FeatureList::IsEnabled(
-      remoting::features::kEnableCrdFileTransferForKiosk);
+  return IsKioskSession(GetCurrentUserSessionType()) &&
+         base::FeatureList::IsEnabled(
+             remoting::features::kEnableCrdFileTransferForKiosk);
 }
 
 DeviceCommandStartCrdSessionJob::ErrorCallback
