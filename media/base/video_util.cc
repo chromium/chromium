@@ -8,6 +8,7 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -45,6 +46,14 @@
 namespace media {
 
 namespace {
+
+// Temporary escape hatch in case VideoFrames requiring external sampling are
+// ever passed to ReadbackTexturePlaneToMemorySyncOOP().
+// TODO(crbug.com/1459252): Remove this after 117 has safely gone through
+// stable.
+BASE_FEATURE(kCheckOnExternalSamplerInTextureReadback,
+             "CheckOnExternalSamplerInTextureReadback",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Helper to apply padding to the region outside visible rect up to the coded
 // size with the repeated last column / row of the visible rect.
@@ -196,7 +205,9 @@ bool ReadbackTexturePlaneToMemorySyncOOP(const VideoFrame& src_frame,
                                          gpu::raster::RasterInterface* ri) {
   // It's not possible to read back individual planes when using external
   // sampling, and this codepath should not be entered in that case.
-  CHECK(!src_frame.RequiresExternalSampler());
+  CHECK(
+      !src_frame.RequiresExternalSampler() ||
+      !base::FeatureList::IsEnabled(kCheckOnExternalSamplerInTextureReadback));
   VideoPixelFormat format = ReadbackFormat(src_frame);
   if (format == PIXEL_FORMAT_UNKNOWN) {
     DLOG(ERROR) << "Readback is not possible for this frame: "
