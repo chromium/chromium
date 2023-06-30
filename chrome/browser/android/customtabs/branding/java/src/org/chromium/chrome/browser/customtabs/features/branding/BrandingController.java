@@ -196,7 +196,17 @@ public class BrandingController {
         TextView runInChromeTextView = (TextView) LayoutInflater.from(mContext).inflate(
                 R.layout.custom_tabs_toast_branding_layout, null, false);
         runInChromeTextView.setText(toastText);
-        mToast = new Toast(mContext.getApplicationContext(), /*toastView*/ runInChromeTextView);
+
+        Toast toast =
+                new Toast(mContext.getApplicationContext(), /*toastView*/ runInChromeTextView);
+        if (mReleaseStorageOnFinished) {
+            toast.setDuration(Toast.LENGTH_LONG);
+            toast.show();
+            PostTask.postDelayedTask(TaskTraits.UI_BEST_EFFORT,
+                    mCallbackController.makeCancelable(toast::cancel), durationMs);
+            return;
+        }
+        mToast = toast;
         mToast.setDuration((int) durationMs);
         mToast.show();
     }
