@@ -12,6 +12,12 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+namespace {
+
+using ExternalPower = power_manager::PowerSupplyProperties_ExternalPower;
+
+}
+
 // Controller class to manage power/battery sounds.
 class ASH_EXPORT PowerSoundsController
     : public PowerStatus::Observer,
@@ -37,6 +43,22 @@ class ASH_EXPORT PowerSoundsController
  private:
   friend class PowerSoundsControllerTest;
 
+  // Type of the battery state according to the critical power or low power
+  // threshold.
+  enum class BatteryState {
+    // The remaining battery level or minutes isn't larger than the critical
+    // power threshold.
+    kCriticalPower,
+
+    // The remaining battery level or minutes isn't larger than the low power
+    // threshold but higher than the critical power threshold.
+    kLowPower,
+
+    // Other status. e.g. when connecting with an AC charger, or the remaining
+    // battery level larger than the low power threshold.
+    kNone,
+  };
+
   // Updates the lid state from received switch states.
   void OnReceiveSwitchStates(
       absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
@@ -45,20 +67,29 @@ class ASH_EXPORT PowerSoundsController
   bool CanPlaySounds() const;
 
   void SetPowerStatus(int battery_level,
-                      bool line_power_connected,
-                      bool is_battery_charging);
+                      bool is_calculating_battery_time,
+                      ExternalPower external_power,
+                      absl::optional<base::TimeDelta> remaining_time);
 
   // Plays a sound when any power resource is connected.
-  // `old_line_power_connected` records whether line power was connected last
+  // `old_ac_charger_connected` records whether line power was connected last
   // time when `OnPowerStatusChanged()` was called.
-  void MaybePlaySoundsForCharging(bool old_line_power_connected);
+  void MaybePlaySoundsForCharging(bool old_ac_charger_connected);
 
-  // Plays a sound when the battery level drops below a certain threshold.
-  // `old_battery_level` records the battery level for the last time when
-  // `OnPowerStatusChanged()` was called. `is_battery_charging` is true if the
-  // battery is charging now.
-  void MaybePlaySoundsForLowBattery(int old_battery_level,
-                                    bool is_battery_charging);
+  bool ShouldPlayLowBatterySound() const;
+
+  // Returns true if the `current_state_` will be updated to a new state.
+  bool UpdateBatteryState(bool is_calculating_battery_time,
+                          ExternalPower external_power,
+                          absl::optional<base::TimeDelta> remaining_time);
+
+  BatteryState CalculateBatteryState(
+      bool is_calculating_battery_time,
+      ExternalPower external_power,
+      absl::optional<base::TimeDelta> remaining_time) const;
+  BatteryState GetBatteryStateFromBatteryLevel() const;
+  BatteryState GetBatteryStateFromRemainingTime(
+      absl::optional<base::TimeDelta> remaining_time) const;
 
   // Records the battery level when the `OnPowerStatusChanged()` was called.
   int battery_level_;
@@ -66,6 +97,8 @@ class ASH_EXPORT PowerSoundsController
   // True if an AC charger is connected when the `OnPowerStatusChanged()` was
   // called.
   bool is_ac_charger_connected_;
+
+  BatteryState current_state_ = BatteryState::kNone;
 
   chromeos::PowerManagerClient::LidState lid_state_ =
       chromeos::PowerManagerClient::LidState::OPEN;

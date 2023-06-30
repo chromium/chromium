@@ -13,7 +13,6 @@
 #include "ash/system/test_system_sounds_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/flat_map.h"
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -31,6 +30,11 @@ constexpr ExternalPower kUsbPower =
     power_manager::PowerSupplyProperties_ExternalPower_USB;
 constexpr ExternalPower kDisconnectedPower =
     power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
+
+constexpr int kCriticalPercentage = 5;
+constexpr int kLowPowerPercentage = 10;
+constexpr int kCriticalMinutes = 5;
+constexpr int kLowPowerMinutes = 15;
 
 }  // namespace
 
@@ -83,7 +87,9 @@ class PowerSoundsControllerTest : public AshTestBase {
            chromeos::PowerManagerClient::LidState::CLOSED;
   }
 
-  void SetPowerStatus(int battery_level, ExternalPower external_power) {
+  void SetPowerStatus(int battery_level,
+                      ExternalPower external_power,
+                      int minutes_to_empty = 180) {
     ASSERT_GE(battery_level, 0);
     ASSERT_LE(battery_level, 100);
 
@@ -93,7 +99,7 @@ class PowerSoundsControllerTest : public AshTestBase {
     PowerSupplyProperties proto;
     proto.set_external_power(external_power);
     proto.set_battery_percent(battery_level);
-    proto.set_battery_time_to_empty_sec(3 * 60 * 60);
+    proto.set_battery_time_to_empty_sec(minutes_to_empty * 60);
     proto.set_battery_time_to_full_sec(2 * 60 * 60);
     proto.set_is_calculating_battery_time(false);
 
@@ -193,26 +199,55 @@ TEST_F(PowerSoundsControllerTest, NoChargingSoundPlayedIfToggleButtonDisabled) {
 }
 
 // Tests if the warning sound can be played when the battery level drops below
-// 15% at the first time.
-TEST_F(PowerSoundsControllerTest, PlaySoundForLowBatteryWarning) {
-  // Don't play warning sound if the battery level is no less than 15%.
-  SetPowerStatus(16, kDisconnectedPower);
+// the threshold when connecting a low-power charger.
+TEST_F(PowerSoundsControllerTest, PlayLowBatterySoundForPercentage) {
+  // Don't play warning sound if the battery level is no less than the low power
+  // threshold.
+  SetPowerStatus(kLowPowerPercentage + 1, kUsbPower);
   EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
 
-  // When the battery drops below 15% at the first time, e.g. 15%, the device
-  // should play the sound for warning.
-  SetPowerStatus(15, kDisconnectedPower);
+  // When the battery drops below the low power threshold at the first time, the
+  // device should play the sound for warning.
+  SetPowerStatus(kLowPowerPercentage, kUsbPower);
   EXPECT_TRUE(VerifySounds({Sound::kNoChargeLowBattery}));
   GetSystemSoundsDelegate()->reset();
 
-  // When the battery level keeps dropping, the device shouldn't play sound for
-  // warning.
-  SetPowerStatus(14, kDisconnectedPower);
+  // When the battery level keeps dropping but no less than the critical power
+  // threshold, the device shouldn't play sound for warning.
+  SetPowerStatus(kLowPowerPercentage - 1, kUsbPower);
   EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
+
+  // The device will play the sound if its battery level keeps dropping to the
+  // critical power threshold.
+  SetPowerStatus(kCriticalPercentage, kUsbPower);
+  EXPECT_TRUE(VerifySounds({Sound::kNoChargeLowBattery}));
+}
+
+// Tests if the warning sound can be played when the battery level drops below
+// the threshold when disconnecting a line power.
+TEST_F(PowerSoundsControllerTest, PlayLowBatterySoundForRemainingTime) {
+  // Set the remaining minutes value higher than the low power threshold.
+  SetPowerStatus(50, kDisconnectedPower, kLowPowerMinutes + 1);
+  EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
+
+  // Set the remaining minutes value to the low power threshold.
+  SetPowerStatus(50, kDisconnectedPower, kLowPowerMinutes);
+  EXPECT_TRUE(VerifySounds({Sound::kNoChargeLowBattery}));
+  GetSystemSoundsDelegate()->reset();
+
+  // When the rounded value keeps dropping but no less than the critical power
+  // threshold, the device shouldn't play sound for warning.
+  SetPowerStatus(50, kDisconnectedPower, kCriticalMinutes + 1);
+  EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
+
+  // Set the rounded value lower than the critical power threshold.
+  SetPowerStatus(50, kDisconnectedPower, kCriticalMinutes);
+  EXPECT_TRUE(VerifySounds({Sound::kNoChargeLowBattery}));
 }
 
 // When the toggle button for the low battery sound is disabled, the sound won't
-// be played if the battery drops below 15%.
+// be played if the battery drops below 15% when connecting with a low-power
+// charger.
 TEST_F(PowerSoundsControllerTest,
        NoLowBatterySoundPlayedIfToggleButtonDisabled) {
   PrefService* pref =
@@ -221,28 +256,46 @@ TEST_F(PowerSoundsControllerTest,
   pref->SetBoolean(prefs::kLowBatterySoundEnabled, false);
   ASSERT_FALSE(pref->GetBoolean(prefs::kLowBatterySoundEnabled));
 
-  // Don't play warning sound if the battery level is no less than 15%.
-  SetPowerStatus(16, kDisconnectedPower);
+  // Don't play warning sound if the battery level is no less than 15% when
+  // connecting with a low-power charger.
+  SetPowerStatus(16, kUsbPower);
   EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
 
   // When the battery drops below 15% at the first time, e.g. 15%, the device
-  // should play the sound for warning.
-  SetPowerStatus(15, kDisconnectedPower);
+  // shouldn't play the sound for warning.
+  SetPowerStatus(15, kUsbPower);
   EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
 }
 
-// Tests a very edge case we charge the device at the same time the warning
-// sound is triggered.
-TEST_F(PowerSoundsControllerTest, PlayTwoSoundsSimultaneously) {
-  // Don't play warning sound if the battery level is no less than 15%.
-  SetPowerStatus(16, kDisconnectedPower);
+// Tests that the charging sound and the low battery sound will be played
+// sequentially, because the charging sound is only played if connecting with an
+// AC charger; however, the low battery sound won't be played if it's AC
+// charger.
+TEST_F(PowerSoundsControllerTest, PlaySoundsSequentially) {
+  // 1. Tests that the low power minutes threshold come first, and then charging
+  // the device.
+  SetPowerStatus(10, kDisconnectedPower, kLowPowerMinutes + 1);
   EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
 
-  // Charge the device at the moment when the low battery warning sound is
-  // played. The device should play two sounds.
-  SetPowerStatus(15, kAcPower);
-  EXPECT_TRUE(
-      VerifySounds({Sound::kChargeLowBattery, Sound::kNoChargeLowBattery}));
+  SetPowerStatus(10, kDisconnectedPower, kLowPowerMinutes);
+  EXPECT_TRUE(VerifySounds({Sound::kNoChargeLowBattery}));
+  GetSystemSoundsDelegate()->reset();
+
+  SetPowerStatus(10, kAcPower, kLowPowerMinutes);
+  EXPECT_TRUE(VerifySounds({Sound::kChargeLowBattery}));
+  GetSystemSoundsDelegate()->reset();
+
+  // 2. Tests that charging the device first and then disconnecting the device
+  // at the threshold.
+  SetPowerStatus(10, kDisconnectedPower, kLowPowerMinutes + 1);
+  EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
+
+  SetPowerStatus(10, kAcPower, kLowPowerMinutes);
+  EXPECT_TRUE(VerifySounds({Sound::kChargeLowBattery}));
+  GetSystemSoundsDelegate()->reset();
+
+  SetPowerStatus(10, kDisconnectedPower, kLowPowerMinutes);
+  EXPECT_TRUE(VerifySounds({Sound::kNoChargeLowBattery}));
 }
 
 // Tests that the recording when the device is plugged in or Unplugged are

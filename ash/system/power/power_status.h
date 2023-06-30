@@ -153,6 +153,10 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // Gets the global instance. Initialize must be called first.
   static PowerStatus* Get();
 
+  power_manager::PowerSupplyProperties_ExternalPower external_power() const {
+    return proto_.external_power();
+  }
+
   // Adds or removes an observer.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
