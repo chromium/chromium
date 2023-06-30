@@ -26,13 +26,6 @@ class WaylandOzoneUIControlsTestHelper : public ui::OzoneUIControlsTestHelper {
       const WaylandOzoneUIControlsTestHelper&) = delete;
   ~WaylandOzoneUIControlsTestHelper() override;
 
-  // Initializes the connection to the server using the ui_controls protocol
-  // extension. Initialization must be done before calling any Send*() methods.
-  //
-  // This fails if the protocol extension is not available on the server side.
-  // Returns false if the initialization failed, else true.
-  bool Initialize();
-
   // OzoneUIControlsTestHelper:
   void Reset() override;
   bool SupportsScreenCoordinates() const override;

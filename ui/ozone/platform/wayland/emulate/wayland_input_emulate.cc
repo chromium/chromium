@@ -43,26 +43,6 @@ WaylandInputEmulate::WaylandInputEmulate(
   auto* wayland_proxy = wl::WaylandProxy::GetInstance();
   DCHECK(wayland_proxy);
   wayland_proxy->SetDelegate(this);
-}
-
-WaylandInputEmulate::~WaylandInputEmulate() {
-  auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-  DCHECK(wayland_proxy);
-  wayland_proxy->SetDelegate(nullptr);
-
-  // If Initialize() failed, `ui_controls_` is null.
-  if (ui_controls_) {
-    zcr_ui_controls_v1_destroy(ui_controls_);
-  }
-
-  CHECK(registry_)
-      << "WaylandInputEmulate destroyed before Initialize() called";
-  wl_registry_destroy(registry_);
-}
-
-bool WaylandInputEmulate::Initialize() {
-  auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-  DCHECK(wayland_proxy);
 
   registry_ = wl_display_get_registry(wayland_proxy->GetDisplayWrapper());
   if (!registry_) {
@@ -80,14 +60,21 @@ bool WaylandInputEmulate::Initialize() {
   // Roundtrip one time to get the ui_controls global.
   wayland_proxy->RoundTripQueue();
   if (!ui_controls_) {
-    return false;
+    LOG(FATAL) << "ui-controls protocol extension is not available.";
   }
 
   static const struct zcr_ui_controls_v1_listener listener = {
       &WaylandInputEmulate::HandleRequestProcessed};
   zcr_ui_controls_v1_add_listener(ui_controls_, &listener, this);
+}
 
-  return true;
+WaylandInputEmulate::~WaylandInputEmulate() {
+  auto* wayland_proxy = wl::WaylandProxy::GetInstance();
+  DCHECK(wayland_proxy);
+  wayland_proxy->SetDelegate(nullptr);
+
+  zcr_ui_controls_v1_destroy(ui_controls_);
+  wl_registry_destroy(registry_);
 }
 
 void WaylandInputEmulate::EmulateKeyboardKey(ui::DomCode dom_code,

@@ -35,14 +35,6 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   explicit WaylandInputEmulate(base::RepeatingCallback<void(uint32_t)>);
   ~WaylandInputEmulate() override;
 
-  // Initializes the connection to the server using the ui_controls protocol
-  // extension. Initialization must be done before calling any Emulate*()
-  // methods.
-  //
-  // This fails if the protocol extension is not available on the server side.
-  // Returns false if the initialization failed, else true.
-  bool Initialize();
-
   // |key_state| is a bit-mask of ui_controls::KeyEventType.
   // |accelerator_state| is a bit-mask of ui_controls::AcceleratorState.
   void EmulateKeyboardKey(ui::DomCode dom_code,

@@ -34,10 +34,6 @@ WaylandOzoneUIControlsTestHelper::WaylandOzoneUIControlsTestHelper() {
 
 WaylandOzoneUIControlsTestHelper::~WaylandOzoneUIControlsTestHelper() = default;
 
-bool WaylandOzoneUIControlsTestHelper::Initialize() {
-  return input_emulate_->Initialize();
-}
-
 void WaylandOzoneUIControlsTestHelper::Reset() {
   // There's nothing to do here, as the both Exo and Weston automatically reset
   // the state when we close the connection.
