@@ -86,6 +86,7 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoAdPersonalizationController;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -618,6 +619,33 @@ public class PageInfoViewTest {
         onViewWaiting(allOf(withText(containsString("stored data")), isDisplayed()));
         // Clear cookies in page info.
         onView(withText(containsString("stored data"))).perform(click());
+        onView(withText("Delete")).perform(click());
+        // Wait until the UI navigates back and check cookies are deleted.
+        onViewWaiting(allOf(withId(R.id.page_info_cookies_row), isDisplayed()));
+        expectHasCookies(false);
+    }
+
+    /**
+     * Tests clearing cookies on the cookies page of the PageInfo UI with User Bypass enabled.
+     */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({PageInfoFeatures.USER_BYPASS_UI_NAME})
+    public void testClearCookiesOnSubpageUserBypass() throws Exception {
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
+        // Create cookies.
+        expectHasCookies(false);
+        createCookies();
+        expectHasCookies(true);
+        // Go to cookies subpage.
+        openPageInfo(PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        // Check that cookies usage is displayed.
+        onViewWaiting(allOf(withText(containsString("stored data")), isDisplayed()));
+        // Clear cookies in page info.
+        onView(withText(containsString("stored data"))).perform(click());
+        onViewWaiting(allOf(withText("Delete"), isDisplayed()));
         onView(withText("Delete")).perform(click());
         // Wait until the UI navigates back and check cookies are deleted.
         onViewWaiting(allOf(withId(R.id.page_info_cookies_row), isDisplayed()));

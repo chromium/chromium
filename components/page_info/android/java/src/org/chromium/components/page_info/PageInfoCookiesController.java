@@ -40,6 +40,8 @@ public class PageInfoCookiesController
 
     private int mAllowedCookies;
     private int mBlockedCookies;
+    private int mAllowedSites;
+    private int mBlockedSites;
     private int mStatus;
     private boolean mIsEnforced;
     private Website mWebsite;
@@ -93,7 +95,11 @@ public class PageInfoCookiesController
         params.disableCookieDeletion = isDeletionDisabled();
         params.hostName = mMainController.getURL().getHost();
         mSubPage.setParams(params);
-        mSubPage.setCookiesCount(mAllowedCookies, mBlockedCookies);
+        if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
+            mSubPage.setSitesCount(mAllowedSites, mBlockedSites);
+        } else {
+            mSubPage.setCookiesCount(mAllowedCookies, mBlockedCookies);
+        }
         mSubPage.setCookieBlockingStatus(mStatus, mIsEnforced);
 
         SiteSettingsCategory storageCategory = SiteSettingsCategory.createFromType(
@@ -181,13 +187,27 @@ public class PageInfoCookiesController
         }
     }
 
-    // TODO(crbug.com/1446230): Implement the following three UserBypassUI methods.
     @Override
-    public void onStatusChanged(int status, int enforcement, long expiration) {}
+    public void onStatusChanged(int status, int enforcement, long expiration) {
+        mStatus = status;
+        mIsEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
+        // TODO(crbug.com/1446230): Store and pass the expiration.
+        if (mSubPage != null) {
+            mSubPage.setCookieBlockingStatus(mStatus, mIsEnforced);
+        }
+    }
 
     @Override
-    public void onSitesCountChanged(int allowedSites, int blockedSites) {}
+    public void onSitesCountChanged(int allowedSites, int blockedSites) {
+        mAllowedSites = allowedSites;
+        mBlockedSites = blockedSites;
+        // TODO(crbug.com/1446230): Update the row view.
+        if (mSubPage != null) {
+            mSubPage.setSitesCount(allowedSites, blockedSites);
+        }
+    }
 
+    // TODO(crbug.com/1446230): Implement.
     @Override
     public void onBreakageConfidenceLevelChanged(int level) {}
 

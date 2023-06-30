@@ -60,7 +60,12 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
             getParentFragmentManager().beginTransaction().remove(this).commit();
             return;
         }
-        SettingsUtils.addPreferencesFromResource(this, R.xml.page_info_cookie_preference);
+        if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
+            SettingsUtils.addPreferencesFromResource(
+                    this, R.xml.page_info_cookie_preference_user_bypass);
+        } else {
+            SettingsUtils.addPreferencesFromResource(this, R.xml.page_info_cookie_preference);
+        }
         mCookieSwitch = findPreference(COOKIE_SWITCH_PREFERENCE);
         mCookieInUse = findPreference(COOKIE_IN_USE_PREFERENCE);
         mFPSInUse = findPreference(FPS_IN_USE_PREFERENCE);
@@ -152,12 +157,37 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
         updateCookieDeleteButton();
     }
 
+    // TODO(crbug.com/1446230): Update the strings for when FPS are on.
+    public void setSitesCount(int allowedSites, int blockedSites) {
+        // TODO(crbug.com/1446230): Invert the cookie switch.
+        if (mCookieSwitch.isChecked()) {
+            mCookieSwitch.setSummary(blockedSites > 0
+                            ? getContext().getResources().getQuantityString(
+                                    R.plurals.page_info_sites_blocked, blockedSites, blockedSites)
+                            : null);
+        } else {
+            mCookieSwitch.setSummary(allowedSites > 0
+                            ? getContext().getResources().getQuantityString(
+                                    R.plurals.page_info_sites_allowed, allowedSites, allowedSites)
+                            : null);
+        }
+
+        mDataUsed |= allowedSites != 0;
+        updateCookieDeleteButton();
+    }
+
     public void setStorageUsage(long storageUsage) {
-        mCookieInUse.setSummary(
-                storageUsage > 0 ? String.format(
-                        getContext().getString(R.string.origin_settings_storage_usage_brief),
-                        Formatter.formatShortFileSize(getContext(), storageUsage))
-                                 : null);
+        if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
+            mCookieInUse.setTitle(String.format(
+                    getContext().getString(R.string.origin_settings_storage_usage_brief),
+                    Formatter.formatShortFileSize(getContext(), storageUsage)));
+        } else {
+            mCookieInUse.setSummary(
+                    storageUsage > 0 ? String.format(
+                            getContext().getString(R.string.origin_settings_storage_usage_brief),
+                            Formatter.formatShortFileSize(getContext(), storageUsage))
+                                     : null);
+        }
 
         mDataUsed |= storageUsage != 0;
         updateCookieDeleteButton();
