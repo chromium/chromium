@@ -20,6 +20,7 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
@@ -34,7 +35,12 @@ class VideoConferenceTrayPixelTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kJellyroll,
+                              features::kVideoConference,
+                              chromeos::features::kJelly},
+        /*disabled_features=*/{});
+
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kCameraEffectsSupportedByHardware);
 
