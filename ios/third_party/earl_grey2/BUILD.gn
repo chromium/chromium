@@ -193,6 +193,8 @@ source_set("ui_lib") {
   visibility = [ ":*" ]
 
   sources = [
+    # TODO(crbug.com/1459377): Remove, needed during chrome-fix branch.
+    "src/AppFramework/Keyboard/GREYKeyboard.h",
     "src/UILib/Additions/CGGeometry+GREYUI.h",
     "src/UILib/Additions/CGGeometry+GREYUI.m",
     "src/UILib/GREYElementHierarchy.m",
