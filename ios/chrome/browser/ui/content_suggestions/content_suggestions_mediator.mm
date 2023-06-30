@@ -313,7 +313,14 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   if ([self shouldShowSetUpList]) {
     self.setUpList.delegate = self;
     NSArray<SetUpListItemViewData*>* items = [self setUpListItems];
-    [self.consumer showSetUpListWithItems:items];
+    if (IsMagicStackEnabled() && [self.setUpList allItemsComplete]) {
+      SetUpListItemViewData* allSetItem =
+          [[SetUpListItemViewData alloc] initWithType:SetUpListItemType::kAllSet
+                                             complete:NO];
+      [self.consumer showSetUpListWithItems:@[ allSetItem ]];
+    } else {
+      [self.consumer showSetUpListWithItems:items];
+    }
     [self.contentSuggestionsMetricsRecorder recordSetUpListShown];
     for (SetUpListItemViewData* item in items) {
       [self.contentSuggestionsMetricsRecorder
@@ -822,9 +829,15 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       [magicStackModules
           addObject:@(int(ContentSuggestionsModuleType::kCompactedSetUpList))];
     } else {
-      for (SetUpListItem* model in self.setUpList.items) {
+      if ([self.setUpList allItemsComplete]) {
         [magicStackModules
-            addObject:@(int(SetUpListModuleTypeForSetUpListType(model.type)))];
+            addObject:@(int(ContentSuggestionsModuleType::kSetUpListAllSet))];
+      } else {
+        for (SetUpListItem* model in self.setUpList.items) {
+          [magicStackModules
+              addObject:@(int(
+                            SetUpListModuleTypeForSetUpListType(model.type)))];
+        }
       }
     }
   }

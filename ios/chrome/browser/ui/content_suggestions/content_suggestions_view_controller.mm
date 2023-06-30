@@ -135,6 +135,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   SetUpListItemView* _setUpListSyncItemView;
   SetUpListItemView* _setUpListDefaultBrowserItemView;
   SetUpListItemView* _setUpListAutofillItemView;
+  SetUpListItemView* _setUpListAllSetItemView;
   NSMutableArray<SetUpListItemView*>* _compactedSetUpListViews;
 }
 
@@ -460,6 +461,9 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
           break;
         case ContentSuggestionsModuleType::kSetUpListAutofill:
           _setUpListAutofillItemView = view;
+          break;
+        case ContentSuggestionsModuleType::kSetUpListAllSet:
+          _setUpListAllSetItemView = view;
           break;
         default:
           break;
@@ -958,6 +962,15 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                                         kCompactedSetUpList
                            delegate:self];
         [_magicStack addArrangedSubview:setUpListCompactedModule];
+        break;
+      }
+      case ContentSuggestionsModuleType::kSetUpListAllSet: {
+        MagicStackModuleContainer* setUpListAllSetModule =
+            [[MagicStackModuleContainer alloc]
+                initWithContentView:_setUpListAllSetItemView
+                               type:type
+                           delegate:self];
+        [_magicStack addArrangedSubview:setUpListAllSetModule];
         break;
       }
       default:

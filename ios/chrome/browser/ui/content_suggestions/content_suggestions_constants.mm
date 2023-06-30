@@ -49,6 +49,8 @@ ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
       return ContentSuggestionsModuleType::kSetUpListDefaultBrowser;
     case SetUpListItemType::kAutofill:
       return ContentSuggestionsModuleType::kSetUpListAutofill;
+    case SetUpListItemType::kAllSet:
+      return ContentSuggestionsModuleType::kSetUpListAllSet;
     default:
       NOTREACHED_NORETURN();
   }
