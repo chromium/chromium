@@ -872,8 +872,7 @@ void ChromeAutofillClient::ShowAutofillPopup(
       web_contents()->GetNativeView(), element_bounds_in_screen_space,
       open_args.text_direction);
 
-  popup_controller_->Show(open_args.suggestions,
-                          open_args.autoselect_first_suggestion);
+  popup_controller_->Show(open_args.suggestions, open_args.trigger_source);
 
   // When testing, try to keep popup open when the reason to hide is from an
   // external browser frame resize that is extraneous to our testing goals.
@@ -910,9 +909,14 @@ ChromeAutofillClient::GetReopenPopupArgs() const {
   gfx::Rect client_area = web_contents()->GetContainerBounds();
   gfx::RectF screen_space_independent_bounds =
       controller->element_bounds() - client_area.OffsetFromOrigin();
+  // Reopening the popup is currently only used for password suggestions, so the
+  // trigger source can be set to `kPasswordManager`.
+  // TODO(crbug.com/1446318): Make the suggestion trigger source a parameter.
+  CHECK_EQ(controller->GetPopupType(), PopupType::kPasswords);
   return autofill::AutofillClient::PopupOpenArgs(
       screen_space_independent_bounds, controller->GetElementTextDirection(),
-      controller->GetSuggestions(), AutoselectFirstSuggestion(false));
+      controller->GetSuggestions(),
+      AutofillSuggestionTriggerSource::kPasswordManager);
 }
 
 void ChromeAutofillClient::UpdatePopup(
@@ -932,8 +936,13 @@ void ChromeAutofillClient::UpdatePopup(
     return;
   }
 
-  // Calling show will reuse the existing view automatically
-  popup_controller_->Show(suggestions, AutoselectFirstSuggestion(false));
+  // Calling show will reuse the existing view automatically.
+  // Updating the popup is currently only used for password suggestions, so the
+  // trigger source can be set to `kPasswordManager`.
+  // TODO(crbug.com/1446318): Make the suggestion trigger source a parameter.
+  CHECK_EQ(popup_type, PopupType::kPasswords);
+  popup_controller_->Show(suggestions,
+                          AutofillSuggestionTriggerSource::kPasswordManager);
 }
 
 void ChromeAutofillClient::HideAutofillPopup(PopupHidingReason reason) {

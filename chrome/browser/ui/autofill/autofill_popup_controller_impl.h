@@ -70,7 +70,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   // Shows the popup, or updates the existing popup with the given values.
   virtual void Show(std::vector<Suggestion> suggestions,
-                    AutoselectFirstSuggestion autoselect_first_suggestion);
+                    AutofillSuggestionTriggerSource trigger_source);
 
   // Updates the data list values currently shown with the popup.
   virtual void UpdateDataListValues(const std::vector<std::u16string>& values,
@@ -241,6 +241,9 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   // The current Autofill query values.
   std::vector<Suggestion> suggestions_;
+
+  // The trigger source of the `suggestions_`.
+  AutofillSuggestionTriggerSource trigger_source_;
 
   // If set to true, the popup will stay open regardless of external changes on
   // the machine that would normally cause the popup to be hidden.

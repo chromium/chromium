@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
@@ -34,13 +35,17 @@ class AutofillPopupDelegate {
 
   // Called when the autofill `suggestion` has been temporarily selected (e.g.,
   // hovered).
-  virtual void DidSelectSuggestion(const Suggestion& suggestion) = 0;
+  virtual void DidSelectSuggestion(
+      const Suggestion& suggestion,
+      AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Informs the delegate that a row in the popup has been chosen. |suggestion|
   // is the suggestion that was chosen in the popup. |position| refers to the
   // index of the suggestion in the suggestion list.
-  virtual void DidAcceptSuggestion(const Suggestion& suggestion,
-                                   int position) = 0;
+  virtual void DidAcceptSuggestion(
+      const Suggestion& suggestion,
+      int position,
+      AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Returns whether the given value can be deleted, and if true,
   // fills out |title| and |body|.

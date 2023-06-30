@@ -117,7 +117,9 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
       : AutofillExternalDelegate(autofill_manager, autofill_driver) {}
   ~MockAutofillExternalDelegate() override = default;
 
-  void DidSelectSuggestion(const Suggestion& suggestion) override {}
+  void DidSelectSuggestion(
+      const Suggestion& suggestion,
+      AutofillSuggestionTriggerSource trigger_source) override {}
   bool RemoveSuggestion(const std::u16string& value,
                         PopupItemId popup_item_id,
                         Suggestion::BackendId backend_id) override {
@@ -129,7 +131,10 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
 
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
   MOCK_METHOD(void, OnPopupSuppressed, (), (override));
-  MOCK_METHOD(void, DidAcceptSuggestion, (const Suggestion&, int), (override));
+  MOCK_METHOD(void,
+              DidAcceptSuggestion,
+              (const Suggestion&, int, AutofillSuggestionTriggerSource),
+              (override));
 };
 
 class MockAutofillPopupView : public AutofillPopupView {
@@ -261,8 +266,9 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
     for (PopupItemId popup_item_id : popup_item_ids) {
       suggestions.emplace_back("", "", "", popup_item_id);
     }
-    popup_controller().Show(std::move(suggestions),
-                            AutoselectFirstSuggestion(false));
+    popup_controller().Show(
+        std::move(suggestions),
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
   }
 
   TestAutofillPopupController& popup_controller() {

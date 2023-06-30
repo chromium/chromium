@@ -351,7 +351,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   // TODO(crbug.com/1448447): Distinguish between different trigger sources.
   autofillManager->OnAskForValuesToFill(
       form, field, gfx::RectF(),
-      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked);
+      autofill::AutofillSuggestionTriggerSource::kiOS);
 }
 
 - (void)checkIfSuggestionsAvailableForForm:
@@ -481,7 +481,10 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
             SysNSStringToUTF8(suggestion.backendIdentifier));
       }
 
-      _popupDelegate->DidAcceptSuggestion(autofill_suggestion, 0);
+      // On iOS, only a single trigger source exists. See crbug.com/1448447.
+      _popupDelegate->DidAcceptSuggestion(
+          autofill_suggestion, 0,
+          autofill::AutofillSuggestionTriggerSource::kiOS);
     }
     return;
   }

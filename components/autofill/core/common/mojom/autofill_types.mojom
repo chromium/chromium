@@ -507,4 +507,23 @@ enum AutofillSuggestionTriggerSource {
   // option to display cards from their account. This causes the suggestions to
   // update. The updated suggested are considered to have this trigger source.
   kShowCardsFromAccount,
+  // The suggestion triggering logic through Blink events (e.g.
+  // `kFormControlElementClicked`) is shared with the password manager. However,
+  // the trigger source is not propagated to the password manager specific
+  // code (password_autofill_agent.cc and onwards to the browser process).
+  // On the browser process side, all password suggestions are treated as
+  // `kPasswordManager`. On the renderer side, `kPasswordManager` is unused.
+  kPasswordManager,
+  // WebView doesn't have Autofill suggestion, but autocomplete suggestions are
+  // merged into and displayed in <datalist>s. When a suggestion from a datalist
+  // is accepted, this counts as trigger source `kAndroidWebView`.
+  // In theory, since the suggestions are triggered through the Autofill
+  // renderer code, a more specific trigger source is available. This has little
+  // value for Autofill and would require passing the trigger source back and
+  // forth between WebView Java code.
+  kAndroidWebView,
+  // Since iOS has no renderer, it has separate suggestion triggering logic.
+  // This code currently doesn't distinguish between different suggestion
+  // trigger sources. They are all treated as `kiOS`. See crbug.com/1448447.
+  kiOS,
 };

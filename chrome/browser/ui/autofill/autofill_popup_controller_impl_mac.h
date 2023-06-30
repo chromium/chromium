@@ -34,7 +34,7 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
   // If the popup contains credit card items, find and set
   // |touchBarController_| and show the credit card autofill touch bar.
   void Show(std::vector<autofill::Suggestion> suggestions,
-            AutoselectFirstSuggestion autoselect_first_suggestion) override;
+            AutofillSuggestionTriggerSource trigger_source) override;
 
   // Updates the data list values currently shown with the popup. Calls
   // -invalidateTouchBar from |touchBarController_|.

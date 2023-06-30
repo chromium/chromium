@@ -21,8 +21,13 @@ bool ShouldAutofillOnEmptyValues(
       return true;
     case AutofillSuggestionTriggerSource::kTextFieldDidChange:
       return false;
-    // `kShowCardsFromAccount` is not triggered through the renderer.
+    // `kShowCardsFromAccount`, `kPasswordManager`, `kAndroidWebView` and `kiOS`
+    // are not used in the renderer code. As such, suggestion properties don't
+    // apply to them.
     case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
+    case mojom::AutofillSuggestionTriggerSource::kPasswordManager:
+    case mojom::AutofillSuggestionTriggerSource::kAndroidWebView:
+    case mojom::AutofillSuggestionTriggerSource::kiOS:
     case AutofillSuggestionTriggerSource::kUnspecified:
       break;
   }
@@ -37,10 +42,14 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kFormControlElementClicked:
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
       return false;
-    // `kShowCardsFromAccount` is not triggered through the renderer.
+    // `kShowCardsFromAccount`, `kPasswordManager`, `kAndroidWebView` and `kiOS`
+    // are not used in the renderer code. As such, suggestion properties don't
+    // apply to them.
     case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
+    case mojom::AutofillSuggestionTriggerSource::kPasswordManager:
+    case mojom::AutofillSuggestionTriggerSource::kAndroidWebView:
+    case mojom::AutofillSuggestionTriggerSource::kiOS:
     case AutofillSuggestionTriggerSource::kUnspecified:
-      //
       break;
   }
   NOTREACHED_NORETURN();
@@ -59,8 +68,18 @@ bool ShouldShowFullSuggestionListForPasswordManager(
     case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
       return false;
-    // `kShowCardsFromAccount` is not triggered through the renderer.
+    // `kShowCardsFromAccount`, `kPasswordManager`, `kAndroidWebView` and `kiOS`
+    // are not used in the renderer code. As such, suggestion properties don't
+    // apply to them.
+    // `kPasswordManager` specifically is used to identify password manager
+    // suggestions in the browser process. In the renderer, the logic triggering
+    // suggestions through Blink events is shared. Thus, the return values for
+    // `kFormControlElementClicked` etc. matter for the password manager in the
+    // renderer.
     case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
+    case mojom::AutofillSuggestionTriggerSource::kPasswordManager:
+    case mojom::AutofillSuggestionTriggerSource::kAndroidWebView:
+    case mojom::AutofillSuggestionTriggerSource::kiOS:
     case AutofillSuggestionTriggerSource::kUnspecified:
       break;
   }

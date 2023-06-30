@@ -293,7 +293,7 @@ class AutofillClient : public RiskDataLoader {
     PopupOpenArgs(const gfx::RectF& element_bounds,
                   base::i18n::TextDirection text_direction,
                   std::vector<Suggestion> suggestions,
-                  AutoselectFirstSuggestion autoselect_first_suggestion);
+                  AutofillSuggestionTriggerSource trigger_source);
     PopupOpenArgs(const PopupOpenArgs&);
     PopupOpenArgs(PopupOpenArgs&&);
     ~PopupOpenArgs();
@@ -304,7 +304,8 @@ class AutofillClient : public RiskDataLoader {
     base::i18n::TextDirection text_direction =
         base::i18n::TextDirection::UNKNOWN_DIRECTION;
     std::vector<Suggestion> suggestions;
-    AutoselectFirstSuggestion autoselect_first_suggestion{false};
+    AutofillSuggestionTriggerSource trigger_source{
+        AutofillSuggestionTriggerSource::kUnspecified};
   };
 
   // Callback to run after local credit card save is offered. Sends whether the

@@ -137,11 +137,9 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
 
   // Send to display.
   if (query_field_.is_focusable && driver_->CanShowAutofillUi()) {
-    AutofillClient::PopupOpenArgs open_args(
-        element_bounds_, query_field_.text_direction, suggestions,
-        AutoselectFirstSuggestion(
-            trigger_source ==
-            AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown));
+    AutofillClient::PopupOpenArgs open_args(element_bounds_,
+                                            query_field_.text_direction,
+                                            suggestions, trigger_source);
     manager_->client()->ShowAutofillPopup(open_args, GetWeakPtr());
   }
 }
@@ -196,7 +194,8 @@ void AutofillExternalDelegate::OnPopupSuppressed() {
 }
 
 void AutofillExternalDelegate::DidSelectSuggestion(
-    const Suggestion& suggestion) {
+    const Suggestion& suggestion,
+    AutofillSuggestionTriggerSource trigger_source) {
   ClearPreviewedForm();
 
   const Suggestion::BackendId backend_id =
@@ -224,8 +223,10 @@ void AutofillExternalDelegate::DidSelectSuggestion(
   }
 }
 
-void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
-                                                   int position) {
+void AutofillExternalDelegate::DidAcceptSuggestion(
+    const Suggestion& suggestion,
+    int position,
+    AutofillSuggestionTriggerSource trigger_source) {
   switch (suggestion.popup_item_id) {
     case PopupItemId::kAutofillOptions:
       // User selected 'Autofill Options'.
