@@ -79,6 +79,10 @@ extern NSString* const kAllTimestampsAppLaunchWarmStart;
 // starts up to allowed maximum number of past events.
 extern NSString* const kAllTimestampsAppLaunchIndirectStart;
 
+// Key in storage containing an array of dates. Each date correspond to
+// a stay safe event of interest for Default Browser Promo modals.
+extern NSString* const kLastSignificantUserEventStaySafe;
+
 // Helper function to set `data` for `key` into the storage object.
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data);
 

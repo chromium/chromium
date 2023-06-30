@@ -46,11 +46,6 @@ NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
 NSString* const kLastSignificantUserEventGeneral = @"lastSignificantUserEvent";
 
 // Key in storage containing an array of dates. Each date correspond to
-// a stay safe event of interest for Default Browser Promo modals.
-NSString* const kLastSignificantUserEventStaySafe =
-    @"lastSignificantUserEventStaySafe";
-
-// Key in storage containing an array of dates. Each date correspond to
 // a made for iOS event of interest for Default Browser Promo modals.
 NSString* const kLastSignificantUserEventMadeForIOS =
     @"lastSignificantUserEventMadeForIOS";
@@ -428,7 +423,6 @@ int NumActiveDays() {
                         kTriggerCriteriaExperimentStatExpiration, active_dates);
   return active_dates.size();
 }
-
 }  // namespace
 
 NSString* const kLastTimeUserInteractedWithPromo =
@@ -439,7 +433,8 @@ NSString* const kAllTimestampsAppLaunchWarmStart =
     @"AllTimestampsAppLaunchWarmStart";
 NSString* const kAllTimestampsAppLaunchIndirectStart =
     @"AllTimestampsAppLaunchIndirectStart";
-
+NSString* const kLastSignificantUserEventStaySafe =
+    @"lastSignificantUserEventStaySafe";
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data) {
   UpdateStorageWithDictionary(@{key : data});
 }
@@ -923,6 +918,9 @@ void RecordPromoStatsToUMAForActionString(PromoStatistics* promo_stats,
   base::UmaHistogramCounts100(
       base::StrCat({histogram_prefix, ".ChromeIndirectStartCount"}),
       promo_stats.chromeIndirectStartCount);
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, ".PasswordManagerUseCount"}),
+      promo_stats.passwordManagerUseCount);
 }
 
 PromoStatistics* CalculatePromoStatistics() {
@@ -943,6 +941,9 @@ PromoStatistics* CalculatePromoStatistics() {
       kAllTimestampsAppLaunchIndirectStart,
       kTriggerCriteriaExperimentStatExpiration);
   promo_stats.activeDayCount = NumActiveDays();
+  promo_stats.passwordManagerUseCount = NumRecordedEventForKeyLessThanDelay(
+      kLastSignificantUserEventStaySafe,
+      kTriggerCriteriaExperimentStatExpiration);
 
   return promo_stats;
 }
