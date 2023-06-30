@@ -1,0 +1,14 @@
+Name: Tensorflow Hub Models
+Short Name: tfhub_models
+URL: https://tfhub.dev/
+Date: 2023/06/29
+License: Apache 2.0
+License File: NOT_SHIPPED
+Version: 2023/06/29
+Security Critical: No
+CPEPrefix: unknown
+
+Description:
+This directory contains models downloaded from https://tfhub.dev/ under its
+Apache license. These models are not built into Chromium and are only used as
+testdata.

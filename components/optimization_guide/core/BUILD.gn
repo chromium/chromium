@@ -442,6 +442,7 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/tfhub_models:tfhub_models_testdata",
     "//third_party/zlib/google:zip",
     "//ui/base",
     "//url:url",
