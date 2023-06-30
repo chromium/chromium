@@ -808,7 +808,9 @@
                             AuthenticationService::ServiceStatus::SigninAllowed;
   BOOL isSyncDisabled = IsSyncDisabledByPolicy(
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState()));
-  if (isSignedIn || isSigninNotAllowed || isSyncDisabled) {
+  if (isSignedIn || isSigninNotAllowed ||
+      (isSyncDisabled && !base::FeatureList::IsEnabled(
+                             syncer::kReplaceSyncPromosWithSignInPromos))) {
     [handler showSettingsFromViewController:self.baseViewController];
   } else {
     // TODO(crbug.com/1447012): Show the SSO screen directly if there are no

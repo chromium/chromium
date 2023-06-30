@@ -206,11 +206,15 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
         bookmarks::kEnableBookmarksAccountStorage);
   }
 
-  if ([self isRunningTest:@selector(testOpenSignInAndSyncFromNTP)]) {
+  if ([self isRunningTest:@selector(testOpenSignInAndSyncFromNTP)] ||
+      [self isRunningTest:@selector
+            (testOpenManageSyncSettingsFromNTPWhenSyncDisabledByPolicy)]) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
-  if ([self isRunningTest:@selector(testOpenSignInFromNTPIfHasDeviceAccount)]) {
+  if ([self isRunningTest:@selector(testOpenSignInFromNTPIfHasDeviceAccount)] ||
+      [self isRunningTest:@selector
+            (testOpenSignInFromNTPWhenSyncDisabledByPolicy)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -988,6 +992,32 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests that a signed-out user can open "Sign in" sheet from the NTP.
 - (void)testOpenSignInFromNTPIfHasDeviceAccount {
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  // Select the identity disc particle.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(GetNSString(
+                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
+      performAction:grey_tap()];
+
+  // Ensure the sign-in sheet is displayed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that a signed-out user with the SyncDisabled policy can still open the
+// "Sign in" sheet from the NTP, to get sign-in benefits other than sync.
+- (void)testOpenSignInFromNTPWhenSyncDisabledByPolicy {
+  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  // Disable sync by policy.
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(GetNSString(
+                                       IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE)),
+                                   grey_userInteractionEnabled(), nil)]
+      performAction:grey_tap()];
 
   // Select the identity disc particle.
   [[EarlGrey selectElementWithMatcher:
