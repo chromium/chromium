@@ -52,8 +52,8 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     main_app_id_ = InstallPWA(start_url);
 
     GURL sub_start_url = https_server()->GetURL("/web_app_badging/blank.html");
-    auto sub_app_info = std::make_unique<WebAppInstallInfo>();
-    sub_app_info->start_url = sub_start_url;
+    auto sub_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(sub_start_url);
     sub_app_info->scope = sub_start_url;
     sub_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     sub_app_id_ = InstallWebApp(std::move(sub_app_info));

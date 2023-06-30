@@ -276,11 +276,26 @@ WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
   return create_shortcut_info;
 }
 
+// static
+std::unique_ptr<WebAppInstallInfo>
+WebAppInstallInfo::CreateWithStartUrlForTesting(const GURL& start_url) {
+  return std::make_unique<WebAppInstallInfo>(
+      GenerateManifestIdFromStartUrlOnly(start_url), start_url);
+}
+
 WebAppInstallInfo::WebAppInstallInfo() = default;
 
 WebAppInstallInfo::WebAppInstallInfo(const web_app::ManifestId& manifest_id)
     : manifest_id(manifest_id) {
   CHECK(manifest_id.is_valid());
+}
+
+WebAppInstallInfo::WebAppInstallInfo(const web_app::ManifestId& manifest_id,
+                                     const GURL& start_url)
+    : manifest_id(manifest_id), start_url(start_url) {
+  CHECK(manifest_id.is_valid());
+  CHECK(!manifest_id.has_ref());
+  CHECK(start_url.is_valid());
 }
 
 WebAppInstallInfo::WebAppInstallInfo(const WebAppInstallInfo& other) = default;

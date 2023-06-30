@@ -191,11 +191,24 @@ struct WebAppInstallInfo {
       const GURL& document_url,
       const WebAppInstallInfo& other);
 
+  // This creates a WebAppInstallInfo where the `manifest_id` is derived from
+  // the `start_url` using `GenerateManifestIdFromStartUrlOnly`.
+  static std::unique_ptr<WebAppInstallInfo> CreateWithStartUrlForTesting(
+      const GURL& start_url);
+
   // TODO(b/280862254): Remove this constructor to force users to use specify
-  // the manifest_id.
+  // the manifest_id and start_url (or call `CreateWithStartUrlForTesting`).
   WebAppInstallInfo();
 
+  // TODO(b/280862254): Remove this constructor to force users to use specify
+  // both the manifest_id and start_url (or call
+  // `CreateWithStartUrlForTesting`).
   explicit WebAppInstallInfo(const web_app::ManifestId& manifest_id);
+
+  // The `manifest_id` and the `start_url` MUST be valid. The `manifest_id` MUST
+  // be created properly, and cannot contain refs (e.g. '#refs').
+  WebAppInstallInfo(const web_app::ManifestId& manifest_id,
+                    const GURL& start_url);
 
   // Deleted to prevent accidental copying. Use Clone() to deep copy explicitly.
   WebAppInstallInfo& operator=(const WebAppInstallInfo&) = delete;
