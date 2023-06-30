@@ -763,28 +763,6 @@ if (use_blink) {
   }
 }
 
-if (is_mac) {
-  # TODO(https://crbug.com/1280317): Merge back into the `test_support` target
-  # once all .mm files are ARCed.
-  source_set("test_support_arc") {
-    testonly = true
-    sources = [
-      "test/cocoa_helper.h",
-      "test/cocoa_helper.mm",
-      "test/view_tree_validator.h",
-      "test/view_tree_validator.mm",
-    ]
-    configs += [ "//build/config/compiler:enable_arc" ]
-    deps = [
-      "//base:base",
-      "//base/test:test_config",
-      "//base/test:test_support",
-      "//testing/gtest",
-      "//ui/display",
-    ]
-  }
-}
-
 static_library("test_support") {
   testonly = true
   sources = [
@@ -814,6 +792,8 @@ static_library("test_support") {
     sources += [
       "interaction/interaction_test_util_mac.h",
       "interaction/interaction_test_util_mac.mm",
+      "test/cocoa_helper.h",
+      "test/cocoa_helper.mm",
       "test/menu_test_observer.h",
       "test/menu_test_observer.mm",
       "test/ns_ax_tree_validator.h",
@@ -827,6 +807,8 @@ static_library("test_support") {
       "test/scoped_preferred_scroller_style_mac.h",
       "test/scoped_preferred_scroller_style_mac.mm",
       "test/ui_controls_mac.mm",
+      "test/view_tree_validator.h",
+      "test/view_tree_validator.mm",
       "test/windowed_nsnotification_observer.h",
       "test/windowed_nsnotification_observer.mm",
     ]
@@ -885,10 +867,6 @@ static_library("test_support") {
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
-
-  if (is_mac) {
-    public_deps += [ ":test_support_arc" ]
-  }
 
   if (is_ios) {
     deps -= [
@@ -1013,24 +991,6 @@ source_set("run_all_unittests") {
   ]
 }
 
-if (is_apple) {
-  # TODO(https://crbug.com/1280317): Merge back into ui_base_unittests once all
-  # .mm files are ARCed.
-  source_set("ui_base_unittests_arc") {
-    testonly = true
-    if (is_mac) {
-      sources = [ "interaction/element_tracker_mac_unittest.mm" ]
-    }
-    configs += [ "//build/config/compiler:enable_arc" ]
-    deps = [
-      ":base",
-      "//base/test:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-  }
-}
-
 test("ui_base_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -1135,10 +1095,10 @@ test("ui_base_unittests") {
       "cocoa/nsmenuitem_additions_unittest.mm",
       "cocoa/touch_bar_util_unittest.mm",
       "cocoa/tracking_area_unittest.mm",
+      "interaction/element_tracker_mac_unittest.mm",
       "l10n/l10n_util_mac_unittest.mm",
       "test/view_tree_validator_unittest.mm",
     ]
-    deps += [ ":ui_base_unittests_arc" ]
   }
 
   if (is_chromeos_lacros) {
