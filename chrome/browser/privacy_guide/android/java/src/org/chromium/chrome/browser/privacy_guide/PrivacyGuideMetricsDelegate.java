@@ -392,9 +392,16 @@ class PrivacyGuideMetricsDelegate {
                 RecordUserAction.record("Settings.PrivacyGuide.BackClickCookies");
                 break;
             }
+            case PrivacyGuideFragment.FragmentType.MSBB: {
+                RecordUserAction.record("Settings.PrivacyGuide.BackClickMSBB");
+                break;
+            }
+            case PrivacyGuideFragment.FragmentType.DONE: {
+                RecordUserAction.record("Settings.PrivacyGuide.BackClickCompletion");
+                break;
+            }
             default:
-                // The Welcome, MSBB and Done cards don't have a back button, and so we won't
-                // support a case for it.
+                // The Welcome card does not have a back button, and we won't support a case for it.
                 assert false : "Unexpected fragmentType " + fragmentType;
         }
     }

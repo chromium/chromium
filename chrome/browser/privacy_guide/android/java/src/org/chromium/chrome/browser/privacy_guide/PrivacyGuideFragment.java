@@ -23,10 +23,15 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.back_press.BackPressHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.CustomTabIntentHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
@@ -35,7 +40,8 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Fragment containing the Privacy Guide (a walk-through of the most important privacy settings).
  */
-public class PrivacyGuideFragment extends Fragment {
+public class PrivacyGuideFragment
+        extends Fragment implements BackPressHandler, BackPressHelper.ObsoleteBackPressedHandler {
     /**
      * The types of fragments supported. Each fragment corresponds to a step in the privacy guide.
      */
@@ -53,6 +59,7 @@ public class PrivacyGuideFragment extends Fragment {
     }
 
     private OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
+    private ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
     private CustomTabIntentHelper mCustomTabHelper;
     private SettingsLauncher mSettingsLauncher;
     private PrivacyGuidePagerAdapter mPagerAdapter;
@@ -66,6 +73,7 @@ public class PrivacyGuideFragment extends Fragment {
     private ButtonCompat mDoneButton;
     private PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegate;
     private NavbarVisibilityDelegate mNavbarVisibilityDelegate;
+    private boolean mEnablePostMVPFixes;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,6 +83,8 @@ public class PrivacyGuideFragment extends Fragment {
         if (savedInstanceState != null) {
             mPrivacyGuideMetricsDelegate.restoreState(savedInstanceState);
         }
+        mHandleBackPressChangedSupplier = new ObservableSupplierImpl<>();
+        mEnablePostMVPFixes = ChromeFeatureList.sPrivacyGuidePostMVP.isEnabled();
     }
 
     @Nullable
@@ -124,6 +134,7 @@ public class PrivacyGuideFragment extends Fragment {
     public void onResume() {
         super.onResume();
         updateButtonVisibility();
+        mHandleBackPressChangedSupplier.set(shouldHandleBackPress());
     }
 
     private void modifyAppBar() {
@@ -143,6 +154,7 @@ public class PrivacyGuideFragment extends Fragment {
 
         mViewPager.setCurrentItem(nextIdx);
         updateButtonVisibility();
+        mHandleBackPressChangedSupplier.set(shouldHandleBackPress());
         recordMetricsOnButtonPress(currentIdx, nextIdx);
     }
 
@@ -150,13 +162,14 @@ public class PrivacyGuideFragment extends Fragment {
         int currentIdx = mViewPager.getCurrentItem();
         int prevIdx = currentIdx - 1;
 
-        if (prevIdx < 1 || currentIdx >= mPagerAdapter.getItemCount() - 1) {
+        if (currentIdx <= 0) {
             // There are no allowed previous steps.
             return;
         }
 
         mViewPager.setCurrentItem(prevIdx);
         updateButtonVisibility();
+        mHandleBackPressChangedSupplier.set(shouldHandleBackPress());
         recordMetricsOnButtonPress(currentIdx, prevIdx);
     }
 
@@ -225,6 +238,30 @@ public class PrivacyGuideFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         mPrivacyGuideMetricsDelegate.saveState(outState);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (shouldHandleBackPress()) {
+            previousStep();
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int handleBackPress() {
+        return onBackPressed() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mHandleBackPressChangedSupplier;
+    }
+
+    private boolean shouldHandleBackPress() {
+        return mEnablePostMVPFixes && mViewPager.getCurrentItem() > 0;
     }
 
     public void setBottomSheetControllerSupplier(
