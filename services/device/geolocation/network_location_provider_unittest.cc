@@ -30,6 +30,7 @@
 #include "services/device/geolocation/mock_wifi_data_provider.h"
 #include "services/device/geolocation/wifi_data_provider.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -126,7 +127,7 @@ class GeolocationNetworkProviderTest : public testing::Test {
   static WifiData CreateReferenceWifiScanData(int ap_count) {
     WifiData data;
     for (int i = 0; i < ap_count; ++i) {
-      AccessPointData ap;
+      mojom::AccessPointData ap;
       ap.mac_address = base::StringPrintf("%02d-34-56-78-54-32", i);
       ap.radio_signal_strength = ap_count - i;
       ap.channel = IndexToChannel(i);
@@ -139,7 +140,7 @@ class GeolocationNetworkProviderTest : public testing::Test {
   static WifiData CreateReferenceWifiScanDataWithNoMACAddress(int ap_count) {
     WifiData data;
     for (int i = 0; i < ap_count; ++i) {
-      AccessPointData ap;
+      mojom::AccessPointData ap;
       ap.radio_signal_strength = ap_count - i;
       ap.channel = IndexToChannel(i);
       ap.signal_to_noise = i + 42;

@@ -190,6 +190,7 @@ source_set("tests") {
     "//services/device/public/cpp:device_features",
     "//services/device/public/cpp/power_monitor",
     "//services/device/public/mojom",
+    "//services/device/public/mojom:geolocation_internals",
     "//services/device/wake_lock",
     "//services/network:test_support",
     "//testing/gmock",

@@ -24,6 +24,7 @@
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 
 namespace device {
 namespace {
@@ -100,7 +101,7 @@ int frquency_in_khz_to_channel(int frequency_khz) {
   if (frequency_khz > 5000000 && frequency_khz < 6000000)  // .11a bands.
     return (frequency_khz - 5000000) / 5000;
   // Ignore everything else.
-  return AccessPointData().channel;  // invalid channel
+  return mojom::kInvalidChannel;
 }
 
 NetworkManagerWlanApi::NetworkManagerWlanApi() {}
@@ -232,7 +233,7 @@ bool NetworkManagerWlanApi::GetAccessPointsForAdapter(
     dbus::ObjectProxy* access_point_proxy = system_bus_->GetObjectProxy(
         kNetworkManagerServiceName, access_point_path);
 
-    AccessPointData access_point_data;
+    mojom::AccessPointData access_point_data;
     {  // Read the mac address
       std::unique_ptr<dbus::Response> mac_response(
           GetAccessPointProperty(access_point_proxy, "HwAddress"));

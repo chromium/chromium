@@ -7,6 +7,28 @@ module device.mojom;
 // Types and interfaces defined in this file are intended for use by the
 // geolocation internals WebUI. (chrome://location-internals)
 
+const int32 kInvalidRadioSignalStrength = -2147483648;  // INT32_MIN
+const int32 kInvalidChannel = -2147483648;  // INT32_MIN
+const int32 kInvalidSignalToNoise = -2147483648;  // INT32_MIN
+
+// Information about a nearby Wi-Fi access point seen while scanning.
+struct AccessPointData {
+  // MAC address, formatted as per MacAddressAsString.
+  string mac_address;
+
+  // Signal strength measured in dBm, or kInvalidRadioSignalStrength if the
+  // signal strength is not provided.
+  int32 radio_signal_strength = kInvalidRadioSignalStrength;
+
+  // An integer representing the frequency range used by this access point, or
+  // kInvalidChannel if the channel is not provided.
+  int32 channel = kInvalidChannel;
+
+  // The ratio in dB of the signal strength to the background noise level, or
+  // kInvalidSignalToNoise if the signal to noise ratio is not provided.
+  int32 signal_to_noise = kInvalidSignalToNoise;
+};
+
 // A snapshot of the internal state of the Geolocation API implementation.
 struct GeolocationDiagnostics {
   // The current state of a LocationProvider.

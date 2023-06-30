@@ -12,6 +12,7 @@
 #include "services/device/geolocation/wifi_data_provider_common.h"
 #include "services/device/geolocation/wifi_data_provider_common_win.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 
 namespace device {
 
@@ -52,8 +53,8 @@ typedef DWORD(WINAPI* WlanCloseHandleFunction)(HANDLE hClientHandle,
                                                PVOID pReserved);
 
 // Extracts data for an access point and converts to AccessPointData.
-AccessPointData GetNetworkData(const WLAN_BSS_ENTRY& bss_entry) {
-  AccessPointData access_point_data;
+mojom::AccessPointData GetNetworkData(const WLAN_BSS_ENTRY& bss_entry) {
+  mojom::AccessPointData access_point_data;
   // Currently we get only MAC address and signal strength.
   access_point_data.mac_address = MacAddressAsString(bss_entry.dot11Bssid);
   access_point_data.radio_signal_strength = bss_entry.lRssi;

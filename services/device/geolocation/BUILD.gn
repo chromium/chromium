@@ -57,6 +57,7 @@ source_set("geolocation") {
     "//mojo/public/cpp/system",
     "//net",
     "//services/device/public/cpp:device_features",
+    "//services/device/public/mojom:geolocation_internals",
     "//ui/gfx",
   ]
   public_deps = [
@@ -198,6 +199,7 @@ source_set("test_support") {
   public_deps = [ ":geolocation" ]
   deps = [
     "//services/device/public/cpp/geolocation",
+    "//services/device/public/mojom:geolocation_internals",
     "//testing/gmock",
     "//testing/gtest",
   ]

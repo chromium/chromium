@@ -27,6 +27,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/location_arbitrator.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -219,8 +220,8 @@ void NetworkLocationRequest::OnRequestComplete(
 namespace {
 
 struct AccessPointLess {
-  bool operator()(const AccessPointData* ap1,
-                  const AccessPointData* ap2) const {
+  bool operator()(const mojom::AccessPointData* ap1,
+                  const mojom::AccessPointData* ap2) const {
     return ap2->radio_signal_strength < ap1->radio_signal_strength;
   }
 };
@@ -276,7 +277,8 @@ void AddWifiData(const WifiData& wifi_data,
   if (wifi_data.access_point_data.empty())
     return;
 
-  typedef std::multiset<const AccessPointData*, AccessPointLess> AccessPointSet;
+  typedef std::multiset<const mojom::AccessPointData*, AccessPointLess>
+      AccessPointSet;
   AccessPointSet access_points_by_signal_strength;
 
   for (const auto& ap_data : wifi_data.access_point_data)

@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -202,7 +203,7 @@ TEST_F(GeolocationWifiDataProviderCommonTest, DoScanWithResults) {
 
   EXPECT_CALL(*polling_policy_, InitialInterval()).Times(1);
   EXPECT_CALL(*polling_policy_, PollingInterval()).Times(AtLeast(1));
-  AccessPointData single_access_point;
+  mojom::AccessPointData single_access_point;
   single_access_point.channel = 2;
   single_access_point.mac_address = "00:11:22:33:44:55";
   single_access_point.radio_signal_strength = 4;
