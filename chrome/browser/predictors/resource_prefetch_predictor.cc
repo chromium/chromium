@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -53,15 +54,26 @@ void InitializeOriginStatFromOriginRequestSummary(
 
 void InitializeOnDBSequence(
     ResourcePrefetchPredictor::RedirectDataMap* host_redirect_data,
-    ResourcePrefetchPredictor::OriginDataMap* origin_data) {
+    ResourcePrefetchPredictor::OriginDataMap* origin_data,
+    ResourcePrefetchPredictor::LcppDataMap* lcpp_data) {
   host_redirect_data->InitializeOnDBSequence();
   origin_data->InitializeOnDBSequence();
+  lcpp_data->InitializeOnDBSequence();
 }
 
 GURL CreateRedirectURL(const std::string& scheme,
                        const std::string& host,
                        std::uint16_t port) {
   return GURL(scheme + "://" + host + ":" + base::NumberToString(port));
+}
+
+double SumOfFrequency(const std::map<std::string, double>& histogram,
+                      double other_bucket_frequency) {
+  double sum = other_bucket_frequency;
+  for (const auto& it : histogram) {
+    sum += it.second;
+  }
+  return sum;
 }
 
 }  // namespace
@@ -267,14 +279,18 @@ void ResourcePrefetchPredictor::StartInitialization() {
   auto origin_data = std::make_unique<OriginDataMap>(
       tables_, tables_->origin_table(), config_.max_hosts_to_track,
       base::Seconds(config_.flush_data_to_disk_delay_seconds));
+  auto lcpp_data = std::make_unique<LcppDataMap>(
+      tables_, tables_->lcpp_table(), config_.max_hosts_to_track,
+      base::Seconds(config_.flush_data_to_disk_delay_seconds));
 
   // Get raw pointers to pass to the first task. Ownership of the unique_ptrs
   // will be passed to the reply task.
   auto task = base::BindOnce(InitializeOnDBSequence, host_redirect_data.get(),
-                             origin_data.get());
-  auto reply = base::BindOnce(
-      &ResourcePrefetchPredictor::CreateCaches, weak_factory_.GetWeakPtr(),
-      std::move(host_redirect_data), std::move(origin_data));
+                             origin_data.get(), lcpp_data.get());
+  auto reply =
+      base::BindOnce(&ResourcePrefetchPredictor::CreateCaches,
+                     weak_factory_.GetWeakPtr(), std::move(host_redirect_data),
+                     std::move(origin_data), std::move(lcpp_data));
 
   tables_->GetTaskRunner()->PostTaskAndReply(FROM_HERE, std::move(task),
                                              std::move(reply));
@@ -313,6 +329,7 @@ void ResourcePrefetchPredictor::RecordPageRequestSummary(
   LearnOrigins(summary->main_frame_url.host(),
                summary->main_frame_url.DeprecatedGetOriginAsURL(),
                summary->origins);
+  LearnLcpp(summary->main_frame_url.host(), summary->lcp_element_locator);
 
   if (observer_)
     observer_->OnNavigationLearned(*summary);
@@ -376,15 +393,18 @@ bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
 
 void ResourcePrefetchPredictor::CreateCaches(
     std::unique_ptr<RedirectDataMap> host_redirect_data,
-    std::unique_ptr<OriginDataMap> origin_data) {
+    std::unique_ptr<OriginDataMap> origin_data,
+    std::unique_ptr<LcppDataMap> lcpp_data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(INITIALIZING, initialization_state_);
 
   DCHECK(host_redirect_data);
   DCHECK(origin_data);
+  DCHECK(lcpp_data);
 
   host_redirect_data_ = std::move(host_redirect_data);
   origin_data_ = std::move(origin_data);
+  lcpp_data_ = std::move(lcpp_data);
 
   ConnectToHistoryService();
 }
@@ -411,6 +431,7 @@ void ResourcePrefetchPredictor::DeleteAllUrls() {
 
   host_redirect_data_->DeleteAllData();
   origin_data_->DeleteAllData();
+  lcpp_data_->DeleteAllData();
 }
 
 void ResourcePrefetchPredictor::DeleteUrls(const history::URLRows& urls) {
@@ -421,6 +442,7 @@ void ResourcePrefetchPredictor::DeleteUrls(const history::URLRows& urls) {
 
   host_redirect_data_->DeleteData(hosts_to_delete);
   origin_data_->DeleteData(hosts_to_delete);
+  lcpp_data_->DeleteData(hosts_to_delete);
 }
 
 void ResourcePrefetchPredictor::LearnRedirect(const std::string& key,
@@ -595,6 +617,184 @@ void ResourcePrefetchPredictor::LearnOrigins(
     origin_data_->DeleteData({host});
   else
     origin_data_->UpdateData(host, data);
+}
+
+void ResourcePrefetchPredictor::LearnLcpp(
+    const std::string& host,
+    const std::string& lcp_element_locator) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (host.size() > ResourcePrefetchPredictorTables::kMaxStringLength) {
+    return;
+  }
+
+  LcppData data;
+  bool exists = lcpp_data_->TryGetData(host, &data);
+  data.set_last_visit_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  if (!exists) {
+    data.set_host(host);
+    auto* bucket_to_add = data.mutable_lcpp_stat()
+                              ->mutable_lcp_element_locator_stat()
+                              ->add_lcp_element_locator_buckets();
+    bucket_to_add->set_lcp_element_locator(lcp_element_locator);
+    bucket_to_add->set_frequency(1);
+  } else {
+    LcpElementLocatorStat& lcp_element_locator_stat =
+        *data.mutable_lcpp_stat()->mutable_lcp_element_locator_stat();
+
+    const size_t kSlidingWindowSize =
+        config_.lcpp_histogram_sliding_window_size;
+    const size_t kMaxHistogramBuckets = config_.max_lcpp_histogram_buckets;
+
+    // This algorithm uses the following configuration.
+    //
+    // - kSlidingWindowSize
+    // - kMaxHistogramBuckets
+    //
+    // `kSlidingWindowSize` is a virtual
+    // sliding window size that builds histogram.
+    // `kMaxHistogramBuckets` is a bucket count
+    // that actually can be saved in the database. If the histogram has more
+    // buckets than kMaxHistogramBuckets, this
+    // algorithm sums up the less frequent buckets, and stores them in a single
+    // "other_bucket" called `other_bucket_frequency`.
+    //
+    // <Conceptual model of sliding window and histogram>
+    //
+    // <------ sliding window ------->
+    // +-----------------------------+                 <- data feed
+    // | /#a   /#a   /#a   /#b   /#b | /#b   /#c   /#d   /#c   /#d
+    // +-----------------------------+
+    //  => histogram: {/#a: 3, /#b: 2}
+    //
+    //       <------ sliding window ------->
+    //       +-----------------------------+
+    //   /#a | /#a   /#a   /#b   /#b   /#b | /#c   /#d   /#c   /#d
+    //       +-----------------------------+
+    //        => histogram: {/#a: 2, /#b: 3}
+    //
+    //             <------ sliding window ------->
+    //             +-----------------------------+
+    //   /#a   /#a | /#a   /#b   /#b   /#b   /#c | /#d   /#c   /#d
+    //             +-----------------------------+
+    //              => histogram: {/#a: 1, /#b: 3, /#c: 1}
+    //
+    // The above sliding window model has the following two problems for us.
+    //
+    // - [Problem_1] We need to keep the entire data inside the sliding
+    //               window to know which item is the first item inside
+    //               the sliding window. But we don't want to keep such
+    //               large data.
+    // - [Problem_2] The histogram can be large if the items don't have
+    //               overlap. We don't want to keep a large histogram.
+    //
+    // To address [Problem_1], we decided not to use the first item
+    // inside the sliding window. Instead, We decided to reduce the
+    // weight of the item.
+    //
+    // histogram: {/#a: 3, /#b: 2}
+    // => histogram: {/#a: {1, 1, 1}, /#b: {1, 1}}
+    //
+    // To add new item "/#c", Reduce the item weight, and add "/#c".
+    //
+    // histogram: {/#a: {4/5, 4/5, 4/5}, /#b: {4/5, 4/5}, /#c: {1}}
+    //
+    // To address [Problem_2], we decided to introduce an "others"
+    // bucket.
+    //
+    // histogram: {/#a: 5, /#b: 3, /#c: 2, /#d: 2}
+    //
+    // To reduce the bucket count under 3 buckets, we merge /#c and /#d
+    // buckets into an <other> bucket.
+    //
+    // histogram: {/#a: 5, /#b: 3, <other>: 4}
+    //
+    // See:
+    // https://docs.google.com/document/d/1T80d4xW8xIEqfo792g1nC1deFqzMraunFJW_5ft4ziQ/edit
+
+    // Prepare working variables (histogram and other_bucket_frequency) from
+    // proto. If the data is corrupted, the previous data will be cleared.
+    bool corrupted = false;
+    double other_bucket_frequency =
+        lcp_element_locator_stat.other_bucket_frequency();
+    if (other_bucket_frequency < 0 ||
+        lcp_element_locator_stat.lcp_element_locator_buckets_size() >
+            int(kMaxHistogramBuckets)) {
+      corrupted = true;
+    }
+    std::map<std::string, double> histogram;
+    for (const auto& it :
+         lcp_element_locator_stat.lcp_element_locator_buckets()) {
+      if (corrupted || !it.has_lcp_element_locator() || !it.has_frequency() ||
+          it.frequency() < 0.0) {
+        corrupted = true;
+        break;
+      }
+      histogram.insert_or_assign(it.lcp_element_locator(), it.frequency());
+    }
+    if (corrupted) {
+      other_bucket_frequency = 0;
+      histogram.clear();
+    }
+
+    // If there is no room to add a new `lcp_element_locator` (the capacity is
+    // the same as the sliding window size), create a room by discounting the
+    // existing histogram frequency.
+    if (1 + SumOfFrequency(histogram, other_bucket_frequency) >
+        kSlidingWindowSize) {
+      double discount = 1.0 / kSlidingWindowSize;
+      for (auto it = histogram.begin(); it != histogram.end();) {
+        it->second -= it->second * discount;
+        // Remove item that has too small frequency.
+        if (it->second < 1e-7) {
+          it = histogram.erase(it);
+        } else {
+          ++it;
+        }
+      }
+      other_bucket_frequency -= other_bucket_frequency * discount;
+    }
+
+    // Now we have one free space to store a new lcp_element_locator.
+    // (`SumOfFrequency()` takes time. Hence `DCHECK_LE` is used.)
+    DCHECK_LE(1 + SumOfFrequency(histogram, other_bucket_frequency),
+              kSlidingWindowSize);
+
+    // Store new lcp_element_locator.
+    {
+      auto it = histogram.emplace(lcp_element_locator, 1);
+      if (!it.second) {
+        ++it.first->second;
+      }
+    }
+
+    // Before saving histogram, we need to reduce the count of buckets less
+    // than `kMaxHistogramBuckets`. If the bucket count is more than
+    // `kMaxHistogramBuckets`, we can merge the least frequent bucket into
+    // other_bucket.
+    if (histogram.size() > kMaxHistogramBuckets) {
+      const auto& least_frequent_bucket =
+          std::min_element(histogram.begin(), histogram.end(),
+                           [](const auto& lhs, const auto& rhs) {
+                             return lhs.second < rhs.second;
+                           });
+      other_bucket_frequency += least_frequent_bucket->second;
+      histogram.erase(least_frequent_bucket);
+    }
+
+    // Copy the results (histogram and other_bucket_frequency) into proto.
+    lcp_element_locator_stat.set_other_bucket_frequency(other_bucket_frequency);
+    lcp_element_locator_stat.clear_lcp_element_locator_buckets();
+    for (const auto& bucket : histogram) {
+      auto* bucket_to_add =
+          lcp_element_locator_stat.add_lcp_element_locator_buckets();
+      bucket_to_add->set_lcp_element_locator(bucket.first);
+      bucket_to_add->set_frequency(bucket.second);
+    }
+  }
+
+  // Update the database.
+  lcpp_data_->UpdateData(host, data);
 }
 
 void ResourcePrefetchPredictor::OnURLsDeleted(

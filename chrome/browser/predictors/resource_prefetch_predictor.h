@@ -162,6 +162,8 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
       sqlite_proto::KeyValueData<RedirectData, internal::LastVisitTimeCompare>;
   using OriginDataMap =
       sqlite_proto::KeyValueData<OriginData, internal::LastVisitTimeCompare>;
+  using LcppDataMap =
+      sqlite_proto::KeyValueData<LcppData, internal::LastVisitTimeCompare>;
 
   ResourcePrefetchPredictor(const LoadingPredictorConfig& config,
                             Profile* profile);
@@ -245,6 +247,9 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
                            TestPrefetchingDurationHistogram);
   FRIEND_TEST_ALL_PREFIXES(ResourcePrefetchPredictorTest,
                            TestRecordFirstContentfulPaint);
+  FRIEND_TEST_ALL_PREFIXES(ResourcePrefetchPredictorTest, LearnLcpp);
+  FRIEND_TEST_ALL_PREFIXES(ResourcePrefetchPredictorTest,
+                           WhenLcppDataIsCorrupted_ResetData);
 
   enum InitializationState {
     NOT_INITIALIZED = 0,
@@ -272,7 +277,8 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   // Callback for the task to read the predictor database. Takes ownership of
   // all arguments.
   void CreateCaches(std::unique_ptr<RedirectDataMap> host_redirect_data,
-                    std::unique_ptr<OriginDataMap> origin_data);
+                    std::unique_ptr<OriginDataMap> origin_data,
+                    std::unique_ptr<LcppDataMap> lcpp_data);
 
   // Called during initialization when history is read and the predictor
   // database has been read.
@@ -292,6 +298,9 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
       const std::string& host,
       const GURL& main_frame_origin,
       const std::map<url::Origin, OriginRequestSummary>& summaries);
+
+  void LearnLcpp(const std::string& host,
+                 const std::string& lcp_element_locator);
 
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
@@ -317,6 +326,7 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
 
   std::unique_ptr<RedirectDataMap> host_redirect_data_;
   std::unique_ptr<OriginDataMap> origin_data_;
+  std::unique_ptr<LcppDataMap> lcpp_data_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

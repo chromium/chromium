@@ -26,6 +26,7 @@ namespace predictors {
 // Currently manages:
 //  - HostRedirectTable - key: host, value: RedirectData
 //  - OriginTable - key: host, value: OriginData
+//  - LcppTable - key: host, value: LcppData
 class ResourcePrefetchPredictorTables : public sqlite_proto::TableManager {
  public:
   ResourcePrefetchPredictorTables(const ResourcePrefetchPredictorTables&) =
@@ -35,6 +36,7 @@ class ResourcePrefetchPredictorTables : public sqlite_proto::TableManager {
 
   virtual sqlite_proto::KeyValueTable<RedirectData>* host_redirect_table();
   virtual sqlite_proto::KeyValueTable<OriginData>* origin_table();
+  virtual sqlite_proto::KeyValueTable<LcppData>* lcpp_table();
 
   // Removes the redirects with more than |max_consecutive_misses| consecutive
   // misses from |data|.
@@ -84,6 +86,7 @@ class ResourcePrefetchPredictorTables : public sqlite_proto::TableManager {
   std::unique_ptr<sqlite_proto::KeyValueTable<RedirectData>>
       host_redirect_table_;
   std::unique_ptr<sqlite_proto::KeyValueTable<OriginData>> origin_table_;
+  std::unique_ptr<sqlite_proto::KeyValueTable<LcppData>> lcpp_table_;
 };
 
 }  // namespace predictors

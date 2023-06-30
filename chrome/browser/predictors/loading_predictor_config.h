@@ -87,6 +87,14 @@ struct LoadingPredictorConfig {
   // Delay between writing data to the predictors database memory cache and
   // flushing it to disk.
   size_t flush_data_to_disk_delay_seconds;
+
+  // The virtual sliding window size for LCP critical path predictor (LCPP)
+  // histogram.
+  size_t lcpp_histogram_sliding_window_size;
+
+  // The max histogram bucket count that can be stored in the LCP critical path
+  // predictor (LCPP) database.
+  size_t max_lcpp_histogram_buckets;
 };
 
 }  // namespace predictors

@@ -67,7 +67,15 @@ LoadingPredictorConfig::LoadingPredictorConfig()
           50)),
       max_consecutive_misses(3),
       max_redirect_consecutive_misses(5),
-      flush_data_to_disk_delay_seconds(30) {}
+      flush_data_to_disk_delay_seconds(30),
+      lcpp_histogram_sliding_window_size(base::GetFieldTrialParamByFeatureAsInt(
+          features::kLoadingPredictorTableConfig,
+          "lcpp_histogram_sliding_window_size",
+          1000)),
+      max_lcpp_histogram_buckets(base::GetFieldTrialParamByFeatureAsInt(
+          features::kLoadingPredictorTableConfig,
+          "max_lcpp_histogram_buckets",
+          10)) {}
 
 LoadingPredictorConfig::LoadingPredictorConfig(
     const LoadingPredictorConfig& other) = default;

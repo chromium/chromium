@@ -80,6 +80,32 @@ OriginData CreateOriginData(const std::string& host, uint64_t last_visit_time) {
   return data;
 }
 
+LcppData CreateLcppData(const std::string& host, uint64_t last_visit_time) {
+  // |host| should not contain the scheme.
+  EXPECT_EQ(std::string::npos, host.find("://"));
+  LcppData data;
+  data.set_host(host);
+  data.set_last_visit_time(last_visit_time);
+  return data;
+}
+
+void InitializeLcpElementLocatorBucket(LcppData& lcpp_data,
+                                       const std::string& lcp_element_locator,
+                                       double frequency) {
+  LcpElementLocatorBucket& bucket = *lcpp_data.mutable_lcpp_stat()
+                                         ->mutable_lcp_element_locator_stat()
+                                         ->add_lcp_element_locator_buckets();
+  bucket.set_lcp_element_locator(lcp_element_locator);
+  bucket.set_frequency(frequency);
+}
+
+void InitializeLcpElementLocatorOtherBucket(LcppData& lcpp_data,
+                                            double frequency) {
+  lcpp_data.mutable_lcpp_stat()
+      ->mutable_lcp_element_locator_stat()
+      ->set_other_bucket_frequency(frequency);
+}
+
 PageRequestSummary CreatePageRequestSummary(
     const std::string& main_frame_url,
     const std::string& initial_url,
@@ -155,6 +181,8 @@ void PopulateTestConfig(LoadingPredictorConfig* config, bool small_db) {
     config->max_origins_per_entry = 5;
     config->max_consecutive_misses = 2;
     config->max_redirect_consecutive_misses = 2;
+    config->lcpp_histogram_sliding_window_size = 5;
+    config->max_lcpp_histogram_buckets = 2;
   }
   config->flush_data_to_disk_delay_seconds = 0;
 }
@@ -189,6 +217,29 @@ std::ostream& operator<<(std::ostream& os, const OriginStat& origin) {
             << origin.accessed_network() << "]";
 }
 
+std::ostream& operator<<(std::ostream& os, const LcppData& data) {
+  os << "[" << data.host() << "," << data.last_visit_time() << "]" << std::endl;
+  os << "\t\t"
+     << "lcp_element_locator_stat:" << std::endl;
+  for (const LcpElementLocatorBucket& bucket :
+       data.lcpp_stat()
+           .lcp_element_locator_stat()
+           .lcp_element_locator_buckets()) {
+    os << "\t\t\t\t" << bucket << std::endl;
+  }
+  os << "\t\t\t\t"
+     << "[<other_bucket>,"
+     << data.lcpp_stat().lcp_element_locator_stat().other_bucket_frequency()
+     << "]" << std::endl;
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const LcpElementLocatorBucket& bucket) {
+  return os << "[" << bucket.lcp_element_locator() << "," << bucket.frequency()
+            << "]";
+}
+
 std::ostream& operator<<(std::ostream& os,
                          const OriginRequestSummary& summary) {
   return os << "[" << summary.origin << "," << summary.always_access_network
@@ -201,6 +252,8 @@ std::ostream& operator<<(std::ostream& os, const PageRequestSummary& summary) {
      << std::endl;
   for (const auto& pair : summary.origins)
     os << "\t\t" << pair.first << ":" << pair.second << std::endl;
+  os << "\t\t"
+     << "lcp_element_locator: " << summary.lcp_element_locator;
   return os;
 }
 
@@ -245,7 +298,8 @@ bool operator==(const RedirectStat& lhs, const RedirectStat& rhs) {
 bool operator==(const PageRequestSummary& lhs, const PageRequestSummary& rhs) {
   return lhs.main_frame_url == rhs.main_frame_url &&
          lhs.initial_url == rhs.initial_url && lhs.origins == rhs.origins &&
-         lhs.subresource_urls == rhs.subresource_urls;
+         lhs.subresource_urls == rhs.subresource_urls &&
+         lhs.lcp_element_locator == rhs.lcp_element_locator;
 }
 
 bool operator==(const OriginRequestSummary& lhs,
@@ -266,6 +320,46 @@ bool operator==(const OriginData& lhs, const OriginData& rhs) {
     equal = equal && lhs.origins(i) == rhs.origins(i);
 
   return equal;
+}
+
+bool operator==(const LcpElementLocatorBucket& lhs,
+                const LcpElementLocatorBucket& rhs) {
+  return lhs.lcp_element_locator() == rhs.lcp_element_locator() &&
+         AlmostEqual(lhs.frequency(), rhs.frequency());
+}
+
+bool operator==(const LcpElementLocatorStat& lhs,
+                const LcpElementLocatorStat& rhs) {
+  if (lhs.lcp_element_locator_buckets_size() !=
+          rhs.lcp_element_locator_buckets_size() ||
+      !AlmostEqual(lhs.other_bucket_frequency(),
+                   rhs.other_bucket_frequency())) {
+    return false;
+  }
+
+  // lcp_element_locator_buckets don't care the order.
+  std::map<std::string, double> lhs_map;
+  for (const auto& it : lhs.lcp_element_locator_buckets()) {
+    lhs_map.emplace(it.lcp_element_locator(), it.frequency());
+  }
+
+  for (const auto& rhs_it : rhs.lcp_element_locator_buckets()) {
+    const auto& lhs_it = lhs_map.find(rhs_it.lcp_element_locator());
+    if (lhs_it == lhs_map.end() ||
+        !AlmostEqual(lhs_it->second, rhs_it.frequency())) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool operator==(const LcppStat& lhs, const LcppStat& rhs) {
+  return lhs.lcp_element_locator_stat() == rhs.lcp_element_locator_stat();
+}
+
+bool operator==(const LcppData& lhs, const LcppData& rhs) {
+  return lhs.host() == rhs.host() && lhs.lcpp_stat() == rhs.lcpp_stat();
 }
 
 bool operator==(const OriginStat& lhs, const OriginStat& rhs) {
