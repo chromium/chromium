@@ -93,7 +93,11 @@
     "android-angle-chromium-arm64-nexus5x": "Ubuntu-22.04",
     "android-official": "Ubuntu-22.04",
     "fuchsia-angle-builder": "Ubuntu-22.04",
+    "fuchsia-arm64-cast-receiver-rel": "Ubuntu-22.04",
+    "fuchsia-arm64-rel": "Ubuntu-22.04",
     "fuchsia-official": "Ubuntu-22.04",
+    "fuchsia-x64-cast-receiver-rel": "Ubuntu-22.04",
+    "fuchsia-x64-rel": "Ubuntu-22.04",
     "ios-angle-intel": "Ubuntu-22.04",
     "linux-angle-chromium-builder": "Ubuntu-22.04",
     "linux-angle-chromium-intel": "Ubuntu-22.04",
@@ -109,5 +113,16 @@
     "mac-angle-chromium-intel": "Ubuntu-22.04",
     "win10-angle-chromium-x64-intel": "Ubuntu-22.04",
     "win10-angle-chromium-x64-nvidia": "Ubuntu-22.04"
+  },
+  "try": {
+    "chromium_presubmit": "Ubuntu-22.04",
+    "fuchsia-arm64-cast-receiver-rel": "Ubuntu-22.04",
+    "fuchsia-arm64-rel": "Ubuntu-22.04",
+    "fuchsia-arm64-rel-compilator": "Ubuntu-22.04",
+    "fuchsia-binary-size": "Ubuntu-22.04",
+    "fuchsia-official": "Ubuntu-22.04",
+    "fuchsia-x64-cast-receiver-rel": "Ubuntu-22.04",
+    "fuchsia-x64-cast-receiver-rel-compilator": "Ubuntu-22.04",
+    "fuchsia-x64-rel": "Ubuntu-22.04"
   }
 }
