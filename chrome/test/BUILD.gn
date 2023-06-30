@@ -4748,6 +4748,7 @@ if (!is_android) {
         "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
         "//components/safe_browsing/content/common:file_type_policies_test_support",
         "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
+        "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
         "//components/safe_browsing/core/common/fbs:client_model",
       ]
 

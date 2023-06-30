@@ -100,7 +100,7 @@ PasswordProtectionServiceBase::~PasswordProtectionServiceBase() {
 
 // static
 bool PasswordProtectionServiceBase::CanGetReputationOfURL(const GURL& url) {
-  if (VerdictCacheManager::has_artificial_unsafe_url()) {
+  if (VerdictCacheManager::has_artificial_cached_url()) {
     return true;
   }
   if (!safe_browsing::CanGetReputationOfUrl(url)) {

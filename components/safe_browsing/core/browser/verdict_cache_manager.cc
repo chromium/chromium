@@ -1097,7 +1097,7 @@ void VerdictCacheManager::CacheArtificialUnsafeRealTimeUrlVerdictFromSwitch() {
     return;
   }
 
-  has_artificial_unsafe_url_ = true;
+  has_artificial_cached_url_ = true;
 
   RTLookupResponse response;
   RTLookupResponse::ThreatInfo* threat_info = response.add_threat_info();
@@ -1127,7 +1127,7 @@ void VerdictCacheManager::CacheArtificialUnsafePhishGuardVerdictFromSwitch() {
     return;
   }
 
-  has_artificial_unsafe_url_ = true;
+  has_artificial_cached_url_ = true;
 
   ReusedPasswordAccountType reused_password_account_type;
   reused_password_account_type.set_account_type(
@@ -1142,21 +1142,19 @@ void VerdictCacheManager::CacheArtificialUnsafePhishGuardVerdictFromSwitch() {
                          base::Time::Now());
 }
 
-void VerdictCacheManager::
-    CacheArtificialUnsafeHashRealTimeLookupVerdictFromSwitch() {
-  std::string phishing_url_string =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kArtificialCachedHashPrefixRealTimeVerdictFlag);
-  if (phishing_url_string.empty()) {
+void VerdictCacheManager::CacheArtificialHashRealTimeLookupVerdict(
+    const std::string& url_spec,
+    bool is_unsafe) {
+  if (url_spec.empty()) {
     return;
   }
 
-  GURL artificial_unsafe_url(phishing_url_string);
+  GURL artificial_unsafe_url(url_spec);
   if (!artificial_unsafe_url.is_valid()) {
     return;
   }
 
-  has_artificial_unsafe_url_ = true;
+  has_artificial_cached_url_ = true;
 
   std::vector<FullHashStr> full_hashes;
   V4ProtocolManagerUtil::UrlToFullHashes(artificial_unsafe_url, &full_hashes);
@@ -1168,12 +1166,23 @@ void VerdictCacheManager::
   FullHashStr sample_full_hash = full_hashes[0];
   V5::FullHash full_hash_object;
   full_hash_object.set_full_hash(sample_full_hash);
-  auto* details = full_hash_object.add_full_hash_details();
-  details->set_threat_type(V5::ThreatType::SOCIAL_ENGINEERING);
+  if (is_unsafe) {
+    auto* details = full_hash_object.add_full_hash_details();
+    details->set_threat_type(V5::ThreatType::SOCIAL_ENGINEERING);
+  }
   V5::Duration cache_duration;
   cache_duration.set_seconds(3000);
   CacheHashPrefixRealTimeLookupResults(hash_prefixes, {full_hash_object},
                                        cache_duration);
+}
+
+void VerdictCacheManager::
+    CacheArtificialUnsafeHashRealTimeLookupVerdictFromSwitch() {
+  std::string phishing_url_string =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kArtificialCachedHashPrefixRealTimeVerdictFlag);
+  CacheArtificialHashRealTimeLookupVerdict(phishing_url_string,
+                                           /*is_unsafe=*/true);
 }
 
 void VerdictCacheManager::StopCleanUpTimerForTesting() {
@@ -1190,11 +1199,11 @@ void VerdictCacheManager::SetPageLoadTokenForTesting(
 }
 
 // static
-bool VerdictCacheManager::has_artificial_unsafe_url_ = false;
+bool VerdictCacheManager::has_artificial_cached_url_ = false;
 
 // static
-bool VerdictCacheManager::has_artificial_unsafe_url() {
-  return has_artificial_unsafe_url_;
+bool VerdictCacheManager::has_artificial_cached_url() {
+  return has_artificial_cached_url_;
 }
 
 }  // namespace safe_browsing

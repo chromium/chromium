@@ -131,9 +131,9 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   // Called by browsing data remover.
   void OnCookiesDeleted();
 
-  // Returns true if an artificial unsafe URL has been provided using
-  // command-line flags.
-  static bool has_artificial_unsafe_url();
+  // Returns true if an artificial URL has been provided either using
+  // command-line flags or through a test.
+  static bool has_artificial_cached_url();
 
   void StopCleanUpTimerForTesting();
   void SetPageLoadTokenForTesting(const GURL& url,
@@ -141,6 +141,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
  private:
   friend class SafeBrowsingBlockingPageRealTimeUrlCheckTest;
+  friend class SafeBrowsingBlockingPageHashRealTimeCheckTest;
   friend class VerdictCacheManagerTest;
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest, TestCleanUpExpiredVerdict);
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
@@ -213,6 +214,12 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   // real-time lookups.
   void CacheArtificialUnsafeHashRealTimeLookupVerdictFromSwitch();
 
+  // This adds a cached verdict for a URL that has artificially been marked as
+  // safe or unsafe (depending on |is_unsafe|). This applies to hash-prefix
+  // real-time lookups.
+  void CacheArtificialHashRealTimeLookupVerdict(const std::string& url_spec,
+                                                bool is_unsafe);
+
   // Number of verdict stored for this profile for password on focus pings.
   absl::optional<size_t> stored_verdict_count_password_on_focus_;
 
@@ -251,7 +258,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
   base::WeakPtrFactory<VerdictCacheManager> weak_factory_{this};
 
-  static bool has_artificial_unsafe_url_;
+  static bool has_artificial_cached_url_;
 };
 
 }  // namespace safe_browsing
