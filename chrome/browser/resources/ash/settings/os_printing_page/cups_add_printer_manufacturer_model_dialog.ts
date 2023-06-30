@@ -22,7 +22,7 @@ import {getTemplate} from './cups_add_printer_manufacturer_model_dialog.html.js'
 import {getBaseName, getErrorText, isPPDInfoValid} from './cups_printer_dialog_util.js';
 import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, ManufacturersInfo, ModelsInfo, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 
-class AddPrinterManufacturerModelDialogElement extends PolymerElement {
+export class AddPrinterManufacturerModelDialogElement extends PolymerElement {
   static get is() {
     return 'add-printer-manufacturer-model-dialog';
   }

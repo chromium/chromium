@@ -21,7 +21,7 @@ import {getTemplate} from './cups_add_print_server_dialog.html.js';
 import {getPrintServerErrorText} from './cups_printer_dialog_util.js';
 import {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, PrintServerResult} from './cups_printers_browser_proxy.js';
 
-class AddPrintServerDialogElement extends PolymerElement {
+export class AddPrintServerDialogElement extends PolymerElement {
   static get is() {
     return 'add-print-server-dialog';
   }

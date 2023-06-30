@@ -2,54 +2,58 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager, PrinterSettingsUserAction, PrinterSetupResult, PrinterType, PrintServerResult} from 'chrome://os-settings/lazy_load.js';
-import {Router, routes} from 'chrome://os-settings/os_settings.js';
+import {AddPrinterManuallyDialogElement, AddPrinterManufacturerModelDialogElement, AddPrintServerDialogElement, CupsPrinterInfo, CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager, PrinterDialogErrorElement, PrinterListEntry, PrinterSettingsUserAction, PrinterSetupResult, PrinterType, PrintServerResult, SettingsCupsAddPrinterDialogElement, SettingsCupsEditPrinterDialogElement, SettingsCupsPrintersElement} from 'chrome://os-settings/lazy_load.js';
+import {CrInputElement, CrSearchableDropDownElement, CrToastElement, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {DomIf, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {FakeMetricsPrivate} from '../fake_metrics_private.js';
+
 import {createCupsPrinterInfo, createPrinterListEntry} from './cups_printer_test_utils.js';
-import {FakeMetricsPrivate} from './fake_metrics_private.js';
 import {TestCupsPrintersBrowserProxy} from './test_cups_printers_browser_proxy.js';
 
 /*
  * Helper function that waits for |getEulaUrl| to get called and then verifies
  * its arguments.
- * @param {!TestCupsPrintersBrowserProxy} cupsPrintersBrowserProxy
- * @param {string} expectedManufacturer
- * @param {string} expectedModel
- * @return {!Promise}
  */
-function verifyGetEulaUrlWasCalled(
-    cupsPrintersBrowserProxy, expectedManufacturer, expectedModel) {
-  return cupsPrintersBrowserProxy.whenCalled('getEulaUrl').then(function(args) {
-    assertEquals(expectedManufacturer, args[0]);  // ppdManufacturer
-    assertEquals(expectedModel, args[1]);         // ppdModel
-  });
+async function verifyGetEulaUrlWasCalled(
+    cupsPrintersBrowserProxy: TestCupsPrintersBrowserProxy,
+    expectedManufacturer: string, expectedModel: string): Promise<void> {
+  const args = await cupsPrintersBrowserProxy.whenCalled('getEulaUrl');
+  assertEquals(expectedManufacturer, args[0]);  // ppdManufacturer
+  assertEquals(expectedModel, args[1]);         // ppdModel
 }
 
 /*
  * Helper function that resets the resolver for |getEulaUrl| and sets the new
  * EULA URL.
- * @param {!TestCupsPrintersBrowserProxy} cupsPrintersBrowserProxy
- * @param {string} eulaUrl
  */
-function resetGetEulaUrl(cupsPrintersBrowserProxy, eulaUrl) {
+function resetGetEulaUrl(
+    cupsPrintersBrowserProxy: TestCupsPrintersBrowserProxy,
+    eulaUrl: string): void {
   cupsPrintersBrowserProxy.resetResolver('getEulaUrl');
   cupsPrintersBrowserProxy.setEulaUrl(eulaUrl);
 }
 
-suite('CupsPrinterUITests', () => {
-  let page = null;
+suite('<settings-cups-printers>', () => {
+  let page: SettingsCupsPrintersElement;
+  let cupsPrintersBrowserProxy: TestCupsPrintersBrowserProxy;
 
-  /** @type {?settings.TestCupsPrintersBrowserProxy} */
-  let cupsPrintersBrowserProxy = null;
+  async function resetPage(): Promise<void> {
+    Router.getInstance().navigateTo(routes.CUPS_PRINTERS);
+    page = document.createElement('settings-cups-printers');
+    document.body.appendChild(page);
+    assertTrue(!!page);
+    await flushTasks();
+  }
 
   setup(async () => {
     cupsPrintersBrowserProxy = new TestCupsPrintersBrowserProxy();
@@ -62,70 +66,71 @@ suite('CupsPrinterUITests', () => {
   teardown(() => {
     cupsPrintersBrowserProxy.reset();
     page.remove();
-    page = null;
   });
-
-  function resetPage() {
-    PolymerTest.clearBody();
-    Router.getInstance().navigateTo(routes.CUPS_PRINTERS);
-    page = document.createElement('settings-cups-printers');
-    document.body.appendChild(page);
-    assertTrue(!!page);
-    return flushTasks();
-  }
 
   // Verify the Saved printers section strings.
   test('SavedPrintersText', async () => {
-    page.savedPrinters_ = [createPrinterListEntry(
-        'nameA', 'printerAddress', 'idA', PrinterType.SAVED)];
+    page.set('savedPrinters_', [createPrinterListEntry(
+                                   'nameA', 'printerAddress', 'idA',
+                                   PrinterType.SAVED)]);
 
     await flushTasks();
+    const container =
+        page.shadowRoot!.querySelector('#savedPrintersContainer .secondary');
+    assertTrue(!!container);
     assertEquals(
         loadTimeData.getString('savedPrintersSubtext'),
-        page.shadowRoot.querySelector('#savedPrintersContainer .secondary')
-            .textContent.trim());
+        container.textContent?.trim());
   });
 
   // Verify the Nearby printers section strings.
-  test('AvailablePrintersText', async () => {
+  test('AvailablePrintersText', () => {
+    const availablePrintersReadyTitle =
+        page.shadowRoot!.querySelector('#availablePrintersReadyTitle');
+    assertTrue(!!availablePrintersReadyTitle);
     assertEquals(
         loadTimeData.getString('availablePrintersReadyTitle'),
-        page.shadowRoot.querySelector('#availablePrintersReadyTitle')
-            .textContent.trim());
+        availablePrintersReadyTitle.textContent?.trim());
+    const availablePrintersReadySubtext =
+        page.shadowRoot!.querySelector('#availablePrintersReadySubtext');
+    assertTrue(!!availablePrintersReadySubtext);
     assertEquals(
         loadTimeData.getString('availablePrintersReadySubtext'),
-        page.shadowRoot.querySelector('#availablePrintersReadySubtext')
-            .textContent.trim());
+        availablePrintersReadySubtext.textContent?.trim());
   });
 
   // Verify the Nearby printers section can be properly opened and closed.
-  test('CollapsibleNearbyPrinterSection', async () => {
+  test('CollapsibleNearbyPrinterSection', () => {
     page.canAddPrinter = true;
 
     // The Add printer section above the Nearby printers section should be
     // hidden.
-    assertFalse(isVisible(page.shadowRoot.querySelector('#addPrinterSection')));
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector('#addPrinterSection')));
 
     // The collapsible section should start opened, then after clicking the
     // button should close.
-    const toggleButton =
-        page.shadowRoot.querySelector('#nearbyPrinterToggleButton');
-    assertTrue(isVisible(page.shadowRoot.querySelector('#collapsibleSection')));
-    assertTrue(isVisible(page.shadowRoot.querySelector('#helpSection')));
+    const toggleButton = page.shadowRoot!.querySelector<HTMLButtonElement>(
+        '#nearbyPrinterToggleButton');
+    assertTrue(!!toggleButton);
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector('#collapsibleSection')));
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#helpSection')));
     toggleButton.click();
     assertFalse(
-        isVisible(page.shadowRoot.querySelector('#collapsibleSection')));
-    assertFalse(isVisible(page.shadowRoot.querySelector('#helpSection')));
+        isVisible(page.shadowRoot!.querySelector('#collapsibleSection')));
+    assertFalse(isVisible(page.shadowRoot!.querySelector('#helpSection')));
     toggleButton.click();
-    assertTrue(isVisible(page.shadowRoot.querySelector('#collapsibleSection')));
-    assertTrue(isVisible(page.shadowRoot.querySelector('#helpSection')));
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector('#collapsibleSection')));
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#helpSection')));
   });
 
   // Verify the Saved printers empty state only shows when there are no saved
   // printers.
   test('SavedPrintersEmptyState', async () => {
     // Settings should start in empty state without saved printers.
-    const emptyState = page.shadowRoot.querySelector('#noSavedPrinters');
+    const emptyState = page.shadowRoot!.querySelector('#noSavedPrinters');
     assertTrue(isVisible(emptyState));
 
     await flushTasks();
@@ -146,7 +151,8 @@ suite('CupsPrinterUITests', () => {
     cupsPrintersBrowserProxy.printerList = {printerList: []};
     resetPage();
     await flushTasks();
-    assertTrue(isVisible(page.shadowRoot.querySelector('#collapsibleSection')));
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector('#collapsibleSection')));
 
     // Simulate 1 saved printer on load and expect the section to be
     // collapsed.
@@ -158,14 +164,14 @@ suite('CupsPrinterUITests', () => {
     resetPage();
     await flushTasks();
     assertFalse(
-        isVisible(page.shadowRoot.querySelector('#collapsibleSection')));
+        isVisible(page.shadowRoot!.querySelector('#collapsibleSection')));
   });
 
-  // Verify performing various actions on the Printer settings page records to
-  // metrics.
-  test('RecordUserActionMetrics', async () => {
+  // Verify clicking the add printer manually button is recorded to metrics.
+  test('RecordUserActionMetric', async () => {
     const fakeMetricsPrivate = new FakeMetricsPrivate();
-    chrome.metricsPrivate = fakeMetricsPrivate;
+    chrome.metricsPrivate =
+        fakeMetricsPrivate as unknown as typeof chrome.metricsPrivate;
 
     // Enable the add printer manually button.
     page.prefs = {
@@ -178,8 +184,10 @@ suite('CupsPrinterUITests', () => {
     page.canAddPrinter = true;
 
     await flushTasks();
-    // Click the Add Printer button.
-    page.shadowRoot.querySelector('.add-manual-printer-icon').click();
+    const icon = page.shadowRoot!.querySelector<HTMLButtonElement>(
+        '.add-manual-printer-icon');
+    assertTrue(!!icon);
+    icon.click();
     assertEquals(
         1,
         fakeMetricsPrivate.countMetricValue(
@@ -188,10 +196,17 @@ suite('CupsPrinterUITests', () => {
   });
 });
 
-suite('CupsAddPrinterDialogTests', function() {
-  function fillAddManuallyDialog(addDialog) {
-    const name = addDialog.shadowRoot.querySelector('#printerNameInput');
-    const address = addDialog.shadowRoot.querySelector('#printerAddressInput');
+suite('CupsAddPrinterDialogTests', () => {
+  let page: SettingsCupsPrintersElement;
+  let dialog: SettingsCupsAddPrinterDialogElement;
+  let cupsPrintersBrowserProxy: TestCupsPrintersBrowserProxy;
+
+  function fillAddManuallyDialog(addDialog: AddPrinterManuallyDialogElement):
+      void {
+    const name = addDialog.shadowRoot!.querySelector<HTMLInputElement>(
+        '#printerNameInput');
+    const address = addDialog.shadowRoot!.querySelector<HTMLInputElement>(
+        '#printerAddressInput');
 
     assertTrue(!!name);
     name.value = 'Test printer';
@@ -199,47 +214,52 @@ suite('CupsAddPrinterDialogTests', function() {
     assertTrue(!!address);
     address.value = '127.0.0.1';
 
-    const addButton = addDialog.shadowRoot.querySelector('#addPrinterButton');
+    const addButton = addDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+        '#addPrinterButton');
     assertTrue(!!addButton);
     assertFalse(addButton.disabled);
   }
 
-  function clickAddButton(dialog) {
+  function clickAddButton(dialog: AddPrinterManuallyDialogElement) {
     assertTrue(!!dialog, 'Dialog is null for add');
-    const addButton = dialog.shadowRoot.querySelector('.action-button');
+    const addButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
     assertTrue(!!addButton, 'Button is null');
     addButton.click();
   }
 
-  function clickCancelButton(dialog) {
+  function clickCancelButton(dialog: AddPrinterManufacturerModelDialogElement) {
     assertTrue(!!dialog, 'Dialog is null for cancel');
-    const cancelButton = dialog.shadowRoot.querySelector('.cancel-button');
+    const cancelButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('.cancel-button');
     assertTrue(!!cancelButton, 'Button is null');
     cancelButton.click();
   }
 
-  function canAddPrinter(dialog, name, address) {
+  function canAddPrinter(
+      dialog: AddPrinterManuallyDialogElement, name: string, address: string) {
     dialog.newPrinter.printerName = name;
     dialog.newPrinter.printerAddress = address;
-    return dialog.canAddPrinter_();
+    return dialog['canAddPrinter_']();
   }
 
-  function mockAddPrinterInputKeyboardPress(crInputId) {
+  function mockAddPrinterInputKeyboardPress(crInputId: string) {
     // Start in add manual dialog.
     const addDialog =
-        dialog.shadowRoot.querySelector('add-printer-manually-dialog');
+        dialog.shadowRoot!.querySelector('add-printer-manually-dialog');
     assertTrue(!!addDialog);
 
     // Test that pressing Enter before all the fields are populated does not
     // advance to the next dialog.
-    const input = addDialog.shadowRoot.querySelector(crInputId);
+    const input = addDialog.shadowRoot!.querySelector(crInputId);
+    assertTrue(!!input);
     keyEventOn(input, 'keypress', /*keycode=*/ 13, [], 'Enter');
     flush();
 
-    assertFalse(!!dialog.shadowRoot.querySelector(
+    assertNull(dialog.shadowRoot!.querySelector(
         'add-printer-manufacturer-model-dialog'));
-    assertFalse(dialog.showManufacturerDialog_);
-    assertTrue(dialog.showManuallyAddDialog_);
+    assertFalse(dialog.get('showManufacturerDialog_'));
+    assertTrue(dialog.get('showManuallyAddDialog_'));
 
     // Add valid input into the dialog
     fillAddManuallyDialog(addDialog);
@@ -249,35 +269,30 @@ suite('CupsAddPrinterDialogTests', function() {
     keyEventOn(input, 'keypress', /*keycode=*/ 16, [], 'Shift');
     flush();
 
-    assertFalse(!!dialog.shadowRoot.querySelector(
+    assertNull(dialog.shadowRoot!.querySelector(
         'add-printer-manufacturer-model-dialog'));
-    assertFalse(dialog.showManufacturerDialog_);
-    assertTrue(dialog.showManuallyAddDialog_);
+    assertFalse(dialog.get('showManufacturerDialog_'));
+    assertTrue(dialog.get('showManuallyAddDialog_'));
 
     // Now test Enter press with valid input.
     keyEventOn(input, 'keypress', /*keycode=*/ 13, [], 'Enter');
     flush();
   }
 
-  let page = null;
-  let dialog = null;
-
-  /** @type {?settings.TestCupsPrintersBrowserProxy} */
-  let cupsPrintersBrowserProxy = null;
-
   setup(() => {
     cupsPrintersBrowserProxy = new TestCupsPrintersBrowserProxy();
     CupsPrintersBrowserProxyImpl.setInstanceForTesting(
         cupsPrintersBrowserProxy);
 
-    PolymerTest.clearBody();
     page = document.createElement('settings-cups-printers');
     // TODO(jimmyxgong): Remove this line when the feature flag is removed.
-    page.enableUpdatedUi_ = false;
+    page.set('enableUpdatedUi_', false);
     document.body.appendChild(page);
     assertTrue(!!page);
-    dialog = page.shadowRoot.querySelector('settings-cups-add-printer-dialog');
-    assertTrue(!!dialog);
+    const element =
+        page.shadowRoot!.querySelector('settings-cups-add-printer-dialog');
+    assertTrue(!!element);
+    dialog = element;
 
     dialog.open();
     return flushTasks();
@@ -286,22 +301,20 @@ suite('CupsAddPrinterDialogTests', function() {
   teardown(() => {
     cupsPrintersBrowserProxy.reset();
     page.remove();
-    dialog = null;
-    page = null;
+    dialog.remove();
   });
 
-  test('ValidIPV4', async () => {
+  test('ValidIPV4', () => {
     const dialog = document.createElement('add-printer-manually-dialog');
     assertTrue(canAddPrinter(dialog, 'Test printer', '127.0.0.1'));
   });
 
-  test('ValidIPV4WithPort', async () => {
+  test('ValidIPV4WithPort', () => {
     const dialog = document.createElement('add-printer-manually-dialog');
-
     assertTrue(canAddPrinter(dialog, 'Test printer', '127.0.0.1:1234'));
   });
 
-  test('ValidIPV6', async () => {
+  test('ValidIPV6', () => {
     const dialog = document.createElement('add-printer-manually-dialog');
 
     // Test the full ipv6 address scheme.
@@ -314,7 +327,7 @@ suite('CupsAddPrinterDialogTests', function() {
     assertTrue(canAddPrinter(dialog, 'Test printer', '1::'));
   });
 
-  test('ValidIPV6WithPort', async () => {
+  test('ValidIPV6WithPort', () => {
     const dialog = document.createElement('add-printer-manually-dialog');
 
     assertTrue(canAddPrinter(dialog, 'Test printer', '[1:2:aa2:4]:12'));
@@ -322,7 +335,7 @@ suite('CupsAddPrinterDialogTests', function() {
     assertTrue(canAddPrinter(dialog, 'Test printer', '[1::]:7899'));
   });
 
-  test('InvalidIPV6', async () => {
+  test('InvalidIPV6', () => {
     const dialog = document.createElement('add-printer-manually-dialog');
 
     assertFalse(canAddPrinter(dialog, 'Test printer', '1:2:3:4:5:6:7:8:9'));
@@ -332,14 +345,14 @@ suite('CupsAddPrinterDialogTests', function() {
     assertFalse(canAddPrinter(dialog, 'Test printer', '1::2::3'));
   });
 
-  test('ValidHostname', async () => {
+  test('ValidHostname', () => {
     const dialog = document.createElement('add-printer-manually-dialog');
 
     assertTrue(canAddPrinter(dialog, 'Test printer', 'hello-world.com'));
     assertTrue(canAddPrinter(dialog, 'Test printer', 'hello.world.com:12345'));
   });
 
-  test('InvalidHostname', async () => {
+  test('InvalidHostname', () => {
     const dialog = document.createElement('add-printer-manually-dialog');
 
     assertFalse(canAddPrinter(dialog, 'Test printer', 'helloworld!123.com'));
@@ -353,12 +366,15 @@ suite('CupsAddPrinterDialogTests', function() {
   test('ValidAddOpensModelSelection', async () => {
     // Starts in add manual dialog.
     const addDialog =
-        dialog.shadowRoot.querySelector('add-printer-manually-dialog');
+        dialog.shadowRoot!.querySelector('add-printer-manually-dialog');
     assertTrue(!!addDialog);
     flush();
     fillAddManuallyDialog(addDialog);
 
-    addDialog.shadowRoot.querySelector('.action-button').click();
+    const button = addDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+        '.action-button');
+    assertTrue(!!button);
+    button.click();
     flush();
 
     // Upon rejection, show model.
@@ -366,11 +382,11 @@ suite('CupsAddPrinterDialogTests', function() {
         'getCupsPrinterManufacturersList');
     await flushTasks();
     // Showing model selection.
-    assertTrue(!!dialog.shadowRoot.querySelector(
+    assertTrue(!!dialog.shadowRoot!.querySelector(
         'add-printer-manufacturer-model-dialog'));
 
-    assertTrue(dialog.showManufacturerDialog_);
-    assertFalse(dialog.showManuallyAddDialog_);
+    assertTrue(dialog.get('showManufacturerDialog_'));
+    assertFalse(dialog.get('showManuallyAddDialog_'));
   });
 
   /**
@@ -380,7 +396,7 @@ suite('CupsAddPrinterDialogTests', function() {
   test('GetPrinterInfoFailsGeneralError', async () => {
     // Starts in add manual dialog.
     const addDialog =
-        dialog.shadowRoot.querySelector('add-printer-manually-dialog');
+        dialog.shadowRoot!.querySelector('add-printer-manually-dialog');
     assertTrue(!!addDialog);
     flush();
 
@@ -391,17 +407,24 @@ suite('CupsAddPrinterDialogTests', function() {
         PrinterSetupResult.FATAL_ERROR);
 
     // Attempt to add the printer.
-    addDialog.shadowRoot.querySelector('.action-button').click();
+    const button = addDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+        '.action-button');
+    assertTrue(!!button);
+    button.click();
     flush();
 
     // Upon rejection, show model.
     await cupsPrintersBrowserProxy.whenCalled('getPrinterInfo');
     // The general error should be showing.
-    assertTrue(!!addDialog.errorText_);
+    assertTrue(!!addDialog.get('errorText_'));
     const generalErrorElement =
-        addDialog.shadowRoot.querySelector('printer-dialog-error');
-    assertFalse(generalErrorElement.shadowRoot.querySelector('#error-container')
-                    .hidden);
+        addDialog.shadowRoot!.querySelector('printer-dialog-error');
+    assertTrue(!!generalErrorElement);
+    const errorContainer =
+        generalErrorElement.shadowRoot!.querySelector<HTMLElement>(
+            '#error-container');
+    assertTrue(!!errorContainer);
+    assertFalse(errorContainer.hidden);
   });
 
   /**
@@ -412,7 +435,7 @@ suite('CupsAddPrinterDialogTests', function() {
   test('GetPrinterInfoFailsUnreachableError', async () => {
     // Starts in add manual dialog.
     const addDialog =
-        dialog.shadowRoot.querySelector('add-printer-manually-dialog');
+        dialog.shadowRoot!.querySelector('add-printer-manually-dialog');
     assertTrue(!!addDialog);
     flush();
 
@@ -423,17 +446,22 @@ suite('CupsAddPrinterDialogTests', function() {
         PrinterSetupResult.PRINTER_UNREACHABLE);
 
     // Attempt to add the printer.
-    addDialog.shadowRoot.querySelector('.action-button').click();
+    const button = addDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+        '.action-button');
+    assertTrue(!!button);
+    button.click();
     flush();
 
     // Upon rejection, show model.
     await cupsPrintersBrowserProxy.whenCalled('getPrinterInfo');
 
     // The printer address input should be marked as invalid.
-    assertTrue(
-        addDialog.shadowRoot.querySelector('#printerAddressInput').invalid);
+    const printerAddressInput =
+        addDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#printerAddressInput');
+    assertTrue(!!printerAddressInput);
+    assertTrue(printerAddressInput.invalid);
   });
-
 
   /**
    * Test that getModels isn't called with a blank query.
@@ -441,26 +469,29 @@ suite('CupsAddPrinterDialogTests', function() {
   test('NoBlankQueries', async () => {
     // Starts in add manual dialog.
     const addDialog =
-        dialog.shadowRoot.querySelector('add-printer-manually-dialog');
+        dialog.shadowRoot!.querySelector('add-printer-manually-dialog');
     assertTrue(!!addDialog);
     flush();
     fillAddManuallyDialog(addDialog);
 
-    // Verify that getCupsPrinterModelList is not called.
-    cupsPrintersBrowserProxy.whenCalled('getCupsPrinterModelsList')
-        .then(function(manufacturer) {
-          assertNotReached(
-              'No manufacturer was selected.  Unexpected model request.');
-        });
-
-    cupsPrintersBrowserProxy.manufacturers =
-        ['ManufacturerA', 'ManufacturerB', 'Chromites'];
-    addDialog.shadowRoot.querySelector('.action-button').click();
+    cupsPrintersBrowserProxy.manufacturers = {
+      success: false,
+      manufacturers: ['ManufacturerA', 'ManufacturerB', 'Chromites'],
+    };
+    const button = addDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+        '.action-button');
+    assertTrue(!!button);
+    button.click();
     flush();
 
     await cupsPrintersBrowserProxy.whenCalled(
         'getCupsPrinterManufacturersList');
-    const modelDialog = dialog.shadowRoot.querySelector(
+
+    // Verify that getCupsPrinterModelList is not called.
+    assertEquals(
+        0, cupsPrintersBrowserProxy.getCallCount('getCupsPrinterModelsList'));
+
+    const modelDialog = dialog.shadowRoot!.querySelector(
         'add-printer-manufacturer-model-dialog');
 
     // Manufacturer dialog has been rendered and the model list was not
@@ -480,6 +511,7 @@ suite('CupsAddPrinterDialogTests', function() {
 
     // Populate the printer object.
     dialog.newPrinter = {
+      isManaged: false,
       ppdManufacturer: '',
       ppdModel: '',
       printerAddress: '192.168.1.13',
@@ -495,21 +527,22 @@ suite('CupsAddPrinterDialogTests', function() {
       },
       printerProtocol: 'ipps',
       printerQueue: 'moreinfohere',
-      printerStatus: '',
+      printServerUri: '',
     };
 
     // Seed the getPrinterInfo response.  We detect the make and model but it is
     // not an autoconf printer.
     cupsPrintersBrowserProxy.printerInfo = {
       autoconf: false,
-      manufacturer: 'MFG',
-      model: 'MDL',
-      makeAndModel: makeAndModel,
+      makeAndModel,
+      ppdRefUserSuppliedPpdUrl: 'ppd url',
+      ppdRefEffectiveMakeAndModel: 'Effective Make And Model',
+      ppdReferenceResolved: false,
     };
 
     // Press the add button to advance dialog.
     const addDialog =
-        dialog.shadowRoot.querySelector('add-printer-manually-dialog');
+        dialog.shadowRoot!.querySelector('add-printer-manually-dialog');
     assertTrue(!!addDialog);
     flush();
     clickAddButton(addDialog);
@@ -520,8 +553,10 @@ suite('CupsAddPrinterDialogTests', function() {
         'getCupsPrinterManufacturersList');
     flush();
     // Cancel setup with the cancel button.
-    clickCancelButton(dialog.shadowRoot.querySelector(
-        'add-printer-manufacturer-model-dialog'));
+    const modelDialog = dialog.shadowRoot!.querySelector(
+        'add-printer-manufacturer-model-dialog');
+    assertTrue(!!modelDialog);
+    clickCancelButton(modelDialog);
     const printer =
         await cupsPrintersBrowserProxy.whenCalled('cancelPrinterSetUp');
     assertTrue(!!printer, 'New printer is null');
@@ -535,12 +570,15 @@ suite('CupsAddPrinterDialogTests', function() {
   test('getEulaUrlGetsCalledOnModelChange', async () => {
     // Start in add manual dialog.
     const addDialog =
-        dialog.shadowRoot.querySelector('add-printer-manually-dialog');
+        dialog.shadowRoot!.querySelector('add-printer-manually-dialog');
     assertTrue(!!addDialog);
     flush();
     fillAddManuallyDialog(addDialog);
 
-    addDialog.shadowRoot.querySelector('.action-button').click();
+    const button = addDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+        '.action-button');
+    assertTrue(!!button);
+    button.click();
     flush();
 
     const expectedEulaLink = 'chrome://os-credits/#google';
@@ -549,32 +587,38 @@ suite('CupsAddPrinterDialogTests', function() {
     const expectedModel2 = 'newPrinter';
     const expectedModel3 = 'newPrinter2';
 
-    let modelDialog = null;
-    let urlElement = null;
-    let modelDropdown = null;
-
     await cupsPrintersBrowserProxy.whenCalled(
         'getCupsPrinterManufacturersList');
-    modelDialog = dialog.shadowRoot.querySelector(
+    const modelDialog = dialog.shadowRoot!.querySelector(
         'add-printer-manufacturer-model-dialog');
     assertTrue(!!modelDialog);
 
-    urlElement = modelDialog.shadowRoot.querySelector('#eulaUrl');
+    const urlElement =
+        modelDialog.shadowRoot!.querySelector<HTMLElement>('#eulaUrl');
+    assertTrue(!!urlElement);
     // Check that the EULA text is not shown.
     assertTrue(urlElement.hidden);
 
     cupsPrintersBrowserProxy.setEulaUrl(expectedEulaLink);
 
-    modelDialog.shadowRoot.querySelector('#manufacturerDropdown').value =
-        expectedManufacturer;
-    modelDropdown = modelDialog.shadowRoot.querySelector('#modelDropdown');
+    const manufacturerDropdown =
+        modelDialog.shadowRoot!.querySelector<CrSearchableDropDownElement>(
+            '#manufacturerDropdown');
+    assertTrue(!!manufacturerDropdown);
+    manufacturerDropdown.value = expectedManufacturer;
+    const modelDropdown =
+        modelDialog.shadowRoot!.querySelector<CrSearchableDropDownElement>(
+            '#modelDropdown');
+    assertTrue(!!modelDropdown);
     modelDropdown.value = expectedModel;
     await verifyGetEulaUrlWasCalled(
         cupsPrintersBrowserProxy, expectedManufacturer, expectedModel);
 
     // Check that the EULA text is shown.
     assertFalse(urlElement.hidden);
-    assertEquals(expectedEulaLink, urlElement.querySelector('a').href);
+    let anchor = urlElement.querySelector('a');
+    assertTrue(!!anchor);
+    assertEquals(expectedEulaLink, anchor.href);
 
     resetGetEulaUrl(cupsPrintersBrowserProxy, '' /* eulaUrl */);
 
@@ -593,7 +637,9 @@ suite('CupsAddPrinterDialogTests', function() {
     await verifyGetEulaUrlWasCalled(
         cupsPrintersBrowserProxy, expectedManufacturer, expectedModel3);
     assertFalse(urlElement.hidden);
-    assertEquals(expectedEulaLink, urlElement.querySelector('a').href);
+    anchor = urlElement.querySelector('a');
+    assertTrue(!!anchor);
+    assertEquals(expectedEulaLink, anchor.href);
   });
 
   /**
@@ -604,7 +650,7 @@ suite('CupsAddPrinterDialogTests', function() {
     // From the add manually dialog, click the add button to advance to the
     // manufacturer dialog.
     const addDialog =
-        dialog.shadowRoot.querySelector('add-printer-manually-dialog');
+        dialog.shadowRoot!.querySelector('add-printer-manually-dialog');
     assertTrue(!!addDialog);
     flush();
     fillAddManuallyDialog(addDialog);
@@ -615,19 +661,27 @@ suite('CupsAddPrinterDialogTests', function() {
     // disabled.
     await cupsPrintersBrowserProxy.whenCalled(
         'getCupsPrinterManufacturersList');
-    const manufacturerDialog = dialog.shadowRoot.querySelector(
+    const manufacturerDialog = dialog.shadowRoot!.querySelector(
         'add-printer-manufacturer-model-dialog');
     assertTrue(!!manufacturerDialog);
 
     // Populate the manufacturer and model fields to enable the add
     // button.
-    manufacturerDialog.shadowRoot.querySelector('#manufacturerDropdown').value =
-        'make';
-    manufacturerDialog.shadowRoot.querySelector('#modelDropdown').value =
-        'model';
+    const manufacturerDropdown =
+        manufacturerDialog.shadowRoot!
+            .querySelector<CrSearchableDropDownElement>(
+                '#manufacturerDropdown');
+    assertTrue(!!manufacturerDropdown);
+    manufacturerDropdown.value = 'make';
+    const modelDropdown =
+        manufacturerDialog.shadowRoot!
+            .querySelector<CrSearchableDropDownElement>('#modelDropdown');
+    assertTrue(!!modelDropdown);
+    modelDropdown.value = 'model';
 
     const addButton =
-        manufacturerDialog.shadowRoot.querySelector('#addPrinterButton');
+        manufacturerDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#addPrinterButton');
     assertTrue(!!addButton);
     assertFalse(addButton.disabled);
     addButton.click();
@@ -648,10 +702,10 @@ suite('CupsAddPrinterDialogTests', function() {
         'getCupsPrinterManufacturersList');
     await flushTasks();
     // Showing model selection.
-    assertTrue(!!dialog.shadowRoot.querySelector(
+    assertTrue(!!dialog.shadowRoot!.querySelector(
         'add-printer-manufacturer-model-dialog'));
-    assertTrue(dialog.showManufacturerDialog_);
-    assertFalse(dialog.showManuallyAddDialog_);
+    assertTrue(dialog.get('showManufacturerDialog_'));
+    assertFalse(dialog.get('showManuallyAddDialog_'));
   });
 
   test('PressEnterInPrinterAddressInput', async () => {
@@ -662,10 +716,10 @@ suite('CupsAddPrinterDialogTests', function() {
         'getCupsPrinterManufacturersList');
     await flushTasks();
     // Showing model selection.
-    assertFalse(
-        !!dialog.shadowRoot.querySelector('add-printer-configuring-dialog'));
-    assertTrue(dialog.showManufacturerDialog_);
-    assertFalse(dialog.showManuallyAddDialog_);
+    assertNull(
+        dialog.shadowRoot!.querySelector('add-printer-configuring-dialog'));
+    assertTrue(dialog.get('showManufacturerDialog_'));
+    assertFalse(dialog.get('showManuallyAddDialog_'));
   });
 
   test('PressEnterInPrinterQueueInput', async () => {
@@ -676,10 +730,10 @@ suite('CupsAddPrinterDialogTests', function() {
         'getCupsPrinterManufacturersList');
     await flushTasks();
     // Showing model selection.
-    assertTrue(!!dialog.shadowRoot.querySelector(
+    assertTrue(!!dialog.shadowRoot!.querySelector(
         'add-printer-manufacturer-model-dialog'));
-    assertTrue(dialog.showManufacturerDialog_);
-    assertFalse(dialog.showManuallyAddDialog_);
+    assertTrue(dialog.get('showManufacturerDialog_'));
+    assertFalse(dialog.get('showManuallyAddDialog_'));
   });
 
   /**
@@ -690,7 +744,7 @@ suite('CupsAddPrinterDialogTests', function() {
     // From the add manually dialog, click the add button to advance to the
     // manufacturer dialog.
     const addDialog =
-        dialog.shadowRoot.querySelector('add-printer-manually-dialog');
+        dialog.shadowRoot!.querySelector('add-printer-manually-dialog');
     assertTrue(!!addDialog);
     flush();
     fillAddManuallyDialog(addDialog);
@@ -699,17 +753,24 @@ suite('CupsAddPrinterDialogTests', function() {
 
     await cupsPrintersBrowserProxy.whenCalled(
         'getCupsPrinterManufacturersList');
-    const manufacturerDialog = dialog.shadowRoot.querySelector(
+    const manufacturerDialog = dialog.shadowRoot!.querySelector(
         'add-printer-manufacturer-model-dialog');
     assertTrue(!!manufacturerDialog);
 
     const manufacturerDropdown =
-        manufacturerDialog.shadowRoot.querySelector('#manufacturerDropdown');
+        manufacturerDialog.shadowRoot!
+            .querySelector<CrSearchableDropDownElement>(
+                '#manufacturerDropdown');
     const modelDropdown =
-        manufacturerDialog.shadowRoot.querySelector('#modelDropdown');
+        manufacturerDialog.shadowRoot!
+            .querySelector<CrSearchableDropDownElement>('#modelDropdown');
     const addButton =
-        manufacturerDialog.shadowRoot.querySelector('#addPrinterButton');
+        manufacturerDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#addPrinterButton');
 
+    assertTrue(!!manufacturerDropdown);
+    assertTrue(!!modelDropdown);
+    assertTrue(!!addButton);
     // Set the starting values for manufacturer and model dropdown.
     manufacturerDropdown.value = 'make';
     modelDropdown.value = 'model';
@@ -717,71 +778,76 @@ suite('CupsAddPrinterDialogTests', function() {
 
     // Mimic typing in random input. Make sure the Add button becomes
     // disabled.
-    manufacturerDropdown.shadowRoot.querySelector('#search').value =
-        'hlrRkJQkNsh';
-    manufacturerDropdown.shadowRoot.querySelector('#search').dispatchEvent(
-        new CustomEvent('input'));
+    let searchElement =
+        manufacturerDropdown.shadowRoot!.querySelector<HTMLInputElement>(
+            '#search');
+    assertTrue(!!searchElement);
+    searchElement.value = 'hlrRkJQkNsh';
+    searchElement.dispatchEvent(new CustomEvent('input'));
     assertTrue(addButton.disabled);
 
     // Then mimic typing in the original value to re-enable the Add
     // button.
-    manufacturerDropdown.shadowRoot.querySelector('#search').value = 'make';
-    manufacturerDropdown.shadowRoot.querySelector('#search').dispatchEvent(
-        new CustomEvent('input'));
+    searchElement =
+        manufacturerDropdown.shadowRoot!.querySelector<HTMLInputElement>(
+            '#search');
+    assertTrue(!!searchElement);
+    searchElement.value = 'make';
+    searchElement.dispatchEvent(new CustomEvent('input'));
     assertFalse(addButton.disabled);
 
     // Mimic typing in random input. Make sure the Add button becomes
     // disabled.
-    modelDropdown.shadowRoot.querySelector('#search').value = 'hlrRkJQkNsh';
-    modelDropdown.shadowRoot.querySelector('#search').dispatchEvent(
-        new CustomEvent('input'));
+    searchElement =
+        modelDropdown.shadowRoot!.querySelector<HTMLInputElement>('#search');
+    assertTrue(!!searchElement);
+    searchElement.value = 'hlrRkJQkNsh';
+    searchElement.dispatchEvent(new CustomEvent('input'));
     assertTrue(addButton.disabled);
 
     // Then mimic typing in the original value to re-enable the Add
     // button.
-    modelDropdown.shadowRoot.querySelector('#search').value = 'model';
-    modelDropdown.shadowRoot.querySelector('#search').dispatchEvent(
-        new CustomEvent('input'));
+    searchElement =
+        modelDropdown.shadowRoot!.querySelector<HTMLInputElement>('#search');
+    assertTrue(!!searchElement);
+    searchElement.value = 'model';
+    searchElement.dispatchEvent(new CustomEvent('input'));
     assertFalse(addButton.disabled);
   });
 
-  test('Queue input is hidden when protocol is App Socket', async () => {
+  test('Queue input is hidden when protocol is App Socket', () => {
     const addDialog =
-        dialog.shadowRoot.querySelector('add-printer-manually-dialog');
+        dialog.shadowRoot!.querySelector('add-printer-manually-dialog');
+    assertTrue(!!addDialog);
     let printerQueueInput =
-        addDialog.shadowRoot.querySelector('#printerQueueInput');
-    const select = addDialog.shadowRoot.querySelector('select');
+        addDialog.shadowRoot!.querySelector('#printerQueueInput');
     assertTrue(!!printerQueueInput);
+    const select = addDialog.shadowRoot!.querySelector('select');
+    assertTrue(!!select);
 
     select.value = 'socket';
-    select.dispatchEvent(new CustomEvent('change'), {'bubbles': true});
+    select.dispatchEvent(new CustomEvent('change', {'bubbles': true}));
     flush();
 
     printerQueueInput =
-        addDialog.shadowRoot.querySelector('#printerQueueInput');
-    assertFalse(!!printerQueueInput);
+        addDialog.shadowRoot!.querySelector('#printerQueueInput');
+    assertNull(printerQueueInput);
 
     select.value = 'http';
-    select.dispatchEvent(new CustomEvent('change'), {'bubbles': true});
+    select.dispatchEvent(new CustomEvent('change', {'bubbles': true}));
     flush();
 
     printerQueueInput =
-        addDialog.shadowRoot.querySelector('#printerQueueInput');
+        addDialog.shadowRoot!.querySelector('#printerQueueInput');
     assertTrue(!!printerQueueInput);
   });
 });
 
-suite('EditPrinterDialog', function() {
-  /** @type {!HTMLElement} */
-  let page = null;
-  /** @type {!HTMLElement} */
-  let dialog = null;
-
-  /** @type {?settings.TestCupsPrintersBrowserProxy} */
-  let cupsPrintersBrowserProxy = null;
-
-  /** @type {!NetworkStateProperties|undefined} */
-  let wifi1;
+suite('EditPrinterDialog', () => {
+  let page: SettingsCupsPrintersElement;
+  let dialog: SettingsCupsEditPrinterDialogElement;
+  let cupsPrintersBrowserProxy: TestCupsPrintersBrowserProxy;
+  let wifi1: NetworkStateProperties;
 
   setup(async () => {
     cupsPrintersBrowserProxy = new TestCupsPrintersBrowserProxy();
@@ -793,43 +859,35 @@ suite('EditPrinterDialog', function() {
     wifi1 = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi1');
     wifi1.connectionState = ConnectionStateType.kOnline;
 
-    PolymerTest.clearBody();
     Router.getInstance().navigateTo(routes.CUPS_PRINTERS);
 
     page = document.createElement('settings-cups-printers');
     document.body.appendChild(page);
     assertTrue(!!page);
     page.onActiveNetworksChanged([wifi1]);
-    return flushTasks();
+    await flushTasks();
   });
 
   teardown(() => {
     cupsPrintersBrowserProxy.reset();
     page.remove();
-    dialog = null;
-    page = null;
+    dialog.remove();
   });
 
-  /**
-   * @param {!HTMLElement} dialog
-   * @private
-   */
-  function clickSaveButton(dialog) {
+  function clickSaveButton(dialog: SettingsCupsEditPrinterDialogElement) {
     assertTrue(!!dialog, 'Dialog is null for save');
-    const saveButton = dialog.shadowRoot.querySelector('.action-button');
-    dialog.printerInfoChanged_ = true;
-    assertFalse(saveButton.disabled);
+    const saveButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
+    dialog.set('printerInfoChanged_', true);
     assertTrue(!!saveButton, 'Button is null');
+    assertFalse(saveButton.disabled);
     saveButton.click();
   }
 
-  /**
-   * @param {!HTMLElement} dialog
-   * @private
-   */
-  function clickCancelButton(dialog) {
+  function clickCancelButton(dialog: SettingsCupsEditPrinterDialogElement) {
     assertTrue(!!dialog, 'Dialog is null for cancel');
-    const cancelButton = dialog.shadowRoot.querySelector('.cancel-button');
+    const cancelButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('.cancel-button');
     assertTrue(!!cancelButton, 'Button is null');
     cancelButton.click();
   }
@@ -837,18 +895,11 @@ suite('EditPrinterDialog', function() {
   /**
    * Initializes a printer and sets that printer as the printer to be edited in
    * the edit dialog. Opens the edit dialog.
-   * @param {!CupsPrinterInfo} printerInfo
-   * @param {boolean} autoconf
-   * @param {string} manufacturer
-   * @param {string} model
-   * @param {string} protocol
-   * @param {string} serverAddress
-   * @param {Promise} Returns a promise after the edit dialog is initialized.
-   * @private
    */
-  function initializeAndOpenEditDialog(
-      name, address, id, autoconf, manufacturer, model, protocol,
-      serverAddress) {
+  async function initializeAndOpenEditDialog(
+      name: string, address: string, id: string, autoconf: boolean,
+      manufacturer: string, model: string, protocol: string,
+      serverAddress: string): Promise<void> {
     page.activePrinter = createCupsPrinterInfo(name, address, id);
     page.activePrinter.printerPpdReference.autoconf = autoconf;
     page.activePrinter.printerProtocol = protocol;
@@ -858,11 +909,14 @@ suite('EditPrinterDialog', function() {
       ppdModel: model,
     };
     // Trigger the edit dialog to open.
-    page.fire('edit-cups-printer-details');
+    page.dispatchEvent(new CustomEvent('edit-cups-printer-details'));
     flush();
-    dialog = page.shadowRoot.querySelector('settings-cups-edit-printer-dialog');
+    const element =
+        page.shadowRoot!.querySelector('settings-cups-edit-printer-dialog');
+    assertTrue(!!element);
+    dialog = element;
     // This proxy function gets called whenever the edit dialog is initialized.
-    return cupsPrintersBrowserProxy.whenCalled('getCupsPrinterModelsList');
+    await cupsPrintersBrowserProxy.whenCalled('getCupsPrinterModelsList');
   }
 
   /**
@@ -874,18 +928,23 @@ suite('EditPrinterDialog', function() {
         /*autoconf=*/ false, /*manufacturer=*/ 'make',
         /*model=*/ 'model', /*protocol=*/ 'usb', /*serverAddress=*/ '');
     // Assert that the protocol is USB.
-    assertEquals('usb', dialog.shadowRoot.querySelector('.md-select').value);
+    const selectElement =
+        dialog.shadowRoot!.querySelector<HTMLSelectElement>('.md-select');
+    assertTrue(!!selectElement);
+    assertEquals('usb', selectElement.value);
 
     // Edit the printer name.
-    const nameField = dialog.shadowRoot.querySelector('.printer-name-input');
+    const nameField = dialog.shadowRoot!.querySelector<HTMLInputElement>(
+        '.printer-name-input');
     assertTrue(!!nameField);
     nameField.value = 'edited printer';
     nameField.dispatchEvent(new CustomEvent('input'));
 
     // Assert that the "Save" button is enabled.
-    const saveButton = dialog.shadowRoot.querySelector('.action-button');
+    const saveButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
     assertTrue(!!saveButton);
-    assertTrue(!saveButton.disabled);
+    assertFalse(saveButton.disabled);
   });
 
   /**
@@ -897,29 +956,33 @@ suite('EditPrinterDialog', function() {
         /*name=*/ 'name', /*address=*/ 'address', /*id=*/ 'id',
         /*autoconf=*/ false, /*manufacturer=*/ 'make',
         /*model=*/ 'model', /*protocol=*/ 'ipp', /*serverAddress=*/ '');
-    assertTrue(!!dialog.shadowRoot.querySelector('#printerName'));
-    assertTrue(!!dialog.shadowRoot.querySelector('#printerAddress'));
+    const printerName =
+        dialog.shadowRoot!.querySelector<HTMLInputElement>('#printerName');
+    const printerAddress =
+        dialog.shadowRoot!.querySelector<HTMLInputElement>('#printerAddress');
+    assertTrue(!!printerName);
+    assertTrue(!!printerAddress);
 
-    const saveButton = dialog.shadowRoot.querySelector('.action-button');
+    const saveButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
     assertTrue(!!saveButton);
     assertTrue(saveButton.disabled);
 
     // Change printer name to something valid.
-    const printerName = dialog.$.printerName;
     printerName.value = 'new printer name';
     printerName.dispatchEvent(new CustomEvent('input'));
     assertFalse(saveButton.disabled);
 
     // Change printer address to something invalid.
-    dialog.$.printerAddress.value = 'abcdef:';
+    printerAddress.value = 'abcdef:';
     assertTrue(saveButton.disabled);
 
     // Change back to something valid.
-    dialog.$.printerAddress.value = 'abcdef:1234';
+    printerAddress.value = 'abcdef:1234';
     assertFalse(saveButton.disabled);
 
     // Change printer name to empty.
-    dialog.$.printerName.value = '';
+    printerName.value = '';
     assertTrue(saveButton.disabled);
   });
 
@@ -936,15 +999,18 @@ suite('EditPrinterDialog', function() {
         /*id=*/ expectedId, /*autoconf=*/ false,
         /*manufacturer=*/ 'make', /*model=*/ 'model',
         /*protocol=*/ expectedProtocol, /*serverAddress=*/ '');
-    const nameField = dialog.shadowRoot.querySelector('.printer-name-input');
+    const nameField = dialog.shadowRoot!.querySelector<HTMLInputElement>(
+        '.printer-name-input');
     assertTrue(!!nameField);
     nameField.value = 'edited printer name';
 
-    const addressField = dialog.shadowRoot.querySelector('#printerAddress');
+    const addressField =
+        dialog.shadowRoot!.querySelector<HTMLInputElement>('#printerAddress');
     assertTrue(!!addressField);
     addressField.value = '9.9.9.9';
 
-    const protocolField = dialog.shadowRoot.querySelector('.md-select');
+    const protocolField =
+        dialog.shadowRoot!.querySelector<HTMLSelectElement>('.md-select');
     assertTrue(!!protocolField);
     protocolField.value = 'http';
 
@@ -965,7 +1031,8 @@ suite('EditPrinterDialog', function() {
         /*name=*/ 'name', /*address=*/ 'address', /*id=*/ 'id',
         /*autoconf=*/ false, /*manufacturer=*/ 'make',
         /*model=*/ 'model', /*protocol=*/ 'ipp', /*serverAddress=*/ '');
-    const nameField = dialog.shadowRoot.querySelector('.printer-name-input');
+    const nameField = dialog.shadowRoot!.querySelector<HTMLInputElement>(
+        '.printer-name-input');
     assertTrue(!!nameField);
     nameField.value = expectedName;
 
@@ -989,11 +1056,13 @@ suite('EditPrinterDialog', function() {
 
     // Editing more than just the printer name requires reconfiguring the
     // printer.
-    const addressField = dialog.shadowRoot.querySelector('#printerAddress');
+    const addressField =
+        dialog.shadowRoot!.querySelector<HTMLInputElement>('#printerAddress');
     assertTrue(!!addressField);
     addressField.value = expectedAddress;
 
-    const queueField = dialog.shadowRoot.querySelector('#printerQueue');
+    const queueField =
+        dialog.shadowRoot!.querySelector<HTMLInputElement>('#printerQueue');
     assertTrue(!!queueField);
     queueField.value = expectedQueue;
 
@@ -1015,11 +1084,13 @@ suite('EditPrinterDialog', function() {
         /*model=*/ 'model', /*protocol=*/ 'ipp', /*serverAddress=*/ '');
     // Editing more than just the printer name requires reconfiguring the
     // printer.
-    const addressField = dialog.shadowRoot.querySelector('#printerAddress');
+    const addressField =
+        dialog.shadowRoot!.querySelector<HTMLInputElement>('#printerAddress');
     assertTrue(!!addressField);
     addressField.value = expectedAddress;
 
-    const queueField = dialog.shadowRoot.querySelector('#printerQueue');
+    const queueField =
+        dialog.shadowRoot!.querySelector<HTMLInputElement>('#printerQueue');
     assertTrue(!!queueField);
     queueField.value = expectedQueue;
 
@@ -1038,7 +1109,10 @@ suite('EditPrinterDialog', function() {
         /*autoconf=*/ false, /*manufacturer=*/ 'make',
         /*model=*/ 'model', /*protocol=*/ 'ipp', /*serverAddress=*/ '');
     // Assert that the manufacturer and model drop-downs are shown.
-    assertFalse(dialog.shadowRoot.querySelector('#makeAndModelSection').hidden);
+    const element =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#makeAndModelSection');
+    assertTrue(!!element);
+    assertFalse(element.hidden);
   });
 
   /**
@@ -1050,7 +1124,10 @@ suite('EditPrinterDialog', function() {
         /*autoconf=*/ true, /*manufacturer=*/ 'make',
         /*model=*/ 'model', /*protocol=*/ 'ipp', /*serverAddress=*/ '');
     // Assert that the manufacturer and model drop-downs are hidden.
-    assertTrue(!dialog.shadowRoot.querySelector('#makeAndModelSection').if);
+    const element =
+        dialog.shadowRoot!.querySelector<DomIf>('#makeAndModelSection');
+    assertTrue(!!element);
+    assertTrue(!element.if);
   });
 
   /**
@@ -1061,16 +1138,18 @@ suite('EditPrinterDialog', function() {
         /*name=*/ 'name', /*address=*/ 'address', /*id=*/ 'id',
         /*autoconf=*/ false, /*manufacturer=*/ 'make',
         /*model=*/ 'model', /*protocol=*/ 'ipp', /*serverAddress=*/ '');
-    const saveButton = dialog.shadowRoot.querySelector('.action-button');
+    const saveButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
     assertTrue(!!saveButton);
     assertTrue(saveButton.disabled);
 
-    const nameField = dialog.shadowRoot.querySelector('.printer-name-input');
+    const nameField = dialog.shadowRoot!.querySelector<HTMLInputElement>(
+        '.printer-name-input');
     assertTrue(!!nameField);
     nameField.value = 'edited printer';
     nameField.dispatchEvent(new CustomEvent('input'));
 
-    assertTrue(!saveButton.disabled);
+    assertFalse(saveButton.disabled);
   });
 
   /**
@@ -1081,16 +1160,18 @@ suite('EditPrinterDialog', function() {
         /*name=*/ 'name', /*address=*/ 'address', /*id=*/ 'id',
         /*autoconf=*/ false, /*manufacturer=*/ 'make',
         /*model=*/ 'model', /*protocol=*/ 'ipp', /*serverAddress=*/ '');
-    const saveButton = dialog.shadowRoot.querySelector('.action-button');
+    const saveButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
     assertTrue(!!saveButton);
     assertTrue(saveButton.disabled);
 
-    const addressField = dialog.shadowRoot.querySelector('#printerAddress');
+    const addressField =
+        dialog.shadowRoot!.querySelector<HTMLInputElement>('#printerAddress');
     assertTrue(!!addressField);
     addressField.value = 'newAddress:789';
     addressField.dispatchEvent(new CustomEvent('input'));
 
-    assertTrue(!saveButton.disabled);
+    assertFalse(saveButton.disabled);
   });
 
   /**
@@ -1101,16 +1182,18 @@ suite('EditPrinterDialog', function() {
         /*name=*/ 'name', /*address=*/ 'address', /*id=*/ 'id',
         /*autoconf=*/ false, /*manufacturer=*/ 'make',
         /*model=*/ 'model', /*protocol=*/ 'ipp', /*serverAddress=*/ '');
-    const saveButton = dialog.shadowRoot.querySelector('.action-button');
+    const saveButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
     assertTrue(!!saveButton);
     assertTrue(saveButton.disabled);
 
-    const queueField = dialog.shadowRoot.querySelector('#printerQueue');
+    const queueField =
+        dialog.shadowRoot!.querySelector<HTMLInputElement>('#printerQueue');
     assertTrue(!!queueField);
     queueField.value = 'newqueueinfo';
     queueField.dispatchEvent(new CustomEvent('input'));
 
-    assertTrue(!saveButton.disabled);
+    assertFalse(saveButton.disabled);
   });
 
   /**
@@ -1121,23 +1204,24 @@ suite('EditPrinterDialog', function() {
         /*name=*/ 'name', /*address=*/ 'address', /*id=*/ 'id',
         /*autoconf=*/ false, /*manufacturer=*/ 'make',
         /*model=*/ 'model', /*protocol=*/ 'ipp', /*serverAddress=*/ '');
-    const saveButton = dialog.shadowRoot.querySelector('.action-button');
+    const saveButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
     assertTrue(!!saveButton);
     assertTrue(saveButton.disabled);
 
-    const dropDown = dialog.shadowRoot.querySelector('.md-select');
+    const dropDown =
+        dialog.shadowRoot!.querySelector<HTMLSelectElement>('.md-select');
+    assertTrue(!!dropDown);
     dropDown.value = 'http';
-    dropDown.dispatchEvent(new CustomEvent('change'), {'bubbles': true});
+    dropDown.dispatchEvent(new CustomEvent('change', {'bubbles': true}));
     flush();
-    assertTrue(!saveButton.disabled);
+    assertFalse(saveButton.disabled);
   });
 
   /**
    * Test that changing the model enables the save button.
    */
   test('TestChangingModelEnablesSaveButton', async () => {
-    let saveButton = null;
-
     cupsPrintersBrowserProxy.manufacturers = {
       success: true,
       manufacturers: ['HP'],
@@ -1147,25 +1231,31 @@ suite('EditPrinterDialog', function() {
         /*name=*/ 'name', /*address=*/ 'address', /*id=*/ 'id',
         /*autoconf=*/ false, /*manufacturer=*/ 'make',
         /*model=*/ 'model', /*protocol=*/ 'ipp', /*serverAddress=*/ '');
-    saveButton = dialog.shadowRoot.querySelector('.action-button');
+    const saveButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
     assertTrue(!!saveButton);
     assertTrue(saveButton.disabled);
 
     const makeDropDown =
-        dialog.shadowRoot.querySelector('#printerPPDManufacturer');
+        dialog.shadowRoot!.querySelector<CrSearchableDropDownElement>(
+            '#printerPPDManufacturer');
+    assertTrue(!!makeDropDown);
     makeDropDown.value = 'HP';
-    makeDropDown.dispatchEvent(new CustomEvent('change'), {'bubbles': true});
+    makeDropDown.dispatchEvent(new CustomEvent('change', {'bubbles': true}));
 
     await cupsPrintersBrowserProxy.whenCalled('getCupsPrinterModelsList');
     // Saving is disabled until a model is selected.
     assertTrue(saveButton.disabled);
 
-    const modelDropDown = dialog.shadowRoot.querySelector('#printerPPDModel');
+    const modelDropDown =
+        dialog.shadowRoot!.querySelector<CrSearchableDropDownElement>(
+            '#printerPPDModel');
+    assertTrue(!!modelDropDown);
     modelDropDown.value = 'HP 910';
-    modelDropDown.dispatchEvent(new CustomEvent('change'), {'bubbles': true});
+    modelDropDown.dispatchEvent(new CustomEvent('change', {'bubbles': true}));
 
     flush();
-    assertTrue(!saveButton.disabled);
+    assertFalse(saveButton.disabled);
   });
 
   /**
@@ -1179,13 +1269,13 @@ suite('EditPrinterDialog', function() {
     const expectedModel2 = 'newModel';
     const expectedModel3 = 'newModel2';
 
-    let modelDropdown = null;
-    let urlElement = null;
     await initializeAndOpenEditDialog(
         /*name=*/ 'name', /*address=*/ 'address', /*id=*/ 'id',
         /*autoconf=*/ false, /*manufacturer=*/ 'make',
         /*model=*/ 'model', /*protocol=*/ 'ipp', /*serverAddress=*/ '');
-    urlElement = dialog.shadowRoot.querySelector('#eulaUrl');
+    const urlElement =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#eulaUrl');
+    assertTrue(!!urlElement);
     // Check that the EULA text is hidden.
     assertTrue(urlElement.hidden);
 
@@ -1193,9 +1283,15 @@ suite('EditPrinterDialog', function() {
     // so we have to reset the resolver before the next call.
     resetGetEulaUrl(cupsPrintersBrowserProxy, eulaLink);
 
-    dialog.shadowRoot.querySelector('#printerPPDManufacturer').value =
-        expectedManufacturer;
-    modelDropdown = dialog.shadowRoot.querySelector('#printerPPDModel');
+    const makeDropDown =
+        dialog.shadowRoot!.querySelector<CrSearchableDropDownElement>(
+            '#printerPPDManufacturer');
+    assertTrue(!!makeDropDown);
+    makeDropDown.value = expectedManufacturer;
+    const modelDropdown =
+        dialog.shadowRoot!.querySelector<CrSearchableDropDownElement>(
+            '#printerPPDModel');
+    assertTrue(!!modelDropdown);
     modelDropdown.value = expectedModel;
 
     await verifyGetEulaUrlWasCalled(
@@ -1238,14 +1334,16 @@ suite('EditPrinterDialog', function() {
         /*name=*/ 'name', /*address=*/ 'address', /*id=*/ 'id',
         /*autoconf=*/ false, /*manufacturer=*/ 'make',
         /*model=*/ 'model', /*protocol=*/ 'ipp', /*serverAddress=*/ '');
-    const nameField = dialog.shadowRoot.querySelector('.printer-name-input');
+    const nameField = dialog.shadowRoot!.querySelector<HTMLInputElement>(
+        '.printer-name-input');
     assertTrue(!!nameField);
     nameField.value = expectedName;
     nameField.dispatchEvent(new CustomEvent('input'));
 
     flush();
 
-    const saveButton = dialog.shadowRoot.querySelector('.action-button');
+    const saveButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
     assertTrue(!!saveButton);
     assertFalse(saveButton.disabled);
 
@@ -1263,11 +1361,21 @@ suite('EditPrinterDialog', function() {
         /*serverAddress=*/ 'ipp://192.168.1.1:631');
 
     // Verify the only the name field is not disabled.
-    assertTrue(dialog.shadowRoot.querySelector('#printerAddress').disabled);
-    assertTrue(dialog.shadowRoot.querySelector('.md-select').disabled);
-    assertTrue(dialog.shadowRoot.querySelector('#printerQueue').disabled);
+    const printerAddress =
+        dialog.shadowRoot!.querySelector<HTMLInputElement>('#printerAddress');
+    assertTrue(!!printerAddress);
+    assertTrue(printerAddress.disabled);
+    const selectElement =
+        dialog.shadowRoot!.querySelector<HTMLSelectElement>('.md-select');
+    assertTrue(!!selectElement);
+    assertTrue(selectElement.disabled);
+    const printerQueue =
+        dialog.shadowRoot!.querySelector<HTMLInputElement>('#printerQueue');
+    assertTrue(!!printerQueue);
+    assertTrue(printerQueue.disabled);
 
-    const nameField = dialog.shadowRoot.querySelector('.printer-name-input');
+    const nameField = dialog.shadowRoot!.querySelector<HTMLInputElement>(
+        '.printer-name-input');
     assertTrue(!!nameField);
     assertFalse(nameField.disabled);
 
@@ -1276,7 +1384,8 @@ suite('EditPrinterDialog', function() {
 
     flush();
 
-    const saveButton = dialog.shadowRoot.querySelector('.action-button');
+    const saveButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
     assertTrue(!!saveButton);
     assertFalse(saveButton.disabled);
 
@@ -1286,16 +1395,11 @@ suite('EditPrinterDialog', function() {
   });
 });
 
-suite('PrintServerTests', function() {
-  let page = null;
-  let dialog = null;
-
-  /** @type {?CupsPrintersEntryManager} */
-  let entryManager = null;
-
-  /** @type {?settings.TestCupsPrintersBrowserProxy} */
-  let cupsPrintersBrowserProxy = null;
-
+suite('PrintServerTests', () => {
+  let page: SettingsCupsPrintersElement;
+  let dialog: SettingsCupsAddPrinterDialogElement;
+  let entryManager: CupsPrintersEntryManager;
+  let cupsPrintersBrowserProxy: TestCupsPrintersBrowserProxy;
 
   setup(async () => {
     entryManager = CupsPrintersEntryManager.getInstance();
@@ -1308,134 +1412,130 @@ suite('PrintServerTests', function() {
     CupsPrintersBrowserProxyImpl.setInstanceForTesting(
         cupsPrintersBrowserProxy);
 
-    PolymerTest.clearBody();
     Router.getInstance().navigateTo(routes.CUPS_PRINTERS);
 
     page = document.createElement('settings-cups-printers');
     document.body.appendChild(page);
     assertTrue(!!page);
-    dialog = page.shadowRoot.querySelector('settings-cups-add-printer-dialog');
-    assertTrue(!!dialog);
+    const element =
+        page.shadowRoot!.querySelector('settings-cups-add-printer-dialog');
+    assertTrue(!!element);
+    dialog = element;
 
-    return flushTasks();
+    await flushTasks();
   });
 
   teardown(() => {
     cupsPrintersBrowserProxy.reset();
     page.remove();
-    dialog = null;
-    page = null;
+    dialog.remove();
   });
 
-  /**
-   * @param {!Array<!PrinterListEntry>} savedPrinters
-   * @param {!Array<!CupsPrinterInfo>} automaticPrinters
-   * @param {!Array<!CupsPrinterInfo>} discoveredPrinters
-   * @param {!Array<!PrinterListEntry>} printerServerPrinters
-   */
   function setEntryManagerPrinters(
-      savedPrinters, automaticPrinters, discoveredPrinters,
-      printerServerPrinters) {
+      savedPrinters: PrinterListEntry[], automaticPrinters: CupsPrinterInfo[],
+      discoveredPrinters: CupsPrinterInfo[],
+      printerServerPrinters: PrinterListEntry[]): void {
     entryManager.setSavedPrintersList(savedPrinters);
     entryManager.setNearbyPrintersList(automaticPrinters, discoveredPrinters);
     entryManager.printServerPrinters = printerServerPrinters;
   }
 
   /**
-   * @param {!HTMLElement} page
-   * @return {?HTMLElement} Returns the print server dialog if it is available.
-   * @private
+   * Returns the print server dialog if it is available.
    */
-  function getPrintServerDialog(page) {
+  function getPrintServerDialog(page: SettingsCupsPrintersElement):
+      AddPrintServerDialogElement {
     assertTrue(!!page);
-    dialog = page.shadowRoot.querySelector('settings-cups-add-printer-dialog');
-    return dialog.shadowRoot.querySelector('add-print-server-dialog');
+    const element =
+        page.shadowRoot!.querySelector('settings-cups-add-printer-dialog');
+    assertTrue(!!element);
+    dialog = element;
+    const addDialog =
+        dialog.shadowRoot!.querySelector('add-print-server-dialog');
+    assertTrue(!!addDialog);
+    return addDialog;
   }
 
   /**
    * Opens the add print server dialog, inputs |address| with the specified
    * |error|. Adds the print server and returns a promise for handling the add
    * event.
-   * @param {string} address
-   * @param {number} error
-   * @return {!Promise} The promise returned when queryPrintServer is called.
-   * @private
+   * The promise returned when queryPrintServer is called.
    */
-  function addPrintServer(address, error) {
+  async function addPrintServer(address: string, error: number): Promise<void> {
     // Open the add manual printe dialog.
     assertTrue(!!page);
     dialog.open();
     flush();
 
     const addPrinterDialog =
-        dialog.shadowRoot.querySelector('add-printer-manually-dialog');
+        dialog.shadowRoot!.querySelector('add-printer-manually-dialog');
+    assertTrue(!!addPrinterDialog);
     // Switch to Add print server dialog.
-    addPrinterDialog.shadowRoot.querySelector('#print-server-button').click();
+    let button = addPrinterDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+        '#print-server-button');
+    assertTrue(!!button);
+    button.click();
     flush();
     const printServerDialog =
-        dialog.shadowRoot.querySelector('add-print-server-dialog');
+        dialog.shadowRoot!.querySelector('add-print-server-dialog');
     assertTrue(!!printServerDialog);
 
     flush();
     cupsPrintersBrowserProxy.setQueryPrintServerResult(error);
-    return flushTasks().then(() => {
-      // Fill dialog with the server address.
-      const address = printServerDialog.shadowRoot.querySelector(
-          '#printServerAddressInput');
-      assertTrue(!!address);
-      address.value = address;
-
-      // Add the print server.
-      const button =
-          printServerDialog.shadowRoot.querySelector('.action-button');
-      // Button should not be disabled before clicking on it.
-      assertTrue(!button.disabled);
-      button.click();
-
-      // Clicking on the button should disable it.
-      assertTrue(button.disabled);
-      return cupsPrintersBrowserProxy.whenCalled('queryPrintServer');
-    });
+    await flushTasks();
+    // Fill dialog with the server address.
+    const printServerAddressInput =
+        printServerDialog.shadowRoot!.querySelector<HTMLInputElement>(
+            '#printServerAddressInput');
+    assertTrue(!!printServerAddressInput);
+    printServerAddressInput.value = address;
+    // Add the print server.
+    button = printServerDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+        '.action-button');
+    assertTrue(!!button);
+    // Button should not be disabled before clicking on it.
+    assertFalse(button.disabled);
+    button.click();
+    // Clicking on the button should disable it.
+    assertTrue(button.disabled);
+    await cupsPrintersBrowserProxy.whenCalled('queryPrintServer');
   }
 
-  /**
-   * @param {string} expectedError
-   * @private
-   */
-  function verifyErrorMessage(expectedError) {
+  function verifyErrorMessage(expectedError: string): void {
     // Assert that the dialog did not close on errors.
     const printServerDialog = getPrintServerDialog(page);
     const dialogError =
-        printServerDialog.shadowRoot.querySelector('#server-dialog-error');
+        printServerDialog.shadowRoot!.querySelector<PrinterDialogErrorElement>(
+            '#server-dialog-error');
+    assertTrue(!!dialogError);
     // Assert that the dialog error is displayed.
-    assertTrue(!dialogError.hidden);
-    assertEquals(loadTimeData.getString(expectedError), dialogError.errorText);
+    assertFalse(dialogError.hidden);
+    assertEquals(
+        loadTimeData.getString(expectedError), dialogError.get('errorText'));
   }
 
-  /**
-   * @param {string} expectedMessage
-   * @param {number} numPrinters
-   * @private
-   */
-  function verifyToastMessage(expectedMessage, numPrinters) {
+  function verifyToastMessage(
+      expectedMessage: string, numPrinters: number): void {
     // We always display the total number of printers found from a print
     // server.
-    const toast = page.shadowRoot.querySelector('#printServerErrorToast');
+    const toast = page.shadowRoot!.querySelector<CrToastElement>(
+        '#printServerErrorToast');
+    assertTrue(!!toast);
     assertTrue(toast.open);
     assertEquals(
         loadTimeData.getStringF(expectedMessage, numPrinters),
-        toast.textContent.trim());
+        toast.textContent?.trim());
   }
 
   test('AddPrintServerIsSuccessful', async () => {
     // Initialize the return result from adding a print server.
-    cupsPrintersBrowserProxy.printServerPrinters =
-        /** @type{!CupsPrintServerPrintersInfo} */ ({
-          printerList: [
-            createCupsPrinterInfo('nameA', 'serverAddress', 'idA'),
-            createCupsPrinterInfo('nameB', 'serverAddress', 'idB'),
-          ],
-        });
+    cupsPrintersBrowserProxy.printServerPrinters = {
+      printerList: [
+        createCupsPrinterInfo('nameA', 'serverAddress', 'idA'),
+        createCupsPrinterInfo('nameB', 'serverAddress', 'idB'),
+      ],
+    };
     await addPrintServer('serverAddress', PrintServerResult.NO_ERRORS);
     flush();
     verifyToastMessage('printServerFoundManyPrinters', /*numPrinters=*/ 2);
@@ -1444,13 +1544,12 @@ suite('PrintServerTests', function() {
 
   test('HandleDuplicateQueries', async () => {
     // Initialize the return result from adding a print server.
-    cupsPrintersBrowserProxy.printServerPrinters =
-        /** @type{!CupsPrintServerPrintersInfo} */ ({
-          printerList: [
-            createCupsPrinterInfo('nameA', 'serverAddress', 'idA'),
-            createCupsPrinterInfo('nameB', 'serverAddress', 'idB'),
-          ],
-        });
+    cupsPrintersBrowserProxy.printServerPrinters = {
+      printerList: [
+        createCupsPrinterInfo('nameA', 'serverAddress', 'idA'),
+        createCupsPrinterInfo('nameB', 'serverAddress', 'idB'),
+      ],
+    };
 
     await flushTasks();
     // Simulate that a print server was queried previously.
@@ -1475,19 +1574,19 @@ suite('PrintServerTests', function() {
     // added to the entry manager.
     assertEquals(2, entryManager.printServerPrinters.length);
     const nearbyPrintersElement =
-        page.shadowRoot.querySelector('settings-cups-nearby-printers');
+        page.shadowRoot!.querySelector('settings-cups-nearby-printers');
+    assertTrue(!!nearbyPrintersElement);
     assertEquals(2, nearbyPrintersElement.nearbyPrinters.length);
   });
 
   test('HandleDuplicateSavedPrinters', async () => {
     // Initialize the return result from adding a print server.
-    cupsPrintersBrowserProxy.printServerPrinters =
-        /** @type{} CupsPrintServerPrintersInfo*/ ({
-          printerList: [
-            createCupsPrinterInfo('nameA', 'serverAddress', 'idA'),
-            createCupsPrinterInfo('nameB', 'serverAddress', 'idB'),
-          ],
-        });
+    cupsPrintersBrowserProxy.printServerPrinters = {
+      printerList: [
+        createCupsPrinterInfo('nameA', 'serverAddress', 'idA'),
+        createCupsPrinterInfo('nameB', 'serverAddress', 'idB'),
+      ],
+    };
 
     await flushTasks();
     // Simulate that a print server was queried previously.
@@ -1518,41 +1617,40 @@ suite('PrintServerTests', function() {
     // list.
     assertEquals(1, entryManager.printServerPrinters.length);
     const nearbyPrintersElement =
-        page.shadowRoot.querySelector('settings-cups-nearby-printers');
+        page.shadowRoot!.querySelector('settings-cups-nearby-printers');
     assertTrue(!!nearbyPrintersElement);
     assertEquals(1, nearbyPrintersElement.nearbyPrinters.length);
     // Verify we correctly removed the duplicate printer, 'idA', since
     // it exists in the saved printer list. Expect only 'idB' in
     // the print server printers list.
     assertEquals(
-        'idB', entryManager.printServerPrinters[0].printerInfo.printerId);
+        'idB', entryManager.printServerPrinters[0]!.printerInfo.printerId);
   });
 
   test('AddPrintServerAddressError', async () => {
-    cupsPrintersBrowserProxy.printServerPrinters =
-        /** @type{} CupsPrintServerPrintersInfo*/ ({printerList: []});
+    cupsPrintersBrowserProxy.printServerPrinters = {printerList: []};
     await addPrintServer('serverAddress', PrintServerResult.INCORRECT_URL);
     flush();
     const printServerDialog = getPrintServerDialog(page);
     // Assert that the dialog did not close on errors.
     assertTrue(!!printServerDialog);
+    const printServerAddressInput =
+        printServerDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#printServerAddressInput');
+    assertTrue(!!printServerAddressInput);
     // Assert that the address input field is invalid.
-    assertTrue(
-        printServerDialog.shadowRoot.querySelector('#printServerAddressInput')
-            .invalid);
+    assertTrue(printServerAddressInput.invalid);
   });
 
   test('AddPrintServerConnectionError', async () => {
-    cupsPrintersBrowserProxy.printServerPrinters =
-        /** @type{} CupsPrintServerPrintersInfo*/ ({printerList: []});
+    cupsPrintersBrowserProxy.printServerPrinters = {printerList: []};
     await addPrintServer('serverAddress', PrintServerResult.CONNECTION_ERROR);
     flush();
     verifyErrorMessage('printServerConnectionError');
   });
 
   test('AddPrintServerReachableServerButIppResponseError', async () => {
-    cupsPrintersBrowserProxy.printServerPrinters =
-        /** @type{} CupsPrintServerPrintersInfo*/ ({printerList: []});
+    cupsPrintersBrowserProxy.printServerPrinters = {printerList: []};
     await addPrintServer(
         'serverAddress', PrintServerResult.CANNOT_PARSE_IPP_RESPONSE);
     flush();
@@ -1560,8 +1658,7 @@ suite('PrintServerTests', function() {
   });
 
   test('AddPrintServerReachableServerButHttpResponseError', async () => {
-    cupsPrintersBrowserProxy.printServerPrinters =
-        /** @type{} CupsPrintServerPrintersInfo*/ ({printerList: []});
+    cupsPrintersBrowserProxy.printServerPrinters = {printerList: []};
     await addPrintServer('serverAddress', PrintServerResult.HTTP_ERROR);
     flush();
     verifyErrorMessage('printServerConfigurationErrorMessage');

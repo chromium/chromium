@@ -17,9 +17,10 @@ import {assertEquals, assertFalse, assertGE, assertNotReached, assertNull, asser
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {createCupsPrinterInfo, createPrinterListEntry, getPrinterEntries} from '../cups_printer_test_utils.js';
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
-import {TestCupsPrintersBrowserProxy} from '../test_cups_printers_browser_proxy.js';
+
+import {createCupsPrinterInfo, createPrinterListEntry, getPrinterEntries} from './cups_printer_test_utils.js';
+import {TestCupsPrintersBrowserProxy} from './test_cups_printers_browser_proxy.js';
 
 const arrowUpEvent = new KeyboardEvent(
     'keydown', {cancelable: true, key: 'ArrowUp', keyCode: 38});

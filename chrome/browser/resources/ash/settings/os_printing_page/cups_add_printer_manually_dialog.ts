@@ -47,11 +47,11 @@ function getEmptyPrinter(): object {
   };
 }
 
-interface AddPrinterManuallyDialogElement {
+export interface AddPrinterManuallyDialogElement {
   $: {printerAddressInput: CrInputElement};
 }
 
-class AddPrinterManuallyDialogElement extends PolymerElement {
+export class AddPrinterManuallyDialogElement extends PolymerElement {
   static get is() {
     return 'add-printer-manually-dialog';
   }
