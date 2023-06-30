@@ -27,30 +27,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-id<GREYMatcher> CopyButton() {
-  return grey_allOf(
-      grey_accessibilityTrait(UIAccessibilityTraitButton),
-      grey_descendant(
-          chrome_test_util::StaticTextWithAccessibilityLabel(@"Copy")),
-      nil);
-}
-
-// Assert the activity service is visible by checking the "copy" button.
-void AssertActivityServiceVisible() {
-  [[EarlGrey selectElementWithMatcher:CopyButton()]
-      assertWithMatcher:grey_interactable()];
-}
-
-// Assert the activity service is not visible by checking the "copy" button.
-void AssertActivityServiceNotVisible() {
-  [[EarlGrey selectElementWithMatcher:grey_allOf(CopyButton(),
-                                                 grey_interactable(), nil)]
-      assertWithMatcher:grey_nil()];
-}
-
-}  // namespace
-
 // Earl grey integration tests for Activity Service Controller.
 @interface ActivityServiceControllerTestCase : WebHttpServerChromeTestCase
 @end
@@ -77,13 +53,11 @@ void AssertActivityServiceNotVisible() {
   [ChromeEarlGreyUI openShareMenu];
 
   // Verify that the share menu is up and contains a Copy action.
-  AssertActivityServiceVisible();
-  [[EarlGrey selectElementWithMatcher:CopyButton()]
-      assertWithMatcher:grey_interactable()];
 
+  [ChromeEarlGrey verifyActivitySheetVisible];
   // Start the Copy action and verify that the share menu gets dismissed.
-  [[EarlGrey selectElementWithMatcher:CopyButton()] performAction:grey_tap()];
-  AssertActivityServiceNotVisible();
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:@"Copy"];
+  [ChromeEarlGrey verifyActivitySheetNotVisible];
 }
 
 // Verifies that Tools Menu > Share Chrome brings up the "share sheet".
@@ -92,7 +66,7 @@ void AssertActivityServiceNotVisible() {
     [ChromeEarlGreyUI openToolsMenu];
     [ChromeEarlGreyUI
         tapToolsMenuAction:grey_accessibilityID(kToolsMenuShareChromeId)];
-    AssertActivityServiceVisible();
+    [ChromeEarlGrey verifyActivitySheetVisible];
   }
 }
 

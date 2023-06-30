@@ -32,10 +32,6 @@ const char kMOVPath[] = "/video_sample.mov";
 // Accessibility ID of the Activity menu.
 NSString* kActivityMenuIdentifier = @"ActivityListView";
 
-// Matcher for the Cancel button.
-id<GREYMatcher> ShareMenuDismissButton() {
-  return chrome_test_util::CloseButton();
-}
 }  // namespace
 
 using base::test::ios::kWaitForDownloadTimeout;
@@ -58,43 +54,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [ChromeEarlGreyUI openShareMenu];
 }
 
-- (void)closeActivityMenu {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // Tap the share button to dismiss the popover.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-        performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:ShareMenuDismissButton()]
-        performAction:grey_tap()];
-  }
-}
-
-- (void)assertActivityServiceVisible {
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(kActivityMenuIdentifier)]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, condition),
-             @"Waiting for the open in dialog to appear");
-}
-
-- (void)assertActivityMenuDismissed {
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(kActivityMenuIdentifier)]
-        assertWithMatcher:grey_notVisible()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, condition),
-             @"Waiting for the open in dialog to disappear");
-}
-
 #pragma mark - Tests
 
 // Tests that open in button appears when opening a PDF, and that tapping on it
@@ -104,12 +63,12 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPDFPath)];
   [self openActivityMenu];
 
-  [self assertActivityServiceVisible];
+  [ChromeEarlGrey verifyActivitySheetVisible];
 
   // Check that tapping on the Cancel button closes the activity menu and hides
   // the open in toolbar.
-  [self closeActivityMenu];
-  [self assertActivityMenuDismissed];
+  [ChromeEarlGrey closeActivitySheet];
+  [ChromeEarlGrey verifyActivitySheetNotVisible];
 }
 
 // Tests that open in button appears when opening a PNG, and that tapping on it
@@ -118,12 +77,12 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   // Open the activity menu.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPNGPath)];
   [self openActivityMenu];
-  [self assertActivityServiceVisible];
+  [ChromeEarlGrey verifyActivitySheetVisible];
 
   // Check that tapping on the Cancel button closes the activity menu and hides
   // the open in toolbar.
-  [self closeActivityMenu];
-  [self assertActivityMenuDismissed];
+  [ChromeEarlGrey closeActivitySheet];
+  [ChromeEarlGrey verifyActivitySheetNotVisible];
 }
 
 // Tests that open in button do not appears when opening a MOV file.
@@ -143,14 +102,11 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
   // Open the activity menu.
   [self openActivityMenu];
-  [self assertActivityServiceVisible];
+  [ChromeEarlGrey verifyActivitySheetVisible];
   // Ensure that the link is shared.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_text(kPNGFilename),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_nil()];
-  [self closeActivityMenu];
-  [self assertActivityMenuDismissed];
+  [ChromeEarlGrey verifyTextNotVisibleInActivitySheetWithID:kPNGFilename];
+  [ChromeEarlGrey closeActivitySheet];
+  [ChromeEarlGrey verifyActivitySheetNotVisible];
 }
 
 @end

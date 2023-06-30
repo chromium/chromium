@@ -66,10 +66,9 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
-      assertWithMatcher:grey_notVisible()];
+  NSString* sendTabToSelf =
+      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
+  [ChromeEarlGrey verifyTextNotVisibleInActivitySheetWithID:sendTabToSelf];
 }
 
 - (void)testHideButtonIfSignedOutAndHasDeviceAccount {
@@ -80,10 +79,9 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
-      assertWithMatcher:grey_notVisible()];
+  NSString* sendTabToSelf =
+      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
+  [ChromeEarlGrey verifyTextNotVisibleInActivitySheetWithID:sendTabToSelf];
 }
 
 - (void)testHideButtonIfSignedInAndNoTargetDevice {
@@ -95,10 +93,9 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
-      assertWithMatcher:grey_notVisible()];
+  NSString* sendTabToSelf =
+      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
+  [ChromeEarlGrey verifyTextNotVisibleInActivitySheetWithID:sendTabToSelf];
 }
 
 - (void)testShowDevicePickerIfSignedInAndHasTargetDevice {
@@ -113,10 +110,10 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
-      performAction:grey_tap()];
+
+  NSString* sendTabToSelf =
+      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(kTargetDeviceName)]
@@ -161,10 +158,9 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
-      assertWithMatcher:grey_notVisible()];
+  NSString* sendTabToSelf =
+      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
+  [ChromeEarlGrey verifyTextNotVisibleInActivitySheetWithID:sendTabToSelf];
 }
 
 // Tests that the entry point button is shown to a signed out user, even if
@@ -176,10 +172,9 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  NSString* sendTabToSelf =
+      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
+  [ChromeEarlGrey verifyTextVisibleInActivitySheetWithID:sendTabToSelf];
 }
 
 - (void)testShowPromoIfSignedOutAndHasDeviceAccount {
@@ -189,10 +184,10 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
-      performAction:grey_tap()];
+
+  NSString* sendTabToSelf =
+      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
   // TODO(crbug.com/1264471): Test that clicking the sign-in button opens the
@@ -208,10 +203,9 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
-      performAction:grey_tap()];
+  NSString* sendTabToSelf =
+      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityLabel(l10n_util::GetNSString(
@@ -231,10 +225,9 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
-      performAction:grey_tap()];
+  NSString* sendTabToSelf =
+      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(kTargetDeviceName)]

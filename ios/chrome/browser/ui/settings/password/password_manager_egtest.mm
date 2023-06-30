@@ -1872,24 +1872,7 @@ void CopyPasswordDetailWithID(int detail_id) {
                                    IDS_IOS_EXPORT_PASSWORDS)]
       assertWithMatcher:exportButtonStatusMatcher];
 
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // Tap outside the activity view to dismiss it, because it is not
-    // accompanied by a "Cancel" button on iPad.
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ButtonWithAccessibilityLabelId(
-                       IDS_IOS_EXPORT_PASSWORDS)] performAction:grey_tap()];
-  } else {
-    // Tap on the "Cancel" or "X" button accompanying the activity view to
-    // dismiss it.
-    NSString* dismissLabel = @"Close";
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(
-                                     ButtonWithAccessibilityLabel(dismissLabel),
-                                     grey_not(grey_accessibilityTrait(
-                                         UIAccessibilityTraitNotEnabled)),
-                                     grey_interactable(), nullptr)]
-        performAction:grey_tap()];
-  }
+  [ChromeEarlGrey closeActivitySheet];
 
   // Wait until the activity view is dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];

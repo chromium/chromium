@@ -854,6 +854,29 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Clear the watcher list, stopping monitoring.
 - (void)stopWatcher;
 
+#pragma mark - ActivitySheet utilities
+
+// Induces a GREYAssert if the activity sheet is not visible.
+- (void)verifyActivitySheetVisible;
+
+// Induces a GREYAssert if the activity sheet is visible.
+- (void)verifyActivitySheetNotVisible;
+
+// Induces a GREYAssert if `text` is visible the activity sheet.
+- (void)verifyTextNotVisibleInActivitySheetWithID:(NSString*)text;
+
+// Induces a GREYAssert if `text` is not visible the activity sheet.
+- (void)verifyTextVisibleInActivitySheetWithID:(NSString*)text;
+
+// Closes the activity sheet. Induces a GREYAssert if the activity sheet cannot
+// be closed, either if the 'Close' button is not visible on a phone, or if the
+// share button cannot be tapped on a tablet.
+- (void)closeActivitySheet;
+
+// Taps the element with `buttonText` within the activity sheet. A GREYAssert
+// is induced on failure.
+- (void)tapButtonInActivitySheetWithID:(NSString*)buttonText;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_H_

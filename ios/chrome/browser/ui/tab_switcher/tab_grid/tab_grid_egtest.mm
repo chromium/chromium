@@ -1488,8 +1488,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       selectElementWithMatcher:chrome_test_util::TabGridEditShareButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::CopyActivityButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:@"Copy"];
 
   NSString* URL1String = base::SysUTF8ToNSString(_URL1.spec());
   NSString* URL3String = base::SysUTF8ToNSString(_URL3.spec());

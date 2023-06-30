@@ -491,8 +491,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
   // Check the presence of the Share sheet, for example by looking for the Copy
   // button.
-  [[EarlGrey selectElementWithMatcher:CopyActivityButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:@"Copy"];
 
   // There should be still be an inactive tab.
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1,
