@@ -428,6 +428,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       kColorTabForegroundInactiveFrameActive};
   mixer[kColorTabAlertAudioPlayingInactiveFrameInactive] = {
       kColorTabForegroundInactiveFrameInactive};
+  mixer[kColorTabAlertAudioPlayingIcon] = ui::SelectBasedOnDarkInput(
+      ui::kColorBubbleFooterBackground, SK_ColorWHITE, gfx::kGoogleGrey800);
   mixer[kColorTabAlertMediaRecordingActiveFrameActive] =
       ui::SelectBasedOnDarkInput(kColorTabForegroundActiveFrameActive,
                                  gfx::kGoogleRed600, gfx::kGoogleRed300);
@@ -440,6 +442,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabAlertMediaRecordingInactiveFrameInactive] =
       ui::SelectBasedOnDarkInput(kColorTabForegroundInactiveFrameInactive,
                                  gfx::kGoogleRed600, gfx::kGoogleRed300);
+  mixer[kColorTabAlertMediaRecordingIcon] = ui::SelectBasedOnDarkInput(
+      ui::kColorBubbleFooterBackground, gfx::kGoogleRed300, gfx::kGoogleRed600);
   mixer[kColorTabAlertPipPlayingActiveFrameActive] = ui::PickGoogleColor(
       ui::kColorAccent, kColorTabBackgroundActiveFrameActive,
       color_utils::kMinimumVisibleContrastRatio);
@@ -452,6 +456,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabAlertPipPlayingInactiveFrameInactive] = ui::PickGoogleColor(
       ui::kColorAccent, kColorTabBackgroundInactiveFrameInactive,
       color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorTabAlertPipPlayingIcon] =
+      ui::PickGoogleColor(ui::kColorAccent, ui::kColorBubbleFooterBackground,
+                          color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorTabCloseButtonFocusRingActive] = ui::PickGoogleColor(
       ui::kColorFocusableBorderFocused, kColorTabBackgroundActiveFrameActive,
       color_utils::kMinimumVisibleContrastRatio);

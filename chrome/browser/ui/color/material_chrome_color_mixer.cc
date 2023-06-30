@@ -180,6 +180,9 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysStateHoverDimBlendProtection};
   mixer[kColorOmniboxChipInkDropRipple] = {
       ui::kColorSysStateRippleNeutralOnSubtle};
+  mixer[kColorTabAlertMediaRecordingIcon] = {ui::kColorSysError};
+  mixer[kColorTabAlertPipPlayingIcon] = {ui::kColorSysPrimary};
+  mixer[kColorTabAlertAudioPlayingIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorToolbar] = {ui::kColorSysBase};
   mixer[kColorToolbarButtonBackgroundHighlightedDefault] = {
       ui::kColorSysStateHoverOnSubtle};

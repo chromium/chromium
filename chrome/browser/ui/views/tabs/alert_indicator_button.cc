@@ -432,6 +432,31 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImage(
   return ui::ImageModel::FromVectorIcon(*icon, button_color, image_width);
 }
 
+ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
+    TabAlertState alert_state) {
+  switch (alert_state) {
+    case TabAlertState::MEDIA_RECORDING:
+    case TabAlertState::DESKTOP_CAPTURING:
+      return AlertIndicatorButton::GetTabAlertIndicatorImage(
+          alert_state, kColorTabAlertMediaRecordingIcon);
+    case TabAlertState::TAB_CAPTURING:
+    case TabAlertState::PIP_PLAYING:
+      return AlertIndicatorButton::GetTabAlertIndicatorImage(
+          alert_state, kColorTabAlertPipPlayingIcon);
+    case TabAlertState::AUDIO_PLAYING:
+    case TabAlertState::AUDIO_MUTING:
+    case TabAlertState::BLUETOOTH_CONNECTED:
+    case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
+    case TabAlertState::USB_CONNECTED:
+    case TabAlertState::HID_CONNECTED:
+    case TabAlertState::SERIAL_CONNECTED:
+    case TabAlertState::VR_PRESENTING_IN_HEADSET:
+      return AlertIndicatorButton::GetTabAlertIndicatorImage(
+          alert_state, kColorTabAlertAudioPlayingIcon);
+  }
+  NOTREACHED_NORETURN();
+}
+
 void AlertIndicatorButton::UpdateIconForAlertState(TabAlertState state) {
   const ui::ColorId color = parent_tab_->GetAlertIndicatorColor(state);
   const ui::ImageModel indicator_image =

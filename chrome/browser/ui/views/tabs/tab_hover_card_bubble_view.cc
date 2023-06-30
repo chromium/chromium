@@ -532,14 +532,8 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
             : 0;
     show_footer =
         show_footer || show_discard_status || tab_memory_usage_in_bytes > 0;
-    absl::optional<ui::ColorId> icon_color =
-        alert_state_.has_value()
-            ? absl::make_optional<ui::ColorId>(
-                  tab->GetAlertIndicatorColor(alert_state_.value()))
-            : absl::nullopt;
     const int hover_card_width = views::View::GetContentsBounds().width();
-    footer_view_->GetAlertRow()->SetData(
-        {alert_state_, icon_color, hover_card_width});
+    footer_view_->GetAlertRow()->SetData({alert_state_, hover_card_width});
     footer_view_->GetPerformanceRow()->SetData(
         {show_discard_status, tab_data.discarded_memory_savings_in_bytes,
          tab_memory_usage_in_bytes, hover_card_width});

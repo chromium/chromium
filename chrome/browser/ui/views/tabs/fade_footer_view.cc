@@ -29,6 +29,8 @@ FooterRow<T>::FooterRow() {
   icon_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   footer_label_ = views::View::AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT));
+  icon_->SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
   footer_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   footer_label_->SetMultiLine(true);
   footer_label_->SetProperty(
@@ -72,9 +74,6 @@ void FooterRow<T>::SetFade(double percent) {
 template <typename T>
 void FooterRow<T>::UpdateIconAndLabelLayout(int max_footer_width) {
   icon_->layer()->SetOpacity(1.0f);
-  auto* const color_provider = views::View::GetColorProvider();
-  icon_->SetBackground(views::CreateSolidBackground(
-      color_provider->GetColor(ui::kColorBubbleFooterBackground)));
 
   // Need to set maximum width for the label so that enough space is allocated
   // for the label to wrap properly
@@ -96,10 +95,10 @@ void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
   views::Label* const alert_label = footer_label();
   views::ImageView* const alert_icon = icon();
   if (alert_state.has_value()) {
-    CHECK(data.icon_color.has_value());
     alert_label->SetText(chrome::GetTabAlertStateText(alert_state.value()));
-    alert_icon->SetImage(AlertIndicatorButton::GetTabAlertIndicatorImage(
-        alert_state.value(), data.icon_color.value()));
+    alert_icon->SetImage(
+        AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
+            alert_state.value()));
     UpdateIconAndLabelLayout(data.footer_row_width);
   } else {
     alert_label->SetText(std::u16string());
@@ -126,7 +125,7 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
           l10n_util::GetStringUTF16(IDS_HOVERCARD_INACTIVE_TAB));
     }
     performance_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        kHighEfficiencyIcon, kColorTabForegroundActiveFrameActive,
+        kHighEfficiencyIcon, kColorTabAlertAudioPlayingIcon,
         GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH)));
     UpdateIconAndLabelLayout(data.footer_row_width);
   } else if (data.memory_usage_in_bytes > 0) {
@@ -141,7 +140,7 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
             : IDS_HOVERCARD_TAB_MEMORY_USAGE,
         formatted_memory_usage));
     performance_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        kHighEfficiencyIcon, kColorTabForegroundActiveFrameActive,
+        kHighEfficiencyIcon, kColorTabAlertAudioPlayingIcon,
         GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH)));
     UpdateIconAndLabelLayout(data.footer_row_width);
   } else {
