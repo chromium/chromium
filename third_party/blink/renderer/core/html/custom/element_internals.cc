@@ -158,7 +158,7 @@ void ElementInternals::setValidity(ValidityStateFlags* flags,
 
 void ElementInternals::setValidity(ValidityStateFlags* flags,
                                    const String& message,
-                                   Element* anchor,
+                                   HTMLElement* anchor,
                                    ExceptionState& exception_state) {
   if (!IsTargetFormAssociated()) {
     exception_state.ThrowDOMException(
