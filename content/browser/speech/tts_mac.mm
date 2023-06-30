@@ -70,19 +70,34 @@ std::vector<content::VoiceData>& Voices() {
   NSMutableDictionary<NSString*, NSNumber*>* name_counts =
       [NSMutableDictionary dictionary];
   for (AVSpeechSynthesisVoice* av_speech_voice in av_speech_voices.get()) {
-    if (NSNumber* count = name_counts[av_speech_voice.name]) {
-      name_counts[av_speech_voice.name] = @(count.intValue + 1);
+    NSString* voice_name = av_speech_voice.name;
+    if (!voice_name) {
+      // AVSpeechSynthesisVoice.name is not a nullable property, but there are
+      // crashes (https://crbug.com/1459235) where -setObject:forKeyedSubscript:
+      // is being passed a nil key, and the only place that happens in this
+      // function is below.
+      continue;
+    }
+    if (NSNumber* count = name_counts[voice_name]) {
+      name_counts[voice_name] = @(count.intValue + 1);
     } else {
-      name_counts[av_speech_voice.name] = @1;
+      name_counts[voice_name] = @1;
     }
   }
 
   voices.reserve(av_speech_voices.get().count);
   for (AVSpeechSynthesisVoice* av_speech_voice in av_speech_voices.get()) {
+    NSString* voice_name = av_speech_voice.name;
+    if (!voice_name) {
+      // AVSpeechSynthesisVoice.name is not a nullable property, but there are
+      // crashes (https://crbug.com/1459235) where it seems like it's returning
+      // nil. Without a name, a voice is useless, so skip it.
+      continue;
+    }
+
     voices.emplace_back();
     content::VoiceData& data = voices.back();
 
-    NSString* voice_name = av_speech_voice.name;
     if (name_counts[voice_name].intValue > 1) {
       // The language property on a voice is a BCP 47 code (i.e. "en-US") while
       // an NSLocale locale identifier isn't (i.e. "en_US"). However, using the
