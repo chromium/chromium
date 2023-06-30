@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "components/viz/common/resources/resource_format.h"
 
 namespace viz {
 
@@ -404,34 +403,33 @@ unsigned int SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataFormat(
 unsigned int SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataType(
     SharedImageFormat format) {
   CHECK(format.is_single_plane());
-  static const GLenum format_gl_data_type[] = {
-      GL_UNSIGNED_BYTE,                    // RGBA_8888
-      GL_UNSIGNED_SHORT_4_4_4_4,           // RGBA_4444
-      GL_UNSIGNED_BYTE,                    // BGRA_8888
-      GL_UNSIGNED_BYTE,                    // ALPHA_8
-      GL_UNSIGNED_BYTE,                    // LUMINANCE_8
-      GL_UNSIGNED_SHORT_5_6_5,             // RGB_565,
-      GL_UNSIGNED_SHORT_5_6_5,             // BGR_565
-      GL_UNSIGNED_BYTE,                    // ETC1
-      GL_UNSIGNED_BYTE,                    // RED_8
-      GL_UNSIGNED_BYTE,                    // RG_88
-      GL_HALF_FLOAT_OES,                   // LUMINANCE_F16
-      GL_HALF_FLOAT_OES,                   // RGBA_F16
-      GL_UNSIGNED_SHORT,                   // R16_EXT
-      GL_UNSIGNED_SHORT,                   // RG16_EXT
-      GL_UNSIGNED_BYTE,                    // RGBX_8888
-      GL_UNSIGNED_BYTE,                    // BGRX_8888
-      GL_UNSIGNED_INT_2_10_10_10_REV_EXT,  // RGBA_1010102
-      GL_UNSIGNED_INT_2_10_10_10_REV_EXT,  // BGRA_1010102
-      GL_ZERO,                             // YVU_420
-      GL_ZERO,                             // YUV_420_BIPLANAR
-      GL_ZERO,                             // YUVA_420_TRIPLANAR
-      GL_ZERO,                             // P010
-  };
-  static_assert(std::size(format_gl_data_type) == (RESOURCE_FORMAT_MAX + 1),
-                "format_gl_data_type does not handle all cases.");
 
-  return format_gl_data_type[format.resource_format()];
+  if (format == SinglePlaneFormat::kRGBA_8888 ||
+      format == SinglePlaneFormat::kBGRA_8888 ||
+      format == SinglePlaneFormat::kALPHA_8 ||
+      format == SinglePlaneFormat::kLUMINANCE_8 ||
+      format == SinglePlaneFormat::kETC1 || format == SinglePlaneFormat::kR_8 ||
+      format == SinglePlaneFormat::kRG_88 ||
+      format == SinglePlaneFormat::kRGBX_8888 ||
+      format == SinglePlaneFormat::kBGRX_8888) {
+    return GL_UNSIGNED_BYTE;
+  } else if (format == SinglePlaneFormat::kRGBA_4444) {
+    return GL_UNSIGNED_SHORT_4_4_4_4;
+  } else if (format == SinglePlaneFormat::kRGB_565 ||
+             format == SinglePlaneFormat::kRGB_565) {
+    return GL_UNSIGNED_SHORT_5_6_5;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_F16 ||
+             format == SinglePlaneFormat::kRGBA_F16) {
+    return GL_HALF_FLOAT_OES;
+  } else if (format == SinglePlaneFormat::kR_16 ||
+             format == SinglePlaneFormat::kRG_1616) {
+    return GL_UNSIGNED_SHORT;
+  } else if (format == SinglePlaneFormat::kRGBA_1010102 ||
+             format == SinglePlaneFormat::kBGRA_1010102) {
+    return GL_UNSIGNED_INT_2_10_10_10_REV_EXT;
+  }
+
+  return GL_ZERO;
 }
 
 // static
