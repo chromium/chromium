@@ -57,7 +57,6 @@ PRINT STATEMENT: *
 
 # Other exceptions.
 WEB-PLATFORM.TEST: *
-SUPPORT-WRONG-DIR: css/css-fonts/*
 MULTIPLE-TESTDRIVER-VENDOR: fenced_frame/hid.https.html
 MULTIPLE-TESTDRIVER-VENDOR: fenced_frame/client-hints.https.html
 MULTIPLE-TESTDRIVER-VENDOR: fenced_frame/client-hints-meta.https.html
