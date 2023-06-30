@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
-import android.os.Build.VERSION_CODES;
-
 import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
@@ -20,7 +18,7 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -246,9 +244,9 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisableIf.Build(message = "Flaky on Android P emulator, see https://crbug.com/1403674",
-            supported_abis_includes = "x86", sdk_is_greater_than = VERSION_CODES.O_MR1,
-            sdk_is_less_than = VERSION_CODES.Q)
+    @DisabledTest(
+            message =
+                    "Flaking on multiple bots, see https://crbug.com/1403674 and https://crbug.com/1459535")
     public void
     testSecondTap() throws Exception {
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
