@@ -2700,10 +2700,16 @@
         },
         'os_type': 'android',
       },
+      # TODO(crbug.com/1412588): Delete this builder when bionic image rolls are
+      # disabled.
       'linux-rel-dev': {
-        'mixins': [
-          'linux-bionic',
-        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-18.04',
+            },
+          ],
+        },
         'test_suites': {
            'gtest_tests': 'chromium_dev_linux_gtests',
         },
