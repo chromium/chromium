@@ -428,8 +428,7 @@ class CommandBufferSetup {
 
       Mailbox mailbox;
       mailbox.SetName(name);
-      viz::SharedImageFormat si_format =
-          viz::SharedImageFormat::SinglePlane(viz::RGBA_8888);
+      viz::SharedImageFormat si_format = viz::SinglePlaneFormat::kRGBA_8888;
 
       shared_image_factory_->CreateSharedImage(
           mailbox, si_format, gfx::Size(256, 256),

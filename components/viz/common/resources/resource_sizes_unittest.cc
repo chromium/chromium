@@ -12,7 +12,7 @@ namespace viz {
 namespace {
 
 struct TestFormat {
-  ResourceFormat format;
+  SharedImageFormat format;
   size_t expected_bytes;
   size_t expected_bytes_aligned;
 };
@@ -25,7 +25,7 @@ class ResourceUtilTest : public testing::Test {
   void TestCheckedWidthInBytes(int width, const TestFormat* test_formats) {
     for (int i = 0; i < kTestFormats; ++i) {
       size_t bytes = ResourceSizes::CheckedWidthInBytes<size_t>(
-          width, SharedImageFormat::SinglePlane(test_formats[i].format));
+          width, test_formats[i].format);
       EXPECT_EQ(bytes, test_formats[i].expected_bytes);
     }
   }
@@ -33,7 +33,7 @@ class ResourceUtilTest : public testing::Test {
   void TestUncheckedWidthInBytes(int width, const TestFormat* test_formats) {
     for (int i = 0; i < kTestFormats; ++i) {
       size_t bytes = ResourceSizes::UncheckedWidthInBytes<size_t>(
-          width, SharedImageFormat::SinglePlane(test_formats[i].format));
+          width, test_formats[i].format);
       EXPECT_EQ(bytes, test_formats[i].expected_bytes);
     }
   }
@@ -42,7 +42,7 @@ class ResourceUtilTest : public testing::Test {
                               const TestFormat* test_formats) {
     for (int i = 0; i < kTestFormats; ++i) {
       size_t bytes = ResourceSizes::CheckedSizeInBytes<size_t>(
-          size, SharedImageFormat::SinglePlane(test_formats[i].format));
+          size, test_formats[i].format);
       EXPECT_EQ(bytes, test_formats[i].expected_bytes);
     }
   }
@@ -52,10 +52,10 @@ TEST_F(ResourceUtilTest, WidthInBytes) {
   // Check bytes for even width.
   int width = 10;
   TestFormat test_formats[] = {
-      {RGBA_8888, 40, 40},  // for 32 bits
-      {RGBA_4444, 20, 20},  // for 16 bits
-      {ALPHA_8, 10, 12},    // for 8 bits
-      {ETC1, 5, 8}          // for 4 bits
+      {SinglePlaneFormat::kRGBA_8888, 40, 40},  // for 32 bits
+      {SinglePlaneFormat::kRGBA_4444, 20, 20},  // for 16 bits
+      {SinglePlaneFormat::kALPHA_8, 10, 12},    // for 8 bits
+      {SinglePlaneFormat::kETC1, 5, 8}          // for 4 bits
   };
 
   TestCheckedWidthInBytes(width, test_formats);
@@ -64,10 +64,10 @@ TEST_F(ResourceUtilTest, WidthInBytes) {
   // Check bytes for odd width.
   int width_odd = 11;
   TestFormat test_formats_odd[] = {
-      {RGBA_8888, 44, 44},  // for 32 bits
-      {RGBA_4444, 22, 24},  // for 16 bits
-      {ALPHA_8, 11, 12},    // for 8 bits
-      {ETC1, 6, 8}          // for 4 bits
+      {SinglePlaneFormat::kRGBA_8888, 44, 44},  // for 32 bits
+      {SinglePlaneFormat::kRGBA_4444, 22, 24},  // for 16 bits
+      {SinglePlaneFormat::kALPHA_8, 11, 12},    // for 8 bits
+      {SinglePlaneFormat::kETC1, 6, 8}          // for 4 bits
   };
 
   TestCheckedWidthInBytes(width_odd, test_formats_odd);
@@ -78,10 +78,10 @@ TEST_F(ResourceUtilTest, SizeInBytes) {
   // Check bytes for even size.
   gfx::Size size(10, 10);
   TestFormat test_formats[] = {
-      {RGBA_8888, 400, 400},  // for 32 bits
-      {RGBA_4444, 200, 200},  // for 16 bits
-      {ALPHA_8, 100, 120},    // for 8 bits
-      {ETC1, 50, 80}          // for 4 bits
+      {SinglePlaneFormat::kRGBA_8888, 400, 400},  // for 32 bits
+      {SinglePlaneFormat::kRGBA_4444, 200, 200},  // for 16 bits
+      {SinglePlaneFormat::kALPHA_8, 100, 120},    // for 8 bits
+      {SinglePlaneFormat::kETC1, 50, 80}          // for 4 bits
   };
 
   TestCheckedSizeInBytes(size, test_formats);
@@ -89,10 +89,10 @@ TEST_F(ResourceUtilTest, SizeInBytes) {
   // Check bytes for odd size.
   gfx::Size size_odd(11, 11);
   TestFormat test_formats_odd[] = {
-      {RGBA_8888, 484, 484},  // for 32 bits
-      {RGBA_4444, 242, 264},  // for 16 bits
-      {ALPHA_8, 121, 132},    // for 8 bits
-      {ETC1, 66, 88}          // for 4 bits
+      {SinglePlaneFormat::kRGBA_8888, 484, 484},  // for 32 bits
+      {SinglePlaneFormat::kRGBA_4444, 242, 264},  // for 16 bits
+      {SinglePlaneFormat::kALPHA_8, 121, 132},    // for 8 bits
+      {SinglePlaneFormat::kETC1, 66, 88}          // for 4 bits
   };
 
   TestCheckedSizeInBytes(size_odd, test_formats_odd);

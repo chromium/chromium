@@ -773,7 +773,7 @@ TEST_P(OnBeginFrameAcksSurfaceSynchronizationTest, ResourcesOnlyReturnedOnce) {
   // resources in its resource list.
   TransferableResource resource;
   resource.id = ResourceId(1337);
-  resource.format = SharedImageFormat::SinglePlane(ALPHA_8);
+  resource.format = SinglePlaneFormat::kALPHA_8;
   resource.size = gfx::Size(1234, 5678);
   std::vector<TransferableResource> resource_list = {resource};
   parent_support().SubmitCompositorFrame(
