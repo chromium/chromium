@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
@@ -65,9 +66,13 @@ optimize_js("fill_js") {
   sources = [ "resources/fill.js" ]
 }
 
-optimize_js("form_js") {
-  primary_script = "resources/form.js"
-  sources = [ "resources/form.js" ]
+optimize_ts("form_js") {
+  sources = [ "resources/form.ts" ]
+
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 optimize_js("form_handlers_js") {

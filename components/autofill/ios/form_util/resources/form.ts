@@ -6,46 +6,37 @@
  * @fileoverview Contains method needed to access the forms and their elements.
  */
 
-/**
- * Namespace for this file. It depends on |__gCrWeb| having already been
- * injected. String 'form' is used in |__gCrWeb['form']| as it needs to be
- * accessed in Objective-C code.
- */
-__gCrWeb.form = {};
-
-// Store common namespace object in a global __gCrWeb object referenced by a
-// string, so it does not get renamed by closure compiler during the
-// minification.
-__gCrWeb['form'] = __gCrWeb.form;
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * Prefix used in references to form elements that have no 'id' or 'name'
  */
-__gCrWeb.form.kNamelessFormIDPrefix = 'gChrome~form~';
+const kNamelessFormIDPrefix = 'gChrome~form~';
 
 /**
  * Prefix used in references to field elements that have no 'id' or 'name' but
  * are included in a form.
  */
-__gCrWeb.form.kNamelessFieldIDPrefix = 'gChrome~field~';
+const kNamelessFieldIDPrefix = 'gChrome~field~';
 
 /**
  * A WeakMap to track if the current value of a field was entered by user or
  * programmatically.
  * If the map is null, the source of changed is not track.
  */
-__gCrWeb.form.wasEditedByUser = null;
+const wasEditedByUser: WeakMap<any, any>|null = null;
 
 /**
  * Based on Element::isFormControlElement() (WebKit)
- * @param {Element} element A DOM element.
- * @return {boolean} true if the |element| is a form control element.
+ * @param element A DOM element.
+ * @return true if the `element` is a form control element.
  */
-__gCrWeb.form.isFormControlElement = function(element) {
+function isFormControlElement(element: Element): boolean {
   const tagName = element.tagName;
   return (
       tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA');
-};
+}
 
 /**
  * Returns an array of control elements in a form.
@@ -56,15 +47,14 @@ __gCrWeb.form.isFormControlElement = function(element) {
  * in chromium/src/third_party/WebKit/Source/WebKit/chromium/src/
  * WebFormElement.cpp.
  *
- * @param {Element} form A form element for which the control elements are
- *   returned.
- * @return {Array<FormControlElement>}
+ * @param form A form element for which the control elements are returned.
+ * @return An array of form control elements.
  */
-__gCrWeb.form.getFormControlElements = function(form) {
+function getFormControlElements(form: HTMLFormElement|null): Element[] {
   if (!form) {
     return [];
   }
-  const results = [];
+  const results: Element[] = [];
   // Get input and select elements from form.elements.
   // According to
   // http://www.w3.org/TR/2011/WD-html5-20110525/forms.html, form.elements are
@@ -77,18 +67,17 @@ __gCrWeb.form.getFormControlElements = function(form) {
   // implementation. Note for Autofill, as input Image Button is not
   // considered as autofillable elements, there is no impact on Autofill
   // feature.
-  const elements = form.elements;
-  for (let i = 0; i < elements.length; i++) {
-    if (__gCrWeb.form.isFormControlElement(elements[i])) {
-      results.push(/** @type {FormControlElement} */ (elements[i]));
+  for (const element of form.elements) {
+    if (isFormControlElement(element)) {
+      results.push(element);
     }
   }
   return results;
-};
+}
 
 /**
- * Returns the field's |id| attribute if not space only; otherwise the
- * form's |name| attribute if the field is part of a form. Otherwhise,
+ * Returns the field's `id` attribute if not space only; otherwise the
+ * form's |name| attribute if the field is part of a form. Otherwise,
  * generate a technical identifier
  *
  * It is the identifier that should be used for the specified |element| when
@@ -109,33 +98,34 @@ __gCrWeb.form.getFormControlElements = function(form) {
  * in chromium/src/third_party/WebKit/Source/WebKit/chromium/public/
  *  WebFormControlElement.h
  *
- * @param {Element} element An element of which the name for Autofill will be
+ * @param element An element of which the name for Autofill will be
  *     returned.
- * @return {string} the name for Autofill.
+ * @return the name for Autofill.
  */
-__gCrWeb.form.getFieldIdentifier = function(element) {
+function getFieldIdentifier(element: Element|null): string {
   if (!element) {
     return '';
   }
-  let trimmedIdentifier = element.id;
+  let trimmedIdentifier: string|null = element.id;
   if (trimmedIdentifier) {
-    return __gCrWeb.common.trim(trimmedIdentifier);
+    return trim(trimmedIdentifier);
   }
-  if (element.form) {
+  if ('form' in element && element.form) {
+    const form = element.form as HTMLFormElement;
     // The name of an element is only relevant as an identifier if the element
     // is part of a form.
-    trimmedIdentifier = element.name;
+    trimmedIdentifier = 'name' in element ? element.name as string : null;
     if (trimmedIdentifier) {
-      trimmedIdentifier = __gCrWeb.common.trim(trimmedIdentifier);
-      if (trimmedIdentifier.length > 0) {
-        return trimmedIdentifier;
+      trimmedIdentifier = trim(trimmedIdentifier);
+      if (trimmedIdentifier!.length > 0) {
+        return trimmedIdentifier!;
       }
     }
 
-    const elements = __gCrWeb.form.getFormControlElements(element.form);
+    const elements = getFormControlElements(form);
     for (let index = 0; index < elements.length; index++) {
       if (elements[index] === element) {
-        return __gCrWeb.form.kNamelessFieldIDPrefix + index;
+        return kNamelessFieldIDPrefix + index;
       }
     }
   }
@@ -143,35 +133,34 @@ __gCrWeb.form.getFieldIdentifier = function(element) {
   // As best effort, try to find the closest ancestor with an id, then
   // check the index of the element in the descendants of the ancestors with
   // the same type.
-  let ancestor = element.parentNode;
-  while (!!ancestor && ancestor.nodeType === Node.ELEMENT_NODE &&
-         (!ancestor.hasAttribute('id') ||
-          __gCrWeb.common.trim(ancestor.id) === '')) {
+  let ancestor: ParentNode|Element|null = element.parentNode;
+  while (ancestor && ancestor instanceof Element &&
+         (!ancestor.hasAttribute('id') || trim(ancestor.id) === '')) {
     ancestor = ancestor.parentNode;
   }
-  const query = element.tagName;
+
   let ancestorId = '';
-  if (!ancestor || ancestor.nodeType !== Node.ELEMENT_NODE) {
+  if (!ancestor || !(ancestor instanceof Element)) {
     ancestor = document.body;
   }
-  if (ancestor.hasAttribute('id')) {
-    ancestorId = '#' + __gCrWeb.common.trim(ancestor.id);
+  if (ancestor instanceof Element && ancestor.hasAttribute('id')) {
+    ancestorId = '#' + trim(ancestor.id);
   }
   const descendants = ancestor.querySelectorAll(element.tagName);
   let i = 0;
   for (i = 0; i < descendants.length; i++) {
     if (descendants[i] === element) {
-      return __gCrWeb.form.kNamelessFieldIDPrefix + ancestorId + '~' +
-          element.tagName + '~' + i;
+      return kNamelessFieldIDPrefix + ancestorId + '~' + element.tagName + '~' +
+          i;
     }
   }
 
   return '';
-};
+}
 
 /**
- * Returns the field's |name| attribute if not space only; otherwise the
- * field's |id| attribute.
+ * Returns the field's `name` attribute if not space only; otherwise the
+ * field's `id` attribute.
  *
  * The name will be used as a hint to infer the autofill type of the field.
  *
@@ -180,41 +169,44 @@ __gCrWeb.form.getFieldIdentifier = function(element) {
  * in chromium/src/third_party/WebKit/Source/WebKit/chromium/public/
  *  WebFormControlElement.h
  *
- * @param {Element} element An element of which the name for Autofill will be
- *     returned.
- * @return {string} the name for Autofill.
+ * @param element An element of which the name for Autofill will be returned.
+ * @return the name for Autofill.
  */
-__gCrWeb.form.getFieldName = function(element) {
+function getFieldName(element: Element|null): string {
   if (!element) {
     return '';
   }
-  let trimmedName = element.name;
-  if (trimmedName) {
-    trimmedName = __gCrWeb.common.trim(trimmedName);
+
+  if ('name' in element && element.name) {
+    const trimmedName = trim(element.name as string);
     if (trimmedName.length > 0) {
       return trimmedName;
     }
   }
-  trimmedName = element.id;
-  if (trimmedName) {
-    return __gCrWeb.common.trim(trimmedName);
+
+  if (element.id) {
+    return trim(element.id);
   }
+
   return '';
-};
+}
 
 /**
- * Returns the form's |name| attribute if non-empty; otherwise the form's |id|
+ * Returns the form's `name` attribute if non-empty; otherwise the form's `id`
  * attribute, or the index of the form (with prefix) in document.forms.
  *
  * It is partially based on the logic in
  *     const string16 GetFormIdentifier(const blink::WebFormElement& form)
  * in chromium/src/components/autofill/renderer/form_autofill_util.h.
  *
- * @param {Element} form An element for which the identifier is returned.
- * @return {string} a string that represents the element's identifier.
+ * @param form An element for which the identifier is returned.
+ * @return a string that represents the element's identifier.
  */
-__gCrWeb.form.getFormIdentifier = function(form) {
-  if (!form) return '';
+function getFormIdentifier(form: Element|null): string {
+  if (!form) {
+    return '';
+  }
+
   let name = form.getAttribute('name');
   if (name && name.length !== 0 &&
       form.ownerDocument.forms.namedItem(name) === form) {
@@ -231,11 +223,11 @@ __gCrWeb.form.getFormIdentifier = function(form) {
   // HTML 4 spec) so this is unlikely to match a true id.
   for (let idx = 0; idx !== document.forms.length; idx++) {
     if (document.forms[idx] === form) {
-      return __gCrWeb.form.kNamelessFormIDPrefix + idx;
+      return kNamelessFormIDPrefix + idx;
     }
   }
   return '';
-};
+}
 
 /**
  * Returns the form element from an ID obtained from getFormIdentifier.
@@ -243,61 +235,72 @@ __gCrWeb.form.getFormIdentifier = function(form) {
  * This works on a 'best effort' basis since DOM changes can always change the
  * actual element that the ID refers to.
  *
- * @param {string} name An ID string obtained via getFormIdentifier.
- * @return {HTMLFormElement} The original form element, if it can be determined.
+ * @param name An ID string obtained via getFormIdentifier.
+ * @return The original form element, if it can be determined.
  */
-__gCrWeb.form.getFormElementFromIdentifier = function(name) {
+function getFormElementFromIdentifier(name: string): HTMLFormElement|null {
   // First attempt is from the name / id supplied.
   const form = document.forms.namedItem(name);
   if (form) {
-    if (form.nodeType !== Node.ELEMENT_NODE) return null;
-    return (form);
+    return form.nodeType === Node.ELEMENT_NODE ? form : null;
   }
   // Second attempt is from the prefixed index position of the form in
   // document.forms.
-  if (name.indexOf(__gCrWeb.form.kNamelessFormIDPrefix) === 0) {
+  if (name.indexOf(kNamelessFormIDPrefix) === 0) {
     const nameAsInteger =
-        0 | name.substring(__gCrWeb.form.kNamelessFormIDPrefix.length);
-    if (__gCrWeb.form.kNamelessFormIDPrefix + nameAsInteger === name &&
+        0 | name.substring(kNamelessFieldIDPrefix.length).length;
+    if (kNamelessFormIDPrefix + nameAsInteger === name &&
         nameAsInteger < document.forms.length) {
-      return document.forms[nameAsInteger];
+      const form = document.forms[nameAsInteger];
+      return form ? form : null;
     }
   }
   return null;
-};
+}
 
 /**
  * Returns the form element from an unique form id.
  *
- * @param {number} identifier An ID string obtained via getFormIdentifier.
- * @return {HTMLFormElement} The original form element, if it can be determined.
+ * @param identifier An ID string obtained via getFormIdentifier.
+ * @return The original form element, if it can be determined.
  */
-__gCrWeb.form.getFormElementFromUniqueFormId = function(identifier) {
-  if (identifier.toString() === __gCrWeb.fill.RENDERER_ID_NOT_SET) {
+function getFormElementFromUniqueFormId(identifier: number): HTMLFormElement|
+    null {
+  if (identifier.toString() === gCrWeb.fill.RENDERER_ID_NOT_SET) {
     return null;
   }
-  const forms = document.forms;
-  for (let i = 0; i < forms.length; i++) {
-    const form = forms[i];
-    if (identifier.toString() === __gCrWeb.fill.getUniqueID(form)) {
+  for (const form of document.forms) {
+    if (identifier.toString() === gCrWeb.fill.getUniqueID(form)) {
       return form;
     }
   }
   return null;
-};
+}
 
 /**
- * Returns whether the last |input| or |change| event on |element| was
+ * Returns whether the last `input` or `change` event on `element` was
  * triggered by a user action (was "trusted").
  */
-__gCrWeb.form['fieldWasEditedByUser'] = function(element) {
-  if (__gCrWeb.form.wasEditedByUser === null) {
+function fieldWasEditedByUser(element: Element) {
+  if (wasEditedByUser === null) {
     // Input event sources is not tracked.
     // Return true to preserve previous behavior.
     return true;
   }
-  if (!__gCrWeb.form.wasEditedByUser.has(element)) {
+  if (!wasEditedByUser.has(element)) {
     return false;
   }
-  return __gCrWeb.form.wasEditedByUser.get(element);
+  return wasEditedByUser.get(element);
+}
+
+gCrWeb.form = {
+  wasEditedByUser,
+  isFormControlElement,
+  getFormControlElements,
+  getFieldIdentifier,
+  getFieldName,
+  getFormIdentifier,
+  getFormElementFromIdentifier,
+  getFormElementFromUniqueFormId,
+  fieldWasEditedByUser,
 };
