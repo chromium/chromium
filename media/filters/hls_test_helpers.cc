@@ -31,6 +31,12 @@ std::vector<uint8_t> ContentToDataVec(base::StringPiece content) {
 
 }  // namespace
 
+MockManifestDemuxerEngineHost::MockManifestDemuxerEngineHost() = default;
+MockManifestDemuxerEngineHost::~MockManifestDemuxerEngineHost() = default;
+
+MockHlsRenditionHost::MockHlsRenditionHost() {}
+MockHlsRenditionHost::~MockHlsRenditionHost() {}
+
 FakeHlsDataSource::FakeHlsDataSource(std::vector<uint8_t> data)
     : HlsDataSource(data.size()), data_(std::move(data)) {}
 

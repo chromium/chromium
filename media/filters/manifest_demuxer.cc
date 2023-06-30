@@ -298,14 +298,16 @@ void ManifestDemuxer::SetPlaybackRate(double rate) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   bool rate_increase = rate > current_playback_rate_;
   current_playback_rate_ = rate;
-  if (!rate_increase || pending_seek_ || has_pending_event_) {
+  if (has_pending_event_ || pending_seek_) {
     return;
   }
 
-  // If the playback rate increased and there isn't already something pending,
-  // cancel the next event and set a new one.
-  cancelable_next_event_.Cancel();
-  TriggerEvent();
+  if (rate_increase || (rate == 0 && !IsSeekable())) {
+    // If the playback rate increased, or it was a pause of live content,
+    // cancel the next event and set a new one.
+    cancelable_next_event_.Cancel();
+    TriggerEvent();
+  }
 }
 
 bool ManifestDemuxer::AddRole(base::StringPiece role,

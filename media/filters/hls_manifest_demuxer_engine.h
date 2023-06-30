@@ -60,7 +60,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>
   ParseMediaPlaylistFromStream(HlsDataSourceStream stream,
                                GURL uri,
-                               hls::types::DecimalInteger version);
+                               hls::types::DecimalInteger version) override;
 
  private:
   struct PlaylistParseInfo {
