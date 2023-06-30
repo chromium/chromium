@@ -342,6 +342,12 @@ BOOL ShouldDismissKeyboardOnScroll() {
     self.carouselCell.layoutMargins =
         UIEdgeInsetsMake(margins.top, leftMargin, margins.bottom, rightMargin);
   }
+  // Update the headers padding.
+  for (NSInteger i = 0; i < self.tableView.numberOfSections; ++i) {
+    UITableViewHeaderFooterView* headerView =
+        [self.tableView headerViewForSection:i];
+    [headerView setNeedsUpdateConfiguration];
+  }
 }
 
 #pragma mark - AutocompleteResultConsumer
@@ -767,20 +773,30 @@ BOOL ShouldDismissKeyboardOnScroll() {
   contentConfiguration.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
       kHeaderTopPadding, kHeaderPadding, kHeaderPaddingBottom, kHeaderPadding);
 
-  // Inset the header to match the omnibox width, similar to
-  // `adjustMarginsToMatchOmniboxWidth` method.
-  if (IsRegularXRegularSizeClass(self)) {
-    if (self.omniboxGuide) {
-      CGFloat leftMargin = CGRectGetMinX(self.omniboxGuide.layoutFrame);
+  __weak __typeof__(self) weakSelf = self;
+  UITableViewHeaderFooterViewConfigurationUpdateHandler configurationUpdater =
+      ^void(__kindof UITableViewHeaderFooterView* headerView,
+            UIViewConfigurationState* state) {
+        __typeof__(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        // Inset the header to match the omnibox width, similar to
+        // `adjustMarginsToMatchOmniboxWidth` method.
+        CGFloat leadingPadding = kHeaderPadding;
+        if (IsRegularXRegularSizeClass(strongSelf) && strongSelf.omniboxGuide) {
+          leadingPadding += CGRectGetMinX(weakSelf.omniboxGuide.layoutFrame);
+        }
 
-      contentConfiguration.directionalLayoutMargins =
-          NSDirectionalEdgeInsetsMake(kHeaderTopPadding,
-                                      kHeaderPadding + leftMargin,
-                                      kHeaderPaddingBottom, kHeaderPadding);
-    }
-  }
-
+        UIListContentConfiguration* configurationCopy =
+            (UIListContentConfiguration*)headerView.contentConfiguration;
+        configurationCopy.directionalLayoutMargins =
+            NSDirectionalEdgeInsetsMake(kHeaderTopPadding, leadingPadding,
+                                        kHeaderPaddingBottom, kHeaderPadding);
+        headerView.contentConfiguration = configurationCopy;
+      };
   header.contentConfiguration = contentConfiguration;
+  header.configurationUpdateHandler = configurationUpdater;
   return header;
 }
 
