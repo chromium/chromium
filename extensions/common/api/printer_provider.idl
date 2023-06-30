@@ -9,19 +9,19 @@
 namespace printerProvider {
   // Error codes returned in response to $(ref:onPrintRequested) event.
   enum PrintError {
-    // Operation completed successfully.
+    // Specifies that the operation was completed successfully.
     OK,
 
-    // General failure.
+    // Specifies that a general failure occured.
     FAILED,
 
-    // Print ticket is invalid. For example, ticket is inconsistent with
-    // capabilities or extension is not able to handle all settings from the
-    // ticket.
+    // Specifies that the print ticket is invalid. For example, the ticket is
+    // inconsistent with some capabilities, or the extension is not able to
+    // handle all settings from the ticket.
     INVALID_TICKET,
 
-    // Document is invalid. For example, data may be corrupted or the format is
-    // incompatible with the extension.
+    // Specifies that the document is invalid. For example, data may be
+    // corrupted or the format is incompatible with the extension.
     INVALID_DATA
   };
 
