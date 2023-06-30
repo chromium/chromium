@@ -649,6 +649,7 @@
 <translation id="5083464117946352670">Није могуће утврдити величину датотеке.</translation>
 <translation id="5090832849094901128">Брисањем ове лозинке нећете избрисати налог на <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Твит је довршен.</translation>
+<translation id="5109892411553231226">Управљајте начинима плаћања</translation>
 <translation id="5118713593561876160">Интересовања</translation>
 <translation id="5118764316110575523">Искључено</translation>
 <translation id="5119391094379141756">Изаберите Chrome</translation>
@@ -1058,6 +1059,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7531345132340165516">Тренутни сајт</translation>
 <translation id="7537586195939242955">Жао нам је, приступна реч сада не може да се инсталира у Passbook.</translation>
 <translation id="754655535278952384">Проверено је <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Последња картица је коришћена на уређају <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Да бисте искључили, отворите <ph name="BEGIN_LINK" />Подешавања<ph name="END_LINK" /> и идите у Опције лозинки.</translation>
 <translation id="7554645225856321710">Затвори све</translation>
 <translation id="7554791636758816595">Нова картица</translation>
@@ -1190,7 +1192,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8319076807703933069">Нова претрага</translation>
 <translation id="8323906514956095947">Додирните и задржите ако желите више опција за картице</translation>
 <translation id="8328777765163860529">Затвори све</translation>
-<translation id="8331621926962374866">Када је Chrome у режиму закључавања, одређене веб-технологије су блокиране, што може да доведе до споријег учитавања веб-сајтова или неправилног рада.</translation>
 <translation id="8343993175958086504">Правите резервне копије садржаја и користите га на било ком уређају.</translation>
 <translation id="834783239627985533">Најпосећенији сајтови</translation>
 <translation id="8378714024927312812">Овим управља организација</translation>
@@ -1204,6 +1205,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8428045167754449968">Град/место</translation>
 <translation id="8428213095426709021">Подешавања</translation>
 <translation id="8428634594422941299">Важи</translation>
+<translation id="8446201778524791138">Измени радње</translation>
 <translation id="8446884382197647889">Сазнајте више</translation>
 <translation id="8458397775385147834">1 ставка је избрисана</translation>
 <translation id="8459333855531264009">Није безбедан</translation>

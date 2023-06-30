@@ -15,6 +15,7 @@
 <translation id="1082009148392559545">Ladataan näytönsäästäjää</translation>
 <translation id="1094693127011229778">IP-osoite ei ole käytettävissä</translation>
 <translation id="1113892970288677790">Valitse taideteoksia ja kuvia</translation>
+<translation id="1118572504348554005">Saatamme jakaa tämän lomakkeen kautta lähetetyn palautteen yhteistyökumppaneillemme bugien ja muiden ilmoittamiesi virheiden korjausta varten. Älä kerro arkaluontoisia tietoja, esimerkiksi salasanaa.</translation>
 <translation id="1119447706177454957">Sisäinen virhe</translation>
 <translation id="1124772482545689468">Käyttäjä</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -460,7 +461,6 @@
 <translation id="469379815867856270">Signaalin voimakkuus</translation>
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
 <translation id="473775607612524610">Päivitä</translation>
-<translation id="4744944742468440486">Valintaasi liittyviä tietoja</translation>
 <translation id="4771607256327216405">näppäimistön kirkastus</translation>
 <translation id="4773299976671772492">Keskeytetty</translation>
 <translation id="4782311465517282004">Voit nähdä määritelmiä, käännöksiä tai yksikkömuunnoksia klikkaamalla tekstiä kakkospainikkeella tai koskettamalla sitä pitkään</translation>

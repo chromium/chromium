@@ -7118,6 +7118,15 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7298197471363105063">Esegui l'override degli insiemi First-Party.</translation>
 <translation id="7302043767260300182">Ritardo blocco schermo in caso di utilizzo di CA</translation>
 <translation id="7303902834678570827">Gli utenti di sessioni Ospite gestite non possono memorizzare le impostazioni di visualizzazione a livello di dispositivo.</translation>
+<translation id="7306926210354955892">La configurazione del criterio consente di specificare l'azione da eseguire quando la directory dei dati ARC dell'utente è stata creata con virtio-fs. A meno che non venga eseguita la migrazione dei dati virtio-fs su virtio-blk, le app per Android potrebbero essere eseguite più lentamente su ARC VM.
+
+      Se il criterio viene impostato su:
+
+      * <ph name="DO_NOT_PROMPT" />, all'utente non verrà chiesto di seguire il flusso di migrazione. Questo è il valore predefinito se il criterio non viene configurato.
+
+      * <ph name="PROMPT" /> (o un valore non supportato) indica che, al momento dell'accesso, all'utente viene chiesto di eseguire il flusso di migrazione dei dati. L'operazione potrebbe richiedere fino a 10 minuti.
+
+      Questo criterio si applica solo ai dispositivi ARM che eseguono la migrazione ad ARC VM.</translation>
 <translation id="731208205557053914">Segnala informazioni sui VPD</translation>
 <translation id="7313672174502374994">L'hash SHA-256 dell'immagine di sfondo.</translation>
 <translation id="7313681786668291607">Questo criterio consente di specificare il comportamento del sistema all'avvio. Disattivare questa impostazione equivale a non configurarla, perché per <ph name="PRODUCT_NAME" /> è necessario specificare un comportamento da adottare all'avvio.

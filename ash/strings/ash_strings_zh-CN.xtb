@@ -394,6 +394,7 @@
 <translation id="2750941250130734256">取消停靠活动窗口。</translation>
 <translation id="2761723519669354964">打开任务栏中的突出显示项</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> 至 <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">Ctrl + 搜索键 + S</translation>
 <translation id="2778650143428714839">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
 <translation id="2782591952652094792">退出截屏/录屏模式</translation>
 <translation id="2785499565474703580">已连接 1 部设备</translation>
@@ -457,6 +458,7 @@
 <translation id="3062298103034426069">不支持</translation>
 <translation id="3068622547379332530">版本 <ph name="VERSION_NAME" />（<ph name="OFFICIAL_STATUS" />）<ph name="CHANNEL_NAME" /><ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">任务栏位于屏幕左侧</translation>
+<translation id="3070639127620815135">搜索键 + Esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">展开菜单</translation>
 <translation id="3087734570205094154">底部</translation>
@@ -470,6 +472,7 @@
 <translation id="3120421559657122717">要关机吗？</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">重新启动以进行更新</translation>
+<translation id="3139188263101386725">使用更新后的快捷键</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">移动数据</translation>
 <translation id="3151786313568798007">方向</translation>
@@ -605,6 +608,7 @@
         <ph name="END_TIME" />，
         <ph name="TIME_ZONE" />。选择相应条目即可在 Google 日历中了解详情。</translation>
 <translation id="3659444876902283058">（第 <ph name="CURRENT_DAY" /> 天，共 <ph name="TOTAL_DAYS" /> 天）</translation>
+<translation id="3659667652322717492">您稍后可随时更改麦克风行为。</translation>
 <translation id="3659814201068740063">电量还剩大约 <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)。
 请为设备接通电源。</translation>
 <translation id="366222428570480733">受管用户：<ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1047,6 +1051,7 @@
 <translation id="5578188167649348993">内存</translation>
 <translation id="5580000943347215299">库</translation>
 <translation id="558849140439112033">拖动鼠标指针即可选择要截取的区域</translation>
+<translation id="5590609058453685222">静音提醒已开启。如果您在静音状态下说话，则会收到通知。</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">按 Ctrl + Alt + Z 即可停用语音反馈。</translation>
@@ -1199,6 +1204,7 @@
 <translation id="6231419273573514727">外围设备的性能可能会受到限制</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" />正在使用您的摄像头和麦克风</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">使用“<ph name="NEW_SHORTCUT" />”打开任务管理器应用。</translation>
 <translation id="6247728804802644171">打开通知</translation>
 <translation id="6254629735336163724">已锁定为横向</translation>
 <translation id="6259254695169772643">请使用您的触控笔进行选择</translation>
@@ -1249,6 +1255,7 @@
 <translation id="6497418457565568043">“勿扰”模式已开启</translation>
 <translation id="6500896621837555595">更新</translation>
 <translation id="6501401484702599040">正在将屏幕投放到“<ph name="RECEIVER_NAME" />”</translation>
+<translation id="6507042703812908515">使用“<ph name="NEW_SHORTCUT" />”打开键盘快捷键应用。</translation>
 <translation id="6507618042428827377">切换到下一种可用输入法</translation>
 <translation id="6508923215158854599">确保您的 Chromebook 与 Chromecast 设备连接到同一个 Wi-Fi 网络。</translation>
 <translation id="6515727200518652613">相机连接已中断，正在尝试重新连接。</translation>
@@ -1637,6 +1644,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />，应用</translation>
 <translation id="8255234195843591763">重置以接收更新</translation>
 <translation id="8261506727792406068">删除</translation>
+<translation id="8265826854528868575">当前显示 <ph name="NUM_SHOWN_TASKS" /> 项，共 <ph name="NUM_TOTAL_TASKS" /> 项</translation>
 <translation id="8270450402312105425">{0,plural, =1{请在 1 小时内将设备回滚到上一个版本}other{请在 # 小时内将设备回滚到上一个版本}}</translation>
 <translation id="8277261673056602147">突出显示屏幕上的文字</translation>
 <translation id="8284362522226889623">若要切换到上一个桌面，请用四根手指向左滑动</translation>

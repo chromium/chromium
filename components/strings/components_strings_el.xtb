@@ -5,7 +5,6 @@
 <translation id="1008557486741366299">Όχι τώρα</translation>
 <translation id="100957008357583611">Χρήση της τοποθεσίας σας;</translation>
 <translation id="1010200102790553230">Φόρτωση σελίδας αργότερα</translation>
-<translation id="1010481144722131607">Η τράπεζά σας θέλει να επαληθεύσει την ταυτότητά σας</translation>
 <translation id="1011206368273183593">Προετοιμασία αρχείων</translation>
 <translation id="1015730422737071372">Καταχωρίστε επιπλέον λεπτομέρειες</translation>
 <translation id="1019413721762100891">Απενεργοποιημένο</translation>
@@ -204,7 +203,6 @@
 <translation id="1391289752476847787">Μετοχές και ομόλογα</translation>
 <translation id="1391625539203220400">Αποθήκευση IBAN σε αυτήν τη συσκευή;</translation>
 <translation id="139305205187523129">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> δεν έστειλε δεδομένα.</translation>
-<translation id="1396259464226642517">Δεν ήταν αναμενόμενο αυτό το αποτέλεσμα; <ph name="BEGIN_LINK" />Αποστολή σχολίων<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Ανοιχτό πράσινο</translation>
 <translation id="1406500794671479665">Επαλήθευση…</translation>
 <translation id="1406812885827747674">Να επιτραπεί αυτήν τη φορά</translation>
@@ -405,7 +403,6 @@
 <translation id="1807528111851433570">Φύλλο έναρξης</translation>
 <translation id="180757923930449935">(Προσομοίωση 64-bit)</translation>
 <translation id="180991881384371158">Ο κωδικός CVC βρίσκεται στο πίσω μέρος της κάρτας σας. Είναι τα 3 τελευταία ψηφία στην επάνω δεξιά γωνία του πλαισίου υπογραφής.</translation>
-<translation id="181000283860817563">Παρακολούθηση τιμών σε πολλούς ιστοτόπους</translation>
 <translation id="1810391395243432441">Προστασία κωδικών πρόσβασης με το κλείδωμα οθόνης</translation>
 <translation id="1812527064848182527">οριζόντιος προσανατολισμός</translation>
 <translation id="1812975699435941848">Εκπαίδευση υγείας και Ιατρική εκπαίδευση</translation>
@@ -476,7 +473,6 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">Ο ιστότοπος <ph name="URL" /> θέλει να αποθηκεύσει μόνιμα δεδομένα μεγάλου όγκου στον τοπικό υπολογιστή σας</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{και άλλο 1 άτομο}other{και άλλα # άτομα}}</translation>
-<translation id="2001469757375372617">Προέκυψε πρόβλημα. Η αλλαγή σας δεν αποθηκεύτηκε.</translation>
 <translation id="2003709556000175978">Επαναφέρετε τον κωδικό πρόσβασής σας τώρα</translation>
 <translation id="2003775180883135320">Τετραπλό τρύπημα στο επάνω μέρος</translation>
 <translation id="2009942480257059311">Κουμπί Δημιουργία συμβάντος, ενεργοποιήστε το για να δημιουργήσετε γρήγορα ένα νέο συμβάν στο Ημερολόγιο Google</translation>
@@ -791,7 +787,6 @@
 <translation id="2704606927547763573">Αντιγράφ.</translation>
 <translation id="2705137772291741111">Δεν είναι δυνατή η ανάγνωση του αποθηκευμένου αντιγράφου (κρυφής μνήμης) αυτού του ιστότοπου.</translation>
 <translation id="2709516037105925701">Αυτόματη συμπλήρωση</translation>
-<translation id="2712173769900027643">Να ζητηθεί άδεια</translation>
 <translation id="2713444072780614174">Λευκό</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για να διαχειριστείτε τα στοιχεία πληρωμών και πιστωτικών καρτών στις ρυθμίσεις του Chrome.</translation>
 <translation id="2715808615350965923">Super A</translation>
@@ -837,7 +832,6 @@
 <translation id="2839032553903800133">Οι ειδοποιήσεις έχουν αποκλειστεί</translation>
 <translation id="2839501879576190149">Ακολουθεί ψεύτικος ιστότοπος</translation>
 <translation id="2851291081585704741">Είστε εκτός σύνδεσης</translation>
-<translation id="2851634818064021665">Απαιτείται άδεια για να επισκεφτείτε αυτόν τον ιστότοπο</translation>
 <translation id="2854764410992194509">Πάροχοι υπηρεσιών διαδικτύου (ISP)</translation>
 <translation id="2856444702002559011">Οι εισβολείς ενδέχεται να προσπαθήσουν να υποκλέψουν τα στοιχεία σας από τον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (για παράδειγμα, κωδικούς πρόσβασης, μηνύματα ή πιστωτικές κάρτες). <ph name="BEGIN_LEARN_MORE_LINK" />Μάθετε περισσότερα<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 χιλ.</translation>
@@ -1479,7 +1473,6 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">T-Shirt</translation>
 <translation id="4253168017788158739">Σημείωση</translation>
-<translation id="4255487295905690262">Αν η τιμή πέσει σε οποιονδήποτε ιστότοπο, θα λάβετε ειδοποιήσεις ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="425582637250725228">Οι αλλαγές που κάνατε ενδέχεται να μην έχουν αποθηκευτεί.</translation>
 <translation id="4258748452823770588">Εσφαλμένη υπογραφή</translation>
 <translation id="4261046003697461417">Δεν είναι δυνατός ο σχολιασμός των προστατευμένων εγγράφων</translation>
@@ -1752,9 +1745,7 @@
 <translation id="484988093836683706">Χρήση λειτουργίας ξεκλειδώματος συσκευής</translation>
 <translation id="4850886885716139402">Προβολή</translation>
 <translation id="4852429274334674023">Λειτουργικά συστήματα</translation>
-<translation id="4853901935952445031">Αυτός ο ιστότοπος δεν θα μπορεί να χρησιμοποιήσει το API U2F μετά τον Φεβρουάριο του 2022. Αν είστε ο κάτοχος αυτού του ιστοτόπου, πρέπει να κάνετε αλλαγές σε αυτόν, ώστε να χρησιμοποιεί το API ελέγχου ταυτότητας ιστού.</translation>
 <translation id="4854853140771946034">Γρήγορη δημιουργία νέας σημείωσης στο Google Keep</translation>
-<translation id="4858792381671956233">Ρώτησες τους γονείς σου εάν σου επιτρέπουν να επισκεφτείς αυτόν τον ιστότοπο</translation>
 <translation id="485902285759009870">Επαλήθευση κωδικού…</translation>
 <translation id="486459320933704969">Για να μπορέσεις να επισκεφτείς αυτόν τον ιστότοπο, πρέπει να δώσει την άδεια ένας γονέα ή κηδεμόνας</translation>
 <translation id="4866506163384898554">Πατήστε |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| για να εμφανιστεί ο δείκτης</translation>
@@ -2440,7 +2431,6 @@
 <translation id="6410264514553301377">Εισαγάγετε την ημερομηνία λήξης και τον κωδικό CVC για την κάρτα <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6414010576370319452">Φροντίδα δέρματος και μανικιούρ</translation>
-<translation id="6414888972213066896">Ρώτησες τους γονείς σου εάν σου επιτρέπουν να επισκεφτείς αυτόν τον ιστότοπο</translation>
 <translation id="6415778972515849510">Το Chromium μπορεί να σας βοηθήσει να προστατεύσετε τον Λογαριασμό σας Google και να αλλάξετε τον κωδικό πρόσβασής σας.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="641811520997304166">Υπηρεσίες μισθοδοσίας</translation>
@@ -2581,7 +2571,6 @@
 <translation id="6711464428925977395">Υπάρχει κάποιο πρόβλημα με το διακομιστή μεσολάβησης ή η διεύθυνση είναι εσφαλμένη.</translation>
 <translation id="6716672519412350405">Ο ιστότοπος <ph name="URL" /> θέλει να δημιουργήσει τρισδιάστατο χάρτη του περιβάλλοντα χώρου σας και να παρακολουθεί τη θέση της κάμερας.</translation>
 <translation id="6718612893943028815">Χρήση κάμερας;</translation>
-<translation id="6721678857435001674">Προβολή της κατασκευής και του μοντέλου του Κλειδιού ασφαλείας</translation>
 <translation id="6726832600570791992">(Προσομοίωση 32-bit)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">κάμερα</translation>
@@ -2688,7 +2677,6 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Συσκευή</translation>
 <translation id="696703987787944103">Αντιληπτική</translation>
-<translation id="6968269510885595029">Χρήση του κλειδιού ασφαλείας σας</translation>
 <translation id="6971439137020188025">Γρήγορη δημιουργία νέας παρουσίασης Google στις Παρουσιάσεις</translation>
 <translation id="6972629891077993081">Συσκευές HID</translation>
 <translation id="6973656660372572881">Καθορίζονται τόσο οι σταθεροί διακομιστές μεσολάβησης όσο και μια διεύθυνση URL σεναρίου .pac.</translation>
@@ -2807,6 +2795,7 @@
 <translation id="7219179957768738017">Στη σύνδεση χρησιμοποιείται <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Επεξεργασία</translation>
 <translation id="7221855153210829124">Εμφάνιση ειδοποιήσεων</translation>
+<translation id="7221857374443660083">Η τράπεζά σας θέλει να επαληθεύσει την ταυτότητά σας</translation>
 <translation id="722454870747268814">Νέα καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="7227293336683593977">Ιστορικό τιμών</translation>
 <translation id="7233592378249864828">Εκτύπωση φύλλου επιβεβαίωσης</translation>
@@ -3386,6 +3375,7 @@
 <translation id="8449836157089738489">Άνοιγμα όλων σε νέα ομάδα καρτελών</translation>
 <translation id="8457125768502047971">Επ' αόριστον</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Ενεργοποίηση</translation>
 <translation id="8461694314515752532">Κρυπτογράφηση συγχρονισμένων δεδομένων με τη δική σας φράση πρόσβασης συγχρονισμού</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 πιστωτική κάρτα}other{# πιστωτικές κάρτες}}</translation>
 <translation id="8468358362970107653">Φάκελος C3</translation>

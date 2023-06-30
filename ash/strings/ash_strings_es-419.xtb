@@ -395,6 +395,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2750941250130734256">Se desancló la ventana activa.</translation>
 <translation id="2761723519669354964">Abrir el elemento destacado de la barra</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">Ctrl + búsqueda + s</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> administra <ph name="DEVICE_TYPE" /></translation>
 <translation id="2782591952652094792">Salir del modo de captura</translation>
 <translation id="2785499565474703580">1 dispositivo conectado</translation>
@@ -458,6 +459,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3062298103034426069">No compatible</translation>
 <translation id="3068622547379332530">Versión <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Biblioteca a la izquierda</translation>
+<translation id="3070639127620815135">búsqueda + esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Expandir menú</translation>
 <translation id="3087734570205094154">Inferior</translation>
@@ -471,6 +473,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3120421559657122717">¿Quieres apagar el dispositivo?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reinicia para actualizar.</translation>
+<translation id="3139188263101386725">Usa la combinación de teclas actualizada</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
 <translation id="315116470104423982">Datos móviles</translation>
 <translation id="3151786313568798007">Orientación</translation>
@@ -606,6 +609,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />. Selecciona un evento para ver más detalles en el Calendario de Google.</translation>
 <translation id="3659444876902283058">(Día <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
+<translation id="3659667652322717492">Puedes cambiar el comportamiento del micrófono en cualquier momento.</translation>
 <translation id="3659814201068740063">Quedan aproximadamente <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Conecta tu dispositivo a la corriente.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, usuario administrado</translation>
@@ -1050,6 +1054,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5578188167649348993">memoria</translation>
 <translation id="5580000943347215299">Biblioteca</translation>
 <translation id="558849140439112033">Arrastra el cursor para seleccionar un área que quieras capturar</translation>
+<translation id="5590609058453685222">El Aviso de micrófono silenciado está activado. Recibirás una notificación si hablas con el micrófono silenciado.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Presiona Ctrl + Alt + Z para inhabilitar los comentarios por voz.</translation>
@@ -1203,6 +1208,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6231419273573514727">Es posible que se limite el rendimiento de los dispositivos periféricos</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está utilizando tu cámara y micrófono</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Abre la app del Administrador de tareas con “<ph name="NEW_SHORTCUT" />”.</translation>
 <translation id="6247728804802644171">Abrir notificaciones</translation>
 <translation id="6254629735336163724">Se bloqueó en posición horizontal</translation>
 <translation id="6259254695169772643">Usa tu pluma stylus para realizar una selección</translation>
@@ -1253,6 +1259,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6497418457565568043">La función No interrumpir está activada</translation>
 <translation id="6500896621837555595">Actualizar</translation>
 <translation id="6501401484702599040">Transmitiendo pantalla a <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Abre la app de Combinaciones de teclas con "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Cambiar al siguiente método de entrada disponible</translation>
 <translation id="6508923215158854599">Asegúrate de que la Chromebook esté conectada a la misma red Wi-Fi que el dispositivo Chromecast.</translation>
 <translation id="6515727200518652613">Se desconectó la cámara. Intentando volver a establecer la conexión.</translation>
@@ -1645,6 +1652,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8255234195843591763">Restablecer para actualizar</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8262312463845990408">Activar o desactivar la reproducción</translation>
+<translation id="8265826854528868575">Se muestran <ph name="NUM_SHOWN_TASKS" /> de <ph name="NUM_TOTAL_TASKS" /></translation>
 <translation id="8270450402312105425">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de una hora}other{Cambia el dispositivo a la versión anterior en el transcurso de # horas}}</translation>
 <translation id="8277261673056602147">Destacar texto en la pantalla</translation>
 <translation id="8284362522226889623">Para cambiar al escritorio anterior, desliza cuatro dedos hacia la izquierda.</translation>

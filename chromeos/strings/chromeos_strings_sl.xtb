@@ -15,6 +15,7 @@
 <translation id="1082009148392559545">Prenos ohranjevalnika zaslona</translation>
 <translation id="1094693127011229778">Naslov IP ni na voljo.</translation>
 <translation id="1113892970288677790">Izberite izbrani slikovni material in slike</translation>
+<translation id="1118572504348554005">Povratne informacije, ki jih pošljete v tem obrazcu, lahko delimo z našimi partnerji in tako odpravljamo napake ter druge težave, o katerih nas obvestite. Ne vključite občutljivih podatkov, kot so gesla.</translation>
 <translation id="1119447706177454957">Notranja napaka</translation>
 <translation id="1124772482545689468">Uporabnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -460,7 +461,6 @@
 <translation id="469379815867856270">Moč signala</translation>
 <translation id="4731797938093519117">Starševski dostop</translation>
 <translation id="473775607612524610">Posodobi</translation>
-<translation id="4744944742468440486">Podatki, povezani z vašim izborom</translation>
 <translation id="4771607256327216405">posvetlitev osvetlitve tipkovnice</translation>
 <translation id="4773299976671772492">Ustavljeno</translation>
 <translation id="4782311465517282004">Zagotovite si definicije, prevode ali pretvorbe enot, ko besedilo kliknete z desnim gumbom ali se ga dotaknete in pridržite.</translation>

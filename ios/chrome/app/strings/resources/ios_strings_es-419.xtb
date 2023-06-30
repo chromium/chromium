@@ -649,6 +649,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5083464117946352670">Tamaño de archivo desconocido</translation>
 <translation id="5090832849094901128">Si borras esta contraseña, no se quitará tu cuenta de <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet publicado</translation>
+<translation id="5109892411553231226">Administrar las formas de pago</translation>
 <translation id="5118713593561876160">Intereses</translation>
 <translation id="5118764316110575523">No</translation>
 <translation id="5119391094379141756">Selecciona Chrome.</translation>
@@ -1080,6 +1081,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7687508192620387263">Hay un archivo del calendario disponible</translation>
 <translation id="7701040980221191251">Ninguna</translation>
 <translation id="7711440461521638739">No reutilizas ninguna contraseña</translation>
+<translation id="7719038820139380048">Accede para obtener contenido según tus intereses.</translation>
 <translation id="7720410380936703141">VOLVER A INTENTAR</translation>
 <translation id="7726702057919861819">Menú → Historial → Borrar datos de navegación</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Solo en este dispositivo.</translation>
@@ -1189,7 +1191,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8319076807703933069">Nueva búsqueda</translation>
 <translation id="8323906514956095947">Mantén presionado el botón para ver más opciones de pestañas</translation>
 <translation id="8328777765163860529">Cerrar todas</translation>
-<translation id="8331621926962374866">Cuando Chrome está en modo hermético, se bloquean ciertas tecnologías web, lo que puede provocar que algunos sitios web se carguen más lento o no funcionen correctamente.</translation>
 <translation id="8343993175958086504">Crea una copia de seguridad de tus datos y úsalos en cualquier dispositivo.</translation>
 <translation id="834783239627985533">Sitios más visitados</translation>
 <translation id="8378714024927312812">Administrado por tu organización</translation>

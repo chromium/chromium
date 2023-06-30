@@ -5,7 +5,6 @@
 <translation id="1008557486741366299">ഇപ്പോഴല്ല</translation>
 <translation id="100957008357583611">നിങ്ങളുടെ ലൊക്കേഷൻ ഉപയോഗിക്കണോ?</translation>
 <translation id="1010200102790553230">പേജ് പിന്നീട് ലോഡ് ചെയ്യുക</translation>
-<translation id="1010481144722131607">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് ബാങ്കിന് ഉറപ്പിക്കേണ്ടതുണ്ട്</translation>
 <translation id="1011206368273183593">ഫയലുകൾ തയ്യാറാക്കുന്നു</translation>
 <translation id="1015730422737071372">കൂടുതൽ വിശദാംശങ്ങൾ നൽകുക</translation>
 <translation id="1019413721762100891">ഓഫാണ്</translation>
@@ -204,7 +203,6 @@
 <translation id="1391289752476847787">സ്റ്റോക്കുകളും ബോണ്ടുകളും</translation>
 <translation id="1391625539203220400">ഈ ഉപകരണത്തിലേക്ക് IBAN സംരക്ഷിക്കണോ?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ഡാറ്റയൊന്നും അയച്ചിട്ടില്ല.</translation>
-<translation id="1396259464226642517">ഈ ഫലം അപ്രതീക്ഷിതമായിരുന്നോ? <ph name="BEGIN_LINK" />ഫീഡ്ബാക്ക് അയയ്ക്കൂ<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">ഇളം പച്ച</translation>
 <translation id="1406500794671479665">സ്ഥിരീകരിക്കുന്നു...</translation>
 <translation id="1406812885827747674">ഇത്തവണ അനുവദിക്കുക</translation>
@@ -405,7 +403,6 @@
 <translation id="1807528111851433570">ആദ്യ ഷീറ്റ്</translation>
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC നിങ്ങളുടെ കാർഡിന്റെ പിൻഭാഗത്താണുള്ളത്. ഒപ്പിടാനുള്ള ബോക്‌സിന്റെ മുകളിൽ വലതുവശത്തുള്ള അവസാന 3 അക്കമാണിത്.</translation>
-<translation id="181000283860817563">ഒന്നിലധികം സൈറ്റുകളിലെ നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="1810391395243432441">നിങ്ങളുടെ സ്ക്രീൻ ലോക്ക് ഉപയോഗിച്ച് പാസ്‌വേഡുകൾ പരിരക്ഷിക്കുക</translation>
 <translation id="1812527064848182527">ലാൻഡ്‌സ്‌കേപ്പ്</translation>
 <translation id="1812975699435941848">ആരോഗ്യ വിദ്യാഭ്യാസവും മെഡിക്കൽ പരിശീലനവും</translation>
@@ -476,7 +473,6 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">നിങ്ങളുടെ ലോക്കൽ കമ്പ്യൂട്ടറിൽ ശാശ്വതമായി വലിയ ഡാറ്റ സംഭരിക്കാൻ <ph name="URL" />ആഗ്രഹിക്കുന്നു</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{കൂടാതെ 1 കൂടി}other{എന്നിവയും # എണ്ണവും കൂടി}}</translation>
-<translation id="2001469757375372617">എന്തോ പിശകുണ്ടായി. നിങ്ങൾ വരുത്തിയ മാറ്റം സംരക്ഷിച്ചില്ല.</translation>
 <translation id="2003709556000175978">നിങ്ങളുടെ പാസ്‌വേഡ് ഇപ്പോൾ തന്നെ റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="2003775180883135320">മുകളിൽ നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="2009942480257059311">'ഇവന്റ് സൃഷ്ടിക്കുക' ബട്ടൺ, Google Calendar-ൽ പുതിയൊരു ഇവന്റ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ സജീവമാക്കുക</translation>
@@ -791,7 +787,6 @@
 <translation id="2704606927547763573">പകർത്തി</translation>
 <translation id="2705137772291741111">ഈ സൈറ്റിന്റെ സംരക്ഷിച്ച (കാഷെ ചെയ്‌ത) പതിപ്പ് വായിക്കാനാകാത്തതാണ്.</translation>
 <translation id="2709516037105925701">സ്വയമേവ പൂരിപ്പിക്കൽ</translation>
-<translation id="2712173769900027643">അനുമതി ചോദിക്കുക</translation>
 <translation id="2713444072780614174">വെള്ള</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പേയ്‌മെന്റുകളും ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങളും മാനേജ് ചെയ്യാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="2715808615350965923">സൂപ്പർ A</translation>
@@ -837,7 +832,6 @@
 <translation id="2839032553903800133">അറിയിപ്പുകൾ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="2839501879576190149">വ്യാജ സൈറ്റ് ഉണ്ട്</translation>
 <translation id="2851291081585704741">നിങ്ങൾ ഓഫ്‌ലൈനാണ്</translation>
-<translation id="2851634818064021665">ഈ സൈറ്റ് സന്ദർശിക്കാൻ നിങ്ങൾക്ക് അനുമതി ആവശ്യമാണ്</translation>
 <translation id="2854764410992194509">ഇന്റര്‍നെറ്റ് സേവന ദാതാക്കൾ (ISPs)</translation>
 <translation id="2856444702002559011"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> എന്നതിൽ നിന്ന് നിങ്ങളുടെ വിവരം മോഷ്‌ടിക്കാൻ അക്രമികൾ ശ്രമിക്കുന്നുണ്ടാവാം (ഉദാഹരണത്തിന്, പാസ്‌വേഡുകൾ, സന്ദേശങ്ങൾ, അല്ലെങ്കിൽ ക്രെഡിറ്റ് കാർഡുകൾ). <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 മി.മീ</translation>
@@ -1477,7 +1471,6 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">ടീ-ഷർട്ടുകൾ</translation>
 <translation id="4253168017788158739">കുറിപ്പ്</translation>
-<translation id="4255487295905690262">ഏതെങ്കിലും സൈറ്റിൽ നിരക്ക് കുറയുമ്പോൾ നിങ്ങൾക്ക് ഇമെയിൽ മുന്നറിയിപ്പുകൾ ലഭിക്കും.</translation>
 <translation id="425582637250725228">നിങ്ങൾ വരുത്തിയ മാറ്റങ്ങൾ സംരക്ഷിക്കപ്പെട്ടിരിക്കാനിടയില്ല.</translation>
 <translation id="4258748452823770588">മോശം സിഗ്‌നേച്ചർ</translation>
 <translation id="4261046003697461417">സംരക്ഷിച്ചിരിക്കുന്ന ഡോക്യുമെൻ്റുകൾ അനോട്ടേറ്റ് ചെയ്യാനാവില്ല</translation>
@@ -1750,9 +1743,7 @@
 <translation id="484988093836683706">ഉപകരണ അൺലോക്ക് ഉപയോഗിക്കുക</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="4852429274334674023">ഓപ്പറേറ്റിംഗ് സിസ്റ്റങ്ങൾ</translation>
-<translation id="4853901935952445031">2022 ഫെബ്രുവരിക്ക് ശേഷം ഈ സൈറ്റിന് U2F API ഉപയോഗിക്കാനാകില്ല. ഈ സൈറ്റ് നിങ്ങളുടേതാണെങ്കിൽ, വെബ് ഓതന്റിക്കേഷൻ API ഉപയോഗിക്കുന്നതിന് നിങ്ങൾ അത് മാറ്റണം.</translation>
 <translation id="4854853140771946034">Google Keep-ൽ പുതിയൊരു കുറിപ്പ് വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
-<translation id="4858792381671956233">ഈ സൈറ്റ് സന്ദർശിക്കുന്നതിന് നിങ്ങൾ രക്ഷിതാക്കളോട് അനുമതി ആവശ്യപ്പെട്ടു</translation>
 <translation id="485902285759009870">കോഡ് പരിശോധിച്ചുറപ്പിക്കുന്നു...</translation>
 <translation id="486459320933704969">നിങ്ങൾക്ക് ഈ വെബ്സൈറ്റ് സന്ദർശിക്കാമെന്ന് രക്ഷിതാവോ നിയമപരമായ പ്രതിനിധിയോ പറയേണ്ടതുണ്ട്</translation>
 <translation id="4866506163384898554">നിങ്ങളുടെ കഴ്‌സർ കാണിക്കാൻ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| അമർത്തുക</translation>
@@ -2438,7 +2429,6 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />-ന്‍റെ കാലാവധി തീരുന്ന തീയതിയും CVC-യും നൽകുക</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6414010576370319452">ചർമ്മ, നഖ സംരക്ഷണം</translation>
-<translation id="6414888972213066896">ഈ സൈറ്റ് സന്ദർശിക്കുന്നതിന് നിങ്ങൾ രക്ഷിതാവിനോട് അനുമതി ആവശ്യപ്പെട്ടു</translation>
 <translation id="6415778972515849510">നിങ്ങളുടെ Google Account പരിരക്ഷിക്കാനും പാസ്‌വേഡ് മാറ്റാനും Chromium സഹായിക്കും.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="641811520997304166">പേറോൾ സേവനങ്ങൾ</translation>
@@ -2579,7 +2569,6 @@
 <translation id="6711464428925977395">പ്രോക്‌സി സെർവറിൽ എന്തോ പ്രശ്‌നമുണ്ട്, അല്ലെങ്കിൽ വിലാസം തെറ്റാണ്.</translation>
 <translation id="6716672519412350405">നിങ്ങളുടെ ചുറ്റുപാടുകളുടെ 3D മാപ്പ് സൃഷ്ടിക്കാനും ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാനും <ph name="URL" /> താല്‍‌പ്പര്യപ്പെടുന്നു</translation>
 <translation id="6718612893943028815">ക്യാമറ ഉപയോഗിക്കണോ?</translation>
-<translation id="6721678857435001674">നിങ്ങളുടെ സുരക്ഷാ കീയുടെ നിർമ്മാണവും മോഡലും കാണുക</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">ക്യാമറ</translation>
@@ -2686,7 +2675,6 @@
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6965978654500191972">ഉപകരണം</translation>
 <translation id="696703987787944103">പെർസെപ്ച്വൽ</translation>
-<translation id="6968269510885595029">നിങ്ങളുടെ സുരക്ഷ കീ ഉപയോഗിക്കുക</translation>
 <translation id="6971439137020188025">Slides-ൽ പുതിയൊരു Google അവതരണം വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="6972629891077993081">HID ഉപകരണങ്ങൾ</translation>
 <translation id="6973656660372572881">സ്ഥിരമായ പ്രോക്‌സി സെർവറുകളും ഒരു സ്‌ക്രിപ്റ്റ് URL-ഉം വ്യക്തമാക്കിയിരിക്കുന്നു.</translation>
@@ -2805,6 +2793,7 @@
 <translation id="7219179957768738017">കണക്ഷന്‍ <ph name="SSL_VERSION" /> ഉപയോഗിക്കുന്നു.</translation>
 <translation id="7220786058474068424">പ്രോസസ്സുചെയ്യുന്നു</translation>
 <translation id="7221855153210829124">അറിയിപ്പുകൾ കാണിക്കുക</translation>
+<translation id="7221857374443660083">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് ബാങ്കിന് ഉറപ്പാക്കേണ്ടതുണ്ട്</translation>
 <translation id="722454870747268814">പുതിയ ആൾമാറാട്ട ടാബ്</translation>
 <translation id="7227293336683593977">നിരക്ക് ചരിത്രം</translation>
 <translation id="7233592378249864828">സ്ഥിരീകരണ ഷീറ്റ് പ്രിന്റ് ചെയ്യുക</translation>

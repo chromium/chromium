@@ -15,6 +15,7 @@
 <translation id="1082009148392559545">Sťahuje sa šetrič obrazovky</translation>
 <translation id="1094693127011229778">Adresa IP nie je k dispozícii</translation>
 <translation id="1113892970288677790">Vyberte plagáty a obrázky</translation>
+<translation id="1118572504348554005">Spätnú väzbu odoslanú prostredníctvom tohto formulára môžeme zdieľať s našimi partnermi na účely opravy chýb a riešenia ďalších problémov, ktoré nám hlásite. Neuvádzajte citlivé údaje, ako sú heslá.</translation>
 <translation id="1119447706177454957">Interná chyba</translation>
 <translation id="1124772482545689468">Používateľ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -460,7 +461,6 @@
 <translation id="469379815867856270">Intenzita signálu</translation>
 <translation id="4731797938093519117">Rodičovský prístup</translation>
 <translation id="473775607612524610">Aktualizovať</translation>
-<translation id="4744944742468440486">Informácie súvisiace s vaším výberom</translation>
 <translation id="4771607256327216405">zjasnenie klávesnice</translation>
 <translation id="4773299976671772492">Zastavené</translation>
 <translation id="4782311465517282004">Získavajte definície, preklady alebo prevody jednotiek kliknutím pravým tlačidlom alebo pridržaním textu</translation>

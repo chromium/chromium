@@ -8,6 +8,7 @@
 <translation id="1004218526896219317">有权访问的网站</translation>
 <translation id="1005274289863221750">使用您的麦克风和摄像头</translation>
 <translation id="1005333234656240382">启用 ADB 调试？</translation>
+<translation id="1005671386794704751">花瓣粉</translation>
 <translation id="1006873397406093306">此扩展程序可读取和更改您的网站数据。您可以控制此扩展程序能访问哪些网站。</translation>
 <translation id="1007057452468855774">开启 Google Play 商店</translation>
 <translation id="1008186147501209563">导出书签</translation>
@@ -690,6 +691,7 @@
 <translation id="1576594961618857597">默认的白色头像</translation>
 <translation id="1576729678809834061">举报此搜索结果</translation>
 <translation id="1578558981922970608">强制关闭</translation>
+<translation id="157931050206866263">详细了解恶意软件扫描</translation>
 <translation id="1580772913177567930">请与您的管理员联系</translation>
 <translation id="1581962803218266616">在 Finder 中显示</translation>
 <translation id="1582955169539260415">删除 [<ph name="FINGERPRINT_NAME" />]</translation>
@@ -914,6 +916,7 @@
 <translation id="1757132445735080748">若要完成 Linux 安装，请更新 ChromeOS Flex 并重试。</translation>
 <translation id="1757301747492736405">待卸载</translation>
 <translation id="175772926354468439">启用主题背景</translation>
+<translation id="1757786065507923842">向家长请求权限失败</translation>
 <translation id="17584710573359123">在 Chrome 应用商店中查看详情</translation>
 <translation id="1761845175367251960"><ph name="NAME" />的帐号</translation>
 <translation id="176272781006230109">购物建议</translation>
@@ -965,6 +968,7 @@
 <translation id="1795214765651529549">使用经典主题背景</translation>
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1797117170091578105">使用 Chromebook 键盘玩游戏。您可以为特定操作自定义按键。</translation>
+<translation id="1801571666562084067">将 PDF 图片转换成文字</translation>
 <translation id="180203835522132923">搜索键 + O，然后按 W</translation>
 <translation id="1802624026913571222">合盖后休眠</translation>
 <translation id="1802687198411089702">该页面没有响应。您可以继续等待，也可以退出。</translation>
@@ -2054,6 +2058,7 @@
 <translation id="2691385045260836588">型号</translation>
 <translation id="2691440343905273290">更改输入设置</translation>
 <translation id="2692503699962701720">读出元素类型和经过格式化的文字时改变音高</translation>
+<translation id="2692901429679246677">湖水绿</translation>
 <translation id="2693134906590795721">充电提示音</translation>
 <translation id="2693176596243495071">糟糕！发生了未知错误。请稍后重试；如果问题依然存在，请与您的管理员联系。</translation>
 <translation id="2698147581454716013">这是一个套装设备，无法注册自助服务终端和数字标牌升级服务。</translation>
@@ -2088,6 +2093,7 @@
 <translation id="2721695630904737430">受监管用户已被您的管理员停用。</translation>
 <translation id="2722540561488096675">您的设备将在 <ph name="TIME_LEFT" />后关闭。届时，请先拔掉 USB，再重新开启您的设备。然后，您便可开始使用 <ph name="DEVICE_OS" /> 了。</translation>
 <translation id="2722547199758472013">ID：<ph name="EXTENSION_ID" /></translation>
+<translation id="2723819893410108315">香橼黄</translation>
 <translation id="2724841811573117416">WebRTC日志</translation>
 <translation id="272488616838512378">单位换算</translation>
 <translation id="2725200716980197196">网络连接已恢复</translation>
@@ -2617,6 +2623,7 @@
 <translation id="3165390001037658081">有些运营商可能会屏蔽此功能。</translation>
 <translation id="3169930038976362151">选择与您的需求相符的主题。若要更改主题、壁纸、屏保等，轻触并按住桌面即可执行所需操作。</translation>
 <translation id="3170072451822350649">您也可以跳过登录步骤，<ph name="LINK_START" />以访客身份浏览<ph name="LINK_END" />。</translation>
+<translation id="3174311489448105660">扫描 PDF 图片，将内容转换成文字供屏幕阅读器读取（如果可用）。仅适用于 Chrome 浏览器。</translation>
 <translation id="31774765611822736">在左侧新增标签页</translation>
 <translation id="3177909033752230686">网页语言：</translation>
 <translation id="3177914167275935955">您的设备随附了一份 Chrome 教育版升级许可，但您的用户名并未与 Google for Education 帐号关联。请先在辅助设备上前往 g.co/workspace/edusignup 创建一个 Google for Education 帐号。</translation>
@@ -4708,6 +4715,7 @@
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">确认访问</translation>
 <translation id="4979263087381759787">开发者选项</translation>
+<translation id="4979510648199782334">Microsoft 365 设置完毕</translation>
 <translation id="4980805016576257426">此扩展程序包含恶意软件。</translation>
 <translation id="4981449534399733132">要想清除您的所有已同步设备中的浏览数据以及您的 Google 帐号中的浏览数据，请<ph name="BEGIN_LINK" />登录<ph name="END_LINK" />。</translation>
 <translation id="4986706507552097681">您始终可在“设置”中选择要同步的内容。Google 可能会根据您的历史记录在 Google 搜索和其他服务中为您提供个性化的体验。</translation>
@@ -5173,6 +5181,7 @@
 <translation id="5407167491482639988">无法听清</translation>
 <translation id="5408750356094797285">缩放比例：<ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">保存在您的 Google 帐号中的密码</translation>
+<translation id="5410889048775606433">紫红</translation>
 <translation id="5411022484772257615">无法完成学校注册</translation>
 <translation id="5411856344659127989">如果想添加他人的帐号，请向您的 <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />添加新用户<ph name="LINK_END" />。
 
@@ -6471,6 +6480,7 @@
 <translation id="6532527800157340614">登录失败，因为检索不到您的访问令牌。请检查您的网络连接，然后重试。</translation>
 <translation id="6532663472409656417">已向企业注册</translation>
 <translation id="6533315466883598769">使用“Google 翻译”</translation>
+<translation id="6533636340637966565">正在开启…</translation>
 <translation id="6535331821390304775">始终允许 <ph name="ORIGIN" /> 在关联的应用中打开此类链接</translation>
 <translation id="653659894138286600">扫描文件和图片</translation>
 <translation id="6537613839935722475">名称可以使用字母、数字和连字符 (-)</translation>
@@ -6833,7 +6843,6 @@
 <translation id="6833996806551876956">隐私沙盒试用</translation>
 <translation id="6835712061486505758">创建 WLAN 热点，以便向其他设备提供互联网连接。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">请连接到互联网，以便更新您的<ph name="DEVICE_TYPE" />。</translation>
-<translation id="6836688241291438278">请确保您的打印机与 Chromebook 连接到同一 Wi-Fi 网络，或者使用 USB 线。详细了解兼容性。</translation>
 <translation id="6839225236531462745">证书删除错误</translation>
 <translation id="6839916869147598086">登录发生变化</translation>
 <translation id="6840155290835956714">发送前先询问</translation>
@@ -8102,6 +8111,7 @@
 <translation id="7910768399700579500">新建文件夹(&amp;N)</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">您已在服务器上更改密码。请先退出，然后重新登录。</translation>
+<translation id="791247712619243506">取消设置</translation>
 <translation id="7912974581251770345">翻译</translation>
 <translation id="7915457674565721553">请连接到互联网以设置家长控制</translation>
 <translation id="7916364730877325865">贵组织不允许您使用此帐号开启同步功能</translation>
@@ -8173,6 +8183,7 @@
 <translation id="7963001036288347286">触控板加速</translation>
 <translation id="7963608432878156675">此名称会对其他设备可见，以便建立蓝牙连接和网络连接</translation>
 <translation id="7963826112438303517">Google 助理会使用这些录音以及您的语音请求来创建和更新您的语音模型，语音模型仅会存储在已开启 Voice Match 的设备上。您可在 Google 助理的“设置”中查看或重新调校语音活动。</translation>
+<translation id="7964458523224581615">深绿</translation>
 <translation id="7966241909927244760">复制图片地址(&amp;O)</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{书签列表中现有 1 个条目}other{书签列表中现有 {COUNT} 个条目}}</translation>
 <translation id="7968072247663421402">提供商选项</translation>
@@ -8197,6 +8208,7 @@
 <translation id="7981670705071137488">之后，软件更新将在后台进行。您可在“设置”中查看更新偏好设置。</translation>
 <translation id="7982083145464587921">请重新启动您的设备以修复此错误。</translation>
 <translation id="7982789257301363584">网络</translation>
+<translation id="7982878511129296052">正在关闭…</translation>
 <translation id="7984068253310542383">镜像“<ph name="DISPLAY_NAME" />”</translation>
 <translation id="7986295104073916105">读取和更改已保存的密码设置</translation>
 <translation id="7987814697832569482">始终通过此 VPN 连接</translation>
@@ -8325,6 +8337,7 @@
 <translation id="8090234456044969073">读取您最常访问的网站列表</translation>
 <translation id="8090513782447872344">日后您可随时回来查看</translation>
 <translation id="8093359998839330381">“<ph name="PLUGIN_NAME" />”没有响应</translation>
+<translation id="8094536695728193970">杏黄</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />备份到 Google 云端硬盘。您随时都能轻松地恢复数据或更换设备。您的备份内容会包含应用数据。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您的备份内容会上传到 Google 并会使用您的 Google 帐号密码进行加密。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />应用数据可以是应用根据开发者设置而保存的任何数据，包括通讯录、邮件/消息、照片等数据。<ph name="END_PARAGRAPH3" />
@@ -8428,8 +8441,6 @@
 <translation id="8181215761849004992">无法加入到该网域中。请检查您的帐号以了解您是否有足够的权限来添加设备。</translation>
 <translation id="8182105986296479640">应用无响应。</translation>
 <translation id="8182412589359523143">如需删除这部 <ph name="DEVICE_TYPE" /> 上的所有数据，请<ph name="BEGIN_LINK" />点击此处<ph name="END_LINK" />。</translation>
-<translation id="8182664696082410784"><ph name="REASON" />
-    我不认为该网站应被屏蔽！</translation>
 <translation id="8183703640399301650">您的设备 EID 为 <ph name="EID_NUMBER" />，设备 IMEI 为 <ph name="IMEI_NUMBER" />。这些号码可用于帮助激活服务。</translation>
 <translation id="8184288427634747179">改用“<ph name="AVATAR_NAME" />”</translation>
 <translation id="8184318863960255706">更多信息</translation>
@@ -8886,6 +8897,7 @@
 <translation id="8592141010104017453">完全不显示通知</translation>
 <translation id="859246725979739260">此网站无法使用您的位置信息。</translation>
 <translation id="8593121833493516339">发送使用情况数据和诊断数据。通过自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
+<translation id="8593450223647418235">完成设置前，您无法在 Microsoft 365 中打开文件。</translation>
 <translation id="8596540852772265699">自定义文件</translation>
 <translation id="8597845839771543242">属性格式：</translation>
 <translation id="8599681327221583254">有一项或多项政策未正确配置。请与您的管理员联系</translation>
@@ -9301,6 +9313,7 @@
 <translation id="8941173171815156065">撤消“<ph name="PERMISSION" />”权限</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" />处于关闭状态</translation>
 <translation id="894191600409472540">创建安全系数高的密码</translation>
+<translation id="8942714513622077633">取消 Microsoft 365 设置？</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">这样会更快消耗电量（目前电量：<ph name="BATTERY_PERCENTAGE" />%）</translation>
 <translation id="8944725102565796255">如果您只想使用此帐号一次，可考虑<ph name="GUEST_LINK_BEGIN" />以访客身份使用设备<ph name="GUEST_LINK_END" />。如果想添加他人的帐号，请向您的 <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />添加新用户<ph name="LINK_END" />。
@@ -9345,10 +9358,14 @@
 <translation id="8978154919215542464">开启 - 同步所有内容</translation>
 <translation id="8978670037548431647">刷新网络共享功能</translation>
 <translation id="897939795688207351">在 <ph name="ORIGIN" /> 上</translation>
+<translation id="8980335421826918629">此文件可能是病毒或恶意软件。
+
+您可将它发送给 Google 安全浏览来检查是否安全。扫描通常需要几秒钟的时间。</translation>
 <translation id="8980345560318123814">反馈报告</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - 已崩溃</translation>
 <translation id="8981038076986775523">详细了解如何使用麦克风</translation>
 <translation id="8981825781894055334">纸张不足</translation>
+<translation id="8982043802480025357">打开 Word、Excel 和 PowerPoint 文件时，这些文件会先移至 Microsoft OneDrive，然后才会在 Microsoft 365 中打开</translation>
 <translation id="8983018820925880511">这份新个人资料将由 <ph name="DOMAIN" /> 管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> 可修改 <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">您的设备将会对所有人可见，时长为 <ph name="MINUTES" /> 分钟。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>

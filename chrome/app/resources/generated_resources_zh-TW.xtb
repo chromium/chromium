@@ -6864,7 +6864,6 @@
 <translation id="6833996806551876956">Privacy Sandbox 試用期</translation>
 <translation id="6835712061486505758">建立 Wi-Fi 無線基地台，為其他裝置提供網際網路連線。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">請連線至網際網路，以更新您的 <ph name="DEVICE_TYPE" />。</translation>
-<translation id="6836688241291438278">確認印表機已連上 Chromebook 使用的 Wi-Fi 網路，或使用 USB 傳輸線。進一步瞭解相容性。</translation>
 <translation id="6839225236531462745">憑證刪除錯誤</translation>
 <translation id="6839916869147598086">登入方式已變更</translation>
 <translation id="6840155290835956714">傳送前詢問我</translation>
@@ -8466,8 +8465,6 @@
 <translation id="8181215761849004992">無法加入網域。請檢查你的帳戶是否有新增裝置的必要權限。</translation>
 <translation id="8182105986296479640">應用程式無回應。</translation>
 <translation id="8182412589359523143">如要從這部「<ph name="DEVICE_TYPE" />」刪除所有資料，<ph name="BEGIN_LINK" />請按一下這裡<ph name="END_LINK" />。</translation>
-<translation id="8182664696082410784"><ph name="REASON" />
-    我認為不應封鎖這個網站！</translation>
 <translation id="8183703640399301650">你的裝置 EID 為 <ph name="EID_NUMBER" />，裝置 IMEI 為 <ph name="IMEI_NUMBER" />。這些編號可用於啟用服務。</translation>
 <translation id="8184288427634747179">切換成<ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">更多資訊</translation>

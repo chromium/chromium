@@ -6885,7 +6885,6 @@
 <translation id="6833996806551876956">గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్ ట్రయల్</translation>
 <translation id="6835712061486505758">ఇతర పరికరాలకు ఇంటర్నెట్‌ను అందించడానికి Wi-Fi హాట్‌స్పాట్‌ను క్రియేట్ చేయండి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">దయచేసి మీ <ph name="DEVICE_TYPE" />ని అప్‌డేట్ చేయడానికి ఇంటర్నెట్‌కి కనెక్ట్ చేయండి.</translation>
-<translation id="6836688241291438278">మీ ప్రింటర్ Chromebook లాగా అదే Wi-Fi నెట్‌వర్క్‌కు కనెక్ట్ చేయబడిందని నిర్ధారించుకోండి లేదా USB కేబుల్‌ను ఉపయోగించండి. అనుకూలత గురించి మరింత తెలుసుకోండి.</translation>
 <translation id="6839225236531462745">ప్రమాణపత్రం తొలగింపు ఎర్రర్</translation>
 <translation id="6839916869147598086">సైన్-ఇన్ మార్చబడింది</translation>
 <translation id="6840155290835956714">పంపే ముందు అడగాలి</translation>
@@ -8485,8 +8484,6 @@
 <translation id="8181215761849004992">డొమైన్‌కు చేర్చడం సాధ్యపడలేదు. పరికరాలను జోడించడానికి తగిన అధికారాలు మీకు ఉన్నాయో లేదో మీ ఖాతాలో చెక్ చేయండి.</translation>
 <translation id="8182105986296479640">అప్లికేషన్ స్పందించడం లేదు.</translation>
 <translation id="8182412589359523143">ఈ <ph name="DEVICE_TYPE" /> నుండి మొత్తం డేటాను తొలగించడానికి, <ph name="BEGIN_LINK" />ఇక్కడ క్లిక్ చేయండి<ph name="END_LINK" />.</translation>
-<translation id="8182664696082410784"><ph name="REASON" />
-    ఈ సైట్‌ను బ్లాక్ చేసి ఉండకూడదు!</translation>
 <translation id="8183703640399301650">మీ పరికర EID <ph name="EID_NUMBER" />, పరికర IMEI <ph name="IMEI_NUMBER" />. సర్వీస్‌ను యాక్టివేట్ చేయడంలో సహాయపడటానికి ఈ నంబర్‌లను ఉపయోగించవచ్చు.</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" />కి మార్చు</translation>
 <translation id="8184318863960255706">మరింత సమాచారం</translation>

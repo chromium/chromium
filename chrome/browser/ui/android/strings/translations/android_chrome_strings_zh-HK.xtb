@@ -297,7 +297,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="2643064289437760082">只要刪除瀏覽資料，即可隨時刪除廣告評估資料</translation>
 <translation id="2647434099613338025">新增語言</translation>
 <translation id="2649068648233607930">您的瀏覽器由 <ph name="DOMAIN" /> 管理</translation>
-<translation id="2650077116157640844">前往已同步的裝置查看更多資訊</translation>
+<translation id="2650077116157640844">前往已同步的裝置查看更多資料</translation>
 <translation id="2650348088770008516">閂咗私隱權指南說明</translation>
 <translation id="2650408372219180431">匯出並刪除儲存至此裝置的密碼</translation>
 <translation id="2650751991977523696">要重新下載檔案嗎？</translation>
@@ -1372,6 +1372,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8209050860603202033">開啟圖片</translation>
+<translation id="8210770465353466621">分頁會在這裡顯示</translation>
 <translation id="8215740705341534369">側邊工作表</translation>
 <translation id="8218622182176210845">管理您的帳戶</translation>
 <translation id="8221401890884589479">您可封鎖不想要的網站。Chrome 亦會從清單自動刪除超過 30 日的網站。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>

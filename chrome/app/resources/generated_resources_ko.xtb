@@ -6887,7 +6887,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6833996806551876956">개인 정보 보호 샌드박스 무료 체험</translation>
 <translation id="6835712061486505758">다른 기기에 인터넷을 제공할 수 있는 Wi-Fi 핫스팟을 만듭니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />을(를) 업데이트하려면 인터넷에 연결하세요.</translation>
-<translation id="6836688241291438278">프린터가 Chromebook과 동일한 Wi-Fi 네트워크에 연결되어 있는지 확인하거나 USB 케이블을 사용하세요. 호환성에 관해 자세히 알아보세요.</translation>
 <translation id="6839225236531462745">인증서 삭제 오류</translation>
 <translation id="6839916869147598086">로그인 변경됨</translation>
 <translation id="6840155290835956714">보내기 전에 확인</translation>
@@ -8491,8 +8490,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8181215761849004992">도메인에 가입할 수 없습니다. 기기를 추가하기에 충분한 권한이 계정에 있는지 확인하세요.</translation>
 <translation id="8182105986296479640">애플리케이션이 응답하지 않음</translation>
 <translation id="8182412589359523143">이 <ph name="DEVICE_TYPE" /> 기기에서 모든 데이터를 삭제하려면 <ph name="BEGIN_LINK" />여기를 클릭<ph name="END_LINK" />하세요.</translation>
-<translation id="8182664696082410784"><ph name="REASON" />
-    차단되면 안 되는 사이트입니다.</translation>
 <translation id="8183703640399301650">기기 EID는 <ph name="EID_NUMBER" />이며 기기 IMEI는 <ph name="IMEI_NUMBER" />입니다. 이 번호를 사용하여 서비스를 활성화할 수 있습니다.</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" />(으)로 전환</translation>
 <translation id="8184318863960255706">추가 정보</translation>

@@ -395,6 +395,7 @@
 <translation id="2750941250130734256">Активниот прозорец е изваден од приклучок.</translation>
 <translation id="2761723519669354964">Отворете нагласена ставка од полицата</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">Ctrl+Search+S</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> управува со <ph name="DEVICE_TYPE" /></translation>
 <translation id="2782591952652094792">Излези од режимот на снимање</translation>
 <translation id="2785499565474703580">Поврзан е 1 уред</translation>
@@ -458,6 +459,7 @@
 <translation id="3062298103034426069">Не е поддржано</translation>
 <translation id="3068622547379332530">Верзија: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Полицата е налево</translation>
+<translation id="3070639127620815135">Search+Esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Прошири го менито</translation>
 <translation id="3087734570205094154">Дно</translation>
@@ -471,6 +473,7 @@
 <translation id="3120421559657122717">Да се исклучи уредот?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Рестартирај за да се ажурира</translation>
+<translation id="3139188263101386725">Користете ја ажурираната кратенка</translation>
 <translation id="3139942575505304791">Биро 1</translation>
 <translation id="315116470104423982">Мобилен интернет</translation>
 <translation id="3151786313568798007">Ориентација</translation>
@@ -606,6 +609,7 @@
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />. За повеќе детали, изберете во „Календарот на Google“.</translation>
 <translation id="3659444876902283058">(Ден <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
+<translation id="3659667652322717492">Може да го промените однесувањето на микрофонот кога било подоцна.</translation>
 <translation id="3659814201068740063">Простануваат уште околу <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Приклучете го уредот во струја.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, управуван корисник</translation>
@@ -1050,6 +1054,7 @@
 <translation id="5578188167649348993">меморија</translation>
 <translation id="5580000943347215299">Збирка</translation>
 <translation id="558849140439112033">Повлечете за да изберете област за сликање</translation>
+<translation id="5590609058453685222">„Известувањето за исклучен микрофон“ е вклучено. Ќе добиете известување ако зборувате додека е исклучен звукот.</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Притиснете Ctrl + Alt + Z за да ги оневозможите говорните повратни информации.</translation>
@@ -1203,6 +1208,7 @@
 <translation id="6231419273573514727">Перформансите на периферните уреди може да бидат ограничени</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ги користи камерата и микрофонот во моментов</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Отворете ја апликацијата „Управник со задачи“ со „<ph name="NEW_SHORTCUT" />“.</translation>
 <translation id="6247728804802644171">Отворете ги известувањата</translation>
 <translation id="6254629735336163724">Заклучен хоризонтално</translation>
 <translation id="6259254695169772643">Користете го пенкалото за да изберете</translation>
@@ -1253,6 +1259,7 @@
 <translation id="6497418457565568043">„Не вознемирувај“ е вклучено</translation>
 <translation id="6500896621837555595">Ажурирај</translation>
 <translation id="6501401484702599040">Екранот се емитува на <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Отворете ја апликацијата „Кратенки од тастатура“ со „<ph name="NEW_SHORTCUT" />“.</translation>
 <translation id="6507618042428827377">Префрлање на следниот достапен метод за внесување</translation>
 <translation id="6508923215158854599">Проверете дали вашиот Chromebook е на истата Wi-Fi мрежа со вашиот уред Chromecast.</translation>
 <translation id="6515727200518652613">Врската со камерата се изгуби, се прави обид за повторно поврзување.</translation>
@@ -1645,6 +1652,7 @@
 <translation id="8255234195843591763">Ресетирајте за ажурирање</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8262312463845990408">Вклучете/исклучете ја репродукцијата</translation>
+<translation id="8265826854528868575">Се прикажуваат <ph name="NUM_SHOWN_TASKS" /> од <ph name="NUM_TOTAL_TASKS" /></translation>
 <translation id="8270450402312105425">{0,plural, =1{Променете го уредот на претходната верзија во рок од еден час}one{Променете го уредот на претходната верзија во рок од # час}other{Променете го уредот на претходната верзија во рок од # часа}}</translation>
 <translation id="8277261673056602147">Нагласете текст на екранот</translation>
 <translation id="8284362522226889623">Повлечете налево со четири прста за да се префрлите на претходната работна површина</translation>

@@ -649,6 +649,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5083464117946352670">Impossibile stabilire le dimensioni del file.</translation>
 <translation id="5090832849094901128">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet completato.</translation>
+<translation id="5109892411553231226">Gestisci metodi di pagamento</translation>
 <translation id="5118713593561876160">Interessi</translation>
 <translation id="5118764316110575523">Non attiva</translation>
 <translation id="5119391094379141756">Seleziona Chrome</translation>
@@ -1058,6 +1059,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7531345132340165516">Sito corrente</translation>
 <translation id="7537586195939242955">Spiacenti, il tuo pass non può essere installato in Passbook in questo momento.</translation>
 <translation id="754655535278952384">Ultimo controllo: <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Ultima scheda utilizzata su <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Per disattivare, apri le <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" /> e vai a Opzioni password.</translation>
 <translation id="7554645225856321710">Chiudi tutte</translation>
 <translation id="7554791636758816595">Nuova scheda</translation>
@@ -1190,7 +1192,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8319076807703933069">Nuova ricerca</translation>
 <translation id="8323906514956095947">Tocca e tieni premuto per vedere maggiori opzioni sulla scheda</translation>
 <translation id="8328777765163860529">Chiudi tutte</translation>
-<translation id="8331621926962374866">Quando Chrome è in Modalità di blocco, alcune tecnologie web sono bloccate e per questo motivo alcuni siti web potrebbero caricarsi più lentamente o non funzionare correttamente.</translation>
 <translation id="8343993175958086504">Esegui il backup dei tuoi dati e usali su qualsiasi dispositivo.</translation>
 <translation id="834783239627985533">Siti più visitati</translation>
 <translation id="8378714024927312812">Gestito dalla tua organizzazione</translation>
@@ -1204,6 +1205,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8428045167754449968">Città/località</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8428634594422941299">OK</translation>
+<translation id="8446201778524791138">Modifica azioni</translation>
 <translation id="8446884382197647889">Scopri di più</translation>
 <translation id="8458397775385147834">1 elemento eliminato</translation>
 <translation id="8459333855531264009">Non sicuro</translation>

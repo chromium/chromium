@@ -389,6 +389,7 @@
 <translation id="131364520783682672">စာလုံးကြီးရန် သော့ခလုတ်</translation>
 <translation id="1313660246522271310">ဖွင့်ထားသော တဘ်များအပါအဝင် ဝဘ်ဆိုက်အားလုံးမှ သင် ထွက်သွားပါမည်</translation>
 <translation id="1313705515580255288">သင်၏ စာညှပ်များ၊ မှတ်တမ်းနှင့် အခြား ဆက်တင်များကို သင်၏ Google အကောင့်သို့ စင့်က် လုပ်ပေးမည်။</translation>
+<translation id="1315184295353569363">အုပ်စုကို မသိမ်းတော့ပါ</translation>
 <translation id="1316136264406804862">ရှာဖွေနေသည်...</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" /> သို့ ချိတ်ဆက်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1316495628809031177">စင့်ခ်လုပ်ခြင်းကို ခေတ္တရပ်ထားသည်</translation>
@@ -2917,6 +2918,7 @@
 <translation id="3429160811076349561">အစမ်းသုံးလုပ်ဆောင်ချက်များကို ပိတ်ထားသည်</translation>
 <translation id="3429271624041785769">ဝဘ်အကြောင်းအရာ ဘာသာစကားများ</translation>
 <translation id="3429275422858276529">နောင်တွင် အလွယ်တကူပြန်ရှာနိုင်ရန် ဤစာမျက်နှာ၏လိပ်စာကို မှတ်ထားပါ</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> နေရာလွတ်သွားသည်</translation>
 <translation id="3432762828853624962">မျှဝေထားသော လုပ်သားများ</translation>
 <translation id="3433507769937235446">ထွက်သွားချိန် လော့ခ်ချခြင်း</translation>
 <translation id="3433621910545056227">အို၊ သော့ချရန် လိုအပ်သည့် စက်ပစ္စည်းတပ်ဆင်ချိန်အား စနစ်မှ မစတင်နိုင်ပါ။</translation>
@@ -4019,6 +4021,7 @@
 <translation id="4361142739114356624">ဤကလိုင်းယင့် အသိအမှတ်ပြုလက်မှတ်အတွက် သီးသန့်ကီးသည် ပျောက်နေသည် သို့မဟုတ် မမှန်ကန်ပါ</translation>
 <translation id="4361745360460842907">တဲဘ်အဖြစ် ဖွင့်</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> သည် <ph name="DEVICE_TYPE" /> ၏ မူလအကောင့်ဖြစ်သည်</translation>
+<translation id="4363215264289239958">Bruschetta အက်ပ်များ</translation>
 <translation id="4363771538994847871">ကာစ်လုပ်ရမည့်စက်ပစ္စည်းတစ်ခုမျှ မတွေ့ပါ။ အကူအညီလိုအပ်ပါသလား။</translation>
 <translation id="4364327530094270451">ဖရဲသီး</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> သည်ဝင်းဒိုးတစ်ခုကို မျှဝေနေပါသည်။</translation>
@@ -5119,6 +5122,7 @@
 <translation id="5319359161174645648">Google က Chrome ကို အသုံးပြုရန် အကြံပြုထားပါသည်</translation>
 <translation id="5319712128756744240">စက်အသစ် တွဲချိတ်ရန်</translation>
 <translation id="5320135788267874712">စက်ပစ္စည်းအသစ်အမည်</translation>
+<translation id="5320261549977878764">အုပ်စုကို မသိမ်းတော့ပါ</translation>
 <translation id="532247166573571973">ဆာဗာကိုဆက်သွယ်၍မရသေးပါ။ နောက်မှထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="5324300749339591280">အက်ပ်စာရင်း</translation>
 <translation id="5324780743567488672">သင့်တည်နေရာကို အသုံးပြု၍ စံတော်ချိန်ကို အလိုအလျောက်သတ်မှတ်မည်</translation>
@@ -6882,7 +6886,6 @@
 <translation id="6833996806551876956">Privacy Sandbox အစမ်းသုံးခြင်း</translation>
 <translation id="6835712061486505758">အခြားစက်များသို့ အင်တာနက်ပေးရန် Wi-Fi ဟော့စပေါ့တစ်ခု ပြုလုပ်နိုင်သည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">သင့် <ph name="DEVICE_TYPE" /> ကို အသစ်မွမ်းမံရန် ကျေးဇူးပြု၍ အင်တာနက်နှင့် ချိတ်ဆက်ပါ။</translation>
-<translation id="6836688241291438278">ပရင်တာသည် သင့် Chromebook နှင့် Wi-Fi ကွန်ရက်တစ်ခုတည်းသို့ ချိတ်ဆက်ထားကြောင်း သေချာပါစေ (သို့) USB ကြိုး သုံးပါ။ တွဲဖက်သုံးနိုင်မှုအကြောင်း ပိုမိုလေ့လာပါ။</translation>
 <translation id="6839225236531462745">အသိမှတ်ပြု လက်မှတ် ဖျက်ခြင်း မှားယွင်းမှု</translation>
 <translation id="6839916869147598086">အကောင့်ဝင်ရောက်ခြင်းကို ပြောင်းထားသည်</translation>
 <translation id="6840155290835956714">မပို့မီ မေးမြန်းရန်</translation>
@@ -8485,8 +8488,6 @@
 <translation id="8181215761849004992">ဒိုမိန်းသို့ ချိတ်ဆက်၍မရပါ။ စက်ပစ္စည်းများ ထည့်သွင်းရန် လုံလောက်သည့် လုပ်ပိုင်ခွင့်များ ရှိမရှိ သိရန် သင်၏အကောင့်ကို စစ်ဆေးပါ။</translation>
 <translation id="8182105986296479640">အပလီကေးရှင်း တုံ့ပြန်မှုမရှိခြင်း။</translation>
 <translation id="8182412589359523143">ဤ <ph name="DEVICE_TYPE" /> မှ ဒေတာအားလုံးကို ဖျက်ရန် <ph name="BEGIN_LINK" />ဤနေရာကိုနှိပ်ပါ<ph name="END_LINK" />။</translation>
-<translation id="8182664696082410784"><ph name="REASON" />
-    ဤဝဘ်ဆိုက်ကို ပိတ်မထားသင့်ပါ။</translation>
 <translation id="8183703640399301650">သင့်စက် EID မှာ <ph name="EID_NUMBER" /> ဖြစ်ပြီး စက် IMEI မှာ <ph name="IMEI_NUMBER" /> ဖြစ်သည်။ ဝန်ဆောင်မှုစတင်ရာ၌ ကူညီရန် ဤနံပါတ်များကို သုံးနိုင်သည်။</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> သို့ ပြောင်းရန်</translation>
 <translation id="8184318863960255706">နောက်ထပ် အချက်အလက်</translation>

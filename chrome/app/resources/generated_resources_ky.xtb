@@ -389,6 +389,7 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Бардык сайттардан, анын ичинде ачылып турган өтмөктөрдөн чыгасыз</translation>
 <translation id="1313705515580255288">Кыстармаларыңыз, таржымалыңыз жана башка параметрлериңиз Google Аккаунтуңуз менен шайкештештирилет.</translation>
+<translation id="1315184295353569363">Топту өчүрүү</translation>
 <translation id="1316136264406804862">Изделүүдө…</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" /> түзмөгү менен байланышкан жок. Кайра аракет кылыңыз.</translation>
 <translation id="1316495628809031177">Шайкештирүү тындырылды</translation>
@@ -2919,6 +2920,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3429160811076349561">Сыноонун функциялары өчүк</translation>
 <translation id="3429271624041785769">Веб мазмундун тилдери</translation>
 <translation id="3429275422858276529">Бул баракчаны кыстармаларга кошуп, кийинчерээк оңой эле таап алыңыз</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> бошотулду</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Жанында болбогондо кулпулоо</translation>
 <translation id="3433621910545056227">Ой! Система түзмөктү орнотуу убакытынын аттрибуттарынын кулпусу негизделбей калды.</translation>
@@ -4022,6 +4024,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4361142739114356624">Бул Кардар тастыктамасынын Купуя ачкычы жок же жараксыз</translation>
 <translation id="4361745360460842907">Өтмөк катары ачуу</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> <ph name="DEVICE_TYPE" /> түзмөгүңүздө демейки аккаунт</translation>
+<translation id="4363215264289239958">Bruschetta колдонмолору</translation>
 <translation id="4363771538994847871">Тышкы экранга чыгаруу үчүн түзмөк табылган жок. Жардам керекпи?</translation>
 <translation id="4364327530094270451">Коон</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> колдонмосу терезесин бөлүшүүдө.</translation>
@@ -5122,6 +5125,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5319359161174645648">Google Chrome'ду сунуштайт</translation>
 <translation id="5319712128756744240">Жаңы түзмөк кошуу</translation>
 <translation id="5320135788267874712">Түзмөктүн жаңы аталышы</translation>
+<translation id="5320261549977878764">Топту өчүрүү</translation>
 <translation id="532247166573571973">Серверге туташуу мүмкүн эмес окшойт. Бир аздан кийин кайталап көрүңүз.</translation>
 <translation id="5324300749339591280">Колдонмолор тизмеси</translation>
 <translation id="5324780743567488672">Жайгашкан жериңиз аркылуу убакыт алкагын автоматтык түрдө коюу</translation>
@@ -6887,7 +6891,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6833996806551876956">Купуя сыноо чөйрөсү</translation>
 <translation id="6835712061486505758">Wi-Fi байланыш түйүнүн түзүп, башка түзмөктөргө Интернетти таркатыңыз. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> түзмөгүңүздү жаңыртуу үчүн сырсөзүңүздү кайра киргизиңиз.</translation>
-<translation id="6836688241291438278">Принтерди Chromebook менен бир Wi-Fi тармагына туташтырып же USB кабелин колдонуңуз. Шайкештик жөнүндө кеңири маалымат алыңыз.</translation>
 <translation id="6839225236531462745">Тастыктаманы жок кылуу катасы</translation>
 <translation id="6839916869147598086">Аккаунтка кирүү өзгөрдү</translation>
 <translation id="6840155290835956714">Жөнөтүүдөн мурун суроо</translation>
@@ -8490,8 +8493,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8181215761849004992">Доменге кошулбай жатат. Аккаунтуңуздун түзмөктөрдү кошууга тийиштүү уруксаттары бар экенин текшериңиз.</translation>
 <translation id="8182105986296479640">Колдонмо жооп бербей жатат.</translation>
 <translation id="8182412589359523143">Бул түзмөктөн (<ph name="DEVICE_TYPE" />) бардык маалыматты өчүрүү үчүн <ph name="BEGIN_LINK" />бул жерди басыңыз<ph name="END_LINK" />.</translation>
-<translation id="8182664696082410784"><ph name="REASON" />
-    Бул сайтты бөгөттөөнүн кажети жок деп ойлойм!</translation>
 <translation id="8183703640399301650">Түзмөгүңүздүн EID номери: <ph name="EID_NUMBER" /> жана IMEI номери: <ph name="IMEI_NUMBER" />. Бул номерлер кызматты иштетүүгө жардам беришет.</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> дегенге өтүү</translation>
 <translation id="8184318863960255706">Көбүрөөк маалымат</translation>

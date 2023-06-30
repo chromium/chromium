@@ -8,7 +8,7 @@
 <translation id="1004218526896219317">網站存取權</translation>
 <translation id="1005274289863221750">使用您的麥克風和相機</translation>
 <translation id="1005333234656240382">要啟用 ADB 偵錯嗎？</translation>
-<translation id="1005671386794704751">玫瑰粉</translation>
+<translation id="1005671386794704751">玫瑰粉紅</translation>
 <translation id="1006873397406093306">此擴充程式可讀取及變更您在網站上的資料。您可控制擴充程式可以存取的網站。</translation>
 <translation id="1007057452468855774">開「Google Play 商店」</translation>
 <translation id="1008186147501209563">匯出書籤</translation>
@@ -2082,7 +2082,7 @@
 <translation id="2691385045260836588">型號</translation>
 <translation id="2691440343905273290">變更輸入法設定</translation>
 <translation id="2692503699962701720">在朗讀元素種類和格式化文字時變更音調</translation>
-<translation id="2692901429679246677">水藍</translation>
+<translation id="2692901429679246677">湖水綠</translation>
 <translation id="2693134906590795721">充電音效</translation>
 <translation id="2693176596243495071">抱歉！出現不明的錯誤。請稍後再試一次，如果問題持續，請與您的管理員聯絡。</translation>
 <translation id="2698147581454716013">這是隨附裝置，因此無法註冊 Kiosk &amp; Signage 升級版。</translation>
@@ -2117,7 +2117,7 @@
 <translation id="2721695630904737430">您的管理員已停用受管使用者。</translation>
 <translation id="2722540561488096675">裝置將會在 <ph name="TIME_LEFT" />後關機。請先拔除 USB，然後才重新開啟裝置。之後，您便可以開始使用 <ph name="DEVICE_OS" />。</translation>
 <translation id="2722547199758472013">ID：<ph name="EXTENSION_ID" /></translation>
-<translation id="2723819893410108315">黃金柚色</translation>
+<translation id="2723819893410108315">青檸色</translation>
 <translation id="2724841811573117416">WebRTC 記錄</translation>
 <translation id="272488616838512378">單位轉換</translation>
 <translation id="2725200716980197196">網絡連線已恢復</translation>
@@ -6521,7 +6521,7 @@
 <translation id="6532527800157340614">無法擷取您的存取憑證，因此無法登入。請檢查您的網絡連線，然後再試一次。</translation>
 <translation id="6532663472409656417">已註冊企業</translation>
 <translation id="6533315466883598769">使用 Google 翻譯</translation>
-<translation id="6533636340637966565">開啟中...</translation>
+<translation id="6533636340637966565">正在開啟…</translation>
 <translation id="6535331821390304775">永遠允許 <ph name="ORIGIN" /> 使用相關聯的應用程式開啟這類連結</translation>
 <translation id="653659894138286600">掃瞄文件及圖片</translation>
 <translation id="6537613839935722475">名稱可以使用字母、數字和連字號 (-)</translation>
@@ -6885,7 +6885,6 @@
 <translation id="6833996806551876956">私隱沙箱試用</translation>
 <translation id="6835712061486505758">建立 Wi-Fi 熱點，為其他裝置提供互聯網連線。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">請連接互聯網以更新 <ph name="DEVICE_TYPE" />。</translation>
-<translation id="6836688241291438278">請確保打印機已連接 Chromebook 使用的 Wi-Fi 網絡，或使用 USB 傳輸線。進一步瞭解兼容性。</translation>
 <translation id="6839225236531462745">憑證刪除錯誤</translation>
 <translation id="6839916869147598086">登入方式已變更</translation>
 <translation id="6840155290835956714">傳送前先詢問</translation>
@@ -8255,7 +8254,7 @@
 <translation id="7981670705071137488">軟件日後會在背景中更新。您可在「設定」中查看更新偏好設定。</translation>
 <translation id="7982083145464587921">請重新啟動裝置以修正這個錯誤。</translation>
 <translation id="7982789257301363584">網絡</translation>
-<translation id="7982878511129296052">關閉中...</translation>
+<translation id="7982878511129296052">正在關閉…</translation>
 <translation id="7984068253310542383">鏡射「<ph name="DISPLAY_NAME" />」</translation>
 <translation id="7986295104073916105">讀取及變更已儲存的密碼設定</translation>
 <translation id="7987814697832569482">永遠透過此 VPN 連接</translation>
@@ -8384,7 +8383,7 @@
 <translation id="8090234456044969073">讀取最常瀏覽的網站清單</translation>
 <translation id="8090513782447872344">您日後可隨時返回查看</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> 沒有回應</translation>
-<translation id="8094536695728193970">杏黃色</translation>
+<translation id="8094536695728193970">杏色</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />備份至「Google 雲端硬碟」。您可隨時輕鬆還原資料或轉用其他裝置。備份包含應用程式資料。<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />您的備份會上載至 Google，並使用您的 Google 帳戶密碼加密。<ph name="END_PARAGRAPH2" />
 <ph name="BEGIN_PARAGRAPH3" />應用程式資料泛指應用程式根據開發人員設定所儲存的任何資料，包括聯絡人、訊息和相片等資料。<ph name="END_PARAGRAPH3" />
@@ -8488,8 +8487,6 @@
 <translation id="8181215761849004992">無法加入網域。請檢查您的帳戶並查看您是否有足夠權限新增裝置。</translation>
 <translation id="8182105986296479640">應用程式無回應。</translation>
 <translation id="8182412589359523143">如要從此 <ph name="DEVICE_TYPE" /> 刪除所有資料，<ph name="BEGIN_LINK" />請按一下這裡<ph name="END_LINK" />。</translation>
-<translation id="8182664696082410784"><ph name="REASON" />
-    我不認為這個網站應被封鎖！</translation>
 <translation id="8183703640399301650">你嘅裝置 EID 係 <ph name="EID_NUMBER" />，而裝置 IMEI 係 <ph name="IMEI_NUMBER" />。呢啲數字可以用嚟啟用服務。</translation>
 <translation id="8184288427634747179">切換至<ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">更多資訊</translation>

@@ -15,6 +15,7 @@
 <translation id="1082009148392559545">Čuvar ekrana se preuzima</translation>
 <translation id="1094693127011229778">IP adresa nije dostupna</translation>
 <translation id="1113892970288677790">Odaberite neke od izabranih ilustracija i slika</translation>
+<translation id="1118572504348554005">Sa partnerima možemo da delimo povratne informacije poslate preko ovog obrasca radi otklanjanja grešaka i drugih problema koje nam prijavite. Nemojte da unosite osetljive informacije poput lozinki.</translation>
 <translation id="1119447706177454957">Interna greška</translation>
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -460,7 +461,6 @@
 <translation id="469379815867856270">Jačina signala</translation>
 <translation id="4731797938093519117">Roditeljski pristup</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
-<translation id="4744944742468440486">Informacije vezane za vaš izbor</translation>
 <translation id="4771607256327216405">osvetljavanje tastature</translation>
 <translation id="4773299976671772492">Zaustavljeno je</translation>
 <translation id="4782311465517282004">Dobijajte definicije, prevode ili konverzije jedinica kada kliknete desnim tasterom na tekst ili ga dodirnete i zadržite</translation>

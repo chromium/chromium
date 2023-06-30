@@ -649,6 +649,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5083464117946352670">Imposible determinar tamaño.</translation>
 <translation id="5090832849094901128">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Completouse o chío.</translation>
+<translation id="5109892411553231226">Xestionar métodos de pago</translation>
 <translation id="5118713593561876160">Intereses</translation>
 <translation id="5118764316110575523">Non</translation>
 <translation id="5119391094379141756">Selecciona Chrome</translation>
@@ -1058,6 +1059,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7531345132340165516">Sitio actual</translation>
 <translation id="7537586195939242955">Non se pode instalar o teu pase en Passbook neste momento.</translation>
 <translation id="754655535278952384">Última comprobación: <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Última pestana usada no dispositivo <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (Configuración) e vai a Password Options (Opcións de contrasinais).</translation>
 <translation id="7554645225856321710">Pechar todo</translation>
 <translation id="7554791636758816595">Nova pestana</translation>
@@ -1080,6 +1082,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7687508192620387263">Hai un ficheiro de calendario dispoñible</translation>
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7711440461521638739">Non estás reutilizando ningún contrasinal</translation>
+<translation id="7719038820139380048">Inicia sesión para desfrutar de contido en función dos teus intereses.</translation>
 <translation id="7720410380936703141">TENTAR DE NOVO</translation>
 <translation id="7726702057919861819">Menú → Historial → Borrar datos de navegación</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Só neste dispositivo.</translation>
@@ -1189,7 +1192,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8319076807703933069">Nova busca</translation>
 <translation id="8323906514956095947">Mantén premido o botón para ver máis opcións da pestana</translation>
 <translation id="8328777765163860529">Pechar todo</translation>
-<translation id="8331621926962374866">Cando Chrome está no modo de bloqueo, bloquéanse determinadas tecnoloxías web, o que pode provocar que algúns sitios web tarden máis en cargar ou non funcionen correctamente.</translation>
 <translation id="8343993175958086504">Fai unha copia de seguranza dos teus datos e úsaos en calquera dispositivo.</translation>
 <translation id="834783239627985533">Sitios máis visitados</translation>
 <translation id="8378714024927312812">Xestionado pola túa organización</translation>
@@ -1203,6 +1205,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8428045167754449968">Cidade/localidade</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428634594422941299">De acordo</translation>
+<translation id="8446201778524791138">Editar accións</translation>
 <translation id="8446884382197647889">Máis información</translation>
 <translation id="8458397775385147834">Eliminouse un elemento</translation>
 <translation id="8459333855531264009">Non seguro</translation>

@@ -157,6 +157,7 @@
       仅当 <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> 设为 False 时，设置 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> 才会产生影响。</translation>
 <translation id="1147732569915511430">相应头像图片的 SHA-256 哈希值。</translation>
 <translation id="1148415065145333943">停用高级电池充电模式</translation>
+<translation id="1149203480502386713">为 TLS 启用后量子密钥协议</translation>
 <translation id="1149841949061115313">LTC 渠道</translation>
 <translation id="1150742937785306405">允许用户在其设备上开启或关闭 <ph name="PRIVACY_SANDBOX_NAME" /> 网站建议采用的广告设置。</translation>
 <translation id="1151353063931113432">在这些网站上允许图片</translation>
@@ -921,6 +922,7 @@
 
           此政策只在启用了“DefaultSearchProviderEnabled”政策的前提下才会生效。</translation>
 <translation id="1850439894606905202">默认情况下，文档会被放入以网站为键的代理集群中。document.domain 会处于可设置状态。</translation>
+<translation id="1851034156561932736">启用充电提示音</translation>
 <translation id="1851282952069386119">用户可选择与 Google 分享 Chrome 清理功能的运行结果</translation>
 <translation id="1852294065645015766">允许自动播放媒体内容</translation>
 <translation id="1855963029978337744">通过设置此政策，您可以罗列一些网址，从而指定自动授权哪些网站访问具有给定供应商 ID 和产品 ID 的 HID 设备。列表中的每个项都必须同时包含“<ph name="DEVICES_FIELD_NAME" />”和“<ph name="URLS_FIELD_NAME" />”字段才有效，否则便无效。“<ph name="DEVICES_FIELD_NAME" />”字段中的每个项都必须包含“<ph name="VENDOR_ID_FIELD_NAME" />”字段且可以包含“<ph name="PRODUCT_ID_FIELD_NAME" />”字段。如果您省略“<ph name="PRODUCT_ID_FIELD_NAME" />”字段，系统将会创建一项与所有具有给定供应商 ID 的设备都匹配的政策。包含“<ph name="PRODUCT_ID_FIELD_NAME" />”字段但不含“<ph name="VENDOR_ID_FIELD_NAME" />”字段的项无效，会被忽视。
@@ -1026,6 +1028,7 @@
 
       如果此政策和 <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> 都已启用，而且 DownloadRestrictions 设为屏蔽危险文件类型，系统会以 DownloadRestrictions 中针对下载文件的屏蔽设置为准。例如，倘若此政策设为允许从网域“website1.com”下载具有扩展名“exe”的文件，同时 DownloadRestrictions 设为屏蔽恶意下载内容和危险文件类型，系统仍会在所有网域中屏蔽文件类型扩展名为“exe”的下载文件。如果 DownloadRestrictions 未设为屏蔽危险文件类型，此政策中指定的文件类型将不会在所列网域中触发基于文件类型扩展名的下载警告。不妨详细了解 DownloadRestrictions (https://chromeenterprise.google/policies/?policy=DownloadRestrictions)。</translation>
 <translation id="1954612656043024615">启用“共享剪贴板”功能</translation>
+<translation id="1955063069502242812">启用电量不足提示音</translation>
 <translation id="1960059835237529462">允许向用户显示弹出式提醒“<ph name="IOS_NAME" /> App Store 评分”</translation>
 <translation id="1960416154405676350">启用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索。</translation>
 <translation id="1961091374249454164">此政策仅适用于受管理的访客会话。
@@ -1404,6 +1407,7 @@
 <translation id="2269319728625047531">在登录期间允许显示同步同意声明</translation>
 <translation id="2270747976331889601">为本地信任锚启用 TLS 1.3 安全功能。</translation>
 <translation id="22754818344448444">允许用户选择要加载的桌面布局模板</translation>
+<translation id="2277117728011250860">不允许使用无障碍性能过滤机制。</translation>
 <translation id="2279381650184876122">为 SVGUseElement 停用数据网址支持。</translation>
 <translation id="2281496157391382819"> 控制 <ph name="PRODUCT_OS_NAME" />上受管理访客会话的隐私权警告。
 
@@ -2426,6 +2430,7 @@
       如果此政策已启用，系统将为用户提供通过使用访问代码或扫描二维码选择投放设备的选项。
       如果此政策已停用或未设置，系统将不会为用户提供通过使用访问代码或扫描二维码选择投放设备的选项。</translation>
 <translation id="3208615748170745525">自发现有可用更新之日起算的天数。</translation>
+<translation id="3209947902706795852">提示用户进行迁移。</translation>
 <translation id="3210408472559816322">通过设置此政策，您可以指定不应加载哪些本地消息传递主机。拒绝名单值 <ph name="WILDCARD_VALUE" /> 表示所有本地消息传递主机均会被拒绝，除非它们已获得明确许可。
 
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 便会加载已安装的所有本地消息传递主机。</translation>
@@ -2928,6 +2933,17 @@
 
       如果您不设置此政策，<ph name="PRODUCT_NAME" /> 便会使用默认库名称。</translation>
 <translation id="3650122925429054129">禁止在登录屏幕上使用光标突出显示</translation>
+<translation id="3652207037778361023">启用电量不足提示音功能。
+
+          该功能负责播放电量不足提示音。
+
+          如果将此政策设为启用，当电池电量或剩余续航时长降到特定阈值以下时，系统会播放电量不足提示音。
+
+          如果将此政策设为停用，系统将不会播放电量不足提示音。
+
+          如果您设置了此政策，用户便无法对其更改或覆盖。
+
+          如果未设置此政策，那么该功能在受管理的 <ph name="PRODUCT_OS_NAME" /> 设备上会处于停用状态，但在其他情况下会处于启用状态。</translation>
 <translation id="3652670852519271837">允许网站通过 File System API 请求用户授予对文件和目录的读取权限</translation>
 <translation id="3653237928288822292">默认搜索服务提供商图标</translation>
 <translation id="3654906736796256792">允许音频沙盒运行</translation>
@@ -2967,6 +2983,7 @@
       如果您未设置此政策，系统将会使用 <ph name="PRINTERS_ALLOW_ALL" />。</translation>
 <translation id="3695204334462456702">基于零配置 (mDNS + DNS-SD) 的协议目的地（已弃用）</translation>
 <translation id="3695706037816556327">当用户从 <ph name="PRODUCT_OS_NAME" />设备上移除安全令牌（例如智能卡）时，系统会执行什么操作。</translation>
+<translation id="3696134803170884851">停用充电提示音</translation>
 <translation id="3699986274986041335">每当网站想获得本地字体权限时都询问</translation>
 <translation id="3700193037252896716">应以怎样的频率定期重新启动设备。</translation>
 <translation id="3700318587977845664">应以何种频率检查是否有可用更新。</translation>
@@ -3596,6 +3613,7 @@
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
 <translation id="4275048399551500192">不显示由其他设备启动的 <ph name="PRODUCT_NAME" /> 会话的媒体控件</translation>
+<translation id="4278656834593750050">启用充电提示音</translation>
 <translation id="4282243913059705499">始终在工具栏中显示 <ph name="PRODUCT_NAME" /> 图标</translation>
 <translation id="4285674129118156176">允许独立用户使用 ARC</translation>
 <translation id="428948795004445932">网络数据的取样和收集时间间隔。所允许的最低时间间隔为 1 分钟。
@@ -3611,6 +3629,7 @@
       如果相应设备不受管理或只有 1 个用户，此政策会被忽略，并且系统始终都会显示通知。
 
       如果受管理的设备上有多个用户帐号，仅当此政策已启用时，系统才会显示通知。</translation>
+<translation id="4298476374822550051">为 TLS 启用 Kyber 后量子密钥协议</translation>
 <translation id="4303167373847512281">允许使用开发者模式</translation>
 <translation id="4307116964468610577">此政策允许系统电池每天只充满 1 次，以延长它的使用寿命。除了用来将电池充满的时间，在当天的其余时间内，电池始终都不会充到 100%，即使系统已接通电源也是如此，这样更利于储电。
 
@@ -3624,6 +3643,17 @@
 <translation id="4311662690937656540">强制在登录屏幕和锁定的屏幕上执行在线登录</translation>
 <translation id="4313767483634435271">设备的指定基座 MAC 地址</translation>
 <translation id="4314538398999793073">在 Kerberos 身份验证期间停用 CNAME 查找功能</translation>
+<translation id="4316437338046981895">启用充电提示音功能。
+
+          该功能负责播放充电提示音。
+
+          如果将此政策设为启用，当设备连接到交流电源充电器之后，系统会播放充电提示音。
+
+          如果将此政策设为停用，系统将不会播放充电提示音。
+
+          如果您设置了此政策，用户便无法对其更改或覆盖。
+
+          如果未设置此政策，那么该功能在受管理的 <ph name="PRODUCT_OS_NAME" /> 设备上会处于停用状态，但在其他情况下会处于启用状态。</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="4322842393287974810">允许自动启动零延迟的自助服务终端应用控制 <ph name="PRODUCT_OS_NAME" />版本</translation>
 <translation id="4323412353642577604">允许为保护内容而进行远程认证</translation>
@@ -4727,6 +4757,7 @@
 <translation id="5393009997533871906">仅向用户显示许可名单中的打印机</translation>
 <translation id="5398387276166014955">允许在 Chrome 中注入第三方代码</translation>
 <translation id="5401696449591951427">启用 <ph name="CHROME_DEVICES_LINK" /></translation>
+<translation id="5404749470367600971">允许进行无障碍性能过滤。</translation>
 <translation id="5405289061476885481">配置允许在 <ph name="PRODUCT_OS_NAME" />登录屏幕上使用哪些键盘布局。
 
       如果此政策设为一个输入法标识符列表，登录屏幕上将会提供所有已指定的输入法以供选用。系统将会预先选择所指定的第一种输入法。当登录屏幕上显示已激活的用户操作大图标时，屏幕上除了会提供通过此政策指定的各种输入法外，还会提供相应用户最近一次用过的输入法。如果此政策未设置，系统则会根据显示登录屏幕时使用的语言区域提供登录屏幕上的输入法。系统将会忽略无效的输入法标识符。</translation>
@@ -5013,6 +5044,7 @@
 <translation id="5657752663637568277">此政策旨在控制是否在打印预览对话框或设置页面内向用户显示 <ph name="CLOUD_PRINT_NAME" />弃用警告。
       如果此政策设为 True，系统会隐藏弃用警告。
       如果此政策设为 False 或未设置，系统会显示弃用警告。</translation>
+<translation id="5659776687676755342">启用电量不足提示音</translation>
 <translation id="5660228672907979869">禁止启用第三方存储分区。</translation>
 <translation id="5666457529647159548">允许用户管理已安装的客户端证书。</translation>
 <translation id="567377007899266033">如果此政策设为 True，系统便会向 Google 报告由政策触发的主要扩展程序安装事件。将此政策设为 False 意味着系统不会记录任何事件。如果此政策未设置，系统会将默认值设为 True。</translation>
@@ -5146,6 +5178,7 @@
 <translation id="5790763087505467169">减少受管理访客会话的自动启动通知</translation>
 <translation id="5800329278018669527">处于离线状态时不弹出网络配置提示</translation>
 <translation id="5802931736499687181">停用加密报告管道</translation>
+<translation id="5804795151506109282">不提示用户进行迁移。</translation>
 <translation id="5806128552675651249">仅允许在没有背景图片的情况下打印</translation>
 <translation id="5809210507920527553">控制 Linux 容器 (Crostini) 的设置。</translation>
 <translation id="5809728392451418079">设置设备本地帐号的显示名称</translation>
@@ -5410,6 +5443,7 @@
 <translation id="608788685013546076">设定用电高峰转移电量阈值（以百分比表示）</translation>
 <translation id="6089679180657323464">控制 Wilco 诊断和遥测控制器设置。</translation>
 <translation id="6091233616732024397">强制要求用户登录才能使用浏览器</translation>
+<translation id="6092073071805297119">允许使用无障碍性能过滤机制。</translation>
 <translation id="6093156968240188330">允许远程用户在远程协助会话中操控提权后的窗口</translation>
 <translation id="6094314311474620462">停用打印功能</translation>
 <translation id="6095048925836115505">在登录屏幕上启用虚拟键盘</translation>
@@ -5707,6 +5741,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
        如果此政策的值发生更改，系统将使用由此政策配置的加密实现方案来访问现有的 <ph name="DM_CRYPT" /> 用户主目录，因为“<ph name="AES_ALGORITHM_NAME" />”实现方案是兼容的方案。
        如果停用或未设置此政策，<ph name="DM_CRYPT" /> 用户主目录将默认使用“<ph name="AES_NI_NAME" />”进行用户存储加密。</translation>
+<translation id="6316971721180184579">停用电量不足提示音</translation>
 <translation id="6319198883324703402">设置首次用户重新启动通知的时间</translation>
 <translation id="6319907968994678054">如果此政策已启用，系统会在使用由 Google 托管的同步服务的 <ph name="PRODUCT_NAME" /> 中关闭数据同步功能。
       如需完全关闭 <ph name="CHROME_SYNC_NAME" />服务，我们建议您在 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />中关闭相应服务。
@@ -5740,6 +5775,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
         如果您向 |app_list| 中添加某个应用及其 |app_id| 和 |app_type|，该应用便可不受应用级使用时限的约束。
        </translation>
 <translation id="6334397544347592516">允许企业管理员与这台计算机建立远程支持连接</translation>
+<translation id="6335206050538331829">ARC 虚拟机数据迁移的迁移策略</translation>
 <translation id="6337782882143073193">此政策已被弃用，请改用 <ph name="URL_BLOCKLIST_POLICY_NAME" />。
 
       此政策让您能够以列表形式指定要在 <ph name="PRODUCT_NAME" /> 中停用的协议。
@@ -6298,6 +6334,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6800181452282128474">不向 Quirks Server 发送查询</translation>
 <translation id="68031099365512050">报告音频状态</translation>
 <translation id="680356860463873420">不允许用户使用 PluginVm</translation>
+<translation id="6807947647944603395">为 TLS 停用 Kyber 后量子密钥协议</translation>
 <translation id="6810445994095397827">在这些网站上阻止 JavaScript</translation>
 <translation id="6813263547126514821">电源和关机</translation>
 <translation id="681446116407619279">支持的身份验证方案</translation>
@@ -6528,6 +6565,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
        在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="6988791975283483023">停用 Wi-Fi</translation>
 <translation id="6990736882800900101">允许所有以 <ph name="BLANK_PAGE_NAME" /> 为目标打开的弹出式窗口与那个请求打开弹出式窗口的页面互动，除非这个页面已明确拒绝此类互动 </translation>
+<translation id="6991623831629598930">使用“适用于 TLS 的 Kyber 后量子密钥协议”的默认值</translation>
 <translation id="6992943675460798920">允许用户截图和录屏</translation>
 <translation id="6994082778848658360">指定如何使用板载安全元件硬件提供双重身份验证（如果该硬件与此功能兼容的话）。使用机器电源按钮检测用户是否真实存在。
 
@@ -8675,6 +8713,9 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       该政策值应该以毫秒为单位。值的范围限定在 30 秒到 24 小时之间。</translation>
 <translation id="9040042535845939426">设置“隐私保护屏”在登录屏幕上的状态</translation>
+<translation id="904090524252041302">此政策用于控制是否允许无障碍功能引擎为 <ph name="PRODUCT_NAME" /> 中的无障碍功能树动态地计算过滤模式以提高性能。
+如果此政策已启用或未设置，系统会允许无障碍功能引擎为 <ph name="PRODUCT_NAME" /> 中的无障碍功能树动态地计算过滤模式，这可能有助于提高性能。
+如果此政策已停用，系统会禁止无障碍引擎为无障碍功能树动态地计算过滤模式。</translation>
 <translation id="9046248916118130378">如果此政策设为启用，<ph name="PRODUCT_NAME" /> 便可从 Google Meet 等 Google 服务收集 WebRTC 文本日志，并将其上传到 Google。这些日志包含诊断信息，例如描述传入和传出 WebRTC 流的文本元数据、特定于 WebRTC 的日志条目，以及其他系统信息。在调试 <ph name="PRODUCT_NAME" /> 中的语音会议或视频会议问题时，这些信息非常有用。这些日志不包含会议的任何音频或视频内容。
 如果此政策设为停用，系统将不会向 Google 上传此类日志。不过，日志仍会存储在用户设备本地，而且存储的日志会越来越多。如果此政策未设置，<ph name="PRODUCT_NAME" /> 将默认能够收集和上传这些日志。</translation>
 <translation id="9050853837490399534">此政策用于控制相应设备是否应该更新至 Quick Fix Build。

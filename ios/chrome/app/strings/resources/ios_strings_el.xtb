@@ -649,6 +649,7 @@
 <translation id="5083464117946352670">Αδύν.προσδ.μεγέθους αρχείου.</translation>
 <translation id="5090832849094901128">Η κατάργηση αυτού του κωδικού πρόσβασης δεν θα διαγράψει τον λογαριασμό σας στον ιστότοπο <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Το Tweet ολοκληρώθηκε.</translation>
+<translation id="5109892411553231226">Διαχείριση τρόπων πληρωμής</translation>
 <translation id="5118713593561876160">Ενδιαφέροντα</translation>
 <translation id="5118764316110575523">Ανενεργό</translation>
 <translation id="5119391094379141756">Επιλέξτε το Chrome</translation>
@@ -1059,6 +1060,7 @@
 <translation id="7531345132340165516">Τρέχων ιστότοπος</translation>
 <translation id="7537586195939242955">Δεν είναι δυνατή η εγκατάσταση του πάσου σας στο Passbook.</translation>
 <translation id="754655535278952384">Έγινε έλεγχος <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Τελευταία καρτέλα που χρησιμοποιήθηκε στη συσκευή <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Για απενεργοποίηση, ανοίξτε τις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" /> και μεταβείτε στις Επιλογές κωδικών πρόσβασης.</translation>
 <translation id="7554645225856321710">Κλείσιμο όλων</translation>
 <translation id="7554791636758816595">Νέα καρτέλα</translation>
@@ -1191,7 +1193,6 @@
 <translation id="8319076807703933069">Νέα αναζήτηση</translation>
 <translation id="8323906514956095947">Αγγίξτε παρατεταμένα για περισσότερες επιλογές καρτελών</translation>
 <translation id="8328777765163860529">Κλείσιμο όλων</translation>
-<translation id="8331621926962374866">Όταν το Chrome βρίσκεται σε λειτουργία κλειδώματος, ορισμένες τεχνολογίες ιστού αποκλείονται, κάτι που μπορεί να έχει ως αποτέλεσμα την πιο αργή φόρτωση ορισμένων ιστοτόπων ή τη σωστή λειτουργία τους.</translation>
 <translation id="8343993175958086504">Δημιουργήστε αντίγραφα ασφαλείας των δεδομένων σας και χρησιμοποιήστε τα σε οποιαδήποτε συσκευή.</translation>
 <translation id="834783239627985533">Ιστότοποι με τις περισσότερες επισκέψεις</translation>
 <translation id="8378714024927312812">Διαχειριζόμενο από τον οργανισμό σας</translation>
@@ -1205,6 +1206,7 @@
 <translation id="8428045167754449968">Πόλη / Κωμόπολη</translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
 <translation id="8428634594422941299">Το κατάλαβα</translation>
+<translation id="8446201778524791138">Επεξεργασία ενεργειών</translation>
 <translation id="8446884382197647889">Μάθετε περισσότερα</translation>
 <translation id="8458397775385147834">Διαγράφηκε 1 στοιχείο</translation>
 <translation id="8459333855531264009">Μη ασφαλές</translation>

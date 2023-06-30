@@ -389,6 +389,7 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Одјавићете се са свих сајтова, укључујући и инстанце на отвореним картицама</translation>
 <translation id="1313705515580255288">Обележивачи, историја и друга подешавања се синхронизују са Google налогом.</translation>
+<translation id="1315184295353569363">Опозови чување групе</translation>
 <translation id="1316136264406804862">Претраживање...</translation>
 <translation id="1316248800168909509">Повезивање са уређајем <ph name="DEVICE" /> није успело. Пробајте поново.</translation>
 <translation id="1316495628809031177">Синхронизација је паузирана</translation>
@@ -2903,6 +2904,7 @@
 <translation id="3429160811076349561">Пробне функције су искључене</translation>
 <translation id="3429271624041785769">Језици веб-садржаја</translation>
 <translation id="3429275422858276529">Обележите ову страницу да бисте је касније лакше пронашли</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – ослобођено је<ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Дељени ресурси</translation>
 <translation id="3433507769937235446">Закључај при одласку</translation>
 <translation id="3433621910545056227">Упс! Систем није успео да одреди закључавање атрибута за време инсталације уређаја.</translation>
@@ -4006,6 +4008,7 @@
 <translation id="4361142739114356624">Приватни кључ за овај сертификат клијента недостаје или је неважећи</translation>
 <translation id="4361745360460842907">Отвори као картицу</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> је подразумевани налог за ваш <ph name="DEVICE_TYPE" /></translation>
+<translation id="4363215264289239958">Апликације Bruschetta</translation>
 <translation id="4363771538994847871">Нема пронађених одредишта за пребацивање. Да ли вам треба помоћ?</translation>
 <translation id="4364327530094270451">Диња</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> дели прозор.</translation>
@@ -5105,6 +5108,7 @@
 <translation id="5319359161174645648">Google препоручује Chrome</translation>
 <translation id="5319712128756744240">Упарите нови уређај</translation>
 <translation id="5320135788267874712">Нов назив уређај</translation>
+<translation id="5320261549977878764">Опозови чување групе</translation>
 <translation id="532247166573571973">Сервер је можда недоступан. Пробајте поново касније.</translation>
 <translation id="5324300749339591280">Листа апликација</translation>
 <translation id="5324780743567488672">Аутоматски подеси временску зону помоћу моје локације</translation>
@@ -6874,7 +6878,6 @@
 <translation id="6833996806551876956">Проба Заштићеног окружења приватности</translation>
 <translation id="6835712061486505758">Направите WiFi хотспот да бисте омогућили интернет другим уређајима. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Повежите се на интернет да бисте ажурирали <ph name="DEVICE_TYPE" />.</translation>
-<translation id="6836688241291438278">Уверите се да је штампач повезан на исту WiFi мрежу као и Chromebook или користите USB кабл. Сазнајте више о компатибилности.</translation>
 <translation id="6839225236531462745">Грешка при брисању сертификата</translation>
 <translation id="6839916869147598086">Пријављивање је промењено</translation>
 <translation id="6840155290835956714">Питај пре слања</translation>
@@ -8478,8 +8481,6 @@
 <translation id="8181215761849004992">Придруживање домену није успело. На налогу проверите да ли имате привилегије за додавање уређаја.</translation>
 <translation id="8182105986296479640">Апликација не реагује.</translation>
 <translation id="8182412589359523143">Да бисте избрисали све податке са овог уређаја (<ph name="DEVICE_TYPE" />), <ph name="BEGIN_LINK" />кликните овде<ph name="END_LINK" />.</translation>
-<translation id="8182664696082410784"><ph name="REASON" />
-    Мислим да овај сајт не треба да буде блокиран!</translation>
 <translation id="8183703640399301650">EID уређаја је <ph name="EID_NUMBER" />, а IMEI уређаја је <ph name="IMEI_NUMBER" />. Ове бројеве можете да користите да бисте активирали услугу.</translation>
 <translation id="8184288427634747179">Пребаци на <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Више информација</translation>

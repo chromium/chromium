@@ -387,6 +387,7 @@
 <translation id="131364520783682672">CapsLock</translation>
 <translation id="1313660246522271310">タブで表示中のサイトも含め、すべてのサイトからログアウトします</translation>
 <translation id="1313705515580255288">ブックマークや履歴などの設定が Google アカウントに同期されます。</translation>
+<translation id="1315184295353569363">グループの保存を解除</translation>
 <translation id="1316136264406804862">検索しています...</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" /> に接続できませんでした。もう一度お試しください。</translation>
 <translation id="1316495628809031177">同期は一時停止中です</translation>
@@ -2898,6 +2899,7 @@
 <translation id="3429160811076349561">試用版機能はオフになっています</translation>
 <translation id="3429271624041785769">ウェブ コンテンツの言語</translation>
 <translation id="3429275422858276529">後で見つけやすいようにこのページをブックマークできます</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> を解放しました</translation>
 <translation id="3432762828853624962">共有ワーカー</translation>
 <translation id="3433507769937235446">退席時ロック</translation>
 <translation id="3433621910545056227">デバイス インストール時の属性のロックを確立できませんでした。</translation>
@@ -4000,6 +4002,7 @@
 <translation id="4361142739114356624">このクライアント証明書には秘密鍵がないか、秘密鍵が無効です</translation>
 <translation id="4361745360460842907">タブとして開く</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> は <ph name="DEVICE_TYPE" /> のデフォルトのアカウントです</translation>
+<translation id="4363215264289239958">Bruschetta アプリ</translation>
 <translation id="4363771538994847871">キャスト先が見つかりません。ヘルプを表示しますか？</translation>
 <translation id="4364327530094270451">メロン</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> がウィンドウを共有しています。</translation>
@@ -5097,6 +5100,7 @@
 <translation id="5319359161174645648">Google は Chrome を推奨しています</translation>
 <translation id="5319712128756744240">新しいデバイスとペア設定</translation>
 <translation id="5320135788267874712">新しいデバイス名</translation>
+<translation id="5320261549977878764">グループの保存を解除</translation>
 <translation id="532247166573571973">サーバーへのアクセスに問題が起こっている可能性があります。しばらくしてからもう一度お試しください。</translation>
 <translation id="5324300749339591280">アプリのリスト</translation>
 <translation id="5324780743567488672">ユーザーの現在地情報を使用して自動的にタイムゾーンを設定する</translation>
@@ -6859,7 +6863,6 @@
 <translation id="6833996806551876956">プライバシー サンドボックス（試用版）</translation>
 <translation id="6835712061486505758">Wi-Fi アクセス ポイントを作成して、他のデバイスにインターネット接続を提供します。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> を更新するにはインターネットに接続してください。</translation>
-<translation id="6836688241291438278">プリンタが Chromebook と同じ Wi-Fi ネットワークに接続されていることを確認するか、USB ケーブルを使用します。詳しくは互換性をご確認ください。</translation>
 <translation id="6839225236531462745">証明書削除エラー</translation>
 <translation id="6839916869147598086">ログインが変わりました</translation>
 <translation id="6840155290835956714">送信する前に確認する</translation>
@@ -8461,8 +8464,6 @@
 <translation id="8181215761849004992">ドメインを追加できません。アカウントにデバイスを追加する権限があるかどうかご確認ください。</translation>
 <translation id="8182105986296479640">アプリケーションから応答がありません。</translation>
 <translation id="8182412589359523143">この <ph name="DEVICE_TYPE" /> からすべてのデータを削除するには、<ph name="BEGIN_LINK" />ここをクリック<ph name="END_LINK" />してください。</translation>
-<translation id="8182664696082410784"><ph name="REASON" />
-    このサイトはブロック不要です。</translation>
 <translation id="8183703640399301650">デバイスの EID は <ph name="EID_NUMBER" /> で、デバイスの IMEI は <ph name="IMEI_NUMBER" /> です。これらの番号を使用して、サービスを有効にできます。</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> に切り替える</translation>
 <translation id="8184318863960255706">詳細</translation>

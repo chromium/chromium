@@ -649,6 +649,7 @@
 <translation id="5083464117946352670">ફાઇલ કદ નિર્ધારિત કરી શકાતું નથી.</translation>
 <translation id="5090832849094901128">આ પાસવર્ડ ડિલીટ કરવાથી <ph name="WEBSITE" />નું તમારું એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="5094827893301452931">ટ્વિટ પૂર્ણ કરેલ છે.</translation>
+<translation id="5109892411553231226">ચુકવણી પદ્ધતિઓ મેનેજ કરો</translation>
 <translation id="5118713593561876160">રુચિઓ</translation>
 <translation id="5118764316110575523">બંધ</translation>
 <translation id="5119391094379141756">Chrome પસંદ કરો</translation>
@@ -1058,6 +1059,7 @@
 <translation id="7531345132340165516">વર્તમાન સાઇટ</translation>
 <translation id="7537586195939242955">માફ કરશો, તમારો પાસ આ સમયે પાસબુક પર ઇન્સ્ટોલ કરી શકાતો નથી.</translation>
 <translation id="754655535278952384">છેલ્લે ચેક કર્યાનો સમય <ph name="TIME" /></translation>
+<translation id="7552154146060018538"><ph name="SOURCE_DEVICE" /> પર ઉપયોગમાં લીધેલું છેલ્લું ટૅબ</translation>
 <translation id="7553234618121028547">બંધ કરવા માટે, <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> ખોલો અને પાસવર્ડ સંબંધિત વિકલ્પો પર જાઓ.</translation>
 <translation id="7554645225856321710">બધું બંધ કરો</translation>
 <translation id="7554791636758816595">નવું ટૅબ</translation>
@@ -1190,7 +1192,6 @@
 <translation id="8319076807703933069">નવી શોધ</translation>
 <translation id="8323906514956095947">ટૅબના વધુ વિકલ્પો માટે, ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="8328777765163860529">બધું બંધ કરો</translation>
-<translation id="8331621926962374866">જ્યારે Chrome લૉકડાઉન મોડમાં હોય, ત્યારે ચોક્કસ વેબ ટેક્નોલોજી બ્લૉક કરવામાં આવે છે, જેના કારણે અમુક વેબસાઇટ વધારે ધીમી લોડ થાય કે યોગ્ય રીતે ઑપરેટ થાય નહીં એમ બની શકે છે.</translation>
 <translation id="8343993175958086504">તમારી સામગ્રીનું બૅકઅપ લો અને કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરો.</translation>
 <translation id="834783239627985533">સૌથી વધુ મુલાકાત લીધેલી સાઇટ</translation>
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
@@ -1204,6 +1205,7 @@
 <translation id="8428045167754449968">શહેર/નગર</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8428634594422941299">સમજાઈ ગયું</translation>
+<translation id="8446201778524791138">ક્રિયાઓમાં ફેરફાર કરો</translation>
 <translation id="8446884382197647889">વધુ જાણો</translation>
 <translation id="8458397775385147834">1 આઇટમ કાઢી નાખી</translation>
 <translation id="8459333855531264009">સુરક્ષિત નથી</translation>

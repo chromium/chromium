@@ -649,6 +649,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5083464117946352670">Dimensiune fișier necunoscută.</translation>
 <translation id="5090832849094901128">Ștergerea acestei parole nu îți va șterge contul de pe <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet finalizat.</translation>
+<translation id="5109892411553231226">Gestionează metodele de plată</translation>
 <translation id="5118713593561876160">Interese</translation>
 <translation id="5118764316110575523">Dezactivat</translation>
 <translation id="5119391094379141756">Selectează Chrome.</translation>
@@ -1058,6 +1059,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7531345132340165516">Site-ul actual</translation>
 <translation id="7537586195939242955">Momentan, parola nu poate fi instalată în Agenda de parole.</translation>
 <translation id="754655535278952384">Verificată <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Ultima filă folosită în <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Pentru dezactivare, deschide <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" /> și accesează Opțiuni pentru parolă.</translation>
 <translation id="7554645225856321710">Închide tot</translation>
 <translation id="7554791636758816595">Filă nouă</translation>
@@ -1190,7 +1192,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8319076807703933069">Căutare nouă</translation>
 <translation id="8323906514956095947">Atinge lung pentru mai multe opțiuni de file</translation>
 <translation id="8328777765163860529">Închideți toate</translation>
-<translation id="8331621926962374866">Când Chrome este în modul Blocare, anumite tehnologii web sunt blocate, ceea ce poate determina încărcarea mai lentă a unor site-uri sau funcționarea incorectă.</translation>
 <translation id="8343993175958086504">Fă backup datelor și folosește-le pe orice dispozitiv.</translation>
 <translation id="834783239627985533">Cele mai accesate site-uri</translation>
 <translation id="8378714024927312812">Gestionat de organizația ta</translation>
@@ -1204,6 +1205,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8428045167754449968">Oraș</translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8428634594422941299">Am înțeles</translation>
+<translation id="8446201778524791138">Editează Acțiunile</translation>
 <translation id="8446884382197647889">Află mai multe</translation>
 <translation id="8458397775385147834">Un element șters</translation>
 <translation id="8459333855531264009">Nesecurizat</translation>

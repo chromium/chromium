@@ -700,6 +700,7 @@
 <translation id="1576594961618857597">Стандарден бел аватар</translation>
 <translation id="1576729678809834061">Пријавете го резултатов од пребарувањето</translation>
 <translation id="1578558981922970608">Затвори присилно</translation>
+<translation id="157931050206866263">Дознајте повеќе за скенирањата за злонамерен софтвер</translation>
 <translation id="1580772913177567930">Контактирајте со администраторот</translation>
 <translation id="1581962803218266616">Прикажи во Наоѓач</translation>
 <translation id="1582955169539260415">избриши [<ph name="FINGERPRINT_NAME" />]</translation>
@@ -932,6 +933,7 @@
 <translation id="1757132445735080748">За да завршите со поставувањето на Linux, ажурирајте ја ChromeOS Flex и обидете се повторно.</translation>
 <translation id="1757301747492736405">Деинсталирањето чека на ред</translation>
 <translation id="175772926354468439">Овозможи тема</translation>
+<translation id="1757786065507923842">Барањето дозвола од родител не успеа.</translation>
 <translation id="17584710573359123">Прикажи во веб-продавницата на Chrome</translation>
 <translation id="1761845175367251960">Сметки на <ph name="NAME" /></translation>
 <translation id="176272781006230109">предлози за купување</translation>
@@ -984,6 +986,7 @@
 <translation id="1795214765651529549">Користи „Класичен“</translation>
 <translation id="1796588414813960292">Функциите на коишто им требаат звуци нема да работат</translation>
 <translation id="1797117170091578105">Играјте со вашата тастатура Chromebook. Можете да ги приспособите копчињата на конкретни дејства.</translation>
+<translation id="1801571666562084067">Конвертирање слики во PDF во текст</translation>
 <translation id="180203835522132923">Search + O, потоа W</translation>
 <translation id="1802624026913571222">Режим во мирување кога капакот е затворен</translation>
 <translation id="1802687198411089702">Страницава не реагира. Може да почекате или да излезете.</translation>
@@ -2647,6 +2650,7 @@
 <translation id="3165390001037658081">Некои оператори може да ја блокираат функцијава.</translation>
 <translation id="3169930038976362151">Изберете ја темата што одговара на вашите потреби. За да промените тема, тапет, штедач на екран и друго, само допрете и задржете на работната површина.</translation>
 <translation id="3170072451822350649">Може да прескокнете и најавување и <ph name="LINK_START" />да прелистувате како Гостин<ph name="LINK_END" />.</translation>
+<translation id="3174311489448105660">Кога е тоа можно, скенирајте слики во PDF за да ги конвертирате содржините во текст за читачот на екран. Ова е поддржано само во прелистувачот Chrome.</translation>
 <translation id="31774765611822736">Нова картичка налево</translation>
 <translation id="3177909033752230686">Јазик на страницата:</translation>
 <translation id="3177914167275935955">Вашиот уред содржи Chrome Education Upgrade, но вашето корисничко име не е поврзано со сметка на Google for Education. Создајте сметка на Google for Education на g.co/workspace/edusignup на секундарен уред.</translation>
@@ -4744,6 +4748,7 @@
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Потврди пристап</translation>
 <translation id="4979263087381759787">Програмерски опции</translation>
+<translation id="4979510648199782334">Поставувањето на Microsoft 365 е завршено</translation>
 <translation id="4980805016576257426">Екстензијата содржи злонамерен софтвер.</translation>
 <translation id="4981449534399733132">За да ги избришете податоците од прелистувањето од сите ваши синхронизирани уреди и од сметката на Google, <ph name="BEGIN_LINK" />најавете се<ph name="END_LINK" />.</translation>
 <translation id="4986706507552097681">Секогаш може да изберете што да синхронизирате во „Поставки“. Google може да ги персонализира „Пребарување“ и другите услуги според вашата историја.</translation>
@@ -6885,7 +6890,6 @@
 <translation id="6833996806551876956">Пробен период за Sandbox за приватност</translation>
 <translation id="6835712061486505758">Создајте точка на пристап за Wi‑Fi за да обезбедите интернет за други уреди. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Поврзете се на интернет за да го ажурирате <ph name="DEVICE_TYPE" />.</translation>
-<translation id="6836688241291438278">Уверете се дека печатачот е поврзан на истата Wi-Fi мрежа како и вашиот Chromebook или користете USB-кабел. Дознајте повеќе за компатибилноста.</translation>
 <translation id="6839225236531462745">Грешка при бришење сертификат</translation>
 <translation id="6839916869147598086">Најавувањето се промени</translation>
 <translation id="6840155290835956714">Прашај пред да испратиш</translation>
@@ -8158,6 +8162,7 @@
 <translation id="7910768399700579500">&amp;Нова папка</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Вашата лозинка е променета на серверот. Одјавете се и повторно најавете се.</translation>
+<translation id="791247712619243506">Откажи го поставувањето</translation>
 <translation id="7912974581251770345">Превод</translation>
 <translation id="7915457674565721553">Поврзете се на интернет за да поставите „Родителски контроли“</translation>
 <translation id="7916364730877325865">Вашата организација не дозволува да вклучите синхронизирање со сметкава</translation>
@@ -8487,8 +8492,6 @@
 <translation id="8181215761849004992">Не може да се приклучи на доменот. Проверете дали имате доволно привилегии на сметката за додавање уреди.</translation>
 <translation id="8182105986296479640">Апликацијата не одговара</translation>
 <translation id="8182412589359523143">За да ги избришете сите податоци од овој <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />кликнете тука<ph name="END_LINK" />.</translation>
-<translation id="8182664696082410784"><ph name="REASON" />
-    Не мислам дека сајтов треба да е блокиран!</translation>
 <translation id="8183703640399301650">EID-бројот на вашиот уред е <ph name="EID_NUMBER" />, а IMEI-бројот на уредот е <ph name="IMEI_NUMBER" />. Броевиве може да се користат за активирање услуга.</translation>
 <translation id="8184288427634747179">Префрли се на <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Повеќе информации</translation>
@@ -8950,6 +8953,7 @@
 <translation id="8592141010104017453">Воопшто не прикажувај известувања</translation>
 <translation id="859246725979739260">Пристапот до вашата локација е блокиран за сајтов.</translation>
 <translation id="8593121833493516339">Испраќајте податоци за користење и дијагностика. Помогнете ни да го подобриме искуството на вашето дете со Android со автоматско испраќање дијагностички и податоци за користењето на уредот и апликациите до Google. Овие податоци нема да се користат за идентификација на вашето дете, а ќе ни помогнат околу стабилноста на системот и апликациите и за други подобрувања. Некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android. Ако сте ја вклучиле дополнителната „Активност на интернет и апликации“ за вашето дете, овие податоци може да се зачувуваат во сметката на Google на детето. <ph name="BEGIN_LINK1" />Дознајте повеќе<ph name="END_LINK1" /></translation>
+<translation id="8593450223647418235">Нема да може да отворате датотеки во Microsoft 365 сѐ додека не заврши поставувањето.</translation>
 <translation id="8596540852772265699">Приспособени датотеки</translation>
 <translation id="8597845839771543242">Формат на својството:</translation>
 <translation id="8599681327221583254">Едно или повеќе правила не се правилно конфигурирани. Контактирајте со администраторот</translation>
@@ -9367,6 +9371,7 @@
 <translation id="8941173171815156065">Отповикај ја дозволата „<ph name="PERMISSION" />“</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> е исклучена</translation>
 <translation id="894191600409472540">Создајте силни лозинки</translation>
+<translation id="8942714513622077633">Да се откаже поставувањето на Microsoft 365?</translation>
 <translation id="894360074127026135">Меѓународно покачување на Netscape</translation>
 <translation id="8944099748578356325">Ја троши батеријата побрзо (во моментов <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944725102565796255">Ако сакате да ја користите сметкава само еднократно, може <ph name="GUEST_LINK_BEGIN" />да го користите уредот како гостин<ph name="GUEST_LINK_END" />. Ако сакате да додадете сметка за некој друг, <ph name="LINK_BEGIN" />додајте ново лице<ph name="LINK_END" /> на вашиот <ph name="DEVICE_TYPE" />.
@@ -9411,10 +9416,14 @@
 <translation id="8978154919215542464">Вклучено - синхронизирај сѐ</translation>
 <translation id="8978670037548431647">Освежи ги можностите за интернет преку мобилен</translation>
 <translation id="897939795688207351">На <ph name="ORIGIN" /></translation>
+<translation id="8980335421826918629">Датотекава можеби е вирус или злонамерен софтвер.
+
+Може да ја испратите до „Безбедно прелистување со Google“ за да се провери дали е небезбедна. Скенирањата обично траат неколку секунди.</translation>
 <translation id="8980345560318123814">Извештаи со повратни информации</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - падна</translation>
 <translation id="8981038076986775523">Дознајте повеќе за користењето микрофон</translation>
 <translation id="8981825781894055334">Нема доволно хартија</translation>
+<translation id="8982043802480025357">При отворање датотеки Word, Excel и PowerPoint, датотеките ќе се преместат во Microsoft OneDrive пред да се отворат во Microsoft 365</translation>
 <translation id="8983018820925880511"><ph name="DOMAIN" /> ќе управува со овој нов профил. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> може да ја изменува <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Уредот ќе биде видлив за сите во траење од <ph name="MINUTES" /> минути. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>

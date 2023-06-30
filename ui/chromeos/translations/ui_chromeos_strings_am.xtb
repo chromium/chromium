@@ -567,6 +567,7 @@
 <translation id="5422221874247253874">የመዳረሻ ነጥብ</translation>
 <translation id="5428105026674456456">ስፓኒሽ</translation>
 <translation id="5438282218546237410">ለ <ph name="SEARCH_TERM" /> ምንም ውጤቶች የሉም።</translation>
+<translation id="5447680084201416734">በቂ ማከማቻ የለም።</translation>
 <translation id="5449551289610225147">ልክ ያልኾነ የይለፍ ቃል</translation>
 <translation id="5459064203055649751">«<ph name="FILENAME" />» የተባለ ፋይል አስቀድሞ አለ። እያንቀሳቀሱት ባለው እሱን ሊተኩት ይፈልጋሉ?</translation>
 <translation id="5463231940765244860">አስገባ</translation>
@@ -695,6 +696,7 @@
 <translation id="6423031066725912715">ቪዬትናምኛ በTCVN ቁልፍ ሰሌዳ</translation>
 <translation id="6430271654280079150">1 ቀሪ ሙከራ አለዎት።</translation>
 <translation id="643243556292470964">የተሰረዙ ፋይሎች አሁን ወደ መጣያ ተወስደዋል</translation>
+<translation id="6438480100790416671">የማከማቻ ቦታን በመፈተሽ ላይ…</translation>
 <translation id="6485131920355264772">የቦታ መረጃን ማምጣት አልተቻለም</translation>
 <translation id="6495925982925244349">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ በእርስዎ አስተዳዳሪ የሚተዳደር፣ ዝርዝሮች</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />ን ወደ <ph name="FOLDER_NAME" /> በማውጣት ላይ</translation>
@@ -898,6 +900,7 @@
 <translation id="8000066093800657092">ምንም አውታረ መረብ የለም</translation>
 <translation id="8008366997883261463">ጃክ ራሰል ቴሪየር</translation>
 <translation id="8028993641010258682">መጠን</translation>
+<translation id="8034974485549318493">ለመጀመሪያ ውቅረት ፋይሎች መስመር እንዲችሉ ከበይነመረብ ጋር መገናኘት ያስፈልግዎታል።</translation>
 <translation id="803771048473350947">ፋይል</translation>
 <translation id="8038111231936746805">(ነባሪ)</translation>
 <translation id="8042602468072383151">የ<ph name="AUDIO_TYPE" /> ኦዲዮ</translation>

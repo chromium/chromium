@@ -649,6 +649,7 @@
 <translation id="5083464117946352670">Неизвестен файлов размер.</translation>
 <translation id="5090832849094901128">Изтриването на тази парола няма да премахне профила ви за <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Съобщението в Twitter е завършено.</translation>
+<translation id="5109892411553231226">Управление на начините на плащане</translation>
 <translation id="5118713593561876160">Интереси</translation>
 <translation id="5118764316110575523">Изкл.</translation>
 <translation id="5119391094379141756">Изберете Chrome.</translation>
@@ -1058,6 +1059,7 @@
 <translation id="7531345132340165516">Настоящ сайт</translation>
 <translation id="7537586195939242955">Понастоящем пропускът не може да се инсталира в Passbook.</translation>
 <translation id="754655535278952384">Проверихте <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Последният раздел, използван на <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">За да изключите функцията, отворете <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" /> и след това „Опции за паролите“.</translation>
 <translation id="7554645225856321710">Затваряне на всички</translation>
 <translation id="7554791636758816595">Нов раздел</translation>
@@ -1080,6 +1082,7 @@
 <translation id="7687508192620387263">Налице е файл за календара</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7711440461521638739">Не използвате повторно нито една парола</translation>
+<translation id="7719038820139380048">Влезте в профила си, за да получавате съдържание въз основа на интересите си.</translation>
 <translation id="7720410380936703141">НОВ ОПИТ</translation>
 <translation id="7726702057919861819">Меню → История → Изчистване на данните за сърфирането</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Само на това устройство.</translation>
@@ -1189,7 +1192,6 @@
 <translation id="8319076807703933069">Ново търсене</translation>
 <translation id="8323906514956095947">Докоснете и задръжте, за да видите още опции за разделите</translation>
 <translation id="8328777765163860529">Затваряне на всички</translation>
-<translation id="8331621926962374866">Когато Chrome е в режим на заключване, определени уеб технологии се блокират и това може да доведе до по-бавното зареждане или неправилното функциониране на някои уебсайтове.</translation>
 <translation id="8343993175958086504">Създайте резервно копие на нещата си и ги използвайте на всяко устройство.</translation>
 <translation id="834783239627985533">Най-посещавани сайтове</translation>
 <translation id="8378714024927312812">Управлява се от организацията ви</translation>
@@ -1203,6 +1205,7 @@
 <translation id="8428045167754449968">Град/селище</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428634594422941299">Разбрах</translation>
+<translation id="8446201778524791138">Редактиране на действията</translation>
 <translation id="8446884382197647889">Научете повече</translation>
 <translation id="8458397775385147834">Изтрихте 1 елемент</translation>
 <translation id="8459333855531264009">Не е сигурно</translation>

@@ -389,6 +389,7 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Θα αποσυνδεθείτε από όλους τους ιστοτόπους, συμπεριλαμβανομένων όσων εμφανίζονται σε ανοικτές καρτέλες.</translation>
 <translation id="1313705515580255288">Οι σελιδοδείκτες, το ιστορικό και άλλες ρυθμίσεις θα συγχρονιστούν με το Λογαριασμό σας Google</translation>
+<translation id="1315184295353569363">Κατάργηση αποθήκευσης ομάδας</translation>
 <translation id="1316136264406804862">Αναζήτηση...</translation>
 <translation id="1316248800168909509">Δεν ήταν δυνατή η σύνδεση με τη συσκευή <ph name="DEVICE" />. Δοκιμάστε ξανά.</translation>
 <translation id="1316495628809031177">Ο συγχρονισμός τέθηκε σε παύση</translation>
@@ -2919,6 +2920,7 @@
 <translation id="3429160811076349561">Οι δοκιμαστικές λειτουργίες είναι απενεργοποιημένες</translation>
 <translation id="3429271624041785769">Γλώσσες περιεχομένου ιστού</translation>
 <translation id="3429275422858276529">Προσθέστε σελιδοδείκτη σε αυτήν τη σελίδα, για να την εντοπίσετε εύκολα αργότερα</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - Ελευθερώθηκαν <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Κλείδωμα κατά την αποχώρηση</translation>
 <translation id="3433621910545056227">Ωχ!  Το σύστημα απέτυχε να εφαρμόσει το κλείδωμα χρόνου εγκατάστασης χαρακτηριστικών.</translation>
@@ -4022,6 +4024,7 @@
 <translation id="4361142739114356624">Το Ιδιωτικό κλειδί για αυτό το Πιστοποιητικό πελάτη λείπει ή δεν είναι έγκυρο</translation>
 <translation id="4361745360460842907">Άνοιγμα ως καρτέλα</translation>
 <translation id="4362675504017386626">Ο λογαριασμός <ph name="ACCOUNT_EMAIL" /> είναι ο προεπιλεγμένος λογαριασμός στη συσκευή <ph name="DEVICE_TYPE" /></translation>
+<translation id="4363215264289239958">Εφαρμογές του Bruschetta</translation>
 <translation id="4363771538994847871">Δεν βρέθηκαν προορισμοί μετάδοσης. Χρειάζεστε βοήθεια;</translation>
 <translation id="4364327530094270451">Πεπόνι</translation>
 <translation id="4364567974334641491">Η εφαρμογή <ph name="APP_NAME" /> μοιράζεται ένα παράθυρο.</translation>
@@ -5122,6 +5125,7 @@
 <translation id="5319359161174645648">Η Google συνιστά το Chrome</translation>
 <translation id="5319712128756744240">Σύζευξη νέας συσκευής</translation>
 <translation id="5320135788267874712">Νέο όνομα συσκευής</translation>
+<translation id="5320261549977878764">Κατάργηση αποθήκευσης ομάδας</translation>
 <translation id="532247166573571973">Ο διακομιστής μπορεί να μην είναι προσβάσιμος. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="5324300749339591280">Λίστα εφαρμογών</translation>
 <translation id="5324780743567488672">Αυτόματη ρύθμιση ζώνης ώρας με χρήση της τοποθεσίας σας</translation>
@@ -6888,7 +6892,6 @@
 <translation id="6833996806551876956">Δοκιμή Πλαίσιο ιδιωτικότητας</translation>
 <translation id="6835712061486505758">Δημιουργήστε ένα σημείο πρόσβασης Wi-Fi, για να παρέχετε σύνδεση στο διαδίκτυο σε άλλες συσκευές. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Συνδεθείτε στο Διαδίκτυο για να ενημερώσετε τη συσκευή σας <ph name="DEVICE_TYPE" />.</translation>
-<translation id="6836688241291438278">Βεβαιωθείτε ότι ο εκτυπωτής σας είναι συνδεδεμένος στο ίδιο δίκτυο Wi-Fi με το Chromebook ή χρησιμοποιήστε ένα καλώδιο USB. Μάθετε περισσότερα σχετικά με τη συμβατότητα.</translation>
 <translation id="6839225236531462745">Σφάλμα διαγραφής πιστοποιητικού</translation>
 <translation id="6839916869147598086">Η σύνδεση έχει αλλάξει</translation>
 <translation id="6840155290835956714">Ερώτηση πριν από την αποστολή</translation>
@@ -8492,8 +8495,6 @@
 <translation id="8181215761849004992">Δεν είναι δυνατή η σύνδεση στον τομέα. Ελέγξτε τον λογαριασμό σας, για να δείτε εάν έχετε επαρκή προνόμια για την προσθήκη συσκευών.</translation>
 <translation id="8182105986296479640">Η εφαρμογή δεν αποκρίνεται.</translation>
 <translation id="8182412589359523143">Για να διαγράψετε όλα τα δεδομένα από τη συσκευή <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />κάντε κλικ εδώ<ph name="END_LINK" />.</translation>
-<translation id="8182664696082410784"><ph name="REASON" />
-    Πιστεύω ότι αυτός ο ιστότοπος δεν πρέπει να είναι αποκλεισμένος!</translation>
 <translation id="8183703640399301650">Ο αριθμός EID της συσκευής σας είναι <ph name="EID_NUMBER" /> και ο αριθμός IMEI της συσκευής είναι <ph name="IMEI_NUMBER" />. Αυτοί οι αριθμοί μπορούν να χρησιμοποιηθούν για να βοηθήσουν στην ενεργοποίηση της υπηρεσίας.</translation>
 <translation id="8184288427634747179">Εναλλαγή σε <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Περισσότερες πληροφορίες</translation>

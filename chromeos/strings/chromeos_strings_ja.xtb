@@ -15,6 +15,7 @@
 <translation id="1082009148392559545">スクリーン セーバーをダウンロードしています</translation>
 <translation id="1094693127011229778">IP アドレスを取得できません</translation>
 <translation id="1113892970288677790">アートワークや画像のライブラリから選択してください</translation>
+<translation id="1118572504348554005">Google は、バグやその他ご報告いただいた問題を解決するため、このフォームからお送りいただいたフィードバックをパートナーと共有する場合があります。パスワードなどの機密情報は含めないでください。</translation>
 <translation id="1119447706177454957">内部エラー</translation>
 <translation id="1124772482545689468">ユーザー</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -460,7 +461,6 @@
 <translation id="469379815867856270">電波強度</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="473775607612524610">更新</translation>
-<translation id="4744944742468440486">選択した項目に関連する情報</translation>
 <translation id="4771607256327216405">キーボードを明るく</translation>
 <translation id="4773299976671772492">停止しました</translation>
 <translation id="4782311465517282004">テキストを右クリックまたは長押しすると、定義、翻訳、単位変換を確認できます</translation>
