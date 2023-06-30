@@ -119,6 +119,8 @@ struct ShortcutsWidgetEntryView: View {
   }
 
   enum Strings {
+    static let widgetDisplayName = String(
+      localized: "IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DISPLAY_NAME")
     static let searchA11yLabel = String(
       localized:
         "IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_SEARCH_A11Y_LABEL")
@@ -163,7 +165,7 @@ struct ShortcutsWidgetEntryView: View {
       .frame(minWidth: 0, maxWidth: .infinity)
       .padding([.leading, .trailing], Dimensions.stackFramePadding)
     }
-    .accessibilityLabel(Text(Strings.searchA11yLabel))
+    .accessibilityLabel(Strings.searchA11yLabel)
   }
 
   // Shows the widget with 4 shortcuts placeholder in the gallery view to respect user's privacy.
@@ -184,20 +186,23 @@ struct ShortcutsWidgetEntryView: View {
   // all his most visited websites from Chrome App.
   private var zeroVisitedSitesView: some View {
     WebsiteLabel(websiteTitle: Strings.noShortcutsAvailableTitle).padding(.leading, 10)
+      .accessibilityLabel(Strings.noShortcutsAvailableTitle)
   }
 
   // Shows the shortcut's icon with website's title on the left.
   @ViewBuilder
   private func oneVisitedSitesView(ntpTile: NTPTile) -> some View {
     Link(destination: ntpTile.url) {
-      WebsiteLogo(ntpTile: ntpTile).padding(.leading, 12)
-      WebsiteLabel(
-        websiteTitle: Strings.openShorcutLabelTemplate.replacingOccurrences(
-          of: "WEBSITE_PLACEHOLDER", with: ntpTile.title ?? "")
-      )
-      .padding(.leading, 8)
-
+      HStack {
+        WebsiteLogo(ntpTile: ntpTile).padding(.leading, 12)
+        WebsiteLabel(
+          websiteTitle: Strings.openShorcutLabelTemplate.replacingOccurrences(
+            of: "WEBSITE_PLACEHOLDER", with: ntpTile.title ?? "")
+        )
+        .padding(.leading, 8)
+      }
     }
+    .accessibilityLabel(ntpTile.title)
   }
 
   // Shows the shortcuts containing the most visited websites.
@@ -213,8 +218,10 @@ struct ShortcutsWidgetEntryView: View {
         Link(destination: ntpTiles[index].url) {
           WebsiteLogo(ntpTile: ntpTiles[index])
         }
-      }.frame(minWidth: 0, maxWidth: .infinity)
-        .padding([.leading, .trailing], Dimensions.iconsPadding)
+        .accessibilityLabel(ntpTiles[index].title)
+      }
+      .frame(minWidth: 0, maxWidth: .infinity)
+      .padding([.leading, .trailing], Dimensions.iconsPadding)
       if index < numberOfShortcuts - 1 {
         SeparatorVertical()
       }
@@ -233,6 +240,7 @@ struct ShortcutsWidgetEntryView: View {
         Rectangle()
           .foregroundColor(Colors.widgetMostVisitedSitesRow)
           .frame(minWidth: 0, maxWidth: .infinity)
+          .accessibilityLabel(Strings.widgetDisplayName)
         HStack {
           let ntpTiles = Array(entry.mostVisitedSites.values).sorted()
 
@@ -249,7 +257,8 @@ struct ShortcutsWidgetEntryView: View {
             }
           }
           Spacer()
-        }.frame(minWidth: 0, maxWidth: .infinity)
+        }
+        .frame(minWidth: 0, maxWidth: .infinity)
       }
       Spacer()
     }.background(Colors.widgetMostVisitedSitesRow)
