@@ -4743,9 +4743,6 @@ crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects
 crbug.com/1210199 http/tests/devtools/elements/elements-panel-restore-selection-when-node-comes-later.js [ Failure Pass ]
 crbug.com/1199522 http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Failure Pass ]
 
-# Failing css-transforms-2 web platform tests.
-crbug.com/847356 external/wpt/css/css-transforms/transform-box/view-box-mutation-001.html [ Failure ]
-
 # Started failing after rolling new version of check-layout-th.js
 css3/flexbox/perpendicular-writing-modes-inside-flex-item.html [ Failure ]
 

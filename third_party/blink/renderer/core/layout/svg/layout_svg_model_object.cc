@@ -170,6 +170,11 @@ void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
 void LayoutSVGModelObject::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutObject::InsertedIntoTree();
+  // Ensure that the viewport dependency flag gets set on the ancestor chain.
+  if (SVGSelfOrDescendantHasViewportDependency()) {
+    ClearSVGSelfOrDescendantHasViewportDependency();
+    SetSVGSelfOrDescendantHasViewportDependency();
+  }
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
   if (StyleRef().HasSVGEffect())

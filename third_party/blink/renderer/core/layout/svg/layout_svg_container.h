@@ -102,6 +102,15 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   }
   void UpdateLayout() override;
 
+  void SetTransformUsesReferenceBox(bool transform_uses_reference_box) {
+    NOT_DESTROYED();
+    transform_uses_reference_box_ = transform_uses_reference_box;
+  }
+  bool TransformUsesReferenceBox() const {
+    NOT_DESTROYED();
+    return transform_uses_reference_box_;
+  }
+
   void AddChild(LayoutObject* child,
                 LayoutObject* before_child = nullptr) final;
   void RemoveChild(LayoutObject*) final;
@@ -128,6 +137,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   bool object_bounding_box_valid_;
   bool needs_boundaries_update_ : 1;
   bool did_screen_scale_factor_change_ : 1;
+  bool transform_uses_reference_box_ : 1;
   mutable bool has_non_isolated_blending_descendants_ : 1;
   mutable bool has_non_isolated_blending_descendants_dirty_ : 1;
 };

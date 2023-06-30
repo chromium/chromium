@@ -4979,6 +4979,19 @@ void LayoutObject::SetSVGDescendantMayHaveTransformRelatedAnimation() {
   }
 }
 
+void LayoutObject::SetSVGSelfOrDescendantHasViewportDependency() {
+  NOT_DESTROYED();
+  auto* object = this;
+  do {
+    DCHECK(object->IsSVGChild());
+    if (object->SVGSelfOrDescendantHasViewportDependency()) {
+      break;
+    }
+    object->bitfields_.SetSVGSelfOrDescendantHasViewportDependency(true);
+    object = object->Parent();
+  } while (object && !object->IsSVGRoot());
+}
+
 void LayoutObject::InvalidateSubtreePositionFallback(bool mark_style_dirty) {
   NOT_DESTROYED();
 

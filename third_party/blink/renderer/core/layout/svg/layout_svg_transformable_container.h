@@ -55,7 +55,6 @@ class LayoutSVGTransformableContainer final : public LayoutSVGContainer {
   }
 
   bool needs_transform_update_ : 1;
-  bool transform_uses_reference_box_ : 1;
   AffineTransform local_transform_;
   gfx::Vector2dF additional_translation_;
 };

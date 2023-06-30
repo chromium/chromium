@@ -3519,6 +3519,17 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   void SetSVGDescendantMayHaveTransformRelatedAnimation();
 
+  bool SVGSelfOrDescendantHasViewportDependency() const {
+    NOT_DESTROYED();
+    return bitfields_.SVGSelfOrDescendantHasViewportDependency();
+  }
+  void SetSVGSelfOrDescendantHasViewportDependency();
+  void ClearSVGSelfOrDescendantHasViewportDependency() {
+    NOT_DESTROYED();
+    DCHECK(IsSVGChild());
+    bitfields_.SetSVGSelfOrDescendantHasViewportDependency(false);
+  }
+
   bool ShouldSkipNextLayoutShiftTracking() const {
     NOT_DESTROYED();
     return bitfields_.ShouldSkipNextLayoutShiftTracking();
@@ -4299,6 +4310,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // SVG container if the container doesn't have any animating descendants.
     ADD_BOOLEAN_BITFIELD(svg_descendant_may_have_transform_related_animation_,
                          SVGDescendantMayHaveTransformRelatedAnimation);
+
+    // For SVG objects, indicates if this object or any descendant depends on
+    // the dimensions of the viewport.
+    ADD_BOOLEAN_BITFIELD(svg_self_or_descendant_has_viewport_dependency_,
+                         SVGSelfOrDescendantHasViewportDependency);
 
     ADD_BOOLEAN_BITFIELD(is_layout_ng_object_for_formatted_text,
                          IsLayoutNGObjectForFormattedText);

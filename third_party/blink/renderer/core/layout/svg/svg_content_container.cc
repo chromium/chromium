@@ -76,6 +76,10 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
 
           force_child_layout = true;
         }
+        if (!child->NeedsLayout() &&
+            child->SVGSelfOrDescendantHasViewportDependency()) {
+          force_child_layout = true;
+        }
       }
     }
 

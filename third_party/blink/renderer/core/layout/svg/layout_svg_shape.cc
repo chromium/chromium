@@ -79,7 +79,7 @@ void LayoutSVGShape::StyleDidChange(StyleDifference diff,
 
   TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
-      TransformHelper::DependsOnReferenceBox(StyleRef());
+      TransformHelper::UpdateReferenceBoxDependency(*this);
   SVGResources::UpdatePaints(*this, old_style, StyleRef());
 
   // Most of the stroke attributes (caps, joins, miters, width, etc.) will cause

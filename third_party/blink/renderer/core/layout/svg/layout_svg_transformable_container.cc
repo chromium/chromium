@@ -31,9 +31,7 @@ namespace blink {
 
 LayoutSVGTransformableContainer::LayoutSVGTransformableContainer(
     SVGGraphicsElement* node)
-    : LayoutSVGContainer(node),
-      needs_transform_update_(true),
-      transform_uses_reference_box_(false) {}
+    : LayoutSVGContainer(node), needs_transform_update_(true) {}
 
 static bool HasValidPredecessor(const Node* node) {
   DCHECK(node);
@@ -100,7 +98,7 @@ SVGTransformChange LayoutSVGTransformableContainer::CalculateLocalTransform(
     additional_translation_ = translation;
   }
 
-  if (!needs_transform_update_ && transform_uses_reference_box_) {
+  if (!needs_transform_update_ && TransformUsesReferenceBox()) {
     if (CheckForImplicitTransformChange(bounds_changed))
       SetNeedsTransformUpdate();
   }
@@ -124,8 +122,8 @@ void LayoutSVGTransformableContainer::StyleDidChange(
   LayoutSVGContainer::StyleDidChange(diff, old_style);
 
   TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
-  transform_uses_reference_box_ =
-      TransformHelper::DependsOnReferenceBox(StyleRef());
+  SetTransformUsesReferenceBox(
+      TransformHelper::UpdateReferenceBoxDependency(*this));
 }
 
 }  // namespace blink

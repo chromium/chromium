@@ -66,6 +66,25 @@ bool TransformHelper::DependsOnReferenceBox(const ComputedStyle& style) {
   return false;
 }
 
+bool TransformHelper::UpdateReferenceBoxDependency(
+    LayoutObject& layout_object) {
+  const bool transform_uses_reference_box =
+      DependsOnReferenceBox(layout_object.StyleRef());
+  UpdateReferenceBoxDependency(layout_object, transform_uses_reference_box);
+  return transform_uses_reference_box;
+}
+
+void TransformHelper::UpdateReferenceBoxDependency(
+    LayoutObject& layout_object,
+    bool transform_uses_reference_box) {
+  if (transform_uses_reference_box &&
+      layout_object.StyleRef().TransformBox() == ETransformBox::kViewBox) {
+    layout_object.SetSVGSelfOrDescendantHasViewportDependency();
+  } else {
+    layout_object.ClearSVGSelfOrDescendantHasViewportDependency();
+  }
+}
+
 gfx::RectF TransformHelper::ComputeReferenceBox(
     const LayoutObject& layout_object) {
   const ComputedStyle& style = layout_object.StyleRef();

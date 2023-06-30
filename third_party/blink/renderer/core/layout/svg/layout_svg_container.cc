@@ -37,6 +37,7 @@ LayoutSVGContainer::LayoutSVGContainer(SVGElement* node)
       object_bounding_box_valid_(false),
       needs_boundaries_update_(true),
       did_screen_scale_factor_change_(false),
+      transform_uses_reference_box_(false),
       has_non_isolated_blending_descendants_(false),
       has_non_isolated_blending_descendants_dirty_(false) {}
 
@@ -63,10 +64,7 @@ void LayoutSVGContainer::UpdateLayout() {
 
   SVGContainerLayoutInfo layout_info;
   layout_info.scale_factor_changed = did_screen_scale_factor_change_;
-  // When HasRelativeLengths() is false, no descendants have relative lengths
-  // (hence no one is interested in viewport size changes).
   layout_info.viewport_changed =
-      GetElement()->HasRelativeLengths() &&
       SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(this);
 
   content_.Layout(layout_info);
@@ -88,6 +86,10 @@ void LayoutSVGContainer::UpdateLayout() {
     LayoutSVGModelObject::SetNeedsBoundariesUpdate();
   }
 
+  // Reset the viewport dependency flag based on the state for this container.
+  TransformHelper::UpdateReferenceBoxDependency(*this,
+                                                transform_uses_reference_box_);
+
   if (!IsSVGHiddenContainer()) {
     SetTransformAffectsVectorEffect(false);
     ClearSVGDescendantMayHaveTransformRelatedAnimation();
@@ -97,6 +99,17 @@ void LayoutSVGContainer::UpdateLayout() {
       if (child->StyleRef().HasCurrentTransformRelatedAnimation() ||
           child->SVGDescendantMayHaveTransformRelatedAnimation()) {
         SetSVGDescendantMayHaveTransformRelatedAnimation();
+      }
+      if (child->SVGSelfOrDescendantHasViewportDependency()) {
+        SetSVGSelfOrDescendantHasViewportDependency();
+      }
+    }
+  } else {
+    // Hidden containers can depend on the viewport as well.
+    for (auto* child = FirstChild(); child; child = child->NextSibling()) {
+      if (child->SVGSelfOrDescendantHasViewportDependency()) {
+        SetSVGSelfOrDescendantHasViewportDependency();
+        break;
       }
     }
   }
