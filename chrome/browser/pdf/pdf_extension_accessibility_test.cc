@@ -375,6 +375,55 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   EXPECT_EQ(kExepectedPDFSelection, selected_text);
 }
 
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
+                       RecordHasAccessibleTextToUmaWithAccessiblePdf) {
+  MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
+  ASSERT_TRUE(guest_view);
+
+  WebContents* contents = GetActiveWebContents();
+  ASSERT_TRUE(contents);
+
+  base::HistogramTester histograms;
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  WaitForAccessibilityTreeToContainNodeWithName(contents,
+                                                "1 First Section\r\n");
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText", true,
+                               /*expected_count=*/1);
+  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText",
+                              /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
+                       RecordHasAccessibleTextToUmaWithInaccessiblePdf) {
+  MimeHandlerViewGuest* guest_view =
+      LoadPdfGetMimeHandlerView(embedded_test_server()->GetURL(
+          "/pdf/accessibility/hello-world-in-image.pdf"));
+  ASSERT_TRUE(guest_view);
+
+  WebContents* contents = GetActiveWebContents();
+  ASSERT_TRUE(contents);
+
+  base::HistogramTester histograms;
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  // This string is defined as `IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION` in
+  // blink_accessibility_strings.grd.
+#if BUILDFLAG(IS_WIN)
+  const char kUnlabeledImageName[] = "Unlabeled graphic";
+#else
+  const char kUnlabeledImageName[] = "Unlabeled image";
+#endif  // BUILDFLAG(IS_WIN)
+  WaitForAccessibilityTreeToContainNodeWithName(contents, kUnlabeledImageName);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText", false,
+                               /*expected_count=*/1);
+  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText",
+                              /*expected_count=*/1);
+}
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Test a particular PDF encountered in the wild that triggered a crash
 // when accessibility is enabled.  (http://crbug.com/668724)
