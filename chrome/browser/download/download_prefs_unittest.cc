@@ -26,11 +26,12 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "components/drive/drive_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -651,7 +652,7 @@ TEST(DownloadPrefsTest, DownloadPathWithMigrationFromOldFormat) {
       DownloadPrefs::GetDefaultDownloadDirectory();
   base::FilePath path_from_pref = default_download_dir.Append("a").Append("b");
   ash::disks::DiskMountManager::InitializeForTesting(
-      new file_manager::FakeDiskMountManager);
+      new ash::disks::FakeDiskMountManager);
 
   TestingProfile profile(base::FilePath("/home/chronos/u-0123456789abcdef"));
   base::test::ScopedRunningOnChromeOS running_on_chromeos;
@@ -669,7 +670,7 @@ TEST(DownloadPrefsTest, DownloadPathWithMigrationFromOldFormat) {
 TEST(DownloadPrefsTest, DefaultDownloadPathPrefMigrationFromOldFormat) {
   content::BrowserTaskEnvironment task_environment;
   ash::disks::DiskMountManager::InitializeForTesting(
-      new file_manager::FakeDiskMountManager);
+      new ash::disks::FakeDiskMountManager);
 
   TestingProfile profile(base::FilePath("/home/chronos/u-0123456789abcdef"));
   base::test::ScopedRunningOnChromeOS running_on_chromeos;

@@ -24,7 +24,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
@@ -44,6 +43,7 @@
 #include "chromeos/ash/components/dbus/smbprovider/fake_smb_provider_client.h"
 #include "chromeos/ash/components/dbus/smbprovider/smb_provider_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/smbfs/smbfs_host.h"
 #include "chromeos/ash/components/smbfs/smbfs_mounter.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -308,8 +308,8 @@ class SmbServiceWithSmbfsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::REAL_IO_THREAD};
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<file_manager::FakeDiskMountManager, ExperimentalAsh>
-      disk_mount_manager_ = new file_manager::FakeDiskMountManager;
+  raw_ptr<disks::FakeDiskMountManager, ExperimentalAsh> disk_mount_manager_ =
+      new disks::FakeDiskMountManager;
 
   // Not owned.
   raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;

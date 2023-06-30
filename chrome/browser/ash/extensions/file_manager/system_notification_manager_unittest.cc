@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/extensions/file_manager/device_event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
@@ -32,6 +31,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -278,7 +278,7 @@ class SystemNotificationManagerTest
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  file_manager::FakeDiskMountManager disk_mount_manager_;
+  ash::disks::FakeDiskMountManager disk_mount_manager_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   // Externally owned raw pointers:
   // profile_ is owned by TestingProfileManager.

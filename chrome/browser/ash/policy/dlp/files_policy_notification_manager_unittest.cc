@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
@@ -27,6 +26,8 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -79,7 +80,7 @@ class FilesPolicyNotificationManagerTest : public testing::Test {
                   file_manager::VolumeManager::GetMtpStorageInfoCallback()));
         }));
     ash::disks::DiskMountManager::InitializeForTesting(
-        new file_manager::FakeDiskMountManager);
+        new ash::disks::FakeDiskMountManager);
 
     io_task_controller_ = GetIOTaskController(profile_);
     ASSERT_TRUE(io_task_controller_);

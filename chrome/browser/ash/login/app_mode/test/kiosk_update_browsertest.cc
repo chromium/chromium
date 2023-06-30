@@ -15,7 +15,6 @@
 #include "base/test/scoped_chromeos_version_info.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/test_app_data_load_waiter.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -24,6 +23,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
@@ -131,7 +131,7 @@ extensions::Manifest::Type GetAppType(const std::string& app_id) {
   return app->GetType();
 }
 
-class KioskFakeDiskMountManager : public file_manager::FakeDiskMountManager {
+class KioskFakeDiskMountManager : public disks::FakeDiskMountManager {
  public:
   KioskFakeDiskMountManager() = default;
 

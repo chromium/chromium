@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_FILE_MANAGER_FAKE_DISK_MOUNT_MANAGER_H_
-#define CHROME_BROWSER_ASH_FILE_MANAGER_FAKE_DISK_MOUNT_MANAGER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DISKS_FAKE_DISK_MOUNT_MANAGER_H_
+#define CHROMEOS_ASH_COMPONENTS_DISKS_FAKE_DISK_MOUNT_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -16,17 +16,17 @@
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 
-namespace file_manager {
+namespace ash::disks {
 
-class FakeDiskMountManager : public ash::disks::DiskMountManager {
+class FakeDiskMountManager : public DiskMountManager {
  public:
   struct MountRequest {
     MountRequest(const std::string& source_path,
                  const std::string& source_format,
                  const std::string& mount_label,
                  const std::vector<std::string>& mount_options,
-                 ash::MountType type,
-                 ash::MountAccessMode access_mode);
+                 MountType type,
+                 MountAccessMode access_mode);
     MountRequest(const MountRequest& other);
     ~MountRequest();
 
@@ -34,13 +34,13 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
     std::string source_format;
     std::string mount_label;
     std::vector<std::string> mount_options;
-    ash::MountType type;
-    ash::MountAccessMode access_mode;
+    MountType type;
+    MountAccessMode access_mode;
   };
 
   struct RemountAllRequest {
-    explicit RemountAllRequest(ash::MountAccessMode access_mode);
-    ash::MountAccessMode access_mode;
+    explicit RemountAllRequest(MountAccessMode access_mode);
+    MountAccessMode access_mode;
   };
 
   FakeDiskMountManager();
@@ -66,14 +66,13 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
   bool FinishAllUnmountPathRequests();
 
   // Fails a future unmount request for |mount_path| with |error_code|.
-  void FailUnmountRequest(const std::string& mount_path,
-                          ash::MountError error_code);
+  void FailUnmountRequest(const std::string& mount_path, MountError error_code);
 
   // DiskMountManager overrides.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   const Disks& disks() const override;
-  const ash::disks::Disk* FindDiskBySourcePath(
+  const Disk* FindDiskBySourcePath(
       const std::string& source_path) const override;
   const MountPoints& mount_points() const override;
   void EnsureMountInfoRefreshed(EnsureMountInfoRefreshedCallback callback,
@@ -82,20 +81,20 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
                  const std::string& source_format,
                  const std::string& mount_label,
                  const std::vector<std::string>& mount_options,
-                 ash::MountType type,
-                 ash::MountAccessMode access_mode,
+                 MountType type,
+                 MountAccessMode access_mode,
                  MountPathCallback) override;
   // In order to simulate asynchronous invocation of callbacks after unmount
   // is finished, |callback| will be invoked only when
   // |FinishAllUnmountRequest()| is called.
   void UnmountPath(const std::string& mount_path,
                    UnmountPathCallback callback) override;
-  void RemountAllRemovableDrives(ash::MountAccessMode access_mode) override;
+  void RemountAllRemovableDrives(MountAccessMode access_mode) override;
   void FormatMountedDevice(const std::string& mount_path,
-                           ash::disks::FormatFileSystemType filesystem,
+                           FormatFileSystemType filesystem,
                            const std::string& label) override;
   void SinglePartitionFormatDevice(const std::string& device_path,
-                                   ash::disks::FormatFileSystemType filesystem,
+                                   FormatFileSystemType filesystem,
                                    const std::string& label) override;
   void RenameMountedDevice(const std::string& mount_path,
                            const std::string& volume_name) override;
@@ -103,9 +102,9 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
       const std::string& device_path,
       UnmountDeviceRecursivelyCallbackType callback) override;
 
-  bool AddDiskForTest(std::unique_ptr<ash::disks::Disk> disk) override;
+  bool AddDiskForTest(std::unique_ptr<Disk> disk) override;
   bool AddMountPointForTest(const MountPoint& mount_point) override;
-  void InvokeDiskEventForTest(DiskEvent event, const ash::disks::Disk* disk);
+  void InvokeDiskEventForTest(DiskEvent event, const Disk* disk);
 
  private:
   base::ObserverList<Observer> observers_;
@@ -117,9 +116,9 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
   std::vector<MountRequest> mount_requests_;
   std::vector<std::string> unmount_requests_;
   std::vector<RemountAllRequest> remount_all_requests_;
-  std::map<std::string, ash::MountError> unmount_errors_;
+  std::map<std::string, MountError> unmount_errors_;
 };
 
-}  // namespace file_manager
+}  // namespace ash::disks
 
-#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_FAKE_DISK_MOUNT_MANAGER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DISKS_FAKE_DISK_MOUNT_MANAGER_H_

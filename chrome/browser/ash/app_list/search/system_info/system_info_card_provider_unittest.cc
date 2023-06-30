@@ -21,13 +21,14 @@
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
@@ -304,7 +305,7 @@ class SystemInfoCardProviderTest : public testing::Test {
     ash::SpacedClient::InitializeFake();
 
     ash::disks::DiskMountManager::InitializeForTesting(
-        new file_manager::FakeDiskMountManager);
+        new ash::disks::FakeDiskMountManager);
 
     // The storage handler requires an instance of ArcServiceManager
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();

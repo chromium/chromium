@@ -16,13 +16,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -128,7 +128,7 @@ class BaseTest : public testing::Test {
 
     // Takes ownership of `disk_mount_manager_`, but Shutdown() must be called.
     ash::disks::DiskMountManager::InitializeForTesting(
-        new file_manager::FakeDiskMountManager);
+        new ash::disks::FakeDiskMountManager);
 
     // Register volumes.
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());

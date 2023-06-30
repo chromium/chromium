@@ -21,12 +21,12 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_policy_impl.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -78,7 +78,7 @@ const size_t kTestFileSize = 32;
 // Creates a new VolumeManager for tests.
 // By default, VolumeManager KeyedService is null for testing.
 std::unique_ptr<KeyedService> BuildVolumeManager(
-    file_manager::FakeDiskMountManager* disk_mount_manager,
+    ash::disks::FakeDiskMountManager* disk_mount_manager,
     content::BrowserContext* context) {
   return std::make_unique<file_manager::VolumeManager>(
       Profile::FromBrowserContext(context),
@@ -142,7 +142,7 @@ class CopyOrMoveIOTaskTest : public testing::TestWithParam<OperationType> {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  file_manager::FakeDiskMountManager disk_mount_manager_;
+  ash::disks::FakeDiskMountManager disk_mount_manager_;
   TestingProfile profile_;
   base::ScopedTempDir temp_dir_;
   ProgressStatus progress_;
@@ -585,7 +585,7 @@ class CopyOrMoveIsCrossFileSystemTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  file_manager::FakeDiskMountManager disk_mount_manager_;
+  ash::disks::FakeDiskMountManager disk_mount_manager_;
   TestingProfile profile_;
   base::FilePath downloads_volume_path_;
   base::FilePath test_volume_path_;

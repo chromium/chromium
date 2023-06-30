@@ -18,9 +18,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,7 +79,7 @@ class ArcVolumeMounterBridgeTest : public testing::Test {
 
   void SetUp() override {
     ash::disks::DiskMountManager::InitializeForTesting(
-        new file_manager::FakeDiskMountManager());
+        new ash::disks::FakeDiskMountManager());
 
     bridge_ = std::make_unique<ArcVolumeMounterBridge>(
         &context_, arc_service_manager_.arc_bridge_service());

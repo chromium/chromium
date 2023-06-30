@@ -4416,8 +4416,6 @@ static_library("test_support") {
     "drive/drivefs_test_support.h",
     "extensions/test_external_cache.cc",
     "extensions/test_external_cache.h",
-    "file_manager/fake_disk_mount_manager.cc",
-    "file_manager/fake_disk_mount_manager.h",
     "file_manager/file_manager_test_util.cc",
     "file_manager/file_manager_test_util.h",
     "file_manager/mount_test_util.cc",

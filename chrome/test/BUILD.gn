@@ -717,6 +717,7 @@ static_library("test_support") {
       "//chromeos/ash/components/cryptohome",
       "//chromeos/ash/components/dbus",
       "//chromeos/ash/components/dbus/concierge",
+      "//chromeos/ash/components/disks:test_support",
       "//chromeos/ash/components/system",
       "//chromeos/dbus/power",
       "//components/policy/test_support",

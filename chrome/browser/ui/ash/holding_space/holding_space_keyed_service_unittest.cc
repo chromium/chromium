@@ -30,7 +30,6 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
@@ -53,6 +52,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -435,7 +435,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
                                      base::Time::Now());
     // Needed by `file_manager::VolumeManager`.
     disks::DiskMountManager::InitializeForTesting(
-        new file_manager::FakeDiskMountManager);
+        new disks::FakeDiskMountManager);
 
     // Needed for `app_list::MockFileSuggestKeyedService`.
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

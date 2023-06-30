@@ -10,7 +10,6 @@
 #include "base/rand_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
@@ -27,6 +26,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -114,7 +114,7 @@ void ExpectFileContents(base::FilePath path, std::string expected) {
 // Creates a new VolumeManager for tests.
 // By default, VolumeManager KeyedService is null for testing.
 std::unique_ptr<KeyedService> BuildVolumeManager(
-    file_manager::FakeDiskMountManager* disk_mount_manager,
+    ash::disks::FakeDiskMountManager* disk_mount_manager,
     content::BrowserContext* context) {
   return std::make_unique<file_manager::VolumeManager>(
       Profile::FromBrowserContext(context),
@@ -929,7 +929,7 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  file_manager::FakeDiskMountManager disk_mount_manager_;
+  ash::disks::FakeDiskMountManager disk_mount_manager_;
   raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_ =
       nullptr;
   std::unique_ptr<policy::MockDlpFilesControllerAsh> files_controller_;

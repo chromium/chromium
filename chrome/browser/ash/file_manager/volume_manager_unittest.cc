@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
@@ -39,6 +38,7 @@
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
@@ -58,6 +58,7 @@ using ::ash::MountError;
 using ::ash::MountType;
 using ::ash::disks::Disk;
 using ::ash::disks::DiskMountManager;
+using ::ash::disks::FakeDiskMountManager;
 using base::FilePath;
 
 std::vector<std::string> arc_volume_ids = {

@@ -30,7 +30,6 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
@@ -54,6 +53,7 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -83,7 +83,7 @@ class FileManagerPathUtilTest : public testing::Test {
 
   void SetUp() override {
     ash::disks::DiskMountManager::InitializeForTesting(
-        new FakeDiskMountManager);
+        new ash::disks::FakeDiskMountManager);
     profile_ = std::make_unique<TestingProfile>(
         base::FilePath("/home/chronos/u-0123456789abcdef"));
     VolumeManagerFactory::GetInstance()->SetTestingFactory(
@@ -670,7 +670,7 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
         crostini_mount_point_);
 
     ash::disks::DiskMountManager::InitializeForTesting(
-        new FakeDiskMountManager);
+        new ash::disks::FakeDiskMountManager);
 
     // Add the disk and mount point for a fake removable device.
     ASSERT_TRUE(ash::disks::DiskMountManager::GetInstance()->AddDiskForTest(

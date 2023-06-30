@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
@@ -44,6 +43,7 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_service.pb.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -280,7 +280,7 @@ class GuestOsSharePathTest : public testing::Test {
     g_browser_process->platform_part()
         ->InitializeSchedulerConfigurationManager();
     ash::disks::DiskMountManager::InitializeForTesting(
-        new file_manager::FakeDiskMountManager);
+        new ash::disks::FakeDiskMountManager);
     file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildVolumeManager));
     root_ = file_manager::util::GetMyFilesFolderForProfile(profile());

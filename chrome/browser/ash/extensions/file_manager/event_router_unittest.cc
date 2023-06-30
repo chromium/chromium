@@ -15,11 +15,11 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/values.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/test_event_router.h"
@@ -168,7 +168,7 @@ class FileManagerEventRouterTest : public testing::Test {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("chrome-extension://abc");
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  file_manager::FakeDiskMountManager disk_mount_manager_;
+  ash::disks::FakeDiskMountManager disk_mount_manager_;
 };
 
 // A matcher that matches an `extensions::Event::event_args` and attempts to

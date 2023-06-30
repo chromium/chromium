@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/borealis/testing/features.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator_test_api.h"
@@ -36,6 +35,8 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_task_environment.h"
@@ -75,7 +76,7 @@ class StorageHandlerTest : public testing::Test {
     // The storage handler requires an instance of DiskMountManager,
     // ArcServiceManager and ArcSessionManager.
     disks::DiskMountManager::InitializeForTesting(
-        new file_manager::FakeDiskMountManager);
+        new disks::FakeDiskMountManager);
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
     arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
