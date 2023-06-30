@@ -109,9 +109,14 @@ UIView* IconViewWithImage(NSString* image_name, BOOL custom_symbol) {
     l10n_util::GetNSString(IDS_IOS_TANGIBLE_SYNC_DATA_TYPE_AUTOFILL),
     l10n_util::GetNSString(IDS_IOS_TANGIBLE_SYNC_DATA_TYPE_HISTORY),
   ];
+  UIView* autofillIconView =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kEnablePasswordsAccountStorage)
+          ? IconViewWithImage(kDocPlaintext, /*custom_symbol=*/NO)
+          : IconViewWithImage(kPasswordSymbol, /*custom_symbol=*/YES);
   NSArray<UIView*>* imageViews = @[
     IconViewWithImage(kBookmarksSymbol, /*custom_symbol=*/NO),
-    IconViewWithImage(kDocPlaintext, /*custom_symbol=*/NO),
+    autofillIconView,
     IconViewWithImage(kRecentTabsSymbol, /*custom_symbol=*/YES),
   ];
   InstructionView* instructionView =

@@ -409,6 +409,12 @@ const char kPasswordsGroupingDescription[] =
     "Group passwords into the same affiliated group in the Password Manager "
     "for the Saved Passwords section";
 
+const char kEnablePasswordsAccountStorageName[] =
+    "Enable the account data storage for passwords";
+const char kEnablePasswordsAccountStorageDescription[] =
+    "Enables storing passwords in a second, Gaia-account-scoped storage for "
+    "signed-in but not syncing users";
+
 const char kEnablePreferencesAccountStorageName[] =
     "Enable the account data storage for preferences for syncing users";
 const char kEnablePreferencesAccountStorageDescription[] =
