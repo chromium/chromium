@@ -19,7 +19,8 @@ namespace provider {
 // Creates a new ChoiceCoordinator instance.
 ChromeCoordinator* CreateChoiceCoordinatorWithViewController(
     UIViewController* view_controller,
-    Browser* browser);
+    Browser* browser,
+    bool first_run);
 
 // Creates a new ChoiceDisplayHandler instance.
 id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler();

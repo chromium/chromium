@@ -17,7 +17,8 @@ namespace provider {
 
 ChromeCoordinator* CreateChoiceCoordinatorWithViewController(
     UIViewController* view_controller,
-    Browser* browser) {
+    Browser* browser,
+    bool first_run) {
   NOTREACHED_NORETURN();
 }
 
