@@ -53,6 +53,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/drive/chromeos/search_metadata.h"
@@ -76,11 +77,16 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "url/gurl.h"
 
-using content::BrowserThread;
+namespace extensions {
+namespace {
 
 using ash::file_system_provider::EntryMetadata;
 using ash::file_system_provider::ProvidedFileSystemInterface;
 using ash::file_system_provider::util::FileSystemURLParser;
+using content::BrowserThread;
+using drive::DriveIntegrationService;
+using drive::util::GetIntegrationServiceByProfile;
+using drivefs::pinning::PinManager;
 using extensions::api::file_manager_private::EntryProperties;
 using extensions::api::file_manager_private::EntryPropertyName;
 using file_manager::util::EntryDefinition;
@@ -90,9 +96,6 @@ using file_manager::util::EntryDefinitionListCallback;
 using file_manager::util::FileDefinition;
 using file_manager::util::FileDefinitionList;
 using google_apis::DriveApiUrlGenerator;
-
-namespace extensions {
-namespace {
 
 constexpr char kAvailableOfflinePropertyName[] = "availableOffline";
 
@@ -350,9 +353,9 @@ void OnSearchDriveFs(
     absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   Profile* const profile =
       Profile::FromBrowserContext(function->browser_context());
-  drive::DriveIntegrationService* integration_service =
-      drive::util::GetIntegrationServiceByProfile(profile);
-  if (!integration_service) {
+  DriveIntegrationService* const service =
+      GetIntegrationServiceByProfile(profile);
+  if (!service) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -364,11 +367,9 @@ void OnSearchDriveFs(
 
   GURL url;
   file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-      profile, integration_service->GetMountPointPath(), function->source_url(),
-      &url);
+      profile, service->GetMountPointPath(), function->source_url(), &url);
   const auto fs_root = base::StrCat({url.spec(), "/"});
-  const auto fs_name =
-      integration_service->GetMountPointPath().BaseName().value();
+  const auto fs_name = service->GetMountPointPath().BaseName().value();
   const base::FilePath root("/");
 
   base::Value::List result;
@@ -397,12 +398,11 @@ drivefs::mojom::QueryParameters::QuerySource SearchDriveFs(
     drivefs::mojom::QueryParametersPtr query,
     bool filter_dirs,
     base::OnceCallback<void(absl::optional<base::Value::List>)> callback) {
-  drive::DriveIntegrationService* const integration_service =
-      drive::util::GetIntegrationServiceByProfile(
-          Profile::FromBrowserContext(function->browser_context()));
+  DriveIntegrationService* const service = GetIntegrationServiceByProfile(
+      Profile::FromBrowserContext(function->browser_context()));
   auto on_response = base::BindOnce(&OnSearchDriveFs, std::move(function),
                                     filter_dirs, std::move(callback));
-  return integration_service->GetDriveFsHost()->PerformSearch(
+  return service->GetDriveFsHost()->PerformSearch(
       std::move(query),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(on_response), drive::FileError::FILE_ERROR_ABORT,
@@ -577,21 +577,21 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalPinDriveFileFunction::RunAsyncForDriveFs(
     const storage::FileSystemURL& file_system_url,
     bool pin) {
-  drive::DriveIntegrationService* integration_service =
+  DriveIntegrationService* const service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
           Profile::FromBrowserContext(browser_context()));
   base::FilePath path;
-  if (!integration_service || !integration_service->GetRelativeDrivePath(
-                                  file_system_url.path(), &path)) {
+  if (!service ||
+      !service->GetRelativeDrivePath(file_system_url.path(), &path)) {
     return RespondNow(Error("Drive is disabled"));
   }
 
-  auto* drivefs_interface = integration_service->GetDriveFsInterface();
-  if (!drivefs_interface) {
+  drivefs::mojom::DriveFs* const drivefs = service->GetDriveFsInterface();
+  if (!drivefs) {
     return RespondNow(Error("Drive is disabled"));
   }
 
-  drivefs_interface->SetPinned(
+  drivefs->SetPinned(
       path, pin,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(
@@ -622,7 +622,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateSearchDriveFunction::Run() {
   const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (!drive::util::GetIntegrationServiceByProfile(
+  if (!GetIntegrationServiceByProfile(
           Profile::FromBrowserContext(browser_context()))) {
     // |integration_service| is NULL if Drive is disabled or not mounted.
     return RespondNow(Error("Drive is disabled"));
@@ -695,8 +695,7 @@ FileManagerPrivateSearchDriveMetadataFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
-  drive::EventLogger* logger = file_manager::util::GetLogger(profile);
-  if (logger) {
+  if (drive::EventLogger* logger = file_manager::util::GetLogger(profile)) {
     logger->Log(
         logging::LOG_INFO, "%s[%d] called. (types: '%s', maxResults: '%d')",
         name(), request_id(),
@@ -705,9 +704,7 @@ FileManagerPrivateSearchDriveMetadataFunction::Run() {
   }
   set_log_on_completion(true);
 
-  drive::DriveIntegrationService* const integration_service =
-      drive::util::GetIntegrationServiceByProfile(profile);
-  if (!integration_service) {
+  if (!GetIntegrationServiceByProfile(profile)) {
     // |integration_service| is NULL if Drive is disabled or not mounted.
     return RespondNow(Error("Drive not available"));
   }
@@ -912,32 +909,30 @@ FileManagerPrivateNotifyDriveDialogResultFunction::Run() {
 
 ExtensionFunction::ResponseAction
 FileManagerPrivatePollDriveHostedFilePinStatesFunction::Run() {
-  Profile* const profile = Profile::FromBrowserContext(browser_context());
-  drive::DriveIntegrationService* integration_service =
-      drive::util::GetIntegrationServiceByProfile(profile);
-  if (integration_service) {
-    integration_service->PollHostedFilePinStates();
+  if (DriveIntegrationService* const service = GetIntegrationServiceByProfile(
+          Profile::FromBrowserContext(browser_context()))) {
+    service->PollHostedFilePinStates();
   }
+
   return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetBulkPinProgressFunction::Run() {
-  Profile* const profile = Profile::FromBrowserContext(browser_context());
-  drive::DriveIntegrationService* integration_service =
-      drive::util::GetIntegrationServiceByProfile(profile);
-  if (!integration_service) {
+  DriveIntegrationService* const service = GetIntegrationServiceByProfile(
+      Profile::FromBrowserContext(browser_context()));
+  if (!service) {
     return RespondNow(Error("Drive not available"));
   }
 
-  if (!integration_service->GetPinManager()) {
+  PinManager* const p = service->GetPinManager();
+  if (!p) {
     return RespondNow(Error("Pin Manager not available"));
   }
 
   return RespondNow(ArgumentList(
       api::file_manager_private::GetBulkPinProgress::Results::Create(
-          file_manager::util::BulkPinProgressToJs(
-              integration_service->GetPinManager()->GetProgress()))));
+          file_manager::util::BulkPinProgressToJs(p->GetProgress()))));
 }
 
 ExtensionFunction::ResponseAction
@@ -952,13 +947,13 @@ FileManagerPrivateOpenManageSyncSettingsFunction::Run() {
 ExtensionFunction::ResponseAction
 FileManagerPrivateCalculateBulkPinRequiredSpaceFunction::Run() {
   Profile* const profile = Profile::FromBrowserContext(browser_context());
-  drive::DriveIntegrationService* integration_service =
-      drive::util::GetIntegrationServiceByProfile(profile);
-  if (!integration_service) {
+  DriveIntegrationService* const service =
+      GetIntegrationServiceByProfile(profile);
+  if (!service) {
     return RespondNow(Error("Drive not available"));
   }
 
-  drivefs::pinning::PinManager* const p = integration_service->GetPinManager();
+  PinManager* const p = service->GetPinManager();
   if (!p) {
     return RespondNow(Error("Pin Manager not available"));
   }

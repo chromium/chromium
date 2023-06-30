@@ -13,10 +13,11 @@
 #include "ui/base/text/bytes_formatting.h"
 
 namespace ash::settings {
-
-using drivefs::pinning::Progress;
-
 namespace {
+
+using drive::DriveIntegrationService;
+using drivefs::pinning::PinManager;
+using drivefs::pinning::Progress;
 
 google_drive::mojom::StatusPtr CreateStatusPtr(const Progress& progress) {
   auto status = google_drive::mojom::Status::New();
@@ -44,23 +45,24 @@ GoogleDrivePageHandler::GoogleDrivePageHandler(
     : profile_(profile),
       page_(std::move(page)),
       receiver_(this, std::move(receiver)) {
-  if (drive::DriveIntegrationService* const drive_service = GetDriveService()) {
-    drive_service->AddObserver(this);
+  if (DriveIntegrationService* const service = GetDriveService()) {
+    service->AddObserver(this);
   }
 }
 
 GoogleDrivePageHandler::~GoogleDrivePageHandler() {
-  if (drive::DriveIntegrationService* const drive_service = GetDriveService()) {
-    drive_service->RemoveObserver(this);
+  if (DriveIntegrationService* const service = GetDriveService()) {
+    service->RemoveObserver(this);
   }
 }
 
 void GoogleDrivePageHandler::CalculateRequiredSpace() {
-  auto* const pin_manager = GetPinManager();
+  PinManager* const pin_manager = GetPinManager();
   if (!pin_manager) {
     page_->OnServiceUnavailable();
     return;
   }
+
   NotifyProgress(pin_manager->GetProgress());
   pin_manager->CalculateRequiredSpace();
 }
@@ -69,26 +71,19 @@ void GoogleDrivePageHandler::NotifyProgress(const Progress& progress) {
   page_->OnProgress(CreateStatusPtr(progress));
 }
 
-drive::DriveIntegrationService* GoogleDrivePageHandler::GetDriveService() {
-  drive::DriveIntegrationService* service =
+DriveIntegrationService* GoogleDrivePageHandler::GetDriveService() {
+  DriveIntegrationService* const service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
-  if (!service || !service->IsMounted()) {
-    return nullptr;
-  }
-  return service;
+  return service && service->IsMounted() ? service : nullptr;
 }
 
-drivefs::pinning::PinManager* GoogleDrivePageHandler::GetPinManager() {
-  drive::DriveIntegrationService* service = GetDriveService();
-  if (!service || !service->GetPinManager()) {
-    return nullptr;
-  }
-  return service->GetPinManager();
+PinManager* GoogleDrivePageHandler::GetPinManager() {
+  DriveIntegrationService* const service = GetDriveService();
+  return service ? service->GetPinManager() : nullptr;
 }
 
 void GoogleDrivePageHandler::OnBulkPinProgress(const Progress& progress) {
-  auto* const pin_manager = GetPinManager();
-  if (!pin_manager) {
+  if (!GetPinManager()) {
     page_->OnServiceUnavailable();
     return;
   }
