@@ -22,10 +22,6 @@ extern const char kBruschettaDisplayName[];
 
 extern const char kBruschettaPolicyId[];
 
-extern const char kBruschettaInstallerDownloadStrategyFlag[];
-extern const char kBruschettaInstallerDownloadStrategySimpleURLLoader[];
-extern const char kBruschettaInstallerDownloadStrategyDownloadService[];
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class BruschettaResult {

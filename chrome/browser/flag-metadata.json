@@ -932,11 +932,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "bruschetta-installer-download-strategy",
-    "owners": [ "davidmunro@google.com", "clumptini@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "bypass-app-banner-engagement-checks",
     "owners": [ "dmurph" ],
     "expiry_milestone": 120

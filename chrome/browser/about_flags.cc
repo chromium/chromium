@@ -2907,14 +2907,6 @@ const FeatureEntry::Choice kCrostiniContainerChoices[] = {
     {"Bullseye", crostini::kCrostiniContainerFlag, "bullseye"},
     {"Bookworm", crostini::kCrostiniContainerFlag, "bookworm"},
 };
-
-const FeatureEntry::Choice kBruschettaInstallerDownloadStrategy[] = {
-    {"Default", "", ""},
-    {"DownloadService", bruschetta::kBruschettaInstallerDownloadStrategyFlag,
-     bruschetta::kBruschettaInstallerDownloadStrategyDownloadService},
-    {"SimpleURLLoader", bruschetta::kBruschettaInstallerDownloadStrategyFlag,
-     bruschetta::kBruschettaInstallerDownloadStrategySimpleURLLoader},
-};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -7886,10 +7878,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCrostiniContainerInstallName,
      flag_descriptions::kCrostiniContainerInstallDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kCrostiniContainerChoices)},
-    {"bruschetta-installer-download-strategy",
-     flag_descriptions::kBruschettaInstallerDownloadStrategyName,
-     flag_descriptions::kBruschettaInstallerDownloadStrategyDescription,
-     kOsCrOS, MULTI_VALUE_TYPE(kBruschettaInstallerDownloadStrategy)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

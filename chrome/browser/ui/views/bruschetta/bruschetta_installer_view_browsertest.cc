@@ -35,17 +35,6 @@ class BruschettaInstallerMock : public bruschetta::BruschettaInstaller {
   MOCK_METHOD(void, Install, (std::string, std::string));
   MOCK_METHOD(void, AddObserver, (Observer*));
   MOCK_METHOD(void, RemoveObserver, (Observer*));
-
-  MOCK_METHOD(const base::Uuid&, GetDownloadGuid, (), (const));
-
-  MOCK_METHOD(void,
-              DownloadStarted,
-              (const std::string& guid,
-               download::DownloadParams::StartResult result));
-  MOCK_METHOD(void, DownloadFailed, ());
-  MOCK_METHOD(void,
-              DownloadSucceeded,
-              (const download::CompletionInfo& completion_info));
 };
 
 class BruschettaInstallerViewBrowserTest : public DialogBrowserTest {

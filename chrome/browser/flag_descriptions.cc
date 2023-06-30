@@ -5569,13 +5569,6 @@ const char kBruschettaAlphaMigrateDescription[] =
     "Enable this flag to migrate a Bruschetta installed during the alpha. "
     "Requires the bruschetta flag to be enabled.";
 
-const char kBruschettaInstallerDownloadStrategyName[] =
-    "How the Bruschetta installer should download files";
-const char kBruschettaInstallerDownloadStrategyDescription[] =
-    "Selects how the Bruschetta installer will download files. Some issues are "
-    "only reproducible on dev channel or later, this lets us evaluate the "
-    "reliability of different approaches.";
-
 const char kCameraAppTimeLapseName[] = "Camera App Time-lapse Recording";
 const char kCameraAppTimeLapseDescription[] =
     "Enable this flag to record time-lapse video in Camera app.";
