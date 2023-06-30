@@ -74,6 +74,8 @@ class MEDIA_EXPORT AudioEncoder {
     AacOutputFormat format;
   };
 
+  enum class BitrateMode { kVariable, kConstant };
+
   struct MEDIA_EXPORT Options {
     Options();
     Options(const Options&);
@@ -86,6 +88,8 @@ class MEDIA_EXPORT AudioEncoder {
     int channels;
 
     int sample_rate;
+
+    absl::optional<BitrateMode> bitrate_mode;
 
     absl::optional<OpusOptions> opus;
     absl::optional<AacOptions> aac;

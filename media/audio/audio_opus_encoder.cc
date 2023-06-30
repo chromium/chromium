@@ -339,9 +339,23 @@ EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
         base::StringPrintf("Failed to set Opus bitrate: %d", bitrate));
   }
 
+  if (options_.bitrate_mode.has_value()) {
+    bool vbr_enabled =
+        options_.bitrate_mode == media::AudioEncoder::BitrateMode::kVariable;
+
+    if (opus_encoder_ctl(encoder.get(), OPUS_SET_VBR(vbr_enabled ? 1 : 0)) !=
+        OPUS_OK) {
+      return EncoderStatus(
+          EncoderStatus::Codes::kEncoderInitializationError,
+          base::StringPrintf("Failed to set Opus bitrateMode: %d",
+                             vbr_enabled));
+    }
+  }
+
   // The remaining parameters are all purely optional.
-  if (!opus_options.has_value())
+  if (!opus_options.has_value()) {
     return encoder;
+  }
 
   const unsigned int complexity = opus_options.value().complexity;
   DCHECK_LE(complexity, 10u);

@@ -752,6 +752,57 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode) {
   opus_decoder = nullptr;
 }
 
+// Tests we can configure the AudioOpusEncoder's bitrate mode.
+TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_BitrateMode) {
+  constexpr AudioEncoder::BitrateMode kTestOpusBitrateMode[] = {
+      AudioEncoder::BitrateMode::kConstant,
+      AudioEncoder::BitrateMode::kVariable};
+
+  for (const AudioEncoder::BitrateMode& bitrate_mode : kTestOpusBitrateMode) {
+    constexpr int kOpusDecoderSampleRate = 48000;
+    const int kOpusDecoderFramesPerBuffer = AudioTimestampHelper::TimeToFrames(
+        kOpusBufferDuration, kOpusDecoderSampleRate);
+
+    // Override the work done in Setup().
+    encoder_ = std::make_unique<AudioOpusEncoder>();
+    options_.bitrate_mode = bitrate_mode;
+
+    int error;
+    OpusDecoder* opus_decoder =
+        opus_decoder_create(kOpusDecoderSampleRate, options_.channels, &error);
+    ASSERT_TRUE(error == OPUS_OK && opus_decoder);
+
+    std::vector<float> buffer(kOpusDecoderFramesPerBuffer * options_.channels);
+    auto verify_opus_encoding = [&](EncodedAudioBuffer output, MaybeDesc) {
+      // Use the libopus decoder to decode the |encoded_data| and check we
+      // get the expected number of frames per buffer.
+      EXPECT_EQ(kOpusDecoderFramesPerBuffer,
+                opus_decode_float(opus_decoder, output.encoded_data.get(),
+                                  output.encoded_data_size, buffer.data(),
+                                  kOpusDecoderFramesPerBuffer, 0));
+    };
+
+    InitializeEncoder(base::BindLambdaForTesting(verify_opus_encoding));
+
+    base::TimeTicks time;
+    int total_frames = 0;
+
+    // Push data until we have a decoded output.
+    while (total_frames < min_number_input_frames_needed_) {
+      total_frames += ProduceAudioAndEncode(time);
+      time += buffer_duration_;
+
+      RunLoop();
+    }
+
+    EXPECT_GE(total_frames, frames_per_buffer_);
+    FlushAndVerifyStatus();
+
+    opus_decoder_destroy(opus_decoder);
+    opus_decoder = nullptr;
+  }
+}
+
 // Tests we can configure the AudioOpusEncoder's extra options.
 TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_OpusOptions) {
   // TODO(crbug.com/1378399): Test an OpusOptions::frame_duration which forces
