@@ -114,6 +114,10 @@ class CC_EXPORT SurfaceLayer : public Layer {
 
   // This surface layer is reflecting the root surface of another display.
   ProtectedSequenceReadable<bool> is_reflection_;
+
+  // Keep track when we change LayerTreeHosts as SurfaceLayerImpl needs to know
+  // in order to keep the visibility callback state consistent.
+  ProtectedSequenceWritable<bool> callback_layer_tree_host_changed_;
 };
 
 }  // namespace cc
