@@ -23,6 +23,15 @@ void RecordRedirectContextDowngradeUKM(RenderFrameHost* rfh,
                                        const net::CanonicalCookie& cookie,
                                        const GURL& url) {
   CHECK(rfh);
+
+  // Our data collection policy disallows collecting UKMs while prerendering.
+  // See //content/browser/preloading/prerender/README.md and ask the team to
+  // explore options to record data for prerendering pages if we need to
+  // support the case.
+  if (rfh->IsInLifecycleState(RenderFrameHost::LifecycleState::kPrerendering)) {
+    return;
+  }
+
   ukm::SourceId source_id = rfh->GetPageUkmSourceId();
 
   int64_t samesite_value = static_cast<int64_t>(cookie.SameSite());
@@ -48,6 +57,15 @@ void RecordSchemefulContextDowngradeUKM(
     const net::CookieInclusionStatus& status,
     const GURL& url) {
   CHECK(rfh);
+
+  // Our data collection policy disallows collecting UKMs while prerendering.
+  // See //content/browser/preloading/prerender/README.md and ask the team to
+  // explore options to record data for prerendering pages if we need to
+  // support the case.
+  if (rfh->IsInLifecycleState(RenderFrameHost::LifecycleState::kPrerendering)) {
+    return;
+  }
+
   ukm::SourceId source_id = rfh->GetPageUkmSourceId();
 
   auto downgrade_metric =
