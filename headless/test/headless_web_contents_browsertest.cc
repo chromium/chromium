@@ -372,9 +372,10 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
   }
 
   void RunTest() {
-    browser_context_ = browser()->CreateBrowserContextBuilder().Build();
-    browser()->SetDefaultBrowserContext(browser_context_);
-    browser_devtools_client_.AttachToBrowser();
+    browser()->SetDefaultBrowserContext(
+        browser()->CreateBrowserContextBuilder().Build());
+    SimpleDevToolsProtocolClient browser_devtools_client;
+    browser_devtools_client.AttachToBrowser();
 
     EXPECT_TRUE(embedded_test_server()->Start());
 
@@ -383,7 +384,7 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
     params.Set("width", 200);
     params.Set("height", 200);
     params.Set("enableBeginFrameControl", true);
-    browser_devtools_client_.SendCommand(
+    browser_devtools_client.SendCommand(
         "Target.createTarget", std::move(params),
         base::BindOnce(
             &HeadlessWebContentsBeginFrameControlTest::OnTargetCreated,
@@ -391,7 +392,7 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
 
     RunAsynchronousTest();
 
-    browser_devtools_client_.DetachClient();
+    browser_devtools_client.DetachClient();
   }
 
   void OnTargetCreated(base::Value::Dict result) {
@@ -402,15 +403,6 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
         browser()->GetWebContentsForDevToolsAgentHostId(targetId));
 
     devtools_client_.AttachToWebContents(web_contents_->web_contents());
-
-    devtools_client_.SendCommand(
-        "Page.stopLoading",
-        base::BindOnce(
-            &HeadlessWebContentsBeginFrameControlTest::OnLoadingStopped,
-            base::Unretained(this)));
-  }
-
-  void OnLoadingStopped(base::Value::Dict) {
     devtools_client_.AddEventHandler("Page.loadEventFired",
                                      on_load_event_fired_handler_);
 
@@ -435,12 +427,10 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
     devtools_client_.RemoveEventHandler("Page.loadEventFired",
                                         on_load_event_fired_handler_);
 
-    page_ready_ = true;
     StartFrames();
   }
 
   void BeginFrame(bool screenshot) {
-    frame_in_flight_ = true;
     num_begin_frames_++;
 
     base::Value::Dict params;
@@ -459,17 +449,6 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
         "has_damage", DictBool(result, "result.hasDamage"),
         "has_screenshot_data", DictString(result, "result.screenshotData"));
 
-    // Post OnFrameFinished call so that any pending OnNeedsBeginFramesChanged
-    // call will be executed first.
-    browser()->BrowserMainThread()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &HeadlessWebContentsBeginFrameControlTest::NotifyOnFrameFinished,
-            base::Unretained(this), std::move(result)));
-  }
-
-  void NotifyOnFrameFinished(base::Value::Dict result) {
-    frame_in_flight_ = false;
     OnFrameFinished(std::move(result));
   }
 
@@ -481,16 +460,11 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
             base::Unretained(this)));
   }
 
-  raw_ptr<HeadlessBrowserContext, DanglingAcrossTasks> browser_context_ =
-      nullptr;  // Not owned.
   raw_ptr<HeadlessWebContentsImpl, DanglingAcrossTasks> web_contents_ =
       nullptr;  // Not owned.
 
-  bool page_ready_ = false;
-  bool frame_in_flight_ = false;
   int num_begin_frames_ = 0;
 
-  SimpleDevToolsProtocolClient browser_devtools_client_;
   SimpleDevToolsProtocolClient devtools_client_;
 
   SimpleDevToolsProtocolClient::EventCallback on_load_event_fired_handler_ =
