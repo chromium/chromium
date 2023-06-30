@@ -150,6 +150,7 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
  private:
   friend class ReturnToAppPanelTest;
   friend class VideoConferenceIntegrationTest;
+  friend class BubbleViewPixelTest;
 
   // The container that is the parent of all the buttons inside this panel.
   // Mainly used to handle expand/collapse animation.

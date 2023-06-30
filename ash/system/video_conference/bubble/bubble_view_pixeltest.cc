@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/style/icon_button.h"
@@ -9,19 +11,44 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/video_conference/bubble/bubble_view.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
+#include "ash/system/video_conference/bubble/return_to_app_panel.h"
 #include "ash/system/video_conference/bubble/toggle_effects_view.h"
 #include "ash/system/video_conference/effects/fake_video_conference_effects.h"
-#include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "ui/views/controls/image_view.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
+#include "url/gurl.h"
 
 namespace ash::video_conference {
+
+namespace {
+
+const std::string kMeetTestUrl = "https://meet.google.com/abc-xyz/ab-123";
+
+crosapi::mojom::VideoConferenceMediaAppInfoPtr CreateFakeMediaApp(
+    bool is_capturing_camera,
+    bool is_capturing_microphone,
+    bool is_capturing_screen,
+    const std::u16string& title,
+    std::string url,
+    const crosapi::mojom::VideoConferenceAppType app_type =
+        crosapi::mojom::VideoConferenceAppType::kChromeTab,
+    const base::UnguessableToken& id = base::UnguessableToken::Create()) {
+  return crosapi::mojom::VideoConferenceMediaAppInfo::New(
+      id,
+      /*last_activity_time=*/base::Time::Now(), is_capturing_camera,
+      is_capturing_microphone, is_capturing_screen, title,
+      /*url=*/GURL(url), app_type);
+}
+
+}  // namespace
 
 class BubbleViewPixelTest : public AshTestBase {
  public:
@@ -84,6 +111,28 @@ class BubbleViewPixelTest : public AshTestBase {
     return bubble_view()->GetViewByID(BubbleViewID::kToggleEffectsView);
   }
 
+  // Get the `ReturnToAppPanel` from the test `StatusAreaWidget`.
+  video_conference::ReturnToAppPanel::ReturnToAppContainer*
+  GetReturnToAppContainer() {
+    auto* return_to_app_panel =
+        static_cast<video_conference::ReturnToAppPanel*>(
+            video_conference_tray()->GetBubbleView()->GetViewByID(
+                video_conference::BubbleViewID::kReturnToApp));
+    return return_to_app_panel->container_view_;
+  }
+
+  // Make the tray and buttons visible by setting `VideoConferenceMediaState`,
+  // and return the state so it can be modified.
+  VideoConferenceMediaState SetTrayAndButtonsVisible() {
+    VideoConferenceMediaState state;
+    state.has_media_app = true;
+    state.has_camera_permission = true;
+    state.has_microphone_permission = true;
+    state.is_capturing_screen = true;
+    controller()->UpdateWithMediaState(state);
+    return state;
+  }
+
   ash::fake_video_conference::OfficeBunnyEffect* office_bunny() {
     return office_bunny_.get();
   }
@@ -115,14 +164,14 @@ TEST_F(BubbleViewPixelTest, ToggleButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_no_focus_not_toggled",
-      /*revision_number=*/0, toggle_effect_button_container));
+      /*revision_number=*/1, toggle_effect_button_container));
 
   // Toggle the first button, the UI should change.
   LeftClickOn(first_toggle_effect_button);
   ASSERT_EQ(1, office_bunny()->num_activations_for_testing());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_no_focus_toggled",
-      /*revision_number=*/0, toggle_effect_button_container));
+      /*revision_number=*/1, toggle_effect_button_container));
 
   // Un-toggle the button, then keyboard focus it.
   LeftClickOn(first_toggle_effect_button);
@@ -134,7 +183,7 @@ TEST_F(BubbleViewPixelTest, ToggleButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_with_focus_not_toggled",
-      /*revision_number=*/0, toggle_effect_button_container));
+      /*revision_number=*/1, toggle_effect_button_container));
 
   // Re-toggle the button.
   event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
@@ -143,7 +192,53 @@ TEST_F(BubbleViewPixelTest, ToggleButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_with_focus_toggled",
-      /*revision_number=*/0, toggle_effect_button_container));
+      /*revision_number=*/1, toggle_effect_button_container));
+}
+
+// Pixel test that tests the expanded/collapsed state of the return to app panel
+// when there's one and two running media app.
+TEST_F(BubbleViewPixelTest, ReturnToApp) {
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/false, /*title=*/u"Meet",
+      /*url=*/kMeetTestUrl));
+
+  SetTrayAndButtonsVisible();
+  ASSERT_TRUE(video_conference_tray()->GetVisible());
+
+  auto* toggle_bubble_button = video_conference_tray()->toggle_bubble_button();
+  LeftClickOn(toggle_bubble_button);
+  ASSERT_TRUE(video_conference_tray()->GetBubbleView());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "video_conference_tray_return_to_app_one_app",
+      /*revision_number=*/0, video_conference_tray()->GetBubbleView()));
+
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
+      /*is_capturing_screen=*/true, /*title=*/u"Zoom",
+      /*url=*/""));
+
+  // Double click to reset the bubble to show the newly added media app.
+  LeftClickOn(toggle_bubble_button);
+  LeftClickOn(toggle_bubble_button);
+  ASSERT_TRUE(video_conference_tray()->GetBubbleView());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "video_conference_tray_return_to_app_two_apps_collapsed",
+      /*revision_number=*/0, video_conference_tray()->GetBubbleView()));
+
+  // Click the summary row to expand the panel.
+  auto* return_to_app_container = GetReturnToAppContainer();
+  auto* summary_row = static_cast<video_conference::ReturnToAppButton*>(
+      return_to_app_container->children().front());
+  LeftClickOn(summary_row);
+  ASSERT_TRUE(summary_row->expanded());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "video_conference_tray_return_to_app_two_apps_expanded",
+      /*revision_number=*/0, video_conference_tray()->GetBubbleView()));
 }
 
 }  // namespace ash::video_conference

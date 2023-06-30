@@ -459,10 +459,15 @@ void ReturnToAppPanel::ReturnToAppContainer::StartExpandCollapseAnimation() {
 
 void ReturnToAppPanel::ReturnToAppContainer::AdjustLayoutForExpandCollapseState(
     bool expanded) {
+  // For bottom padding in expanded state, we need an extra
+  // `kReturnToAppPanelVerticalPadding`, on top of the bottom padding of the
+  // last child (which is `kReturnToAppPanelSpacing`).
+  int bottom_padding = expanded ? kReturnToAppPanelVerticalPadding : 0;
+
   layout_manager_->SetInteriorMargin(
       gfx::Insets::TLBR(expanded ? kReturnToAppPanelExpandedTopPadding
                                  : kReturnToAppPanelVerticalPadding,
-                        0, kReturnToAppPanelVerticalPadding, 0));
+                        0, bottom_padding, 0));
 }
 
 void ReturnToAppPanel::ReturnToAppContainer::AnimationProgressed(
