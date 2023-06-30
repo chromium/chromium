@@ -3922,9 +3922,6 @@ extern const char kRunOnOsLoginDescription[];
 
 extern const char kPreventCloseName[];
 extern const char kPreventCloseDescription[];
-
-extern const char kKeepAliveName[];
-extern const char kKeepAliveDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)

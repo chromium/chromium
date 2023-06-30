@@ -295,12 +295,6 @@ BASE_FEATURE(kDesktopPWAsPreventClose,
              "DesktopPWAsPreventClose",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, allow-listed PWAs cannot will be prevented from throttling /
-// hibernation, even when idle.
-BASE_FEATURE(kDesktopPWAsKeepAlive,
-             "DesktopPWAsKeepAlive",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Runs diagnostics during start up to measure how broken web app icons are to
 // feed into metrics.
 BASE_FEATURE(kDesktopPWAsIconHealthChecks,

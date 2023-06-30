@@ -2866,13 +2866,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-keep-alive",
-    "owners": [
-      "sfiss"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-keyboard-backlight-toggle",
     "owners": [ "rtinkoff" ],
     "expiry_milestone": 105
