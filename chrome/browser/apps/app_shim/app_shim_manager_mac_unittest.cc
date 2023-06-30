@@ -593,7 +593,6 @@ TEST_F(AppShimManagerTest, LaunchProfileIsLocked) {
   EXPECT_CALL(*manager_, IsProfileLockedForPath(profile_path_a_))
       .WillOnce(Return(true));
   EXPECT_CALL(*manager_, LaunchProfilePicker());
-  EXPECT_CALL(*manager_, OpenAppURLInBrowserWindow(profile_path_a_, _));
   NormalLaunch(bootstrap_aa_, nullptr);
   EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kProfileLocked,
             *bootstrap_aa_result_);

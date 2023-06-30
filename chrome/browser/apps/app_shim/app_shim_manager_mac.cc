@@ -837,17 +837,20 @@ void AppShimManager::OnShimProcessConnectedAndAllLaunchesDone(
   }
 
   // If we failed because the profile was locked, launch the profile manager.
-  if (result == chrome::mojom::AppShimLaunchResult::kProfileLocked)
+  if (result == chrome::mojom::AppShimLaunchResult::kProfileLocked) {
     LaunchProfilePicker();
-
-  // If the app specified a URL, but we tried and failed to launch it, then
-  // open that URL in a new browser window.
-  if (result != chrome::mojom::AppShimLaunchResult::kSuccess &&
-      result != chrome::mojom::AppShimLaunchResult::kSuccessAndDisconnect &&
-      bootstrap->GetLaunchType() == chrome::mojom::AppShimLaunchType::kNormal) {
-    const GURL& url = bootstrap->GetAppURL();
-    if (url.is_valid())
-      OpenAppURLInBrowserWindow(bootstrap->GetProfilePath(), url);
+  } else {
+    // If the app specified a URL, but we tried and failed to launch it, then
+    // open that URL in a new browser window.
+    if (result != chrome::mojom::AppShimLaunchResult::kSuccess &&
+        result != chrome::mojom::AppShimLaunchResult::kSuccessAndDisconnect &&
+        bootstrap->GetLaunchType() ==
+            chrome::mojom::AppShimLaunchType::kNormal) {
+      const GURL& url = bootstrap->GetAppURL();
+      if (url.is_valid()) {
+        OpenAppURLInBrowserWindow(bootstrap->GetProfilePath(), url);
+      }
+    }
   }
 
   // If we failed to find a AppShimHost (in a ProfileState) for |bootstrap|
