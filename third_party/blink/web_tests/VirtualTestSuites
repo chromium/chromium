@@ -2087,14 +2087,6 @@
     "expires": "Dec 1, 2023"
   },
   {
-    "prefix": "environment-integrity",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["wpt_internal/environment-integrity"],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-features=WebEnvironmentIntegrity"],
-    "expires": "Dec 1, 2023"
-  },
-  {
     "prefix": "longtask-from-loaf",
     "platforms": ["Linux"],
     "bases": ["external/wpt/longtask-timing"],

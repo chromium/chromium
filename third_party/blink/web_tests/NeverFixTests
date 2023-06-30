@@ -1978,3 +1978,8 @@ crbug.com/1446931 [ Android ] inspector-protocol/heap-profiler/heap-snapshot-exp
 crbug.com/1446931 [ Fuchsia ] inspector-protocol/heap-profiler/heap-snapshot-exposes-cpp-internals.js [ Skip ]
 crbug.com/1446931 [ Mac ] inspector-protocol/heap-profiler/heap-snapshot-exposes-cpp-internals.js [ Skip ]
 crbug.com/1446931 [ Win ] inspector-protocol/heap-profiler/heap-snapshot-exposes-cpp-internals.js [ Skip ]
+
+# See crbug.com/1454404. This is currently being prototyped and at this time is an Android only feature.
+# Because we don't meaningfully run WPT against any non Android Pie builders, we are disabling
+# this across the board and will iterate on these tests locally.
+wpt_internal/environment-integrity/* [ Skip ]

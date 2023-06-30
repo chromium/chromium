@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script>
+<script type="module">
+  'use strict';
+
+  import { MockEnvironmentIntegrity } from "./resources/mock.js";
+
+  const mockEnvironmentIntegrity = new MockEnvironmentIntegrity();
+
   test(() => {
     assert_idl_attribute(navigator, 'getEnvironmentIntegrity');
   }, 'The getEnvironmentIntegrity method should exist on the navigator object');
@@ -9,9 +15,15 @@
   promise_test(async () => {
     try {
       await navigator.getEnvironmentIntegrity('contentBinding');
-      assert_unreached();
     } catch (exception) {
-      assert_equals(exception.name, 'NotSupportedError');
+      assert_unreached();
     }
-  }, 'The getEnvironmentIntegrity method throws an exception');
+  }, 'The getEnvironmentIntegrity method can be called');
+
+  // TODO(crbug.com/1439945): Temporary test to confirm our mocks work until we can actually start
+  // using them once we make use of the getEnvironmentIntegrity mojo call.
+  promise_test(async () => {
+    await navigator.getEnvironmentIntegrity('contentBinding');
+    assert_true(mockEnvironmentIntegrity.wasCalled);
+  }, 'Mock environment integrity should be called');
 </script>
