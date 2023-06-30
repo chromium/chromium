@@ -402,6 +402,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       kind: ScreenKind.NORMAL,
     },
     {
+      id: 'add-child',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'offline-ad-login',
       kind: ScreenKind.NORMAL,
       // Remove this step from preview here, because it can only occur during
@@ -1730,7 +1734,8 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     {
       id: 'quick-start',
       kind: ScreenKind.NORMAL,
-      handledSteps: 'verification,connecting_to_wifi,connected_to_wifi,gaia_credentials,fido_assertion_received',
+      handledSteps:
+          'verification,connecting_to_wifi,connected_to_wifi,gaia_credentials,fido_assertion_received',
       states: [
         {
           id: 'PinVerification',
