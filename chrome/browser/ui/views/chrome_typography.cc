@@ -17,8 +17,9 @@
 
 int GetFontSizeDeltaBoundedByAvailableHeight(int available_height,
                                              int desired_font_size) {
-  int size_delta = views::style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(
-      desired_font_size);
+  int size_delta =
+      gfx::PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(
+          desired_font_size);
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   gfx::FontList base_font = bundle.GetFontListWithDelta(size_delta);
 
@@ -49,7 +50,7 @@ void ApplyCommonFontStyles(int context,
     }
     case CONTEXT_TAB_COUNTER: {
       details.size_delta =
-          views::style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
+          gfx::PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
       details.weight = gfx::Font::Weight::BOLD;
       break;
     }
@@ -94,23 +95,23 @@ void ApplyCommonFontStyles(int context,
 #if BUILDFLAG(IS_WIN)
     case CONTEXT_WINDOWS10_NATIVE:
       // Adjusts default font size up to match Win10 modern UI.
-      details.size_delta = 15 - gfx::PlatformFont::kDefaultBaseFontSize;
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(15);
       break;
 #endif
     case CONTEXT_IPH_BUBBLE_TITLE:
       details.size_delta =
-          views::style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(18);
+          gfx::PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(18);
       if (features::IsChromeRefresh2023()) {
         details.weight = gfx::Font::Weight::MEDIUM;
       }
       break;
     case CONTEXT_IPH_BUBBLE_BODY:
       details.size_delta =
-          views::style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
+          gfx::PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
       break;
     case CONTEXT_SIDE_PANEL_TITLE:
       details.size_delta =
-          views::style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
+          gfx::PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
       break;
   }
 }

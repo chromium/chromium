@@ -31,6 +31,17 @@ class GFX_EXPORT PlatformFont : public base::RefCounted<PlatformFont> {
   static constexpr int kDefaultBaseFontSize = 12;
 #endif
 
+  // Takes a desired font size and returns the size delta to request from
+  // ui::ResourceBundle that will result in font size plus any font size changes
+  // made to account for locale or user settings.
+  static constexpr int GetFontSizeDelta(int desired_font_size);
+
+  // Takes a desired font size and returns the size delta to request from
+  // ui::ResourceBundle that will result in exactly that font size, canceling
+  // out any font size changes made to account for locale or user settings.
+  static int GetFontSizeDeltaIgnoringUserOrLocaleSettings(
+      int desired_font_size);
+
   // Creates an appropriate PlatformFont implementation.
   static PlatformFont* CreateDefault();
 #if BUILDFLAG(IS_APPLE)
@@ -112,6 +123,10 @@ class GFX_EXPORT PlatformFont : public base::RefCounted<PlatformFont> {
  private:
   friend class base::RefCounted<PlatformFont>;
 };
+
+constexpr int PlatformFont::GetFontSizeDelta(int desired_font_size) {
+  return desired_font_size - kDefaultBaseFontSize;
+}
 
 }  // namespace gfx
 

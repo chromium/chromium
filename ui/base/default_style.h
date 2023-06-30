@@ -6,6 +6,7 @@
 #define UI_BASE_DEFAULT_STYLE_H_
 
 #include "build/build_config.h"
+#include "ui/gfx/platform_font.h"
 
 // This file contains the constants that provide the default style for UI
 // controls and dialogs.
@@ -20,29 +21,17 @@ namespace ui {
 constexpr int kMessageFontSizeDelta = 0;
 
 // Default font size delta for views::Badge.
-#if BUILDFLAG(IS_APPLE)
-// Aim for 9pt for Cocoa labels ([NSFont systemFontSize] is typically 13pt).
-constexpr int kBadgeFontSizeDelta = -4;
-#else
-constexpr int kBadgeFontSizeDelta = -3;
-#endif
+constexpr int kBadgeFontSizeDelta = gfx::PlatformFont::GetFontSizeDelta(9);
 
 // Default font size delta for dialog buttons, textfields, and labels.
-// Default font size for ChromeRefresh2023 is 13 instead of 12.
-#if BUILDFLAG(IS_APPLE)
-// Aim for 12pt for Cocoa labels ([NSFont systemFontSize] is typically 13pt).
-constexpr int kLabelFontSizeDelta = -1;
-constexpr int kLabelFontSizeDeltaChromeRefresh2023 = 0;
-#else
-constexpr int kLabelFontSizeDelta = 0;
-constexpr int kLabelFontSizeDeltaChromeRefresh2023 = 1;
-#endif
+// For CR2023, prefer using views::style::STYLE_BODY_3 instead.
+constexpr int kLabelFontSizeDelta = gfx::PlatformFont::GetFontSizeDelta(12);
 
 // Font size delta for dialog titles.
 #if BUILDFLAG(IS_APPLE)
-constexpr int kTitleFontSizeDelta = 1;
+constexpr int kTitleFontSizeDelta = gfx::PlatformFont::GetFontSizeDelta(14);
 #else
-constexpr int kTitleFontSizeDelta = 3;
+constexpr int kTitleFontSizeDelta = gfx::PlatformFont::GetFontSizeDelta(15);
 #endif
 
 }  // namespace ui

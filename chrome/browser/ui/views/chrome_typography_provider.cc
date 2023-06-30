@@ -36,6 +36,7 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
   constexpr int kTitleSize = 15;
   constexpr int kTouchableLabelSize = 14;
   constexpr int kBodyTextLargeSize = 13;
+  constexpr int kCR23ButtonTextSize = 13;
   constexpr int kDefaultSize = 12;
   constexpr int kStatusSize = 10;
   constexpr int kBadgeSize = 9;
@@ -51,7 +52,7 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
     return details;
   }
 
-  details.size_delta = kDefaultSize - gfx::PlatformFont::kDefaultBaseFontSize;
+  details.size_delta = gfx::PlatformFont::GetFontSizeDelta(kDefaultSize);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ApplyAshFontStyles(context, style, details);
@@ -61,35 +62,34 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
 
   switch (context) {
     case views::style::CONTEXT_BADGE:
-      details.size_delta = kBadgeSize - gfx::PlatformFont::kDefaultBaseFontSize;
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(kBadgeSize);
       details.weight = gfx::Font::Weight::BOLD;
       break;
     case views::style::CONTEXT_BUTTON_MD:
       details.weight = MediumWeightForUI();
-      details.size_delta = features::IsChromeRefresh2023()
-                               ? ui::kLabelFontSizeDeltaChromeRefresh2023
-                               : ui::kLabelFontSizeDelta;
+      details.size_delta =
+          features::IsChromeRefresh2023()
+              ? gfx::PlatformFont::GetFontSizeDelta(kCR23ButtonTextSize)
+              : ui::kLabelFontSizeDelta;
       break;
     case views::style::CONTEXT_DIALOG_TITLE:
-      details.size_delta = kTitleSize - gfx::PlatformFont::kDefaultBaseFontSize;
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(kTitleSize);
       break;
     case views::style::CONTEXT_TOUCH_MENU:
       details.size_delta =
-          kTouchableLabelSize - gfx::PlatformFont::kDefaultBaseFontSize;
+          gfx::PlatformFont::GetFontSizeDelta(kTouchableLabelSize);
       break;
     case views::style::CONTEXT_DIALOG_BODY_TEXT:
     case CONTEXT_TAB_HOVER_CARD_TITLE:
     case CONTEXT_DOWNLOAD_SHELF:
       details.size_delta =
-          kBodyTextLargeSize - gfx::PlatformFont::kDefaultBaseFontSize;
+          gfx::PlatformFont::GetFontSizeDelta(kBodyTextLargeSize);
       break;
     case CONTEXT_HEADLINE:
-      details.size_delta =
-          kHeadlineSize - gfx::PlatformFont::kDefaultBaseFontSize;
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(kHeadlineSize);
       break;
     case CONTEXT_DOWNLOAD_SHELF_STATUS:
-      details.size_delta =
-          kStatusSize - gfx::PlatformFont::kDefaultBaseFontSize;
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(kStatusSize);
       break;
     default:
       break;

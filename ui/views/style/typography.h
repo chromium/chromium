@@ -151,8 +151,6 @@ enum TextStyle {
   STYLE_CAPTION_EMPHASIS,
   STYLE_CAPTION_MEDIUM = STYLE_CAPTION_EMPHASIS,
   STYLE_CAPTION_BOLD,
-  STYLE_BUTTON,
-  STYLE_LABEL,
   STYLE_OVERRIDE_TYPOGRAPHY_END,
 
   // Embedders must start TextStyle enum values from here.
@@ -169,9 +167,6 @@ VIEWS_EXPORT const gfx::FontList& GetFont(int context, int style);
 VIEWS_EXPORT int GetLineHeight(int context, int style);
 
 VIEWS_EXPORT ui::ColorId GetColorId(int context, int style);
-
-VIEWS_EXPORT int GetFontSizeDeltaIgnoringUserOrLocaleSettings(
-    int desired_font_size);
 
 }  // namespace views::style
 

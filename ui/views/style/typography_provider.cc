@@ -85,7 +85,7 @@ ui::ResourceBundle::FontDetails TypographyProvider::GetFontDetails(
       break;
     case style::CONTEXT_BUTTON_MD:
       details.size_delta = features::IsChromeRefresh2023()
-                               ? ui::kLabelFontSizeDeltaChromeRefresh2023
+                               ? gfx::PlatformFont::GetFontSizeDelta(13)
                                : ui::kLabelFontSizeDelta;
       details.weight = TypographyProvider::MediumWeightForUI();
       break;
@@ -118,118 +118,95 @@ ui::ResourceBundle::FontDetails TypographyProvider::GetFontDetails(
       details.weight = gfx::Font::Weight::SEMIBOLD;
       break;
     case style::STYLE_HEADLINE_1:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(24);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(24);
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case style::STYLE_HEADLINE_2:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(20);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(20);
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case style::STYLE_HEADLINE_3:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(18);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(18);
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case style::STYLE_HEADLINE_4:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(16);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(16);
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case style::STYLE_HEADLINE_5:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(14);
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case style::STYLE_BODY_1:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(16);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(16);
       details.weight = gfx::Font::Weight::NORMAL;
       break;
     case style::STYLE_BODY_1_MEDIUM:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(16);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(16);
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case style::STYLE_BODY_1_BOLD:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(16);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(16);
       details.weight = gfx::Font::Weight::BOLD;
       break;
     case style::STYLE_BODY_2:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(14);
       details.weight = gfx::Font::Weight::NORMAL;
       break;
     case style::STYLE_BODY_2_MEDIUM:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(14);
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case style::STYLE_BODY_2_BOLD:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(14);
       details.weight = gfx::Font::Weight::BOLD;
       break;
     case style::STYLE_BODY_3:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(13);
       details.weight = gfx::Font::Weight::NORMAL;
       break;
     case style::STYLE_BODY_3_MEDIUM:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(13);
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case style::STYLE_BODY_3_BOLD:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(13);
       details.weight = gfx::Font::Weight::BOLD;
       break;
     case style::STYLE_BODY_4:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(12);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(12);
       details.weight = gfx::Font::Weight::NORMAL;
       break;
     case style::STYLE_BODY_4_MEDIUM:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(12);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(12);
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case style::STYLE_BODY_4_BOLD:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(12);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(12);
       details.weight = gfx::Font::Weight::BOLD;
       break;
     case style::STYLE_BODY_5:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(11);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(11);
       details.weight = gfx::Font::Weight::NORMAL;
       break;
     case style::STYLE_BODY_5_MEDIUM:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(11);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(11);
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case style::STYLE_BODY_5_BOLD:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(11);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(11);
       details.weight = gfx::Font::Weight::BOLD;
       break;
     case style::STYLE_CAPTION:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(9);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(9);
       details.weight = gfx::Font::Weight::NORMAL;
       break;
     case style::STYLE_CAPTION_MEDIUM:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(9);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(9);
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case style::STYLE_CAPTION_BOLD:
-      details.size_delta =
-          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(9);
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(9);
       details.weight = gfx::Font::Weight::BOLD;
       break;
   }
