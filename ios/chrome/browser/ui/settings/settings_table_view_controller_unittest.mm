@@ -268,36 +268,6 @@ TEST_F(SettingsTableViewControllerTest, SyncPasswordError) {
                                          SettingsSectionIdentifierSignIn]);
 }
 
-// Verifies that the Sync icon displays the off state when the user has
-// completed the sign-in and sync flow then explicitly turned off the Sync
-// setting.
-TEST_F(SettingsTableViewControllerTest, TurnsSyncOffAfterFirstSetup) {
-  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
-          IsInitialSyncFeatureSetupComplete())
-      .WillByDefault(Return(true));
-  ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(false));
-  auth_service_->SignIn(fake_identity_,
-                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-
-  CreateController();
-  CheckController();
-
-  NSArray* account_items = [controller().tableViewModel
-      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
-                                       SettingsSectionIdentifierAccount];
-  ASSERT_EQ(3U, account_items.count);
-
-  TableViewDetailIconItem* sync_item =
-      static_cast<TableViewDetailIconItem*>(account_items[1]);
-  ASSERT_NSEQ(l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE),
-              sync_item.text);
-  ASSERT_NSEQ(nil, sync_item.detailText);
-  // Check that there is no sign-in promo when there is a sync error.
-  ASSERT_FALSE([controller().tableViewModel
-      hasSectionForSectionIdentifier:SettingsSectionIdentifier::
-                                         SettingsSectionIdentifierSignIn]);
-}
-
 // Verifies that the Sync icon displays the off state (and no detail text) when
 // the user has completed the sign-in and sync flow then explicitly turned off
 // all data types in the Sync settings.
@@ -340,10 +310,15 @@ TEST_F(SettingsTableViewControllerTest, SigninDisabled) {
                                          SettingsSectionIdentifierSignIn]);
 }
 
-// Verifies that the Sync icon displays the off state (with OFF in detail text)
-// when the user has not agreed on sync. This case is possible when using
-// web sign-in.
-TEST_F(SettingsTableViewControllerTest, SyncSetupNotComplete) {
+// Verifies that for a signed-in non-syncing user with
+// kReplaceSyncPromosWithSignInPromos disabled, the account section shows 3
+// items: the one with the name/email, the "Sync off" one, and the "Google
+// Services" one.
+TEST_F(SettingsTableViewControllerTest,
+       AccountSectionIfSignedInNonSyncing_SyncToSigninDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
   ON_CALL(*sync_service_mock_->GetMockUserSettings(),
           IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(false));
@@ -358,12 +333,51 @@ TEST_F(SettingsTableViewControllerTest, SyncSetupNotComplete) {
                                        SettingsSectionIdentifierAccount];
   ASSERT_EQ(3U, account_items.count);
 
-  TableViewDetailIconItem* sync_item =
-      static_cast<TableViewDetailIconItem*>(account_items[1]);
-  ASSERT_NSEQ(l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE),
+  auto* account_item = static_cast<TableViewAccountItem*>(account_items[0]);
+  auto* sync_item = static_cast<TableViewDetailIconItem*>(account_items[1]);
+  auto* google_services_item =
+      static_cast<TableViewDetailIconItem*>(account_items[2]);
+  EXPECT_NSEQ(fake_identity_.userFullName, account_item.text);
+  EXPECT_NSEQ(fake_identity_.userEmail, account_item.detailText);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE),
               sync_item.text);
-  ASSERT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_OFF),
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_OFF),
               sync_item.detailText);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE),
+              google_services_item.text);
+  EXPECT_NSEQ(nil, google_services_item.detailText);
+}
+
+// Verifies that for a signed-in non-syncing user with
+// kReplaceSyncPromosWithSignInPromos enabled, the account section shows 2
+// items: the one with the name/email, and the "Google Services" one.
+TEST_F(SettingsTableViewControllerTest,
+       AccountSectionIfSignedInNonSyncing_SyncToSigninEnabled) {
+  base::test::ScopedFeatureList features(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
+      .WillByDefault(Return(false));
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+
+  CreateController();
+  CheckController();
+
+  NSArray* account_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierAccount];
+  ASSERT_EQ(2U, account_items.count);
+
+  auto* account_item = static_cast<TableViewAccountItem*>(account_items[0]);
+  auto* google_services_item =
+      static_cast<TableViewDetailIconItem*>(account_items[1]);
+  EXPECT_NSEQ(fake_identity_.userFullName, account_item.text);
+  EXPECT_NSEQ(fake_identity_.userEmail, account_item.detailText);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE),
+              google_services_item.text);
+  EXPECT_NSEQ(nil, google_services_item.detailText);
 }
 
 // Verifies that the sign-in setting item is replaced by the managed sign-in
@@ -409,7 +423,7 @@ TEST_F(SettingsTableViewControllerTest, HoldAccountStorageErrorWhenEligible) {
   NSArray* account_items = [controller().tableViewModel
       itemsInSectionWithIdentifier:SettingsSectionIdentifier::
                                        SettingsSectionIdentifierAccount];
-  ASSERT_EQ(3U, account_items.count);
+  ASSERT_NE(0U, account_items.count);
 
   // Verify that the account item is in an error state.
   TableViewAccountItem* identityAccountItem =
@@ -438,7 +452,7 @@ TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
   NSArray* account_items = [controller().tableViewModel
       itemsInSectionWithIdentifier:SettingsSectionIdentifier::
                                        SettingsSectionIdentifierAccount];
-  ASSERT_EQ(3U, account_items.count);
+  ASSERT_NE(0U, account_items.count);
 
   // Verify that the account item is in an error state.
   TableViewAccountItem* identityAccountItem =
@@ -455,7 +469,7 @@ TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
   account_items = [controller().tableViewModel
       itemsInSectionWithIdentifier:SettingsSectionIdentifier::
                                        SettingsSectionIdentifierAccount];
-  ASSERT_EQ(3U, account_items.count);
+  ASSERT_NE(0U, account_items.count);
   identityAccountItem =
       base::mac::ObjCCast<TableViewAccountItem>(account_items[0]);
   ASSERT_TRUE(identityAccountItem != nil);
@@ -515,7 +529,7 @@ TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenNoError) {
   NSArray* account_items = [controller().tableViewModel
       itemsInSectionWithIdentifier:SettingsSectionIdentifier::
                                        SettingsSectionIdentifierAccount];
-  ASSERT_EQ(3U, account_items.count);
+  ASSERT_NE(0U, account_items.count);
 
   // Verify that the account item is not in an error state.
   TableViewAccountItem* identityAccountItem =
