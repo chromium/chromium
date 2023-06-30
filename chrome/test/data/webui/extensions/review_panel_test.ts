@@ -12,7 +12,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {createExtensionInfo} from './test_util.js';
+import {createExtensionInfo, MockItemDelegate} from './test_util.js';
 
 suite('ExtensionsReviewPanel', function() {
   let element: ExtensionsReviewPanelElement;
@@ -30,7 +30,7 @@ suite('ExtensionsReviewPanel', function() {
         safetyCheckText: {panelString: 'This extension contains malware.'},
       }),
       createExtensionInfo({name: 'Bravo', id: 'b'.repeat(32)}),
-      createExtensionInfo({name: 'Charlie', id: 'c'.repeat(29) + 'wxy'}),
+      createExtensionInfo({name: 'Charlie', id: 'c'.repeat(29)}),
     ];
     element.extensions = extensionItems;
     document.body.appendChild(element);
@@ -106,5 +106,23 @@ suite('ExtensionsReviewPanel', function() {
         'Alpha');
   });
 
-  // TODO(http://crbug.com/1432194): Add tests to verify action functionalities.
+  test('CompletionStateShouldBeShown', async function() {
+    let completionTextContainer =
+        element.shadowRoot!.querySelector('.completion-container');
+    assertFalse(isVisible(completionTextContainer));
+    class MockDeleteItemDelegate extends MockItemDelegate {
+      override deleteItem(id: string) {
+        // Mock deleting the extension.
+        element.extensions =
+            element.extensions.filter(extension => extension.id !== id);
+      }
+    }
+    element.delegate = new MockDeleteItemDelegate();
+    element.shadowRoot!.querySelector('cr-icon-button')?.click();
+    flush();
+    completionTextContainer =
+        element.shadowRoot!.querySelector('.completion-container');
+    assertTrue(!!completionTextContainer);
+    assertTrue(isVisible(completionTextContainer));
+  });
 });

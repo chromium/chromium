@@ -571,6 +571,9 @@
   <message name="IDS_EXTENSIONS_SC_REMOVE_ALL" desc="The generic label for a button to remove all extensions.">
     Remove All
   </message>
+  <message name="IDS_EXTENSIONS_SC_ALL_DONE_FOR_NOW" desc="The text of the safety check completion state.">
+    All done for now
+  </message>
 <if expr="is_macosx">
   <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Command key.">
     Include Ctrl, Alt, or ⌘
