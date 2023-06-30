@@ -323,8 +323,14 @@ void EnrollmentScreen::ShowImpl() {
     scoped_network_observation_.Observe(network_state_informer_.get());
   }
   is_rollback_flow_ = IsRollbackFlow(*context());
-  if (view_)
+  if (view_) {
+    // Reset the view when the screen is shown for the first time or after a
+    // retry. Notably, the ShowImpl is not invoked after network error overlay
+    // is dismissed, which prevents the view from resetting when enrollment has
+    // already been completed.
+    view_->ResetEnrollmentScreen();
     view_->SetEnrollmentController(this);
+  }
   // Block enrollment on liveboot (OS isn't installed yet and this is trial
   // flow).
   if (switches::IsOsInstallAllowed()) {
@@ -814,6 +820,11 @@ bool EnrollmentScreen::IsEnrollmentScreenHiddenByError() {
 
 void EnrollmentScreen::UpdateState(NetworkError::ErrorReason reason) {
   UpdateStateInternal(reason, false);
+}
+
+void EnrollmentScreen::SetNetworkStateForTesting(const NetworkState* state) {
+  CHECK_IS_TEST();
+  network_state_informer_->DefaultNetworkChanged(state);
 }
 
 // TODO(rsorokin): This function is mostly copied from SigninScreenHandler and

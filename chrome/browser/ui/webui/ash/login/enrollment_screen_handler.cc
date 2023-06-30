@@ -189,6 +189,12 @@ void EnrollmentScreenHandler::ReloadSigninScreen() {
   CallExternalAPI("doReload");
 }
 
+void EnrollmentScreenHandler::ResetEnrollmentScreen() {
+  // The empty string will be replaced by the correct initial step in the screen
+  // initialization code.
+  ShowStep(std::string());
+}
+
 void EnrollmentScreenHandler::ShowUserError(const std::string& email) {
   // Reset the state of the GAIA so after error user would retry enrollment and
   // start from enter your account view.
@@ -761,8 +767,8 @@ void EnrollmentScreenHandler::HandleOnLearnMore() {
   help_app_->ShowHelpTopic(HelpAppLauncher::HELP_DEVICE_ATTRIBUTES);
 }
 
-void EnrollmentScreenHandler::ShowStep(const char* step) {
-  CallExternalAPI("showStep", std::string(step));
+void EnrollmentScreenHandler::ShowStep(const std::string& step) {
+  CallExternalAPI("showStep", step);
 }
 
 void EnrollmentScreenHandler::ShowError(int message_id, bool retry) {

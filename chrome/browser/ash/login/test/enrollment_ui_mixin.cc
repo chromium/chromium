@@ -103,6 +103,10 @@ void EnrollmentUIMixin::ExpectErrorMessage(int error_message_id,
 
 void EnrollmentUIMixin::RetryAfterError() {
   OobeJS().ClickOnPath(kEnrollmentErrorRetryButtonPath);
+}
+
+void EnrollmentUIMixin::RetryAndWaitForSigninStep() {
+  RetryAfterError();
   WaitForStep(ui::kEnrollmentStepSignin);
 }
 
