@@ -402,8 +402,15 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
 
     ScopedDrmConnectorPtr connector =
         drm.GetConnector(resources->connectors[i]);
-    if (!connector)
+    // In case of zombie connectors, verify that the connector is valid by
+    // checking if it has props.
+    // Zombie connectors can occur when an MST (which creates a new connector ID
+    // upon connection) is disconnected but the kernel hasn't cleaned up the old
+    // connector ID yet.
+    if (!connector || !drm.GetObjectProperties(resources->connectors[i],
+                                               DRM_MODE_OBJECT_CONNECTOR)) {
       continue;
+    }
 
     if (connector->connection == DRM_MODE_CONNECTED &&
         connector->count_modes != 0) {

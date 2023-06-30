@@ -218,7 +218,8 @@ TEST_P(HardwareDisplayPlaneManagerTest, MAYBE_ResettingConnectorCache) {
   drm_state.connector_properties[connector_and_crtc_count - 1].id =
       kConnectorIdBase + 3;
   fake_drm_->UpdateStateBesidesPlaneManager(drm_state);
-  fake_drm_->plane_manager()->ResetConnectorsCache(fake_drm_->GetResources());
+  fake_drm_->plane_manager()->ResetConnectorsCacheAndGetValidIds(
+      fake_drm_->GetResources());
 
   {
     CommitRequest commit_request;

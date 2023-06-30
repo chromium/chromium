@@ -17,6 +17,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
@@ -259,28 +260,35 @@ std::vector<uint64_t> HardwareDisplayPlaneManager::GetFormatModifiers(
   return {};
 }
 
-void HardwareDisplayPlaneManager::ResetConnectorsCache(
+base::flat_set<uint32_t>
+HardwareDisplayPlaneManager::ResetConnectorsCacheAndGetValidIds(
     const ScopedDrmResourcesPtr& resources) {
   connectors_props_.clear();
+  base::flat_set<uint32_t> valid_ids;
 
   for (int i = 0; i < resources->count_connectors; ++i) {
-    ConnectorProperties state_props;
-    state_props.id = resources->connectors[i];
+    uint32_t connector_id = resources->connectors[i];
 
-    ScopedDrmObjectPropertyPtr props(drm_->GetObjectProperties(
-        resources->connectors[i], DRM_MODE_OBJECT_CONNECTOR));
+    ScopedDrmObjectPropertyPtr props(
+        drm_->GetObjectProperties(connector_id, DRM_MODE_OBJECT_CONNECTOR));
     if (!props) {
       PLOG(ERROR) << "Failed to get Connector properties for connector="
-                  << state_props.id;
+                  << connector_id;
       continue;
     }
+
+    ConnectorProperties state_props;
+    state_props.id = connector_id;
     GetDrmPropertyForName(drm_, props.get(), "CRTC_ID", &state_props.crtc_id);
     DCHECK(!drm_->is_atomic() || state_props.crtc_id.id);
     GetDrmPropertyForName(drm_, props.get(), "link-status",
                           &state_props.link_status);
 
     connectors_props_.emplace_back(std::move(state_props));
+    valid_ids.emplace(connector_id);
   }
+
+  return valid_ids;
 }
 
 bool HardwareDisplayPlaneManager::SetColorMatrix(
@@ -377,7 +385,7 @@ bool HardwareDisplayPlaneManager::InitializeCrtcState() {
   }
 
   DisableConnectedConnectorsToCrtcs(resources);
-  ResetConnectorsCache(resources);
+  ResetConnectorsCacheAndGetValidIds(resources);
 
   unsigned int num_crtcs_with_out_fence_ptr = 0;
 
