@@ -375,7 +375,8 @@ void SavedTabGroupModel::MoveTabInGroupTo(const base::Uuid& group_id,
   saved_tab_groups_[index.value()].MoveTabLocally(tab_id, new_index);
 
   for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedLocally(group_id, copy_tab_id);
+    // TODO(crbug/1459730): Consider further optimizations.
+    observer.SavedTabGroupTabsReorderedLocally(group_id);
   }
 }
 

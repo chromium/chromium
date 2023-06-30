@@ -234,7 +234,7 @@ void SavedTabGroupSyncBridge::SavedTabGroupUpdatedLocally(
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
-  const SavedTabGroup* group = model_->Get(group_guid);
+  const SavedTabGroup* const group = model_->Get(group_guid);
   DCHECK(group);
 
   if (tab_guid.has_value()) {
@@ -255,17 +255,27 @@ void SavedTabGroupSyncBridge::SavedTabGroupUpdatedLocally(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void SavedTabGroupSyncBridge::SavedTabGroupTabsReorderedLocally(
+    const base::Uuid& group_guid) {
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+
+  const SavedTabGroup* const group = model_->Get(group_guid);
+  DCHECK(group);
+
+  for (const SavedTabGroupTab& tab : group->saved_tabs()) {
+    UpsertEntitySpecific(tab.ToSpecifics(), write_batch.get());
+  }
+
+  store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
+}
+
 void SavedTabGroupSyncBridge::SavedTabGroupReorderedLocally() {
-  // TODO(dljames): Find a more efficient way to only upsert the data that has
-  // changed. If a group has changed, update all groups. If a tab has changed,
-  // update all tabs in its group.
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
     UpsertEntitySpecific(group.ToSpecifics(), write_batch.get());
-    for (const SavedTabGroupTab& tab : group.saved_tabs())
-      UpsertEntitySpecific(tab.ToSpecifics(), write_batch.get());
   }
 
   store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());

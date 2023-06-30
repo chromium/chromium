@@ -63,6 +63,7 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   void SavedTabGroupUpdatedLocally(
       const base::Uuid& group_guid,
       const absl::optional<base::Uuid>& tab_guid = absl::nullopt) override;
+  void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid) override;
   void SavedTabGroupReorderedLocally() override;
 
  private:

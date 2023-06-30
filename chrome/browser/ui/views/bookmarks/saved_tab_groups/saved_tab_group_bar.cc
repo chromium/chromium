@@ -423,6 +423,11 @@ void SavedTabGroupBar::SavedTabGroupReorderedFromSync() {
   SavedTabGroupReordered();
 }
 
+void SavedTabGroupBar::SavedTabGroupTabsReorderedLocally(
+    const base::Uuid& group_guid) {
+  SavedTabGroupUpdated(group_guid);
+}
+
 void SavedTabGroupBar::SavedTabGroupAddedFromSync(const base::Uuid& guid) {
   SavedTabGroupAdded(guid);
 }

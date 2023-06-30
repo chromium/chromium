@@ -37,6 +37,11 @@ class SavedTabGroupModelObserver {
       const base::Uuid& group_guid,
       const absl::optional<base::Uuid>& tab_guid = absl::nullopt) {}
 
+  // Called when the order of tabs in an open saved tab group are changed in the
+  // tabstrip.
+  virtual void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid) {
+  }
+
   // Called when the order of saved tab groups in the bookmark bar are changed.
   virtual void SavedTabGroupReorderedLocally() {}
 

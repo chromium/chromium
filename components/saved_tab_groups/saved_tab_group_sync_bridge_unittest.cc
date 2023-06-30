@@ -710,3 +710,64 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateTabLocally) {
 
   saved_tab_group_model_.UpdateTabInGroup(group_guid, updated_tab_1);
 }
+
+// Verify that locally reordered tabs updates all tabs in the group.
+TEST_F(SavedTabGroupSyncBridgeTest, ReorderTabsInGroupLocally) {
+  EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
+
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
+                      /*position=*/absl::nullopt);
+  SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
+                         group.saved_guid(), /*position=*/absl::nullopt);
+  SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
+                         group.saved_guid(), /*position=*/absl::nullopt);
+  group.AddTabLocally(tab_1).AddTabLocally(tab_2);
+
+  SavedTabGroupTab updated_tab_1(group.saved_tabs()[0]);
+  updated_tab_1.SetURL(GURL("https://youtube.com"));
+  updated_tab_1.SetTitle(u"Youtube");
+
+  base::Uuid group_guid = group.saved_guid();
+  base::Uuid tab_1_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_guid = tab_2.saved_tab_guid();
+  saved_tab_group_model_.Add(std::move(group));
+
+  EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _));
+  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _));
+  EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
+
+  saved_tab_group_model_.MoveTabInGroupTo(group_guid, tab_1_guid, 1);
+}
+
+// Verify that locally reordered tabs updates all tabs in the group.
+TEST_F(SavedTabGroupSyncBridgeTest, ReorderGroupLocally) {
+  EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
+
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
+                      /*position=*/absl::nullopt);
+  SavedTabGroup group_2(u"Test Title 2", tab_groups::TabGroupColorId::kRed, {},
+                        /*position=*/absl::nullopt);
+  SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
+                         group.saved_guid(), /*position=*/absl::nullopt);
+  SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
+                         group.saved_guid(), /*position=*/absl::nullopt);
+  group.AddTabLocally(tab_1).AddTabLocally(tab_2);
+
+  SavedTabGroupTab updated_tab_1(group.saved_tabs()[0]);
+  updated_tab_1.SetURL(GURL("https://youtube.com"));
+  updated_tab_1.SetTitle(u"Youtube");
+
+  base::Uuid group_guid = group.saved_guid();
+  base::Uuid group_2_guid = group_2.saved_guid();
+  base::Uuid tab_1_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_guid = tab_2.saved_tab_guid();
+  saved_tab_group_model_.Add(std::move(group));
+  saved_tab_group_model_.Add(std::move(group_2));
+
+  EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _));
+  EXPECT_CALL(processor_, Put(group_2_guid.AsLowercaseString(), _, _));
+
+  saved_tab_group_model_.ReorderGroupLocally(group_guid, 1);
+}
