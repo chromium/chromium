@@ -164,7 +164,6 @@ function startOobe() {
     });
   }
 
-
   // Add OOBE or LOGIN screens to the document.
   const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
 

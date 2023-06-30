@@ -3885,6 +3885,9 @@ extern const char kSmdsDbusMigrationDescription[];
 extern const char kOobeJellyName[];
 extern const char kOobeJellyDescription[];
 
+extern const char kOobeJellyModalName[];
+extern const char kOobeJellyModalDescription[];
+
 extern const char kOobeSimonName[];
 extern const char kOobeSimonDescription[];
 

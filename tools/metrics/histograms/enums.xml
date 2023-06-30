@@ -62542,6 +62542,7 @@ from previous Chrome versions.
   <int value="-700300613" label="use-fake-device-for-media-stream:disabled"/>
   <int value="-699767107" label="enable-sync-app-list"/>
   <int value="-699756444" label="ArcGhostWindow:disabled"/>
+  <int value="-699321605" label="OobeJellyModal:enabled"/>
   <int value="-699198009" label="KeyboardShortcutViewer:enabled"/>
   <int value="-697887799"
       label="AutofillSaveCardDialogUnlabeledExpirationDate:disabled"/>
@@ -63032,6 +63033,7 @@ from previous Chrome versions.
   <int value="-446220201" label="EnableIncognitoShortcutOnDesktop:enabled"/>
   <int value="-444867364" label="Metal:enabled"/>
   <int value="-442352394" label="IframeOneGoogleBar:disabled"/>
+  <int value="-441972413" label="OobeJellyModal:disabled"/>
   <int value="-441840790" label="TailoredSecurityUpdatedMessages:disabled"/>
   <int value="-438529902" label="CaptivePortalErrorPage:enabled"/>
   <int value="-438379844" label="SwapSideVolumeButtonsForOrientation:enabled"/>

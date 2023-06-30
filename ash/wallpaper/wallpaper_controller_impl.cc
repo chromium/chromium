@@ -2044,22 +2044,29 @@ void WallpaperControllerImpl::SetOnlineWallpaperImpl(
 }
 
 void WallpaperControllerImpl::ShowOobeWallpaper() {
-  if (ash::features::IsOobeSimonEnabled()) {
-    const base::FilePath simon_file_path = base::FilePath(
+  base::FilePath file_path;
+  if (features::IsOobeSimonEnabled()) {
+    file_path = base::FilePath(
         FILE_PATH_LITERAL("/usr/share/chromeos-assets/animated_splash_screen/"
                           "oobe_wallpaper.jpg"));
-    if (!cached_oobe_wallpaper_.image.isNull() &&
-        cached_oobe_wallpaper_.file_path == simon_file_path) {
-      OnOobeWallpaperDecoded(simon_file_path, cached_oobe_wallpaper_.image);
-    } else {
-      ReadAndDecodeWallpaper(
-          base::BindOnce(&WallpaperControllerImpl::OnOobeWallpaperDecoded,
-                         weak_factory_.GetWeakPtr(), simon_file_path),
-          simon_file_path);
-    }
+  } else if (features::IsOobeJellyModalEnabled()) {
+    file_path =
+        base::FilePath(FILE_PATH_LITERAL("/usr/share/chromeos-assets/wallpaper/"
+                                         "oobe_wallpaper.jpg"));
   } else {
     OnOobeWallpaperDecoded(base::FilePath(),
                            CreateSolidColorWallpaper(kOobeWallpaperColor));
+    return;
+  }
+
+  if (!cached_oobe_wallpaper_.image.isNull() &&
+      cached_oobe_wallpaper_.file_path == file_path) {
+    OnOobeWallpaperDecoded(file_path, cached_oobe_wallpaper_.image);
+  } else {
+    ReadAndDecodeWallpaper(
+        base::BindOnce(&WallpaperControllerImpl::OnOobeWallpaperDecoded,
+                       weak_factory_.GetWeakPtr(), file_path),
+        file_path);
   }
 }
 

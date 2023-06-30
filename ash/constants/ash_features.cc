@@ -1708,6 +1708,11 @@ BASE_FEATURE(kOobeHidDetectionRevamp,
 // Enables OOBE Jelly features.
 BASE_FEATURE(kOobeJelly, "OobeJelly", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables OOBE Jelly modal features.
+BASE_FEATURE(kOobeJellyModal,
+             "OobeJellyModal",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables lazy loading in OOBE's WebUI by prioritizing the first screen.
 BASE_FEATURE(kOobeLazyLoading,
              "OobeLazyLoading",
@@ -3347,6 +3352,10 @@ bool IsKioskLoginScreenEnabled() {
 bool IsOobeJellyEnabled() {
   return chromeos::features::IsJellyEnabled() &&
          base::FeatureList::IsEnabled(kOobeJelly);
+}
+
+bool IsOobeJellyModalEnabled() {
+  return IsOobeJellyEnabled() && base::FeatureList::IsEnabled(kOobeJellyModal);
 }
 
 bool IsOobeSimonEnabled() {

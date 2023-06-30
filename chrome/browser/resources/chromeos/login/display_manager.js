@@ -120,10 +120,6 @@ export function invokePolymerMethod(element, name, ...args) {
       this.demoModeStartListener_ = null;
     }
 
-    get virtualKeyboardShown() {
-      return this.virtualKeyboardShown_;
-    }
-
     set virtualKeyboardShown(shown) {
       this.virtualKeyboardShown_ = shown;
       document.documentElement.setAttribute('virtual-keyboard', shown);
@@ -403,9 +399,10 @@ export function invokePolymerMethod(element, name, ...args) {
 
     /**
      * Updates "device in tablet mode" state when tablet mode is changed.
-     * @param {Boolean} isInTabletMode True when in tablet mode.
+     * @param {boolean} isInTabletMode True when in tablet mode.
      */
     setTabletModeState_(isInTabletMode) {
+      document.documentElement.setAttribute('tablet', isInTabletMode);
       for (let i = 0; i < this.screens_.length; ++i) {
         const screenId = this.screens_[i];
         const screen = $(screenId);

@@ -3628,28 +3628,43 @@ TEST_F(WallpaperControllerTest, ShowWallpaperForEphemeralUser) {
 // which OOBE wallpaper flow should be used
 class WallpaperControllerOobeWallpaperTest
     : public WallpaperControllerTest,
-      public testing::WithParamInterface<
-          std::tuple</*OobeSimon*/ bool, /*OobeJelly*/ bool>> {
+      public testing::WithParamInterface<std::tuple</*OobeSimon*/ bool,
+                                                    /*OobeJelly*/ bool,
+                                                    /*OobeJellyModal*/ bool>> {
  public:
   WallpaperControllerOobeWallpaperTest() {
     const bool oobe_simon = std::get<0>(GetParam());
     const bool oobe_jelly = std::get<1>(GetParam());
+    const bool oobe_jelly_modal = std::get<2>(GetParam());
     scoped_feature_list_.InitWithFeatureStates(
-        {{ash::features::kFeatureManagementOobeSimon, oobe_simon},
-         {ash::features::kOobeSimon, oobe_simon},
-         {ash::features::kOobeJelly, oobe_jelly},
-         {chromeos::features::kJelly, oobe_jelly}});
+        {{features::kFeatureManagementOobeSimon, oobe_simon},
+         {features::kOobeSimon, oobe_simon},
+         {chromeos::features::kJelly, oobe_jelly},
+         {features::kOobeJelly, oobe_jelly},
+         {features::kOobeJellyModal, oobe_jelly_modal}});
   }
   ~WallpaperControllerOobeWallpaperTest() override = default;
+
+  // Populate meaningful test suffixes instead of /0, /1, etc.
+  struct PrintToStringParamName {
+    std::string operator()(
+        const testing::TestParamInfo<ParamType>& info) const {
+      std::stringstream ss;
+      ss << std::get<0>(info.param) << "_AND_" << std::get<1>(info.param)
+         << "_AND_" << std::get<2>(info.param);
+      return ss.str();
+    }
+  };
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         WallpaperControllerOobeWallpaperTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WallpaperControllerOobeWallpaperTest,
+    ::testing::Combine(::testing::Bool(), ::testing::Bool(), ::testing::Bool()),
+    WallpaperControllerOobeWallpaperTest::PrintToStringParamName());
 
 TEST_P(WallpaperControllerOobeWallpaperTest, ShowOobeWallpaper) {
   controller_->ShowDefaultWallpaperForTesting();

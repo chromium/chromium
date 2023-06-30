@@ -296,6 +296,8 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
                      features::IsOobeLazyLoadingEnabled());
   // TODO (b/268463435) Cleanup OobeJelly
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
+  source->AddBoolean("isOobeJellyModalEnabled",
+                     features::IsOobeJellyModalEnabled());
   // TODO (b/269117729) Cleanup OobeSimon
   source->AddBoolean("isOobeSimonEnabled", features::IsOobeSimonEnabled());
   source->AddBoolean(
@@ -727,6 +729,9 @@ base::Value::Dict OobeUI::GetLocalizedStrings() {
   // TODO (b/268463435) Cleanup OobeJelly
   if (features::IsOobeJellyEnabled()) {
     oobeClasses += "jelly-enabled ";
+  }
+  if (features::IsOobeJellyModalEnabled()) {
+    oobeClasses += "jelly-modal-enabled ";
   }
   // TODO (b/269117729) Cleanup OobeSimon
   if (features::IsOobeSimonEnabled()) {

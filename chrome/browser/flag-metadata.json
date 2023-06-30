@@ -6032,6 +6032,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "oobe-jelly-modal",
+    "owners": [ "ziegltrum@google.com", "cros-oobe@google.com" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "oobe-simon",
     "owners": [ "ziegltrum@google.com", "cros-oobe@google.com" ],
     "expiry_milestone": 121

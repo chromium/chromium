@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/shell.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -44,6 +45,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -52,6 +54,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/display/test/display_manager_test_api.h"
 
 namespace ash {
 
@@ -132,6 +135,11 @@ void ToggleAccessibilityFeature(const std::string& feature_name,
   EXPECT_FALSE(js.GetBool(feature_toggle));
   js.TapOnPath({"connect", feature_name, "button"});
   js.CreateWaiter(feature_toggle)->Wait();
+}
+
+// Forces all css transitions to 0s duration.
+void DisableCssTransitions() {
+  test::OobeJS().Evaluate("document.body.style['transition']='all 0s ease 0s'");
 }
 
 }  // namespace
@@ -517,6 +525,103 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest,
   histogram_tester_.ExpectTotalCount(kWelcomeScreenLocaleChangeMetric, 1);
   histogram_tester_.ExpectUniqueSample(kWelcomeScreenLocaleChangeMetric, true,
                                        1);
+}
+
+class WelcomeScreenInsetModeBrowserTest
+    : public WelcomeScreenBrowserTest,
+      public testing::WithParamInterface<std::tuple</*OobeSimon*/ bool,
+                                                    /*OobeJelly*/ bool,
+                                                    /*OobeJellyModal*/ bool>> {
+ public:
+  WelcomeScreenInsetModeBrowserTest() {
+    const bool oobe_simon = std::get<0>(GetParam());
+    const bool oobe_jelly = std::get<1>(GetParam());
+    const bool oobe_jelly_modal = std::get<2>(GetParam());
+
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kFeatureManagementOobeSimon, oobe_simon},
+         {features::kOobeSimon, oobe_simon},
+         {chromeos::features::kJelly, oobe_jelly},
+         {features::kOobeJelly, oobe_jelly},
+         {features::kOobeJellyModal, oobe_jelly_modal}});
+  }
+  ~WelcomeScreenInsetModeBrowserTest() override = default;
+
+  // Populate meaningful test suffixes instead of /0, /1, etc.
+  struct PrintToStringParamName {
+    std::string operator()(
+        const testing::TestParamInfo<ParamType>& info) const {
+      std::stringstream ss;
+      ss << std::get<0>(info.param) << "_AND_" << std::get<1>(info.param)
+         << "_AND_" << std::get<2>(info.param);
+      return ss.str();
+    }
+  };
+
+  const std::string kGetCalculatedBackgroundColor =
+      "window.getComputedStyle(document.body)"
+      ".getPropertyValue('background-color')";
+  const std::string kRgbaTransparent = "rgba(0, 0, 0, 0)";
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WelcomeScreenInsetModeBrowserTest,
+    ::testing::Combine(::testing::Bool(), ::testing::Bool(), ::testing::Bool()),
+    WelcomeScreenInsetModeBrowserTest::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(WelcomeScreenInsetModeBrowserTest,
+                       EnsureBackgroundOpacityForDifferentResolutions) {
+  display::test::DisplayManagerTestApi display_manager(
+      ash::ShellTestApi().display_manager());
+  test::WaitForWelcomeScreen();
+  DisableCssTransitions();
+
+  // Closest value to threshold of 1040 px.
+  // Check in UpdateDisplay fails if height==width
+  display_manager.UpdateDisplay(std::string("1039x1038"));
+  test::OobeJS().ExpectNE(kGetCalculatedBackgroundColor, kRgbaTransparent);
+
+  // Use inset mode if one screen dimension is >=1040px (and tablet mode is off)
+  display_manager.UpdateDisplay(std::string("600x1040"));
+  if (ash::features::IsOobeSimonEnabled() ||
+      ash::features::IsOobeJellyModalEnabled()) {
+    test::OobeJS().ExpectEQ(kGetCalculatedBackgroundColor, kRgbaTransparent);
+  } else {
+    test::OobeJS().ExpectNE(kGetCalculatedBackgroundColor, kRgbaTransparent);
+  }
+
+  display_manager.UpdateDisplay(std::string("1040x600"));
+  if (ash::features::IsOobeSimonEnabled() ||
+      ash::features::IsOobeJellyModalEnabled()) {
+    test::OobeJS().ExpectEQ(kGetCalculatedBackgroundColor, kRgbaTransparent);
+  } else {
+    test::OobeJS().ExpectNE(kGetCalculatedBackgroundColor, kRgbaTransparent);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(WelcomeScreenInsetModeBrowserTest,
+                       EnsureBackgroundOpacityForTabletMode) {
+  display::test::DisplayManagerTestApi display_manager(
+      ash::ShellTestApi().display_manager());
+  test::WaitForWelcomeScreen();
+  DisableCssTransitions();
+  display_manager.UpdateDisplay(std::string("1040x600"));
+
+  // Never use inset mode for tablets
+  ShellTestApi().SetTabletModeEnabledForTest(true);
+  test::OobeJS().ExpectNE(kGetCalculatedBackgroundColor, kRgbaTransparent);
+
+  ShellTestApi().SetTabletModeEnabledForTest(false);
+  if (ash::features::IsOobeSimonEnabled() ||
+      ash::features::IsOobeJellyModalEnabled()) {
+    test::OobeJS().ExpectEQ(kGetCalculatedBackgroundColor, kRgbaTransparent);
+  } else {
+    test::OobeJS().ExpectNE(kGetCalculatedBackgroundColor, kRgbaTransparent);
+  }
 }
 
 class WelcomeScreenSystemDevModeBrowserTest : public WelcomeScreenBrowserTest {
