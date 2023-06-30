@@ -7,27 +7,27 @@ import re
 from typing import List
 from typing import Optional
 
-import models
-import type_resolver
+import java_types
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(order=True)
 class ParsedMethod:
   name: str
-  return_type: str
-  params: List[models.Param]
+  return_type: java_types.JavaType
+  params: java_types.JavaParamList
   native_class_name: str
 
 
 @dataclasses.dataclass
 class ParsedFile:
   filename: str
-  java_class: models.JavaClass
-  type_resolver: type_resolver.TypeResolver
+  java_class: java_types.JavaClass
+  type_resolver: java_types.TypeResolver
   proxy_methods: List[ParsedMethod]
   non_proxy_natives: list  # [jni_generator.NativeMethod]
   called_by_natives: list  # [jni_generator.CalledByNative]
-  proxy_interface: Optional[models.JavaClass] = None
+  proxy_interface: Optional[java_types.JavaClass] = None
+  proxy_visibility: Optional[str] = None
   module_name: Optional[str] = None  # E.g. @NativeMethods("module_name")
   jni_namespace: Optional[str] = None  # E.g. @JNINamespace("content")
 
@@ -86,7 +86,7 @@ def _parse_package(contents):
 
 
 _CLASSES_REGEX = re.compile(
-    r'^(.*?)(?:\b(public|protected|private)?\b)\s*'
+    r'^(.*?)(?:\b(?:public|protected|private)?\b)\s*'
     r'(?:\b(?:static|abstract|final|sealed)\s+)*'
     r'\b(?:class|interface|enum)\s+(\w+?)\b[^"]*?$',
     flags=re.MULTILINE)
@@ -98,14 +98,14 @@ def _parse_java_classes(contents):
   outer_class = None
   nested_classes = []
   for m in _CLASSES_REGEX.finditer(contents):
-    preamble, visibility, class_name = m.groups()
+    preamble, class_name = m.groups()
     # Ignore annoations like @Foo("contains the words class Bar")
     if preamble.count('"') % 2 != 0:
       continue
     if outer_class is None:
-      outer_class = models.JavaClass(f'{package}/{class_name}', visibility)
+      outer_class = java_types.JavaClass(f'{package}/{class_name}')
     else:
-      nested_classes.append(outer_class.make_nested(class_name, visibility))
+      nested_classes.append(outer_class.make_nested(class_name))
 
   if outer_class is None:
     raise SyntaxError('No classes found.')
@@ -113,20 +113,11 @@ def _parse_java_classes(contents):
   return outer_class, nested_classes
 
 
-def parse_javap_signature(signature_line):
-  prefix = 'Signature: '
-  index = signature_line.find(prefix)
-  if index == -1:
-    prefix = 'descriptor: '
-    index = signature_line.index(prefix)
-  return '"%s"' % signature_line[index + len(prefix):]
-
-
 # Supports only @Foo and @Foo("value").
 _ANNOTATION_REGEX = re.compile(r'@([\w.]+)(?:\(\s*"(.*?)\"\s*\))?\s*')
 
 
-def _parse_type_with_annotations(value):
+def _parse_annotations(value):
   annotations = {}
   last_idx = 0
   for m in _ANNOTATION_REGEX.finditer(value):
@@ -136,35 +127,53 @@ def _parse_type_with_annotations(value):
   return annotations, value[last_idx:]
 
 
+def parse_type(type_resolver, value):
+  """Parses a string into a JavaType."""
+  annotations, value = _parse_annotations(value)
+  array_dimensions = 0
+  while value[-2:] == '[]':
+    array_dimensions += 1
+    value = value[:-2]
+
+  if value in java_types.PRIMITIVES:
+    primitive_name = value
+    java_class = None
+  else:
+    primitive_name = None
+    java_class = type_resolver.resolve(value)
+
+  return java_types.JavaType(array_dimensions=array_dimensions,
+                             primitive_name=primitive_name,
+                             java_class=java_class,
+                             annotations=annotations)
+
+
 _FINAL_REGEX = re.compile(r'\bfinal\s')
 
 
-def parse_param_list(line, from_javap=False):
-  """Parses the params into a list of Param objects."""
-  if not line:
-    return []
-  ret = []
-  line = _FINAL_REGEX.sub('', line)
-  for p in line.split(','):
-    annotations, p = _parse_type_with_annotations(p)
+def parse_param_list(type_resolver,
+                     value,
+                     has_names=True) -> java_types.JavaParamList:
+  if not value or value.isspace():
+    return java_types.EMPTY_PARAM_LIST
+  params = []
+  value = _FINAL_REGEX.sub('', value)
+  for param_str in value.split(','):
+    param_str = param_str.strip()
+    if has_names:
+      param_str, _, param_name = param_str.rpartition(' ')
+      param_str = param_str.rstrip()
+    else:
+      param_name = f'p{len(params)}'
 
-    items = p.split()
-    datatype = items[0]
     # Handle varargs.
-    if datatype.endswith('...'):
-      datatype = datatype[:-3] + '[]'
+    if param_str.endswith('...'):
+      param_str = param_str[:-3] + '[]'
 
-    if from_javap:
-      datatype = datatype.replace('.', '/')
+    param_type = parse_type(type_resolver, param_str)
+    params.append(java_types.JavaParam(param_type, param_name))
 
-    name = items[1] if len(items) > 1 else 'p%s' % len(ret)
-
-    ret.append(
-        models.Param(annotations=list(annotations),
-                     datatype=datatype,
-                     name=name))
-
-  return ret
+  return java_types.JavaParamList(params)
 
 
 _NATIVE_PROXY_EXTRACTION_REGEX = re.compile(
@@ -181,7 +190,7 @@ _EXTRACT_METHODS_REGEX = re.compile(r'\s*(.*?)\s+(\w+)\((.*?)\);',
 _PUBLIC_REGEX = re.compile(r'\bpublic\s')
 
 
-def _parse_proxy_natives(contents, resolver):
+def _parse_proxy_natives(type_resolver, contents):
   matches = list(_NATIVE_PROXY_EXTRACTION_REGEX.finditer(contents))
   if not matches:
     return None
@@ -199,15 +208,9 @@ def _parse_proxy_natives(contents, resolver):
   for m in _EXTRACT_METHODS_REGEX.finditer(interface_body):
     preamble, name, params_part = m.groups()
     preamble = _PUBLIC_REGEX.sub('', preamble)
-    annotations, return_type_part = _parse_type_with_annotations(preamble)
-    params = parse_param_list(params_part)
-    # Ensure all nested class types have "OuterClass." prefixed on them.
-    params = [
-        models.Param(annotations=p.annotations,
-                     datatype=resolver.resolve_type(p.datatype),
-                     name=p.name) for p in params
-    ]
-    return_type = resolver.resolve_type(return_type_part)
+    annotations, return_type_part = _parse_annotations(preamble)
+    params = parse_param_list(type_resolver, params_part)
+    return_type = parse_type(type_resolver, return_type_part)
     ret.methods.append(
         ParsedMethod(
             name=name,
@@ -216,6 +219,8 @@ def _parse_proxy_natives(contents, resolver):
             native_class_name=annotations.get('NativeClassQualifiedName')))
   if not ret.methods:
     raise SyntaxError('Found no methods within @NativeMethod interface.')
+  # TODO(agrieve): Enable sorting.
+  # ret.methods.sort()
   return ret
 
 
@@ -230,7 +235,7 @@ def _parse_imports(contents):
     m = _IMPORT_CLASS_NAME_REGEX.match(name)
     if m:
       package, class_name = m.groups()
-      yield models.JavaClass(
+      yield java_types.JavaClass(
           package.replace('.', '/') + '/' + class_name.replace('.', '$'))
 
 
@@ -265,24 +270,26 @@ def _do_parse(filename, *, package_prefix):
     outer_class = outer_class.make_prefixed(package_prefix)
     nested_classes = [c.make_prefixed(package_prefix) for c in nested_classes]
 
-  resolver = type_resolver.TypeResolver(outer_class)
+  type_resolver = java_types.TypeResolver(outer_class)
   for java_class in _parse_imports(contents):
-    resolver.add_import(java_class)
+    type_resolver.add_import(java_class)
   for java_class in nested_classes:
-    resolver.add_nested_class(java_class)
+    type_resolver.add_nested_class(java_class)
 
-  parsed_proxy_natives = _parse_proxy_natives(contents, resolver)
+  parsed_proxy_natives = _parse_proxy_natives(type_resolver, contents)
   jni_namespace = _parse_jni_namespace(contents)
 
   # TODO(crbug.com/1406605): Remove circular dep.
   import jni_generator
-  non_proxy_natives = jni_generator.ExtractNatives(contents, 'long')
-  called_by_natives = jni_generator.ExtractCalledByNatives(resolver, contents)
+  non_proxy_natives = jni_generator.ExtractNatives(type_resolver, contents,
+                                                   'long')
+  called_by_natives = jni_generator.ExtractCalledByNatives(
+      type_resolver, contents)
 
   ret = ParsedFile(filename=filename,
                    jni_namespace=jni_namespace,
                    java_class=outer_class,
-                   type_resolver=resolver,
+                   type_resolver=type_resolver,
                    proxy_methods=[],
                    non_proxy_natives=non_proxy_natives,
                    called_by_natives=called_by_natives)
@@ -290,8 +297,8 @@ def _do_parse(filename, *, package_prefix):
   if parsed_proxy_natives:
     ret.module_name = parsed_proxy_natives.module_name
     ret.proxy_interface = outer_class.make_nested(
-        parsed_proxy_natives.interface_name,
-        visibility=parsed_proxy_natives.visibility)
+        parsed_proxy_natives.interface_name)
+    ret.proxy_visibility = parsed_proxy_natives.visibility
     ret.proxy_methods = parsed_proxy_natives.methods
 
   return ret

@@ -9,9 +9,8 @@ codegen/placeholder_gen_jni_java.py
 codegen/proxy_impl_java.py
 common.py
 java_lang_classes.py
+java_types.py
 jni_generator.py
 jni_registration_generator.py
-models.py
 parse.py
 proxy.py
-type_resolver.py

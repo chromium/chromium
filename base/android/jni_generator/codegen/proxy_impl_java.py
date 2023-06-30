@@ -2,12 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import java_types
+
 
 def Generate(jni_obj, *, gen_jni_class, script_name):
-  visibility = 'public ' if jni_obj.proxy_interface.is_public else ''
+  proxy_class = java_types.JavaClass(
+      f'{jni_obj.java_class.full_name_with_slashes}Jni')
+  visibility = 'public ' if jni_obj.proxy_visibility == 'public' else ''
   interface_name = jni_obj.proxy_interface.name_with_dots
-  impl_name = f'{jni_obj.java_class.name}Jni'
   gen_jni = gen_jni_class.name
+  type_resolver = java_types.TypeResolver(proxy_class)
+  type_resolver.imports = list(jni_obj.type_resolver.imports)
 
   sb = []
   sb.append(f"""\
@@ -23,12 +28,12 @@ import {gen_jni_class.full_name_with_dots};
 """)
 
   # Copy over all imports (some will be unused, but oh well).
-  for java_class in jni_obj.type_resolver.imports:
-    sb.append(f'import {java_class.full_name_with_dots};\n')
+  for c in type_resolver.imports:
+    sb.append(f'import {c.full_name_with_dots};\n')
 
   sb.append(f"""
 @CheckDiscard("crbug.com/993421")
-{visibility}class {impl_name} implements {interface_name} {{
+{visibility}class {proxy_class.name} implements {interface_name} {{
   private static {interface_name} testInstance;
 
   public static final JniStaticTestMocker<{interface_name}> TEST_HOOKS =
@@ -45,15 +50,16 @@ import {gen_jni_class.full_name_with_dots};
 """)
 
   for native in jni_obj.proxy_natives:
-    call_params = ', '.join(p.name for p in native.params)
-    sig_params = ', '.join(f'{p.datatype} {p.name}' for p in native.params)
+    call_params = native.params.to_call_str()
+    sig_params = native.params.to_java_declaration(type_resolver)
+    return_type_str = native.return_type.to_java(type_resolver)
     return_prefix = ''
-    if native.return_type != 'void':
-      return_prefix = f'return ({native.return_type}) '
+    if not native.return_type.is_void():
+      return_prefix = f'return ({return_type_str}) '
 
     sb.append(f"""
   @Override
-  public {native.return_type} {native.name}({sig_params}) {{
+  public {return_type_str} {native.name}({sig_params}) {{
     {return_prefix}{gen_jni}.{native.proxy_name}({call_params});
   }}
 """)
@@ -71,7 +77,7 @@ import {gen_jni_class.full_name_with_dots};
       }}
     }}
     NativeLibraryLoadedStatus.checkLoaded();
-    return new {impl_name}();
+    return new {proxy_class.name}();
   }}
 }}
 """)

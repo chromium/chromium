@@ -19,10 +19,9 @@ public class {gen_jni_class.name} {{
 
   for jni_obj in jni_objs:
     for native in jni_obj.proxy_natives:
-      sig_params = ', '.join(f'{p.datatype} {p.name}'
-                             for p in native.proxy_params)
+      sig_params = native.proxy_params.to_java_declaration()
       sb.append(f"""
-  public static native {native.proxy_return_type} {native.proxy_name}\
+  public static native {native.proxy_return_type.to_java()} {native.proxy_name}\
 ({sig_params});""")
 
   sb.append('\n}\n')

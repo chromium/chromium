@@ -19,8 +19,8 @@ import sys
 import zipfile
 
 import common
+import java_types
 import jni_generator
-import models
 import proxy
 
 from util import build_utils
@@ -229,12 +229,13 @@ def _GenerateStubs(natives):
         throw new RuntimeException("Stub - not implemented!");
     }""")
 
-    params_with_types = ', '.join('%s %s' % (p.datatype, p.name)
-                                  for p in native.proxy_params)
     final_string += template.substitute({
-        'RETURN_TYPE': native.proxy_return_type,
-        'METHOD_NAME': native.proxy_name,
-        'PARAMS_WITH_TYPES': params_with_types,
+        'RETURN_TYPE':
+        native.proxy_return_type.to_java(),
+        'METHOD_NAME':
+        native.proxy_name,
+        'PARAMS_WITH_TYPES':
+        native.proxy_params.to_java_declaration(),
     })
   return final_string
 
@@ -257,23 +258,22 @@ ${CLASS_NAME}_${PROXY_SIGNATURE} was called with an invalid switch number: "\
 
   switch_statements = []
   for signature, cases in sorted(signature_to_cases.items()):
-    return_type, params_list = signature
-    params_in_stub = _GetJavaToNativeParamsList(params_list)
+    params_in_stub = _GetJavaToNativeParamsList(signature.param_types)
     switch_statements.append(
         template.substitute({
             'RETURN':
-            jni_generator.JavaDataTypeToC(return_type),
+            signature.return_type.to_cpp(),
             'CLASS_NAME':
-            common.EscapeClassName(short_gen_jni_class.full_name_with_slashes),
+            common.escape_class_name(
+                short_gen_jni_class.full_name_with_slashes),
             'PROXY_SIGNATURE':
-            common.EscapeClassName(
-                _GetMultiplexProxyName(return_type, params_list)),
+            common.escape_class_name(_GetMultiplexProxyName(signature)),
             'PARAMS_IN_STUB':
             params_in_stub,
             'CASES':
             ''.join(cases),
             'DEFAULT_RETURN':
-            '' if return_type == 'void' else ' {}',
+            '' if signature.return_type.is_void() else ' {}',
         }))
 
   return ''.join(s for s in switch_statements)
@@ -339,7 +339,7 @@ ${REGISTER_NATIVES}
   short_name = options.use_proxy_hash or options.enable_jni_multiplexing
   sub_dict = {
       'ESCAPED_PROXY_CLASS':
-      common.EscapeClassName(gen_jni_class.full_name_with_slashes),
+      common.escape_class_name(gen_jni_class.full_name_with_slashes),
       'PROXY_CLASS':
       gen_jni_class.full_name_with_slashes,
       'KMETHODS':
@@ -461,20 +461,18 @@ ${MANUAL_REGISTRATION}
   return template.substitute(registration_dict)
 
 
-def _GetJavaToNativeParamsList(params_list):
-  if not params_list:
+def _GetJavaToNativeParamsList(param_types):
+  if not param_types:
     return 'jlong switch_num'
 
   # Parameters are named after their type, with a unique number per parameter
   # type to make sure the names are unique, even within the same types.
   params_type_count = collections.defaultdict(int)
   params_in_stub = []
-  for p in params_list:
-    params_type_count[p] += 1
-    params_in_stub.append(
-        '%s %s_param%d' %
-        (jni_generator.JavaDataTypeToC(p), p.replace(
-            '[]', '_array').lower(), params_type_count[p]))
+  for t in param_types:
+    params_type_count[t] += 1
+    params_in_stub.append('%s %s_param%d' % (t.to_cpp(), t.to_java().replace(
+        '[]', '_array').lower(), params_type_count[t]))
 
   return 'jlong switch_num, ' + ', '.join(params_in_stub)
 
@@ -551,7 +549,7 @@ JNI_GENERATOR_EXPORT ${RETURN} ${STUB_NAME}(
     forward_declaration = ''
     for native in self.natives:
       value = {
-          'RETURN': jni_generator.JavaDataTypeToC(native.proxy_return_type),
+          'RETURN': native.proxy_return_type.to_cpp(),
           'STUB_NAME': self.helper.GetStubName(native),
           'PARAMS_IN_STUB': jni_generator.GetParamsInStub(native),
       }
@@ -606,36 +604,33 @@ ${KMETHODS}
     return '\n'.join(ret)
 
   def _GetKMethodArrayEntry(self, native):
-    template = string.Template('    { "${NAME}", ${JNI_SIGNATURE}, ' +
+    template = string.Template('    { "${NAME}", "${JNI_DESCRIPTOR}", ' +
                                'reinterpret_cast<void*>(${STUB_NAME}) },')
 
     name = 'native' + native.cpp_name
-    jni_signature = self.type_resolver.create_signature(
-        native.proxy_params, native.proxy_return_type)
+    jni_descriptor = native.proxy_signature.to_descriptor()
     stub_name = self.helper.GetStubName(native)
 
     if native.is_proxy:
       # Literal name of the native method in the class that contains the actual
       # native declaration.
       if self.options.enable_jni_multiplexing:
-        return_type, params_list = native.proxy_return_and_signature
-        class_name = common.EscapeClassName(
+        class_name = common.escape_class_name(
             self.gen_jni_class.full_name_with_slashes)
-        proxy_signature = common.EscapeClassName(
-            _GetMultiplexProxyName(return_type, params_list))
-
-        name = _GetMultiplexProxyName(return_type, params_list)
-        jni_signature = self.type_resolver.create_signature(
-            [models.Param(annotations=[], datatype='long', name='switch_num')] +
-            native.proxy_params, native.return_type)
+        name = _GetMultiplexProxyName(native.proxy_signature)
+        proxy_signature = common.escape_class_name(name)
         stub_name = 'Java_' + class_name + '_' + proxy_signature
+
+        multipliexed_signature = java_types.JavaSignature(
+            native.return_type, (java_types.LONG, ), None)
+        jni_descriptor = multipliexed_signature.to_descriptor()
       elif self.options.use_proxy_hash:
         name = native.hashed_proxy_name
       else:
         name = native.proxy_name
     values = {
         'NAME': name,
-        'JNI_SIGNATURE': jni_signature,
+        'JNI_DESCRIPTOR': jni_descriptor,
         'STUB_NAME': stub_name
     }
     return template.substitute(values)
@@ -666,7 +661,7 @@ ${KMETHODS}
       if kmethods:
         values = {
             'NAMESPACE': namespace_str,
-            'JAVA_CLASS': common.EscapeClassName(full_clazz),
+            'JAVA_CLASS': common.escape_class_name(full_clazz),
             'KMETHODS': kmethods
         }
         ret += [template.substitute(values)]
@@ -747,8 +742,8 @@ ${NATIVES}\
 
     signature_to_cases = collections.defaultdict(list)
     for native in self.proxy_natives:
-      signature = native.proxy_return_and_signature
-      params = _GetParamsListForMultiplex(signature[1], with_types=False)
+      signature = native.proxy_signature
+      params = _GetParamsListForMultiplex(native.proxy_params, with_types=False)
       values = {
           'SWITCH_NUM': native.switch_num,
           # We are forced to call the generated stub instead of the impl because
@@ -761,51 +756,57 @@ ${NATIVES}\
     self.registration_dict['SIGNATURE_TO_CASES'] = signature_to_cases
 
 
-def _GetParamsListForMultiplex(params_list, with_types):
-  if not params_list:
+def _GetParamsListForMultiplex(params, *, with_types):
+  if not params:
     return ''
 
   # Parameters are named after their type, with a unique number per parameter
   # type to make sure the names are unique, even within the same types.
   params_type_count = collections.defaultdict(int)
-  params = []
-  for p in params_list:
-    params_type_count[p] += 1
-    param_type = p + ' ' if with_types else ''
-    params.append(
-        '%s%s_param%d' %
-        (param_type, p.replace('[]', '_array').lower(), params_type_count[p]))
+  sb = []
+  for p in params:
+    type_str = p.java_type.to_java()
+    params_type_count[type_str] += 1
+    param_type = f'{type_str} ' if with_types else ''
+    sb.append('%s%s_param%d' % (param_type, type_str.replace(
+        '[]', '_array').lower(), params_type_count[type_str]))
 
-  return ', ' + ', '.join(params)
+  return ', ' + ', '.join(sb)
 
 
-def _GetMultiplexProxyName(return_type, params_list):
+_MULTIPLEXED_CHAR_BY_TYPE = {
+    '[]': 'A',
+    'byte': 'B',
+    'char': 'C',
+    'double': 'D',
+    'float': 'F',
+    'int': 'I',
+    'long': 'J',
+    'Class': 'L',
+    'Object': 'O',
+    'String': 'R',
+    'short': 'S',
+    'Throwable': 'T',
+    'boolean': 'Z',
+}
+
+
+def _GetMultiplexProxyName(signature):
   # Proxy signatures for methods are named after their return type and
   # parameters to ensure uniqueness, even for the same return types.
-  params = ''
+  params_part = ''
+  params_list = [t.to_java() for t in signature.param_types]
+  # Parameter types could contain multi-dimensional arrays and every
+  # instance of [] has to be replaced in the proxy signature name.
+  for k, v in _MULTIPLEXED_CHAR_BY_TYPE.items():
+    params_list = [p.replace(k, v) for p in params_list]
+  params_part = ''
   if params_list:
-    type_convert_dictionary = {
-        '[]': 'A',
-        'byte': 'B',
-        'char': 'C',
-        'double': 'D',
-        'float': 'F',
-        'int': 'I',
-        'long': 'J',
-        'Class': 'L',
-        'Object': 'O',
-        'String': 'R',
-        'short': 'S',
-        'Throwable': 'T',
-        'boolean': 'Z',
-    }
-    # Parameter types could contain multi-dimensional arrays and every
-    # instance of [] has to be replaced in the proxy signature name.
-    for k, v in type_convert_dictionary.items():
-      params_list = [p.replace(k, v) for p in params_list]
-    params = '_' + ''.join(p for p in params_list)
+    params_part = '_' + ''.join(p for p in params_list)
 
-  return 'resolve_for_' + return_type.replace('[]', '_array').lower() + params
+  java_return_type = signature.return_type.to_java()
+  return_value_part = java_return_type.replace('[]', '_array').lower()
+  return 'resolve_for_' + return_value_part + params_part
 
 
 def _MakeForwardingProxy(options, gen_jni_class, proxy_native):
@@ -814,29 +815,26 @@ def _MakeForwardingProxy(options, gen_jni_class, proxy_native):
         ${MAYBE_RETURN}${PROXY_CLASS}.${PROXY_METHOD_NAME}(${PARAM_NAMES});
     }""")
 
-  params_with_types = ', '.join('%s %s' % (p.datatype, p.name)
-                                for p in proxy_native.proxy_params)
-  param_names = ', '.join(p.name for p in proxy_native.proxy_params)
+  param_names = proxy_native.proxy_params.to_call_str()
 
   if options.enable_jni_multiplexing:
     if not param_names:
       param_names = proxy_native.switch_num + 'L'
     else:
       param_names = proxy_native.switch_num + 'L, ' + param_names
-    return_type, params_list = proxy_native.proxy_return_and_signature
-    proxy_method_name = _GetMultiplexProxyName(return_type, params_list)
+    proxy_method_name = _GetMultiplexProxyName(proxy_native.proxy_signature)
   else:
     proxy_method_name = proxy_native.hashed_proxy_name
 
   return template.substitute({
       'RETURN_TYPE':
-      proxy_native.proxy_return_type,
+      proxy_native.proxy_return_type.to_java(),
       'METHOD_NAME':
       proxy_native.proxy_name,
       'PARAMS_WITH_TYPES':
-      params_with_types,
+      proxy_native.proxy_params.to_java_declaration(),
       'MAYBE_RETURN':
-      '' if proxy_native.proxy_return_type == 'void' else 'return ',
+      '' if proxy_native.proxy_return_type.is_void() else 'return ',
       'PROXY_CLASS':
       gen_jni_class.full_name_with_dots,
       'PROXY_METHOD_NAME':
@@ -847,8 +845,7 @@ def _MakeForwardingProxy(options, gen_jni_class, proxy_native):
 
 
 def _MakeProxySignature(options, proxy_native):
-  params_with_types = ', '.join('%s %s' % (p.datatype, p.name)
-                                for p in proxy_native.proxy_params)
+  params_with_types = proxy_native.proxy_params.to_java_declaration()
   native_method_line = """
     public static native ${RETURN} ${PROXY_NAME}(${PARAMS_WITH_TYPES});"""
 
@@ -859,10 +856,9 @@ def _MakeProxySignature(options, proxy_native):
     signature_template = string.Template(native_method_line)
 
     alt_name = None
-    return_type, params_list = proxy_native.proxy_return_and_signature
-    proxy_name = _GetMultiplexProxyName(return_type, params_list)
+    proxy_name = _GetMultiplexProxyName(proxy_native.proxy_signature)
     params_with_types = 'long switch_num' + _GetParamsListForMultiplex(
-        params_list, with_types=True)
+        proxy_native.proxy_params, with_types=True)
   elif options.use_proxy_hash:
     signature_template = string.Template("""
       // Original name: ${ALT_NAME}""" + native_method_line)
@@ -878,9 +874,10 @@ def _MakeProxySignature(options, proxy_native):
     alt_name = f'Java_J_N_{proxy_native.hashed_proxy_name}'
     proxy_name = proxy_native.proxy_name
 
+  return_type_str = proxy_native.proxy_return_type.to_java()
   return signature_template.substitute({
       'ALT_NAME': alt_name,
-      'RETURN': proxy_native.proxy_return_type,
+      'RETURN': return_type_str,
       'PROXY_NAME': proxy_name,
       'PARAMS_WITH_TYPES': params_with_types,
   })
