@@ -1939,7 +1939,6 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
   if (is_recording_in_progress()) {
     SetType(CaptureModeType::kImage);
   } else if (entry_type == CaptureModeEntryType::kProjector) {
-    CHECK(features::IsProjectorEnabled());
     CHECK(!delegate_->IsAudioCaptureDisabledByPolicy())
         << "A projector session should not be allowed to begin if audio "
            "capture is disabled by policy.";

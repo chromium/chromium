@@ -3195,11 +3195,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-projector",
-    "owners": [ "llin", "cros-projector@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "enable-projector-app-debug",
     "owners": [ "tobyhuang", "cros-projector@google.com" ],
     "expiry_milestone": 108

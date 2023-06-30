@@ -1651,9 +1651,7 @@ void Shell::Init(
     glanceables_v2_controller_ = std::make_unique<GlanceablesV2Controller>();
   }
 
-  if (features::IsProjectorEnabled()) {
-    projector_controller_ = std::make_unique<ProjectorControllerImpl>();
-  }
+  projector_controller_ = std::make_unique<ProjectorControllerImpl>();
 
   if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     float_controller_ = std::make_unique<FloatController>();

@@ -854,9 +854,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeCameraBrowserTests, VerifyFrames) {
 
 class CaptureModeProjectorBrowserTests : public CaptureModeCameraBrowserTests {
  public:
-  CaptureModeProjectorBrowserTests() {
-    scoped_feature_list_.InitWithFeatures({ash::features::kProjector}, {});
-  }
+  CaptureModeProjectorBrowserTests() = default;
 
   ~CaptureModeProjectorBrowserTests() override = default;
 
@@ -890,9 +888,6 @@ class CaptureModeProjectorBrowserTests : public CaptureModeCameraBrowserTests {
     EXPECT_TRUE(projector_session->is_active());
     EXPECT_TRUE(ash::CaptureModeTestApi().IsSessionActive());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the crash reported in https://crbug.com/1368903 is not happening.

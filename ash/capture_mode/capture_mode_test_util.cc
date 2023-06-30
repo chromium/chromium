@@ -398,11 +398,8 @@ void RemoveDefaultCamera() {
 // -----------------------------------------------------------------------------
 // ProjectorCaptureModeIntegrationHelper:
 
-ProjectorCaptureModeIntegrationHelper::ProjectorCaptureModeIntegrationHelper() {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kProjector},
-      /*disabled_features=*/{});
-}
+ProjectorCaptureModeIntegrationHelper::ProjectorCaptureModeIntegrationHelper() =
+    default;
 
 void ProjectorCaptureModeIntegrationHelper::SetUp() {
   auto* projector_controller = ProjectorController::Get();

@@ -6452,10 +6452,6 @@ const char kAppListDragAndDropRefactorDescription[] =
     "Enables app list drag and drop refactor to use views drag and drop APIs. "
     "No user visible changes are expected.";
 
-const char kProjectorName[] = "Enable Projector";
-const char kProjectorDescription[] =
-    "Enables Projects SWA and associated recording tools";
-
 const char kProjectorLocalPlaybackName[] = "Enable Projector local playback";
 const char kProjectorLocalPlaybackDescription[] =
     "Supports streaming screencast videos from DriveFS instead of Drive before "

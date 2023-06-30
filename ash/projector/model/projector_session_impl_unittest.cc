@@ -33,8 +33,7 @@ class ProjectorSessionImplTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kProjector,
-                              features::kProjectorManagedUser},
+        /*enabled_features=*/{features::kProjectorManagedUser},
         /*disabled_features=*/{});
     AshTestBase::SetUp();
     session_ = static_cast<ProjectorSessionImpl*>(ProjectorSession::Get());

@@ -143,7 +143,6 @@ class ProjectorControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    InitFeatureFlags();
     AshTestBase::SetUp();
 
     controller_ =
@@ -178,10 +177,6 @@ class ProjectorControllerTest : public AshTestBase {
   }
 
  protected:
-  virtual void InitFeatureFlags() {
-    scoped_feature_list_.InitWithFeatures({features::kProjector}, {});
-  }
-
   void InitFakeMic(bool mic_present) {
     if (!mic_present) {
       CrasAudioHandler::Get()->SetActiveInputNodes({});
@@ -212,8 +207,6 @@ class ProjectorControllerTest : public AshTestBase {
   MockProjectorClient mock_client_;
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ProjectorControllerTest, OnTranscription) {

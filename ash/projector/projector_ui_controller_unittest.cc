@@ -63,9 +63,7 @@ class MockMessageCenterObserver : public message_center::MessageCenterObserver {
 
 class ProjectorUiControllerTest : public AshTestBase {
  public:
-  ProjectorUiControllerTest() {
-    scoped_feature_list_.InitWithFeatures({features::kProjector}, {});
-  }
+  ProjectorUiControllerTest() = default;
 
   ProjectorUiControllerTest(const ProjectorUiControllerTest&) = delete;
   ProjectorUiControllerTest& operator=(const ProjectorUiControllerTest&) =
@@ -83,9 +81,6 @@ class ProjectorUiControllerTest : public AshTestBase {
  protected:
   raw_ptr<ProjectorUiController, ExperimentalAsh> controller_;
   MockProjectorClient projector_client_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ProjectorUiControllerTest, ShowAndHideTray) {

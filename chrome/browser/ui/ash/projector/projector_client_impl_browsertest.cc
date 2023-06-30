@@ -121,8 +121,8 @@ class DriveFsMountStatusWaiter : public ProjectorAppClient::Observer {
 class ProjectorClientTest : public InProcessBrowserTest {
  public:
   ProjectorClientTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kProjector, features::kOnDeviceSpeechRecognition}, {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kOnDeviceSpeechRecognition);
   }
 
   ~ProjectorClientTest() override = default;

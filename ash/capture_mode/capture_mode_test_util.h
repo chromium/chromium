@@ -15,7 +15,6 @@
 #include "ash/public/cpp/test/mock_projector_client.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/message_center/message_center.h"
@@ -197,7 +196,6 @@ class ProjectorCaptureModeIntegrationHelper {
   void StartProjectorModeSession();
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   MockProjectorClient projector_client_;
 };
 

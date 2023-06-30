@@ -440,12 +440,10 @@ void PaletteTray::OnLockStateChanged(bool locked) {
 }
 
 void PaletteTray::OnShellInitialized() {
-  if (features::IsProjectorEnabled()) {
-    ProjectorControllerImpl* projector_controller =
-        Shell::Get()->projector_controller();
-    projector_session_observation_.Observe(
-        projector_controller->projector_session());
-  }
+  ProjectorControllerImpl* projector_controller =
+      Shell::Get()->projector_controller();
+  projector_session_observation_.Observe(
+      projector_controller->projector_session());
 }
 
 void PaletteTray::OnShellDestroying() {

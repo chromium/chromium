@@ -52,9 +52,9 @@ bool IsProjectorAppEnabled(const Profile* profile) {
   if (!IsProjectorAllowedForProfile(profile))
     return false;
 
-  // Projector for regular consumer users is controlled by a feature flag.
+  // Projector for regular consumer users.
   if (!profile->GetProfilePolicyConnector()->IsManaged())
-    return ash::features::IsProjectorAllUserEnabled();
+    return true;
 
   // Projector dogfood for supervised users is controlled by an enterprise
   // policy. When the feature is out of dogfood phase the policy will be
@@ -66,9 +66,8 @@ bool IsProjectorAppEnabled(const Profile* profile) {
 
   // Projector for enterprise users is controlled by a combination of a feature
   // flag and an enterprise policy.
-  return ash::features::IsProjectorEnabled() &&
-         (ash::features::IsProjectorManagedUserIgnorePolicyEnabled() ||
-          profile->GetPrefs()->GetBoolean(ash::prefs::kProjectorAllowByPolicy));
+  return ash::features::IsProjectorManagedUserIgnorePolicyEnabled() ||
+         profile->GetPrefs()->GetBoolean(ash::prefs::kProjectorAllowByPolicy);
 }
 
 void SendFilesToProjectorApp(std::vector<base::FilePath> files) {

@@ -759,9 +759,7 @@ TEST_F(PaletteTrayTestMultiDisplay, MirrorModeEnable) {
 
 class PaletteTrayTestWithProjector : public PaletteTrayTest {
  public:
-  PaletteTrayTestWithProjector() {
-    scoped_feature_list_.InitWithFeatures({features::kProjector}, {});
-  }
+  PaletteTrayTestWithProjector() = default;
 
   PaletteTrayTestWithProjector(const PaletteTrayTestWithProjector&) = delete;
   PaletteTrayTestWithProjector& operator=(const PaletteTrayTestWithProjector&) =
@@ -777,9 +775,6 @@ class PaletteTrayTestWithProjector : public PaletteTrayTest {
 
  protected:
   raw_ptr<ProjectorSessionImpl, ExperimentalAsh> projector_session_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that the palette tray is hidden during a Projector session.

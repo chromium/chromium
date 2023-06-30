@@ -123,7 +123,7 @@ class ScopedLogIn {
 
 class ProjectorUtilsTest : public testing::Test {
  public:
-  ProjectorUtilsTest() : scoped_feature_list_(features::kProjector) {}
+  ProjectorUtilsTest() = default;
   ProjectorUtilsTest(const ProjectorUtilsTest&) = delete;
   ProjectorUtilsTest& operator=(const ProjectorUtilsTest&) = delete;
   ~ProjectorUtilsTest() override = default;
@@ -168,7 +168,6 @@ class ProjectorUtilsTest : public testing::Test {
   base::ScopedTempDir data_dir_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<TestingProfile> profile_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ProjectorUtilsChildTest : public ProjectorUtilsTest {

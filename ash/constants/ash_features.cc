@@ -1932,9 +1932,6 @@ BASE_FEATURE(kProductivityLauncher,
              "ProductivityLauncher",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to enable Projector.
-BASE_FEATURE(kProjector, "Projector", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to enable Projector for managed users.
 BASE_FEATURE(kProjectorManagedUser,
              "ProjectorManagedUser",
@@ -3504,14 +3501,6 @@ bool IsPrivacyIndicatorsEnabled() {
 
 bool IsProductivityLauncherEnabled() {
   return base::FeatureList::IsEnabled(kProductivityLauncher);
-}
-
-bool IsProjectorEnabled() {
-  return IsProjectorAllUserEnabled() || IsProjectorManagedUserEnabled();
-}
-
-bool IsProjectorAllUserEnabled() {
-  return base::FeatureList::IsEnabled(kProjector);
 }
 
 bool IsProjectorManagedUserEnabled() {

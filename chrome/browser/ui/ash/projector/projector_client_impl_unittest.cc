@@ -401,16 +401,13 @@ INSTANTIATE_TEST_SUITE_P(
     ProjectorClientTestScenarios,
     ProjectorClientImplUnitTest,
     ::testing::Values(
-        ProjectorClientTestScenario({features::kProjector,
-                                     features::kOnDeviceSpeechRecognition},
-                                    {}),
+        ProjectorClientTestScenario({features::kOnDeviceSpeechRecognition}, {}),
         ProjectorClientTestScenario(
-            {features::kProjector, features::kOnDeviceSpeechRecognition,
+            {features::kOnDeviceSpeechRecognition,
              features::kForceEnableServerSideSpeechRecognitionForDev},
             {}),
         ProjectorClientTestScenario(
-            {features::kProjector,
-             features::kInternalServerSideSpeechRecognition,
+            {features::kInternalServerSideSpeechRecognition,
              features::kOnDeviceSpeechRecognition},
             {features::kForceEnableServerSideSpeechRecognitionForDev})));
 

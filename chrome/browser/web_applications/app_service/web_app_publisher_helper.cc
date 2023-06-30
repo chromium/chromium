@@ -636,8 +636,7 @@ apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsProjectorEnabled() &&
-      app_id == ash::kChromeUIUntrustedProjectorSwaAppId) {
+  if (app_id == ash::kChromeUIUntrustedProjectorSwaAppId) {
     filters.push_back(apps_util::MakeIntentFilterForUrlScope(
         GURL(ash::kChromeUIUntrustedProjectorPwaUrl)));
   }

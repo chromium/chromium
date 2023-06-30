@@ -9426,10 +9426,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableVariableRefreshRateDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnableVariableRefreshRate)},
 
-    {"enable-projector", flag_descriptions::kProjectorName,
-     flag_descriptions::kProjectorDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kProjector)},
-
     {"enable-projector-local-playback",
      flag_descriptions::kProjectorLocalPlaybackName,
      flag_descriptions::kProjectorLocalPlaybackDescription, kOsCrOS,

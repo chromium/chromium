@@ -68,7 +68,7 @@ UntrustedProjectorUIConfig::~UntrustedProjectorUIConfig() = default;
 bool UntrustedProjectorUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  return ash::features::IsProjectorEnabled() && IsProjectorAppEnabled(profile);
+  return IsProjectorAppEnabled(profile);
 }
 
 std::unique_ptr<content::WebUIController>
