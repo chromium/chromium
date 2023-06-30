@@ -13,10 +13,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash::quick_start {
@@ -54,6 +59,7 @@ class TargetDeviceBootstrapController
       variant<absl::monostate, ErrorCode, QRCodePixelData, FidoAssertionInfo>;
 
   // TODO(b/288054370) - Consolidate fields.
+
   struct Status {
     Status();
     ~Status();
@@ -84,11 +90,11 @@ class TargetDeviceBootstrapController
   };
 
   TargetDeviceBootstrapController(
-      std::unique_ptr<TargetDeviceConnectionBroker>
-          target_device_connection_broker,
       std::unique_ptr<SecondDeviceAuthBroker> auth_broker,
       std::unique_ptr<AccessibilityManagerWrapper>
-          accessibility_manager_wrapper);
+          accessibility_manager_wrapper,
+      base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
+      mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder);
   TargetDeviceBootstrapController(TargetDeviceBootstrapController&) = delete;
   TargetDeviceBootstrapController& operator=(TargetDeviceBootstrapController&) =
       delete;
@@ -157,6 +163,11 @@ class TargetDeviceBootstrapController
 
   void OnChallengeBytesReceived(
       quick_start::SecondDeviceAuthBroker::ChallengeBytesOrError);
+
+  void set_connection_broker_for_testing(
+      std::unique_ptr<TargetDeviceConnectionBroker> connection_broker) {
+    connection_broker_ = std::move(connection_broker);
+  }
 
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;
 

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_connection.h"
+
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 
 namespace ash::quick_start {
@@ -12,7 +14,7 @@ FakeConnection::Factory::~Factory() = default;
 
 std::unique_ptr<Connection> FakeConnection::Factory::Create(
     NearbyConnection* nearby_connection,
-    Connection::SessionContext session_context,
+    SessionContext session_context,
     mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
     ConnectionClosedCallback on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated) {
@@ -25,7 +27,7 @@ std::unique_ptr<Connection> FakeConnection::Factory::Create(
 
 FakeConnection::FakeConnection(
     NearbyConnection* nearby_connection,
-    Connection::SessionContext session_context,
+    SessionContext session_context,
     mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
     ConnectionClosedCallback on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated)

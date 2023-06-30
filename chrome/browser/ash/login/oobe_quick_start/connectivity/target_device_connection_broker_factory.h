@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -21,9 +22,9 @@ namespace ash::quick_start {
 class TargetDeviceConnectionBrokerFactory {
  public:
   static std::unique_ptr<TargetDeviceConnectionBroker> Create(
+      std::unique_ptr<SessionContext> session_context,
       base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-      mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
-      bool is_resume_after_update = false);
+      mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder);
 
   static void SetFactoryForTesting(
       TargetDeviceConnectionBrokerFactory* test_factory);
@@ -38,8 +39,7 @@ class TargetDeviceConnectionBrokerFactory {
  protected:
   virtual std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance(
       base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-      mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
-      bool is_resume_after_update) = 0;
+      mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder) = 0;
 
  private:
   static TargetDeviceConnectionBrokerFactory* test_factory_;

@@ -8,6 +8,7 @@
 #include <cstdint>
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 
 namespace ash::quick_start {
@@ -22,7 +23,7 @@ class FakeConnection : public Connection {
     // Connection::Factory:
     std::unique_ptr<Connection> Create(
         NearbyConnection* nearby_connection,
-        Connection::SessionContext session_context,
+        SessionContext session_context,
         mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
         ConnectionClosedCallback on_connection_closed,
         ConnectionAuthenticatedCallback on_connection_authenticated) override;
@@ -32,7 +33,7 @@ class FakeConnection : public Connection {
 
   FakeConnection(
       NearbyConnection* nearby_connection,
-      Connection::SessionContext session_context,
+      SessionContext session_context,
       mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
       ConnectionClosedCallback on_connection_closed,
       ConnectionAuthenticatedCallback on_connection_authenticated);

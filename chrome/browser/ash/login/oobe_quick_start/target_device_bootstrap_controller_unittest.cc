@@ -7,10 +7,12 @@
 #include <memory>
 #include <string>
 
+#include "base/base64.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
@@ -21,11 +23,14 @@
 #include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/quick_start/fake_quick_start_decoder.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -99,23 +104,27 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
   }
 
   void CreateBootstrapController() {
-    std::unique_ptr<FakeTargetDeviceConnectionBroker>
-        fake_target_device_connection_broker =
-            std::make_unique<FakeTargetDeviceConnectionBroker>();
-    fake_target_device_connection_broker_ =
-        fake_target_device_connection_broker.get();
-
     auto auth_broker =
         std::make_unique<MockAuthBroker>(test_factory_.GetSafeWeakWrapper());
     auth_broker_ = auth_broker.get();
-
     auto fake_accessibility_manager =
         std::make_unique<FakeAccessibilityManagerWrapper>();
     fake_accessibility_manager_ = fake_accessibility_manager.get();
 
     bootstrap_controller_ = std::make_unique<TargetDeviceBootstrapController>(
-        std::move(fake_target_device_connection_broker), std::move(auth_broker),
-        std::move(fake_accessibility_manager));
+        std::move(auth_broker), std::move(fake_accessibility_manager),
+        fake_nearby_connections_manager_.GetWeakPtr(),
+        mojo::SharedRemote<mojom::QuickStartDecoder>(
+            fake_quick_start_decoder_.GetRemote()));
+
+    std::unique_ptr<FakeTargetDeviceConnectionBroker>
+        fake_target_device_connection_broker =
+            std::make_unique<FakeTargetDeviceConnectionBroker>();
+    fake_target_device_connection_broker_ =
+        fake_target_device_connection_broker.get();
+    bootstrap_controller_->set_connection_broker_for_testing(
+        std::move(fake_target_device_connection_broker));
+
     fake_observer_ = std::make_unique<FakeObserver>();
     bootstrap_controller_->AddObserver(fake_observer_.get());
   }
@@ -143,6 +152,7 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
   raw_ptr<FakeTargetDeviceConnectionBroker, ExperimentalAsh>
       fake_target_device_connection_broker_;
   FakeNearbyConnectionsManager fake_nearby_connections_manager_;
+  FakeQuickStartDecoder fake_quick_start_decoder_;
   std::unique_ptr<FakeObserver> fake_observer_;
   raw_ptr<MockAuthBroker> auth_broker_;
   raw_ptr<FakeAccessibilityManagerWrapper, ExperimentalAsh>

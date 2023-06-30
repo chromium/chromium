@@ -99,8 +99,10 @@ class ConnectionTest : public testing::Test {
     fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
     NearbyConnection* nearby_connection = fake_nearby_connection_.get();
     fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
+    session_context_ = std::make_unique<SessionContext>(
+        session_id_, kSharedSecret, kSecondarySharedSecret);
     connection_ = std::make_unique<Connection>(
-        nearby_connection, session_context_,
+        nearby_connection, *session_context_,
         mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
             fake_quick_start_decoder_->GetRemote()),
         /*on_connection_closed=*/base::DoNothing(),
@@ -150,11 +152,8 @@ class ConnectionTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
   std::unique_ptr<Connection> connection_;
+  std::unique_ptr<SessionContext> session_context_;
   RandomSessionId session_id_ = RandomSessionId(kRandomSessionId);
-  Connection::SessionContext session_context_ = {
-      .session_id = session_id_,
-      .shared_secret = kSharedSecret,
-      .secondary_shared_secret = kSecondarySharedSecret};
   bool ran_assertion_response_callback_ = false;
   bool ran_connection_authenticated_callback_ = false;
   base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
@@ -463,7 +462,7 @@ TEST_F(ConnectionTest, TestClose) {
       future;
   std::unique_ptr<Connection> connection_under_test =
       std::make_unique<Connection>(
-          fake_nearby_connection_.get(), session_context_,
+          fake_nearby_connection_.get(), *session_context_,
           mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
               fake_quick_start_decoder_->GetRemote()),
           /*on_connection_closed=*/future.GetCallback(),
@@ -486,7 +485,7 @@ TEST_F(ConnectionTest, TestDisconnectsWithoutCloseIssueUnknownError) {
       future;
   std::unique_ptr<Connection> connection_under_test =
       std::make_unique<Connection>(
-          fake_nearby_connection_.get(), session_context_,
+          fake_nearby_connection_.get(), *session_context_,
           mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
               fake_quick_start_decoder_->GetRemote()),
           /*on_connection_closed=*/future.GetCallback(),

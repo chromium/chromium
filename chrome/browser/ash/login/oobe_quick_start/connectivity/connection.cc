@@ -14,7 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/handshake_helpers.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/components/quick_start/logging.h"
@@ -41,7 +41,7 @@ Connection::Factory::~Factory() = default;
 
 std::unique_ptr<Connection> Connection::Factory::Create(
     NearbyConnection* nearby_connection,
-    Connection::SessionContext session_context,
+    SessionContext session_context,
     mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
     ConnectionClosedCallback on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated) {
@@ -52,14 +52,12 @@ std::unique_ptr<Connection> Connection::Factory::Create(
 
 Connection::Connection(
     NearbyConnection* nearby_connection,
-    Connection::SessionContext session_context,
+    SessionContext session_context,
     mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
     ConnectionClosedCallback on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated)
     : nearby_connection_(nearby_connection),
-      random_session_id_(session_context.session_id),
-      shared_secret_(session_context.shared_secret),
-      secondary_shared_secret_(session_context.secondary_shared_secret),
+      session_context_(session_context),
       on_connection_closed_(std::move(on_connection_closed)),
       on_connection_authenticated_(std::move(on_connection_authenticated)),
       decoder_(std::move(quick_start_decoder)) {
@@ -107,8 +105,10 @@ void Connection::RequestWifiCredentials(
     int32_t session_id,
     RequestWifiCredentialsCallback callback) {
   // Build the Wifi Credential Request payload
-  std::string shared_secret_str(secondary_shared_secret_.begin(),
-                                secondary_shared_secret_.end());
+  SessionContext::SharedSecret secondary_shared_secret =
+      session_context_.secondary_shared_secret();
+  std::string shared_secret_str(secondary_shared_secret.begin(),
+                                secondary_shared_secret.end());
   ConnectionResponseCallback on_response_received =
       base::BindOnce(&Connection::DecodeData<mojom::WifiCredentials>,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -129,9 +129,11 @@ void Connection::NotifySourceOfUpdate(int32_t session_id,
     return;
   }
 
+  SessionContext::SharedSecret secondary_shared_secret =
+      session_context_.secondary_shared_secret();
   SendMessageAndReadResponse(
       requests::BuildNotifySourceOfUpdateMessage(session_id,
-                                                 secondary_shared_secret_),
+                                                 secondary_shared_secret),
       QuickStartResponseType::kNotifySourceOfUpdate,
       base::BindOnce(&Connection::OnNotifySourceOfUpdateResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -307,7 +309,8 @@ void Connection::SendBytesAndReadResponse(std::vector<uint8_t>&& bytes,
 void Connection::InitiateHandshake(const std::string& authentication_token,
                                    HandshakeSuccessCallback callback) {
   SendBytesAndReadResponse(
-      handshake::BuildHandshakeMessage(authentication_token, shared_secret_),
+      handshake::BuildHandshakeMessage(authentication_token,
+                                       session_context_.shared_secret()),
       QuickStartResponseType::kHandshake,
       base::BindOnce(&Connection::OnHandshakeResponse,
                      weak_ptr_factory_.GetWeakPtr(), authentication_token,
@@ -324,7 +327,7 @@ void Connection::OnHandshakeResponse(
     return;
   }
   bool success = handshake::VerifyHandshakeMessage(
-      *response_bytes, authentication_token, shared_secret_);
+      *response_bytes, authentication_token, session_context_.shared_secret());
   std::move(callback).Run(success);
 }
 
@@ -341,6 +344,10 @@ void Connection::WaitForUserVerification(
                      std::move(on_decoding_completed));
 
   nearby_connection_->Read(std::move(on_message_received));
+}
+
+base::Value::Dict Connection::GetPrepareForUpdateInfo() {
+  return session_context_.GetPrepareForUpdateInfo();
 }
 
 void Connection::OnUserVerificationRequested(

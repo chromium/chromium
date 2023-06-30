@@ -15,6 +15,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
@@ -59,15 +60,20 @@ TargetDeviceBootstrapController::QRCodePixelData GenerateQRCode(
 }  // namespace
 
 TargetDeviceBootstrapController::TargetDeviceBootstrapController(
-    std::unique_ptr<TargetDeviceConnectionBroker>
-        target_device_connection_broker,
     std::unique_ptr<SecondDeviceAuthBroker> auth_broker,
     std::unique_ptr<
         TargetDeviceBootstrapController::AccessibilityManagerWrapper>
-        accessibility_manager_wrapper)
-    : connection_broker_(std::move(target_device_connection_broker)),
-      auth_broker_(std::move(auth_broker)),
+        accessibility_manager_wrapper,
+    base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
+    mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder)
+    : auth_broker_(std::move(auth_broker)),
       accessibility_manager_wrapper_(std::move(accessibility_manager_wrapper)) {
+  auto session_context = std::make_unique<SessionContext>();
+  // TODO(b/287650532) Generate QR Code data before moving |session_context| ptr
+  // to new location.
+  connection_broker_ = TargetDeviceConnectionBrokerFactory::Create(
+      std::move(session_context), nearby_connections_manager,
+      quick_start_decoder);
 }
 
 TargetDeviceBootstrapController::~TargetDeviceBootstrapController() = default;
@@ -240,7 +246,8 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
                     "Quick Start after the update.";
     PrefService* prefs = g_browser_process->local_state();
     prefs->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
-    base::Value::Dict info = connection_broker_->GetPrepareForUpdateInfo();
+    base::Value::Dict info =
+        authenticated_connection_->GetPrepareForUpdateInfo();
     prefs->SetDict(prefs::kResumeQuickStartAfterRebootInfo, std::move(info));
   }
 

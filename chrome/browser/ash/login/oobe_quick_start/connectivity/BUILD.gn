@@ -13,7 +13,6 @@ source_set("connectivity") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start_pref_names",
     "//chrome/browser/nearby_sharing/public/cpp",
-    "//chrome/browser/nearby_sharing/public/cpp",
     "//chromeos/ash/components/quick_start",
     "//chromeos/ash/services/nearby/public/cpp",
     "//chromeos/ash/services/nearby/public/mojom",
@@ -35,6 +34,8 @@ source_set("connectivity") {
     "handshake_helpers.h",
     "random_session_id.cc",
     "random_session_id.h",
+    "session_context.cc",
+    "session_context.h",
     "target_device_connection_broker.cc",
     "target_device_connection_broker.h",
     "target_device_connection_broker_factory.cc",
@@ -87,6 +88,7 @@ source_set("unit_tests") {
     "connection_unittest.cc",
     "fast_pair_advertiser_unittest.cc",
     "handshake_helpers_unittest.cc",
+    "session_context_unittest.cc",
     "target_device_connection_broker_impl_unittest.cc",
   ]
 }

@@ -15,22 +15,20 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
-#include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service_factory.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/quick_start/fake_quick_start_decoder.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/constants/devicetype.h"
-#include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,6 +64,12 @@ constexpr std::array<uint8_t, 32> kSharedSecret = {
 constexpr char kSharedSecretBase64[] =
     "VL1Az4p8L2rKFVnP8%2BsxCJBz79qH1CPAVdWDWwQoSfI%3D";
 
+// 32 random bytes to use as the secondary shared secret.
+constexpr std::array<uint8_t, 32> kSecondarySharedSecret = {
+    0x50, 0xfe, 0xd7, 0x14, 0x1c, 0x93, 0xf6, 0x92, 0xaf, 0x7b, 0x4d,
+    0xab, 0xa0, 0xe3, 0xfc, 0xd3, 0x5a, 0x04, 0x01, 0x63, 0xf6, 0xf5,
+    0xeb, 0x40, 0x7f, 0x4b, 0xac, 0xe4, 0xd1, 0xbf, 0x20, 0x19};
+
 // Arbitrary string to use as the endpoint id.
 constexpr char kEndpointId[] = "endpoint_id";
 
@@ -75,11 +79,6 @@ constexpr char kAuthenticationToken[] = "auth_token";
 
 // Expected PIN corresponding to |kAuthenticationToken|.
 constexpr char kAuthenticationTokenPin[] = "6229";
-
-// The keys expected to be in the dict returned by PrepareForUpdate().
-constexpr char kPrepareForUpdateRandomSessionIdKey[] = "random_session_id";
-constexpr char kPrepareForUpdateSecondarySharedSecretKey[] =
-    "secondary_shared_secret";
 
 constexpr base::TimeDelta kNearbyConnectionsAdvertisementAfterUpdateTimeout =
     base::Seconds(30);
@@ -295,8 +294,7 @@ class FakeConnectionLifecycleListener
 
 class TargetDeviceConnectionBrokerImplTest : public testing::Test {
  public:
-  TargetDeviceConnectionBrokerImplTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  TargetDeviceConnectionBrokerImplTest() = default;
   TargetDeviceConnectionBrokerImplTest(TargetDeviceConnectionBrokerImplTest&) =
       delete;
   TargetDeviceConnectionBrokerImplTest& operator=(
@@ -327,12 +325,16 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   void CreateConnectionBroker(bool is_resume_after_update = false) {
     auto connection_factory = std::make_unique<FakeConnection::Factory>();
     connection_factory_ = connection_factory.get();
+    random_session_id_ = RandomSessionId();
+    auto session_context = std::make_unique<SessionContext>(
+        random_session_id_, kSharedSecret, kSecondarySharedSecret,
+        is_resume_after_update);
     connection_broker_ = std::make_unique<TargetDeviceConnectionBrokerImpl>(
+        std::move(session_context),
         fake_nearby_connections_manager_.GetWeakPtr(),
         std::move(connection_factory),
         mojo::SharedRemote<mojom::QuickStartDecoder>(
-            fake_quick_start_decoder_->GetRemote()),
-        is_resume_after_update);
+            fake_quick_start_decoder_->GetRemote()));
   }
 
   void FinishFetchingBluetoothAdapter() {
@@ -369,40 +371,10 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
         ->GenerateEndpointInfo();
   }
 
-  const RandomSessionId& GetRandomSessionId() {
-    return static_cast<TargetDeviceConnectionBrokerImpl*>(
-               connection_broker_.get())
-        ->random_session_id_;
-  }
-
-  const TargetDeviceConnectionBroker::SharedSecret GetSharedSecret() {
-    return static_cast<TargetDeviceConnectionBrokerImpl*>(
-               connection_broker_.get())
-        ->shared_secret_;
-  }
-
-  const TargetDeviceConnectionBroker::SharedSecret GetSecondarySharedSecret() {
-    return static_cast<TargetDeviceConnectionBrokerImpl*>(
-               connection_broker_.get())
-        ->secondary_shared_secret_;
-  }
-
-  std::string GetSecondarySharedSecretString() {
-    TargetDeviceConnectionBroker::SharedSecret secondary_shared_secret =
-        GetSecondarySharedSecret();
-    std::string secondary_shared_secret_bytes(secondary_shared_secret.begin(),
-                                              secondary_shared_secret.end());
-    std::string secondary_shared_secret_base64;
-    base::Base64Encode(secondary_shared_secret_bytes,
-                       &secondary_shared_secret_base64);
-    return secondary_shared_secret_base64;
-  }
-
   const std::vector<uint8_t> GetQrCodeData() {
-    const RandomSessionId& session_id = GetRandomSessionId();
     return static_cast<TargetDeviceConnectionBrokerImpl*>(
                connection_broker_.get())
-        ->GetQrCodeData(session_id, kSharedSecret);
+        ->GetQrCodeData(random_session_id_, kSharedSecret);
   }
 
   std::string DerivePin() {
@@ -413,31 +385,13 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
 
   FakeConnection* connection() { return connection_factory_->instance_.get(); }
 
-  PrefService* GetLocalState() { return local_state_.Get(); }
-
-  void ResumeAfterUpdate() {
-    // The connection broker expects these prefs to be set if resuming after an
-    // update.
-    GetLocalState()->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot,
-                                true);
-    base::Value::Dict info = connection_broker_->GetPrepareForUpdateInfo();
-    GetLocalState()->SetDict(prefs::kResumeQuickStartAfterRebootInfo,
-                             std::move(info));
-    std::string expected_random_session_id = GetRandomSessionId().ToString();
-    TargetDeviceConnectionBroker::SharedSecret expected_shared_secret =
-        GetSecondarySharedSecret();
-
-    CreateConnectionBroker(/*is_resume_after_update=*/true);
-    ASSERT_EQ(expected_random_session_id, GetRandomSessionId().ToString());
-    ASSERT_EQ(expected_shared_secret, GetSharedSecret());
-  }
-
  protected:
   bool is_bluetooth_powered_ = true;
   bool is_bluetooth_present_ = true;
   bool start_advertising_callback_called_ = false;
   bool start_advertising_callback_success_ = false;
   bool stop_advertising_callback_called_ = false;
+  RandomSessionId random_session_id_;
   scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_bluetooth_adapter_;
   FakeNearbyConnectionsManager fake_nearby_connections_manager_;
   FakeNearbyConnection fake_nearby_connection_;
@@ -447,7 +401,6 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeConnectionLifecycleListener connection_lifecycle_listener_;
-  ScopedTestingLocalState local_state_;
   raw_ptr<FakeConnection::Factory, ExperimentalAsh> connection_factory_ =
       nullptr;
 
@@ -654,8 +607,7 @@ TEST_P(TargetDeviceConnectionBrokerImplEndpointInfoTest, GenerateEndpointInfo) {
   std::string display_name =
       std::string(display_name_bytes.begin(), display_name_bytes.end());
   std::string expected_display_name = GetParam().expected_display_name + " (" +
-                                      GetRandomSessionId().GetDisplayCode() +
-                                      ")";
+                                      random_session_id_.GetDisplayCode() + ")";
   EXPECT_EQ(expected_display_name, display_name);
   i += j;
 
@@ -677,7 +629,7 @@ TEST_P(TargetDeviceConnectionBrokerImplEndpointInfoTest, GenerateEndpointInfo) {
   // Parse the RandomSessionId. The field is fixed-width, but contains a
   // string that may not occupy the full length, in which case there will be a
   // null terminator.
-  std::string session_id = GetRandomSessionId().ToString();
+  std::string session_id = random_session_id_.ToString();
   for (size_t k = i; k < i + kEndpointInfoRandomSessionIdLength; k++) {
     if (advertising_info[k] == 0) {
       break;
@@ -736,7 +688,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest, GetQRCodeData) {
-  std::string random_session_id = GetRandomSessionId().ToString();
+  std::string random_session_id = random_session_id_.ToString();
   std::string encoded_shared_secret(kSharedSecretBase64);
 
   std::vector<uint8_t> expected_data(std::begin(kBaseUrl), std::end(kBaseUrl));
@@ -824,18 +776,6 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   EXPECT_NE(connection_lifecycle_listener_.authenticated_connection_, nullptr);
 }
 
-TEST_F(TargetDeviceConnectionBrokerImplTest, GetPrepareForUpdateInfo) {
-  base::Value::Dict prepare_for_update_info =
-      connection_broker_->GetPrepareForUpdateInfo();
-  EXPECT_FALSE(prepare_for_update_info.empty());
-  EXPECT_EQ(
-      GetRandomSessionId().ToString(),
-      *prepare_for_update_info.FindString(kPrepareForUpdateRandomSessionIdKey));
-  EXPECT_EQ(GetSecondarySharedSecretString(),
-            *prepare_for_update_info.FindString(
-                kPrepareForUpdateSecondarySharedSecretKey));
-}
-
 TEST_F(TargetDeviceConnectionBrokerImplTest,
        ConnectionClosedEventIssuesCallback) {
   FinishFetchingBluetoothAdapter();
@@ -864,20 +804,9 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
       TargetDeviceConnectionBroker::ConnectionClosedReason::kConnectionLost);
 }
 
-TEST_F(TargetDeviceConnectionBrokerImplTest, ConstructWhenResumeAfterUpdate) {
-  ResumeAfterUpdate();
-
-  // Prefs should be cleared after the |connection_broker_| construction.
-  ASSERT_FALSE(
-      GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
-  ASSERT_TRUE(GetLocalState()
-                  ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
-                  .empty());
-}
-
 TEST_F(TargetDeviceConnectionBrokerImplTest,
        StartAdvertisingWhenResumeAfterUpdate) {
-  ResumeAfterUpdate();
+  CreateConnectionBroker(/*is_resume_after_update=*/true);
   FinishFetchingBluetoothAdapter();
   EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
   EXPECT_FALSE(fake_nearby_connections_manager_.IsAdvertising());
@@ -900,7 +829,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,
        HandshakeInitiatedWhenResumeAfterUpdate_UseQRCodeAuthentication) {
-  ResumeAfterUpdate();
+  CreateConnectionBroker(/*is_resume_after_update=*/true);
   FinishFetchingBluetoothAdapter();
   connection_broker_->StartAdvertising(&connection_lifecycle_listener_,
                                        /* use_pin_authentication= */ false,
@@ -924,7 +853,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,
        HandshakeInitiatedWhenResumeAfterUpdate_UsePinAuthentication) {
-  ResumeAfterUpdate();
+  CreateConnectionBroker(/*is_resume_after_update=*/true);
   FinishFetchingBluetoothAdapter();
   connection_broker_->StartAdvertising(&connection_lifecycle_listener_,
                                        /* use_pin_authentication= */ true,
@@ -948,7 +877,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,
        NearbyConnectionsAdvertisingTimeoutWhenResumeAfterUpdate_Pin) {
-  ResumeAfterUpdate();
+  CreateConnectionBroker(/*is_resume_after_update=*/true);
   FinishFetchingBluetoothAdapter();
 
   connection_broker_->StartAdvertising(
@@ -981,7 +910,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,
        NearbyConnectionsAdvertisingTimeoutWhenResumeAfterUpdate_QrCode) {
-  ResumeAfterUpdate();
+  CreateConnectionBroker(/*is_resume_after_update=*/true);
   FinishFetchingBluetoothAdapter();
 
   connection_broker_->StartAdvertising(

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,7 +31,7 @@ struct FidoAssertionInfo;
 class TargetDeviceConnectionBroker {
  public:
   using ResultCallback = base::OnceCallback<void(bool success)>;
-  using SharedSecret = std::array<uint8_t, 32>;
+  using SharedSecret = SessionContext::SharedSecret;
 
   enum class FeatureSupportStatus {
     kUndetermined = 0,
@@ -93,6 +94,10 @@ class TargetDeviceConnectionBroker {
     // Wait for the user to perform verification, and return if it succeeded
     virtual void WaitForUserVerification(
         AwaitUserVerificationCallback callback) = 0;
+
+    // Exposes SessionContext::GetPrepareForUpdateInfo() to the
+    // AuthenticatedConnection caller.
+    virtual base::Value::Dict GetPrepareForUpdateInfo() = 0;
 
     // Retrieve CryptAuth ID from BootstrapConfigurations response.
     std::string get_phone_instance_id() { return phone_instance_id_; }
@@ -196,13 +201,6 @@ class TargetDeviceConnectionBroker {
   // desired connection, or in error/edge cases, e.g., the user exits the UI.
   virtual void StopAdvertising(
       base::OnceClosure on_stop_advertising_callback) = 0;
-
-  // Returns Dict that can be persisted to a local state Dict pref if the target
-  // device is going to update. This Dict contains the RandomSessionId and
-  // secondary SharedSecret represented as base64-encoded strings. These values
-  // are needed to resume the Quick Start connection after the target device
-  // reboots.
-  virtual base::Value::Dict GetPrepareForUpdateInfo() = 0;
 
   // Gets the 3 digits of the discoverable name. e.g.: Chromebook (123)
   virtual std::string GetSessionIdDisplayCode() = 0;

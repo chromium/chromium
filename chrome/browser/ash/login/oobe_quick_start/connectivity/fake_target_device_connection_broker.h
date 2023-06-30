@@ -49,8 +49,8 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
     // TargetDeviceConnectionBrokerFactory:
     std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance(
         base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-        mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
-        bool is_resume_after_update = false) override;
+        mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder)
+        override;
 
     std::vector<FakeTargetDeviceConnectionBroker*> instances_;
   };
@@ -67,7 +67,6 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
                         bool use_pin_authentication,
                         ResultCallback on_start_advertising_callback) override;
   void StopAdvertising(base::OnceClosure on_stop_advertising_callback) override;
-  base::Value::Dict GetPrepareForUpdateInfo() override;
 
   void InitiateConnection(const std::string& source_device_id);
   void AuthenticateConnection(const std::string& source_device_id);
