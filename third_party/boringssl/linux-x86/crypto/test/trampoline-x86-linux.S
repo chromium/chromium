@@ -1,16 +1,9 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if defined(__has_feature)
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
-#endif
+#include <openssl/asm_base.h>
 
-#if !defined(OPENSSL_NO_ASM) && defined(__i386__) && defined(__ELF__)
-#if defined(BORINGSSL_PREFIX)
-#include <boringssl_prefix_symbols_asm.h>
-#endif
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86) && defined(__ELF__)
 .text
 .globl	abi_test_trampoline
 .hidden	abi_test_trampoline
@@ -208,8 +201,4 @@ abi_test_clobber_xmm7:
 	pxor	%xmm7,%xmm7
 	ret
 .size	abi_test_clobber_xmm7,.-.L_abi_test_clobber_xmm7_begin
-#endif  // !defined(OPENSSL_NO_ASM) && defined(__i386__) && defined(__ELF__)
-#if defined(__ELF__)
-// See https://www.airs.com/blog/archives/518.
-.section .note.GNU-stack,"",%progbits
-#endif
+#endif  // !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86) && defined(__ELF__)
