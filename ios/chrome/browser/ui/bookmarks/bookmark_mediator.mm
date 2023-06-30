@@ -186,9 +186,7 @@ using bookmarks::BookmarkNode;
       (storageType == bookmarks::StorageType::kAccount) ||
       (hasSyncConsent && _syncSetupService->IsDataTypePreferred(
                              syncer::UserSelectableType::kBookmarks));
-  if (base::FeatureList::IsEnabled(
-          kEnableEmailInBookmarksReadingListSnackbar) &&
-      saveIntoAccount) {
+  if (saveIntoAccount) {
     std::u16string email = base::SysNSStringToUTF16(identity.userEmail);
     if (addFolder) {
       std::u16string title = base::SysNSStringToUTF16(folderTitle);

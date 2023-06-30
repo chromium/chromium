@@ -159,10 +159,6 @@ bool IsConsistencyNewAccountInterfaceEnabled();
 // Feature flag to enable the new layout of the NTP omnibox.
 BASE_DECLARE_FEATURE(kNewNTPOmniboxLayout);
 
-// Whether the email is shown in the snackbar indicating that a new bookmark
-// or reading list item is added.
-BASE_DECLARE_FEATURE(kEnableEmailInBookmarksReadingListSnackbar);
-
 // Feature flag to enable indicating Sync errors (including identity errors)
 // on the Settings destination in the overflow menu carousel.
 BASE_DECLARE_FEATURE(kIndicateSyncErrorInOverflowMenu);
