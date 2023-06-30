@@ -900,9 +900,8 @@ _CONFIG = [
         ],
     },
     {
-        'paths': [
-            'third_party/blink/renderer/core/frame/deprecation/deprecation.cc'
-        ],
+        'paths':
+        ['third_party/blink/renderer/core/frame/deprecation/deprecation.cc'],
         'allowed': [
             'base::CommandLine',
         ]
@@ -1323,6 +1322,7 @@ _CONFIG = [
             'base::MakeFixedFlatMap',
             'base::SharedMemory',
             'base::StringPiece',
+            'base::NumberToString',
             'base::ThreadTaskRunnerHandle',
             'media::.+',
             'libopus::.+',

@@ -21,6 +21,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/muxers/webm_muxer.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
@@ -417,8 +419,10 @@ VideoTrackRecorderImpl::Encoder::Encoder(
 VideoTrackRecorderImpl::Encoder::~Encoder() = default;
 
 void VideoTrackRecorderImpl::Encoder::InitializeEncoder(
-    KeyFrameRequestProcessor::Configuration key_frame_config) {
+    KeyFrameRequestProcessor::Configuration key_frame_config,
+    std::unique_ptr<media::MojoVideoEncoderMetricsProvider> metrics_provider) {
   key_frame_processor_.UpdateConfig(key_frame_config);
+  metrics_provider_ = std::move(metrics_provider);
   Initialize();
 }
 
@@ -934,9 +938,13 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
     }
   }
 
+  CHECK(callback_interface());
+  auto metrics_provider =
+      callback_interface()->CreateMojoVideoEncoderMetricsProvider();
+  CHECK(metrics_provider);
   encoder_.emplace(encoding_task_runner, std::move(encoder));
-  encoder_.AsyncCall(&Encoder::InitializeEncoder).WithArgs(key_frame_config_);
-
+  encoder_.AsyncCall(&Encoder::InitializeEncoder)
+      .WithArgs(key_frame_config_, std::move(metrics_provider));
   if (should_pause_encoder_on_initialization_)
     encoder_.AsyncCall(&Encoder::SetPaused).WithArgs(true);
 

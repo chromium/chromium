@@ -7,6 +7,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "media/base/video_frame.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
@@ -64,13 +65,15 @@ bool MediaRecorderEncoderWrapper::CanEncodeAlphaChannel() const {
   return false;
 }
 
-void MediaRecorderEncoderWrapper::EnterErrorState() {
+void MediaRecorderEncoderWrapper::EnterErrorState(
+    const media::EncoderStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == State::kInError) {
     CHECK(!on_error_cb_);
     return;
   }
 
+  metrics_provider_->SetError(status);
   state_ = State::kInError;
   pending_encode_tasks_ = {};
   params_in_encode_ = {};
@@ -103,7 +106,7 @@ void MediaRecorderEncoderWrapper::CreateAndInitialize(
     // encoder creation with status=kOk and as Flush done callback. The status
     // can be non kOk only if it is invoked as flush callback.
     DLOG(ERROR) << "Flush() failed: " << status.message();
-    EnterErrorState();
+    EnterErrorState(status);
     return;
   }
   CHECK_NE(state_, State::kInError);
@@ -118,6 +121,8 @@ void MediaRecorderEncoderWrapper::CreateAndInitialize(
   // MediaRecorderEncoderWrapper doesn't require an encoder to post a callback
   // because a given |on_encoded_video_cb_| already hops a thread.
   encoder_->DisablePostedCallbacks();
+  metrics_provider_->Initialize(profile_, options_.frame_size,
+                                /*is_hardware_encoder=*/false);
   encoder_->Initialize(
       profile_, options_,
       /*info_cb=*/base::DoNothing(),
@@ -132,7 +137,7 @@ void MediaRecorderEncoderWrapper::InitializeDone(media::EncoderStatus status) {
   TRACE_EVENT0("media", "MediaRecorderEncoderWrapper::InitizalizeDone");
   if (!status.is_ok()) {
     DLOG(ERROR) << "Initialize() failed: " << status.message();
-    EnterErrorState();
+    EnterErrorState(status);
     return;
   }
   CHECK_NE(state_, State::kInError);
@@ -198,7 +203,7 @@ void MediaRecorderEncoderWrapper::EncodeDone(media::EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!status.is_ok()) {
     DLOG(ERROR) << "EncodeDone() failed: " << status.message();
-    EnterErrorState();
+    EnterErrorState(status);
     return;
   }
 }
@@ -212,6 +217,8 @@ void MediaRecorderEncoderWrapper::OutputEncodeData(
     CHECK(!on_error_cb_);
     return;
   }
+
+  metrics_provider_->IncrementEncodedFrameCount();
 
   // TODO(crbug.com/1330919): Check OutputEncodeData() in the same order as
   // Encode().

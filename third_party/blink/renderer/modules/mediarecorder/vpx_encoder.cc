@@ -8,9 +8,12 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
+#include "media/base/encoder_status.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
+#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -159,6 +162,7 @@ void VpxEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   }
   frame = nullptr;
 
+  metrics_provider_->IncrementEncodedFrameCount();
   on_encoded_video_cb_.Run(video_params, std::move(data), std::move(alpha_data),
                            capture_timestamp, keyframe);
 }
@@ -199,10 +203,13 @@ void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
       vpx_codec_encode(encoder, &vpx_image, 0 /* pts */,
                        static_cast<unsigned long>(duration.InMicroseconds()),
                        flags, VPX_DL_REALTIME);
-  DCHECK_EQ(ret, VPX_CODEC_OK)
-      << vpx_codec_err_to_string(ret) << ", #" << vpx_codec_error(encoder)
-      << " -" << vpx_codec_error_detail(encoder);
-
+  if (ret != VPX_CODEC_OK) {
+    metrics_provider_->SetError(
+        {media::EncoderStatus::Codes::kEncoderFailedEncode,
+         base::StrCat(
+             {"libvpx failed to encode: ", vpx_codec_err_to_string(ret), " - ",
+              vpx_codec_error_detail(encoder)})});
+  }
   *keyframe = false;
   vpx_codec_iter_t iter = nullptr;
   const vpx_codec_cx_pkt_t* pkt = nullptr;
@@ -288,12 +295,19 @@ bool VpxEncoder::ConfigureEncoder(const gfx::Size& size,
   // Number of frames to consume before producing output.
   codec_config->g_lag_in_frames = 0;
 
+  metrics_provider_->Initialize(
+      use_vp9_ ? media::VP9PROFILE_MIN : media::VP8PROFILE_ANY, size,
+      /*is_hardware_encoder=*/false);
   // Can't use ScopedVpxCodecCtxPtr until after vpx_codec_enc_init, since it's
   // not valid to call vpx_codec_destroy when vpx_codec_enc_init fails.
   auto tmp_encoder = std::make_unique<vpx_codec_ctx_t>();
   const vpx_codec_err_t ret = vpx_codec_enc_init(
       tmp_encoder.get(), codec_interface, codec_config, 0 /* flags */);
   if (ret != VPX_CODEC_OK) {
+    metrics_provider_->SetError(
+        {media::EncoderStatus::Codes::kEncoderInitializationError,
+         base::StrCat(
+             {"libvpx failed to initialize: ", vpx_codec_err_to_string(ret)})});
     DLOG(WARNING) << "vpx_codec_enc_init failed: " << ret;
     // Require the encoder to be reinitialized next frame.
     codec_config->g_timebase.den = 0;

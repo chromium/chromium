@@ -14,6 +14,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,6 +104,30 @@ constexpr media::VideoCodec MediaVideoCodecFromCodecId(
   return media::VideoCodec::kUnknown;
 }
 
+media::VideoCodecProfile MediaVideoCodecProfileFromCodecId(
+    VideoTrackRecorder::CodecId id) {
+  switch (id) {
+    case VideoTrackRecorder::CodecId::kVp8:
+      return media::VideoCodecProfile::VP8PROFILE_ANY;
+    case VideoTrackRecorder::CodecId::kVp9:
+      return media::VideoCodecProfile::VP9PROFILE_PROFILE0;
+// Note: The H264 tests in this file are written explicitly for OpenH264 and
+// will fail for hardware encoders that aren't 1 in 1 out.
+#if BUILDFLAG(RTC_USE_H264)
+    case VideoTrackRecorder::CodecId::kH264:
+      return media::VideoCodecProfile::H264PROFILE_MIN;
+#endif
+#if BUILDFLAG(ENABLE_LIBAOM)
+    case VideoTrackRecorder::CodecId::kAv1:
+      return media::VideoCodecProfile::AV1PROFILE_MIN;
+#endif
+    default:
+      break;
+  }
+  NOTREACHED() << "Unsupported video codec";
+  return media::VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
+}
+
 }  // namespace
 
 ACTION_P(RunClosure, closure) {
@@ -141,6 +166,11 @@ class MockVideoTrackRecorderCallbackInterface
                base::TimeTicks timestamp,
                bool is_key_frame),
               (override));
+  MOCK_METHOD(std::unique_ptr<media::MojoVideoEncoderMetricsProvider>,
+              CreateMojoVideoEncoderMetricsProvider,
+              (),
+              (override));
+
   MOCK_METHOD(void, OnVideoEncodingError, (), (override));
   MOCK_METHOD(void, OnSourceReadyStateChanged, (), (override));
   void Trace(Visitor*) const override {}
@@ -150,12 +180,23 @@ class VideoTrackRecorderTestBase {
  public:
   VideoTrackRecorderTestBase()
       : mock_callback_interface_(
-            MakeGarbageCollected<MockVideoTrackRecorderCallbackInterface>()) {}
+            MakeGarbageCollected<MockVideoTrackRecorderCallbackInterface>()) {
+    ON_CALL(*mock_callback_interface_, CreateMojoVideoEncoderMetricsProvider())
+        .WillByDefault(::testing::Invoke(
+            this, &VideoTrackRecorderTestBase::
+                      CreateMockMojoVideoEncoderMetricsProvider));
+  }
 
  protected:
   virtual ~VideoTrackRecorderTestBase() {
     mock_callback_interface_ = nullptr;
     WebHeap::CollectAllGarbageForTesting();
+  }
+
+  std::unique_ptr<media::MojoVideoEncoderMetricsProvider>
+  CreateMockMojoVideoEncoderMetricsProvider() {
+    return std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
+        media::mojom::VideoEncoderUseCase::kMediaRecorder);
   }
 
   Persistent<MockVideoTrackRecorderCallbackInterface> mock_callback_interface_;
@@ -422,6 +463,95 @@ TEST_P(VideoTrackRecorderTest, VideoEncoding) {
     EXPECT_EQ(second_frame_encoded_alpha.size(), kEmptySize);
     EXPECT_EQ(third_frame_encoded_alpha.size(), kEmptySize);
   }
+
+  Mock::VerifyAndClearExpectations(this);
+}
+
+// Same as VideoEncoding but add the EXPECT_CALL for the
+// MojoVideoEncoderMetricsProvider.
+TEST_P(VideoTrackRecorderTest, CheckMetricsProviderInVideoEncoding) {
+  InitializeRecorder(testing::get<0>(GetParam()));
+
+  const bool encode_alpha_channel = testing::get<2>(GetParam());
+  // |frame_size| cannot be arbitrarily small, should be reasonable.
+  const gfx::Size& frame_size = testing::get<1>(GetParam());
+  const TestFrameType test_frame_type = testing::get<3>(GetParam());
+
+  // We don't support alpha channel with GpuMemoryBuffer frames.
+  if (test_frame_type != TestFrameType::kI420 && encode_alpha_channel) {
+    return;
+  }
+
+  const media::VideoCodecProfile video_codec_profile =
+      MediaVideoCodecProfileFromCodecId(testing::get<0>(GetParam()));
+
+  auto metrics_provider =
+      std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
+          media::mojom::VideoEncoderUseCase::kMediaRecorder);
+  media::MockMojoVideoEncoderMetricsProvider* mock_metrics_provider =
+      metrics_provider.get();
+  int initialize_time = 1;
+  if (encode_alpha_channel &&
+      (video_codec_profile == media::VideoCodecProfile::VP8PROFILE_ANY ||
+       video_codec_profile == media::VideoCodecProfile::VP9PROFILE_PROFILE0)) {
+    initialize_time = 2;
+  }
+
+  base::RunLoop run_loop1;
+  InSequence s;
+  EXPECT_CALL(*mock_callback_interface_,
+              CreateMojoVideoEncoderMetricsProvider())
+      .WillOnce(Return(::testing::ByMove(std::move(metrics_provider))));
+  EXPECT_CALL(*mock_metrics_provider,
+              MockInitialize(video_codec_profile, frame_size,
+                             /*is_hardware_encoder=*/false,
+                             media::SVCScalabilityMode::kL1T1))
+      .Times(initialize_time);
+  EXPECT_CALL(*mock_metrics_provider, MockIncrementEncodedFrameCount())
+      .Times(2);
+
+  const gfx::Size frame_size2(frame_size.width() + kTrackRecorderTestSizeDiff,
+                              frame_size.height());
+  EXPECT_CALL(*mock_metrics_provider,
+              MockInitialize(video_codec_profile, frame_size2,
+                             /*is_hardware_encoder=*/false,
+                             media::SVCScalabilityMode::kL1T1))
+      .Times(initialize_time);
+  EXPECT_CALL(*mock_metrics_provider, MockIncrementEncodedFrameCount())
+      .WillOnce(RunClosure(run_loop1.QuitClosure()));
+
+  const scoped_refptr<media::VideoFrame> video_frame = CreateFrameForTest(
+      test_frame_type, frame_size, encode_alpha_channel, /*padding=*/0);
+
+  const double kFrameRate = 60.0f;
+  video_frame->metadata().frame_rate = kFrameRate;
+  const scoped_refptr<media::VideoFrame> video_frame2 = CreateFrameForTest(
+      test_frame_type, frame_size2, encode_alpha_channel, /*padding=*/0);
+
+  const base::TimeTicks timeticks_now = base::TimeTicks::Now();
+  const base::TimeTicks timeticks_later =
+      timeticks_now + base::Milliseconds(10);
+  const base::TimeTicks timeticks_last =
+      timeticks_later + base::Milliseconds(10);
+
+  // A test-only TSAN problem is fixed by placing the encodes down here and not
+  // close to the expectation setups.
+  Encode(video_frame, timeticks_now);
+  Encode(video_frame, timeticks_later);
+  Encode(video_frame2, timeticks_last);
+
+  run_loop1.Run();
+
+  // Since |encoder_| is destroyed on the encoder sequence checker, it and the
+  // MockMojoVideoEncoderMetricsProvider are asynchronously. It causes the leak
+  // mock object, |mock_metrics_provider|. Avoid it by waiting until the
+  // mock object is destroyed.
+  base::RunLoop run_loop2;
+
+  EXPECT_CALL(*mock_metrics_provider, MockDestroy())
+      .WillOnce(RunClosure(run_loop2.QuitClosure()));
+  video_track_recorder_.reset();
+  run_loop2.Run();
 
   Mock::VerifyAndClearExpectations(this);
 }

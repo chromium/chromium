@@ -26,6 +26,7 @@ namespace media {
 class AudioBus;
 class AudioParameters;
 class VideoFrame;
+class MojoVideoEncoderMetricsProvider;
 class Muxer;
 }  // namespace media
 
@@ -109,6 +110,8 @@ class MODULES_EXPORT MediaRecorderHandler final
                           std::string encoded_alpha,
                           base::TimeTicks timestamp,
                           bool is_key_frame) override;
+  std::unique_ptr<media::MojoVideoEncoderMetricsProvider>
+  CreateMojoVideoEncoderMetricsProvider() override;
   void OnVideoEncodingError() override;
   // AudioTrackRecorder::CallbackInterface overrides.
   void OnEncodedAudio(

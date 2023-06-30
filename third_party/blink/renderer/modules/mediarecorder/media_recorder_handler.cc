@@ -21,9 +21,12 @@
 #include "media/base/mime_util.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
+#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/muxers/live_webm_muxer_delegate.h"
 #include "media/muxers/muxer.h"
 #include "media/muxers/webm_muxer.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -658,6 +661,18 @@ void MediaRecorderHandler::OnEncodedAudio(
     recorder_->OnError(DOMExceptionCode::kUnknownError,
                        "Error muxing audio data");
   }
+}
+
+std::unique_ptr<media::MojoVideoEncoderMetricsProvider>
+MediaRecorderHandler::CreateMojoVideoEncoderMetricsProvider() {
+  DCHECK(IsMainThread());
+  mojo::PendingRemote<media::mojom::VideoEncoderMetricsProvider>
+      video_encoder_metrics_provider;
+  recorder_->DomWindow()->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
+      video_encoder_metrics_provider.InitWithNewPipeAndPassReceiver());
+  return std::make_unique<media::MojoVideoEncoderMetricsProvider>(
+      media::mojom::VideoEncoderUseCase::kMediaRecorder,
+      std::move(video_encoder_metrics_provider));
 }
 
 void MediaRecorderHandler::WriteData(base::StringPiece data) {

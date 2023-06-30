@@ -672,6 +672,7 @@ source_set("unit_tests") {
     "//media/capture/mojom:image_capture_blink",
     "//media/gpu:gpu",
     "//media/mojo:buildflags",
+    "//media/mojo:test_support",
     "//media/mojo/mojom",
     "//media/mojo/services:services",
     "//media/webrtc:webrtc",
