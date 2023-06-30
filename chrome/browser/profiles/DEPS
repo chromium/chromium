@@ -1,6 +1,9 @@
 include_rules = [
   "+components/live_caption:constants",
   "+components/profile_metrics",
+  "+device/fido/cros/credential_store.h",
+  "+device/fido/mac/credential_store.h",
+  "+device/fido/platform_credential_store.h",
 ]
 
 specific_include_rules = {

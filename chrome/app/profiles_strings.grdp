@@ -599,8 +599,8 @@
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_HISTORY" desc="The title of a statistic (browsing history) shown inside a table below the warning text when attempting to remove an user. A number is displayed next to it.">
       Browsing history
     </message>
-    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_PASSWORDS" desc="The title of a statistic (passwords) shown inside a table below the warning text when attempting to remove a profile. A number is displayed next to it.">
-      Passwords
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_PASSWORDS" desc="The title of a statistic (sign-in methods) shown inside a table below the warning text when attempting to remove a profile. A number is displayed next to it.">
+      Sign-in methods
     </message>
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_BOOKMARKS" desc="The title of a statistic (bookmarks) shown inside a table below the warning text when attempting to remove a profile. A number is displayed next to it.">
       Bookmarks
