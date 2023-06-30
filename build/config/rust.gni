@@ -102,7 +102,10 @@ declare_args() {
   enable_rust_gnrt = host_toolchain == current_toolchain
 
   # Rust gtest interop
-  enable_rust_gtest_interop = enable_all_rust_features
+  # TODO(https://bugs.chromium.org/p/gn/issues/detail?id=340): Framework search
+  # paths produce invalid Ninja files with GN, and they show up in the iOS
+  # build here.
+  enable_rust_gtest_interop = !is_ios
 
   # Enable Boringssl Rust bindings generation
   enable_rust_boringssl = enable_all_rust_features

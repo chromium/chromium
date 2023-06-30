@@ -266,9 +266,14 @@ template("test") {
       _dist_target = "${target_name}__dist"
       _exec_output =
           "$target_out_dir/${invoker.target_name}/${invoker.target_name}"
+      _crate_name = "${target_name}"
 
       mixed_test(_exec_target) {
         target_type = "executable"
+
+        # Use a crate name that avoids creating a warning due to double
+        # underscore (ie. `__`).
+        crate_name = _crate_name
 
         # Configs will always be defined since we set_defaults in
         # BUILDCONFIG.gn.
@@ -523,6 +528,7 @@ template("test") {
     _pkg_target = "${_output_name}_pkg"
     _exec_target = "${_output_name}__exec"
     _program_name = get_label_info(":${_exec_target}", "name")
+    _crate_name = _output_name
 
     # Generate a CML fragment that provides the program name.
     _test_program_fragment_target = "${target_name}_program-fragment"
@@ -689,6 +695,10 @@ template("test") {
       target_type = "executable"
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       output_name = _exec_target
+
+      # Use a crate name that avoids creating a warning due to double
+      # underscore (ie. `__`).
+      crate_name = _crate_name
     }
   } else if (is_ios) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
