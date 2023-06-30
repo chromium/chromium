@@ -11,9 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibilit
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.core.IsNot.not;
-
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
@@ -21,21 +18,14 @@ import android.view.View;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
-import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
-import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
@@ -48,7 +38,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for quick delete dialog view.
@@ -75,51 +64,20 @@ public class QuickDeleteDialogDelegateTest {
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
-    @After
-    public void tearDown() throws TimeoutException {
-        CallbackHelper callbackHelper = new CallbackHelper();
-
-        // Clear history.
-        runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(callbackHelper::notifyCalled,
-                    new int[] {BrowsingDataType.HISTORY}, TimePeriod.ALL_TIME);
-        });
-
-        callbackHelper.waitForCallback(0);
-
-        mSigninTestRule.forceSignOut();
-    }
-
-    private void openQuickDeleteDialog() {
-        // Open 3 dot menu.
-        runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
-        });
-        onViewWaiting(withId(R.id.app_menu_list))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-
-        // Click on quick delete menu item.
-        runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.callOnItemClick(
-                    mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id);
-        });
-    }
-
+    /**
+     * TODO(crbug.com/1412087): Update the tests to verify different states of
+     * |quick_delete_dialog_tabs_closed_text| and the various browsing history string possible which
+     * relies on local browsing history information.
+     */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1459455")
-    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Feature({"RenderTest"})
-    public void testQuickDeleteDialogView_WithSignInAndSync() throws IOException {
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-        mActivityTestRule.loadUrl("https://www.example.com/");
-        mActivityTestRule.loadUrl("https://www.google.com/");
-
+    public void testQuickDeleteDialogView() throws IOException {
         openQuickDeleteDialog();
 
         onView(withText(R.string.quick_delete_dialog_title)).check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_dialog_description)).check(matches(isDisplayed()));
-        onView(withId(R.id.quick_delete_history_row)).check(matches(isDisplayed()));
+        onView(withId(R.id.quick_delete_history_row_title)).check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_dialog_browsing_history_secondary_text))
                 .check(matches(isDisplayed()));
         onView(withText(mActivityTestRule.getActivity().getResources().getQuantityString(
@@ -127,7 +85,6 @@ public class QuickDeleteDialogDelegateTest {
                 .check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_dialog_cookies_cache_and_other_site_data_text))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.search_history_disambiguation)).check(matches(isDisplayed()));
 
         // TODO(crbug.com/1412087): Get the full dialog for render test instead of just the custom
         // view.
@@ -135,59 +92,38 @@ public class QuickDeleteDialogDelegateTest {
                                   .getModalDialogManager()
                                   .getCurrentDialogForTest()
                                   .get(ModalDialogProperties.CUSTOM_VIEW);
-        mRenderTestRule.render(dialogView, "quick_delete_dialog-signed-in-and-sync");
+        mRenderTestRule.render(dialogView, "quick_delete_dialog");
     }
 
     @Test
     @MediumTest
-    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Feature({"RenderTest"})
-    public void testQuickDeleteDialogView_WithSignInOnly() throws IOException {
+    public void testSearchHistoryDisambiguationTextShown_WhenUserIsSignedIn() throws IOException {
         mSigninTestRule.addTestAccountThenSignin();
-        mActivityTestRule.loadUrl("https://www.google.com/");
-
         openQuickDeleteDialog();
 
-        onView(withText(R.string.quick_delete_dialog_title)).check(matches(isDisplayed()));
-        onView(withText(R.string.quick_delete_dialog_description)).check(matches(isDisplayed()));
-        onView(withId(R.id.quick_delete_history_row)).check(matches(isDisplayed()));
-        onView(withText(R.string.quick_delete_dialog_browsing_history_secondary_text))
-                .check(matches(not(isDisplayed())));
-        onView(withText(mActivityTestRule.getActivity().getResources().getQuantityString(
-                       R.plurals.quick_delete_dialog_tabs_closed_text, 1)))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.quick_delete_dialog_cookies_cache_and_other_site_data_text))
-                .check(matches(isDisplayed()));
         onView(withId(R.id.search_history_disambiguation)).check(matches(isDisplayed()));
 
         View dialogView = mActivityTestRule.getActivity()
                                   .getModalDialogManager()
                                   .getCurrentDialogForTest()
                                   .get(ModalDialogProperties.CUSTOM_VIEW);
+
         mRenderTestRule.render(dialogView, "quick_delete_dialog-signed-in");
     }
 
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    public void testQuickDeleteDialogView_WithoutTabsOrHistory() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityTestRule.getActivity().getCurrentTabModel().closeAllTabs(false));
+    private void openQuickDeleteDialog() {
+        // Open 3 dot menu.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+        onViewWaiting(withId(R.id.app_menu_list))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
-        openQuickDeleteDialog();
-
-        onView(withText(R.string.quick_delete_dialog_title)).check(matches(isDisplayed()));
-        onView(withText(R.string.quick_delete_dialog_description)).check(matches(isDisplayed()));
-        onView(withId(R.id.quick_delete_history_row)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.quick_delete_tabs_close_row)).check(matches(not(isDisplayed())));
-        onView(withText(R.string.quick_delete_dialog_cookies_cache_and_other_site_data_text))
-                .check(matches(isDisplayed()));
-        onView(withId(R.id.search_history_disambiguation)).check(matches(not(isDisplayed())));
-
-        View dialogView = mActivityTestRule.getActivity()
-                                  .getModalDialogManager()
-                                  .getCurrentDialogForTest()
-                                  .get(ModalDialogProperties.CUSTOM_VIEW);
-        mRenderTestRule.render(dialogView, "quick_delete_dialog-no-tabs-or-history");
+        // Click on quick delete menu item.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.callOnItemClick(
+                    mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id);
+        });
     }
 }
