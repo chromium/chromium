@@ -13,7 +13,7 @@
 #endif
 
 BASE_FEATURE(kTabPickupThreshold,
-             "TabPikcupThreshold",
+             "TabPickupThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kTabPickupThresholdParameterName[] = "variant";

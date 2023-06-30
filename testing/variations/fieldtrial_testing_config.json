@@ -7501,6 +7501,21 @@
             ]
         }
     ],
+    "IOSTabPikcup": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabPickupThreshold"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSUseUserDefaultsForExitedCleanlyBeacon": [
         {
             "platforms": [
