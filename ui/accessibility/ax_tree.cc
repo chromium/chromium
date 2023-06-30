@@ -1136,6 +1136,22 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
       if (node &&
           notified_node_attributes_will_change.insert(new_data.id).second) {
         nodes_to_notify.emplace_back(node->data(), new_data);
+        for (AXTreeObserver& observer : observers_) {
+          if (new_data.HasIntListAttribute(
+                  ax::mojom::IntListAttribute::kTextOperationStartOffsets)) {
+            DCHECK(new_data.HasIntListAttribute(
+                ax::mojom::IntListAttribute::kTextOperationStartOffsets));
+            DCHECK(new_data.HasIntListAttribute(
+                ax::mojom::IntListAttribute::kTextOperationEndOffsets));
+            DCHECK(new_data.HasIntListAttribute(
+                ax::mojom::IntListAttribute::kTextOperationStartAnchorIds));
+            DCHECK(new_data.HasIntListAttribute(
+                ax::mojom::IntListAttribute::kTextOperationEndAnchorIds));
+            DCHECK(new_data.HasIntListAttribute(
+                ax::mojom::IntListAttribute::kTextOperations));
+            observer.OnTextDeletionOrInsertion(*node, new_data);
+          }
+        }
       }
     }
 
@@ -1155,6 +1171,22 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
       AXNode* node = GetFromId(new_data.id);
       if (node &&
           notified_node_attributes_will_change.insert(new_data.id).second) {
+        for (AXTreeObserver& observer : observers_) {
+          if (new_data.HasIntListAttribute(
+                  ax::mojom::IntListAttribute::kTextOperationStartOffsets)) {
+            DCHECK(new_data.HasIntListAttribute(
+                ax::mojom::IntListAttribute::kTextOperationStartOffsets));
+            DCHECK(new_data.HasIntListAttribute(
+                ax::mojom::IntListAttribute::kTextOperationEndOffsets));
+            DCHECK(new_data.HasIntListAttribute(
+                ax::mojom::IntListAttribute::kTextOperationStartAnchorIds));
+            DCHECK(new_data.HasIntListAttribute(
+                ax::mojom::IntListAttribute::kTextOperationEndAnchorIds));
+            DCHECK(new_data.HasIntListAttribute(
+                ax::mojom::IntListAttribute::kTextOperations));
+            observer.OnTextDeletionOrInsertion(*node, new_data);
+          }
+        }
         NotifyNodeAttributesWillChange(
             node, update_state,
             update_state.old_tree_data ? &update_state.old_tree_data.value()

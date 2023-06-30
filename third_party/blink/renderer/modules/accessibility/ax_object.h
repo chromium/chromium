@@ -419,6 +419,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // editable.
   bool IsNonAtomicTextField() const;
 
+  // Returns the lowest text field ancestor, including itself.
+  AXObject* GetTextFieldAncestor();
+
   // Returns true if this object is a text field that is used for entering
   // passwords, i.e. <input type=password>.
   bool IsPasswordField() const;

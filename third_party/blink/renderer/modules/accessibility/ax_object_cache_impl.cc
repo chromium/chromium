@@ -4021,6 +4021,19 @@ void AXObjectCacheImpl::MarkElementDirty(const Node* element) {
   MarkAXObjectDirty(Get(element));
 }
 
+WTF::Vector<TextChangedOperation>*
+AXObjectCacheImpl::GetFromTextOperationInNodeIdMap(AXID id) {
+  auto it = text_operation_in_node_ids_.find(id);
+  if (it != text_operation_in_node_ids_.end()) {
+    return &it.Get()->value;
+  }
+  return nullptr;
+}
+
+void AXObjectCacheImpl::ClearTextOperationInNodeIdMap() {
+  text_operation_in_node_ids_.clear();
+}
+
 void AXObjectCacheImpl::MarkElementDirtyWithCleanLayout(const Node* element) {
   // Warning, if no AXObject exists for element, nothing is marked dirty.
   MarkAXObjectDirtyWithCleanLayout(Get(element));
@@ -4462,17 +4475,51 @@ void AXObjectCacheImpl::HandleEditableTextContentChanged(Node* node) {
       node);
 }
 
+void AXObjectCacheImpl::HandleDeletionOrInsertionInTextField(
+    const SelectionInDOMTree& changed_selection,
+    bool is_deletion) {
+  Position start_pos = changed_selection.ComputeStartPosition();
+  Position end_pos = changed_selection.ComputeEndPosition();
+
+  // Currently there are scenarios where the start/end are not offset in
+  // anchor, if this is the case, we need to compute their offset in the
+  // container node since we need this information on the browser side.
+  int start_offset = start_pos.ComputeOffsetInContainerNode();
+  int end_offset = end_pos.ComputeOffsetInContainerNode();
+
+  AXObject* start_obj = GetOrCreate(start_pos.ComputeContainerNode());
+  AXObject* end_obj = GetOrCreate(end_pos.ComputeContainerNode());
+  if (!start_obj || !end_obj) {
+    return;
+  }
+
+  AXObject* text_field_obj = start_obj->GetTextFieldAncestor();
+  if (!text_field_obj) {
+    return;
+  }
+
+  auto it = text_operation_in_node_ids_.find(text_field_obj->AXObjectID());
+  ax::mojom::blink::Command op = is_deletion
+                                     ? ax::mojom::blink::Command::kDelete
+                                     : ax::mojom::blink::Command::kInsert;
+  if (it != text_operation_in_node_ids_.end()) {
+    it->value.push_back(TextChangedOperation(start_offset, end_offset,
+                                             start_obj->AXObjectID(),
+                                             end_obj->AXObjectID(), op));
+  } else {
+    WTF::Vector<TextChangedOperation> info{
+        TextChangedOperation(start_offset, end_offset, start_obj->AXObjectID(),
+                             end_obj->AXObjectID(), op)};
+    text_operation_in_node_ids_.Set(text_field_obj->AXObjectID(), info);
+  }
+}
+
 void AXObjectCacheImpl::HandleEditableTextContentChangedWithCleanLayout(
     Node* node) {
-  AXObject* obj = nullptr;
-  do {
-    obj = GetOrCreate(node);
-  } while (!obj && (node = node->parentNode()));
-  if (!obj)
-    return;
-
-  while (obj && !obj->IsTextField())
-    obj = obj->ParentObject();
+  AXObject* obj = GetOrCreate(node);
+  if (obj) {
+    obj = obj->GetTextFieldAncestor();
+  }
 
   PostNotification(obj, ax::mojom::Event::kValueChanged);
 }

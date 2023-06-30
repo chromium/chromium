@@ -422,6 +422,9 @@ void TypingCommand::InsertText(
     return;
   const wtf_size_t selection_start = selection_offsets.Start();
 
+  frame->GetEditor().NotifyAccessibilityOfDeletionOrInsertionInTextField(
+      passed_selection_for_insertion_as_undo_step, /* is_deletion*/ false);
+
   // Set the starting and ending selection appropriately if we are using a
   // selection that is different from the current selection.  In the future, we
   // should change EditCommand to deal with custom selections in a general way
@@ -998,6 +1001,8 @@ void TypingCommand::DeleteKeyPressedInternal(
   if (frame->GetEditor().Behavior().ShouldUndoOfDeleteSelectText() &&
       opened_by_backward_delete_)
     SetStartingSelection(selection_after_undo);
+  frame->GetEditor().NotifyAccessibilityOfDeletionOrInsertionInTextField(
+      selection_to_delete, /* is_deletion */ true);
   DeleteSelectionIfRange(selection_to_delete, editing_state);
   if (editing_state->IsAborted())
     return;

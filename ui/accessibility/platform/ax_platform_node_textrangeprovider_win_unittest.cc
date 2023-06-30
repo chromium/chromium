@@ -7574,4 +7574,364 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                                    /*expected_count*/ 1);
 }
 
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       OnTextDeletionOrInsertionDeletionOnTwoRelevantNodes) {
+  // This test is for `OnTextDeletionOrInsertion` which is called when
+  // unserializing. This test covers the following scenario of text deletion:
+  // <div contenteditable>hello world red blue</div>
+  // Our text range would be (with start and end denoted by <> and deletion
+  // range by |):
+  // "|hello| world re<d> blue".
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGenericContainer state=kRichlyEditable,kEditable boolAttribute=kNonAtomicTextFieldRoot,true
+    ++++++3 kStaticText state=kRichlyEditable,kEditable
+    ++++++++4 kInlineTextBox state=kRichlyEditable,kEditable
+  )HTML"));
+
+  update.nodes[1].SetName("hello world red blue");
+  update.nodes[2].SetName("hello world red blue");
+  update.nodes[3].SetName("hello world red blue");
+
+  AXTree* tree = Init(update);
+  AXNode* text_field = tree->GetFromId(1);
+  AXNode* st_node = tree->GetFromId(4);
+
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(text_field));
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> original;
+  CreateTextRangeProviderWin(
+      original, owner,
+      /*start_anchor*/ st_node, /*start_offset*/ 14,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor*/ st_node, /*end_offset*/ 14,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartOffsets,
+      std::vector<int>{0});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndOffsets,
+      std::vector<int>{5});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartAnchorIds,
+      std::vector<int>{1});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndAnchorIds,
+      std::vector<int>{1});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperations,
+      std::vector<int>{static_cast<int>(ax::mojom::Command::kDelete)});
+
+  ASSERT_TRUE(GetTree()->Unserialize(update));
+
+  // We should expect the TextRangeProvider's offset to decrease by 9 on both
+  // the start and end.
+  ComPtr<AXPlatformNodeTextRangeProviderWin> after_deletion_expected;
+  CreateTextRangeProviderWin(
+      after_deletion_expected, owner,
+      /*start_anchor*/ st_node, /*start_offset*/ 9,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor*/ st_node, /*end_offset*/ 9,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  BOOL are_same;
+  original->Compare(after_deletion_expected.Get(), &are_same);
+  EXPECT_TRUE(are_same);
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       OnTextDeletionOrInsertionDeletionOnTwoIrrelevantNodes) {
+  // This test is for `OnTextDeletionOrInsertion` which is called when
+  // unserializing. This test covers the following scenario of text deletion:
+  // <div contenteditable><span>hello</span> world red blue</div>
+  // Our text range would be (with start and end denoted by <> and deletion
+  // range by |):
+  // "world re<d> blue".
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGenericContainer state=kRichlyEditable,kEditable boolAttribute=kNonAtomicTextFieldRoot,true
+    ++++++3 kStaticText name="hello" state=kRichlyEditable,kEditable
+    ++++++++4 kInlineTextBox name="hello" state=kRichlyEditable,kEditable
+    ++++++5 kStaticText state=kRichlyEditable,kEditable
+    ++++++++6 kInlineTextBox state=kRichlyEditable,kEditable
+  )HTML"));
+
+  update.nodes[4].SetName("world red blue");
+  update.nodes[5].SetName("world red blue");
+
+  AXTree* tree = Init(update);
+  AXNode* text_field = tree->GetFromId(1);
+  AXNode* st_node = tree->GetFromId(4);
+
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(text_field));
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> original;
+  CreateTextRangeProviderWin(
+      original, owner,
+      /*start_anchor*/ st_node, /*start_offset*/ 14,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor*/ st_node, /*end_offset*/ 14,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartOffsets,
+      std::vector<int>{0});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndOffsets,
+      std::vector<int>{5});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartAnchorIds,
+      std::vector<int>{3});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndAnchorIds,
+      std::vector<int>{3});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperations,
+      std::vector<int>{static_cast<int>(ax::mojom::Command::kDelete)});
+
+  ASSERT_TRUE(GetTree()->Unserialize(update));
+
+  // We should expect the TextRangeProvider's offset to be unaffected
+  ComPtr<AXPlatformNodeTextRangeProviderWin> after_deletion_expected;
+  CreateTextRangeProviderWin(
+      after_deletion_expected, owner,
+      /*start_anchor*/ st_node, /*start_offset*/ 14,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor*/ st_node, /*end_offset*/ 14,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  BOOL are_same;
+  original->Compare(after_deletion_expected.Get(), &are_same);
+  EXPECT_TRUE(are_same);
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       OnTextDeletionOrInsertionDeletionOnOneIrrelevantOneRelevant) {
+  // This test is for `OnTextDeletionOrInsertion` which is called when
+  // unserializing. This test covers the following scenario of text deletion:
+  // <div contenteditable><span>hello world</span> red green blue</div>
+  // Our text range would be (with start and end denoted by <> and deletion
+  // range by |):
+  // "red| gre<e>n blue".
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGenericContainer state=kRichlyEditable,kEditable boolAttribute=kNonAtomicTextFieldRoot,true
+    ++++++3 kStaticText state=kRichlyEditable,kEditable
+    ++++++++4 kInlineTextBox state=kRichlyEditable,kEditable
+    ++++++5 kStaticText state=kRichlyEditable,kEditable
+    ++++++++6 kInlineTextBox state=kRichlyEditable,kEditable
+  )HTML"));
+
+  update.nodes[1].SetName("hello world red green blue");
+  update.nodes[2].SetName("hello world ");
+  update.nodes[3].SetName("hello world ");
+  update.nodes[4].SetName("red green blue");
+  update.nodes[5].SetName("red green blue");
+
+  AXTree* tree = Init(update);
+  AXNode* text_field = tree->GetFromId(1);
+  AXNode* st_node = tree->GetFromId(5);
+
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(text_field));
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> original;
+  CreateTextRangeProviderWin(
+      original, owner,
+      /*start_anchor*/ st_node, /*start_offset*/ 20,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor*/ st_node, /*end_offset*/ 20,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartOffsets,
+      std::vector<int>{6});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndOffsets,
+      std::vector<int>{3});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartAnchorIds,
+      std::vector<int>{3});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndAnchorIds,
+      std::vector<int>{5});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperations,
+      std::vector<int>{static_cast<int>(ax::mojom::Command::kDelete)});
+
+  ASSERT_TRUE(GetTree()->Unserialize(update));
+
+  // We should expect the TextRangeProvider's offset to decrease by 3
+  // units since from the deleted range, only "red" affects the offset.
+  ComPtr<AXPlatformNodeTextRangeProviderWin> after_deletion_expected;
+  CreateTextRangeProviderWin(
+      after_deletion_expected, owner,
+      /*start_anchor*/ st_node, /*start_offset*/ 17,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor*/ st_node, /*end_offset*/ 17,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  BOOL are_same;
+  original->Compare(after_deletion_expected.Get(), &are_same);
+  EXPECT_TRUE(are_same);
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       OnTextDeletionOrInsertionDeletionInsideTextRangeProvider) {
+  // This test is for `OnTextDeletionOrInsertion` which is called when
+  // unserializing. This test covers the following scenario of text deletion:
+  // <div contenteditable><span>hello world</span> red green blue</div>
+  // Our text range would be (with start and end denoted by <> and deletion
+  // range by |):
+  // "hel<l>o |world red| gre<e>n blue".
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGenericContainer state=kRichlyEditable,kEditable boolAttribute=kNonAtomicTextFieldRoot,true
+    ++++++3 kStaticText state=kRichlyEditable,kEditable
+    ++++++++4 kInlineTextBox state=kRichlyEditable,kEditable
+    ++++++5 kStaticText state=kRichlyEditable,kEditable
+    ++++++++6 kInlineTextBox state=kRichlyEditable,kEditable
+  )HTML"));
+
+  update.nodes[1].SetName("hello world red green blue");
+  update.nodes[2].SetName("hello world ");
+  update.nodes[3].SetName("hello world ");
+  update.nodes[4].SetName("red green blue");
+  update.nodes[5].SetName("red green blue");
+
+  AXTree* tree = Init(update);
+  AXNode* text_field = tree->GetFromId(1);
+  AXNode* span_node = tree->GetFromId(3);
+  AXNode* st_node = tree->GetFromId(5);
+
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(text_field));
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> original;
+  CreateTextRangeProviderWin(
+      original, owner,
+      /*start_anchor*/ span_node, /*start_offset*/ 3,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor*/ st_node, /*end_offset*/ 7,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartOffsets,
+      std::vector<int>{6});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndOffsets,
+      std::vector<int>{3});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartAnchorIds,
+      std::vector<int>{3});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndAnchorIds,
+      std::vector<int>{5});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperations,
+      std::vector<int>{static_cast<int>(ax::mojom::Command::kDelete)});
+
+  ASSERT_TRUE(GetTree()->Unserialize(update));
+
+  // We should expect the TextRangeProvider's end offset to decrease by 3
+  // units since from the deleted range, since "red" affects the offset, but we
+  // should expect the start offset to remain unaffected.
+  ComPtr<AXPlatformNodeTextRangeProviderWin> after_deletion_expected;
+  CreateTextRangeProviderWin(
+      after_deletion_expected, owner,
+      /*start_anchor*/ span_node, /*start_offset*/ 3,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor*/ st_node, /*end_offset*/ 4,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  BOOL are_same;
+  original->Compare(after_deletion_expected.Get(), &are_same);
+  EXPECT_TRUE(are_same);
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       OnTextDeletionOrInsertionDeletionMultipleDeletionsAndInsertions) {
+  // This test is for `OnTextDeletionOrInsertion` which is called when
+  // unserializing. This test covers the following scenario of text deletion:
+  // <div contenteditable>hello world red green blue</div>
+  // Our text range would be (with start and end denoted by <> and deletion
+  // range by |):
+  // "<h>ello world red gree|n| blue<>"
+  // "<h>ello world red gre|e| blue<>"
+  // "<h>ello world red gr|e| blue<>"
+  // "<h>ello world red g|r| blue<>"
+  // "<h>ello world red |g| blue<>"
+  // And then we do some insertions, denoted again by |
+  // "<h>ello world red |g| blue<>"
+  // "<h>ello world red g|o| blue<>"
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGenericContainer state=kRichlyEditable,kEditable boolAttribute=kNonAtomicTextFieldRoot,true
+    ++++++3 kStaticText state=kRichlyEditable,kEditable
+    ++++++++4 kInlineTextBox state=kRichlyEditable,kEditable
+  )HTML"));
+
+  update.nodes[1].SetName("hello world red green blue");
+  update.nodes[2].SetName("hello world red green blue");
+  update.nodes[3].SetName("hello world red green blue");
+
+  AXTree* tree = Init(update);
+  AXNode* text_field = tree->GetFromId(1);
+  AXNode* st_node = tree->GetFromId(3);
+
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(text_field));
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> original;
+  CreateTextRangeProviderWin(
+      original, owner,
+      /*start_anchor*/ st_node, /*start_offset*/ 0,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor*/ st_node, /*end_offset*/ 26,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartOffsets,
+      std::vector<int>{20, 19, 18, 17, 16, 16, 17});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndOffsets,
+      std::vector<int>{21, 20, 19, 18, 17, 16, 17});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartAnchorIds,
+      std::vector<int>{3, 3, 3, 3, 3, 3, 3});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndAnchorIds,
+      std::vector<int>{3, 3, 3, 3, 3, 3, 3});
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperations,
+      std::vector<int>{static_cast<int>(ax::mojom::Command::kDelete),
+                       static_cast<int>(ax::mojom::Command::kDelete),
+                       static_cast<int>(ax::mojom::Command::kDelete),
+                       static_cast<int>(ax::mojom::Command::kDelete),
+                       static_cast<int>(ax::mojom::Command::kDelete),
+                       static_cast<int>(ax::mojom::Command::kInsert),
+                       static_cast<int>(ax::mojom::Command::kInsert)});
+
+  ASSERT_TRUE(GetTree()->Unserialize(update));
+
+  // We should expect the TextRangeProvider's end offset to decrease by 3
+  // units since there were 5 deletions and 2 insertions relevant to it but we
+  // should expect the start offset to remain unaffected, since none of these
+  // were relevant to it.
+  ComPtr<AXPlatformNodeTextRangeProviderWin> after_deletion_expected;
+  CreateTextRangeProviderWin(
+      after_deletion_expected, owner,
+      /*start_anchor*/ st_node, /*start_offset*/ 0,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor*/ st_node, /*end_offset*/ 23,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  BOOL are_same;
+  original->Compare(after_deletion_expected.Get(), &are_same);
+  EXPECT_TRUE(are_same);
+}
+
 }  // namespace ui

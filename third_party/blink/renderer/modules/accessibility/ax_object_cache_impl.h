@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache_base.h"
 #include "third_party/blink/renderer/core/accessibility/blink_ax_event_intent.h"
+#include "third_party/blink/renderer/core/editing/commands/selection_for_undo_step.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
@@ -81,6 +82,30 @@ class WebLocalFrameClient;
 // type of object to create, and use a node whenever possible, in order to
 // enable more stable IDs for most objects.
 enum AXObjectType { kPruneSubtree = 0, kAXNodeObject, kAXLayoutObject };
+
+struct TextChangedOperation {
+  TextChangedOperation()
+      : start(0),
+        end(0),
+        start_anchor_id(0),
+        end_anchor_id(0),
+        op(ax::mojom::blink::Command::kNone) {}
+  TextChangedOperation(int start_in,
+                       int end_in,
+                       AXID start_id_in,
+                       AXID end_id_in,
+                       ax::mojom::blink::Command op_in)
+      : start(start_in),
+        end(end_in),
+        start_anchor_id(start_id_in),
+        end_anchor_id(end_id_in),
+        op(op_in) {}
+  int start;
+  int end;
+  AXID start_anchor_id;
+  AXID end_anchor_id;
+  ax::mojom::blink::Command op;
+};
 
 // This class should only be used from inside the accessibility directory.
 class MODULES_EXPORT AXObjectCacheImpl
@@ -219,6 +244,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleInitialFocus() override;
   void HandleTextFormControlChanged(Node*) override;
   void HandleEditableTextContentChanged(Node*) override;
+  void HandleDeletionOrInsertionInTextField(
+      const SelectionInDOMTree& changed_selection,
+      bool is_deletion) override;
   void HandleTextMarkerDataAdded(Node* start, Node* end) override;
   void HandleValueChanged(Node*) override;
   void HandleUpdateActiveMenuOption(Node*) override;
@@ -527,6 +555,13 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Returns true if UpdateTreeIfNeeded has been called and has not yet
   /// finished.
   bool UpdatingTree() { return updating_tree_; }
+
+  // Returns the `TextChangedOperation` associated with the `id` from the
+  // `text_operation_in_node_ids_` map, if `id` is in the map.
+  WTF::Vector<TextChangedOperation>* GetFromTextOperationInNodeIdMap(AXID id);
+
+  // Clears the map after each call, should be called after each serialization.
+  void ClearTextOperationInNodeIdMap();
 
  protected:
   void PostPlatformNotification(
@@ -929,6 +964,11 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // The list of node IDs whose position is fixed or sticky.
   HashSet<AXID> fixed_or_sticky_node_ids_;
+
+  // Map of node IDs where there was an operation done, could be deletion or
+  // insertion. The items in the vector are in the order that the operations
+  // were made in.
+  HashMap<AXID, WTF::Vector<TextChangedOperation>> text_operation_in_node_ids_;
 
   // The source of the event that is currently being handled.
   ax::mojom::blink::EventFrom active_event_from_ =

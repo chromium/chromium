@@ -2504,4 +2504,63 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 #endif
 
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       TestNotificationTextDeletedInTextfield) {
+  LoadInitialAccessibilityTreeFromHtml(
+      "<input autofocus id='input' aria-label='Input' type='text' value='old "
+      "value'/>");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Input");
+
+  BrowserAccessibility* input_node = FindNode("Input");
+  ASSERT_NE(input_node, nullptr);
+
+  // We select an arbitrary portion of the text.
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ax::mojom::Event::kDocumentSelectionChanged);
+
+    ui::AXActionData action_data;
+    action_data.anchor_node_id = input_node->GetId();
+    action_data.anchor_offset = 1;
+    action_data.focus_node_id = input_node->GetId();
+    action_data.focus_offset = 3;
+    action_data.action = ax::mojom::Action::kSetSelection;
+    input_node->AccessibilityPerformAction(action_data);
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+  // We delete the selection and make sure the `kTextDeletedInTextfield` event
+  // is fired
+  {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                           ui::kAXModeComplete,
+                                           ax::mojom::Event::kValueChanged);
+
+    SimulateKeyPress(shell()->web_contents(), ui::DomKey::BACKSPACE,
+                     ui::DomCode::BACKSPACE, ui::VKEY_BACK, /* control */ false,
+                     /* shift */ false, /* alt */ false,
+                     /* command */ false);
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+
+  const BrowserAccessibility* root =
+      GetManager()->GetBrowserAccessibilityRoot();
+  ASSERT_NE(root, nullptr);
+  const BrowserAccessibility* input = FindNode("Input");
+  ASSERT_NE(input, nullptr);
+
+  EXPECT_TRUE(input->HasIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartOffsets));
+  EXPECT_TRUE(input->HasIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndOffsets));
+  EXPECT_TRUE(input->HasIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartAnchorIds));
+  EXPECT_TRUE(input->HasIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndAnchorIds));
+  EXPECT_TRUE(
+      input->HasIntListAttribute(ax::mojom::IntListAttribute::kTextOperations));
+}
+
 }  // namespace content

@@ -278,6 +278,17 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
     void OnNodeDeleted(AXTree* tree, AXNodeID node_id) override;
     void OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) override;
 
+    // This function is in charge of modifying the text offset when it changes
+    // by deletion of text. The renderer fires an even notifying that the text
+    // offset changed via a deletion, we listen to that here and adjust
+    // accordingly. This is needed so that the text offset that the renderer has
+    // and the text offset that we have here is synched in case a deletion
+    // happens. Otherwise, there are scenarios where an AT may perform an
+    // operation, such as a selection, on a range that is no longer in sync with
+    // what the renderer has which can lead to wrong behavior.
+    void OnTextDeletionOrInsertion(const AXNode& node,
+                                   const AXNodeData& new_data) override;
+
    private:
     struct DeletionOfInterest {
       AXTreeID tree_id;
@@ -297,6 +308,16 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
     // OnNodeDeleted. However, it may still be preferable to defer the
     // validation to keep work out of unserialize.
     void ValidateEndpointsAfterNodeDeletionIfNeeded();
+
+    void AdjustEndpointForTextFieldEdit(
+        const AXNode& text_field_node,
+        const AXPositionInstance& current_position,
+        AXNode* edit_start_anchor,
+        AXNode* edit_end_anchor,
+        int edit_start,
+        int edit_end,
+        bool is_start,
+        ax::mojom::Command op);
 
     AXPositionInstance start_;
     AXPositionInstance end_;

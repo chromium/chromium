@@ -1948,6 +1948,173 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
   }
 }
 
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
+    OnTextDeletionOrInsertion(const AXNode& node, const AXNodeData& new_data) {
+  DCHECK(new_data.IsTextField());
+
+  const std::vector<int>& start_offsets = new_data.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartOffsets);
+  const std::vector<int>& end_offsets = new_data.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndOffsets);
+  const std::vector<int>& start_ids = new_data.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartAnchorIds);
+  const std::vector<int>& end_ids = new_data.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndAnchorIds);
+  const std::vector<int>& op_vector = new_data.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperations);
+
+  // Each position in the vectors corresponds to a single operation, and these
+  // positions across the vectors correspond to each other. As such the vectors
+  // must always be the same size.
+  DCHECK(start_offsets.size() == end_offsets.size());
+  DCHECK(start_offsets.size() == start_ids.size());
+  DCHECK(start_offsets.size() == end_ids.size());
+  DCHECK(start_offsets.size() == op_vector.size());
+
+  AXTreeManager* manager = node.GetManager();
+  DCHECK(manager);
+
+  for (size_t i = 0; i < start_offsets.size(); i++) {
+    int edit_start = start_offsets[i];
+    int edit_end = end_offsets[i];
+    int edit_start_id = start_ids[i];
+    int edit_end_id = end_ids[i];
+    ax::mojom::Command op = static_cast<ax::mojom::Command>(op_vector[i]);
+    DCHECK(op == ax::mojom::Command::kDelete ||
+           op == ax::mojom::Command::kInsert);
+    AXNode* edit_start_node = manager->GetNode(edit_start_id);
+    AXNode* edit_end_node = manager->GetNode(edit_end_id);
+
+    AdjustEndpointForTextFieldEdit(node, GetStart(), edit_start_node,
+                                   edit_end_node, edit_start, edit_end,
+                                   /* is_start */ true, op);
+    AdjustEndpointForTextFieldEdit(node, GetEnd(), edit_start_node,
+                                   edit_end_node, edit_start, edit_end,
+                                   /* is_start */ false, op);
+  }
+}
+
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
+    AdjustEndpointForTextFieldEdit(const AXNode& text_field_node,
+                                   const AXPositionInstance& current_position,
+                                   AXNode* edit_start_anchor,
+                                   AXNode* edit_end_anchor,
+                                   int edit_start,
+                                   int edit_end,
+                                   bool is_start,
+                                   ax::mojom::Command op) {
+  if (!edit_start_anchor || !edit_end_anchor) {
+    return;
+  }
+  DCHECK(op == ax::mojom::Command::kDelete ||
+         op == ax::mojom::Command::kInsert);
+
+  // At this point there are three possibilities for the relevant deletion or
+  // insertion anchors: Either both the start and the end are relevant, only
+  // one is, or neither. There are two conditions as to why one might not be
+  // relevant:
+  // The deletion/insertion anchor is different from the endpoint's anchor
+  // AND one is not a descendant of the other.
+  // If these conditions are met, the deletion/insertion would be
+  // considered irrelevant for this endpoint since it would not affect the text
+  // offset. First we check if the insertion or deletion start is relevant:
+  bool start_is_relevant = true;
+  bool end_is_relevant = true;
+  if (current_position->GetAnchor() &&
+      current_position->GetAnchor()->id() != edit_start_anchor->id() &&
+      !current_position->GetAnchor()->IsDescendantOf(edit_start_anchor) &&
+      !edit_start_anchor->IsDescendantOf(current_position->GetAnchor())) {
+    start_is_relevant = false;
+  }
+  // Then we check if the end is relevant.
+  if (current_position->GetAnchor() &&
+      current_position->GetAnchor()->id() != edit_end_anchor->id() &&
+      !current_position->GetAnchor()->IsDescendantOf(edit_end_anchor) &&
+      !edit_end_anchor->IsDescendantOf(current_position->GetAnchor())) {
+    end_is_relevant = false;
+  }
+  // If neither is relevant, then the offset will be unaffected.
+  if (!start_is_relevant && !end_is_relevant) {
+    return;
+  }
+
+  // Now we calculate the amount by which we'll have to modify the offset,
+  // depending on whether both the start are end are relevant, or only one of
+  // them. For example we could have this structure inside a contenteditable;
+  // <div contenteditable><span> hello world </span> sport team</div>
+  // and our text range could be "sport team" but the deletion range could be
+  // "world sport". As far as our text range is concerned, only the deletion of
+  // "sport" is relevant.
+  int difference_or_increase = edit_end - edit_start;
+  if (!start_is_relevant && end_is_relevant) {
+    difference_or_increase = edit_end;
+  } else if (start_is_relevant && !end_is_relevant) {
+    difference_or_increase = edit_start;
+  }
+
+  bool deletion_encompasses_endpoint = false;
+
+  if (op == ax::mojom::Command::kInsert) {
+    // The + 1 is needed since if one character is inserted,
+    // the offsets for the insertion will both be just the position of the new
+    // character.
+    difference_or_increase = edit_end - edit_start + 1;
+  } else {
+    difference_or_increase *= -1;
+
+    // We now create ancestor positions on the text field node for the deletion
+    // start, end, and the current position. This is so that we can determine if
+    // the deletion encompasses the current position, this is a scenario we need
+    // to account for.
+    AXPositionInstance deletion_start_position =
+        AXNodePosition::CreateTextPosition(*edit_start_anchor, edit_start,
+                                           current_position->affinity())
+            ->CreateAncestorPosition(&text_field_node,
+                                     ax::mojom::MoveDirection::kForward);
+    AXPositionInstance deletion_end_position =
+        AXNodePosition::CreateTextPosition(*edit_end_anchor, edit_end,
+                                           current_position->affinity())
+            ->CreateAncestorPosition(&text_field_node,
+                                     ax::mojom::MoveDirection::kForward);
+    AXPositionInstance current_text_field_position =
+        current_position->CreateAncestorPosition(
+            &text_field_node, ax::mojom::MoveDirection::kForward);
+    deletion_encompasses_endpoint =
+        deletion_start_position->text_offset() <=
+            current_text_field_position->text_offset() &&
+        deletion_end_position->text_offset() >=
+            current_text_field_position->text_offset();
+  }
+
+  if (edit_start < current_position->text_offset()) {
+    if (deletion_encompasses_endpoint) {
+      if (is_start) {
+        SetStart(AXNodePosition::CreateNullPosition());
+        return;
+      }
+      SetEnd(AXNodePosition::CreateNullPosition());
+      return;
+    }
+    if (is_start) {
+      SetStart(AXNodePosition::CreateTextPosition(
+          *current_position->GetAnchor(),
+          current_position->text_offset() + difference_or_increase,
+          current_position->affinity()));
+      return;
+    }
+    SetEnd(AXNodePosition::CreateTextPosition(
+        *current_position->GetAnchor(),
+        current_position->text_offset() + difference_or_increase,
+        current_position->affinity()));
+    return;
+  }
+  if (is_start) {
+    SetStart(current_position->Clone());
+  } else {
+    SetEnd(current_position->Clone());
+  }
+}
+
 // Ensures that our endpoints are always valid (step 2, all scenarios). See
 // comment in header file for more details.
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::

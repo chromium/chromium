@@ -2800,6 +2800,14 @@ bool AXObject::IsNonAtomicTextField() const {
   return HasContentEditableAttributeSet() || IsARIATextField();
 }
 
+AXObject* AXObject::GetTextFieldAncestor() {
+  AXObject* ancestor = this;
+  while (ancestor && !ancestor->IsTextField()) {
+    ancestor = ancestor->ParentObject();
+  }
+  return ancestor;
+}
+
 bool AXObject::IsPasswordField() const {
   auto* input_element = DynamicTo<HTMLInputElement>(GetNode());
   return input_element && input_element->type() == input_type_names::kPassword;

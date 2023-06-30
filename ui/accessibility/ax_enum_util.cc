@@ -1851,6 +1851,16 @@ const char* ToString(ax::mojom::IntListAttribute int_list_attribute) {
       return "wordEnds";
     case ax::mojom::IntListAttribute::kCustomActionIds:
       return "customActionIds";
+    case ax::mojom::IntListAttribute::kTextOperationStartOffsets:
+      return "textOperationStartOffsets";
+    case ax::mojom::IntListAttribute::kTextOperationEndOffsets:
+      return "textOperationEndOffsets";
+    case ax::mojom::IntListAttribute::kTextOperationStartAnchorIds:
+      return "textOperationStartAnchorIds";
+    case ax::mojom::IntListAttribute::kTextOperationEndAnchorIds:
+      return "textOperationEndAnchorIds";
+    case ax::mojom::IntListAttribute::kTextOperations:
+      return "textOperations";
   }
 
   return "";
