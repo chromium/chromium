@@ -8,7 +8,7 @@
 [
   {
     "namespace": "runtime",
-    "description": "Use the <code>chrome.runtime</code> API to retrieve the background page, return details about the manifest, and listen for and respond to events in the app or extension lifecycle. You can also use this API to convert the relative path of URLs to fully-qualified URLs.",
+    "description": "Use the <code>chrome.runtime</code> API to retrieve the service worker, return details about the manifest, and listen for and respond to events in the app or extension lifecycle. You can also use this API to convert the relative path of URLs to fully-qualified URLs.",
     "compiler_options": {
       "modernised_enums": true
     },
@@ -83,26 +83,39 @@
         "type": "string",
         "description": "The operating system Chrome is running on.",
         "enum": [
-          "mac",
-          "win",
-          "android",
-          "cros",
-          "linux",
-          "openbsd",
-          "fuchsia"
+            {"name": "mac", "description": "Specifies the MacOS operating system."},
+            {"name": "win", "description": "Specifies the Windows operating system."},
+            {"name": "android", "description": "Specifies the Android operating system."},
+            {"name": "cros", "description": "Specifies the Chrome operating system."},
+            {"name": "linux", "description": "Specifies the Linux operating system."},
+            {"name": "openbsd", "description": "Specifies the OpenBSD operating system."},
+            {"name": "fuchsia", "description": "Specifies the Fuchsia operating system."}
         ]
       },
       {
         "id": "PlatformArch",
         "type": "string",
-        "enum": ["arm", "arm64", "x86-32", "x86-64", "mips", "mips64"],
+        "enum": [
+            {"name": "arm", "description": "Specifies the processer architecture as arm."},
+            {"name": "arm64", "description": "Specifies the processer architecture as arm64."},
+            {"name": "x86-32", "description": "Specifies the processer architecture as x86-32."},
+            {"name": "x86-64", "description": "Specifies the processer architecture as x86-64."},
+            {"name": "mips", "description": "Specifies the processer architecture as mips."},
+            {"name": "mips64", "description": "Specifies the processer architecture as mips64."}
+         ],
         "description": "The machine's processor architecture."
       },
       {
         "id": "PlatformNaclArch",
         "description": "The native client architecture. This may be different from arch on some platforms.",
         "type": "string",
-        "enum": ["arm", "x86-32", "x86-64", "mips", "mips64"]
+        "enum": [
+          {"name": "arm", "description": "Specifies the native client architecture as arm."},
+          {"name": "x86-32", "description": "Specifies the native client architecture as x86-32."},
+          {"name": "x86-64", "description": "Specifies the native client architecture as x86-64."},
+          {"name": "mips", "description": "Specifies the native client architecture as mips."},
+          {"name": "mips64", "description": "Specifies the native client architecture as mips64."}
+        ]
       },
       {
         "id": "PlatformInfo",
@@ -126,25 +139,44 @@
       {
         "id": "RequestUpdateCheckStatus",
         "type": "string",
-        "enum": ["throttled", "no_update", "update_available"],
+        "enum": [
+          {"name":  "throttled", "description": "Specifies that the status check has been throttled. This can occur after repeated checks within a short amount of time."},
+          {"name": "no_update", "description": "Specifies that there are no available updates to install."},
+          {"name": "update_available", "description": "Specifies that there is an available update to install."}
+        ],
         "description": "Result of the update check."
       },
       {
         "id": "OnInstalledReason",
         "type": "string",
-        "enum": ["install", "update", "chrome_update", "shared_module_update"],
+        "enum": [
+          {"name": "install", "description": "Specifies the event reason as an installation."},
+          {"name": "update", "description": "Specifies the event reason as an extension update."},
+          {"name": "chrome_update", "description": "Specifies the event reason as a Chrome update."},
+          {"name": "shared_module_update", "description": "Specifies the event reason as an update to a shared module."}
+        ],
         "description": "The reason that this event is being dispatched."
       },
       {
         "id": "OnRestartRequiredReason",
         "type": "string",
         "description": "The reason that the event is being dispatched. 'app_update' is used when the restart is needed because the application is updated to a newer version. 'os_update' is used when the restart is needed because the browser/OS is updated to a newer version. 'periodic' is used when the system runs for more than the permitted uptime set in the enterprise policy.",
-        "enum": ["app_update", "os_update", "periodic"]
+        "enum": [
+          {"name": "app_update", "description": "Specifies the event reason as an update to the app."},
+          {"name": "os_update", "description": "Specifies the event reason as an update to the operating system."},
+          {"name": "periodic", "description": "Specifies the event reason as a periodic restart of the app."}
+        ]
       },
       {
         "id": "ContextType",
         "type": "string",
-        "enum": ["TAB", "POPUP", "BACKGROUND", "OFFSCREEN_DOCUMENT", "SIDE_PANEL"]
+        "enum": [
+          {"name": "TAB", "description": "Specifies the context type as a tab"},
+          {"name": "POPUP", "description": "Specifies the context type as an extension popup window"},
+          {"name": "BACKGROUND", "description": "Specifies the context type as a service worker."},
+          {"name": "OFFSCREEN_DOCUMENT", "description": "Specifies the context type as an offscreen document."},
+          {"name": "SIDE_PANEL", "description": "Specifies the context type as a side panel."}
+        ]
       },
       {
         "id": "ExtensionContext",
