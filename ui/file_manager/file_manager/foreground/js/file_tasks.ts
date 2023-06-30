@@ -563,7 +563,7 @@ export class FileTasks {
               str('OFFLINE_COLUMN_LABEL'));
 
       this.ui_.alertDialog.showHtml(str('OFFLINE_HEADER'), msg);
-      return;
+      return Promise.reject();
     }
 
     const isOnMetered = this.volumeManager_.getDriveConnectionState().type ===
