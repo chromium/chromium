@@ -26,8 +26,6 @@ declare_args() {
       build_with_chromium &&
       # TODO(crbug.com/1386212): Mac official.
       !(is_official_build && is_mac) &&
-      # TODO(crbug.com/1386212): Bindgen finds bad system headers on XCode 15.
-      !(is_ios && xcode_version_int >= 1500) &&
       # TODO(crbug.com/1453618): Windows ARM64 is missing clang_rt libs, and
       # clang_rt.profile is needed when coverage is enabled.
       !(is_win && use_clang_coverage && target_cpu == "arm64")

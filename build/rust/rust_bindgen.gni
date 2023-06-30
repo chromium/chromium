@@ -116,17 +116,21 @@ template("rust_bindgen") {
       "{{cflags_c}}",
     ]
 
-    # Clang ships with some headers, which are installed along side the binary,
-    # and which clang itself finds by default, but libclang does not (see also
-    # https://reviews.llvm.org/D95396 which would resolve this but was reverted).
-    clang_headers = rebase_path(
-            clang_base_path + "/lib/clang/" + clang_version + "/include",
-            root_build_dir)
-    if (is_win) {
-      args += [ "-imsvc" + clang_headers ]
-    } else {
-      args += [ "-isystem" + clang_headers ]
-    }
+    # libclang will run the system `clang` to find the "resource dir" which it
+    # places before the directory specified in `-isysroot`.
+    # https://github.com/llvm/llvm-project/blob/699e0bed4bfead826e210025bf33e5a1997c018b/clang/lib/Tooling/Tooling.cpp#L499-L510
+    #
+    # This means include files are pulled from the wrong place if the `clang`
+    # says the wrong thing. We point it to our clang's resource dir which will
+    # make it behave consistently with our other command line flags and allows
+    # system headers to be found.
+    clang_resource_dir =
+        rebase_path(clang_base_path + "/lib/clang/" + clang_version,
+                    root_build_dir)
+    args += [
+      "-resource-dir",
+      clang_resource_dir,
+    ]
 
     if (is_win) {
       # On Windows we fall back to using system headers from a sysroot from
