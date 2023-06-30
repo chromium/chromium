@@ -401,8 +401,8 @@ void NearbyShareSessionImpl::OnPreparedDirectory(base::File::Error result) {
     return;
   }
 
-  // TODO(b/191232168): Figure out why PrepareDirectoryTask is flaky. Ignoring
-  // the error seem to always work otherwise will sometimes return error.
+  // PrepareDirectoryTask can sometimes be flaky but the error does not affect
+  // functionality. Log a warning when this happens and continue.
   PLOG_IF(WARNING, result != base::File::FILE_OK)
       << "Prepare Directory was not successful";
 
