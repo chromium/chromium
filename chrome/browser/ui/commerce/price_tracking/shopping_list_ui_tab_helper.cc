@@ -490,6 +490,10 @@ ShoppingListUiTabHelper::GetPendingTrackingStateForTesting() {
   return pending_tracking_state_;
 }
 
+const absl::optional<PriceInsightsInfo>&
+ShoppingListUiTabHelper::GetPriceInsightsInfo() {
+  return price_insights_info_;
+}
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ShoppingListUiTabHelper);
 
 }  // namespace commerce

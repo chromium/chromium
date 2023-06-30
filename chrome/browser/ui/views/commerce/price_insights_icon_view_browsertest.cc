@@ -14,6 +14,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -37,6 +39,11 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
         .Times(testing::AnyNumber());
     ON_CALL(*mock_tab_helper, ShouldShowPriceInsightsIconView)
         .WillByDefault(testing::Return(true));
+
+    EXPECT_CALL(*mock_tab_helper, GetPriceInsightsInfo)
+        .Times(testing::AnyNumber());
+    ON_CALL(*mock_tab_helper, GetPriceInsightsInfo)
+        .WillByDefault(testing::ReturnRef(price_insights_info_));
   }
 
   void ShowUi(const std::string& name) override {
@@ -44,8 +51,8 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
   }
 
   bool VerifyUi() override {
-    auto* price_tracking_chip = GetChip();
-    if (!price_tracking_chip) {
+    auto* price_insights_chip = GetChip();
+    if (!price_insights_chip) {
       return false;
     }
 
@@ -59,16 +66,8 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
     ui_test_utils::WaitForBrowserToClose();
   }
 
- private:
-  base::test::ScopedFeatureList test_features_{commerce::kPriceInsights};
-
-  BrowserView* GetBrowserView() {
-    return BrowserView::GetBrowserViewForBrowser(browser());
-  }
-
-  LocationBarView* GetLocationBarView() {
-    return GetBrowserView()->toolbar()->location_bar();
-  }
+ protected:
+  absl::optional<commerce::PriceInsightsInfo> price_insights_info_;
 
   PriceInsightsIconView* GetChip() {
     const ui::ElementContext context =
@@ -81,9 +80,102 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
                ? views::AsViewClass<PriceInsightsIconView>(matched_view)
                : nullptr;
   }
+
+ private:
+  base::test::ScopedFeatureList test_features_{commerce::kPriceInsights};
+
+  BrowserView* GetBrowserView() {
+    return BrowserView::GetBrowserViewForBrowser(browser());
+  }
+
+  LocationBarView* GetLocationBarView() {
+    return GetBrowserView()->toolbar()->location_bar();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewBrowserTest,
                        InvokeUi_show_price_insights_icon) {
+  ShowAndVerifyUi();
+}
+
+class PriceInsightsIconViewWithLabelBrowserTest
+    : public PriceInsightsIconViewBrowserTest {
+ public:
+  PriceInsightsIconViewWithLabelBrowserTest() {
+    test_features_.InitAndEnableFeatures(
+        {commerce::kPriceInsights,
+         feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature},
+        {});
+  }
+  // UiBrowserTest:
+  void PreShow() override {
+    PriceInsightsIconViewBrowserTest::PreShow();
+
+    std::string test_name =
+        testing::UnitTest::GetInstance()->current_test_info()->name();
+    if (test_name == "InvokeUi_show_price_insights_icon_with_low_price_label") {
+      price_insights_info_ = commerce::CreateValidPriceInsightsInfo(
+          true, true, commerce::PriceBucket::kLowPrice);
+    } else if (test_name ==
+               "InvokeUi_show_price_insights_icon_with_high_price_label") {
+      price_insights_info_ = commerce::CreateValidPriceInsightsInfo(
+          true, true, commerce::PriceBucket::kHighPrice);
+    } else {
+      price_insights_info_ = commerce::CreateValidPriceInsightsInfo(
+          true, true, commerce::PriceBucket::kTypicalPrice);
+    }
+  }
+
+  bool VerifyUi() override {
+    auto* price_insights_chip = GetChip();
+    if (!price_insights_chip) {
+      return false;
+    }
+
+    std::string test_name =
+        testing::UnitTest::GetInstance()->current_test_info()->name();
+    if (test_name == "InvokeUi_show_price_insights_icon_with_low_price_label") {
+      EXPECT_TRUE(price_insights_chip->ShouldShowLabel());
+      EXPECT_EQ(
+          base::ToLowerASCII(price_insights_chip->GetIconLabelForTesting()),
+          u"price is low");
+
+      // TODO(meiliang): Add pixel test.
+    } else if (test_name ==
+               "InvokeUi_show_price_insights_icon_with_high_price_label") {
+      EXPECT_TRUE(price_insights_chip->ShouldShowLabel());
+      EXPECT_EQ(
+          base::ToLowerASCII(price_insights_chip->GetIconLabelForTesting()),
+          u"price is high");
+
+      // TODO(meiliang): Add pixel test.
+    }
+    return true;
+  }
+
+  void SetupFeatureEngagementTracker() {
+    BrowserFeaturePromoController* const promo_controller =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetFeaturePromoController();
+    EXPECT_TRUE(
+        user_education::test::WaitForFeatureEngagementReady(promo_controller));
+  }
+
+ private:
+  feature_engagement::test::ScopedIphFeatureList test_features_;
+};
+
+IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewWithLabelBrowserTest,
+                       InvokeUi_show_price_insights_icon_with_low_price_label) {
+  SetupFeatureEngagementTracker();
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PriceInsightsIconViewWithLabelBrowserTest,
+    InvokeUi_show_price_insights_icon_with_high_price_label) {
+  SetupFeatureEngagementTracker();
+
   ShowAndVerifyUi();
 }

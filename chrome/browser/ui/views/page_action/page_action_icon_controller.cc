@@ -170,7 +170,8 @@ void PageActionIconController::Init(const PageActionIconParams& params,
       case PageActionIconType::kPriceInsights:
         add_page_action_icon(type, std::make_unique<PriceInsightsIconView>(
                                        params.icon_label_bubble_delegate,
-                                       params.page_action_icon_delegate));
+                                       params.page_action_icon_delegate,
+                                       params.browser->profile()));
         break;
       case PageActionIconType::kPriceTracking:
         add_page_action_icon(

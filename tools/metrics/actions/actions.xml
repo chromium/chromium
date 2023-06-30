@@ -38259,6 +38259,8 @@ should be able to be added at any place in this file.
   <suffix name="PreviewsOmniboxUI"
       label="For the Previews UI in the Android Omnibox feature."/>
   <suffix name="PriceDropNTP" label="For PriceDropNTP feature."/>
+  <suffix name="PriceInsightsPageActionIconLabel"
+      label="For price insights page action icon label triggering."/>
   <suffix name="PriceTrackingChipFeature"
       label="For PriceTrackingChipFeature feature."/>
   <suffix name="PriceTrackingInSidePanel"

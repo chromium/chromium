@@ -92,6 +92,11 @@ class ShoppingListUiTabHelper
                                      base::OnceCallback<void(bool)> callback);
   void ShowShoppingInsightsSidePanel();
 
+  // Return the PriceInsightsInfo for the last fetched product URL. A reference
+  // to this object should not be kept directly, if one is needed, a copy should
+  // be made.
+  virtual const absl::optional<PriceInsightsInfo>& GetPriceInsightsInfo();
+
  protected:
   ShoppingListUiTabHelper(content::WebContents* contents,
                           ShoppingService* shopping_service,

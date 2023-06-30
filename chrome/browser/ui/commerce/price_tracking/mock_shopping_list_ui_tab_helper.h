@@ -40,6 +40,9 @@ class MockShoppingListUiTabHelper : public commerce::ShoppingListUiTabHelper {
               CreateShoppingInsightsWebView,
               (),
               (override));
+  MOCK_METHOD(const absl::optional<commerce::PriceInsightsInfo>&,
+              GetPriceInsightsInfo,
+              ());
 
  private:
   gfx::Image valid_product_image_;
