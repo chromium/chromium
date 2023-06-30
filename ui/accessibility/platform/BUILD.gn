@@ -115,7 +115,7 @@ component("platform") {
       "//base:i18n",
       "//components/crash/core/common:crash_key",
       "//gin",
-      "//services/accessibility/public/mojom",
+      "//services/accessibility/public/mojom:automation",
     ]
   }
 

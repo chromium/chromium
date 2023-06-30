@@ -5,15 +5,23 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//services/accessibility/buildflags.gni")
 
+mojom("automation") {
+  sources = [ "automation.mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/accessibility/mojom",
+  ]
+}
+
 mojom("mojom") {
   if (supports_os_accessibility_service) {
     enabled_features = [ "supports_os_accessibility_service" ]
   }
   sources = [ "accessibility_service.mojom" ]
   public_deps = [
+    ":automation",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
-    "//ui/accessibility/mojom",
   ]
   if (supports_os_accessibility_service) {
     public_deps += [ ":os_service_mojom" ]

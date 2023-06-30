@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/accessibility/buildflags.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/automation.mojom.h"
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 #include "services/accessibility/public/mojom/tts.mojom.h"

@@ -4,7 +4,7 @@
 
 module extensions.mojom;
 
-import "services/accessibility/public/mojom/accessibility_service.mojom";
+import "services/accessibility/public/mojom/automation.mojom";
 
 // Implemented by the main Browser process and called from the extensions
 // renderer process. This allows the extensions renderer process to receive
