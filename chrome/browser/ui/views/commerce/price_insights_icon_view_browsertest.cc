@@ -102,9 +102,10 @@ class PriceInsightsIconViewWithLabelBrowserTest
     : public PriceInsightsIconViewBrowserTest {
  public:
   PriceInsightsIconViewWithLabelBrowserTest() {
-    test_features_.InitAndEnableFeatures(
-        {commerce::kPriceInsights,
-         feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature},
+    test_features_.InitAndEnableFeaturesWithParameters(
+        {{commerce::kPriceInsights,
+          {{commerce::kPriceInsightsChipLabelExpandOnHighPriceParam, "true"}}},
+         {feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature, {}}},
         {});
   }
   // UiBrowserTest:
