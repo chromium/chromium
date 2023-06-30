@@ -197,21 +197,11 @@ class VideoEncoderTest : public ::testing::Test {
         video_frame_processors.push_back(std::move(image_writer));
     }
 
-    // For a resolution less than 360p, we lower the tolerance. Some platforms
-    // couldn't compress a low resolution video efficiently with a low bitrate.
-    constexpr gfx::Size k360p(640, 360);
-    constexpr double kSSIMToleranceForLowerResolution = 0.65;
-    const gfx::Size encode_resolution = decoder_config.visible_rect().size();
-    const double ssim_tolerance =
-        encode_resolution.GetArea() < k360p.GetArea()
-            ? kSSIMToleranceForLowerResolution
-            : SSIMVideoFrameValidator::kDefaultTolerance;
-
-    auto ssim_validator = SSIMVideoFrameValidator::Create(
+    auto psnr_validator = PSNRVideoFrameValidator::Create(
         get_model_frame_cb, std::move(image_writer),
-        VideoFrameValidator::ValidationMode::kAverage, ssim_tolerance);
-    LOG_ASSERT(ssim_validator);
-    video_frame_processors.push_back(std::move(ssim_validator));
+        VideoFrameValidator::ValidationMode::kAverage);
+    LOG_ASSERT(psnr_validator);
+    video_frame_processors.push_back(std::move(psnr_validator));
     return BitstreamValidator::Create(
         decoder_config, last_frame_index, std::move(video_frame_processors),
         spatial_layer_index_to_decode, temporal_layer_index_to_decode,

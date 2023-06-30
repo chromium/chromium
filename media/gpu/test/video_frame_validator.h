@@ -214,7 +214,7 @@ class RawVideoFrameValidator : public VideoFrameValidator {
 // |tolerance_|, the validation on the frame passes.
 class PSNRVideoFrameValidator : public VideoFrameValidator {
  public:
-  constexpr static double kDefaultTolerance = 20.0;
+  constexpr static double kDefaultTolerance = 25.0;
 
   static std::unique_ptr<PSNRVideoFrameValidator> Create(
       const GetModelFrameCB& get_model_frame_cb,
