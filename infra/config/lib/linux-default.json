@@ -17,11 +17,13 @@
     "Dawn Mac x64 Experimental Release (Intel)": "Ubuntu-22.04",
     "Dawn Mac x64 Release (AMD)": "Ubuntu-22.04",
     "Dawn Mac x64 Release (Intel)": "Ubuntu-22.04",
+    "Dawn Win10 x64 DEPS Release (Intel HD 630)": "Ubuntu-22.04",
     "Dawn Win10 x64 DEPS Release (Intel)": "Ubuntu-22.04",
     "Dawn Win10 x64 DEPS Release (NVIDIA)": "Ubuntu-22.04",
     "Dawn Win10 x64 Experimental Release (Intel)": "Ubuntu-22.04",
     "Dawn Win10 x64 Release (Intel)": "Ubuntu-22.04",
     "Dawn Win10 x64 Release (NVIDIA)": "Ubuntu-22.04",
+    "Dawn Win10 x86 DEPS Release (Intel HD 630)": "Ubuntu-22.04",
     "Dawn Win10 x86 DEPS Release (Intel)": "Ubuntu-22.04",
     "Dawn Win10 x86 DEPS Release (NVIDIA)": "Ubuntu-22.04",
     "Dawn Win10 x86 Experimental Release (Intel)": "Ubuntu-22.04",
@@ -75,5 +77,10 @@
     "mac-angle-chromium-intel": "Ubuntu-22.04",
     "win10-angle-chromium-x64-intel": "Ubuntu-22.04",
     "win10-angle-chromium-x64-nvidia": "Ubuntu-22.04"
+  },
+  "try": {
+    "chromium_presubmit": "Ubuntu-22.04",
+    "win-rel": "Ubuntu-22.04",
+    "win10_chromium_x64_rel_ng": "Ubuntu-22.04"
   }
 }
