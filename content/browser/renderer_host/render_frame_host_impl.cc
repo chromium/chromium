@@ -1163,8 +1163,15 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
     result.trust_token_issuance_policy_ =
         DetermineAfterCommitWhetherToForbidTrustTokenOperation(
             frame, network::mojom::TrustTokenOperationType::kIssuance);
-    result.ukm_source_id_ =
-        ukm::SourceIdObj::FromInt64(frame.GetPageUkmSourceId());
+
+    // Our data collection policy disallows collecting UKMs while prerendering.
+    // So, assign a valid ID only when the page is not in the prerendering
+    // state. See //content/browser/preloading/prerender/README.md and ask the
+    // team to explore options to record data for prerendering pages.
+    result.ukm_source_id_ = ukm::SourceIdObj::FromInt64(
+        frame.IsInLifecycleState(LifecycleState::kPrerendering)
+            ? ukm::kInvalidSourceId
+            : frame.GetPageUkmSourceId());
 
     if (frame.GetIsThirdPartyCookiesUserBypassEnabled()) {
       result.cookie_setting_overrides_.Put(
@@ -15040,7 +15047,13 @@ void RenderFrameHostImpl::RecordDocumentCreatedUkmEvent(
 
   bool is_main_frame = IsOutermostMainFrame();
 
-  ukm::SourceId navigation_ukm_source_id = GetPageUkmSourceId();
+  // Our data collection policy disallows collecting UKMs while prerendering.
+  // So, assign a valid ID only when the page is not in the prerendering state.
+  // See //content/browser/preloading/prerender/README.md and ask the team to
+  // explore options to record data for prerendering pages.
+  const ukm::SourceId navigation_ukm_source_id =
+      IsInLifecycleState(LifecycleState::kPrerendering) ? ukm::kInvalidSourceId
+                                                        : GetPageUkmSourceId();
 
   RecordIdentifiabilityDocumentCreatedMetrics(
       document_ukm_source_id, ukm_recorder, navigation_ukm_source_id,
