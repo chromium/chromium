@@ -385,7 +385,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   LayoutCustomScrollbarPart* ScrollCorner() const { return scroll_corner_; }
 
-  void Resize(const gfx::Point& pos, const LayoutSize& old_offset);
+  void Resize(const gfx::Point& pos, const gfx::Vector2d& old_offset);
   gfx::Vector2d OffsetFromResizeCorner(const gfx::Point& absolute_point) const;
 
   bool InResizeMode() const { return in_resize_mode_; }

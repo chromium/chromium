@@ -109,7 +109,7 @@ void PointerEventManager::Clear() {
   pending_pointer_capture_target_.clear();
   dispatching_pointer_id_ = 0;
   resize_scrollable_area_.Clear();
-  offset_from_resize_corner_ = LayoutSize();
+  offset_from_resize_corner_ = {};
 }
 
 void PointerEventManager::Trace(Visitor* visitor) const {
@@ -803,7 +803,7 @@ bool PointerEventManager::HandleResizerDrag(
         frame_->GetPage()->GetChromeClient().SetTouchAction(frame_,
                                                             TouchAction::kNone);
         offset_from_resize_corner_ =
-            LayoutSize(resize_scrollable_area_->OffsetFromResizeCorner(p));
+            resize_scrollable_area_->OffsetFromResizeCorner(p);
         return true;
       }
       break;
@@ -822,7 +822,7 @@ bool PointerEventManager::HandleResizerDrag(
       if (resize_scrollable_area_ && resize_scrollable_area_->InResizeMode()) {
         resize_scrollable_area_->SetInResizeMode(false);
         resize_scrollable_area_.Clear();
-        offset_from_resize_corner_ = LayoutSize();
+        offset_from_resize_corner_ = {};
         return true;
       }
       break;
