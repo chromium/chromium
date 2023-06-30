@@ -1560,11 +1560,6 @@ targets.console_test_launcher(
 )
 
 targets.console_test_launcher(
-    name = "ozone_gl_unittests",
-    label = "//ui/ozone/gl:ozone_gl_unittests",
-)
-
-targets.console_test_launcher(
     name = "ozone_unittests",
     label = "//ui/ozone:ozone_unittests",
 )

@@ -47,17 +47,6 @@ void PassthroughAbstractTextureImpl::SetParameteri(GLenum pname, GLint param) {
   gl_api_->glTexParameteriFn(texture_passthrough_->target(), pname, param);
 }
 
-#if BUILDFLAG(IS_OZONE)
-void PassthroughAbstractTextureImpl::SetBoundImage(GLImageNativePixmap* image) {
-  if (!texture_passthrough_) {
-    return;
-  }
-
-  texture_passthrough_->SetLevelImage(texture_passthrough_->target(),
-                                      /*level=*/0, image);
-}
-#endif
-
 void PassthroughAbstractTextureImpl::SetCleared() {
   // The passthrough decoder has no notion of 'cleared', so do nothing.
 }

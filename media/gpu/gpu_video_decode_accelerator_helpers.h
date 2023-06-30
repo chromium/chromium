@@ -16,13 +16,11 @@ class GLContext;
 }
 
 namespace gpu {
-class GLImageNativePixmap;
-
 namespace gles2 {
 class AbstractTexture;
 class ContextGroup;
 }
-}
+}  // namespace gpu
 
 namespace media {
 
@@ -41,16 +39,6 @@ using GetGLContextCallback = base::RepeatingCallback<gl::GLContext*(void)>;
 // Make the applicable GL context current. To be called by VDAs before
 // executing any GL calls. Return true on success, false otherwise.
 using MakeGLContextCurrentCallback = base::RepeatingCallback<bool(void)>;
-
-#if BUILDFLAG(IS_OZONE)
-// Bind |image| to |client_texture_id| given |texture_target|, marking the
-// texture as not needing binding by the decoder.
-// Return true on success, false otherwise.
-using BindGLImageCallback = base::RepeatingCallback<bool(
-    uint32_t client_texture_id,
-    uint32_t texture_target,
-    const scoped_refptr<gpu::GLImageNativePixmap>& image)>;
-#endif
 
 // Return a ContextGroup*, if one is available.
 using GetContextGroupCallback =
@@ -82,16 +70,6 @@ struct MEDIA_GPU_EXPORT GpuVideoDecodeGLClient {
   // executing any GL calls. Return true on success, false otherwise.
   using MakeGLContextCurrentCallback = base::RepeatingCallback<bool(void)>;
 
-#if BUILDFLAG(IS_OZONE)
-  // Bind |image| to |client_texture_id| given |texture_target|, marking the
-  // texture as not needing binding by the decoder.
-  // Return true on success, false otherwise.
-  using BindGLImageCallback = base::RepeatingCallback<bool(
-      uint32_t client_texture_id,
-      uint32_t texture_target,
-      const scoped_refptr<gpu::GLImageNativePixmap>& image)>;
-#endif
-
   // Return a ContextGroup*, if one is available.
   using GetContextGroupCallback =
       base::RepeatingCallback<gpu::gles2::ContextGroup*(void)>;
@@ -101,11 +79,6 @@ struct MEDIA_GPU_EXPORT GpuVideoDecodeGLClient {
 
   // Callback for making the relevant context current for GL calls.
   MakeGLContextCurrentCallback make_context_current;
-
-#if BUILDFLAG(IS_OZONE)
-  // Callback to bind a GLImage to a given texture id and target.
-  BindGLImageCallback bind_image;
-#endif
 
   // Callback to return a ContextGroup*.
   GetContextGroupCallback get_context_group;

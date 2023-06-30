@@ -29,10 +29,6 @@
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_switches.h"
 
-#if BUILDFLAG(IS_OZONE)
-#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
-#endif
-
 using ::testing::AtLeast;
 using ::testing::Pointee;
 using ::testing::Return;
@@ -2046,15 +2042,8 @@ TEST_P(ProduceConsumeTextureTest, ProduceConsumeTextureWithImage) {
   manager_->SetTarget(texture_ref_.get(), target);
   Texture* texture = texture_ref_->texture();
   EXPECT_EQ(static_cast<GLenum>(target), texture->target());
-#if BUILDFLAG(IS_OZONE)
-  scoped_refptr<GLImageNativePixmap> image(
-      GLImageNativePixmap::CreateForTesting(gfx::Size()));
-#endif
   manager_->SetLevelInfo(texture_ref_.get(), target, 0, GL_RGBA, 0, 0, 1, 0,
                          GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect());
-#if BUILDFLAG(IS_OZONE)
-  manager_->SetBoundLevelImage(texture_ref_.get(), target, 0, image.get());
-#endif
   GLuint service_id = texture->service_id();
   Texture* produced_texture = Produce(texture_ref_.get());
 
@@ -2343,52 +2332,6 @@ TEST_F(SharedTextureTest, Memory) {
   texture_manager2_->RemoveTexture(20);
   EXPECT_EQ(initial_memory2, memory_tracker2_.GetSize());
 }
-
-#if BUILDFLAG(IS_OZONE)
-TEST_F(SharedTextureTest, Images) {
-  scoped_refptr<TextureRef> ref1 = texture_manager1_->CreateTexture(10, 10);
-  scoped_refptr<TextureRef> ref2 =
-      texture_manager2_->Consume(20, ref1->texture());
-
-  texture_manager1_->SetTarget(ref1.get(), GL_TEXTURE_2D);
-  texture_manager1_->SetLevelInfo(ref1.get(), GL_TEXTURE_2D, 1, GL_RGBA, 2, 2,
-                                  1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                                  gfx::Rect(2, 2));
-  EXPECT_FALSE(ref1->texture()->HasImages());
-  EXPECT_FALSE(ref2->texture()->HasImages());
-  EXPECT_FALSE(texture_manager1_->HaveImages());
-  EXPECT_FALSE(texture_manager2_->HaveImages());
-  scoped_refptr<GLImageNativePixmap> image1(
-      GLImageNativePixmap::CreateForTesting(gfx::Size()));
-  texture_manager1_->SetBoundLevelImage(ref1.get(), GL_TEXTURE_2D, 1,
-                                        image1.get());
-  EXPECT_TRUE(ref1->texture()->HasImages());
-  EXPECT_TRUE(ref2->texture()->HasImages());
-  EXPECT_TRUE(texture_manager1_->HaveImages());
-  EXPECT_TRUE(texture_manager2_->HaveImages());
-  scoped_refptr<GLImageNativePixmap> image2(
-      GLImageNativePixmap::CreateForTesting(gfx::Size()));
-  texture_manager1_->SetBoundLevelImage(ref1.get(), GL_TEXTURE_2D, 1,
-                                        image2.get());
-  EXPECT_TRUE(ref1->texture()->HasImages());
-  EXPECT_TRUE(ref2->texture()->HasImages());
-  EXPECT_TRUE(texture_manager1_->HaveImages());
-  EXPECT_TRUE(texture_manager2_->HaveImages());
-  texture_manager1_->SetLevelInfo(ref1.get(), GL_TEXTURE_2D, 1, GL_RGBA, 2, 2,
-                                  1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                                  gfx::Rect(2, 2));
-  EXPECT_FALSE(ref1->texture()->HasImages());
-  EXPECT_FALSE(ref2->texture()->HasImages());
-  EXPECT_FALSE(texture_manager1_->HaveImages());
-  EXPECT_FALSE(texture_manager1_->HaveImages());
-
-  EXPECT_CALL(*gl_, DeleteTextures(1, _))
-      .Times(1)
-      .RetiresOnSaturation();
-  texture_manager1_->RemoveTexture(10);
-  texture_manager2_->RemoveTexture(20);
-}
-#endif
 
 class TextureFormatTypeValidationTest : public TextureManagerTest {
  public:

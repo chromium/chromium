@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -58,17 +57,6 @@ scoped_refptr<CommandBufferHelper> CreateCommandBufferHelper(
   return CommandBufferHelper::Create(stub);
 }
 
-#if BUILDFLAG(IS_OZONE)
-bool BindClientManagedImage(
-    scoped_refptr<CommandBufferHelper> command_buffer_helper,
-    uint32_t client_texture_id,
-    uint32_t texture_target,
-    const scoped_refptr<gpu::GLImageNativePixmap>& image) {
-  return command_buffer_helper->BindClientManagedImage(client_texture_id,
-                                                       image.get());
-}
-#endif
-
 std::unique_ptr<VideoDecodeAccelerator> CreateAndInitializeVda(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
@@ -84,10 +72,6 @@ std::unique_ptr<VideoDecodeAccelerator> CreateAndInitializeVda(
         &CommandBufferHelper::GetGLContext, command_buffer_helper);
     gl_client.make_context_current = base::BindRepeating(
         &CommandBufferHelper::MakeContextCurrent, command_buffer_helper);
-#if BUILDFLAG(IS_OZONE)
-    gl_client.bind_image =
-        base::BindRepeating(&BindClientManagedImage, command_buffer_helper);
-#endif
     gl_client.is_passthrough = command_buffer_helper->IsPassthrough();
     gl_client.supports_arb_texture_rectangle =
         command_buffer_helper->SupportsTextureRectangle();

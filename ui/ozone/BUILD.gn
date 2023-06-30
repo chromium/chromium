@@ -486,10 +486,7 @@ group("unittests") {
 
   visibility += [ "*" ]
 
-  deps = [
-    ":ozone_unittests",
-    "//ui/ozone/gl:ozone_gl_unittests",
-  ]
+  deps = [ ":ozone_unittests" ]
 
   if (ozone_platform_x11) {
     deps += [ "//ui/ozone:ozone_x11_unittests" ]

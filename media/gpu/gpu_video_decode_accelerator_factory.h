@@ -24,13 +24,12 @@ class GLContext;
 }
 
 namespace gpu {
-class GLImageNativePixmap;
 struct GpuPreferences;
 
 namespace gles2 {
 class ContextGroup;
 }
-}
+}  // namespace gpu
 
 namespace media {
 
@@ -52,16 +51,6 @@ class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
   // Make the applicable GL context current. To be called by VDAs before
   // executing any GL calls. Return true on success, false otherwise.
   using MakeGLContextCurrentCallback = base::RepeatingCallback<bool(void)>;
-
-#if BUILDFLAG(IS_OZONE)
-  // Bind |image| to |client_texture_id| given |texture_target|, marking the
-  // texture as not needing binding by the decoder.
-  // Return true on success, false otherwise.
-  using BindGLImageCallback = base::RepeatingCallback<bool(
-      uint32_t client_texture_id,
-      uint32_t texture_target,
-      const scoped_refptr<gpu::GLImageNativePixmap>& image)>;
-#endif
 
   // Return a ContextGroup*, if one is available.
   using GetContextGroupCallback =

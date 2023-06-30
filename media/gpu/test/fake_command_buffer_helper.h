@@ -65,10 +65,6 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
                        GLenum type) override;
   void DestroyTexture(GLuint service_id) override;
   void SetCleared(GLuint service_id) override;
-#if BUILDFLAG(IS_OZONE)
-  bool BindClientManagedImage(GLuint service_id,
-                              gpu::GLImageNativePixmap* image) override;
-#endif
   gpu::Mailbox CreateLegacyMailbox(GLuint service_id) override;
   void AddWillDestroyStubCB(WillDestroyStubCB callback) override;
   bool IsPassthrough() const override;

@@ -1011,7 +1011,6 @@ if (is_chromeos_ash) {
       # Blocked on https://github.com/catapult-project/catapult/issues/2297
       #"//third_party/catapult/telemetry:bitmaptools",
       "//tools/perf/clear_system_cache",
-      "//ui/ozone/gl:ozone_gl_unittests",
     ]
 
     if (enable_ppapi) {
