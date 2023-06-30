@@ -19,52 +19,101 @@
       {
         "id": "ResourceType",
         "type": "string",
-        "enum": ["main_frame", "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest", "ping", "csp_report", "media", "websocket", "webbundle", "other"]
+        "enum": [
+          {"name": "main_frame", "description": "Specifies the resource as the main frame."},
+          {"name": "sub_frame", "description": "Specifies the resource as a sub frame."},
+          {"name":  "stylesheet", "description": "Specifies the resource as a stylesheet."},
+          {"name": "script", "description": "Specifies the resource as a script."},
+          {"name": "image", "description": "Specifies the resource as an image."},
+          {"name": "font", "description": "Specifies the resource as a font."},
+          {"name": "object", "description": "Specifies the resource as an object."},
+          {"name": "xmlhttprequest",
+           "description": "Specifies the resource as an XMLHttpRequest."},
+          {"name": "ping",
+           "description": "Specifies the resource as a ping."},
+          {"name": "csp_report",
+          "description": "Specifies the resource as a Content Security Policy (CSP) report."},
+          {"name": "media", "description": "Specifies the resource as a media object."},
+          {"name": "websocket", "description": "Specifies the resource as a WebSocket."},
+          {"name": "webbundle", "description": "Specifies the resource as a WebBundle."},
+          {"name": "other", "description": "Specifies the resource as a type not included in the listed types."}
+        ]
       },
       {
         "id": "OnBeforeRequestOptions",
         "type": "string",
-        "enum": ["blocking", "requestBody", "extraHeaders"]
+        "enum": [
+          {"name": "blocking", "description": "Specifies the request is blocked until the callback function returns."},
+          {"name": "requestBody", "description": "Specifies that the request body should be included in the event."},
+          {"name": "extraHeaders", "description": "Specifies that headers can violate Cross-Origin Resource Sharing (CORS)."}
+        ]
       },
       {
         "id": "OnBeforeSendHeadersOptions",
         "type": "string",
-        "enum": ["requestHeaders", "blocking", "extraHeaders"]
+        "enum": [
+          {"name": "requestHeaders", "description": "Specifies that the request header should be included in the event."},
+          {"name": "blocking", "description": "Specifies the request is blocked until the callback function returns."},
+          {"name": "extraHeaders", "description": "Specifies that headers can violate Cross-Origin Resource Sharing (CORS)."}
+        ]
       },
       {
         "id": "OnSendHeadersOptions",
         "type": "string",
-        "enum": ["requestHeaders", "extraHeaders"]
+        "enum": [
+          {"name": "requestHeaders", "description": "Specifies that the request header should be included in the event."},
+          {"name": "extraHeaders", "description": "Specifies that headers can violate Cross-Origin Resource Sharing (CORS)."}
+        ]
       },
       {
         "id": "OnHeadersReceivedOptions",
         "type": "string",
-        "enum": ["blocking", "responseHeaders", "extraHeaders"]
+        "enum": [
+          {"name": "blocking", "description": "Specifies the request is blocked until the callback function returns."},
+          {"name": "responseHeaders", "description": "Specifies that the response headers should be included in the event."},
+          {"name": "extraHeaders", "description": "Specifies that headers can violate Cross-Origin Resource Sharing (CORS)."}
+        ]
       },
       {
         "id": "OnAuthRequiredOptions",
         "type": "string",
-        "enum": ["responseHeaders", "blocking", "asyncBlocking", "extraHeaders"]
+        "enum": [
+          {"name": "responseHeaders", "description": "Specifies that the response headers should be included in the event."},
+          {"name": "blocking", "description": "Specifies the request is blocked until the callback function returns."},
+          {"name": "asyncBlocking", "description": "Specifies that the callback function is handled asynchronously."},
+          {"name": "extraHeaders", "description": "Specifies that headers can violate Cross-Origin Resource Sharing (CORS)."}
+        ]
       },
       {
         "id": "OnResponseStartedOptions",
         "type": "string",
-        "enum": ["responseHeaders", "extraHeaders"]
+        "enum": [
+          {"name": "responseHeaders", "description": "Specifies that the response headers should be included in the event."},
+          {"name": "extraHeaders", "description": "Specifies that headers can violate Cross-Origin Resource Sharing (CORS)."}
+        ]
       },
       {
         "id": "OnBeforeRedirectOptions",
         "type": "string",
-        "enum": ["responseHeaders", "extraHeaders"]
+        "enum": [
+          {"name": "responseHeaders", "description": "Specifies that the response headers should be included in the event."},
+          {"name": "extraHeaders", "description": "Specifies that headers can violate Cross-Origin Resource Sharing (CORS)."}
+        ]
       },
       {
         "id": "OnCompletedOptions",
         "type": "string",
-        "enum": ["responseHeaders", "extraHeaders"]
+        "enum": [
+          {"name": "responseHeaders", "description": "Specifies that the response headers should be included in the event."},
+          {"name": "extraHeaders", "description": "Specifies that headers can violate Cross-Origin Resource Sharing (CORS)."}
+        ]
       },
       {
         "id": "OnErrorOccurredOptions",
         "type": "string",
-        "enum": ["extraHeaders"]
+        "enum": [
+          {"name": "extraHeaders", "description": "Specifies that headers can violate Cross-Origin Resource Sharing (CORS)."}
+        ]
       },
       {
         "id": "RequestFilter",
