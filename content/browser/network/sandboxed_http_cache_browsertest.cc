@@ -400,8 +400,16 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
   IgnoreNetworkServiceCrashes();
 }
 
+// TODO(crbug.com/1459570): Flaky on at least Mac11.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CreateSimpleCacheWithParentDirectoryTraversal \
+  DISABLED_CreateSimpleCacheWithParentDirectoryTraversal
+#else
+#define MAYBE_CreateSimpleCacheWithParentDirectoryTraversal \
+  CreateSimpleCacheWithParentDirectoryTraversal
+#endif
 IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
-                       CreateSimpleCacheWithParentDirectoryTraversal) {
+                       MAYBE_CreateSimpleCacheWithParentDirectoryTraversal) {
   base::RunLoop run_loop;
 
   const base::FilePath root_path = GetTempDirPath();
