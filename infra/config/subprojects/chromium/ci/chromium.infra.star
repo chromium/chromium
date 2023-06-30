@@ -336,6 +336,12 @@ ci.builder(
                 "device_os": "N2G48C",
                 "max_uid_threshold": 18000,
             },
+            {
+                "pool": "chromium.tests",
+                "device_type": "walleye",
+                "device_os": "OPM4.171019.021.P2",
+                "max_uid_threshold": 18000,
+            },
             # Used by ci/android-pie-arm64-rel
             # This is mirrored by the CQ builder android-arm64-rel
             {
