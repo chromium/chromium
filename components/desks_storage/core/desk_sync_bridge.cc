@@ -417,8 +417,8 @@ void DeskSyncBridge::DeleteEntry(const base::Uuid& uuid,
     std::move(callback).Run(DeleteEntryStatus::kFailure);
     return;
   }
-  const DeskTemplate* desk_template = GetUserEntryByUUID(uuid);
-  if (desk_template == nullptr) {
+
+  if (GetUserEntryByUUID(uuid) == nullptr) {
     // Consider the deletion successful if the entry does not exist.
     std::move(callback).Run(DeleteEntryStatus::kOk);
     return;
@@ -431,11 +431,6 @@ void DeskSyncBridge::DeleteEntry(const base::Uuid& uuid,
                              batch->GetMetadataChangeList());
 
   desk_template_entries_.erase(uuid);
-
-  if (desk_template->type() == ash::DeskTemplateType::kFloatingWorkspace) {
-    floating_workspace_templates_uuid_.erase(
-        desk_template->client_cache_guid());
-  }
 
   batch->DeleteData(uuid.AsLowercaseString());
 

@@ -183,15 +183,6 @@ class FloatingWorkspaceService : public KeyedService,
 
   void SendNotification(const std::string& id);
 
-  // Gets all the floating workspace template entries.
-  std::vector<const DeskTemplate*> GetFloatingWorkspaceEntries();
-
-  // Performs garbage collection of stale floating workspace templates. A
-  // floating workspace template is considered stale if it's older than 30
-  // days. The only exception is if it's the only floating workspace
-  // template associated with the current user, which we want to keep.
-  void DoGarbageCollection(const base::Uuid& exclude_uuid);
-
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   const floating_workspace_util::FloatingWorkspaceVersion version_;
