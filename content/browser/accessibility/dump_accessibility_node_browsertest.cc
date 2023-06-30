@@ -35,8 +35,9 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
 
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
     std::vector<AXPropertyFilter> property_filters;
-    if (GetParam() == ui::AXApiType::kMac)
+    if (GetParam().first == ui::AXApiType::kMac) {
       return property_filters;
+    }
 
     property_filters.emplace_back("value='*'", AXPropertyFilter::ALLOW);
     property_filters.emplace_back("value='http*'", AXPropertyFilter::DENY);
@@ -99,8 +100,9 @@ class DumpAccessibilityAccNameTest : public DumpAccessibilityNodeTest {
  public:
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
     std::vector<AXPropertyFilter> property_filters;
-    if (GetParam() == ui::AXApiType::kMac)
+    if (GetParam().first == ui::AXApiType::kMac) {
       return property_filters;
+    }
 
     property_filters.emplace_back("name*", AXPropertyFilter::ALLOW_EMPTY);
     property_filters.emplace_back("description*",
@@ -170,15 +172,16 @@ class DumpAccessibilityNodeWithoutMathMLTest
 // Parameterize the tests so that each test-pass is run independently.
 struct TestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
-    return std::string(i.param);
+      const ::testing::TestParamInfo<std::pair<ui::AXApiType::Type, bool>>& i)
+      const {
+    return std::string(i.param.first) + (i.param.second ? "1" : "0");
   }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityNodeTest,
-    ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
     TestPassToString());
 
 // UIA is excluded due to flakiness. See https://crbug.com/1459215

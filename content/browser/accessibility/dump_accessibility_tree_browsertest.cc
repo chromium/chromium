@@ -48,8 +48,9 @@ using ui::AXTreeFormatter;
 std::vector<ui::AXPropertyFilter> DumpAccessibilityTreeTest::DefaultFilters()
     const {
   std::vector<AXPropertyFilter> property_filters;
-  if (GetParam() == ui::AXApiType::kMac)
+  if (GetParam().first == ui::AXApiType::kMac) {
     return property_filters;
+  }
 
   property_filters.emplace_back("value='*'", AXPropertyFilter::ALLOW);
   // The value attribute on the document object contains the URL of the
@@ -145,8 +146,9 @@ class DumpAccessibilityTreeTestExceptUIA : public DumpAccessibilityTreeTest {};
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityTreeTestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
-    return std::string(i.param);
+      const ::testing::TestParamInfo<std::pair<ui::AXApiType::Type, bool>>& i)
+      const {
+    return std::string(i.param.first) + (i.param.second ? "1" : "0");
   }
 };
 
@@ -166,7 +168,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityTreeTestWithIgnoredNodes,
-    ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
     DumpAccessibilityTreeTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSAltText) {
@@ -2069,7 +2071,7 @@ class DumpAccessibilityTreeFencedFrameTest : public DumpAccessibilityTreeTest {
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityTreeFencedFrameTest,
-    ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
     DumpAccessibilityTreeTestPassToString());
 
 // TODO(crbug.com/1459385): Re-enable this test
@@ -2617,7 +2619,7 @@ class DumpAccessibilityTreeWithSpeakAsDescriptorTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityTreeWithSpeakAsDescriptorTest,
-    ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
     DumpAccessibilityTreeTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithSpeakAsDescriptorTest,
@@ -3044,7 +3046,7 @@ class YieldingParserDumpAccessibilityTreeTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     YieldingParserDumpAccessibilityTreeTest,
-    ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPassesExceptUIA()),
     DumpAccessibilityTreeTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
@@ -3322,8 +3324,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 #if BUILDFLAG(IS_MAC)
   // The /blink test pass is different on macOS than on other platforms. See
   // https://crbug.com/1314896.
-  if (GetParam() == ui::AXApiType::kBlink)
+  if (GetParam().first == ui::AXApiType::kBlink) {
     return;
+  }
 #endif
   RunHtmlTest(FILE_PATH_LITERAL("no-source-video.html"));
 }
@@ -3332,8 +3335,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityVideoControls) {
 #if BUILDFLAG(IS_MAC)
   // The /blink test pass is different on macOS than on other platforms. See
   // https://crbug.com/1314896.
-  if (GetParam() == ui::AXApiType::kBlink)
+  if (GetParam().first == ui::AXApiType::kBlink) {
     return;
+  }
 #endif
   RunHtmlTest(FILE_PATH_LITERAL("video-controls.html"));
 }
