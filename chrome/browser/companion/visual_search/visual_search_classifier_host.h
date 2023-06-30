@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_COMPANION_VISUAL_SEARCH_VISUAL_SEARCH_CLASSIFIER_HOST_H_
 
 #include <memory>
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
 #include "chrome/common/companion/visual_search.mojom.h"
 #include "content/public/browser/render_frame_host.h"
@@ -44,7 +45,22 @@ class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
                            const GURL& validated_url,
                            ResultCallback callback);
 
+  // Used to cancel and cleanup any ongoing classification; currently it
+  // mainly tracks the model fetching step.
+  void CancelClassification();
+
  private:
+  // This method performs the actual mojom IPC to start classifier agent after
+  // we have obtained the model from |visual_search_service_|.
+  void StartClassificationWithModel(content::RenderFrameHost* render_frame_host,
+                                    const GURL validated_url,
+                                    ResultCallback callback,
+                                    base::File file,
+                                    std::string base64_config);
+
+  // Used to track the url that is currently being processed.
+  GURL current_url_;
+
   // Pointer to visual search service which we do not own.
   raw_ptr<VisualSearchSuggestionsService> visual_search_service_ = nullptr;
 
@@ -53,6 +69,9 @@ class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
 
   // This reference binds this class to the result handler for the mojom IPC.
   mojo::Receiver<mojom::VisualSuggestionsResultHandler> result_handler_{this};
+
+  // Pointer factory necessary for scheduling tasks on different threads.
+  base::WeakPtrFactory<VisualSearchClassifierHost> weak_ptr_factory_{this};
 };
 }  // namespace companion::visual_search
 

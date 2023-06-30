@@ -8,10 +8,9 @@
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "content/public/browser/browser_thread.h"
-
-using content::BrowserThread;
 
 namespace companion::visual_search {
 
@@ -33,6 +32,17 @@ void CloseModelFile(base::File model_file) {
     return;
   }
   model_file.Close();
+}
+
+// Extracts the model string value from the model metadata.
+// The model string is expected to be a serialized string of the
+// |EligibilitySpec| proto.
+std::string GetModelSpec(ModelMetadata& metadata) {
+  std::string model_spec;
+  if (metadata.has_value() && metadata->has_eligibility_spec()) {
+    metadata->eligibility_spec().SerializeToString(&model_spec);
+  }
+  return model_spec;
 }
 
 }  // namespace
@@ -81,6 +91,11 @@ void VisualSearchSuggestionsService::OnModelFileLoaded(base::File model_file) {
         FROM_HERE, base::BindOnce(&CloseModelFile, std::move(*model_file_)));
   }
   model_file_ = std::move(model_file);
+  for (auto& callback : model_callbacks_) {
+    std::move(callback).Run(model_file_->Duplicate(),
+                            GetModelSpec(model_metadata_));
+  }
+  model_callbacks_.clear();
 }
 
 void VisualSearchSuggestionsService::OnModelUpdated(
@@ -91,17 +106,29 @@ void VisualSearchSuggestionsService::OnModelUpdated(
           OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION) {
     return;
   }
+
+  const absl::optional<optimization_guide::proto::Any>& metadata =
+      model_info.GetModelMetadata();
+
+  if (metadata.has_value()) {
+    model_metadata_ = optimization_guide::ParsedAnyMetadata<
+        optimization_guide::proto::VisualSearchModelMetadata>(metadata.value());
+  }
+
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&LoadModelFile, model_info.GetModelFilePath()),
       base::BindOnce(&VisualSearchSuggestionsService::OnModelFileLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-base::File VisualSearchSuggestionsService::GetModelFile() {
+void VisualSearchSuggestionsService::SetModelUpdateCallback(
+    ModelUpdateCallback callback) {
   if (model_file_) {
-    return model_file_->Duplicate();
+    std::move(callback).Run(model_file_->Duplicate(),
+                            GetModelSpec(model_metadata_));
+    return;
   }
-  return base::File();
+  model_callbacks_.emplace_back(std::move(callback));
 }
 
 }  // namespace companion::visual_search

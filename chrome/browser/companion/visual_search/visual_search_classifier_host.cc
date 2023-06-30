@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/companion/visual_search/features.h"
 #include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
+#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -78,20 +79,42 @@ void VisualSearchClassifierHost::HandleClassification(
     std::move(result_callback_).Run(std::move(data_uris));
   }
   result_callback_.Reset();
+  result_handler_.reset();
 }
 
 void VisualSearchClassifierHost::StartClassification(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url,
     ResultCallback callback) {
-  base::File model = visual_search_service_->GetModelFile();
+  if (!render_frame_host) {
+    LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.EmptyRenderFrame", true);
+    return;
+  }
+
+  current_url_ = validated_url;
+  visual_search_service_->SetModelUpdateCallback(
+      base::BindOnce(&VisualSearchClassifierHost::StartClassificationWithModel,
+                     weak_ptr_factory_.GetWeakPtr(), render_frame_host,
+                     validated_url, std::move(callback)));
+}
+
+void VisualSearchClassifierHost::StartClassificationWithModel(
+    content::RenderFrameHost* render_frame_host,
+    const GURL validated_url,
+    ResultCallback callback,
+    base::File model,
+    std::string base64_config) {
   LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.ModelFileSuccess",
                           model.IsValid());
   if (!model.IsValid()) {
     return;
   }
 
-  std::string base64_config;
+  if (validated_url != current_url_) {
+    LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.MismatchURL", true);
+    return;
+  }
+
   absl::optional<std::string> config_switch =
       switches::GetVisualSearchConfigForCompanionOverride();
 
@@ -106,7 +129,7 @@ void VisualSearchClassifierHost::StartClassification(
   mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler> visual_search;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &visual_search);
-  if (visual_search.is_bound()) {
+  if (visual_search.is_bound() && !result_handler_.is_bound()) {
     visual_search->StartVisualClassification(
         std::move(model), base64_config,
         result_handler_.BindNewPipeAndPassRemote());
@@ -119,5 +142,12 @@ void VisualSearchClassifierHost::StartClassification(
 
   LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.StartClassificationSuccess",
                           visual_search.is_bound());
+}
+
+void VisualSearchClassifierHost::CancelClassification() {
+  result_callback_.Reset();
+  current_url_ = GURL::EmptyGURL();
+  LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.ClassificationCancelled",
+                          true);
 }
 }  // namespace companion::visual_search

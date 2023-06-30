@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/notreached.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 
 namespace companion::visual_search {
 namespace {

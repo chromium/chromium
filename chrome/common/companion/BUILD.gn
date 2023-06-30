@@ -8,14 +8,7 @@ import("//third_party/protobuf/proto_library.gni")
 source_set("visual_search") {
   sources = []
 
-  deps = [
-    ":mojo_bindings",
-    ":proto",
-  ]
-}
-
-proto_library("proto") {
-  sources = [ "eligibility_spec.proto" ]
+  deps = [ ":mojo_bindings" ]
 }
 
 mojom("mojo_bindings") {

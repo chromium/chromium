@@ -219,6 +219,14 @@ void CompanionPageHandler::ShowUI() {
     }
 
     NotifyURLChanged(/*is_full_reload=*/true);
+    if (visual_search_host_) {
+      visual_search::VisualSearchClassifierHost::ResultCallback callback =
+          base::BindOnce(&CompanionPageHandler::HandleVisualSearchResult,
+                         weak_ptr_factory_.GetWeakPtr());
+      visual_search_host_->StartClassification(
+          web_contents()->GetPrimaryMainFrame(), web_contents()->GetURL(),
+          std::move(callback));
+    }
   }
 }
 
@@ -254,6 +262,9 @@ void CompanionPageHandler::NotifyURLChanged(bool is_full_reload) {
         web_contents()->GetVisibleURL());
     reload_start_time_ = base::TimeTicks::Now();
     page_->UpdateCompanionPage(companion_update_proto);
+  }
+  if (visual_search_host_) {
+    visual_search_host_->CancelClassification();
   }
 }
 

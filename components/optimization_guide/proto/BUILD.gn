@@ -25,6 +25,7 @@ proto_library("optimization_guide_proto") {
     "page_topics_override_list.proto",
     "push_notification.proto",
     "salient_image_metadata.proto",
+    "visual_search_model_metadata.proto",
   ]
 }
 

@@ -1,15 +1,14 @@
 // Copyright 2023 The Chromium Authors
-// Use of this source code is governed by a BSD - style license that can be
+// Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-// This proto is used to configure the Eligibility Module. It should be kept
-// up-to-date with the server-side equivalent proto.
 
 syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "VisualSearchModelMetadataProto";
 
-package companion.visual_search;
+package optimization_guide.proto;
 
 message FeatureLibrary {
   enum ImageLevelFeatureName {
@@ -90,4 +89,9 @@ message EligibilitySpec {
   // Before running these rules, normalizing features are recomputed only over
   // the images that remain after the second pass.
   repeated OrOfThresholdingRules post_renormalization_rules = 3;
+}
+
+// The message contains a set of params to config visual search classification.
+message VisualSearchModelMetadata {
+  optional EligibilitySpec eligibility_spec = 1;
 }

@@ -14,7 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "chrome/common/companion/eligibility_spec.pb.h"
+#include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -25,6 +25,11 @@ namespace companion::visual_search {
 using ::gfx::Rect;
 using ::gfx::Size;
 using ::gfx::SizeF;
+
+using optimization_guide::proto::EligibilitySpec;
+using optimization_guide::proto::FeatureLibrary;
+using optimization_guide::proto::OrOfThresholdingRules;
+using optimization_guide::proto::ThresholdingRule;
 
 // Stores the raw features of a single image.
 struct SingleImageGeometryFeatures {
