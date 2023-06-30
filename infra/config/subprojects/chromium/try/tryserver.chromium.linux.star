@@ -618,6 +618,10 @@ try_.builder(
     executable = "recipe:chromium_toolchain/package_rust",
     builderless = True,
     cores = 32,
+    # This builder produces the rustc binaries used on all builders. Since it
+    # uses the system's sysroot when compiling, the builder needs to run on the
+    # OS version that's the oldest used on any bot.
+    os = os.LINUX_BIONIC,
     execution_timeout = 5 * time.hour,
     notifies = ["chrome-rust-toolchain"],
 )
