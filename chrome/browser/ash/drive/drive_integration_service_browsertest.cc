@@ -623,35 +623,6 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithBulkPinningEnabled,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithBulkPinningEnabled,
-                       GetTotalPinnedSizeReturnsCachedSizeOnNextRequest) {
-  auto* drive_integration_service =
-      DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
-  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
-
-  EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
-      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, 1024));
-
-  // First invocation of `GetTotalPinnedSize` should invoke the fake drivefs.
-  base::RunLoop run_loop;
-  base::MockOnceCallback<void(int64_t)> mock_callback;
-  EXPECT_CALL(mock_callback, Run(1024))
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
-
-  drive_integration_service->GetTotalPinnedSize(mock_callback.Get());
-  run_loop.Run();
-
-  // Second invocation of `GetTotalPinnedSize` should reuse the same value but
-  // cached not calling fake drivefs instead.
-  base::RunLoop run_loop_2;
-  base::MockOnceCallback<void(int64_t)> cached_mock_callback;
-  EXPECT_CALL(cached_mock_callback, Run(1024))
-      .WillOnce(RunClosure(run_loop_2.QuitClosure()));
-
-  drive_integration_service->GetTotalPinnedSize(cached_mock_callback.Get());
-  run_loop_2.Run();
-}
-
 class DriveIntegrationServiceBrowserTestLacros
     : public DriveIntegrationServiceBrowserTestBase {
  protected:
