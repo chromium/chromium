@@ -57,8 +57,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
   // TouchInjectorObserver:
   void OnActionAdded(Action& action) override;
   void OnActionRemoved(const Action& action) override;
-  void OnActionTypeChanged(const Action& action,
-                           const Action& new_action) override;
+  void OnActionTypeChanged(Action* action, Action* new_action) override;
   void OnActionUpdated(const Action& action) override;
 
   raw_ptr<DisplayOverlayController> controller_;

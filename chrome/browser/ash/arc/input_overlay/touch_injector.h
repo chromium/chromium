@@ -95,6 +95,8 @@ class TouchInjector : public ui::EventRewriter {
   // Set input binding back to original binding.
   void OnBindingRestore();
   void OnProtoDataAvailable(AppDataProto& proto);
+  // Save proto file.
+  void OnSaveProtoFile();
   // Save the input menu state when the menu is closed.
   void OnInputMenuViewRemoved();
   void NotifyFirstTimeLaunch();
@@ -116,6 +118,11 @@ class TouchInjector : public ui::EventRewriter {
   // with default position binding at the center.
   void AddNewAction(ActionType action_type);
   void RemoveAction(Action* action);
+  // Remove action view for |action|.
+  void RemoveActionView(Action* action);
+  // Create a new action with guidance from the reference action, and delete
+  // the reference action.
+  void ChangeActionType(Action* reference_action, ActionType action_type);
 
   void AddObserver(TouchInjectorObserver* observer);
   void RemoveObserver(TouchInjectorObserver* observer);
@@ -169,6 +176,7 @@ class TouchInjector : public ui::EventRewriter {
  private:
   friend class ArcInputOverlayManagerTest;
   friend class TouchInjectorTest;
+  friend class ButtonOptionsMenuTest;
 
   struct TouchPointInfo {
     // ID managed by input overlay.
@@ -221,8 +229,6 @@ class TouchInjector : public ui::EventRewriter {
 
   // Convert the customized data to AppDataProto.
   std::unique_ptr<AppDataProto> ConvertToProto();
-  // Save proto file.
-  void OnSaveProtoFile();
 
   // Add the menu state to |proto|.
   void AddMenuStateToProto(AppDataProto& proto);
@@ -243,7 +249,7 @@ class TouchInjector : public ui::EventRewriter {
   // For observers.
   void NotifyActionAdded(Action& action);
   void NotifyActionRemoved(Action& action);
-  void NotifyActionTypeChanged(const Action& action, const Action& new_action);
+  void NotifyActionTypeChanged(Action* action, Action* new_action);
   void NotifyActionUpdated(const Action& action);
 
   // For test.

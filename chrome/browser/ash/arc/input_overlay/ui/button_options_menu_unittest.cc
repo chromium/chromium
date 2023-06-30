@@ -9,6 +9,9 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/test/view_test_base.h"
+#include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_type_button_group.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -79,6 +82,46 @@ class ButtonOptionsMenuTest : public ViewTestBase {
     menu->OnTrashButtonPressed();
   }
 
+  ActionType GetActionType(TestButtonOptionsMenu* menu) {
+    DCHECK(menu);
+    return menu->action()->GetType();
+  }
+
+  void PressActionMoveButton(TestButtonOptionsMenu* menu) {
+    DCHECK(menu);
+    ActionTypeButtonGroup* button_group = menu->button_group_;
+    DCHECK(button_group);
+    button_group->OnActionMoveButtonPressed();
+  }
+
+  void PressTapButton(TestButtonOptionsMenu* menu) {
+    DCHECK(menu);
+    ActionTypeButtonGroup* button_group = menu->button_group_;
+    DCHECK(button_group);
+    button_group->OnActionTapButtonPressed();
+  }
+
+  bool IsActionInTouchInjector(Action* action) {
+    const auto& actions = touch_injector_->actions();
+    return std::find_if(actions.begin(), actions.end(),
+                        [&](const std::unique_ptr<Action>& p) {
+                          return action == p.get();
+                        }) != actions.end();
+  }
+
+  bool IsActionInEditingList(Action* action) {
+    views::View* scroll_content = editing_list_->scroll_content_;
+    DCHECK(scroll_content);
+    for (auto* child : scroll_content->children()) {
+      auto* list_item = static_cast<ActionViewListItem*>(child);
+      DCHECK(list_item);
+      if (list_item->action() == action) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   std::unique_ptr<EditingList> editing_list_;
   std::unique_ptr<TestButtonOptionsMenu> tap_action_menu_;
   std::unique_ptr<TestButtonOptionsMenu> move_action_menu_;
@@ -120,6 +163,23 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
   move_action_menu_.reset();
   EXPECT_TRUE(IsEditingListInZeroState());
   EXPECT_EQ(0u, GetActionViewSize());
+}
+
+TEST_F(ButtonOptionsMenuTest, TestChangeActionType) {
+  // Change Action Tap.
+  ShowButtonOptionsMenu(ActionType::TAP);
+  PressActionMoveButton(tap_action_menu_.get());
+  EXPECT_EQ(GetActionType(tap_action_menu_.get()), ActionType::MOVE);
+  EXPECT_TRUE(IsActionInTouchInjector(tap_action_menu_->action()));
+  EXPECT_TRUE(IsActionInEditingList(tap_action_menu_->action()));
+  tap_action_menu_.reset();
+  // Change Action Move.
+  ShowButtonOptionsMenu(ActionType::MOVE);
+  PressTapButton(move_action_menu_.get());
+  EXPECT_EQ(GetActionType(move_action_menu_.get()), ActionType::TAP);
+  EXPECT_TRUE(IsActionInTouchInjector(move_action_menu_->action()));
+  EXPECT_TRUE(IsActionInEditingList(move_action_menu_->action()));
+  move_action_menu_.reset();
 }
 
 }  // namespace arc::input_overlay

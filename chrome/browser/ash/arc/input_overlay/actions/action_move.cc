@@ -59,7 +59,6 @@ class ActionMove::ActionMoveMouseView : public ActionView {
   ActionMoveMouseView& operator=(const ActionMoveMouseView&) = delete;
   ~ActionMoveMouseView() override = default;
 
-  // TODO(b/241966781): rewrite for Beta once design is ready.
   void SetViewContent(BindingOption binding_option) override {
     InputElement* input_binding =
         GetInputBindingByBindingOption(action_, binding_option);
@@ -234,6 +233,16 @@ bool ActionMove::InitFromEditor() {
   return true;
 }
 
+void ActionMove::InitFromAction(Action* action) {
+  Action::InitFromAction(action);
+  auto keys = action->current_input()->keys();
+  auto dom_code = keys.size() > 0 ? keys[0] : ui::DomCode::NONE;
+  std::vector<ui::DomCode> keycodes{dom_code, ui::DomCode::NONE,
+                                    ui::DomCode::NONE, ui::DomCode::NONE};
+  current_input_ = InputElement::CreateActionMoveKeyElement(keycodes);
+  original_input_ = InputElement::CreateActionMoveKeyElement(keycodes);
+}
+
 bool ActionMove::ParseJsonFromKeyboard(const base::Value::Dict& value) {
   const auto* list = value.FindList(kKeys);
   if (!list) {
@@ -400,7 +409,7 @@ void ActionMove::UnbindInput(const InputElement& input_element) {
   }
 }
 
-ActionType ActionMove::GetType() {
+ActionType ActionMove::GetType() const {
   return ActionType::MOVE;
 }
 

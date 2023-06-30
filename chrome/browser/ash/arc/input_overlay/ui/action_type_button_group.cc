@@ -8,6 +8,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/views/layout/flex_layout.h"
 
@@ -38,12 +39,12 @@ void ActionTypeButtonGroup::Init() {
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
 
   auto* tap_button = AddActionTypeButton(
-      base::BindRepeating(&ActionTypeButtonGroup::OnTapButtonPressed,
+      base::BindRepeating(&ActionTypeButtonGroup::OnActionTapButtonPressed,
                           base::Unretained(this)),
       // TODO(b/274690042): Replace placeholder text with localized strings.
       u"Single button", vector_icons::kCloseIcon);
   auto* move_button = AddActionTypeButton(
-      base::BindRepeating(&ActionTypeButtonGroup::OnMoveButtonPressed,
+      base::BindRepeating(&ActionTypeButtonGroup::OnActionMoveButtonPressed,
                           base::Unretained(this)),
       // TODO(b/274690042): Replace placeholder text with localized strings.
       u"Dpad", kGameControlsDpadKeyboardIcon);
@@ -95,14 +96,12 @@ void ActionTypeButtonGroup::OnButtonClicked(ash::OptionButtonBase* button) {
   button->SetSelected(true);
 }
 
-void ActionTypeButtonGroup::OnTapButtonPressed() {
-  // TODO(b/270969760): Implement tap button functionality.
-  NOTIMPLEMENTED();
+void ActionTypeButtonGroup::OnActionTapButtonPressed() {
+  controller_->ChangeActionType(action_, ActionType::TAP);
 }
 
-void ActionTypeButtonGroup::OnMoveButtonPressed() {
-  // TODO(b/270969760): Implement move button functionality.
-  NOTIMPLEMENTED();
+void ActionTypeButtonGroup::OnActionMoveButtonPressed() {
+  controller_->ChangeActionType(action_, ActionType::MOVE);
 }
 
 }  // namespace arc::input_overlay

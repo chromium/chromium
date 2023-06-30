@@ -57,6 +57,8 @@ class DisplayOverlayController : public ui::EventHandler,
   void OnInputBindingChange(Action* action,
                             std::unique_ptr<InputElement> input_element);
 
+  // Save changes to actions, without changing the display mode afterward.
+  void SaveToProtoFile();
   // Save the changes when users press the save button after editing.
   void OnCustomizeSave();
   // Don't save any changes when users press the cancel button after editing.
@@ -75,6 +77,9 @@ class DisplayOverlayController : public ui::EventHandler,
   // For editor.
   void AddNewAction(ActionType action_type = ActionType::TAP);
   void RemoveAction(Action* action);
+  // Creates a new action with guidance from the reference action, and deletes
+  // the reference action.
+  void ChangeActionType(Action* reference_action_, ActionType type);
 
   int GetTouchInjectorActionsSize();
 

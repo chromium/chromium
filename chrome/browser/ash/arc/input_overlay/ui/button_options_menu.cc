@@ -13,7 +13,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
-#include "ash/system/unified/feature_tile.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
@@ -240,7 +239,7 @@ void ButtonOptionsMenu::AddActionSelection() {
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 2, 0));
 
-  container->AddChildView(
+  button_group_ = container->AddChildView(
       ActionTypeButtonGroup::CreateButtonGroup(controller_, action_));
 }
 
@@ -249,9 +248,10 @@ void ButtonOptionsMenu::AddActionEdit() {
   // ||"Selected key" |key labels||
   // ||"key"                      |
   // ------------------------------
-  auto* container = AddChildView(std::make_unique<ash::RoundedContainer>(
+  action_edit_container_ = AddChildView(std::make_unique<ash::RoundedContainer>(
       ash::RoundedContainer::Behavior::kBottomRounded));
-  container->SetLayoutManager(std::make_unique<views::TableLayout>())
+  action_edit_container_
+      ->SetLayoutManager(std::make_unique<views::TableLayout>())
       ->AddColumn(views::LayoutAlignment::kStart,
                   views::LayoutAlignment::kCenter,
                   /*horizontal_resize=*/1.0f,
@@ -262,14 +262,15 @@ void ButtonOptionsMenu::AddActionEdit() {
                  views::TableLayout::ColumnSize::kUsePreferred,
                  /*fixed_width=*/0, /*min_width=*/0)
       .AddRows(1, views::TableLayout::kFixedSize, 0);
-  container->SetBorderInsets(gfx::Insets::VH(14, 16));
-  container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 8, 0));
+  action_edit_container_->SetBorderInsets(gfx::Insets::VH(14, 16));
+  action_edit_container_->SetProperty(views::kMarginsKey,
+                                      gfx::Insets::TLBR(0, 0, 8, 0));
 
   // TODO(b/274690042): Replace placeholder text with localized strings.
-  auto* name_tag =
-      container->AddChildView(NameTag::CreateNameTag(u"Selected key"));
-  labels_view_ = container->AddChildView(
-      EditLabels::CreateEditLabels(controller_, action_, name_tag));
+  key_name_tag_ = action_edit_container_->AddChildView(
+      NameTag::CreateNameTag(u"Selected key"));
+  labels_view_ = action_edit_container_->AddChildView(
+      EditLabels::CreateEditLabels(controller_, action_, key_name_tag_));
 }
 
 void ButtonOptionsMenu::AddActionNameLabel() {
@@ -332,7 +333,7 @@ void ButtonOptionsMenu::OnTrashButtonPressed() {
 }
 
 void ButtonOptionsMenu::OnDoneButtonPressed() {
-  // TODO(b/270969760): Implement save menu functionality.
+  controller_->SaveToProtoFile();
   controller_->RemoveButtonOptionsMenu();
 }
 
@@ -371,9 +372,15 @@ void ButtonOptionsMenu::OnActionRemoved(const Action& action) {
   controller_->RemoveButtonOptionsMenu();
 }
 
-void ButtonOptionsMenu::OnActionTypeChanged(const Action& action,
-                                            const Action& new_action) {
-  NOTIMPLEMENTED();
+void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
+                                            Action* new_action) {
+  DCHECK_EQ(action_, action);
+  action_ = new_action;
+  button_group_->set_action(new_action);
+  action_edit_container_->RemoveChildViewT(labels_view_);
+  labels_view_ = action_edit_container_->AddChildView(
+      EditLabels::CreateEditLabels(controller_, action_, key_name_tag_));
+  SizeToPreferredSize();
 }
 
 void ButtonOptionsMenu::OnActionUpdated(const Action& action) {

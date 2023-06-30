@@ -159,11 +159,11 @@ void InputMappingView::OnActionRemoved(const Action& action) {
   }
 }
 
-void InputMappingView::OnActionTypeChanged(const Action& action,
-                                           const Action& new_action) {
+void InputMappingView::OnActionTypeChanged(Action* action, Action* new_action) {
   // No action type change function for pre-beta version.
   DCHECK(IsBeta());
-  NOTIMPLEMENTED();
+  OnActionRemoved(*action);
+  OnActionAdded(*new_action);
 }
 
 void InputMappingView::OnActionUpdated(const Action& action) {

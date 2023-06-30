@@ -64,6 +64,8 @@ class Action {
   virtual bool ParseFromJson(const base::Value::Dict& value);
   // Used to create an action from UI.
   virtual bool InitFromEditor();
+  virtual void InitFromAction(Action* action);
+
   bool ParseFromProto(const ActionProto& proto);
   void OverwriteFromProto(const ActionProto& proto);
   // 1. Return true & non-empty touch_events:
@@ -85,7 +87,7 @@ class Action {
   // |input_element| should overlap the current displayed binding. If it is
   // partially overlapped, then we only unbind the overlapped input.
   virtual void UnbindInput(const InputElement& input_element) = 0;
-  virtual ActionType GetType() = 0;
+  virtual ActionType GetType() const = 0;
 
   // This is called for editing the actions before change is saved. Or for
   // loading the customized data to override the default input mapping.

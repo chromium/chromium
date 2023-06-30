@@ -202,6 +202,13 @@ bool ActionTap::InitFromEditor() {
   return true;
 }
 
+void ActionTap::InitFromAction(Action* action) {
+  Action::InitFromAction(action);
+  auto dom_code = action->current_input()->keys()[0];
+  current_input_ = InputElement::CreateActionTapKeyElement(dom_code);
+  original_input_ = InputElement::CreateActionTapKeyElement(dom_code);
+}
+
 bool ActionTap::ParseJsonFromKeyboard(const base::Value::Dict& value) {
   auto key = ParseKeyboardKey(value, name_);
   if (!key) {
@@ -288,7 +295,7 @@ void ActionTap::UnbindInput(const InputElement& input_element) {
   PostUnbindInputProcess();
 }
 
-ActionType ActionTap::GetType() {
+ActionType ActionTap::GetType() const {
   return ActionType::TAP;
 }
 

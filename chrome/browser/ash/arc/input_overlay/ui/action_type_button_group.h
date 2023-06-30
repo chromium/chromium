@@ -31,7 +31,11 @@ class ActionTypeButtonGroup : public ash::OptionButtonGroup,
   ActionTypeButtonGroup& operator=(const ActionTypeButtonGroup&) = delete;
   ~ActionTypeButtonGroup() override;
 
+  void set_action(Action* action) { action_ = action; }
+
  private:
+  friend class ButtonOptionsMenuTest;
+
   void Init();
 
   // Add an action type button.
@@ -41,8 +45,8 @@ class ActionTypeButtonGroup : public ash::OptionButtonGroup,
       const gfx::VectorIcon& icon);
 
   // Functions related to buttons:
-  void OnTapButtonPressed();
-  void OnMoveButtonPressed();
+  void OnActionTapButtonPressed();
+  void OnActionMoveButtonPressed();
 
   // OptionButtonGroup:
   ActionTypeButton* AddButton(ActionTypeButton::PressedCallback callback,

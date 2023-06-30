@@ -224,9 +224,9 @@ void EditingList::OnActionRemoved(const Action& action) {
   SizeToPreferredSize();
 }
 
-void EditingList::OnActionTypeChanged(const Action& action,
-                                      const Action& new_action) {
-  NOTIMPLEMENTED();
+void EditingList::OnActionTypeChanged(Action* action, Action* new_action) {
+  OnActionRemoved(*action);
+  OnActionAdded(*new_action);
 }
 
 void EditingList::OnActionUpdated(const Action& action) {

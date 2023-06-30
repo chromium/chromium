@@ -177,6 +177,11 @@ void DisplayOverlayController::RemoveButtonOptionsMenu() {
   button_options_menu_ = nullptr;
 }
 
+void DisplayOverlayController::ChangeActionType(Action* reference_action,
+                                                ActionType type) {
+  touch_injector_->ChangeActionType(reference_action, type);
+}
+
 void DisplayOverlayController::AddEditingList() {
   if (!IsBeta() || editing_list_) {
     return;
@@ -418,6 +423,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       // When using Tab to traverse views and enter into the edit mode, it needs
       // to reset the focus before removing the menu.
       ResetFocusTo(overlay_widget->GetContentsView());
+      RemoveButtonOptionsMenu();
       RemoveInputMenuView();
       RemoveMenuEntryView();
       RemoveEducationalView();
@@ -493,6 +499,10 @@ void DisplayOverlayController::OnInputBindingChange(
     Action* action,
     std::unique_ptr<InputElement> input_element) {
   touch_injector_->OnInputBindingChange(action, std::move(input_element));
+}
+
+void DisplayOverlayController::SaveToProtoFile() {
+  touch_injector_->OnSaveProtoFile();
 }
 
 void DisplayOverlayController::OnCustomizeSave() {

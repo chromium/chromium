@@ -884,8 +884,8 @@ void TouchInjector::NotifyActionRemoved(Action& action) {
   }
 }
 
-void TouchInjector::NotifyActionTypeChanged(const Action& action,
-                                            const Action& new_action) {
+void TouchInjector::NotifyActionTypeChanged(Action* action,
+                                            Action* new_action) {
   for (auto& observer : observers_) {
     observer.OnActionTypeChanged(action, new_action);
   }
@@ -911,6 +911,24 @@ void TouchInjector::AddNewAction(ActionType action_type) {
 
   // Apply the change right away for beta.
   NotifyActionAdded(*actions_.emplace_back(std::move(action)));
+}
+
+void TouchInjector::ChangeActionType(Action* action, ActionType action_type) {
+  auto new_action = CreateRawAction(action_type);
+  if (!new_action) {
+    return;
+  }
+
+  new_action->InitFromAction(action);
+  auto* new_action_raw = new_action.get();
+
+  auto it = std::find_if(
+      actions_.begin(), actions_.end(),
+      [&](const std::unique_ptr<Action>& p) { return action == p.get(); });
+  DCHECK(it != actions_.end());
+  actions_.erase(it);
+  actions_.emplace_back(std::move(new_action));
+  NotifyActionTypeChanged(action, new_action_raw);
 }
 
 void TouchInjector::RemoveAction(Action* action) {

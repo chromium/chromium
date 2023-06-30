@@ -28,6 +28,7 @@ class ActionMove : public Action {
   // Override from Action.
   bool ParseFromJson(const base::Value::Dict& value) override;
   bool InitFromEditor() override;
+  void InitFromAction(Action* action) override;
   bool RewriteEvent(const ui::Event& origin,
                     const bool is_mouse_locked,
                     const gfx::Transform* rotation_transform,
@@ -38,7 +39,7 @@ class ActionMove : public Action {
       DisplayOverlayController* display_overlay_controller) override;
   void UnbindInput(const InputElement& input_element) override;
   std::unique_ptr<ActionProto> ConvertToProtoIfCustomized() const override;
-  ActionType GetType() override;
+  ActionType GetType() const override;
 
   void set_move_distance(int move_distance) { move_distance_ = move_distance; }
   int move_distance() { return move_distance_; }

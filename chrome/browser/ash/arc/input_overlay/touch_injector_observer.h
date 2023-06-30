@@ -21,8 +21,7 @@ class TouchInjectorObserver : public base::CheckedObserver {
   virtual void OnActionRemoved(const Action& action) {}
   // Once action type is changed, the original action is removed and
   // |new_action| with new type is added.
-  virtual void OnActionTypeChanged(const Action& action,
-                                   const Action& new_action) {}
+  virtual void OnActionTypeChanged(Action* action, Action* new_action) {}
   virtual void OnActionUpdated(const Action& action) {}
 
  protected:
