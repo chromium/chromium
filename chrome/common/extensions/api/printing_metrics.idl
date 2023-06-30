@@ -9,53 +9,54 @@
 namespace printingMetrics {
   // The source of the print job.
   enum PrintJobSource {
-    // The job was created from the Print Preview page initiated by the user.
+    // Specifies that the job was created from the Print Preview page
+    // initiated by the user.
     PRINT_PREVIEW,
 
-    // The job was created from an Android App.
+    // Specifies that the job was created from an Android App.
     ANDROID_APP,
 
-    // The job was created by extension via Chrome API.
+    // Specifies that the job was created by extension via Chrome API.
     EXTENSION
   };
 
-  // The final status of the print job.
+  // Specifies the final status of the print job.
   enum PrintJobStatus {
-    // Print job was interrupted due to some error.
+    // Specifies that the print job was interrupted due to some error.
    FAILED,
 
-   // Print job was canceled by the user or via API.
+   // Specifies that the print job was canceled by the user or via API.
    CANCELED,
 
-   // Print job was printed without any errors.
+   // Specifies that the print job was printed without any errors.
    PRINTED
   };
 
   // The source of the printer.
   enum PrinterSource {
-    // Printer was added by user.
+    // Specifies that the printer was added by user.
     USER,
 
-    // Printer was added via policy.
+    // Specifies that the printer was added via policy.
     POLICY
   };
 
   enum ColorMode {
-    // Black and white mode was used.
+    // Specifies that black and white mode was used.
     BLACK_AND_WHITE,
 
-    // Color mode was used.
+    // Specifies that color mode was used.
     COLOR
   };
 
   enum DuplexMode {
-    // One-sided printing was used.
+    // Specifies that one-sided printing was used.
     ONE_SIDED,
 
-    // Two-sided printing was used, flipping on long edge.
+    // Specifies that two-sided printing was used, flipping on long edge.
     TWO_SIDED_LONG_EDGE,
 
-    // Two-sided printing was used, flipping on short edge.
+    // Specifies that two-sided printing was used, flipping on short edge.
     TWO_SIDED_SHORT_EDGE
   };
 
