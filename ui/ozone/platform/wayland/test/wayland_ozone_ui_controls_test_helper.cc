@@ -64,7 +64,7 @@ void WaylandOzoneUIControlsTestHelper::SendKeyEvents(
     int key_event_types,
     int accelerator_state,
     base::OnceClosure closure) {
-  DCHECK(!(accelerator_state & ui_controls::kCommand))
+  CHECK(!(accelerator_state & ui_controls::kCommand))
       << "No Command key on Wayland";
 
   uint32_t request_id = GetNextRequestId();
