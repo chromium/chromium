@@ -951,9 +951,16 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
     defined(ARCH_CPU_ARM64) || BUILDFLAG(IS_OZONE)
 #if defined(ARCH_CPU_ARM64) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE))
+
   // Windows, macOS, and Fuchsia on ARM64 has some pixels difference.
   // crbug.com/1029728, crbug.com/1128443
+#if !BUILDFLAG(IS_IOS)
   float percentage_pixels_error = 0.89f;
+#else
+  // iOS on ARM64 has some more differing pixels.
+  float percentage_pixels_error = 0.96f;
+#endif
+
   float average_error_allowed_in_bad_pixels = 5.f;
   int error_allowed = 17;
 #elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
