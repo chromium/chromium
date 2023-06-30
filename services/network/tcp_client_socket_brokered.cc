@@ -5,6 +5,7 @@
 #include "services/network/tcp_client_socket_brokered.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
@@ -157,9 +158,15 @@ void TCPClientSocketBrokered ::DidCompleteCreate(
     }
   }
 
-  brokered_socket_->Connect(base::BindOnce(
-      &TCPClientSocketBrokered::DidCompleteConnect,
-      brokered_weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  auto split_connect_callback = base::SplitOnceCallback(std::move(callback));
+  int connect_result = brokered_socket_->Connect(
+      base::BindOnce(&TCPClientSocketBrokered::DidCompleteConnect,
+                     brokered_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_connect_callback.first)));
+  if (connect_result != net::ERR_IO_PENDING) {
+    DidCompleteConnect(std::move(split_connect_callback.second),
+                       connect_result);
+  }
 }
 
 void TCPClientSocketBrokered::Disconnect() {
