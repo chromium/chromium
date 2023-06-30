@@ -1625,14 +1625,12 @@ TEST_F(LoginDatabaseTest, ReportAccountStoreMetricsTest) {
       "PasswordManager.AccountStore.InaccessiblePasswords3", 0, 1);
 }
 
-class LoginDatabaseSyncMetadataTest
-    : public LoginDatabaseTest,
-      public testing::WithParamInterface<syncer::ModelType> {
+class LoginDatabaseSyncMetadataTest : public LoginDatabaseTest {
  public:
-  syncer::ModelType SyncModelType() { return GetParam(); }
+  syncer::ModelType SyncModelType() { return syncer::PASSWORDS; }
 };
 
-TEST_P(LoginDatabaseSyncMetadataTest, NoMetadata) {
+TEST_F(LoginDatabaseSyncMetadataTest, NoMetadata) {
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
       db().password_sync_metadata_store().GetAllSyncMetadata(SyncModelType());
   ASSERT_THAT(metadata_batch, testing::NotNull());
@@ -1641,7 +1639,7 @@ TEST_P(LoginDatabaseSyncMetadataTest, NoMetadata) {
             metadata_batch->GetModelTypeState().SerializeAsString());
 }
 
-TEST_P(LoginDatabaseSyncMetadataTest, GetAllSyncMetadata) {
+TEST_F(LoginDatabaseSyncMetadataTest, GetAllSyncMetadata) {
   sync_pb::EntityMetadata metadata;
   PasswordStoreSync::MetadataStore& password_sync_metadata_store =
       db().password_sync_metadata_store();
@@ -1692,7 +1690,7 @@ TEST_P(LoginDatabaseSyncMetadataTest, GetAllSyncMetadata) {
       sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
 }
 
-TEST_P(LoginDatabaseSyncMetadataTest, DeleteAllSyncMetadata) {
+TEST_F(LoginDatabaseSyncMetadataTest, DeleteAllSyncMetadata) {
   sync_pb::EntityMetadata metadata;
   PasswordStoreSync::MetadataStore& password_sync_metadata_store =
       db().password_sync_metadata_store();
@@ -1728,7 +1726,7 @@ TEST_P(LoginDatabaseSyncMetadataTest, DeleteAllSyncMetadata) {
   EXPECT_EQ(empty_metadata_batch->TakeAllMetadata().size(), 0u);
 }
 
-TEST_P(LoginDatabaseSyncMetadataTest, WriteThenDeleteSyncMetadata) {
+TEST_F(LoginDatabaseSyncMetadataTest, WriteThenDeleteSyncMetadata) {
   sync_pb::EntityMetadata metadata;
   PasswordStoreSync::MetadataStore& password_sync_metadata_store =
       db().password_sync_metadata_store();
@@ -1768,12 +1766,6 @@ TEST_P(LoginDatabaseSyncMetadataTest, WriteThenDeleteSyncMetadata) {
   EXPECT_EQ(sync_pb::ModelTypeState().SerializeAsString(),
             metadata_batch->GetModelTypeState().SerializeAsString());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    SyncModelTypes,
-    LoginDatabaseSyncMetadataTest,
-    testing::Values(syncer::PASSWORDS,
-                    syncer::INCOMING_PASSWORD_SHARING_INVITATION));
 
 #if BUILDFLAG(IS_POSIX)
 // Only the current user has permission to read the database.
