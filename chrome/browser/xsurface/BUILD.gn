@@ -7,9 +7,6 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/xsurface/ColorProvider.java",
-    "android/java/src/org/chromium/chrome/browser/xsurface/FeedLaunchReliabilityLogger.java",
-    "android/java/src/org/chromium/chrome/browser/xsurface/FeedNetworkRequestReliabilityLogger.java",
-    "android/java/src/org/chromium/chrome/browser/xsurface/FeedUserInteractionReliabilityLogger.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/HybridListRenderer.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ImageCacheHelper.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ImageFetchClient.java",

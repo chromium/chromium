@@ -131,20 +131,8 @@ public interface FeedLaunchReliabilityLogger {
      * @return A logger for the request: an existing logger if one matches `requestId`, or a new one
      *         otherwise.
      */
-    @Deprecated
-    default org.chromium.chrome.browser.xsurface.FeedNetworkRequestReliabilityLogger
-    getNetworkRequestReliabilityLogger(int requestId) {
-        return new org.chromium.chrome.browser.xsurface.FeedNetworkRequestReliabilityLogger() {};
-    }
-
-    /**
-     * Get the network request logger for a request by its ID.
-     * @param requestId A unique ID for the request.
-     * @return A logger for the request: an existing logger if one matches `requestId`, or a new one
-     *         otherwise.
-     */
     default FeedNetworkRequestReliabilityLogger getNetworkRequestReliabilityLogger2(int requestId) {
-        return getNetworkRequestReliabilityLogger(requestId);
+        return new FeedNetworkRequestReliabilityLogger() {};
     }
 
     /**

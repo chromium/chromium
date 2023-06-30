@@ -15,7 +15,7 @@ namespace feed {
 /**
  * Interface for logging reliability-related timestamps and status codes. See
  * chrome/browser/xsurface/android/java/src/org/chromium/chrome/browser/
- * xsurface/FeedLaunchReliabilityLogger.java.
+ * xsurface/feed/FeedLaunchReliabilityLogger.java.
  */
 class ReliabilityLoggingBridge {
  public:

@@ -25,16 +25,4 @@ public interface SurfaceScope {
 
     default void replaceDataStoreEntry(String key, byte[] data) {}
     default void removeDataStoreEntry(String key) {}
-
-    // Functionality moving to FeedSurfaceScope
-    @Deprecated
-    default FeedLaunchReliabilityLogger getFeedLaunchReliabilityLogger() {
-        return new FeedLaunchReliabilityLogger() {};
-    }
-
-    // Functionality moving to FeedSurfaceScope
-    @Deprecated
-    default FeedUserInteractionReliabilityLogger getFeedUserInteractionReliabilityLogger() {
-        return new FeedUserInteractionReliabilityLogger() {};
-    }
 }
