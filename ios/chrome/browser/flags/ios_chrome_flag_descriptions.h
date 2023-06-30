@@ -361,6 +361,10 @@ extern const char kEnableFullscreenAPIDescription[];
 extern const char kPasswordsGroupingName[];
 extern const char kPasswordsGroupingDescription[];
 
+// Title and description for the flag to enable the passwords account storage.
+extern const char kEnablePasswordsAccountStorageName[];
+extern const char kEnablePasswordsAccountStorageDescription[];
+
 // Title and description for the flag to enable the preferences account storage.
 extern const char kEnablePreferencesAccountStorageName[];
 extern const char kEnablePreferencesAccountStorageDescription[];

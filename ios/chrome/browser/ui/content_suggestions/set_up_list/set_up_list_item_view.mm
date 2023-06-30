@@ -83,10 +83,15 @@ struct ViewConfig {
     _complete = data.complete;
     if (data.compactLayout) {
       // ViewConfig for a compact layout.
+      const int syncString =
+          base::FeatureList::IsEnabled(
+              password_manager::features::kEnablePasswordsAccountStorage)
+              ? IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION_NO_PASSWORDS
+              : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION;
       _config = {
           YES,
           NO,
-          IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION_NO_PASSWORDS,
+          syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_SHORT_DESCRIPTION,
           UIFontTextStyleFootnote,
@@ -107,10 +112,15 @@ struct ViewConfig {
       };
     } else {
       // Normal ViewConfig.
+      const int syncString =
+          base::FeatureList::IsEnabled(
+              password_manager::features::kEnablePasswordsAccountStorage)
+              ? IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION_NO_PASSWORDS
+              : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION;
       _config = {
           NO,
           NO,
-          IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION_NO_PASSWORDS,
+          syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_DESCRIPTION,
           UIFontTextStyleSubheadline,
