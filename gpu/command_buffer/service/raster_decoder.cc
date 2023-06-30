@@ -2719,18 +2719,25 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
     return;
   }
 
-  SkIRect src_rect = SkIRect::MakeSize(sk_image->dimensions());
-  SkISize dst_size = SkISize::Make(dst_width, dst_height);
+  const SkIRect src_rect = SkIRect::MakeSize(sk_image->dimensions());
+  const SkISize dst_size = SkISize::Make(dst_width, dst_height);
 
-  // While this function indicates it's asynchronous, the flushAndSubmit()
-  // call below ensures it completes synchronously. We do this because
-  // RasterImplementation/Decoder does not currently have a query
-  // that can handle asynchronous calls.
+  // While this function indicates it's asynchronous, the DoFinish() call below
+  // ensures it completes synchronously.
   YUVReadbackResult yuv_result;
-  sk_image->asyncRescaleAndReadPixelsYUV420(
-      kJPEG_Full_SkYUVColorSpace, SkColorSpace::MakeSRGB(), src_rect, dst_size,
-      SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
-      &OnReadYUVImagePixelsDone, &yuv_result);
+  if (graphite_context()) {
+    graphite_context()->asyncRescaleAndReadPixelsYUV420(
+        sk_image.get(), kJPEG_Full_SkYUVColorSpace, SkColorSpace::MakeSRGB(),
+        src_rect, dst_size, SkImage::RescaleGamma::kSrc,
+        SkImage::RescaleMode::kRepeatedLinear, &OnReadYUVImagePixelsDone,
+        &yuv_result);
+  } else {
+    sk_image->asyncRescaleAndReadPixelsYUV420(
+        kJPEG_Full_SkYUVColorSpace, SkColorSpace::MakeSRGB(), src_rect,
+        dst_size, SkImage::RescaleGamma::kSrc,
+        SkImage::RescaleMode::kRepeatedLinear, &OnReadYUVImagePixelsDone,
+        &yuv_result);
+  }
 
   source_scoped_access->ApplyBackendSurfaceEndState();
   if (!end_semaphores.empty()) {
@@ -2744,13 +2751,11 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
     gr_context()->flush(flush_info);
   }
 
-  // TODO(crbug.com/1023262): Eventually we should make this function truly
-  // asynchronous by removing this flush and implementing a query that can
-  // signal back to client process.
+  // TODO(crbug.com/1023262): Use COMMANDS_COMPLETED query for async readback.
   DoFinish();
 
   // The call above will sync up gpu and CPU, resulting in callback being run
-  // during flushAndSubmit. To prevent UAF make sure it indeed happened.
+  // during DoFinish(). To prevent UAF make sure it indeed happened.
   CHECK(yuv_result.finished);
   if (!yuv_result.async_result) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",

@@ -1670,7 +1670,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     source_selection.Intersect(sampling_selection);
   }
 
-  SkIRect src_rect =
+  const SkIRect src_rect =
       SkIRect::MakeXYWH(source_selection.x(), source_selection.y(),
                         source_selection.width(), source_selection.height());
   switch (request->result_format()) {
@@ -1682,19 +1682,26 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
           << "SkSurface::asyncRescaleAndReadPixelsYUV420() requires "
              "destination height to be even!";
 
-      std::unique_ptr<ReadPixelsContext> context =
-          std::make_unique<ReadPixelsContext>(std::move(request),
-                                              geometry.result_selection,
-                                              color_space, weak_ptr_);
+      const SkISize dst_size =
+          SkISize::Make(geometry.result_selection.width(),
+                        geometry.result_selection.height());
+      auto context = std::make_unique<ReadPixelsContext>(
+          std::move(request), geometry.result_selection, color_space,
+          weak_ptr_);
       // Skia readback could be synchronous. Incremement counter in case
       // ReadbackCompleted is called immediately.
       num_readbacks_pending_++;
-      surface->asyncRescaleAndReadPixelsYUV420(
-          kRec709_SkYUVColorSpace, SkColorSpace::MakeSRGB(), src_rect,
-          {geometry.result_selection.width(),
-           geometry.result_selection.height()},
-          SkSurface::RescaleGamma::kSrc, rescale_mode,
-          &CopyOutputResultSkiaYUV::OnReadbackDone, context.release());
+      if (auto* graphite_context = context_state_->graphite_context()) {
+        graphite_context->asyncRescaleAndReadPixelsYUV420(
+            surface, kRec709_SkYUVColorSpace, SkColorSpace::MakeSRGB(),
+            src_rect, dst_size, SkSurface::RescaleGamma::kSrc, rescale_mode,
+            &CopyOutputResultSkiaYUV::OnReadbackDone, context.release());
+      } else {
+        surface->asyncRescaleAndReadPixelsYUV420(
+            kRec709_SkYUVColorSpace, SkColorSpace::MakeSRGB(), src_rect,
+            dst_size, SkSurface::RescaleGamma::kSrc, rescale_mode,
+            &CopyOutputResultSkiaYUV::OnReadbackDone, context.release());
+      }
       break;
     }
     case CopyOutputRequest::ResultFormat::NV12_PLANES:
@@ -2396,7 +2403,12 @@ void SkiaOutputSurfaceImplOnGpu::CheckReadbackCompletion() {
   if (num_readbacks_pending_ == 0 || !MakeCurrent(/*need_framebuffer=*/false))
     return;
 
-  gr_context()->checkAsyncWorkCompletion();
+  if (auto* graphite_context = context_state_->graphite_context()) {
+    graphite_context->checkAsyncWorkCompletion();
+  } else {
+    CHECK(gr_context());
+    gr_context()->checkAsyncWorkCompletion();
+  }
   ScheduleCheckReadbackCompletion();
 }
 
