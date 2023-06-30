@@ -190,6 +190,9 @@
     <message name="IDS_PRINT_PREVIEW_MEDIA_SIZE_LABEL" desc="Media size option label. Provides user the option to change the size of the printed page.">
       Paper size
     </message>
+    <message name="IDS_PRINT_PREVIEW_MEDIA_TYPE_LABEL" desc="Media type option label. Provides user the option to select the type of paper to printed on (plain paper, photo paper, etc.)">
+      Paper type
+    </message>
     <message name="IDS_PRINT_PREVIEW_DPI_LABEL" desc="Print quality option label. Provides user the option to select one of the print quality options defined for the printer.">
       Quality
     </message>
