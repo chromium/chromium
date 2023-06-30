@@ -20,6 +20,7 @@ class PermissionRequestID;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// Update StorageAccessAPIRequestOutcome in enums.xml when you add entries.
 enum class RequestOutcome {
   // The request was granted because the requesting site and the top level site
   // were in the same First-Party Set.
@@ -47,8 +48,11 @@ enum class RequestOutcome {
   kDeniedByTopLevelInteractionHeuristic = 8,
   // 3p cookies are already allowed by user agent, so there is no need to ask.
   kAllowedByCookieSettings = 9,
+  // The permission was previously granted without user action. E.g. through
+  // FPS.
+  kReusedImplicitGrant = 10,
 
-  kMaxValue = kAllowedByCookieSettings,
+  kMaxValue = kReusedImplicitGrant,
 };
 
 class StorageAccessGrantPermissionContext

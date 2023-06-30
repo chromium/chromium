@@ -20,6 +20,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/permission_request_id.h"
@@ -164,6 +165,14 @@ class StorageAccessGrantPermissionContextTest
 
   ContentSetting DecidePermissionSync(bool user_gesture) {
     return DecidePermission(user_gesture)->Get();
+  }
+
+  ContentSetting RequestPermissionSync() {
+    base::test::TestFuture<ContentSetting> future;
+    permission_context()->RequestPermission(CreateFakeID(), GetRequesterURL(),
+                                            true, future.GetCallback());
+
+    return future.Get();
   }
 
   // Helper to ensure that a given content setting is consistently applied on a
@@ -372,6 +381,50 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
               IsEmpty());
 }
 
+TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
+       PermissionGrantReused) {
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetContentSettingDefaultScope(GetRequesterURL(), GetTopLevelURL(),
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_ALLOW);
+  RequestPermissionSync();
+  histogram_tester().ExpectUniqueSample(
+      kRequestOutcomeHistogram, RequestOutcome::kReusedPreviousDecision, 1);
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              UnorderedElementsAre(Pair(GetRequesterSite(), true)));
+}
+
+TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, BlockReused) {
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetContentSettingDefaultScope(GetRequesterURL(), GetTopLevelURL(),
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_BLOCK);
+  RequestPermissionSync();
+  histogram_tester().ExpectUniqueSample(
+      kRequestOutcomeHistogram, RequestOutcome::kReusedPreviousDecision, 1);
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              UnorderedElementsAre(Pair(GetRequesterSite(), true)));
+}
+
+TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, FpsGrantReused) {
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_session_model(
+      content_settings::SessionModel::NonRestorableUserSession);
+  map->SetContentSettingDefaultScope(GetRequesterURL(), GetTopLevelURL(),
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_ALLOW, constraint);
+
+  RequestPermissionSync();
+  histogram_tester().ExpectUniqueSample(
+      kRequestOutcomeHistogram, RequestOutcome::kReusedImplicitGrant, 1);
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              IsEmpty());
+}
+
 TEST_F(StorageAccessGrantPermissionContextAPIDisabledTest,
        PermissionStatusBlocked) {
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
@@ -532,19 +585,15 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GetDummyEmbeddingUrlWithSubdomain());
 
+  int implicit_grant_limit =
+      blink::features::kStorageAccessAPIImplicitGrantLimit.Get();
+
   // Although the grants are exhausted, another request from a top-level origin
   // that is same site with an existing grant should still be auto-granted. The
   // call is to `RequestPermission`, which checks for existing grants, while
   // `DecidePermission` does not.
-  base::test::TestFuture<ContentSetting> future;
-  permission_context()->RequestPermission(CreateFakeID(), GetRequesterURL(),
-                                          true, future.GetCallback());
-
-  int implicit_grant_limit =
-      blink::features::kStorageAccessAPIImplicitGrantLimit.Get();
-
   // We should have no prompts still and our latest result should be an allow.
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, RequestPermissionSync());
   EXPECT_FALSE(request_manager()->IsRequestInProgress());
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram, RequestOutcome::kGrantedByAllowance),
@@ -555,14 +604,9 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
   histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
                                        /*sample=*/true, implicit_grant_limit);
 
-  // TODO(crbug.com/1433644): Here we are actually logging a StorageAccess
-  // request because we don't know that the previously granted permission was
-  // implicit. We should tag implicit grants to be able to know later on whether
-  // a previous grant was implicit.
   EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
                   ContentSettingsType::STORAGE_ACCESS),
-              UnorderedElementsAre(
-                  Pair(GetRequesterSite(), true)));  // Should be IsEmpty().
+              IsEmpty());
 }
 
 TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantDenial) {

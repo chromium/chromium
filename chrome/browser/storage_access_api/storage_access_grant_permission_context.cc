@@ -51,13 +51,42 @@ namespace {
 constexpr base::TimeDelta kImplicitGrantDuration = base::Hours(24);
 constexpr base::TimeDelta kExplicitGrantDuration = base::Days(30);
 
-// Returns true iff the request was answered implicitly (assuming it met some
-// other baseline prerequisites).
+// Returns true if the request wasn't answered by the user explicitly.
 bool IsImplicitOutcome(RequestOutcome outcome) {
-  CHECK_NE(outcome, RequestOutcome::kDeniedByPrerequisites);
-  return outcome == RequestOutcome::kGrantedByAllowance ||
-         outcome == RequestOutcome::kGrantedByFirstPartySet ||
-         outcome == RequestOutcome::kDeniedByFirstPartySet;
+  switch (outcome) {
+    case RequestOutcome::kAllowedByCookieSettings:
+    case RequestOutcome::kDeniedByFirstPartySet:
+    case RequestOutcome::kDeniedByPrerequisites:
+    case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
+    case RequestOutcome::kDismissedByUser:
+    case RequestOutcome::kGrantedByAllowance:
+    case RequestOutcome::kGrantedByFirstPartySet:
+    case RequestOutcome::kReusedImplicitGrant:
+    case RequestOutcome::kReusedPreviousDecision:
+      return true;
+    case RequestOutcome::kDeniedByUser:
+    case RequestOutcome::kGrantedByUser:
+      return false;
+  }
+}
+
+// Returns true if the request outcome should be displayed in the omnibox.
+bool ShouldDisplayOutcomeInOmnibox(RequestOutcome outcome) {
+  switch (outcome) {
+    case RequestOutcome::kDeniedByUser:
+    case RequestOutcome::kDismissedByUser:
+    case RequestOutcome::kGrantedByUser:
+    case RequestOutcome::kReusedPreviousDecision:
+      return true;
+    case RequestOutcome::kAllowedByCookieSettings:
+    case RequestOutcome::kDeniedByFirstPartySet:
+    case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
+    case RequestOutcome::kGrantedByAllowance:
+    case RequestOutcome::kGrantedByFirstPartySet:
+    case RequestOutcome::kReusedImplicitGrant:
+    case RequestOutcome::kDeniedByPrerequisites:
+      return false;
+  }
 }
 
 // Converts a ContentSetting to the corresponding RequestOutcome. This assumes
@@ -102,6 +131,7 @@ content_settings::ContentSettingConstraints ComputeConstraints(
     case RequestOutcome::kDeniedByFirstPartySet:
     case RequestOutcome::kDeniedByPrerequisites:
     case RequestOutcome::kReusedPreviousDecision:
+    case RequestOutcome::kReusedImplicitGrant:
     case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
     case RequestOutcome::kAllowedByCookieSettings:
       NOTREACHED_NORETURN();
@@ -279,7 +309,11 @@ void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
   ContentSetting existing_setting =
       PermissionContextBase::GetPermissionStatusInternal(rfh, requesting_origin,
                                                          embedding_origin);
-  if (existing_setting != CONTENT_SETTING_ASK) {
+  // ALLOW grants are handled by PermissionContextBase so they never reach this
+  // point. StorageAccessGrantPermissionContext::GetPermissionStatusInternal
+  // rewrites BLOCK to ASK, so we need to handle BLOCK here explicitly.
+  CHECK_NE(existing_setting, CONTENT_SETTING_ALLOW);
+  if (existing_setting == CONTENT_SETTING_BLOCK) {
     NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
                                 std::move(callback),
                                 /*persist=*/false, existing_setting,
@@ -390,9 +424,28 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
   CHECK(!is_one_time);
   CHECK(is_final_decision);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  NotifyPermissionSetInternal(
-      id, requesting_origin, embedding_origin, std::move(callback), persist,
-      content_setting, RequestOutcomeFromPrompt(content_setting, persist));
+  RequestOutcome outcome = RequestOutcomeFromPrompt(content_setting, persist);
+  if (outcome == RequestOutcome::kReusedPreviousDecision) {
+    // This could be an implicit, e.g. FPS or allowance based permission. Check
+    // if the exception has an ephemeral session model.
+    content_settings::SettingInfo info;
+    HostContentSettingsMapFactory::GetForProfile(browser_context())
+        ->GetContentSetting(requesting_origin, embedding_origin,
+                            ContentSettingsType::STORAGE_ACCESS, &info);
+
+    switch (info.metadata.session_model()) {
+      case content_settings::SessionModel::NonRestorableUserSession:
+      case content_settings::SessionModel::UserSession:
+        outcome = RequestOutcome::kReusedImplicitGrant;
+        break;
+      case content_settings::SessionModel::Durable:
+      case content_settings::SessionModel::OneTime:
+        break;
+    }
+  }
+  NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
+                              std::move(callback), persist, content_setting,
+                              outcome);
 }
 
 void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
@@ -414,8 +467,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   const bool permission_allowed = (content_setting == CONTENT_SETTING_ALLOW);
   UpdateTabContext(id, requesting_origin, permission_allowed);
 
-  if (outcome != RequestOutcome::kDeniedByPrerequisites &&
-      !IsImplicitOutcome(outcome)) {
+  if (ShouldDisplayOutcomeInOmnibox(outcome)) {
     auto* content_settings =
         content_settings::PageSpecificContentSettings::GetForFrame(
             id.global_render_frame_host_id());
