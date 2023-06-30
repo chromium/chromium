@@ -290,12 +290,16 @@ absl::optional<std::vector<std::string>> DMPolicyManager::GetAppsWithPolicy()
 }
 
 scoped_refptr<PolicyManagerInterface> CreateDMPolicyManager() {
+  scoped_refptr<DMStorage> default_dm_storage = GetDefaultDMStorage();
+  if (!default_dm_storage) {
+    return nullptr;
+  }
   std::unique_ptr<
       ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>
-      omaha_settings = GetDefaultDMStorage()->GetOmahaPolicySettings();
-  if (!omaha_settings)
+      omaha_settings = default_dm_storage->GetOmahaPolicySettings();
+  if (!omaha_settings) {
     return nullptr;
-
+  }
   return base::MakeRefCounted<DMPolicyManager>(*omaha_settings);
 }
 
