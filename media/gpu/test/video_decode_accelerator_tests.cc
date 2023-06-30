@@ -7,8 +7,10 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/cpu.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -203,8 +205,11 @@ class VideoDecoderTest : public ::testing::Test {
     LOG_ASSERT(video_player);
     LOG_ASSERT(video_player->Initialize(video));
 
-    // Increase event timeout when outputting video frames.
-    if (g_env->GetFrameOutputMode() != FrameOutputMode::kNone) {
+    // Increase the time out if
+    // (1) video frames are output, or
+    // (2) on Intel GLK, where mapping is very slow.
+    if (g_env->GetFrameOutputMode() != FrameOutputMode::kNone ||
+        IsSlowMappingDevice()) {
       video_player->SetEventWaitTimeout(
           std::max(kDefaultEventWaitTimeout, g_env->Video()->Duration() * 10));
     }
@@ -212,6 +217,16 @@ class VideoDecoderTest : public ::testing::Test {
   }
 
  private:
+  bool IsSlowMappingDevice() const {
+    static const base::NoDestructor<base::CPU> cpuid;
+    constexpr int kPentiumAndLaterFamily = 0x06;
+    constexpr int kGeminiLakeModelId = 0x7A;
+    static const bool is_glk_device =
+        cpuid->family() == kPentiumAndLaterFamily &&
+        cpuid->model() == kGeminiLakeModelId;
+    return is_glk_device;
+  }
+
   // TODO(hiroh): Move this to Video class or video_frame_helpers.h.
   // TODO(hiroh): Create model frames once during the test.
   bool CreateModelFrames(const VideoBitstream* video) {
@@ -388,7 +403,7 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream) {
   // This test case is used for video.ChromeStackDecoderVerification.
   // Mapping is very slow on some intel devices and hit the default timeout
   // in long 4k video verification. Increase the timeout more than 1080p video
-  // to mitigate the issue. See b/230378122 for the discussion.
+  // to mitigate the issue.
   // 180 seconds are selected as it is long enough to pass the existing tests.
   constexpr gfx::Size k1080p(1920, 1080);
   if (g_env->Video()->Resolution().GetArea() > k1080p.GetArea()) {
