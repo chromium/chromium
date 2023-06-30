@@ -2123,7 +2123,7 @@ TEST_F(AmbientControllerDurationTest, SetScreenSaverDuration) {
   EXPECT_EQ(0, GetScreenSaverDuration());
 }
 
-TEST_F(AmbientControllerDurationTest, AcquireWakeLockWithoutCharger) {
+TEST_F(AmbientControllerDurationTest, DoNotAcquireWakeLockOnBattery) {
   // Simulate User logged in.
   ClearLogin();
   SimulateUserLogin(kUser1);
@@ -2133,36 +2133,15 @@ TEST_F(AmbientControllerDurationTest, AcquireWakeLockWithoutCharger) {
   SetScreenSaverDuration(0);
   EXPECT_EQ(0, GetScreenSaverDuration());
 
-  // Lock screen to start ambient mode, and flush the loop to ensure
-  // the acquire wake lock request has reached the wake lock provider.
   LockScreen();
   FastForwardByLockScreenInactivityTimeout();
   FastForwardTiny();
-
-  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
-                   device::mojom::WakeLockType::kPreventDisplaySleep));
-
-  HideAmbientScreen();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(0, GetNumOfActiveWakeLocks(
-                   device::mojom::WakeLockType::kPreventDisplaySleep));
-
-  // Ambient screen showup again after inactivity.
-  FastForwardByLockScreenInactivityTimeout();
-
-  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
-                   device::mojom::WakeLockType::kPreventDisplaySleep));
-
-  // Unlock screen to exit ambient mode.
-  UnlockScreen();
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(0, GetNumOfActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventDisplaySleep));
 }
 
-TEST_F(AmbientControllerDurationTest, AcquireWakeLockWithCharger) {
+TEST_F(AmbientControllerDurationTest, AcquireWakeLockAfterScreenSaverStarts) {
   // Simulate User logged in.
   ClearLogin();
   SimulateUserLogin(kUser1);
