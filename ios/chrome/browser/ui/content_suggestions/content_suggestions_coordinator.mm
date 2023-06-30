@@ -13,7 +13,6 @@
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/prefs/pref_service.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
@@ -482,12 +481,8 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
     set_up_list_prefs::MarkItemComplete(localState,
                                         SetUpListItemType::kSignInSync);
   };
-  AuthenticationOperation operation =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? AuthenticationOperationSigninOnly
-          : AuthenticationOperationSigninAndSyncWithTwoScreens;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:operation
+      initWithOperation:AuthenticationOperationSigninAndSyncWithTwoScreens
                identity:nil
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST
             promoAction:signin_metrics::PromoAction::

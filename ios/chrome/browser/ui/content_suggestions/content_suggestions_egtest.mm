@@ -12,10 +12,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -40,7 +38,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
-#import "ui/base/l10n/l10n_util.h"
 #import "ui/strings/grit/ui_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -161,21 +158,6 @@ void TapMoreButtonIfVisible() {
   config.features_disabled.push_back(kMagicStack);
   config.features_enabled.push_back(kEnableFeedAblation);
   config.features_enabled.push_back(kIOSSetUpList);
-  if ([self isRunningTest:@selector
-            (testSetUpListDismissItemsWithSyncToSigninDisabled)] ||
-      [self isRunningTest:@selector
-            (testSetUpListSigninWithSyncToSigninDisabled)]) {
-    config.features_disabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-  if ([self isRunningTest:@selector
-            (testSetUpListDismissItemsWithSyncToSigninEnabled)] ||
-      [self isRunningTest:@selector
-            (testSetUpListSigninWithSyncToSigninEnabled)]) {
-    config.features_enabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-    config.features_enabled.push_back(kConsistencyNewAccountInterface);
-  }
   return config;
 }
 
@@ -369,7 +351,7 @@ void TapMoreButtonIfVisible() {
 // Tests that each item opens the appropriate UI flow and that dismissing that
 // UI marks the item complete. Also tests that the "All Set" view appears when
 // all items are complete.
-- (void)testSetUpListDismissItemsWithSyncToSigninDisabled {
+- (void)testSetUpListDismissItems {
   [self prepareToTestSetUpList];
 
   // Tap the signin item.
@@ -432,78 +414,9 @@ void TapMoreButtonIfVisible() {
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that each item opens the appropriate UI flow and that dismissing that
-// UI marks the item complete. Also tests that the "All Set" view appears when
-// all items are complete.
-- (void)testSetUpListDismissItemsWithSyncToSigninEnabled {
-  [self prepareToTestSetUpList];
-
-  // Tap the signin item.
-  TapView(set_up_list::kSignInItemID);
-  // Verify the signin screen appears.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kWebSigninSkipButtonAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Dismiss the signin view.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kWebSigninSkipButtonAccessibilityIdentifier)]
-      performAction:grey_tap()];
-  // Verify the signin item is complete.
-  GREYAssertTrue([NewTabPageAppInterface setUpListItemSignInSyncIsComplete],
-                 @"SetUpList item SignIn not completed.");
-
-  // Tap the default browser item.
-  TapView(set_up_list::kDefaultBrowserItemID);
-  // Ensure the Default Browser Promo is displayed.
-  id<GREYMatcher> defaultBrowserView = grey_accessibilityID(
-      first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:defaultBrowserView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss Default Browser Promo.
-  TapPromoStyleSecondaryActionButton();
-  // Verify the default browser item is complete.
-  GREYAssertTrue([NewTabPageAppInterface setUpListItemDefaultBrowserIsComplete],
-                 @"SetUpList item Default Browser not completed.");
-
-  TapSetUpListExpand();
-  ScrollToSetUpList();
-
-  // Tap the autofill item.
-  TapView(set_up_list::kAutofillItemID);
-  // TODO - verify the CPE promo is displayed.
-  id<GREYMatcher> CPEPromoView =
-      grey_accessibilityID(@"kCredentialProviderPromoAccessibilityId");
-  [[EarlGrey selectElementWithMatcher:CPEPromoView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss the CPE promo.
-  TapSecondaryActionButton();
-  // Verify the Autofill item is complete.
-  GREYAssertTrue([NewTabPageAppInterface setUpListItemAutofillIsComplete],
-                 @"SetUpList item Autofill not completed.");
-
-  // Verify All Set view appears.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SetUpListAllSet()];
-
-  // Close NTP and reopen.
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
-  // SetUpList is still visible.
-  [[EarlGrey selectElementWithMatcher:SetUpList()]
-      assertWithMatcher:grey_notNil()];
-
-  // Close NTP and reopen. SetUpList should not be visible.
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
-  // SetUpList is not visible.
-  [[EarlGrey selectElementWithMatcher:SetUpList()]
-      assertWithMatcher:grey_nil()];
-}
-
 // Tests that the signin UI flow works and that the signin item is marked
 // complete when signin is completed.
-- (void)testSetUpListSigninWithSyncToSigninDisabled {
+- (void)testSetUpListSignin {
   [self prepareToTestSetUpList];
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
@@ -530,23 +443,6 @@ void TapMoreButtonIfVisible() {
   // Verify the signin item is complete.
   GREYAssertTrue([NewTabPageAppInterface setUpListItemSignInSyncIsComplete],
                  @"SetUpList item SignIn not completed.");
-}
-
-// Tests that the signin UI flow works and that the signin item is marked
-// complete when signin is completed.
-- (void)testSetUpListSigninWithSyncToSigninEnabled {
-  [self prepareToTestSetUpList];
-  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  // Tap the signin item.
-  TapView(set_up_list::kSignInItemID);
-  // Verify the signin screen appears.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // TODO(crbug.com/1447012): Support testing the "Continue as..." button
-  // upstream, to verify the setup list item disappears.
 }
 
 // Tests that the signin and sync screens can be dismissed by a swipe.
