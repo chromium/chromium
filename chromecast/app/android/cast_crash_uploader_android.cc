@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/android/java_exception_reporter.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
@@ -54,6 +55,7 @@ CastCrashUploaderAndroid::CastCrashUploaderAndroid(
   crash_reporter::SetCrashReporterClient(crash_reporter_client_.get());
   crash_reporter::InitializeCrashpad(process_type_.empty(), process_type_);
   crash_reporter::InitializeCrashKeys();
+  base::android::InitJavaExceptionReporter();
   crash_reporter_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
