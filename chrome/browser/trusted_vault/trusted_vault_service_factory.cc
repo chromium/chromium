@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/trusted_vault/trusted_vault_service.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/functional/callback.h"
 #include "chrome/browser/trusted_vault/trusted_vault_client_android.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -59,6 +59,15 @@ std::unique_ptr<trusted_vault::TrustedVaultClient> CreateTrustedVaultClient(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+std::unique_ptr<KeyedService> BuildTrustedVaultService(
+    content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  CHECK(!profile->IsOffTheRecord());
+
+  return std::make_unique<trusted_vault::TrustedVaultService>(
+      CreateTrustedVaultClient(profile));
+}
+
 }  // namespace
 
 // static
@@ -72,6 +81,12 @@ trusted_vault::TrustedVaultService* TrustedVaultServiceFactory::GetForProfile(
 TrustedVaultServiceFactory* TrustedVaultServiceFactory::GetInstance() {
   static base::NoDestructor<TrustedVaultServiceFactory> instance;
   return instance.get();
+}
+
+// static
+BrowserContextKeyedServiceFactory::TestingFactory
+TrustedVaultServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildTrustedVaultService);
 }
 
 TrustedVaultServiceFactory::TrustedVaultServiceFactory()
@@ -92,9 +107,9 @@ TrustedVaultServiceFactory::~TrustedVaultServiceFactory() = default;
 
 KeyedService* TrustedVaultServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  CHECK(!profile->IsOffTheRecord());
+  return BuildTrustedVaultService(context).release();
+}
 
-  return new trusted_vault::TrustedVaultService(
-      CreateTrustedVaultClient(profile));
+bool TrustedVaultServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }

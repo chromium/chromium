@@ -34,6 +34,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -176,8 +177,11 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
   profile_builder.AddTestingFactories(
       IdentityTestEnvironmentProfileAdaptor::
           GetIdentityTestEnvironmentFactories());
-  // TODO(crbug.com/1222596): SyncService instantiation can be scoped down to
-  // a few derived fixtures.
+  // TODO(crbug.com/1222596): SyncService (and thus TrustedVaultService)
+  // instantiation can be scoped down to a few derived fixtures.
+  profile_builder.AddTestingFactory(
+      TrustedVaultServiceFactory::GetInstance(),
+      TrustedVaultServiceFactory::GetDefaultFactory());
   profile_builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                                     SyncServiceFactory::GetDefaultFactory());
 

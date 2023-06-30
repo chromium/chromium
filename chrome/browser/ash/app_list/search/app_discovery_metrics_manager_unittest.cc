@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_events.h"
@@ -78,6 +79,8 @@ class AppDiscoveryMetricsManagerTest : public testing::Test {
         task_environment_.GetMainThreadTaskRunner());
 
     TestingProfile::Builder builder;
+    builder.AddTestingFactory(TrustedVaultServiceFactory::GetInstance(),
+                              TrustedVaultServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               SyncServiceFactory::GetDefaultFactory());
     testing_profile_ = builder.Build();

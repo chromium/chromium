@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -202,6 +203,8 @@ void AppPlatformMetricsServiceTestBase::AddRegularUser(
   fake_user_manager_->SimulateUserProfileLoad(account_id);
 
   TestingProfile::Builder builder;
+  builder.AddTestingFactory(TrustedVaultServiceFactory::GetInstance(),
+                            TrustedVaultServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                             SyncServiceFactory::GetDefaultFactory());
   testing_profile_ = builder.Build();

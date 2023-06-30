@@ -15,6 +15,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
@@ -57,6 +59,8 @@ class SyncServiceFactoryTest : public testing::Test {
                               FaviconServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
                               HistoryServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(TrustedVaultServiceFactory::GetInstance(),
+                              TrustedVaultServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               SyncServiceFactory::GetDefaultFactory());
     // Some services will only be created if there is a WebDataService.

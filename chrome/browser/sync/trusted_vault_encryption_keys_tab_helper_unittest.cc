@@ -9,6 +9,7 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/site_isolation/features.h"
@@ -82,7 +83,9 @@ class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {{SyncServiceFactory::GetInstance(),
+    return {{TrustedVaultServiceFactory::GetInstance(),
+             TrustedVaultServiceFactory::GetDefaultFactory()},
+            {SyncServiceFactory::GetInstance(),
              SyncServiceFactory::GetDefaultFactory()},
             {ChromeSigninClientFactory::GetInstance(),
              base::BindRepeating(&signin::BuildTestSigninClient)}};

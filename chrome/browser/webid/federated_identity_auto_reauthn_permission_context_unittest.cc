@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/browser/webid/federated_identity_auto_reauthn_permission_context_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -25,10 +26,13 @@ class FederatedIdentityAutoReauthnPermissionContextTest : public testing::Test {
       FederatedIdentityAutoReauthnPermissionContextTest&) = delete;
 
   void SetUp() override {
-    profile_ = TestingProfile::Builder()
-                   .AddTestingFactory(SyncServiceFactory::GetInstance(),
-                                      SyncServiceFactory::GetDefaultFactory())
-                   .Build();
+    profile_ =
+        TestingProfile::Builder()
+            .AddTestingFactory(TrustedVaultServiceFactory::GetInstance(),
+                               TrustedVaultServiceFactory::GetDefaultFactory())
+            .AddTestingFactory(SyncServiceFactory::GetInstance(),
+                               SyncServiceFactory::GetDefaultFactory())
+            .Build();
     context_ =
         FederatedIdentityAutoReauthnPermissionContextFactory::GetForProfile(
             profile());

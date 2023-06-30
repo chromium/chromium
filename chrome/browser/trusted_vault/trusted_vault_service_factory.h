@@ -20,6 +20,9 @@ class TrustedVaultServiceFactory : public ProfileKeyedServiceFactory {
 
   static TrustedVaultServiceFactory* GetInstance();
 
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend base::NoDestructor<TrustedVaultServiceFactory>;
 
@@ -29,6 +32,7 @@ class TrustedVaultServiceFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // CHROME_BROWSER_TRUSTED_VAULT_TRUSTED_VAULT_SERVICE_FACTORY_H_

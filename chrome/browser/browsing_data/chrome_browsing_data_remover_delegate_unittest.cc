@@ -72,6 +72,7 @@
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 #include "chrome/common/chrome_constants.h"
@@ -1233,6 +1234,8 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
                   return std::make_unique<SpellcheckService>(
                       static_cast<Profile*>(profile));
                 }))
+            .AddTestingFactory(TrustedVaultServiceFactory::GetInstance(),
+                               TrustedVaultServiceFactory::GetDefaultFactory())
             .AddTestingFactory(SyncServiceFactory::GetInstance(),
                                SyncServiceFactory::GetDefaultFactory())
             .AddTestingFactory(
