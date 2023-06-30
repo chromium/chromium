@@ -9,57 +9,9 @@ load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./config.star", "config")
 load("./mojo.star", "mojo")
+load("./rewrapper_cfg.star", "rewrapper_cfg")
 
 __filegroups = {}
-
-def __parse_rewrapper_cfg(ctx, cfg_file):
-    if not cfg_file:
-        fail("cfg file expected but none found")
-    if not ctx.fs.exists(cfg_file):
-        fail("cmd specifies rewrapper cfg %s but not found, is download_remoteexec_cfg set in gclient custom_vars?" % cfg_file)
-
-    reproxy_config = {}
-    for line in str(ctx.fs.read(cfg_file)).splitlines():
-        if line.startswith("canonicalize_working_dir="):
-            reproxy_config["canonicalize_working_dir"] = line.removeprefix("canonicalize_working_dir=").lower() == "true"
-
-        reproxy_config["download_outputs"] = True
-        if line.startswith("download_outputs="):
-            reproxy_config["download_outputs"] = line.removeprefix("download_outputs=").lower() == "true"
-
-        if line.startswith("exec_strategy="):
-            reproxy_config["exec_strategy"] = line.removeprefix("exec_strategy=")
-
-        if line.startswith("exec_timeout="):
-            reproxy_config["exec_timeout"] = line.removeprefix("exec_timeout=")
-
-        if line.startswith("inputs="):
-            reproxy_config["inputs"] = line.removeprefix("inputs=").split(",")
-
-        if line.startswith("labels="):
-            if "labels" not in reproxy_config:
-                reproxy_config["labels"] = dict()
-            for label in line.removeprefix("labels=").split(","):
-                label_parts = label.split("=")
-                if len(label_parts) != 2:
-                    fail("not k,v %s" % label)
-                reproxy_config["labels"][label_parts[0]] = label_parts[1]
-
-        if line.startswith("platform="):
-            if "platform" not in reproxy_config:
-                reproxy_config["platform"] = dict()
-            for label in line.removeprefix("platform=").split(","):
-                label_parts = label.split("=")
-                if len(label_parts) != 2:
-                    fail("not k,v %s" % label)
-                reproxy_config["platform"][label_parts[0]] = label_parts[1]
-
-        if line.startswith("remote_wrapper="):
-            reproxy_config["remote_wrapper"] = line.removeprefix("remote_wrapper=")
-
-        if line.startswith("server_address="):
-            reproxy_config["server_address"] = line.removeprefix("server_address=")
-    return reproxy_config
 
 def __rewrite_rewrapper(ctx, cmd):
     # Not all clang actions will have rewrapper.
@@ -91,7 +43,7 @@ def __rewrite_rewrapper(ctx, cmd):
         fail("couldn't find rewrapper cfg file in %s" % str(cmd.args))
     ctx.actions.fix(
         args = cmd.args[wrapped_command_pos:],
-        reproxy_config = json.encode(__parse_rewrapper_cfg(ctx, cfg_file)),
+        reproxy_config = json.encode(rewrapper_cfg.parse(ctx, cfg_file)),
     )
 
 # TODO(b/278225415): change gn so this wrapper (and by extension this handler) becomes unnecessary.
@@ -137,7 +89,7 @@ def __rewrite_clang_code_coverage_wrapper(ctx, cmd):
     ctx.actions.fix(
         args = cmd.args[:rewrapper_pos] + cmd.args[wrapped_command_pos:],
         tool_inputs = cmd.tool_inputs + coverage_wrapper_inputs,
-        reproxy_config = json.encode(__parse_rewrapper_cfg(ctx, cfg_file)),
+        reproxy_config = json.encode(rewrapper_cfg.parse(ctx, cfg_file)),
     )
 
 def __rewrite_action_remote_py(ctx, cmd):
@@ -172,7 +124,7 @@ def __rewrite_action_remote_py(ctx, cmd):
         fail("couldn't find action command in %s" % str(cmd.args))
     ctx.actions.fix(
         args = cmd.args[wrapped_command_pos:],
-        reproxy_config = json.encode(__parse_rewrapper_cfg(ctx, cfg_file)),
+        reproxy_config = json.encode(rewrapper_cfg.parse(ctx, cfg_file)),
     )
 
 __handlers = {
