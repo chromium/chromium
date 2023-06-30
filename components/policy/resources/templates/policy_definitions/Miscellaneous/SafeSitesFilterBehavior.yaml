@@ -29,7 +29,7 @@ schema:
   - 1
   type: integer
 supported_on:
-- android:116-
+- android:115-
 - chrome.*:69-
 - chrome_os:69-
 tags:
