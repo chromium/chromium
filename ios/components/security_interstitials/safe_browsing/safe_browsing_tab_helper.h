@@ -90,6 +90,10 @@ class SafeBrowsingTabHelper
       GURL url;
       absl::optional<web::WebStatePolicyDecider::PolicyDecision> decision;
       web::WebStatePolicyDecider::PolicyDecisionCallback response_callback;
+
+      // The time at which a navigation was delayed waiting for the result of
+      // this query.
+      base::TimeTicks delay_start_time;
     };
 
     // Represents the policy decision for a URL loaded in a sub frame.
@@ -106,6 +110,10 @@ class SafeBrowsingTabHelper
       absl::optional<web::WebStatePolicyDecider::PolicyDecision> decision;
       std::list<web::WebStatePolicyDecider::PolicyDecisionCallback>
           response_callbacks;
+
+      // The times at which navigations were delayed waiting for the result of
+      // this query. This list has the same ordering as `response_callbacks`.
+      std::list<base::TimeTicks> delay_start_times;
     };
 
     // web::WebStatePolicyDecider implementation

@@ -1501,6 +1501,31 @@ chromium-metrics-reviews@google.com.
   <token key="MaybeRedirects" variants="HPRTExperimentMaybeRedirects"/>
 </histogram>
 
+<histogram name="SafeBrowsing.IOS.IsCheckCompletedOnShouldAllowResponse"
+    enum="BooleanCompleted" expires_after="2024-06-27">
+  <owner>ajuma@chromium.org</owner>
+  <owner>joemerramos@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether the Safe Browsing check is completed when a navigation response
+    has arrived. If not, the navigation will be deferred until the Safe Browsing
+    check is completed. Logs on each navigation response policy callback.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.IOS.TotalDelay" units="ms"
+    expires_after="2024-06-27">
+  <owner>ajuma@chromium.org</owner>
+  <owner>joemerramos@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the latency between when a navigation response policy decision was
+    deferred by Safe Browsing check and when the check is completed. Logs each
+    time that a navigation was deferred by Safe Browsing check and the Safe
+    Browsing check doesn't block the URL.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.LocalBinaryUploadRequest.DlpResult"
     enum="BooleanSuccess" expires_after="2023-10-20">
   <owner>rogerta@chromium.org</owner>
