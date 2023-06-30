@@ -407,3 +407,48 @@ testNotEnoughSpaceStateAddsTypeAttributeAndSyncingRemovesAttribute(
 
   done();
 }
+
+/**
+ * Test that any existing properties are removed when moving to the listing
+ * files stage.
+ */
+export async function testExistingPropertiesAreRemovedOnSubsequentSyncds(
+    done: () => void) {
+  // Initialize the store with bulk pinning enabled.
+  const store = getStore();
+  store.init({...getEmptyState(), preferences: PREFERENCES});
+
+  // Setup a syncing state that should be 10% done with 10 items.
+  const bulkPinning: BulkPinProgress = {
+    stage: BulkPinStage.SYNCING,
+    freeSpaceBytes: 0,
+    requiredSpaceBytes: 0,
+    bytesToPin: 1000,
+    pinnedBytes: 100,
+    filesToPin: 10,
+    remainingSeconds: 0,
+  };
+
+  // Dispatch an update to the store and ensure the panel does get attributes.
+  store.dispatch(updateBulkPinProgress(bulkPinning));
+  assertEquals(
+      container!.updates, 1,
+      'Bulk pin state change should increment updates to 1');
+  assertEquals(panel!.getAttribute('items'), '10');
+  assertEquals(panel!.getAttribute('percentage'), '10');
+
+  // Dispatch an update to the store to move back to the listing files stage,
+  // this should clear the percentage attribute.
+  store.dispatch(updateBulkPinProgress({
+    ...bulkPinning,
+    stage: BulkPinStage.LISTING_FILES,
+    pinnedBytes: 0,
+  }));
+  assertEquals(
+      container!.updates, 2,
+      'Bulk pin state change should increment updates to 2');
+  assertEquals(panel!.getAttribute('items'), '10');
+  assertFalse(panel!.hasAttribute('percentage'));
+
+  done();
+}

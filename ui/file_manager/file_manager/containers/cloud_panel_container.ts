@@ -124,6 +124,7 @@ export class CloudPanelContainer {
       return;
     }
 
+    this.clearAllAttributes_();
     this.panel_.setAttribute('items', String(bulkPinProgress.filesToPin));
     const percentage = (bulkPinProgress.bytesToPin === 0) ?
         '100' :
@@ -144,10 +145,17 @@ export class CloudPanelContainer {
    */
   private updatePanelType_(type: CloudPanelType) {
     this.panel_.setAttribute('type', type);
+    this.clearAllAttributes_();
+    this.increaseUpdates_();
+  }
+
+  /**
+   * Clear all the attributes in anticipation of setting new ones.
+   */
+  private clearAllAttributes_() {
     this.panel_.removeAttribute('items');
     this.panel_.removeAttribute('percentage');
     this.panel_.removeAttribute('seconds');
-    this.increaseUpdates_();
   }
 
   /**
