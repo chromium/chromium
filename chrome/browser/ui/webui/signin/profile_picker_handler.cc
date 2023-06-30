@@ -712,7 +712,6 @@ void ProfilePickerHandler::HandleCreateProfile(const base::Value::List& args) {
 void ProfilePickerHandler::HandleCreateProfileAndOpenCustomizationDialog(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  DCHECK(base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
 
   // profileColor is undefined for the default theme.
   absl::optional<SkColor> profile_color;

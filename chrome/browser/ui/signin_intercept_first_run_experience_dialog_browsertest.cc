@@ -117,8 +117,7 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
   SigninInterceptFirstRunExperienceDialogBrowserTest()
       : SigninBrowserTestBase(/*use_main_profile=*/true) {
     feature_list_.InitAndEnableFeatures(
-        {feature_engagement::kIPHProfileSwitchFeature,
-         kSyncPromoAfterSigninIntercept});
+        {feature_engagement::kIPHProfileSwitchFeature});
   }
 
   ~SigninInterceptFirstRunExperienceDialogBrowserTest() override = default;

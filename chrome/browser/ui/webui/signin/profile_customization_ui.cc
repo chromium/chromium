@@ -99,9 +99,6 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
           .GetProfileAttributesWithPath(profile->GetPath());
   source->AddString("profileName",
                     base::UTF16ToUTF8(entry->GetLocalProfileName()));
-  source->AddBoolean(
-      "profileCustomizationInDialogDesign",
-      base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
   source->AddBoolean("isLocalProfileCreation",
                      GetProfileCustomizationStyle(url) ==

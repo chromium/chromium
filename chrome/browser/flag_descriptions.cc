@@ -7224,18 +7224,6 @@ const char kSyncPollImmediatelyOnEveryStartupName[] =
     "Sync Poll Immediately On Every Startup";
 const char kSyncPollImmediatelyOnEveryStartupDescription[] =
     "Sends a poll GetUpdates request on every browser startup.";
-
-const char kSyncPromoAfterSigninInterceptName[] =
-    "Sync Promo After Sign-in Intercept";
-const char kSyncPromoAfterSigninInterceptDescription[] =
-    "Enable updates in the first run experience for a new profile in the "
-    "Sign-in Intercept, such as a Sync Promo step and an updated Profile "
-    "Customization UI, which is also used for local profile creation.";
-
-const char kSigninInterceptBubbleV2Name[] = "Sign-in Intercept Bubble V2";
-const char kSigninInterceptBubbleV2Description[] =
-    "Enable visual updates to the sign-in intercept bubble, such as updated "
-    "illustration, strings and an enterprise disclaimer.";
 #endif
 
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) || \

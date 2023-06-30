@@ -61,11 +61,6 @@ var SyncConfirmationInterceptModalTest = class extends SigninBrowserTest {
         `signin/sync_confirmation_test.js&style=` +
         `${SyncConfirmationStyle.SIGNIN_INTERCEPT_MODAL}`;
   }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['kSyncPromoAfterSigninIntercept']};
-  }
 };
 
 TEST_F('SyncConfirmationInterceptModalTest', 'Dialog', function() {

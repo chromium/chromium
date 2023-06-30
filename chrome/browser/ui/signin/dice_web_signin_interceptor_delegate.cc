@@ -154,21 +154,8 @@ void DiceWebSigninInterceptorDelegate::ShowFirstRunExperienceInNewProfile(
     Browser* browser,
     const CoreAccountId& account_id,
     WebSigninInterceptor::SigninInterceptionType interception_type) {
-  if (base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept)) {
-    browser->signin_view_controller()
-        ->ShowModalInterceptFirstRunExperienceDialog(
-            account_id, interception_type ==
-                            WebSigninInterceptor::SigninInterceptionType::
-                                kEnterpriseForced);
-  } else {
-    // Don't show the customization bubble if a valid policy theme is set.
-    if (ThemeServiceFactory::GetForProfile(browser->profile())
-            ->UsingPolicyTheme()) {
-      // Show the profile switch IPH that is normally shown after the
-      // customization bubble.
-      browser->window()->MaybeShowProfileSwitchIPH();
-      return;
-    }
-    ShowProfileCustomizationBubbleInternal(browser);
-  }
+  browser->signin_view_controller()->ShowModalInterceptFirstRunExperienceDialog(
+      account_id,
+      interception_type ==
+          WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
 }

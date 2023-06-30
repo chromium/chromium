@@ -225,9 +225,8 @@
   }
 </style>
 
-<cr-view-manager role="dialog" id="viewManager" aria-labelledby="title"
-    aria-describedby="content"
-    class$="[[getDialogDesignClass_(profileCustomizationInDialogDesign_)]]">
+<cr-view-manager role="dialog" id="viewManager" class="in-dialog-design"
+    aria-labelledby="title" aria-describedby="content">
   <div id="customizeDialog" slot="view" class="active">
     <!-- An extra wrapper is needed because cr-view-manager incorrectly
          displays views with display: flex -->
@@ -256,9 +255,6 @@
         <div id="title">
           [[welcomeTitle_]]
         </div>
-        <template is="dom-if" if="[[!profileCustomizationInDialogDesign_]]">
-          <div id="content">$i18n{profileCustomizationText}</div>
-        </template>
       </div>
 
       <cr-input id="nameInput" pattern=".*\\S.*" value="{{profileName_}}"

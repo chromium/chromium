@@ -248,21 +248,10 @@ bool DiceWebSigninInterceptHandler::ShouldShowManagedDeviceVersion() {
 }
 
 std::string DiceWebSigninInterceptHandler::GetHeaderText() {
-  if (bubble_parameters_.interception_type ==
-      WebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
-    return intercepted_account().given_name;
-  }
-
-  if (base::FeatureList::IsEnabled(kSigninInterceptBubbleV2))
-    return std::string();
-
-  if (bubble_parameters_.interception_type ==
-          WebSigninInterceptor::SigninInterceptionType::kEnterprise &&
-      IsManaged(intercepted_account())) {
-    return intercepted_account().hosted_domain;
-  }
-
-  return intercepted_account().given_name;
+  return (bubble_parameters_.interception_type ==
+          WebSigninInterceptor::SigninInterceptionType::kProfileSwitch)
+             ? intercepted_account().given_name
+             : std::string();
 }
 
 std::string DiceWebSigninInterceptHandler::GetBodyTitle() {
@@ -367,10 +356,6 @@ std::string DiceWebSigninInterceptHandler::GetManagedDisclaimerText() {
 }
 
 bool DiceWebSigninInterceptHandler::GetShouldUseV2Design() {
-  if (bubble_parameters_.interception_type ==
-      WebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
-    return false;
-  }
-
-  return base::FeatureList::IsEnabled(kSigninInterceptBubbleV2);
+  return bubble_parameters_.interception_type !=
+         WebSigninInterceptor::SigninInterceptionType::kProfileSwitch;
 }

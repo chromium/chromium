@@ -83,12 +83,6 @@ export class ProfileCustomizationAppElement extends
       /** The currently selected profile avatar, if any. */
       selectedAvatar_: Object,
 
-      profileCustomizationInDialogDesign_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('profileCustomizationInDialogDesign'),
-      },
-
       isLocalProfileCreation_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isLocalProfileCreation'),
@@ -103,7 +97,6 @@ export class ProfileCustomizationAppElement extends
   private availableIcons_: AvatarIcon[];
   private selectedAvatar_: AvatarIcon;
   private confirmedAvatar_: AvatarIcon;
-  private profileCustomizationInDialogDesign_: boolean;
   private isLocalProfileCreation_: boolean;
   private profileCustomizationBrowserProxy_: ProfileCustomizationBrowserProxy =
       ProfileCustomizationBrowserProxyImpl.getInstance();
@@ -148,18 +141,13 @@ export class ProfileCustomizationAppElement extends
         '--header-background-color', profileInfo.backgroundColor);
     this.pictureUrl_ = profileInfo.pictureUrl;
     this.isManaged_ = profileInfo.isManaged;
-    if (this.profileCustomizationInDialogDesign_) {
-      this.welcomeTitle_ = this.isLocalProfileCreation_ ?
-          this.i18n('localProfileCreationTitle') :
-          this.i18n('profileCustomizationTitle');
-    } else {
-      this.welcomeTitle_ = profileInfo.welcomeTitle;
-    }
+    this.welcomeTitle_ = this.isLocalProfileCreation_ ?
+        this.i18n('localProfileCreationTitle') :
+        this.i18n('profileCustomizationTitle');
   }
 
   private shouldShowCancelButton_(): boolean {
-    return this.profileCustomizationInDialogDesign_ &&
-        !this.isLocalProfileCreation_;
+    return !this.isLocalProfileCreation_;
   }
 
   private onSkipCustomizationClicked_() {
@@ -171,10 +159,6 @@ export class ProfileCustomizationAppElement extends
     // destructor when deleting the profile.
     this.$.themeSelector.confirmThemeChanges();
     this.profileCustomizationBrowserProxy_.deleteProfile();
-  }
-
-  private getDialogDesignClass_(inDialogDesign: boolean): string {
-    return inDialogDesign ? 'in-dialog-design' : '';
   }
 
   private onCustomizeAvatarClick_() {

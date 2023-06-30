@@ -7152,11 +7152,6 @@
     "expiry_milestone" : 110
   },
   {
-    "name": "signin-intercept-bubble-v2",
-    "owners": [ "gabolvr@google.com", "alexilin", "my-chrome-everywhere@google.com" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "sim-lock-policy",
     "owners": [ "hsuregan@google.com", "cros-connectivity@google.com" ],
     "expiry_milestone": 112
@@ -7359,11 +7354,6 @@
     "name": "sync-poll-immediately-on-every-startup",
     "owners": [ "treib", "//components/search/OWNERS" ],
     "expiry_milestone": 118
-  },
-  {
-    "name": "sync-promo-after-signin-intercept",
-    "owners": [ "gabolvr@google.com", "alexilin", "my-chrome-everywhere@google.com" ],
-    "expiry_milestone": 114
   },
   {
     "name": "sync-segments-data",

@@ -32,10 +32,6 @@ BASE_DECLARE_FEATURE(kWaffle);
 
 BASE_DECLARE_FEATURE(kProcessGaiaRemoveLocalAccountHeader);
 
-BASE_DECLARE_FEATURE(kSyncPromoAfterSigninIntercept);
-
-BASE_DECLARE_FEATURE(kSigninInterceptBubbleV2);
-
 BASE_DECLARE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin);
 
 BASE_DECLARE_FEATURE(kDisallowManagedProfileSignout);

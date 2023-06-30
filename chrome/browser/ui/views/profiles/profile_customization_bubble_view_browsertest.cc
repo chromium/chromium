@@ -41,18 +41,13 @@ std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
 
 }  // namespace
 
+// TODO(https://crbug.com/1459176): Rename the file to match the class once
+// `ProfileCustomizationBubbleView` is deleted.
 class ProfileCustomizationBrowserTest : public DialogBrowserTest {
  public:
-  explicit ProfileCustomizationBrowserTest(bool dialog_enabled) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        feature_engagement::kIPHProfileSwitchFeature};
-    std::vector<base::test::FeatureRef> disabled_features = {};
-    if (dialog_enabled) {
-      enabled_features.push_back(kSyncPromoAfterSigninIntercept);
-    } else {
-      disabled_features.push_back(kSyncPromoAfterSigninIntercept);
-    }
-    feature_list_.InitAndEnableFeatures(enabled_features, disabled_features);
+  ProfileCustomizationBrowserTest() {
+    feature_list_.InitAndEnableFeatures(
+        {feature_engagement::kIPHProfileSwitchFeature});
     subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
@@ -85,57 +80,7 @@ class ProfileCustomizationBrowserTest : public DialogBrowserTest {
   base::CallbackListSubscription subscription_;
 };
 
-class ProfileCustomizationBubbleBrowserTest
-    : public ProfileCustomizationBrowserTest {
- public:
-  ProfileCustomizationBubbleBrowserTest()
-      : ProfileCustomizationBrowserTest(/*dialog_enabled=*/false) {}
-};
-
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif
-IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest,
-                       MAYBE_InvokeUi_default) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest, IPH) {
-  AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
-  // Create the customization bubble, owned by the view hierarchy.
-  ProfileCustomizationBubbleView* bubble =
-      ProfileCustomizationBubbleView::CreateBubble(browser(),
-                                                   GetAvatarButton());
-
-  feature_engagement::Tracker* tracker =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->GetFeaturePromoController()
-          ->feature_engagement_tracker();
-
-  EXPECT_NE(
-      tracker->GetTriggerState(feature_engagement::kIPHProfileSwitchFeature),
-      feature_engagement::Tracker::TriggerState::HAS_BEEN_DISPLAYED);
-
-  bubble->OnCompletionButtonClicked(
-      ProfileCustomizationHandler::CustomizationResult::kDone);
-
-  ASSERT_TRUE(user_education::test::WaitForFeatureEngagementReady(tracker));
-  EXPECT_EQ(
-      tracker->GetTriggerState(feature_engagement::kIPHProfileSwitchFeature),
-      feature_engagement::Tracker::TriggerState::HAS_BEEN_DISPLAYED);
-}
-
-class ProfileCustomizationDialogBrowserTest
-    : public ProfileCustomizationBrowserTest {
- public:
-  ProfileCustomizationDialogBrowserTest()
-      : ProfileCustomizationBrowserTest(/*dialog_enabled=*/true) {}
-};
-
-IN_PROC_BROWSER_TEST_F(ProfileCustomizationDialogBrowserTest, IPH) {
+IN_PROC_BROWSER_TEST_F(ProfileCustomizationBrowserTest, IPH) {
   AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
   auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   // Create the customization dialog, owned by the view hierarchy.

@@ -271,7 +271,6 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   }
 #endif
   if (is_signin_intercept_promo) {
-    DCHECK(base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
     info_title_id =
         IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT_V2;
     confirm_label_id = IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL;

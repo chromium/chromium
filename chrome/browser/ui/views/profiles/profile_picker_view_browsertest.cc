@@ -399,13 +399,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerViewBrowserTest,
 
 class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
  public:
-  explicit ProfilePickerCreationFlowBrowserTest(
-      bool local_profile_creation_dialog_enabled) {
+  ProfilePickerCreationFlowBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
         feature_engagement::kIPHProfileSwitchFeature};
-    if (local_profile_creation_dialog_enabled) {
-      enabled_features.push_back(kSyncPromoAfterSigninIntercept);
-    }
     feature_list_.InitAndEnableFeatures(enabled_features);
 #if BUILDFLAG(IS_MAC)
     // Ensure the platform is unmanaged
@@ -415,10 +411,6 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
             policy::EnterpriseManagementAuthority::NONE);
 #endif
   }
-
-  ProfilePickerCreationFlowBrowserTest()
-      : ProfilePickerCreationFlowBrowserTest(
-            /*local_profile_creation_dialog_enabled=*/false) {}
 
   void SetUpInProcessBrowserTestFixture() override {
     ProfilePickerTestBase::SetUpInProcessBrowserTestFixture();
@@ -2162,12 +2154,12 @@ INSTANTIATE_TEST_SUITE_P(
                     ForceEphemeralProfilesPolicy::kDisabled,
                     ForceEphemeralProfilesPolicy::kEnabled));
 
+// TODO(crbug.com/1442940): Merge `ProfilePickerCreationFlowBrowserTest` and
+// `ProfilePickerLocalProfileCreationDialogBrowserTest`.
 class ProfilePickerLocalProfileCreationDialogBrowserTest
     : public ProfilePickerCreationFlowBrowserTest {
  public:
-  ProfilePickerLocalProfileCreationDialogBrowserTest()
-      : ProfilePickerCreationFlowBrowserTest(
-            /*local_profile_creation_dialog_enabled=*/true) {}
+  ProfilePickerLocalProfileCreationDialogBrowserTest() = default;
 
   // Simulates a click on "Continue without an account" to create a local
   // profile and open the profile customization dialog.

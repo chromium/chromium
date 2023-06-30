@@ -4182,12 +4182,6 @@ extern const char kUIDebugToolsDescription[];
 
 extern const char kSyncPollImmediatelyOnEveryStartupName[];
 extern const char kSyncPollImmediatelyOnEveryStartupDescription[];
-
-extern const char kSyncPromoAfterSigninInterceptName[];
-extern const char kSyncPromoAfterSigninInterceptDescription[];
-
-extern const char kSigninInterceptBubbleV2Name[];
-extern const char kSigninInterceptBubbleV2Description[];
 #endif
 
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) || \

@@ -8681,18 +8681,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncPollImmediatelyOnEveryStartupDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(syncer::kSyncPollImmediatelyOnEveryStartup)},
-
-    {"sync-promo-after-signin-intercept",
-     flag_descriptions::kSyncPromoAfterSigninInterceptName,
-     flag_descriptions::kSyncPromoAfterSigninInterceptDescription,
-     kOsWin | kOsLinux | kOsLacros | kOsMac | kOsFuchsia,
-     FEATURE_VALUE_TYPE(kSyncPromoAfterSigninIntercept)},
-
-    {"signin-intercept-bubble-v2",
-     flag_descriptions::kSigninInterceptBubbleV2Name,
-     flag_descriptions::kSigninInterceptBubbleV2Description,
-     kOsWin | kOsLinux | kOsLacros | kOsMac | kOsFuchsia,
-     FEATURE_VALUE_TYPE(kSigninInterceptBubbleV2)},
 #endif
     {"http-cache-partitioning",
      flag_descriptions::kSplitCacheByNetworkIsolationKeyName,
