@@ -320,7 +320,7 @@ BuildIsolatedElementInfo(Element& element,
                          float scale);
 
 void CORE_EXPORT
-AppendStyleInfo(Node* node,
+AppendStyleInfo(Element* element,
                 protocol::DictionaryValue* element_info,
                 const InspectorHighlightContrastInfo& node_contrast,
                 const ContrastAlgorithm& contrast_algorithm);
