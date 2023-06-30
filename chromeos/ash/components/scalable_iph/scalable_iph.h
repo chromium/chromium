@@ -26,7 +26,56 @@ namespace scalable_iph {
 // flexibility: //components/feature_engagement/README.md.
 //
 // - IPH: in-product-help.
-class ScalableIph : public KeyedService, public ScalableIphDelegate::Observer {
+//
+// Class diagram:
+// =============================================================================
+//
+// //chromeos/ash/components       | //chrome/browser/ash
+// -----------------------------------------------------------------------------
+//
+// |-------------|
+// |             |
+// |             |                 |---------------------|              |-----|
+// |             | -[TriggerIph]-> |                     | -[ShowUI]--> |     |
+// |             | ---[Action]---> | ScalableIphDelegate | -[OpenUrl]-> | Ash |
+// |             | <--[Observer]-- |                     | <-[Events]-- |     |
+// |             |                 |---------------------|              |-----|
+// |             |                                                         |
+// |             |                 |---------|                             |
+// | ScalableIph | <---[Action]--- | HelpApp |                             |
+// |             |                 |---------|                             |
+// |             |                                                        \|/
+// |             |                                               |------------|
+// |             | <-------------------[Action]----------------- | IphSession |
+// |             |                                               |------------|
+// |             |                                                         |
+// |             |                                                        \|/
+// |             |                          |---------------------------------|
+// |             | -------[Interact]------> | //components/feature_engagement |
+// |-------------|                          |---------------------------------|
+//
+// ScalableIph: The main component of Scalable Iph framework. This class checks
+//              trigger conditions and parse Scalable Iph custom fields, e.g.
+//              Custom conditions.
+// ScalableIphDelegate: A delegate class for `ScalableIph` to delegate its tasks
+//                      to Ash or Chrome. An implementation of
+//                      `ScalableIphDelegate` will be in //chrome/browser/ash.
+//                      Delegated tasks will be:
+//                      - Show an IPH UI, e.g. Notification.
+//                      - Observe events, e.g. Network connection.
+//                      - Perform actions, e.g. Open a URL.
+// IphSession: An object for managing a single IPH session. If an UI is opened
+//             by `ScalableIph` (e.g. Notification, Bubble), `IphSession` is
+//             passed to those code for `ScalableIph` to manage an IPH session
+//             and for those UIs to perform actions. `IphSession` can interact
+//             with a `feature_engagement::Tracker` directly as it holds a
+//             reference to it. But it has to delegate actions to `ScalableIph`
+//             as it is in //chromeos/ash/components. `ScalableIph` delegates
+//             them again to `ScalableIphDelegate`.
+//
+class ScalableIph : public KeyedService,
+                    public ScalableIphDelegate::Observer,
+                    public IphSession::Delegate {
  public:
   // List of events ScalableIph supports.
   enum class Event { kFiveMinTick };
@@ -45,15 +94,20 @@ class ScalableIph : public KeyedService, public ScalableIphDelegate::Observer {
   // ScalableIphDelegate::Observer:
   void OnConnectionChanged(bool online) override;
 
+  // IphSession::Delegate:
+  void PerformActionForIphSession(ActionType action_type) override;
+
   void OverrideFeatureListForTesting(
       const std::vector<const base::Feature*> features);
   void OverrideTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Perform `action_type` as a result of a user action, e.g. A link click in a
-  // help app, etc. Ash UI code should not use this method but use
-  // `IphSession::PerformAction`. This notifies a corresponding IPH event to the
-  // feature engagement framework.
+  // help app, etc. This notifies a corresponding IPH event to the feature
+  // engagement framework.
+  //
+  // UIs which were initiated with `IphSession` (e.g. Notification, Bubble)
+  // should use `IphSession::PerformAction` instead of this method.
   void PerformAction(ActionType action_type);
 
  private:

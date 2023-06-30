@@ -142,6 +142,10 @@ void ScalableIph::OnConnectionChanged(bool online) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ScalableIph::PerformActionForIphSession(ActionType action_type) {
+  PerformAction(action_type);
+}
+
 void ScalableIph::OverrideFeatureListForTesting(
     const std::vector<const base::Feature*> feature_list) {
   CHECK(feature_list_for_testing_.size() == 0)
@@ -237,7 +241,7 @@ void ScalableIph::CheckTriggerConditions() {
           << "Only Notification is implemented now";
       delegate_->ShowNotification(
           ParseNotificationParams(*feature),
-          std::make_unique<IphSession>(*feature, tracker_));
+          std::make_unique<IphSession>(*feature, tracker_, this));
     }
   }
 }

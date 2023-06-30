@@ -10,9 +10,11 @@
 namespace scalable_iph {
 
 IphSession::IphSession(const base::Feature& feature,
-                       feature_engagement::Tracker* tracker)
-    : feature_(feature), tracker_(tracker) {
+                       feature_engagement::Tracker* tracker,
+                       Delegate* delegate)
+    : feature_(feature), tracker_(tracker), delegate_(delegate) {
   CHECK(tracker_);
+  CHECK(delegate_);
 }
 
 IphSession::~IphSession() {
@@ -20,8 +22,7 @@ IphSession::~IphSession() {
 }
 
 void IphSession::PerformAction(ActionType action_type) {
-  // TODO(b/289108135): Implement this. This will pass `action_type` to
-  // `ScalableIph::PerformAction`.
+  delegate_->PerformActionForIphSession(action_type);
 }
 
 }  // namespace scalable_iph

@@ -18,8 +18,14 @@ namespace scalable_iph {
 // service.
 class IphSession {
  public:
+  class Delegate {
+   public:
+    virtual void PerformActionForIphSession(ActionType action_type) = 0;
+  };
+
   IphSession(const base::Feature& feature,
-             feature_engagement::Tracker* tracker);
+             feature_engagement::Tracker* tracker,
+             Delegate* delegate);
   ~IphSession();
 
   IphSession(const IphSession& iph_session) = delete;
@@ -34,6 +40,7 @@ class IphSession {
   // //components/feature_engagement/README.md for details about an IPH feature.
   const base::Feature& feature_;
   const raw_ptr<feature_engagement::Tracker> tracker_;
+  const raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace scalable_iph
