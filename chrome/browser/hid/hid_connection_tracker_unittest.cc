@@ -47,8 +47,10 @@ TEST_F(HidConnectionTrackerTest, DeviceConnectionExtensionOrigins) {
 }
 
 // Test the scenario with null HID system tray icon and it doesn't cause crash.
+//
+// TODO(crbug.com/1459534): Disabled sheriff 2023-06-30 (crashes on ubsan)
 TEST_F(HidConnectionTrackerTest,
-       DeviceConnectionExtensionOriginsWithNullSystemTrayIcon) {
+       DISABLED_DeviceConnectionExtensionOriginsWithNullSystemTrayIcon) {
   TestingBrowserProcess::GetGlobal()->SetHidSystemTrayIcon(nullptr);
   TestDeviceConnectionExtensionOrigins(/*has_system_tray_icon=*/false);
 }
