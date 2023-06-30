@@ -130,6 +130,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kLhs,
     kRlhs,
     kCaps,
+    kRcaps,
     kUserUnits,  // The SVG term for unitless lengths
     // Angle units
     kDegrees,
@@ -165,6 +166,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kUnitTypeFontSize,
     kUnitTypeFontXSize,
     kUnitTypeFontCapitalHeight,
+    kUnitTypeRootFontCapitalHeight,
     kUnitTypeRootFontSize,
     kUnitTypeRootFontXSize,
     kUnitTypeRootFontZeroCharacterWidth,
@@ -234,6 +236,8 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     static_assert(kUnitTypeRootFontZeroCharacterWidth < kSize,
                   "rch unit supported");
     static_assert(kUnitTypeFontCapitalHeight < kSize, "cap unit supported");
+    static_assert(kUnitTypeRootFontCapitalHeight < kSize,
+                  "rcap unit supported");
     static_assert(kUnitTypeViewportWidth < kSize, "vw unit supported");
     static_assert(kUnitTypeViewportHeight < kSize, "vh unit supported");
     static_assert(kUnitTypeViewportInlineSize < kSize, "vi unit supported");
@@ -307,7 +311,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
            type == UnitType::kLhs || type == UnitType::kRexs ||
            type == UnitType::kRchs || type == UnitType::kRics ||
            type == UnitType::kRlhs || type == UnitType::kCaps ||
-           IsViewportPercentageLength(type) ||
+           type == UnitType::kRcaps || IsViewportPercentageLength(type) ||
            IsContainerPercentageLength(type);
   }
   bool IsLength() const;

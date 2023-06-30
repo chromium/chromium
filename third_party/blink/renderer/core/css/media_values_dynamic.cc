@@ -106,6 +106,12 @@ float MediaValuesDynamic::CapFontSize(float zoom) const {
   return CalculateCapSize(frame_);
 }
 
+float MediaValuesDynamic::RcapFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
+  // For media queries cap and rcap units are both based on the initial font.
+  return CalculateCapSize(frame_);
+}
+
 double MediaValuesDynamic::ViewportWidth() const {
   if (viewport_dimensions_overridden_) {
     return viewport_width_override_;

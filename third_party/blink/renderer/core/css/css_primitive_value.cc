@@ -577,6 +577,9 @@ bool CSSPrimitiveValue::UnitTypeToLengthUnitType(UnitType unit_type,
     case CSSPrimitiveValue::UnitType::kCaps:
       length_type = kUnitTypeFontCapitalHeight;
       return true;
+    case CSSPrimitiveValue::UnitType::kRcaps:
+      length_type = kUnitTypeRootFontCapitalHeight;
+      return true;
     case CSSPrimitiveValue::UnitType::kLhs:
       length_type = kUnitTypeLineHeight;
       return true;
@@ -704,6 +707,8 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::LengthUnitTypeToUnitType(
       return CSSPrimitiveValue::UnitType::kIcs;
     case kUnitTypeFontCapitalHeight:
       return CSSPrimitiveValue::UnitType::kCaps;
+    case kUnitTypeRootFontCapitalHeight:
+      return CSSPrimitiveValue::UnitType::kRcaps;
     case kUnitTypeLineHeight:
       return CSSPrimitiveValue::UnitType::kLhs;
     case kUnitTypeRootLineHeight:
@@ -808,6 +813,8 @@ const char* CSSPrimitiveValue::UnitTypeToString(UnitType type) {
       return "rlh";
     case UnitType::kCaps:
       return "cap";
+    case UnitType::kRcaps:
+      return "rcap";
     case UnitType::kPixels:
       return "px";
     case UnitType::kCentimeters:

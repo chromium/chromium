@@ -33,6 +33,7 @@ class CORE_EXPORT CSSLengthResolver {
   virtual float LineHeight(float zoom) const = 0;
   virtual float RootLineHeight(float zoom) const = 0;
   virtual float CapFontSize(float zoom) const = 0;
+  virtual float RcapFontSize(float zoom) const = 0;
 
   // Other sizes are not pre-zoomed.
   virtual double ViewportWidth() const = 0;

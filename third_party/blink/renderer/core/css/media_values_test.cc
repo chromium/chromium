@@ -34,6 +34,7 @@ TEST_F(MediaValuesTest, Basic) {
       {40.0, CSSPrimitiveValue::UnitType::kEms, 16, 300, 300, true, 640},
       {40.0, CSSPrimitiveValue::UnitType::kRems, 16, 300, 300, true, 640},
       {40.0, CSSPrimitiveValue::UnitType::kCaps, 16, 300, 300, true, 640},
+      {40.0, CSSPrimitiveValue::UnitType::kRcaps, 16, 300, 300, true, 640},
       {40.0, CSSPrimitiveValue::UnitType::kExs, 16, 300, 300, true, 320},
       {40.0, CSSPrimitiveValue::UnitType::kRexs, 16, 300, 300, true, 320},
       {40.0, CSSPrimitiveValue::UnitType::kChs, 16, 300, 300, true, 320},
@@ -110,6 +111,7 @@ TEST_F(MediaValuesTest, ZoomedFontUnits) {
   double lh = 0;
   double rlh = 0;
   double cap = 0;
+  double rcap = 0;
 
   using UnitType = CSSPrimitiveValue::UnitType;
 
@@ -124,6 +126,7 @@ TEST_F(MediaValuesTest, ZoomedFontUnits) {
   EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kLhs, lh));
   EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kRlhs, rlh));
   EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kCaps, cap));
+  EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kRcaps, rcap));
 
   EXPECT_DOUBLE_EQ(10.0, em);
   EXPECT_DOUBLE_EQ(10.0, rem);
@@ -136,6 +139,7 @@ TEST_F(MediaValuesTest, ZoomedFontUnits) {
   EXPECT_DOUBLE_EQ(10.0, lh);
   EXPECT_DOUBLE_EQ(10.0, rlh);
   EXPECT_DOUBLE_EQ(8.0, cap);
+  EXPECT_DOUBLE_EQ(8.0, rcap);
 }
 
 }  // namespace blink

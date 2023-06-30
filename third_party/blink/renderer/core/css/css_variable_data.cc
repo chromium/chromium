@@ -40,6 +40,7 @@ static bool IsRootFontUnitToken(CSSParserToken token) {
     case CSSPrimitiveValue::UnitType::kRchs:
     case CSSPrimitiveValue::UnitType::kRics:
     case CSSPrimitiveValue::UnitType::kRlhs:
+    case CSSPrimitiveValue::UnitType::kRcaps:
       return true;
     default:
       return false;

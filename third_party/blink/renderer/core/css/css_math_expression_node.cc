@@ -85,6 +85,7 @@ static CalculationResultCategory UnitCategory(
     case CSSPrimitiveValue::UnitType::kLhs:
       return kCalcLength;
     case CSSPrimitiveValue::UnitType::kCaps:
+    case CSSPrimitiveValue::UnitType::kRcaps:
       return RuntimeEnabledFeatures::CSSCapFontUnitsEnabled() ? kCalcLength
                                                               : kCalcOther;
     case CSSPrimitiveValue::UnitType::kViewportInlineSize:
@@ -155,6 +156,7 @@ static bool HasDoubleValue(CSSPrimitiveValue::UnitType type) {
     case CSSPrimitiveValue::UnitType::kIcs:
     case CSSPrimitiveValue::UnitType::kLhs:
     case CSSPrimitiveValue::UnitType::kCaps:
+    case CSSPrimitiveValue::UnitType::kRcaps:
     case CSSPrimitiveValue::UnitType::kRlhs:
     case CSSPrimitiveValue::UnitType::kRems:
     case CSSPrimitiveValue::UnitType::kRexs:

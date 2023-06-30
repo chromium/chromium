@@ -5,7 +5,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/cq-testcommon.js"></script>
 <style>
-  :root { font-size: 10px; line-height: 10px; }
+  @import url("/fonts/ahem.css");
+  :root { font-family: 'Ahem'; font-size: 10px; line-height: 10px; }
   #em_container {
     container-type: inline-size;
     width: 100px;
@@ -46,10 +47,13 @@
   @container (width: 10cap) {
     #cap_test { color: green }
   }
+  @container (width: 50rcap) {
+    #rcap_test { color: green }
+  }
   @container (width: 10ex) {
     #ex_test { color: green }
   }
-  @container (49rex <= width <= 100rex) {
+  @container (width: 50rex) {
     #rex_test { color: green }
   }
   @container (width: 10ch) {
@@ -77,6 +81,7 @@
 </div>
 <div id="cap_container">
   <div id="cap_test"></div>
+  <div id="rcap_test"></div>
 </div>
 <div id="ex_container">
   <div id="ex_test"></div>
@@ -109,4 +114,5 @@
   test(() => assert_equals(getComputedStyle(lh_test).color, green), "lh relative inline-size");
   test(() => assert_equals(getComputedStyle(rlh_test).color, green), "rlh relative inline-size");
   test(() => assert_equals(getComputedStyle(cap_test).color, green), "cap relative inline-size");
+  test(() => assert_equals(getComputedStyle(rcap_test).color, green), "rcap relative inline-size");
 </script>

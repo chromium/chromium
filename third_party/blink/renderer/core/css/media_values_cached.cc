@@ -156,6 +156,12 @@ float MediaValuesCached::CapFontSize(float zoom) const {
   return data_.cap_size;
 }
 
+float MediaValuesCached::RcapFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
+  // For media queries rcap units are based on the initial font.
+  return data_.cap_size;
+}
+
 double MediaValuesCached::ViewportWidth() const {
   return data_.viewport_width;
 }

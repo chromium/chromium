@@ -1156,6 +1156,7 @@ CSSPrimitiveValue* ConsumeLength(CSSParserTokenRange& range,
       case CSSPrimitiveValue::UnitType::kRlhs:
         break;
       case CSSPrimitiveValue::UnitType::kCaps:
+      case CSSPrimitiveValue::UnitType::kRcaps:
         if (!RuntimeEnabledFeatures::CSSCapFontUnitsEnabled()) {
           return nullptr;
         }
