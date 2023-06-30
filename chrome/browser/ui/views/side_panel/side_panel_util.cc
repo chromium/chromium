@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -188,9 +189,17 @@ void SidePanelUtil::RecordNewTabButtonClicked(SidePanelEntry::Id id) {
       {"SidePanel.", GetHistogramNameForId(id), ".NewTabButtonClicked"}));
 }
 
-void SidePanelUtil::RecordEntryShownMetrics(SidePanelEntry::Id id) {
+void SidePanelUtil::RecordEntryShownMetrics(
+    SidePanelEntry::Id id,
+    base::TimeTicks load_started_timestamp) {
   base::RecordComputedAction(
       base::StrCat({"SidePanel.", GetHistogramNameForId(id), ".Shown"}));
+  if (load_started_timestamp != base::TimeTicks()) {
+    base::UmaHistogramLongTimes(
+        base::StrCat({"SidePanel.", GetHistogramNameForId(id),
+                      ".TimeFromEntryTriggerToShown"}),
+        base::TimeTicks::Now() - load_started_timestamp);
+  }
 }
 
 void SidePanelUtil::RecordEntryHiddenMetrics(SidePanelEntry::Id id,

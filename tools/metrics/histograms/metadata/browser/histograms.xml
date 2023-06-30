@@ -1325,6 +1325,17 @@ chromium-metrics-reviews@google.com.
   <token key="SidePanelEntry" variants="SidePanelEntry"/>
 </histogram>
 
+<histogram name="SidePanel.{SidePanelEntry}.TimeFromEntryTriggerToShown"
+    units="ms" expires_after="2024-06-01">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records elapsed time between when the {SidePanelEntry} side panel entry
+    triggered to be shown and when it was shown.
+  </summary>
+  <token key="SidePanelEntry" variants="SidePanelEntry"/>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
