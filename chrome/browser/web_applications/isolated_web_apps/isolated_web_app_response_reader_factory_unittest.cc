@@ -58,12 +58,19 @@ constexpr uint8_t kEd25519Signature[64] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0};
 
-class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
+// This class needs to be a IsolatedWebAppVaidator, but also must provide
+// a TestingPrefServiceSimple that outlives it. So rather than making
+// TestingPrefServiceSimple a member, make it the leftmost base class.
+class FakeIsolatedWebAppValidator : public TestingPrefServiceSimple,
+                                    public IsolatedWebAppValidator {
  public:
   explicit FakeIsolatedWebAppValidator(
       absl::optional<std::string> integrity_block_error)
       : IsolatedWebAppValidator(std::make_unique<IsolatedWebAppTrustChecker>(
-            TestingPrefServiceSimple())),
+            // Disambiguate the constructor using the form that takes the
+            // already-initialized leftmost base class, rather than the copy
+            // constructor for the uninitialized rightmost base class.
+            *static_cast<TestingPrefServiceSimple*>(this))),
         integrity_block_error_(integrity_block_error) {}
 
   void ValidateIntegrityBlock(
