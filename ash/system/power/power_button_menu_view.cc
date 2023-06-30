@@ -188,7 +188,8 @@ void PowerButtonMenuView::RecreateItems() {
                                   session_controller->CanLockScreen();
   const bool create_capture_mode =
       Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-      !session_controller->IsUserSessionBlocked();
+      !session_controller->IsUserSessionBlocked() &&
+      login_status != LoginStatus::KIOSK_APP;
   const bool create_feedback = login_status != LoginStatus::LOCKED &&
                                login_status != LoginStatus::KIOSK_APP;
 

@@ -65,6 +65,10 @@ bool PowerButtonControllerTestApi::IsMenuOpened() const {
   return controller_->IsMenuOpened();
 }
 
+bool PowerButtonControllerTestApi::MenuHasPowerOffItem() const {
+  return IsMenuOpened() && GetPowerButtonMenuView()->power_off_item_for_test();
+}
+
 bool PowerButtonControllerTestApi::MenuHasSignOutItem() const {
   return IsMenuOpened() && GetPowerButtonMenuView()->sign_out_item_for_test();
 }
@@ -72,6 +76,11 @@ bool PowerButtonControllerTestApi::MenuHasSignOutItem() const {
 bool PowerButtonControllerTestApi::MenuHasLockScreenItem() const {
   return IsMenuOpened() &&
          GetPowerButtonMenuView()->lock_screen_item_for_test();
+}
+
+bool PowerButtonControllerTestApi::MenuHasCaptureModeItem() const {
+  return IsMenuOpened() &&
+         GetPowerButtonMenuView()->capture_mode_item_for_test();
 }
 
 bool PowerButtonControllerTestApi::MenuHasFeedbackItem() const {

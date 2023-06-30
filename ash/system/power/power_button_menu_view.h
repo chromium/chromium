@@ -48,6 +48,9 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
   PowerButtonMenuItemView* lock_screen_item_for_test() const {
     return lock_screen_item_;
   }
+  PowerButtonMenuItemView* capture_mode_item_for_test() const {
+    return capture_mode_item_;
+  }
   PowerButtonMenuItemView* feedback_item_for_test() const {
     return feedback_item_;
   }

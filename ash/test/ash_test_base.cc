@@ -50,6 +50,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
+#include "components/user_manager/user_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/env.h"
@@ -422,7 +423,8 @@ void AshTestBase::SimulateGuestLogin() {
 
 void AshTestBase::SimulateKioskMode(user_manager::UserType user_type) {
   DCHECK(user_type == user_manager::USER_TYPE_ARC_KIOSK_APP ||
-         user_type == user_manager::USER_TYPE_KIOSK_APP);
+         user_type == user_manager::USER_TYPE_KIOSK_APP ||
+         user_type == user_manager::USER_TYPE_WEB_KIOSK_APP);
 
   const std::string user_email = "fake_kiosk@kioks-apps.device-local.localhost";
   TestSessionControllerClient* session = GetSessionControllerClient();
