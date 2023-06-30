@@ -2503,6 +2503,11 @@ void BrowserView::VerifyUserEligibilityIOSPasswordPromoBubble() {
     return;
   }
 
+  if (promos_utils::IsActivationCriteriaOverriddenIOSPasswordPromo()) {
+    ShowIOSPasswordPromoBubble();
+    return;
+  }
+
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(browser_->profile());
 
@@ -2511,7 +2516,7 @@ void BrowserView::VerifyUserEligibilityIOSPasswordPromoBubble() {
   // opted-out from seeing the promo.
   if (sync_service && sync_service->IsSyncFeatureActive() &&
       sync_service->GetActiveDataTypes().Has(syncer::PREFERENCES) &&
-      promos_utils::ShouldShowIOSPasswordPromo()) {
+      promos_utils::ShouldShowIOSPasswordPromo(browser_->profile())) {
     auto input_context =
         base::MakeRefCounted<segmentation_platform::InputContext>();
     input_context->metadata_args.emplace(
@@ -2543,8 +2548,10 @@ void BrowserView::MaybeShowIOSPasswordPromoBubble(
       feature_engagement::TrackerFactory::GetForBrowserContext(
           browser_->profile());
 
-  if (tracker->ShouldTriggerHelpUI(
+  if (promos_utils::UserNotClassifiedAsMobileDeviceSwitcher(result) &&
+      tracker->ShouldTriggerHelpUI(
           feature_engagement::kIPHiOSPasswordPromoDesktopFeature)) {
+    promos_utils::iOSPasswordPromoShown(browser_->profile());
     ShowIOSPasswordPromoBubble();
   }
 }
