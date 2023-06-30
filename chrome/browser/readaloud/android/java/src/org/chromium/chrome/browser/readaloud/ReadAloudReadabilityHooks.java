@@ -4,18 +4,33 @@
 
 package org.chromium.chrome.browser.readaloud;
 
-import com.google.common.util.concurrent.ListenableFuture;
-
-/** Interface providing access to ReadAloud page readability checking. */
+/**
+ * Interface providing access to ReadAloud page readability checking.
+ * Page can only be played if it's readable, which is true if (among others) there's enough text to
+ * be played as audio.
+ */
 public interface ReadAloudReadabilityHooks {
+    /** Interface to receive result for readability check. */
+    interface ReadabilityCallback {
+        /**
+         * Called if isPageReadable() succeeds.
+         *
+         * @param isReadable          if page can be played
+         * @param timepointsSupported whether timepoints are supported. Timepoints are
+         *                            used forword-by-word highlighting.
+         */
+        void onSuccess(boolean isReadable, boolean timepointsSupported);
+        /** Called if isPageReadable() fails. */
+        void onFailure(Throwable t);
+    }
+
     /** Returns true if ReadAloud feature is available. */
     boolean isEnabled();
 
     /**
      * Checks whether a given page is readable.
-     * @param checkSupportedRequest Serialized CheckSupportedRequest proto message.
-     * @return Future that returns a serialized CheckSupportedResult proto message, or null if the
-     *         check is unavailable.
+     * @param url url of a page to check
+     * @param callback callback to get result
      */
-    ListenableFuture<byte[]> isPageReadable(byte[] checkSupportedRequest);
+    void isPageReadable(String url, ReadabilityCallback callback);
 }
