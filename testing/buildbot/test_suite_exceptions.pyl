@@ -1125,8 +1125,9 @@
       },
       'Linux Tests (dbg)(1)': {
         # crbug.com/1066161
+        # crbug.com/1459645
         'swarming': {
-          'shards': 20,
+          'shards': 27,
         },
       },
       'Mac ASan 64 Tests (1)': {
