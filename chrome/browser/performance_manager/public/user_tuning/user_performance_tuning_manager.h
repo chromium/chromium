@@ -22,6 +22,7 @@
 class ChromeBrowserMainExtraPartsPerformanceManager;
 class PerformanceManagerMetricsProviderTest;
 class PrefService;
+class BatteryDischargeReporterTest;
 
 namespace performance_manager::user_tuning {
 
@@ -253,6 +254,7 @@ class UserPerformanceTuningManager {
   friend class TestUserPerformanceTuningManagerEnvironment;
   friend class ChromeOSBatterySaverProvider;
   friend class DesktopBatterySaverProvider;
+  friend class ::BatteryDischargeReporterTest;
 
   // An implementation of UserPerformanceTuningNotifier::Receiver that
   // forwards the notifications to the UserPerformanceTuningManager on the Main

@@ -50,6 +50,19 @@ chromium-metrics-reviews@google.com.
                when a device is released."/>
 </variants>
 
+<variants name="BatterySaverMode">
+<!--
+  Variants indicating if battery saver was enabled when the sample was recorded.
+-->
+
+  <variant name=""
+      summary="all intervals no matter the battery saver mode state"/>
+  <variant name=".BatterySaverDisabled"
+      summary="intervals with battery saver mode disabled."/>
+  <variant name=".BatterySaverEnabled"
+      summary="intervals with battery saver mode enabled."/>
+</variants>
+
 <variants name="IntervalType">
 <!--
     Variants describing if the histogram contains all samples, only the first
@@ -993,7 +1006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Power.BatteryDischargeRateMilliwatts6{UsageScenario}{IntervalType}"
+    name="Power.BatteryDischargeRateMilliwatts6{UsageScenario}{IntervalType}{BatterySaverMode}"
     units="milliwatts" expires_after="2024-03-31">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
@@ -1011,13 +1024,16 @@ chromium-metrics-reviews@google.com.
     This is recorded for {UsageScenario}.
 
     This contains {IntervalType}.
+
+    This is recorded for {BatterySaverMode}.
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
   <token key="IntervalType" variants="IntervalType"/>
+  <token key="BatterySaverMode" variants="BatterySaverMode"/>
 </histogram>
 
 <histogram
-    name="Power.BatteryDischargeRatePreciseMilliwatts{UsageScenario}{IntervalType}"
+    name="Power.BatteryDischargeRatePreciseMilliwatts{UsageScenario}{IntervalType}{BatterySaverMode}"
     units="milliwatts" expires_after="2024-03-31">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -1037,13 +1053,16 @@ chromium-metrics-reviews@google.com.
     This is recorded for {UsageScenario}.
 
     This contains {IntervalType}.
+
+    This is recorded for {BatterySaverMode}.
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
   <token key="IntervalType" variants="IntervalType"/>
+  <token key="BatterySaverMode" variants="BatterySaverMode"/>
 </histogram>
 
 <histogram
-    name="Power.BatteryDischargeRateRelative5{UsageScenario}{IntervalType}"
+    name="Power.BatteryDischargeRateRelative5{UsageScenario}{IntervalType}{BatterySaverMode}"
     units="hundredth of percent" expires_after="2024-03-31">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
@@ -1063,9 +1082,12 @@ chromium-metrics-reviews@google.com.
     This is recorded for {UsageScenario}.
 
     This contains {IntervalType}.
+
+    This is recorded for {BatterySaverMode}.
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
   <token key="IntervalType" variants="IntervalType"/>
+  <token key="BatterySaverMode" variants="BatterySaverMode"/>
 </histogram>
 
 <histogram name="Power.BatteryDischargeRateWhileHibernated" units="mW"
