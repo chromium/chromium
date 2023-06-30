@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
@@ -135,12 +136,15 @@ void NGInlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
 
   FontHeight emphasis_marks_outsets =
       ComputeEmphasisMarkOutsets(styleref, fontref);
+  FontHeight leading_space =
+      CalculateLeadingSpace(styleref.ComputedLineHeightAsFixed(fontref),
+                            text_metrics, styleref.TextBoxTrim());
   if (emphasis_marks_outsets.IsEmpty()) {
-    text_metrics.AddLeading(styleref.ComputedLineHeightAsFixed(fontref));
+    text_metrics.AddLeading(leading_space);
   } else {
     FontHeight emphasis_marks_metrics = text_metrics;
     emphasis_marks_metrics += emphasis_marks_outsets;
-    text_metrics.AddLeading(styleref.ComputedLineHeightAsFixed(fontref));
+    text_metrics.AddLeading(leading_space);
     text_metrics.Unite(emphasis_marks_metrics);
     // TODO: Is this correct to include into text_metrics? How do we use
     // text_metrics after this point?
@@ -171,8 +175,10 @@ void NGInlineBoxState::AccumulateUsedFonts(
   for (const SimpleFontData* const fallback_font : fallback_fonts) {
     FontHeight fallback_metrics =
         fallback_font->GetFontMetrics().GetFontHeight(baseline_type);
-    fallback_metrics.AddLeading(
-        fallback_font->GetFontMetrics().FixedLineSpacing());
+    FontHeight leading_space = CalculateLeadingSpace(
+        fallback_font->GetFontMetrics().FixedLineSpacing(), fallback_metrics,
+        style->TextBoxTrim());
+    fallback_metrics.AddLeading(leading_space);
     metrics.Unite(fallback_metrics);
   }
 }
@@ -1148,7 +1154,9 @@ FontHeight NGInlineLayoutStateStack::MetricsForTopAndBottomAlign(
     box_metrics.descent -= box_data.padding.line_under;
     // Include the line-height property. The inline box has the height of the
     // font metrics without the line-height included.
-    box_metrics.AddLeading(style.ComputedLineHeightAsFixed());
+    FontHeight leading_space = CalculateLeadingSpace(
+        style.ComputedLineHeightAsFixed(), box_metrics, style.TextBoxTrim());
+    box_metrics.AddLeading(leading_space);
     metrics.Unite(box_metrics);
   }
 

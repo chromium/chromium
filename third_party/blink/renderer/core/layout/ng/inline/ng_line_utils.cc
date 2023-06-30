@@ -28,4 +28,26 @@ bool InSameNGLineBox(const PositionWithAffinity& position1,
   return line_box1 == line_box2;
 }
 
+FontHeight CalculateLeadingSpace(const LayoutUnit& line_height,
+                                 const FontHeight& current_height,
+                                 const ETextBoxTrim& text_box_trim) {
+  // TODO(kojii): floor() is to make text dump compatible with legacy test
+  // results. Revisit when we paint.
+  LayoutUnit ascent_leading_spacing{
+      ((line_height - current_height.LineHeight()) / 2).Floor()};
+  LayoutUnit descent_leading_spacing =
+      line_height - current_height.LineHeight() - ascent_leading_spacing;
+
+  // TODO(https://crbug.com/1278634): Trim it to the specified edges instead.
+  if (UNLIKELY(text_box_trim == ETextBoxTrim::kBoth ||
+               text_box_trim == ETextBoxTrim::kStart)) {
+    ascent_leading_spacing = LayoutUnit();
+  }
+  if (UNLIKELY(text_box_trim == ETextBoxTrim::kBoth ||
+               text_box_trim == ETextBoxTrim::kEnd)) {
+    descent_leading_spacing = LayoutUnit();
+  }
+  return FontHeight(ascent_leading_spacing, descent_leading_spacing);
+}
+
 }  // namespace blink
