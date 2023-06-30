@@ -125,7 +125,13 @@ class LinkerDriver(object):
                 assert driver_action[0] not in linker_driver_actions
                 linker_driver_actions[driver_action[0]] = driver_action[1]
             else:
-                compiler_driver_args.append(arg)
+                # TODO(crbug.com/1446796): On Apple, the linker command line
+                # produced by rustc for LTO includes these arguments, but the
+                # Apple linker doesn't accept them.
+                # Upstream bug: https://github.com/rust-lang/rust/issues/60059
+                BAD_RUSTC_ARGS = ['-plugin-opt=O3', '-plugin-opt=mcpu=core2']
+                if arg not in BAD_RUSTC_ARGS:
+                    compiler_driver_args.append(arg)
 
         if self._object_path_lto is not None:
             compiler_driver_args.append('-Wl,-object_path_lto,{}'.format(
