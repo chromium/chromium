@@ -41,16 +41,22 @@ source_set("qt_interface") {
   sources = [ "qt_interface.cc" ]
 }
 
-if (!use_sysroot) {
-  action("generate_moc") {
-    script = "moc_wrapper.py"
-    inputs = [ "//ui/qt/qt_shim.h" ]
-    outputs = [ "$root_gen_dir/qt_shim_moc.cc" ]
-    args = rebase_path(inputs + outputs, root_build_dir)
-  }
-}
-
 template("qt_shim") {
+  if (!use_sysroot) {
+    action("generate_moc" + invoker.qt_version) {
+      script = "moc_wrapper.py"
+      inputs = [ "//ui/qt/qt_shim.h" ]
+      outputs = [ "$root_gen_dir/qt" + invoker.qt_version + "/qt_shim_moc.cc" ]
+      args = rebase_path(inputs + outputs, root_build_dir)
+      if (invoker.moc_qt_path != "") {
+        args += [
+          "--path",
+          invoker.moc_qt_path,
+        ]
+      }
+    }
+  }
+
   pkg_config("qt" + invoker.qt_version + "_config") {
     packages = [
       "Qt" + invoker.qt_version + "Core",
@@ -90,17 +96,23 @@ template("qt_shim") {
       # avoid a build-time dependency on `moc` when using the sysroot.
       sources += [ "qt" + invoker.qt_version + "_shim_moc.cc" ]
     } else {
-      sources += get_target_outputs(":generate_moc")
-      deps += [ ":generate_moc" ]
+      sources += get_target_outputs(":generate_moc" + invoker.qt_version)
+      deps += [ ":generate_moc" + invoker.qt_version ]
     }
   }
 }
 qt_shim("qt5_shim") {
   qt_version = "5"
+  if (!use_sysroot) {
+    moc_qt_path = "$moc_qt5_path"
+  }
 }
 if (use_qt6) {
   qt_shim("qt6_shim") {
     qt_version = "6"
+    if (!use_sysroot) {
+      moc_qt_path = "$moc_qt6_path"
+    }
   }
 }
 
