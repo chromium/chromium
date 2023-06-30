@@ -323,12 +323,18 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
     base::flat_map<size_t, uint64_t> modifier_entries;
     modifier_entries.emplace(format_table_index++, DRM_FORMAT_MOD_INVALID);
 
-    // Gen12 intel modifiers leak memory on gbm to gl buffer import. Block these
-    // modifiers for now. See crbug.com/1445252
+    // Intel CCS modifiers leak memory on gbm to gl buffer import. Block these
+    // modifiers for now. See crbug.com/1445252, crbug.com/1458575
     const base::flat_set<uint64_t> modifier_block_list = {
+        I915_FORMAT_MOD_Y_TILED_CCS,
+        I915_FORMAT_MOD_Yf_TILED_CCS,
         I915_FORMAT_MOD_Y_TILED_GEN12_RC_CCS,
         I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS,
-        I915_FORMAT_MOD_Y_TILED_GEN12_RC_CCS_CC};
+        I915_FORMAT_MOD_Y_TILED_GEN12_RC_CCS_CC,
+        I915_FORMAT_MOD_4_TILED_DG2_RC_CCS,
+        I915_FORMAT_MOD_4_TILED_DG2_MC_CCS,
+        I915_FORMAT_MOD_4_TILED_DG2_RC_CCS_CC,
+    };
 
     if (base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufModifiers)) {
       for (uint64_t modifier : modifiers) {
