@@ -322,5 +322,41 @@ TEST_F(NavigationItemTest, SerializationOptimizesURLStorage) {
   EXPECT_TRUE(storage.virtual_url().empty());
 }
 
+// Tests correct decoding of the URL and virtual URL when using http: scheme.
+TEST_F(NavigationItemTest, DecodeHTTPScheme) {
+  web::proto::NavigationItemStorage storage;
+  storage.set_url("http://url.test");
+  storage.set_virtual_url("http://virtual.test");
+  ASSERT_NE(storage.url(), storage.virtual_url());
+
+  NavigationItemImpl navigation_item(storage);
+  EXPECT_EQ(GURL(storage.url()), navigation_item.GetURL());
+  EXPECT_EQ(GURL(storage.virtual_url()), navigation_item.GetVirtualURL());
+}
+
+// Tests correct decoding of the URL and virtual URL when using file: scheme.
+TEST_F(NavigationItemTest, DecodeFileScheme) {
+  web::proto::NavigationItemStorage storage;
+  storage.set_url("file://myfile.test");
+  storage.set_virtual_url("http://virtual.test");
+  ASSERT_NE(storage.url(), storage.virtual_url());
+
+  NavigationItemImpl navigation_item(storage);
+  EXPECT_EQ(GURL(storage.virtual_url()), navigation_item.GetURL());
+  EXPECT_EQ(GURL(storage.virtual_url()), navigation_item.GetVirtualURL());
+}
+
+// Tests correct decoding of the URL and virtual URL when using blob: scheme.
+TEST_F(NavigationItemTest, DecodeBlobScheme) {
+  web::proto::NavigationItemStorage storage;
+  storage.set_url("blob:myfile.test");
+  storage.set_virtual_url("http://virtual.test");
+  ASSERT_NE(storage.url(), storage.virtual_url());
+
+  NavigationItemImpl navigation_item(storage);
+  EXPECT_EQ(GURL(storage.virtual_url()), navigation_item.GetURL());
+  EXPECT_EQ(GURL(storage.virtual_url()), navigation_item.GetVirtualURL());
+}
+
 }  // namespace
 }  // namespace web

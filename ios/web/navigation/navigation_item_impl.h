@@ -23,7 +23,6 @@ namespace proto {
 class NavigationItemStorage;
 }  // namespace proto
 
-class NavigationItemStorageBuilder;
 enum class NavigationInitiationType;
 
 // Implementation of NavigationItem.
@@ -130,10 +129,6 @@ class NavigationItemImpl : public web::NavigationItem {
 #endif
 
  private:
-  // The NavigationManItemStorageBuilder functions require access to
-  // private variables of NavigationItemImpl.
-  friend NavigationItemStorageBuilder;
-
   // Explicit copy constructor since the super class is not copyable.
   // Used to implement Clone().
   NavigationItemImpl(const NavigationItemImpl& item);

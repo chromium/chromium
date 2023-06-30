@@ -56,8 +56,6 @@ source_set("navigation") {
     "crw_wk_navigation_handler.mm",
     "crw_wk_navigation_states.h",
     "crw_wk_navigation_states.mm",
-    "navigation_item_storage_builder.h",
-    "navigation_item_storage_builder.mm",
     "serializable_user_data_manager_impl.h",
     "serializable_user_data_manager_impl.mm",
     "session_storage_builder.h",

@@ -276,7 +276,6 @@ source_set("ios_web_navigation_unittests") {
     "navigation/crw_wk_navigation_states_unittest.mm",
     "navigation/navigation_context_impl_unittest.mm",
     "navigation/navigation_item_impl_unittest.mm",
-    "navigation/navigation_item_storage_builder_unittest.mm",
     "navigation/navigation_manager_impl_unittest.mm",
     "navigation/navigation_manager_util_unittest.mm",
     "navigation/nscoder_util_unittest.mm",
