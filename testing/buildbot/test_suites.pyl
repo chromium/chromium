@@ -829,7 +829,6 @@
           '--test-launcher-jobs=1',
         ],
       },
-      'rust_gtest_interop_unittests': {},
       'sql_unittests': {},
       'url_unittests': {},
       'vaapi_unittest': {
@@ -882,7 +881,6 @@
       'content_unittests': {},
       'interactive_ui_tests': {},
       'net_unittests': {},
-      'rust_gtest_interop_unittests': {},
       'unit_tests': {},
     },
 
@@ -944,7 +942,6 @@
           ],
         },
       },
-      'rust_gtest_interop_unittests': {},
       'unit_tests': {
         'swarming': {
           'dimension_sets': [
@@ -1022,7 +1019,6 @@
         },
       },
       'perfetto_unittests': {},
-      'rust_gtest_interop_unittests': {},
       'services_unittests': {},
       'shell_dialogs_unittests': {},
       'skia_unittests': {},
@@ -2497,7 +2493,6 @@
       },
       'ozone_unittests': {},
       'perfetto_unittests': {},
-      'rust_gtest_interop_unittests': {},
       'service_manager_unittests': {},
       'services_unittests': {
         'args': [
@@ -4052,8 +4047,6 @@
       'net_unittests': {},
       'services_unittests': {},
       'sql_unittests': {},
-      # TODO(https://bugs.chromium.org/p/gn/issues/detail?id=340): Enable this.
-      # 'rust_gtest_interop_unittests': {},
       'url_unittests': {},
     },
 
@@ -4537,7 +4530,6 @@
       'cronet_unittests':{},
       'device_unittests':{},
       'net_unittests':{},
-      'rust_gtest_interop_unittests': {},
     },
 
     'mac_specific_chromium_gtests': {
