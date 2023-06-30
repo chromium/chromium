@@ -174,9 +174,6 @@ gfx::Size FooterView::CalculatePreferredSize() const {
   if (preferred_size.width() > 0 && preferred_size.height() > 0) {
     // When two footers are showing, add space between them.
     if (alert_size.height() > 0 && performance_size.height() > 0) {
-      performance_row_->SetProperty(
-          views::kMarginsKey,
-          gfx::Insets::TLBR(kFooterVerticalMargins, 0, 0, 0));
       preferred_size.Enlarge(0, kFooterVerticalMargins);
     }
     const gfx::Insets margins = flex_layout_->interior_margin();

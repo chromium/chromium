@@ -90,7 +90,10 @@ class FooterView : public views::View {
     flex_layout_ =
         views::View::SetLayoutManager(std::make_unique<views::FlexLayout>());
     flex_layout_->SetOrientation(views::LayoutOrientation::kVertical)
-        .SetInteriorMargin(kFooterMargins);
+        .SetCollapseMargins(true)
+        .SetInteriorMargin(kFooterMargins)
+        .SetDefault(views::kMarginsKey,
+                    gfx::Insets::VH(kFooterVerticalMargins, 0));
     alert_row_ = AddChildView(
         std::make_unique<FadeView<FadeAlertFooterRow, FadeAlertFooterRow,
                                   AlertFooterRowData>>(
