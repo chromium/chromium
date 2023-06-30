@@ -2287,16 +2287,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.ImportMap.HasJSONComments" enum="Boolean"
-    expires_after="2023-11-12">
-  <owner>jbroman@chromium.org</owner>
-  <owner>domenic@chromium.org</owner>
-  <summary>
-    Whether (non-standard) JSON comments occur in an importmap script element.
-    Logged each time it is parsed as valid JSON.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Input.GestureScrollBeginAsCursorControl"
     enum="BooleanSuccess" expires_after="M91">
   <obsolete>
