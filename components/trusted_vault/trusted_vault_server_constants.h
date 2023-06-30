@@ -32,10 +32,12 @@ inline constexpr char kGetSecurityDomainURLPathAndQuery[] =
 inline constexpr char kQueryParameterAlternateOutputKey[] = "alt";
 inline constexpr char kQueryParameterAlternateOutputProto[] = "proto";
 
+// Identifies a particular security domain.
+//
+// Append new values at the end and update kMaxValue. Values must not be
+// persisted.
 enum class SecurityDomainId {
   kChromeSync,
-  // Append new values at the end and update kMaxValue. Values must not be
-  // persisted.
   kMaxValue = kChromeSync,
 };
 

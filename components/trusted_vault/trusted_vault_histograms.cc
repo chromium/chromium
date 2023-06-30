@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 
 namespace trusted_vault {
@@ -30,6 +31,26 @@ std::string GetReasonSuffix(TrustedVaultURLFetchReasonForUMA reason) {
 }
 
 }  // namespace
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SecurityDomainIdOrInvalidForUma {
+  kInvalid = 0,
+  kChromeSync = 1,
+  kMaxValue = kChromeSync,
+};
+
+SecurityDomainIdOrInvalidForUma GetSecurityDomainIdOrInvalidForUma(
+    absl::optional<SecurityDomainId> security_domain) {
+  if (!security_domain) {
+    return SecurityDomainIdOrInvalidForUma::kInvalid;
+  }
+  switch (*security_domain) {
+    case SecurityDomainId::kChromeSync:
+      return SecurityDomainIdOrInvalidForUma::kChromeSync;
+  }
+  NOTREACHED_NORETURN();
+}
 
 void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
@@ -96,6 +117,31 @@ void RecordVerifyRegistrationStatus(TrustedVaultDownloadKeysStatusForUMA status,
 
 void RecordTrustedVaultFileReadStatus(TrustedVaultFileReadStatusForUMA status) {
   base::UmaHistogramEnumeration("Sync.TrustedVaultFileReadStatus", status);
+}
+
+void RecordTrustedVaultSetEncryptionKeysForSecurityDomain(
+    absl::optional<SecurityDomainId> security_domain,
+    IsOffTheRecord is_off_the_record) {
+  SecurityDomainIdOrInvalidForUma domain_for_uma =
+      GetSecurityDomainIdOrInvalidForUma(security_domain);
+  base::UmaHistogramEnumeration(
+      "TrustedVault.SetEncryptionKeysForSecurityDomain."
+      "AllProfiles",
+      domain_for_uma);
+  if (is_off_the_record == IsOffTheRecord::kYes) {
+    base::UmaHistogramEnumeration(
+        "TrustedVault.SetEncryptionKeysForSecurityDomain.OffTheRecordOnly",
+        domain_for_uma);
+  }
+}
+
+void RecordCallToJsSetClientEncryptionKeysWithSecurityDomainToUma(
+    absl::optional<SecurityDomainId> security_domain) {
+  SecurityDomainIdOrInvalidForUma domain_for_uma =
+      GetSecurityDomainIdOrInvalidForUma(security_domain);
+  base::UmaHistogramEnumeration(
+      "TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain",
+      domain_for_uma);
 }
 
 }  // namespace trusted_vault

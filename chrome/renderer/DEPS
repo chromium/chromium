@@ -75,6 +75,7 @@ include_rules = [
   "+components/translate/core/common",
   "+components/translate/core/language_detection",
   "+components/trusted_vault/features.h",
+  "+components/trusted_vault/trusted_vault_histograms.h",
   "+components/trusted_vault/trusted_vault_server_constants.h",
   "+components/version_info",
   "+components/visitedlink/renderer",

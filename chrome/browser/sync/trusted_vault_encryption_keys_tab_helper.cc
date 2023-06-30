@@ -19,6 +19,7 @@
 #include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle.h"
@@ -62,7 +63,22 @@ class EncryptionKeyApi
     }
 
     for (const auto& [vault_name, keys] : trusted_vault_keys) {
-      AddKeysToTrustedVault(gaia_id, vault_name, keys);
+      if (keys.empty()) {
+        // Checked by the renderer.
+        mojo::ReportBadMessage("empty keys for " + vault_name);
+        return;
+      }
+      const absl::optional<trusted_vault::SecurityDomainId> security_domain =
+          trusted_vault::GetSecurityDomainByName(vault_name);
+      trusted_vault::RecordTrustedVaultSetEncryptionKeysForSecurityDomain(
+          security_domain, is_off_the_record_for_uma_
+                               ? trusted_vault::IsOffTheRecord::kYes
+                               : trusted_vault::IsOffTheRecord::kNo);
+      if (!security_domain) {
+        DLOG(ERROR) << "Unknown vault type " << vault_name;
+        continue;
+      }
+      AddEncryptionKeysForSecurityDomain(gaia_id, *security_domain, keys);
     }
 
     std::move(callback).Run();
@@ -99,26 +115,20 @@ class EncryptionKeyApi
   EncryptionKeyApi(content::RenderFrameHost* rfh,
                    syncer::SyncService* sync_service)
       : DocumentUserData<EncryptionKeyApi>(rfh),
+        is_off_the_record_for_uma_(
+            content::WebContents::FromRenderFrameHost(rfh)
+                ->GetBrowserContext()
+                ->IsOffTheRecord()),
         sync_service_(sync_service),
         receivers_(content::WebContents::FromRenderFrameHost(rfh), this) {}
 
 #if !BUILDFLAG(IS_ANDROID)
-  void AddKeysToTrustedVault(
+  void AddEncryptionKeysForSecurityDomain(
       const std::string& gaia_id,
-      const std::string& vault_name,
+      trusted_vault::SecurityDomainId security_domain,
       const std::vector<chrome::mojom::TrustedVaultKeyPtr>& keys) {
-    if (keys.empty()) {
-      // The renderer enforces this.
-      return;
-    }
-    const absl::optional<trusted_vault::SecurityDomainId> security_domain =
-        trusted_vault::GetSecurityDomainByName(vault_name);
-    if (!security_domain) {
-      // TODO(https://crbug.com/1223853): Add a UMA metric for this case.
-      DLOG(ERROR) << "Unknown vault type " << vault_name;
-      return;
-    }
-    switch (*security_domain) {
+    CHECK(!keys.empty());
+    switch (security_domain) {
       case trusted_vault::SecurityDomainId::kChromeSync: {
         base::UmaHistogramBoolean(
             "Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito",
@@ -133,7 +143,6 @@ class EncryptionKeyApi
                        [](const chrome::mojom::TrustedVaultKeyPtr& key) {
                          return key->bytes;
                        });
-        DCHECK(!keys.empty());  // Checked above.
         const int32_t version = keys.back()->version;
         sync_service_->AddTrustedVaultDecryptionKeysFromWeb(
             gaia_id, keys_as_bytes, version);
@@ -145,8 +154,8 @@ class EncryptionKeyApi
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
 
-  // Null `sync_service_` is interpreted as incognito (when it comes to
-  // metrics).
+  const bool is_off_the_record_for_uma_;
+
   const raw_ptr<syncer::SyncService> sync_service_;
 
   content::RenderFrameHostReceiverSet<

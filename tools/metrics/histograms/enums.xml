@@ -95265,6 +95265,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="Memfd execution attempt detected in the audit log file."/>
 </enum>
 
+<enum name="SecurityDomainId">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="Chrome Sync"/>
+</enum>
+
 <enum name="SecurityFilteredTouchResult">
   <int value="0" label="Touch event was handled by security sensitive dialog"/>
   <int value="1"

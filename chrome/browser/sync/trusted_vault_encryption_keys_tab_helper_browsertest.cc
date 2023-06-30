@@ -49,6 +49,10 @@ namespace {
 const char kFakeGaiaId[] = "fake_gaia_id";
 const char kConsoleSuccessMessage[] = "trusted_vault_encryption_keys:OK";
 const char kConsoleFailureMessage[] = "trusted_vault_encryption_keys:FAIL";
+#if !BUILDFLAG(IS_ANDROID)
+const char kConsoleUncaughtTypeErrorMessagePattern[] =
+    "Uncaught TypeError: Error processing argument at index *";
+#endif
 
 // Executes JS to call chrome.setSyncEncryptionKeys(). Either
 // |kConsoleSuccessMessage| or |kConsoleFailureMessage| is logged to the console
@@ -97,6 +101,52 @@ void ExecJsSetClientEncryptionKeys(content::RenderFrameHost* render_frame_host,
 
   std::ignore = content::ExecJs(render_frame_host, script);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ExecJsSetClientEncryptionKeysForInvalidSecurityDomain(
+    content::RenderFrameHost* render_frame_host,
+    const std::vector<uint8_t>& key) {
+  // To simplify the test, it limits the size of `key` to 1.
+  DCHECK_EQ(key.size(), 1u);
+  const std::string script = base::StringPrintf(
+      R"(
+      if (chrome.setClientEncryptionKeys === undefined) {
+        console.log('%s');
+      } else {
+        let bytes = new ArrayBuffer(1);
+        let view = new Uint8Array(bytes);
+        view[0] = %d;
+        chrome.setClientEncryptionKeys(
+            () => {console.log('%s');},
+            "%s",
+            {'users/me/securitydomains/invalid': [{version: 0, bytes}]});
+      }
+    )",
+      kConsoleFailureMessage, key[0], kConsoleSuccessMessage, kFakeGaiaId);
+
+  std::ignore = content::ExecJs(render_frame_host, script);
+}
+
+void ExecJsSetClientEncryptionKeysWithIllformedArgs(
+    content::RenderFrameHost* render_frame_host) {
+  // Don't actually pass a key. This should trigger a render-side argument
+  // parsing failure.
+  const std::string script = base::StringPrintf(
+      R"(
+      if (chrome.setClientEncryptionKeys === undefined) {
+        console.log('%s');
+      } else {
+        chrome.setClientEncryptionKeys(
+            () => {console.log('%s');},
+            "%s",
+            {'users/me/securitydomains/chromesync': [{version: 0}]});
+      }
+    )",
+      kConsoleFailureMessage, kConsoleSuccessMessage, kFakeGaiaId);
+
+  std::ignore = content::ExecJs(render_frame_host, script);
+}
+#endif
 
 // Executes JS to call chrome.addTrustedSyncEncryptionRecoveryMethod. Either
 // |kConsoleSuccessMessage| or |kConsoleFailureMessage| is logged to the console
@@ -331,7 +381,19 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   // HistogramTester cannot verify the ones instrumented in the renderer.
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  // TODO(https://crbug.com/1223853): Add SetClientEncryptionKeys UMA metric.
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.JavascriptSetClientEncryptionKeysValidArgs", 1 /*Valid*/,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain",
+      1 /*Chrome Sync*/, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.SetEncryptionKeysForSecurityDomain.AllProfiles",
+      1 /*Chrome Sync*/, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.SetEncryptionKeysForSecurityDomain.OffTheRecordOnly",
+      1 /*Chrome Sync*/, 0);
 
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito",
@@ -344,9 +406,91 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   EXPECT_THAT(actual_keys, testing::ElementsAre(kEncryptionKey));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    TrustedVaultEncryptionKeysTabHelperBrowserTest,
+    ShouldIgnoreClientEncryptionKeysForInvalidSecurityDomain) {
+  const GURL initial_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+  // EncryptionKeysApi is created for the primary page as the origin is allowed.
+  EXPECT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kConsoleSuccessMessage);
+
+  base::HistogramTester histogram_tester;
+
+  // Calling setClientEncryptionKeys() in the main frame works.
+  const std::vector<uint8_t> kEncryptionKey = {7};
+  ExecJsSetClientEncryptionKeysForInvalidSecurityDomain(
+      web_contents()->GetPrimaryMainFrame(), kEncryptionKey);
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(1u, console_observer.messages().size());
+
+  // Collect histograms from the renderer process, since otherwise
+  // HistogramTester cannot verify the ones instrumented in the renderer.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.JavascriptSetClientEncryptionKeysValidArgs", 1 /*Valid*/,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain",
+      0 /*Invalid*/, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.SetEncryptionKeysForSecurityDomain.AllProfiles",
+      0 /*Invalid*/, 1);
+
+  AccountInfo account;
+  account.gaia = kFakeGaiaId;
+  std::vector<std::vector<uint8_t>> actual_keys =
+      FetchTrustedVaultKeysForProfile(browser()->profile(), account);
+  EXPECT_THAT(actual_keys, testing::IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
+                       ShouldIgnoreClientEncryptionKeysWithIllformedArgs) {
+  const GURL initial_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+  // EncryptionKeysApi is created for the primary page as the origin is allowed.
+  EXPECT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kConsoleUncaughtTypeErrorMessagePattern);
+
+  base::HistogramTester histogram_tester;
+
+  ExecJsSetClientEncryptionKeysWithIllformedArgs(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(1u, console_observer.messages().size());
+
+  // Collect histograms from the renderer process, since otherwise
+  // HistogramTester cannot verify the ones instrumented in the renderer.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.JavascriptSetClientEncryptionKeysValidArgs", 0 /*Invalid*/,
+      1);
+
+  // Renderer makes no attempt of setting keys on the browser side.
+  histogram_tester.ExpectTotalCount(
+      "TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain", 0);
+  histogram_tester.ExpectTotalCount(
+      "TrustedVault.SetEncryptionKeysForSecurityDomain.AllProfiles", 0);
+
+  AccountInfo account;
+  account.gaia = kFakeGaiaId;
+  std::vector<std::vector<uint8_t>> actual_keys =
+      FetchTrustedVaultKeysForProfile(browser()->profile(), account);
+  EXPECT_THAT(actual_keys, testing::IsEmpty());
+}
+
 // Tests that chrome.setSyncEncryptionKeys() works in a fenced frame.
 IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
-                       ShouldBindSynEncryptionKeysApiInFencedFrame) {
+                       ShouldBindSyncEncryptionKeysApiInFencedFrame) {
   const GURL initial_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
@@ -446,6 +590,13 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
       "Sync.TrustedVaultJavascriptSetEncryptionKeysValidArgs", 1 /*Valid*/, 1);
 
   histogram_tester.ExpectUniqueSample(
+      "TrustedVault.SetEncryptionKeysForSecurityDomain.AllProfiles",
+      1 /*Chrome Sync*/, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.SetEncryptionKeysForSecurityDomain.OffTheRecordOnly",
+      1 /*Chrome Sync*/, 1);
+
+  histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito",
       1 /*Incognito*/, 1);
 
@@ -489,7 +640,19 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   // HistogramTester cannot verify the ones instrumented in the renderer.
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  // TODO(https://crbug.com/1223853): Add SetClientEncryptionKeys UMA metric.
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.JavascriptSetClientEncryptionKeysValidArgs", 1 /*Valid*/,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain",
+      1 /*Chrome Sync*/, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.SetEncryptionKeysForSecurityDomain.AllProfiles",
+      1 /*Chrome Sync*/, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.SetEncryptionKeysForSecurityDomain.OffTheRecordOnly",
+      1 /*Chrome Sync*/, 1);
 
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito",

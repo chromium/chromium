@@ -137,6 +137,7 @@ tools/metrics/histograms/metadata/sync/histograms.xml
 tools/metrics/histograms/metadata/system/histograms.xml
 tools/metrics/histograms/metadata/tab/histograms.xml
 tools/metrics/histograms/metadata/translate/histograms.xml
+tools/metrics/histograms/metadata/trusted_vault/histograms.xml
 tools/metrics/histograms/metadata/ukm/histograms.xml
 tools/metrics/histograms/metadata/uma/histograms.xml
 tools/metrics/histograms/metadata/update_engine/histograms.xml
