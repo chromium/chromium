@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -359,6 +360,12 @@ void ExtensionFunction::ResponseAction::Execute() {
 }
 
 ExtensionFunction::~ExtensionFunction() {
+  // `name_` may not be set in unit tests.
+  std::string safe_name = name() ? name() : "<unknown>";
+  // Crash keys added for https://crbug.com/1435545.
+  SCOPED_CRASH_KEY_STRING256("extensions", "destructing_ext_func_name",
+                             safe_name);
+
   if (name()) {  // name_ may not be set in unit tests.
     ExtensionFunctionMemoryDumpProvider::GetInstance().RemoveFunctionName(
         name());
