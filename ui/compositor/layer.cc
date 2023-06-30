@@ -467,7 +467,7 @@ bool Layer::Contains(const Layer* other) const {
   return false;
 }
 
-void Layer::SetAnimator(LayerAnimator* animator) {
+void Layer::SetAnimator(scoped_refptr<LayerAnimator> animator) {
   Compositor* compositor = GetCompositor();
 
   if (animator_) {
@@ -477,7 +477,7 @@ void Layer::SetAnimator(LayerAnimator* animator) {
     animator_->SetDelegate(nullptr);
   }
 
-  animator_ = animator;
+  animator_ = std::move(animator);
 
   if (animator_) {
     animator_->SetDelegate(this);

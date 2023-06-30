@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -76,10 +77,10 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
   LayerAnimator& operator=(const LayerAnimator&) = delete;
 
   // No implicit animations when properties are set.
-  static LayerAnimator* CreateDefaultAnimator();
+  static scoped_refptr<LayerAnimator> CreateDefaultAnimator();
 
   // Implicitly animates when properties are set.
-  static LayerAnimator* CreateImplicitAnimator();
+  static scoped_refptr<LayerAnimator> CreateImplicitAnimator();
 
   // Sets the transform on the delegate. May cause an implicit animation.
   virtual void SetTransform(const gfx::Transform& transform);
