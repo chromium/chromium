@@ -706,16 +706,6 @@ bool ComputedStyle::InheritedDataShared(const ComputedStyle& other) const {
   return ComputedStyleBase::InheritedDataShared(other);
 }
 
-static bool DependenceOnContentHeightHasChanged(const ComputedStyle& a,
-                                                const ComputedStyle& b) {
-  // If top or bottom become auto/non-auto then it means we either have to solve
-  // height based on the content or stop doing so
-  // (http://www.w3.org/TR/CSS2/visudet.html#abs-non-replaced-height)
-  // - either way requires a layout.
-  return a.LogicalTop().IsAuto() != b.LogicalTop().IsAuto() ||
-         a.LogicalBottom().IsAuto() != b.LogicalBottom().IsAuto();
-}
-
 StyleDifference ComputedStyle::VisualInvalidationDiff(
     const Document& document,
     const ComputedStyle& other) const {
@@ -741,8 +731,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   }
 
   if (!diff.NeedsFullLayout() && !MarginEqual(other)) {
-    // Relative-positioned elements collapse their margins so need a full
-    // layout.
+    // Inflow elements participate in margin-collapsing so need a full layout.
     if (HasOutOfFlowPosition()) {
       diff.SetNeedsPositionedMovementLayout();
     } else {
@@ -752,13 +741,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
 
   if (!diff.NeedsFullLayout() && GetPosition() != EPosition::kStatic &&
       !OffsetEqual(other)) {
-    // Optimize for the case where a positioned layer is moving but not changing
-    // size.
-    if (DependenceOnContentHeightHasChanged(*this, other)) {
-      diff.SetNeedsFullLayout();
-    } else {
-      diff.SetNeedsPositionedMovementLayout();
-    }
+    diff.SetNeedsPositionedMovementLayout();
   }
 
   AdjustDiffForNeedsPaintInvalidation(other, diff, document);

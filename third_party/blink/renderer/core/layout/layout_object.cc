@@ -1450,8 +1450,7 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout) {
     // it's not enough to check |object|, since the element that is actually
     // locked needs its child bits set properly, we need to go one more
     // iteration after that.
-    if (!last->SelfNeedsLayout() && !last->NeedsPositionedMovementLayout() &&
-        last->ChildLayoutBlockedByDisplayLock()) {
+    if (!last->SelfNeedsLayout() && last->ChildLayoutBlockedByDisplayLock()) {
       return;
     }
 
@@ -2641,7 +2640,11 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
       SetNeedsLayoutAndIntrinsicWidthsRecalc(
           layout_invalidation_reason::kStyleChange);
     } else if (updated_diff.NeedsPositionedMovementLayout()) {
-      SetNeedsPositionedMovementLayout();
+      if (IsOutOfFlowPositioned()) {
+        ContainingBlock()->SetNeedsSimplifiedLayout();
+      } else {
+        ContainingBlock()->SetChildNeedsLayout();
+      }
     }
   }
 
@@ -3018,7 +3021,11 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     SetNeedsLayoutAndIntrinsicWidthsRecalc(
         layout_invalidation_reason::kStyleChange);
   } else if (diff.NeedsPositionedMovementLayout()) {
-    SetNeedsPositionedMovementLayout();
+    if (IsOutOfFlowPositioned()) {
+      ContainingBlock()->SetNeedsSimplifiedLayout();
+    } else {
+      ContainingBlock()->SetChildNeedsLayout();
+    }
   }
 
   if (diff.ScrollAnchorDisablingPropertyChanged())

@@ -59,9 +59,6 @@ void DumpToTracedValue(const LayoutObject& object,
     traced_value->SetBoolean("positioned", object.IsOutOfFlowPositioned());
   if (object.SelfNeedsLayout())
     traced_value->SetBoolean("selfNeeds", object.SelfNeedsLayout());
-  if (object.NeedsPositionedMovementLayout())
-    traced_value->SetBoolean("positionedMovement",
-                             object.NeedsPositionedMovementLayout());
   if (object.NormalChildNeedsLayout())
     traced_value->SetBoolean("childNeeds", object.NormalChildNeedsLayout());
   if (object.PosChildNeedsLayout())

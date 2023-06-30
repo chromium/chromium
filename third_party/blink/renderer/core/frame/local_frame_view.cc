@@ -1289,7 +1289,7 @@ void LocalFrameView::MarkFixedPositionObjectsForLayout(bool width_changed,
     if (width_changed) {
       if (style.UsedWidth().IsFixed() &&
           (style.UsedLeft().IsAuto() || style.UsedRight().IsAuto())) {
-        layout_object->SetNeedsPositionedMovementLayout();
+        layout_object->ContainingBlock()->SetNeedsSimplifiedLayout();
       } else {
         layout_object->SetNeedsLayoutAndFullPaintInvalidation(
             layout_invalidation_reason::kSizeChanged);
@@ -1298,7 +1298,7 @@ void LocalFrameView::MarkFixedPositionObjectsForLayout(bool width_changed,
     if (height_changed) {
       if (style.UsedHeight().IsFixed() &&
           (style.UsedTop().IsAuto() || style.UsedBottom().IsAuto())) {
-        layout_object->SetNeedsPositionedMovementLayout();
+        layout_object->ContainingBlock()->SetNeedsSimplifiedLayout();
       } else {
         layout_object->SetNeedsLayoutAndFullPaintInvalidation(
             layout_invalidation_reason::kSizeChanged);
