@@ -214,14 +214,15 @@ template("single_apple_toolchain") {
       cxx = "$python_path $_coverage_wrapper ${cxx}"
     }
 
+    linker_driver_env = "TOOL_VERSION=${tool_versions.linker_driver}"
     linker_driver =
-        "TOOL_VERSION=${tool_versions.linker_driver} " +
         rebase_path("//build/toolchain/apple/linker_driver.py", root_build_dir)
+    linker_driver_args = "-Wcrl,driver,$ld"
 
     # Specify an explicit path for the strip binary.
     _strippath = invoker.bin_path + "strip"
     _installnametoolpath = invoker.bin_path + "install_name_tool"
-    linker_driver += " -Wcrl,strippath,${_strippath} -Wcrl,installnametoolpath,${_installnametoolpath}"
+    linker_driver_args += " -Wcrl,strippath,${_strippath} -Wcrl,installnametoolpath,${_installnametoolpath}"
     _enable_dsyms = enable_dsyms
     _save_unstripped_output = save_unstripped_output
 
@@ -331,7 +332,7 @@ template("single_apple_toolchain") {
         # }
 
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${_cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $exename LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
+        command = "$linker_driver_env \"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"$linker_driver\" $rustc_common_args --emit=dep-info=$depfile,link -o $exename LDFLAGS $linker_driver_args {{ldflags}} RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative_to_out
       }
 
@@ -360,7 +361,7 @@ template("single_apple_toolchain") {
         # }
 
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${_cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $dllname LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
+        command = "$linker_driver_env \"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"$linker_driver\" $rustc_common_args --emit=dep-info=$depfile,link -o $dllname LDFLAGS $linker_driver_args {{ldflags}} RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative_to_out
       }
 
@@ -497,7 +498,8 @@ template("single_apple_toolchain") {
 
       does_reexport_command = "[ ! -e \"$dylib\" -o ! -e \"$tocname\" ] || $otool -l \"$dylib\" | grep -q LC_REEXPORT_DYLIB"
 
-      link_command = "$linker_driver $ld -shared "
+      link_command =
+          "$linker_driver_env $linker_driver $linker_driver_args -shared "
       if (toolchain_is_component_build) {
         link_command += " -Wl,-install_name,@rpath/\"{{target_output_name}}{{output_extension}}\" "
       }
@@ -550,7 +552,7 @@ template("single_apple_toolchain") {
       rspfile = sofile + ".rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      link_command = "$linker_driver $ld -bundle {{ldflags}} -o \"$sofile\" \"@$rspfile\" {{rlibs}}"
+      link_command = "$linker_driver_env $linker_driver $linker_driver_args -bundle {{ldflags}} -o \"$sofile\" \"@$rspfile\" {{rlibs}}"
       link_command += dsym_switch
       command = link_command
 
@@ -580,7 +582,7 @@ template("single_apple_toolchain") {
       rspfile = "$outfile.rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      command = "$linker_driver $ld $dsym_switch {{ldflags}} -o \"$outfile\" \"@$rspfile\" {{rlibs}}"
+      command = "$linker_driver_env $linker_driver $linker_driver_args $dsym_switch {{ldflags}} -o \"$outfile\" \"@$rspfile\" {{rlibs}}"
       description = "LINK $outfile"
       rspfile_content =
           "{{inputs}} {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}}"
