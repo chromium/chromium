@@ -2955,6 +2955,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter',
         ],
       },
+      'Linux Tests (dbg)(1)': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1251656
         'experiment_percentage': 100,
       },
