@@ -1289,8 +1289,7 @@ class MetaBuildWrapper:
 
     Skylab is CrOS infra facilities for us to run hardware tests. These files
     may appear in the test target's runtime_deps for browser lab, but
-    unnecessary for CrOS lab. E.g. chrome is provisioned by our autotest
-    wrapper in Skylab, not by third_party/chromite.
+    unnecessary for CrOS lab.
     """
     file_ignore_list = [
         re.compile(r'.*build/chromeos.*'),
