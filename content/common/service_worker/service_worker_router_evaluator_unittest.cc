@@ -382,6 +382,90 @@ TEST(ServiceWorkerRouterEvaluator, InvalidSource) {
   EXPECT_FALSE(evaluator.IsValid());
 }
 
+TEST(ServiceWorkerRouterEvaluator, RequestMatch) {
+  auto verify =
+      [](const blink::ServiceWorkerRouterRequestCondition& request_condition,
+         const network::ResourceRequest& request, bool expect_match) {
+        blink::ServiceWorkerRouterRules rules;
+        {
+          blink::ServiceWorkerRouterRule rule;
+          {
+            blink::ServiceWorkerRouterCondition condition;
+            condition.type =
+                blink::ServiceWorkerRouterCondition::ConditionType::kRequest;
+            condition.request = request_condition;
+            rule.conditions.push_back(condition);
+          }
+          {
+            blink::ServiceWorkerRouterSource source;
+            source.type =
+                blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+            source.fetch_event_source.emplace();
+            rule.sources.push_back(source);
+          }
+          rules.rules.push_back(rule);
+        }
+        ASSERT_EQ(1U, rules.rules.size());
+        ServiceWorkerRouterEvaluator evaluator(rules);
+        ASSERT_EQ(1U, evaluator.rules().rules.size());
+        EXPECT_TRUE(evaluator.IsValid());
+
+        const auto sources = evaluator.Evaluate(request);
+        if (expect_match) {
+          EXPECT_EQ(1U, sources.size());
+        } else {
+          EXPECT_EQ(0U, sources.size());
+        }
+      };
+
+  network::ResourceRequest request;
+  request.method = "GET";
+  request.mode = network::mojom::RequestMode::kCors;
+  request.destination = network::mojom::RequestDestination::kFrame;
+  request.url = GURL("https://example.com/test/page.html");
+
+  // match cases.
+  {
+    blink::ServiceWorkerRouterRequestCondition rc;
+    rc.method = "GET";
+    verify(rc, request, /*expect_match=*/true);
+  }
+  {
+    blink::ServiceWorkerRouterRequestCondition rc;
+    rc.mode = network::mojom::RequestMode::kCors;
+    verify(rc, request, /*expect_match=*/true);
+  }
+  {
+    blink::ServiceWorkerRouterRequestCondition rc;
+    rc.destination = network::mojom::RequestDestination::kFrame;
+    verify(rc, request, /*expect_match=*/true);
+  }
+  {
+    blink::ServiceWorkerRouterRequestCondition rc;
+    rc.method = "GET";
+    rc.mode = network::mojom::RequestMode::kCors;
+    rc.destination = network::mojom::RequestDestination::kFrame;
+    verify(rc, request, /*expect_match=*/true);
+  }
+
+  // not matched case.
+  {
+    blink::ServiceWorkerRouterRequestCondition rc;
+    rc.method = "POST";
+    verify(rc, request, /*expect_match=*/false);
+  }
+  {
+    blink::ServiceWorkerRouterRequestCondition rc;
+    rc.mode = network::mojom::RequestMode::kNoCors;
+    verify(rc, request, /*expect_match=*/false);
+  }
+  {
+    blink::ServiceWorkerRouterRequestCondition rc;
+    rc.destination = network::mojom::RequestDestination::kAudio;
+    verify(rc, request, /*expect_match=*/false);
+  }
+}
+
 TEST(ServiceWorkerRouterEvaluator, ToValueEmptyRule) {
   blink::ServiceWorkerRouterRules rules;
   ServiceWorkerRouterEvaluator evaluator(rules);
@@ -408,9 +492,32 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
       rule.conditions.push_back(condition);
     }
     {
+      blink::ServiceWorkerRouterCondition condition;
+      condition.type =
+          blink::ServiceWorkerRouterCondition::ConditionType::kRequest;
+      blink::ServiceWorkerRouterRequestCondition request;
+      request.method = "GET";
+      request.mode = network::mojom::RequestMode::kCors;
+      request.destination = network::mojom::RequestDestination::kFrame;
+      condition.request = request;
+      rule.conditions.push_back(condition);
+    }
+    {
       blink::ServiceWorkerRouterSource source;
       source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
       source.network_source.emplace();
+      rule.sources.push_back(source);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kRace;
+      source.race_source.emplace();
+      rule.sources.push_back(source);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+      source.fetch_event_source.emplace();
       rule.sources.push_back(source);
     }
     rules.rules.push_back(rule);
@@ -431,11 +538,24 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
           condition.Set("urlPattern", "/test/*");
           conditions.Append(std::move(condition));
         }
+        {
+          base::Value::Dict condition;
+          {
+            base::Value::Dict request;
+            request.Set("method", "GET");
+            request.Set("mode", "cors");
+            request.Set("destination", "frame");
+            condition.Set("request", base::Value(std::move(request)));
+          }
+          conditions.Append(std::move(condition));
+        }
         rule.Set("condition", std::move(conditions));
       }
       {
         base::Value::List sources;
         sources.Append("network");
+        sources.Append("race-network-and-fetch-handler");
+        sources.Append("fetch-event");
         rule.Set("source", std::move(sources));
       }
     }

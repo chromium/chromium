@@ -32,7 +32,7 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
   std::string ToString() const;
 
  private:
-  struct RouterRule;
+  class RouterRule;
   void Compile();
 
   const blink::ServiceWorkerRouterRules rules_;
