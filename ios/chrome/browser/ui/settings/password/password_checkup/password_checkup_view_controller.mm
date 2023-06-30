@@ -189,6 +189,9 @@ void SetUpTrailingIconAndAccessoryType(
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  self.tableView.accessibilityIdentifier =
+      password_manager::kPasswordCheckupTableViewId;
+
   self.title = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP);
 
   _headerImageView = [self createHeaderImageView];
@@ -294,6 +297,8 @@ void SetUpTrailingIconAndAccessoryType(
   compromisedPasswordsItem.enabled = YES;
   compromisedPasswordsItem.indicatorHidden = YES;
   compromisedPasswordsItem.infoButtonHidden = YES;
+  compromisedPasswordsItem.accessibilityIdentifier =
+      password_manager::kPasswordCheckupCompromisedPasswordsItemId;
   return compromisedPasswordsItem;
 }
 
@@ -303,6 +308,8 @@ void SetUpTrailingIconAndAccessoryType(
   reusedPasswordsItem.enabled = YES;
   reusedPasswordsItem.indicatorHidden = YES;
   reusedPasswordsItem.infoButtonHidden = YES;
+  reusedPasswordsItem.accessibilityIdentifier =
+      password_manager::kPasswordCheckupReusedPasswordsItemId;
   return reusedPasswordsItem;
 }
 
@@ -312,6 +319,8 @@ void SetUpTrailingIconAndAccessoryType(
   weakPasswordsItem.enabled = YES;
   weakPasswordsItem.indicatorHidden = YES;
   weakPasswordsItem.infoButtonHidden = YES;
+  weakPasswordsItem.accessibilityIdentifier =
+      password_manager::kPasswordCheckupWeakPasswordsItemId;
   return weakPasswordsItem;
 }
 
@@ -415,6 +424,7 @@ void SetUpTrailingIconAndAccessoryType(
   [self updatePasswordCheckupTimestampDetailText];
 }
 
+// TODO(crbug.com/1453276): Make the coordinator present the alert instead.
 - (void)showErrorDialogWithMessage:(NSString*)message {
   NSString* title = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_ERROR_DIALOG_TITLE);
@@ -427,6 +437,10 @@ void SetUpTrailingIconAndAccessoryType(
       [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
                                style:UIAlertActionStyleDefault
                              handler:nil];
+  // TODO(crbug.com/1453276): Once fixed, setting the accessibilityIdentifier
+  // will no longer be neeeded since it will be handled by the AlertCoordinator.
+  okAction.accessibilityIdentifier =
+      [l10n_util::GetNSString(IDS_OK) stringByAppendingString:@"AlertAction"];
   [alert addAction:okAction];
 
   [self presentViewController:alert animated:YES completion:nil];
@@ -524,6 +538,8 @@ void SetUpTrailingIconAndAccessoryType(
   UIImageView* headerImageView = [[UIImageView alloc] init];
   headerImageView.contentMode = UIViewContentModeScaleAspectFill;
   headerImageView.frame = CGRectMake(0, 0, 0, kHeaderImageHeight);
+  headerImageView.accessibilityIdentifier =
+      password_manager::kPasswordCheckupHeaderImageViewId;
   return headerImageView;
 }
 

@@ -21,6 +21,21 @@ NSString* const kPasswordCheckupHeaderImageRed = @"password_checkup_header_red";
 NSString* const kPasswordCheckupHeaderImageYellow =
     @"password_checkup_header_yellow";
 
+NSString* const kPasswordCheckupHeaderImageViewId =
+    @"PasswordCheckupHeaderImageViewId";
+
+NSString* const kPasswordCheckupTableViewId =
+    @"PasswordCheckupHomepageTableViewId";
+
+NSString* const kPasswordCheckupCompromisedPasswordsItemId =
+    @"PasswordCheckupCompromisedPasswordsItemId";
+
+NSString* const kPasswordCheckupReusedPasswordsItemId =
+    @"PasswordCheckupReusedPasswordsItemId";
+
+NSString* const kPasswordCheckupWeakPasswordsItemId =
+    @"PasswordCheckupWeakPasswordsItemId";
+
 const char kPasswordManagerHelpCenterChangeUnsafePasswordsURL[] =
     "https://support.google.com/accounts/answer/9457609";
 

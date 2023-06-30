@@ -117,5 +117,18 @@ source_set("eg2_tests") {
   ]
   testonly = true
   sources = [ "password_checkup_egtest.mm" ]
-  deps = [ "//ios/chrome/test/earl_grey:eg_test_support+eg2" ]
+  deps = [
+    ":password_checkup_constants",
+    "//components/password_manager/core/common:features",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:eg2_tests",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password/password_details:password_details_table_view_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
 }

@@ -16,6 +16,9 @@ extern NSString* const kPasswordDetailsViewControllerId;
 // account.
 extern NSString* const kMovePasswordToAccountButtonId;
 
+// The accessibility identifier of the compromised warning.
+extern NSString* const kCompromisedWarningId;
+
 // UI items for password details
 typedef NS_ENUM(NSInteger, PasswordDetailsItemType) {
   PasswordDetailsItemTypeWebsite = kItemTypeEnumZero,

@@ -430,6 +430,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   item.image = [self compromisedIcon];
   item.imageViewTintColor = [UIColor
       colorNamed:IsPasswordGroupingEnabled() ? kRed500Color : kRedColor];
+  item.accessibilityIdentifier = kCompromisedWarningId;
   return item;
 }
 

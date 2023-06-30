@@ -254,6 +254,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   dismissedWarningsItem.accessibilityTraits = UIAccessibilityTraitButton;
   dismissedWarningsItem.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
+  dismissedWarningsItem.accessibilityIdentifier = kDismissedWarningsCellId;
   return dismissedWarningsItem;
 }
 
