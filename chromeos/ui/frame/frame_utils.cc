@@ -112,18 +112,18 @@ SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top) {
 }
 
 int GetFrameCornerRadius(const aura::Window* native_window) {
-  const chromeos::WindowStateType window_state =
-      native_window->GetProperty(chromeos::kWindowStateTypeKey);
+  const WindowStateType window_state =
+      native_window->GetProperty(kWindowStateTypeKey);
 
-  if (window_state == chromeos::WindowStateType::kPip) {
-    return chromeos::kPipRoundedCornerRadius;
+  if (window_state == WindowStateType::kPip) {
+    return kPipRoundedCornerRadius;
   }
 
-  if (chromeos::IsNormalWindowStateType(
-          native_window->GetProperty(chromeos::kWindowStateTypeKey))) {
-    return chromeos::features::IsRoundedWindowsEnabled()
-               ? chromeos::features::RoundedWindowsRadius()
-               : chromeos::kTopCornerRadiusWhenRestored;
+  if (IsNormalWindowStateType(window_state) ||
+      window_state == WindowStateType::kFloated) {
+    return features::IsRoundedWindowsEnabled()
+               ? features::RoundedWindowsRadius()
+               : kTopCornerRadiusWhenRestored;
   }
 
   return 0;
