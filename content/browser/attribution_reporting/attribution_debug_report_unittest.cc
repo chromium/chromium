@@ -8,9 +8,11 @@
 
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
+#include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "net/base/schemeful_site.h"
@@ -922,6 +924,84 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
       } else {
         EXPECT_FALSE(report) << test_case.result << ", " << is_debug_cookie_set;
       }
+    }
+  }
+}
+
+TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
+  const struct {
+    const char* description;
+    OsRegistration registration;
+    const char* expected_body;
+  } kTestCases[] = {
+      {
+          "os_source",
+          OsRegistration(
+              /*registration_url=*/GURL("https://a.test/x"),
+              /*debug_reporting=*/true,
+              /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
+              AttributionInputEvent(), /*is_within_fenced_frame=*/false),
+          R"json([{
+            "body": {
+              "context_site": "https://b.test",
+              "registration_url": "https://a.test/x"
+            },
+            "type": "os-source-delegated"
+          }])json",
+      },
+      {
+          "os_trigger",
+          OsRegistration(
+              /*registration_url=*/GURL("https://a.test/x"),
+              /*debug_reporting=*/true,
+              /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
+              /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/false),
+          R"json([{
+            "body": {
+              "context_site": "https://b.test",
+              "registration_url": "https://a.test/x"
+            },
+            "type": "os-trigger-delegated"
+          }])json",
+      },
+      {
+          "debug_reporting_disabled",
+          OsRegistration(
+              /*registration_url=*/GURL("https://a.test/x"),
+              /*debug_reporting=*/false,
+              /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
+              /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/false),
+          nullptr,
+      },
+      {
+          "within_fenced_frame",
+          OsRegistration(
+              /*registration_url=*/GURL("https://a.test/x"),
+              /*debug_reporting=*/true,
+              /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
+              /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/true),
+          nullptr,
+      },
+      {
+          "non_suitable_registration_origin",
+          OsRegistration(
+              /*registration_url=*/GURL("http://a.test/x"),
+              /*debug_reporting=*/true,
+              /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
+              /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/false),
+          nullptr,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    absl::optional<AttributionDebugReport> report =
+        AttributionDebugReport::Create(test_case.registration);
+    EXPECT_EQ(report.has_value(), test_case.expected_body != nullptr)
+        << test_case.description;
+    if (test_case.expected_body) {
+      EXPECT_EQ(report->ReportBody(),
+                base::test::ParseJson(test_case.expected_body))
+          << test_case.description;
     }
   }
 }

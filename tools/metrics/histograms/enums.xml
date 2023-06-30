@@ -20155,6 +20155,8 @@ Called by update_net_error_codes.py.-->
   <int value="21" label="trigger-aggregate-report-window-passed"/>
   <int value="22" label="trigger-aggregate-excessive-reports"/>
   <int value="23" label="trigger-unknown-error"/>
+  <int value="24" label="os-source-delegated"/>
+  <int value="25" label="os-trigger-delegated"/>
 </enum>
 
 <enum name="CookieAccessType">

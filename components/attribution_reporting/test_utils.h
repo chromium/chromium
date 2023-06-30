@@ -20,6 +20,7 @@ class SuitableOrigin;
 
 struct AggregatableDedupKey;
 struct EventTriggerData;
+struct OsRegistrationItem;
 struct SourceRegistration;
 struct TriggerRegistration;
 
@@ -68,6 +69,10 @@ std::ostream& operator<<(std::ostream&, const SuitableOrigin&);
 bool operator==(const AggregatableDedupKey&, const AggregatableDedupKey&);
 
 std::ostream& operator<<(std::ostream&, const AggregatableDedupKey&);
+
+bool operator==(const OsRegistrationItem&, const OsRegistrationItem&);
+
+std::ostream& operator<<(std::ostream&, const OsRegistrationItem&);
 
 }  // namespace attribution_reporting
 

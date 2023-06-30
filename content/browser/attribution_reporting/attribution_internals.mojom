@@ -179,6 +179,7 @@ struct WebUIOsRegistration {
   url.mojom.Url registration_url;
   url.mojom.Origin top_level_origin;
   bool is_debug_key_allowed;
+  bool debug_reporting;
   attribution_reporting.mojom.OsRegistrationType type;
   attribution_reporting.mojom.OsRegistrationResult result;
 };

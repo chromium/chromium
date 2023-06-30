@@ -429,7 +429,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[2]?.innerText === 'https://a.test/' &&
           table.children[0].children[3]?.innerText === 'https://b.test' &&
           table.children[0].children[4]?.innerText === 'false' &&
-          table.children[0].children[5]?.innerText === 'Passed to OS') {
+          table.children[0].children[5]?.innerText === 'false' &&
+          table.children[0].children[6]?.innerText === 'Passed to OS') {
         obs.disconnect();
         document.title = $1;
       }
@@ -441,9 +442,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
 
   manager()->NotifyOsRegistration(
-      OsRegistration(GURL("https://a.test"),
+      OsRegistration(GURL("https://a.test"), /*debug_reporting=*/false,
                      url::Origin::Create(GURL("https://b.test")),
-                     AttributionInputEvent()),
+                     AttributionInputEvent(), /*is_within_fenced_frame=*/false),
       /*is_debug_key_allowed=*/false,
       attribution_reporting::mojom::OsRegistrationResult::kPassedToOs);
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());

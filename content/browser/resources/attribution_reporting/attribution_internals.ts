@@ -715,6 +715,7 @@ class OsRegistration {
   topLevelOrigin: string;
   registrationType: string;
   debugKeyAllowed: boolean;
+  debugReporting: boolean;
   result: string;
 
   constructor(mojo: WebUIOsRegistration) {
@@ -722,6 +723,7 @@ class OsRegistration {
     this.registrationUrl = mojo.registrationUrl.url;
     this.topLevelOrigin = originToText(mojo.topLevelOrigin);
     this.debugKeyAllowed = mojo.isDebugKeyAllowed;
+    this.debugReporting = mojo.debugReporting;
 
     switch (mojo.type) {
       case OsRegistrationType.kSource:
@@ -774,6 +776,8 @@ class OsRegistrationTableModel extends TableModel<OsRegistration> {
               'Top-Level Origin', (e) => e.topLevelOrigin),
           new ValueColumn<OsRegistration, boolean>(
               'Debug Key Allowed', (e) => e.debugKeyAllowed),
+          new ValueColumn<OsRegistration, boolean>(
+              'Debug Reporting', (e) => e.debugReporting),
           new ValueColumn<OsRegistration, string>('Result', (e) => e.result),
         ],
         0,

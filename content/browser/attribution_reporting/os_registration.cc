@@ -16,11 +16,15 @@ namespace content {
 
 OsRegistration::OsRegistration(
     GURL registration_url,
+    bool debug_reporting,
     url::Origin top_level_origin,
-    absl::optional<AttributionInputEvent> input_event)
+    absl::optional<AttributionInputEvent> input_event,
+    bool is_within_fenced_frame)
     : registration_url(std::move(registration_url)),
+      debug_reporting(debug_reporting),
       top_level_origin(std::move(top_level_origin)),
-      input_event(std::move(input_event)) {}
+      input_event(std::move(input_event)),
+      is_within_fenced_frame(is_within_fenced_frame) {}
 
 OsRegistration::~OsRegistration() = default;
 

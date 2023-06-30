@@ -131,8 +131,10 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration,
       std::vector<network::TriggerVerification>) override;
-  void OsSourceDataAvailable(std::vector<GURL> registration_urls) override;
-  void OsTriggerDataAvailable(std::vector<GURL> registration_urls) override;
+  void OsSourceDataAvailable(
+      std::vector<attribution_reporting::OsRegistrationItem>) override;
+  void OsTriggerDataAvailable(
+      std::vector<attribution_reporting::OsRegistrationItem>) override;
 
   const RegistrationContext* GetReceiverRegistrationContextForSource();
   const RegistrationContext* GetReceiverRegistrationContextForTrigger();

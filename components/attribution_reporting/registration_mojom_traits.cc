@@ -18,6 +18,7 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
@@ -271,6 +272,18 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
 
   out->debug_reporting = data.debug_reporting();
   out->source_registration_time_config = data.source_registration_time_config();
+  return true;
+}
+
+// static
+bool StructTraits<attribution_reporting::mojom::OsRegistrationItemDataView,
+                  attribution_reporting::OsRegistrationItem>::
+    Read(attribution_reporting::mojom::OsRegistrationItemDataView data,
+         attribution_reporting::OsRegistrationItem* out) {
+  if (!data.ReadUrl(&out->url)) {
+    return false;
+  }
+  out->debug_reporting = data.debug_reporting();
   return true;
 }
 

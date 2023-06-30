@@ -20,6 +20,7 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
@@ -323,15 +324,36 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::OsRegistrationDataView,
-                 std::vector<GURL>> {
-  static const std::vector<GURL>& urls(const std::vector<GURL>& urls) {
-    return urls;
+                 std::vector<attribution_reporting::OsRegistrationItem>> {
+  static const std::vector<attribution_reporting::OsRegistrationItem>& items(
+      const std::vector<attribution_reporting::OsRegistrationItem>& items) {
+    return items;
   }
 
-  static bool Read(attribution_reporting::mojom::OsRegistrationDataView data,
-                   std::vector<GURL>* out) {
-    return data.ReadUrls(out);
+  static bool Read(
+      attribution_reporting::mojom::OsRegistrationDataView data,
+      std::vector<attribution_reporting::OsRegistrationItem>* out) {
+    return data.ReadItems(out);
   }
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::OsRegistrationItemDataView,
+                 attribution_reporting::OsRegistrationItem> {
+  static const GURL& url(
+      const attribution_reporting::OsRegistrationItem& item) {
+    return item.url;
+  }
+
+  static bool debug_reporting(
+      const attribution_reporting::OsRegistrationItem& item) {
+    return item.debug_reporting;
+  }
+
+  static bool Read(
+      attribution_reporting::mojom::OsRegistrationItemDataView data,
+      attribution_reporting::OsRegistrationItem* out);
 };
 
 }  // namespace mojo

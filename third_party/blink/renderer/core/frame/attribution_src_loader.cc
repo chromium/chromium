@@ -812,17 +812,17 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
   UseCounter::Count(loader_->local_frame_->DomWindow(),
                     mojom::blink::WebFeature::kAttributionReportingCrossAppWeb);
 
-  std::vector<GURL> registration_urls =
+  std::vector<attribution_reporting::OsRegistrationItem> registration_items =
       attribution_reporting::ParseOsSourceOrTriggerHeader(
           StringUTF8Adaptor(headers.os_source).AsStringPiece());
-  if (registration_urls.empty()) {
+  if (registration_items.empty()) {
     LogAuditIssue(loader_->local_frame_->DomWindow(),
                   AttributionReportingIssueType::kInvalidRegisterOsSourceHeader,
                   /*element=*/nullptr, headers.request_id,
                   /*invalid_parameter=*/headers.os_source);
     return;
   }
-  data_host_->OsSourceDataAvailable(std::move(registration_urls));
+  data_host_->OsSourceDataAvailable(std::move(registration_items));
   ++num_registrations_;
 }
 
@@ -870,10 +870,10 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
   UseCounter::Count(loader_->local_frame_->DomWindow(),
                     mojom::blink::WebFeature::kAttributionReportingCrossAppWeb);
 
-  std::vector<GURL> registration_urls =
+  std::vector<attribution_reporting::OsRegistrationItem> registration_items =
       attribution_reporting::ParseOsSourceOrTriggerHeader(
           StringUTF8Adaptor(headers.os_trigger).AsStringPiece());
-  if (registration_urls.empty()) {
+  if (registration_items.empty()) {
     LogAuditIssue(
         loader_->local_frame_->DomWindow(),
         AttributionReportingIssueType::kInvalidRegisterOsTriggerHeader,
@@ -881,7 +881,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
         /*invalid_parameter=*/headers.os_trigger);
     return;
   }
-  data_host_->OsTriggerDataAvailable(std::move(registration_urls));
+  data_host_->OsTriggerDataAvailable(std::move(registration_items));
   ++num_registrations_;
 }
 

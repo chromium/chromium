@@ -10,9 +10,11 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_type.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "services/network/public/cpp/features.h"
@@ -109,10 +111,12 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
     return trigger_verifications_;
   }
 
-  const std::vector<std::vector<GURL>>& os_sources() const {
+  const std::vector<std::vector<attribution_reporting::OsRegistrationItem>>&
+  os_sources() const {
     return os_sources_;
   }
-  const std::vector<std::vector<GURL>>& os_triggers() const {
+  const std::vector<std::vector<attribution_reporting::OsRegistrationItem>>&
+  os_triggers() const {
     return os_triggers_;
   }
 
@@ -138,12 +142,16 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
     trigger_verifications_.push_back(std::move(verifications));
   }
 
-  void OsSourceDataAvailable(std::vector<GURL> registration_urls) override {
-    os_sources_.emplace_back(std::move(registration_urls));
+  void OsSourceDataAvailable(
+      std::vector<attribution_reporting::OsRegistrationItem> registration_items)
+      override {
+    os_sources_.emplace_back(std::move(registration_items));
   }
 
-  void OsTriggerDataAvailable(std::vector<GURL> registration_urls) override {
-    os_triggers_.emplace_back(std::move(registration_urls));
+  void OsTriggerDataAvailable(
+      std::vector<attribution_reporting::OsRegistrationItem> registration_items)
+      override {
+    os_triggers_.emplace_back(std::move(registration_items));
   }
 
   Vector<attribution_reporting::SourceRegistration> source_data_;
@@ -152,8 +160,10 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
 
   Vector<Vector<network::TriggerVerification>> trigger_verifications_;
 
-  std::vector<std::vector<GURL>> os_sources_;
-  std::vector<std::vector<GURL>> os_triggers_;
+  std::vector<std::vector<attribution_reporting::OsRegistrationItem>>
+      os_sources_;
+  std::vector<std::vector<attribution_reporting::OsRegistrationItem>>
+      os_triggers_;
 
   size_t disconnects_ = 0;
   mojo::Receiver<mojom::blink::AttributionDataHost> receiver_{this};
@@ -686,9 +696,10 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
   ASSERT_TRUE(mock_data_host);
 
   mock_data_host->Flush();
-  EXPECT_THAT(
-      mock_data_host->os_triggers(),
-      ::testing::ElementsAre(::testing::ElementsAre(GURL("https://r.test/x"))));
+  EXPECT_THAT(mock_data_host->os_triggers(),
+              ::testing::ElementsAre(::testing::ElementsAre(
+                  attribution_reporting::OsRegistrationItem{
+                      .url = GURL("https://r.test/x")})));
 }
 
 }  // namespace

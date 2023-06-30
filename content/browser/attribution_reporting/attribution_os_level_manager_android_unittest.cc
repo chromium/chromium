@@ -62,9 +62,9 @@ TEST_F(AttributionOsLevelManagerAndroidTest, Register) {
     base::RunLoop run_loop;
 
     manager_->Register(
-        OsRegistration(GURL("https://r.test"),
+        OsRegistration(GURL("https://r.test"), /*debug_reporting=*/false,
                        url::Origin::Create(GURL("https://o.test")),
-                       test_case.input_event),
+                       test_case.input_event, /*is_within_fenced_frame=*/false),
         /*is_debug_key_allowed=*/false,
         base::BindLambdaForTesting([&](const OsRegistration&, bool success) {
           // We don't check `success` here because the measurement API may or

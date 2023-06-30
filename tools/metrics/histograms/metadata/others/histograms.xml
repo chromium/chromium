@@ -4042,7 +4042,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SentVerboseDebugReportType"
+<histogram name="Conversions.SentVerboseDebugReportType2"
     enum="ConversionVerboseDebugReportType" expires_after="2023-11-30">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
