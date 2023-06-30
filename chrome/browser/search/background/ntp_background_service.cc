@@ -77,7 +77,8 @@ NtpBackgroundService::NtpBackgroundService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(url_loader_factory) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  image_options_ = kImageOptions;
+  default_image_options_ = kImageOptions;
+  thumbnail_image_options_ = GetThumbnailImageOptions();
   collections_api_url_ = GetUrl(kCollectionsPath);
   collection_images_api_url_ = GetUrl(kCollectionImagesPath);
   next_image_api_url_ = GetUrl(kNextCollectionImagePath);
@@ -307,17 +308,24 @@ void NtpBackgroundService::OnCollectionImageInfoFetchComplete(
                            FetchComplete::COLLECTION_IMAGE_INFO));
     for (int i = 0; i < images_response.images_size(); ++i) {
       const ntp::background::Image image = images_response.images(i);
+      const GURL thumbnail_image_url =
+          AddOptionsToImageURL(image.image_url(), thumbnail_image_options_);
       VerifyImageURL(
-          GURL(image.image_url()),
+          thumbnail_image_url,
           base::BindOnce(
               &NtpBackgroundService::OnCollectionImageURLHeadersReceived,
-              base::Unretained(this), image,
+              base::Unretained(this), image, thumbnail_image_url,
               collection_urls_verification_complete_closure));
     }
   } else {
     for (int i = 0; i < images_response.images_size(); ++i) {
+      const ntp::background::Image image = images_response.images(i);
       collection_images_.push_back(CollectionImage::CreateFromProto(
-          requested_collection_id_, images_response.images(i), image_options_));
+          requested_collection_id_, image,
+          /*default_image_url=*/
+          AddOptionsToImageURL(image.image_url(), default_image_options_),
+          /*thumbnail_image_url=*/
+          AddOptionsToImageURL(image.image_url(), thumbnail_image_options_)));
     }
     NotifyObservers(FetchComplete::COLLECTION_IMAGE_INFO);
   }
@@ -405,11 +413,15 @@ void NtpBackgroundService::OnImageURLHeadersFetchComplete(
 
 void NtpBackgroundService::OnCollectionImageURLHeadersReceived(
     ntp::background::Image image,
+    const GURL& thumbnail_image_url,
     base::OnceClosure collection_urls_verification_complete_closure,
     int headers_response_code) {
   if (headers_response_code == net::HTTP_OK) {
     collection_images_.push_back(CollectionImage::CreateFromProto(
-        requested_collection_id_, image, image_options_));
+        requested_collection_id_, image,
+        /*default_image_url=*/
+        AddOptionsToImageURL(image.image_url(), default_image_options_),
+        thumbnail_image_url));
   }
   std::move(collection_urls_verification_complete_closure).Run();
 }
@@ -510,9 +522,13 @@ void NtpBackgroundService::OnNextImageInfoFetchComplete(
     return;
   }
 
-  next_image_ =
-      CollectionImage::CreateFromProto(requested_next_image_collection_id_,
-                                       image_response.image(), image_options_);
+  const ntp::background::Image image = image_response.image();
+  next_image_ = CollectionImage::CreateFromProto(
+      requested_next_image_collection_id_, image,
+      /*default_image_url=*/
+      AddOptionsToImageURL(image.image_url(), default_image_options_),
+      /*thumbnail_image_url=*/
+      AddOptionsToImageURL(image.image_url(), thumbnail_image_options_));
   next_image_resume_token_ = image_response.resume_token();
 
   NotifyObservers(FetchComplete::NEXT_IMAGE_INFO);

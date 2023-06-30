@@ -164,8 +164,8 @@ TEST_P(NtpBackgroundServiceTest, GoodCollectionsResponse) {
   CollectionInfo collection_info;
   collection_info.collection_id = collection.collection_id();
   collection_info.collection_name = collection.collection_name();
-  collection_info.preview_image_url = GURL(
-      collection.preview(0).image_url() + GetThumbnailImageOptionsForTesting());
+  collection_info.preview_image_url =
+      GURL(collection.preview(0).image_url() + GetThumbnailImageOptions());
 
   EXPECT_FALSE(service()->collection_info().empty());
   EXPECT_THAT(service()->collection_info().at(0), Eq(collection_info));
@@ -212,7 +212,8 @@ TEST_P(NtpBackgroundServiceTest, ImageInCollectionHasNetworkError) {
 
   SetUpResponseWithData(service()->GetImagesURLForTesting(), response_string);
   if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithNetworkError(GURL(image.image_url()));
+    SetUpResponseWithNetworkError(
+        GURL(image.image_url() + GetThumbnailImageOptions()));
   }
 
   ASSERT_TRUE(service()->collection_images().empty());
@@ -224,7 +225,7 @@ TEST_P(NtpBackgroundServiceTest, ImageInCollectionHasNetworkError) {
   collection_image.collection_id = "shapes";
   collection_image.asset_id = image.asset_id();
   collection_image.thumbnail_image_url =
-      GURL(image.image_url() + GetThumbnailImageOptionsForTesting());
+      GURL(image.image_url() + GetThumbnailImageOptions());
   collection_image.image_url =
       GURL(image.image_url() + service()->GetImageOptionsForTesting());
   collection_image.attribution.push_back(image.attribution(0).text());
@@ -253,7 +254,8 @@ TEST_P(NtpBackgroundServiceTest, GoodCollectionImagesResponse) {
 
   SetUpResponseWithData(service()->GetImagesURLForTesting(), response_string);
   if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithNetworkSuccess(GURL(image.image_url()));
+    SetUpResponseWithNetworkSuccess(
+        GURL(image.image_url() + GetThumbnailImageOptions()));
   }
 
   ASSERT_TRUE(service()->collection_images().empty());
@@ -265,7 +267,7 @@ TEST_P(NtpBackgroundServiceTest, GoodCollectionImagesResponse) {
   collection_image.collection_id = "shapes";
   collection_image.asset_id = image.asset_id();
   collection_image.thumbnail_image_url =
-      GURL(image.image_url() + GetThumbnailImageOptionsForTesting());
+      GURL(image.image_url() + GetThumbnailImageOptions());
   collection_image.image_url =
       GURL(image.image_url() + service()->GetImageOptionsForTesting());
   collection_image.attribution.push_back(image.attribution(0).text());
@@ -301,7 +303,8 @@ TEST_P(NtpBackgroundServiceTest, MultipleRequests) {
   SetUpResponseWithData(service()->GetImagesURLForTesting(),
                         image_response_string);
   if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithNetworkSuccess(GURL(image.image_url()));
+    SetUpResponseWithNetworkSuccess(
+        GURL(image.image_url() + GetThumbnailImageOptions()));
   }
 
   ASSERT_TRUE(service()->collection_info().empty());
@@ -316,14 +319,14 @@ TEST_P(NtpBackgroundServiceTest, MultipleRequests) {
   CollectionInfo collection_info;
   collection_info.collection_id = collection.collection_id();
   collection_info.collection_name = collection.collection_name();
-  collection_info.preview_image_url = GURL(
-      collection.preview(0).image_url() + GetThumbnailImageOptionsForTesting());
+  collection_info.preview_image_url =
+      GURL(collection.preview(0).image_url() + GetThumbnailImageOptions());
 
   CollectionImage collection_image;
   collection_image.collection_id = "shapes";
   collection_image.asset_id = image.asset_id();
   collection_image.thumbnail_image_url =
-      GURL(image.image_url() + GetThumbnailImageOptionsForTesting());
+      GURL(image.image_url() + GetThumbnailImageOptions());
   collection_image.image_url =
       GURL(image.image_url() + service()->GetImageOptionsForTesting());
   collection_image.attribution.push_back(image.attribution(0).text());
@@ -379,7 +382,7 @@ TEST_P(NtpBackgroundServiceTest, GoodNextImageResponse) {
   collection_image.collection_id = "shapes";
   collection_image.asset_id = image.asset_id();
   collection_image.thumbnail_image_url =
-      GURL(image.image_url() + GetThumbnailImageOptionsForTesting());
+      GURL(image.image_url() + GetThumbnailImageOptions());
   collection_image.image_url =
       GURL(image.image_url() + service()->GetImageOptionsForTesting());
   collection_image.attribution.push_back(image.attribution(0).text());
@@ -418,7 +421,7 @@ TEST_P(NtpBackgroundServiceTest, MultipleRequestsNextImage) {
   collection_image.collection_id = "shapes";
   collection_image.asset_id = image.asset_id();
   collection_image.thumbnail_image_url =
-      GURL(image.image_url() + GetThumbnailImageOptionsForTesting());
+      GURL(image.image_url() + GetThumbnailImageOptions());
   collection_image.image_url =
       GURL(image.image_url() + service()->GetImageOptionsForTesting());
   collection_image.attribution.push_back(image.attribution(0).text());
@@ -444,7 +447,8 @@ TEST_P(NtpBackgroundServiceTest, CheckValidAndInvalidBackdropUrls) {
 
   SetUpResponseWithData(service()->GetImagesURLForTesting(), response_string);
   if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithNetworkSuccess(GURL(image.image_url()));
+    SetUpResponseWithNetworkSuccess(
+        GURL(image.image_url() + GetThumbnailImageOptions()));
   }
 
   ASSERT_TRUE(service()->collection_images().empty());

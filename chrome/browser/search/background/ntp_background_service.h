@@ -125,7 +125,8 @@ class NtpBackgroundService : public KeyedService {
   GURL GetNextImageURLForTesting() const;
 
  private:
-  std::string image_options_;
+  std::string default_image_options_;
+  std::string thumbnail_image_options_;
   GURL collections_api_url_;
   GURL collection_images_api_url_;
   GURL next_image_api_url_;
@@ -163,6 +164,7 @@ class NtpBackgroundService : public KeyedService {
   // whose resources could be reached.
   void OnCollectionImageURLHeadersReceived(
       ntp::background::Image image,
+      const GURL& thumbnail_image_url,
       base::OnceClosure collection_urls_verification_complete_closure,
       int headers_response_code);
 
