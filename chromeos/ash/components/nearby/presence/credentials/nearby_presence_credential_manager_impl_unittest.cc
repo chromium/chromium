@@ -69,7 +69,7 @@ BuildSharedCredentials() {
 }
 
 ::nearby::internal::Metadata BuildTestMetadata() {
-  return ash::nearby::presence::BuildMetadata(
+  return ash::nearby::presence::proto::BuildMetadata(
       /*device_type=*/::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS,
       /*account_name=*/kUserEmail,
       /*device_name=*/kDeviceName,

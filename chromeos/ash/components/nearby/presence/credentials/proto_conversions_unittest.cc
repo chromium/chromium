@@ -39,7 +39,7 @@ constexpr int64_t kEndTimeMillis_AfterConversion = 64301728000;
 
 }  // namespace
 
-namespace ash::nearby::presence {
+namespace ash::nearby::presence::proto {
 
 class ProtoConversionsTest : public testing::Test {};
 
@@ -202,4 +202,4 @@ TEST_F(ProtoConversionsTest, PublicCertificateToSharedCredential) {
             proto_cred.identity_type());
 }
 
-}  // namespace ash::nearby::presence
+}  // namespace ash::nearby::presence::proto

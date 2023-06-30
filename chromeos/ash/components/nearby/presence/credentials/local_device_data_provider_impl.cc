@@ -128,7 +128,7 @@ std::string LocalDeviceDataProviderImpl::GetDeviceName() const {
 
   // `mac_address` is empty for Nearby Presence MVP on ChromeOS since
   // broadcasting is not supported.
-  return BuildMetadata(
+  return proto::BuildMetadata(
       /*device_type=*/::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS,
       /*account_name=*/GetAccountName(),
       /*device_name=*/GetDeviceName(),

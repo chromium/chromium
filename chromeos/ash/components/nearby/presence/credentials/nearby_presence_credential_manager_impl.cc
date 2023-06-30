@@ -197,7 +197,7 @@ void NearbyPresenceCredentialManagerImpl::UpdateCredentials() {
 void NearbyPresenceCredentialManagerImpl::InitializeDeviceMetadata(
     base::OnceClosure on_metadata_initialized_callback) {
   nearby_presence_->UpdateLocalDeviceMetadata(
-      MetadataToMojom(local_device_data_provider_->GetDeviceMetadata()));
+      proto::MetadataToMojom(local_device_data_provider_->GetDeviceMetadata()));
   std::move(on_metadata_initialized_callback).Run();
 }
 
@@ -282,7 +282,7 @@ void NearbyPresenceCredentialManagerImpl::OnRegistrationRpcSuccess(
   //      5. Save other devices' credentials.
   // Next, kick off Step 2.
   nearby_presence_->UpdateLocalDeviceMetadataAndGenerateCredentials(
-      MetadataToMojom(local_device_data_provider_->GetDeviceMetadata()),
+      proto::MetadataToMojom(local_device_data_provider_->GetDeviceMetadata()),
       base::BindOnce(
           &NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsGenerated,
           weak_ptr_factory_.GetWeakPtr()));
@@ -310,7 +310,8 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsGenerated(
   // changes.
   std::vector<::nearby::internal::SharedCredential> proto_shared_credentials;
   for (const auto& cred : shared_credentials) {
-    proto_shared_credentials.push_back(SharedCredentialFromMojom(cred.get()));
+    proto_shared_credentials.push_back(
+        proto::SharedCredentialFromMojom(cred.get()));
   }
 
   local_device_data_provider_->UpdatePersistedSharedCredentials(
@@ -455,7 +456,8 @@ void NearbyPresenceCredentialManagerImpl::UploadCredentials(
 
   std::vector<ash::nearby::proto::PublicCertificate> public_certificates;
   for (auto cred : credentials) {
-    public_certificates.push_back(PublicCertificateFromSharedCredential(cred));
+    public_certificates.push_back(
+        proto::PublicCertificateFromSharedCredential(cred));
   }
   *(request.mutable_device()->mutable_public_certificates()) = {
       public_certificates.begin(), public_certificates.end()};
@@ -585,7 +587,7 @@ void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsSuccess(
   std::vector<::nearby::internal::SharedCredential> remote_credentials;
   for (auto public_certificate : response.public_certificates()) {
     remote_credentials.push_back(
-        PublicCertificateToSharedCredential(public_certificate));
+        proto::PublicCertificateToSharedCredential(public_certificate));
   }
 
   HandleDownloadCredentialsResult(download_credentials_result_callback,

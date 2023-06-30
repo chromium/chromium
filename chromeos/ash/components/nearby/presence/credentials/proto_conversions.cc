@@ -6,7 +6,7 @@
 
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 
-namespace ash::nearby::presence {
+namespace ash::nearby::presence::proto {
 
 ::nearby::internal::Metadata BuildMetadata(
     ::nearby::internal::DeviceType device_type,
@@ -179,4 +179,4 @@ int64_t SecondsToMilliseconds(int64_t seconds) {
   return seconds * 1000.0;
 }
 
-}  // namespace ash::nearby::presence
+}  // namespace ash::nearby::presence::proto

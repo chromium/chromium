@@ -12,7 +12,7 @@
 #include "third_party/nearby/internal/proto/credential.pb.h"
 #include "third_party/nearby/internal/proto/metadata.pb.h"
 
-namespace ash::nearby::presence {
+namespace ash::nearby::presence::proto {
 
 ::nearby::internal::Metadata BuildMetadata(
     ::nearby::internal::DeviceType device_type,
@@ -43,6 +43,6 @@ int64_t MillisecondsToSeconds(int64_t milliseconds);
     ash::nearby::proto::TrustType trust_type);
 int64_t SecondsToMilliseconds(int64_t seconds);
 
-}  // namespace ash::nearby::presence
+}  // namespace ash::nearby::presence::proto
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_PROTO_CONVERSIONS_H_
