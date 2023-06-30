@@ -314,22 +314,22 @@
       </message>
 
       <!-- Multitask Menu -->
-      <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title of the half button on the multitask menu.">
+      <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title of the half button on the multitask menu." meaning="Splits the associated window into half snapped state.">
         Split
       </message>
-      <message name="IDS_MULTITASK_MENU_PARTIAL_BUTTON_NAME" desc="Title and and accessible name of the partial button on the multitask menu.">
+      <message name="IDS_MULTITASK_MENU_PARTIAL_BUTTON_NAME" desc="Title and and accessible name of the partial button on the multitask menu." meaning="Splits the associated window into half snapped state.">
         Partial
       </message>
-      <message name="IDS_MULTITASK_MENU_FULLSCREEN_BUTTON_NAME" desc="Title and and accessible name of the fullscreen button on the multitask menu, when the window is not in fullscreen state.">
+      <message name="IDS_MULTITASK_MENU_FULLSCREEN_BUTTON_NAME" desc="Title and and accessible name of the fullscreen button on the multitask menu, when the window is not in fullscreen state." meaning="Puts the associated window into fullscreen state.">
         Full
       </message>
-      <message name="IDS_MULTITASK_MENU_EXIT_FULLSCREEN_BUTTON_NAME" desc="Title and and accessible name of the fullscreen button on the multitask menu, when the window is in fullscreen state.">
+      <message name="IDS_MULTITASK_MENU_EXIT_FULLSCREEN_BUTTON_NAME" desc="Title and and accessible name of the fullscreen button on the multitask menu, when the window is in fullscreen state." meaning="Restores the associated fullscreen window into its pre-fullscreen state.">
         Exit full
       </message>
-      <message name="IDS_MULTITASK_MENU_FLOAT_BUTTON_NAME" desc="Title and and accessible name of the float button on the multitask menu, when the window is not in float state.">
+      <message name="IDS_MULTITASK_MENU_FLOAT_BUTTON_NAME" desc="Title and and accessible name of the float button on the multitask menu, when the window is not in float state." meaning="Floats the associated window above other windows.">
         Float
       </message>
-      <message name="IDS_MULTITASK_MENU_EXIT_FLOAT_BUTTON_NAME" desc="Title and and accessible name of the float button on the multitask menu, when the window is in float state.">
+      <message name="IDS_MULTITASK_MENU_EXIT_FLOAT_BUTTON_NAME" desc="Title and and accessible name of the float button on the multitask menu, when the window is in float state." meaning="Restores the associated floated window to regular z-order.">
         Exit float
       </message>
       <message name="IDS_MULTITASK_MENU_HALF_BUTTON_ACCESSIBLE_NAME" desc="A11y name for the half button on the multitask menu.">
@@ -341,16 +341,16 @@
       <message name="IDS_MULTITASK_MENU_PARTIAL_BUTTON_SMALL_ACCESSIBLE_NAME" desc="A11y name for the partial button's small side on the multitask menu.">
         Dock window on the <ph name="DIRECTION">$1<ex>left</ex></ph> smaller portion of the screen
       </message>
-      <message name="IDS_MULTITASK_MENU_LEFT" desc="A11y name and tooltip to describe left side of the screen.">
+      <message name="IDS_MULTITASK_MENU_LEFT" desc="A11y name and tooltip to describe left side of the screen." meaning="The associated window will snap to the left side of the screen.">
         left
       </message>
-      <message name="IDS_MULTITASK_MENU_RIGHT" desc="A11y name and tooltip to describe right side of the screen.">
+      <message name="IDS_MULTITASK_MENU_RIGHT" desc="A11y name and tooltip to describe right side of the screen." meaning="The associated window will snap to the right side of the screen.">
         right
       </message>
-      <message name="IDS_MULTITASK_MENU_TOP" desc="A11y name and tooltip to describe top side of the screen.">
+      <message name="IDS_MULTITASK_MENU_TOP" desc="A11y name and tooltip to describe top side of the screen." meaning="The associated window will snap to the top side of the screen.">
         top
       </message>
-      <message name="IDS_MULTITASK_MENU_BOTTOM" desc="A11y name and tooltip to describe bottom side of the screen.">
+      <message name="IDS_MULTITASK_MENU_BOTTOM" desc="A11y name and tooltip to describe bottom side of the screen." meaning="The associated window will snap to the bottom side of the screen.">
         bottom
       </message>
       <message name="IDS_MULTITASK_MENU_NUDGE_TEXT" desc="Text that is shown when the clamshell multitask menu nudge is displayed.">
