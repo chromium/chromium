@@ -83,6 +83,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/notifications/update_notification.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
@@ -2088,6 +2089,9 @@ void UserSessionManager::StartTetherServiceIfPossible(Profile* profile) {
 }
 
 void UserSessionManager::ShowNotificationsIfNeeded(Profile* profile) {
+  // TODO(b/284978852): Show update notification in the correct order.
+  MaybeShowUpdateNotification();
+
   // Check to see if this profile should show TPM Firmware Update Notification
   // and show the message accordingly.
   tpm_firmware_update::ShowNotificationIfNeeded(profile);
@@ -2522,6 +2526,13 @@ void UserSessionManager::MaybeShowU2FNotification() {
   if (!u2f_notification_) {
     u2f_notification_ = std::make_unique<U2FNotification>();
     u2f_notification_->Check();
+  }
+}
+
+void UserSessionManager::MaybeShowUpdateNotification() {
+  if (features::IsUpdateNotificationEnabled() && !update_notification_) {
+    update_notification_ = std::make_unique<UpdateNotification>();
+    update_notification_->ShowNotification();
   }
 }
 

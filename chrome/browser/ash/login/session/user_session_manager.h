@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ash/net/xdr_manager.h"
+#include "chrome/browser/ash/notifications/update_notification.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_notification_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -332,6 +333,9 @@ class UserSessionManager
   // Shows U2F notification if necessary.
   void MaybeShowU2FNotification();
 
+  // Shows update notification if necessary.
+  void MaybeShowUpdateNotification();
+
   // Shows Help App release notes notification, if a notification for the help
   // app has not yet been shown in the current milestone.
   void MaybeShowHelpAppReleaseNotesNotification(Profile* profile);
@@ -629,6 +633,8 @@ class UserSessionManager
   std::unique_ptr<ChildPolicyObserver> child_policy_observer_;
 
   std::unique_ptr<U2FNotification> u2f_notification_;
+
+  std::unique_ptr<UpdateNotification> update_notification_;
 
   std::unique_ptr<HelpAppNotificationController>
       help_app_notification_controller_;
