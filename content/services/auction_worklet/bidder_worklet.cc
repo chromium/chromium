@@ -759,9 +759,11 @@ void BidderWorklet::V8State::ReportWin(
   v8::Local<v8::UnboundScript> unbound_worklet_script =
       worklet_script_.Get(isolate);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "report_win", trace_id);
+  std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
+      v8_helper_->CreateTimeLimit(/*script_timeout=*/absl::nullopt);
   bool script_failed =
       !v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
-                             /*script_timeout=*/absl::nullopt, errors_out);
+                             total_timeout.get(), errors_out);
   if (script_failed) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_win", trace_id);
     PostReportWinCallbackToUserThread(
@@ -787,8 +789,7 @@ void BidderWorklet::V8State::ReportWin(
       v8_helper_
           ->CallFunction(context, debug_id_.get(),
                          v8_helper_->FormatScriptName(unbound_worklet_script),
-                         "reportWin", args, /*script_timeout=*/absl::nullopt,
-                         errors_out)
+                         "reportWin", args, total_timeout.get(), errors_out)
           .IsEmpty();
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_win", trace_id);
 
@@ -1014,10 +1015,13 @@ BidderWorklet::V8State::GenerateSingleBid(
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
       *debug_id_, "beforeBidderWorkletBiddingStart");
 
+  std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
+      v8_helper_->CreateTimeLimit(per_buyer_timeout);
+
   // No recycled context, make a fresh one.
   if (!context_recycler) {
     fresh_context_recycler = CreateContextRecyclerAndRunTopLevelForGenerateBid(
-        trace_id, per_buyer_timeout, should_deep_freeze, errors_out);
+        trace_id, total_timeout.get(), should_deep_freeze, errors_out);
 
     if (!fresh_context_recycler) {
       return absl::make_optional(SingleGenerateBidResult(
@@ -1226,7 +1230,7 @@ BidderWorklet::V8State::GenerateSingleBid(
           ->CallFunction(
               context, debug_id_.get(),
               v8_helper_->FormatScriptName(worklet_script_.Get(isolate)),
-              "generateBid", args, std::move(per_buyer_timeout), errors_out)
+              "generateBid", args, total_timeout.get(), errors_out)
           .ToLocal(&generate_bid_result);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "generate_bid", trace_id);
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.GenerateBidTime",
@@ -1282,7 +1286,7 @@ BidderWorklet::V8State::GenerateSingleBid(
 std::unique_ptr<ContextRecycler>
 BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
     uint64_t trace_id,
-    const absl::optional<base::TimeDelta> per_buyer_timeout,
+    AuctionV8Helper::TimeLimit* total_timeout,
     bool should_deep_freeze,
     std::vector<std::string>& errors_out) {
   base::TimeTicks start = base::TimeTicks::Now();
@@ -1298,7 +1302,7 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "biddingScript", trace_id);
   bool success =
       v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
-                            per_buyer_timeout, errors_out);
+                            total_timeout, errors_out);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "biddingScript", trace_id);
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.BidScriptTime",
                           base::TimeTicks::Now() - start);

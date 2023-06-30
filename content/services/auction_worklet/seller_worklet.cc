@@ -926,9 +926,11 @@ void SellerWorklet::V8State::ScoreAd(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "score_ad", trace_id);
   v8::Local<v8::UnboundScript> unbound_worklet_script =
       worklet_script_.Get(isolate);
+  std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
+      v8_helper_->CreateTimeLimit(seller_timeout);
   bool success =
       v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
-                            seller_timeout, errors_out);
+                            total_timeout.get(), errors_out);
   if (!success) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
     // Keep debug loss reports and Private Aggregation API requests since
@@ -961,7 +963,7 @@ void SellerWorklet::V8State::ScoreAd(
       v8_helper_
           ->CallFunction(context, debug_id_.get(),
                          v8_helper_->FormatScriptName(unbound_worklet_script),
-                         "scoreAd", args, std::move(seller_timeout), errors_out)
+                         "scoreAd", args, total_timeout.get(), errors_out)
           .ToLocal(&score_ad_result);
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
@@ -1408,9 +1410,11 @@ void SellerWorklet::V8State::ReportResult(
   v8::Local<v8::UnboundScript> unbound_worklet_script =
       worklet_script_.Get(isolate);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "report_result", trace_id);
+  std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
+      v8_helper_->CreateTimeLimit(/*script_timeout=*/absl::nullopt);
   bool success =
       v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
-                            /*script_timeout=*/absl::nullopt, errors_out);
+                            total_timeout.get(), errors_out);
 
   if (!success) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);
@@ -1438,8 +1442,7 @@ void SellerWorklet::V8State::ReportResult(
       v8_helper_
           ->CallFunction(context, debug_id_.get(),
                          v8_helper_->FormatScriptName(unbound_worklet_script),
-                         "reportResult", args,
-                         /*script_timeout=*/absl::nullopt, errors_out)
+                         "reportResult", args, total_timeout.get(), errors_out)
           .ToLocal(&signals_for_winner_value);
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);

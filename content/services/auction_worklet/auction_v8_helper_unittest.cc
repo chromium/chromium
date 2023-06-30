@@ -189,9 +189,10 @@ class AuctionV8HelperTest : public testing::Test {
               v8::Context::Scope ctx(context);
               v8::Local<v8::Value> result;
 
+              auto timeout =
+                  helper->CreateTimeLimit(/*script_timeout=*/absl::nullopt);
               bool success = helper->RunScript(context, script, debug_id.get(),
-                                               /*script_timeout=*/absl::nullopt,
-                                               error_msgs);
+                                               timeout.get(), error_msgs);
               if (success) {
                 // This is here since it needs to be before CallFunction() ---
                 // doing it before Compile() doesn't work.
@@ -204,8 +205,7 @@ class AuctionV8HelperTest : public testing::Test {
                                              helper->FormatScriptName(script),
                                              function_name,
                                              base::span<v8::Local<v8::Value>>(),
-                                             /*script_timeout=*/absl::nullopt,
-                                             error_msgs)
+                                             timeout.get(), error_msgs)
                               .ToLocal(&result);
               }
               EXPECT_EQ(expect_success, success);
@@ -300,13 +300,12 @@ TEST_F(AuctionV8HelperTest, Basic) {
     v8::Local<v8::Value> result;
     ASSERT_TRUE(helper_->RunScript(context, script,
                                    /*debug_id=*/nullptr,
-                                   /*script_timeout=*/absl::nullopt,
-                                   error_msgs) &&
+                                   /*script_timeout=*/nullptr, error_msgs) &&
                 helper_
                     ->CallFunction(context, /*debug_id=*/nullptr,
                                    helper_->FormatScriptName(script), "foo",
                                    base::span<v8::Local<v8::Value>>(),
-                                   /*script_timeout=*/absl::nullopt, error_msgs)
+                                   /*script_timeout=*/nullptr, error_msgs)
                     .ToLocal(&result));
     int int_result = 0;
     ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &int_result));
@@ -357,9 +356,10 @@ TEST_F(AuctionV8HelperTest, Timeout) {
       EXPECT_EQ(compile_error, absl::nullopt);
 
       std::vector<std::string> error_msgs;
+      auto time_limit = helper_->CreateTimeLimit(timeout.script_timeout);
       EXPECT_FALSE(helper_->RunScript(context, script,
-                                      /*debug_id=*/nullptr,
-                                      timeout.script_timeout, error_msgs));
+                                      /*debug_id=*/nullptr, time_limit.get(),
+                                      error_msgs));
       EXPECT_THAT(
           error_msgs,
           ElementsAre("https://foo.test/ top-level execution timed out."));
@@ -390,13 +390,14 @@ TEST_F(AuctionV8HelperTest, Timeout) {
       EXPECT_EQ(compile_error, absl::nullopt);
 
       std::vector<std::string> error_msgs;
+      auto time_limit = helper_->CreateTimeLimit(timeout.script_timeout);
       EXPECT_TRUE(helper_->RunScript(context, script,
-                                     /*debug_id=*/nullptr,
-                                     timeout.script_timeout, error_msgs));
+                                     /*debug_id=*/nullptr, time_limit.get(),
+                                     error_msgs));
 
       v8::MaybeLocal<v8::Value> result = helper_->CallFunction(
           context, /*debug_id=*/nullptr, helper_->FormatScriptName(script),
-          "foo", base::span<v8::Local<v8::Value>>(), timeout.script_timeout,
+          "foo", base::span<v8::Local<v8::Value>>(), time_limit.get(),
           error_msgs);
       EXPECT_TRUE(result.IsEmpty());
       EXPECT_THAT(
@@ -428,13 +429,12 @@ TEST_F(AuctionV8HelperTest, Timeout) {
   v8::Local<v8::Value> result;
   ASSERT_TRUE(helper_->RunScript(context, script,
                                  /*debug_id=*/nullptr,
-                                 /*script_timeout=*/absl::nullopt,
-                                 error_msgs) &&
+                                 /*script_timeout=*/nullptr, error_msgs) &&
               helper_
                   ->CallFunction(context, /*debug_id=*/nullptr,
                                  helper_->FormatScriptName(script), "foo",
                                  base::span<v8::Local<v8::Value>>(),
-                                 /*script_timeout=*/absl::nullopt, error_msgs)
+                                 /*script_timeout=*/nullptr, error_msgs)
                   .ToLocal(&result));
   EXPECT_TRUE(error_msgs.empty());
   int int_result = 0;
@@ -460,13 +460,12 @@ TEST_F(AuctionV8HelperTest, NoTime) {
   std::vector<std::string> error_msgs;
   EXPECT_TRUE(helper_->RunScript(context, script,
                                  /*debug_id=*/nullptr,
-                                 /*script_timeout=*/absl::nullopt,
-                                 error_msgs) &&
+                                 /*script_timeout=*/nullptr, error_msgs) &&
               helper_
                   ->CallFunction(context, /*debug_id=*/nullptr,
                                  helper_->FormatScriptName(script), "foo",
                                  base::span<v8::Local<v8::Value>>(),
-                                 /*script_timeout=*/absl::nullopt, error_msgs)
+                                 /*script_timeout=*/nullptr, error_msgs)
                   .IsEmpty());
   ASSERT_EQ(1u, error_msgs.size());
   EXPECT_THAT(error_msgs[0], StartsWith("https://foo.test/:1"));
@@ -507,8 +506,7 @@ TEST_F(AuctionV8HelperTest, RunErrorTopLevel) {
   v8::Context::Scope ctx(context);
   ASSERT_FALSE(helper_->RunScript(context, script,
                                   /*debug_id=*/nullptr,
-                                  /*script_timeout=*/absl::nullopt,
-                                  error_msgs));
+                                  /*script_timeout=*/nullptr, error_msgs));
   EXPECT_THAT(
       error_msgs,
       ElementsAre("https://foo.test/:3 Uncaught Error: I am an error."));
@@ -535,12 +533,12 @@ TEST_F(AuctionV8HelperTest, TargetFunctionNotFound) {
   v8::Local<v8::Value> result;
   ASSERT_TRUE(helper_->RunScript(context, script,
                                  /*debug_id=*/nullptr,
-                                 /*script_timeout=*/absl::nullopt, error_msgs));
+                                 /*script_timeout=*/nullptr, error_msgs));
   ASSERT_FALSE(helper_
                    ->CallFunction(context, /*debug_id=*/nullptr,
                                   helper_->FormatScriptName(script), "bar",
                                   base::span<v8::Local<v8::Value>>(),
-                                  /*script_timeout=*/absl::nullopt, error_msgs)
+                                  /*script_timeout=*/nullptr, error_msgs)
                    .ToLocal(&result));
 
   // This "not a function" and not "not found" since the lookup successfully
@@ -569,12 +567,12 @@ TEST_F(AuctionV8HelperTest, TargetFunctionError) {
   v8::Local<v8::Value> result;
   ASSERT_TRUE(helper_->RunScript(context, script,
                                  /*debug_id=*/nullptr,
-                                 /*script_timeout=*/absl::nullopt, error_msgs));
+                                 /*script_timeout=*/nullptr, error_msgs));
   ASSERT_FALSE(helper_
                    ->CallFunction(context, /*debug_id=*/nullptr,
                                   helper_->FormatScriptName(script), "foo",
                                   base::span<v8::Local<v8::Value>>(),
-                                  /*script_timeout=*/absl::nullopt, error_msgs)
+                                  /*script_timeout=*/nullptr, error_msgs)
                    .ToLocal(&result));
   ASSERT_EQ(1u, error_msgs.size());
 
@@ -1462,58 +1460,58 @@ TEST_F(AuctionV8HelperTest, CloneWasmModule) {
   args.push_back(wasm_module);
   v8::Local<v8::Value> result;
   std::vector<std::string> error_msgs;
-  ASSERT_TRUE(
-      helper_->RunScript(context, script,
-                         /*debug_id=*/nullptr,
-                         /*script_timeout=*/absl::nullopt, error_msgs) &&
-      helper_
-          ->CallFunction(context, /*debug_id=*/nullptr,
-                         helper_->FormatScriptName(script), "probe", args,
-                         /*script_timeout=*/absl::nullopt, error_msgs)
-          .ToLocal(&result));
+  ASSERT_TRUE(helper_->RunScript(context, script,
+                                 /*debug_id=*/nullptr,
+                                 /*script_timeout=*/nullptr, error_msgs) &&
+              helper_
+                  ->CallFunction(context, /*debug_id=*/nullptr,
+                                 helper_->FormatScriptName(script), "probe",
+                                 args,
+                                 /*script_timeout=*/nullptr, error_msgs)
+                  .ToLocal(&result));
   EXPECT_TRUE(error_msgs.empty());
   int int_result = 0;
   ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &int_result));
   EXPECT_EQ(-1, int_result);
 
-  ASSERT_TRUE(
-      helper_->RunScript(context, script,
-                         /*debug_id=*/nullptr,
-                         /*script_timeout=*/absl::nullopt, error_msgs) &&
-      helper_
-          ->CallFunction(context, /*debug_id=*/nullptr,
-                         helper_->FormatScriptName(script), "probe", args,
-                         /*script_timeout=*/absl::nullopt, error_msgs)
-          .ToLocal(&result));
+  ASSERT_TRUE(helper_->RunScript(context, script,
+                                 /*debug_id=*/nullptr,
+                                 /*script_timeout=*/nullptr, error_msgs) &&
+              helper_
+                  ->CallFunction(context, /*debug_id=*/nullptr,
+                                 helper_->FormatScriptName(script), "probe",
+                                 args,
+                                 /*script_timeout=*/nullptr, error_msgs)
+                  .ToLocal(&result));
   EXPECT_TRUE(error_msgs.empty());
   ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &int_result));
   EXPECT_EQ(5, int_result);
 
   // Nothing stick arounds if CloneWasmModule is consistently used, however.
   args[0] = helper_->CloneWasmModule(wasm_module).ToLocalChecked();
-  ASSERT_TRUE(
-      helper_->RunScript(context, script,
-                         /*debug_id=*/nullptr,
-                         /*script_timeout=*/absl::nullopt, error_msgs) &&
-      helper_
-          ->CallFunction(context, /*debug_id=*/nullptr,
-                         helper_->FormatScriptName(script), "probe", args,
-                         /*script_timeout=*/absl::nullopt, error_msgs)
-          .ToLocal(&result));
+  ASSERT_TRUE(helper_->RunScript(context, script,
+                                 /*debug_id=*/nullptr,
+                                 /*script_timeout=*/nullptr, error_msgs) &&
+              helper_
+                  ->CallFunction(context, /*debug_id=*/nullptr,
+                                 helper_->FormatScriptName(script), "probe",
+                                 args,
+                                 /*script_timeout=*/nullptr, error_msgs)
+                  .ToLocal(&result));
   EXPECT_TRUE(error_msgs.empty());
   ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &int_result));
   EXPECT_EQ(-1, int_result);
 
   args[0] = helper_->CloneWasmModule(wasm_module).ToLocalChecked();
-  ASSERT_TRUE(
-      helper_->RunScript(context, script,
-                         /*debug_id=*/nullptr,
-                         /*script_timeout=*/absl::nullopt, error_msgs) &&
-      helper_
-          ->CallFunction(context, /*debug_id=*/nullptr,
-                         helper_->FormatScriptName(script), "probe", args,
-                         /*script_timeout=*/absl::nullopt, error_msgs)
-          .ToLocal(&result));
+  ASSERT_TRUE(helper_->RunScript(context, script,
+                                 /*debug_id=*/nullptr,
+                                 /*script_timeout=*/nullptr, error_msgs) &&
+              helper_
+                  ->CallFunction(context, /*debug_id=*/nullptr,
+                                 helper_->FormatScriptName(script), "probe",
+                                 args,
+                                 /*script_timeout=*/nullptr, error_msgs)
+                  .ToLocal(&result));
   EXPECT_TRUE(error_msgs.empty());
   ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &int_result));
   EXPECT_EQ(-1, int_result);

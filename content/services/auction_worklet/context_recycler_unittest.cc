@@ -81,16 +81,19 @@ class ContextRecyclerTest : public testing::Test {
     std::vector<v8::Local<v8::Value>> args;
     if (!maybe_arg.IsEmpty())
       args.push_back(maybe_arg);
+    auto total_timeout =
+        helper_->CreateTimeLimit(/*script_timeout=*/absl::nullopt);
     if (!helper_->RunScript(scope.GetContext(), script,
                             /*debug_id=*/nullptr,
-                            /*script_timeout=*/absl::nullopt, error_msgs)) {
+                            /*script_timeout=*/total_timeout.get(),
+                            error_msgs)) {
       return {};
     }
-    return helper_->CallFunction(scope.GetContext(),
-                                 /*debug_id=*/nullptr,
-                                 helper_->FormatScriptName(script),
-                                 function_name, args,
-                                 /*script_timeout=*/absl::nullopt, error_msgs);
+    return helper_->CallFunction(
+        scope.GetContext(),
+        /*debug_id=*/nullptr, helper_->FormatScriptName(script), function_name,
+        args,
+        /*script_timeout=*/total_timeout.get(), error_msgs);
   }
 
   // Runs a function with a list of arguments.
@@ -99,16 +102,19 @@ class ContextRecyclerTest : public testing::Test {
                                 const std::string& function_name,
                                 std::vector<std::string>& error_msgs,
                                 std::vector<v8::Local<v8::Value>> args) {
+    auto total_timeout =
+        helper_->CreateTimeLimit(/*script_timeout=*/absl::nullopt);
     if (!helper_->RunScript(scope.GetContext(), script,
                             /*debug_id=*/nullptr,
-                            /*script_timeout=*/absl::nullopt, error_msgs)) {
+                            /*script_timeout=*/total_timeout.get(),
+                            error_msgs)) {
       return {};
     }
-    return helper_->CallFunction(scope.GetContext(),
-                                 /*debug_id=*/nullptr,
-                                 helper_->FormatScriptName(script),
-                                 function_name, args,
-                                 /*script_timeout=*/absl::nullopt, error_msgs);
+    return helper_->CallFunction(
+        scope.GetContext(),
+        /*debug_id=*/nullptr, helper_->FormatScriptName(script), function_name,
+        args,
+        /*script_timeout=*/total_timeout.get(), error_msgs);
   }
 
  protected:

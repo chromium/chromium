@@ -140,6 +140,46 @@ class CONTENT_EXPORT AuctionV8Helper
     size_t size_;
   };
 
+  // Represents a time limit that's shared by a group of operations (so if it's
+  // 50ms and first takes 30ms and second tries to take 25ms, it will be
+  // interrupted at around 20ms).
+  class CONTENT_EXPORT TimeLimit {
+   public:
+    virtual ~TimeLimit();
+
+    // Resumes the timer (must not already be running). You do not need to
+    // call it directly if you're using `RunScript` or `CallFunction`.
+    virtual void Resume() = 0;
+
+    // Pauses the timer (must be running). You do not need to
+    // call it directly if you're using `RunScript` or `CallFunction`.
+    virtual void Pause() = 0;
+
+   protected:
+    TimeLimit() = default;
+  };
+
+  // Helper that calls Resume()/Pause() if given a non-nullptr TimeLimit.
+  // v8::TryCatch::HasTerminated() can help detect the timeouts.
+  class CONTENT_EXPORT TimeLimitScope {
+   public:
+    explicit TimeLimitScope(TimeLimit* script_timeout)
+        : script_timeout_(script_timeout) {
+      if (script_timeout) {
+        script_timeout->Resume();
+      }
+    }
+
+    ~TimeLimitScope() {
+      if (script_timeout_) {
+        script_timeout_->Pause();
+      }
+    }
+
+   private:
+    raw_ptr<TimeLimit> script_timeout_;
+  };
+
   explicit AuctionV8Helper(const AuctionV8Helper&) = delete;
   AuctionV8Helper& operator=(const AuctionV8Helper&) = delete;
 
@@ -256,6 +296,15 @@ class CONTENT_EXPORT AuctionV8Helper
   v8::MaybeLocal<v8::WasmModuleObject> CloneWasmModule(
       v8::Local<v8::WasmModuleObject> in);
 
+  // Creates a time limiter for a group of operations. Note that it registers
+  // itself with `this` and must not outlive it, and there shouldn't be more
+  // than one at a time per AuctionV8Helper.
+  //
+  // If `script_timeout` has no value, kScriptTimeout will be used as the
+  // default timeout.
+  std::unique_ptr<TimeLimit> CreateTimeLimit(
+      absl::optional<base::TimeDelta> script_timeout);
+
   // Binds a script and runs it in the passed in context, returning true if it
   // succeeded.
   //
@@ -265,14 +314,15 @@ class CONTENT_EXPORT AuctionV8Helper
   // Assumes passed in context is the active context. Passed in context must be
   // using the Helper's isolate.
   //
-  // If `script_timeout` has no value, kScriptTimeout will be used as the
-  // default timeout.
+  // If `script_timeout` is set, it will be used as a time limit for this
+  // operation. (If nullptr, the script may take an arbitrary amount of time or
+  // might fail to terminate).
   //
   // In case of an error sets `error_out`.
   bool RunScript(v8::Local<v8::Context> context,
                  v8::Local<v8::UnboundScript> script,
                  const DebugId* debug_id,
-                 absl::optional<base::TimeDelta> script_timeout,
+                 TimeLimit* script_timeout,
                  std::vector<std::string>& error_out);
 
   // Calls a bound function (by name) attached to the global context in the
@@ -292,18 +342,18 @@ class CONTENT_EXPORT AuctionV8Helper
   // Assumes passed in context is the active context. Passed in context must be
   // using the Helper's isolate.
   //
-  // If `script_timeout` has no value, kScriptTimeout will be used as the
-  // default timeout.
+  // If `script_timeout` is set, it will be used as a time limit for this
+  // operation. (If nullptr, the function may take an arbitrary amount of time
+  // or might fail to terminate).
   //
   // In case of an error sets `error_out`.
-  v8::MaybeLocal<v8::Value> CallFunction(
-      v8::Local<v8::Context> context,
-      const DebugId* debug_id,
-      const std::string& script_name,
-      base::StringPiece function_name,
-      base::span<v8::Local<v8::Value>> args,
-      absl::optional<base::TimeDelta> script_timeout,
-      std::vector<std::string>& error_out);
+  v8::MaybeLocal<v8::Value> CallFunction(v8::Local<v8::Context> context,
+                                         const DebugId* debug_id,
+                                         const std::string& script_name,
+                                         base::StringPiece function_name,
+                                         base::span<v8::Local<v8::Value>> args,
+                                         TimeLimit* script_timeout,
+                                         std::vector<std::string>& error_out);
 
   // If any debugging session targeting `debug_id` has set an active
   // DOM instrumentation breakpoint `name`, asks for v8 to do a debugger pause
