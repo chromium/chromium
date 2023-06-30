@@ -8,35 +8,39 @@ namespace offscreen {
   enum Reason {
     // A reason used for testing purposes only.
     TESTING,
-    // The offscreen document is responsible for playing audio.
+    // Specifies that the offscreen document is responsible for playing audio.
     AUDIO_PLAYBACK,
-    // The offscreen document needs to embed and script an iframe in order to
-    // modify the iframe's content.
+    // Specifies that the offscreen document needs to embed and script an
+    // iframe in order to modify the iframe's content.
     IFRAME_SCRIPTING,
-    // The offscreen document needs to embed an iframe and scrape its DOM to
-    // extract information.
+    // Specifies that the offscreen document needs to embed an iframe and
+    // scrape its DOM to extract information.
     DOM_SCRAPING,
-    // The offscreen document needs to interact with Blob objects (including
-    // <code>URL.createObjectURL()</code>).
+    // Specifies that the offscreen document needs to interact with Blob
+    // objects (including <code>URL.createObjectURL()</code>).
     BLOBS,
-    // The offscreen document needs to use the <code>DOMParser</code> API.
+    // Specifies that the offscreen document needs to use the
+    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/DOMParser>DOMParser API</a>.
     DOM_PARSER,
-    // The offscreen document needs to interact with media streams from user
-    // media (e.g. <code>getUserMedia()</code>).
+    // Specifies that the offscreen document needs to interact with
+    // media streams from user media (e.g. <code>getUserMedia()</code>).
     USER_MEDIA,
-    // The offscreen document needs to interact with media streams from display
-    // media (e.g. <code>getDisplayMedia()</code>).
+    // Specifies that the offscreen document needs to interact with
+    // media streams from display media (e.g. <code>getDisplayMedia()</code>).
     DISPLAY_MEDIA,
-    // The offscreen document needs to use WebRTC APIs.
+    // Specifies that the offscreen document needs to use
+    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API>WebRTC APIs</a>.
     WEB_RTC,
-    // The offscreen document needs to interact with the clipboard APIs
-    // (e.g. <code>Navigator.clipboard</code>).
+    // Specifies that the offscreen document needs to interact with the
+    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API>Clipboard API</a>.
     CLIPBOARD,
-    // The offscreen document needs access to <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">localStorage</a>.
+    // Specifies that the offscreen document needs access to
+    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">localStorage</a>.
     LOCAL_STORAGE,
-    // The offscreen document needs to spawn workers.
+    // Specifies that the offscreen document needs to spawn workers.
     WORKERS,
-    // The offscreen document needs to use <a href="https://developer.mozilla.org/en-US/docs/Web/API/Navigator/geolocation">navigator.geolocation</a>
+    // Specifies that the offscreen document needs to use
+    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/Navigator/geolocation">navigator.geolocation</a>.
     GEOLOCATION
   };
 
