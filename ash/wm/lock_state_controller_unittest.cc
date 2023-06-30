@@ -33,6 +33,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/display_configurator.h"
@@ -933,7 +934,10 @@ TEST_P(LockStateControllerAnimationTest, CancelShouldResetWallpaperBlur) {
 
   // Enter Overview and verify wallpaper properties.
   EnterOverview();
-  EXPECT_EQ(wallpaper_constants::kOverviewBlur, wallpaper_view->blur_sigma());
+  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
+                ? wallpaper_constants::kClear
+                : wallpaper_constants::kOverviewBlur,
+            wallpaper_view->blur_sigma());
 
   // Start lock animation and verify wallpaper properties.
   PressLockButton();
@@ -948,7 +952,10 @@ TEST_P(LockStateControllerAnimationTest, CancelShouldResetWallpaperBlur) {
   ExpectUnlockedState("4");
 
   // Verify wallpaper blur are restored to overview's.
-  EXPECT_EQ(wallpaper_constants::kOverviewBlur, wallpaper_view->blur_sigma());
+  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
+                ? wallpaper_constants::kClear
+                : wallpaper_constants::kOverviewBlur,
+            wallpaper_view->blur_sigma());
 }
 
 INSTANTIATE_TEST_SUITE_P(LockStateControllerAnimation,
