@@ -101,12 +101,12 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
       return;
     }
 
-    if (!owner_->item_ || !owner_->surface_)
+    if (!IsNotificationShown()) {
       return;
+    }
 
+    // It's guaranteed that it's not null in IsNotificationShown() above.
     views::Widget* widget = owner_->GetWidget();
-    if (!widget)
-      return;
 
     // Forward the events to the containing widget, except for:
     // 1. Touches, because View should no longer receive touch events.
@@ -122,15 +122,15 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
       if (located_event->type() == ui::ET_MOUSE_ENTERED ||
           located_event->type() == ui::ET_MOUSE_EXITED) {
         owner_->UpdateControlButtonsVisibility();
-        widget->OnMouseEvent(located_event->AsMouseEvent());
+        PostEventToContainingWidget(located_event);
         return;
       }
 
       if (located_event->type() == ui::ET_MOUSE_MOVED ||
           located_event->IsMouseWheelEvent()) {
-        widget->OnMouseEvent(located_event->AsMouseEvent());
+        PostEventToContainingWidget(located_event);
       } else if (located_event->IsScrollEvent()) {
-        widget->OnScrollEvent(located_event->AsScrollEvent());
+        PostEventToContainingWidget(located_event);
         owner_->item_->CancelPress();
       } else if (located_event->IsGestureEvent() &&
                  event->type() != ui::ET_GESTURE_TAP) {
@@ -168,7 +168,7 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
           owner_->message_view_->DisableSlideForcibly(false);
         }
 
-        widget->OnGestureEvent(located_event->AsGestureEvent());
+        PostEventToContainingWidget(located_event);
       }
 
       // Records UMA when user clicks/taps on the notification surface. Note
@@ -191,10 +191,10 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
       // pressed. See crbug.com/965603.
       if (owner_->slide_in_progress()) {
         if (event->type() == ui::ET_MOUSE_RELEASED ||
-            event->type() == ui::ET_MOUSE_PRESSED)
-          widget->OnMouseEvent(event->AsMouseEvent());
-        else if (event->type() == ui::ET_GESTURE_TAP)
-          widget->OnGestureEvent(event->AsGestureEvent());
+            event->type() == ui::ET_MOUSE_PRESSED ||
+            event->type() == ui::ET_GESTURE_TAP) {
+          PostEventToContainingWidget(located_event);
+        }
       }
     }
 
@@ -215,6 +215,36 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
     }
   }
 
+  void PostEventToContainingWidget(ui::LocatedEvent* event) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&EventForwarder::PostEventToContainingWidgetInternal,
+                       weak_factory_.GetWeakPtr(), event->Clone()));
+  }
+
+  void PostEventToContainingWidgetInternal(std::unique_ptr<ui::Event> event) {
+    // Check the existence of the notification again because it might already be
+    // deleted.
+    if (!IsNotificationShown()) {
+      return;
+    }
+
+    views::Widget* widget = owner_->GetWidget();
+    if (event->IsMouseEvent()) {
+      widget->OnMouseEvent(event->AsMouseEvent());
+    } else if (event->IsScrollEvent()) {
+      widget->OnScrollEvent(event->AsScrollEvent());
+    } else if (event->IsGestureEvent()) {
+      widget->OnGestureEvent(event->AsGestureEvent());
+    } else {
+      NOTREACHED();
+    }
+  }
+
+  bool IsNotificationShown() const {
+    return owner_->item_ && owner_->surface_ && owner_->GetWidget();
+  }
+
   // Some swipes are handled by Android alone. We don't want to capture swipe
   // events if we started a swipe on the chrome side then moved into the Android
   // swipe region. So, keep track of whether swipe has been 'captured' by
@@ -225,6 +255,8 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
   bool is_current_slide_handled_by_android_ = false;
 
   base::ScopedObservation<ui::EventTarget, ui::EventHandler> observation_{this};
+
+  base::WeakPtrFactory<EventForwarder> weak_factory_{this};
 };
 
 class ArcNotificationContentView::SlideHelper {
