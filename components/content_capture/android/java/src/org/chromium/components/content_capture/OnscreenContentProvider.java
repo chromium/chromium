@@ -9,6 +9,7 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewStructure;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -209,6 +210,7 @@ public class OnscreenContentProvider {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @RequiresApi(Build.VERSION_CODES.Q)
     public void removePlatformConsumerForTesting() {
         for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
             if (consumer instanceof PlatformContentCaptureConsumer) {

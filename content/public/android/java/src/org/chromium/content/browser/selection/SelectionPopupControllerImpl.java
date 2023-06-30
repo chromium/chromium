@@ -1677,9 +1677,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @Override
     public void setSelectionClient(@Nullable SelectionClient selectionClient) {
         mSelectionClient = selectionClient;
-        mSmartSelectionEventProcessor = mSelectionClient == null
-                ? null
-                : (SmartSelectionEventProcessor) mSelectionClient.getSelectionEventProcessor();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            mSmartSelectionEventProcessor = mSelectionClient == null
+                    ? null
+                    : (SmartSelectionEventProcessor) mSelectionClient.getSelectionEventProcessor();
+        } else {
+            mSmartSelectionEventProcessor = null;
+        }
 
         mClassificationResult = null;
 

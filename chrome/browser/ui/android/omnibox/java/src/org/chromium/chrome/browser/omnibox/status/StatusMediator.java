@@ -77,7 +77,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
 
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private @DrawableRes int mSecurityIconRes;
-    private @DrawableRes int mSecurityIconTintRes;
+    private @ColorRes int mSecurityIconTintRes;
     private @StringRes int mSecurityIconDescriptionRes;
     private @ColorRes int mNavigationIconTintRes;
 

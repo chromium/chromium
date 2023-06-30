@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.2.0-alpha08" type="baseline" client="" dependencies="true" name="" variant="all" version="8.2.0-alpha08">
+<issues format="6" by="lint 8.2.0-alpha10" type="baseline" client="" dependencies="true" name="" variant="all" version="8.2.0-alpha10">
 
     <issue
         id="ResourceType"
@@ -10,17 +10,6 @@
             file="../../content/public/android/java/src/org/chromium/content/browser/input/SelectPopupDialog.java"
             line="115"
             column="44"/>
-    </issue>
-
-    <issue
-        id="ResourceType"
-        message="Expected resource of type color"
-        errorLine1="        StatusIconResource statusIcon = icon == 0 ? null : new StatusIconResource(icon, tint);"
-        errorLine2="                                                                                        ~~~~">
-        <location
-            file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/status/StatusMediator.java"
-            line="490"
-            column="89"/>
     </issue>
 
     <issue
@@ -85,7 +74,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java"
-            line="114"
+            line="112"
             column="27"/>
     </issue>
 
@@ -129,7 +118,7 @@
         errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1169"
+            line="1158"
             column="56"/>
     </issue>
 
@@ -140,7 +129,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1178"
+            line="1167"
             column="21"/>
     </issue>
 
@@ -151,7 +140,7 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1193"
+            line="1182"
             column="52"/>
     </issue>
 
@@ -162,7 +151,7 @@
         errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1259"
+            line="1248"
             column="56"/>
     </issue>
 
@@ -206,7 +195,7 @@
         errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1662"
+            line="1608"
             column="25"/>
     </issue>
 
@@ -217,7 +206,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1702"
+            line="1648"
             column="29"/>
     </issue>
 
@@ -228,7 +217,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="2235"
+            line="2187"
             column="13"/>
     </issue>
 
@@ -239,7 +228,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="2250"
+            line="2202"
             column="17"/>
     </issue>
 
@@ -932,7 +921,7 @@
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1044"
+            line="1043"
             column="34"/>
     </issue>
 
@@ -943,7 +932,7 @@
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1059"
+            line="1058"
             column="34"/>
     </issue>
 
@@ -954,7 +943,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1564"
+            line="1566"
             column="36"/>
     </issue>
 
@@ -965,7 +954,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="464"
+            line="539"
             column="55"/>
     </issue>
 
@@ -976,7 +965,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="468"
+            line="543"
             column="55"/>
     </issue>
 
@@ -987,7 +976,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="475"
+            line="550"
             column="55"/>
     </issue>
 
@@ -998,7 +987,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1450"
+            line="1661"
             column="47"/>
     </issue>
 
@@ -1009,7 +998,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1606"
+            line="1821"
             column="47"/>
     </issue>
 
@@ -1339,7 +1328,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java"
-            line="645"
+            line="646"
             column="36"/>
     </issue>
 
@@ -1526,7 +1515,7 @@
         errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/WebLayerImpl.java"
-            line="323"
+            line="320"
             column="38"/>
     </issue>
 
@@ -1938,7 +1927,7 @@
         errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="561"
+            line="564"
             column="35"/>
     </issue>
 
@@ -1949,7 +1938,7 @@
         errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="562"
+            line="565"
             column="35"/>
     </issue>
 
@@ -2070,7 +2059,7 @@
         errorLine2="                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1638"
+            line="1584"
             column="49"/>
     </issue>
 
@@ -2081,7 +2070,7 @@
         errorLine2="                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1647"
+            line="1593"
             column="65"/>
     </issue>
 
@@ -2125,7 +2114,7 @@
         errorLine2="                                                                         ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/ClientManager.java"
-            line="480"
+            line="491"
             column="74"/>
     </issue>
 
@@ -2136,7 +2125,7 @@
         errorLine2="                                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/ClientManager.java"
-            line="491"
+            line="502"
             column="55"/>
     </issue>
 
@@ -2147,7 +2136,7 @@
         errorLine2="                                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/ClientManager.java"
-            line="499"
+            line="510"
             column="72"/>
     </issue>
 
@@ -2367,7 +2356,7 @@
         errorLine2="                                                                                          ~~~~~">
         <location
             file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/CrashesListFragment.java"
-            line="107"
+            line="108"
             column="91"/>
     </issue>
 
@@ -2378,7 +2367,7 @@
         errorLine2="                                                                                             ~~~~~">
         <location
             file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/CrashesListFragment.java"
-            line="131"
+            line="132"
             column="94"/>
     </issue>
 
@@ -2455,7 +2444,7 @@
         errorLine2="                                                                           ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityTabController.java"
-            line="371"
+            line="368"
             column="76"/>
     </issue>
 
@@ -2466,7 +2455,7 @@
         errorLine2="                                                           ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityTabController.java"
-            line="398"
+            line="395"
             column="60"/>
     </issue>
 
@@ -2477,7 +2466,7 @@
         errorLine2="                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java"
-            line="974"
+            line="968"
             column="39"/>
     </issue>
 
@@ -2730,7 +2719,7 @@
         errorLine2="                              ~~~~~">
         <location
             file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/FlagsFragment.java"
-            line="520"
+            line="521"
             column="31"/>
     </issue>
 
@@ -2743,17 +2732,6 @@
             file="../../chrome/android/java/src/org/chromium/chrome/browser/services/gcm/GcmUma.java"
             line="33"
             column="78"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: GestureNavigationDirection.BACK, GestureNavigationDirection.FORWARD"
-        errorLine1="                GestureNavigationDirection.NUM_ENTRIES);"
-        errorLine2="                                           ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/gesturenav/GestureNavMetrics.java"
-            line="52"
-            column="44"/>
     </issue>
 
     <issue
@@ -2939,7 +2917,7 @@
         errorLine2="                                                                                    ~~~~~">
         <location
             file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/MainActivity.java"
-            line="81"
+            line="82"
             column="85"/>
     </issue>
 
@@ -2950,7 +2928,7 @@
         errorLine2="                                   ~~~~~">
         <location
             file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/MainActivity.java"
-            line="137"
+            line="138"
             column="36"/>
     </issue>
 
@@ -3017,28 +2995,6 @@
         <location
             file="../../components/browser_ui/media/android/java/src/org/chromium/components/browser_ui/media/MediaSessionUma.java"
             line="32"
-            column="76"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: MediaSessionActionSource.MEDIA_NOTIFICATION, MediaSessionActionSource.MEDIA_SESSION, MediaSessionActionSource.HEADSET_UNPLUG"
-        errorLine1="                    &quot;Media.Session.Pause&quot;, action, MediaSessionActionSource.NUM_ENTRIES);"
-        errorLine2="                                                                            ~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/media/android/java/src/org/chromium/components/browser_ui/media/MediaSessionUma.java"
-            line="39"
-            column="77"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: MediaSessionActionSource.MEDIA_NOTIFICATION, MediaSessionActionSource.MEDIA_SESSION, MediaSessionActionSource.HEADSET_UNPLUG"
-        errorLine1="                    &quot;Media.Session.Stop&quot;, action, MediaSessionActionSource.NUM_ENTRIES);"
-        errorLine2="                                                                           ~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/media/android/java/src/org/chromium/components/browser_ui/media/MediaSessionUma.java"
-            line="46"
             column="76"/>
     </issue>
 
@@ -3583,23 +3539,12 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ShowQueryTilesSegmentationResultComparison.UNINITIALIZED, ShowQueryTilesSegmentationResultComparison.SEGMENTATION_ENABLED_LOGIC_ENABLED, ShowQueryTilesSegmentationResultComparison.SEGMENTATION_ENABLED_LOGIC_DISABLED, ShowQueryTilesSegmentationResultComparison.SEGMENTATION_DISABLED_LOGIC_ENABLED, ShowQueryTilesSegmentationResultComparison.SEGMENTATION_DISABLED_LOGIC_DISABLED"
-        errorLine1="                ShowQueryTilesSegmentationResultComparison.NUM_ENTRIES);"
-        errorLine2="                                                           ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="227"
-            column="60"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: ShowQueryTilesSegmentationResult.UNINITIALIZED, ShowQueryTilesSegmentationResult.DONT_SHOW, ShowQueryTilesSegmentationResult.SHOW"
         errorLine1="                ShowQueryTilesSegmentationResult.NUM_ENTRIES);"
         errorLine2="                                                 ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="241"
+            line="148"
             column="50"/>
     </issue>
 
@@ -3610,7 +3555,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="270"
+            line="177"
             column="16"/>
     </issue>
 
@@ -3621,7 +3566,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="270"
+            line="177"
             column="16"/>
     </issue>
 
@@ -3808,7 +3753,7 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java"
-            line="361"
+            line="371"
             column="33"/>
     </issue>
 
@@ -3896,7 +3841,7 @@
         errorLine2="                                                                                      ~~~~~">
         <location
             file="../../ui/android/java/src/org/chromium/ui/base/SelectFileDialog.java"
-            line="1323"
+            line="1326"
             column="87"/>
     </issue>
 
@@ -4006,7 +3951,7 @@
         errorLine2="                                                                         ~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettings.java"
-            line="1536"
+            line="1527"
             column="74"/>
     </issue>
 
@@ -4017,7 +3962,7 @@
         errorLine2="                                         ~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleWebsiteSettings.java"
-            line="1220"
+            line="1203"
             column="42"/>
     </issue>
 
@@ -4028,7 +3973,7 @@
         errorLine2="                                                           ~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleWebsiteSettings.java"
-            line="1222"
+            line="1205"
             column="60"/>
     </issue>
 
@@ -4107,17 +4052,6 @@
             file="../../chrome/android/java/src/org/chromium/chrome/browser/translate/TranslateAssistContent.java"
             line="70"
             column="46"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: TranslateTabIntentResult.FEATURE_DISABLED, TranslateTabIntentResult.MISSING_AUTH_TOKEN, TranslateTabIntentResult.TAB_WAS_NULL, TranslateTabIntentResult.INCOGNITO_TAB, TranslateTabIntentResult.EXPECTED_URL_MISMATCH, TranslateTabIntentResult.CANNOT_TRANSLATE_TAB, TranslateTabIntentResult.SUCCESS"
-        errorLine1="                &quot;Translate.TranslateTabIntentResult&quot;, result, TranslateTabIntentResult.NUM_ENTRIES);"
-        errorLine2="                                                                                       ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/translate/TranslateIntentHandler.java"
-            line="82"
-            column="88"/>
     </issue>
 
     <issue
@@ -4347,7 +4281,7 @@
         errorLine2="                                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java"
-            line="113"
+            line="120"
             column="72"/>
     </issue>
 
@@ -4358,7 +4292,7 @@
         errorLine2="                                                                            ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java"
-            line="123"
+            line="130"
             column="77"/>
     </issue>
 
@@ -4369,7 +4303,7 @@
         errorLine2="                                        ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java"
-            line="163"
+            line="170"
             column="41"/>
     </issue>
 
@@ -4380,7 +4314,7 @@
         errorLine2="                                        ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java"
-            line="180"
+            line="187"
             column="41"/>
     </issue>
 
@@ -4408,12 +4342,12 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ApiCall.ADD_JAVASCRIPT_INTERFACE, ApiCall.AUTOFILL, ApiCall.CAN_GO_BACK, ApiCall.CAN_GO_BACK_OR_FORWARD, ApiCall.CAN_GO_FORWARD, ApiCall.CAN_ZOOM_IN, ApiCall.CAN_ZOOM_OUT, ApiCall.CAPTURE_PICTURE, ApiCall.CLEAR_CACHE, ApiCall.CLEAR_FORM_DATA, ApiCall.CLEAR_HISTORY, ApiCall.CLEAR_MATCHES, ApiCall.CLEAR_SSL_PREFERENCES, ApiCall.CLEAR_VIEW, ApiCall.COPY_BACK_FORWARD_LIST, ApiCall.CREATE_PRINT_DOCUMENT_ADAPTER, ApiCall.CREATE_WEBMESSAGE_CHANNEL, ApiCall.DOCUMENT_HAS_IMAGES, ApiCall.DOES_SUPPORT_FULLSCREEN, ApiCall.EVALUATE_JAVASCRIPT, ApiCall.EXTRACT_SMART_CLIP_DATA, ApiCall.FIND_NEXT, ApiCall.GET_CERTIFICATE, ApiCall.GET_CONTENT_HEIGHT, ApiCall.GET_CONTENT_WIDTH, ApiCall.GET_FAVICON, ApiCall.GET_HIT_TEST_RESULT, ApiCall.GET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.GET_ORIGINAL_URL, ApiCall.GET_PROGRESS, ApiCall.GET_SCALE, ApiCall.GET_SETTINGS, ApiCall.GET_TEXT_CLASSIFIER, ApiCall.GET_TITLE, ApiCall.GET_URL, ApiCall.GET_WEBCHROME_CLIENT, ApiCall.GET_WEBVIEW_CLIENT, ApiCall.GO_BACK, ApiCall.GO_BACK_OR_FORWARD, ApiCall.GO_FORWARD, ApiCall.INSERT_VISUAL_STATE_CALLBACK, ApiCall.INVOKE_ZOOM_PICKER, ApiCall.IS_PAUSED, ApiCall.IS_PRIVATE_BROWSING_ENABLED, ApiCall.LOAD_DATA, ApiCall.LOAD_DATA_WITH_BASE_URL, ApiCall.NOTIFY_FIND_DIALOG_DISMISSED, ApiCall.ON_PAUSE, ApiCall.ON_PROVIDE_AUTOFILL_VIRTUAL_STRUCTURE, ApiCall.ON_RESUME, ApiCall.OVERLAY_HORIZONTAL_SCROLLBAR, ApiCall.OVERLAY_VERTICAL_SCROLLBAR, ApiCall.PAGE_DOWN, ApiCall.PAGE_UP, ApiCall.PAUSE_TIMERS, ApiCall.POST_MESSAGE_TO_MAIN_FRAME, ApiCall.POST_URL, ApiCall.RELOAD, ApiCall.REMOVE_JAVASCRIPT_INTERFACE, ApiCall.REQUEST_FOCUS_NODE_HREF, ApiCall.REQUEST_IMAGE_REF, ApiCall.RESTORE_STATE, ApiCall.RESUME_TIMERS, ApiCall.SAVE_STATE, ApiCall.SET_DOWNLOAD_LISTENER, ApiCall.SET_FIND_LISTENER, ApiCall.SET_HORIZONTAL_SCROLLBAR_OVERLAY, ApiCall.SET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.SET_INITIAL_SCALE, ApiCall.SET_NETWORK_AVAILABLE, ApiCall.SET_PICTURE_LISTENER, ApiCall.SET_SMART_CLIP_RESULT_HANDLER, ApiCall.SET_TEXT_CLASSIFIER, ApiCall.SET_VERTICAL_SCROLLBAR_OVERLAY, ApiCall.SET_WEBCHROME_CLIENT, ApiCall.SET_WEBVIEW_CLIENT, ApiCall.SHOW_FIND_DIALOG, ApiCall.STOP_LOADING, ApiCall.WEBVIEW_DATABASE_CLEAR_FORM_DATA, ApiCall.WEBVIEW_DATABASE_CLEAR_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_CLEAR_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_GET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_HAS_FORM_DATA, ApiCall.WEBVIEW_DATABASE_HAS_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_HAS_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_SET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.COOKIE_MANAGER_ACCEPT_COOKIE, ApiCall.COOKIE_MANAGER_ACCEPT_THIRD_PARTY_COOKIES, ApiCall.COOKIE_MANAGER_FLUSH, ApiCall.COOKIE_MANAGER_GET_COOKIE, ApiCall.COOKIE_MANAGER_HAS_COOKIES, ApiCall.COOKIE_MANAGER_REMOVE_ALL_COOKIE, ApiCall.COOKIE_MANAGER_REMOVE_ALL_COOKIES, ApiCall.COOKIE_MANAGER_REMOVE_EXPIRED_COOKIE, ApiCall.COOKIE_MANAGER_REMOVE_SESSION_COOKIE, ApiCall.COOKIE_MANAGER_REMOVE_SESSION_COOKIES, ApiCall.COOKIE_MANAGER_SET_ACCEPT_COOKIE, ApiCall.COOKIE_MANAGER_SET_ACCEPT_FILE_SCHEME_COOKIES, ApiCall.COOKIE_MANAGER_SET_ACCEPT_THIRD_PARTY_COOKIES, ApiCall.COOKIE_MANAGER_SET_COOKIE, ApiCall.WEB_STORAGE_DELETE_ALL_DATA, ApiCall.WEB_STORAGE_DELETE_ORIGIN, ApiCall.WEB_STORAGE_GET_ORIGINS, ApiCall.WEB_STORAGE_GET_QUOTA_FOR_ORIGIN, ApiCall.WEB_STORAGE_GET_USAGE_FOR_ORIGIN, ApiCall.WEB_SETTINGS_GET_ALLOW_CONTENT_ACCESS, ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS, ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_GET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_GET_BLOCK_NETWORK_IMAGE, ApiCall.WEB_SETTINGS_GET_BLOCK_NETWORK_LOADS, ApiCall.WEB_SETTINGS_GET_BUILT_IN_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_GET_CACHE_MODE, ApiCall.WEB_SETTINGS_GET_CURSIVE_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_DATABASE_ENABLED, ApiCall.WEB_SETTINGS_GET_DEFAULT_FIXED_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_DEFAULT_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_DEFAULT_TEXT_ENCODING_NAME, ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS, ApiCall.WEB_SETTINGS_GET_DISPLAY_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_GET_DOM_STORAGE_ENABLED, ApiCall.WEB_SETTINGS_GET_FANTASY_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_FIXED_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_FORCE_DARK, ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY, ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_ENABLED, ApiCall.WEB_SETTINGS_GET_LAYOUT_ALGORITHM, ApiCall.WEB_SETTINGS_GET_LOAD_WITH_OVERVIEW_MODE, ApiCall.WEB_SETTINGS_GET_LOADS_IMAGES_AUTOMATICALLY, ApiCall.WEB_SETTINGS_GET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE, ApiCall.WEB_SETTINGS_GET_MINIMUM_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_MINIMUM_LOGICAL_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_MIXED_CONTENT_MODE, ApiCall.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER, ApiCall.WEB_SETTINGS_GET_PLUGIN_STATE, ApiCall.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED, ApiCall.WEB_SETTINGS_GET_SANS_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_SAVE_FORM_DATA, ApiCall.WEB_SETTINGS_GET_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_STANDARD_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_TEXT_ZOOM, ApiCall.WEB_SETTINGS_GET_USE_WIDE_VIEW_PORT, ApiCall.WEB_SETTINGS_GET_USER_AGENT_STRING, ApiCall.WEB_SETTINGS_SET_ALLOW_CONTENT_ACCESS, ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS, ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_SET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_SET_BLOCK_NETWORK_IMAGE, ApiCall.WEB_SETTINGS_SET_BLOCK_NETWORK_LOADS, ApiCall.WEB_SETTINGS_SET_BUILT_IN_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_SET_CACHE_MODE, ApiCall.WEB_SETTINGS_SET_CURSIVE_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_DATABASE_ENABLED, ApiCall.WEB_SETTINGS_SET_DEFAULT_FIXED_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_DEFAULT_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_DEFAULT_TEXT_ENCODING_NAME, ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS, ApiCall.WEB_SETTINGS_SET_DISPLAY_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_SET_DOM_STORAGE_ENABLED, ApiCall.WEB_SETTINGS_SET_FANTASY_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_FIXED_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_GEOLOCATION_ENABLED, ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY, ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_ENABLED, ApiCall.WEB_SETTINGS_SET_LAYOUT_ALGORITHM, ApiCall.WEB_SETTINGS_SET_LOAD_WITH_OVERVIEW_MODE, ApiCall.WEB_SETTINGS_SET_LOADS_IMAGES_AUTOMATICALLY, ApiCall.WEB_SETTINGS_SET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE, ApiCall.WEB_SETTINGS_SET_MINIMUM_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_MINIMUM_LOGICAL_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_MIXED_CONTENT_MODE, ApiCall.WEB_SETTINGS_SET_NEED_INITIAL_FOCUS, ApiCall.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER, ApiCall.WEB_SETTINGS_SET_PLUGIN_STATE, ApiCall.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED, ApiCall.WEB_SETTINGS_SET_SANS_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_SAVE_FORM_DATA, ApiCall.WEB_SETTINGS_SET_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_STANDARD_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_SUPPORT_MULTIPLE_WINDOWS, ApiCall.WEB_SETTINGS_SET_SUPPORT_ZOOM, ApiCall.WEB_SETTINGS_SET_TEXT_SIZE, ApiCall.WEB_SETTINGS_SET_TEXT_ZOOM, ApiCall.WEB_SETTINGS_SET_USE_WIDE_VIEW_PORT, ApiCall.WEB_SETTINGS_SET_USER_AGENT_STRING, ApiCall.WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS, ApiCall.WEB_SETTINGS_SUPPORT_ZOOM"
+        message="Must be one of: ApiCall.ADD_JAVASCRIPT_INTERFACE, ApiCall.AUTOFILL, ApiCall.CAN_GO_BACK, ApiCall.CAN_GO_BACK_OR_FORWARD, ApiCall.CAN_GO_FORWARD, ApiCall.CAN_ZOOM_IN, ApiCall.CAN_ZOOM_OUT, ApiCall.CAPTURE_PICTURE, ApiCall.CLEAR_CACHE, ApiCall.CLEAR_FORM_DATA, ApiCall.CLEAR_HISTORY, ApiCall.CLEAR_MATCHES, ApiCall.CLEAR_SSL_PREFERENCES, ApiCall.CLEAR_VIEW, ApiCall.COPY_BACK_FORWARD_LIST, ApiCall.CREATE_PRINT_DOCUMENT_ADAPTER, ApiCall.CREATE_WEBMESSAGE_CHANNEL, ApiCall.DOCUMENT_HAS_IMAGES, ApiCall.DOES_SUPPORT_FULLSCREEN, ApiCall.EVALUATE_JAVASCRIPT, ApiCall.EXTRACT_SMART_CLIP_DATA, ApiCall.FIND_NEXT, ApiCall.GET_CERTIFICATE, ApiCall.GET_CONTENT_HEIGHT, ApiCall.GET_CONTENT_WIDTH, ApiCall.GET_FAVICON, ApiCall.GET_HIT_TEST_RESULT, ApiCall.GET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.GET_ORIGINAL_URL, ApiCall.GET_PROGRESS, ApiCall.GET_SCALE, ApiCall.GET_SETTINGS, ApiCall.GET_TEXT_CLASSIFIER, ApiCall.GET_TITLE, ApiCall.GET_URL, ApiCall.GET_WEBCHROME_CLIENT, ApiCall.GET_WEBVIEW_CLIENT, ApiCall.GO_BACK, ApiCall.GO_BACK_OR_FORWARD, ApiCall.GO_FORWARD, ApiCall.INSERT_VISUAL_STATE_CALLBACK, ApiCall.INVOKE_ZOOM_PICKER, ApiCall.IS_PAUSED, ApiCall.IS_PRIVATE_BROWSING_ENABLED, ApiCall.LOAD_DATA, ApiCall.LOAD_DATA_WITH_BASE_URL, ApiCall.NOTIFY_FIND_DIALOG_DISMISSED, ApiCall.ON_PAUSE, ApiCall.ON_PROVIDE_AUTOFILL_VIRTUAL_STRUCTURE, ApiCall.ON_RESUME, ApiCall.OVERLAY_HORIZONTAL_SCROLLBAR, ApiCall.OVERLAY_VERTICAL_SCROLLBAR, ApiCall.PAGE_DOWN, ApiCall.PAGE_UP, ApiCall.PAUSE_TIMERS, ApiCall.POST_MESSAGE_TO_MAIN_FRAME, ApiCall.POST_URL, ApiCall.RELOAD, ApiCall.REMOVE_JAVASCRIPT_INTERFACE, ApiCall.REQUEST_FOCUS_NODE_HREF, ApiCall.REQUEST_IMAGE_REF, ApiCall.RESTORE_STATE, ApiCall.RESUME_TIMERS, ApiCall.SAVE_STATE, ApiCall.SET_DOWNLOAD_LISTENER, ApiCall.SET_FIND_LISTENER, ApiCall.SET_HORIZONTAL_SCROLLBAR_OVERLAY, ApiCall.SET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.SET_INITIAL_SCALE, ApiCall.SET_NETWORK_AVAILABLE, ApiCall.SET_PICTURE_LISTENER, ApiCall.SET_SMART_CLIP_RESULT_HANDLER, ApiCall.SET_TEXT_CLASSIFIER, ApiCall.SET_VERTICAL_SCROLLBAR_OVERLAY, ApiCall.SET_WEBCHROME_CLIENT, ApiCall.SET_WEBVIEW_CLIENT, ApiCall.SHOW_FIND_DIALOG, ApiCall.STOP_LOADING, ApiCall.WEBVIEW_DATABASE_CLEAR_FORM_DATA, ApiCall.WEBVIEW_DATABASE_CLEAR_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_CLEAR_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_GET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_HAS_FORM_DATA, ApiCall.WEBVIEW_DATABASE_HAS_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_HAS_USERNAME_PASSWORD, ApiCall.WEBVIEW_DATABASE_SET_HTTP_AUTH_USERNAME_PASSWORD, ApiCall.COOKIE_MANAGER_ACCEPT_COOKIE, ApiCall.COOKIE_MANAGER_ACCEPT_THIRD_PARTY_COOKIES, ApiCall.COOKIE_MANAGER_FLUSH, ApiCall.COOKIE_MANAGER_GET_COOKIE, ApiCall.COOKIE_MANAGER_HAS_COOKIES, ApiCall.COOKIE_MANAGER_REMOVE_ALL_COOKIE, ApiCall.COOKIE_MANAGER_REMOVE_ALL_COOKIES, ApiCall.COOKIE_MANAGER_REMOVE_EXPIRED_COOKIE, ApiCall.COOKIE_MANAGER_REMOVE_SESSION_COOKIE, ApiCall.COOKIE_MANAGER_REMOVE_SESSION_COOKIES, ApiCall.COOKIE_MANAGER_SET_ACCEPT_COOKIE, ApiCall.COOKIE_MANAGER_SET_ACCEPT_FILE_SCHEME_COOKIES, ApiCall.COOKIE_MANAGER_SET_ACCEPT_THIRD_PARTY_COOKIES, ApiCall.COOKIE_MANAGER_SET_COOKIE, ApiCall.WEB_STORAGE_DELETE_ALL_DATA, ApiCall.WEB_STORAGE_DELETE_ORIGIN, ApiCall.WEB_STORAGE_GET_ORIGINS, ApiCall.WEB_STORAGE_GET_QUOTA_FOR_ORIGIN, ApiCall.WEB_STORAGE_GET_USAGE_FOR_ORIGIN, ApiCall.WEB_SETTINGS_GET_ALLOW_CONTENT_ACCESS, ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS, ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_GET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_GET_BLOCK_NETWORK_IMAGE, ApiCall.WEB_SETTINGS_GET_BLOCK_NETWORK_LOADS, ApiCall.WEB_SETTINGS_GET_BUILT_IN_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_GET_CACHE_MODE, ApiCall.WEB_SETTINGS_GET_CURSIVE_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_DATABASE_ENABLED, ApiCall.WEB_SETTINGS_GET_DEFAULT_FIXED_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_DEFAULT_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_DEFAULT_TEXT_ENCODING_NAME, ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS, ApiCall.WEB_SETTINGS_GET_DISPLAY_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_GET_DOM_STORAGE_ENABLED, ApiCall.WEB_SETTINGS_GET_FANTASY_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_FIXED_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_FORCE_DARK, ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY, ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_ENABLED, ApiCall.WEB_SETTINGS_GET_LAYOUT_ALGORITHM, ApiCall.WEB_SETTINGS_GET_LOAD_WITH_OVERVIEW_MODE, ApiCall.WEB_SETTINGS_GET_LOADS_IMAGES_AUTOMATICALLY, ApiCall.WEB_SETTINGS_GET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE, ApiCall.WEB_SETTINGS_GET_MINIMUM_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_MINIMUM_LOGICAL_FONT_SIZE, ApiCall.WEB_SETTINGS_GET_MIXED_CONTENT_MODE, ApiCall.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER, ApiCall.WEB_SETTINGS_GET_PLUGIN_STATE, ApiCall.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED, ApiCall.WEB_SETTINGS_GET_SANS_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_SAVE_FORM_DATA, ApiCall.WEB_SETTINGS_GET_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_STANDARD_FONT_FAMILY, ApiCall.WEB_SETTINGS_GET_TEXT_ZOOM, ApiCall.WEB_SETTINGS_GET_USE_WIDE_VIEW_PORT, ApiCall.WEB_SETTINGS_GET_USER_AGENT_STRING, ApiCall.WEB_SETTINGS_SET_ALLOW_CONTENT_ACCESS, ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS, ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_SET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS, ApiCall.WEB_SETTINGS_SET_BLOCK_NETWORK_IMAGE, ApiCall.WEB_SETTINGS_SET_BLOCK_NETWORK_LOADS, ApiCall.WEB_SETTINGS_SET_BUILT_IN_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_SET_CACHE_MODE, ApiCall.WEB_SETTINGS_SET_CURSIVE_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_DATABASE_ENABLED, ApiCall.WEB_SETTINGS_SET_DEFAULT_FIXED_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_DEFAULT_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_DEFAULT_TEXT_ENCODING_NAME, ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS, ApiCall.WEB_SETTINGS_SET_DISPLAY_ZOOM_CONTROLS, ApiCall.WEB_SETTINGS_SET_DOM_STORAGE_ENABLED, ApiCall.WEB_SETTINGS_SET_FANTASY_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_FIXED_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_GEOLOCATION_ENABLED, ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY, ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_ENABLED, ApiCall.WEB_SETTINGS_SET_LAYOUT_ALGORITHM, ApiCall.WEB_SETTINGS_SET_LOAD_WITH_OVERVIEW_MODE, ApiCall.WEB_SETTINGS_SET_LOADS_IMAGES_AUTOMATICALLY, ApiCall.WEB_SETTINGS_SET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE, ApiCall.WEB_SETTINGS_SET_MINIMUM_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_MINIMUM_LOGICAL_FONT_SIZE, ApiCall.WEB_SETTINGS_SET_MIXED_CONTENT_MODE, ApiCall.WEB_SETTINGS_SET_NEED_INITIAL_FOCUS, ApiCall.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER, ApiCall.WEB_SETTINGS_SET_PLUGIN_STATE, ApiCall.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED, ApiCall.WEB_SETTINGS_SET_SANS_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_SAVE_FORM_DATA, ApiCall.WEB_SETTINGS_SET_SERIF_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_STANDARD_FONT_FAMILY, ApiCall.WEB_SETTINGS_SET_SUPPORT_MULTIPLE_WINDOWS, ApiCall.WEB_SETTINGS_SET_SUPPORT_ZOOM, ApiCall.WEB_SETTINGS_SET_TEXT_SIZE, ApiCall.WEB_SETTINGS_SET_TEXT_ZOOM, ApiCall.WEB_SETTINGS_SET_USE_WIDE_VIEW_PORT, ApiCall.WEB_SETTINGS_SET_USER_AGENT_STRING, ApiCall.WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS, ApiCall.WEB_SETTINGS_SUPPORT_ZOOM, ApiCall.GET_RENDERER_REQUESTED_PRIORITY, ApiCall.GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE, ApiCall.SET_RENDERER_PRIORITY_POLICY"
         errorLine1="        RecordHistogram.recordEnumeratedHistogram(&quot;Android.WebView.ApiCall&quot;, sample, ApiCall.COUNT);"
         errorLine2="                                                                                             ~~~~~">
         <location
             file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
-            line="441"
+            line="447"
             column="94"/>
     </issue>
 
@@ -4562,7 +4496,7 @@
 
     <issue
         id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
+        message="This class should only be accessed from tests or within private scope"
         errorLine1="class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {"
         errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -4628,7 +4562,7 @@
 
     <issue
         id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
+        message="This class should only be accessed from tests or within private scope"
         errorLine1="                            0, new VisualStateCallback() {"
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~">
         <location
@@ -4842,7 +4776,7 @@
         errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="944"
+            line="933"
             column="23"/>
     </issue>
 
@@ -4864,7 +4798,7 @@
         errorLine2="                                                                      ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1047"
+            line="990"
             column="71"/>
     </issue>
 
@@ -4947,7 +4881,7 @@
 
     <issue
         id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
+        message="This class should only be accessed from tests or within private scope"
         errorLine1="                extends Api.AbstractClientBuilder&lt;FidoClient, ApiOptions.NoOptions> {"
         errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -5102,22 +5036,11 @@
     <issue
         id="VisibleForTests"
         message="This method should only be accessed from tests or within private scope"
-        errorLine1="        boolean animate = !tabRemoved &amp;&amp; animationsEnabled();"
-        errorLine2="                                         ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromePhone.java"
-            line="105"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
         errorLine1="        } else if (animationsEnabled()) {"
         errorLine2="                   ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromePhone.java"
-            line="120"
+            line="115"
             column="20"/>
     </issue>
 
@@ -5425,7 +5348,7 @@
         errorLine2="                   ~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java"
-            line="480"
+            line="481"
             column="20"/>
     </issue>
 
@@ -5458,13 +5381,13 @@
         errorLine2="                              ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelper.java"
-            line="1320"
+            line="1328"
             column="31"/>
     </issue>
 
     <issue
         id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
+        message="This class should only be accessed from tests or within private scope"
         errorLine1="                    requestId, new AwContents.VisualStateCallback() {"
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -5574,12 +5497,12 @@
 
     <issue
         id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
+        message="This class should only be accessed from tests or within private scope"
         errorLine1="                    requestId, callback == null ? null : new AwContents.VisualStateCallback() {"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
-            line="1265"
+            line="1271"
             column="62"/>
     </issue>
 
@@ -5590,7 +5513,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
-            line="2244"
+            line="2264"
             column="29"/>
     </issue>
 
@@ -5678,7 +5601,7 @@
         errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
-            line="221"
+            line="194"
             column="24"/>
     </issue>
 
