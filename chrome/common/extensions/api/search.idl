@@ -5,13 +5,14 @@
 // Use the <code>chrome.search</code> API to search via the default provider.
 namespace search {
   enum Disposition {
-    // Display results in the calling tab or the tab from the active browser.
+    // Specifies that the search results display in the calling tab or the tab
+    // from the active browser.
     CURRENT_TAB,
 
-    // Display search results in a new tab.
+    // Specifies that the search results display in a new tab.
     NEW_TAB,
 
-    // Display search results in a new window.
+    // Specifies that the search results display in a new window.
     NEW_WINDOW
   };
 
