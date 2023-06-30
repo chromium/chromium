@@ -93,6 +93,10 @@ bool LoginScreenController::IsAuthenticating() const {
   return authentication_stage_ != AuthenticationStage::kIdle;
 }
 
+bool LoginScreenController::IsAuthenticationCallbackExecuting() const {
+  return authentication_stage_ == AuthenticationStage::kUserCallback;
+}
+
 void LoginScreenController::AuthenticateUserWithPasswordOrPin(
     const AccountId& account_id,
     const std::string& password,

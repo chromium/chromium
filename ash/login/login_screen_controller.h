@@ -62,6 +62,9 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   // Check to see if an authentication attempt is in-progress.
   bool IsAuthenticating() const;
 
+  // Check to see if an authentication callback is executing.
+  bool IsAuthenticationCallbackExecuting() const;
+
   // Hash the password and send AuthenticateUser request to LoginScreenClient.
   // LoginScreenClient (in the chrome process) will do the authentication and
   // request to show error messages in the screen if auth fails, or request to

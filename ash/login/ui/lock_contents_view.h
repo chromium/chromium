@@ -406,6 +406,9 @@ class ASH_EXPORT LockContentsView
       AuthEventsRecorder::AuthenticationOutcome outcome,
       AccountId account_id);
 
+  // Updates the layout with the new users list.
+  void ApplyUserChanges(const std::vector<LoginUserInfo>& users);
+
   const LockScreen::ScreenType screen_type_;
 
   std::vector<UserState> users_;
@@ -524,6 +527,10 @@ class ASH_EXPORT LockContentsView
 
   BottomIndicatorState bottom_status_indicator_state_ =
       BottomIndicatorState::kNone;
+
+  // When OnUsersChanged called during authentication this object stores
+  // the users info till the authentication finished.
+  absl::optional<std::vector<LoginUserInfo>> pending_users_change_;
 
   base::WeakPtrFactory<LockContentsView> weak_ptr_factory_{this};
 };
