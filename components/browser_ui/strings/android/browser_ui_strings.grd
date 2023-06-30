@@ -922,8 +922,8 @@
       <message name="IDS_MESSAGE_DISMISS_AND_SHOW_NEXT" desc="Accessibility label to allow user to dismiss the current one in order to show the background message">
         Dismiss and show next available action
       </message>
-      <message name="IDS_MESSAGE_MORE_OPTIONS" desc="Accessibility label of the more options icon in the message banner">
-        More options <ph name="BANNER_TITLE">%1$s<ex>Title</ex></ph>
+      <message name="IDS_MESSAGE_MORE_OPTIONS" desc="Accessibility label of the more options icon in the message banner. Clicking on the options icon will enable a context menu or a dialog showing more available actions related to the message banner.">
+        More options in the <ph name="BANNER_TITLE">%1$s<ex>Title</ex></ph>
       </message>
 
       <!-- In-Product Help -->
