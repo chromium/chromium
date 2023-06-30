@@ -49805,6 +49805,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="20" label="Error: Send HTTPS failure"/>
   <int value="21" label="Error: Unexpected modem manager state"/>
   <int value="22" label="Error: Modem message processing"/>
+  <int value="23" label="Error: Empty error response"/>
+  <int value="24" label="Error: Unknown response"/>
 </enum>
 
 <enum name="HIDContinueScenarioType">
