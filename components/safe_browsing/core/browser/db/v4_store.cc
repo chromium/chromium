@@ -181,9 +181,11 @@ const base::FilePath TemporaryFileForFilename(const base::FilePath& filename) {
 }
 
 std::unique_ptr<HashPrefixMap> CreateHashPrefixMap(
-    const base::FilePath& store_path) {
+    const base::FilePath& store_path,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   if (base::FeatureList::IsEnabled(kMmapSafeBrowsingDatabase))
-    return std::make_unique<MmapHashPrefixMap>(store_path);
+    return std::make_unique<MmapHashPrefixMap>(store_path,
+                                               std::move(task_runner));
   return std::make_unique<InMemoryHashPrefixMap>();
 }
 
@@ -349,8 +351,8 @@ std::ostream& operator<<(std::ostream& os, const V4Store& store) {
 std::unique_ptr<V4Store> V4StoreFactory::CreateV4Store(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const base::FilePath& store_path) {
-  auto new_store = std::make_unique<V4Store>(task_runner, store_path,
-                                             CreateHashPrefixMap(store_path));
+  auto new_store = std::make_unique<V4Store>(
+      task_runner, store_path, CreateHashPrefixMap(store_path, task_runner));
   new_store->Initialize();
   return new_store;
 }
@@ -533,7 +535,8 @@ void V4Store::ApplyUpdate(
     UpdatedStoreReadyCallback callback) {
   base::ElapsedThreadTimer thread_timer;
   auto new_store = std::make_unique<V4Store>(
-      task_runner_, store_path_, CreateHashPrefixMap(store_path_), file_size_);
+      task_runner_, store_path_, CreateHashPrefixMap(store_path_, task_runner_),
+      file_size_);
   ApplyUpdateResult apply_update_result;
   std::string metric;
   if (response->response_type() == ListUpdateResponse::PARTIAL_UPDATE) {

@@ -1034,13 +1034,17 @@ TEST_F(V4StoreTest, MigrateToInMemory) {
   EXPECT_EQ(write_store.GetMatchingHashPrefix(kFullHash), kHash);
 
   // Make sure a mmap store can read correctly.
-  V4Store mmap_store(task_runner_, store_path_,
-                     std::make_unique<MmapHashPrefixMap>(store_path_));
+  auto mmap_map2 = std::make_unique<MmapHashPrefixMap>(store_path_);
+  auto* mmap_map_raw2 = mmap_map2.get();
+  V4Store mmap_store(task_runner_, store_path_, std::move(mmap_map2));
   EXPECT_EQ(READ_SUCCESS, mmap_store.ReadFromDisk());
   EXPECT_EQ("test_client_state", mmap_store.state());
   EXPECT_EQ(mmap_store.hash_prefix_map_->view()[5], kHash);
   EXPECT_TRUE(base::PathExists(hashes_path));
   EXPECT_EQ(mmap_store.GetMatchingHashPrefix(kFullHash), kHash);
+
+  mmap_map_raw->ClearAndWaitForTesting();
+  mmap_map_raw2->ClearAndWaitForTesting();
 
   write_store.Reset();
   mmap_store.Reset();
@@ -1137,6 +1141,8 @@ TEST_F(V4StoreTest, FileSizeIncludesHashFiles) {
 
   int64_t original_file_size = write_store.file_size();
 
+  static_cast<MmapHashPrefixMap*>(write_store.hash_prefix_map_.get())
+      ->ClearAndWaitForTesting();
   write_store.Reset();
   write_store.hash_prefix_map_->Append(4, "abcd");
   write_store.hash_prefix_map_->Append(4, "efgh");
