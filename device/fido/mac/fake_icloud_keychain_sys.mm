@@ -201,8 +201,7 @@ void FakeSystemInterface::GetPlatformCredentials(
 void FakeSystemInterface::MakeCredential(
     NSWindow* window,
     CtapMakeCredentialRequest request,
-    base::OnceCallback<void(ASAuthorization* __strong, NSError* __strong)>
-        callback) {
+    base::OnceCallback<void(ASAuthorization*, NSError*)> callback) {
   auto attestation_object_bytes =
       std::move(make_credential_attestation_object_bytes_);
   make_credential_attestation_object_bytes_.reset();
@@ -238,8 +237,7 @@ void FakeSystemInterface::MakeCredential(
 void FakeSystemInterface::GetAssertion(
     NSWindow* window,
     CtapGetAssertionRequest request,
-    base::OnceCallback<void(ASAuthorization* __strong, NSError* __strong)>
-        callback) {
+    base::OnceCallback<void(ASAuthorization*, NSError*)> callback) {
   if (!get_assertion_authenticator_data_) {
     std::move(callback).Run(nullptr, [[NSError alloc] initWithDomain:@""
                                                                 code:1001

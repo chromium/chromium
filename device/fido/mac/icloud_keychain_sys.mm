@@ -50,20 +50,17 @@ API_AVAILABLE(macos(13.3))
 API_AVAILABLE(macos(13.3))
 @interface ICloudKeychainDelegate : NSObject <ASAuthorizationControllerDelegate>
 - (void)setCallback:
-    (base::OnceCallback<void(ASAuthorization* __strong, NSError* __strong)>)
-        callback;
+    (base::OnceCallback<void(ASAuthorization*, NSError*)>)callback;
 - (void)setCleanupCallback:(base::OnceClosure)callback;
 @end
 
 @implementation ICloudKeychainDelegate {
-  base::OnceCallback<void(ASAuthorization* __strong, NSError* __strong)>
-      _callback;
+  base::OnceCallback<void(ASAuthorization*, NSError*)> _callback;
   base::OnceClosure _cleanupCallback;
 }
 
 - (void)setCallback:
-    (base::OnceCallback<void(ASAuthorization* __strong, NSError* __strong)>)
-        callback {
+    (base::OnceCallback<void(ASAuthorization*, NSError*)>)callback {
   _callback = std::move(callback);
 }
 
@@ -257,8 +254,7 @@ class API_AVAILABLE(macos(13.3)) NativeSystemInterface
   void MakeCredential(
       NSWindow* window,
       CtapMakeCredentialRequest request,
-      base::OnceCallback<void(ASAuthorization* __strong, NSError* __strong)>
-          callback) override {
+      base::OnceCallback<void(ASAuthorization*, NSError*)> callback) override {
     DCHECK(!create_controller_);
     DCHECK(!get_controller_);
     DCHECK(!delegate_);
@@ -303,8 +299,7 @@ class API_AVAILABLE(macos(13.3)) NativeSystemInterface
   void GetAssertion(
       NSWindow* window,
       CtapGetAssertionRequest request,
-      base::OnceCallback<void(ASAuthorization* __strong, NSError* __strong)>
-          callback) override {
+      base::OnceCallback<void(ASAuthorization*, NSError*)> callback) override {
     DCHECK(!create_controller_);
     DCHECK(!get_controller_);
     DCHECK(!delegate_);

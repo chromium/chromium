@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "device/fido/mac/icloud_keychain.h"
+
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -128,12 +129,15 @@ class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
  public:
   void SetUp() override {
     if (@available(macOS 13.3, *)) {
+      NSWindow* window = [[NSWindow alloc] init];
+      window.releasedWhenClosed = NO;  // Required by ARC.
+
       fake_ = base::MakeRefCounted<FakeSystemInterface>();
       SetSystemInterfaceForTesting(fake_);
-      NSWindow* window = [[NSWindow alloc] init];
-      uintptr_t ns_window;
+
+      uintptr_t ns_window = (uintptr_t)(__bridge void*)window;
       static_assert(sizeof(window) == sizeof(ns_window));
-      memcpy(&ns_window, (void*)&window, sizeof(ns_window));
+
       discovery_ = NewDiscovery(ns_window);
       discovery_->set_observer(this);
       discovery_->Start();

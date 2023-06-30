@@ -4,12 +4,12 @@
 
 #include "device/fido/mac/icloud_keychain.h"
 
-#import <AuthenticationServices/ASFoundation.h>
 #import <AuthenticationServices/AuthenticationServices.h>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -195,10 +195,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     return FidoTransportProtocol::kInternal;
   }
 
-  void GetTouch(base::OnceClosure callback) override {
-    NOTREACHED();
-    std::move(callback).Run();
-  }
+  void GetTouch(base::OnceClosure callback) override { NOTREACHED_NORETURN(); }
 
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
@@ -206,8 +203,8 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
 
  private:
   void OnMakeCredentialComplete(MakeCredentialCallback callback,
-                                ASAuthorization* __strong authorization,
-                                NSError* __strong error) {
+                                ASAuthorization* authorization,
+                                NSError* error) {
     if (error) {
       const std::string domain = base::SysNSStringToUTF8(error.domain);
       FIDO_LOG(ERROR) << "iCKC: makeCredential failed, domain: " << domain
@@ -279,8 +276,8 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
   }
 
   void OnGetAssertionComplete(GetAssertionCallback callback,
-                              ASAuthorization* __strong authorization,
-                              NSError* __strong error) {
+                              ASAuthorization* authorization,
+                              NSError* error) {
     if (error) {
       FIDO_LOG(ERROR) << "iCKC: getAssertion failed, domain: "
                       << base::SysNSStringToUTF8(error.domain)
@@ -334,7 +331,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                             std::move(responses));
   }
 
-  NSWindow* const window_;
+  NSWindow* __strong window_;
   base::WeakPtrFactory<Authenticator> weak_factory_{this};
 };
 
@@ -361,7 +358,7 @@ class API_AVAILABLE(macos(13.3)) Discovery : public FidoDiscoveryBase {
                                  {authenticator_.get()});
   }
 
-  NSWindow* const window_;
+  NSWindow* __strong window_;
   std::unique_ptr<Authenticator> authenticator_;
   base::WeakPtrFactory<Discovery> weak_factory_{this};
 };
@@ -377,20 +374,13 @@ bool IsSupported() {
 
 std::unique_ptr<FidoDiscoveryBase> NewDiscovery(uintptr_t ns_window) {
   if (@available(macOS 13.3, *)) {
-    NSWindow* window;
+    NSWindow* window = (__bridge NSWindow*)(void*)ns_window;
     static_assert(sizeof(window) == sizeof(ns_window));
-    memcpy((void*)&window, &ns_window, sizeof(ns_window));
 
-    auto discovery = std::make_unique<Discovery>(window);
-
-    // Clear pointer so that ObjC doesn't try to release it.
-    memset((void*)&window, 0, sizeof(window));
-
-    return discovery;
+    return std::make_unique<Discovery>(window);
   }
 
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace device::fido::icloud_keychain
