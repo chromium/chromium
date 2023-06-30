@@ -28504,23 +28504,6 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="113" label="Signin Intercept First Run Experience"/>
 </enum>
 
-<enum name="DialogOriginRelationship">
-  <int value="1" label="non-HTTP(S) main frame"/>
-  <int value="2" label="HTTP(S) main frame, alerting frame is the main frame"/>
-  <int value="3"
-      label="HTTP(S) main frame, HTTP(S) alerting frame, alerting frame
-             same-origin as main frame"/>
-  <int value="4"
-      label="HTTP(S) main frame, HTTP(S) alerting frame, alerting frame
-             different-origin to main frame"/>
-  <int value="5"
-      label="HTTP(S) main frame, non-HTTP(S) alerting frame, alerting frame's
-             nearest HTTP(S) ancestor same-origin as main frame"/>
-  <int value="6"
-      label="HTTP(S) main frame, non-HTTP(S) alerting frame, alerting frame's
-             nearest HTTP(S) ancestor different-origin to main frame"/>
-</enum>
-
 <enum name="DidNavigateToAd">
   <obsolete>
     Removed July 2018.

@@ -7150,27 +7150,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="JSDialogs.OriginRelationship"
-    enum="DialogOriginRelationship" expires_after="2022-12-11">
-  <owner>avi@chromium.org</owner>
-  <owner>carlosil@chromium.org</owner>
-  <owner>ericmill@google.com</owner>
-  <owner>meacer@chromium.org</owner>
-  <summary>
-    For dialogs, the relationship of the origins of the main frame vs the
-    alerting frame.
-  </summary>
-</histogram>
-
-<histogram base="true" name="JSDialogs.Scheme" enum="NavigationScheme"
-    expires_after="2022-12-11">
-  <owner>avi@chromium.org</owner>
-  <owner>carlosil@chromium.org</owner>
-  <owner>ericmill@google.com</owner>
-  <owner>meacer@chromium.org</owner>
-  <summary>The scheme of the URL showing a JavaScript dialog.</summary>
-</histogram>
-
 <histogram name="Launch.FlagsAtStartup" enum="LoginCustomFlags"
     expires_after="never">
 <!-- expires-never: monitors use of all flags. -->

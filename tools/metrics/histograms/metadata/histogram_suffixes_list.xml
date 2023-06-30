@@ -2170,15 +2170,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Startup.Android.SingleTabTitleAvailableTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="JSDialogs_DialogType" separator=".">
-  <suffix name="Alert" label="window.alert() dialog"/>
-  <suffix name="BeforeUnload" label="dialog caused by window.onbeforeunload"/>
-  <suffix name="Confirm" label="window.confirm() dialog"/>
-  <suffix name="Prompt" label="window.prompt() dialog"/>
-  <affected-histogram name="JSDialogs.OriginRelationship"/>
-  <affected-histogram name="JSDialogs.Scheme"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="LeakDetectionDialogType" separator=".">
   <suffix name="Change" label="The user is asked to change their password"/>
   <suffix name="ChangeAutomatically"
