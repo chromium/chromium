@@ -238,8 +238,7 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
       std::make_unique<VideoConferenceTrayButton>(
           base::BindRepeating(&VideoConferenceTray::OnScreenShareButtonClicked,
                               weak_ptr_factory_.GetWeakPtr()),
-          &kPrivacyIndicatorsScreenShareIcon,
-          &kPrivacyIndicatorsScreenShareIcon,
+          &kVideoConferenceScreenShareIcon, &kVideoConferenceScreenShareIcon,
           VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_SCREEN_SHARE));
   // Toggling screen share stops screen share, and removes the item.
   screen_share_icon_->set_toggle_is_one_way();

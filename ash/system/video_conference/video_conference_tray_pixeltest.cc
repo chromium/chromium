@@ -91,7 +91,7 @@ TEST_F(VideoConferenceTrayPixelTest, BasicPixelTest) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_no_focus_not_toggled",
-      /*revision_number=*/0, video_conference_tray()));
+      /*revision_number=*/1, video_conference_tray()));
 
   Shell::Get()->focus_cycler()->FocusWidget(
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())
@@ -104,13 +104,13 @@ TEST_F(VideoConferenceTrayPixelTest, BasicPixelTest) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_audio_focused_not_toggled",
-      /*revision_number=*/0, video_conference_tray()));
+      /*revision_number=*/1, video_conference_tray()));
 
   PressAndReleaseKey(ui::VKEY_RETURN);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_audio_focused_and_toggled",
-      /*revision_number=*/0, video_conference_tray()));
+      /*revision_number=*/1, video_conference_tray()));
 
   // Un-toggle the audio icon, then focus the video icon.
   PressAndReleaseKey(ui::VKEY_RETURN);
@@ -118,13 +118,13 @@ TEST_F(VideoConferenceTrayPixelTest, BasicPixelTest) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_video_focused_not_toggled",
-      /*revision_number=*/0, video_conference_tray()));
+      /*revision_number=*/1, video_conference_tray()));
 
   PressAndReleaseKey(ui::VKEY_RETURN);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_video_focused_and_toggled",
-      /*revision_number=*/0, video_conference_tray()));
+      /*revision_number=*/1, video_conference_tray()));
 
   // Un-toggle the video icon, then focus the screen capture icon.
   PressAndReleaseKey(ui::VKEY_RETURN);
@@ -133,19 +133,19 @@ TEST_F(VideoConferenceTrayPixelTest, BasicPixelTest) {
   // For screen capture, the button cannot be toggled.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_screen_capture_focused_not_toggled",
-      /*revision_number=*/0, video_conference_tray()));
+      /*revision_number=*/1, video_conference_tray()));
 
   // Focus the toggle button icon.
   PressAndReleaseKey(ui::VKEY_TAB);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_toggle_bubble_focused_not_toggled",
-      /*revision_number=*/0, video_conference_tray()));
+      /*revision_number=*/1, video_conference_tray()));
 
   PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_toggle_bubble_focused_and_toggled",
-      /*revision_number=*/0, video_conference_tray()));
+      /*revision_number=*/1, video_conference_tray()));
 }
 
 }  // namespace ash
