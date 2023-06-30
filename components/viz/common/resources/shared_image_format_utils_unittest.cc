@@ -10,7 +10,7 @@
 namespace viz {
 namespace {
 
-class ResourceFormatUtilTest : public testing::Test {
+class SharedImageFormatUtilsTest : public testing::Test {
  public:
   void TestToClosestSkColorType(std::vector<SkColorType> expected_types,
                                 SharedImageFormat format,
@@ -24,7 +24,8 @@ class ResourceFormatUtilTest : public testing::Test {
   }
 };
 
-TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYUVBiplanar8bit) {
+TEST_F(SharedImageFormatUtilsTest,
+       ToClosestSkColorTypeMultiPlaneYUVBiplanar8bit) {
   // 8-bit 4:2:0 Y_UV biplanar format (YUV_420_BIPLANAR)
   SharedImageFormat format = MultiPlaneFormat::kNV12;
   std::vector<SkColorType> expected_types = {kAlpha_8_SkColorType,
@@ -32,7 +33,7 @@ TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYUVBiplanar8bit) {
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/true);
 }
 
-TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYVU) {
+TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeMultiPlaneYVU) {
   // 8-bit 4:2:0 Y_V_U format (YVU_420)
   SharedImageFormat format = MultiPlaneFormat::kYV12;
   std::vector<SkColorType> expected_types = {
@@ -40,7 +41,7 @@ TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYVU) {
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/true);
 }
 
-TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneP010) {
+TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeMultiPlaneP010) {
   // 10-bit 4:2:0 Y_UV biplanar format (P010)
   SharedImageFormat format = MultiPlaneFormat::kP010;
   std::vector<SkColorType> expected_types = {kA16_unorm_SkColorType,
@@ -48,7 +49,8 @@ TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneP010) {
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/true);
 }
 
-TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYUVBiplanar16bit) {
+TEST_F(SharedImageFormatUtilsTest,
+       ToClosestSkColorTypeMultiPlaneYUVBiplanar16bit) {
   // 16-bit 4:2:0 Y_UV biplanar format
   SharedImageFormat format =
       SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
@@ -59,7 +61,8 @@ TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYUVBiplanar16bit) {
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/true);
 }
 
-TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYUVATriplanar) {
+TEST_F(SharedImageFormatUtilsTest,
+       ToClosestSkColorTypeMultiPlaneYUVATriplanar) {
   // 16-bit float 4:2:0 Y_UV_A triplanar format
   SharedImageFormat format =
       SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV_A,
@@ -71,21 +74,21 @@ TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYUVATriplanar) {
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/true);
 }
 
-TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeSinglePlaneRGBX) {
+TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSinglePlaneRGBX) {
   // Single planar RGBX_8888
   SharedImageFormat format = SinglePlaneFormat::kRGBX_8888;
   std::vector<SkColorType> expected_types = {kRGB_888x_SkColorType};
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/true);
 }
 
-TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeSinglePlaneAlpha) {
+TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSinglePlaneAlpha) {
   // Single planar ALPHA_8
   SharedImageFormat format = SinglePlaneFormat::kALPHA_8;
   std::vector<SkColorType> expected_types = {kAlpha_8_SkColorType};
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/true);
 }
 
-TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeSoftwareRGBX) {
+TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSoftwareRGBX) {
   // Software Compositing.
   // Single planar RGBX_8888
   SharedImageFormat format = SinglePlaneFormat::kRGBX_8888;
@@ -93,7 +96,7 @@ TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeSoftwareRGBX) {
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/false);
 }
 
-TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeSoftwareYUV) {
+TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSoftwareYUV) {
   // Software Compositing.
   // 10-bit 4:2:0 Y_UV biplanar format (P010)
   SharedImageFormat format = MultiPlaneFormat::kP010;
