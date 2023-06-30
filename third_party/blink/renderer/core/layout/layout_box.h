@@ -307,9 +307,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       SetWidth(size);
   }
 
-  virtual LayoutPoint Location() const {
+  // Location() is deprecated.  Use PhysicalLocation() instead.
+  LayoutPoint Location() const {
     NOT_DESTROYED();
-    return frame_location_;
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
+    return LocationInternal();
   }
   // LocationOffset() is deprecated.  Use PhysicalLocation() instead.
   LayoutSize LocationOffset() const {
@@ -1768,6 +1770,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   PhysicalRect LocalVisualRectIgnoringVisibility() const override;
 
+  virtual LayoutPoint LocationInternal() const {
+    NOT_DESTROYED();
+    return frame_location_;
+  }
+  // Allow LayoutMultiColumnSpannerPlaceholder to call LocationInternal() of
+  // other instances.
+  friend class LayoutMultiColumnSpannerPlaceholder;
+
   PhysicalOffset OffsetFromContainerInternal(
       const LayoutObject*,
       bool ignore_scroll_offset) const override;
@@ -1887,7 +1897,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const LayoutBox* container_box) const {
     NOT_DESTROYED();
     DCHECK_EQ(container_box, LocationContainer());
-    LayoutPoint location = Location();
+    LayoutPoint location = LocationInternal();
     if (LIKELY(!container_box || !container_box->HasFlippedBlocksWritingMode()))
       return PhysicalOffset(location);
 

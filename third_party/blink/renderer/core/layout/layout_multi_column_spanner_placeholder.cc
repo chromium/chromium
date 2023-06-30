@@ -147,12 +147,12 @@ bool LayoutMultiColumnSpannerPlaceholder::NodeAtPoint(
                                                     accumulated_offset, phase);
 }
 
-LayoutPoint LayoutMultiColumnSpannerPlaceholder::Location() const {
+LayoutPoint LayoutMultiColumnSpannerPlaceholder::LocationInternal() const {
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-    return layout_object_in_flow_thread_->Location();
+    return layout_object_in_flow_thread_->LocationInternal();
   }
-  return LayoutBox::Location();
+  return LayoutBox::LocationInternal();
 }
 
 PhysicalSize LayoutMultiColumnSpannerPlaceholder::Size() const {

@@ -226,7 +226,7 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
     NOT_DESTROYED();
     return "LayoutMultiColumnSet";
   }
-  LayoutPoint Location() const override;
+  LayoutPoint LocationInternal() const override;
 
   // Sets |columnRuleBounds| to the bounds of each column rule rect's painted
   // extent, adjusted by paint offset, before pixel snapping. Returns true if

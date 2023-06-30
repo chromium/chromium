@@ -471,7 +471,7 @@ void LayoutMultiColumnSet::WillBeRemovedFromTree() {
   DetachFromFlowThread();
 }
 
-LayoutPoint LayoutMultiColumnSet::Location() const {
+LayoutPoint LayoutMultiColumnSet::LocationInternal() const {
   NOT_DESTROYED();
   UpdateGeometryIfNeeded();
   return frame_location_;

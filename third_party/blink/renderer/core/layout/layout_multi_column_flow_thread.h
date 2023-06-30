@@ -268,7 +268,7 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   // "public" for |MakeGarbageCollected<T>|.
   explicit LayoutMultiColumnFlowThread();
 
-  LayoutPoint Location() const override;
+  LayoutPoint LocationInternal() const override;
   PhysicalSize Size() const override;
 
  private:

@@ -1397,36 +1397,28 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
 
 LayoutUnit LayoutBox::LogicalLeft() const {
   NOT_DESTROYED();
-  auto location = Location();
-  LayoutUnit logical_left =
-      StyleRef().IsHorizontalWritingMode() ? location.X() : location.Y();
   if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
     auto [offset, container_writing_mode] = LogicalLocation(*this);
-    LayoutUnit left = IsParallelWritingMode(container_writing_mode,
-                                            StyleRef().GetWritingMode())
-                          ? offset.inline_offset
-                          : offset.block_offset;
-    DCHECK_EQ(logical_left, left);
-    return left;
+    return IsParallelWritingMode(container_writing_mode,
+                                 StyleRef().GetWritingMode())
+               ? offset.inline_offset
+               : offset.block_offset;
   }
-  return logical_left;
+  auto location = Location();
+  return StyleRef().IsHorizontalWritingMode() ? location.X() : location.Y();
 }
 
 LayoutUnit LayoutBox::LogicalTop() const {
   NOT_DESTROYED();
-  auto location = Location();
-  LayoutUnit logical_top =
-      StyleRef().IsHorizontalWritingMode() ? location.Y() : location.X();
   if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
     auto [offset, container_writing_mode] = LogicalLocation(*this);
-    LayoutUnit top = IsParallelWritingMode(container_writing_mode,
-                                           StyleRef().GetWritingMode())
-                         ? offset.block_offset
-                         : offset.inline_offset;
-    DCHECK_EQ(logical_top, top);
-    return top;
+    return IsParallelWritingMode(container_writing_mode,
+                                 StyleRef().GetWritingMode())
+               ? offset.block_offset
+               : offset.inline_offset;
   }
-  return logical_top;
+  auto location = Location();
+  return StyleRef().IsHorizontalWritingMode() ? location.Y() : location.X();
 }
 
 LayoutUnit LayoutBox::ConstrainLogicalHeightByMinMax(

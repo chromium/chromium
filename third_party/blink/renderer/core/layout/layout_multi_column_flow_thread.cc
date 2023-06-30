@@ -1277,7 +1277,7 @@ void LayoutMultiColumnFlowThread::UpdateLogicalWidth() {
   SetLogicalWidth(column_width);
 }
 
-LayoutPoint LayoutMultiColumnFlowThread::Location() const {
+LayoutPoint LayoutMultiColumnFlowThread::LocationInternal() const {
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
       !HasValidCachedGeometry() && EverHadLayout()) {

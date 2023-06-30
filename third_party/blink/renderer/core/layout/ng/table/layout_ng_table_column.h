@@ -41,7 +41,7 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
 
   PhysicalSize Size() const override;
 
-  LayoutPoint Location() const override;
+  LayoutPoint LocationInternal() const override;
 
   // LayoutObject methods start.
 

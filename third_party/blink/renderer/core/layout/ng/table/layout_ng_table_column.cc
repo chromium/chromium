@@ -176,7 +176,7 @@ PhysicalSize LayoutNGTableColumn::Size() const {
   return ToPhysicalSize(size, table->StyleRef().GetWritingMode());
 }
 
-LayoutPoint LayoutNGTableColumn::Location() const {
+LayoutPoint LayoutNGTableColumn::LocationInternal() const {
   NOT_DESTROYED();
   if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
     return frame_location_;

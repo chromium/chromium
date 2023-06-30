@@ -174,7 +174,7 @@ void LayoutCustomScrollbarPart::SetOverriddenFrameRect(const LayoutRect& rect) {
   overridden_rect_ = rect;
 }
 
-LayoutPoint LayoutCustomScrollbarPart::Location() const {
+LayoutPoint LayoutCustomScrollbarPart::LocationInternal() const {
   NOT_DESTROYED();
   return overridden_rect_.Location();
 }

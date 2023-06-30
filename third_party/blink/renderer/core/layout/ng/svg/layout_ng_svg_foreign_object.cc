@@ -75,7 +75,7 @@ AffineTransform LayoutNGSVGForeignObject::LocalToSVGParentTransform() const {
   return transform;
 }
 
-LayoutPoint LayoutNGSVGForeignObject::Location() const {
+LayoutPoint LayoutNGSVGForeignObject::LocationInternal() const {
   NOT_DESTROYED();
   return overridden_location_;
 }

@@ -66,7 +66,7 @@ class LayoutNGSVGForeignObject final
   AffineTransform LocalToSVGParentTransform() const override;
 
   // LayoutBox override:
-  LayoutPoint Location() const override;
+  LayoutPoint LocationInternal() const override;
   PaintLayerType LayerTypeRequired() const override;
   bool CreatesNewFormattingContext() const override;
 

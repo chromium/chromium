@@ -285,7 +285,6 @@ TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnReverseHTB) {
   EXPECT_EQ(gfx::PointF(0, 716), scrollable_area->ScrollPosition());
 
   const auto* child = GetLayoutBoxByElementId("child");
-  EXPECT_EQ(LayoutPoint(90, -686), child->Location());
   EXPECT_EQ(PhysicalOffset(90, -686), child->PhysicalLocation());
 }
 
