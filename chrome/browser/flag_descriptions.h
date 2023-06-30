@@ -2756,6 +2756,9 @@ extern const char kLayoutExtractionDescription[];
 extern const char kOmniboxDriveSuggestionsName[];
 extern const char kOmniboxDriveSuggestionsDescription[];
 
+extern const char kOmniboxDriveSuggestionsNoSettingName[];
+extern const char kOmniboxDriveSuggestionsNoSettingDescription[];
+
 extern const char kPasswordsGroupingName[];
 extern const char kPasswordsGroupingDescription[];
 

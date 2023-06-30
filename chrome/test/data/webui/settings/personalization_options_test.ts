@@ -12,6 +12,7 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // <if expr="chromeos_ash">
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 // <if expr="not is_chromeos">
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -30,7 +31,10 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
+      // TODO(crbug.com/1459031): Remove the tests for "driveSuggest" when
+      // the setting is completely removed.
       driveSuggestAvailable: true,
+      driveSuggestNoSetting: false,
       signinAvailable: true,
       changePriceEmailNotificationsEnabled: true,
     });
@@ -67,23 +71,35 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
   });
 
   test('DriveSearchSuggestControl', function() {
-    assertFalse(
-        !!testElement.shadowRoot!.querySelector('#driveSuggestControl'));
+    assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
 
     testElement.syncStatus = {
       signedIn: true,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();
-    assertTrue(!!testElement.shadowRoot!.querySelector('#driveSuggestControl'));
+    assertTrue(isChildVisible(testElement, '#driveSuggestControl'));
 
     testElement.syncStatus = {
       signedIn: true,
       statusAction: StatusAction.REAUTHENTICATE,
     };
     flush();
-    assertFalse(
-        !!testElement.shadowRoot!.querySelector('#driveSuggestControl'));
+    assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
+  });
+
+  test('DriveSearchSuggestControlDeprecated', function() {
+    testElement.syncStatus = {
+      signedIn: true,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+    assertTrue(isChildVisible(testElement, '#driveSuggestControl'));
+
+    loadTimeData.overrideValues({'driveSuggestNoSetting': false});
+    buildTestElement();
+
+    assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
   });
 
   // <if expr="not is_chromeos">

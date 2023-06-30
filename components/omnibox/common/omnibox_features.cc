@@ -289,6 +289,14 @@ BASE_FEATURE(kDomainSuggestions,
              "OmniboxDomainSuggestions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Drive suggestions are available to all signed-in users who have
+// not opted out of server-side suggestions. The 'Show Google Drive suggestions'
+// setting is removed. Otherwise, Drive suggestions also require that the user
+// syncs and has the aforementioned setting enabled.
+BASE_FEATURE(kDriveSuggestionsNoSetting,
+             "DriveSuggestionsNoSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows Omnibox to dynamically adjust number of offered suggestions to fill in
 // the space between Omnibox and the soft keyboard. The number of suggestions
 // shown will be no less than minimum for the platform (eg. 5 for Android).

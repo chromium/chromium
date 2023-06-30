@@ -1903,6 +1903,9 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "driveSuggestAvailable",
       base::FeatureList::IsEnabled(omnibox::kDocumentProvider));
+  html_source->AddBoolean(
+      "driveSuggestNoSetting",
+      base::FeatureList::IsEnabled(omnibox::kDriveSuggestionsNoSetting));
 
   bool show_secure_dns = IsSecureDnsAvailable();
   bool link_secure_dns = ShouldLinkSecureDnsOsSettings();

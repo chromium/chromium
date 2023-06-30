@@ -259,7 +259,8 @@ export class SettingsPersonalizationOptionsElement extends
   private shouldShowDriveSuggest_(): boolean {
     return loadTimeData.getBoolean('driveSuggestAvailable') &&
         !!this.syncStatus && !!this.syncStatus.signedIn &&
-        this.syncStatus.statusAction !== StatusAction.REAUTHENTICATE;
+        this.syncStatus.statusAction !== StatusAction.REAUTHENTICATE &&
+        !loadTimeData.getBoolean('driveSuggestNoSetting');
   }
 
   private onSigninAllowedChange_() {

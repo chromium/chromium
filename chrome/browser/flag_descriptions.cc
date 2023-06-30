@@ -4783,6 +4783,16 @@ const char kOmniboxDriveSuggestionsDescription[] =
     "Display suggestions for Google Drive documents in the omnibox when Google "
     "is the default search engine.";
 
+const char kOmniboxDriveSuggestionsNoSettingName[] =
+    "Omnibox Google Drive Document suggestions available to all signed-in "
+    "users";
+const char kOmniboxDriveSuggestionsNoSettingDescription[] =
+    "Omnibox Drive suggestions are available to all signed-in users. "
+    "Previously, they were only available to syncing users who had the 'Show "
+    "Google Drive suggestions' setting enabled. The setting is now removed, "
+    "however, the existing 'Improve search suggestions' setting can still be "
+    "used to disable all server-side suggestions altogether.";
+
 const char kPasswordsGroupingName[] = "Passwords grouping";
 const char kPasswordsGroupingDescription[] =
     "Enables displaying passwords grouped together using information from "

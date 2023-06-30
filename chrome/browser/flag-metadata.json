@@ -5720,6 +5720,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-drive-suggestions-no-setting",
+    "owners": [ "msramek", "chrome-omnibox-team@google.com", "chrome-privacy-controls@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-dynamic-max-autocomplete",
     "owners": [ "stkhapugin", "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120
