@@ -218,10 +218,6 @@ TEST_F(AccountsTableViewControllerTest, IgnoreMismatchWithAccountInfo) {
 // Tests that when eligible the account model holds the passphrase error and
 // clears the error when the error is resolved.
 TEST_F(AccountsTableViewControllerTest, HoldPassphraseErrorWhenEligible) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kIndicateAccountStorageErrorInAccountCell);
-
   const std::string email = "foo@gmail.com";
   const std::string gaia_id = "fooID";
 
@@ -255,10 +251,6 @@ TEST_F(AccountsTableViewControllerTest, HoldPassphraseErrorWhenEligible) {
 // the error is resolved. Triggers the model update by firing a Sync State
 // change.
 TEST_F(AccountsTableViewControllerTest, ClearPassphraseErrorWhenResolved) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kIndicateAccountStorageErrorInAccountCell);
-
   const std::string email = "foo@gmail.com";
   const std::string gaia_id = "fooID";
 
@@ -302,10 +294,6 @@ TEST_F(AccountsTableViewControllerTest, ClearPassphraseErrorWhenResolved) {
 // Tests that when ineligible the account model doesn't hold the Account Storage
 // error.
 TEST_F(AccountsTableViewControllerTest, DontHoldPassphraseErrorWhenIneligible) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kIndicateAccountStorageErrorInAccountCell);
-
   const std::string email = "foo@gmail.com";
   const std::string gaia_id = "fooID";
 
@@ -338,10 +326,6 @@ TEST_F(AccountsTableViewControllerTest, DontHoldPassphraseErrorWhenIneligible) {
 // error when there is no error.
 TEST_F(AccountsTableViewControllerTest,
        DontHoldPassphraseErrorWhenEligibleNoError) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kIndicateAccountStorageErrorInAccountCell);
-
   const std::string email = "foo@gmail.com";
   const std::string gaia_id = "fooID";
 

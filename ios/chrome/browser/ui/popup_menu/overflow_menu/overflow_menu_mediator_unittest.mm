@@ -673,12 +673,6 @@ TEST_F(OverflowMenuMediatorTest, TestOpenWhatsNewDoesntCrashWithNoTracker) {
 // positioned at at most kNewDestinationsInsertionIndex when there is an
 // eligible identity error that can be resolved from the Settings menu.
 TEST_F(OverflowMenuMediatorTest, TestEligibleIdentityErrorWhenSyncOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kIndicateSyncErrorInOverflowMenu,
-       syncer::kIndicateAccountStorageErrorInAccountCell},
-      {});
-
   CreateMediator(/*is_incognito=*/NO);
 
   syncer::MockSyncService syncService;
@@ -702,12 +696,6 @@ TEST_F(OverflowMenuMediatorTest, TestEligibleIdentityErrorWhenSyncOff) {
 // Tests that there is no error badge displayed on the Settings destination when
 // there is no eligible identity error. Sync is OFF.
 TEST_F(OverflowMenuMediatorTest, TestNoEligibleIdentityErrorWhenSyncOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kIndicateSyncErrorInOverflowMenu,
-       syncer::kIndicateAccountStorageErrorInAccountCell},
-      {});
-
   CreateMediator(/*is_incognito=*/NO);
 
   syncer::MockSyncService syncService;
@@ -729,12 +717,6 @@ TEST_F(OverflowMenuMediatorTest, TestNoEligibleIdentityErrorWhenSyncOff) {
 // a Sync error that will be indicated in the Settings menu. The account is
 // signed in and has Sync turned ON.
 TEST_F(OverflowMenuMediatorTest, TestSyncError) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kIndicateSyncErrorInOverflowMenu,
-       syncer::kIndicateAccountStorageErrorInAccountCell},
-      {});
-
   CreateMediator(/*is_incognito=*/NO);
 
   syncer::MockSyncService syncService;
@@ -758,12 +740,6 @@ TEST_F(OverflowMenuMediatorTest, TestSyncError) {
 // Tests that there is no error cue (red dot) displayed on the Settings
 // destination when there is no error in both Sync and Identity levels.
 TEST_F(OverflowMenuMediatorTest, TestNoSyncError) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kIndicateSyncErrorInOverflowMenu,
-       syncer::kIndicateAccountStorageErrorInAccountCell},
-      {});
-
   CreateMediator(/*is_incognito=*/NO);
 
   syncer::MockSyncService syncService;
@@ -785,12 +761,6 @@ TEST_F(OverflowMenuMediatorTest, TestNoSyncError) {
 // Tests that the Settings destination that has an error cue has predence over
 // the promoted What's New destination.
 TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kIndicateSyncErrorInOverflowMenu,
-       syncer::kIndicateAccountStorageErrorInAccountCell},
-      {});
-
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
   CreateBrowserStatePrefs();
@@ -825,12 +795,6 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
 // history ranking.
 TEST_F(OverflowMenuMediatorTest,
        TestPromotedDestinationsWhenNoHistoryUsageRanking) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kIndicateSyncErrorInOverflowMenu,
-       syncer::kIndicateAccountStorageErrorInAccountCell},
-      {});
-
   CreateMediator(/*is_incognito=*/NO);
   syncer::MockSyncService syncService;
   ON_CALL(syncService, GetUserActionableError())

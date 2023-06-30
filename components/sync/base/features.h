@@ -160,12 +160,6 @@ BASE_DECLARE_FEATURE(kSyncPollImmediatelyOnEveryStartup);
 // there won't be an additional delay.
 BASE_DECLARE_FEATURE(kSyncPollWithoutDelayOnStartup);
 
-#if BUILDFLAG(IS_IOS)
-// Feature flag to enable indicating the Account Storage error in the Account
-// Cell when Sync is turned OFF (iOS only).
-BASE_DECLARE_FEATURE(kIndicateAccountStorageErrorInAccountCell);
-#endif  // BUILDFLAG(IS_IOS)
-
 #if !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(IS_IOS)
 // Enables syncing the WEBAUTHN_CREDENTIAL data type.
 BASE_DECLARE_FEATURE(kSyncWebauthnCredentials);

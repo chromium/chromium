@@ -94,11 +94,6 @@ GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForEverything() {
 }  // namespace
 
 AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kIndicateAccountStorageErrorInAccountCell)) {
-    return nil;
-  }
-
   DCHECK(sync_service);
 
   if (sync_service->IsSyncFeatureEnabled()) {
@@ -159,10 +154,6 @@ SyncState GetSyncState(syncer::SyncService* sync_service) {
 bool ShouldIndicateIdentityErrorInOverflowMenu(
     syncer::SyncService* sync_service) {
   DCHECK(sync_service);
-
-  if (!IsIndicateSyncErrorInOverflowMenuEnabled()) {
-    return false;
-  }
 
   return GetAccountErrorUIInfo(sync_service) != nil ||
          GetSyncState(sync_service) == SyncState::kSyncEnabledWithError;

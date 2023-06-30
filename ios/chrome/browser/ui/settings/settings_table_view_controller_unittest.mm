@@ -405,10 +405,6 @@ TEST_F(SettingsTableViewControllerTest, SigninDisabledByPolicy) {
 // Verifies that when eligible the account item model holds the Account Storage
 // error.
 TEST_F(SettingsTableViewControllerTest, HoldAccountStorageErrorWhenEligible) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kIndicateAccountStorageErrorInAccountCell);
-
   // Set account error.
   ON_CALL(*sync_service_mock_, GetUserActionableError())
       .WillByDefault(
@@ -434,10 +430,6 @@ TEST_F(SettingsTableViewControllerTest, HoldAccountStorageErrorWhenEligible) {
 // Verifies that the error is removed from the model when the Account Storage
 // error is resolved. Triggers the model update by firing a Sync State change.
 TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kIndicateAccountStorageErrorInAccountCell);
-
   // Set account error to resolve.
   ON_CALL(*sync_service_mock_, GetUserActionableError())
       .WillByDefault(
@@ -479,10 +471,6 @@ TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
 // Verifies that when ineligible the account item model doesn't hold the Account
 // Storage error.
 TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenIneligible) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kIndicateAccountStorageErrorInAccountCell);
-
   // Enable Sync to make the account item ineligible to indicate errors.
   SetupSyncServiceEnabledExpectations();
 
@@ -512,10 +500,6 @@ TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenIneligible) {
 // Verifies that when eligible the account item model doesn't have the Account
 // Storage error when there is no error.
 TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenNoError) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kIndicateAccountStorageErrorInAccountCell);
-
   // Set no account error state.
   ON_CALL(*sync_service_mock_, GetUserActionableError())
       .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));

@@ -145,13 +145,6 @@ void ResolvePassphraseErrorFromOverflowMenu() {
     EARL_GREY_TEST_SKIPPED(kOverflowMenuSkipTestMessage)
   }
 
-  AppLaunchConfiguration config;
-  // Enable Overflow Menu identity error indicators.
-  config.features_enabled.push_back(kIndicateSyncErrorInOverflowMenu);
-  config.features_enabled.push_back(
-      syncer::kIndicateAccountStorageErrorInAccountCell);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
@@ -185,13 +178,6 @@ void ResolvePassphraseErrorFromOverflowMenu() {
   if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
     EARL_GREY_TEST_SKIPPED(kOverflowMenuSkipTestMessage)
   }
-
-  AppLaunchConfiguration config;
-  // Enable Overflow Menu indicators.
-  config.features_enabled.push_back(kIndicateSyncErrorInOverflowMenu);
-  config.features_enabled.push_back(
-      syncer::kIndicateAccountStorageErrorInAccountCell);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.

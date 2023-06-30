@@ -209,14 +209,6 @@ BASE_FEATURE(kNewNTPOmniboxLayout,
              "kNewNTPOmniboxLayout",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIndicateSyncErrorInOverflowMenu,
-             "IndicateSyncErrorInOverflowMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsIndicateSyncErrorInOverflowMenuEnabled() {
-  return base::FeatureList::IsEnabled(kIndicateSyncErrorInOverflowMenu);
-}
-
 BASE_FEATURE(kBottomOmniboxSteadyState,
              "BottomOmniboxSteadyState",
              base::FEATURE_DISABLED_BY_DEFAULT);

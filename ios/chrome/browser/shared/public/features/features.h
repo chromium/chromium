@@ -159,13 +159,6 @@ bool IsConsistencyNewAccountInterfaceEnabled();
 // Feature flag to enable the new layout of the NTP omnibox.
 BASE_DECLARE_FEATURE(kNewNTPOmniboxLayout);
 
-// Feature flag to enable indicating Sync errors (including identity errors)
-// on the Settings destination in the overflow menu carousel.
-BASE_DECLARE_FEATURE(kIndicateSyncErrorInOverflowMenu);
-
-// Returns true if the `kIndicateSyncErrorInOverflowMenu` feature is enabled.
-bool IsIndicateSyncErrorInOverflowMenuEnabled();
-
 // Feature flag to move the steady-state (unfocused) omnibox to the bottom.
 BASE_DECLARE_FEATURE(kBottomOmniboxSteadyState);
 
