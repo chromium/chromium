@@ -14,6 +14,8 @@ class SampleProxyEdgeCases {
     @interface ShouldBeIgnored {}
     static class OtherInnerClass {}
 
+    public @interface ShouldBeIgnored {}
+
     @NativeMethods
     interface Natives {
         void foo__weirdly__escaped_name1();

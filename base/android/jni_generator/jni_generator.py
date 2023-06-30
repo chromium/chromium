@@ -93,13 +93,12 @@ class ParseError(SyntaxError):
   """Exception thrown when we can't parse the input file."""
 
   def __init__(self, description, *context_lines):
-    super().__init__()
-    self.description = description
+    super().__init__(description)
     self.context_lines = context_lines
 
   def __str__(self):
     context = '\n'.join(self.context_lines)
-    return '***\nERROR: %s\n\n%s\n***' % (self.description, context)
+    return '***\nERROR: %s\n\n%s\n***' % (self.msg, context)
 
 
 class NativeMethod(object):
@@ -182,7 +181,6 @@ class ConstantField(object):
 
 def JavaDataTypeToC(java_type):
   """Returns a C datatype for the given java type."""
-  java_type = parse.strip_generics(java_type)
   if java_type in JAVA_POD_TYPE_MAP:
     return JAVA_POD_TYPE_MAP[java_type]
   elif java_type in JAVA_TYPE_MAP:
@@ -330,7 +328,6 @@ def GetStaticCastForReturnType(return_type):
       'float[]': 'jfloatArray',
       'double[]': 'jdoubleArray'
   }
-  return_type = parse.strip_generics(return_type)
   ret = type_map.get(return_type, None)
   if ret:
     return ret
@@ -478,8 +475,10 @@ class JNIFromJavaP(object):
   """Uses 'javap' to parse a .class file and generate the JNI header file."""
 
   def __init__(self, contents, options):
+    contents = parse.remove_generics(contents)
+    lines = contents.splitlines()
     self.options = options
-    for line in contents:
+    for line in lines:
       m = re.match('.*?(public).*?(?:class|interface) (\S+?)( |\Z)', line)
       if m:
         fqn = m.group(2).split('<', 1)[0].replace('.', '/')
@@ -492,7 +491,7 @@ class JNIFromJavaP(object):
     re_method = re.compile('(?P<prefix>.*?)(?P<return_type>\S+?) (?P<name>\w+?)'
                            '\((?P<params>.*?)\)')
     self.called_by_natives = []
-    for lineno, content in enumerate(contents[2:], 2):
+    for lineno, content in enumerate(lines[2:], 2):
       match = re.match(re_method, content)
       if not match:
         continue
@@ -506,12 +505,12 @@ class JNIFromJavaP(object):
               name=match.group('name'),
               params=parse.parse_param_list(match.group('params'),
                                             from_javap=True),
-              signature=parse.parse_javap_signature(contents[lineno + 1]))
+              signature=parse.parse_javap_signature(lines[lineno + 1]))
       ]
     re_constructor = re.compile('(.*?)public ' +
                                 self.java_class.full_name_with_dots +
                                 '\((?P<params>.*?)\)')
-    for lineno, content in enumerate(contents[2:], 2):
+    for lineno, content in enumerate(lines[2:], 2):
       match = re.match(re_constructor, content)
       if not match:
         continue
@@ -524,8 +523,8 @@ class JNIFromJavaP(object):
                          name='Constructor',
                          params=parse.parse_param_list(match.group('params'),
                                                        from_javap=True),
-                         signature=parse.parse_javap_signature(contents[lineno +
-                                                                        1]),
+                         signature=parse.parse_javap_signature(lines[lineno +
+                                                                     1]),
                          is_constructor=True)
       ]
     self.called_by_natives = MangleCalledByNatives(self.type_resolver,
@@ -534,13 +533,13 @@ class JNIFromJavaP(object):
     re_constant_field = re.compile('.*?public static final int (?P<name>.*?);')
     re_constant_field_value = re.compile(
         '.*?Constant(Value| value): int (?P<value>(-*[0-9]+)?)')
-    for lineno, content in enumerate(contents[2:], 2):
+    for lineno, content in enumerate(lines[2:], 2):
       match = re.match(re_constant_field, content)
       if not match:
         continue
-      value = re.match(re_constant_field_value, contents[lineno + 2])
+      value = re.match(re_constant_field_value, lines[lineno + 2])
       if not value:
-        value = re.match(re_constant_field_value, contents[lineno + 3])
+        value = re.match(re_constant_field_value, lines[lineno + 3])
       if value:
         self.constant_fields.append(
             ConstantField(name=match.group('name'), value=value.group('value')))
@@ -566,7 +565,7 @@ class JNIFromJavaP(object):
         stderr=subprocess.PIPE,
         universal_newlines=True)
     stdout, _ = p.communicate()
-    jni_from_javap = JNIFromJavaP(stdout.split('\n'), options)
+    jni_from_javap = JNIFromJavaP(stdout, options)
     return jni_from_javap
 
 class JNIFromJavaSource(object):

@@ -62,6 +62,19 @@ def _remove_comments(contents):
   return _COMMENT_REMOVER_REGEX.sub(replacer, contents)
 
 
+# This will also break lines with comparison operators, but we don't care.
+_GENERICS_REGEX = re.compile(r'<[^<>\n]*>')
+
+
+def remove_generics(value):
+  """Strips Java generics from a string."""
+  while True:
+    ret = _GENERICS_REGEX.sub('', value)
+    if len(ret) == len(value):
+      return ret
+    value = ret
+
+
 _PACKAGE_REGEX = re.compile('^package\s+(\S+?);', flags=re.MULTILINE)
 
 
@@ -109,24 +122,6 @@ def parse_javap_signature(signature_line):
   return '"%s"' % signature_line[index + len(prefix):]
 
 
-def strip_generics(value):
-  """Strips Java generics from a string."""
-  nest_level = 0  # How deeply we are nested inside the generics.
-  start_index = 0  # Starting index of the last non-generic region.
-  out = []
-
-  for i, c in enumerate(value):
-    if c == '<':
-      if nest_level == 0:
-        out.append(value[start_index:i])
-      nest_level += 1
-    elif c == '>':
-      start_index = i + 1
-      nest_level -= 1
-  out.append(value[start_index:])
-  return ''.join(out)
-
-
 # Supports only @Foo and @Foo("value").
 _ANNOTATION_REGEX = re.compile(r'@([\w.]+)(?:\(\s*"(.*?)\"\s*\))?\s*')
 
@@ -149,7 +144,6 @@ def parse_param_list(line, from_javap=False):
   if not line:
     return []
   ret = []
-  line = strip_generics(line)
   line = _FINAL_REGEX.sub('', line)
   for p in line.split(','):
     annotations, p = _parse_type_with_annotations(p)
@@ -213,7 +207,7 @@ def _parse_proxy_natives(contents, resolver):
                      datatype=resolver.resolve_type(p.datatype),
                      name=p.name) for p in params
     ]
-    return_type = resolver.resolve_type(strip_generics(return_type_part))
+    return_type = resolver.resolve_type(return_type_part)
     ret.methods.append(
         ParsedMethod(
             name=name,
@@ -258,6 +252,7 @@ def _do_parse(filename, *, package_prefix):
   with open(filename) as f:
     contents = f.read()
   contents = _remove_comments(contents)
+  contents = remove_generics(contents)
 
   outer_class, nested_classes = _parse_java_classes(contents)
 
@@ -306,5 +301,5 @@ def parse_java_file(filename, *, package_prefix=None):
   try:
     return _do_parse(filename, package_prefix=package_prefix)
   except SyntaxError as e:
-    e.msg += f' (when parsing {filename})'
+    e.msg = (e.msg or '') + f' (when parsing {filename})'
     raise

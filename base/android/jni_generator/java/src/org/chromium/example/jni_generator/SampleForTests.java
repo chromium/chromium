@@ -222,6 +222,22 @@ class SampleForTests {
         return null;
     }
 
+    // Test overloads (causes names to be mangled).
+    @CalledByNative
+    static InnerEnum getInnerEnum(int a) {
+        return null;
+    }
+
+    // Test jclass and jthrowable, as well as generics.
+    @CalledByNative
+    private Class<Map<String, String>> getClass(Class<Map<String, String>> arg0) {
+        return null;
+    }
+    @CalledByNative
+    private Throwable getThrowable(Throwable arg0) {
+        return null;
+    }
+
     // ---------------------------------------------------------------------------------------------
     // The following methods demonstrate declaring methods to call into C++ from Java.
     // The generator detects the type and name of the first parameter.
@@ -265,6 +281,10 @@ class SampleForTests {
         // Note that it returns a ScopedJavaLocalRef<jobject> so that you don' have to worry about
         // deleting the JNI local reference. This is similar with Strings and arrays.
         Object getNonPODDatatype(SampleForTests caller);
+
+        // Test jclass and jthrowable, as well as generics.
+        Class<Map<String, String>> getClass(Class<Map<String, String>> arg0);
+        Throwable getThrowable(Throwable arg0);
 
         // Similar to nativeDestroy above, this will cast nativeCPPClass into pointer of CPPClass
         // type and call its Method member function. Replace "CPPClass" with your particular class

@@ -67,6 +67,16 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   }
 
   @Override
+  public Class getClass(Class arg0) {
+    return (Class) GEN_JNI.this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getClass(arg0);
+  }
+
+  @Override
+  public Throwable getThrowable(Throwable arg0) {
+    return (Throwable) GEN_JNI.this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getThrowable(arg0);
+  }
+
+  @Override
   public int method(long nativeCPPClass, SampleForTests caller) {
     return (int) GEN_JNI.this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_method(nativeCPPClass, caller);
   }

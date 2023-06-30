@@ -14,6 +14,8 @@ public class GEN_JNI {
   public static native float org_chromium_example_jni_1generator_SampleForTests_getFloatFunction();
   public static native void org_chromium_example_jni_1generator_SampleForTests_setNonPODDatatype(Object caller, Object rect);
   public static native Object org_chromium_example_jni_1generator_SampleForTests_getNonPODDatatype(Object caller);
+  public static native Class org_chromium_example_jni_1generator_SampleForTests_getClass(Class arg0);
+  public static native Throwable org_chromium_example_jni_1generator_SampleForTests_getThrowable(Throwable arg0);
   public static native int org_chromium_example_jni_1generator_SampleForTests_method(long nativeCPPClass, Object caller);
   public static native double org_chromium_example_jni_1generator_SampleForTests_methodOtherP0(long nativePtr, Object caller);
   public static native void org_chromium_example_jni_1generator_SampleForTests_addStructB(long nativeCPPClass, Object caller, Object b);

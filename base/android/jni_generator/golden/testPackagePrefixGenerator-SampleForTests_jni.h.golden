@@ -153,6 +153,29 @@ JNI_GENERATOR_EXPORT jobject
       caller)).Release();
 }
 
+static base::android::ScopedJavaLocalRef<jclass> JNI_SampleForTests_GetClass(JNIEnv* env, const
+    base::android::JavaParamRef<jclass>& arg0);
+
+JNI_GENERATOR_EXPORT jclass
+    Java_this_is_a_package_prefix_org_chromium_base_natives_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1chromium_1example_1jni_11generator_1SampleForTests_1getClass(
+    JNIEnv* env,
+    jclass jcaller,
+    jclass arg0) {
+  return JNI_SampleForTests_GetClass(env, base::android::JavaParamRef<jclass>(env, arg0)).Release();
+}
+
+static base::android::ScopedJavaLocalRef<jthrowable> JNI_SampleForTests_GetThrowable(JNIEnv* env,
+    const base::android::JavaParamRef<jthrowable>& arg0);
+
+JNI_GENERATOR_EXPORT jthrowable
+    Java_this_is_a_package_prefix_org_chromium_base_natives_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1chromium_1example_1jni_11generator_1SampleForTests_1getThrowable(
+    JNIEnv* env,
+    jclass jcaller,
+    jthrowable arg0) {
+  return JNI_SampleForTests_GetThrowable(env, base::android::JavaParamRef<jthrowable>(env,
+      arg0)).Release();
+}
+
 JNI_GENERATOR_EXPORT jint
     Java_this_is_a_package_prefix_org_chromium_base_natives_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1chromium_1example_1jni_11generator_1SampleForTests_1method(
     JNIEnv* env,
@@ -522,8 +545,9 @@ static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerIn
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerEnum(nullptr);
-static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env) {
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerEnumTIAPPOCEJSFTIE(nullptr);
+static base::android::ScopedJavaLocalRef<jobject>
+    Java_SampleForTests_getInnerEnumTIAPPOCEJSFTIE(JNIEnv* env) {
   jclass clazz =
       this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz,
@@ -536,12 +560,84 @@ static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEn
           clazz,
           "getInnerEnum",
 "()Lthis/is/a/package/prefix/org/chromium/example/jni_generator/SampleForTests$InnerEnum;",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerEnum);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerEnumTIAPPOCEJSFTIE);
 
   jobject ret =
       env->CallStaticObjectMethod(clazz,
           call_context.base.method_id);
   return base::android::ScopedJavaLocalRef<jobject>(env, ret);
+}
+
+static std::atomic<jmethodID>
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerEnumTIAPPOCEJSFTIE_I(nullptr);
+static base::android::ScopedJavaLocalRef<jobject>
+    Java_SampleForTests_getInnerEnumTIAPPOCEJSFTIE_I(JNIEnv* env, JniIntWrapper a) {
+  jclass clazz =
+      this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_clazz(env);
+  CHECK_CLAZZ(env, clazz,
+      this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_clazz(env), NULL);
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
+      base::android::MethodID::TYPE_STATIC>(
+          env,
+          clazz,
+          "getInnerEnum",
+"(I)Lthis/is/a/package/prefix/org/chromium/example/jni_generator/SampleForTests$InnerEnum;",
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerEnumTIAPPOCEJSFTIE_I);
+
+  jobject ret =
+      env->CallStaticObjectMethod(clazz,
+          call_context.base.method_id, as_jint(a));
+  return base::android::ScopedJavaLocalRef<jobject>(env, ret);
+}
+
+static std::atomic<jmethodID>
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getClass(nullptr);
+static base::android::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(JNIEnv* env, const
+    base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jclass>& arg0) {
+  jclass clazz =
+      this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(),
+      this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_clazz(env), NULL);
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
+      base::android::MethodID::TYPE_INSTANCE>(
+          env,
+          clazz,
+          "getClass",
+          "(Ljava/lang/Class;)Ljava/lang/Class;",
+          &g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getClass);
+
+  jclass ret =
+      static_cast<jclass>(env->CallObjectMethod(obj.obj(),
+          call_context.base.method_id, arg0.obj()));
+  return base::android::ScopedJavaLocalRef<jclass>(env, ret);
+}
+
+static std::atomic<jmethodID>
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getThrowable(nullptr);
+static base::android::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThrowable(JNIEnv* env,
+    const base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jthrowable>& arg0) {
+  jclass clazz =
+      this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(),
+      this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_clazz(env), NULL);
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
+      base::android::MethodID::TYPE_INSTANCE>(
+          env,
+          clazz,
+          "getThrowable",
+          "(Ljava/lang/Throwable;)Ljava/lang/Throwable;",
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getThrowable);
+
+  jthrowable ret =
+      static_cast<jthrowable>(env->CallObjectMethod(obj.obj(),
+          call_context.base.method_id, arg0.obj()));
+  return base::android::ScopedJavaLocalRef<jthrowable>(env, ret);
 }
 
 }  // namespace android
