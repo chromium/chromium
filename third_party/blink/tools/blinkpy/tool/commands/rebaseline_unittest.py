@@ -481,6 +481,50 @@ class TestRebaseline(BaseTestCase):
             'userscripts/first-test.html',
         ])
 
+    def test_rebaseline_reftest_with_text_failure(self):
+        """Ensure that a reftest can still have any text output [0] rebaselined.
+
+        [0]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#tests-that-are-both-pixel_reference-tests-and-text-tests
+        """
+        build = Build('MOCK Win7', 1000)
+        self.tool.results_fetcher.set_results(
+            build,
+            WebTestResults.from_json(
+                {
+                    'tests': {
+                        'reftest.html': {
+                            'expected': 'PASS',
+                            'actual': 'FAIL',
+                            'is_unexpected': True,
+                            'artifacts': {
+                                'actual_text': [
+                                    'https://results.api.cr.dev/reftest-actual.txt',
+                                ],
+                                'actual_image': [
+                                    'https://results.api.cr.dev/reftest-actual.png',
+                                ],
+                            },
+                        },
+                    },
+                },
+                step_name='blink_web_tests (with patch)'))
+        self._write('reftest-expected.html', 'reference page')
+
+        test_baseline_set = TestBaselineSet(self.tool.builders)
+        test_baseline_set.add('reftest.html', build,
+                              'blink_web_tests (with patch)')
+        self.command.rebaseline(self.options(), test_baseline_set)
+
+        self._assert_baseline_downloaded(
+            'https://results.api.cr.dev/reftest-actual.txt',
+            'platform/test-win-win7/reftest-expected.txt')
+        self.assertNotIn(
+            mock.call('https://results.api.cr.dev/reftest-actual.png'),
+            self.tool.web.get_binary.call_args_list)
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self._expand('platform/test-win-win7/reftest-expected.png')))
+
     def test_rebaseline_with_cache_hit(self):
         results = WebTestResults([
             WebTestResult('userscripts/first-test.html', {

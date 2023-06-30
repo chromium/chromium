@@ -257,7 +257,7 @@ class TestBaselineSet(collections.abc.Set):
 
 class RebaselineFailureReason(enum.Enum):
     TIMEOUT_OR_CRASH = 'May not run to completion'
-    REFTEST_FAILURE = 'Reftest failure'
+    REFTEST_IMAGE_FAILURE = 'Reftest image failure'
     FLAKY_OUTPUT = 'Flaky output'
     LOCAL_BASELINE_NOT_FOUND = 'Missing from local results directory'
 
@@ -302,12 +302,8 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             if (build.builder_name,
                     step_name) not in build_steps_to_fetch_from:
                 continue
-            if self._host_port.reference_files(test):
-                self._rebaseline_failures[task] = (
-                    RebaselineFailureReason.REFTEST_FAILURE)
-                continue
-            suffixes = list(
-                self._suffixes_for_actual_failures(test, build, step_name))
+            suffixes = self._suffixes_for_actual_failures(
+                test, build, step_name)
             if suffixes:
                 rebaselinable_set.add(test, build, step_name, port_name)
         return rebaselinable_set
@@ -793,6 +789,9 @@ class BaselineLoader:
             RebaselineFailure: If a test cannot be rebaselined (e.g., flakiness
                 outside fuzzy parameters).
         """
+        if suffix == 'png' and self._default_port.reference_files(test_name):
+            raise RebaselineFailure(
+                RebaselineFailureReason.REFTEST_IMAGE_FAILURE)
         assert artifacts
         contents_by_run = {
             artifact: self.load(artifact)

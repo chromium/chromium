@@ -673,10 +673,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'TestExpectations instead of being rebaselined.\n',
             'WARNING: Consider adding the following lines to '
             '/mock-checkout/third_party/blink/web_tests/TestExpectations:\n'
-            '[ Trusty ] two/image-fail.html [ Failure ]  # Reftest failure\n',
+            '[ Trusty ] two/image-fail.html [ Failure ]  # Reftest image failure\n',
         ])
-        self._mock_copier.find_baselines_to_copy.assert_not_called()
-        self.tool.main.assert_not_called()
         self.assertFalse(
             self.tool.filesystem.exists(
                 self._expand('platform/test-linux-trusty/'
