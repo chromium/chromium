@@ -44,10 +44,10 @@ constexpr const char* usage_msg =
            [--codec=<codec>] [--svc_mode=<svc scalability mode>]
            [--bitrate_mode=(cbr|vbr)]
            [--reverse] [--bitrate=<bitrate>]
-           [--disable_validator] [--output_bitstream]
-           [--output_images=(all|corrupt)] [--output_format=(png|yuv)]
-           [--output_folder=<filepath>] [--output_limit=<number>]
-           [--disable_vaapi_lock]
+           [--disable_validator] [--psnr_threshold=<number>]
+           [--output_bitstream] [--output_images=(all|corrupt)]
+           [--output_format=(png|yuv)] [--output_folder=<filepath>]
+           [--output_limit=<number>] [--disable_vaapi_lock]
            [-v=<level>] [--vmodule=<config>]
            [--gtest_help] [--help]
            [<video path>] [<video metadata path>]
@@ -128,6 +128,9 @@ constexpr double kVariableBitrateTolerance = 0.3;
 constexpr base::TimeDelta kBitrateCheckEventTimeout = base::Seconds(180);
 
 media::test::VideoEncoderTestEnvironment* g_env;
+// Declared PSNR threshold here, not in VideoEncoderTestEnvironment because it
+// is specific in video_encode_accelerator_tests.
+double g_psnr_threshold = PSNRVideoFrameValidator::kDefaultTolerance;
 
 // Video encode test class. Performs setup and teardown for each single test.
 class VideoEncoderTest : public ::testing::Test {
@@ -199,7 +202,7 @@ class VideoEncoderTest : public ::testing::Test {
 
     auto psnr_validator = PSNRVideoFrameValidator::Create(
         get_model_frame_cb, std::move(image_writer),
-        VideoFrameValidator::ValidationMode::kAverage);
+        VideoFrameValidator::ValidationMode::kAverage, g_psnr_threshold);
     LOG_ASSERT(psnr_validator);
     video_frame_processors.push_back(std::move(psnr_validator));
     return BitstreamValidator::Create(
@@ -807,6 +810,11 @@ int main(int argc, char** argv) {
       }
     } else if (it->first == "disable_validator") {
       enable_bitstream_validator = false;
+    } else if (it->first == "psnr_threshold") {
+      if (!base::StringToDouble(it->second, &media::test::g_psnr_threshold)) {
+        std::cout << "invalid number \"" << it->second << "\n";
+        return EXIT_FAILURE;
+      }
     } else if (it->first == "output_bitstream") {
       output_bitstream = true;
     } else if (it->first == "bitrate") {
