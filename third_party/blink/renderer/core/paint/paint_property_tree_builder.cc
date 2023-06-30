@@ -2500,6 +2500,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
             if (needs_effect_node) {
               EffectPaintPropertyNode::State effect_state;
               effect_state.local_transform_space = context_.current.transform;
+              effect_state.output_clip = context_.current.clip;
               effect_state.compositor_element_id =
                   scrollable_area->GetScrollbarElementId(orientation);
 
@@ -2545,6 +2546,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
         // are only painted for non-overlay scrollbars.
         EffectPaintPropertyNode::State effect_state;
         effect_state.local_transform_space = context_.current.transform;
+        effect_state.output_clip = context_.current.clip;
         effect_state.compositor_element_id =
             scrollable_area->GetScrollCornerElementId();
         OnUpdateEffect(properties_->UpdateScrollCornerEffect(

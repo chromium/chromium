@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/fake_remote_frame_host.h"
+#include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
@@ -560,6 +561,34 @@ TEST_P(CompositingTest, ContainPaintLayerBounds) {
   auto* layer = CcLayersByDOMElementId(RootCcLayer(), "target")[0];
   ASSERT_TRUE(layer);
   EXPECT_EQ(gfx::Size(200, 100), layer->bounds());
+}
+
+// https://crbug.com/1422877:
+TEST_P(CompositingTest, CompositedOverlayScrollbarUnderNonNonFastBorderRadius) {
+  ScopedMockOverlayScrollbars mock_overlay_scrollbars;
+
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <div id="rounded" style="width: 150px; height: 150px;
+                             border-radius: 10px / 20px; overflow: hidden;
+                             will-change: opacity">
+      Content1
+      <div id="scroll1" style="width: 100px; height: 100px; overflow: scroll">
+        <div style="height: 2000px">Content2</div>
+      </div>
+      Content3
+      <div id="scroll2" style="width: 100px; height: 100px; overflow: scroll">
+        <div style="height: 2000px">Content4</div>
+      </div>
+      Content5
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  ASSERT_TRUE(GetLayoutObjectById("scroll1")
+                  ->FirstFragment()
+                  .PaintProperties()
+                  ->VerticalScrollbarEffect());
+  EXPECT_EQ(1u, CcLayersByName(RootCcLayer(), "Synthesized Clip").size());
 }
 
 class CompositingSimTest : public PaintTestConfigurations, public SimTest {
