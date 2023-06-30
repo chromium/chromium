@@ -120,6 +120,7 @@ public class ReengagementNotificationControllerIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky on multiple bots, see crbug.com/1459539")
     public void testReengagementDifferentNotificationSent() {
         DefaultBrowserInfo2.setDefaultInfoForTests(
                 createDefaultInfo(/* passesPrecondition = */ true));
