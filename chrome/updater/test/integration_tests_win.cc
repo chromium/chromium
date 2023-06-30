@@ -146,6 +146,55 @@ HRESULT CreateLocalServer(GUID clsid,
               .HasValue(service_name.c_str());
 }
 
+// Apps like Chrome frequently write active bits to registry. These reg
+// values are allowed to be present after uninstall of updater. Everything else
+// should be deleted.
+void ExpectUpdateRegKeyCleanExcludeActivityRegValues(UpdaterScope scope) {
+  const HKEY root = UpdaterScopeToHKeyRoot(scope);
+  if (IsSystemInstall(scope)) {
+    // App activity bits are written to HKCU only.
+    EXPECT_FALSE(RegKeyExists(root, UPDATER_KEY));
+    return;
+  }
+
+  if (!RegKeyExists(root, UPDATER_KEY)) {
+    return;
+  }
+
+  // `ClientState` sub-key is the only possible child of `update` key.
+  EXPECT_EQ(
+      base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ)).GetValueCount(),
+      0u);
+  base::win::RegistryKeyIterator updater_key_iter(root, UPDATER_KEY,
+                                                  KEY_WOW64_32KEY);
+  if (updater_key_iter.SubkeyCount() == 0) {
+    return;
+  }
+  EXPECT_EQ(updater_key_iter.SubkeyCount(), 1u);
+  EXPECT_STREQ(updater_key_iter.Name(), L"ClientState");
+
+  EXPECT_EQ(base::win::RegKey(root, CLIENT_STATE_KEY, Wow6432(KEY_READ))
+                .GetValueCount(),
+            0u);
+  const std::vector<std::wstring> allowed_values = {kDidRun, L"lastrun"};
+  for (base::win::RegistryKeyIterator client_state_iter(root, CLIENT_STATE_KEY,
+                                                        KEY_WOW64_32KEY);
+       client_state_iter.Valid(); ++client_state_iter) {
+    const std::wstring app_client_state_key_name =
+        GetAppClientStateKey(client_state_iter.Name());
+    for (base::win::RegistryValueIterator value_iter(
+             root, app_client_state_key_name.c_str(), KEY_WOW64_32KEY);
+         value_iter.Valid(); ++value_iter) {
+      EXPECT_TRUE(base::Contains(allowed_values, value_iter.Name()))
+          << value_iter.Name();
+    }
+    EXPECT_EQ(base::win::RegistryKeyIterator(
+                  root, app_client_state_key_name.c_str(), KEY_WOW64_32KEY)
+                  .SubkeyCount(),
+              0u);
+  }
+}
+
 // Checks the installation states (installed or uninstalled) and versions (SxS
 // only, or both active and SxS). The installation state includes
 // Client/ClientState registry, COM server registration, COM service
@@ -161,17 +210,12 @@ void CheckInstallation(UpdaterScope scope,
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
 
   if (is_active_and_sxs) {
-    for (const wchar_t* key : {CLIENTS_KEY, UPDATER_KEY}) {
-      // This expectation can fail when Chrome or another program is writing
-      // `dr` in its `CLIENT_STATE_KEY` subkey and the test is checking for a
-      // clean uninstall.
-      EXPECT_EQ(is_installed, RegKeyExists(root, key)) << key;
-    }
-
     EXPECT_EQ(is_installed, base::PathExists(*GetGoogleUpdateExePath(scope)));
 
     if (is_installed) {
-      EXPECT_TRUE(RegKeyExists(root, CLIENT_STATE_KEY));
+      for (const wchar_t* key : {CLIENTS_KEY, CLIENT_STATE_KEY, UPDATER_KEY}) {
+        EXPECT_TRUE(RegKeyExists(root, key)) << key;
+      }
 
       std::wstring pv;
       EXPECT_EQ(ERROR_SUCCESS,
@@ -209,8 +253,8 @@ void CheckInstallation(UpdaterScope scope,
           EXPECT_FALSE(RegKeyExists(HKEY_LOCAL_MACHINE, key));
         }
       }
-
-      EXPECT_FALSE(RegKeyExists(root, UPDATER_KEY));
+      EXPECT_FALSE(RegKeyExists(root, CLIENTS_KEY));
+      ExpectUpdateRegKeyCleanExcludeActivityRegValues(scope);
 
       if (!IsSystemInstall(scope)) {
         ForEachRegistryRunValueWithPrefix(
@@ -251,8 +295,9 @@ void CheckInstallation(UpdaterScope scope,
 
   if (IsSystemInstall(scope)) {
     for (const bool is_internal_service : {false, true}) {
-      if (!is_active_and_sxs && !is_internal_service)
+      if (!is_active_and_sxs && !is_internal_service) {
         continue;
+      }
 
       const std::wstring service_name(GetServiceName(is_internal_service));
       EXPECT_EQ(is_installed,
@@ -395,8 +440,9 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
     install_cmd.AppendSwitch(kEnableLoggingSwitch);
     install_cmd.AppendSwitchASCII(kLoggingModuleSwitch,
                                   kLoggingModuleSwitchValue);
-    if (IsSystemInstall(install_scope))
+    if (IsSystemInstall(install_scope)) {
       install_cmd.AppendSwitch(kSystemSwitch);
+    }
 
     install_cmd.AppendSwitchNative(
         updater::kHandoffSwitch,
@@ -405,8 +451,9 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
                                   "{E85204C6-6F2F-40BF-9E6C-4952208BB977}");
     install_cmd.AppendSwitchNative(updater::kOfflineDirSwitch,
                                    offline_dir_guid);
-    if (is_silent_install)
+    if (is_silent_install) {
       install_cmd.AppendSwitch(updater::kSilentSwitch);
+    }
 
     return base::LaunchProcess(install_cmd, {});
   };
@@ -433,8 +480,9 @@ class WindowEnumerator {
     constexpr int kMaxWindowClassNameLength = 256;
     wchar_t buffer[kMaxWindowClassNameLength + 1] = {0};
     int name_len = ::GetClassName(hwnd, buffer, std::size(buffer));
-    if (name_len <= 0 || name_len > kMaxWindowClassNameLength)
+    if (name_len <= 0 || name_len > kMaxWindowClassNameLength) {
       return std::wstring();
+    }
 
     return std::wstring(&buffer[0], name_len);
   }
@@ -446,18 +494,21 @@ class WindowEnumerator {
 
   static std::wstring GetWindowText(HWND hwnd) {
     const int num_chars = ::GetWindowTextLength(hwnd);
-    if (!num_chars)
+    if (!num_chars) {
       return std::wstring();
+    }
     std::vector<wchar_t> text(num_chars + 1);
-    if (!::GetWindowText(hwnd, &text.front(), text.size()))
+    if (!::GetWindowText(hwnd, &text.front(), text.size())) {
       return std::wstring();
+    }
     return std::wstring(text.begin(), text.end());
   }
 
  private:
   bool OnWindow(HWND hwnd) const {
-    if (filter_.Run(hwnd))
+    if (filter_.Run(hwnd)) {
       action_.Run(hwnd);
+    }
 
     // Returns true to keep enumerating.
     return true;
@@ -603,8 +654,8 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
         return base::JoinString(commands, "\n");
       }(scope, base::WideToASCII(app_client_state_key), event_holder.name)));
 
-  // The updater only allows `.exe` or `.msi` to run from the offline directory.
-  // Setup `cmd.exe` as the wrapper installer.
+  // The updater only allows `.exe` or `.msi` to run from the offline
+  // directory. Setup `cmd.exe` as the wrapper installer.
   base::FilePath cmd_exe_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &cmd_exe_path));
   cmd_exe_path = cmd_exe_path.Append(L"cmd.exe");
