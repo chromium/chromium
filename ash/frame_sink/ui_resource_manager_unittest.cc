@@ -9,7 +9,6 @@
 
 #include "ash/frame_sink/ui_resource.h"
 #include "base/test/gtest_util.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
