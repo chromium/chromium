@@ -59,6 +59,10 @@ policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
 std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
   return nullptr;
 }
+std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
+GetOverriddenBulkLeakCheckService() {
+  return nullptr;
+}
 void SetUpTestsIfPresent() {
   CWTWebDriverAppInterface* appInterface =
       [[CWTWebDriverAppInterface alloc] init];

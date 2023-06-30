@@ -35,5 +35,6 @@ specific_include_rules = {
 
   "eg_tests_hook\.mm": [
    "+components/signin/internal/identity_manager",
+   "+components/password_manager/ios",
   ],
 }

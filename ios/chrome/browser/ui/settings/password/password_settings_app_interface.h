@@ -73,9 +73,6 @@
 // Returns YES if credential service is enabled.
 + (BOOL)isCredentialsServiceEnabled;
 
-// Replaces the BrowserState's BulkLeakCheckService with a fake one.
-+ (void)setupFakeBulkLeakCheckService;
-
 // Sets the FakeBulkLeakCheck's buffered state.
 + (void)setFakeBulkLeakCheckBufferedState:
     (password_manager::BulkLeakCheckServiceInterface::State)state;

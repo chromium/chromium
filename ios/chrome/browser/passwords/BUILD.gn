@@ -68,6 +68,7 @@ source_set("passwords") {
     "//components/ukm",
     "//components/ukm/ios:ukm_url_recorder",
     "//google_apis",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill:autofill_shared",
     "//ios/chrome/browser/autofill/bottom_sheet",

@@ -12,6 +12,7 @@
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service_interface.h"
+#include "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -48,6 +49,12 @@ IOSChromeBulkLeakCheckServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
+  std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
+      test_bulk_leak_check_service =
+          tests_hook::GetOverriddenBulkLeakCheckService();
+  if (test_bulk_leak_check_service) {
+    return test_bulk_leak_check_service;
+  }
   return std::make_unique<password_manager::BulkLeakCheckService>(
       IdentityManagerFactory::GetForBrowserState(browser_state),
       context->GetSharedURLLoaderFactory());

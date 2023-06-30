@@ -6,6 +6,7 @@
 
 #import "base/command_line.h"
 #import "base/logging.h"
+#import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
@@ -128,6 +129,11 @@ std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
   }
 
   return system_identity_manager;
+}
+
+std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
+GetOverriddenBulkLeakCheckService() {
+  return std::make_unique<password_manager::FakeBulkLeakCheckService>();
 }
 
 void SetUpTestsIfPresent() {

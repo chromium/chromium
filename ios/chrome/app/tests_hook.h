@@ -14,6 +14,9 @@ class SystemIdentityManager;
 namespace policy {
 class ConfigurationPolicyProvider;
 }
+namespace password_manager {
+class BulkLeakCheckServiceInterface;
+}
 
 namespace tests_hook {
 
@@ -78,6 +81,11 @@ policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider();
 // Allow overriding the SystemIdentityManager factory. The real factory will
 // be used if this hook returns null.
 std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager();
+
+// Returns a bulk leak check service that should be used when testing. The real
+// factory will be used if this hook returns a nullptr.
+std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
+GetOverriddenBulkLeakCheckService();
 
 // Global integration tests setup.
 void SetUpTestsIfPresent();

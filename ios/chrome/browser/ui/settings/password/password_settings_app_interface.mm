@@ -10,7 +10,6 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -304,15 +303,6 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
       chrome_test_util::GetOriginalBrowserState();
   return browserState->GetPrefs()->GetBoolean(
       password_manager::prefs::kCredentialsEnableService);
-}
-
-+ (void)setupFakeBulkLeakCheckService {
-  IOSChromeBulkLeakCheckServiceFactory::GetInstance()->SetTestingFactory(
-      chrome_test_util::GetOriginalBrowserState(),
-      base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
-        return std::unique_ptr<KeyedService>(
-            std::make_unique<password_manager::FakeBulkLeakCheckService>());
-      })));
 }
 
 + (void)setFakeBulkLeakCheckBufferedState:

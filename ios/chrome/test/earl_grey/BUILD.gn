@@ -29,6 +29,7 @@ source_set("hooks") {
   deps = [
     ":switches",
     "//base",
+    "//components/password_manager/ios:fake_bulk_leak_check_service",
     "//components/policy/core/common:test_support",
     "//components/signin/internal/identity_manager",
     "//components/signin/internal/identity_manager:test_support",
