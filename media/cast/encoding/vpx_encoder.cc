@@ -215,7 +215,7 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   vpx_image_t vpx_image;
   vpx_image_t* const result = vpx_img_wrap(
       &vpx_image, vpx_format, frame_size.width(), frame_size.height(), 1,
-      video_frame->writable_data(VideoFrame::kYPlane));
+      const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kYPlane)));
   DCHECK_EQ(result, &vpx_image);
   switch (vpx_format) {
     case VPX_IMG_FMT_I420:
