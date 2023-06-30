@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_REPORTING_NETWORK_NETWORK_BANDWIDTH_SAMPLER_H_
 #define CHROME_BROWSER_CHROMEOS_REPORTING_NETWORK_NETWORK_BANDWIDTH_SAMPLER_H_
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,6 +13,10 @@
 #include "services/network/public/cpp/network_quality_tracker.h"
 
 namespace reporting {
+
+// Feature flag that controls network bandwidth reporting for affiliated
+// ChromeOS users/devices and is used for phased rollout.
+BASE_DECLARE_FEATURE(kEnableNetworkBandwidthReporting);
 
 // Sampler used to collect network bandwidth information like download speed
 // (in kbps). This sampler relies on the `NetworkQualityTracker` defined in
