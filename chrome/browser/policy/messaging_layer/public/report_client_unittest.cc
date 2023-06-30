@@ -16,6 +16,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
+#include "chrome/browser/policy/messaging_layer/upload/file_upload_job_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/dm_token_retriever_provider.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
@@ -275,6 +277,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   // tasks.
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  FileUploadJob::TestEnvironment manager_test_env_;
   std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;
 
   base::ScopedTempDir location_;
