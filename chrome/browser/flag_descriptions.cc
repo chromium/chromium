@@ -3620,13 +3620,6 @@ const char kUseIDNA2008NonTransitionalDescription[] =
     "Enables IDNA 2008 in Non-Transitional Mode in URL processing, allowing "
     "deviation characters in domain names.";
 
-const char kPolicyMergeMultiSourceName[] =
-    "Merge policies from multiple sources";
-const char kPolicyMergeMultiSourceDescription[] =
-    "Only merge policies that are set from multiple sources. Policies set from "
-    "a single source will not be treated as merged and will keep their "
-    "original source.";
-
 const char kEnableVariationsGoogleGroupFilteringName[] =
     "Enables filtering experiments by Google group membership";
 const char kEnableVariationsGoogleGroupFilteringDescription[] =

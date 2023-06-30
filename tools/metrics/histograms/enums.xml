@@ -62525,7 +62525,6 @@ from previous Chrome versions.
   <int value="-709058455" label="ui-slow-animations"/>
   <int value="-708531565" label="EsbIphBubbleAndCollapseSettings:enabled"/>
   <int value="-708482536" label="Cormorant:disabled"/>
-  <int value="-707508842" label="PolicyMergeMultiSource:disabled"/>
   <int value="-707407907" label="ScanAppMediaLink:enabled"/>
   <int value="-706733351" label="enable-floating-virtual-keyboard:enabled"/>
   <int value="-706159808" label="QuickAnswersOnEditableText:disabled"/>
@@ -67942,7 +67941,6 @@ from previous Chrome versions.
   <int value="2106798283" label="SafetyTip:disabled"/>
   <int value="2106855416" label="HostWindowsInAppShimProcess:enabled"/>
   <int value="2107406401" label="UseDnsHttpsSvcb:disabled"/>
-  <int value="2107520493" label="PolicyMergeMultiSource:enabled"/>
   <int value="2107942975" label="ApnRevamp:disabled"/>
   <int value="2108461166" label="LanguagePacksInSettings:disabled"/>
   <int value="2109483186" label="OmniboxSteadyStateTextColor:disabled"/>

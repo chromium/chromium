@@ -6326,11 +6326,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "policy-merge-multi-source",
-    "owners": [ "igorruvinov", "ydago", "pastarmovj" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "policy-provided-trust-anchors-allowed-at-lock-screen",
     "owners": [ "acostinas", "suprnet@google.com" ],
     "expiry_milestone": 118
