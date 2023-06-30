@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/paint/layout_object_counter.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_request_forward.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
@@ -1016,8 +1015,6 @@ class CORE_EXPORT LocalFrameView final
   DarkModeFilter& EnsureDarkModeFilter();
 
   bool HasViewTransitionThrottlingRendering() const;
-
-  LayoutSize size_;
 
   typedef HeapHashSet<Member<LayoutEmbeddedObject>> EmbeddedObjectSet;
   EmbeddedObjectSet part_update_set_;

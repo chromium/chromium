@@ -740,8 +740,6 @@ void LocalFrameView::PerformLayout() {
           scrollable_area->ForceVerticalScrollbarForFirstLayout();
       }
     }
-
-    size_ = LayoutSize(GetLayoutSize());
   }
 
   TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
