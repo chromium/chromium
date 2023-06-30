@@ -864,25 +864,6 @@ TEST_P(ClientControlledShellSurfaceTest, ToggleFullscreen) {
 }
 
 TEST_P(ClientControlledShellSurfaceTest,
-       DefaultDeviceScaleFactorForcedScaleFactor) {
-  double scale = 1.5;
-  display::Display::SetForceDeviceScaleFactor(scale);
-
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  display::SetInternalDisplayIds({display_id});
-
-  auto shell_surface = exo::test::ShellSurfaceBuilder({64, 64})
-                           .EnableDefaultScaleCancellation()
-                           .BuildClientControlledShellSurface();
-  gfx::Transform transform;
-  transform.Scale(1.0 / scale, 1.0 / scale);
-
-  EXPECT_EQ(
-      transform.ToString(),
-      shell_surface->host_window()->layer()->GetTargetTransform().ToString());
-}
-
-TEST_P(ClientControlledShellSurfaceTest,
        DefaultDeviceScaleFactorFromDisplayManager) {
   int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   display::SetInternalDisplayIds({display_id});
@@ -916,9 +897,8 @@ TEST_P(ClientControlledShellSurfaceTest,
   gfx::Transform transform;
   transform.Scale(1.0 / scale, 1.0 / scale);
 
-  EXPECT_EQ(
-      transform.ToString(),
-      shell_surface->host_window()->layer()->GetTargetTransform().ToString());
+  EXPECT_EQ(transform.ToString(),
+            shell_surface->root_surface()->window()->transform().ToString());
 }
 
 TEST_P(ClientControlledShellSurfaceTest, MouseAndTouchTarget) {

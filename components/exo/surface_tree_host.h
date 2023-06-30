@@ -187,7 +187,11 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   // If the client has submitted a scale factor, we use that. Otherwise we use
   // the host window's layer's scale factor.
-  float GetScaleFactor();
+  virtual float GetScaleFactor() const;
+
+  // Set the appropriate transform for the given scale factor.
+  // NOTE: This should only be done if the client submits in pixel coordinates.
+  void SetScaleFactorTransform(float scale_factor);
 
  private:
   void InitHostWindow(const std::string& window_name);
@@ -199,10 +203,6 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void CleanUpCallbacks();
 
   std::unique_ptr<LayerTreeFrameSinkHolder> CreateLayerTreeFrameSinkHolder();
-
-  // Set the appropriate transform for the given scale factor.
-  // NOTE: This should only be done if the client submits in pixel coordinates.
-  void SetScaleFactorTransform(float scale_factor);
 
   raw_ptr<Surface, ExperimentalAsh> root_surface_ = nullptr;
 

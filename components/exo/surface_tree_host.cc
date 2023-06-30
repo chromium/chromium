@@ -519,7 +519,7 @@ void SurfaceTreeHost::HandleContextLost() {
   SubmitCompositorFrame();
 }
 
-float SurfaceTreeHost::GetScaleFactor() {
+float SurfaceTreeHost::GetScaleFactor() const {
   if (scale_factor_) {
     // TODO(crbug.com/1412420): Remove this once the scale factor precision
     // issue is fixed.

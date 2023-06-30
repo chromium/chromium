@@ -350,6 +350,7 @@ ClientControlledShellSurface::ClientControlledShellSurface(
       use_default_scale_cancellation_(default_scale_cancellation),
       supports_floated_state_(supports_floated_state) {
   server_side_resize_ = true;
+  set_client_submits_surfaces_in_pixel_coordinates(true);
 }
 
 ClientControlledShellSurface::~ClientControlledShellSurface() {
@@ -507,9 +508,7 @@ void ClientControlledShellSurface::CommitPendingScale() {
   if (pending_scale_ == scale_ || pending_scale_ == 0.0)
     return;
 
-  gfx::Transform transform;
-  transform.Scale(1.0 / pending_scale_, 1.0 / pending_scale_);
-  host_window()->SetTransform(transform);
+  SetScaleFactorTransform(pending_scale_);
   scale_ = pending_scale_;
   set_bounds_is_dirty(true);
   UpdateCornerRadius();
@@ -1141,6 +1140,11 @@ void ClientControlledShellSurface::InitializeWindowState(
 
 float ClientControlledShellSurface::GetScale() const {
   return scale_;
+}
+
+float ClientControlledShellSurface::GetScaleFactor() const {
+  // TODO(andreaorru): consolidate Scale and ScaleFactor.
+  return GetScale();
 }
 
 absl::optional<gfx::Rect> ClientControlledShellSurface::GetWidgetBounds()
