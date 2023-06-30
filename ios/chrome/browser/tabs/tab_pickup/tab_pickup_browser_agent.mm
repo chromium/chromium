@@ -51,6 +51,9 @@ TabPickupBrowserAgent::TabPickupBrowserAgent(Browser* browser)
 
 TabPickupBrowserAgent::~TabPickupBrowserAgent() {
   DCHECK(!browser_);
+
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:foreground_notification_observer_];
 }
 
 #pragma mark - BrowserObserver
