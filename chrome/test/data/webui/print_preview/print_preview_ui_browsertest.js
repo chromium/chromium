@@ -862,6 +862,14 @@ TEST_F('PrintPreviewPreviewAreaTest', 'StateChanges', function() {
   this.runMochaTest(preview_area_test.TestNames.StateChanges);
 });
 
+GEN('#if BUILDFLAG(IS_CHROMEOS)');
+TEST_F(
+    'PrintPreviewPreviewAreaTest', 'StateChangesPrinterSetupCros', function() {
+      this.runMochaTest(
+          preview_area_test.TestNames.StateChangesPrinterSetupCros);
+    });
+GEN('#endif');
+
 TEST_F('PrintPreviewPreviewAreaTest', 'ViewportSizeChanges', function() {
   this.runMochaTest(preview_area_test.TestNames.ViewportSizeChanges);
 });
