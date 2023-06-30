@@ -1214,6 +1214,35 @@ message ScrollDeltas {
   repeated float segregated_predicted_deltas_in_gpu_frame_y = 14;
 }
 
+// Debug information for system layer of audio rendering on Windows.
+message WinRenderAudioFromSource {
+  // Buffer size used by the platform.
+  optional uint32 iaudioclient_buffer_size_frames = 1;
+  // Number of available frames in the platform buffer.
+  optional uint32 iaudioclient_buffer_unfilled_frames = 2;
+  // Number of frames requested from the audio stream client.
+  optional uint32 packet_size_frames = 3;
+  // Total number of frames requested from the client and written to the
+  // platform buffer during the stream lifetime.
+  optional uint64 num_written_frames = 4;
+  // Total number of frames played by the platform during the stream lifetime.
+  optional uint64 num_played_out_frames = 5;
+  // Device frequency reported by the platform; used to convert the stream
+  // position to frames.
+  optional uint64 iaudioclock_device_frequency = 6;
+  // Stream position reported by the platform.
+  optional uint64 iaudioclock_stream_position = 7;
+  // Performance counter position reported by the platform.
+  optional uint64 iaudioclock_qpc_position = 8;
+  // Stream position increase since the last call, converted to milliseconds.
+  optional int64 iaudioclock_stream_position_increase_ms = 9;
+  // Performance counter position since the last call, converted to
+  // milliseconds.
+  optional int64 iaudioclock_qpc_position_increase_ms = 10;
+  // Estimated playout delay, milliseconds.
+  optional int64 playout_delay_ms = 11;
+};
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
   // Next ID: 1048
@@ -1318,5 +1347,7 @@ message ChromeTrackEvent {
     optional TabSwitchMeasurement tab_switch_measurement = 1046;
 
     optional ScrollDeltas scroll_deltas = 1047;
+
+    optional WinRenderAudioFromSource win_render_audio_from_source = 1048;
   }
 }

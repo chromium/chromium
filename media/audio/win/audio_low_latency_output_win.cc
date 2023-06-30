@@ -22,7 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/win/scoped_propvariant.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/win/audio_manager_win.h"
@@ -600,8 +600,13 @@ void WASAPIAudioOutputStream::Run() {
 }
 
 bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
-  TRACE_EVENT2("audio", "RenderAudioFromSource", "device_frequency",
-               device_frequency, "buffer_size", endpoint_buffer_size_frames_);
+  TRACE_EVENT(
+      "audio", "RenderAudioFromSource", [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_win_render_audio_from_source();
+        data->set_iaudioclock_device_frequency(device_frequency);
+        data->set_iaudioclient_buffer_size_frames(endpoint_buffer_size_frames_);
+      });
 
   const base::TimeDelta buffer_duration =
       media::AudioTimestampHelper::FramesToTime(packet_size_frames_,
@@ -613,13 +618,12 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
   // Contains how much new data we can write to the buffer without
   // the risk of overwriting previously written data that the audio
   // engine has not yet read from the buffer.
-  size_t num_available_frames = 0;
+  UINT32 num_available_frames = 0;
 
   if (share_mode_ == AUDCLNT_SHAREMODE_SHARED) {
     // Get the padding value which represents the amount of rendering
     // data that is queued up to play in the endpoint buffer.
     hr = audio_client_->GetCurrentPadding(&num_queued_frames);
-    num_available_frames = endpoint_buffer_size_frames_ - num_queued_frames;
     if (FAILED(hr)) {
       RecordAudioFailure(kRenderFailureHistogram, hr);
       LOG(ERROR) << "WAOS::" << __func__
@@ -627,10 +631,13 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
                  << ErrorToString(hr).c_str() << "])";
       return false;
     }
+    TRACE_COUNTER_ID1(TRACE_DISABLED_BY_DEFAULT("audio"),
+                      "IAudioClient_queued_frames", this, num_queued_frames);
     if (!num_queued_frames) {
       TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("audio"), "buffer empty",
                            TRACE_EVENT_SCOPE_THREAD);
     }
+    num_available_frames = endpoint_buffer_size_frames_ - num_queued_frames;
   } else {
     // While the stream is running, the system alternately sends one
     // buffer or the other to the client. This form of double buffering
@@ -644,8 +651,13 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
     num_available_frames = endpoint_buffer_size_frames_;
   }
 
-  TRACE_COUNTER_ID1(TRACE_DISABLED_BY_DEFAULT("audio"), "IAudioClient frames",
-                    this, num_available_frames);
+  TRACE_EVENT(
+      TRACE_DISABLED_BY_DEFAULT("audio"), "IAudioClient frames",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_win_render_audio_from_source();
+        data->set_iaudioclient_buffer_unfilled_frames(num_available_frames);
+      });
 
   // Check if there is enough available space to fit the packet size
   // specified by the client.  If not, wait until a future callback.
@@ -669,8 +681,13 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
   // See http://crbug.com/524947.
   const size_t num_packets = num_available_frames / packet_size_frames_;
   for (size_t n = 0; n < num_packets; ++n) {
-    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("audio"), "Write packet",
-                 "num_written_frames_", num_written_frames_);
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("audio"), "Write packet",
+                [&](perfetto::EventContext ctx) {
+                  auto* event =
+                      ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                  auto* data = event->set_win_render_audio_from_source();
+                  data->set_packet_size_frames(packet_size_frames_);
+                });
     // Grab all available space in the rendering endpoint buffer
     // into which the client can write a data packet.
     hr = audio_render_client_->GetBuffer(packet_size_frames_, &audio_data);
@@ -692,9 +709,16 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
     // a RT thread.
     hr = audio_clock_->GetPosition(&position, &qpc_position);
     if (SUCCEEDED(hr)) {
-      TRACE_EVENT_BEGIN2(TRACE_DISABLED_BY_DEFAULT("audio"),
-                         "IAudioClock position", "position", position,
-                         "qpc_position", qpc_position);
+      TRACE_EVENT_BEGIN(
+          TRACE_DISABLED_BY_DEFAULT("audio"), "IAudioClock position",
+          [&](perfetto::EventContext ctx) {
+            auto* event =
+                ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+            auto* data = event->set_win_render_audio_from_source();
+            data->set_iaudioclock_stream_position(position);
+            data->set_iaudioclock_qpc_position(qpc_position);
+            data->set_num_written_frames(num_written_frames_);
+          });
       // Check for glitches. Records a glitch whenever the stream's position has
       // moved forward significantly less than the performance counter has. The
       // threshold is set to half the buffer size, to limit false positives.
@@ -731,11 +755,17 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
                 ? base::TimeDelta()
                 : base::Microseconds((qpc_position - last_qpc_position_) / 10);
 
-        TRACE_EVENT_BEGIN2(TRACE_DISABLED_BY_DEFAULT("audio"), "gap estimation",
-                           "qpc_position_time_increase ms",
-                           qpc_position_time_increase.InMilliseconds(),
-                           "position_time_increase ms",
-                           position_time_increase.InMilliseconds());
+        TRACE_EVENT(
+            TRACE_DISABLED_BY_DEFAULT("audio"), "gap estimation",
+            [&](perfetto::EventContext ctx) {
+              auto* event =
+                  ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+              auto* data = event->set_win_render_audio_from_source();
+              data->set_iaudioclock_stream_position_increase_ms(
+                  position_time_increase.InMilliseconds());
+              data->set_iaudioclock_qpc_position_increase_ms(
+                  qpc_position_time_increase.InMilliseconds());
+            });
         // We probably should not trust qpc_position being reported in 100 ns
         // intervals in some cases, in a remote desktop situation, for example.
         // Let's see how qpc-based time compares to base::TimeTicks. Even if we
@@ -760,7 +790,6 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
           glitch_info_accumulator.Add(AudioGlitchInfo::SingleBoundedGlitch(
               gap_duration, AudioGlitchInfo::Direction::kRender));
         }
-        TRACE_EVENT_END0(TRACE_DISABLED_BY_DEFAULT("audio"), "gap estimation");
       }
 
       last_position_ = position;
@@ -787,9 +816,16 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
       // the same time origin as QPC. We can simply convert it into us dividing
       // by 10.0 since 10x100ns = 1us.
       delay_timestamp += base::Microseconds(qpc_position * 0.1);
-      TRACE_EVENT_END2(TRACE_DISABLED_BY_DEFAULT("audio"),
-                       "IAudioClock position", "played_out_frames",
-                       played_out_frames, "delay ms", delay.InMilliseconds());
+      TRACE_EVENT_END(
+          TRACE_DISABLED_BY_DEFAULT("audio"),
+          //  "IAudioClock position",
+          [&](perfetto::EventContext ctx) {
+            auto* event =
+                ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+            auto* data = event->set_win_render_audio_from_source();
+            data->set_num_played_out_frames(played_out_frames);
+            data->set_playout_delay_ms(delay.InMilliseconds());
+          });
     } else {
       RecordAudioFailure(kRenderFailureHistogram, hr);
       LOG(ERROR) << "WAOS::" << __func__
