@@ -1202,29 +1202,24 @@ size_t DIPSDatabase::GetEntryCount() {
   return (s_entry_count.Step() ? s_entry_count.ColumnInt(0) : 0);
 }
 
-// TODO(njeunje): Double check the intent of this method as it might not be
-// clearing the desired number of entries ('purge_goal') if `num_deleted` >=
-// `purge_goal`. Couldn't find a test confirming this behavior.
 size_t DIPSDatabase::GarbageCollect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit())
     return 0;
 
   size_t num_deleted = ClearExpiredRows();
-  size_t num_entries = GetEntryCount();
-  int purge_goal = num_entries - (max_entries_ - purge_entries_);
 
-  if (num_entries <= max_entries_)
+  // NOTE: `GetEntryCount()` might perform other row deletions whilst re-calling
+  // `ClearExpiredRows()`, but possible precision lost in the final num_delete
+  // isn't deemed crucial.
+  const size_t num_entries = GetEntryCount();
+  if (num_entries <= max_entries_) {
     return num_deleted;
-
-  DCHECK_GT(purge_goal, 0);
-
-  // If expiration did not purge enough entries, remove entries with the oldest
-  // |MAX(last_user_interaction_time, last_web_authn_assertion_time,
-  // last_site_storage_time)| values until the |purge_goal| is satisfied.
-  if (num_deleted < static_cast<size_t>(purge_goal)) {
-    num_deleted += GarbageCollectOldest(purge_goal - num_deleted);
   }
+
+  const int purge_goal = num_entries - (max_entries_ - purge_entries_);
+  DCHECK_GT(purge_goal, 0);
+  num_deleted += GarbageCollectOldest(purge_goal);
 
   return num_deleted;
 }
@@ -1234,6 +1229,9 @@ size_t DIPSDatabase::GarbageCollectOldest(int purge_goal) {
   if (!CheckDBInit())
     return 0;
 
+  // Remove entries with the oldest `MAX(last_user_interaction_time,
+  // last_web_authn_assertion_time, last_site_storage_time)` values until the
+  // `purge_goal` is satisfied
   static constexpr char kGarbageCollectOldestSql[] = R"(
     DELETE FROM bounces
     WHERE site IN(

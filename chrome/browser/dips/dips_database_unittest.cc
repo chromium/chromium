@@ -978,6 +978,16 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, RemovesRecentOverMax) {
             db_->GetMaxEntries() - db_->GetPurgeEntries());
 }
 
+TEST_P(DIPSDatabaseGarbageCollectionTest, RemovesExpired_RemovesRecent_GT_Max) {
+  BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries() * 2,
+                    /*num_old_entries=*/db_->GetMaxEntries());
+
+  EXPECT_EQ(db_->GarbageCollect(),
+            db_->GetMaxEntries() * 2 + db_->GetPurgeEntries());
+  EXPECT_EQ(db_->GetEntryCount(),
+            db_->GetMaxEntries() - db_->GetPurgeEntries());
+}
+
 // Less than |max_entries_| entries, none of which are expired;
 // no entries should be garbage collected.
 TEST_P(DIPSDatabaseGarbageCollectionTest, PreservesUnderMax) {
@@ -1002,19 +1012,13 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, PreservesMax) {
   EXPECT_EQ(db_->GetEntryCount(), db_->GetMaxEntries());
 }
 
-// More than |max_entries_| entries with recent user interaction and a few with
-// expired user interaction; only entries with expired user interaction should
-// be garbage collected by pure expiration.
 TEST_P(DIPSDatabaseGarbageCollectionTest,
-       ClearExpiredRows_ExpirationPreservesRecent) {
-  BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries() * 2,
-                    /*num_old_entries=*/db_->GetMaxEntries() / 2);
+       RemovesExpired_PreserveRecent_LE_Max) {
+  BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries(),
+                    /*num_old_entries=*/db_->GetMaxEntries());
 
-  // TODO(njeunje): Make sure it is as intended: this is not exactly testing
-  // `GarbageCollect()`.
-  EXPECT_EQ(db_->ClearExpiredRows(), db_->GetMaxEntries() / 2);
-
-  EXPECT_EQ(db_->GetEntryCount(), db_->GetMaxEntries() * 2);
+  EXPECT_EQ(db_->GarbageCollect(), db_->GetMaxEntries());
+  EXPECT_EQ(db_->GetEntryCount(), db_->GetMaxEntries());
 }
 
 TEST_P(DIPSDatabaseGarbageCollectionTest, GarbageCollectOldest) {
