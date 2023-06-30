@@ -1375,7 +1375,7 @@ def main():
           # fstat and sunrpc tests fail due to sysroot/host mismatches
           # (crbug.com/1459187).
           '^MemorySanitizer-.* f?stat(at)?(64)?.cpp$',
-          '^.*Sanitizer-.* Linux/sunrpc.*cpp$'
+          '^.*Sanitizer-.*sunrpc.*cpp$'
       ]
       env['LIT_FILTER_OUT'] = '|'.join(lit_excludes)
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'check-all'],
