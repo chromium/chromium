@@ -23,9 +23,14 @@
 #include <iterator>
 #include <limits>
 
+#include "base/apple/bridging.h"
 #include "base/mac/scoped_launch_data.h"
 #include "gtest/gtest.h"
 #include "util/stdlib/objc.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace crashpad {
 namespace test {
@@ -60,7 +65,8 @@ TEST(Launchd, CFPropertyToLaunchData_Integer) {
 
     for (size_t index = 0; index < std::size(integer_nses); ++index) {
       NSNumber* integer_ns = integer_nses[index];
-      launch_data.reset(CFPropertyToLaunchData(integer_ns));
+      launch_data.reset(
+          CFPropertyToLaunchData(base::apple::NSToCFPtrCast(integer_ns)));
       ASSERT_TRUE(launch_data.get());
       ASSERT_EQ(LaunchDataGetType(launch_data.get()), LAUNCH_DATA_INTEGER);
       EXPECT_EQ(LaunchDataGetInteger(launch_data.get()),
@@ -90,7 +96,8 @@ TEST(Launchd, CFPropertyToLaunchData_FloatingPoint) {
 
     for (size_t index = 0; index < std::size(double_nses); ++index) {
       NSNumber* double_ns = double_nses[index];
-      launch_data.reset(CFPropertyToLaunchData(double_ns));
+      launch_data.reset(
+          CFPropertyToLaunchData(base::apple::NSToCFPtrCast(double_ns)));
       ASSERT_TRUE(launch_data.get());
       ASSERT_EQ(LaunchDataGetType(launch_data.get()), LAUNCH_DATA_REAL);
       double expected_double_value = [double_ns doubleValue];
@@ -109,17 +116,19 @@ TEST(Launchd, CFPropertyToLaunchData_Boolean) {
   @autoreleasepool {
     base::mac::ScopedLaunchData launch_data;
 
-    NSNumber* bool_nses[] = {
-      @NO,
-      @YES,
+    // Use CFBooleanRefs here because calling NSToCFPtrCast on an NSNumber
+    // boolean can fail. Casting an NSNumber expects a CFNumberRef as a result
+    // but a cast boolean will end up as a CFBooleanRef.
+    CFBooleanRef bools[] = {
+        kCFBooleanFalse,
+        kCFBooleanTrue,
     };
 
-    for (size_t index = 0; index < std::size(bool_nses); ++index) {
-      NSNumber* bool_ns = bool_nses[index];
-      launch_data.reset(CFPropertyToLaunchData(bool_ns));
+    for (CFBooleanRef bool_cf : bools) {
+      launch_data.reset(CFPropertyToLaunchData(bool_cf));
       ASSERT_TRUE(launch_data.get());
       ASSERT_EQ(LaunchDataGetType(launch_data.get()), LAUNCH_DATA_BOOL);
-      if ([bool_ns boolValue]) {
+      if (CFBooleanGetValue(bool_cf)) {
         EXPECT_TRUE(LaunchDataGetBool(launch_data.get()));
       } else {
         EXPECT_FALSE(LaunchDataGetBool(launch_data.get()));
@@ -140,7 +149,8 @@ TEST(Launchd, CFPropertyToLaunchData_String) {
 
     for (size_t index = 0; index < std::size(string_nses); ++index) {
       NSString* string_ns = string_nses[index];
-      launch_data.reset(CFPropertyToLaunchData(string_ns));
+      launch_data.reset(
+          CFPropertyToLaunchData(base::apple::NSToCFPtrCast(string_ns)));
       ASSERT_TRUE(launch_data.get());
       ASSERT_EQ(LaunchDataGetType(launch_data.get()), LAUNCH_DATA_STRING);
       EXPECT_STREQ([string_ns UTF8String],
@@ -156,7 +166,8 @@ TEST(Launchd, CFPropertyToLaunchData_Data) {
     static constexpr uint8_t data_c[] = {
         1, 2, 3, 4, 5, 6, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0, 9, 8, 7, 6, 5, 4, 3, 2};
     NSData* data_ns = [NSData dataWithBytes:data_c length:sizeof(data_c)];
-    launch_data.reset(CFPropertyToLaunchData(data_ns));
+    launch_data.reset(
+        CFPropertyToLaunchData(base::apple::NSToCFPtrCast(data_ns)));
     ASSERT_TRUE(launch_data.get());
     ASSERT_EQ(LaunchDataGetType(launch_data.get()), LAUNCH_DATA_OPAQUE);
     EXPECT_EQ(LaunchDataGetOpaqueSize(launch_data.get()), sizeof(data_c));
@@ -174,7 +185,8 @@ TEST(Launchd, CFPropertyToLaunchData_Dictionary) {
       @"key" : @"value",
     };
 
-    launch_data.reset(CFPropertyToLaunchData(dictionary_ns));
+    launch_data.reset(
+        CFPropertyToLaunchData(base::apple::NSToCFPtrCast(dictionary_ns)));
     ASSERT_TRUE(launch_data.get());
     ASSERT_EQ(LaunchDataGetType(launch_data.get()), LAUNCH_DATA_DICTIONARY);
     EXPECT_EQ(LaunchDataDictGetCount(launch_data.get()), [dictionary_ns count]);
@@ -193,7 +205,8 @@ TEST(Launchd, CFPropertyToLaunchData_Array) {
 
     NSArray* array_ns = @[ @"element_1", @"element_2", ];
 
-    launch_data.reset(CFPropertyToLaunchData(array_ns));
+    launch_data.reset(
+        CFPropertyToLaunchData(base::apple::NSToCFPtrCast(array_ns)));
     ASSERT_TRUE(launch_data.get());
     ASSERT_EQ(LaunchDataGetType(launch_data.get()), LAUNCH_DATA_ARRAY);
     EXPECT_EQ(LaunchDataArrayGetCount(launch_data.get()), [array_ns count]);
@@ -219,18 +232,20 @@ TEST(Launchd, CFPropertyToLaunchData_NSDate) {
     base::mac::ScopedLaunchData launch_data;
 
     NSDate* date = [NSDate date];
-    launch_data.reset(CFPropertyToLaunchData(date));
+    launch_data.reset(CFPropertyToLaunchData(base::apple::NSToCFPtrCast(date)));
     EXPECT_FALSE(launch_data.get());
 
     NSDictionary* date_dictionary = @{
       @"key" : @"value",
       @"date" : date,
     };
-    launch_data.reset(CFPropertyToLaunchData(date_dictionary));
+    launch_data.reset(
+        CFPropertyToLaunchData(base::apple::NSToCFPtrCast(date_dictionary)));
     EXPECT_FALSE(launch_data.get());
 
     NSArray* date_array = @[ @"string_1", date, @"string_2", ];
-    launch_data.reset(CFPropertyToLaunchData(date_array));
+    launch_data.reset(
+        CFPropertyToLaunchData(base::apple::NSToCFPtrCast(date_array)));
     EXPECT_FALSE(launch_data.get());
   }
 }
@@ -249,7 +264,8 @@ TEST(Launchd, CFPropertyToLaunchData_RealWorldJobDictionary) {
       },
     };
 
-    launch_data.reset(CFPropertyToLaunchData(job_dictionary));
+    launch_data.reset(
+        CFPropertyToLaunchData(base::apple::NSToCFPtrCast(job_dictionary)));
     ASSERT_TRUE(launch_data.get());
     ASSERT_EQ(LaunchDataGetType(launch_data.get()), LAUNCH_DATA_DICTIONARY);
     EXPECT_EQ(LaunchDataDictGetCount(launch_data.get()), 4u);

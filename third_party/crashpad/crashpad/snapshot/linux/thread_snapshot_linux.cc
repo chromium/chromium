@@ -190,6 +190,12 @@ bool ThreadSnapshotLinux::Initialize(
         thread.thread_info.float_context.f32,
         context_.mipsel);
   }
+#elif defined(ARCH_CPU_RISCV64)
+  context_.architecture = kCPUArchitectureRISCV64;
+  context_.riscv64 = &context_union_.riscv64;
+  InitializeCPUContextRISCV64(thread.thread_info.thread_context.t64,
+                              thread.thread_info.float_context.f64,
+                              context_.riscv64);
 #else
 #error Port.
 #endif

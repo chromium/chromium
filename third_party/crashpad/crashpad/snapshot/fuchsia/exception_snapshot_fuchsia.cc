@@ -42,6 +42,8 @@ bool ExceptionSnapshotFuchsia::Initialize(
   exception_info_ = exception_report.context.arch.u.x86_64.err_code;
 #elif defined(ARCH_CPU_ARM64)
   exception_info_ = exception_report.context.arch.u.arm_64.esr;
+#elif defined(ARCH_CPU_RISCV64)
+  exception_info_ = exception_report.context.arch.u.riscv_64.cause;
 #endif
 
   codes_.push_back(exception_);
@@ -52,6 +54,8 @@ bool ExceptionSnapshotFuchsia::Initialize(
   codes_.push_back(exception_report.context.arch.u.x86_64.cr2);
 #elif defined(ARCH_CPU_ARM64)
   codes_.push_back(exception_report.context.arch.u.arm_64.far);
+#elif defined(ARCH_CPU_RISCV64)
+  codes_.push_back(exception_report.context.arch.u.riscv_64.tval);
 #endif
 
   const auto threads = process_reader->Threads();
@@ -70,14 +74,19 @@ bool ExceptionSnapshotFuchsia::Initialize(
 #if defined(ARCH_CPU_X86_64)
   context_.architecture = kCPUArchitectureX86_64;
   context_.x86_64 = &context_arch_;
-  // TODO(fxbug.dev/5496): Add float context once saved in |t|.
-  InitializeCPUContextX86_64_NoFloatingPoint(t->general_registers,
-                                             context_.x86_64);
+  // TODO(fxbug.dev/5496): Add vector context.
+  InitializeCPUContextX86_64(
+      t->general_registers, t->fp_registers, context_.x86_64);
 #elif defined(ARCH_CPU_ARM64)
   context_.architecture = kCPUArchitectureARM64;
   context_.arm64 = &context_arch_;
   InitializeCPUContextARM64(
       t->general_registers, t->vector_registers, context_.arm64);
+#elif defined(ARCH_CPU_RISCV64)
+  context_.architecture = kCPUArchitectureRISCV64;
+  context_.riscv64 = &context_arch_;
+  InitializeCPUContextRISCV64(
+      t->general_registers, t->fp_registers, context_.riscv64);
 #else
 #error Port.
 #endif
@@ -92,6 +101,8 @@ bool ExceptionSnapshotFuchsia::Initialize(
     exception_address_ = exception_report.context.arch.u.x86_64.cr2;
 #elif defined(ARCH_CPU_ARM64)
     exception_address_ = exception_report.context.arch.u.arm_64.far;
+#elif defined(ARCH_CPU_RISCV64)
+    exception_address_ = exception_report.context.arch.u.riscv_64.tval;
 #else
 #error Port.
 #endif

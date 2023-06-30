@@ -68,6 +68,8 @@ CPUArchitecture SystemSnapshotMinidump::GetCPUArchitecture() const {
     case kMinidumpCPUArchitectureMIPS:
       return kCPUArchitectureMIPSEL;
     // No word on how MIPS64 is signalled
+    case kMinidumpCPUArchitectureRISCV64Breakpad:
+      return kCPUArchitectureRISCV64;
 
     default:
       return CPUArchitecture::kCPUArchitectureUnknown;

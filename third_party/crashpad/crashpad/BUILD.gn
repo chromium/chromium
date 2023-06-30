@@ -126,11 +126,6 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
       deps = _resources
     }
 
-    fuchsia_shell_package("crashpad-database-util") {
-      package_name = "crashpad_database_util"
-      deps = [ "tools:crashpad_database_util" ]
-    }
-
     group("tests") {
       testonly = true
 

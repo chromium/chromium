@@ -272,6 +272,31 @@ void InitializeMinidumpContextMIPS64(MinidumpContextMIPS64* context,
   context->dsp_control = value++;
 }
 
+void InitializeMinidumpContextRISCV64(MinidumpContextRISCV64* context,
+                                      uint32_t seed) {
+  if (seed == 0) {
+    memset(context, 0, sizeof(*context));
+    context->context_flags = kMinidumpContextRISCV64;
+    context->version = MinidumpContextRISCV64::kVersion;
+    return;
+  }
+
+  context->context_flags = kMinidumpContextRISCV64All;
+  context->version = MinidumpContextRISCV64::kVersion;
+
+  uint32_t value = seed;
+
+  context->pc = value++;
+  for (size_t index = 0; index < std::size(context->regs); ++index) {
+    context->regs[index] = value++;
+  }
+
+  for (size_t index = 0; index < std::size(context->fpregs); ++index) {
+    context->fpregs[index] = value++;
+  }
+  context->fcsr = value++;
+}
+
 namespace {
 
 // Using Google Test assertions, compares |expected| to |observed|. This is
@@ -599,6 +624,25 @@ void ExpectMinidumpContextMIPS64(uint32_t expect_seed,
     EXPECT_EQ(observed->lo[index], expected.lo[index]);
   }
   EXPECT_EQ(observed->dsp_control, expected.dsp_control);
+}
+
+void ExpectMinidumpContextRISCV64(uint32_t expect_seed,
+                                  const MinidumpContextRISCV64* observed,
+                                  bool snapshot) {
+  MinidumpContextRISCV64 expected;
+  InitializeMinidumpContextRISCV64(&expected, expect_seed);
+
+  EXPECT_EQ(observed->context_flags, expected.context_flags);
+  EXPECT_EQ(observed->version, expected.version);
+
+  for (size_t index = 0; index < std::size(expected.regs); ++index) {
+    EXPECT_EQ(observed->regs[index], expected.regs[index]);
+  }
+
+  for (size_t index = 0; index < std::size(expected.fpregs); ++index) {
+    EXPECT_EQ(observed->fpregs[index], expected.fpregs[index]);
+  }
+  EXPECT_EQ(observed->fcsr, expected.fcsr);
 }
 
 }  // namespace test

@@ -76,6 +76,10 @@ class ProcessReaderFuchsia {
     //!     returned by `zx_thread_read_state()`.
     zx_thread_state_general_regs_t general_registers = {};
 
+    //! \brief The raw architecture-specific `zx_thread_state_fp_regs_t` as
+    //!     returned by `zx_thread_read_state()`.
+    zx_thread_state_fp_regs_t fp_registers = {};
+
     //! \brief The raw architecture-specific `zx_thread_state_vector_regs_t` as
     //!     returned by `zx_thread_read_state()`.
     zx_thread_state_vector_regs_t vector_registers = {};

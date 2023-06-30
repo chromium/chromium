@@ -139,6 +139,6 @@ if (crashpad_is_in_chromium) {
     ]
 
     public_configs = [ ":config" ]
-    deps = [ "../../build:ios_enable_arc" ]
+    deps = [ "../../build:apple_enable_arc" ]
   }
 }

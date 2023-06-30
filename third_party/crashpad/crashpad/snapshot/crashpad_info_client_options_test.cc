@@ -241,6 +241,22 @@ TEST(CrashpadInfoClientOptions, TwoModules) {
 class CrashpadInfoSizes_ClientOptions
     : public testing::TestWithParam<base::FilePath::StringType> {};
 
+// UBSan detects a function type mismatch when calling
+// TestModule_GetCrashpadInfo since the expected function signature should
+// return a CrashpadInfo* but the actual TestModule_GetCrashpadInfo defined for
+// the test returns a TestCrashpadInfo*. CrashpadInfo is a struct with its
+// members set as private and TestCrashpadInfo is a POD meant to replicate the
+// layout of CrashpadInfo byte-for-byte. Note this is intentional since the
+// whole point of the test is to exercise the snapshot reader’s ability to
+// handle CrashpadInfo.
+#if defined(__clang__)
+[[clang::no_sanitize("function")]]
+#endif
+inline CrashpadInfo*
+CallGetCrashpadInfo(CrashpadInfo* (*func)()) {
+  return func();
+}
+
 TEST_P(CrashpadInfoSizes_ClientOptions, DifferentlySizedStruct) {
   base::FilePath::StringType artifact(FILE_PATH_LITERAL("module_"));
   artifact += GetParam();
@@ -279,7 +295,8 @@ TEST_P(CrashpadInfoSizes_ClientOptions, DifferentlySizedStruct) {
   EXPECT_EQ(options.gather_indirectly_referenced_memory, TriState::kUnset);
 
   // Get the remote CrashpadInfo structure.
-  CrashpadInfo* remote_crashpad_info = TestModule_GetCrashpadInfo();
+  CrashpadInfo* remote_crashpad_info =
+      CallGetCrashpadInfo(TestModule_GetCrashpadInfo);
   ASSERT_TRUE(remote_crashpad_info);
 
   {

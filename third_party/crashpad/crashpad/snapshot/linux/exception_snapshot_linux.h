@@ -89,6 +89,8 @@ class ExceptionSnapshotLinux final : public ExceptionSnapshot {
 #elif defined(ARCH_CPU_MIPS_FAMILY)
     CPUContextMIPS mipsel;
     CPUContextMIPS64 mips64;
+#elif defined(ARCH_CPU_RISCV64)
+    CPUContextRISCV64 riscv64;
 #endif
   } context_union_;
   CPUContext context_;

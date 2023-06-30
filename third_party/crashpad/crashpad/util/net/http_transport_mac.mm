@@ -17,8 +17,8 @@
 #import <Foundation/Foundation.h>
 #include <sys/utsname.h>
 
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
-#import "base/mac/scoped_nsobject.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
@@ -28,12 +28,16 @@
 #include "util/misc/metrics.h"
 #include "util/net/http_body.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // An implementation of NSInputStream that reads from a
 // crashpad::HTTPBodyStream.
 @interface CrashpadHTTPBodyStreamTransport : NSInputStream {
  @private
   NSStreamStatus _streamStatus;
-  id<NSStreamDelegate> _delegate;
+  id<NSStreamDelegate> __strong _delegate;
   crashpad::HTTPBodyStream* _bodyStream;  // weak
 }
 - (instancetype)initWithBodyStream:(crashpad::HTTPBodyStream*)bodyStream;
@@ -154,12 +158,13 @@ NSString* UserAgentString() {
   // Expected to be CFNetwork.
   NSBundle* nsurl_bundle = [NSBundle bundleForClass:[NSURLRequest class]];
   NSString* bundle_name = base::mac::ObjCCast<NSString>([nsurl_bundle
-      objectForInfoDictionaryKey:base::mac::CFToNSCast(kCFBundleNameKey)]);
+      objectForInfoDictionaryKey:base::apple::CFToNSPtrCast(kCFBundleNameKey)]);
   if (bundle_name) {
     user_agent = AppendEscapedFormat(user_agent, @" %@", bundle_name);
 
-    NSString* bundle_version = base::mac::ObjCCast<NSString>([nsurl_bundle
-        objectForInfoDictionaryKey:base::mac::CFToNSCast(kCFBundleVersionKey)]);
+    NSString* bundle_version = base::mac::ObjCCast<NSString>(
+        [nsurl_bundle objectForInfoDictionaryKey:base::apple::CFToNSPtrCast(
+                                                     kCFBundleVersionKey)]);
     if (bundle_version) {
       user_agent = AppendEscapedFormat(user_agent, @"/%@", bundle_version);
     }
@@ -240,10 +245,9 @@ bool HTTPTransportMac::ExecuteSynchronously(std::string* response_body) {
           forHTTPHeaderField:base::SysUTF8ToNSString(pair.first)];
     }
 
-    base::scoped_nsobject<NSInputStream> input_stream(
-        [[CrashpadHTTPBodyStreamTransport alloc]
-            initWithBodyStream:body_stream()]);
-    [request setHTTPBodyStream:input_stream.get()];
+    NSInputStream* input_stream = [[CrashpadHTTPBodyStreamTransport alloc]
+        initWithBodyStream:body_stream()];
+    [request setHTTPBodyStream:input_stream];
 
     NSURLResponse* response = nil;
     NSError* error = nil;

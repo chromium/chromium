@@ -69,6 +69,8 @@ class ThreadSnapshotFuchsia final : public ThreadSnapshot {
   CPUContextX86_64 context_arch_;
 #elif defined(ARCH_CPU_ARM64)
   CPUContextARM64 context_arch_;
+#elif defined(ARCH_CPU_RISCV64)
+  CPUContextRISCV64 context_arch_;
 #else
 #error Port.
 #endif

@@ -129,6 +129,10 @@ int CrashyMain(int argc, wchar_t* argv[]) {
     return EXIT_FAILURE;
   }
 
+  // Some versions of python call SetErrorMode() which extends to children, and
+  // prevents the WerFault infrastructure from running.
+  SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX);
+
   if (type == L"cf")
     CfgCrash();
   if (type == L"ff")

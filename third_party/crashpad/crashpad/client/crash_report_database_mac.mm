@@ -49,6 +49,10 @@
 #include "util/ios/scoped_background_task.h"
 #endif  // BUILDFLAG(IS_IOS)
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace crashpad {
 
 namespace {

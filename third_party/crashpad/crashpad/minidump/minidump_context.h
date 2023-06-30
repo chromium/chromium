@@ -637,6 +637,56 @@ struct MinidumpContextMIPS64 {
   uint64_t fir;
 };
 
+//! \brief 64-bit RISCV-specific flags for
+//! MinidumpContextRISCV64::context_flags.
+enum MinidumpContextRISCV64Flags : uint32_t {
+  //! \brief Identifies the context structure as RISCV64.
+  kMinidumpContextRISCV64 = 0x08000000,
+
+  //! \brief Indicates the validity of integer registers.
+  //!
+  //! Registers 'pc' and `x1`-`x31` are valid.
+  kMinidumpContextRISCV64Integer = kMinidumpContextRISCV64 | 0x00000001,
+
+  //! \brief Indicates the validity of floating point registers.
+  //!
+  //! Floating point registers `f0`-`f31` are valid.
+  kMinidumpContextRISCV64FloatingPoint = kMinidumpContextRISCV64 | 0x00000002,
+
+  //! \brief Indicates the validity of all registers.
+  kMinidumpContextRISCV64All = kMinidumpContextRISCV64Integer |
+                               kMinidumpContextRISCV64FloatingPoint,
+};
+
+//! \brief A 64-bit RISC-V CPU context (register state) carried in a minidump
+//! file.
+//!
+//! This structure is versioned. Increment |kVersion| when changing this
+//! structure.
+struct MinidumpContextRISCV64 {
+
+  //! \brief The structure’s currently-defined version number.
+  static constexpr uint32_t kVersion = 1;
+
+  //! \brief Indicates the validity of fields in this structure.
+  uint32_t context_flags;
+
+  //! \brief The structure’s version number.
+  uint32_t version;
+
+  //! \brief The program counter register.
+  uint64_t pc;
+
+  //! \brief The integer registers, x1 through x31.
+  uint64_t regs[31];
+
+  //! \brief The floating point registers.
+  uint64_t fpregs[32];
+
+  //! \brief The floating point control and status register.
+  uint32_t fcsr;
+};
+
 }  // namespace crashpad
 
 #endif  // CRASHPAD_MINIDUMP_MINIDUMP_CONTEXT_H_

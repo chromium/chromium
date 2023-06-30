@@ -35,6 +35,9 @@ void SanityCheckContext(const NativeCPUContext& context) {
             FromPointerCast<intptr_t>(&context));
 #elif defined(ARCH_CPU_ARM64)
   EXPECT_EQ(context.uc_mcontext.regs[0], FromPointerCast<uintptr_t>(&context));
+#elif defined(ARCH_CPU_RISCV64)
+  EXPECT_EQ(context.uc_mcontext.__gregs[10],
+            FromPointerCast<uintptr_t>(&context));
 #endif
 }
 
@@ -43,6 +46,8 @@ uintptr_t ProgramCounterFromContext(const NativeCPUContext& context) {
   return context.uc_mcontext.gregs[REG_RIP];
 #elif defined(ARCH_CPU_ARM64)
   return context.uc_mcontext.pc;
+#elif defined(ARCH_CPU_RISCV64)
+  return context.uc_mcontext.__gregs[0];
 #endif
 }
 
@@ -51,6 +56,8 @@ uintptr_t StackPointerFromContext(const NativeCPUContext& context) {
   return context.uc_mcontext.gregs[REG_RSP];
 #elif defined(ARCH_CPU_ARM64)
   return context.uc_mcontext.sp;
+#elif defined(ARCH_CPU_RISCV64)
+  return context.uc_mcontext.__gregs[2];
 #endif
 }
 

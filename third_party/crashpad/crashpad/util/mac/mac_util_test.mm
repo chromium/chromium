@@ -19,9 +19,12 @@
 
 #include <string>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace crashpad {
 namespace test {
@@ -33,8 +36,8 @@ namespace {
 // check for with ASSERT_NO_FATAL_FAILURE() or testing::Test::HasFatalFailure().
 void SwVers(NSString* argument, std::string* output) {
   @autoreleasepool {
-    base::scoped_nsobject<NSPipe> pipe([[NSPipe alloc] init]);
-    base::scoped_nsobject<NSTask> task([[NSTask alloc] init]);
+    NSPipe* pipe = [[NSPipe alloc] init];
+    NSTask* task = [[NSTask alloc] init];
     [task setStandardOutput:pipe];
     [task setLaunchPath:@"/usr/bin/sw_vers"];
     [task setArguments:@[ argument ]];
@@ -65,10 +68,9 @@ TEST(MacUtil, MacOSVersionComponents) {
   int minor;
   int bugfix;
   std::string build;
-  bool server;
   std::string version_string;
-  ASSERT_TRUE(MacOSVersionComponents(
-      &major, &minor, &bugfix, &build, &server, &version_string));
+  ASSERT_TRUE(
+      MacOSVersionComponents(&major, &minor, &bugfix, &build, &version_string));
 
   EXPECT_GE(major, 10);
   EXPECT_LE(major, 99);
@@ -116,10 +118,9 @@ TEST(MacUtil, MacOSVersionNumber) {
   int minor;
   int bugfix;
   std::string build;
-  bool server;
   std::string version_string;
-  ASSERT_TRUE(MacOSVersionComponents(
-      &major, &minor, &bugfix, &build, &server, &version_string));
+  ASSERT_TRUE(
+      MacOSVersionComponents(&major, &minor, &bugfix, &build, &version_string));
 
   EXPECT_EQ(macos_version_number,
             major * 1'00'00 + minor * 1'00 +

@@ -47,6 +47,8 @@ void InitializeMinidumpContextARM64(MinidumpContextARM64* context,
 void InitializeMinidumpContextMIPS(MinidumpContextMIPS* context, uint32_t seed);
 void InitializeMinidumpContextMIPS64(MinidumpContextMIPS* context,
                                      uint32_t seed);
+void InitializeMinidumpContextRISCV64(MinidumpContextRISCV64* context,
+                                      uint32_t seed);
 //! \}
 
 //! \brief Verifies, via Google Test assertions, that a context structure
@@ -85,6 +87,9 @@ void ExpectMinidumpContextMIPS(uint32_t expect_seed,
 void ExpectMinidumpContextMIPS64(uint32_t expect_seed,
                                  const MinidumpContextMIPS64* observed,
                                  bool snapshot);
+void ExpectMinidumpContextRISCV64(uint32_t expect_seed,
+                                  const MinidumpContextRISCV64* observed,
+                                  bool snapshot);
 //! \}
 
 }  // namespace test

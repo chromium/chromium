@@ -24,6 +24,8 @@
   .balign 16, 0x90
 #elif defined(__aarch64__)
   .balign 4, 0x0
+#elif defined(__riscv)
+  .balign 4, 0x0
 #endif
 
 CAPTURECONTEXT_SYMBOL:
@@ -167,6 +169,86 @@ CAPTURECONTEXT_SYMBOL:
   ldr x1, [x0, #0xc0]
 
   // TODO(https://crashpad.chromium.org/bug/300): save floating-point registers.
+
+  ret
+
+#elif defined(__riscv)
+
+  #define MCONTEXT_GREGS_OFFSET 176
+
+  // x1/ra is the return address. Store it as the pc.
+  // The original x10/a0 can't be recovered.
+  sd x1, (0 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x1, (1 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x2, (2 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x3, (3 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x4, (4 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x5, (5 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x6, (6 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x7, (7 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x8, (8 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x9, (9 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x10, (10 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x11, (11 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x12, (12 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x13, (13 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x14, (14 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x15, (15 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x16, (16 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x17, (17 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x18, (18 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x19, (19 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x20, (20 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x21, (21 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x22, (22 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x23, (23 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x24, (24 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x25, (25 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x26, (26 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x27, (27 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x28, (28 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x29, (29 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x30, (30 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+  sd x31, (31 * 8 + MCONTEXT_GREGS_OFFSET)(a0)
+
+  #define MCONTEXT_FPREGS_OFFSET MCONTEXT_GREGS_OFFSET + 32*8
+
+  // Use x31/t6 as scratch register.
+  frcsr x31
+  sw x31, (32 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+
+  fsd f0, (0 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f1, (1 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f2, (2 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f3, (3 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f4, (4 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f5, (5 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f6, (6 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f7, (7 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f8, (8 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f9, (9 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f10, (10 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f11, (11 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f12, (12 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f13, (13 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f14, (14 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f15, (15 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f16, (16 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f17, (17 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f18, (18 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f19, (19 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f20, (20 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f21, (21 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f22, (22 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f23, (23 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f24, (24 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f25, (25 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f26, (26 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f27, (27 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f28, (28 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f29, (29 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f30, (30 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
+  fsd f31, (31 * 8 + MCONTEXT_FPREGS_OFFSET)(a0)
 
   ret
 

@@ -16,11 +16,16 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_launch_data.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/mac/scoped_launch_data.h"
 #include "base/strings/sys_string_conversions.h"
 #include "util/misc/implicit_cast.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace crashpad {
 
@@ -34,7 +39,7 @@ launch_data_t CFPropertyToLaunchData(CFPropertyListRef property_cf) {
     CFTypeID type_id_cf = CFGetTypeID(property_cf);
 
     if (type_id_cf == CFDictionaryGetTypeID()) {
-      NSDictionary* dictionary_ns = base::mac::CFToNSCast(
+      NSDictionary* dictionary_ns = base::apple::CFToNSPtrCast(
           base::mac::CFCastStrict<CFDictionaryRef>(property_cf));
       base::mac::ScopedLaunchData dictionary_launch(
           LaunchDataAlloc(LAUNCH_DATA_DICTIONARY));
@@ -45,7 +50,7 @@ launch_data_t CFPropertyToLaunchData(CFPropertyListRef property_cf) {
         }
 
         CFPropertyListRef value_cf =
-            implicit_cast<CFPropertyListRef>(dictionary_ns[key]);
+            (__bridge CFPropertyListRef)dictionary_ns[key];
         launch_data_t value_launch = CFPropertyToLaunchData(value_cf);
         if (!value_launch) {
           return nullptr;
@@ -58,15 +63,14 @@ launch_data_t CFPropertyToLaunchData(CFPropertyListRef property_cf) {
       data_launch = dictionary_launch.release();
 
     } else if (type_id_cf == CFArrayGetTypeID()) {
-      NSArray* array_ns = base::mac::CFToNSCast(
+      NSArray* array_ns = base::apple::CFToNSPtrCast(
           base::mac::CFCastStrict<CFArrayRef>(property_cf));
       base::mac::ScopedLaunchData array_launch(
           LaunchDataAlloc(LAUNCH_DATA_ARRAY));
       size_t index = 0;
 
       for (id element_ns in array_ns) {
-        CFPropertyListRef element_cf =
-            implicit_cast<CFPropertyListRef>(element_ns);
+        CFPropertyListRef element_cf = (__bridge CFPropertyListRef)element_ns;
         launch_data_t element_launch = CFPropertyToLaunchData(element_cf);
         if (!element_launch) {
           return nullptr;
@@ -79,7 +83,7 @@ launch_data_t CFPropertyToLaunchData(CFPropertyListRef property_cf) {
 
     } else if (type_id_cf == CFNumberGetTypeID()) {
       CFNumberRef number_cf = base::mac::CFCastStrict<CFNumberRef>(property_cf);
-      NSNumber* number_ns = base::mac::CFToNSCast(number_cf);
+      NSNumber* number_ns = base::apple::CFToNSPtrCast(number_cf);
       switch (CFNumberGetType(number_cf)) {
         case kCFNumberSInt8Type:
         case kCFNumberSInt16Type:
@@ -113,7 +117,7 @@ launch_data_t CFPropertyToLaunchData(CFPropertyListRef property_cf) {
       data_launch = LaunchDataNewBool(CFBooleanGetValue(boolean_cf));
 
     } else if (type_id_cf == CFStringGetTypeID()) {
-      NSString* string_ns = base::mac::CFToNSCast(
+      NSString* string_ns = base::apple::CFToNSPtrCast(
           base::mac::CFCastStrict<CFStringRef>(property_cf));
 
       // -fileSystemRepresentation might be more correct than -UTF8String,
@@ -125,7 +129,7 @@ launch_data_t CFPropertyToLaunchData(CFPropertyListRef property_cf) {
       data_launch = LaunchDataNewString([string_ns UTF8String]);
 
     } else if (type_id_cf == CFDataGetTypeID()) {
-      NSData* data_ns = base::mac::CFToNSCast(
+      NSData* data_ns = base::apple::CFToNSPtrCast(
           base::mac::CFCastStrict<CFDataRef>(property_cf));
       data_launch = LaunchDataNewOpaque([data_ns bytes], [data_ns length]);
     } else {

@@ -40,7 +40,7 @@ source_set("google_test_runner") {
   configs += [ "../..:crashpad_config" ]
   deps = [
     "../$mini_chromium_source_parent:base",
-    "../../build:ios_enable_arc",
+    "../../build:apple_enable_arc",
     "../../build:ios_xctest",
     "../../test/ios:google_test_runner_shared_headers",
   ]
@@ -57,7 +57,7 @@ source_set("google_test_setup") {
   deps = [
     ":google_test_runner_shared_headers",
     "../$mini_chromium_source_parent:base",
-    "../../build:ios_enable_arc",
+    "../../build:apple_enable_arc",
     "../../third_party/googletest:googletest",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -72,7 +72,7 @@ source_set("xcuitests") {
   ]
 
   deps = [
-    "../../build:ios_enable_arc",
+    "../../build:apple_enable_arc",
     "../../build:ios_xctest",
     "../../client:common",
     "../../test/ios/host:app_shared_sources",

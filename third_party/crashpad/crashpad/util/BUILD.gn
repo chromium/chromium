@@ -19,7 +19,7 @@ if (crashpad_is_in_chromium) {
   import("//build/config/sanitizers/sanitizers.gni")
 }
 
-if (crashpad_is_mac || crashpad_is_ios) {
+if (crashpad_is_apple) {
   if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
     import("//build/config/sysroot.gni")
   } else {
@@ -325,7 +325,7 @@ crashpad_static_library("util") {
     }
   }
 
-  if (crashpad_is_mac || crashpad_is_ios) {
+  if (crashpad_is_apple) {
     sources += [
       "mac/xattr.cc",
       "mac/xattr.h",
@@ -409,10 +409,10 @@ crashpad_static_library("util") {
       "ios/raw_logging.h",
       "ios/scoped_background_task.h",
       "ios/scoped_background_task.mm",
-      "ios/scoped_vm_read.cc",
-      "ios/scoped_vm_read.h",
       "ios/scoped_vm_map.cc",
       "ios/scoped_vm_map.h",
+      "ios/scoped_vm_read.cc",
+      "ios/scoped_vm_read.h",
     ]
   }
 
@@ -593,13 +593,12 @@ crashpad_static_library("util") {
 
   configs = [ "../build:flock_always_supported_defines" ]
 
-  if (crashpad_is_mac || crashpad_is_ios) {
+  if (crashpad_is_apple) {
     include_dirs += [ "$root_gen_dir" ]
-    deps += [ ":mig_output" ]
-  }
-
-  if (crashpad_is_ios) {
-    deps += [ "../build:ios_enable_arc" ]
+    deps += [
+      ":mig_output",
+      "../build:apple_enable_arc",
+    ]
   }
 
   if (crashpad_is_mac && !crashpad_is_in_fuchsia) {
@@ -659,6 +658,10 @@ crashpad_static_library("net") {
     ":util",
     "$mini_chromium_source_parent:base",
   ]
+
+  if (crashpad_is_apple) {
+    deps += [ "../build:apple_enable_arc" ]
+  }
 
   if (crashpad_is_mac && !crashpad_is_in_fuchsia) {
     sources += [ "net/http_transport_mac.mm" ]
@@ -812,7 +815,7 @@ source_set("util_test") {
     sources += [ "posix/scoped_mmap_test.cc" ]
   }
 
-  if (crashpad_is_mac || crashpad_is_ios) {
+  if (crashpad_is_apple) {
     sources += [
       "mac/xattr_test.cc",
       "mach/composite_mach_message_server_test.cc",
@@ -848,8 +851,8 @@ source_set("util_test") {
     sources += [
       "ios/ios_intermediate_dump_reader_test.cc",
       "ios/ios_intermediate_dump_writer_test.cc",
-      "ios/scoped_vm_read_test.cc",
       "ios/scoped_vm_map_test.cc",
+      "ios/scoped_vm_read_test.cc",
     ]
 
     sources -= [
@@ -925,6 +928,10 @@ source_set("util_test") {
     if (crashpad_use_boringssl_for_http_transport_socket) {
       defines = [ "CRASHPAD_USE_BORINGSSL" ]
     }
+  }
+
+  if (crashpad_is_apple) {
+    deps += [ "../build:apple_enable_arc" ]
   }
 
   if (crashpad_is_mac) {

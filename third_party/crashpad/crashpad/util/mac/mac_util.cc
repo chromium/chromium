@@ -45,7 +45,6 @@ extern "C" {
 // TryCFCopy*VersionDictionary() helpers to account for the possibility that
 // they may not be present at runtime.
 CFDictionaryRef _CFCopySystemVersionDictionary() WEAK_IMPORT;
-CFDictionaryRef _CFCopyServerVersionDictionary() WEAK_IMPORT;
 
 // Don’t use these constants with CFDictionaryGetValue() directly, use them with
 // the TryCFDictionaryGetValue() wrapper to account for the possibility that
@@ -85,8 +84,8 @@ int DarwinMajorVersion() {
   int rv = uname(&uname_info);
   PCHECK(rv == 0) << "uname";
 
-  DCHECK_EQ(strcmp(uname_info.sysname, "Darwin"), 0) << "unexpected sysname "
-                                                     << uname_info.sysname;
+  DCHECK_EQ(strcmp(uname_info.sysname, "Darwin"), 0)
+      << "unexpected sysname " << uname_info.sysname;
 
   char* dot = strchr(uname_info.release, '.');
   CHECK(dot);
@@ -105,13 +104,6 @@ int DarwinMajorVersion() {
 CFDictionaryRef TryCFCopySystemVersionDictionary() {
   if (_CFCopySystemVersionDictionary) {
     return _CFCopySystemVersionDictionary();
-  }
-  return nullptr;
-}
-
-CFDictionaryRef TryCFCopyServerVersionDictionary() {
-  if (_CFCopyServerVersionDictionary) {
-    return _CFCopyServerVersionDictionary();
   }
   return nullptr;
 }
@@ -242,19 +234,12 @@ bool MacOSVersionComponents(int* major,
                             int* minor,
                             int* bugfix,
                             std::string* build,
-                            bool* server,
                             std::string* version_string) {
   base::ScopedCFTypeRef<CFDictionaryRef> dictionary(
-      TryCFCopyServerVersionDictionary());
-  if (dictionary) {
-    *server = true;
-  } else {
-    dictionary.reset(TryCFCopySystemVersionDictionary());
-    if (!dictionary) {
-      LOG(ERROR) << "_CFCopySystemVersionDictionary failed";
-      return false;
-    }
-    *server = false;
+      TryCFCopySystemVersionDictionary());
+  if (!dictionary) {
+    LOG(ERROR) << "_CFCopySystemVersionDictionary failed";
+    return false;
   }
 
   bool success = true;
@@ -338,8 +323,8 @@ void MacModelAndBoard(std::string* model, std::string* board_id) {
     // alternative.
     CFStringRef kBoardProperty = CFSTR("target-type");
 #endif
-    board_id->assign(IORegistryEntryDataPropertyAsString(platform_expert,
-                                                         kBoardProperty));
+    board_id->assign(
+        IORegistryEntryDataPropertyAsString(platform_expert, kBoardProperty));
   } else {
     model->clear();
     board_id->clear();

@@ -325,6 +325,48 @@ bool ExceptionSnapshotLinux::ReadContext<ContextTraits64>(
       reader, context_address, context_.mips64);
 }
 
+#elif defined(ARCH_CPU_RISCV64)
+
+static bool ReadContext(ProcessReaderLinux* reader,
+                        LinuxVMAddress context_address,
+                        typename ContextTraits64::CPUContext* dest_context) {
+  const ProcessMemory* memory = reader->Memory();
+
+  LinuxVMAddress gregs_address = context_address +
+                                 offsetof(UContext<ContextTraits64>, mcontext) +
+                                 offsetof(MContext64, regs);
+
+  typename ContextTraits64::SignalThreadContext thread_context;
+  if (!memory->Read(gregs_address, sizeof(thread_context), &thread_context)) {
+    LOG(ERROR) << "Couldn't read gregs";
+    return false;
+  }
+
+  LinuxVMAddress fpregs_address =
+      context_address + offsetof(UContext<ContextTraits64>, mcontext) +
+      offsetof(MContext64, fpregs);
+
+  typename ContextTraits64::SignalFloatContext fp_context;
+  if (!memory->Read(fpregs_address, sizeof(fp_context), &fp_context)) {
+    LOG(ERROR) << "Couldn't read fpregs";
+    return false;
+  }
+
+  InitializeCPUContextRISCV64(thread_context, fp_context, dest_context);
+
+  return true;
+}
+
+template <>
+bool ExceptionSnapshotLinux::ReadContext<ContextTraits64>(
+    ProcessReaderLinux* reader,
+    LinuxVMAddress context_address) {
+  context_.architecture = kCPUArchitectureRISCV64;
+  context_.riscv64 = &context_union_.riscv64;
+
+  return internal::ReadContext(reader, context_address, context_.riscv64);
+}
+
 #endif  // ARCH_CPU_X86_FAMILY
 
 bool ExceptionSnapshotLinux::Initialize(
@@ -355,10 +397,12 @@ bool ExceptionSnapshotLinux::Initialize(
       return false;
     }
   } else {
+#if !defined(ARCH_CPU_RISCV64)
     if (!ReadContext<ContextTraits32>(process_reader, context_address) ||
         !ReadSiginfo<Traits32>(process_reader, siginfo_address)) {
       return false;
     }
+#endif
   }
 
   CaptureMemoryDelegateLinux capture_memory_delegate(

@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/bridging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -29,6 +29,10 @@
 #include "util/misc/random_string.h"
 #include "util/posix/process_info.h"
 #include "util/stdlib/objc.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace crashpad {
 namespace test {
@@ -124,7 +128,7 @@ TEST(ServiceManagement, SubmitRemoveJob) {
           @[ @"/bin/sh", @"-c", shell_script_ns, ],
     };
     CFDictionaryRef job_dictionary_cf =
-        base::mac::NSToCFCast(job_dictionary_ns);
+        base::apple::NSToCFPtrCast(job_dictionary_ns);
 
     // The job may be left over from a failed previous run.
     if (ServiceManagementIsJobLoaded(kJobLabel)) {
