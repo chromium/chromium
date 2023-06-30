@@ -294,14 +294,16 @@ namespace system.display {
   // Mirror mode, i.e. different ways of how a display is mirrored to other
   // displays.
   enum MirrorMode {
-    // Use the default mode (extended or unified desktop).
+    // Specifies the default mode (extended or unified desktop).
     off,
 
-    // The default source display will be mirrored to all other displays.
+    // Specifies that the default source display will be mirrored to all other
+    // displays.
     normal,
 
-    // The specified source display will be mirrored to the provided
-    // destination displays. All other connected displays will be extended.
+    // Specifies that the specified source display will be mirrored to the
+    // provided destination displays. All other connected displays will be
+    //  extended.
     mixed
   };
 
