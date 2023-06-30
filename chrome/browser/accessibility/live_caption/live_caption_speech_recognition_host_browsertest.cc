@@ -4,17 +4,23 @@
 
 #include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host.h"
 
+#include <string>
+#include <vector>
+
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_test_util.h"
+#include "chrome/browser/accessibility/live_translate_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/live_caption_controller.h"
+#include "components/live_caption/live_translate_controller.h"
 #include "components/live_caption/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
@@ -55,6 +61,29 @@ class FullscreenEventsWaiter : public content::WebContentsObserver {
 
 namespace captions {
 
+class MockLiveTranslateController : public LiveTranslateController {
+ public:
+  MockLiveTranslateController(PrefService* profile_prefs,
+                              content::BrowserContext* browser_context)
+      : LiveTranslateController(profile_prefs, browser_context) {}
+
+  void GetTranslation(const std::string& result,
+                      std::string source_language,
+                      std::string target_language,
+                      OnTranslateEventCallback callback) override {
+    translation_requests_.push_back(result);
+    std::move(callback).Run(result);
+  }
+
+  // Returns a collection of strings passed into `GetTranslation()`.
+  std::vector<std::string> GetTranslationRequests() {
+    return translation_requests_;
+  }
+
+ private:
+  std::vector<std::string> translation_requests_;
+};
+
 class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
  public:
   LiveCaptionSpeechRecognitionHostTest() = default;
@@ -63,6 +92,12 @@ class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
       const LiveCaptionSpeechRecognitionHostTest&) = delete;
   LiveCaptionSpeechRecognitionHostTest& operator=(
       const LiveCaptionSpeechRecognitionHostTest&) = delete;
+
+  std::unique_ptr<KeyedService> SetLiveTranslateController(
+      content::BrowserContext* context) {
+    return std::make_unique<testing::NiceMock<MockLiveTranslateController>>(
+        browser()->profile()->GetPrefs(), browser()->profile());
+  }
 
   // LiveCaptionBrowserTest:
   void SetUp() override {
@@ -73,6 +108,11 @@ class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+    LiveTranslateControllerFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindRepeating(
+            &LiveCaptionSpeechRecognitionHostTest::SetLiveTranslateController,
+            base::Unretained(this)));
     LiveCaptionBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -89,9 +129,10 @@ class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
 
   void OnSpeechRecognitionRecognitionEvent(content::RenderFrameHost* frame_host,
                                            std::string text,
-                                           bool expected_success) {
+                                           bool expected_success,
+                                           bool is_final = false) {
     remotes_[frame_host]->OnSpeechRecognitionRecognitionEvent(
-        media::SpeechRecognitionResult(text, /*is_final=*/false),
+        media::SpeechRecognitionResult(text, is_final),
         base::BindOnce(&LiveCaptionSpeechRecognitionHostTest::
                            DispatchTranscriptionCallback,
                        base::Unretained(this), expected_success));
@@ -123,6 +164,13 @@ class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
             ->caption_bubble_controller_for_testing();
     EXPECT_EQ(visible, bubble_controller->IsWidgetVisibleForTesting());
 #endif
+  }
+
+  std::vector<std::string> GetTranslationRequests() {
+    return static_cast<MockLiveTranslateController*>(
+               LiveTranslateControllerFactory::GetForProfile(
+                   browser()->profile()))
+        ->GetTranslationRequests();
   }
 
  private:
@@ -260,6 +308,103 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest, LiveTranslate) {
       /* expected_success= */ true);
   base::RunLoop().RunUntilIdle();
   ExpectIsWidgetVisible(true);
+}
+
+IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest, TranslationCache) {
+  content::RenderFrameHost* frame_host = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
+  CreateLiveCaptionSpeechRecognitionHost(frame_host);
+
+  SetLiveCaptionEnabled(true);
+  SetLiveTranslateEnabled(true);
+
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host,
+      "Pomeranians come in 23 different color combinations. Some Pomeranians",
+      /* expected_success= */ true, /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ExpectIsWidgetVisible(true);
+
+  ASSERT_EQ(1u, GetTranslationRequests().size());
+  ASSERT_EQ(
+      "Pomeranians come in 23 different color combinations. Some Pomeranians",
+      GetTranslationRequests()[0]);
+
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host,
+      "Pomeranians come in 23 different color combinations. Some Pomeranians",
+      /* expected_success= */ true, /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(2u, GetTranslationRequests().size());
+  ASSERT_EQ("Some Pomeranians", GetTranslationRequests()[1]);
+
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host,
+      "Pomeranians come in 23 different color combinations. Some Pomeranians "
+      "are even tricolored! Are",
+      /* expected_success= */ true, /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(3u, GetTranslationRequests().size());
+  ASSERT_EQ("Some Pomeranians are even tricolored! Are",
+            GetTranslationRequests()[2]);
+
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host,
+      "Pomeranians come in 23 different color combinations. Some Pomeranians "
+      "are even tricolored! Are they the cutest dog breed in the",
+      /* expected_success= */ true, /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(4u, GetTranslationRequests().size());
+  ASSERT_EQ("Are they the cutest dog breed in the",
+            GetTranslationRequests()[3]);
+
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host,
+      "Pomeranians come in 23 different color combinations. Some Pomeranians "
+      "are even tricolored! Are they the cutest dog breed in the world? "
+      "Absolutely.",
+      /* expected_success= */ true, /* is_final= */ true);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(5u, GetTranslationRequests().size());
+  ASSERT_EQ("Are they the cutest dog breed in the world? Absolutely.",
+            GetTranslationRequests()[4]);
+
+  // The previous final event clears the translation cache.
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host, "Pomeranians come in 23 different color combinations.",
+      /* expected_success= */ true, /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(6u, GetTranslationRequests().size());
+  ASSERT_EQ("Pomeranians come in 23 different color combinations.",
+            GetTranslationRequests()[5]);
+
+  // Ensure that cached strings aren't retrieved out of order.
+  OnSpeechRecognitionRecognitionEvent(frame_host, "First sentence. Second",
+                                      /* expected_success= */ true,
+                                      /* is_final= */ false);
+  OnSpeechRecognitionRecognitionEvent(frame_host, "Third sentence. Fourth",
+                                      /* expected_success= */ true,
+                                      /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(8u, GetTranslationRequests().size());
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host, "First sentence. Second sentence. Third sentence.",
+      /* expected_success= */ true, /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(9u, GetTranslationRequests().size());
+  ASSERT_EQ("Second sentence. Third sentence.", GetTranslationRequests()[8]);
+
+  // Ensure that partial sentences aren't cached.
+  OnSpeechRecognitionRecognitionEvent(frame_host, "Fourth sentence",
+                                      /* expected_success= */ true,
+                                      /* is_final= */ false);
+  OnSpeechRecognitionRecognitionEvent(frame_host, "Fourth sentence",
+                                      /* expected_success= */ true,
+                                      /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(11u, GetTranslationRequests().size());
 }
 
 }  // namespace captions

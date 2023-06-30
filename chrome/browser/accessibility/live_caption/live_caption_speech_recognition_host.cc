@@ -6,11 +6,16 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
@@ -26,7 +31,71 @@
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/icu/source/common/unicode/brkiter.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+const char kSpaceChar = ' ';
+
+// Split the transcription into sentences. Spaces are included in the preceding
+// sentence.
+std::vector<std::string> SplitSentences(const std::string& text,
+                                        const std::string& locale) {
+  std::vector<std::string> sentences;
+  UErrorCode status = U_ZERO_ERROR;
+
+  // Use icu::BreakIterator instead of base::i18n::BreakIterator to avoid flakey
+  // mid-string sentence breaks.
+  icu::BreakIterator* iter =
+      icu::BreakIterator::createSentenceInstance(locale.c_str(), status);
+
+  DCHECK(U_SUCCESS(status))
+      << "ICU could not open a break iterator: " << u_errorName(status) << " ("
+      << status << ")";
+
+  // Set the text to be analyzed.
+  icu::UnicodeString unicode_text = icu::UnicodeString::fromUTF8(text);
+  iter->setText(unicode_text);
+
+  // Iterate over the sentences.
+  int32_t start = iter->first();
+  int32_t end = iter->next();
+  while (end != icu::BreakIterator::DONE) {
+    icu::UnicodeString sentence;
+    unicode_text.extractBetween(start, end, sentence);
+    std::string sentence_string;
+    sentence.toUTF8String(sentence_string);
+    sentences.emplace_back(sentence_string);
+    start = end;
+    end = iter->next();
+  }
+
+  delete iter;
+
+  return sentences;
+}
+
+bool ContainsTrailingSpace(const std::string& str) {
+  return !str.empty() && base::IsAsciiWhitespace(str.back());
+}
+
+std::string RemoveTrailingSpace(const std::string& str) {
+  if (ContainsTrailingSpace(str)) {
+    return str.substr(0, str.length() - 1);
+  }
+
+  return str;
+}
+
+std::string GetTranslationCacheKey(const std::string& source_language,
+                                   const std::string& target_language,
+                                   const std::string& transcription) {
+  return base::StrCat({source_language, target_language, "|", transcription});
+}
+
+}  // namespace
 
 namespace captions {
 
@@ -80,18 +149,57 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
     return;
   }
 
+  std::string target_language =
+      prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode);
   if (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
       prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
-      l10n_util::GetLanguage(
-          prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode)) !=
+      l10n_util::GetLanguage(target_language) !=
           l10n_util::GetLanguage(source_language_)) {
-    characters_translated_ += result.transcription.size();
-    GetLiveTranslateController()->GetTranslation(
-        result, source_language_,
-        prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode),
-        base::BindOnce(&LiveCaptionSpeechRecognitionHost::OnTranslationCallback,
-                       weak_factory_.GetWeakPtr()));
-    std::move(reply).Run(!stop_transcriptions_);
+    std::vector<std::string> sentences =
+        SplitSentences(result.transcription, source_language_);
+
+    std::string cached_translation;
+    std::string string_to_translate;
+    bool cached_translation_found = true;
+    for (std::string& sentence : sentences) {
+      if (cached_translation_found) {
+        bool sentence_contains_trailing_space = ContainsTrailingSpace(sentence);
+        auto translation_cache_key = GetTranslationCacheKey(
+            source_language_, target_language,
+            sentence_contains_trailing_space ? RemoveTrailingSpace(sentence)
+                                             : sentence);
+        auto iter = translation_cache_.find(translation_cache_key);
+        if (iter != translation_cache_.end()) {
+          cached_translation += iter->second;
+          if (sentence_contains_trailing_space) {
+            cached_translation += kSpaceChar;
+          }
+
+          continue;
+        }
+        cached_translation_found = false;
+      }
+
+      string_to_translate = base::StrCat({string_to_translate, sentence});
+    }
+
+    if (!string_to_translate.empty()) {
+      characters_translated_ += string_to_translate.size();
+      GetLiveTranslateController()->GetTranslation(
+          string_to_translate, source_language_, target_language,
+          base::BindOnce(
+              &LiveCaptionSpeechRecognitionHost::OnTranslationCallback,
+              weak_factory_.GetWeakPtr(), cached_translation,
+              string_to_translate, source_language_, target_language,
+              result.is_final));
+      std::move(reply).Run(!stop_transcriptions_);
+    } else {
+      // Dispatch the transcription immediately if the entire transcription was
+      // cached.
+      std::move(reply).Run(live_caption_controller->DispatchTranscription(
+          context_.get(),
+          media::SpeechRecognitionResult(cached_translation, result.is_final)));
+    }
   } else {
     std::move(reply).Run(
         live_caption_controller->DispatchTranscription(context_.get(), result));
@@ -139,10 +247,35 @@ void LiveCaptionSpeechRecognitionHost::MediaEffectivelyFullscreenChanged(
 #endif
 
 void LiveCaptionSpeechRecognitionHost::OnTranslationCallback(
-    media::SpeechRecognitionResult result) {
+    const std::string& cached_translation,
+    const std::string& original_transcription,
+    const std::string& source_language,
+    const std::string& target_language,
+    bool is_final,
+    const std::string& result) {
+  auto original_sentences =
+      SplitSentences(original_transcription, source_language);
+  auto translated_sentences = SplitSentences(result, target_language);
+  if (is_final) {
+    translation_cache_.clear();
+  } else {
+    if (original_sentences.size() > 1 &&
+        original_sentences.size() == translated_sentences.size()) {
+      for (size_t i = 0; i < original_sentences.size() - 1; i++) {
+        // Sentences are always cached without the trailing space.
+        std::string sentence = RemoveTrailingSpace(original_sentences[i]);
+        translation_cache_.insert(
+            {GetTranslationCacheKey(source_language, target_language, sentence),
+             translated_sentences[i]});
+      }
+    }
+  }
+
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
-  stop_transcriptions_ =
-      !live_caption_controller->DispatchTranscription(context_.get(), result);
+  stop_transcriptions_ = !live_caption_controller->DispatchTranscription(
+      context_.get(),
+      media::SpeechRecognitionResult(base::StrCat({cached_translation, result}),
+                                     is_final));
 }
 
 content::WebContents* LiveCaptionSpeechRecognitionHost::GetWebContents() {
