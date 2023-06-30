@@ -239,20 +239,21 @@ void InjectNTP(Browser* browser) {
 }  // namespace
 
 @interface SceneController () <AppStateObserver,
+                               HistoryCoordinatorDelegate,
+                               IncognitoInterstitialCoordinatorDelegate,
                                PolicyWatcherBrowserAgentObserving,
                                SettingsNavigationControllerDelegate,
                                SceneUIProvider,
-                               HistoryCoordinatorDelegate,
                                SceneURLLoadingServiceDelegate,
+                               SignedInAccountsViewControllerDelegate,
                                TabGridCoordinatorDelegate,
-                               WebStateListObserving,
-                               IncognitoInterstitialCoordinatorDelegate> {
+                               WebStateListObserving> {
   std::unique_ptr<WebStateListObserverBridge> _webStateListForwardingObserver;
   std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
       _policyWatcherObserverBridge;
   // View controller presents the signed in accounts when they have changed
   // while the application was in background.
-  __weak SignedInAccountsViewController* _accountsViewController;
+  SignedInAccountsViewController* _accountsViewController;
 }
 
 // Navigation View controller for the settings.
@@ -1166,6 +1167,7 @@ void InjectNTP(Browser* browser) {
   }
 
   [_accountsViewController teardownUI];
+  _accountsViewController.delegate = nil;
   _accountsViewController = nil;
 
   // The UI should be stopped before the models they observe are stopped.
@@ -2953,15 +2955,14 @@ void InjectNTP(Browser* browser) {
   id<ApplicationSettingsCommands> settingsHandler =
       HandlerForProtocol(self.mainInterface.browser->GetCommandDispatcher(),
                          ApplicationSettingsCommands);
-  SignedInAccountsViewController* accountsViewController =
-      [[SignedInAccountsViewController alloc]
-          initWithBrowserState:browserState
-                    dispatcher:settingsHandler];
+  _accountsViewController = [[SignedInAccountsViewController alloc]
+      initWithBrowserState:browserState
+                dispatcher:settingsHandler];
   [[self topPresentedViewController]
-      presentViewController:accountsViewController
+      presentViewController:_accountsViewController
                    animated:YES
                  completion:nil];
-  _accountsViewController = accountsViewController;
+  _accountsViewController.delegate = self;
 }
 
 // Close Settings, or Signin or the 3rd-party intents Incognito interstitial.
@@ -3131,6 +3132,16 @@ void InjectNTP(Browser* browser) {
       };
 
   [self.signinCoordinator start];
+}
+
+#pragma mark - SignedInAccountsViewControllerDelegate
+
+- (void)signedInAccountsViewControllerIsDismissed:
+    (SignedInAccountsViewController*)signedInAccountsViewController {
+  CHECK_EQ(_accountsViewController, signedInAccountsViewController);
+  [_accountsViewController teardownUI];
+  _accountsViewController.delegate = nil;
+  _accountsViewController = nil;
 }
 
 #pragma mark - WebStateListObserving

@@ -109,13 +109,16 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
     authService->ApproveAccountList();
   }
   __weak __typeof(self) weakSelf = self;
-  [self.presentingViewController dismissViewControllerAnimated:YES
-                                                    completion:^{
-                                                      [weakSelf teardownUI];
-                                                      if (completion) {
-                                                        completion();
-                                                      }
-                                                    }];
+  [self.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [weakSelf.delegate
+                               signedInAccountsViewControllerIsDismissed:
+                                   weakSelf];
+                           if (completion) {
+                             completion();
+                           }
+                         }];
 }
 
 - (void)dealloc {
