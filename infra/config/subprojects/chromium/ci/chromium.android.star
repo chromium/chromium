@@ -1183,6 +1183,34 @@ ci.builder(
     execution_timeout = 4 * time.hour,
 )
 
+# TODO(crbug.com/1459433): Enable the branch, sheriff and tree_closing
+# once the builder is stable.
+ci.builder(
+    name = "android-oreo-x86-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["android", "enable_wpr_tests"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "x86_builder_mb",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    sheriff_rotations = args.ignore_default(None),
+    # TODO(crbug.com/1459433): Update the console view config once on CQ
+    console_view_entry = consoles.console_view_entry(
+        category = "builder_tester|x86",
+        short_name = "O",
+    ),
+)
+
 ci.thin_tester(
     name = "android-pie-arm64-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,

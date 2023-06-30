@@ -350,6 +350,13 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-oreo-x86-rel",
+    mirrors = [
+        "ci/android-oreo-x86-rel",
+    ],
+)
+
+try_.builder(
     name = "android-perfetto-rel",
     mirrors = [
         "ci/android-perfetto-rel",
