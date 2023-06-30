@@ -10,10 +10,9 @@
     "e2e": "npm run e2e-headless --",
     "eslint": "wireit",
     "flake8": "flake8 examples/ tests/",
-    "format": "wireit",
+    "format": "npm run pre-commit --",
     "pre-commit": "pre-commit run --all-files",
     "prepare": "wireit",
-    "prettier": "prettier --write .",
     "rollup": "wireit",
     "server": "npm run server-headless --",
     "server-headful": "wireit",
@@ -22,8 +21,7 @@
     "tsc": "wireit",
     "unit": "wireit",
     "wpt": "wireit",
-    "wpt-all": "wireit",
-    "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
+    "wpt-all": "wireit"
   },
   "nyc": {
     "exclude": [
@@ -69,13 +67,6 @@
       ],
       "dependencies": [
         "tsc"
-      ]
-    },
-    "format": {
-      "dependencies": [
-        "eslint",
-        "prettier",
-        "yapf"
       ]
     },
     "prepare": {
