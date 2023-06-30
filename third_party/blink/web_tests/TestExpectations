@@ -6650,3 +6650,6 @@ crbug.com/1459304 [ Linux ] fast/peerconnection/RTCPeerConnection-iframe-gc.html
 crbug.com/1459304 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Failure Pass ]
 crbug.com/1459347 [ Fuchsia ] virtual/text-antialias/stroking-decorations.html [ Failure Pass ]
 crbug.com/1459347 [ Fuchsia ] paint/invalidation/shadow-multiple.html [ Failure Pass ]
+
+# Sheriff 2023-06-30
+crbug.com/1459560 [ Linux ] http/tests/devtools/profiler/heap-snapshot-location.js [ Failure Timeout Pass ]
