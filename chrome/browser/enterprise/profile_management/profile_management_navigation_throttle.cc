@@ -6,11 +6,9 @@
 
 #include <string>
 
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
-#include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
@@ -22,7 +20,6 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/profile_token_web_signin_interceptor.h"
 #include "chrome/browser/signin/profile_token_web_signin_interceptor_factory.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/account_id/account_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -50,65 +47,13 @@ struct SAMLProfileAttributes {
   std::string token;
 };
 
-constexpr char kNameAttributeKey[] = "name";
-constexpr char kDomainAttributeKey[] = "domain";
-constexpr char kTokenAttributeKey[] = "token";
-
 base::flat_map<std::string, SAMLProfileAttributes>& GetAttributeMap() {
+  // TODO(crbug.com/1445072): Add actual domains with claim names.
   static base::NoDestructor<base::flat_map<std::string, SAMLProfileAttributes>>
-      profile_attributes;
-
-  if (!profile_attributes->empty()) {
-    return *profile_attributes;
-  }
-
-  // TODO(crbug.com/1445072): Add actual domains with attribute names.
-  profile_attributes->insert(std::make_pair(
-      "supported.test",
-      SAMLProfileAttributes("placeholderName", "placeholderDomain",
-                            "placeholderToken")));
-
-  // Extract domains and attributes from the command line switch.
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  if (!command_line.HasSwitch(switches::kProfileManagementAttributes)) {
-    return *profile_attributes;
-  }
-
-  absl::optional<base::Value> switch_value = base::JSONReader::Read(
-      command_line.GetSwitchValueASCII(switches::kProfileManagementAttributes));
-  if (!switch_value || !switch_value->is_dict()) {
-    VLOG(1) << "[Profile management] Failed to parse attributes JSON.";
-    return *profile_attributes;
-  }
-
-  for (const auto [domain, attributes_value] : switch_value->GetDict()) {
-    if (!attributes_value.is_dict()) {
-      VLOG(1) << "[Profile management] Attributes for domain \"" << domain
-              << "\" are ignored as they are not in JSON object format.";
-      continue;
-    }
-
-    const base::Value::Dict& attributes = attributes_value.GetDict();
-    SAMLProfileAttributes new_attributes;
-    if (auto* name_attribute = attributes.FindString(kNameAttributeKey);
-        name_attribute) {
-      new_attributes.name = *name_attribute;
-    }
-    if (auto* domain_attribute = attributes.FindString(kDomainAttributeKey);
-        domain_attribute) {
-      new_attributes.domain = *domain_attribute;
-    }
-    if (auto* token_attribute = attributes.FindString(kTokenAttributeKey);
-        token_attribute) {
-      new_attributes.token = *token_attribute;
-    }
-
-    profile_attributes->insert(
-        std::make_pair(domain, std::move(new_attributes)));
-  }
-
-  VLOG(1) << "[Profile management] Successfully parsed attributes JSON.";
+      profile_attributes(
+          {{"supported.test",
+            SAMLProfileAttributes("placeholderName", "placeholderDomain",
+                                  "placeholderToken")}});
   return *profile_attributes;
 }
 
@@ -211,10 +156,6 @@ void ProfileManagementNavigationThrottle::SetURLsForTesting(
     const std::string& unmanaged_url) {
   token_url_for_testing_ = token_url;
   unmanaged_url_for_testing_ = unmanaged_url;
-}
-
-void ProfileManagementNavigationThrottle::ClearAttributeMapForTesting() {
-  GetAttributeMap().clear();
 }
 
 void ProfileManagementNavigationThrottle::OnResponseBodyReady(

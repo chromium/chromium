@@ -7,14 +7,12 @@
 #include "base/base64.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/profile_management/saml_response_parser.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/web_contents.h"
@@ -30,7 +28,6 @@ using testing::_;
 namespace {
 
 constexpr char kSupportedDomain[] = "https://supported.test";
-constexpr char kSwitchDomain[] = "switch.test";
 constexpr char kGoogleServiceLoginUrl[] = "www.google.com/a/%s/ServiceLogin";
 constexpr char kTokenUrl[] = "token.test/";
 constexpr char kUnmanagedUrl[] = "unmanaged.test/";
@@ -40,9 +37,6 @@ constexpr char kValidDomain[] = "host.test";
 constexpr char kInvalidDomain[] = "host";
 constexpr char kValidEmail[] = "user@host.test";
 constexpr char kInvalidEmail[] = "user@host";
-
-constexpr char kJSONAttributesTemplate[] = R"({"%s":{"name":"placeholderName",
-"domain":"placeholderDomain","token":"placeholderToken"}})";
 
 constexpr char kHTMLTemplate[] = R"(<html><body><form>
       <input name="SAMLResponse" value="%s"/></form></body></html>)";
@@ -83,14 +77,6 @@ class ProfileManagementNavigationThrottleTest
     BrowserWithTestWindowTest::SetUp();
     // Create the first tab so that web_contents() exists.
     AddTab(browser(), GURL(base::StrCat({"http://", kTestUrl})));
-  }
-
-  std::unique_ptr<ProfileManagementNavigationThrottle> GetNavigationThrottle(
-      content::NavigationHandle* handle) {
-    auto throttle =
-        std::make_unique<ProfileManagementNavigationThrottle>(handle);
-    throttle->ClearAttributeMapForTesting();
-    return throttle;
   }
 
   content::WebContents* web_contents() const {
@@ -138,44 +124,9 @@ TEST_F(ProfileManagementNavigationThrottleTest, UnsupportedHost) {
       GURL("https://unsupported.host/"), main_frame());
   EXPECT_CALL(navigation_handle, GetResponseBody(_)).Times(0);
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            throttle->WillProcessResponse().action());
-}
+  auto throttle =
+      std::make_unique<ProfileManagementNavigationThrottle>(&navigation_handle);
 
-TEST_F(ProfileManagementNavigationThrottleTest, Switch_InvalidJSON) {
-  base::test::ScopedFeatureList features(
-      features::kEnableProfileTokenManagement);
-  // Set the command line switch to an invalid JSON string.
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      switches::kProfileManagementAttributes,
-      base::StringPrintf(kJSONAttributesTemplate,
-                         base::StrCat({kSwitchDomain, "\""}).c_str()));
-
-  content::MockNavigationHandle navigation_handle(
-      GURL(base::StrCat({"https://", kSwitchDomain})), main_frame());
-  EXPECT_CALL(navigation_handle, GetResponseBody(_)).Times(0);
-
-  auto throttle = GetNavigationThrottle(&navigation_handle);
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            throttle->WillProcessResponse().action());
-}
-
-TEST_F(ProfileManagementNavigationThrottleTest, Switch_InvalidAttributes) {
-  base::test::ScopedFeatureList features(
-      features::kEnableProfileTokenManagement);
-  // Set the command line switch attributes as a string instead of JSON object.
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      switches::kProfileManagementAttributes,
-      base::StringPrintf(R"({"%s": "attribute_value"})", kSwitchDomain));
-
-  content::MockNavigationHandle navigation_handle(
-      GURL(base::StrCat({"https://", kSwitchDomain})), main_frame());
-  EXPECT_CALL(navigation_handle, GetResponseBody(_)).Times(0);
-
-  auto throttle = GetNavigationThrottle(&navigation_handle);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillProcessResponse().action());
 }
@@ -205,16 +156,6 @@ class ProfileManagementNavigationThrottleRedirectTest
     EXPECT_CALL(handle, GetResponseBody(_)).Times(1);
   }
 
-  std::unique_ptr<ProfileManagementNavigationThrottle> GetNavigationThrottle(
-      content::NavigationHandle* handle) {
-    auto throttle =
-        std::make_unique<ProfileManagementNavigationThrottle>(handle);
-    throttle->ClearAttributeMapForTesting();
-    throttle->SetURLsForTesting(base::StrCat({"https://", kTokenUrl}),
-                                base::StrCat({"https://", kUnmanagedUrl}));
-    return throttle;
-  }
-
  protected:
   base::RunLoop loop_;
 
@@ -229,7 +170,10 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, InvalidEmail) {
   SetNavigationHandleExpectations(navigation_handle,
                                   BuildSAMLResponse(kInvalidEmail));
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  auto throttle =
+      std::make_unique<ProfileManagementNavigationThrottle>(&navigation_handle);
+  throttle->SetURLsForTesting(base::StrCat({"https://", kTokenUrl}),
+                              base::StrCat({"https://", kUnmanagedUrl}));
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   loop_.RunUntilIdle();
@@ -245,7 +189,10 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, ValidEmail) {
   SetNavigationHandleExpectations(navigation_handle,
                                   BuildSAMLResponse(kValidEmail));
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  auto throttle =
+      std::make_unique<ProfileManagementNavigationThrottle>(&navigation_handle);
+  throttle->SetURLsForTesting(base::StrCat({"https://", kTokenUrl}),
+                              base::StrCat({"https://", kUnmanagedUrl}));
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   loop_.RunUntilIdle();
@@ -262,7 +209,10 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, EmptyDomain) {
   SetNavigationHandleExpectations(navigation_handle,
                                   BuildSAMLResponse(std::string()));
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  auto throttle =
+      std::make_unique<ProfileManagementNavigationThrottle>(&navigation_handle);
+  throttle->SetURLsForTesting(base::StrCat({"https://", kTokenUrl}),
+                              base::StrCat({"https://", kUnmanagedUrl}));
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   loop_.RunUntilIdle();
@@ -278,7 +228,10 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, EmptyDomainAndToken) {
   SetNavigationHandleExpectations(
       navigation_handle, BuildSAMLResponse(std::string(), std::string()));
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  auto throttle =
+      std::make_unique<ProfileManagementNavigationThrottle>(&navigation_handle);
+  throttle->SetURLsForTesting(base::StrCat({"https://", kTokenUrl}),
+                              base::StrCat({"https://", kUnmanagedUrl}));
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   loop_.RunUntilIdle();
@@ -294,7 +247,10 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, InvalidDomain) {
   SetNavigationHandleExpectations(navigation_handle,
                                   BuildSAMLResponse(kInvalidDomain));
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  auto throttle =
+      std::make_unique<ProfileManagementNavigationThrottle>(&navigation_handle);
+  throttle->SetURLsForTesting(base::StrCat({"https://", kTokenUrl}),
+                              base::StrCat({"https://", kUnmanagedUrl}));
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   loop_.RunUntilIdle();
@@ -310,30 +266,10 @@ TEST_F(ProfileManagementNavigationThrottleRedirectTest, ValidDomain) {
   SetNavigationHandleExpectations(navigation_handle,
                                   BuildSAMLResponse(kValidDomain));
 
-  auto throttle = GetNavigationThrottle(&navigation_handle);
-  EXPECT_EQ(content::NavigationThrottle::DEFER,
-            throttle->WillProcessResponse().action());
-  loop_.RunUntilIdle();
-
-  // The throttle navigates to the Google sign-in URL corresponding to the
-  // parsed domain when the domain is valid.
-  EXPECT_EQ(base::StringPrintf(kGoogleServiceLoginUrl, kValidDomain),
-            web_contents()->GetURL().GetContent());
-}
-
-TEST_F(ProfileManagementNavigationThrottleRedirectTest, Switch_ValidDomain) {
-  // Set a new supported domain using the command line switch.
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      switches::kProfileManagementAttributes,
-      base::StringPrintf(kJSONAttributesTemplate, kSwitchDomain));
-
-  content::MockNavigationHandle navigation_handle(
-      GURL(base::StrCat({"https://", kSwitchDomain})), main_frame());
-  SetNavigationHandleExpectations(navigation_handle,
-                                  BuildSAMLResponse(kValidDomain));
-
-  auto throttle = GetNavigationThrottle(&navigation_handle);
+  auto throttle =
+      std::make_unique<ProfileManagementNavigationThrottle>(&navigation_handle);
+  throttle->SetURLsForTesting(base::StrCat({"https://", kTokenUrl}),
+                              base::StrCat({"https://", kUnmanagedUrl}));
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   loop_.RunUntilIdle();
