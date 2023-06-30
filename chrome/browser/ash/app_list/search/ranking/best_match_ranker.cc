@@ -36,13 +36,13 @@ bool ShouldIgnoreProvider(ProviderType type) {
     case ProviderType::kInternalPrivacyInfo:
     // In development:
     case ProviderType::kImageSearch:
+    case ProviderType::kHelpApp:
       return true;
     case ProviderType::kInternalApp:
     case ProviderType::kArcAppShortcut:
     case ProviderType::kKeyboardShortcut:
     case ProviderType::kDriveSearch:
     case ProviderType::kGames:
-    case ProviderType::kHelpApp:
     case ProviderType::kZeroStateHelpApp:
     case ProviderType::kFileSearch:
     case ProviderType::kInstalledApp:
