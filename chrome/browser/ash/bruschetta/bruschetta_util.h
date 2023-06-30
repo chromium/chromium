@@ -18,7 +18,6 @@ extern const char kToolsDlc[];
 extern const char kUefiDlc[];
 
 extern const char kBruschettaVmName[];
-extern const char kBruschettaDisplayName[];
 
 extern const char kBruschettaPolicyId[];
 
@@ -72,6 +71,10 @@ bool HasInstallableConfig(const Profile* profile, const std::string& config_id);
 
 // Returns true if Bruschetta is installed.
 bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id);
+
+absl::optional<const base::Value::Dict*> GetConfigForGuest(
+    Profile* profile,
+    const guest_os::GuestId& guest_id);
 
 absl::optional<RunningVmPolicy> GetLaunchPolicyForConfig(Profile* profile,
                                                          std::string config_id);

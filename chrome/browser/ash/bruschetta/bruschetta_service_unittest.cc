@@ -66,6 +66,7 @@ class BruschettaServiceTest : public testing::Test,
                  prefs::PolicyUpdateAction::FORCE_SHUTDOWN_IF_MORE_RESTRICTED));
 
     config.Set(prefs::kPolicyVTPMKey, std::move(vtpm));
+    config.Set(prefs::kPolicyNameKey, "Display Name");
 
     pref.Set(kTestVmConfig, std::move(config));
     profile_.GetPrefs()->SetDict(prefs::kBruschettaVMConfiguration,

@@ -130,6 +130,15 @@ void BruschettaService::OnPolicyChanged() {
 
     StopVmIfRequiredByPolicy(guest_id.vm_name, std::move(config_id), config);
   }
+
+  // Any change to policy may change the display name of a config, so sync the
+  // terminal prefs.
+  auto* terminal_registry = guest_os::GuestOsService::GetForProfile(profile_)
+                                ->TerminalProviderRegistry();
+  for (const auto& it : terminal_providers_) {
+    auto id = it.second;
+    terminal_registry->SyncPrefs(id);
+  }
 }
 
 void BruschettaService::StopVmIfRequiredByPolicy(
