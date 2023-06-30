@@ -226,6 +226,35 @@ class LintWPTTest(LoggingTestCase):
         # Note the 1-indexed convention.
         self.assertEqual(line, 2)
 
+    def test_disable_one_rule(self):
+        (error, ) = self._check_metadata(
+            """\
+            [variant.html?foo=baz]
+              [subtest2]  # lint-wpt: disable=META-SINGLE-ELEM-LIST
+                expected: [FAIL]
+              [subtest1]
+                expected: FAIL
+            """, 'variant.html.ini')
+        name, description, path, _ = error
+        self.assertEqual(name, 'META-UNSORTED-SECTION')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description,
+            'Section contains unsorted keys or subsection headings: '
+            "'[subtest1]' should precede '[subtest2]'")
+
+    def test_disable_all_rules(self):
+        errors = self._check_metadata(
+            """\
+            # lint-wpt:  disable= *; TODO(crbug.com/1): reformat file
+            [variant.html?foo=baz]
+              [subtest2]
+                expected: [FAIL]
+              [subtest1]
+                expected: FAIL
+            """, 'variant.html.ini')
+        self.assertEqual(errors, [])
+
     def test_metadata_unsorted_sections(self):
         out_of_order_subtests, out_of_order_tests = self._check_metadata(
             """\

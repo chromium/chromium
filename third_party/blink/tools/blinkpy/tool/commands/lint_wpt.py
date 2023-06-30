@@ -12,9 +12,10 @@ import io
 import logging
 import optparse
 import pathlib
+import re
 import textwrap
 import urllib.parse
-from typing import Hashable, List, Optional, Set, Tuple, Type, Union
+from typing import Dict, Hashable, List, Optional, Set, Tuple, Type, Union
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
@@ -427,6 +428,9 @@ class LintWPT(Command):
 
 
 class MetadataLinter(static.Compiler):
+    _disable_pattern = re.compile(
+        r'\s*lint-wpt:\s*disable\s*=\s*(?P<rules>[^;]*)')
+
     def __init__(
         self,
         path: str,
@@ -444,8 +448,9 @@ class MetadataLinter(static.Compiler):
         # `context` contains information about the current section type,
         # heading, and key as it becomes available during the traversal. It's
         # also provided to the error message formatter.
-        self.context = {}
-        self.errors = set()
+        self.context: Dict[str, str] = {}
+        self.disabled_rules: Set[str] = set()
+        self.errors: Set[LintError] = set()
         # Check that all configurations have the same keys.
         assert len({frozenset(config.data) for config in configs}) == 1
 
@@ -494,13 +499,27 @@ class MetadataLinter(static.Compiler):
                         self._error(MetadataLongTimeout, test=test_id)
 
     def visit(self, node: wptnode.Node):
+        with self._disable_rules(node):
+            try:
+                return super().visit(node)
+            except AttributeError:
+                # When no handler is explicitly specified, default to traversing
+                # the node's children.
+                for child in node.children:
+                    self.visit(child)
+
+    @contextlib.contextmanager
+    def _disable_rules(self, node: wptnode.Node):
+        disabled_rules = set(self.disabled_rules)
         try:
-            return super().visit(node)
-        except AttributeError:
-            # When no handler is explicitly specified, default to traversing
-            # the node's children.
-            for child in node.children:
-                self.visit(child)
+            for _, comment in node.comments:
+                disable_match = self._disable_pattern.match(comment)
+                if disable_match:
+                    rules = disable_match['rules'].split(',')
+                    self.disabled_rules.update(rule.strip() for rule in rules)
+            yield
+        finally:
+            self.disabled_rules = disabled_rules
 
     def visit_DataNode(self, node: wptnode.DataNode):
         section_type = self.context.get('next_type')
@@ -521,8 +540,7 @@ class MetadataLinter(static.Compiler):
                     self._error(MetadataUnknownTest, test=test_id)
                 if self.test_type == 'testharness':
                     next_type = SectionType.SUBTEST
-            if not node.children:
-                assert heading
+            if heading and not node.children:
                 self._error(MetadataEmptySection)
             self._check_section_sorted(node)
             with self.using_context(next_type=next_type):
@@ -683,7 +701,11 @@ class MetadataLinter(static.Compiler):
         section_type = context.get('section_type')
         if section_type:
             context['section_type'] = section_type.name.capitalize()
-        self.errors.add(rule.error(self.path, context))
+        error = name, description, path, _ = rule.error(self.path, context)
+        if {'*', rule.name} & self.disabled_rules:
+            _log.debug('Skipping rule %s in %s: %s', name, path, description)
+        else:
+            self.errors.add(error)
 
     def _check_section_sorted(self, node: wptnode.DataNode):
         sort_key = lambda child: (isinstance(child, wptnode.DataNode), child.
@@ -721,4 +743,5 @@ def _format_condition(condition: Condition) -> str:
 
 
 def _format_node(node: wptnode.Node) -> str:
-    return wptmanifest.serialize(node).splitlines()[0].strip()
+    node, _, _ = wptmanifest.serialize(node).splitlines()[0].partition('#')
+    return node.strip()
