@@ -20,8 +20,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
@@ -241,10 +241,10 @@ class CredentialManagerImplTest : public testing::Test,
   void SetUp() override {
     store_ = new TestPasswordStore;
 
-    mock_affiliation_service_ = std::make_unique<MockAffiliationService>();
+    fake_affiliation_service_ = std::make_unique<FakeAffiliationService>();
     auto owning_mock_match_helper =
         std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
-            mock_affiliation_service_.get());
+            fake_affiliation_service_.get());
     mock_match_helper_ = owning_mock_match_helper.get();
     store_->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
 
@@ -425,7 +425,7 @@ class CredentialManagerImplTest : public testing::Test,
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<TestPasswordStore> account_store_;
   std::unique_ptr<testing::NiceMock<MockPasswordManagerClient>> client_;
-  std::unique_ptr<MockAffiliationService> mock_affiliation_service_;
+  std::unique_ptr<FakeAffiliationService> fake_affiliation_service_;
   raw_ptr<MockAffiliatedMatchHelper, DanglingUntriaged> mock_match_helper_;
   std::unique_ptr<CredentialManagerImpl> cm_service_impl_;
 };

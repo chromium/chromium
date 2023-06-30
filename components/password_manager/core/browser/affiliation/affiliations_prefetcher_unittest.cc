@@ -38,72 +38,6 @@ constexpr base::TimeDelta kInitializationDelayOnStartup = base::Seconds(30);
 
 using StrategyOnCacheMiss = AffiliationService::StrategyOnCacheMiss;
 
-class OverloadedMockAffiliationService : public MockAffiliationService {
- public:
-  OverloadedMockAffiliationService() {
-    testing::DefaultValue<AffiliatedFacets>::Set(AffiliatedFacets());
-  }
-
-  MOCK_METHOD(AffiliatedFacets,
-              OnGetAffiliationsAndBrandingCalled,
-              (const FacetURI&, StrategyOnCacheMiss));
-
-  void GetAffiliationsAndBranding(const FacetURI& facet_uri,
-                                  StrategyOnCacheMiss cache_miss_strategy,
-                                  ResultCallback result_callback) override {
-    AffiliatedFacets affiliation =
-        OnGetAffiliationsAndBrandingCalled(facet_uri, cache_miss_strategy);
-    std::move(result_callback).Run(affiliation, !affiliation.empty());
-  }
-
-  void ExpectCallToGetAffiliationsAndBrandingAndSucceedWithResult(
-      const FacetURI& expected_facet_uri,
-      StrategyOnCacheMiss expected_cache_miss_strategy,
-      const AffiliatedFacets& affiliations_to_return) {
-    EXPECT_CALL(*this, OnGetAffiliationsAndBrandingCalled(
-                           expected_facet_uri, expected_cache_miss_strategy))
-        .WillOnce(testing::Return(affiliations_to_return));
-  }
-
-  void ExpectCallToGetAffiliationsAndBrandingAndEmulateFailure(
-      const FacetURI& expected_facet_uri,
-      StrategyOnCacheMiss expected_cache_miss_strategy) {
-    EXPECT_CALL(*this, OnGetAffiliationsAndBrandingCalled(
-                           expected_facet_uri, expected_cache_miss_strategy))
-        .WillOnce(testing::Return(AffiliatedFacets()));
-  }
-
-  void ExpectCallToPrefetch(const char* expected_facet_uri_spec) {
-    EXPECT_CALL(*this,
-                Prefetch(FacetURI::FromCanonicalSpec(expected_facet_uri_spec),
-                         base::Time::Max()))
-        .RetiresOnSaturation();
-  }
-
-  void ExpectCallToCancelPrefetch(const char* expected_facet_uri_spec) {
-    EXPECT_CALL(*this, CancelPrefetch(
-                           FacetURI::FromCanonicalSpec(expected_facet_uri_spec),
-                           base::Time::Max()))
-        .RetiresOnSaturation();
-  }
-
-  void ExpectCallToTrimCacheForFacetURI(const char* expected_facet_uri_spec) {
-    EXPECT_CALL(*this, TrimCacheForFacetURI(FacetURI::FromCanonicalSpec(
-                           expected_facet_uri_spec)))
-        .RetiresOnSaturation();
-  }
-
-  void ExpectCallToTrimUnusedCache() {
-    EXPECT_CALL(*this, TrimUnusedCache).RetiresOnSaturation();
-  }
-
-  void ExpectKeepPrefetchForFacets(
-      const std::vector<FacetURI>& expected_facets) {
-    EXPECT_CALL(*this, KeepPrefetchForFacets(expected_facets))
-        .RetiresOnSaturation();
-  }
-};
-
 const char kTestWebFacetURIAlpha1[] = "https://one.alpha.example.com";
 const char kTestWebFacetURIAlpha2[] = "https://two.alpha.example.com";
 const char kTestAndroidFacetURIAlpha3[] =
@@ -162,8 +96,8 @@ class AffiliationsPrefetcherTest : public testing::Test,
  protected:
   // testing::Test:
   void SetUp() override {
-    mock_affiliation_service_ = std::make_unique<
-        testing::StrictMock<OverloadedMockAffiliationService>>();
+    mock_affiliation_service_ =
+        std::make_unique<testing::StrictMock<MockAffiliationService>>();
     password_store()->Init(/*prefs=*/nullptr,
                            /*affiliated_match_helper=*/nullptr);
 
@@ -183,7 +117,7 @@ class AffiliationsPrefetcherTest : public testing::Test,
 
   void RunDeferredInitialization() {
     task_environment_.RunUntilIdle();
-    mock_affiliation_service()->ExpectCallToTrimUnusedCache();
+    ExpectCallToTrimUnusedCache();
     prefetcher_->RegisterPasswordStore(password_store());
     task_environment_.FastForwardBy(kInitializationDelayOnStartup);
   }
@@ -237,17 +171,52 @@ class AffiliationsPrefetcherTest : public testing::Test,
     RemoveLogin(GetTestAndroidCredentials(kTestWebRealmAlpha2));
   }
 
+  void ExpectCallToPrefetch(std::string_view expected_facet_uri_spec) {
+    EXPECT_CALL(*mock_affiliation_service(),
+                Prefetch(FacetURI::FromCanonicalSpec(
+                             std::string(expected_facet_uri_spec)),
+                         base::Time::Max()))
+        .RetiresOnSaturation();
+  }
+
+  void ExpectCallToCancelPrefetch(std::string_view expected_facet_uri_spec) {
+    EXPECT_CALL(*mock_affiliation_service(),
+                CancelPrefetch(FacetURI::FromCanonicalSpec(
+                                   std::string(expected_facet_uri_spec)),
+                               base::Time::Max()))
+        .RetiresOnSaturation();
+  }
+
+  void ExpectCallToTrimCacheForFacetURI(
+      std::string_view expected_facet_uri_spec) {
+    EXPECT_CALL(*mock_affiliation_service(),
+                TrimCacheForFacetURI(FacetURI::FromCanonicalSpec(
+                    std::string(expected_facet_uri_spec))))
+        .RetiresOnSaturation();
+  }
+
+  void ExpectCallToTrimUnusedCache() {
+    EXPECT_CALL(*mock_affiliation_service(), TrimUnusedCache)
+        .RetiresOnSaturation();
+  }
+
+  void ExpectKeepPrefetchForFacets(
+      const std::vector<FacetURI>& expected_facets) {
+    EXPECT_CALL(*mock_affiliation_service(),
+                KeepPrefetchForFacets(expected_facets))
+        .RetiresOnSaturation();
+  }
+
   void ExpectPrefetchForTestLogins() {
-    mock_affiliation_service()->ExpectCallToPrefetch(
-        kTestAndroidFacetURIAlpha3);
-    mock_affiliation_service()->ExpectCallToPrefetch(kTestAndroidFacetURIBeta2);
-    mock_affiliation_service()->ExpectCallToPrefetch(kTestAndroidFacetURIBeta3);
-    mock_affiliation_service()->ExpectCallToPrefetch(kTestAndroidFacetURIGamma);
+    ExpectCallToPrefetch(kTestAndroidFacetURIAlpha3);
+    ExpectCallToPrefetch(kTestAndroidFacetURIBeta2);
+    ExpectCallToPrefetch(kTestAndroidFacetURIBeta3);
+    ExpectCallToPrefetch(kTestAndroidFacetURIGamma);
 
     if (base::FeatureList::IsEnabled(
             features::kFillingAcrossAffiliatedWebsites)) {
-      mock_affiliation_service()->ExpectCallToPrefetch(kTestWebFacetURIAlpha1);
-      mock_affiliation_service()->ExpectCallToPrefetch(kTestWebFacetURIAlpha2);
+      ExpectCallToPrefetch(kTestWebFacetURIAlpha1);
+      ExpectCallToPrefetch(kTestWebFacetURIAlpha2);
     }
   }
 
@@ -270,44 +239,32 @@ class AffiliationsPrefetcherTest : public testing::Test,
           FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha2));
     }
 
-    mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
+    ExpectKeepPrefetchForFacets(expected_facets);
   }
 
   void ExpectCancelPrefetchForTestLogins() {
-    mock_affiliation_service()->ExpectCallToCancelPrefetch(
-        kTestAndroidFacetURIAlpha3);
-    mock_affiliation_service()->ExpectCallToCancelPrefetch(
-        kTestAndroidFacetURIBeta2);
-    mock_affiliation_service()->ExpectCallToCancelPrefetch(
-        kTestAndroidFacetURIBeta3);
-    mock_affiliation_service()->ExpectCallToCancelPrefetch(
-        kTestAndroidFacetURIGamma);
+    ExpectCallToCancelPrefetch(kTestAndroidFacetURIAlpha3);
+    ExpectCallToCancelPrefetch(kTestAndroidFacetURIBeta2);
+    ExpectCallToCancelPrefetch(kTestAndroidFacetURIBeta3);
+    ExpectCallToCancelPrefetch(kTestAndroidFacetURIGamma);
 
     if (base::FeatureList::IsEnabled(
             features::kFillingAcrossAffiliatedWebsites)) {
-      mock_affiliation_service()->ExpectCallToCancelPrefetch(
-          kTestWebFacetURIAlpha1);
-      mock_affiliation_service()->ExpectCallToCancelPrefetch(
-          kTestWebFacetURIAlpha2);
+      ExpectCallToCancelPrefetch(kTestWebFacetURIAlpha1);
+      ExpectCallToCancelPrefetch(kTestWebFacetURIAlpha2);
     }
   }
 
   void ExpectTrimCacheForTestLogins() {
-    mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-        kTestAndroidFacetURIAlpha3);
-    mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-        kTestAndroidFacetURIBeta2);
-    mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-        kTestAndroidFacetURIBeta3);
-    mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-        kTestAndroidFacetURIGamma);
+    ExpectCallToTrimCacheForFacetURI(kTestAndroidFacetURIAlpha3);
+    ExpectCallToTrimCacheForFacetURI(kTestAndroidFacetURIBeta2);
+    ExpectCallToTrimCacheForFacetURI(kTestAndroidFacetURIBeta3);
+    ExpectCallToTrimCacheForFacetURI(kTestAndroidFacetURIGamma);
 
     if (base::FeatureList::IsEnabled(
             features::kFillingAcrossAffiliatedWebsites)) {
-      mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-          kTestWebFacetURIAlpha1);
-      mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-          kTestWebFacetURIAlpha2);
+      ExpectCallToTrimCacheForFacetURI(kTestWebFacetURIAlpha1);
+      ExpectCallToTrimCacheForFacetURI(kTestWebFacetURIAlpha2);
     }
   }
 
@@ -318,7 +275,7 @@ class AffiliationsPrefetcherTest : public testing::Test,
 
   TestPasswordStore* password_store() { return password_store_.get(); }
 
-  OverloadedMockAffiliationService* mock_affiliation_service() {
+  MockAffiliationService* mock_affiliation_service() {
     return mock_affiliation_service_.get();
   }
 
@@ -343,7 +300,7 @@ class AffiliationsPrefetcherTest : public testing::Test,
       base::MakeRefCounted<TestPasswordStore>();
   std::unique_ptr<AffiliationsPrefetcher> prefetcher_;
 
-  std::unique_ptr<OverloadedMockAffiliationService> mock_affiliation_service_;
+  std::unique_ptr<MockAffiliationService> mock_affiliation_service_;
 };
 
 // Verifies that affiliations for Android applications with pre-existing
@@ -379,7 +336,7 @@ TEST_P(AffiliationsPrefetcherTest,
 // Verifies that corresponding affiliation information gets prefetched.
 TEST_P(AffiliationsPrefetcherTest,
        PrefetchAffiliationsForAndroidCredentialsAddedAfterInitialization) {
-  mock_affiliation_service()->ExpectKeepPrefetchForFacets({});
+  ExpectKeepPrefetchForFacets({});
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 
   ExpectPrefetchForTestLogins();
@@ -410,15 +367,12 @@ TEST_P(AffiliationsPrefetcherTest, PrefetchBeforeTrimForPrimaryKeyUpdates) {
   ExpectKeepPrefetchForTestLogins();
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 
-  mock_affiliation_service()->ExpectCallToCancelPrefetch(
-      kTestAndroidFacetURIAlpha3);
+  ExpectCallToCancelPrefetch(kTestAndroidFacetURIAlpha3);
 
   {
     testing::InSequence in_sequence;
-    mock_affiliation_service()->ExpectCallToPrefetch(
-        kTestAndroidFacetURIAlpha3);
-    mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-        kTestAndroidFacetURIAlpha3);
+    ExpectCallToPrefetch(kTestAndroidFacetURIAlpha3);
+    ExpectCallToTrimCacheForFacetURI(kTestAndroidFacetURIAlpha3);
   }
 
   PasswordForm old_form(GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
@@ -431,7 +385,7 @@ TEST_P(AffiliationsPrefetcherTest, PrefetchBeforeTrimForPrimaryKeyUpdates) {
 // expects that Prefetch() and CancelPrefetch() will each be called four times.
 TEST_P(AffiliationsPrefetcherTest,
        DuplicateCredentialsArePrefetchWithMultiplicity) {
-  mock_affiliation_service()->ExpectKeepPrefetchForFacets(
+  ExpectKeepPrefetchForFacets(
       {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3),
        FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3),
        FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3)});
@@ -466,10 +420,8 @@ TEST_P(AffiliationsPrefetcherTest,
   AddLoginAndWait(password_store(), android_form4);
 
   for (size_t i = 0; i < 4; ++i) {
-    mock_affiliation_service()->ExpectCallToCancelPrefetch(
-        kTestAndroidFacetURIAlpha3);
-    mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-        kTestAndroidFacetURIAlpha3);
+    ExpectCallToCancelPrefetch(kTestAndroidFacetURIAlpha3);
+    ExpectCallToTrimCacheForFacetURI(kTestAndroidFacetURIAlpha3);
   }
 
   RemoveLogin(android_form);
@@ -479,7 +431,7 @@ TEST_P(AffiliationsPrefetcherTest,
 }
 
 TEST_P(AffiliationsPrefetcherTest, OnLoginsRetained) {
-  mock_affiliation_service()->ExpectKeepPrefetchForFacets({});
+  ExpectKeepPrefetchForFacets({});
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 
   std::vector<PasswordForm> forms = {
@@ -495,7 +447,7 @@ TEST_P(AffiliationsPrefetcherTest, OnLoginsRetained) {
     expected_facets = {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2)};
   }
 
-  mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
+  ExpectKeepPrefetchForFacets(expected_facets);
 
   (static_cast<PasswordStoreInterface::Observer*>(prefetcher()))
       ->OnLoginsRetained(nullptr, forms);
@@ -531,7 +483,7 @@ class AffiliationsPrefetcherWithTwoStoresTest
 
   void RunDeferredInitialization() {
     RunUntilIdle();
-    mock_affiliation_service()->ExpectCallToTrimUnusedCache();
+    ExpectCallToTrimUnusedCache();
     prefetcher()->RegisterPasswordStore(password_store());
     prefetcher()->RegisterPasswordStore(account_password_store());
     FastForwardBy(kInitializationDelayOnStartup);
@@ -559,7 +511,7 @@ TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestInitialPrefetch) {
       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2));
 
   // Expect prefetch for passwords from both stores.
-  mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
+  ExpectKeepPrefetchForFacets(expected_facets);
 
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 }
@@ -577,7 +529,7 @@ TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestDuplicatesPrefetch) {
       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3));
 
   // Expect prefetch for passwords from both stores.
-  mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
+  ExpectKeepPrefetchForFacets(expected_facets);
 
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 }
@@ -586,7 +538,7 @@ TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestLoginsChanged) {
   AddLoginAndWait(password_store(),
                   GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
 
-  mock_affiliation_service()->ExpectKeepPrefetchForFacets(
+  ExpectKeepPrefetchForFacets(
       {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3)});
 
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
@@ -598,10 +550,8 @@ TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestLoginsChanged) {
       GetTestAndroidCredentials(kTestAndroidRealmBeta2));
   RunUntilIdle();
 
-  mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-      kTestAndroidFacetURIAlpha3);
-  mock_affiliation_service()->ExpectCallToCancelPrefetch(
-      kTestAndroidFacetURIAlpha3);
+  ExpectCallToTrimCacheForFacetURI(kTestAndroidFacetURIAlpha3);
+  ExpectCallToCancelPrefetch(kTestAndroidFacetURIAlpha3);
   password_store()->RemoveLogin(
       GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
   RunUntilIdle();
@@ -617,16 +567,16 @@ TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestStoreRegisteredLater) {
   expected_facets.push_back(
       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3));
 
-  mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
-  mock_affiliation_service()->ExpectCallToTrimUnusedCache();
+  ExpectKeepPrefetchForFacets(expected_facets);
+  ExpectCallToTrimUnusedCache();
 
   prefetcher()->RegisterPasswordStore(password_store());
   FastForwardBy(kInitializationDelayOnStartup);
 
   expected_facets.push_back(
       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2));
-  mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
-  mock_affiliation_service()->ExpectCallToTrimUnusedCache();
+  ExpectKeepPrefetchForFacets(expected_facets);
+  ExpectCallToTrimUnusedCache();
 
   prefetcher()->RegisterPasswordStore(account_password_store());
   RunUntilIdle();
@@ -646,8 +596,8 @@ TEST_P(AffiliationsPrefetcherWithTwoStoresTest,
       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3));
   expected_facets.push_back(
       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2));
-  mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
-  mock_affiliation_service()->ExpectCallToTrimUnusedCache();
+  ExpectKeepPrefetchForFacets(expected_facets);
+  ExpectCallToTrimUnusedCache();
 
   prefetcher()->RegisterPasswordStore(password_store());
   prefetcher()->RegisterPasswordStore(account_password_store());

@@ -23,8 +23,8 @@
 #include "build/build_config.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/login_database.h"
@@ -708,9 +708,9 @@ TEST_F(PasswordStoreTest, GetLoginsWithoutAffiliations) {
   /* clang-format on */
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  MockAffiliationService mock_affiliation_service;
+  FakeAffiliationService fake_affiliation_service;
   auto owning_mock_match_helper =
-      std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service);
   MockAffiliatedMatchHelper* mock_affiliated_match_helper =
       owning_mock_match_helper.get();
   store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
@@ -810,9 +810,9 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
       }};
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  MockAffiliationService mock_affiliation_service;
+  FakeAffiliationService fake_affiliation_service;
   auto owning_mock_match_helper =
-      std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service);
   MockAffiliatedMatchHelper* mock_affiliated_match_helper =
       owning_mock_match_helper.get();
   store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
@@ -869,9 +869,9 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
 
 TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForExactMatch) {
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  MockAffiliationService mock_affiliation_service;
+  FakeAffiliationService fake_affiliation_service;
   auto owning_mock_match_helper =
-      std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service);
   MockAffiliatedMatchHelper* mock_affiliated_match_helper =
       owning_mock_match_helper.get();
   store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
@@ -920,9 +920,9 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForExactMatch) {
 
 TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForAffiliatedLogins) {
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  MockAffiliationService mock_affiliation_service;
+  FakeAffiliationService fake_affiliation_service;
   auto owning_mock_match_helper =
-      std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service);
   MockAffiliatedMatchHelper* mock_affiliated_match_helper =
       owning_mock_match_helper.get();
   store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
@@ -1009,9 +1009,9 @@ TEST_P(PasswordStoreFederationTest, GetLoginsWithWebAffiliations) {
        u"password2"}};
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  MockAffiliationService mock_affiliation_service;
+  FakeAffiliationService fake_affiliation_service;
   auto owning_mock_match_helper =
-      std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service);
   MockAffiliatedMatchHelper* mock_affiliated_match_helper =
       owning_mock_match_helper.get();
   store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
@@ -1079,9 +1079,8 @@ class PasswordStoreGroupsTest : public PasswordStoreTest,
           /*disabled_features=*/{features::kFillingAcrossGroupedSites});
     }
     store_ = CreatePasswordStore();
-    MockAffiliationService mock_affiliation_service;
     auto owning_mock_match_helper =
-        std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+        std::make_unique<MockAffiliatedMatchHelper>(&affiliation_service_);
     mock_affiliated_match_helper_ = owning_mock_match_helper.get();
     store_->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
   }
@@ -1128,6 +1127,9 @@ class PasswordStoreGroupsTest : public PasswordStoreTest,
   scoped_refptr<PasswordStore> store_;
   raw_ptr<MockAffiliatedMatchHelper, DanglingUntriaged>
       mock_affiliated_match_helper_;
+
+ private:
+  FakeAffiliationService affiliation_service_;
 };
 
 // Retrieve matching passwords for affiliated groups credentials and make sure
@@ -1454,9 +1456,9 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
             std::move(reply).Run(true);
           })));
 
-  MockAffiliationService mock_affiliation_service;
+  FakeAffiliationService fake_affiliation_service;
   auto mock_match_helper =
-      std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service);
   MockAffiliatedMatchHelper* match_helper = mock_match_helper.get();
   store->Init(/*prefs=*/nullptr, std::move(mock_match_helper));
 
@@ -1707,9 +1709,9 @@ TEST_F(PasswordStoreTest, RemoveFieldInfo) {
 
 TEST_F(PasswordStoreTest, TestGetLoginRequestCancelable) {
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  MockAffiliationService mock_affiliation_service;
+  FakeAffiliationService fake_affiliation_service;
   auto owning_mock_match_helper =
-      std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service);
   MockAffiliatedMatchHelper* mock_affiliated_match_helper =
       owning_mock_match_helper.get();
   store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));

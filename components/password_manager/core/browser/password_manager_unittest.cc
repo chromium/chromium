@@ -29,8 +29,8 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
@@ -392,7 +392,7 @@ class PasswordManagerTest : public testing::Test {
     store_ = base::MakeRefCounted<TestPasswordStore>();
     auto owning_mock_match_helper =
         std::make_unique<testing::NiceMock<MockAffiliatedMatchHelper>>(
-            &mock_affiliation_service_);
+            &fake_affiliation_service_);
     mock_match_helper_ = owning_mock_match_helper.get();
     store_->Init(
         /*prefs=*/nullptr,
@@ -647,7 +647,7 @@ class PasswordManagerTest : public testing::Test {
   const GURL test_form_action_{"https://www.google.com/a/Login"};
   const std::string test_signon_realm_ = "https://www.google.com/";
   base::test::SingleThreadTaskEnvironment task_environment_;
-  testing::NiceMock<MockAffiliationService> mock_affiliation_service_;
+  FakeAffiliationService fake_affiliation_service_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<TestPasswordStore> account_store_;
   raw_ptr<MockAffiliatedMatchHelper, DanglingUntriaged> mock_match_helper_;

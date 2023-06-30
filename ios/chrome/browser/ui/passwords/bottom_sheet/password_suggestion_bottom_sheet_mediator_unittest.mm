@@ -8,7 +8,6 @@
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/password_manager/ios/shared_password_controller.h"
@@ -217,7 +216,6 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
     prefs_->registry()->RegisterIntegerPref(
         prefs::kIosPasswordBottomSheetDismissCount, 0);
 
-    password_manager::MockAffiliationService affiliation_service_;
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
             IOSChromePasswordStoreFactory::GetForBrowserState(
