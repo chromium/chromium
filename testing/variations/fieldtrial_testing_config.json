@@ -304,6 +304,16 @@
                         "MediaPickerAdoption"
                     ],
                     "min_os_version": "13.0.0"
+                },
+                {
+                    "name": "Enabled_Indirect",
+                    "params": {
+                        "use_action_get_content": "true"
+                    },
+                    "enable_features": [
+                        "MediaPickerAdoption"
+                    ],
+                    "min_os_version": "13.0.0"
                 }
             ]
         }
