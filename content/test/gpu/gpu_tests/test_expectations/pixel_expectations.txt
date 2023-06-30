@@ -300,7 +300,6 @@ crbug.com/984734 [ android android-webview-instrumentation android-nexus-5x ] Pi
 # Failing on Linux and Windows, both Intel HD 630 and NVIDIA Quadro P400
 crbug.com/974380 [ angle-vulkan display-server-x linux nvidia-0x2184 renderer-skia-vulkan ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
 crbug.com/974380 [ angle-vulkan display-server-x intel-0x9bc5 linux no-clang-coverage release renderer-skia-vulkan ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
-crbug.com/974380 [ amd-0x7340 angle-vulkan display-server-x linux no-clang-coverage release renderer-skia-vulkan ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 crbug.com/974380 [ angle-vulkan display-server-x linux nvidia-0x2184 renderer-skia-vulkan ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 crbug.com/974380 [ angle-vulkan display-server-x intel-0x9bc5 linux no-clang-coverage release renderer-skia-vulkan ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 
@@ -406,7 +405,7 @@ crbug.com/1392806 [ chromeos lacros-chrome chromeos-board-jacuzzi ] Pixel_Video_
 crbug.com/1444804 [ android-pixel-4 android-r angle-disabled no-passthrough ] Pixel_Video_VP9 [ Failure ]
 
 # Flake on Linux NVIDIA
-crbug.com/1453989 [ linux nvidia ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster [ RetryOnFailure ]
+crbug.com/1453989 [ linux nvidia release ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster [ RetryOnFailure ]
 
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage [ Skip ]
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas [ Skip ]
