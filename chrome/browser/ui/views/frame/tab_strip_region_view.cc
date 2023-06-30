@@ -163,7 +163,9 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
     if (features::IsChromeRefresh2023()) {
       tab_search_button_->SetProperty(
           views::kMarginsKey,
-          gfx::Insets::TLBR(0, 0, kCRtabstripRegionViewControlPadding,
+          gfx::Insets::TLBR(0, 0,
+                            kCRtabstripRegionViewControlPadding +
+                                GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP),
                             kCRtabstripRegionViewControlPadding));
     } else {
       const auto control_padding = gfx::Insets::TLBR(
@@ -199,8 +201,13 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
     // space for the `tab_search_button_`.
     gfx::Size tab_search_button_size = tab_search_button_->GetPreferredSize();
 
-    tab_strip_left_margin =
-        tab_search_button_size.width() + kCRtabstripRegionViewControlPadding;
+    // The TabSearchButton should be 6 pixels from the left and the tabstrip
+    // should have 6 px of padding between it and the tab_search button (not
+    // including the corner radius).
+    tab_strip_left_margin = tab_search_button_size.width() +
+                            kCRtabstripRegionViewControlPadding +
+                            kCRtabstripRegionViewControlPadding -
+                            TabStyle::Get()->GetBottomCornerRadius();
   }
 
   if (tab_strip_left_margin.has_value() || tab_strip_right_margin.has_value()) {
@@ -287,18 +294,23 @@ views::View::Views TabStripRegionView::GetChildrenInZOrder() {
 void TabStripRegionView::Layout() {
   views::AccessiblePaneView::Layout();
 
+  const int bottom_padding = (kCRtabstripRegionViewControlPadding +
+                              GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
+
   if (tab_search_button_ && render_tab_search_before_tab_strip_) {
     const gfx::Size tab_search_button_size =
         tab_search_button_->GetPreferredSize();
 
-    const int x = tab_strip_container_->x() - tab_search_button_size.width() +
-                  kCRtabstripRegionViewControlPadding;
+    // The TabSearchButton is calculated as controls padding away from the first
+    // tab (not including bottom corner radius)
+    const int x =
+        tab_strip_container_->x() + TabStyle::Get()->GetBottomCornerRadius() -
+        kCRtabstripRegionViewControlPadding - tab_search_button_size.width();
 
     // The y position is measured from the bottom of the tabstrip, and then
     // pading and button height are removed.
     const int y = tab_strip_container_->y() + tab_strip_container_->height() -
-                  kCRtabstripRegionViewControlPadding -
-                  tab_search_button_size.height();
+                  bottom_padding - tab_search_button_size.height();
 
     const gfx::Rect tab_search_new_bounds =
         gfx::Rect(gfx::Point(x, y), tab_search_button_size);
@@ -307,14 +319,18 @@ void TabStripRegionView::Layout() {
   }
 
   if (render_new_tab_button_over_tab_strip_) {
+    // The NTB needs to be layered on top of the tabstrip to achieve negative
+    // margins.
     gfx::Size new_tab_button_size = new_tab_button_->GetPreferredSize();
 
-    gfx::Point new_tab_button_new_position = gfx::Point(
-        tab_strip_container_->x() + tab_strip_container_->width() -
-            TabStyle::Get()->GetBottomCornerRadius() +
-            kCRtabstripRegionViewControlPadding,
-        tab_strip_container_->y() + tab_strip_container_->height() -
-            kCRtabstripRegionViewControlPadding - new_tab_button_size.height());
+    // The y position is measured from the bottom of the tabstrip, and then
+    // pading and button height are removed.
+    gfx::Point new_tab_button_new_position =
+        gfx::Point(tab_strip_container_->bounds().right() -
+                       TabStyle::Get()->GetBottomCornerRadius() +
+                       kCRtabstripRegionViewControlPadding,
+                   tab_strip_container_->y() + tab_strip_container_->height() -
+                       bottom_padding - new_tab_button_size.height());
 
     gfx::Rect new_tab_button_new_bounds =
         gfx::Rect(new_tab_button_new_position, new_tab_button_size);
