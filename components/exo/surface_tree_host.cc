@@ -483,12 +483,17 @@ viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
   // Additionally, we must use this size even if we are submitting an empty
   // compositor frame, otherwise we may set the Surface created by Viz to be the
   // wrong size. Then, trying to submit a regular compositor frame will fail
-  // because  the size is different.
+  // because the size is different.
   const float device_scale_factor = GetScaleFactor();
-  // TODO(crbug.com/1131628): Should this be ceil? Why do we choose floor?
+
   gfx::Size output_surface_size_in_pixels =
-      gfx::ToFlooredSize(gfx::ConvertSizeToPixels(host_window_->bounds().size(),
-                                                  device_scale_factor));
+      root_surface_->surface_hierarchy_content_bounds().size();
+  if (!client_submits_surfaces_in_pixel_coordinates_) {
+    // TODO(crbug.com/1131628): Should this be ceil? Why do we choose floor?
+    output_surface_size_in_pixels = gfx::ScaleToFlooredSize(
+        output_surface_size_in_pixels, device_scale_factor);
+  }
+
   // Viz will crash if the frame size is empty. Ensure it's not empty.
   // crbug.com/1041932.
   if (output_surface_size_in_pixels.IsEmpty())
