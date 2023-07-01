@@ -500,7 +500,10 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   }
 
   void UpdateLocalColorSchemePref() {
-    CHECK(local_state_);
+    if (!local_state_) {
+      CHECK_IS_TEST();
+      return;
+    }
     auto account_id = AccountFromSession(GetActiveUserSession());
     auto color_scheme = GetColorScheme(account_id);
     user_manager::KnownUser(local_state_)
@@ -509,7 +512,10 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   }
 
   void UpdateLocalSeedColorPref() {
-    CHECK(local_state_);
+    if (!local_state_) {
+      CHECK_IS_TEST();
+      return;
+    }
     auto account_id = AccountFromSession(GetActiveUserSession());
     auto seed_color = GetStaticSeedColor(account_id);
     user_manager::KnownUser(local_state_)
