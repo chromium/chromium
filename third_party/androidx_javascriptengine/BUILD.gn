@@ -39,11 +39,15 @@ android_library("javascriptengine_common_java") {
 android_library("javascriptengine_java") {
   sources = [
     "src/main/java/androidx/javascriptengine/CloseGuardHelper.java",
+    "src/main/java/androidx/javascriptengine/EnvironmentDeadState.java",
     "src/main/java/androidx/javascriptengine/EvaluationFailedException.java",
     "src/main/java/androidx/javascriptengine/EvaluationResultSizeLimitExceededException.java",
     "src/main/java/androidx/javascriptengine/ExecutionErrorTypes.java",
+    "src/main/java/androidx/javascriptengine/IsolateClosedState.java",
     "src/main/java/androidx/javascriptengine/IsolateStartupParameters.java",
+    "src/main/java/androidx/javascriptengine/IsolateState.java",
     "src/main/java/androidx/javascriptengine/IsolateTerminatedException.java",
+    "src/main/java/androidx/javascriptengine/IsolateUsableState.java",
     "src/main/java/androidx/javascriptengine/JavaScriptConsoleCallback.java",
     "src/main/java/androidx/javascriptengine/JavaScriptException.java",
     "src/main/java/androidx/javascriptengine/JavaScriptIsolate.java",
