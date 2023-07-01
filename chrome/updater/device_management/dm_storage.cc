@@ -175,15 +175,10 @@ std::unique_ptr<CachedPolicyInfo> DMStorage::GetCachedPolicyInfo() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto cached_info = std::make_unique<CachedPolicyInfo>();
 
-  if (!IsValidDMToken()) {
-    return cached_info;
-  }
-
   std::string policy_info_data;
-  if (!base::PathExists(policy_info_file_) ||
-      !base::ReadFileToString(policy_info_file_, &policy_info_data) ||
-      !cached_info->Populate(policy_info_data)) {
-    return cached_info;
+  if (IsValidDMToken() && base::PathExists(policy_info_file_) &&
+      base::ReadFileToString(policy_info_file_, &policy_info_data)) {
+    cached_info->Populate(policy_info_data);
   }
 
   return cached_info;
