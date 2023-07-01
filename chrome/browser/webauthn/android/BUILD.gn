@@ -19,7 +19,6 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/modules/cablev2_authenticator/public:java",
-    "//chrome/browser/enterprise/util:java",
     "//chrome/browser/notifications:java",
     "//components/browser_ui/notifications/android:java",
     "//components/externalauth/android:java",

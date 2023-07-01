@@ -98,11 +98,6 @@ BASE_DECLARE_FEATURE(kWebAuthConditionalUIExperimentation);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnCableViaCredMan);
 
-// Don't publish prelinking information if Chrome is running in a work profile
-// on Android.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnDontPrelinkInProfiles);
-
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

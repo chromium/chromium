@@ -93,16 +93,6 @@ class SystemInterface : public RegistrationState::SystemInterface {
         std::move(callback));
   }
 
-  void AmInWorkProfile(base::OnceCallback<void(bool)> callback) override {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-    // This Java function must run on the UI thread, but that's ok because it
-    // defers work to a worker thread itself.
-    work_profile_callback_ = std::move(callback);
-    Java_CableAuthenticatorModuleProvider_amInWorkProfile(
-        base::android::AttachCurrentThread(),
-        reinterpret_cast<uintptr_t>(this));
-  }
-
   void CalculateIdentityKey(
       const std::array<uint8_t, 32>& secret,
       base::OnceCallback<void(bssl::UniquePtr<EC_KEY>)> callback) override {
@@ -153,13 +143,6 @@ class SystemInterface : public RegistrationState::SystemInterface {
     std::move(prelink_callback_).Run(std::move(cbor));
   }
 
-  // Called when the Java code has finished checking if we're running in a work
-  // profile.
-  void OnHaveWorkProfileResult(bool in_work_profile) {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-    std::move(work_profile_callback_).Run(in_work_profile);
-  }
-
  private:
   static instance_id::InstanceIDDriver* GetDriver() {
     return instance_id::InstanceIDProfileServiceFactory::GetForProfile(
@@ -191,7 +174,6 @@ class SystemInterface : public RegistrationState::SystemInterface {
 
   base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
       prelink_callback_;
-  base::OnceCallback<void(bool)> work_profile_callback_;
 };
 
 RegistrationState* GetRegistrationState() {
@@ -301,12 +283,6 @@ GetSyncDataIfRegistered() {
     return absl::nullopt;
   }
 
-  if (state->am_in_work_profile()) {
-    // Never publish pre-linking information when in a work profile, instead
-    // route hybrid requests into the main profile.
-    return absl::nullopt;
-  }
-
   if (state->prelink_play_services() && state->link_data_from_play_services()) {
     absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
         internal::PaaskInfoFromCBOR(*state->link_data_from_play_services());
@@ -403,19 +379,6 @@ static void JNI_CableAuthenticatorModuleProvider_OnHaveLinkingInformation(
                          base::Unretained(reinterpret_cast<SystemInterface*>(
                              static_cast<uintptr_t>(system_interface_pointer))),
                          std::move(optional_cbor)));
-}
-
-static void JNI_CableAuthenticatorModuleProvider_OnHaveWorkProfileResult(
-    JNIEnv* env,
-    jlong system_interface_pointer,
-    jboolean in_work_profile) {
-  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(&SystemInterface::OnHaveWorkProfileResult,
-                         base::Unretained(reinterpret_cast<SystemInterface*>(
-                             static_cast<uintptr_t>(system_interface_pointer))),
-                         in_work_profile));
 }
 
 static void JNI_PrivacySettingsFragment_RevokeAllLinkedDevices(JNIEnv* env) {

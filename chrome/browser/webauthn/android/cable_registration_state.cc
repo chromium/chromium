@@ -42,8 +42,6 @@ void RegistrationState::Register() {
       base::BindRepeating(&RegistrationState::OnEvent, base::Unretained(this)));
   interface_->CanDeviceSupportCable(base::BindOnce(
       &RegistrationState::OnDeviceSupportResult, base::Unretained(this)));
-  interface_->AmInWorkProfile(base::BindOnce(
-      &RegistrationState::OnWorkProfileResult, base::Unretained(this)));
 
   std::string secret_base64 = interface_->GetRootSecret();
 
@@ -71,8 +69,8 @@ void RegistrationState::Register() {
 // put information into sync's DeviceInfo.
 bool RegistrationState::have_data_for_sync() const {
   return device_supports_cable_.has_value() && identity_key_ &&
-         am_in_work_profile_.has_value() && sync_registration_ != nullptr &&
-         sync_registration_->contact_id() && have_play_services_data();
+         sync_registration_ != nullptr && sync_registration_->contact_id() &&
+         have_play_services_data();
 }
 
 void RegistrationState::SignalSyncWhenReady() {
@@ -199,11 +197,6 @@ void RegistrationState::MaybeSignalSync() {
 
 void RegistrationState::OnDeviceSupportResult(bool result) {
   device_supports_cable_ = result;
-  MaybeSignalSync();
-}
-
-void RegistrationState::OnWorkProfileResult(bool result) {
-  am_in_work_profile_ = result;
   MaybeSignalSync();
 }
 
