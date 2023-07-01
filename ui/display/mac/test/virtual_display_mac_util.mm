@@ -40,6 +40,9 @@
 @property(readonly, nonatomic) unsigned int displayID;
 @property(readonly, nonatomic) unsigned int hiDPI;
 @property(readonly, nonatomic) NSArray* modes;
+@property(readonly, nonatomic)
+    unsigned int serialNumber API_AVAILABLE(macos(11.0));
+@property(readonly, nonatomic) unsigned int rotation API_AVAILABLE(macos(11.0));
 - (BOOL)applySettings:(id)arg1;
 - (void)dealloc;
 - (id)initWithDescriptor:(id)arg1;
@@ -62,6 +65,7 @@
 @property(nonatomic) struct CGPoint whitePoint;
 @property(strong, nonatomic) id queue;
 @property(copy, nonatomic) id terminationHandler;
+@property(nonatomic) unsigned int serialNumber API_AVAILABLE(macos(11.0));
 - (void)dealloc;
 - (id)init;
 - (id)dispatchQueue;
@@ -75,9 +79,14 @@
 @property(readonly, nonatomic) unsigned int width;
 @property(readonly, nonatomic) unsigned int height;
 @property(readonly, nonatomic) double refreshRate;
+@property(copy, nonatomic) id transferFunction API_AVAILABLE(macos(13.3));
 - (id)initWithWidth:(unsigned int)arg1
              height:(unsigned int)arg2
         refreshRate:(double)arg3;
+- (id)initWithWidth:(unsigned int)arg1
+              height:(unsigned int)arg2
+         refreshRate:(double)arg3
+    transferFunction:(id)arg4 API_AVAILABLE(macos(13.3));
 
 @end
 
@@ -86,6 +95,7 @@
 
 @property(strong, nonatomic) NSArray* modes;
 @property(nonatomic) unsigned int hiDPI;
+@property(nonatomic) unsigned int rotation API_AVAILABLE(macos(11.0));
 - (void)dealloc;
 - (id)init;
 
@@ -105,16 +115,10 @@ CGVirtualDisplay* CreateVirtualDisplay(int width,
                                        int ppi,
                                        BOOL hiDPI,
                                        NSString* name) {
-  CGVirtualDisplaySettings* settings = [[CGVirtualDisplaySettings alloc] init];
-  settings.hiDPI = hiDPI;
-
   CGVirtualDisplayDescriptor* descriptor =
       [[CGVirtualDisplayDescriptor alloc] init];
   descriptor.queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
   descriptor.name = name;
-
-  // See System Preferences > Displays > Color > Open Profile > Apple display
-  // native information
   descriptor.whitePoint = CGPointMake(0.3125, 0.3291);
   descriptor.bluePrimary = CGPointMake(0.1494, 0.0557);
   descriptor.greenPrimary = CGPointMake(0.2559, 0.6983);
@@ -126,24 +130,31 @@ CGVirtualDisplay* CreateVirtualDisplay(int width,
   descriptor.serialNum = 0;
   descriptor.productID = 0;
   descriptor.vendorID = 0;
+  descriptor.terminationHandler = nil;
+  if (@available(macos 11.0, *)) {
+    descriptor.serialNumber = 0;
+  }
 
   CGVirtualDisplay* display =
       [[CGVirtualDisplay alloc] initWithDescriptor:descriptor];
-
-  if (settings.hiDPI) {
-    width /= 2;
-    height /= 2;
-  }
-  CGVirtualDisplayMode* mode =
-      [[CGVirtualDisplayMode alloc] initWithWidth:width
-                                           height:height
-                                      refreshRate:60];
-  settings.modes = @[ mode ];
-
-  if (![display applySettings:settings]) {
+  if (!display) {
+    LOG(ERROR) << __func__ << " - CGVirtualDisplay initWithDescriptor failed";
     return nil;
   }
 
+  CGVirtualDisplaySettings* settings = [[CGVirtualDisplaySettings alloc] init];
+  settings.hiDPI = hiDPI;
+  if (@available(macos 11.0, *)) {
+    settings.rotation = 0;
+  }
+  CGVirtualDisplayMode* mode =
+      [[CGVirtualDisplayMode alloc] initWithWidth:(hiDPI ? width / 2 : width)
+                                           height:(hiDPI ? height / 2 : height)
+                                      refreshRate:60];
+  settings.modes = @[ mode ];
+  if (![display applySettings:settings]) {
+    LOG(ERROR) << __func__ << " - CGVirtualDisplay applySettings failed";
+  }
   return display;
 }
 
