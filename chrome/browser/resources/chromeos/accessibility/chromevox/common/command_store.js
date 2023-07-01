@@ -563,7 +563,6 @@ CommandStore.COMMAND_DATA = {
   },
   [Command.SHOW_OPTIONS_PAGE]: {
     category: CommandCategory.HELP_COMMANDS,
-    denySignedOut: true,
     msgId: 'show_options_page',
   },
   [Command.SHOW_LOG_PAGE]: {
