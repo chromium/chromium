@@ -34,10 +34,12 @@ import com.google.android.gms.tasks.Task;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -253,6 +255,24 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
         return NotificationManagerCompat.from(context).areNotificationsEnabled();
     }
 
+    /**
+     * Calls back into native code with whether we are running in a work profile.
+     */
+    @CalledByNative
+    public static void amInWorkProfile(long pointer) {
+        if (!DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_DONT_PRELINK_IN_PROFILES)) {
+            CableAuthenticatorModuleProviderJni.get().onHaveWorkProfileResult(pointer, false);
+            return;
+        }
+
+        ThreadUtils.assertOnUiThread();
+        EnterpriseInfo enterpriseInfo = EnterpriseInfo.getInstance();
+        enterpriseInfo.getDeviceEnterpriseInfo(
+                (state)
+                        -> CableAuthenticatorModuleProviderJni.get().onHaveWorkProfileResult(
+                                pointer, state.mProfileOwned));
+    }
+
     @CalledByNative
     public static void getLinkingInformation(long pointer) {
         boolean ok = true;
@@ -305,5 +325,8 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
         // Services. The argument is a CBOR-encoded linking structure, as defined in CTAP 2.2, or is
         // null on error.
         void onHaveLinkingInformation(long pointer, byte[] cbor);
+        // onHaveWorkProfileResult is called when it has been determined if
+        // Chrome is running in a work profile or not.
+        void onHaveWorkProfileResult(long pointer, boolean inWorkProfile);
     }
 }
