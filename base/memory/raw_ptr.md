@@ -213,17 +213,15 @@ As a performance optimization, raw C++ pointers may be used instead of
 ### Pointers in locations other than fields
 
 Use raw C++ pointers instead of `raw_ptr<T>` in the following scenarios:
-- Pointers in local variables and function/method parameters.
-  This includes pointer fields in classes/structs that are used only on the stack.
+- Pointers in local variables and function parameters and return values. This
+  includes pointer fields in classes/structs that are used only on the stack.
   (We plan to enforce this in the Chromium Clang Plugin.  Using `raw_ptr<T>`
   here would cumulatively lead to performance regression and the security
   benefit of UaF protection is lower for such short-lived pointers.)
-- Pointer fields in unions. (Naive usage this will lead to
-  [a C++ compile
-  error](https://docs.google.com/document/d/1uAsWnwy8HfIJhDPSh1efohnqfGsv2LJmYTRBj0JzZh8/edit#heading=h.fvvnv6htvlg3).
-  Avoiding the error requires the `raw_ptr<T>` destructor to be explicitly
-  called before destroying the union, if the field is holding a value. Doing
-  this manual destruction wrong might lead to leaks or double-dereferences.)
+- Pointer fields in unions. However, note that a much better, modern alternative
+  is `absl::variant` + `raw_ptr<T>`. If use of C++ union is absolutely
+  unavoidable, prefer a regular C++ pointer: incorrect management of a
+  `raw_ptr<T>` field can easily lead to refcount corruption.
 - Pointers whose addresses are used only as identifiers and which are
   never dereferenced (e.g. keys in a map). There is a performance gain
   by not using `raw_ptr` in this case; prefer to use `uintptr_t` to
