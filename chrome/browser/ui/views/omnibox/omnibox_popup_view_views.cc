@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -169,19 +169,6 @@ OmniboxPopupViewViews::OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-
-  PrefService* const pref_service = GetPrefService();
-  if (pref_service) {
-    // We are observing the preference here rather than in OmniboxResultView,
-    // because showing and hiding matches also requires resizing the popup.
-    pref_change_registrar_.Init(pref_service);
-    // Unretained is appropriate here. 'this' will outlive the registrar.
-    pref_change_registrar_.Add(
-        omnibox::kSuggestionGroupVisibility,
-        base::BindRepeating(
-            &OmniboxPopupViewViews::OnSuggestionGroupVisibilityUpdate,
-            base::Unretained(this)));
-  }
 }
 
 OmniboxPopupViewViews::~OmniboxPopupViewViews() {
@@ -303,16 +290,12 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
   // we have enough row views.
   const size_t result_size = controller()->result().size();
   std::u16string previous_row_header = u"";
-  PrefService* const pref_service = GetPrefService();
   for (size_t i = 0; i < result_size; ++i) {
     // Create child views lazily.  Since especially the first result view may
     // be expensive to create due to loading font data, this saves time and
     // memory during browser startup. https://crbug.com/1021323
     if (children().size() == i) {
-      AddChildView(std::make_unique<OmniboxRowView>(
-          i, /*popup_view=*/this,
-          std::make_unique<OmniboxResultView>(/*popup_view=*/this, i),
-          pref_service));
+      AddChildView(std::make_unique<OmniboxRowView>(i, /*popup_view=*/this));
     }
 
     OmniboxRowView* const row_view =
@@ -326,10 +309,13 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
             ? controller()->result().GetHeaderForSuggestionGroup(
                   match.suggestion_group_id.value())
             : u"";
+    bool group_hidden = match.suggestion_group_id.has_value() &&
+                        controller()->IsSuggestionGroupHidden(
+                            match.suggestion_group_id.value());
     if (!current_row_header.empty() &&
         current_row_header != previous_row_header) {
-      row_view->ShowHeader(match.suggestion_group_id.value(),
-                           current_row_header);
+      // Set toggle state of the header based on whether the group is hidden.
+      row_view->ShowHeader(current_row_header, group_hidden);
     } else {
       row_view->HideHeader();
     }
@@ -337,12 +323,8 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
 
     OmniboxResultView* const result_view = row_view->result_view();
     result_view->SetMatch(match);
-
     // Set visibility of the result view based on whether the group is hidden.
-    bool match_hidden = pref_service && match.suggestion_group_id.has_value() &&
-                        controller()->result().IsSuggestionGroupHidden(
-                            pref_service, match.suggestion_group_id.value());
-    result_view->SetVisible(!match_hidden);
+    result_view->SetVisible(!group_hidden);
 
     const SkBitmap* bitmap = model()->GetPopupRichSuggestionBitmap(i);
     if (bitmap) {
@@ -544,6 +526,14 @@ gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
   return content_rect;
 }
 
+OmniboxHeaderView* OmniboxPopupViewViews::header_view_at(size_t i) {
+  if (i >= children().size()) {
+    return nullptr;
+  }
+
+  return static_cast<OmniboxRowView*>(children()[i])->header_view();
+}
+
 OmniboxResultView* OmniboxPopupViewViews::result_view_at(size_t i) {
   if (i >= children().size()) {
     return nullptr;
@@ -579,16 +569,14 @@ size_t OmniboxPopupViewViews::GetIndexForPoint(const gfx::Point& point) {
   return OmniboxPopupSelection::kNoMatch;
 }
 
-void OmniboxPopupViewViews::OnSuggestionGroupVisibilityUpdate() {
-  for (size_t i = 0; i < controller()->result().size(); ++i) {
-    const AutocompleteMatch& match = controller()->result().match_at(i);
-    bool match_hidden =
-        match.suggestion_group_id.has_value() &&
-        controller()->result().IsSuggestionGroupHidden(
-            GetPrefService(), match.suggestion_group_id.value());
-    if (OmniboxResultView* result_view = result_view_at(i)) {
-      result_view->SetVisible(!match_hidden);
-    }
+void OmniboxPopupViewViews::SetSuggestionGroupVisibility(
+    size_t match_index,
+    bool suggestion_group_hidden) {
+  if (OmniboxHeaderView* header_view = header_view_at(match_index)) {
+    header_view->SetSuggestionGroupVisibility(suggestion_group_hidden);
+  }
+  if (OmniboxResultView* result_view = result_view_at(match_index)) {
+    result_view->SetVisible(!suggestion_group_hidden);
   }
 
   // This is necssary for the popup to actually resize to accommodate newly
@@ -598,14 +586,6 @@ void OmniboxPopupViewViews::OnSuggestionGroupVisibilityUpdate() {
   }
 
   InvalidateLayout();
-}
-
-PrefService* OmniboxPopupViewViews::GetPrefService() const {
-  if (!location_bar_view_ || !location_bar_view_->profile()) {
-    return nullptr;
-  }
-
-  return location_bar_view_->profile()->GetPrefs();
 }
 
 void OmniboxPopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {

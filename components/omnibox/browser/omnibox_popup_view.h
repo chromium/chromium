@@ -72,6 +72,10 @@ class OmniboxPopupView {
   // unit test and it would be better to eliminate it than to increase usage.
   virtual std::u16string GetAccessibleButtonTextForResult(size_t line) = 0;
 
+  // Updates the result and header views based on the visibility of their group.
+  virtual void SetSuggestionGroupVisibility(size_t match_index,
+                                            bool suggestion_group_hidden) {}
+
  private:
   // Owned by OmniboxView which owns this.
   raw_ptr<OmniboxController> controller_;

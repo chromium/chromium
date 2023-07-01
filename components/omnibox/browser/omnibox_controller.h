@@ -11,6 +11,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class AutocompleteResult;
 class OmniboxClient;
@@ -66,9 +67,29 @@ class OmniboxController : public AutocompleteController::Observer {
   // Turns off keyword mode for the current match.
   void ClearPopupKeywordMode() const;
 
+  // Returns the header string associated with `suggestion_group_id`, or an
+  // empty string if `suggestion_group_id` is not found in the results.
+  std::u16string GetHeaderForSuggestionGroup(
+      omnibox::GroupId suggestion_group_id) const;
+
+  // Returns whether or not `suggestion_group_id` should be collapsed in the UI.
+  // This method takes into account both the user's stored prefs as well as
+  // the server-provided visibility hint. Returns false if `suggestion_group_id`
+  // is not found in the results.
+  bool IsSuggestionGroupHidden(omnibox::GroupId suggestion_group_id) const;
+
+  // Sets the UI collapsed/expanded state of the `suggestion_group_id` in the
+  // user's stored prefs based on the value of `hidden`. Does nothing if
+  // `suggestion_group_id` is not found in the results.
+  void SetSuggestionGroupHidden(omnibox::GroupId suggestion_group_id,
+                                bool hidden) const;
+
  private:
   // Stores the bitmap in the OmniboxPopupModel.
   void SetRichSuggestionBitmap(int result_index, const SkBitmap& bitmap);
+
+  // Called when the prefs for the visibility of groups changes.
+  void OnSuggestionGroupVisibilityPrefChanged();
 
   std::unique_ptr<OmniboxClient> client_;
 
@@ -85,6 +106,9 @@ class OmniboxController : public AutocompleteController::Observer {
   //   purpose but is hopefully more often correctly set (`current_match_` here
   //   is almost always invalid).
   AutocompleteMatch current_match_;
+
+  // Observes changes to the prefs for the visibility of groups.
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<OmniboxController> weak_ptr_factory_{this};
 };

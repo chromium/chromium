@@ -438,6 +438,10 @@ class OmniboxEditModel {
   // Stores the image in a local data member and schedules a repaint.
   void SetPopupRichSuggestionBitmap(int result_index, const SkBitmap& bitmap);
 
+  // Updates the popup view when the visibility of a group changes.
+  void SetPopupSuggestionGroupVisibility(size_t match_index,
+                                         bool suggestion_group_hidden);
+
   // Called to indicate a navigation may occur based on
   // |navigation_predictor| to the suggestion on |line|.
   void OnNavigationLikely(

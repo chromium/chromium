@@ -14,6 +14,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "ui/gfx/geometry/rect.h"
 
 OmniboxController::OmniboxController(OmniboxView* view,
@@ -36,6 +37,15 @@ OmniboxController::OmniboxController(OmniboxView* view,
   // Register the `AutocompleteController` with `AutocompleteControllerEmitter`.
   if (auto* emitter = client_->GetAutocompleteControllerEmitter()) {
     autocomplete_controller_->AddObserver(emitter);
+  }
+
+  if (PrefService* prefs = client_->GetPrefs()) {
+    pref_change_registrar_.Init(prefs);
+    pref_change_registrar_.Add(
+        omnibox::kSuggestionGroupVisibility,
+        base::BindRepeating(
+            &OmniboxController::OnSuggestionGroupVisibilityPrefChanged,
+            base::Unretained(this)));
   }
 }
 
@@ -113,7 +123,36 @@ void OmniboxController::ClearPopupKeywordMode() const {
   }
 }
 
+std::u16string OmniboxController::GetHeaderForSuggestionGroup(
+    omnibox::GroupId suggestion_group_id) const {
+  return result().GetHeaderForSuggestionGroup(suggestion_group_id);
+}
+
+bool OmniboxController::IsSuggestionGroupHidden(
+    omnibox::GroupId suggestion_group_id) const {
+  PrefService* prefs = client_->GetPrefs();
+  return prefs && result().IsSuggestionGroupHidden(prefs, suggestion_group_id);
+}
+
+void OmniboxController::SetSuggestionGroupHidden(
+    omnibox::GroupId suggestion_group_id,
+    bool hidden) const {
+  if (PrefService* prefs = client_->GetPrefs()) {
+    result().SetSuggestionGroupHidden(prefs, suggestion_group_id, hidden);
+  }
+}
+
 void OmniboxController::SetRichSuggestionBitmap(int result_index,
                                                 const SkBitmap& bitmap) {
   edit_model_->SetPopupRichSuggestionBitmap(result_index, bitmap);
+}
+
+void OmniboxController::OnSuggestionGroupVisibilityPrefChanged() {
+  for (size_t i = 0; i < result().size(); ++i) {
+    const AutocompleteMatch& match = result().match_at(i);
+    bool suggestion_group_hidden =
+        match.suggestion_group_id.has_value() &&
+        IsSuggestionGroupHidden(match.suggestion_group_id.value());
+    edit_model_->SetPopupSuggestionGroupVisibility(i, suggestion_group_hidden);
+  }
 }

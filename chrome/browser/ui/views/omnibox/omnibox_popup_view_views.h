@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/window_open_disposition.h"
@@ -22,6 +21,7 @@
 
 class LocationBarView;
 class OmniboxController;
+class OmniboxHeaderView;
 class OmniboxResultView;
 class OmniboxViewViews;
 struct AutocompleteMatch;
@@ -68,6 +68,8 @@ class OmniboxPopupViewViews : public views::View,
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AddPopupAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetAccessibleButtonTextForResult(size_t line) override;
+  void SetSuggestionGroupVisibility(size_t match_index,
+                                    bool suggestion_group_hidden) override;
 
   // views::View:
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -90,6 +92,9 @@ class OmniboxPopupViewViews : public views::View,
   // of |location_bar_view_|.
   gfx::Rect GetTargetBounds() const;
 
+  // Gets the OmniboxHeaderView for match |i|.
+  OmniboxHeaderView* header_view_at(size_t i);
+
   // Gets the OmniboxResultView for match |i|.
   OmniboxResultView* result_view_at(size_t i);
 
@@ -103,12 +108,6 @@ class OmniboxPopupViewViews : public views::View,
   // coordinates. Returns OmniboxPopupSelection::kNoMatch if there isn't a match
   // at the specified point.
   size_t GetIndexForPoint(const gfx::Point& point);
-
-  // Update which result views are visible when the group visibility changes.
-  void OnSuggestionGroupVisibilityUpdate();
-
-  // Gets the pref service for this view. May return nullptr in tests.
-  PrefService* GetPrefService() const;
 
   LocationBarView* location_bar_view() const { return location_bar_view_; }
 
@@ -124,9 +123,6 @@ class OmniboxPopupViewViews : public views::View,
 
   // The location bar view that owns |omnibox_view_|. May be nullptr in tests.
   raw_ptr<LocationBarView> location_bar_view_;
-
-  // A pref change registrar for toggling result view visibility.
-  PrefChangeRegistrar pref_change_registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_H_

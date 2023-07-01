@@ -45,19 +45,19 @@ namespace {
 
 class OmniboxViewTest : public testing::Test {
  public:
-  OmniboxViewTest() {
+  OmniboxViewTest()
+      : bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()) {
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
     omnibox_client_ = omnibox_client.get();
     EXPECT_CALL(*client(), GetLocationBarModel())
         .WillRepeatedly(Return(&location_bar_model_));
+    EXPECT_CALL(*client(), GetBookmarkModel())
+        .WillRepeatedly(Return(bookmark_model_.get()));
 
     view_ = std::make_unique<TestOmniboxView>(std::move(omnibox_client));
     view_->controller()->SetEditModelForTesting(
         std::make_unique<TestOmniboxEditModel>(view_->controller(), view_.get(),
                                                /*pref_service=*/nullptr));
-
-    bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
-    client()->SetBookmarkModel(bookmark_model_.get());
   }
 
   TestOmniboxView* view() { return view_.get(); }

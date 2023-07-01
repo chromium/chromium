@@ -85,6 +85,10 @@ SessionID ChromeOmniboxClientIOS::GetSessionID() const {
       ->session_id();
 }
 
+PrefService* ChromeOmniboxClientIOS::GetPrefs() {
+  return browser_state_->GetPrefs();
+}
+
 bookmarks::BookmarkModel* ChromeOmniboxClientIOS::GetBookmarkModel() {
   return ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
       browser_state_);

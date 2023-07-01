@@ -399,6 +399,7 @@ class RealboxOmniboxClient : public OmniboxClient {
       override;
   bool IsPasteAndGoEnabled() const override;
   SessionID GetSessionID() const override;
+  PrefService* GetPrefs() override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() override;
   TemplateURLService* GetTemplateURLService() override;
@@ -457,6 +458,10 @@ bool RealboxOmniboxClient::IsPasteAndGoEnabled() const {
 
 SessionID RealboxOmniboxClient::GetSessionID() const {
   return sessions::SessionTabHelper::IdForTab(web_contents_);
+}
+
+PrefService* RealboxOmniboxClient::GetPrefs() {
+  return profile_->GetPrefs();
 }
 
 bookmarks::BookmarkModel* RealboxOmniboxClient::GetBookmarkModel() {
@@ -887,10 +892,8 @@ void RealboxHandler::ToggleSuggestionGroupIdVisibility(
   const auto& group_id = omnibox::GroupIdForNumber(suggestion_group_id);
   DCHECK_NE(omnibox::GROUP_INVALID, group_id);
   const bool current_visibility =
-      autocomplete_controller()->result().IsSuggestionGroupHidden(
-          profile_->GetPrefs(), group_id);
-  autocomplete_controller()->result().SetSuggestionGroupHidden(
-      profile_->GetPrefs(), group_id, !current_visibility);
+      controller_->IsSuggestionGroupHidden(group_id);
+  controller_->SetSuggestionGroupHidden(group_id, !current_visibility);
 }
 
 void RealboxHandler::ExecuteAction(uint8_t line,

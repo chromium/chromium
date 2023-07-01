@@ -40,6 +40,7 @@ struct VectorIcon;
 }
 
 class AutocompleteControllerEmitter;
+class PrefService;
 
 using BitmapFetchedCallback =
     base::RepeatingCallback<void(int result_index, const SkBitmap& bitmap)>;
@@ -93,6 +94,7 @@ class OmniboxClient : public base::SupportsWeakPtr<OmniboxClient> {
       const AutocompleteMatch& match,
       omnibox::mojom::NavigationPredictor navigation_predictor) {}
 
+  virtual PrefService* GetPrefs() = 0;
   virtual bookmarks::BookmarkModel* GetBookmarkModel();
   virtual AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() = 0;
   virtual TemplateURLService* GetTemplateURLService();

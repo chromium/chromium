@@ -68,7 +68,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 // If |suggestion_group_id| has never been manually hidden or shown by the user,
 // this method returns SuggestionGroupVisibility::DEFAULT.
 //
-// Warning: UI code should use AutocompleteResult::IsSuggestionGroupHidden()
+// Warning: UI code should use OmniboxController::IsSuggestionGroupHidden()
 // instead, which passes the server-provided group ID to this method and takes
 // the server-provided hint on default visibility of the group into account.
 SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
@@ -78,7 +78,7 @@ SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
 // Sets the stored visibility preference for |suggestion_group_id| to
 // |visibility|.
 //
-// Warning: UI code should use AutocompleteResult::SetSuggestionGroupHidden()
+// Warning: UI code should use OmniboxController::SetSuggestionGroupHidden()
 // instead, which passes the server-provided group ID to this method.
 void SetUserPreferenceForSuggestionGroupVisibility(
     PrefService* prefs,

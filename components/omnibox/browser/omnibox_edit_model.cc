@@ -891,11 +891,9 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
     DCHECK(match.suggestion_group_id.has_value());
 
     const bool current_visibility =
-        controller_->result().IsSuggestionGroupHidden(
-            GetPrefService(), match.suggestion_group_id.value());
-    controller_->result().SetSuggestionGroupHidden(
-        GetPrefService(), match.suggestion_group_id.value(),
-        !current_visibility);
+        controller_->IsSuggestionGroupHidden(match.suggestion_group_id.value());
+    controller_->SetSuggestionGroupHidden(match.suggestion_group_id.value(),
+                                          !current_visibility);
   } else if (selection.state ==
              OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
     TryDeletingPopupLine(selection.line);
@@ -2017,12 +2015,12 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
   static_assert(OmniboxPopupSelection::LINE_STATE_MAX_VALUE == 5);
   switch (popup_selection_.state) {
     case OmniboxPopupSelection::FOCUSED_BUTTON_HEADER: {
-      bool group_hidden = controller_->result().IsSuggestionGroupHidden(
-          GetPrefService(), match.suggestion_group_id.value());
+      bool group_hidden = controller_->IsSuggestionGroupHidden(
+          match.suggestion_group_id.value());
       int message_id = group_hidden ? IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON
                                     : IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON;
       return l10n_util::GetStringFUTF16(
-          message_id, controller_->result().GetHeaderForSuggestionGroup(
+          message_id, controller_->GetHeaderForSuggestionGroup(
                           match.suggestion_group_id.value()));
     }
     case OmniboxPopupSelection::NORMAL: {
@@ -2144,10 +2142,17 @@ void OmniboxEditModel::SetPopupRichSuggestionBitmap(int result_index,
   popup_view_->UpdatePopupAppearance();
 }
 
+void OmniboxEditModel::SetPopupSuggestionGroupVisibility(
+    size_t match_index,
+    bool suggestion_group_hidden) {
+  if (PopupIsOpen()) {
+    popup_view_->SetSuggestionGroupVisibility(match_index,
+                                              suggestion_group_hidden);
+  }
+}
+
 PrefService* OmniboxEditModel::GetPrefService() const {
-  return controller_->autocomplete_controller()
-      ->autocomplete_provider_client()
-      ->GetPrefs();
+  return controller_->client()->GetPrefs();
 }
 
 bool OmniboxEditModel::MaybeStartQueryForPopup() {

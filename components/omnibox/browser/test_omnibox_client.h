@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -16,6 +15,7 @@
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/sessions/core/session_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/image/image.h"
 
 class AutocompleteSchemeClassifier;
 
@@ -32,8 +32,6 @@ class TestOmniboxClient : public testing::NiceMock<OmniboxClient> {
       override;
   bool IsPasteAndGoEnabled() const override;
   SessionID GetSessionID() const override;
-  void SetBookmarkModel(bookmarks::BookmarkModel* bookmark_model);
-  bookmarks::BookmarkModel* GetBookmarkModel() override;
   AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() override;
   TemplateURLService* GetTemplateURLService() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
@@ -63,10 +61,11 @@ class TestOmniboxClient : public testing::NiceMock<OmniboxClient> {
                const AutocompleteMatch& alternative_nav_match,
                IDNA2008DeviationCharacter deviation_char_in_hostname));
   MOCK_METHOD(LocationBarModel*, GetLocationBarModel, ());
+  MOCK_METHOD(bookmarks::BookmarkModel*, GetBookmarkModel, ());
+  MOCK_METHOD(PrefService*, GetPrefs, ());
 
  private:
   SessionID session_id_;
-  raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> bookmark_model_;
   raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
   TestSchemeClassifier scheme_classifier_;
   AutocompleteClassifier autocomplete_classifier_;
