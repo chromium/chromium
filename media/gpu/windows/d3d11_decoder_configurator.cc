@@ -89,12 +89,13 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
   } else if (config.profile() == HEVCPROFILE_MAIN10) {
     decoder_guid = D3D11_DECODER_PROFILE_HEVC_VLD_MAIN10;
   } else if (config.profile() == HEVCPROFILE_REXT) {
-    // TODO(crbug.com/1345568): Enable 8-bit 444 decoding when AYUV
-    // is added into video pixel format histogram enumerations.
     if (bit_depth == 8) {
       if (chroma_sampling == VideoChromaSampling::k420) {
         decoder_guid = DXVA_ModeHEVC_VLD_Main_Intel;
         decoder_dxgi_format = DXGI_FORMAT_NV12;
+      } else if (chroma_sampling == VideoChromaSampling::k444) {
+        decoder_guid = DXVA_ModeHEVC_VLD_Main444_Intel;
+        decoder_dxgi_format = DXGI_FORMAT_AYUV;
       } else {
         MEDIA_LOG(INFO, media_log)
             << "D3D11VideoDecoder does not support HEVC range extension "
@@ -115,19 +116,15 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
         decoder_dxgi_format = DXGI_FORMAT_Y410;
       }
     } else if (bit_depth == 12) {
-      // TODO(crbug.com/1345568): Enable 12-bit 422/444 decoding.
-      // 12-bit decoding with 422 & 444 format does not work well
-      // on Intel platforms.
       if (chroma_sampling == VideoChromaSampling::k420) {
         decoder_guid = DXVA_ModeHEVC_VLD_Main12_Intel;
         decoder_dxgi_format = DXGI_FORMAT_P016;
-      } else {
-        MEDIA_LOG(INFO, media_log)
-            << "D3D11VideoDecoder does not support HEVC range extension "
-            << config.codec() << " with chroma subsampling format "
-            << VideoChromaSamplingToString(chroma_sampling) << " and bit depth "
-            << base::strict_cast<int>(bit_depth);
-        return nullptr;
+      } else if (chroma_sampling == VideoChromaSampling::k422) {
+        decoder_guid = DXVA_ModeHEVC_VLD_Main422_12_Intel;
+        decoder_dxgi_format = DXGI_FORMAT_Y216;
+      } else if (chroma_sampling == VideoChromaSampling::k444) {
+        decoder_guid = DXVA_ModeHEVC_VLD_Main444_12_Intel;
+        decoder_dxgi_format = DXGI_FORMAT_Y416;
       }
     }
   }
