@@ -63,20 +63,23 @@
     width: 336px;
   }
  
-  #skuIconContainer {
+  .label-wrapper {
     align-items: center;
     display: inline-flex;
     vertical-align: middle;
   }
 
-  #infoIcon {
+  .info-icon {
+    color: var(--shimless-hint-text-color);
     display: inline-block;
     height: 18px;
     margin-inline-start: 6px;
+    position: relative;
+    top: -5px;
     width: 18px;
   }
 
-  #tooltipContent {
+  .tooltip-content {
     line-height: var(--shimless-instructions-line-height);
   }
 
@@ -92,6 +95,11 @@
     height: 18px;
     margin-inline-end: 6px;
     width: 18px;
+  }
+
+  .required-field-asterisk {
+    color: var(--cros-text-color-alert);
+    margin-inline-start: 3px;
   }
 </style>
 
@@ -176,15 +184,16 @@
           </cr-button>
         </div>
       </div>
-      <div id="skuIconContainer">
+      <div class="label-wrapper">
         <label id="skuLabel" class="cr-form-field-label">
           [[i18n('confirmDeviceInfoSkuLabel')]]
         </label>
-        <iron-icon icon="shimless-icon:info" id="infoIcon"
-            class="cr-form-field-label">
+        <iron-icon id="skuIcon" icon="shimless-icon:info" class="info-icon">
         </iron-icon>
-        <paper-tooltip for="infoIcon" aria-hidden="true">
-          <div id="tooltipContent">[[i18n('confirmDeviceInfoSkuWarning')]]</div>
+        <paper-tooltip for="skuIcon" aria-hidden="true">
+          <div class="tooltip-content">
+            [[i18n('confirmDeviceInfoSkuWarning')]]
+          </div>
         </paper-tooltip>
       </div>
       <div class="input-holder input-row">
@@ -220,13 +229,19 @@
         </div>
         <div hidden="[[isComplianceStatusKnown_(featureLevel_)]]">
           <div class="input-row">
-            <label id="isChassisBrandedLabel" class="cr-form-field-label">
-              [[i18n('confirmDeviceInfoDeviceQuestionIsBranded')]]
-            </label>
+            <div class="label-wrapper">
+              <label id="isChassisBrandedLabel" class="cr-form-field-label">
+                [[i18n('confirmDeviceInfoDeviceQuestionIsBranded')]]
+              </label>
+              <span class="required-field-asterisk cr-form-field-label">*</span>
+            </div>
             <div class="input-holder">
               <select id="isChassisBranded" class="md-select"
                   aria-labelledby="isChassisBrandedLabel"
                   disabled="[[allButtonsDisabled]]">
+                <option value="default">
+                  [[i18n('confirmDeviceInfoDeviceAnswerDefault')]]
+                </option>
                 <option value="no">
                   [[i18n('confirmDeviceInfoDeviceAnswerNo')]]
                 </option>
@@ -237,13 +252,27 @@
             </div>
           </div>
           <div class="input-row">
-            <label id="doesMeetRequirementsLabel" class="cr-form-field-label">
-              [[i18n('confirmDeviceInfoDeviceQuestionDoesMeetRequirements')]]
-            </label>
+            <div class="label-wrapper">
+              <label id="doesMeetRequirementsLabel" class="cr-form-field-label">
+                [[i18n('confirmDeviceInfoDeviceQuestionDoesMeetRequirements')]]
+              </label>
+              <span class="required-field-asterisk cr-form-field-label">*</span>
+              <iron-icon icon="shimless-icon:info" class="info-icon"
+                id="requirements-icon">
+              </iron-icon>
+              <paper-tooltip for="requirements-icon" aria-hidden="true">
+                <div class="tooltip-content">
+                  [[i18n('confirmDeviceInfoDeviceQuestionDoesMeetRequirementsTooltip')]]
+                </div>
+              </paper-tooltip>
+            </div>
             <div class="input-holder">
               <select id="doesMeetRequirements" class="md-select"
                   aria-labelledby="doesMeetRequirementsLabel"
                   disabled="[[allButtonsDisabled]]">
+                <option value="default">
+                  [[i18n('confirmDeviceInfoDeviceAnswerDefault')]]
+                </option>
                 <option value="no">
                   [[i18n('confirmDeviceInfoDeviceAnswerNo')]]
                 </option>
