@@ -134,7 +134,7 @@ class MediaCodecUtil {
 
         // Codec2 names sw decoders this way.
         // See hardware/google/av/codec2/vndk/C2Store.cpp.
-        if (name.startsWith("c2.google.") || name.startsWith("c2.android.")) return true;
+        if ( name.startsWith("c2.android.")) return true;
 
         return false;
     }
