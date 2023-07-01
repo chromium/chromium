@@ -648,8 +648,8 @@ double OscillatorHandler::ProcessARate(int n,
 
 void OscillatorHandler::Process(uint32_t frames_to_process) {
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-              "OscillatorHandler::Process", "this", static_cast<void*>(this),
-              "type", GetType());
+              "OscillatorHandler::Process", "this",
+              reinterpret_cast<void*>(this), "type", GetType());
 
   AudioBus* output_bus = Output(0).Bus();
 

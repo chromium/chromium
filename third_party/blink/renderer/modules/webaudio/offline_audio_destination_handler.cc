@@ -98,7 +98,7 @@ void OfflineAudioDestinationHandler::StartRendering() {
 
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
               "OfflineAudioDestinationHandler::StartRendering", "this",
-              static_cast<void*>(this));
+              reinterpret_cast<void*>(this));
 
   // Rendering was not started. Starting now.
   if (!is_rendering_started_) {
@@ -165,7 +165,7 @@ void OfflineAudioDestinationHandler::DoOfflineRendering() {
   DCHECK(!IsMainThread());
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
               "OfflineAudioDestinationHandler::DoOfflineRendering", "this",
-              static_cast<void*>(this));
+              reinterpret_cast<void*>(this));
 
   unsigned number_of_channels = shared_render_target_->numberOfChannels();
   Vector<float*> destinations;

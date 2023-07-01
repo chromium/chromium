@@ -71,8 +71,8 @@ void DynamicsCompressorHandler::Process(uint32_t frames_to_process) {
 
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
               "DynamicsCompressorHandler::Process", "this",
-              static_cast<void*>(this), "threshold", threshold, "knee", knee,
-              "ratio", ratio, "attack", attack, "release", release);
+              reinterpret_cast<void*>(this), "threshold", threshold, "knee",
+              knee, "ratio", ratio, "attack", attack, "release", release);
 
   AudioBus* output_bus = Output(0).Bus();
   DCHECK(output_bus);
