@@ -53,6 +53,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
+#include "ash/wm/workspace_controller.h"
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -2195,6 +2196,13 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
     EXPECT_TRUE(child->IsVisible());
   }
 
+  BackdropController* backdrop_controller =
+      GetActiveWorkspaceController(Shell::GetPrimaryRootWindow())
+          ->layout_manager()
+          ->backdrop_controller();
+  ASSERT_EQ(backdrop_controller->backdrop_window(),
+            default_container()->children()[0]);
+
   EXPECT_EQ(window1.get(), default_container()->children()[1]);
   EXPECT_EQ(default_container()->bounds(),
             default_container()->children()[0]->bounds());
@@ -2204,6 +2212,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   // container. Its bounds should be the same as the snapped window's bounds.
   split_view_controller()->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
+
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   // One of the windows in the default container is the overview
   // no_windows_widget window. Exclude it.

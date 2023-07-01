@@ -899,6 +899,15 @@ absl::optional<float> SplitViewController::ComputeSnapRatio(
   return absl::nullopt;
 }
 
+bool SplitViewController::WillStartOverview() const {
+  // Note that at this point `state_` may not have been updated yet, so check if
+  // only one of `primary_window_` or `secondary_window_` are snapped.
+  return !IsInOverviewSession() && !DesksController::Get()->animation() &&
+         (split_view_type_ == SplitViewType::kTabletType ||
+          IsSnapGroupEnabledInClamshellMode()) &&
+         !!primary_window_ != !!secondary_window_;
+}
+
 void SplitViewController::SnapWindow(aura::Window* window,
                                      SnapPosition snap_position,
                                      WindowSnapActionSource snap_action_source,
@@ -2790,11 +2799,7 @@ void SplitViewController::OnWindowSnapped(
   // only one snapped window in split screen when in tablet mode or clamshell
   // mode when `CanEnterOverview()` returns true, the check will happen in
   // `OverviewController`.
-  if (!IsInOverviewSession() && !DesksController::Get()->animation() &&
-      (split_view_type_ == SplitViewType::kTabletType ||
-       snap_group_enabled_in_clamshell) &&
-      (state_ == State::kPrimarySnapped ||
-       state_ == State::kSecondarySnapped)) {
+  if (WillStartOverview()) {
     in_snap_group_creation_session_ = snap_group_enabled_in_clamshell;
     Shell::Get()->overview_controller()->StartOverview(
         OverviewStartAction::kSplitView, OverviewEnterExitType::kNormal);

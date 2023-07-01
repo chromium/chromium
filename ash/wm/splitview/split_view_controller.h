@@ -227,6 +227,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   bool CanSnapWindow(aura::Window* window) const;
   bool CanSnapWindow(aura::Window* window, float snap_ratio) const;
 
+  // Returns true if, after a window is snapped, it will get put into split
+  // overview eventually.
+  bool WillStartOverview() const;
+
   // Returns the snap ratio (if valid) for `window` depending on the default
   // window. Returns null if `window` cannot get snapped. If there is no default
   // window, it will check if `window` can be half snapped. Otherwise, it checks
