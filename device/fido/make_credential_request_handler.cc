@@ -429,7 +429,7 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
       options_.authenticator_attachment;
 
   base::flat_set<FidoTransportProtocol> allowed_transports =
-      GetTransportsAllowedByRP(options.authenticator_attachment);
+      GetTransportsAllowedByRP(options_.authenticator_attachment);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Attempt to instantiate the ChromeOS platform authenticator for
