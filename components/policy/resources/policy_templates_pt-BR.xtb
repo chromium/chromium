@@ -7279,6 +7279,15 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7298197471363105063">Substituir o First-Party Sets.</translation>
 <translation id="7302043767260300182">Intervalo de bloqueio da tela no funcionamento com alimentação CA</translation>
 <translation id="7303902834678570827">Usuários de Sessões de visitante gerenciadas não podem armazenar configurações de tela para o dispositivo</translation>
+<translation id="7306926210354955892">A definição da política especifica a ação a ser executada quando o diretório de dados ARC do usuário tiver sido criado com virtio-fs. A menos que os dados do virtio-fs sejam migrados para o virtio-blk, os apps Android poderão ficar mais lentos na VM do ARC.
+
+      Se a política for definida como:
+
+      * <ph name="DO_NOT_PROMPT" />, o usuário não precisará passar pelo fluxo de migração. Esse é o valor padrão quando a política não está definida.
+
+      * <ph name="PROMPT" /> (ou um valor sem suporte), o usuário precisará passar pelo fluxo de migração de dados no momento do login. Isso pode levar até 10 minutos.
+
+      Esta política se aplica apenas a dispositivos ARM que migram para a VM do ARC.</translation>
 <translation id="731208205557053914">Enviar informações sobre os VPD</translation>
 <translation id="7313672174502374994">A hash SHA-256 da imagem de plano de fundo.</translation>
 <translation id="7313681786668291607">A definição desta política permite especificar o comportamento do sistema na inicialização. Desativar essa configuração é o mesmo que não defini-la, já que o <ph name="PRODUCT_NAME" /> precisa ter um comportamento de inicialização especificado.

@@ -2318,6 +2318,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6157754950574419155">Remover todos do histórico</translation>
 <translation id="6157877588268064908">Para ver métodos e requisitos de envio, selecione um endereço</translation>
 <translation id="6159554577634054750">Controle de pragas</translation>
+<translation id="6160391204859821737">Ativar um recurso de privacidade de anúncios</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6167577165590485365">Última tentativa de busca:</translation>
 <translation id="6169916984152623906">Agora você pode navegar com privacidade. Outras pessoas que usarem este dispositivo não verão sua atividade, mas os downloads e favoritos serão salvos.</translation>
@@ -3374,6 +3375,7 @@ Mais detalhes:
 <translation id="8449836157089738489">Abrir tudo em um novo grupo de guias</translation>
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Ativar</translation>
 <translation id="8461694314515752532">Criptografar dados sincronizados com sua própria senha longa de sincronização</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 cartão de crédito}one{# cartão de crédito}other{# cartões de crédito}}</translation>
 <translation id="8468358362970107653">Envelope C3</translation>

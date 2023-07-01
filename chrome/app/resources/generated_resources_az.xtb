@@ -385,6 +385,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="131364520783682672">Böyük Hərf rejimi</translation>
 <translation id="1313660246522271310">Açıq tablardakılar daxil olmaqla, bütün saytlardan çıxacaqsınız</translation>
 <translation id="1313705515580255288">Əlfəcin, tarixçə və digər ayarlarınız Google Hesabınıza sinxronizasiya olunacaq.</translation>
+<translation id="1315184295353569363">Qrupu yadda saxlamayın</translation>
 <translation id="1316136264406804862">Axtarılır...</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" /> cihazına qoşulmaq alınmadı. Yenə cəhd edin.</translation>
 <translation id="1316495628809031177">Sinxronizasiya dayandırıldı</translation>
@@ -2903,6 +2904,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3429160811076349561">Sınaq funksiyaları deaktivdir</translation>
 <translation id="3429271624041785769">Veb məzmun dilləri</translation>
 <translation id="3429275422858276529">Səhifəni sonradan asanlıqla tapmaq üçün əlfəcin qoyun</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> boşaldıldı</translation>
 <translation id="3432762828853624962">Birgə İşləyənlər</translation>
 <translation id="3433507769937235446">Çıxış etdikdə kilidlənsin</translation>
 <translation id="3433621910545056227">Sistem cihaz quraşdırma vaxtının atribut kilidini yarada bilmədi.</translation>
@@ -4004,6 +4006,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4361142739114356624">Bu Klient Sertifikatı üçün olan Şəxsi Açar əskik və ya yanlışdır</translation>
 <translation id="4361745360460842907">Tab olaraq açın</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> <ph name="DEVICE_TYPE" /> cihazınızda defolt hesabdır</translation>
+<translation id="4363215264289239958">Bruschetta tətbiqləri</translation>
 <translation id="4363771538994847871">Yayım təyinatı tapılmadı. Kömək lazımdır?</translation>
 <translation id="4364327530094270451">Yemiş</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> tətbiqi pəncərə paylaşır.</translation>
@@ -5103,6 +5106,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5319359161174645648">Google, Chrome'u tövsiyə edir</translation>
 <translation id="5319712128756744240">Yeni cihaz birləşdirin</translation>
 <translation id="5320135788267874712">Yeni cihaz adı</translation>
+<translation id="5320261549977878764">Qrupu yadda saxlamayın</translation>
 <translation id="532247166573571973">Server əlçatmaz ola bilər. Sonra cəhd edin.</translation>
 <translation id="5324300749339591280">Tətbiq siyahısı</translation>
 <translation id="5324780743567488672">Məkanınızdan istifadə edərək saat qurşağını avtomatik ayarlayın</translation>

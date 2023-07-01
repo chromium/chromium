@@ -1060,6 +1060,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7531345132340165516">Site actuel</translation>
 <translation id="7537586195939242955">Impossible d'installer votre Pass dans Passbook actuellement.</translation>
 <translation id="754655535278952384">Vérifié <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Dernier onglet utilisé sur <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Pour désactiver, ouvrez <ph name="BEGIN_LINK" />Réglages<ph name="END_LINK" />, puis accédez à "Options de mots de passe".</translation>
 <translation id="7554645225856321710">Tout fermer</translation>
 <translation id="7554791636758816595">Nouvel onglet</translation>
@@ -1205,6 +1206,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8428045167754449968">Ville</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8428634594422941299">OK</translation>
+<translation id="8446201778524791138">Modifier les actions</translation>
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8458397775385147834">1 élément supprimé.</translation>
 <translation id="8459333855531264009">Non sécurisé</translation>

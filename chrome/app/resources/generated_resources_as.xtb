@@ -390,6 +390,7 @@
 <translation id="131364520783682672">কেপছ-লক</translation>
 <translation id="1313660246522271310">খোলা থকা টেবসমূহকে ধৰি আপুনি সকলো ছাইটৰ পৰা ছাইন আউট হৈ যাব</translation>
 <translation id="1313705515580255288">আপোনাৰ বুকমাৰ্ক, ব্ৰাউজিঙৰ ইতিহাস, পাছৱর্ড আৰু অন্য ছেটিংসমূহ আপোনাৰ Google একাউণ্টত ছিংক কৰা হ’ব।</translation>
+<translation id="1315184295353569363">গোট আনছেভ কৰক</translation>
 <translation id="1316136264406804862">সন্ধান কৰি থকা হৈছে…</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" />ৰ সৈতে সংযোগ কৰিব পৰা নগ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="1316495628809031177">ছিংক পজ কৰা আছে</translation>
@@ -2917,6 +2918,7 @@
 <translation id="3429160811076349561">ট্ৰায়েলৰ সুবিধা অফ আছে</translation>
 <translation id="3429271624041785769">ৱেবৰ সমলৰ ভাষা</translation>
 <translation id="3429275422858276529">পৰৱর্তী সময়ত এই পৃষ্ঠাটো সহজে বিচাৰি পাবলৈ ইয়াক বুকমার্ক কৰক</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> খালী কৰা হৈছে</translation>
 <translation id="3432762828853624962">শ্বেয়াৰ কৰা ৱৰ্কাৰ</translation>
 <translation id="3433507769937235446">এৰি গ’লে লক হোৱাৰ সুবিধা</translation>
 <translation id="3433621910545056227">আমি দুঃখিত!  ছিষ্টেমটোৱে ডিভাইচটোৰ ইনষ্টলেশ্বনৰ সময়ৰ এট্রিবিউট লক স্থাপন কৰিব নোৱাৰিলে।</translation>
@@ -4019,6 +4021,7 @@
 <translation id="4361142739114356624">এই ক্লাইণ্টৰ প্ৰমাণপত্ৰৰ ব্যক্তিগত চাবিটো নাই বা ই মান্য নহয়</translation>
 <translation id="4361745360460842907">টেব হিচাপে খোলক</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> হৈছে আপোনাৰ <ph name="DEVICE_TYPE" />ত থকা ডিফ’ল্ট একাউণ্ট</translation>
+<translation id="4363215264289239958">Bruschetta এপ্‌</translation>
 <translation id="4363771538994847871">কাষ্ট কৰিবলৈ কোনো ডিভাইচ বিচাৰি পোৱা নগ’ল। সহায়ৰ প্ৰয়োজন হৈছে নেকি?</translation>
 <translation id="4364327530094270451">মেল’ন</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" />এ এখন ৱিণ্ড' শ্বেয়াৰ কৰি আছে।</translation>
@@ -5119,6 +5122,7 @@
 <translation id="5319359161174645648">Googleএ Chrome ব্যৱহাৰৰ চুপাৰিছ কৰে</translation>
 <translation id="5319712128756744240">নতুন ডিভাইচ পেয়াৰ কৰক</translation>
 <translation id="5320135788267874712">নতুন ডিভাইচৰ নাম</translation>
+<translation id="5320261549977878764">গোট আনছেভ কৰক</translation>
 <translation id="532247166573571973">ছাৰ্ভাৰ প্ৰাপ্তব্য নহ’বও পাৰে৷ পাছত আকৌ চেষ্টা কৰক।</translation>
 <translation id="5324300749339591280">এপৰ সূচী</translation>
 <translation id="5324780743567488672">আপোনাৰ অৱস্থান ব্যৱহাৰ কৰি স্বয়ংক্ৰিয়ভাৱে সময় মণ্ডল ছেট কৰক</translation>

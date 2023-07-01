@@ -1059,6 +1059,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7531345132340165516">Aktuelt website</translation>
 <translation id="7537586195939242955">Din adgangssætning kan ikke installeres på Passbook lige nu.</translation>
 <translation id="754655535278952384">Tjek udført for <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Sidste fane er blevet brugt på <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Du kan deaktivere funktionen ved at åbne <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> og gå til Valgmuligheder for adgangskoder.</translation>
 <translation id="7554645225856321710">Luk alle</translation>
 <translation id="7554791636758816595">Ny fane</translation>
@@ -1204,6 +1205,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8428045167754449968">By</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8428634594422941299">OK</translation>
+<translation id="8446201778524791138">Rediger handlinger</translation>
 <translation id="8446884382197647889">Få flere oplysninger</translation>
 <translation id="8458397775385147834">1 bogmærke blev slettet</translation>
 <translation id="8459333855531264009">Ikke sikker</translation>

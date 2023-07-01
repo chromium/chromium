@@ -1059,6 +1059,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7531345132340165516">Site atual</translation>
 <translation id="7537586195939242955">Impossível instalar senha no livro de senhas no momento.</translation>
 <translation id="754655535278952384">Verificada <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Última guia usada no dispositivo <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Para desativar, abra <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" /> e acesse "Opções de senha".</translation>
 <translation id="7554645225856321710">Fechar todas</translation>
 <translation id="7554791636758816595">Nova guia</translation>
@@ -1204,6 +1205,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8428045167754449968">Cidade</translation>
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8428634594422941299">Entendi</translation>
+<translation id="8446201778524791138">Editar ações</translation>
 <translation id="8446884382197647889">Saiba mais</translation>
 <translation id="8458397775385147834">1 item excluído</translation>
 <translation id="8459333855531264009">Não seguro</translation>

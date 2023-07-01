@@ -1052,6 +1052,7 @@
 <translation id="7531345132340165516">Текущий сайт</translation>
 <translation id="7537586195939242955">Не удалось внести данные в Passbook.</translation>
 <translation id="754655535278952384">Проверено <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Последняя вкладка, открытая на устройстве <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Чтобы отключить автозаполнение, выберите <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" /> и перейдите в раздел "Настройки паролей".</translation>
 <translation id="7554645225856321710">Закрыть все</translation>
 <translation id="7554791636758816595">Новая вкладка</translation>
@@ -1196,6 +1197,7 @@
 <translation id="8428045167754449968">Город</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428634594422941299">ОК</translation>
+<translation id="8446201778524791138">Изменить действия</translation>
 <translation id="8446884382197647889">Подробнее...</translation>
 <translation id="8458397775385147834">Удалено закладок: 1</translation>
 <translation id="8459333855531264009">Не защищено</translation>

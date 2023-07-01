@@ -388,6 +388,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="131364520783682672">Verr. maj.</translation>
 <translation id="1313660246522271310">Vous allez être déconnecté de tous les sites, y compris dans les onglets ouverts</translation>
 <translation id="1313705515580255288">Vos favoris, votre historique et d'autres paramètres seront synchronisés avec votre compte Google.</translation>
+<translation id="1315184295353569363">Désenregistrer le groupe</translation>
 <translation id="1316136264406804862">Recherche en cours…</translation>
 <translation id="1316248800168909509">Impossible de se connecter à <ph name="DEVICE" />. Réessayez.</translation>
 <translation id="1316495628809031177">Synchronisation en pause</translation>
@@ -2905,6 +2906,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3429160811076349561">Les fonctionnalités à l'essai sont désactivées</translation>
 <translation id="3429271624041785769">Langues du contenu Web</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver facilement</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> libérés</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Verrouiller en cas d'éloignement</translation>
 <translation id="3433621910545056227">Petit problème… Le système n'a pas réussi à établir le verrouillage des attributs du temps d'installation de l'appareil.</translation>
@@ -4008,6 +4010,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4361142739114356624">La clé privée de ce certificat client est manquante ou incorrecte</translation>
 <translation id="4361745360460842907">Ouvrir dans un onglet</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> est le compte par défaut sur votre <ph name="DEVICE_TYPE" /></translation>
+<translation id="4363215264289239958">Applis Bruschetta</translation>
 <translation id="4363771538994847871">Aucune destination Cast trouvée. Besoin d'aide?</translation>
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> partage une fenêtre.</translation>
@@ -5107,6 +5110,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5319359161174645648">Google recommande Chrome</translation>
 <translation id="5319712128756744240">Associer un nouvel appareil</translation>
 <translation id="5320135788267874712">Nouveau nom de l'appareil</translation>
+<translation id="5320261549977878764">Désenregistrer le groupe</translation>
 <translation id="532247166573571973">Le serveur peut être inaccessible. Veuillez réessayer plus tard.</translation>
 <translation id="5324300749339591280">Liste d'applications</translation>
 <translation id="5324780743567488672">Définir le fuseau horaire automatiquement à l'aide de votre position</translation>

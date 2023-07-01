@@ -2318,6 +2318,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6157754950574419155">Eliminar todo del historial</translation>
 <translation id="6157877588268064908">Selecciona una dirección para ver los métodos de envío y los requisitos</translation>
 <translation id="6159554577634054750">Control de plagas</translation>
+<translation id="6160391204859821737">Activar una función de privacidad en la publicidad</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6167577165590485365">Último intento de obtención:</translation>
 <translation id="6169916984152623906">Ahora puedes navegar de forma privada; las otras personas que usen este dispositivo no verán tu actividad. No obstante, se guardarán las descargas y los marcadores.</translation>
@@ -3374,6 +3375,7 @@ Más información:
 <translation id="8449836157089738489">Abrir todas en un grupo de pestañas</translation>
 <translation id="8457125768502047971">Indefinido</translation>
 <translation id="8458202188076138974">Carta extra</translation>
+<translation id="8460854335417802511">Activar</translation>
 <translation id="8461694314515752532">Cifrar datos sincronizados con tu propia frase de contraseña de sincronización</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{Una tarjeta de crédito}other{# tarjetas de crédito}}</translation>
 <translation id="8468358362970107653">Sobre C3</translation>

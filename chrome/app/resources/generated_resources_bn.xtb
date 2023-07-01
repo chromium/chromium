@@ -390,6 +390,7 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">স্ক্রিনে খুলে রাখা ট্যাব সহ সমস্ত সাইট থেকে আপনি সাইন-আউট হয়ে যাবেন</translation>
 <translation id="1313705515580255288">আপনার বুকমার্ক, ইতিহাস এবং অন্যান্য সেটিংস আপনার Google অ্যাকাউন্টে সিঙ্ক হবে৷</translation>
+<translation id="1315184295353569363">গ্রুপ সেভ করা হয়নি</translation>
 <translation id="1316136264406804862">সার্চ করা হচ্ছে...</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" />-এর সাথে কানেক্ট করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="1316495628809031177">সিঙ্ক থামানো হয়েছে</translation>
@@ -2920,6 +2921,7 @@
 <translation id="3429160811076349561">ট্রায়াল ফিচার বন্ধ করা আছে</translation>
 <translation id="3429271624041785769">ওয়েব কন্টেন্টের ভাষা</translation>
 <translation id="3429275422858276529">এই পৃষ্ঠা পরে সহজে খুঁজে পেতে বুকমার্ক করুন</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> খালি করা হয়েছে</translation>
 <translation id="3432762828853624962">শেয়ার্ড ওয়ার্কার</translation>
 <translation id="3433507769937235446">স্ক্রিন বন্ধ করার সময় লক করা</translation>
 <translation id="3433621910545056227">ওহো! সিস্টেমটি ডিভাইস ইনস্টলেশন-সময় অ্যাট্রিবিউটস লক স্থাপন করতে ব্যর্থ হয়েছে৷</translation>
@@ -4023,6 +4025,7 @@
 <translation id="4361142739114356624">এই ক্লায়েন্ট সার্টিফিকেটের জন্য ব্যক্তিগত কী পাওয়া যাচ্ছে না বা এটি ভুল</translation>
 <translation id="4361745360460842907">ট্যাব রূপে খুলুন</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> হল আপনার <ph name="DEVICE_TYPE" />-এর ডিফল্ট অ্যাকাউন্ট।</translation>
+<translation id="4363215264289239958">Bruschetta অ্যাপ</translation>
 <translation id="4363771538994847871">কোনও Cast গন্তব্য পাওয়া যায়নি। সাহায্য প্রয়োজন?</translation>
 <translation id="4364327530094270451">ফুটি</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> একটি উইন্ডো শেয়ার করছে।</translation>
@@ -5124,6 +5127,7 @@
 <translation id="5319359161174645648">Google Chrome ব্যবহার করার সুপারিশ করে</translation>
 <translation id="5319712128756744240">নতুন ডিভাইস পেয়ার করুন</translation>
 <translation id="5320135788267874712">নতুন ডিভাইসের নাম</translation>
+<translation id="5320261549977878764">গ্রুপ সেভ করা হয়নি</translation>
 <translation id="532247166573571973">সার্ভারে সংযোগ নাও হতে পারে। পরে আবার চেষ্টা করুন।</translation>
 <translation id="5324300749339591280">অ্যাপ তালিকা</translation>
 <translation id="5324780743567488672">আপনার লোকেশন ব্যবহার করে স্বয়ংক্রিয়ভাবে সময় অঞ্চল সেট করুন</translation>

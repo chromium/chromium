@@ -391,6 +391,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="131364520783682672">Velika slova</translation>
 <translation id="1313660246522271310">Odjavit ćete se sa svih web lokacija, uključujući otvorene kartice</translation>
 <translation id="1313705515580255288">Vaše oznake, historija i druge postavke će se sinhronizirati s vašim Google računom.</translation>
+<translation id="1315184295353569363">Poništi pohranjivanje grupe</translation>
 <translation id="1316136264406804862">Pretraživanje…</translation>
 <translation id="1316248800168909509">Povezivanje s uređajem <ph name="DEVICE" /> nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="1316495628809031177">Sinhronizacija je pauzirana</translation>
@@ -2918,6 +2919,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3429160811076349561">Funkcije probnog perioda su isključene</translation>
 <translation id="3429271624041785769">Jezici web sadržaja</translation>
 <translation id="3429275422858276529">Označite ovu stranicu kako biste je kasnije lakše pronašli</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – oslobođeno: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Dijeljeni radnici</translation>
 <translation id="3433507769937235446">Zaključavanje pri odlasku</translation>
 <translation id="3433621910545056227">Ups!  Sistem nije uspio uspostaviti zaključavanje atributa za vrijeme instalacije na uređaju.</translation>
@@ -4021,6 +4023,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4361142739114356624">Pprivatni ključ za potvrdu ovog klijenta nedostaje ili je nevažeći</translation>
 <translation id="4361745360460842907">Otvori kao karticu</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> je zadani račun na vašem uređaju <ph name="DEVICE_TYPE" /></translation>
+<translation id="4363215264289239958">Aplikacije Bruschetta</translation>
 <translation id="4363771538994847871">Nije pronađeno nijedno odredište za emitiranje. Trebate pomoć?</translation>
 <translation id="4364327530094270451">Dinja</translation>
 <translation id="4364567974334641491">Aplikacija <ph name="APP_NAME" /> dijeli prozor.</translation>
@@ -5121,6 +5124,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5319359161174645648">Google preporučuje Chrome</translation>
 <translation id="5319712128756744240">Uparivanje novog uređaja</translation>
 <translation id="5320135788267874712">Novi naziv uređaja</translation>
+<translation id="5320261549977878764">Poništi pohranjivanje grupe</translation>
 <translation id="532247166573571973">Možda nije moguće doprijeti do servera. Pokušajte ponovo kasnije.</translation>
 <translation id="5324300749339591280">Lista aplikacija</translation>
 <translation id="5324780743567488672">Automatski postavi vremensku zonu pomoću moje lokacije</translation>

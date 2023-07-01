@@ -1059,6 +1059,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7531345132340165516">Jelenlegi webhely</translation>
 <translation id="7537586195939242955">Sajnos jelenleg nem lehet létrehozni a kupont a Passbookban.</translation>
 <translation id="754655535278952384">Ellenőrizve ekkor: <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Legutóbb használt lap itt: <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">A kikapcsoláshoz nyissa meg a <ph name="BEGIN_LINK" />Beállítások<ph name="END_LINK" /> menüt, és lépjen a Jelszóbeállítások ponthoz.</translation>
 <translation id="7554645225856321710">Az összes bezárása</translation>
 <translation id="7554791636758816595">Új lap</translation>
@@ -1204,6 +1205,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8428045167754449968">Város/helység</translation>
 <translation id="8428213095426709021">Beállítások</translation>
 <translation id="8428634594422941299">Értem</translation>
+<translation id="8446201778524791138">Műveletek szerkesztése</translation>
 <translation id="8446884382197647889">További információ</translation>
 <translation id="8458397775385147834">1 elem törölve</translation>
 <translation id="8459333855531264009">Nem biztonságos</translation>

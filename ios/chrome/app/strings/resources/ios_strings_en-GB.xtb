@@ -944,6 +944,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6674571176963658787">To start sync, enter your passphrase</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6684906340059221832">Tracking prices</translation>
+<translation id="6689804622901271327">Autofill payment info</translation>
 <translation id="6710079714193676716">Managed by your organisation. Some features may be unavailable. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Get your bookmarks, passwords and more on all your devices.</translation>
@@ -1000,6 +1001,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7053983685419859001">Block</translation>
 <translation id="7062545763355031412">Accept and switch accounts</translation>
 <translation id="7080806333218412752">Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats. Temporarily links this data to your Google Account when you’re signed in, to protect you across Google apps.</translation>
+<translation id="7082853213442715471">When turned on, certain web technologies are blocked, which might cause some websites to load more slowly or not operate correctly.</translation>
 <translation id="7095110968493193530">To Google Password Manager for <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Recent Tabs</translation>
 <translation id="7102005569666697658">Downloading… <ph name="FILE_SIZE" /></translation>

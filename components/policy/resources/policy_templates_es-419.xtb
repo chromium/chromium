@@ -7289,6 +7289,15 @@ El valor <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad
 <translation id="7298197471363105063">Anular los conjuntos propios</translation>
 <translation id="7302043767260300182">Demora de bloqueo de pantalla con alimentación de CA</translation>
 <translation id="7303902834678570827">Los usuarios de la sesión de invitado administrada no pueden almacenar la configuración de la pantalla de todo el dispositivo</translation>
+<translation id="7306926210354955892">Si estableces la política, se especificará la acción que debe realizarse cuando se crea el directorio de datos de ARC del usuario con virtio-fs. A menos que los datos de virtio-fs se migren a virtio-blk, es posible que las apps para Android se ejecuten más lento en la VM de ARC.
+
+      Si estableces la política como:
+
+      * <ph name="DO_NOT_PROMPT" /> significa que no se le pedirá al usuario que complete el flujo de migración. Este es el valor predeterminado cuando no se establece la política.
+
+      * <ph name="PROMPT" /> (o un valor no admitido) significa que, durante el acceso, se le pide al usuario que complete el flujo de migración de datos. Este proceso puede tardar hasta 10 minutos.
+
+      Esta política solo se aplica a los dispositivos ARM que migren a ARCVM.</translation>
 <translation id="731208205557053914">Envía información sobre los VPD</translation>
 <translation id="7313672174502374994">El hash SHA-256 de la imagen de fondo de pantalla.</translation>
 <translation id="7313681786668291607">Si estableces la política, podrás especificar el comportamiento del sistema al iniciar el navegador. Si desactivas esta configuración, equivale a no establecerla, dado que debe especificarse el comportamiento de <ph name="PRODUCT_NAME" /> al iniciarse.

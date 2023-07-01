@@ -389,6 +389,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Du blir logget av alle nettsteder, inkludert i åpne faner</translation>
 <translation id="1313705515580255288">Bokmerkene, loggen og andre innstillinger synkroniseres til Google-kontoen din.</translation>
+<translation id="1315184295353569363">Slett gruppen</translation>
 <translation id="1316136264406804862">Søker …</translation>
 <translation id="1316248800168909509">Kunne ikke koble til <ph name="DEVICE" />. Prøv på nytt.</translation>
 <translation id="1316495628809031177">Synkroniseringen er satt på pause</translation>
@@ -2914,6 +2915,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3429160811076349561">Prøvefunksjoner er avslått</translation>
 <translation id="3429271624041785769">Språk for nettinnhold</translation>
 <translation id="3429275422858276529">Sett denne siden som bokmerke for å finne den enkelt senere</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> er frigjort</translation>
 <translation id="3432762828853624962">Delte arbeidere (SharedWorker)</translation>
 <translation id="3433507769937235446">Lås når enheten forlates</translation>
 <translation id="3433621910545056227">Beklager. Systemet kunne ikke oppdage enhetens attributtlås for installasjonstid.</translation>
@@ -4015,6 +4017,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4361142739114356624">Privatnøkkelen for dette klientsertifikatet mangler eller er ugyldig</translation>
 <translation id="4361745360460842907">Åpne som fane</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> er standardkontoen på <ph name="DEVICE_TYPE" /></translation>
+<translation id="4363215264289239958">Bruschetta-apper</translation>
 <translation id="4363771538994847871">Fant ingen Cast-destinasjoner. Trenger du hjelp?</translation>
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deler et vindu.</translation>
@@ -5114,6 +5117,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
 <translation id="5319712128756744240">Koble til en ny enhet</translation>
 <translation id="5320135788267874712">Nytt enhetsnavn</translation>
+<translation id="5320261549977878764">Slett gruppen</translation>
 <translation id="532247166573571973">Det kan hende tjeneren ikke er tilgjengelig. Prøv på nytt senere.</translation>
 <translation id="5324300749339591280">App-liste</translation>
 <translation id="5324780743567488672">Angi tidssonen automatisk ved hjelp av posisjonen din</translation>

@@ -389,6 +389,7 @@
 <translation id="131364520783682672">Үсгийн хэмжээг түгжин тогтоох</translation>
 <translation id="1313660246522271310">Таныг бүх сайтаас гаргах бөгөөд үүнд нээлттэй табын сайтууд мөн багтана</translation>
 <translation id="1313705515580255288">Таны хайлтын жагсаалт, түүх болон бусад тохиргоонуудыг таны Google Account руу шууд sync хийнэ.</translation>
+<translation id="1315184295353569363">Бүлгийг хадгалахаа болих</translation>
 <translation id="1316136264406804862">Хайж байна...</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" />-д холбогдож чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="1316495628809031177">Синк хийхийг түр зогсоосон</translation>
@@ -2915,6 +2916,7 @@
 <translation id="3429160811076349561">Туршилтын онцлог унтраалттай байна</translation>
 <translation id="3429271624041785769">Веб контентын хэлнүүд</translation>
 <translation id="3429275422858276529">Энэ хуудсыг дараа хялбар олохын тулд тэмдэглэнэ үү</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" />-г сулласан</translation>
 <translation id="3432762828853624962">Хуваалцсан ажилчид</translation>
 <translation id="3433507769937235446">Гарах үед түгжих</translation>
 <translation id="3433621910545056227">Анхаарна уу! Систем төхөөрөмжийг суурьлуулж чадахгүй байна.</translation>
@@ -4017,6 +4019,7 @@
 <translation id="4361142739114356624">Энэ үйлчлүүлэгчийн сертификатын хувийн түлхүүр байхгүй эсвэл хүчингүй байна</translation>
 <translation id="4361745360460842907">Таб хэлбэрээр нээх</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> нь таны <ph name="DEVICE_TYPE" />-н үндсэн бүртгэл юм</translation>
+<translation id="4363215264289239958">Bruschetta аппууд</translation>
 <translation id="4363771538994847871">Дамжуулах байршил олдсонгүй. Тусламж хэрэгтэй юу?</translation>
 <translation id="4364327530094270451">Амтат гуа</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> цонх хуваалцаж байна.</translation>
@@ -5117,6 +5120,7 @@
 <translation id="5319359161174645648">Google нь Chrome-г санал болгож байна</translation>
 <translation id="5319712128756744240">Шинэ төхөөрөмж хослуулах</translation>
 <translation id="5320135788267874712">Шинэ төхөөрөмжийн нэр</translation>
+<translation id="5320261549977878764">Бүлгийг хадгалахаа болих</translation>
 <translation id="532247166573571973">Энэ серверт холбогдох боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="5324300749339591280">Аппын жагсаалт</translation>
 <translation id="5324780743567488672">Таны байршлын мэдээллийг ашиглан цагийн бүсийг автоматаар тохируулах</translation>

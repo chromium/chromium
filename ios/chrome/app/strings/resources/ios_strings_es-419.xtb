@@ -1059,6 +1059,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7531345132340165516">Sitio actual</translation>
 <translation id="7537586195939242955">Tu pase no se puede instalar en Passbook en este momento.</translation>
 <translation id="754655535278952384">Se revisó <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Última pestaña utilizada en tu <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Para desactivar esta opción, abre <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /> y ve a Opciones de contraseña.</translation>
 <translation id="7554645225856321710">Cerrar todas</translation>
 <translation id="7554791636758816595">Nueva pestaña</translation>
@@ -1204,6 +1205,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8428045167754449968">Ciudad/pueblo</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428634594422941299">Entendido</translation>
+<translation id="8446201778524791138">Editar acciones</translation>
 <translation id="8446884382197647889">Más información</translation>
 <translation id="8458397775385147834">1 elemento eliminado</translation>
 <translation id="8459333855531264009">No seguro</translation>

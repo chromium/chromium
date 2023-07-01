@@ -7153,6 +7153,15 @@ Kaynakları eşleşen kalıplar, https://support.google.com/chrome/a?p=url_block
 <translation id="7298197471363105063">First-Party Sets özelliğini geçersiz kıl.</translation>
 <translation id="7302043767260300182">AC güçle çalışırken ekran kilidi gecikmesi</translation>
 <translation id="7303902834678570827">Yönetilen Misafir Oturumu kullanıcıları, cihaz genelindeki görüntü ayarlarını saklayamazlar.</translation>
+<translation id="7306926210354955892">Politikanın ayarlanması, kullanıcının ARC veri dizini virtio-fs ile oluşturulduğunda gerçekleştirilecek işlemi belirtir. virtio-fs verileri virtio-blk'ye taşınmadığı sürece Android uygulamaları, ARC sanal makinesinde daha yavaş çalışabilir.
+
+      Politika:
+
+      *<ph name="DO_NOT_PROMPT" /> değerine ayarlanırsa kullanıcıdan taşıma işlemini gerçekleştirmesi istenmez. Politika ayarlanmadan bırakılırsa varsayılan olarak bu değer kullanılır.
+
+      *<ph name="PROMPT" /> değerine (veya desteklenmeyen bir değere) ayarlanırsa oturum açma sırasında kullanıcıdan veri taşıma işlemini gerçekleştirmesi istenir. Bu işlem 10 dakika kadar sürebilir.
+
+      Bu politika yalnızca ARC sanal makinesine (ARCVM) taşınan ARM cihazları için geçerlidir.</translation>
 <translation id="731208205557053914">VPD bilgilerini raporla</translation>
 <translation id="7313672174502374994">Duvar kağıdı resminin SHA-256 karması.</translation>
 <translation id="7313681786668291607">Politikayı ayarlamak, başlangıçta sistem davranışını belirtmenize olanak tanır. <ph name="PRODUCT_NAME" /> ürününün, başlangıç davranışını belirtmesi gerektiğinden bu ayarı kapatmak, politikanın ayarlanmadan bırakılması anlamına gelir.

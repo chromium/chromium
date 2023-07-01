@@ -1046,6 +1046,7 @@
 <translation id="7531345132340165516">当前网站</translation>
 <translation id="7537586195939242955">抱歉，目前无法将您的票证添加到 Passbook。</translation>
 <translation id="754655535278952384">上次检查时间：<ph name="TIME" /></translation>
+<translation id="7552154146060018538">在 <ph name="SOURCE_DEVICE" /> 上使用的最后一个标签页</translation>
 <translation id="7553234618121028547">如需关闭此功能，请打开<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />，然后进入“密码选项”部分。</translation>
 <translation id="7554645225856321710">全部关闭</translation>
 <translation id="7554791636758816595">新标签页</translation>
@@ -1190,6 +1191,7 @@
 <translation id="8428045167754449968">市/镇</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8428634594422941299">知道了</translation>
+<translation id="8446201778524791138">修改操作</translation>
 <translation id="8446884382197647889">了解详情</translation>
 <translation id="8458397775385147834">删除了1项</translation>
 <translation id="8459333855531264009">不安全</translation>

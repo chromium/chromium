@@ -7083,6 +7083,15 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 <translation id="7298197471363105063">Ignorer les ensembles propriétaires.</translation>
 <translation id="7302043767260300182">Délai de verrouillage de l'écran (secteur)</translation>
 <translation id="7303902834678570827">Les utilisateurs d'une session Invité gérée ne peuvent pas stocker les paramètres d'affichage au niveau de l'appareil</translation>
+<translation id="7306926210354955892">Cette règle permet de spécifier l'action à effectuer lorsque le répertoire de données ARC de l'utilisateur a été créé avec virtio-fs. À moins que les données virtio-fs ne soient migrées vers virtio-blk, les applications Android peuvent s'exécuter plus lentement sur ARCVM.
+
+      La règle peut être définie comme suit :
+
+      * <ph name="DO_NOT_PROMPT" />, auquel cas l'utilisateur n'est pas invité à passer par le flux de migration. Il s'agit de la valeur par défaut lorsque la règle n'est pas configurée.
+
+      * <ph name="PROMPT" /> (ou une valeur non acceptée), auquel cas l'utilisateur est invité à suivre le processus de migration des données lorsqu'il se connecte. Cette opération peut prendre jusqu'à 10 minutes.
+
+      Cette règle ne s'applique qu'aux appareils ARM migrant vers ARCVM.</translation>
 <translation id="731208205557053914">Transmettre des informations sur les données VPD</translation>
 <translation id="7313672174502374994">Hachage SHA-256 du fond d'écran.</translation>
 <translation id="7313681786668291607">Cette règle permet de définir le comportement du système au démarrage. La désactiver revient à ne pas la configurer, alors que le comportement au démarrage de <ph name="PRODUCT_NAME" /> doit impérativement être spécifié.

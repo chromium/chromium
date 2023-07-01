@@ -387,6 +387,7 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">您将会自动退出所有网站（包括已打开的标签页中的网站）</translation>
 <translation id="1313705515580255288">系统会将您的书签、浏览记录和其他设置同步到您的Google帐号。</translation>
+<translation id="1315184295353569363">取消保存组</translation>
 <translation id="1316136264406804862">正在搜索...</translation>
 <translation id="1316248800168909509">无法连接到<ph name="DEVICE" />。请重试。</translation>
 <translation id="1316495628809031177">同步已暂停</translation>
@@ -2893,6 +2894,7 @@
 <translation id="3429160811076349561">试用版功能已关闭</translation>
 <translation id="3429271624041785769">网页内容语言</translation>
 <translation id="3429275422858276529">为此网页添加书签，以便日后查找</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - 已释放 <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">离开时锁定</translation>
 <translation id="3433621910545056227">糟糕！系统无法建立设备安装时间属性锁定。</translation>
@@ -3993,6 +3995,7 @@
 <translation id="4361142739114356624">缺少此客户端证书的私钥，或私钥无效</translation>
 <translation id="4361745360460842907">作为标签页打开</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> 是您 <ph name="DEVICE_TYPE" /> 上的默认帐号</translation>
+<translation id="4363215264289239958">Bruschetta 应用</translation>
 <translation id="4363771538994847871">找不到投放目标。需要帮助吗？</translation>
 <translation id="4364327530094270451">甜瓜</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共享窗口。</translation>
@@ -5089,6 +5092,7 @@
 <translation id="5319359161174645648">Google 推荐使用 Chrome</translation>
 <translation id="5319712128756744240">为新设备配对</translation>
 <translation id="5320135788267874712">新的设备名称</translation>
+<translation id="5320261549977878764">取消保存组</translation>
 <translation id="532247166573571973">可能无法连接到服务器，请稍后重试。</translation>
 <translation id="5324300749339591280">应用列表</translation>
 <translation id="5324780743567488672">使用您的位置信息自动设置时区</translation>

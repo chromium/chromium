@@ -389,6 +389,7 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">திறந்துள்ள தாவல்கள் உட்பட அனைத்துத் தளங்களிலிருந்தும் வெளியேற்றப்படுவீர்கள்</translation>
 <translation id="1313705515580255288">உங்கள் புத்தகக்குறிகள், வரலாறு மற்றும் பிற அமைப்புகள் ஆகியவை உங்கள் Google கணக்கில் ஒத்திசைக்கப்படும்.</translation>
+<translation id="1315184295353569363">சேமித்த குழுவை அகற்று</translation>
 <translation id="1316136264406804862">தேடுகிறது...</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" /> உடன் இணைக்க முடியவில்லை. மீண்டும் முயலவும்.</translation>
 <translation id="1316495628809031177">ஒத்திசைவு இடைநிறுத்தப்பட்டது</translation>
@@ -2919,6 +2920,7 @@
 <translation id="3429160811076349561">சோதனையிலுள்ள அம்சங்கள் முடக்கப்பட்டுள்ளன</translation>
 <translation id="3429271624041785769">இணைய உள்ளடக்கத்திற்கான மொழிகள்</translation>
 <translation id="3429275422858276529">இந்தப் பக்கத்தைப் பிறகு எளிதாகக் கண்டறிய, புத்தகக்குறியிடவும்</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> காலியாக்கப்பட்டது</translation>
 <translation id="3432762828853624962">ஷேர்டு வொர்க்கர்ஸ்</translation>
 <translation id="3433507769937235446">விலகிச் சென்றால் லாக் செய்</translation>
 <translation id="3433621910545056227">அச்சச்சோ!  சாதன நிறுவல்-நேர பண்புக்கூறுகளைப் பூட்டுவதில் முறைமை தோல்வியடைந்தது.</translation>
@@ -4022,6 +4024,7 @@
 <translation id="4361142739114356624">இந்தக் கிளையண்ட் சான்றிதழுக்கான தனிப்பட்ட குறியீடு இல்லை அல்லது தவறானது</translation>
 <translation id="4361745360460842907">தாவலாகத் திற</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் இருக்கும் இயல்புக் கணக்காகும்</translation>
+<translation id="4363215264289239958">Bruschetta ஆப்ஸ்</translation>
 <translation id="4363771538994847871">எங்கே அலைபரப்புவது என்று கண்டறிய முடியவில்லை. உதவி வேண்டுமா?</translation>
 <translation id="4364327530094270451">முலாம்பழம்</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> சாளரத்தைப் பகிர்கிறது.</translation>
@@ -5122,6 +5125,7 @@
 <translation id="5319359161174645648">Google ஆனது Chromeஐப் பரிந்துரைக்கிறது</translation>
 <translation id="5319712128756744240">புதிய சாதனத்துடன் இணை</translation>
 <translation id="5320135788267874712">புதிய சாதனத்தின் பெயர்</translation>
+<translation id="5320261549977878764">சேமித்த குழுவை அகற்று</translation>
 <translation id="532247166573571973">சேவையகத்தைத் தொடர்புகொள்ள முடியாதிருக்கலாம். மீண்டும் முயலவும்.</translation>
 <translation id="5324300749339591280">ஆப்ஸ் பட்டியல்</translation>
 <translation id="5324780743567488672">எனது இருப்பிடத்தைப் பயன்படுத்தி, தானாகவே நேர மண்டலத்தை அமை</translation>

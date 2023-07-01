@@ -3907,7 +3907,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
 De pagina 'Nieuw tabblad' wordt geopend als er nieuwe tabbladen en vensters worden geopend.
 
-Met dit beleid bepaal je niet welke pagina's worden geopend als de browser wordt opgestart. Deze pagina's worden beheerd door het beleid <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Dit beleid is wel van invloed op de homepage als hiervoor is ingesteld dat de pagina 'Nieuw tabblad' moet worden geopend, maar ook op de startpagina als deze is ingesteld op de pagina 'Nieuw tabblad'.
+Met dit beleid bepaal je niet welke pagina's worden geopend als de browser wordt opgestart. Deze pagina's worden beheerd door het beleid <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Dit beleid is wel van invloed op de homepage als hiervoor is ingesteld dat de pagina 'Nieuw tabblad' moet worden geopend, maar ook op de homepage als deze is ingesteld op de pagina 'Nieuw tabblad'.
 
 Het is verstandig om de volledige canonieke URL op te geven. Als de URL niet volledig canoniek is, gebruikt <ph name="PRODUCT_NAME" /> standaard https://.
 
@@ -7051,6 +7051,15 @@ De <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> geeft de minimale hoevee
 <translation id="7298197471363105063">First-Party Sets overschrijven.</translation>
 <translation id="7302043767260300182">Vertraging van schermvergrendeling wanneer op netstroom wordt gewerkt</translation>
 <translation id="7303902834678570827">Gebruikers van beheerde gastsessies kunnen geen weergave-eigenschappen voor het hele apparaat opslaan</translation>
+<translation id="7306926210354955892">Als je het beleid instelt, geef je de actie op die moet worden uitgevoerd als de ARC-gegevensdirectory van de gebruiker is gemaakt met virtio-fs. Tenzij virtio-fs-gegevens worden gemigreerd naar virtio-blk, worden Android-apps misschien langzamer uitgevoerd op ARC VM.
+
+      Als je het beleid instelt op:
+
+* <ph name="DO_NOT_PROMPT" />, dan wordt de gebruiker niet gevraagd om het migratieproces te doorlopen. Dit is de standaardwaarde als het beleid niet is ingesteld.
+
+      * <ph name="PROMPT" /> (of een niet-ondersteunde waarde), dan wordt de gebruiker bij het inloggen gevraagd het proces voor gegevensmigratie te doorlopen. Dit kan tot 10 minuten duren.
+
+      Dit beleid geldt alleen voor ARM-apparaten die naar ARC VM worden gemigreerd.</translation>
 <translation id="731208205557053914">VPD-gegevens rapporteren</translation>
 <translation id="7313672174502374994">De SHA-256-hash van de achtergrondafbeelding.</translation>
 <translation id="7313681786668291607">Als je dit beleid instelt, kun je opgeven hoe het systeem moet reageren als de browser wordt opgestart. Als je deze instelling uitzet, heeft dit hetzelfde effect als wanneer je het beleid niet instelt, omdat het opstartgedrag van <ph name="PRODUCT_NAME" /> moet zijn opgegeven.

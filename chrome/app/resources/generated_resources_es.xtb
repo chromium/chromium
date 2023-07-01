@@ -387,6 +387,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="131364520783682672">Bloq Mayús</translation>
 <translation id="1313660246522271310">Se cerrarán tus sesiones en todos los sitios, incluidas las que estén en pestañas abiertas</translation>
 <translation id="1313705515580255288">Tus marcadores, tu historial y otras opciones se sincronizarán con tu cuenta de Google.</translation>
+<translation id="1315184295353569363">Dejar de guardar grupo</translation>
 <translation id="1316136264406804862">Buscando...</translation>
 <translation id="1316248800168909509">No se ha podido conectar a <ph name="DEVICE" />. Inténtalo de nuevo.</translation>
 <translation id="1316495628809031177">La sincronización está en pausa</translation>
@@ -2905,6 +2906,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3429160811076349561">Las funciones de prueba están desactivadas.</translation>
 <translation id="3429271624041785769">Idiomas del contenido web</translation>
 <translation id="3429275422858276529">Añade esta página a marcadores para encontrarla fácilmente en otro momento</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - Memoria liberada: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Bloqueo en ausencia</translation>
 <translation id="3433621910545056227">¡Vaya! El sistema no ha podido establecer el bloqueo de atributos del tiempo de instalación del dispositivo.</translation>
@@ -4007,6 +4009,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4361142739114356624">Falta la clave privada de este certificado de cliente o no es válida</translation>
 <translation id="4361745360460842907">Abrir como pestaña</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> es la cuenta predeterminada de tu <ph name="DEVICE_TYPE" /></translation>
+<translation id="4363215264289239958">Aplicaciones de Bruschetta</translation>
 <translation id="4363771538994847871">No se han encontrado destinos para enviar contenido. ¿Necesitas ayuda?</translation>
 <translation id="4364327530094270451">Melón</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> está compartiendo una ventana.</translation>
@@ -5106,6 +5109,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5319359161174645648">Google recomienda Chrome</translation>
 <translation id="5319712128756744240">Emparejar nuevo dispositivo</translation>
 <translation id="5320135788267874712">Nuevo nombre del dispositivo</translation>
+<translation id="5320261549977878764">Dejar de guardar grupo</translation>
 <translation id="532247166573571973">Es posible que no se pueda acceder al servidor. Vuelve a intentarlo más tarde.</translation>
 <translation id="5324300749339591280">Lista de aplicaciones</translation>
 <translation id="5324780743567488672">Establecer la zona horaria de forma automática según tu ubicación</translation>

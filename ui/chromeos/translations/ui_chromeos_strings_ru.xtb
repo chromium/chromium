@@ -567,6 +567,7 @@
 <translation id="5422221874247253874">Точка доступа</translation>
 <translation id="5428105026674456456">Испанский</translation>
 <translation id="5438282218546237410">По запросу "<ph name="SEARCH_TERM" />" ничего не найдено.</translation>
+<translation id="5447680084201416734">Недостаточно свободного места.</translation>
 <translation id="5449551289610225147">Неправильный пароль</translation>
 <translation id="5459064203055649751">Файл "<ph name="FILENAME" />" уже существует. Заменить его?</translation>
 <translation id="5463231940765244860">Ввод</translation>
@@ -695,6 +696,7 @@
 <translation id="6423031066725912715">Вьетнамский, раскладка TCVN</translation>
 <translation id="6430271654280079150">Осталась одна попытка.</translation>
 <translation id="643243556292470964">Удаленные файлы теперь перемещаются в корзину</translation>
+<translation id="6438480100790416671">Проверка хранилища…</translation>
 <translation id="6485131920355264772">Не удалось получить информацию о свободном месте.</translation>
 <translation id="6495925982925244349">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, под управлением администратора, подробная информация</translation>
 <translation id="649877868557234318">Извлечение <ph name="FILE_NAME" /> в папку "<ph name="FOLDER_NAME" />"…</translation>
@@ -898,6 +900,7 @@
 <translation id="8000066093800657092">Нет сети</translation>
 <translation id="8008366997883261463">Собака</translation>
 <translation id="8028993641010258682">Размер</translation>
+<translation id="8034974485549318493">Для первоначальной настройки необходимо подключиться к интернету, чтобы синхронизировать файлы.</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038111231936746805">(по умолчанию)</translation>
 <translation id="8042602468072383151">Аудиофайл <ph name="AUDIO_TYPE" /></translation>

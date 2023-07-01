@@ -390,6 +390,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Masa-sign out ka sa lahat ng site, pati na rin sa mga nakabukas na tab</translation>
 <translation id="1313705515580255288">Isi-sync ang iyong mga bookmark, kasaysayan, at iba pang mga setting sa iyong Google Account.</translation>
+<translation id="1315184295353569363">I-unsave ang Grupo</translation>
 <translation id="1316136264406804862">Naghahanap...</translation>
 <translation id="1316248800168909509">Hindi makakonekta sa <ph name="DEVICE" />. Subukan ulit.</translation>
 <translation id="1316495628809031177">Naka-pause ang pag-sync</translation>
@@ -2920,6 +2921,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3429160811076349561">Naka-off ang mga feature ng trial</translation>
 <translation id="3429271624041785769">Mga wika ng content sa web</translation>
 <translation id="3429275422858276529">I-bookmark ang page na ito upang madali itong mahanap sa ibang pagkakaton</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> ang nabakante</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Lock-on-leave</translation>
 <translation id="3433621910545056227">Naku! Nabigo ang system na itatag ang lock sa mga katangian sa oras ng pag-install.</translation>
@@ -4023,6 +4025,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4361142739114356624">Nawawala o di-wasto ang Pribadong Key para sa Client Certificate na ito</translation>
 <translation id="4361745360460842907">Buksan bilang tab</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> ang default na account sa iyong <ph name="DEVICE_TYPE" /></translation>
+<translation id="4363215264289239958">Mga Bruschetta app</translation>
 <translation id="4363771538994847871">Walang nakitang mga patutunguhan ng Pag-cast. Kailangan mo ba ng tulong?</translation>
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364567974334641491">Nagbabahagi ng window ang <ph name="APP_NAME" />.</translation>
@@ -5123,6 +5126,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5319359161174645648">Inirerekomenda ng Google ang Chrome</translation>
 <translation id="5319712128756744240">Magpares ng bagong device</translation>
 <translation id="5320135788267874712">Bagong pangalan ng device</translation>
+<translation id="5320261549977878764">I-unsave ang grupo</translation>
 <translation id="532247166573571973">Maaaring hindi makakonekta sa server. Subukang muli sa ibang pagkakataon.</translation>
 <translation id="5324300749339591280">Listahan ng mga app</translation>
 <translation id="5324780743567488672">Awtomatikong itakda ang time zone gamit ang iyong lokasyon</translation>

@@ -387,6 +387,7 @@
 <translation id="131364520783682672">କ୍ୟାପ୍ସ ଲକ୍‌</translation>
 <translation id="1313660246522271310">ଖୋଲାଥିବା ଟାବଗୁଡ଼ିକ ସମେତ, ଆପଣ ସମସ୍ତ ସାଇଟରୁ ସାଇନ୍ ଆଉଟ୍ ହୋଇଯିବେ</translation>
 <translation id="1313705515580255288">ଆପଣଙ୍କର ବୁକ୍‍ମାର୍କ, ଇତିବୃତ୍ତି, ପାସ୍‍ୱର୍ଡ ଏବଂ ଅନ୍ୟାନ୍ୟ ସେଟିଂସ୍‌ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସିଙ୍କ୍ କରିଦିଆଯିବ।</translation>
+<translation id="1315184295353569363">ଗୋଷ୍ଠୀକୁ ଅନସେଭ କରନ୍ତୁ</translation>
 <translation id="1316136264406804862">ସନ୍ଧାନ କରୁଛି…</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" /> ସହ ସଂଯୋଗ କରାଯାଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1316495628809031177">ସିଙ୍କ୍‌ ବିରତ ଅଛି</translation>
@@ -2897,6 +2898,7 @@
 <translation id="3429160811076349561">ଟ୍ରାଏଲ୍ ଫିଚରଗୁଡ଼ିକ ବନ୍ଦ ଅଛି</translation>
 <translation id="3429271624041785769">ୱେବ୍ ବିଷୟବସ୍ତୁ ଭାଷାଗୁଡ଼ିକ</translation>
 <translation id="3429275422858276529">ଏହାକୁ ପରେ ସହଜରେ ଖୋଜିବା ପାଇଁ ଏହି ପୃଷ୍ଠାକୁ ବୁକ୍‌ମାର୍କ କରନ୍ତୁ</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> ଖାଲି କରାଯାଇଛି</translation>
 <translation id="3432762828853624962">ସେୟାର୍ କରାଯାଇଥିବା କର୍ମୀ</translation>
 <translation id="3433507769937235446">ଲକ-ଅନ-ଲିଭ</translation>
 <translation id="3433621910545056227">ଓହୋ!  ସିଷ୍ଟମ୍‌, ଡିଭାଇସ୍‌ ଇନ୍‌ଷ୍ଟଲେସନ୍-ସମୟ ବୈଶିଷ୍ଟ୍ୟ ଲକ୍‌ ସ୍ଥାପନା କରିବାରେ ବିଫଳ ହୋଇଛି।</translation>
@@ -3996,6 +3998,7 @@
 <translation id="4361142739114356624">କ୍ଲାଏଣ୍ଟ ସାର୍ଟିଫିକେଟ୍‍ ପାଇଁ ବ୍ୟକ୍ତିଗତ କୀ ନାହିଁ କିମ୍ୱା ଅବୈଧ ଅଟେ</translation>
 <translation id="4361745360460842907">ଟାବ୍ ଭାବେ ଖୋଲନ୍ତୁ</translation>
 <translation id="4362675504017386626">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ <ph name="ACCOUNT_EMAIL" /> ଡିଫଲ୍ଟ ଆକାଉଣ୍ଟ ଅଟେ</translation>
+<translation id="4363215264289239958">Bruschetta ଆପ୍ସ</translation>
 <translation id="4363771538994847871">କୌଣସି କାଷ୍ଟ ଗନ୍ତବ୍ୟସ୍ଥଳ ମିଳିଲା ନାହିଁ। ସାହାଯ୍ୟ ଆବଶ୍ୟକ କରୁଛନ୍ତି କି?</translation>
 <translation id="4364327530094270451">ମେଲୋନ୍</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ଏକ ୱିଣ୍ଡୋ ସେୟାର୍ କରୁଛି।</translation>
@@ -5095,6 +5098,7 @@
 <translation id="5319359161174645648">Google Chromeକୁ ସୁପାରିଶ କରୁଛି</translation>
 <translation id="5319712128756744240">ନୂଆ ଡିଭାଇସକୁ ପେୟାର କରନ୍ତୁ</translation>
 <translation id="5320135788267874712">ନୂଆ ଡିଭାଇସର ନାମ</translation>
+<translation id="5320261549977878764">ଗୋଷ୍ଠୀକୁ ଅନସେଭ କରନ୍ତୁ</translation>
 <translation id="532247166573571973">ସର୍ଭର୍ ହୁଏତ ପହଞ୍ଚଯୋଗ୍ୟ ନୁହେଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="5324300749339591280">ଆପଗୁଡ଼ିକର ତାଲିକା</translation>
 <translation id="5324780743567488672">ଆପଣଙ୍କର ଲୋକେସନ୍‌ ବ୍ୟବହାର କରି ସ୍ୱଚାଳିତ ଭାବେ ସମୟ କ୍ଷେତ୍ର ସେଟ୍‌ କରନ୍ତୁ</translation>

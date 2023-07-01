@@ -311,6 +311,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1244265436519979884">Linux restore currently in progress</translation>
 <translation id="1244303850296295656">Extension error</translation>
 <translation id="1244917379075403655">Click 'Settings'.</translation>
+<translation id="1245331638296910488">Files will move to OneDrive when opening in Microsoft 365</translation>
 <translation id="1245628370644070008">Local data recovery</translation>
 <translation id="1246863218384630739">Couldn't install <ph name="VM_NAME" />: Image URL returned a <ph name="HTTP_ERROR" /> error code. Please contact your administrator.</translation>
 <translation id="1247372569136754018">Microphone (internal)</translation>
@@ -672,6 +673,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1552301827267621511">The '<ph name="EXTENSION_NAME" />' extension changed search to use <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Manage extension</translation>
 <translation id="1553538517812678578">unlimited</translation>
+<translation id="1553947773881524342"><ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /> about Microsoft 365 on your Chromebook.</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="1556127816860282890">Background activity and some visual effects, like smooth scrolling, may be limited</translation>
 <translation id="1556537182262721003">Could not move extension directory into profile.</translation>
@@ -1129,6 +1131,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1904580727789512086">The URLs that you visit are saved to your Google Account</translation>
 <translation id="1905375423839394163">Chromebook device name</translation>
 <translation id="1906181697255754968">Sites usually access files and folders on your device for features like automatically saving your work</translation>
+<translation id="1906488504371069394">Discover more extensions and themes on the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Type with your voice. Use Search + D, then start speaking.</translation>
 <translation id="1908591798274282246">Reopen Closed Group</translation>
 <translation id="1909880997794698664">Are you sure you want to permanently keep this device in kiosk mode?</translation>
@@ -1943,6 +1946,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2561211427862644160">See all your bookmarks here</translation>
 <translation id="2564520396658920462">Executing JavaScript through AppleScript is turned off. To turn it on, from the menu bar, go to View &gt; Developer &gt; Allow JavaScript from Apple Events. For more information: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Enhanced spell check</translation>
+<translation id="2565214867520763227">Turn on screen reader</translation>
 <translation id="2568694057933302218">While in Incognito, sites can't use your cookies to see your browsing activity across sites. Your browsing activity isn't used for things like personalising ads. Features on some sites may not work.</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
 <translation id="2569972178052279830">Retailer name</translation>
@@ -2575,6 +2579,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3089948625237571254">Copy video frame</translation>
 <translation id="3090227230165225418">Announce download notifications</translation>
 <translation id="3090589793601454425">Don't move</translation>
+<translation id="309079592386854321">Make sure that your printer is connected to the same Wi-Fi network as your Chromebook or use a USB cable. <ph name="LINK_BEGIN" />Learn more about compatibility<ph name="LINK_END" />.</translation>
 <translation id="3090819949319990166">Can't copy external crx file to <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" paired</translation>
 <translation id="3093714882666365141">Don't allow sites to install payment handlers</translation>
@@ -4089,6 +4094,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4410545552906060960">Use a number (PIN) instead of a password to unlock your device. To set your PIN later, go to Settings.</translation>
 <translation id="4411578466613447185">Code Signer</translation>
 <translation id="4411719918614785832">These passkeys are saved to Windows Hello on this computer. They aren't saved to your Google Account.</translation>
+<translation id="4412275763838812196">The screen reader on ChromeOS, ChromeVox, is primarily used by blind people and people with low vision. Press the space bar to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.</translation>
 <translation id="4412632005703201014">Chrome apps are migrating to progressive web apps. This Chrome app was installed on your browser by your organisation. To open the progressive web app from the Apps list, first contact your administrator and ask them to uninstall the Chrome app. In the meantime, you can visit <ph name="EXTENSION_LAUNCH_URL" /> to open <ph name="EXTENSION_NAME" /> on the web.</translation>
 <translation id="4412698727486357573">Help Centre</translation>
 <translation id="4412992751769744546">Allow third-party cookies</translation>
@@ -4301,6 +4307,7 @@ Device signals can include information about your browser, OS, device, installed
 <translation id="4585793705637313973">Edit page</translation>
 <translation id="4586275095964870617"><ph name="URL" /> could not be open in an alternative browser. Please contact your system administrator.</translation>
 <translation id="4587589328781138893">Sites</translation>
+<translation id="4588882777927162244">The screen reader on ChromeOS Flex, ChromeVox, is primarily used by blind people and people with low vision. Press the space bar to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.</translation>
 <translation id="4589713469967853491">Logs successfully written to downloads directory.</translation>
 <translation id="459204634473266369">No devices saved to <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">Browsing and searching is faster.</translation>
@@ -5084,6 +5091,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5284445933715251131">Continue Downloading</translation>
 <translation id="5285635972691565180">Display <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Scanning</translation>
+<translation id="5287073652040102781">The screen reader on ChromeOS Flex, ChromeVox, is primarily used by blind people and people with low vision. Press and hold both volume keys for five seconds to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.</translation>
 <translation id="5287425679749926365">Your accounts</translation>
 <translation id="5288106344236929384">More actions, passkey options for <ph name="USERNAME" /> on <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">R&amp;eopen Closed Tab</translation>
@@ -5632,6 +5640,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> allows you to run Windows® apps on your Chromebook. <ph name="MINIMUM_SPACE" /> of free space is recommended for installation.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{You can wait for it to become responsive or exit the page.}other{You can wait for them to become responsive or exit the pages.}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" /> more details</translation>
+<translation id="577313026359983030">My extensions</translation>
 <translation id="5774295353725270860">Open Files app</translation>
 <translation id="5776450228446082914">The list of websites that can open in either browser.</translation>
 <translation id="5776571780337000608">You can open and edit supported files with this app from your file browser or other apps. To control which files open this app by default, <ph name="BEGIN_LINK" />learn how to set default apps on your device<ph name="END_LINK" />.</translation>
@@ -6834,6 +6843,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6798780071646309401">caps lock on</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">General settings</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Choose if this extension can read or change this site}other{Choose if these extensions can read or change this site}}</translation>
 <translation id="6801435275744557998">Calibrate touchscreen</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">VM '<ph name="DEFAULT_VM_NAME" />' exists</translation>
@@ -8040,6 +8050,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7800518121066352902">Rotate A&amp;nti-clockwise</translation>
 <translation id="7801679634091975683">Changes that you make here apply only to Lacros Chrome Browser. To make changes to your Chrome Browser settings, open Chrome Browser and go to settings.</translation>
 <translation id="780301667611848630">No, thanks</translation>
+<translation id="7803267169006795990">The screen reader on ChromeOS, ChromeVox, is primarily used by blind people and people with low vision. Press and hold both volume keys for five seconds to turn on ChromeVox. When ChromeVox is activated, you’ll go through a quick tour.</translation>
 <translation id="7803657407897251194">To continue setup with your Android device, connect your <ph name="DEVICE_TYPE" /> to a network</translation>
 <translation id="7804072833593604762">Tab closed</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -9589,6 +9600,7 @@ You can send it to Google Safe Browsing to check if it's unsafe. Scans usually t
 <translation id="9108808586816295166">Secure DNS may not be available all the time</translation>
 <translation id="9109122242323516435">To free up space, delete files from device storage.</translation>
 <translation id="9109283579179481106">Connect to mobile network</translation>
+<translation id="9110739391922513676">Set up Microsoft 365 to open files</translation>
 <translation id="9111102763498581341">Unlock</translation>
 <translation id="9111305600911828693">Licence is not set up</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9711,6 +9723,7 @@ You can send it to Google Safe Browsing to check if it's unsafe. Scans usually t
 <translation id="9220820413868316583">Lift then try again.</translation>
 <translation id="922152298093051471">Customise Chrome</translation>
 <translation id="923467487918828349">Show all</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{To manage it, open Extensions}other{To manage them, open Extensions}}</translation>
 <translation id="924818813611903184">Manage languages in Chrome OS settings</translation>
 <translation id="925270020047573546">Casting desktop audio is not supported on this device.</translation>
 <translation id="930268624053534560">Detailed Timestamps</translation>

@@ -297,6 +297,7 @@
 <translation id="2643064289437760082">የአሰሳ ውሂብዎን በመሰረዝ የማስታወቂያ ልኬት ውሂብን ሁልጊዜ መሰረዝ ይችላሉ</translation>
 <translation id="2647434099613338025">ቋንቋ አክል</translation>
 <translation id="2649068648233607930">የእርስዎ አሳሽ በ<ph name="DOMAIN" /> የሚተዳደር ነው</translation>
+<translation id="2650077116157640844">የሰመሩ መሣሪያዎች ላይ ተጨማሪ</translation>
 <translation id="2650348088770008516">የግላዊነት መመሪያ ማብራሪያ ተዘግቷል</translation>
 <translation id="2650408372219180431">በዚህ መሣሪያ ላይ የተቀመጡ የይለፍ ቃላትን ወደ ውጭ ይላኩ እና ይሰርዙ</translation>
 <translation id="2650751991977523696">ፋይሉ እንደገና ይውረድ?</translation>
@@ -482,6 +483,7 @@
 <translation id="360901359071773787">የመጨረሻዎቹ 15 ደቂቃዎች ይሰረዙ?</translation>
 <translation id="3616113530831147358">ድምፅ</translation>
 <translation id="3622349720008044802">መስኮቶች ያቀናብሩ</translation>
+<translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 ጣቢያ}one{+ # ጣቢያ}other{+ # ጣቢያዎች}}</translation>
 <translation id="3631987586758005671">ለ <ph name="DEVICE_NAME" /> በማጋራት ላይ</translation>
 <translation id="363596933471559332">የተከማቹ ምስክርነቶችን በመጠቀም በራስ-ሰር ወደ የድር ጣቢያዎች መለያ ይግቡ። ባህሪው ሲጠፋ ወደ አንድ ድር ጣቢያ ከመግባትዎ በፊት ማረጋገጫ ይጠየቃሉ።</translation>
 <translation id="3636940436873918441">የተመረጡ ቋንቋዎች</translation>

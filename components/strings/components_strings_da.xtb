@@ -360,7 +360,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1718029547804390981">Dokumenterne er for store til at blive annoteret</translation>
 <translation id="1719434663396780149">Underretninger om prisfald er aktiveret. Du kan ændre dette i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 tommer</translation>
-<translation id="1720941539803966190">Luk selvstudiet</translation>
+<translation id="1720941539803966190">Luk vejledningen</translation>
 <translation id="1721424275792716183">* Feltet skal udfyldes</translation>
 <translation id="1725591448053514783">Konvolut Dig 6</translation>
 <translation id="1727613060316725209">Certifikatet er gyldigt</translation>
@@ -580,7 +580,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2215727959747642672">Filredigering</translation>
 <translation id="2215963164070968490">Hunde</translation>
 <translation id="2218879909401188352">Hackere, der i øjeblikket er på <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, kan installere farlige apps, som kan skade din enhed, føje skjulte gebyrer til din mobilregning eller stjæle dine personlige oplysninger. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="2219658597883514593">Genstart selvstudiet</translation>
+<translation id="2219658597883514593">Genstart vejledningen</translation>
 <translation id="2219735899272417925">Enheden skal nulstilles</translation>
 <translation id="2221227930294879156">Festival for mad og drikke</translation>
 <translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
@@ -2318,6 +2318,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6157754950574419155">Fjern alt fra historikken</translation>
 <translation id="6157877588268064908">Vælg en adresse for at se forsendelsesmetoder og -krav</translation>
 <translation id="6159554577634054750">Skadedyrskontrol</translation>
+<translation id="6160391204859821737">Aktivér en privatlivsfunktion til annoncer</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6167577165590485365">Sidst forsøgt hentet:</translation>
 <translation id="6169916984152623906">Nu kan du gå på nettet privat, og andre brugere på denne enhed kan ikke se din aktivitet. Downloads og bogmærker gemmes dog stadig.</translation>
@@ -3374,6 +3375,7 @@ Yderligere oplysninger:
 <translation id="8449836157089738489">Åbn alle i en ny fanegruppe</translation>
 <translation id="8457125768502047971">Ikke defineret</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Aktivér det</translation>
 <translation id="8461694314515752532">Kryptér synkroniserede data med din egen adgangssætning til synkronisering</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditkort}one{# kreditkort}other{# kreditkort}}</translation>
 <translation id="8468358362970107653">Konvolut C3</translation>

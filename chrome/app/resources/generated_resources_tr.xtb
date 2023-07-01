@@ -387,6 +387,7 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Açık sekmeler de dahil tüm sitelerdeki oturumunuz kapatılacak</translation>
 <translation id="1313705515580255288">Yer işaretleriniz, geçmişiniz ve diğer ayarlarınız Google Hesabınızla senkronize edilecek.</translation>
+<translation id="1315184295353569363">Grubun Kaydını Sil</translation>
 <translation id="1316136264406804862">Aranıyor...</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" /> cihazına bağlanılamadı. Tekrar deneyin.</translation>
 <translation id="1316495628809031177">Senkronizasyon duraklatıldı</translation>
@@ -2902,6 +2903,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3429160811076349561">Deneme özellikleri kapalı</translation>
 <translation id="3429271624041785769">Web içerik dilleri</translation>
 <translation id="3429275422858276529">Bu sayfayı daha sonra kolayca bulmak için sayfaya yer işareti koyun</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> yer açıldı</translation>
 <translation id="3432762828853624962">Ortak Çalışanlar</translation>
 <translation id="3433507769937235446">Ekran başından ayrılınca kilitle</translation>
 <translation id="3433621910545056227">Hata! Sistem, cihaz yükleme zamanı özellikleri kilidini oluşturamadı.</translation>
@@ -4005,6 +4007,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4361142739114356624">Bu İstemci Sertifikası'nın Özel Anahtarı eksik veya geçersiz</translation>
 <translation id="4361745360460842907">Sekme olarak aç</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" />, <ph name="DEVICE_TYPE" /> cihazınızda varsayılan hesap olarak ayarlı</translation>
+<translation id="4363215264289239958">Bruschetta uygulamaları</translation>
 <translation id="4363771538994847871">Hiç Yayınlama hedefi bulunamadı. Yardıma ihtiyacınız var mı?</translation>
 <translation id="4364327530094270451">Kavun</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" />, bir pencereyi paylaşıyor.</translation>
@@ -5104,6 +5107,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5319359161174645648">Google, Chrome'u önerir</translation>
 <translation id="5319712128756744240">Yeni cihaz eşle</translation>
 <translation id="5320135788267874712">Yeni cihaz adı</translation>
+<translation id="5320261549977878764">Grubun kaydını sil</translation>
 <translation id="532247166573571973">Sunucuya ulaşılamıyor olabilir. Daha sonra tekrar deneyin.</translation>
 <translation id="5324300749339591280">Uygulamalar listesi</translation>
 <translation id="5324780743567488672">Konumumu kullanarak saat dilimini otomatik olarak ayarla</translation>

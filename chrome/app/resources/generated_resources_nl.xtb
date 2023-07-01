@@ -387,6 +387,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Je wordt uitgelogd bij alle sites, ook in geopende tabbladen</translation>
 <translation id="1313705515580255288">Je bookmarks, geschiedenis en andere instellingen worden gesynchroniseerd met je Google-account</translation>
+<translation id="1315184295353569363">Groep opslaan ongedaan maken</translation>
 <translation id="1316136264406804862">Zoeken...</translation>
 <translation id="1316248800168909509">Kan geen verbinding maken met <ph name="DEVICE" />. Probeer het opnieuw.</translation>
 <translation id="1316495628809031177">Synchronisatie is onderbroken</translation>
@@ -2904,6 +2905,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="3429160811076349561">Proeffuncties staan uit</translation>
 <translation id="3429271624041785769">Talen voor webcontent</translation>
 <translation id="3429275422858276529">Stel een bookmark in voor deze pagina zodat je de pagina later makkelijk kunt terugvinden</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> vrijgemaakt</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Vergrendelen als je weggaat</translation>
 <translation id="3433621910545056227">Het systeem kan de vergrendeling van de instellingen ten tijde van de apparaatinstallatie niet uitvoeren.</translation>
@@ -3222,7 +3224,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="3699920817649120894">Synchronisatie en personalisatie uitzetten?</translation>
 <translation id="3700888195348409686">Gepresenteerd (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Niet toestaan dat sites je camerapositie volgen</translation>
-<translation id="3702500414347826004">Je startpagina's zijn gewijzigd en bevatten nu ook <ph name="URL" />.</translation>
+<translation id="3702500414347826004">Je homepage's zijn gewijzigd en bevatten nu ook <ph name="URL" />.</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Geef de naam van de verkoper en het winkelnummer op waarvoor dit demoapparaat is ingesteld*. <ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />Als je het winkelnummer niet weet, geef je 0000 op om door te gaan met de installatie van de demomodus. <ph name="END_PARAGRAPH2" />
 <ph name="BEGIN_PARAGRAPH3" />*Opmerking: Google gebruikt deze codes om te bepalen welke versie van de demomodus het apparaat moet krijgen en het gebruik van de demomodus te meten.<ph name="END_PARAGRAPH3" /></translation>
@@ -4006,6 +4008,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4361142739114356624">De privésleutel voor dit clientcertificaat ontbreekt of is ongeldig</translation>
 <translation id="4361745360460842907">Openen als tabblad</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> is het standaardaccount op je <ph name="DEVICE_TYPE" /></translation>
+<translation id="4363215264289239958">Bruschetta-apps</translation>
 <translation id="4363771538994847871">Er zijn geen Cast-bestemmingen gevonden. Hulp nodig?</translation>
 <translation id="4364327530094270451">Meloen</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deelt een venster.</translation>
@@ -4648,7 +4651,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4899696330053002588">Bevat advertenties</translation>
 <translation id="489985760463306091">Start je computer opnieuw op om de verwijdering van schadelijke software te voltooien</translation>
 <translation id="490031510406860025">Niet toegestaan op deze site</translation>
-<translation id="4900392736118574277">Je startpagina is gewijzigd in <ph name="URL" />.</translation>
+<translation id="4900392736118574277">Je homepage is gewijzigd in <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - geïnterlinieerd</translation>
 <translation id="4900652253009739885">Kan niet de enige schakelaar verwijderen die is toegewezen aan de actie Selecteren. Druk op een toets om te <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Recent gesloten tabbladen uitvouwen</translation>
@@ -5104,6 +5107,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5319359161174645648">Google beveelt Chrome aan</translation>
 <translation id="5319712128756744240">Nieuw apparaat koppelen</translation>
 <translation id="5320135788267874712">Nieuwe apparaatnaam</translation>
+<translation id="5320261549977878764">Groep opslaan ongedaan maken</translation>
 <translation id="532247166573571973">De server is mogelijk niet bereikbaar. Probeer het later opnieuw.</translation>
 <translation id="5324300749339591280">Lijst met apps</translation>
 <translation id="5324780743567488672">Tijdzone automatisch instellen op basis van je locatie</translation>
@@ -7995,7 +7999,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7788298548579301890">Een ander programma op je computer heeft een app toegevoegd die de manier kan wijzigen waarop Chrome werkt.
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7789963078219276159">Achtergrond van startpagina is gewijzigd in <ph name="CATEGORY" />.</translation>
+<translation id="7789963078219276159">Achtergrond van homepage is gewijzigd in <ph name="CATEGORY" />.</translation>
 <translation id="7791436592012979144">Omgekeerd scrollen staat aan</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="7792012425874949788">Er is een fout opgetreden tijdens het inloggen</translation>
@@ -9141,7 +9145,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8767069439158587614">Alle zoekopdrachten voor <ph name="QUERY_CLUSTER_NAME" /> tonen</translation>
 <translation id="8767621466733104912">Chrome automatisch updaten voor alle gebruikers</translation>
 <translation id="8770406935328356739">Hoofddirectory van extensie</translation>
-<translation id="8771300903067484968">De achtergrond van de startpagina is gereset naar de standaardachtergrond.</translation>
+<translation id="8771300903067484968">De achtergrond van de homepage is gereset naar de standaardachtergrond.</translation>
 <translation id="8773280816776735812">IBAN-waarde tonen</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> opslaan</translation>
 <translation id="8774379074441005279">Herstel bevestigen</translation>

@@ -1059,6 +1059,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7531345132340165516">Gjeldende nettsted</translation>
 <translation id="7537586195939242955">Tillatelsen din kan for øyeblikket ikke installeres i Passbook.</translation>
 <translation id="754655535278952384">Sjekket <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Den siste fanen som ble brukt på <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">For å slå av funksjonen, åpne <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" /> og gå til Passordvalg.</translation>
 <translation id="7554645225856321710">Lukk alle</translation>
 <translation id="7554791636758816595">Ny fane</translation>
@@ -1204,6 +1205,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8428045167754449968">By/tettsted</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8428634594422941299">Greit</translation>
+<translation id="8446201778524791138">Rediger handlinger</translation>
 <translation id="8446884382197647889">Les mer</translation>
 <translation id="8458397775385147834">1 element slettet</translation>
 <translation id="8459333855531264009">Ikke sikker</translation>
