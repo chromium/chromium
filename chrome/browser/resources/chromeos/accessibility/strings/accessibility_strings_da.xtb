@@ -56,7 +56,7 @@
 <translation id="1268366246392928616">Der er ingen forrige matematiske udtryk</translation>
 <translation id="1273314450961659276">Indstillinger for oplæsning</translation>
 <translation id="1275718070701477396">Valgt</translation>
-<translation id="1284576163386164372">Du kan til enhver tid se selvstudier ved at åbne menuerne. Du åbner menuerne ved at trykke med fire fingre. Aktivér derefter selvstudiet under sektionen "ChromeVox".</translation>
+<translation id="1284576163386164372">Du kan til enhver tid se selvstudier ved at åbne menuerne. Du åbner menuerne ved at trykke med fire fingre. Aktivér derefter vejledningen under sektionen "ChromeVox".</translation>
 <translation id="1291286136605998134">Skydeknap</translation>
 <translation id="1299774449519412690">Lys himmelblå</translation>
 <translation id="1303806948938513162">Tryk med fire fingre for at åbne ChromeVox-menuerne</translation>
@@ -125,7 +125,7 @@
 <translation id="1717267964664691695">Selvstudiet i berøring er gennemført</translation>
 <translation id="1722567105086139392">Link</translation>
 <translation id="1727806147743597030">si.fo</translation>
-<translation id="1730447754326314349">Velkommen til ChromeVox-selvstudiet. Du kan til enhver tid forlade dette selvstudie ved at trykke på Esc-tasten øverst til venstre på tastaturet. Hold Ctrl og Alt nede, og tryk på Z for at deaktivere ChromeVox. Brug mellemrumstasten til at gå til næste lektion, når du er klar.</translation>
+<translation id="1730447754326314349">Velkommen til ChromeVox-vejledningen. Du kan til enhver tid forlade denne vejledning ved at trykke på Esc-tasten øverst til venstre på tastaturet. Hold Ctrl og Alt nede, og tryk på Z for at deaktivere ChromeVox. Brug mellemrumstasten til at gå til næste lektion, når du er klar.</translation>
 <translation id="174268867904053074">Næste grafik</translation>
 <translation id="1756785467854861272">Mørk magenta</translation>
 <translation id="1758693804775271377">Stryg til venstre eller højre med én finger for at gennemse lektioner om dette emne</translation>
@@ -300,7 +300,7 @@
 <translation id="2972205263822847197">Værktøjstip</translation>
 <translation id="2976476721782829799">Du kan også navigere ved at trække én finger rundt på skærmen. Denne funktion hedder Tryk for at høre. Prøv at trække din finger rundt på skærmen for at læse resten af denne lektion.</translation>
 <translation id="297825089465017871">Stryg til venstre med to fingre</translation>
-<translation id="2988364959384217951">Tip! Stryg fra højre mod venstre med to fingre for at afslutte dette selvstudie.</translation>
+<translation id="2988364959384217951">Tip! Stryg fra højre mod venstre med to fingre for at afslutte denne vejledning.</translation>
 <translation id="2998131015536248178">Forrige tegn</translation>
 <translation id="2999559350546931576">Skru ned for toneleje</translation>
 <translation id="3009352964623081324">Søgetasten+O efterfulgt af S. Brug til at installere, administrere og tilpasse stemmer.</translation>
@@ -375,7 +375,7 @@
 <translation id="3356951775008366684">Oplæs fonetisk udtale af ord</translation>
 <translation id="3359142382821736686">seprtr</translation>
 <translation id="3363015957057974366">Du kan også gå til det næste interaktive element på skærmen ved hjælp af Tab-tasten. Find Tab-tasten, som er direkte over søgetasten. Tryk på Tab-tasten for at fortsætte.</translation>
-<translation id="3366946046494222386">Selvstudie til <ph name="TOPIC" />, <ph name="LESSONS" /> lektioner</translation>
+<translation id="3366946046494222386">Vejledning til <ph name="TOPIC" />, <ph name="LESSONS" /> lektioner</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{plus}one{# plustegn}other{# plustegn}}</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3389259863310851658">Forrige formularfelt</translation>
@@ -419,7 +419,7 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dollar}one{# dollartegn}other{# dollartegn}}</translation>
 <translation id="3659787053479271466">advar</translation>
-<translation id="366419593095697301">Tip! Tryk på Esc, hvis du vil forlade dette selvstudie.</translation>
+<translation id="366419593095697301">Tip! Tryk på Esc, hvis du vil forlade denne vejledning.</translation>
 <translation id="3676062394766691318">Når du har konfigureret din enhed, kan du komme tilbage og se flere selvstudier ved at trykke på søgetasten+O efterfulgt af T.</translation>
 <translation id="3681531118904532409">Lys varm orange</translation>
 <translation id="3692274950075847560">S:<ph name="RESULT" /></translation>
@@ -700,7 +700,7 @@
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">Grafiksymbol</translation>
 <translation id="5648939288050772726">Tillykke! Nu har du lært det vigtigste om ChromeVox. Husk, at du til enhver tid kan åbne ChromeVox-kommandomenuen ved at trykke på Søg+punktum. Du kan få flere oplysninger om ChromeVox og ChromeOS i følgende artikler.
-    Hvis du er færdig med selvstudiet, kan du bruge ChromeVox til at gå til knappen Luk og klikke på den.</translation>
+    Hvis du er færdig med vejledningen, kan du bruge ChromeVox til at gå til knappen Luk og klikke på den.</translation>
 <translation id="5653397561111110475">Brug hjælpefunktioner til touchskærm på Chromebook</translation>
 <translation id="5655682562155942719">Hopkommandoer</translation>
 <translation id="56637627897541303">Tekstområde</translation>
@@ -719,7 +719,7 @@
 <translation id="5732189279857692565">Dette er den anden overskrift. Fortsæt ved at trykke på enten søgetasten+H eller søgetasten+Shift+H</translation>
 <translation id="5748623122140342504">Forrige niveau 5-overskrift</translation>
 <translation id="5760594853119905566">Bilag</translation>
-<translation id="5761219715606611783">Flot! Du har lært det grundlæggende om ChromeVox-berøringer. Du kan gennemgå selvstudiet igen eller afslutte det ved hjælp af knapperne nedenfor.</translation>
+<translation id="5761219715606611783">Flot! Du har lært det grundlæggende om ChromeVox-berøringer. Du kan gennemgå vejledningen igen eller afslutte det ved hjælp af knapperne nedenfor.</translation>
 <translation id="5776001898637896684">Udvidelsen Google Enhanced Network til oplæsning</translation>
 <translation id="5805940204952508776">Tryk med to fingre</translation>
 <translation id="5819072574982403430">Træelement</translation>
@@ -733,7 +733,7 @@
 <translation id="5851548754964597211">Faneliste</translation>
 <translation id="5866042630553435010">Delvist markeret</translation>
 <translation id="5866210856231860256">Tryk på søgetasten+højrepil eller på søgetasten+venstrepil for at gennemse lektioner til dette emne</translation>
-<translation id="5867591286054666064">Undervejs i dette selvstudie kan du trykke på en given tast for at høre, hvad den hedder.</translation>
+<translation id="5867591286054666064">Undervejs i denne vejledning kan du trykke på en given tast for at høre, hvad den hedder.</translation>
 <translation id="5869546221129391014">Gitter</translation>
 <translation id="5876817486144482042">Skru ned for talevolumen</translation>
 <translation id="5878206664863390311">Tryk på søgetasten+højrepil eller på søgetasten+venstrepil for at gennemse emner</translation>
@@ -878,7 +878,7 @@
 <translation id="6994042831499278539">Reference på ordliste</translation>
 <translation id="6996566555547746822">Næste kombifelt</translation>
 <translation id="6997224546856374593">Ved oplæsning af store bogstaver:</translation>
-<translation id="6999752561504308105">Velkommen til ChromeVox-selvstudiet. Du kan til enhver tid forlade dette selvstudie ved at stryge mod højre eller venstre med to fingre. Du kan til enhver tid aktivere eller deaktivere ChromeVox ved at holde begge lydstyrkeknapper nede i fem sekunder. Når du er klar, skal du trykke to gange på skærmen med én finger for at gå til næste lektion.</translation>
+<translation id="6999752561504308105">Velkommen til ChromeVox-vejledningen. Du kan til enhver tid forlade denne vejledning ved at stryge mod højre eller venstre med to fingre. Du kan til enhver tid aktivere eller deaktivere ChromeVox ved at holde begge lydstyrkeknapper nede i fem sekunder. Når du er klar, skal du trykke to gange på skærmen med én finger for at gå til næste lektion.</translation>
 <translation id="700202842116345659">Bibliografipunkt</translation>
 <translation id="7005146664810010831">Der blev ikke fundet nogen webadresse</translation>
 <translation id="7026338066939101231">Reducer</translation>
@@ -1110,7 +1110,7 @@
 <translation id="8603071050456974042">ChromeVox-panel</translation>
 <translation id="8606621670302093223">Datokontrol</translation>
 <translation id="8613709718990529335">Gråbrun</translation>
-<translation id="8614129468475308349">Flot! Nu har du lært det grundlæggende om ChromeVox. Du kan gennemgå selvstudiet igen eller afslutte det ved at finde og klikke på en knap nedenfor.</translation>
+<translation id="8614129468475308349">Flot! Nu har du lært det grundlæggende om ChromeVox. Du kan gennemgå vejledningen igen eller afslutte det ved at finde og klikke på en knap nedenfor.</translation>
 <translation id="8625173877182443267">Der er ikke flere niveau 6-overskrifter</translation>
 <translation id="8628186274519446680">Tomatrød</translation>
 <translation id="8638532244051952400">Oplys aktuelle cellekoordinater</translation>
@@ -1183,7 +1183,7 @@
 <translation id="9153606228985488238">Toneleje <ph name="PERCENT" /> procent</translation>
 <translation id="9160096769946561184">Gå til slutningen af ​​den aktuelle kolonne</translation>
 <translation id="9173115498289768110">Lydstyrke <ph name="PERCENT" /> procent</translation>
-<translation id="9185200690645120087">Selvstudie i ChromeVox-berøringer</translation>
+<translation id="9185200690645120087">Vejledning i ChromeVox-berøringer</translation>
 <translation id="9192904702577636854">Marquee</translation>
 <translation id="9205282956404529648">Skriv for at udfylde automatisk</translation>
 <translation id="9208241857935108694">Kalkhvid</translation>
