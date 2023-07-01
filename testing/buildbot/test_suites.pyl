@@ -820,6 +820,11 @@
           'shards': 3,
         },
       },
+      'ozone_gl_unittests': {
+        'args': [
+          '--stop-ui',
+        ],
+      },
       'ozone_unittests': {},
       'pdf_unittests': {},
       'printing_unittests': {},
@@ -2489,6 +2494,11 @@
         },
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter',
+        ],
+      },
+      'ozone_gl_unittests': {
+        'args': [
+          '--test-arg=--ozone-platform=headless',
         ],
       },
       'ozone_unittests': {},
@@ -4315,6 +4325,11 @@
       'exo_unittests': {},
       'gl_unittests_ozone': {},
       'keyboard_unittests': {},
+      'ozone_gl_unittests': {
+        'args': [
+          '--ozone-platform=headless',
+        ],
+      },
       'ozone_unittests': {},
       'ozone_x11_unittests': {},
       'shell_encryption_unittests': {},
