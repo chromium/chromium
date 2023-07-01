@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/omnibox/webui_omnibox_popup_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -14,7 +14,7 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
-WebUIOmniboxPopupView::WebUIOmniboxPopupView(LocationBarView* location_bar_view)
+OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view)
     : views::WebView(location_bar_view->profile()),
       location_bar_view_(location_bar_view),
       widget_(nullptr) {
@@ -27,11 +27,11 @@ WebUIOmniboxPopupView::WebUIOmniboxPopupView(LocationBarView* location_bar_view)
   LoadInitialURL(GURL(chrome::kChromeUIOmniboxPopupURL));
 }
 
-WebUIOmniboxPopupView::~WebUIOmniboxPopupView() {
+OmniboxPopupPresenter::~OmniboxPopupPresenter() {
   ReleaseWidget(false);
 }
 
-void WebUIOmniboxPopupView::Show() {
+void OmniboxPopupPresenter::Show() {
   if (!widget_) {
     widget_ = new ThemeCopyingWidget(location_bar_view_->GetWidget());
 
@@ -64,18 +64,18 @@ void WebUIOmniboxPopupView::Show() {
   }
 }
 
-void WebUIOmniboxPopupView::Hide() {
+void OmniboxPopupPresenter::Hide() {
   ReleaseWidget(true);
 }
 
-RealboxHandler* WebUIOmniboxPopupView::GetWebUIHandler() {
+RealboxHandler* OmniboxPopupPresenter::GetWebUIHandler() {
   OmniboxPopupUI* omnibox_popup_ui = static_cast<OmniboxPopupUI*>(
       GetWebContents()->GetWebUI()->GetController());
   DCHECK(omnibox_popup_ui->webui_handler());
   return omnibox_popup_ui->webui_handler();
 }
 
-void WebUIOmniboxPopupView::OnWidgetDestroyed(views::Widget* widget) {
+void OmniboxPopupPresenter::OnWidgetDestroyed(views::Widget* widget) {
   // TODO(crbug.com/1445142): Consider restoring if not closed logically by
   // omnibox.
   if (widget == widget_) {
@@ -83,7 +83,7 @@ void WebUIOmniboxPopupView::OnWidgetDestroyed(views::Widget* widget) {
   }
 }
 
-gfx::Rect WebUIOmniboxPopupView::GetTargetBounds() const {
+gfx::Rect OmniboxPopupPresenter::GetTargetBounds() const {
   int popup_height = GetPreferredSize().height();
 
   // Add enough space on the top and bottom so it looks like there is the same
@@ -107,7 +107,7 @@ gfx::Rect WebUIOmniboxPopupView::GetTargetBounds() const {
   return content_rect;
 }
 
-void WebUIOmniboxPopupView::ReleaseWidget(bool close) {
+void OmniboxPopupPresenter::ReleaseWidget(bool close) {
   if (widget_) {
     // Avoid possibility of dangling raw_ptr by nulling before cleanup.
     views::Widget* widget = widget_;
@@ -121,5 +121,5 @@ void WebUIOmniboxPopupView::ReleaseWidget(bool close) {
   CHECK(!IsInObserverList());
 }
 
-BEGIN_METADATA(WebUIOmniboxPopupView, views::WebView)
+BEGIN_METADATA(OmniboxPopupPresenter, views::WebView)
 END_METADATA

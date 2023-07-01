@@ -24,7 +24,7 @@ class LocationBarView;
 class OmniboxController;
 class OmniboxViewViews;
 class RealboxHandler;
-class WebUIOmniboxPopupView;
+class OmniboxPopupPresenter;
 
 class OmniboxPopupViewWebUI : public OmniboxPopupView {
  public:
@@ -63,8 +63,8 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView {
   // The location bar view that owns `omnibox_view_`. May be nullptr in tests.
   raw_ptr<LocationBarView> location_bar_view_;
 
-  // The suggestions WebView that manages its own widget and WebUI presentation.
-  std::unique_ptr<WebUIOmniboxPopupView> webui_view_;
+  // The presenter that manages its own widget and WebUI presentation.
+  std::unique_ptr<OmniboxPopupPresenter> presenter_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_WEBUI_H_

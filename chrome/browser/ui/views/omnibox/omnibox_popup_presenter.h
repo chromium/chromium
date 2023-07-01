@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_WEBUI_OMNIBOX_POPUP_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_OMNIBOX_WEBUI_OMNIBOX_POPUP_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
+#define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -14,19 +14,20 @@
 class LocationBarView;
 class RealboxHandler;
 
-// A WebView to display WebUI suggestions for OmniboxPopupViewWebUI.  This class
-// is an implementation detail and is not expected to grow or change much with
-// omnibox changes.  The concern of this class is presentation only, i.e. Views
-// and Widgets.  For omnibox logic concerns and communication between native
-// omnibox code and the WebUI code, work with OmniboxPopupViewWebUI directly.
-class WebUIOmniboxPopupView : public views::WebView,
+// An assistant class for OmniboxPopupViewWebUI, this manages a WebView and a
+// Widget to present WebUI suggestions.  This class is an implementation detail
+// and is not expected to grow or change much with omnibox changes.  The concern
+// of this class is presentation only, i.e. Views and Widgets.  For omnibox
+// logic concerns and communication between native omnibox code and the WebUI
+// code, work with OmniboxPopupViewWebUI directly.
+class OmniboxPopupPresenter : public views::WebView,
                               public views::WidgetObserver {
  public:
-  METADATA_HEADER(WebUIOmniboxPopupView);
-  explicit WebUIOmniboxPopupView(LocationBarView* location_bar_view);
-  WebUIOmniboxPopupView(const WebUIOmniboxPopupView&) = delete;
-  WebUIOmniboxPopupView& operator=(const WebUIOmniboxPopupView&) = delete;
-  ~WebUIOmniboxPopupView() override;
+  METADATA_HEADER(OmniboxPopupPresenter);
+  explicit OmniboxPopupPresenter(LocationBarView* location_bar_view);
+  OmniboxPopupPresenter(const OmniboxPopupPresenter&) = delete;
+  OmniboxPopupPresenter& operator=(const OmniboxPopupPresenter&) = delete;
+  ~OmniboxPopupPresenter() override;
 
   // Show or hide the popup widget with web view.
   void Show();
@@ -53,4 +54,4 @@ class WebUIOmniboxPopupView : public views::WebView,
   base::raw_ptr<views::Widget> widget_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_WEBUI_OMNIBOX_POPUP_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_

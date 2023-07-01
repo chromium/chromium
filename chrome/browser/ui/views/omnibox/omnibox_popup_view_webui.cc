@@ -14,11 +14,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
-#include "chrome/browser/ui/views/omnibox/webui_omnibox_popup_view.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/webui/realbox/realbox_handler.h"
@@ -45,7 +45,7 @@ OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
     : OmniboxPopupView(controller),
       omnibox_view_(omnibox_view),
       location_bar_view_(location_bar_view),
-      webui_view_(nullptr) {
+      presenter_(nullptr) {
   model()->set_popup_view(this);
 }
 
@@ -54,7 +54,7 @@ OmniboxPopupViewWebUI::~OmniboxPopupViewWebUI() {
 }
 
 bool OmniboxPopupViewWebUI::IsOpen() const {
-  return !!webui_view_;
+  return !!presenter_;
 }
 
 void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
@@ -62,21 +62,21 @@ void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
 void OmniboxPopupViewWebUI::OnSelectionChanged(
     OmniboxPopupSelection old_selection,
     OmniboxPopupSelection new_selection) {
-  if (webui_view_) {
+  if (presenter_) {
     handler()->SelectMatchAtLine(old_selection.line, new_selection.line);
   }
 }
 
 void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
   if (controller()->result().empty() || omnibox_view_->IsImeShowingPopup()) {
-    if (webui_view_) {
-      webui_view_->Hide();
+    if (presenter_) {
+      presenter_->Hide();
     }
   } else {
-    if (!webui_view_) {
-      webui_view_ = std::make_unique<WebUIOmniboxPopupView>(location_bar_view_);
+    if (!presenter_) {
+      presenter_ = std::make_unique<OmniboxPopupPresenter>(location_bar_view_);
     }
-    webui_view_->Show();
+    presenter_->Show();
   }
 }
 
@@ -104,5 +104,5 @@ std::u16string OmniboxPopupViewWebUI::GetAccessibleButtonTextForResult(
 }
 
 RealboxHandler* OmniboxPopupViewWebUI::handler() const {
-  return webui_view_->GetWebUIHandler();
+  return presenter_->GetWebUIHandler();
 }
