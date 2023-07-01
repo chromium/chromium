@@ -228,7 +228,10 @@ bool BrowserFrameAsh::ShouldRestorePreviousBrowserWidgetState() const {
   // restore.
   const int32_t restore_id =
       browser_view_->browser()->create_params().restore_id;
-  return !app_restore::HasWindowInfo(restore_id);
+  // Don't restore unresizable browser apps, because they can get stuck at a
+  // broken size.
+  return !app_restore::HasWindowInfo(restore_id) &&
+         browser_view_->browser()->create_params().can_resize;
 }
 
 bool BrowserFrameAsh::ShouldUseInitialVisibleOnAllWorkspaces() const {

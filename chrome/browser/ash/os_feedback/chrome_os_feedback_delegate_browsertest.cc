@@ -52,6 +52,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -803,4 +804,22 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
             feedback_data->sys_info()->find(kFeedbackUserConsentKey)->second);
 }
 
+// Tests that the feedback app, which is an unresizable SWA, doesn't restore
+// window bounds.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
+                       DontRestoreUnresizableSystemWebApp) {
+  Browser* feedback_browser = LaunchFeedbackAppAndGetBrowser();
+  aura::Window* feedback_window = feedback_browser->window()->GetNativeWindow();
+
+  // Launch the feedback app and set it to an arbitrary size.
+  const gfx::Rect default_bounds(feedback_window->GetBoundsInScreen());
+  feedback_window->SetBounds(gfx::Rect(600, 600));
+  ASSERT_NE(default_bounds, feedback_window->GetBoundsInScreen());
+  feedback_browser->window()->Close();
+
+  // Launch the app again. Test that it resets to default bounds.
+  feedback_browser = LaunchFeedbackAppAndGetBrowser();
+  feedback_window = feedback_browser->window()->GetNativeWindow();
+  ASSERT_EQ(default_bounds, feedback_window->GetBoundsInScreen());
+}
 }  // namespace ash
