@@ -173,6 +173,21 @@ shopping_list::mojom::PriceInsightsInfoPtr PriceInsightsInfoToMojoObject(
 
   insights_info->has_multiple_catalogs = info->has_multiple_catalogs;
 
+  for (auto history_price : info->catalog_history_prices) {
+    auto point = shopping_list::mojom::PricePoint::New();
+    point->date = std::get<0>(history_price);
+
+    auto price =
+        static_cast<float>(std::get<1>(history_price)) / kToMicroCurrency;
+    point->price = price;
+    point->formatted_price =
+        base::UTF16ToUTF8(formatter->Format(base::NumberToString(price)));
+    insights_info->history.push_back(std::move(point));
+  }
+
+  insights_info->locale = locale;
+  insights_info->currency_code = info->currency_code;
+
   return insights_info;
 }
 

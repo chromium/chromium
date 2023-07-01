@@ -49,6 +49,12 @@ struct BookmarkProductInfo {
     ProductInfo info;
 };
 
+struct PricePoint {
+  string date;
+  float price;
+  string formatted_price;
+};
+
 struct PriceInsightsInfo {
   enum PriceBucket { kUnknown, kLow, kTypical, kHigh };
 
@@ -73,7 +79,14 @@ struct PriceInsightsInfo {
   // Whether we find multiple catalogs of this product on page.
   bool has_multiple_catalogs;
 
-  // TODO(b:283465961): Check the type we need to draw the history graph.
+  // History price data.
+  array<PricePoint> history;
+
+  // Used to format the history graph y ticks only.
+  string locale;
+
+  // Used to format the history graph y ticks only.
+  string currency_code;
 };
 
 // Used by the price tracking section in side panel to bootstrap

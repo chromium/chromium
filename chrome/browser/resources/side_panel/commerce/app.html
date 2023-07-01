@@ -18,9 +18,38 @@
 
   .panel-subtitle {
     color: var(--cr-primary-text-color);
-    margin: 4px 0;
+    margin-top: 4px;
     font-size: 12px;
     font-weight: 400;
+  }
+
+  .divider {
+    border-top: 4px solid var(--cr-separator-color);
+  }
+
+  .section-title {
+    color: var(--cr-primary-text-color);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .history-subtitle {
+    color: var(--cr-secondary-text-color);
+    margin-top: 4px;
+    font-size: 12px;
+  }
+
+  .section-details {
+    color: var(--cr-secondary-text-color);
+    margin-top: 8px;
+    font-size: 11px;
+    line-height: 20px;
+    max-width: 100%;
+  }
+
+  .panel-subtitle,
+  .section-title,
+  .history-subtitle {
     line-height: 20px;
     max-width: 100%;
     overflow: hidden;
@@ -28,25 +57,57 @@
     white-space: nowrap;
   }
 
-  .divider {
-    border-top: 4px solid var(--cr-separator-color);
+  shopping-insights-history-graph {
+    margin-top: 8px;
   }
 </style>
 
 <div id="insightsContainer">
   <div class="section" id="titleSection">
     <div class="panel-title">[[productInfo.clusterTitle]]</div>
-    <div hidden="[[!priceInsightsInfo.typicalLowPrice.length]]"
-        class="panel-subtitle">[[getRangeDescription_(priceInsightsInfo)]]</div>
-    <template is="dom-if"
-        if="[[!priceInsightsInfo.typicalLowPrice.length]]" restamp>
-      <div>
-        <div hidden="[[!priceInsightsInfo.hasMultipleCatalogs]]"
-            class="panel-subtitle">[[priceInsightsInfo.catalogAttributes]]</div>
+    <div id="priceRange" class="panel-subtitle"
+        hidden="[[!priceInsightsInfo.typicalLowPrice.length]]">
+      [[getRangeDescription_(priceInsightsInfo)]]
+    </div>
+    <div class="panel-subtitle"
+        hidden="[[priceInsightsInfo.typicalLowPrice.length]]">
+      <span hidden="[[!priceInsightsInfo.hasMultipleCatalogs]]"
+          id="attributes1">
+        [[priceInsightsInfo.catalogAttributes]]
+      </span>
+      <!-- TODO(b:283465961): Add buying options button -->
+    </div>
+    <div hidden="[[priceInsightsInfo.history.length]]"
+        class="section-details" id="desc1">
+      $i18n{historyDescription}
+    </div>
+    <!-- TODO(b:283465961): Add feedback button -->
+  </div>
+  <template is="dom-if" if="[[priceInsightsInfo.history.length]]" restamp>
+    <div class="divider"></div>
+    <div class="section" id="historySection">
+      <div class="section-title" id="historyTitle">
+        [[getHistoryTitle_(priceInsightsInfo)]]
+      </div>
+      <div hidden="[[!priceInsightsInfo.typicalLowPrice.length]]"
+          class="history-subtitle">
+        <span hidden="[[!priceInsightsInfo.hasMultipleCatalogs]]"
+            id="attributes2">
+          [[priceInsightsInfo.catalogAttributes]]
+        </span>
         <!-- TODO(b:283465961): Add buying options button -->
       </div>
-    </template>
-  </div>
+      <shopping-insights-history-graph data="[[priceInsightsInfo.history]]"
+          locale="[[priceInsightsInfo.locale]]"
+          currency="[[priceInsightsInfo.currencyCode]]">
+      </shopping-insights-history-graph>
+      <div hidden="[[!priceInsightsInfo.history.length]]"
+          class="section-details" id="desc2">
+        $i18n{historyDescription}
+      </div>
+      <!-- TODO(b:283465961): Add feedback button -->
+    </div>
+  </template>
   <template is="dom-if" if="[[isProductTrackable_]]" restamp>
     <div class="divider"></div>
     <price-tracking-section id="priceTrackingSection"
