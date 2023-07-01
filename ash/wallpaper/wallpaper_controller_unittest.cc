@@ -4526,6 +4526,68 @@ TEST_F(WallpaperControllerTest,
 }
 
 TEST_F(WallpaperControllerTest,
+       DoesNotCrashOnScheduleCheckpointChangedWhenDownloadFails) {
+  SimulateUserLogin(kAccountId1);
+
+  // Enable dark mode by default.
+  Shell::Get()->dark_light_mode_controller()->SetDarkModeEnabledForTest(true);
+
+  auto run_loop = std::make_unique<base::RunLoop>();
+  ClearWallpaperCount();
+  std::vector<OnlineWallpaperVariant> variants;
+  variants.emplace_back(kAssetId, GURL(kDummyUrl),
+                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  variants.emplace_back(kAssetId2, GURL(kDummyUrl2),
+                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  const OnlineWallpaperParams& params =
+      OnlineWallpaperParams(kAccountId1, kAssetId, GURL(kDummyUrl),
+                            TestWallpaperControllerClient::kDummyCollectionId,
+                            WALLPAPER_LAYOUT_CENTER_CROPPED,
+                            /*preview_mode=*/false, /*from_user=*/true,
+                            /*daily_refresh_enabled=*/false, kUnitId, variants);
+  // Use dark mode wallpaper initially.
+  controller_->SetOnlineWallpaper(
+      params, base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_TRUE(success);
+        run_loop->Quit();
+      }));
+  run_loop->Run();
+  EXPECT_EQ(1, GetWallpaperCount());
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
+
+  ClearWallpaperCount();
+  // Simulate a wallpaper changes from the server by changing one of the
+  // variant's url.
+  WallpaperInfo local_info;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &local_info));
+  std::vector<OnlineWallpaperVariant> updated_variants;
+  const std::string updated_light_url = "https://new_light_url.jpg";
+  updated_variants.emplace_back(kAssetId, GURL(kDummyUrl),
+                                backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  updated_variants.emplace_back(kAssetId2, GURL(updated_light_url),
+                                backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  local_info.variants = updated_variants;
+  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(kAccountId1, local_info));
+  // Simulate a failure in image downloading.
+  test_wallpaper_image_downloader()->set_image_generator(
+      base::BindLambdaForTesting([]() { return gfx::ImageSkia(); }));
+
+  // Switch to light mode and simulate schedule checkpoint change to reflect
+  // light mode.
+  EXPECT_TRUE(Shell::Get()->dark_light_mode_controller()->IsDarkModeEnabled());
+  Shell::Get()->dark_light_mode_controller()->ToggleColorMode();
+  RunAllTasksUntilIdle();
+  EXPECT_EQ(0, GetWallpaperCount());
+  WallpaperInfo expected = WallpaperInfo(params);
+  WallpaperInfo actual;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual));
+  EXPECT_EQ(actual.asset_id, expected.asset_id);
+  EXPECT_EQ(actual.location, expected.location);
+  // Assets aren't matched due to updated variant asset.
+  EXPECT_FALSE(actual.MatchesAsset(expected));
+}
+
+TEST_F(WallpaperControllerTest,
        DoesNotUpdateWallpaperOnColorModeChangedWithNoVariants) {
   SimulateUserLogin(kAccountId1);
 
