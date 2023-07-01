@@ -7,9 +7,9 @@
 #include <gio/gio.h>
 #include <gio/gunixfdlist.h>
 #include <glib-object.h>
+#include <linux/input.h>
 #include <poll.h>
 
-#include <libevdev/libevdev-uinput.h>
 #include <utility>
 
 #include "base/check.h"

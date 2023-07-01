@@ -241,10 +241,6 @@ if (is_linux) {
   pkg_config("xkbcommon") {
     packages = [ "xkbcommon" ]
   }
-
-  pkg_config("libevdev") {
-    packages = [ "libevdev" ]
-  }
 }
 
 # This must be a static library instead of a source set because
@@ -576,7 +572,6 @@ static_library("common") {
       "x11_display_util.cc",
       "x11_display_util.h",
     ]
-    configs += [ ":libevdev" ]
     libs += [ "//third_party/libei/lib64/libei.a" ]
     public_deps += [
       "//third_party/wayland:wayland_client",
