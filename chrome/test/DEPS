@@ -30,6 +30,7 @@ include_rules = [
   "+components/global_media_controls",
   "+components/google/core/common",
   "+components/guest_view/browser",
+  "+components/history_clusters/core",
   "+components/history/content",
   "+components/history/core",
   "+components/infobars/content",

@@ -8,11 +8,11 @@
 typedef WebUIMochaBrowserTest CrModuleTest;
 
 IN_PROC_BROWSER_TEST_F(CrModuleTest, SendWithPromise) {
-  RunTest("js/cr_test.js", "mocha.fgrep('CrModuleSendWithPromiseTest').run();");
+  RunTest("js/cr_test.js", "runMochaSuite('CrModuleSendWithPromiseTest');");
 }
 
 IN_PROC_BROWSER_TEST_F(CrModuleTest, WebUiListeners) {
-  RunTest("js/cr_test.js", "mocha.fgrep('CrModuleWebUiListenersTest').run();");
+  RunTest("js/cr_test.js", "runMochaSuite('CrModuleWebUiListenersTest');");
 }
 
 typedef WebUIMochaBrowserTest IconModuleTest;

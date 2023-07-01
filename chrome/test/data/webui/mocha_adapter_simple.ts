@@ -93,6 +93,12 @@ class WebUiMochaBrowserTestReporter extends Mocha.reporters.Base {
   }
 }
 
+// Helper function provided to make running a single Mocha suite more robust.
+function runMochaSuite(suiteName: string) {
+  mocha.grep(new RegExp('^' + suiteName + ' ')).run();
+}
+Object.assign(window, {runMochaSuite});
+
 // Configure mocha.
 mocha.setup({
   // Use TDD interface instead of BDD.

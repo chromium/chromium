@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://history/strings.m.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 import {HistoryClustersElement} from 'chrome://resources/cr_components/history_clusters/clusters.js';
