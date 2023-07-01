@@ -32,6 +32,12 @@ void ActionViewListItem::OnActionUpdated() {
   labels_view_->OnActionUpdated();
 }
 
+void ActionViewListItem::OnActionNameUpdated() {
+  if (action_->name_label()) {
+    name_tag_->SetTitle(*(action_->name_label()));
+  }
+}
+
 void ActionViewListItem::Init() {
   SetUseDefaultFillLayout(true);
   auto* container = AddChildView(std::make_unique<ash::RoundedContainer>());
@@ -52,9 +58,9 @@ void ActionViewListItem::Init() {
       .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize);
 
   // TODO(b/270969479): Replace the hardcoded string.
-  auto* name_tag = container->AddChildView(NameTag::CreateNameTag(u"title"));
-  labels_view_ = container->AddChildView(
-      EditLabels::CreateEditLabels(controller_, action_, name_tag));
+  name_tag_ = container->AddChildView(NameTag::CreateNameTag(u"title"));
+  labels_view_ = container->AddChildView(EditLabels::CreateEditLabels(
+      controller_, action_, name_tag_, /*set_title=*/true));
 }
 
 }  // namespace arc::input_overlay

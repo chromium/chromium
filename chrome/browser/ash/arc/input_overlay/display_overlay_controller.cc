@@ -17,6 +17,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/button_label_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
@@ -175,6 +176,22 @@ void DisplayOverlayController::RemoveButtonOptionsMenu() {
   }
   button_options_menu_->parent()->RemoveChildViewT(button_options_menu_);
   button_options_menu_ = nullptr;
+  RemoveButtonLabelList();
+}
+
+void DisplayOverlayController::AddButtonLabelList() {
+  if (!IsBeta() || !button_options_menu_) {
+    return;
+  }
+  button_label_list_ = ButtonLabelList::Show(this, button_options_menu_);
+}
+
+void DisplayOverlayController::RemoveButtonLabelList() {
+  if (!IsBeta() || !button_label_list_) {
+    return;
+  }
+  button_label_list_->parent()->RemoveChildViewT(button_label_list_);
+  button_label_list_ = nullptr;
 }
 
 void DisplayOverlayController::ChangeActionType(Action* reference_action,
@@ -558,6 +575,11 @@ void DisplayOverlayController::AddNewAction(ActionType action_type) {
 void DisplayOverlayController::RemoveAction(Action* action) {
   // TODO(b/270973654): Show delete confirmation dialog here.
   touch_injector_->RemoveAction(action);
+}
+
+void DisplayOverlayController::ChangeActionName(Action* action,
+                                                std::u16string name) {
+  touch_injector_->ChangeActionName(action, name);
 }
 
 int DisplayOverlayController::GetTouchInjectorActionsSize() {

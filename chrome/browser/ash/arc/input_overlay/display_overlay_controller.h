@@ -24,6 +24,7 @@ namespace arc::input_overlay {
 class Action;
 class ActionEditMenu;
 class ButtonOptionsMenu;
+class ButtonLabelList;
 class EditFinishView;
 class EditingList;
 class EducationalView;
@@ -80,6 +81,7 @@ class DisplayOverlayController : public ui::EventHandler,
   // Creates a new action with guidance from the reference action, and deletes
   // the reference action.
   void ChangeActionType(Action* reference_action_, ActionType type);
+  void ChangeActionName(Action* action, std::u16string name);
 
   int GetTouchInjectorActionsSize();
 
@@ -108,6 +110,7 @@ class DisplayOverlayController : public ui::EventHandler,
  private:
   friend class ActionView;
   friend class ArcInputOverlayManagerTest;
+  friend class ButtonLabelList;
   friend class ButtonOptionsMenu;
   friend class DisplayOverlayControllerTest;
   friend class EditingList;
@@ -155,6 +158,9 @@ class DisplayOverlayController : public ui::EventHandler,
   void AddButtonOptionsMenu(Action* action);
   void RemoveButtonOptionsMenu();
 
+  void AddButtonLabelList();
+  void RemoveButtonLabelList();
+
   void AddEditingList();
   void RemoveEditingList();
 
@@ -196,6 +202,7 @@ class DisplayOverlayController : public ui::EventHandler,
   raw_ptr<InputMappingView, DanglingUntriaged> input_mapping_view_ = nullptr;
   raw_ptr<InputMenuView, DanglingUntriaged> input_menu_view_ = nullptr;
   raw_ptr<ButtonOptionsMenu, DanglingUntriaged> button_options_menu_ = nullptr;
+  raw_ptr<ButtonLabelList> button_label_list_ = nullptr;
   raw_ptr<MenuEntryView, DanglingUntriaged> menu_entry_ = nullptr;
   raw_ptr<EditFinishView, DanglingUntriaged> edit_finish_view_ = nullptr;
   raw_ptr<MessageView, DanglingUntriaged> message_ = nullptr;

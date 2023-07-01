@@ -59,6 +59,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
   void OnActionRemoved(const Action& action) override;
   void OnActionTypeChanged(Action* action, Action* new_action) override;
   void OnActionUpdated(const Action& action) override;
+  void OnActionNameUpdated(const Action& action) override;
 
   raw_ptr<DisplayOverlayController> controller_;
   // It wraps ActionViewListItem.

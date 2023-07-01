@@ -12,7 +12,9 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/rounded_container.h"
 #include "ash/style/typography.h"
+#include "ash/system/unified/feature_tile.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
@@ -27,7 +29,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
@@ -41,92 +42,11 @@ namespace {
 // Whole Menu measurements.
 constexpr int kMenuWidth = 316;
 
-// Triangle.
-constexpr int kTriangleLength = 20;
+// Triangle measurements.
 constexpr int kTriangleHeight = 14;
-constexpr int kCornerRadius = 16;
-constexpr int kBorderThickness = 2;
 
 // Spacing.
 constexpr int kMenuActionGap = 8;
-
-// Draws the dialog shape path with round corner. It starts after the corner
-// radius on line #0 and draws clockwise.
-//
-// draw_triangle_on_left draws the triangle wedge on the left side of the box
-// instead of the right if set to true.
-//
-// action_offset draws the triangle wedge higher or lower if the position of
-// the action is too close to the top or bottom of the window. An offset of
-// zero draws the triangle wedge at the vertical center of the box.
-//  _0>__________
-// |             |
-// |             |
-// |             |
-// |              >
-// |             |
-// |             |
-// |_____________|
-//
-SkPath BackgroundPath(int height,
-                      bool draw_triangle_on_left,
-                      int action_offset) {
-  SkPath path;
-  int short_length = kMenuWidth - kTriangleHeight - 2 * kCornerRadius;
-  int short_height = height - 2 * kCornerRadius;
-  // If the offset is greater than the limit or less than the negative
-  // limit, set it respectively.
-  const int limit = short_height / 2 - kTriangleLength / 2;
-  if (action_offset > limit) {
-    action_offset = limit;
-  } else if (action_offset < -limit) {
-    action_offset = -limit;
-  }
-  if (draw_triangle_on_left) {
-    path.moveTo(kCornerRadius + kTriangleHeight, 0);
-  } else {
-    path.moveTo(kCornerRadius, 0);
-  }
-  // Top left after corner radius to top right corner radius.
-  path.rLineTo(short_length, 0);
-  path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, +kCornerRadius, +kCornerRadius);
-  if (draw_triangle_on_left) {
-    // Top right after corner radius to bottom right corner radius.
-    path.rLineTo(0, short_height);
-  } else {
-    // Top right after corner radius to midway point.
-    path.rLineTo(0, limit + action_offset);
-    // Triangle shape.
-    path.rLineTo(kTriangleHeight, kTriangleLength / 2);
-    path.rLineTo(-kTriangleHeight, kTriangleLength / 2);
-    // After midway point to bottom right corner radius.
-    path.rLineTo(0, limit - action_offset);
-  }
-  path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, -kCornerRadius, +kCornerRadius);
-  // Bottom right after corner radius to bottom left corner radius.
-  path.rLineTo(-short_length, 0);
-  path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, -kCornerRadius, -kCornerRadius);
-  if (draw_triangle_on_left) {
-    // bottom left after corner radius to midway point.
-    path.rLineTo(0, -limit + action_offset);
-    // Triangle shape.
-    path.rLineTo(-kTriangleHeight, -kTriangleLength / 2);
-    path.rLineTo(kTriangleHeight, -kTriangleLength / 2);
-    // After midway point to bottom right corner radius.
-    path.rLineTo(0, -limit - action_offset);
-  } else {
-    // Bottom left after corner radius to top left corner radius.
-    path.rLineTo(0, -short_height);
-  }
-  path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, +kCornerRadius, -kCornerRadius);
-  // Path finish.
-  path.close();
-  return path;
-}
 
 }  // namespace
 
@@ -269,8 +189,9 @@ void ButtonOptionsMenu::AddActionEdit() {
   // TODO(b/274690042): Replace placeholder text with localized strings.
   key_name_tag_ = action_edit_container_->AddChildView(
       NameTag::CreateNameTag(u"Selected key"));
-  labels_view_ = action_edit_container_->AddChildView(
-      EditLabels::CreateEditLabels(controller_, action_, key_name_tag_));
+  labels_view_ =
+      action_edit_container_->AddChildView(EditLabels::CreateEditLabels(
+          controller_, action_, key_name_tag_, /*set_title=*/false));
 }
 
 void ButtonOptionsMenu::AddActionNameLabel() {
@@ -282,24 +203,25 @@ void ButtonOptionsMenu::AddActionNameLabel() {
   container->SetUseDefaultFillLayout(true);
   container->SetBorderInsets(gfx::Insets::VH(14, 16));
 
-  auto* action_name_feature_tile =
+  action_name_tile_ =
       container->AddChildView(std::make_unique<ash::FeatureTile>(
           base::BindRepeating(
               &ButtonOptionsMenu::OnButtonLabelAssignmentPressed,
               base::Unretained(this)),
           /*is_togglable=*/false));
-  action_name_feature_tile->SetID(ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE);
-  action_name_feature_tile->SetAccessibleName(
+  action_name_tile_->SetID(ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE);
+  action_name_tile_->SetAccessibleName(
       // TODO(b/279117180): Replace placeholder names with a11y strings.
       l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
   // TODO(b/274690042): Replace placeholder text with localized strings.
-  action_name_feature_tile->SetLabel(u"Button label");
-  action_name_feature_tile->SetSubLabel(u"Unassigned");
-  action_name_feature_tile->SetSubLabelVisibility(true);
-  action_name_feature_tile->CreateDecorativeDrillInArrow();
-  action_name_feature_tile->SetBackground(
+  action_name_tile_->SetLabel(u"Button label");
+  action_name_tile_->SetSubLabel(
+      action_->name_label() ? *(action_->name_label()) : u"Unassigned");
+  action_name_tile_->SetSubLabelVisibility(true);
+  action_name_tile_->CreateDecorativeDrillInArrow();
+  action_name_tile_->SetBackground(
       views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  action_name_feature_tile->SetVisible(true);
+  action_name_tile_->SetVisible(true);
 }
 
 void ButtonOptionsMenu::CalculatePosition() {
@@ -338,28 +260,18 @@ void ButtonOptionsMenu::OnDoneButtonPressed() {
 }
 
 void ButtonOptionsMenu::OnButtonLabelAssignmentPressed() {
-  // TODO(b/270969760): Implement key binding change functionality.
+  SetVisible(false);
+  controller_->AddButtonLabelList();
 }
 
 void ButtonOptionsMenu::OnPaintBackground(gfx::Canvas* canvas) {
-  cc::PaintFlags flags;
-  // Draw the shape.
-  flags.setAntiAlias(true);
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  ui::ColorProvider* color_provider = GetColorProvider();
-  flags.setColor(color_provider->GetColor(cros_tokens::kCrosSysBaseElevated));
   int height = GetHeightForWidth(kMenuWidth);
-  bool draw_triangle_on_left = action_->on_left_or_middle_side();
-  int action_offset = CalculateActionOffset(height);
-  canvas->DrawPath(BackgroundPath(height, draw_triangle_on_left, action_offset),
-                   flags);
-  // Draw the border.
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  // TODO(b/270969760): Change to "sys.BorderHighlight1" when added.
-  flags.setColor(color_provider->GetColor(cros_tokens::kCrosSysSystemBorder1));
-  flags.setStrokeWidth(kBorderThickness);
-  canvas->DrawPath(BackgroundPath(height, draw_triangle_on_left, action_offset),
-                   flags);
+  ui::ColorProvider* color_provider = GetColorProvider();
+  DrawBackgroundContainerWithArrow(
+      canvas, height, action_->on_left_or_middle_side(),
+      CalculateActionOffset(height),
+      color_provider->GetColor(cros_tokens::kCrosSysBaseElevated),
+      color_provider->GetColor(cros_tokens::kCrosSysSystemBorder1));
 }
 
 gfx::Size ButtonOptionsMenu::CalculatePreferredSize() const {
@@ -378,14 +290,24 @@ void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
   action_ = new_action;
   button_group_->set_action(new_action);
   action_edit_container_->RemoveChildViewT(labels_view_);
-  labels_view_ = action_edit_container_->AddChildView(
-      EditLabels::CreateEditLabels(controller_, action_, key_name_tag_));
+  labels_view_ =
+      action_edit_container_->AddChildView(EditLabels::CreateEditLabels(
+          controller_, action_, key_name_tag_, /*set_title=*/false));
   SizeToPreferredSize();
 }
 
 void ButtonOptionsMenu::OnActionUpdated(const Action& action) {
   if (action_ == &action) {
     labels_view_->OnActionUpdated();
+  }
+}
+
+void ButtonOptionsMenu::OnActionNameUpdated(const Action& action) {
+  if (action_ == &action) {
+    auto name_label = action_->name_label();
+    if (name_label) {
+      action_name_tile_->SetSubLabel(*name_label);
+    }
   }
 }
 

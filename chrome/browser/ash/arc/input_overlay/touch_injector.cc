@@ -897,6 +897,12 @@ void TouchInjector::NotifyActionUpdated(const Action& action) {
   }
 }
 
+void TouchInjector::NotifyActionNameUpdated(const Action& action) {
+  for (auto& observer : observers_) {
+    observer.OnActionNameUpdated(action);
+  }
+}
+
 int TouchInjector::GetNextActionID() {
   return next_action_id_++;
 }
@@ -939,6 +945,13 @@ void TouchInjector::RemoveAction(Action* action) {
   actions_.erase(it);
 
   NotifyActionRemoved(*action);
+}
+
+void TouchInjector::ChangeActionName(Action* action, std::u16string name) {
+  DCHECK(IsBeta());
+  action->set_name_label(name);
+
+  NotifyActionNameUpdated(*action);
 }
 
 void TouchInjector::RecordMenuStateOnLaunch() {

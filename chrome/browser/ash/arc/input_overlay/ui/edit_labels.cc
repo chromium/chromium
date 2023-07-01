@@ -17,16 +17,22 @@ namespace arc::input_overlay {
 std::unique_ptr<EditLabels> EditLabels::CreateEditLabels(
     DisplayOverlayController* controller,
     Action* action,
-    NameTag* name_tag) {
-  auto labels = std::make_unique<EditLabels>(controller, action, name_tag);
+    NameTag* name_tag,
+    bool set_title) {
+  auto labels =
+      std::make_unique<EditLabels>(controller, action, name_tag, set_title);
   labels->Init();
   return labels;
 }
 
 EditLabels::EditLabels(DisplayOverlayController* controller,
                        Action* action,
-                       NameTag* name_tag)
-    : controller_(controller), action_(action), name_tag_(name_tag) {}
+                       NameTag* name_tag,
+                       bool set_title)
+    : controller_(controller),
+      action_(action),
+      name_tag_(name_tag),
+      set_title_(set_title) {}
 
 EditLabels::~EditLabels() = default;
 
@@ -43,6 +49,9 @@ void EditLabels::Init() {
   }
 
   UpdateNameTag();
+  if (set_title_) {
+    UpdateNameTagTitle();
+  }
 }
 
 void EditLabels::OnActionUpdated() {
@@ -51,6 +60,13 @@ void EditLabels::OnActionUpdated() {
   }
 
   UpdateNameTag();
+}
+
+void EditLabels::UpdateNameTagTitle() {
+  auto name_label = action_->name_label();
+  if (name_label) {
+    name_tag_->SetTitle(*name_label);
+  }
 }
 
 void EditLabels::SetNameTagState(bool is_error,

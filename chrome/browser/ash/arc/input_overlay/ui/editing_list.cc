@@ -241,4 +241,16 @@ void EditingList::OnActionUpdated(const Action& action) {
   }
 }
 
+void EditingList::OnActionNameUpdated(const Action& action) {
+  DCHECK(scroll_content_);
+  for (auto* child : scroll_content_->children()) {
+    auto* list_item = static_cast<ActionViewListItem*>(child);
+    DCHECK(list_item);
+    if (list_item->action() == &action) {
+      list_item->OnActionNameUpdated();
+      break;
+    }
+  }
+}
+
 }  // namespace arc::input_overlay

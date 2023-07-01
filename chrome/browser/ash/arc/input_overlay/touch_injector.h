@@ -123,6 +123,7 @@ class TouchInjector : public ui::EventRewriter {
   // Create a new action with guidance from the reference action, and delete
   // the reference action.
   void ChangeActionType(Action* reference_action, ActionType action_type);
+  void ChangeActionName(Action* action, std::u16string name);
 
   void AddObserver(TouchInjectorObserver* observer);
   void RemoveObserver(TouchInjectorObserver* observer);
@@ -251,6 +252,7 @@ class TouchInjector : public ui::EventRewriter {
   void NotifyActionRemoved(Action& action);
   void NotifyActionTypeChanged(Action* action, Action* new_action);
   void NotifyActionUpdated(const Action& action);
+  void NotifyActionNameUpdated(const Action& action);
 
   // For test.
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id);
