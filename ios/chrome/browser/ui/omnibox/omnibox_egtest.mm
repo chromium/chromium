@@ -618,9 +618,13 @@ void FocusFakebox() {
                  @"Context menu is still visible.");
 }
 
-// TODO(crbug.com/1453240): Re-enable when fixed.
-- (void)DISABLED_testOmniboxDefocusesOnTabSwitch {
+// Tests that the omnibox defocuses when switching to another tab.
+- (void)testOmniboxDefocusesOnTabSwitch {
+  [ChromeEarlGrey closeAllTabs];
+
+  [ChromeEarlGrey openNewTab];
   [self openPage1];
+
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey waitForMainTabCount:2];
   [self openPage2];
@@ -643,13 +647,10 @@ void FocusFakebox() {
       assertWithMatcher:grey_notVisible()];
 }
 
+// Tests that the omnibox defocuses when switching to another incognito tab.
 - (void)testOmniboxDefocusesOnTabSwitchIncognito {
-#if !TARGET_IPHONE_SIMULATOR
-  // Test flaky, see TODO:(crbug.com/1211373).
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disable on iPad device.");
-  }
-#endif
+  [ChromeEarlGrey closeAllTabs];
+
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey waitForIncognitoTabCount:1];
   [self openPage1];
@@ -674,6 +675,9 @@ void FocusFakebox() {
   [self checkLocationBarSteadyState];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
       assertWithMatcher:grey_notVisible()];
+
+  // Exit incognito.
+  [ChromeEarlGrey closeAllTabs];
 }
 
 #pragma mark - Helpers
