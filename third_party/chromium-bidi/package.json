@@ -212,7 +212,7 @@
     "source-map-support": "0.5.21",
     "terser": "5.18.2",
     "tslib": "2.6.0",
-    "typescript": "5.1.5",
+    "typescript": "5.1.6",
     "websocket": "1.0.34",
     "wireit": "0.9.5",
     "ws": "8.13.0",
