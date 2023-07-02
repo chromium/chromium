@@ -134,12 +134,6 @@ RegisteredTaskSource PriorityQueue::PopTaskSource() {
       task_source_and_sort_key.take_task_source();
   container_.pop();
 
-  // https://linear.app/replay/issue/RUN-753
-  if (!recordreplay::AreEventsDisallowed()) {
-    recordreplay::Assert("PriorityQueue::PopTaskSource %d",
-                         recordreplay::PointerId(task_source.get()));
-  }
-
   return task_source;
 }
 

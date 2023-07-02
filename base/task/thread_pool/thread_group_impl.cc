@@ -96,8 +96,7 @@ class ThreadGroupImpl::ScopedCommandsExecutor
     : public ThreadGroup::BaseScopedCommandsExecutor {
  public:
   explicit ScopedCommandsExecutor(ThreadGroupImpl* outer) : outer_(outer) {
-    if (recordreplay::AreEventsDisallowed())
-      CHECK(outer_->RecordReplayUnordered());
+    DCHECK(!recordreplay::AreEventsDisallowed() || outer_->RecordReplayUnordered());
   }
 
   ScopedCommandsExecutor(const ScopedCommandsExecutor&) = delete;
@@ -574,12 +573,8 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   outer_->EnsureEnoughWorkersLockRequired(&executor);
   executor.FlushWorkerCreation(&outer_->lock_);
 
-  if (!CanGetWorkLockRequired(&executor, worker)) {
-    // https://linear.app/replay/issue/RUN-753
-    if (!recordreplay::AreEventsDisallowed())
-      recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #1");
+  if (!CanGetWorkLockRequired(&executor, worker))
     return nullptr;
-  }
 
   RegisteredTaskSource task_source;
   TaskPriority priority;
@@ -597,9 +592,6 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
     task_source = outer_->TakeRegisteredTaskSource(&executor);
   }
   if (!task_source) {
-    // https://linear.app/replay/issue/RUN-753
-    if (!recordreplay::AreEventsDisallowed())
-      recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #2");
     OnWorkerBecomesIdleLockRequired(&executor, worker);
     return nullptr;
   }
@@ -609,12 +601,6 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   DCHECK(!outer_->idle_workers_stack_.Contains(worker));
   write_worker().current_task_priority = priority;
   write_worker().current_shutdown_behavior = task_source->shutdown_behavior();
-
-  // https://linear.app/replay/issue/RUN-753
-  if (!recordreplay::AreEventsDisallowed()) {
-    recordreplay::Assert("WorkerThreadDelegateImpl::GetWork Done %d",
-                         recordreplay::PointerId(task_source.get()));
-  }
 
   return task_source;
 }

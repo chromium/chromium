@@ -38,11 +38,15 @@ namespace recordreplay {
         (const char* feature, const char* subfeature),                  \
         (feature, subfeature), bool, true)                              \
   Macro(V8RecordReplayHasDisabledFeatures, (), (), bool, false)         \
+  Macro(V8RecordReplayAreAssertsDisabled, (), (), bool, false)          \
   Macro(V8IsMainThread, (), (), bool, false)                            \
   Macro(V8RecordReplayHadMismatch, (), (), bool, false)
 
 #define ForEachV8APIVoid(Macro)                                         \
   Macro(V8RecordReplayAssertVA,                                         \
+        (const char* format, va_list args),                             \
+        (format, args))                                                 \
+  Macro(V8RecordReplayAssertMaybeEventsDisallowedVA,                    \
         (const char* format, va_list args),                             \
         (format, args))                                                 \
   Macro(V8RecordReplayAssertBytes,                                      \
@@ -223,6 +227,15 @@ void Assert(const char* format, ...) {
 #endif
 }
 
+void AssertMaybeEventsDisallowed(const char* format, ...) {
+#ifndef NACL_TC_REV
+  va_list ap;
+  va_start(ap, format);
+  V8RecordReplayAssertMaybeEventsDisallowedVA(format, ap);
+  va_end(ap);
+#endif
+}
+
 void Diagnostic(const char* format, ...) {
 #ifndef NACL_TC_REV
   va_list ap;
@@ -252,6 +265,10 @@ void Trace(const char* format, ...) {
 
 void AssertBytes(const char* why, const void* buf, size_t size) {
   V8RecordReplayAssertBytes(why, buf, size);
+}
+
+bool AreAssertsDisabled() {
+  return V8RecordReplayAreAssertsDisabled();
 }
 
 void Print(const char* format, ...) {

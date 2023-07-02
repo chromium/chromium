@@ -99,10 +99,10 @@ bool WaitableEvent::IsSignaled() {
 // -----------------------------------------------------------------------------
 class SyncWaiter : public WaitableEvent::Waiter {
  public:
-  SyncWaiter()
+  SyncWaiter(bool record_replay_unordered)
      : fired_(false),
        signaling_event_(nullptr),
-       lock_(recordreplay::AreEventsDisallowed() ? nullptr : "SyncWaiter.lock_"),
+       lock_(record_replay_unordered ? nullptr : "SyncWaiter.lock_"),
        cv_(&lock_) {}
 
   ~SyncWaiter() override {}
@@ -203,7 +203,7 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
     return true;
   }
 
-  SyncWaiter sw;
+  SyncWaiter sw(kernel_->record_replay_unordered_);
   if (!waiting_is_blocking_)
     sw.cv()->declare_only_used_while_idle();
   sw.lock()->Acquire();
@@ -275,8 +275,10 @@ cmp_fst_addr(const std::pair<WaitableEvent*, unsigned> &a,
 // NO_THREAD_SAFETY_ANALYSIS: Complex control flow.
 size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables,
                                size_t count) NO_THREAD_SAFETY_ANALYSIS {
+  bool record_replay_unordered = count && raw_waitables[0]->kernel_->record_replay_unordered_;
+
   absl::optional<recordreplay::AutoDisallowEvents> disallow;
-  if (count && raw_waitables[0]->kernel_->record_replay_unordered_)
+  if (record_replay_unordered)
     disallow.emplace("WaitableEvent::WaitMany");
 
   DCHECK(count) << "Cannot wait on no events";
@@ -304,7 +306,7 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables,
     DCHECK(waitables[i].first != waitables[i+1].first);
   }
 
-  SyncWaiter sw;
+  SyncWaiter sw(record_replay_unordered);
 
   const size_t r = EnqueueMany(&waitables[0], count, &sw);
   if (r < count) {

@@ -34,7 +34,9 @@ void Diagnostic(const char* format, ...);
 void Warning(const char* format, ...);
 void Trace(const char* format, ...);
 void Assert(const char* format, ...);
+void AssertMaybeEventsDisallowed(const char* format, ...);
 void AssertBytes(const char* why, const void* buf, size_t size);
+bool AreAssertsDisabled();
 
 uintptr_t RecordReplayValue(const char* why, uintptr_t v);
 void RecordReplayBytes(const char* why, void* buf, size_t size);
