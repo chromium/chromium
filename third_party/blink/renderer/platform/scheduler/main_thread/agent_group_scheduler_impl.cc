@@ -137,8 +137,10 @@ void AgentGroupSchedulerImpl::RemoveAgent(Agent* agent) {
 }
 
 void AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint() {
-  recordreplay::Assert("[RUN-2056-2211] AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint Start numAgents=%d",
-    (int) agents_->size());
+  recordreplay::Assert(
+      "[RUN-2056-2298] AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint "
+      "Start %d %d",
+      RecordReplayId(), (int)agents_->size());
 
   for (Agent* agent : *agents_) {
     agent->PerformMicrotaskCheckpoint();

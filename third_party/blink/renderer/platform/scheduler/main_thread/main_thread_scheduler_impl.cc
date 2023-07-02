@@ -1118,7 +1118,9 @@ void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
   // This will fallback to execute the microtask checkpoint for the
   // default EventLoop for the isolate.
   recordreplay::Assert(
-      "[RUN-1593-1876] MainThreadSchedulerImpl::PerformMicrotaskCheckpoint %d", !!isolate());
+      "[RUN-2056-2298] MainThreadSchedulerImpl::PerformMicrotaskCheckpoint %d %d %u",
+      recordreplay::PointerId(this), !!isolate(),
+      main_thread_only().agent_group_schedulers.size());
   if (isolate())
     EventLoop::PerformIsolateGlobalMicrotasksCheckpoint(isolate());
   // Perform a microtask checkpoint for each AgentSchedulingGroup. This
