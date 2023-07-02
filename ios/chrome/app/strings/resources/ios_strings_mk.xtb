@@ -1059,6 +1059,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7531345132340165516">Моментален сајт</translation>
 <translation id="7537586195939242955">Pass не може да се инсталира во Passbook во моментов.</translation>
 <translation id="754655535278952384">Последна проверка: <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Последна картичка користена на <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">За да исклучите, отворете <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" /> и одете на „Опции за лозинки“.</translation>
 <translation id="7554645225856321710">Затвори ги сите</translation>
 <translation id="7554791636758816595">Нова картичка</translation>
@@ -1204,6 +1205,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8428045167754449968">Град</translation>
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8428634594422941299">Сфатив</translation>
+<translation id="8446201778524791138">Изменете дејства</translation>
 <translation id="8446884382197647889">Дознај повеќе</translation>
 <translation id="8458397775385147834">1 ставка е избришана</translation>
 <translation id="8459333855531264009">Не е безбедно</translation>

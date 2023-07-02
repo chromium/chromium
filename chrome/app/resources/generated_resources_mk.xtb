@@ -390,6 +390,7 @@
 <translation id="131364520783682672">Големи букви</translation>
 <translation id="1313660246522271310">Ќе ве одјавиме од сите сајтови, вклучително и од отворените картички</translation>
 <translation id="1313705515580255288">Вашите обележувачи, историја и други поставки ќе се синхронизираат со вашата сметка на Google.</translation>
+<translation id="1315184295353569363">Отстранете ја групата од зачуваните</translation>
 <translation id="1316136264406804862">Се пребарува…</translation>
 <translation id="1316248800168909509">Не можеше да се поврзе со <ph name="DEVICE" />. Обидете се повторно.</translation>
 <translation id="1316495628809031177">Синхронизацијата е паузирана</translation>
@@ -2920,6 +2921,7 @@
 <translation id="3429160811076349561">Пробните функции се исклучени</translation>
 <translation id="3429271624041785769">Јазици за содржини од интернет</translation>
 <translation id="3429275422858276529">Обележете ја страницава за полесно да ја најдете подоцна</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - ослободено: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Заклучи при излегување</translation>
 <translation id="3433621910545056227">Уф! Системот не успеа да воспостави заклучување на уредот за атрибути за време на инсталацијата.</translation>
@@ -4023,6 +4025,7 @@
 <translation id="4361142739114356624">Приватниот клуч за овој Сертификат на клиент недостасува или е неважечки</translation>
 <translation id="4361745360460842907">Отвори како картичка</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> е стандардната сметка за вашиот <ph name="DEVICE_TYPE" /></translation>
+<translation id="4363215264289239958">Апликации Bruschetta</translation>
 <translation id="4363771538994847871">Не се најдени дестинации за Cast. Ви треба помош?</translation>
 <translation id="4364327530094270451">Диња</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> споделува прозорец.</translation>
@@ -5123,6 +5126,7 @@
 <translation id="5319359161174645648">Google го препорачува Chrome</translation>
 <translation id="5319712128756744240">Спарете нов уред</translation>
 <translation id="5320135788267874712">Ново име на уредот</translation>
+<translation id="5320261549977878764">Отстранете ја групата од зачуваните</translation>
 <translation id="532247166573571973">Серверот може да е недостапен. Обидете се повторно подоцна.</translation>
 <translation id="5324300749339591280">Список со апликации</translation>
 <translation id="5324780743567488672">Автоматско поставување на часовната зона преку вашата локација</translation>

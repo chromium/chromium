@@ -390,6 +390,7 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">המערכת תוציא אותך מכל האתרים, כולל בכרטיסיות הפתוחות.</translation>
 <translation id="1313705515580255288">‏הסימניות, ההיסטוריה והגדרות נוספות יסונכרנו עם חשבון Google שלך.</translation>
+<translation id="1315184295353569363">ביטול השמירה של הקבוצה</translation>
 <translation id="1316136264406804862">מתבצע חיפוש...</translation>
 <translation id="1316248800168909509">לא ניתן היה להתחבר אל <ph name="DEVICE" />. אפשר לנסות שוב.</translation>
 <translation id="1316495628809031177">הסנכרון הושהה</translation>
@@ -2913,6 +2914,7 @@
 <translation id="3429160811076349561">התכונות הניסיוניות מושבתות</translation>
 <translation id="3429271624041785769">השפות של תוכן האינטרנט</translation>
 <translation id="3429275422858276529">כדאי לסמן את הדף בסימנייה כדי לגשת אליו בקלות בהמשך</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – הנפח שהתפנה: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">נעילה ביציאה</translation>
 <translation id="3433621910545056227">אופס!  המערכת לא הצליחה ליצור את נעילת התכונות של המכשיר המתרחשת בזמן ההתקנה.</translation>
@@ -4013,6 +4015,7 @@
 <translation id="4361142739114356624">המפתח הפרטי לאישור לקוח זה חסר או אינו חוקי</translation>
 <translation id="4361745360460842907">פתיחה ככרטיסייה</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> הוא חשבון ברירת המחדל ב-<ph name="DEVICE_TYPE" /> שלך</translation>
+<translation id="4363215264289239958">‏אפליקציות Bruschetta</translation>
 <translation id="4363771538994847871">לא נמצא יעד להעברה. רוצה עזרה?</translation>
 <translation id="4364327530094270451">מלון</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> משתף חלון.</translation>
@@ -5112,6 +5115,7 @@
 <translation id="5319359161174645648">‏Google ממליצה על Chrome</translation>
 <translation id="5319712128756744240">התאמת מכשיר חדש</translation>
 <translation id="5320135788267874712">השם החדש של המכשיר</translation>
+<translation id="5320261549977878764">ביטול השמירה של הקבוצה</translation>
 <translation id="532247166573571973">ייתכן שהשרת אינו נגיש. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="5324300749339591280">רשימת האפליקציות</translation>
 <translation id="5324780743567488672">היעזרות במיקום להגדרה אוטומטית של אזור הזמן</translation>

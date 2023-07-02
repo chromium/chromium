@@ -7234,6 +7234,15 @@ Trường <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> cho biết lượ
 <translation id="7298197471363105063">Ghi đè First-Party Set.</translation>
 <translation id="7302043767260300182">Độ trễ khóa màn hình khi chạy trên nguồn AC</translation>
 <translation id="7303902834678570827">Người dùng Phiên khách được quản lý không thể lưu trữ các chế độ cài đặt hiển thị trên toàn thiết bị</translation>
+<translation id="7306926210354955892">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định hành động cần thực hiện khi thư mục dữ liệu ARC của người dùng được tạo bằng virtio-fs. Trừ phi dữ liệu virtio-fs được di chuyển sang virtio-blk, các ứng dụng Android có thể chạy chậm hơn trên máy ảo ARC.
+
+      Nếu bạn đặt chính sách này thành:
+
+      * <ph name="DO_NOT_PROMPT" />, hệ thống sẽ không yêu cầu người dùng thực hiện quy trình di chuyển. Đây là giá trị mặc định khi bạn không đặt chính sách.
+
+      * <ph name="PROMPT" /> (hoặc một giá trị không được hỗ trợ), hệ thống sẽ nhắc người dùng thực hiện quy trình di chuyển dữ liệu khi họ đăng nhập. Quá trình này có thể mất tối đa 10 phút.
+
+      Chính sách này chỉ áp dụng cho các thiết bị ARM di chuyển sang ARCVM.</translation>
 <translation id="731208205557053914">Báo cáo thông tin về VPD</translation>
 <translation id="7313672174502374994">Hàm băm SHA-256 của hình nền.</translation>
 <translation id="7313681786668291607">Nếu đặt chính sách này, bạn có thể chỉ định hoạt động của hệ thống khi khởi động. Việc tắt chế độ cài đặt này tương tự như việc không đặt vì <ph name="PRODUCT_NAME" /> chắc chắn đã chỉ định hành vi khi khởi động.
