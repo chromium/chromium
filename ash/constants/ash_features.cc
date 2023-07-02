@@ -980,6 +980,11 @@ BASE_FEATURE(kFederatedServiceScheduleTasks,
              "FederatedServiceScheduleTasks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the federated strings service.
+BASE_FEATURE(kFederatedStringsService,
+             "FederatedStringsService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kFederatedTimezoneCodePhh,
              "FederatedTimezoneCodePhh",
              base::FEATURE_DISABLED_BY_DEFAULT);
