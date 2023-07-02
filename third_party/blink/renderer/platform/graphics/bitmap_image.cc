@@ -87,9 +87,6 @@ bool BitmapImage::CurrentFrameHasSingleSecurityOrigin() const {
 }
 
 void BitmapImage::DestroyDecodedData() {
-  recordreplay::Assert(
-      "[RUN-1975-2225] BitmapImage::DestroyDecodedData %d %u",
-      paint_image_id(), reset_animation_sequence_id_);
   cached_frame_ = PaintImage();
   NotifyMemoryChanged();
 }

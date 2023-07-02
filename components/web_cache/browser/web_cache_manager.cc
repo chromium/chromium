@@ -360,12 +360,15 @@ void WebCacheManager::ClearRendererCache(
     content::RenderProcessHost* host =
         content::RenderProcessHost::FromID(*iter);
     recordreplay::Assert(
-        "[RUN-1975-2264] WebCacheManager::ClearRendererCache %d %d %d %d/%zu",
+        "[RUN-1975-2287] WebCacheManager::ClearRendererCache A %d %d %d %d/%zu",
         *iter, !!host, (int)occasion,
         std::distance(renderers.begin(), iter), renderers.size());
     if (host) {
       // Find the mojo::Remote<WebCache> by renderer process id.
       auto it = web_cache_services_.find(*iter);
+      recordreplay::Assert(
+          "[RUN-1975-2287] WebCacheManager::ClearRendererCache B %d",
+          it != web_cache_services_.end());
       if (it != web_cache_services_.end()) {
         WebCacheInfo& cache_info = it->second;
         DCHECK(cache_info.service);
@@ -373,6 +376,8 @@ void WebCacheManager::ClearRendererCache(
       }
     }
   }
+  recordreplay::Assert(
+      "[RUN-1975-2287] WebCacheManager::ClearRendererCache C");
 }
 
 void WebCacheManager::ReviseAllocationStrategy() {

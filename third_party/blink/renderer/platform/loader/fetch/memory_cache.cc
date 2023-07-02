@@ -369,6 +369,8 @@ void MemoryCache::EvictResources() {
 void MemoryCache::Prune() {
   TRACE_EVENT0("renderer", "MemoryCache::prune()");
 
+  recordreplay::Assert("[RUN-1975-2287] MemoryCache::Prune");
+
   // Cache state can vary when replaying, make sure we don't interact
   // with the recording while pruning.
   recordreplay::AutoDisallowEvents disallow("MemoryCache::Prune");
