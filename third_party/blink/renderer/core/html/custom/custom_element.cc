@@ -126,6 +126,10 @@ HTMLElement* CustomElement::CreateCustomElement(Document& document,
                                                 const QualifiedName& tag_name,
                                                 CreateElementFlags flags) {
   DCHECK(ShouldCreateCustomElement(tag_name)) << tag_name;
+
+  recordreplay::Assert(
+      "[RUN-1492-2299] CustomElement::CreateCustomElement %s", tag_name.ToString().Utf8().c_str());
+
   // 4. Let definition be the result of looking up a custom element
   // definition given document, namespace, localName, and is.
   if (auto* definition = DefinitionFor(
