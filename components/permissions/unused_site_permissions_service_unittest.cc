@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/permissions/unused_site_permissions_service.h"
+#include <cstdint>
 #include <ctime>
 #include <list>
 #include <memory>
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -40,6 +44,7 @@ class UnusedSitePermissionsServiceTest
     hcsm_->SetClockForTesting(&clock_);
     service_ = std::make_unique<UnusedSitePermissionsService>(hcsm_.get());
     service_->SetClockForTesting(&clock_);
+    callback_count_ = 0;
   }
 
   void TearDown() override {
@@ -48,11 +53,21 @@ class UnusedSitePermissionsServiceTest
     content::RenderViewHostTestHarness::TearDown();
   }
 
+  void OnUpdateAsyncFinished(uint8_t expected_num_callbacks,
+                             const base::RepeatingClosure& quit_callback) {
+    callback_count_++;
+    if (callback_count_ == expected_num_callbacks) {
+      quit_callback.Run();
+    }
+  }
+
   base::SimpleTestClock* clock() { return &clock_; }
 
   UnusedSitePermissionsService* service() { return service_.get(); }
 
   HostContentSettingsMap* hcsm() { return hcsm_.get(); }
+
+  uint8_t callback_count() { return callback_count_; }
 
   base::Time GetLastVisitedDate(GURL url, ContentSettingsType type) {
     content_settings::SettingInfo info;
@@ -90,6 +105,7 @@ class UnusedSitePermissionsServiceTest
   std::unique_ptr<UnusedSitePermissionsService> service_;
   scoped_refptr<HostContentSettingsMap> hcsm_;
   base::SimpleTestClock clock_;
+  uint8_t callback_count_;
 };
 
 TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
@@ -671,6 +687,22 @@ TEST_F(UnusedSitePermissionsServiceTest,
   revoked_permissions_list = hcsm()->GetSettingsForOneType(
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
   EXPECT_EQ(1U, revoked_permissions_list.size());
+}
+
+TEST_F(UnusedSitePermissionsServiceTest, UpdateUnusedPermissionsAsync) {
+  EXPECT_EQ(callback_count(), 0);
+  // The repeating callback should be called every time after
+  // UpdateUnusedPermissionsAsync has finished running.
+  base::RunLoop loop;
+  int num_calls = 2;
+  base::RepeatingCallback callback = base::BindRepeating(
+      &UnusedSitePermissionsServiceTest::OnUpdateAsyncFinished,
+      base::Unretained(this), num_calls, loop.QuitClosure());
+  for (int i = 0; i < num_calls; i++) {
+    service()->UpdateUnusedPermissionsAsync(callback);
+  }
+  loop.Run();
+  EXPECT_EQ(callback_count(), 2);
 }
 
 }  // namespace permissions

@@ -256,14 +256,14 @@ void UnusedSitePermissionsService::ClearRevokedPermissionsList() {
 }
 
 void UnusedSitePermissionsService::UpdateUnusedPermissionsAsync(
-    base::RepeatingClosure callback) {
+    const base::RepeatingClosure& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&GetUnusedPermissionsMap, clock_, hcsm_),
       base::BindOnce(
           &UnusedSitePermissionsService::OnUnusedPermissionsMapRetrieved,
-          AsWeakPtr(), std::move(callback)));
+          AsWeakPtr(), callback));
 }
 
 void UnusedSitePermissionsService::IgnoreOriginForAutoRevocation(
@@ -312,13 +312,13 @@ void UnusedSitePermissionsService::OnPageVisited(const url::Origin& origin) {
 }
 
 void UnusedSitePermissionsService::OnUnusedPermissionsMapRetrieved(
-    base::OnceClosure callback,
+    const base::RepeatingClosure& callback,
     UnusedPermissionMap map) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   recently_unused_permissions_ = map;
   RevokeUnusedPermissions();
   if (callback) {
-    std::move(callback).Run();
+    callback.Run();
   }
 }
 

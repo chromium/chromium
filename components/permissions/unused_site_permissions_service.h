@@ -131,14 +131,17 @@ class UnusedSitePermissionsService
       std::map<std::string, std::list<ContentSettingEntry>>;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(UnusedSitePermissionsServiceTest,
+                           UpdateUnusedPermissionsAsync);
+
   // Called by TabHelper when a URL was visited.
   void OnPageVisited(const url::Origin& origin);
 
   // Called on UI thread
-  void UpdateUnusedPermissionsAsync(base::RepeatingClosure callback);
+  void UpdateUnusedPermissionsAsync(const base::RepeatingClosure& callback);
 
   // Called on UI thread.
-  void OnUnusedPermissionsMapRetrieved(base::OnceClosure callback,
+  void OnUnusedPermissionsMapRetrieved(const base::RepeatingClosure& callback,
                                        UnusedPermissionMap map);
 
   // Removes a pattern from the list of revoked permissions so that the entry is
