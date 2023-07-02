@@ -32,6 +32,7 @@ namespace blink {
 IdTargetObserver::IdTargetObserver(IdTargetObserverRegistry& observer_registry,
                                    const AtomicString& id)
     : registry_(&observer_registry), id_(id) {
+  recordreplay::Assert("[RUN-1436-2286] IdTargetObserver %s", id.Utf8().c_str());
   Registry().AddObserver(id_, this);
 }
 
@@ -43,6 +44,12 @@ void IdTargetObserver::Trace(Visitor* visitor) const {
 
 void IdTargetObserver::Unregister() {
   Registry().RemoveObserver(id_, this);
+}
+
+unsigned IdTargetObserver::GetHash() const {
+  // WTF::StringHash comments: "The GetHash() functions on StringHash do
+  // not support null strings".
+  return id_.IsNull() ? 0 : WTF::StringHash::GetHash(id_);
 }
 
 }  // namespace blink

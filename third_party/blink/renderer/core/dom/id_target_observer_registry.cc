@@ -72,6 +72,9 @@ void IdTargetObserverRegistry::NotifyObserversInternal(const AtomicString& id) {
 
   HeapVector<Member<IdTargetObserver>> copy(*notifying_observers_in_set_);
   for (const auto& observer : copy) {
+    recordreplay::Assert(
+        "[RUN-1436-2286] IdTargetObserverRegistry::NotifyObserversInternal %d %u",
+        notifying_observers_in_set_->Contains(observer), observer->GetHash());
     if (notifying_observers_in_set_->Contains(observer))
       observer->IdTargetChanged();
   }

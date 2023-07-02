@@ -52,6 +52,8 @@ namespace blink {
 namespace {
 
 FontFallbackMap& GetFontFallbackMap(FontSelector* font_selector) {
+  recordreplay::Assert("[RUN-1436-2286] GetFontFallbackMap %d",
+                       font_selector ? font_selector->RecordReplayId() : -1);
   if (font_selector)
     return font_selector->GetFontFallbackMap();
   return FontCache::Get().GetFontFallbackMap();

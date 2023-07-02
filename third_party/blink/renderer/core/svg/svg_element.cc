@@ -597,6 +597,9 @@ void SVGElement::AddInstance(SVGElement* instance) {
   DCHECK(!instances.Contains(instance));
 
   instances.insert(instance);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                           "SVGElement"))
+    EnsureSVGRareData()->ReplayStrongElementInstances().insert(instance);
 }
 
 void SVGElement::RemoveInstance(SVGElement* instance) {
@@ -611,6 +614,9 @@ void SVGElement::RemoveInstance(SVGElement* instance) {
       SvgRareData()->ElementInstances();
 
   instances.erase(instance);
+
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "SVGElement"))
+    EnsureSVGRareData()->ReplayStrongElementInstances().erase(instance);
 }
 
 static HeapHashSet<WeakMember<SVGElement>>& EmptyInstances() {
@@ -1120,6 +1126,9 @@ void SVGElement::InvalidateInstances() {
   }
 
   SvgRareData()->ElementInstances().clear();
+
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "SVGElement"))
+    EnsureSVGRareData()->ReplayStrongElementInstances().clear();
 }
 
 void SVGElement::SetNeedsStyleRecalcForInstances(

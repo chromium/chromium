@@ -41,8 +41,6 @@ void FontFallbackMap::Remove(const FontDescription& font_description) {
   DCHECK_NE(iter, fallback_list_for_description_.end());
   DCHECK(iter->value->IsValid());
   DCHECK(iter->value->HasOneRef());
-  recordreplay::Assert("[RUN-1436-2260] FontFallbackMap::Remove %s",
-                       font_description.ToString().Utf8().c_str());
   fallback_list_for_description_.erase(iter);
 }
 
@@ -50,7 +48,6 @@ void FontFallbackMap::InvalidateAll() {
   lock_.AssertAcquired();
   for (auto& entry : fallback_list_for_description_)
     entry.value->MarkInvalid();
-  recordreplay::Assert("[RUN-1436-2260] FontFallbackMap::InvalidateAll");
   fallback_list_for_description_.clear();
 }
 

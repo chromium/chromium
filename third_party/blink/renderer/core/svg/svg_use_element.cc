@@ -584,6 +584,9 @@ bool SVGUseElement::ShadowTreeRebuildPending() const {
 }
 
 void SVGUseElement::InvalidateShadowTree() {
+  recordreplay::Assert(
+      "[RUN-1436-2286] SVGUseElement::InvalidateTargetReference A %d %d",
+      RecordReplayId(), ShadowTreeRebuildPending());
   if (ShadowTreeRebuildPending())
     return;
   ScheduleShadowTreeRecreation();

@@ -143,7 +143,13 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
 
   void Trace(Visitor* visitor) const override;
 
+  int RecordReplayId() const { return record_replay_id_; }
+
  protected:
+  FontSelector() {
+    record_replay_id_ = recordreplay::NewIdAnyThread("FontSelector");
+  }
+
   static AtomicString FamilyNameFromSettings(
       const GenericFontFamilySettings&,
       const FontDescription&,
@@ -154,6 +160,7 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
 
  private:
   Member<FontFallbackMap> font_fallback_map_;
+  int record_replay_id_ = 0;
 };
 
 }  // namespace blink

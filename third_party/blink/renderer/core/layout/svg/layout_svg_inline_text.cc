@@ -519,6 +519,12 @@ void LayoutSVGInlineText::ComputeNewScaledFontForStyle(
   font_description.SetWordSpacing(font_description.WordSpacing() *
                                   scaling_factor / zoom);
 
+  recordreplay::Assert(
+      "[RUN-1436-2286] LayoutSVGInlineText::ComputeNewScaledFontForStyle %d",
+      document.GetStyleEngine().GetFontSelector()
+          ? document.GetStyleEngine().GetFontSelector()->RecordReplayId()
+          : -1);
+
   scaled_font =
       Font(font_description, document.GetStyleEngine().GetFontSelector());
 }

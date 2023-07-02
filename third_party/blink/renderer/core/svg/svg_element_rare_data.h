@@ -58,6 +58,10 @@ class SVGElementRareData final : public GarbageCollected<SVGElementRareData> {
     return element_instances_;
   }
 
+  HeapHashSet<Member<SVGElement>>& ReplayStrongElementInstances() {
+    return replay_strong_element_instances_;
+  }
+
   bool InstanceUpdatesBlocked() const { return instances_updates_blocked_; }
   void SetInstanceUpdatesBlocked(bool value) {
     instances_updates_blocked_ = value;
@@ -107,6 +111,7 @@ class SVGElementRareData final : public GarbageCollected<SVGElementRareData> {
   SVGElementSet outgoing_references_;
   SVGElementSet incoming_references_;
   HeapHashSet<WeakMember<SVGElement>> element_instances_;
+  HeapHashSet<Member<SVGElement>> replay_strong_element_instances_;
   Member<SVGElement> corresponding_element_;
   Member<SVGElementResourceClient> resource_client_;
   Member<ElementSMILAnimations> smil_animations_;
