@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 396 tests; 369 PASS, 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 376 tests; 349 PASS, 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL CSS Transitions: property <offset-path> from [path('M 0 0 L 100 100 M 100 200 L 200 200 Z L 200 100 Z')] to [ray(0deg closest-side)] at (-0.3) should be [ray(0deg closest-side)] assert_equals: expected "ray ( 0deg ) " but got "path ( \" M 0 0 L 100 100 M 100 200 L 200 200 Z L 200 100 Z \" ) "
 FAIL CSS Transitions: property <offset-path> from [path('M 0 0 L 100 100 M 100 200 L 200 200 Z L 200 100 Z')] to [ray(0deg closest-side)] at (0) should be [ray(0deg closest-side)] assert_equals: expected "ray ( 0deg ) " but got "path ( \" M 0 0 L 100 100 M 100 200 L 200 200 Z L 200 100 Z \" ) "
 FAIL CSS Transitions: property <offset-path> from [path('M 0 0 L 100 100 M 100 200 L 200 200 Z L 200 100 Z')] to [ray(0deg closest-side)] at (0.3) should be [ray(0deg closest-side)] assert_equals: expected "ray ( 0deg ) " but got "path ( \" M 0 0 L 100 100 M 100 200 L 200 200 Z L 200 100 Z \" ) "
@@ -260,30 +260,10 @@ PASS Web Animations: property <offset-path> from [ray(-10deg farthest-corner at 
 PASS Web Animations: property <offset-path> from [ray(-10deg farthest-corner at 0% 0px)] to [ray(-50deg farthest-corner at 100% 100px)] at (0.875) should be [ray(-45deg farthest-corner at 87.5% 87.5px)]
 PASS Web Animations: property <offset-path> from [ray(-10deg farthest-corner at 0% 0px)] to [ray(-50deg farthest-corner at 100% 100px)] at (1) should be [ray(-50deg farthest-corner at 100% 100px)]
 PASS Web Animations: property <offset-path> from [ray(-10deg farthest-corner at 0% 0px)] to [ray(-50deg farthest-corner at 100% 100px)] at (2) should be [ray(-90deg farthest-corner at 200% 200px)]
-PASS CSS Transitions: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (-1) should be [ray(30deg farthest-corner at 0% 0%)]
-PASS CSS Transitions: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (0) should be [ray(-10deg farthest-corner)]
-PASS CSS Transitions: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (0.125) should be [ray(-15deg farthest-corner at 56.25% 56.25%)]
-PASS CSS Transitions: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (0.875) should be [ray(-45deg farthest-corner at 93.75% 93.75%)]
 PASS CSS Transitions: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (1) should be [ray(-50deg farthest-corner at 100% 100%)]
-PASS CSS Transitions: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (2) should be [ray(-90deg farthest-corner at 150% 150%)]
-PASS CSS Transitions with transition: all: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (-1) should be [ray(30deg farthest-corner at 0% 0%)]
-PASS CSS Transitions with transition: all: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (0) should be [ray(-10deg farthest-corner)]
-PASS CSS Transitions with transition: all: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (0.125) should be [ray(-15deg farthest-corner at 56.25% 56.25%)]
-PASS CSS Transitions with transition: all: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (0.875) should be [ray(-45deg farthest-corner at 93.75% 93.75%)]
 PASS CSS Transitions with transition: all: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (1) should be [ray(-50deg farthest-corner at 100% 100%)]
-PASS CSS Transitions with transition: all: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (2) should be [ray(-90deg farthest-corner at 150% 150%)]
-PASS CSS Animations: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (-1) should be [ray(30deg farthest-corner at 0% 0%)]
-PASS CSS Animations: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (0) should be [ray(-10deg farthest-corner)]
-PASS CSS Animations: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (0.125) should be [ray(-15deg farthest-corner at 56.25% 56.25%)]
-PASS CSS Animations: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (0.875) should be [ray(-45deg farthest-corner at 93.75% 93.75%)]
 PASS CSS Animations: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (1) should be [ray(-50deg farthest-corner at 100% 100%)]
-PASS CSS Animations: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (2) should be [ray(-90deg farthest-corner at 150% 150%)]
-PASS Web Animations: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (-1) should be [ray(30deg farthest-corner at 0% 0%)]
-PASS Web Animations: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (0) should be [ray(-10deg farthest-corner)]
-PASS Web Animations: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (0.125) should be [ray(-15deg farthest-corner at 56.25% 56.25%)]
-PASS Web Animations: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (0.875) should be [ray(-45deg farthest-corner at 93.75% 93.75%)]
 PASS Web Animations: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (1) should be [ray(-50deg farthest-corner at 100% 100%)]
-PASS Web Animations: property <offset-path> from [ray(-10deg farthest-corner)] to [ray(-50deg farthest-corner at 100% 100%)] at (2) should be [ray(-90deg farthest-corner at 150% 150%)]
 FAIL CSS Transitions: property <offset-path> from [ray(200deg farthest-side)] to [ray(300deg sides)] at (-0.3) should be [ray(300deg sides)] assert_equals: expected "ray ( 300deg sides ) " but got "ray ( 200deg farthest - side ) "
 FAIL CSS Transitions: property <offset-path> from [ray(200deg farthest-side)] to [ray(300deg sides)] at (0) should be [ray(300deg sides)] assert_equals: expected "ray ( 300deg sides ) " but got "ray ( 200deg farthest - side ) "
 FAIL CSS Transitions: property <offset-path> from [ray(200deg farthest-side)] to [ray(300deg sides)] at (0.3) should be [ray(300deg sides)] assert_equals: expected "ray ( 300deg sides ) " but got "ray ( 200deg farthest - side ) "
