@@ -217,10 +217,8 @@ class LocalCardMigrationBrowserTest
         test_shared_loader_factory_);
 
     // Set up this class as the ObserverForTest implementation.
-    local_card_migration_manager_ =
-        client->GetFormDataImporter()->local_card_migration_manager_.get();
-
-    local_card_migration_manager_->SetEventObserverForTesting(this);
+    client->GetFormDataImporter()
+        ->local_card_migration_manager_->SetEventObserverForTesting(this);
     personal_data_ = PersonalDataManagerFactory::GetForProfile(GetProfile(0));
 
     // Wait for Personal Data Manager to be fully loaded to prevent that
@@ -246,7 +244,6 @@ class LocalCardMigrationBrowserTest
 
   void TearDownOnMainThread() override {
     personal_data_ = nullptr;
-    local_card_migration_manager_ = nullptr;
 
     SyncTest::TearDownOnMainThread();
   }
@@ -527,8 +524,6 @@ class LocalCardMigrationBrowserTest
 
   void WaitForCardDeletion() { WaitForPersonalDataChange(GetProfile(0)); }
 
-  raw_ptr<LocalCardMigrationManager, DanglingUntriaged>
-      local_card_migration_manager_ = nullptr;
   raw_ptr<PersonalDataManager> personal_data_ = nullptr;
   PersonalDataLoadedObserverMock personal_data_observer_;
 
