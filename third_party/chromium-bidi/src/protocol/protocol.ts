@@ -520,6 +520,11 @@ export namespace CommonDataTypes {
 
   export type WindowProxyRemoteValue = RemoteReference & {
     type: 'window';
+    value: WindowProxyProperties;
+  };
+
+  export type WindowProxyProperties = {
+    context: BrowsingContext;
   };
 
   // BrowsingContext = text;
