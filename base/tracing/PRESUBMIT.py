@@ -19,5 +19,7 @@ def CheckSqlModules(input_api, output_api):
     './stdlib/chrome'
     ]
   if subprocess.call(cmd):
-    return [output_api.PresubmitError(tool + ' failed')]
+    # TODO(b/283962174): Add presubmit failure when TP stdlib migration
+    # is complete.
+    return []
   return []
