@@ -322,7 +322,7 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertThat(callback.mResponseInfo)
+        assertThat(callback.getResponseInfoWithChecks())
                 .hasReceivedByteCountThat()
                 .isEqualTo(responseText.length());
     }
@@ -540,7 +540,7 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertThat(callback.mResponseInfo).hasUrlChainThat().isEqualTo(expectedUrlChain);
+        assertThat(callback.getResponseInfoWithChecks()).hasUrlChainThat().isEqualTo(expectedUrlChain);
     }
 
     @Test
@@ -560,7 +560,7 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertThat(callback.mResponseInfo).hasUrlChainThat().isEqualTo(expectedUrlChain);
+        assertThat(callback.getResponseInfoWithChecks()).hasUrlChainThat().isEqualTo(expectedUrlChain);
     }
 
     @Test
@@ -579,7 +579,9 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(expectedResponseCode);
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasHttpStatusCodeThat()
+                .isEqualTo(expectedResponseCode);
     }
 
     @Test
@@ -599,7 +601,9 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertThat(callback.mResponseInfo).hasHttpStatusTextThat().isEqualTo(expectedResponseText);
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasHttpStatusTextThat()
+                .isEqualTo(expectedResponseText);
     }
 
     @Test
@@ -616,7 +620,7 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertThat(callback.mResponseInfo).wasCached();
+        assertThat(callback.getResponseInfoWithChecks()).wasCached();
     }
 
     @Test
@@ -637,7 +641,7 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertThat(callback.mResponseInfo)
+        assertThat(callback.getResponseInfoWithChecks())
                 .hasNegotiatedProtocolThat()
                 .isEqualTo(expectedNegotiatedProtocol);
     }
@@ -657,7 +661,7 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertThat(callback.mResponseInfo).hasProxyServerThat().isEqualTo(expectedProxyServer);
+        assertThat(callback.getResponseInfoWithChecks()).hasProxyServerThat().isEqualTo(expectedProxyServer);
     }
 
     @Test
@@ -837,7 +841,7 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(404);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(404);
     }
 
     @Test
@@ -892,7 +896,7 @@ public class FakeUrlRequestTest {
         builder.build().start();
         callback.blockForDone();
 
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEmpty();
         dataProvider.assertClosed();
     }
@@ -921,7 +925,7 @@ public class FakeUrlRequestTest {
         assertThat(dataProvider.getNumReadCalls()).isEqualTo(1);
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(0);
 
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("test");
     }
 
@@ -1020,7 +1024,7 @@ public class FakeUrlRequestTest {
         assertThat(dataProvider.getNumReadCalls()).isEqualTo(4);
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(0);
 
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("Yet another test");
     }
 
@@ -1050,7 +1054,7 @@ public class FakeUrlRequestTest {
         assertThat(dataProvider.getNumReadCalls()).isEqualTo(4);
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(0);
 
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("Yet another test");
     }
 
@@ -1078,7 +1082,7 @@ public class FakeUrlRequestTest {
         callback.blockForDone();
         dataProvider.assertClosed();
 
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("POST");
     }
 
@@ -1109,7 +1113,7 @@ public class FakeUrlRequestTest {
         callback.blockForDone();
         dataProvider.assertClosed();
 
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("PUT");
     }
 
@@ -1138,7 +1142,7 @@ public class FakeUrlRequestTest {
         assertThat(dataProvider.getNumReadCalls()).isEqualTo(2);
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(1);
 
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("test");
     }
 
@@ -1167,7 +1171,7 @@ public class FakeUrlRequestTest {
         assertThat(dataProvider.getNumReadCalls()).isEqualTo(2);
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(1);
 
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("test");
     }
 
@@ -1209,7 +1213,7 @@ public class FakeUrlRequestTest {
                 .hasCauseThat()
                 .hasMessageThat()
                 .contains("Read upload data length 2 exceeds expected length 1");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
@@ -1248,7 +1252,7 @@ public class FakeUrlRequestTest {
                 .hasCauseThat()
                 .hasMessageThat()
                 .contains("Read upload data length 8192 exceeds expected length 8191");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
@@ -1280,7 +1284,7 @@ public class FakeUrlRequestTest {
                 .hasMessageThat()
                 .contains("Exception received from UploadDataProvider");
         assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Sync length failure");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
@@ -1313,7 +1317,7 @@ public class FakeUrlRequestTest {
                 .hasMessageThat()
                 .contains("Exception received from UploadDataProvider");
         assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Sync read failure");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
@@ -1346,7 +1350,7 @@ public class FakeUrlRequestTest {
                 .hasMessageThat()
                 .contains("Exception received from UploadDataProvider");
         assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Async read failure");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
@@ -1378,7 +1382,7 @@ public class FakeUrlRequestTest {
                 .hasMessageThat()
                 .contains("Exception received from UploadDataProvider");
         assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Thrown read failure");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     /** This test uses a direct executor for upload, and non direct for callbacks */
@@ -1418,7 +1422,7 @@ public class FakeUrlRequestTest {
                 .hasCauseThat()
                 .hasMessageThat()
                 .contains("Inline execution is prohibited for this request");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     /** This test uses a direct executor for callbacks, and non direct for upload */
@@ -1456,7 +1460,7 @@ public class FakeUrlRequestTest {
                 .hasCauseThat()
                 .hasMessageThat()
                 .contains("Inline execution is prohibited for this request");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
         dataProvider.assertClosed();
     }
 
@@ -1487,7 +1491,7 @@ public class FakeUrlRequestTest {
             throw callback.mError;
         }
 
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("test");
     }
 
@@ -1520,7 +1524,7 @@ public class FakeUrlRequestTest {
                 .hasMessageThat()
                 .contains("Exception received from UploadDataProvider");
         assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Sync rewind failure");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
@@ -1555,7 +1559,7 @@ public class FakeUrlRequestTest {
                 .hasCauseThat()
                 .hasMessageThat()
                 .contains("Async rewind failure");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
@@ -1590,7 +1594,7 @@ public class FakeUrlRequestTest {
                 .hasCauseThat()
                 .hasMessageThat()
                 .contains("Thrown rewind failure");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test

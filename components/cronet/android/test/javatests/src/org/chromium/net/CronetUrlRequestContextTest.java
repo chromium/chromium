@@ -1044,8 +1044,8 @@ public class CronetUrlRequestContextTest {
                 cronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
         urlRequestBuilder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
-        assertThat(callback.mResponseInfo).wasCached();
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).wasCached();
         assertThat(callback.mOnCanceledCalled).isTrue();
     }
 
@@ -1293,7 +1293,9 @@ public class CronetUrlRequestContextTest {
                 engine.newUrlRequestBuilder(url, callback, callback.getExecutor()).build();
         request.start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(expectedStatusCode);
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasHttpStatusCodeThat()
+                .isEqualTo(expectedStatusCode);
     }
 
     private void checkRequestCaching(CronetEngine engine, String url, boolean expectCached) {
@@ -1310,7 +1312,7 @@ public class CronetUrlRequestContextTest {
         }
         urlRequestBuilder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.wasCached()).isEqualTo(expectCached);
+        assertThat(callback.getResponseInfoWithChecks().wasCached()).isEqualTo(expectCached);
         assertThat(callback.mResponseAsString).isEqualTo("this is a cacheable file\n");
     }
 
@@ -1461,7 +1463,7 @@ public class CronetUrlRequestContextTest {
                 cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
         urlRequestBuilder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
     }
 
     @Test
@@ -1477,7 +1479,7 @@ public class CronetUrlRequestContextTest {
                     cronetEngine.newUrlRequestBuilder(urls[i], callback, callback.getExecutor());
             urlRequestBuilder.build().start();
             callback.blockForDone();
-            statusCodes[i] = callback.mResponseInfo.getHttpStatusCode();
+            statusCodes[i] = callback.getResponseInfoWithChecks().getHttpStatusCode();
         }
         assertThat(statusCodes).asList().containsExactly(200, 404).inOrder();
     }
@@ -1495,8 +1497,8 @@ public class CronetUrlRequestContextTest {
         runBlocker.open();
         thread1.join();
         thread2.join();
-        assertThat(thread1.mCallback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
-        assertThat(thread2.mCallback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(404);
+        assertThat(thread1.mCallback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(thread2.mCallback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(404);
     }
 
     @Test
@@ -1510,8 +1512,8 @@ public class CronetUrlRequestContextTest {
         thread1.join();
         thread2.start();
         thread2.join();
-        assertThat(thread1.mCallback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
-        assertThat(thread2.mCallback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(404);
+        assertThat(thread1.mCallback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(thread2.mCallback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(404);
     }
 
     @Test
@@ -1704,7 +1706,7 @@ public class CronetUrlRequestContextTest {
                 requestUrl.toString(), callback, callback.getExecutor());
         urlRequestBuilder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
     }
 
     /**

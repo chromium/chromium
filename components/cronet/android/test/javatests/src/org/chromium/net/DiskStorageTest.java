@@ -78,7 +78,7 @@ public class DiskStorageTest {
         UrlRequest urlRequest = requestBuilder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         cronetEngine.shutdown();
         FileInputStream newVersionFile = null;
         // Make sure that version file is in readOnlyStoragePath.
@@ -142,7 +142,7 @@ public class DiskStorageTest {
         UrlRequest urlRequest = requestBuilder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         cronetEngine.shutdown();
         FileInputStream newVersionFile = null;
         try {
@@ -184,7 +184,7 @@ public class DiskStorageTest {
         UrlRequest urlRequest = requestBuilder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         cronetEngine.shutdown();
 
         // Create a sample file in storage directory.
@@ -210,7 +210,7 @@ public class DiskStorageTest {
         UrlRequest urlRequest2 = requestBuilder2.build();
         urlRequest2.start();
         callback2.blockForDone();
-        assertThat(callback2.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback2.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         engine.shutdown();
         // Sample file still exists.
         BufferedReader reader = new BufferedReader(new FileReader(sampleFile));
@@ -248,7 +248,7 @@ public class DiskStorageTest {
         UrlRequest urlRequest = requestBuilder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         cronetEngine.shutdown();
 
         String testStorage = getTestStorage(mTestRule.getTestFramework().getContext());
@@ -276,7 +276,7 @@ public class DiskStorageTest {
         UrlRequest urlRequest = requestBuilder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         cronetEngine.shutdown();
 
         File diskCacheDir = new File(testStorage + "/disk_cache");

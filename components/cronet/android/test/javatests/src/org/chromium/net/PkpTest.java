@@ -395,9 +395,9 @@ public class PkpTest {
                     + ((NetworkException) mListener.mError).getCronetInternalErrorCode());
         }
         assertWithMessage("Expected non-null response from the server")
-                .that(mListener.mResponseInfo)
+                .that(mListener.getResponseInfoWithChecks())
                 .isNotNull();
-        assertThat(mListener.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(mListener.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
     }
 
     private void createCronetEngineBuilder(boolean bypassPinningForLocalAnchors, boolean knownRoot)

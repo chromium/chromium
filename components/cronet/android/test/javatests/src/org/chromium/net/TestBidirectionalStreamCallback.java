@@ -22,7 +22,7 @@ import java.util.concurrent.ThreadFactory;
  * Allows to cancel, block stream or throw an exception from an arbitrary step.
  */
 public class TestBidirectionalStreamCallback extends BidirectionalStream.Callback {
-    public UrlResponseInfo mResponseInfo;
+    private UrlResponseInfo mResponseInfo;
     public CronetException mError;
 
     public ResponseStep mResponseStep = ResponseStep.NOTHING;
@@ -381,6 +381,26 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
      */
     public int numPendingWrites() {
         return mWriteBuffers.size();
+    }
+
+    /**
+     * Asserts that there is no callback error before trying to access responseInfo. Only use this
+     * when you expect {@code mError} to be null.
+     * @return {@link UrlResponseInfo}
+     */
+    public UrlResponseInfo getResponseInfoWithChecks() {
+        assertThat(mError).isNull();
+        assertThat(mOnErrorCalled).isFalse();
+        assertThat(mResponseInfo).isNotNull();
+        return mResponseInfo;
+    }
+
+    /**
+     * Simply returns {@code mResponseInfo} with no nullability or error checks.
+     * @return {@link UrlResponseInfo}
+     */
+    public UrlResponseInfo getResponseInfo() {
+        return mResponseInfo;
     }
 
     protected void openDone() {

@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class TestUrlRequestCallback extends UrlRequest.Callback {
     public ArrayList<UrlResponseInfo> mRedirectResponseInfoList = new ArrayList<UrlResponseInfo>();
     public ArrayList<String> mRedirectUrlList = new ArrayList<String>();
-    public UrlResponseInfo mResponseInfo;
+    private UrlResponseInfo mResponseInfo;
     public CronetException mError;
 
     public ResponseStep mResponseStep = ResponseStep.NOTHING;
@@ -337,6 +337,26 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         // indefinitely, so have to block for one millisecond to get state
         // without blocking.
         return mDone.block(1);
+    }
+
+    /**
+     * Asserts that there is no callback error before trying to access responseInfo. Only use this
+     * when you expect {@code mError} to be null.
+     * @return {@link UrlResponseInfo}
+     */
+    public UrlResponseInfo getResponseInfoWithChecks() {
+        assertThat(mError).isNull();
+        assertThat(mOnErrorCalled).isFalse();
+        assertThat(mResponseInfo).isNotNull();
+        return mResponseInfo;
+    }
+
+    /**
+     * Simply returns {@code mResponseInfo} with no nullability or error checks.
+     * @return {@link UrlResponseInfo}
+     */
+    public UrlResponseInfo getResponseInfo() {
+        return mResponseInfo;
     }
 
     protected void openDone() {

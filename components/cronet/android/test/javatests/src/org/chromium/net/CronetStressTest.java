@@ -84,7 +84,7 @@ public class CronetStressTest {
 
             for (TestUrlRequestCallback callback : callbacks) {
                 callback.blockForDone();
-                assertThat(callback.mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
+                assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
             }
         } finally {
             callbackExecutor.shutdown();
