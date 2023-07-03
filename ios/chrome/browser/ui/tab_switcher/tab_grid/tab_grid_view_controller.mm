@@ -169,8 +169,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // mode.
 @property(nonatomic, strong) UIPanGestureRecognizer* searchResultPanRecognizer;
 
-@property(nonatomic, assign, getter=isDragSeesionInProgress)
-    BOOL dragSeesionInProgress;
+@property(nonatomic, assign, getter=isDragSessionInProgress)
+    BOOL dragSessionInProgress;
 
 // YES if it is possible to undo the close all conditions.
 @property(nonatomic, assign) BOOL undoCloseAllAvailable;
@@ -200,7 +200,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _pageConfiguration = tabGridPageConfiguration;
-    _dragSeesionInProgress = NO;
+    _dragSessionInProgress = NO;
 
     switch (_pageConfiguration) {
       case TabGridPageConfiguration::kAllPagesEnabled:
@@ -383,7 +383,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView*)scrollView {
   TabGridPage currentPage = GetPageFromScrollView(scrollView);
-  if (currentPage != self.currentPage && self.isDragSeesionInProgress) {
+  if (currentPage != self.currentPage && self.isDragSessionInProgress) {
     // This happens when the user drags an item from one scroll view into
     // another.
     [self recordActionSwitchingToPage:currentPage
@@ -1488,7 +1488,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   BOOL incognitoTabsNeedsAuth =
       (self.currentPage == TabGridPageIncognitoTabs &&
        self.incognitoTabsViewController.contentNeedsAuthentication);
-  enabled = enabled && !incognitoTabsNeedsAuth && !self.isDragSeesionInProgress;
+  enabled = enabled && !incognitoTabsNeedsAuth && !self.isDragSessionInProgress;
 
   [self.topToolbar setCloseAllButtonEnabled:enabled];
   [self.bottomToolbar setCloseAllButtonEnabled:enabled];
@@ -2047,7 +2047,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)pinnedViewControllerDragSessionDidEnd:
     (PinnedTabsViewController*)pinnedTabsViewController {
-  self.dragSeesionInProgress = NO;
+  self.dragSessionInProgress = NO;
 
   [self.topToolbar setSearchButtonEnabled:YES];
 
@@ -2177,7 +2177,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)gridViewControllerDragSessionWillBegin:
     (GridViewController*)gridViewController {
-  self.dragSeesionInProgress = YES;
+  self.dragSessionInProgress = YES;
 
   // Actions on both bars should be disabled during dragging.
   [self.topToolbar setDoneButtonEnabled:NO];
@@ -2197,7 +2197,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)gridViewControllerDragSessionDidEnd:
     (GridViewController*)gridViewController {
-  self.dragSeesionInProgress = NO;
+  self.dragSessionInProgress = NO;
 
   [self.topToolbar setSearchButtonEnabled:YES];
 
