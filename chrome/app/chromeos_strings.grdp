@@ -6873,6 +6873,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_CONNECT_TO_ONEDRIVE_BODY_TEXT" desc="Explanation text for a dialog which allows the user to connect Files app and Microsoft OneDrive storage.">
     Connect OneDrive to the Files app to manage your stored documents from your Chromebook. You'll need to sign in with your Microsoft account.
   </message>
+  <message name="IDS_CONNECT_TO_ONEDRIVE_SIGNIN_FLOW_BODY_TEXT" desc="Explanation text for a dialog which allows the user to connect Files app and Microsoft OneDrive storage via sign in flow.">
+    Microsoft 365 uses OneDrive to open and edit Word, Excel, and PowerPoint files. These files will be found in the Files app side navigation labeled “Microsoft OneDrive.” You'll need to sign in with your Microsoft account. <ph name="LINK_BEGIN">&lt;a href="https://support.google.com/chromebook?p=edit_office_files" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_CANT_CONNECT_ONEDRIVE" desc="Error message text displayed when the user has tried to connect to OneDrive storage, but failed for any reason.">
     Can't connect to OneDrive. Try again.
   </message>

@@ -49,6 +49,8 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       {"animationPauseText", IDS_OOBE_PAUSE_ANIMATION_MESSAGE},
       // Connect To OneDrive dialog.
       {"connectToOneDriveTitle", IDS_CONNECT_TO_ONEDRIVE_TITLE},
+      {"connectToOneDriveSignInFlowBodyText",
+       IDS_CONNECT_TO_ONEDRIVE_SIGNIN_FLOW_BODY_TEXT},
       {"connectToOneDriveBodyText", IDS_CONNECT_TO_ONEDRIVE_BODY_TEXT},
       {"cantConnectOneDrive", IDS_CANT_CONNECT_ONEDRIVE},
       {"connectOneDrive", IDS_CONNECT_ONEDRIVE},
