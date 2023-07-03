@@ -8,7 +8,8 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/skia_util.h"
 
 namespace apps {
 
@@ -20,16 +21,19 @@ class PromiseAppIconCacheTest : public testing::Test {
 
   PromiseAppIconCache* icon_cache() { return cache_.get(); }
 
+  PromiseAppIconPtr CreateIcon(int width) {
+    PromiseAppIconPtr icon = std::make_unique<PromiseAppIcon>();
+    icon->icon = gfx::test::CreateBitmap(width, width);
+    icon->width_in_pixels = width;
+    return icon;
+  }
+
  private:
   std::unique_ptr<PromiseAppIconCache> cache_;
 };
 
 TEST_F(PromiseAppIconCacheTest, SaveIcon) {
-  PromiseAppIconPtr icon = std::make_unique<PromiseAppIcon>();
-  icon->icon = gfx::ImageSkia();
-  icon->is_masking_allowed = true;
-  icon->width_in_pixels = 50;
-
+  PromiseAppIconPtr icon = CreateIcon(/*width=*/50);
   EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
 
   icon_cache()->SaveIcon(kTestPackageId, std::move(icon));
@@ -37,37 +41,41 @@ TEST_F(PromiseAppIconCacheTest, SaveIcon) {
   std::vector<PromiseAppIcon*> icons_saved =
       icon_cache()->GetIconsForTesting(kTestPackageId);
   EXPECT_EQ(icons_saved.size(), 1u);
-  EXPECT_EQ(icons_saved[0]->is_masking_allowed, true);
   EXPECT_EQ(icons_saved[0]->width_in_pixels, 50);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(icons_saved[0]->icon,
+                                   gfx::test::CreateBitmap(50, 50)));
 }
 
 TEST_F(PromiseAppIconCacheTest, SaveMultipleIcons) {
-  PromiseAppIconPtr icon_small = std::make_unique<PromiseAppIcon>();
-  icon_small->icon = gfx::ImageSkia();
-  icon_small->is_masking_allowed = true;
-  icon_small->width_in_pixels = 512;
-
-  PromiseAppIconPtr icon_large = std::make_unique<PromiseAppIcon>();
-  icon_large->icon = gfx::ImageSkia();
-  icon_large->is_masking_allowed = false;
-  icon_large->width_in_pixels = 1024;
+  PromiseAppIconPtr icon_small = CreateIcon(/*width=*/512);
+  PromiseAppIconPtr icon_large = CreateIcon(/*width=*/1024);
+  PromiseAppIconPtr icon_smallest = CreateIcon(/*width=*/128);
 
   EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
 
   icon_cache()->SaveIcon(kTestPackageId, std::move(icon_small));
-  EXPECT_TRUE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
   EXPECT_EQ(icon_cache()->GetIconsForTesting(kTestPackageId).size(), 1u);
 
   icon_cache()->SaveIcon(kTestPackageId, std::move(icon_large));
+  EXPECT_EQ(icon_cache()->GetIconsForTesting(kTestPackageId).size(), 2u);
+
+  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_smallest));
 
   // We should have 2 icons for the same package ID.
   std::vector<PromiseAppIcon*> icons_saved =
       icon_cache()->GetIconsForTesting(kTestPackageId);
-  EXPECT_EQ(icons_saved.size(), 2u);
-  EXPECT_EQ(icons_saved[0]->is_masking_allowed, true);
-  EXPECT_EQ(icons_saved[0]->width_in_pixels, 512);
-  EXPECT_EQ(icons_saved[1]->is_masking_allowed, false);
-  EXPECT_EQ(icons_saved[1]->width_in_pixels, 1024);
+  EXPECT_EQ(icons_saved.size(), 3u);
+  EXPECT_EQ(icons_saved[0]->width_in_pixels, 128);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(icons_saved[0]->icon,
+                                   gfx::test::CreateBitmap(128, 128)));
+
+  EXPECT_EQ(icons_saved[1]->width_in_pixels, 512);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(icons_saved[1]->icon,
+                                   gfx::test::CreateBitmap(512, 512)));
+
+  EXPECT_EQ(icons_saved[2]->width_in_pixels, 1024);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(icons_saved[2]->icon,
+                                   gfx::test::CreateBitmap(1024, 1024)));
 }
 
 }  // namespace apps

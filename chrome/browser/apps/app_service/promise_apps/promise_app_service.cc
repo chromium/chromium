@@ -113,11 +113,6 @@ void PromiseAppService::SetSkipAlmanacForTesting(bool skip_almanac) {
   skip_almanac_for_testing_ = skip_almanac;
 }
 
-void PromiseAppService::SetImageFetcherForTesting(
-    std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher) {
-  image_fetcher_ = std::move(image_fetcher);
-}
-
 void PromiseAppService::OnGetPromiseAppInfoCompleted(
     const PackageId& package_id,
     absl::optional<PromiseAppWrapper> promise_app_info) {
@@ -164,15 +159,10 @@ void PromiseAppService::OnGetPromiseAppInfoCompleted(
   pending_download_count_[package_id] = promise_app_info->GetIcons().size();
 
   for (auto icon : promise_app_info->GetIcons()) {
-    PromiseAppIconPtr promise_app_icon = std::make_unique<PromiseAppIcon>();
-    promise_app_icon->width_in_pixels = icon.GetWidthInPixels();
-    promise_app_icon->is_masking_allowed = icon.IsMaskingAllowed();
-
     image_fetcher_->FetchImage(
         icon.GetUrl(),
         base::BindOnce(&PromiseAppService::OnIconDownloaded,
-                       weak_ptr_factory_.GetWeakPtr(), package_id,
-                       std::move(promise_app_icon)),
+                       weak_ptr_factory_.GetWeakPtr(), package_id),
         image_fetcher::ImageFetcherParams(kTrafficAnnotation,
                                           "Promise App Service Icon Fetcher"));
   }
@@ -180,7 +170,6 @@ void PromiseAppService::OnGetPromiseAppInfoCompleted(
 
 void PromiseAppService::OnIconDownloaded(
     const PackageId& package_id,
-    PromiseAppIconPtr promise_app_icon,
     const gfx::Image& image,
     const image_fetcher::RequestMetadata& metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -201,7 +190,9 @@ void PromiseAppService::OnIconDownloaded(
 
   // Save valid icons to the icon cache.
   if (!image.IsEmpty()) {
-    promise_app_icon->icon = image.AsImageSkia();
+    PromiseAppIconPtr promise_app_icon = std::make_unique<PromiseAppIcon>();
+    promise_app_icon->icon = image.AsBitmap();
+    promise_app_icon->width_in_pixels = promise_app_icon->icon.width();
     promise_app_icon_cache_->SaveIcon(package_id, std::move(promise_app_icon));
   }
 

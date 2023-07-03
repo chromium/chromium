@@ -68,10 +68,6 @@ class PromiseAppService {
   // care about Almanac responses.
   void SetSkipAlmanacForTesting(bool skip_almanac);
 
-  // Allows us to set a fake image fetcher for mock responses in unit tests.
-  void SetImageFetcherForTesting(
-      std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher);
-
  private:
   // Update a promise app's fields with the info retrieved from the Almanac API.
   void OnGetPromiseAppInfoCompleted(
@@ -81,7 +77,6 @@ class PromiseAppService {
   // Adds an icon to the icon cache and marks the corresponding promise app
   // as ready to show after all the icons are downloaded.
   void OnIconDownloaded(const PackageId& package_id,
-                        PromiseAppIconPtr promise_app_icon,
                         const gfx::Image& image,
                         const image_fetcher::RequestMetadata& metadata);
 
