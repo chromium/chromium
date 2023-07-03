@@ -1285,18 +1285,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Crostini.UnsupportedNotification.Reason"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="CryptohomeAsyncDBusMethod" separator=".">
-  <suffix name="AsyncTpmAttestationCreateCertRequest" label=""/>
-  <suffix name="AsyncTpmAttestationCreateEnrollRequest" label=""/>
-  <suffix name="AsyncTpmAttestationEnroll" label=""/>
-  <suffix name="AsyncTpmAttestationFinishCertRequest" label=""/>
-  <suffix name="TpmAttestationRegisterKey" label=""/>
-  <suffix name="TpmAttestationSignEnterpriseVaChallenge" label=""/>
-  <suffix name="TpmAttestationSignSimpleChallenge" label=""/>
-  <affected-histogram name="Cryptohome.AsyncDBusRequest"/>
-  <affected-histogram name="Cryptohome.AsyncDBusRequest.Inqueue"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="CryptohomeClientDBusMethod" separator=".">
   <suffix name="AddKeyEx" label=""/>
   <suffix name="AsyncDoesUsersExist" label=""/>

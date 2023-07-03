@@ -55,26 +55,6 @@ chromium-metrics-reviews@google.com.
   <variant name="UssMigrationError"/>
 </variants>
 
-<histogram name="Cryptohome.AsyncDBusRequest" units="ms"
-    expires_after="2022-01-02">
-  <owner>zuan@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    Records the total running time of every async dbus calls of Cryptohome at
-    server side.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.AsyncDBusRequest.Inqueue" units="ms"
-    expires_after="2020-08-17">
-  <owner>zuan@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    Records the total inqueue time of every async dbus calls of Cryptohome at
-    server side. Recorded when the first stage of this requests is served.
-  </summary>
-</histogram>
-
 <histogram name="Cryptohome.AuthFactorBackingStoreConfig"
     enum="CryptohomeAuthFactorBackingStoreConfig" expires_after="2023-12-07">
   <owner>jadmanski@chromium.org</owner>
@@ -105,16 +85,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cryptohome.ChecksumStatus" enum="CryptohomeChecksumStatus"
-    expires_after="2021-08-09">
-  <owner>apronin@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    Checksum status of critical persistent data used by Cryptohome. This status
-    is recorded every time the cryptohomed daemon reads a file.
-  </summary>
-</histogram>
-
 <histogram name="Cryptohome.DeletedUserProfiles" units="profiles"
     expires_after="2023-10-15">
   <owner>simmonsjosh@google.com</owner>
@@ -123,18 +93,6 @@ chromium-metrics-reviews@google.com.
     In low disk space scenarios, Cryptohome erases whole user profiles. This is
     a number of user profiles deleted during cleanup. Only reported when
     non-zero.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.DeprecatedApiCalled"
-    enum="CryptohomeDeprecatedApiCalled" expires_after="2022-04-03">
-  <owner>apronin@chromium.org</owner>
-  <owner>louiscollard@chromium.org</owner>
-  <owner>zuan@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    Records when a deprecated API function in cryptohome is called, so we know
-    which exposed DBus API can be removed without side effect.
   </summary>
 </histogram>
 
@@ -380,16 +338,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The encryption type used for a user's cryptohome directory. This is logged
     each time the cryptohome is mounted.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.InvalidateDirCryptoKeyResult" enum="BooleanSuccess"
-    expires_after="2021-09-26">
-  <owner>yich@google.com</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    The errors resulting from interacting with the InvalidateDirCryptoKey
-    operation.
   </summary>
 </histogram>
 
