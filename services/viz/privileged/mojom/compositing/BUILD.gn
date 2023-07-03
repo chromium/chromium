@@ -44,6 +44,9 @@ mojom("compositing") {
   if (enable_cast_overlay_strategy) {
     enabled_features += [ "enable_cast_overlay_strategy" ]
   }
+  if (is_linux || is_chromeos_lacros) {
+    enabled_features += [ "is_linux_or_chromeos_lacros" ]
+  }
 
   cpp_typemaps = [
     {

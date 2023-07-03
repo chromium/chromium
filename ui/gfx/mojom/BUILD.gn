@@ -364,7 +364,7 @@ mojom("native_handle_types") {
     enabled_features = [ "supports_native_pixmap" ]
   }
   if (is_linux || is_chromeos) {
-    enabled_features += [ "is_linux_or_chromeos_ash" ]
+    enabled_features += [ "is_linux_or_chromeos" ]
   }
   public_deps = [ "//mojo/public/mojom/base" ]
   generate_java = true
