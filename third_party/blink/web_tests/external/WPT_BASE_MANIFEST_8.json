@@ -294535,14 +294535,6 @@
       "661016619c0c46c113dedc57aa890f62b35e137c",
       []
      ],
-     "scope-shadow-expected.txt": [
-      "9e86a4b5c7419a1beb5a67b7470d27eb64dbb20b",
-      []
-     ],
-     "scope-shadow.html.ini": [
-      "c093dd66cdee0a9b27fadcfb8f2e5f003b007d20",
-      []
-     ],
      "support": {
       "test-green.css": [
        "da8e1014d2a95eb3300124b8d6b7c2baa04b8fcd",
@@ -447400,7 +447392,7 @@
       ]
      ],
      "scope-invalidation.html": [
-      "c5bdb6165852f445f870e78d5e77e812cff3a069",
+      "d41df57851e189ed9312435487c3cd72519eebe6",
       [
        null,
        {}
@@ -447434,8 +447426,8 @@
        {}
       ]
      ],
-     "scope-shadow.html": [
-      "100438f534b68a9d801fe6bf63343a352b4834e5",
+     "scope-shadow.tentative.html": [
+      "7bcd2e63cf8800738e862853767f4da020ea9d79",
       [
        null,
        {}
@@ -644785,7 +644777,7 @@
      ]
     ],
     "videoFrame-construction.window.js": [
-     "02f84215522aed4e3ede029342838119bd92fba2",
+     "6c9791cea6821a45e80f7928cdbc4d223ba3f6b1",
      [
       "webcodecs/videoFrame-construction.window.html",
       {
