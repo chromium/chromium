@@ -89,6 +89,8 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
   // Return the set of active pref types.
   base::flat_set<syncer::ModelType> GetActiveTypesForTest() const;
 
+  void SetIsHistorySyncEnabledForTest(bool is_history_sync_enabled);
+
  protected:
   ~DualLayerUserPrefStore() override;
 
@@ -120,8 +122,14 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
 
   bool IsInitializationSuccessful() const;
 
-  // Returns whether the pref with the given `key` should be synced.
-  bool ShouldSyncPref(const std::string& key) const;
+  // Returns whether the pref with the given `key` should be inserted into the
+  // account pref store. Note that the account store keeps in sync with the
+  // account.
+  bool ShouldSetValueInAccountStore(const std::string& key) const;
+  // Returns whether the pref with the given `key` should be queried from the
+  // account pref store. Note that the account store keeps in sync with the
+  // account.
+  bool ShouldGetValueFromAccountStore(const std::string& key) const;
 
   // Returns whether the pref with the given `key` is mergeable.
   // TODO(crbug.com/1416479): This does not cover prefs with custom merge logic
@@ -147,6 +155,9 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
 
   // Get all prefs currently present in the account store.
   std::vector<std::string> GetPrefNamesInAccountStore() const;
+
+  // Returns whether the user has history sync turned on.
+  bool IsHistorySyncEnabled() const;
 
   // The two underlying pref stores, scoped to this device/profile and to the
   // user's signed-in account, respectively.
@@ -174,6 +185,9 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
   // Set to true while this store is setting prefs in the underlying stores.
   // Used to avoid self-notifications.
   bool is_setting_prefs_ = false;
+
+  // TODO(crbug.com/1448000): Set this based on actual history sync value.
+  bool is_history_sync_enabled_ = true;
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
 
