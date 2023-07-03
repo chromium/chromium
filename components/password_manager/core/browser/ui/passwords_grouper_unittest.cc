@@ -591,4 +591,27 @@ TEST_F(PasswordsGrouperTest, SchemeOmittedDuringOrdering) {
           AffiliatedGroup({credential2}, GetDefaultBrandingInfo(credential2))));
 }
 
+TEST_F(PasswordsGrouperTest, BlockedSitesOmitDuplicates) {
+  PasswordForm form = CreateForm("https://test.com/");
+
+  PasswordForm blocked_form_1;
+  blocked_form_1.signon_realm = "https://test.com/";
+  blocked_form_1.url = GURL(blocked_form_1.signon_realm);
+  blocked_form_1.blocked_by_user = true;
+
+  PasswordForm blocked_form_2;
+  blocked_form_2.signon_realm = "https://test.com/auth";
+  blocked_form_2.url = GURL(blocked_form_2.signon_realm);
+  blocked_form_2.blocked_by_user = true;
+
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillRepeatedly(
+          base::test::RunOnceCallback<1>(std::vector<GroupedFacets>{}));
+  grouper().GroupCredentials({blocked_form_1, blocked_form_2}, {},
+                             base::DoNothing());
+
+  EXPECT_THAT(grouper().GetBlockedSites(),
+              ElementsAre(CredentialUIEntry(blocked_form_1)));
+}
+
 }  // namespace password_manager

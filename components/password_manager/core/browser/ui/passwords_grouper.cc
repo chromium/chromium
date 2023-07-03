@@ -343,8 +343,8 @@ std::vector<CredentialUIEntry> PasswordsGrouper::GetBlockedSites() const {
   std::vector<CredentialUIEntry> results;
   results.reserve(blocked_sites_.size());
   base::ranges::transform(blocked_sites_, std::back_inserter(results),
-                          [](const PasswordForm& password_form) {
-                            return CredentialUIEntry(password_form);
+                          [](const auto& key_value) {
+                            return CredentialUIEntry(key_value.second.front());
                           });
   // Sort blocked sites.
   std::sort(results.begin(), results.end());
@@ -357,10 +357,11 @@ std::vector<PasswordForm> PasswordsGrouper::GetPasswordFormsFor(
 
   // Verify if the credential is in blocked sites first.
   if (credential.blocked_by_user) {
-    for (const auto& blocked_site : blocked_sites_) {
-      if (credential.GetFirstSignonRealm() == blocked_site.signon_realm) {
-        forms.push_back(blocked_site);
-      }
+    const std::string displayed_name =
+        credential.GetAffiliatedDomains().front().name;
+    const auto& iterator = blocked_sites_.find(displayed_name);
+    if (iterator != blocked_sites_.end()) {
+      return iterator->second;
     }
     return forms;
   }
@@ -433,7 +434,10 @@ void PasswordsGrouper::GroupPasswordsImpl(
   for (auto& form : forms) {
     // Do not group blocked by user password forms.
     if (form.blocked_by_user) {
-      blocked_sites_.push_back(std::move(form));
+      CredentialUIEntry credential(form);
+      std::string displayed_name =
+          credential.GetAffiliatedDomains().front().name;
+      blocked_sites_[displayed_name].push_back(std::move(form));
       continue;
     }
     std::string facet_uri = GetFacetRepresentation(form);
