@@ -720,7 +720,6 @@ TEST_P(PopupViewViewsTestWithAnyPopupItemId, MAYBE_ShowClickTest) {
   Paint();
   generator().MoveMouseTo(GetCenterOfSuggestion(0));
   generator().ClickLeftButton();
-  view().RemoveAllChildViews();
 }
 
 // Tests that after the mouse moves into the popup after display, clicking a
@@ -734,7 +733,6 @@ TEST_P(PopupViewViewsTestWithClickablePopupItemId,
   Paint();
   generator().MoveMouseTo(GetCenterOfSuggestion(0));
   generator().ClickLeftButton();
-  view().RemoveAllChildViews();
 }
 
 // Tests that after the mouse moves from one suggestion to another, clicking the
@@ -748,7 +746,6 @@ TEST_P(PopupViewViewsTestWithClickablePopupItemId,
   Paint();
   generator().MoveMouseTo(GetCenterOfSuggestion(1));  // Selects another row.
   generator().ClickLeftButton();
-  view().RemoveAllChildViews();
 }
 
 // Tests that after the mouse moves from one suggestion to another and back to
@@ -763,7 +760,6 @@ TEST_P(PopupViewViewsTestWithClickablePopupItemId,
   generator().MoveMouseTo(GetCenterOfSuggestion(1));  // Selects another row.
   generator().MoveMouseTo(GetCenterOfSuggestion(0));
   generator().ClickLeftButton();
-  view().RemoveAllChildViews();
 }
 
 // Tests that even if the mouse hovers a suggestion when the popup is displayed,
@@ -780,7 +776,6 @@ TEST_P(PopupViewViewsTestWithClickablePopupItemId,
   ASSERT_FALSE(view().IsMouseHovered());
   generator().MoveMouseTo(GetCenterOfSuggestion(0));
   generator().ClickLeftButton();
-  view().RemoveAllChildViews();
 }
 
 // Tests that if the mouse hovers a suggestion when the popup is displayed,
@@ -793,7 +788,6 @@ TEST_P(PopupViewViewsTestWithClickablePopupItemId,
   ASSERT_TRUE(view().IsMouseHovered());
   Paint();
   generator().ClickLeftButton();
-  view().RemoveAllChildViews();
 }
 
 // Tests that if the mouse hovers a suggestion when the popup is displayed and
@@ -813,7 +807,6 @@ TEST_P(PopupViewViewsTestWithClickablePopupItemId,
     }
   }
   generator().ClickLeftButton();
-  view().RemoveAllChildViews();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
