@@ -12747,36 +12747,6 @@
             ]
         }
     ],
-    "SpeculativeServiceWorkerWarmUp": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnableAll_20230608",
-                    "params": {
-                        "sw_warm_up_dry_run": "true",
-                        "sw_warm_up_intersection_observer": "true",
-                        "sw_warm_up_on_pointerdown": "true",
-                        "sw_warm_up_on_pointerover": "true",
-                        "sw_warm_up_on_visible": "true"
-                    },
-                    "enable_features": [
-                        "SpeculativeServiceWorkerWarmUp"
-                    ],
-                    "disable_features": [
-                        "SpeculativeServiceWorkerStartup"
-                    ]
-                }
-            ]
-        }
-    ],
     "SplitCacheByNetworkIsolationKey": [
         {
             "platforms": [
