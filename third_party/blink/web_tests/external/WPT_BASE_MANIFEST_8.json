@@ -200739,7 +200739,7 @@
        ]
       ],
       "svg-transform-group-009.html": [
-       "da16c47f9849722e11a92d5d85d6950d5f3bb15e",
+       "58f4beeda9c2e207ac259f4567fef171ef0f3056",
        [
         null,
         [
@@ -200748,7 +200748,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             2
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "svg-transform-group-010.html": [
@@ -200869,7 +200885,7 @@
        ]
       ],
       "svg-transform-nested-008.html": [
-       "80b153344ec9fd9816a68da776b7ef8ba32ed792",
+       "8348aaeb8d9e5a8001ce9e129f7ac66b3310ae61",
        [
         null,
         [
@@ -200878,11 +200894,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             50
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "svg-transform-nested-009.html": [
-       "bb747ea3303feaba5f036503aa6e4fe4f5ca3bc0",
+       "fe3b06ac2c564126e9bcc10203ea798655086563",
        [
         null,
         [
@@ -200963,7 +200995,7 @@
        ]
       ],
       "svg-transform-nested-014.html": [
-       "e6da31a682c068badc52229ad25b2ad640be7dda",
+       "9da7a80c1011c3481bd6d6bed3441d8a5e63997c",
        [
         null,
         [
@@ -200972,7 +201004,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             2
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "svg-transform-nested-015.html": [
@@ -201028,7 +201076,7 @@
        ]
       ],
       "svg-transform-nested-019.html": [
-       "c3fb59ece6122d7129cfbb64ebef5239e71e8a72",
+       "4bb658d2f9ccc1d844141538b1e8cbc87396d684",
        [
         null,
         [
@@ -201037,7 +201085,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             299
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "svg-transform-nested-020.html": [
@@ -203171,7 +203235,7 @@
        ]
       ],
       "svg-rotate-angle-45-001.html": [
-       "ff5173753694d97ed5df47c190dc56575db48173",
+       "be3e4bead853a9c767b215783f8f6d6419a11338",
        [
         null,
         [
@@ -203180,11 +203244,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             142
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "svg-rotate-angle-45-011.html": [
-       "94f1bf5121bfc09e5166217cc819284b1cec8a2f",
+       "d6164c0444d28211821aa8c569aa250c85a0d6fa",
        [
         null,
         [
@@ -203193,11 +203273,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             142
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "svg-rotate-angle-45-022.html": [
-       "b4d7019a90ee45762134ddbeca5f86fc785a7739",
+       "4542f7597d03e5474a19f7174bb98bdad9608d4d",
        [
         null,
         [
@@ -203206,7 +203302,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             142
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "svg-rotate-angle-90-001.html": [
@@ -274391,16 +274503,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "95a515748b96ec3662ffd608470bc2431b5792b0",
-     []
-    ],
-    "mtime.json": [
-     "9b6e0112a9cbce678e0e45558872d652ffa210b1",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -572990,7 +573092,7 @@
         ]
        ],
        "protocol.https.html": [
-        "cc16260d702e9ebace9e8cb44f072b2c26043265",
+        "add78d2fd47ade772cadea38d5ecbfd2e51ef9b4",
         [
          null,
          {}
