@@ -440,23 +440,133 @@ TEST_F(ShellSurfaceTest, RestoreExitsFullscreen) {
 }
 
 TEST_F(ShellSurfaceTest, HostWindowBoundsUpdatedAfterCommitWidget) {
-  gfx::Size buffer_size(256, 256);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  std::unique_ptr<Surface> surface(new Surface);
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+  constexpr gfx::Point kOrigin(0, 0);
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetOrigin(kOrigin)
+          .BuildShellSurface();
 
-  surface->Attach(buffer.get());
-  shell_surface->SurfaceTreeHost::OnSurfaceCommit();
   shell_surface->root_surface()->SetSurfaceHierarchyContentBoundsForTest(
       gfx::Rect(0, 0, 50, 50));
 
   // Host Window Bounds size before committing.
-  EXPECT_EQ(gfx::Rect(0, 0, 0, 0), shell_surface->host_window()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 256, 256), shell_surface->host_window()->bounds());
   EXPECT_TRUE(shell_surface->OnPreWidgetCommit());
   shell_surface->CommitWidget();
   // CommitWidget should update the Host Window Bounds.
   EXPECT_EQ(gfx::Rect(0, 0, 50, 50), shell_surface->host_window()->bounds());
+}
+
+TEST_F(ShellSurfaceTest, HostWindowBoundsUpdatedWithNegativeCoordinate) {
+  constexpr gfx::Point kOrigin(20, 20);
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetOrigin(kOrigin)
+          .BuildShellSurface();
+
+  // Set content bounds to negative and larger than surface. This happens when
+  // subsurfaces are outside of root surface boundary.
+  shell_surface->root_surface()->SetSurfaceHierarchyContentBoundsForTest(
+      gfx::Rect(-20, -20, 300, 300));
+
+  // Host Window Bounds size before committing.
+  EXPECT_EQ(gfx::Rect(0, 0, 256, 256), shell_surface->host_window()->bounds());
+  EXPECT_TRUE(shell_surface->OnPreWidgetCommit());
+  shell_surface->CommitWidget();
+  // CommitWidget should update the Host Window Bounds.
+  EXPECT_EQ(gfx::Rect(-20, -20, 300, 300),
+            shell_surface->host_window()->bounds());
+  // Root surface origin must be adjusted relative to host window.
+  EXPECT_EQ(gfx::Point(20, 20), shell_surface->root_surface_origin());
+}
+
+TEST_F(ShellSurfaceTest, HostWindowIncludesAllSubSurfaces) {
+  constexpr gfx::Point kOrigin(20, 20);
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetOrigin(kOrigin)
+          .BuildShellSurface();
+
+  constexpr gfx::Size kChildBufferSize(32, 32);
+
+  // Add child buffer at the upper-right corner of the root surface.
+  auto child_buffer1 = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(kChildBufferSize));
+  auto child_surface1 = std::make_unique<Surface>();
+  child_surface1->Attach(child_buffer1.get());
+  auto subsurface1 = std::make_unique<SubSurface>(
+      child_surface1.get(), shell_surface->root_surface());
+  subsurface1->SetPosition(gfx::PointF(-10, -10));
+  child_surface1->Commit();
+
+  // Add child buffer at the bottom-left corner of the root surface.
+  auto child_buffer2 = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(kChildBufferSize));
+  auto child_surface2 = std::make_unique<Surface>();
+  child_surface2->Attach(child_buffer2.get());
+  auto subsurface2 = std::make_unique<SubSurface>(
+      child_surface2.get(), shell_surface->root_surface());
+  subsurface2->SetPosition(gfx::PointF(250, 250));
+  child_surface2->Commit();
+
+  shell_surface->root_surface()->Commit();
+
+  ASSERT_TRUE(shell_surface->GetWidget());
+  shell_surface->SetGeometry(gfx::Rect(0, 0, 256, 256));
+  shell_surface->root_surface()->Commit();
+
+  // Host window must be set to include all children subsurfaces.
+  EXPECT_EQ(gfx::Rect(-10, -10, 292, 292),
+            shell_surface->host_window()->bounds());
+  // Root surface origin must be adjusted relative to host window.
+  EXPECT_EQ(gfx::Point(10, 10), shell_surface->root_surface_origin());
+}
+
+TEST_F(ShellSurfaceTest, HostWindowIncludesAllSubSurfacesWithScaleFactor) {
+  constexpr gfx::Point kOrigin(20, 20);
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetOrigin(kOrigin)
+          .BuildShellSurface();
+
+  // Set scale.
+  constexpr float kScaleFactor = 2.0;
+  shell_surface->set_client_submits_surfaces_in_pixel_coordinates(true);
+  shell_surface->SetScaleFactor(kScaleFactor);
+
+  constexpr gfx::Size kChildBufferSize(32, 32);
+
+  // Add child buffer at the upper-right corner of the root surface.
+  auto child_buffer1 = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(kChildBufferSize));
+  auto child_surface1 = std::make_unique<Surface>();
+  child_surface1->Attach(child_buffer1.get());
+  auto subsurface1 = std::make_unique<SubSurface>(
+      child_surface1.get(), shell_surface->root_surface());
+  subsurface1->SetPosition(gfx::PointF(-10, -10));
+  child_surface1->Commit();
+
+  // Add child buffer at the bottom-left corner of the root surface.
+  auto child_buffer2 = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(kChildBufferSize));
+  auto child_surface2 = std::make_unique<Surface>();
+  child_surface2->Attach(child_buffer2.get());
+  auto subsurface2 = std::make_unique<SubSurface>(
+      child_surface2.get(), shell_surface->root_surface());
+  subsurface2->SetPosition(gfx::PointF(250, 250));
+  child_surface2->Commit();
+
+  shell_surface->root_surface()->Commit();
+
+  ASSERT_TRUE(shell_surface->GetWidget());
+  shell_surface->SetGeometry(gfx::Rect(0, 0, 256, 256));
+  shell_surface->root_surface()->Commit();
+
+  // Host window must be set to include all children subsurfaces.
+  EXPECT_EQ(gfx::Rect(-5, -5, 146, 146),
+            shell_surface->host_window()->bounds());
+  // Root surface origin must be adjusted relative to host window.
+  EXPECT_EQ(gfx::Point(10, 10), shell_surface->root_surface_origin());
 }
 
 TEST_F(ShellSurfaceTest, SetFullscreen) {

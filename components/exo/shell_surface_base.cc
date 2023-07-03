@@ -1742,7 +1742,7 @@ void ShellSurfaceBase::UpdateSurfaceBounds() {
 
   origin += GetSurfaceOrigin().OffsetFromOrigin();
   origin -= ToFlooredVector2d(ScaleVector2d(
-      root_surface_origin().OffsetFromOrigin(), 1.f / GetScale()));
+      root_surface_origin().OffsetFromOrigin(), 1.f / GetScaleFactor()));
   gfx::Rect surface_bounds(origin, host_window()->bounds().size());
   if (host_window()->bounds() == surface_bounds)
     return;
