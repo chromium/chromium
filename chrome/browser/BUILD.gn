@@ -1939,6 +1939,7 @@ static_library("browser") {
     "//components/safe_browsing:buildflags",
     "//components/services/screen_ai/buildflags",
     "//components/services/storage/public/mojom",
+    "//components/session_proto_db:session_proto_db",
     "//components/sync",
     "//components/sync_device_info",
     "//content/public/browser",
@@ -2769,6 +2770,15 @@ static_library("browser") {
       "android/partner_browser_customizations.cc",
       "android/partner_browser_customizations.h",
       "android/permissions/permission_settings_bridge.cc",
+      "android/persisted_tab_data/leveldb_persisted_tab_data_storage_android.cc",
+      "android/persisted_tab_data/leveldb_persisted_tab_data_storage_android.h",
+      "android/persisted_tab_data/persisted_tab_data_android.cc",
+      "android/persisted_tab_data/persisted_tab_data_android.h",
+      "android/persisted_tab_data/persisted_tab_data_config_android.cc",
+      "android/persisted_tab_data/persisted_tab_data_config_android.h",
+      "android/persisted_tab_data/persisted_tab_data_storage_android.h",
+      "android/persisted_tab_data/sensitivity_persisted_tab_data_android.cc",
+      "android/persisted_tab_data/sensitivity_persisted_tab_data_android.h",
       "android/policy/policy_auditor.cc",
       "android/policy/policy_auditor_bridge.cc",
       "android/policy/policy_auditor_bridge.h",
@@ -3262,6 +3272,7 @@ static_library("browser") {
       ":delta_file_proto",
       ":fast_checkout_funnels_proto",
       ":profile_token",
+      ":sensitivity_data_proto",
       ":usage_stats_proto",
       "//cc/slim",
       "//chrome/android:jni_headers",
@@ -7761,6 +7772,10 @@ if (is_android) {
 
   proto_library("fast_checkout_funnels_proto") {
     sources = [ "fast_checkout/fast_checkout_funnels.proto" ]
+  }
+
+  proto_library("sensitivity_data_proto") {
+    sources = [ "android/persisted_tab_data/sensitivity_data.proto" ]
   }
 
   proto_library("profile_token") {

@@ -1020,6 +1020,7 @@ if (is_android) {
       "../browser/android/customtabs/custom_tabs_browsertest.cc",
       "../browser/android/customtabs/tab_interaction_recorder_browsertest.cc",
       "../browser/android/historical_tab_saver_browsertest.cc",
+      "../browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android_browsertest.cc",
       "../browser/android/webapk/webapk_icon_hasher_browsertest.cc",
       "../browser/banners/android/ambient_badge_manager_browsertest.cc",
       "../browser/browsing_data/access_context_audit_browsertest.cc",
