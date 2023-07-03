@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
 import '//resources/cr_elements/icons.html.js';
 

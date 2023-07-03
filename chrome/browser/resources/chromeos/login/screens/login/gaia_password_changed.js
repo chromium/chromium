@@ -6,6 +6,7 @@
  * @fileoverview Polymer element for GAIA password changed screen.
  */
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';

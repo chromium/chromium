@@ -7,6 +7,7 @@
  * screen.
  */
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 // <if expr="_google_chrome">

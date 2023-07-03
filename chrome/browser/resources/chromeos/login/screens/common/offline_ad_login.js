@@ -7,6 +7,7 @@
  * Authenticate user screens.
  */
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/md_select.css.js';
