@@ -684,6 +684,7 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
 
   auto instance = std::make_unique<dawn::native::Instance>(
       reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc));
+  // Enumerate adapters with default toggles
   std::vector<dawn::native::Adapter> adapters = instance->EnumerateAdapters();
 
   for (dawn::native::Adapter& adapter : adapters) {
@@ -774,8 +775,8 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
       }
 #endif
 
-      // Get supported features
-      dawn_info_list->push_back("[Supported Features]");
+      // Get supported features under default adapter toggles.
+      dawn_info_list->push_back("[Default Supported Features]");
       for (const char* name : adapter.GetSupportedFeatures()) {
         dawn_info_list->push_back(name);
       }

@@ -592,7 +592,7 @@ export class InfoViewElement extends CustomElement {
         infoEl.textContent = infoString;
 
         if (infoString === '[WebGPU Status]' ||
-            infoString === '[Supported Features]') {
+            infoString === '[Default Supported Features]') {
           inProcessingToggles = false;
         } else {
           inProcessingToggles = true;
