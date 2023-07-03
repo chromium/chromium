@@ -258,7 +258,13 @@ using chrome_test_util::SettingsDoneButton;
 //
 // Corresponds to ConsentAddedButNoSyncCheck in //chrome/browser/metrics/
 // ukm_browsertest.cc.
-- (void)testConsentAddedButNoSync {
+// TODO(crbug.com/1459991): Test is flaky on iphone-simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testConsentAddedButNoSync DISABLED_testConsentAddedButNoSync
+#else
+#define MAYBE_testConsentAddedButNoSync testConsentAddedButNoSync
+#endif
+- (void)MAYBE_testConsentAddedButNoSync {
   [SigninEarlGrey signOut];
   [MetricsAppInterface setMetricsAndCrashReportingForTesting:NO];
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
@@ -344,7 +350,13 @@ using chrome_test_util::SettingsDoneButton;
 //
 // Corresponds to HistoryDeleteCheck in //chrome/browser/metrics/
 // ukm_browsertest.cc.
-- (void)testHistoryDelete {
+// TODO(crbug.com/1459991): Test is flaky on iphone-simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testHistoryDelete DISABLED_testHistoryDelete
+#else
+#define MAYBE_testHistoryDelete testHistoryDelete
+#endif
+- (void)MAYBE_testHistoryDelete {
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
 
   const uint64_t kDummySourceId = 0x54321;
