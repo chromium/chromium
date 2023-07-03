@@ -294,7 +294,10 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
 
   MatchStatus match;
   if (context.selector->Relation() != CSSSelector::kSubSelector) {
-    if (NextSelectorExceedsScope(context)) {
+    // The kScopeActivation relation type does not change the current element
+    // being matched, unlike e.g. kChild which looks at the parent element.
+    if (NextSelectorExceedsScope(context) &&
+        (context.selector->Relation() != CSSSelector::kScopeActivation)) {
       return kSelectorFailsCompletely;
     }
 
@@ -727,10 +730,18 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
   DCHECK(context.selector);
   const CSSSelector& selector = *context.selector;
 
-  // Only :host and :host-context() should match the host:
-  // http://drafts.csswg.org/css-scoping/#host-element
+  // When considered within its own shadow trees, the shadow host is
+  // featureless. Only the :host, :host(), and :host-context() pseudo-classes
+  // are allowed to match it. [1]
+  //
+  // However, the :scope pseudo-class may also match the host if the host is the
+  // scoping root. [2]
+  //
+  // [1] https://drafts.csswg.org/css-scoping/#host-element-in-tree
+  // [2] https://github.com/w3c/csswg-drafts/issues/9025
   if (context.scope && context.scope->OwnerShadowHost() == element &&
       (!selector.IsHostPseudoClass() &&
+       selector.GetPseudoType() != CSSSelector::kPseudoTrue &&
        selector.GetPseudoType() != CSSSelector::kPseudoScope &&
        !context.treat_shadow_host_as_normal_scope &&
        selector.Match() != CSSSelector::kPseudoElement)) {

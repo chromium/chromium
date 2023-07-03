@@ -797,4 +797,31 @@ TEST_F(SelectorCheckerTest, PseudoTrue) {
   EXPECT_TRUE(checker.Match(context, result));
 }
 
+TEST_F(SelectorCheckerTest, PseudoTrueMatchesHost) {
+  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+    <div id=host>
+      <template shadowroot=open>
+      </template>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  CSSSelector selector;
+  selector.SetTrue();
+  selector.SetLastInComplexSelector(true);
+
+  Element* host = GetDocument().getElementById("host");
+  ASSERT_TRUE(host);
+  ShadowRoot* shadow = host->GetShadowRoot();
+  ASSERT_TRUE(shadow);
+
+  SelectorChecker checker(SelectorChecker::kResolvingStyle);
+  SelectorChecker::SelectorCheckingContext context(host);
+  context.selector = &selector;
+  context.scope = shadow;
+
+  SelectorChecker::MatchResult result;
+  EXPECT_TRUE(checker.Match(context, result));
+}
+
 }  // namespace blink

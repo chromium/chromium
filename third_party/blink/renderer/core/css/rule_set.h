@@ -474,6 +474,10 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   bool HasBucketForStyleAttribute() const { return has_bucket_for_style_attr_; }
 
+  bool MayHaveScopeInUniversalBucket() const {
+    return may_have_scope_in_universal_bucket_;
+  }
+
   bool NeedsFullRecalcForRuleSetInvalidation() const {
     return features_.NeedsFullRecalcForRuleSetInvalidation();
   }
@@ -650,6 +654,13 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // may need to take extra steps to synchronize the style attribute on
   // an element before looking for appropriate buckets.
   bool has_bucket_for_style_attr_ = false;
+
+  // Since the :scope pseudo-class can match a shadow host when that host
+  // is the scoping root, ElementRuleCollector::CollectMatchingShadowHostRules
+  // also needs to collect rules from the universal bucket, but this is only
+  // required when :scope is actually present. Nothing else in the universal
+  // bucket can match the host from inside the shadow tree.
+  bool may_have_scope_in_universal_bucket_ = false;
 
   unsigned rule_count_ = 0;
   bool need_compaction_ = false;

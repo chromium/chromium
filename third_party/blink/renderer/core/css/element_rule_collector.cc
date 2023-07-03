@@ -866,6 +866,11 @@ void ElementRuleCollector::CollectMatchingShadowHostRules(
     CollectMatchingRulesForList(bundle.rule_set->ShadowHostRules(),
                                 match_request, bundle.rule_set,
                                 bundle.style_sheet_index, checker);
+    if (bundle.rule_set->MayHaveScopeInUniversalBucket()) {
+      CollectMatchingRulesForList(bundle.rule_set->UniversalRules(),
+                                  match_request, bundle.rule_set,
+                                  bundle.style_sheet_index, checker);
+    }
   }
 }
 

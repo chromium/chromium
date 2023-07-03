@@ -493,6 +493,13 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
     return;
   }
 
+  // The selector parser prepends a :true pseudo-class with
+  // relation=kScopeActivation to any compound that contains :scope
+  // or the parent pseudo-class (&).
+  if (component.Relation() == CSSSelector::kScopeActivation) {
+    may_have_scope_in_universal_bucket_ = true;
+  }
+
   // If we didn't find a specialized map to stick it in, file under universal
   // rules.
   AddToRuleSet(universal_rules_, rule_data);
