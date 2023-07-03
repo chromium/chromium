@@ -7548,14 +7548,8 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForActivation() {
   CHECK(params);
 
   if (IsPrerenderedPageActivation()) {
-    if (prerender_navigation_utils::IsDisallowedHttpResponseCode(
-            params->http_status_code)) {
-      // TODO(https://crbug.com/1441842) Replace with CHECK when the
-      // investigation is done.
-      SCOPED_CRASH_KEY_NUMBER("PrerenderUnexpected", "http_status_code",
-                              params->http_status_code);
-      NOTREACHED_NORETURN();
-    }
+    CHECK(!prerender_navigation_utils::IsDisallowedHttpResponseCode(
+        params->http_status_code));
   } else {
     DCHECK_EQ(params->http_status_code, net::HTTP_OK);
   }
