@@ -1050,7 +1050,6 @@ http/tests/devtools/overrides/can-edit-iframe-html.js
 http/tests/devtools/overrides/project-added-with-existing-files-bind.js
 http/tests/devtools/persistence/automapping-rename-files.js
 http/tests/devtools/persistence/persistence-move-breakpoints-on-reload.js
-http/tests/devtools/profiler/cpu-profiler-calculate-time.js
 http/tests/devtools/profiler/heap-profiler-profiling.js
 http/tests/devtools/profiler/heap-snapshot-comparison-expansion-preserved-when-sorting.js
 http/tests/devtools/profiler/heap-snapshot-comparison-shown-node-count-preserved-when-sorting.js

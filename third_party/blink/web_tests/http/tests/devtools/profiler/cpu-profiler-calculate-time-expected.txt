@@ -1,4 +1,0 @@
-Tests self and total time calculation in CPU profiler.
-
-SUCCESS: all nodes have correct self and total times
-
