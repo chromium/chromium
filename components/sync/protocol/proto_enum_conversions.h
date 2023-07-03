@@ -118,10 +118,6 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(
     sync_pb::GaiaPasswordReuse::PasswordReuseLookup::ReputationVerdict verdict);
 
-// TODO(markusheintz): Remove.
-const char* ProtoEnumToString(
-    sync_pb::GaiaPasswordReuse::PasswordCaptured::EventTrigger trigger);
-
 const char* ProtoEnumToString(
     sync_pb::SegmentationSpecifics::DeviceMetadata::PlatformType platform_type);
 
