@@ -116,6 +116,9 @@ const char kArcDisableUreadahead[] = "arc-disable-ureadahead";
 // mode enum.
 const char kArcHostUreadaheadGeneration[] = "arc-host-ureadahead-generation";
 
+// Flag that indicates ARC images are formatted with EROFS (go/arcvm-erofs).
+const char kArcErofs[] = "arc-erofs";
+
 // Flag that forces the OptIn ui to be shown. Used in tests.
 const char kArcForceShowOptInUi[] = "arc-force-show-optin-ui";
 

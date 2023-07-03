@@ -234,6 +234,12 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   if (should_set_blocksize)
     request.set_rootfs_block_size(kBlockSize);
 
+  // Enable O_DIRECT for ARC system image (rootfs) and vendor image if the
+  // images are formatted with EROFS. (b/287383456)
+  const bool is_arc_erofs_enabled =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(ash::switches::kArcErofs);
+  request.set_rootfs_o_direct(is_arc_erofs_enabled);
+
   // Add /vendor as /dev/block/vdb. The device name has to be consistent with
   // the one in GenerateFirstStageFstab() in platform2/arc/setup/.
   vm_tools::concierge::DiskImage* disk_image = request.add_disks();
@@ -241,6 +247,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   disk_image->set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
   disk_image->set_writable(false);
   disk_image->set_do_mount(true);
+  disk_image->set_o_direct(is_arc_erofs_enabled);
   if (should_set_blocksize)
     disk_image->set_block_size(kBlockSize);
 
