@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -32,6 +33,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_types.h"
@@ -1650,6 +1652,9 @@ TEST_F(CookiesTreeModelTest, CanonicalizeCookieSource) {
 }
 
 TEST_F(CookiesTreeModelTest, CookieDeletionFilterNormalUser) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
   auto callback =
       CookiesTreeModel::GetCookieDeletionDisabledCallback(profile_.get());
   EXPECT_FALSE(callback);
@@ -1657,6 +1662,44 @@ TEST_F(CookiesTreeModelTest, CookieDeletionFilterNormalUser) {
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(CookiesTreeModelTest, CookieDeletionFilterChildUser) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
+  profile_->SetIsSupervisedProfile();
+  auto callback =
+      CookiesTreeModel::GetCookieDeletionDisabledCallback(profile_.get());
+
+  EXPECT_TRUE(callback);
+  EXPECT_FALSE(callback.Run(GURL("https://google.com")));
+  EXPECT_FALSE(callback.Run(GURL("https://example.com")));
+  EXPECT_TRUE(callback.Run(GURL("http://youtube.com")));
+  EXPECT_TRUE(callback.Run(GURL("https://youtube.com")));
+}
+#endif
+
+TEST_F(
+    CookiesTreeModelTest,
+    CookieDeletionFilterNormalUserWithClearingCookiesEnabledForSupervisedUsers) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
+  auto callback =
+      CookiesTreeModel::GetCookieDeletionDisabledCallback(profile_.get());
+  EXPECT_TRUE(callback);
+  EXPECT_FALSE(callback.Run(GURL("https://google.com")));
+  EXPECT_FALSE(callback.Run(GURL("https://google.com")));
+  EXPECT_FALSE(callback.Run(GURL("https://example.com")));
+  EXPECT_FALSE(callback.Run(GURL("http://youtube.com")));
+  EXPECT_FALSE(callback.Run(GURL("https://youtube.com")));
+}
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+TEST_F(
+    CookiesTreeModelTest,
+    CookieDeletionFilterChildUserWithClearingCookiesEnabledForSupervisedUsers) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
   profile_->SetIsSupervisedProfile();
   auto callback =
       CookiesTreeModel::GetCookieDeletionDisabledCallback(profile_.get());
