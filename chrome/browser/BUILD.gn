@@ -3118,6 +3118,8 @@ static_library("browser") {
       "password_manager/android/password_manager_launcher_android.h",
       "password_manager/android/password_manager_ui_util_android.cc",
       "password_manager/android/password_manager_ui_util_android.h",
+      "password_manager/android/password_migration_warning_startup_launcher.cc",
+      "password_manager/android/password_migration_warning_startup_launcher.h",
       "password_manager/android/password_store_bridge.cc",
       "password_manager/android/password_store_bridge.h",
       "password_manager/android/password_ui_view_android.cc",
