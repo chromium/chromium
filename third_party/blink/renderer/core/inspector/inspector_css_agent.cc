@@ -1341,17 +1341,26 @@ protocol::Response InspectorCSSAgent::getComputedStyleForNode(
     return protocol::Response::ServerError(
         "Node does not have an owner document");
   }
+  Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    element = FlatTreeTraversal::ParentElement(*node);
+  }
+  if (!element) {
+    return protocol::Response::ServerError(
+        "Node is not an element and does not have a parent element");
+  }
 
   auto* computed_style_info =
-      MakeGarbageCollected<CSSComputedStyleDeclaration>(node, true);
+      MakeGarbageCollected<CSSComputedStyleDeclaration>(element, true);
   *style = std::make_unique<
       protocol::Array<protocol::CSS::CSSComputedStyleProperty>>();
   for (CSSPropertyID property_id : CSSPropertyIDList()) {
     const CSSProperty& property_class =
         CSSProperty::Get(ResolveCSSPropertyID(property_id));
-    if (!property_class.IsWebExposed(node->GetExecutionContext()) ||
-        property_class.IsShorthand() || !property_class.IsProperty())
+    if (!property_class.IsWebExposed(element->GetExecutionContext()) ||
+        property_class.IsShorthand() || !property_class.IsProperty()) {
       continue;
+    }
     (*style)->emplace_back(
         protocol::CSS::CSSComputedStyleProperty::create()
             .setName(property_class.GetPropertyNameString())
