@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//net/features.gni")
 import("//services/network/public/cpp/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -151,7 +152,7 @@ component("cpp") {
     "x_frame_options_parser.h",
   ]
 
-  if (!is_ios) {
+  if (enable_websockets) {
     sources += [
       "server/http_connection.cc",
       "server/http_connection.h",
@@ -582,7 +583,7 @@ source_set("tests") {
     "x_frame_options_parser_unittest.cc",
   ]
 
-  if (!is_ios) {
+  if (enable_websockets) {
     sources += [
       "server/http_server_unittest.cc",
       "server/web_socket_encoder_unittest.cc",

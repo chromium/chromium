@@ -29,7 +29,7 @@
 #include "services/network/url_loader.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
 #include "services/network/websocket.h"
 #endif
 
@@ -111,11 +111,11 @@ int NetworkServiceNetworkDelegate::OnBeforeStartTransaction(
   if (url_loader)
     return url_loader->OnBeforeStartTransaction(headers, std::move(callback));
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
   WebSocket* web_socket = WebSocket::ForRequest(*request);
   if (web_socket)
     return web_socket->OnBeforeStartTransaction(headers, std::move(callback));
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
   return net::OK;
 }
@@ -136,14 +136,14 @@ int NetworkServiceNetworkDelegate::OnHeadersReceived(
         preserve_fragment_on_redirect_url));
   }
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
   WebSocket* web_socket = WebSocket::ForRequest(*request);
   if (web_socket) {
     chain->AddResult(web_socket->OnHeadersReceived(
         chain->CreateCallback(), original_response_headers,
         override_response_headers, preserve_fragment_on_redirect_url));
   }
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
   chain->AddResult(HandleClearSiteDataHeader(request, chain->CreateCallback(),
                                              original_response_headers));
@@ -207,13 +207,13 @@ bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
   if (url_loader) {
     allowed =
         url_loader->AllowCookies(request.url(), request.site_for_cookies());
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
   } else {
     WebSocket* web_socket = WebSocket::ForRequest(request);
     if (web_socket) {
       allowed = web_socket->AllowCookies(request.url());
     }
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
   }
   if (!allowed)
     ExcludeAllCookies(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
@@ -238,11 +238,11 @@ bool NetworkServiceNetworkDelegate::OnCanSetCookie(
   URLLoader* url_loader = URLLoader::ForRequest(request);
   if (url_loader)
     return url_loader->AllowCookies(request.url(), request.site_for_cookies());
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
   WebSocket* web_socket = WebSocket::ForRequest(request);
   if (web_socket)
     return web_socket->AllowCookies(request.url());
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
   return true;
 }
 
