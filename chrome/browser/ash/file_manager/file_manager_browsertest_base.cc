@@ -3221,7 +3221,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
     ASSERT_NE(integration_service, nullptr);
     ASSERT_NE(integration_service->GetPinManager(), nullptr);
-    integration_service->GetPinManager()->CalculateRequiredSpace();
+    ASSERT_TRUE(integration_service->GetPinManager()->CalculateRequiredSpace());
     return;
   }
 

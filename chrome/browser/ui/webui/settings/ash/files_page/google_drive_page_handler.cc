@@ -64,7 +64,10 @@ void GoogleDrivePageHandler::CalculateRequiredSpace() {
   }
 
   NotifyProgress(pin_manager->GetProgress());
-  pin_manager->CalculateRequiredSpace();
+  if (!pin_manager->CalculateRequiredSpace()) {
+    page_->OnServiceUnavailable();
+    return;
+  }
 }
 
 void GoogleDrivePageHandler::NotifyProgress(const Progress& progress) {

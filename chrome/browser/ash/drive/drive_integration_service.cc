@@ -1366,7 +1366,7 @@ void DriveIntegrationService::ToggleBulkPinning() {
   }
 
   if (GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled)) {
-    pin_manager_->ShouldPin(true);
+    pin_manager_->ShouldPin();
     pin_manager_->Start();
   } else {
     pin_manager_->Stop();

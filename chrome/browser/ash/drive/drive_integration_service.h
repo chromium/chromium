@@ -408,7 +408,7 @@ class DriveIntegrationService : public KeyedService,
   // Pin all the files in |files_to_pin| with DriveFS.
   void PinFiles(const std::vector<base::FilePath>& files_to_pin);
 
-  // Enable or disable DriveFS bulk pinning.
+  // Enables or disables DriveFS bulk pinning.
   void ToggleBulkPinning();
 
   // Regularly samples the bulk-pinning preference and stores the result in a

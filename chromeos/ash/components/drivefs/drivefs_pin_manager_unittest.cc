@@ -2328,6 +2328,92 @@ TEST_F(DriveFsPinManagerTest, StartMonitoringSpace) {
   manager.progress_.stage = Stage::kStopped;
 }
 
+TEST_F(DriveFsPinManagerTest, CalculateRequiredSpace) {
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
+  manager.SetSpaceGetter(GetSpaceGetter());
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  EXPECT_TRUE(manager.should_pin_);
+
+  // Pin manager not in the right stage to start calculating required space.
+  manager.progress_.stage = Stage::kGettingFreeSpace;
+  EXPECT_FALSE(manager.CalculateRequiredSpace());
+  EXPECT_TRUE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+
+  manager.progress_.stage = Stage::kListingFiles;
+  EXPECT_FALSE(manager.CalculateRequiredSpace());
+  EXPECT_TRUE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kListingFiles);
+
+  manager.progress_.stage = Stage::kSyncing;
+  EXPECT_FALSE(manager.CalculateRequiredSpace());
+  EXPECT_TRUE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kSyncing);
+
+  manager.progress_.stage = Stage::kPausedOffline;
+  EXPECT_FALSE(manager.CalculateRequiredSpace());
+  EXPECT_TRUE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
+
+  manager.progress_.stage = Stage::kPausedBatterySaver;
+  EXPECT_FALSE(manager.CalculateRequiredSpace());
+  EXPECT_TRUE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
+
+  // Pin manager is paused.
+  manager.progress_.stage = Stage::kPausedOffline;
+  EXPECT_FALSE(manager.CalculateRequiredSpace());
+  EXPECT_TRUE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
+
+  manager.progress_.stage = Stage::kPausedBatterySaver;
+  EXPECT_FALSE(manager.CalculateRequiredSpace());
+  EXPECT_TRUE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
+
+  // Pin manager already calculating required space.
+  manager.should_pin_ = false;
+  manager.progress_.stage = Stage::kGettingFreeSpace;
+  EXPECT_TRUE(manager.CalculateRequiredSpace());
+  EXPECT_FALSE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+
+  manager.progress_.stage = Stage::kListingFiles;
+  EXPECT_TRUE(manager.CalculateRequiredSpace());
+  EXPECT_FALSE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kListingFiles);
+
+  manager.progress_.stage = Stage::kSyncing;
+  EXPECT_TRUE(manager.CalculateRequiredSpace());
+  EXPECT_FALSE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kSyncing);
+
+  // Pin manager is stopped. Start calculating required space.
+  manager.should_pin_ = true;
+  manager.progress_.stage = Stage::kStopped;
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
+  EXPECT_TRUE(manager.CalculateRequiredSpace());
+  EXPECT_FALSE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+
+  manager.should_pin_ = true;
+  manager.progress_.stage = Stage::kCannotListFiles;
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
+  EXPECT_TRUE(manager.CalculateRequiredSpace());
+  EXPECT_FALSE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+
+  manager.should_pin_ = true;
+  manager.progress_.stage = Stage::kCannotGetFreeSpace;
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
+  EXPECT_TRUE(manager.CalculateRequiredSpace());
+  EXPECT_FALSE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+
+  manager.progress_.stage = Stage::kStopped;
+}
+
 TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
   CompletionCallback completion_callback;
   RunLoop run_loop;
@@ -2349,7 +2435,7 @@ TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
   PinManager manager(profile_path_, mount_path_, &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
   manager.SetCompletionCallback(completion_callback.Get());
-  manager.CalculateRequiredSpace();
+  EXPECT_TRUE(manager.CalculateRequiredSpace());
   run_loop.Run();
 
   const Progress progress = manager.GetProgress();
@@ -2382,7 +2468,7 @@ TEST_F(DriveFsPinManagerTest, WhenMoreResultsReturnedNextPageIsAttempted) {
   PinManager manager(profile_path_, mount_path_, &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
   manager.SetCompletionCallback(completion_callback.Get());
-  manager.CalculateRequiredSpace();
+  EXPECT_TRUE(manager.CalculateRequiredSpace());
   run_loop.Run();
 
   const Progress progress = manager.GetProgress();
@@ -2931,17 +3017,13 @@ TEST_F(DriveFsPinManagerTest, StartPinning) {
 
   manager.progress_.stage = Stage::kListingFiles;
   manager.progress_.free_space = int64_t(4) << 30;  // 4 GB
-
-  EXPECT_TRUE(manager.should_pin_);
-  manager.ShouldPin(false);
-  EXPECT_FALSE(manager.should_pin_);
+  manager.should_pin_ = false;
 
   manager.StartPinning();
   EXPECT_EQ(manager.progress_.stage, Stage::kSuccess);
 
   manager.progress_.stage = Stage::kListingFiles;
-  manager.ShouldPin(true);
-  EXPECT_TRUE(manager.should_pin_);
+  manager.should_pin_ = true;
 
   const Id id1 = Id(101);
   const Path path1 = Path("/root/Path 1");

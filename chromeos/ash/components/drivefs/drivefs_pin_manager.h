@@ -195,7 +195,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   // Lists the files and calculates the required space and free disk space. This
   // doesn't pin any files and doesn't keep the space calculations up to date.
-  void CalculateRequiredSpace();
+  // Does nothing and returns false if this pin manager is not in the right
+  // stage to start calculating the required space.
+  [[nodiscard]] bool CalculateRequiredSpace();
 
   // Gets the current progress status.
   Progress GetProgress() const {
@@ -264,18 +266,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
     completion_callback_ = std::move(f);
   }
 
-  // Sets the flag controlling whether the feature should actually pin files
-  // (default), or whether it should stop after checking the space requirements.
-  void ShouldPin(const bool b) {
+  // Sets the flag controlling whether the feature should actually pin files.
+  void ShouldPin() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    should_pin_ = b;
+    should_pin_ = true;
   }
 
   // Sets the online or offline network status, and starts or pauses the Pin
   // manager accordingly.
   void SetOnline(bool online);
 
-  // Check for free space.
+  // Starts checking for free space.
   void CheckFreeSpace();
 
   // Whether `path` is parented at a path that is untracked (e.g. a shortcut
@@ -530,6 +531,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnSearchResult);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, HandleQueryItem);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, DropQuery);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CalculateRequiredSpace);
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)

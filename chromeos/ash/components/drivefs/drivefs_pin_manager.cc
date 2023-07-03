@@ -691,9 +691,18 @@ void PinManager::Stop() {
   }
 }
 
-void PinManager::CalculateRequiredSpace() {
-  ShouldPin(false);
+bool PinManager::CalculateRequiredSpace() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (progress_.stage != Stage::kStopped && !progress_.IsError() &&
+      should_pin_) {
+    LOG(ERROR) << "Cannot calculate required space: "
+               << "Pin manager is in stage " << progress_.stage;
+    return false;
+  }
+
+  should_pin_ = false;
   Start();
+  return true;
 }
 
 void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {

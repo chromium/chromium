@@ -958,7 +958,10 @@ FileManagerPrivateCalculateBulkPinRequiredSpaceFunction::Run() {
     return RespondNow(Error("Pin Manager not available"));
   }
 
-  p->CalculateRequiredSpace();
+  if (!p->CalculateRequiredSpace()) {
+    return RespondNow(Error("Pin Manager is already pinning"));
+  }
+
   return RespondNow(NoArguments());
 }
 
