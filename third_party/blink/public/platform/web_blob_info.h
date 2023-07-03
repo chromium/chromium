@@ -19,7 +19,8 @@ class BlobDataHandle;
 
 class WebBlobInfo {
  public:
-  BLINK_EXPORT WebBlobInfo();
+  WebBlobInfo()
+      : is_file_(false), size_(std::numeric_limits<uint64_t>::max()) {}
   BLINK_EXPORT WebBlobInfo(const WebString& uuid,
                            const WebString& type,
                            uint64_t size,
@@ -79,7 +80,7 @@ class WebBlobInfo {
   WebString uuid_;
   WebString type_;  // MIME type
   uint64_t size_;
-  WebPrivatePtr<BlobDataHandle> blob_handle_;
+  WebPrivatePtrForRefCounted<BlobDataHandle> blob_handle_;
   WebString file_name_;   // Only for File
   absl::optional<base::Time> last_modified_;  // Only for File
 };

@@ -129,12 +129,6 @@ static void CheckLayoutClean(const Document* document) {
 }
 #endif
 
-WebAXObject::WebAXObject() = default;
-
-WebAXObject::WebAXObject(const WebAXObject& o) {
-  Assign(o);
-}
-
 void WebAXObject::Reset() {
   private_.Reset();
 }

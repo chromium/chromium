@@ -54,8 +54,8 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamSource {
     kReadyStateEnded = 2
   };
 
-  WebMediaStreamSource();
-  WebMediaStreamSource(const WebMediaStreamSource& other);
+  WebMediaStreamSource() = default;
+  WebMediaStreamSource(const WebMediaStreamSource& other) { Assign(other); }
   ~WebMediaStreamSource() { Reset(); }
 
   WebMediaStreamSource& operator=(const WebMediaStreamSource& other) {
@@ -89,7 +89,7 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamSource {
 #endif
 
  private:
-  WebPrivatePtr<MediaStreamSource> private_;
+  WebPrivatePtrForGC<MediaStreamSource> private_;
 };
 
 }  // namespace blink

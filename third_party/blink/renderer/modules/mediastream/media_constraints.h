@@ -300,7 +300,7 @@ class MediaConstraints {
   MODULES_EXPORT const String ToString() const;
 
  private:
-  WebPrivatePtr<MediaConstraintsPrivate> private_;
+  WebPrivatePtrForRefCounted<MediaConstraintsPrivate> private_;
 };
 
 }  // namespace blink

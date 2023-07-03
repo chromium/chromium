@@ -706,6 +706,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   // scrolled and focused editable node.
   bool has_scrolled_focused_editable_node_into_rect_ = false;
 
+  GC_PLUGIN_IGNORE("crbug.com/1458809")
   WebHistoryItem current_history_item_;
 
   // All the registered observers.

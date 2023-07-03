@@ -103,7 +103,7 @@ class BLINK_EXPORT WebDOMFileSystem {
 #endif
 
  private:
-  WebPrivatePtr<DOMFileSystem> private_;
+  WebPrivatePtrForGC<DOMFileSystem> private_;
 };
 
 }  // namespace blink

@@ -76,7 +76,7 @@ class BLINK_PLATFORM_EXPORT WebThreadSafeData {
 #endif
 
  private:
-  WebPrivatePtr<RawData> private_;
+  WebPrivatePtrForRefCounted<RawData> private_;
 };
 
 }  // namespace blink

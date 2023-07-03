@@ -38,12 +38,6 @@
 
 namespace blink {
 
-WebElementCollection::WebElementCollection() : current_(0) {}
-
-WebElementCollection::WebElementCollection(const WebElementCollection& n) {
-  Assign(n);
-}
-
 void WebElementCollection::Reset() {
   private_.Reset();
 }

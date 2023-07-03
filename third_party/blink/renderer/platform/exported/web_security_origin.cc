@@ -45,12 +45,6 @@ WebSecurityOrigin WebSecurityOrigin::Create(const WebURL& url) {
   return WebSecurityOrigin(SecurityOrigin::Create(url));
 }
 
-WebSecurityOrigin::WebSecurityOrigin() = default;
-
-WebSecurityOrigin::WebSecurityOrigin(const WebSecurityOrigin& s) {
-  Assign(s);
-}
-
 void WebSecurityOrigin::Reset() {
   private_ = nullptr;
 }

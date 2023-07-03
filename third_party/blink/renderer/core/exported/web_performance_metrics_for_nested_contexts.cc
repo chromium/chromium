@@ -8,14 +8,6 @@
 
 namespace blink {
 
-WebPerformanceMetricsForNestedContexts::
-    WebPerformanceMetricsForNestedContexts() = default;
-
-WebPerformanceMetricsForNestedContexts::WebPerformanceMetricsForNestedContexts(
-    const WebPerformanceMetricsForNestedContexts& p) {
-  Assign(p);
-}
-
 void WebPerformanceMetricsForNestedContexts::Reset() {
   private_.Reset();
 }

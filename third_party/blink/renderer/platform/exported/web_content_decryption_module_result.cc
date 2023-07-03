@@ -8,11 +8,6 @@
 
 namespace blink {
 
-WebContentDecryptionModuleResult::WebContentDecryptionModuleResult(
-    const WebContentDecryptionModuleResult& o) {
-  Assign(o);
-}
-
 void WebContentDecryptionModuleResult::Complete() {
   impl_->Complete();
   Reset();

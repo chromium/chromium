@@ -67,8 +67,8 @@ class BLINK_PLATFORM_EXPORT WebHTTPBody {
 
   ~WebHTTPBody() { Reset(); }
 
-  WebHTTPBody();
-  WebHTTPBody(const WebHTTPBody& b);
+  WebHTTPBody() = default;
+  WebHTTPBody(const WebHTTPBody& b) { Assign(b); }
   WebHTTPBody& operator=(const WebHTTPBody& b) {
     Assign(b);
     return *this;
@@ -122,7 +122,7 @@ class BLINK_PLATFORM_EXPORT WebHTTPBody {
  private:
   void EnsureMutable();
 
-  WebPrivatePtr<EncodedFormData> private_;
+  WebPrivatePtrForRefCounted<EncodedFormData> private_;
 };
 
 }  // namespace blink

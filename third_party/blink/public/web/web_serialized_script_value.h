@@ -76,7 +76,7 @@ class BLINK_EXPORT WebSerializedScriptValue {
 #endif
 
  private:
-  WebPrivatePtr<SerializedScriptValue> private_;
+  WebPrivatePtrForRefCounted<SerializedScriptValue> private_;
 };
 
 }  // namespace blink

@@ -90,10 +90,10 @@ class WebCryptoKeyHandle;
 class BLINK_PLATFORM_EXPORT WebCryptoKey {
  public:
   // Constructs a "null" key (One for which isNull() returns true).
-  WebCryptoKey();
+  WebCryptoKey() = default;
   ~WebCryptoKey() { Reset(); }
 
-  WebCryptoKey(const WebCryptoKey& other);
+  WebCryptoKey(const WebCryptoKey& other) { Assign(other); }
   WebCryptoKey& operator=(const WebCryptoKey& other) {
     Assign(other);
     return *this;
@@ -129,7 +129,7 @@ class BLINK_PLATFORM_EXPORT WebCryptoKey {
   void Assign(const WebCryptoKey& other);
   void Reset();
 
-  WebPrivatePtr<WebCryptoKeyPrivate> private_;
+  WebPrivatePtrForRefCounted<WebCryptoKeyPrivate> private_;
 };
 
 // Base class for the embedder to define its own opaque key handle. The lifetime

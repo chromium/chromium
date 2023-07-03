@@ -67,7 +67,7 @@ class BLINK_EXPORT WebDOMMediaStreamTrack {
   WebDOMMediaStreamTrack(MediaStreamTrack*);
 #endif
 
-  WebPrivatePtr<MediaStreamTrack> private_;
+  WebPrivatePtrForGC<MediaStreamTrack> private_;
 };
 
 }  // namespace blink

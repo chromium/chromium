@@ -30,7 +30,9 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleResult {
     kSessionAlreadyExists,
   };
 
-  WebContentDecryptionModuleResult(const WebContentDecryptionModuleResult& o);
+  WebContentDecryptionModuleResult(const WebContentDecryptionModuleResult& o) {
+    Assign(o);
+  }
 
   ~WebContentDecryptionModuleResult() { Reset(); }
 
@@ -66,8 +68,8 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleResult {
   void Reset();
   void Assign(const WebContentDecryptionModuleResult&);
 
-  WebPrivatePtr<ContentDecryptionModuleResult,
-                WebPrivatePtrDestruction::kCrossThread>
+  WebPrivatePtrForGC<ContentDecryptionModuleResult,
+                     WebPrivatePtrDestruction::kCrossThread>
       impl_;
 };
 

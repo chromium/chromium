@@ -59,9 +59,12 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
 
   ~WebPerformanceMetricsForReporting() { Reset(); }
 
-  WebPerformanceMetricsForReporting();
+  WebPerformanceMetricsForReporting() = default;
 
-  WebPerformanceMetricsForReporting(const WebPerformanceMetricsForReporting& p);
+  WebPerformanceMetricsForReporting(
+      const WebPerformanceMetricsForReporting& p) {
+    Assign(p);
+  }
 
   WebPerformanceMetricsForReporting& operator=(
       const WebPerformanceMetricsForReporting& p) {
@@ -123,7 +126,7 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
 #endif
 
  private:
-  WebPrivatePtr<WindowPerformance> private_;
+  WebPrivatePtrForGC<WindowPerformance> private_;
 };
 
 }  // namespace blink

@@ -66,8 +66,8 @@ class BLINK_EXPORT WebAXObject {
  public:
   ~WebAXObject() { Reset(); }
 
-  WebAXObject();
-  WebAXObject(const WebAXObject& o);
+  WebAXObject() = default;
+  WebAXObject(const WebAXObject& o) { Assign(o); }
   WebAXObject& operator=(const WebAXObject& o) {
     Assign(o);
     return *this;
@@ -295,7 +295,7 @@ class BLINK_EXPORT WebAXObject {
 #endif
 
  private:
-  WebPrivatePtr<AXObject> private_;
+  WebPrivatePtrForGC<AXObject> private_;
 };
 
 }  // namespace blink

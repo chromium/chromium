@@ -76,7 +76,7 @@ class BLINK_EXPORT WebBlob {
 #endif
 
  protected:
-  WebPrivatePtr<Blob> private_;
+  WebPrivatePtrForGC<Blob> private_;
 };
 
 }  // namespace blink

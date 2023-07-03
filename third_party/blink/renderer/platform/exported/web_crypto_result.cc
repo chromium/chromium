@@ -34,10 +34,6 @@
 
 namespace blink {
 
-WebCryptoResult::WebCryptoResult(const WebCryptoResult& o) {
-  Assign(o);
-}
-
 void WebCryptoResult::CompleteWithError(WebCryptoErrorType error_type,
                                         const WebString& error_details) {
   if (!Cancelled())

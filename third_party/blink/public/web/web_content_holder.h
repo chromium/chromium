@@ -34,7 +34,7 @@ class BLINK_EXPORT WebContentHolder {
 #endif
 
  private:
-  WebPrivatePtr<ContentHolder> private_;
+  WebPrivatePtrForGC<ContentHolder> private_;
 };
 
 }  // namespace blink

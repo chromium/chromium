@@ -61,12 +61,6 @@ WebVector<absl::optional<std::u16string>> ToOptionalString16Vector(
 
 }  // namespace
 
-WebHistoryItem::WebHistoryItem() = default;
-
-WebHistoryItem::WebHistoryItem(const WebHistoryItem& h) {
-  Assign(h);
-}
-
 WebHistoryItem::WebHistoryItem(const PageState& page_state) {
   ExplodedPageState exploded_page_state;
   if (!DecodePageState(page_state.ToEncodedData(), &exploded_page_state))

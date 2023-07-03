@@ -50,8 +50,8 @@ class BLINK_PLATFORM_EXPORT WebSecurityOrigin {
  public:
   ~WebSecurityOrigin() { Reset(); }
 
-  WebSecurityOrigin();
-  WebSecurityOrigin(const WebSecurityOrigin& s);
+  WebSecurityOrigin() = default;
+  WebSecurityOrigin(const WebSecurityOrigin& s) { Assign(s); }
   WebSecurityOrigin& operator=(const WebSecurityOrigin& s) {
     Assign(s);
     return *this;
@@ -132,7 +132,7 @@ class BLINK_PLATFORM_EXPORT WebSecurityOrigin {
 #endif
 
  private:
-  WebPrivatePtr<const SecurityOrigin> private_;
+  WebPrivatePtrForRefCounted<const SecurityOrigin> private_;
 };
 
 }  // namespace blink

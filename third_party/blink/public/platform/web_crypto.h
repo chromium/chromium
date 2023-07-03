@@ -60,7 +60,7 @@ enum WebCryptoErrorType {
 
 class BLINK_PLATFORM_EXPORT WebCryptoResult {
  public:
-  WebCryptoResult(const WebCryptoResult& o);
+  WebCryptoResult(const WebCryptoResult& o) { Assign(o); }
 
   ~WebCryptoResult() { Reset(); }
 
@@ -97,8 +97,10 @@ class BLINK_PLATFORM_EXPORT WebCryptoResult {
   void Reset();
   void Assign(const WebCryptoResult&);
 
-  WebPrivatePtr<CryptoResult, WebPrivatePtrDestruction::kCrossThread> impl_;
-  WebPrivatePtr<CryptoResultCancel, WebPrivatePtrDestruction::kCrossThread>
+  WebPrivatePtrForGC<CryptoResult, WebPrivatePtrDestruction::kCrossThread>
+      impl_;
+  WebPrivatePtrForRefCounted<CryptoResultCancel,
+                             WebPrivatePtrDestruction::kCrossThread>
       cancel_;
 };
 

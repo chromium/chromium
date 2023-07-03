@@ -50,8 +50,8 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamTrack {
     kVideoText
   };
 
-  WebMediaStreamTrack();
-  WebMediaStreamTrack(const WebMediaStreamTrack& other);
+  WebMediaStreamTrack() = default;
+  WebMediaStreamTrack(const WebMediaStreamTrack& other) { Assign(other); }
   ~WebMediaStreamTrack() { Reset(); }
 
   WebMediaStreamTrack& operator=(const WebMediaStreamTrack& other) {
@@ -73,7 +73,7 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamTrack {
 #endif
 
  private:
-  WebPrivatePtr<MediaStreamComponent> private_;
+  WebPrivatePtrForGC<MediaStreamComponent> private_;
 };
 
 }  // namespace blink

@@ -53,8 +53,8 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamObserver {
 
 class BLINK_PLATFORM_EXPORT WebMediaStream {
  public:
-  WebMediaStream();
-  WebMediaStream(const WebMediaStream& other);
+  WebMediaStream() = default;
+  WebMediaStream(const WebMediaStream& other) { Assign(other); }
   ~WebMediaStream() { Reset(); }
 
   WebMediaStream& operator=(const WebMediaStream& other) {
@@ -90,7 +90,7 @@ class BLINK_PLATFORM_EXPORT WebMediaStream {
 #endif
 
  private:
-  WebPrivatePtr<MediaStreamDescriptor> private_;
+  WebPrivatePtrForGC<MediaStreamDescriptor> private_;
 };
 
 }  // namespace blink

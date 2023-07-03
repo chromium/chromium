@@ -51,9 +51,9 @@ class WebVector;
 class BLINK_EXPORT WebHistoryItem {
  public:
   ~WebHistoryItem() { Reset(); }
-  WebHistoryItem();
+  WebHistoryItem() = default;
   explicit WebHistoryItem(const PageState& page_state);
-  WebHistoryItem(const WebHistoryItem& h);
+  WebHistoryItem(const WebHistoryItem& h) { Assign(h); }
   WebHistoryItem& operator=(const WebHistoryItem& h) {
     Assign(h);
     return *this;
@@ -90,7 +90,7 @@ class BLINK_EXPORT WebHistoryItem {
   void Assign(const WebHistoryItem&);
   WebVector<WebString> GetReferencedFilePaths() const;
 
-  WebPrivatePtr<HistoryItem> private_;
+  WebPrivatePtrForGC<HistoryItem> private_;
   // TODO(dcheng): Remove this, since unique name is no longer a Blink concept.
   WebString target_;
 };

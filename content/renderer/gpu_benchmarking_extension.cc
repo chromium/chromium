@@ -131,7 +131,6 @@ class GpuBenchmarkingContext {
 using blink::GpuBenchmarkingContext;
 using blink::WebImageCache;
 using blink::WebLocalFrame;
-using blink::WebPrivatePtr;
 using blink::WebView;
 
 namespace content {

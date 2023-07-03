@@ -19,10 +19,12 @@ class BLINK_EXPORT WebPerformanceMetricsForNestedContexts {
  public:
   ~WebPerformanceMetricsForNestedContexts() { Reset(); }
 
-  WebPerformanceMetricsForNestedContexts();
+  WebPerformanceMetricsForNestedContexts() = default;
 
   WebPerformanceMetricsForNestedContexts(
-      const WebPerformanceMetricsForNestedContexts& p);
+      const WebPerformanceMetricsForNestedContexts& p) {
+    Assign(p);
+  }
 
   WebPerformanceMetricsForNestedContexts& operator=(
       const WebPerformanceMetricsForNestedContexts& p) {
@@ -43,7 +45,7 @@ class BLINK_EXPORT WebPerformanceMetricsForNestedContexts {
   absl::optional<base::TimeTicks> CommitNavigationEnd() const;
 
  private:
-  WebPrivatePtr<WindowPerformance> private_;
+  WebPrivatePtrForGC<WindowPerformance> private_;
 };
 }  // namespace blink
 
