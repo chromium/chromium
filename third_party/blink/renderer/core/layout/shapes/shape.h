@@ -42,6 +42,7 @@
 namespace blink {
 
 class FloatRoundedRect;
+struct LogicalSize;
 
 struct LineSegment {
   STACK_ALLOCATED();
@@ -77,7 +78,7 @@ class CORE_EXPORT Shape {
     Path margin_shape;
   };
   static std::unique_ptr<Shape> CreateShape(const BasicShape*,
-                                            const LayoutSize& logical_box_size,
+                                            const LogicalSize& logical_box_size,
                                             WritingMode,
                                             float margin);
   static std::unique_ptr<Shape> CreateRasterShape(Image*,

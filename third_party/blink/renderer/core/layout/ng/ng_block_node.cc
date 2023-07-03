@@ -1836,16 +1836,15 @@ void NGBlockNode::UpdateShapeOutsideInfoIfNeeded(
 
   // The box_ may not have a valid size yet (due to an intermediate layout),
   // use the fragment's size instead.
-  LayoutSize box_size = layout_result.PhysicalFragment().Size().ToLayoutSize();
+  PhysicalSize box_size = layout_result.PhysicalFragment().Size();
 
   // TODO(ikilpatrick): Ideally this should be moved to a NGLayoutResult
   // computing the shape area. There may be an issue with the new fragmentation
   // model and computing the correct sizes of shapes.
   ShapeOutsideInfo* shape_outside = box_->GetShapeOutsideInfo();
-  LayoutBlock* containing_block = box_->ContainingBlock();
+  WritingMode writing_mode = box_->ContainingBlock()->Style()->GetWritingMode();
   shape_outside->SetReferenceBoxLogicalSize(
-      containing_block->IsHorizontalWritingMode() ? box_size
-                                                  : box_size.TransposedSize());
+      box_size.ConvertToLogical(writing_mode));
   shape_outside->SetPercentageResolutionInlineSize(
       percentage_resolution_inline_size);
 }

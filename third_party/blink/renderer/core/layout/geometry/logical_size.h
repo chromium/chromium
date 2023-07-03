@@ -50,6 +50,16 @@ struct CORE_EXPORT LogicalSize {
     return inline_size == LayoutUnit() || block_size == LayoutUnit();
   }
 
+  void Expand(LayoutUnit inline_offset, LayoutUnit block_offset) {
+    inline_size += inline_offset;
+    block_size += block_offset;
+  }
+
+  void Shrink(LayoutUnit inline_offset, LayoutUnit block_offset) {
+    inline_size -= inline_offset;
+    block_size -= block_offset;
+  }
+
   LogicalSize ClampNegativeToZero() const {
     return LogicalSize(inline_size.ClampNegativeToZero(),
                        block_size.ClampNegativeToZero());

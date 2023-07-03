@@ -34,6 +34,7 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -51,12 +52,12 @@ CSSBoxType ReferenceBox(const ShapeValue& shape_value) {
 }
 
 void ShapeOutsideInfo::SetReferenceBoxLogicalSize(
-    LayoutSize new_reference_box_logical_size) {
+    LogicalSize new_reference_box_logical_size) {
   Document& document = layout_box_->GetDocument();
   bool is_horizontal_writing_mode =
       layout_box_->ContainingBlock()->StyleRef().IsHorizontalWritingMode();
 
-  LayoutSize margin_box_for_use_counter = new_reference_box_logical_size;
+  LogicalSize margin_box_for_use_counter = new_reference_box_logical_size;
   if (is_horizontal_writing_mode) {
     margin_box_for_use_counter.Expand(layout_box_->MarginWidth(),
                                       layout_box_->MarginHeight());
@@ -155,22 +156,20 @@ static bool CheckShapeImageOrigin(Document& document,
   return false;
 }
 
-static LayoutRect GetShapeImageMarginRect(
+static LogicalRect GetShapeImageMarginRect(
     const LayoutBox& layout_box,
-    const LayoutSize& reference_box_logical_size) {
-  LayoutPoint margin_box_origin(
+    const LogicalSize& reference_box_logical_size) {
+  LogicalOffset margin_box_origin(
       -layout_box.MarginLineLeft() - layout_box.BorderAndPaddingLogicalLeft(),
       -layout_box.MarginBefore() - layout_box.BorderBefore() -
           layout_box.PaddingBefore());
-  LayoutSize margin_box_size_delta(
-      layout_box.MarginLogicalWidth() +
-          layout_box.BorderAndPaddingLogicalWidth(),
-      layout_box.MarginLogicalHeight() +
-          layout_box.BorderAndPaddingLogicalHeight());
-  LayoutSize margin_rect_size(reference_box_logical_size +
-                              margin_box_size_delta);
+  LogicalSize margin_rect_size = reference_box_logical_size;
+  margin_rect_size.Expand(layout_box.MarginLogicalWidth() +
+                              layout_box.BorderAndPaddingLogicalWidth(),
+                          layout_box.MarginLogicalHeight() +
+                              layout_box.BorderAndPaddingLogicalHeight());
   margin_rect_size.ClampNegativeToZero();
-  return LayoutRect(margin_box_origin, margin_rect_size);
+  return LogicalRect(margin_box_origin, margin_rect_size);
 }
 
 std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
@@ -186,9 +185,11 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
 
   const LayoutSize& image_size = RoundedLayoutSize(style_image->ImageSize(
       layout_box_->StyleRef().EffectiveZoom(),
-      gfx::SizeF(reference_box_logical_size_), respect_orientation));
+      gfx::SizeF(reference_box_logical_size_.inline_size.ToFloat(),
+                 reference_box_logical_size_.block_size.ToFloat()),
+      respect_orientation));
 
-  const LayoutRect& margin_rect =
+  const LogicalRect& margin_rect =
       GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
   const LayoutRect& image_rect = (layout_box_->IsLayoutImage())
                                      ? To<LayoutImage>(layout_box_.Get())
@@ -201,8 +202,8 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
                             layout_box_->StyleRef(), gfx::SizeF(image_size));
 
   return Shape::CreateRasterShape(image.get(), shape_image_threshold,
-                                  image_rect, margin_rect, writing_mode, margin,
-                                  respect_orientation);
+                                  image_rect, margin_rect.ToLayoutRect(),
+                                  writing_mode, margin, respect_orientation);
 }
 
 const Shape& ShapeOutsideInfo::ComputedShape() const {
@@ -250,8 +251,10 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
     case ShapeValue::kBox: {
       // TODO(layout-dev): It seems incorrect to pass logical size to
       // RoundedBorderGeometry().
+      PhysicalSize size(reference_box_logical_size_.inline_size,
+                        reference_box_logical_size_.block_size);
       const FloatRoundedRect& shape_rect = RoundedBorderGeometry::RoundedBorder(
-          style, PhysicalRect(PhysicalOffset(), reference_box_logical_size_));
+          style, PhysicalRect(PhysicalOffset(), size));
       shape_ = Shape::CreateLayoutBoxShape(shape_rect, writing_mode, margin);
       break;
     }
