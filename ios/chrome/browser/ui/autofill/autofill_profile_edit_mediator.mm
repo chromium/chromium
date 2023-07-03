@@ -109,19 +109,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.consumer didSelectCountry:countryItem.text];
 }
 
+#pragma mark - AutofillSettingsProfileEditTableViewControllerDelegate
+
+- (void)didEditAutofillProfileFromSettings {
+  _personalDataManager->UpdateProfile(*_autofillProfile);
+
+  // Push the saved profile data to the consumer.
+  [self sendAutofillProfileDataToConsumer];
+}
+
 #pragma mark - AutofillProfileEditTableViewControllerDelegate
 
 - (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country {
   [self.delegate
       willSelectCountryWithCurrentlySelectedCountry:country
                                         countryList:self.allCountries];
-}
-
-- (void)didEditAutofillProfile {
-  _personalDataManager->UpdateProfile(*_autofillProfile);
-
-  // Push the saved profile data to the consumer.
-  [self sendAutofillProfileDataToConsumer];
 }
 
 - (void)didSaveProfileFromModal {

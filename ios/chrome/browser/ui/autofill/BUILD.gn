@@ -134,6 +134,7 @@ source_set("autofill_shared_ui") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/autofill/cells",
     "//ios/chrome/browser/ui/settings/autofill:constants",
+    "//ios/chrome/browser/ui/settings/autofill:shared_ui",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",

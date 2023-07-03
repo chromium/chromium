@@ -55,7 +55,8 @@ class AutofillSettingsProfileEditTableViewControllerTest
   ChromeTableViewController* InstantiateController() override {
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
-            initWithShouldShowMigrateToAccountButton:NO];
+                            initWithDelegate:nil
+            shouldShowMigrateToAccountButton:NO];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
             initWithDelegate:delegate_mock_
@@ -169,7 +170,8 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
   ChromeTableViewController* InstantiateController() override {
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
-            initWithShouldShowMigrateToAccountButton:NO];
+                            initWithDelegate:nil
+            shouldShowMigrateToAccountButton:NO];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
             initWithDelegate:delegate_mock_
@@ -258,21 +260,12 @@ TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
 class AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest
     : public AutofillSettingsProfileEditTableViewControllerTest {
  protected:
-  void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
-    delegate_mock_ = OCMProtocolMock(
-        @protocol(AutofillProfileEditTableViewControllerDelegate));
-    CreateController();
-    CheckController();
-    CreateProfileData();
-
-    // Reload the model so that the changes are propogated.
-    [controller() loadModel];
-  }
   ChromeTableViewController* InstantiateController() override {
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
-            initWithShouldShowMigrateToAccountButton:YES];
+                            initWithDelegate:nil
+            shouldShowMigrateToAccountButton:YES];
+
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
             initWithDelegate:delegate_mock_

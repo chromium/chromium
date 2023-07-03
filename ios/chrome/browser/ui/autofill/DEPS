@@ -1,5 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/ui/settings/autofill/autofill_constants.h",
+  "+ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller_delegate.h",
   "+ios/chrome/browser/ui/settings/password",
   "+ios/chrome/browser/ui/bubble",
 ]

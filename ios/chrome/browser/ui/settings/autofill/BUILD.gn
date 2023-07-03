@@ -31,6 +31,7 @@ source_set("autofill") {
   ]
   deps = [
     ":constants",
+    ":shared_ui",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
@@ -76,6 +77,12 @@ source_set("constants") {
     "autofill_constants.h",
     "autofill_constants.mm",
   ]
+}
+
+source_set("shared_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources =
+      [ "autofill_settings_profile_edit_table_view_controller_delegate.h" ]
 }
 
 source_set("unit_tests") {

@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -26,6 +27,10 @@ const CGFloat kSymbolSize = 22;
 
 @interface AutofillSettingsProfileEditTableViewController ()
 
+@property(nonatomic, weak)
+    id<AutofillSettingsProfileEditTableViewControllerDelegate>
+        delegate;
+
 // If YES, a section is shown in the view to migrate the profile to account.
 @property(nonatomic, assign) BOOL showMigrateToAccountSection;
 
@@ -35,11 +40,14 @@ const CGFloat kSymbolSize = 22;
 
 #pragma mark - Initialization
 
-- (instancetype)initWithShouldShowMigrateToAccountButton:
-    (BOOL)showMigrateToAccount {
+- (instancetype)initWithDelegate:
+                    (id<AutofillSettingsProfileEditTableViewControllerDelegate>)
+                        delegate
+    shouldShowMigrateToAccountButton:(BOOL)showMigrateToAccount {
   self = [super initWithStyle:ChromeTableViewStyle()];
 
   if (self) {
+    _delegate = delegate;
     _showMigrateToAccountSection = showMigrateToAccount;
   }
 
@@ -99,7 +107,13 @@ const CGFloat kSymbolSize = 22;
 - (void)editButtonPressed {
   [super editButtonPressed];
 
-  [self.handler editButtonPressed];
+  if (!self.tableView.editing) {
+    [self.handler updateProfileData];
+    [self.delegate didEditAutofillProfileFromSettings];
+  }
+
+  [self loadModel];
+  [self.handler reconfigureCells];
 }
 
 #pragma mark - UITableViewDataSource

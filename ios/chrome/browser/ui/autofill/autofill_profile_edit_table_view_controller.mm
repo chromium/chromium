@@ -129,16 +129,43 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   [self.delegate viewDidDisappear];
 }
 
-- (void)editButtonPressed {
-  DCHECK(self.settingsView);
-  if (!self.controller.tableView.editing) {
-    [self updateProfileData];
-    [self.delegate didEditAutofillProfile];
-  }
+- (void)updateProfileData {
+  TableViewModel* model = self.controller.tableViewModel;
+  NSInteger itemCount =
+      [model numberOfItemsInSection:
+                 [model sectionForSectionIdentifier:
+                            AutofillProfileDetailsSectionIdentifierFields]];
 
-  // Reload the model.
-  [self.controller loadModel];
-  // Update the cells.
+  // Reads the values from the fields and updates the local copy of the
+  // profile accordingly.
+  NSInteger section = [model sectionForSectionIdentifier:
+                                 AutofillProfileDetailsSectionIdentifierFields];
+  for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
+    NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
+                                            inSection:section];
+    NSInteger itemType =
+        [self.controller.tableViewModel itemTypeForIndexPath:path];
+
+    if (itemType == AutofillProfileDetailsItemTypeCountry) {
+      if (self.autofillAccountProfilesUnionViewEnabled) {
+        [self.delegate
+            updateProfileMetadataWithValue:self.homeAddressCountry
+                         forAutofillUIType:
+                             AutofillUITypeProfileHomeAddressCountry];
+        continue;
+      }
+    } else if (![self isItemTypeTextEditCell:itemType]) {
+      continue;
+    }
+
+    AutofillEditItem* item = base::mac::ObjCCastStrict<AutofillEditItem>(
+        [model itemAtIndexPath:path]);
+    [self.delegate updateProfileMetadataWithValue:item.textFieldValue
+                                forAutofillUIType:item.autofillUIType];
+  }
+}
+
+- (void)reconfigureCells {
   [self.controller reconfigureCellsForItems:
                        [self.controller.tableViewModel
                            itemsInSectionWithIdentifier:
@@ -805,42 +832,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       break;
   }
   return NO;
-}
-
-- (void)updateProfileData {
-  TableViewModel* model = self.controller.tableViewModel;
-  NSInteger itemCount =
-      [model numberOfItemsInSection:
-                 [model sectionForSectionIdentifier:
-                            AutofillProfileDetailsSectionIdentifierFields]];
-
-  // Reads the values from the fields and updates the local copy of the
-  // profile accordingly.
-  NSInteger section = [model sectionForSectionIdentifier:
-                                 AutofillProfileDetailsSectionIdentifierFields];
-  for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
-    NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
-                                            inSection:section];
-    NSInteger itemType =
-        [self.controller.tableViewModel itemTypeForIndexPath:path];
-
-    if (itemType == AutofillProfileDetailsItemTypeCountry) {
-      if (self.autofillAccountProfilesUnionViewEnabled) {
-        [self.delegate
-            updateProfileMetadataWithValue:self.homeAddressCountry
-                         forAutofillUIType:
-                             AutofillUITypeProfileHomeAddressCountry];
-        continue;
-      }
-    } else if (![self isItemTypeTextEditCell:itemType]) {
-      continue;
-    }
-
-    AutofillEditItem* item = base::mac::ObjCCastStrict<AutofillEditItem>(
-        [model itemAtIndexPath:path]);
-    [self.delegate updateProfileMetadataWithValue:item.textFieldValue
-                                forAutofillUIType:item.autofillUIType];
-  }
 }
 
 @end
