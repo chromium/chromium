@@ -47,9 +47,9 @@ BrowsingTopicsPageLoadDataTracker::BrowsingTopicsPageLoadDataTracker(
     content::Page& page)
     : content::PageUserData<BrowsingTopicsPageLoadDataTracker>(page),
       hashed_main_frame_host_(HashMainFrameHostForStorage(
-          page.GetMainDocument().GetLastCommittedOrigin().host())),
-      source_id_(page.GetMainDocument().GetPageUkmSourceId()) {
-  DCHECK(page.IsPrimary());
+          page.GetMainDocument().GetLastCommittedOrigin().host())) {
+  CHECK(page.IsPrimary());
+  source_id_ = page.GetMainDocument().GetPageUkmSourceId();
 
   // TODO(yaoxia): consider dropping the permissions policy checks. We require
   // that the API is used in the page, and that already implies that the
@@ -85,7 +85,7 @@ void BrowsingTopicsPageLoadDataTracker::OnBrowsingTopicsApiUsed(
         web_contents->GetLastCommittedURL());
   }
 
-  DCHECK_LE(
+  CHECK_LE(
       blink::features::
           kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToStorePerPageLoad
               .Get(),
