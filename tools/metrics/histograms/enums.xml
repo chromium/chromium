@@ -28077,6 +28077,9 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="61" label="Application - IndexedDB"/>
   <int value="62" label="Application - Web SQL"/>
   <int value="63" label="Performance Insights"/>
+  <int value="64" label="Application - Preloading"/>
+  <int value="65" label="Application - Bounce Tracking Mitigations"/>
+  <int value="66" label="Drawer - Resource Loading"/>
 </enum>
 
 <enum name="DevToolsRecordingAssertion">
