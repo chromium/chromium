@@ -48,6 +48,8 @@ class MockPasswordGenerationPopupController
   MOCK_METHOD(void, PasswordAccepted, (), (override));
   MOCK_METHOD(void, SetSelected, (), (override));
   MOCK_METHOD(void, SelectionCleared, (), (override));
+  MOCK_METHOD(void, EditPasswordClicked, (), (override));
+  MOCK_METHOD(void, EditPasswordSelected, (), (override));
   MOCK_METHOD(void, OnGooglePasswordManagerLinkClicked, (), (override));
   MOCK_METHOD(std::u16string, GetPrimaryAccountEmail, (), (override));
   MOCK_METHOD(GenerationUIState, state, (), (const override));

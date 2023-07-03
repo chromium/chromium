@@ -86,6 +86,8 @@ int GetHelpTextMessageId() {
       return IDS_PASSWORD_GENERATION_HELP_TEXT_CONVENIENCE;
     case PasswordGenerationVariation::kCrossDevice:
       return IDS_PASSWORD_GENERATION_HELP_TEXT;
+    default:
+      return IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER;
   }
 }
 
@@ -142,6 +144,55 @@ std::unique_ptr<views::View> CreateCrossDeviceFooter(
 
   return cross_device_footer;
 }
+
+// Displays the "edit password" row with custom logic for handling mouse events
+// (background selection and switching to editing state on clicks).
+class EditPasswordRow : public views::FlexLayoutView {
+ public:
+  explicit EditPasswordRow(
+      base::WeakPtr<PasswordGenerationPopupController> controller)
+      : controller_(controller) {
+    auto icon = std::make_unique<NonAccessibleImageView>();
+    icon->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icons::kEditIcon, ui::kColorIconSecondary, kIconSize));
+    AddChildView(std::move(icon));
+
+    auto spacer = std::make_unique<views::View>();
+    spacer->SetPreferredSize(gfx::Size(
+        autofill::PopupBaseView::GetHorizontalPadding(), /*height=*/1));
+    AddChildView(std::move(spacer));
+
+    AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_EDIT_PASSWORD),
+        views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
+  }
+
+ private:
+  void OnMouseEntered(const ui::MouseEvent& event) override {
+    if (controller_) {
+      controller_->EditPasswordSelected();
+    }
+    SetBackground(views::CreateThemedSolidBackground(
+        ui::kColorDropdownBackgroundSelected));
+  }
+
+  void OnMouseExited(const ui::MouseEvent& event) override {
+    SetBackground(
+        views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
+  }
+
+  bool OnMousePressed(const ui::MouseEvent& event) override {
+    return event.GetClickCount() == 1;
+  }
+
+  void OnMouseReleased(const ui::MouseEvent& event) override {
+    if (event.IsOnlyLeftMouseButton() && controller_) {
+      controller_->EditPasswordClicked();
+    }
+  }
+
+  base::WeakPtr<PasswordGenerationPopupController> controller_ = nullptr;
+};
 
 }  // namespace
 
@@ -368,6 +419,16 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
   password_view->Init(controller_);
   password_view_ = AddChildView(std::move(password_view));
   PasswordSelectionUpdated();
+
+  if (controller_->state() ==
+          PasswordGenerationPopupController::kOfferGeneration &&
+      password_manager::features::kPasswordGenerationExperimentVariationParam
+              .Get() == PasswordGenerationVariation::kEditPassword) {
+    auto edit_password_row = std::make_unique<EditPasswordRow>(controller_);
+    edit_password_row->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
+    AddChildView(std::move(edit_password_row));
+  }
 
   AddChildView(views::Builder<views::Separator>()
                    .SetOrientation(views::Separator::Orientation::kHorizontal)

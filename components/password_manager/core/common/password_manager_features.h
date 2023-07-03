@@ -115,6 +115,8 @@ enum class PasswordGenerationVariation {
   kConvenience = 4,
   // Adjusts the language of the help text pointing out the benefits.
   kCrossDevice = 5,
+  // Adds a row for switching to editing the suggested password directly.
+  kEditPassword = 6,
 };
 
 inline constexpr base::FeatureParam<PasswordGenerationVariation>::Option
@@ -124,6 +126,7 @@ inline constexpr base::FeatureParam<PasswordGenerationVariation>::Option
         {PasswordGenerationVariation::kTrySomethingNew, "try_something_new"},
         {PasswordGenerationVariation::kConvenience, "convenience"},
         {PasswordGenerationVariation::kCrossDevice, "cross_device"},
+        {PasswordGenerationVariation::kEditPassword, "edit_password"},
 };
 
 inline constexpr base::FeatureParam<PasswordGenerationVariation>

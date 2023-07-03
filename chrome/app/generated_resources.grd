@@ -6420,6 +6420,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_PASSWORD_GENERATION_SUGGESTION_CONVENIENCE" desc="Text shown next to a generated password describing its convenience.">
           Quickly use a strong password
         </message>
+        <message name="IDS_PASSWORD_GENERATION_EDIT_PASSWORD" desc="Text shown below the generated password describing the action to edit it directly.">
+          Edit password
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_PASSWORD_GENERATION_SUGGESTION_GPM" desc="In Title Case: Text shown next to a generated password describing it as a suggestion.">
@@ -6436,6 +6439,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
         <message name="IDS_PASSWORD_GENERATION_SUGGESTION_CONVENIENCE" desc="Text shown next to a generated password describing its convenience.">
           Quickly Use a Strong Password
+        </message>
+        <message name="IDS_PASSWORD_GENERATION_EDIT_PASSWORD" desc="Text shown below the generated password describing the action to edit it directly.">
+          Edit Password
         </message>
       </if>
 

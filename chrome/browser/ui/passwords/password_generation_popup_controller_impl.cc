@@ -323,6 +323,16 @@ void PasswordGenerationPopupControllerImpl::SetSelected() {
   driver_->PreviewGenerationSuggestion(current_generated_password_);
 }
 
+void PasswordGenerationPopupControllerImpl::EditPasswordClicked() {
+  driver_->GeneratedPasswordAccepted(form_data_, generation_element_id_,
+                                     current_generated_password_);
+  Show(kEditGeneratedPassword);
+}
+
+void PasswordGenerationPopupControllerImpl::EditPasswordSelected() {
+  driver_->PreviewGenerationSuggestion(current_generated_password_);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void PasswordGenerationPopupControllerImpl::
     OnGooglePasswordManagerLinkClicked() {
