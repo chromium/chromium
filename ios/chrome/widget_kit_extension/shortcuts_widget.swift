@@ -296,12 +296,12 @@ struct WebSitePlaceholder: View {
     static let placeholderSize: CGFloat = 28
   }
   enum Colors {
-    static let widgetTextColor = Color("widget_text_color")
+    static let widgetBackgroundColor = Color("widget_background_color")
   }
   var body: some View {
     Circle()
       .frame(width: Dimensions.placeholderSize, height: Dimensions.placeholderSize)
-      .foregroundColor(Colors.widgetTextColor)
+      .foregroundColor(Colors.widgetBackgroundColor)
       .opacity(0.2)
       .frame(minWidth: 0, maxWidth: .infinity)
   }
@@ -353,10 +353,9 @@ struct WebsiteLogo: View {
   @ViewBuilder
   private func backgroundWithLogo(faviconImage: Image) -> some View {
     ZStack {
-      RoundedRectangle(cornerRadius: Dimensions.cornerRadius, style: .continuous)
-        .frame(width: Dimensions.placeholderSize, height: Dimensions.placeholderSize)
       faviconImage.resizable()
         .frame(width: Dimensions.placeholderSize, height: Dimensions.placeholderSize)
+        .cornerRadius(Dimensions.cornerRadius)
     }
   }
 
