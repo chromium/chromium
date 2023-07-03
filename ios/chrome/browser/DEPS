@@ -160,6 +160,9 @@ include_rules = [
   "-components/metrics/gpu",
   "-components/sessions/content",
 
+  # Features should add explicit dependencies.
+  "-ios/chrome/browser",
+
   # Shared dependencies.
   "+ios/chrome/browser/shared/model",
   "+ios/chrome/browser/shared/public",
