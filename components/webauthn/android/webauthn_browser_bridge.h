@@ -49,6 +49,8 @@ class WebAuthnBrowserBridge {
       const base::android::JavaParamRef<jstring>& jusername,
       const base::android::JavaParamRef<jstring>& jpassword);
 
+  void Destroy(JNIEnv* env);
+
  private:
   // Java object that owns this WebAuthnBrowserBridge.
   base::android::ScopedJavaGlobalRef<jobject> owner_;

@@ -210,4 +210,8 @@ void WebAuthnBrowserBridge::CleanupRequest(
   client->CleanupWebAuthnRequest(render_frame_host);
 }
 
+void WebAuthnBrowserBridge::Destroy(JNIEnv* env) {
+  delete this;
+}
+
 }  // namespace webauthn

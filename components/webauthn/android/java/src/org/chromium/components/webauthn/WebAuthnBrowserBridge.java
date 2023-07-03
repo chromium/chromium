@@ -101,6 +101,12 @@ public class WebAuthnBrowserBridge {
         WebAuthnBrowserBridgeJni.get().cleanupRequest(mNativeWebAuthnBrowserBridge, frameHost);
     }
 
+    public void destroy() {
+        if (mNativeWebAuthnBrowserBridge == 0) return;
+        WebAuthnBrowserBridgeJni.get().destroy(mNativeWebAuthnBrowserBridge);
+        mNativeWebAuthnBrowserBridge = 0;
+    }
+
     @CalledByNative
     private static String getWebAuthnCredentialDetailsUserName(WebAuthnCredentialDetails cred) {
         return cred.mUserName;
@@ -145,5 +151,6 @@ public class WebAuthnBrowserBridge {
         void onPasswordCredentialReceived(long nativeWebAuthnBrowserBridge,
                 RenderFrameHost frameHost, String username, String password);
         void cleanupRequest(long nativeWebAuthnBrowserBridge, RenderFrameHost frameHost);
+        void destroy(long nativeWebAuthnBrowserBridge);
     }
 }

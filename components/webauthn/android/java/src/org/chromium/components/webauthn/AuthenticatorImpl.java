@@ -28,8 +28,10 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.Origin;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
 /**
  * Android implementation of the authenticator.mojom interface.
@@ -69,6 +71,7 @@ public final class AuthenticatorImpl implements Authenticator {
     private Queue<org.chromium.mojo.bindings.Callbacks.Callback1<Boolean>>
             mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue = new LinkedList<>();
     private Fido2CredentialRequest mPendingFido2CredentialRequest;
+    private Set<Fido2CredentialRequest> mUnclosedFido2CredentialRequests = new HashSet<>();
 
     // StaticFieldLeak complains that this is a memory leak because
     // `Fido2CredentialRequest` contains a `Context`. But this field is only
@@ -106,8 +109,9 @@ public final class AuthenticatorImpl implements Authenticator {
         if (sFido2CredentialRequestOverrideForTesting != null) {
             return sFido2CredentialRequestOverrideForTesting;
         }
-
-        return new Fido2CredentialRequest(mIntentSender);
+        Fido2CredentialRequest request = new Fido2CredentialRequest(mIntentSender);
+        mUnclosedFido2CredentialRequests.add(request);
+        return request;
     }
 
     /**
@@ -293,6 +297,7 @@ public final class AuthenticatorImpl implements Authenticator {
         } else if (mGetAssertionCallback != null) {
             mGetAssertionCallback.call(status, null, null);
         }
+        if (mPendingFido2CredentialRequest != null) mPendingFido2CredentialRequest.destroyBridge();
         cleanupRequest();
     }
 
@@ -305,6 +310,8 @@ public final class AuthenticatorImpl implements Authenticator {
 
     @Override
     public void close() {
+        mUnclosedFido2CredentialRequests.forEach(Fido2CredentialRequest::destroyBridge);
+        mUnclosedFido2CredentialRequests.clear();
         cleanupRequest();
     }
 

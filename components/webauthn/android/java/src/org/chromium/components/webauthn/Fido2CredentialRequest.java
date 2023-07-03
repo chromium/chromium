@@ -1432,6 +1432,12 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         return passwordCredentialOption;
     }
 
+    protected void destroyBridge() {
+        if (mBrowserBridge == null) return;
+        mBrowserBridge.destroy();
+        mBrowserBridge = null;
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
