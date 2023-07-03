@@ -2370,10 +2370,10 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
         filling_context && base::Contains(filling_context->forced_fill_values,
                                           form.fields[i].global_id());
 
-    if (!has_override &&
-        ShouldPreventAutofillFromOverridingPrefilledField(
-            action, field, form.fields[i], autofill_field, &result.fields[i],
-            profile_or_credit_card, optional_cvc)) {
+    if (!has_override && ShouldPreventAutofillFromOverridingPrefilledField(
+                             action, autofill_field, &result.fields[i],
+                             autofill_field->SameFieldAs(field),
+                             profile_or_credit_card, optional_cvc)) {
       LOG_AF(buffer) << Tr{} << field_number << "Skipped: value is prefilled";
       LogSkippedStatusIfFill(SkipStatus::kValuePrefilled);
       continue;
@@ -2594,10 +2594,9 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
 bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
     mojom::RendererFormDataAction action,
-    const FormFieldData& initiating_field,
-    const FormFieldData& to_be_filled_field,
     AutofillField* cached_field,
     FormFieldData* field_data,
+    bool is_initiating_field,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
     const std::u16string* optional_cvc) {
@@ -2616,12 +2615,10 @@ bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
       absl::nullopt);
 
   // Some sites have empty values in the fields, for example.
-  std::u16string sanitized_field_value =
-      RemoveWhiteSpaceAndConjugatingCharacters(to_be_filled_field.value);
-
-  if (!to_be_filled_field.IsSelectOrSelectMenuElement() &&
-      !sanitized_field_value.empty() &&
-      !FormFieldData::DeepEqual(to_be_filled_field, initiating_field)) {
+  if (std::u16string sanitized_field_value =
+          RemoveWhiteSpaceAndConjugatingCharacters(field_data->value);
+      !field_data->IsSelectOrSelectMenuElement() &&
+      !sanitized_field_value.empty() && !is_initiating_field) {
     std::string unused_failure_to_fill;
     const std::u16string kEmptyCvc{};
     std::u16string fill_value = field_filler_.GetValueForFilling(

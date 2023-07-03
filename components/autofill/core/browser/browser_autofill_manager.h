@@ -584,10 +584,9 @@ class BrowserAutofillManager : public AutofillManager,
   // case.
   [[nodiscard]] bool ShouldPreventAutofillFromOverridingPrefilledField(
       mojom::RendererFormDataAction action,
-      const FormFieldData& initiating_field,
-      const FormFieldData& to_be_filled_field,
       AutofillField* cached_field,
       FormFieldData* field_data,
+      bool is_initiating_field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
       const std::u16string* optional_cvc);
