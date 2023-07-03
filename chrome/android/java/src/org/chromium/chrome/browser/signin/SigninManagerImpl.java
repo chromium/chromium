@@ -631,7 +631,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                         mNativeSigninManagerAndroid, wipeDataCallback);
                 break;
         }
-        ThreadUtils.postOnUiThread(mAccountTrackerService::onAccountsChanged);
     }
 
     /**
