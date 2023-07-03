@@ -6,6 +6,7 @@ CPEPrefix: cpe:/a:harfbuzz_project:harfbuzz:7.3.0
 Date: 20230613
 Revision: db700b5670d9475cc8ed4880cc9447b232c5e432
 Security Critical: yes
+Shipped: yes
 License: MIT
 License File: src/COPYING
 
