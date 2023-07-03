@@ -55,7 +55,7 @@ class AutofillSettingsProfileEditTableViewControllerTest
   ChromeTableViewController* InstantiateController() override {
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
-            initWithStyle:ChromeTableViewStyle()];
+            initWithShouldShowMigrateToAccountButton:NO];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
             initWithDelegate:delegate_mock_
@@ -169,7 +169,7 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
   ChromeTableViewController* InstantiateController() override {
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
-            initWithStyle:ChromeTableViewStyle()];
+            initWithShouldShowMigrateToAccountButton:NO];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
             initWithDelegate:delegate_mock_
@@ -253,6 +253,50 @@ TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
       IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT, kTestSyncingEmail);
   TableViewLinkHeaderFooterItem* footer = [model footerForSectionIndex:1];
   EXPECT_NSEQ(expected_footer_text, footer.text);
+}
+
+class AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest
+    : public AutofillSettingsProfileEditTableViewControllerTest {
+ protected:
+  void SetUp() override {
+    ChromeTableViewControllerTest::SetUp();
+    delegate_mock_ = OCMProtocolMock(
+        @protocol(AutofillProfileEditTableViewControllerDelegate));
+    CreateController();
+    CheckController();
+    CreateProfileData();
+
+    // Reload the model so that the changes are propogated.
+    [controller() loadModel];
+  }
+  ChromeTableViewController* InstantiateController() override {
+    AutofillSettingsProfileEditTableViewController* viewController =
+        [[AutofillSettingsProfileEditTableViewController alloc]
+            initWithShouldShowMigrateToAccountButton:YES];
+    autofill_profile_edit_table_view_controller_ =
+        [[AutofillProfileEditTableViewController alloc]
+            initWithDelegate:delegate_mock_
+                   userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
+                  controller:viewController
+                settingsView:YES];
+    viewController.handler = autofill_profile_edit_table_view_controller_;
+    return viewController;
+  }
+};
+
+// Tests the number of sections and the number of items in the sections.
+TEST_F(AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest,
+       TestElementsInView) {
+  TableViewModel* model = [controller() tableViewModel];
+  int rowCnt =
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSupportForHonorificPrefixes)
+          ? 11
+          : 10;
+
+  EXPECT_EQ(2, [model numberOfSections]);
+  EXPECT_EQ(rowCnt, [model numberOfItemsInSection:0]);
+  EXPECT_EQ(2, [model numberOfItemsInSection:1]);
 }
 
 }  // namespace

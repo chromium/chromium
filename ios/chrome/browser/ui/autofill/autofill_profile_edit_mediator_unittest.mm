@@ -71,9 +71,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.countrySelected = country;
 }
 
-- (void)showMigrateToAccountButton {
-}
-
 @end
 
 @interface FakeAutofillProfileEditMediatorDelegate
@@ -129,12 +126,11 @@ class AutofillProfileEditMediatorTest : public PlatformTest {
   void InitializeMediator(bool is_migration_prompt) {
     autofill::AutofillProfile autofill_profile;
     autofill_profile_edit_mediator_ = [[AutofillProfileEditMediator alloc]
-                  initWithDelegate:fake_autofill_profile_edit_mediator_delegate_
-               personalDataManager:personal_data_manager_
-                   autofillProfile:&autofill_profile
-                       countryCode:@"US"
-                 isMigrationPrompt:is_migration_prompt
-        showMigrateToAccountButton:NO];
+           initWithDelegate:fake_autofill_profile_edit_mediator_delegate_
+        personalDataManager:personal_data_manager_
+            autofillProfile:&autofill_profile
+                countryCode:@"US"
+          isMigrationPrompt:is_migration_prompt];
     autofill_profile_edit_mediator_.consumer = fake_consumer_;
   }
 

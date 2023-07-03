@@ -86,15 +86,14 @@
       _autofillProfile, GetApplicationContext()->GetApplicationLocale());
 
   self.mediator = [[AutofillProfileEditMediator alloc]
-                initWithDelegate:self
-             personalDataManager:personalDataManager
-                 autofillProfile:&_autofillProfile
-                     countryCode:base::SysUTF8ToNSString(countryCode)
-               isMigrationPrompt:NO
-      showMigrateToAccountButton:self.showMigrateToAccountButton];
+         initWithDelegate:self
+      personalDataManager:personalDataManager
+          autofillProfile:&_autofillProfile
+              countryCode:base::SysUTF8ToNSString(countryCode)
+        isMigrationPrompt:NO];
 
   self.viewController = [[AutofillSettingsProfileEditTableViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
+      initWithShouldShowMigrateToAccountButton:self.showMigrateToAccountButton];
   self.sharedViewController = [[AutofillProfileEditTableViewController alloc]
       initWithDelegate:self.mediator
              userEmail:[self userEmail]

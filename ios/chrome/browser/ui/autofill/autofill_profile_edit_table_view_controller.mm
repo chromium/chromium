@@ -337,10 +337,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 }
 
-- (void)showMigrateToAccountButton {
-  // TODO(crbug.com/1407666): Show the button section.
-}
-
 #pragma mark - Actions
 
 - (void)didTapSaveButton {
@@ -374,6 +370,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     case AutofillProfileDetailsItemTypeError:
     case AutofillProfileDetailsItemTypeFooter:
     case AutofillProfileDetailsItemTypeSaveButton:
+    case AutofillProfileDetailsItemTypeMigrateToAccountButton:
+    case AutofillProfileDetailsItemTypeMigrateToAccountRecommendation:
       break;
   }
   NOTREACHED();
@@ -403,6 +401,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     case AutofillProfileDetailsItemTypeError:
     case AutofillProfileDetailsItemTypeFooter:
     case AutofillProfileDetailsItemTypeSaveButton:
+    case AutofillProfileDetailsItemTypeMigrateToAccountButton:
+    case AutofillProfileDetailsItemTypeMigrateToAccountRecommendation:
       break;
   }
   NOTREACHED();
@@ -593,6 +593,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     case AutofillProfileDetailsItemTypeError:
     case AutofillProfileDetailsItemTypeFooter:
     case AutofillProfileDetailsItemTypeSaveButton:
+    case AutofillProfileDetailsItemTypeMigrateToAccountButton:
+    case AutofillProfileDetailsItemTypeMigrateToAccountRecommendation:
       break;
   }
   return NO;
@@ -798,6 +800,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     case AutofillProfileDetailsItemTypeError:
     case AutofillProfileDetailsItemTypeFooter:
     case AutofillProfileDetailsItemTypeSaveButton:
+    case AutofillProfileDetailsItemTypeMigrateToAccountButton:
+    case AutofillProfileDetailsItemTypeMigrateToAccountRecommendation:
       break;
   }
   return NO;

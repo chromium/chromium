@@ -60,8 +60,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
              personalDataManager:(autofill::PersonalDataManager*)dataManager
                  autofillProfile:(autofill::AutofillProfile*)autofillProfile
                      countryCode:(NSString*)countryCode
-               isMigrationPrompt:(BOOL)isMigrationPrompt
-      showMigrateToAccountButton:(BOOL)showMigrateToAccountButton {
+               isMigrationPrompt:(BOOL)isMigrationPrompt {
   self = [super init];
 
   if (self) {
@@ -71,7 +70,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _delegate = delegate;
     _selectedCountryCode = countryCode;
     _isMigrationPrompt = isMigrationPrompt;
-    _showMigrateToAccountButton = showMigrateToAccountButton;
 
     [self loadCountries];
   }
@@ -98,9 +96,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   [_consumer setAccountProfile:[self isAccountProfile]];
-  if (self.showMigrateToAccountButton) {
-    [_consumer showMigrateToAccountButton];
-  }
 }
 
 #pragma mark - Public

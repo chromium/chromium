@@ -103,12 +103,11 @@ using autofill_address_profile_infobar_overlays::
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
     self.sharedEditViewMediator = [[AutofillProfileEditMediator alloc]
-                  initWithDelegate:self
-               personalDataManager:personalDataManager
-                   autofillProfile:&_autofillProfile
-                       countryCode:nil
-                 isMigrationPrompt:self.config->is_migration_to_account()
-        showMigrateToAccountButton:NO];
+           initWithDelegate:self
+        personalDataManager:personalDataManager
+            autofillProfile:&_autofillProfile
+                countryCode:nil
+          isMigrationPrompt:self.config->is_migration_to_account()];
 
     InfobarEditAddressProfileTableViewController* editModalViewController =
         [[InfobarEditAddressProfileTableViewController alloc]

@@ -14,6 +14,13 @@
 @interface AutofillSettingsProfileEditTableViewController
     : AutofillEditTableViewController
 
+// Initializes a AutofillSettingsProfileEditTableViewController with passed
+// boolean to show migration button.
+- (instancetype)initWithShouldShowMigrateToAccountButton:
+    (BOOL)showMigrateToAccount NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
+
 @property(nonatomic, weak) id<AutofillProfileEditHandler> handler;
 
 @end
