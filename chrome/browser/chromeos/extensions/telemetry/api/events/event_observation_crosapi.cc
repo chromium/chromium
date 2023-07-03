@@ -78,6 +78,18 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
         break;
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
+          kHdmiEventInfo: {
+        base::Value::List args;
+        args.Append(converters::ConvertStructPtr<api::os_events::HdmiEventInfo>(
+                        std::move(info->get_hdmi_event_info()))
+                        .ToValue());
+        event = std::make_unique<extensions::Event>(
+            extensions::events::OS_EVENTS_ON_HDMI_EVENT,
+            api::os_events::OnHdmiEvent::kEventName, std::move(args),
+            browser_context_);
+        break;
+      }
+      case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kSdCardEventInfo: {
         base::Value::List args;
         args.Append(

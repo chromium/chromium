@@ -15,7 +15,8 @@ namespace os.events {
         stylus_garage,
         touchpad_button,
         touchpad_touch,
-        touchpad_connected
+        touchpad_connected,
+        hdmi
     };
 
     enum EventSupportStatus {
@@ -166,6 +167,13 @@ namespace os.events {
         disconnected
     };
 
+    enum HdmiEvent {
+        // An HDMI device was connected.
+        connected,
+        // An HDMI device was disconnected.
+        disconnected
+    };
+
     enum SdCardEvent {
         // A SD card was connected.
         connected,
@@ -213,6 +221,10 @@ namespace os.events {
         // https://www.usb.org/defined-class-codes
         DOMString[] categories;
         UsbEvent? event;
+    };
+
+    dictionary HdmiEventInfo {
+        HdmiEvent? event;
     };
 
     dictionary SdCardEventInfo {
@@ -322,6 +334,9 @@ namespace os.events {
 
         // Informs the extension that a `Usb` event occured.
         static void onUsbEvent(UsbEventInfo event_info);
+
+        // Informs the extension that an `Hdmi` event occured.
+        static void onHdmiEvent(HdmiEventInfo event_info);
 
         // Informs the extension that a `SD Card` event occured.
         static void onSdCardEvent(SdCardEventInfo event_info);

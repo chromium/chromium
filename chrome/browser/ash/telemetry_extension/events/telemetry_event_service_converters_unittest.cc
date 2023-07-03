@@ -256,6 +256,18 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryUsbEventInfo_State) {
             crosapi::mojom::TelemetryUsbEventInfo::State::kRemove);
 }
 
+TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryHdmiEventInfo_State) {
+  EXPECT_EQ(
+      Convert(cros_healthd::mojom::HdmiEventInfo::State::kUnmappedEnumField),
+      crosapi::mojom::TelemetryHdmiEventInfo::State::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::HdmiEventInfo::State::kAdd),
+            crosapi::mojom::TelemetryHdmiEventInfo::State::kAdd);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::HdmiEventInfo::State::kRemove),
+            crosapi::mojom::TelemetryHdmiEventInfo::State::kRemove);
+}
+
 TEST(TelemetryEventServiceConvertersTest,
      ConvertTelemetrySdCardEventInfo_State) {
   EXPECT_EQ(
@@ -364,6 +376,9 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventCategoryEnum) {
 
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kUsb),
             cros_healthd::mojom::EventCategoryEnum::kUsb);
+
+  EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kHdmi),
+            cros_healthd::mojom::EventCategoryEnum::kHdmi);
 
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kSdCard),
             cros_healthd::mojom::EventCategoryEnum::kSdCard);
@@ -555,6 +570,14 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryUsbEventInfoPtr) {
                 crosapi::mojom::TelemetryUsbEventInfo::State::kAdd));
 }
 
+TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryHdmiEventInfoPtr) {
+  auto input = cros_healthd::mojom::HdmiEventInfo::New();
+  input->state = cros_healthd::mojom::HdmiEventInfo::State::kAdd;
+
+  EXPECT_EQ(ConvertStructPtr(std::move(input)),
+            crosapi::mojom::TelemetryHdmiEventInfo::New(
+                crosapi::mojom::TelemetryHdmiEventInfo::State::kAdd));
+}
 TEST(TelemetryEventServiceConvertersTest, ConvertTelemetrySdCardEventInfoPtr) {
   auto input = cros_healthd::mojom::SdCardEventInfo::New();
   input->state = cros_healthd::mojom::SdCardEventInfo::State::kAdd;

@@ -103,6 +103,25 @@ struct TelemetryUsbEventInfo {
   State state@5;
 };
 
+// HDMI event info. This is emitted when an HDMI device is plugged in or plugged
+// out.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct TelemetryHdmiEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // HDMI plugged in.
+    kAdd = 1,
+    // HDMI plugged out.
+    kRemove = 2,
+  };
+
+  State state@0;
+};
+
 // SD card event info. This is emitted when a SD card is plugged in or plugged
 // out.
 //
@@ -255,7 +274,7 @@ struct TelemetryTouchpadConnectedEventInfo {
 
 // Union of event info.
 //
-// NextMinVersion: 8, NextIndex: 11
+// NextMinVersion: 9, NextIndex: 12
 [Stable, Extensible]
 union TelemetryEventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -283,11 +302,13 @@ union TelemetryEventInfo {
   // Touchpad Connected event info.
   [MinVersion=7] TelemetryTouchpadConnectedEventInfo
       touchpad_connected_event_info@10;
+  // HDMI event info.
+  [MinVersion=8] TelemetryHdmiEventInfo hdmi_event_info@11;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 8, NextIndex: 11
+// NextMinVersion: 9, NextIndex: 12
 [Stable, Extensible]
 enum TelemetryEventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -302,6 +323,7 @@ enum TelemetryEventCategoryEnum {
   [MinVersion=7] kTouchpadButton = 8,
   [MinVersion=7] kTouchpadTouch = 9,
   [MinVersion=7] kTouchpadConnected = 10,
+  [MinVersion=8] kHdmi = 11,
 };
 
 // Implemented by clients who desire events.

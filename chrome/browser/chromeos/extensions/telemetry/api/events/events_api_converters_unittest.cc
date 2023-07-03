@@ -226,6 +226,17 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertUsbState) {
             cx_events::UsbEvent::kDisconnected);
 }
 
+TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertHdmiState) {
+  EXPECT_EQ(Convert(crosapi::TelemetryHdmiEventInfo::State::kUnmappedEnumField),
+            cx_events::HdmiEvent::kNone);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryHdmiEventInfo::State::kAdd),
+            cx_events::HdmiEvent::kConnected);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryHdmiEventInfo::State::kRemove),
+            cx_events::HdmiEvent::kDisconnected);
+}
+
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertSdCardState) {
   EXPECT_EQ(
       Convert(crosapi::TelemetrySdCardEventInfo::State::kUnmappedEnumField),
@@ -295,6 +306,9 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kUsb),
             crosapi::TelemetryEventCategoryEnum::kUsb);
+
+  EXPECT_EQ(Convert(cx_events::EventCategory::kHdmi),
+            crosapi::TelemetryEventCategoryEnum::kHdmi);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kSdCard),
             crosapi::TelemetryEventCategoryEnum::kSdCard);
@@ -483,6 +497,15 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertUsbEventInfo) {
   EXPECT_EQ(result.vid, 1);
   EXPECT_EQ(result.pid, 2);
   EXPECT_EQ(result.categories, categories);
+}
+
+TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertHdmiEventInfo) {
+  auto input = crosapi::TelemetryHdmiEventInfo::New();
+  input->state = crosapi::TelemetryHdmiEventInfo::State::kAdd;
+
+  auto result = ConvertStructPtr<cx_events::HdmiEventInfo>(std::move(input));
+
+  EXPECT_EQ(result.event, cx_events::HdmiEvent::kConnected);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertSdCardEventInfo) {

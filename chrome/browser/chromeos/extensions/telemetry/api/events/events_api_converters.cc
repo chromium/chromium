@@ -99,6 +99,15 @@ cx_events::UsbEventInfo UncheckedConvertPtr(
   return result;
 }
 
+cx_events::HdmiEventInfo UncheckedConvertPtr(
+    crosapi::TelemetryHdmiEventInfoPtr ptr) {
+  cx_events::HdmiEventInfo result;
+
+  result.event = Convert(ptr->state);
+
+  return result;
+}
+
 cx_events::SdCardEventInfo UncheckedConvertPtr(
     crosapi::TelemetrySdCardEventInfoPtr ptr) {
   cx_events::SdCardEventInfo result;
@@ -366,6 +375,18 @@ cx_events::UsbEvent Convert(crosapi::TelemetryUsbEventInfo::State state) {
   NOTREACHED();
 }
 
+cx_events::HdmiEvent Convert(crosapi::TelemetryHdmiEventInfo::State state) {
+  switch (state) {
+    case crosapi::TelemetryHdmiEventInfo_State::kUnmappedEnumField:
+      return cx_events::HdmiEvent::kNone;
+    case crosapi::TelemetryHdmiEventInfo_State::kAdd:
+      return cx_events::HdmiEvent::kConnected;
+    case crosapi::TelemetryHdmiEventInfo_State::kRemove:
+      return cx_events::HdmiEvent::kDisconnected;
+  }
+  NOTREACHED();
+}
+
 cx_events::SdCardEvent Convert(crosapi::TelemetrySdCardEventInfo::State state) {
   switch (state) {
     case crosapi::TelemetrySdCardEventInfo_State::kUnmappedEnumField:
@@ -431,6 +452,8 @@ crosapi::TelemetryEventCategoryEnum Convert(cx_events::EventCategory input) {
       return crosapi::TelemetryEventCategoryEnum::kLid;
     case cx_events::EventCategory::kUsb:
       return crosapi::TelemetryEventCategoryEnum::kUsb;
+    case cx_events::EventCategory::kHdmi:
+      return crosapi::TelemetryEventCategoryEnum::kHdmi;
     case cx_events::EventCategory::kSdCard:
       return crosapi::TelemetryEventCategoryEnum::kSdCard;
     case cx_events::EventCategory::kPower:

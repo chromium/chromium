@@ -516,6 +516,27 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
   )");
 }
 
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       CheckHdmiApiWithoutFeatureFlagFail) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function hdmiNotWorking() {
+        chrome.test.assertThrows(() => {
+          chrome.os.events.onHdmiEvent.addListener((event) => {
+            // unreachable.
+          });
+        }, [],
+          'Cannot read properties of undefined (reading \'addListener\')'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
 class PendingApprovalTelemetryExtensionEventsApiBrowserTest
     : public TelemetryExtensionEventsApiBrowserTest {
  public:
@@ -782,6 +803,39 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
         });
 
         await chrome.os.events.startCapturingEvents("touchpad_connected");
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+                       CheckHdmiApiWithFeatureFlagWork) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto hdmi_info = crosapi::TelemetryHdmiEventInfo::New();
+        hdmi_info->state = crosapi::TelemetryHdmiEventInfo::State::kAdd;
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kHdmi,
+            crosapi::TelemetryEventInfo::NewHdmiEventInfo(
+                std::move(hdmi_info)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onHdmiEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            event: 'connected'
+          });
+
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("hdmi");
       }
     ]);
   )");

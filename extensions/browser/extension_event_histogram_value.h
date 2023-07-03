@@ -550,6 +550,7 @@ enum HistogramValue {
   OS_EVENTS_ON_TOUCHPAD_CONNECTED_EVENT = 528,
   SMART_CARD_PROVIDER_PRIVATE_ON_BEGIN_TRANSACTION_REQUESTED = 529,
   SMART_CARD_PROVIDER_PRIVATE_ON_END_TRANSACTION_REQUESTED = 530,
+  OS_EVENTS_ON_HDMI_EVENT = 531,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
