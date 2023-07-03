@@ -4,8 +4,8 @@ URL: https://www.makotemplates.org
 Version: 1.2.4
 Date: November 15, 2022
 License: MIT
-License File: NOT_SHIPPED
 Security Critical: no
+Shipped: no
 
 Description:
 Template engine in Python, used for code generation in Blink.
