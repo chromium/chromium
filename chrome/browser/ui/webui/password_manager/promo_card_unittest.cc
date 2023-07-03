@@ -196,10 +196,14 @@ TEST_F(PromoCardBaseTest, OnPromoCardShown) {
                   PrefInfo{card.GetPromoID(), 1, base::Time::Now(), false})));
 }
 
-// TODO(crbug.com/1459637): Re-enable it after fix.
-TEST_F(PromoCardBaseTest, DISABLED_GetAllPromoCards) {
+TEST_F(PromoCardBaseTest, GetAllPromoCards) {
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
+
+  // Enforce delegate creation before retrieving promo cards.
+  scoped_refptr<extensions::PasswordsPrivateDelegate> delegate =
+      extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(
+          profile(), true);
 
   std::vector<std::unique_ptr<PromoCardInterface>> promo_cards =
       PromoCardInterface::GetAllPromoCardsForProfile(profile());
