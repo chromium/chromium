@@ -391,6 +391,7 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">سيتم تسجيل خروجك من جميع المواقع الإلكترونية، بما في ذلك المواقع الإلكترونية في علامات التبويب المفتوحة.</translation>
 <translation id="1313705515580255288">‏ستتم مزامنة الإشارات المرجعية والسجل وغير ذلك من الإعدادات مع حسابك على Google.</translation>
+<translation id="1315184295353569363">إلغاء حفظ المجموعة</translation>
 <translation id="1316136264406804862">جارِ البحث...</translation>
 <translation id="1316248800168909509">تعذّر الربط بجهاز <ph name="DEVICE" />. يُرجى إعادة المحاولة.</translation>
 <translation id="1316495628809031177">تم إيقاف المزامنة مؤقتًا</translation>
@@ -2904,6 +2905,7 @@
 <translation id="3429160811076349561">ميزات الإصدار التجريبي غير مفعّلة</translation>
 <translation id="3429271624041785769">لغات محتوى الويب</translation>
 <translation id="3429275422858276529">ضَع إشارة على هذه الصفحة لسهولة العثور عليها لاحقًا</translation>
+<translation id="3431715928297727378">‫"<ph name="WINDOW_TITLE" />" - تم إخلاء <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">العمال المشتركون</translation>
 <translation id="3433507769937235446">قفل الشاشة عند الابتعاد عن الجهاز</translation>
 <translation id="3433621910545056227">عفوًا!  تعذّر النظام في إنشاء قفل سمات وقت التثبيت بالجهاز.</translation>
@@ -4005,6 +4007,7 @@
 <translation id="4361142739114356624">المفتاح الخاص لشهادة العميل هذه مفقود أو غير صالح</translation>
 <translation id="4361745360460842907">فتح كعلامة تبويب</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> هو الحساب التلقائي على جهاز <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4363215264289239958">‏تطبيقات Bruschetta</translation>
 <translation id="4363771538994847871">لم يتم العثور على وجهات الإرسال. هل تريد المساعدة؟</translation>
 <translation id="4364327530094270451">شمام</translation>
 <translation id="4364567974334641491">يشارك <ph name="APP_NAME" /> نافذة.</translation>
@@ -5103,6 +5106,7 @@
 <translation id="5319359161174645648">‏توصي Google باستخدام Chrome</translation>
 <translation id="5319712128756744240">إقران جهاز جديد</translation>
 <translation id="5320135788267874712">الاسم الجديد للجهاز</translation>
+<translation id="5320261549977878764">إلغاء حفظ المجموعة</translation>
 <translation id="532247166573571973">قد يتعذر الوصول إلى الخادم. حاول مرة أخرى.</translation>
 <translation id="5324300749339591280">قائمة التطبيقات</translation>
 <translation id="5324780743567488672">تعيين المنطقة الزمنية تلقائيا باستخدام موقعك</translation>

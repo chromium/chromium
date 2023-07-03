@@ -1061,6 +1061,7 @@
 <translation id="7531345132340165516">الموقع الإلكتروني الحالي</translation>
 <translation id="7537586195939242955">‏عذرًا، لا يمكن أن تكون بطاقتك مثبتة على Passbook في الوقت الحالي.</translation>
 <translation id="754655535278952384">تم التحقّق من كلمات المرور منذ <ph name="TIME" /></translation>
+<translation id="7552154146060018538">آخر علامة تبويب تم استخدامها في "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="7553234618121028547">‏لإيقاف ميزة "الملء التلقائي"، افتح <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (الإعدادات) ثم انتقِل إلى Password Options (خيارات كلمات المرور).</translation>
 <translation id="7554645225856321710">إغلاق الكل</translation>
 <translation id="7554791636758816595">علامة تبويب جديدة</translation>
@@ -1205,6 +1206,7 @@
 <translation id="8428045167754449968">المدينة/البلدة</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8428634594422941299">حسنًا</translation>
+<translation id="8446201778524791138">تعديل الإجراءات</translation>
 <translation id="8446884382197647889">مزيد من المعلومات</translation>
 <translation id="8458397775385147834">تم حذف عنصر واحد</translation>
 <translation id="8459333855531264009">غير آمن</translation>

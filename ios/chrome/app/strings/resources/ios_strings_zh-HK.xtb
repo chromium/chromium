@@ -1057,6 +1057,7 @@
 <translation id="7531345132340165516">目前網站</translation>
 <translation id="7537586195939242955">抱歉，目前無法將您的票證安裝至 Passbook。</translation>
 <translation id="754655535278952384">已在 <ph name="TIME" />檢查</translation>
+<translation id="7552154146060018538">最近在 <ph name="SOURCE_DEVICE" /> 上使用的分頁</translation>
 <translation id="7553234618121028547">要關閉，請開啟「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」並前往「密碼選項」部分。</translation>
 <translation id="7554645225856321710">全部關閉</translation>
 <translation id="7554791636758816595">新分頁</translation>
@@ -1202,6 +1203,7 @@
 <translation id="8428045167754449968">城市/鄉鎮</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">知道了</translation>
+<translation id="8446201778524791138">編輯操作</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8458397775385147834">已刪除 1 個項目</translation>
 <translation id="8459333855531264009">不安全</translation>

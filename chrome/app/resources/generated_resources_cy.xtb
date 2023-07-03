@@ -393,6 +393,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Byddwch yn cael eich allgofnodi o bob gwefan, gan gynnwys mewn tabiau sydd ar agor</translation>
 <translation id="1313705515580255288">Bydd eich nodau tudalen, eich hanes a'ch gosodiadau eraill yn cael eu cysoni i'ch Cyfrif Google.</translation>
+<translation id="1315184295353569363">Dad-gadw'r Grŵp</translation>
 <translation id="1316136264406804862">Wrthi'n chwilio…</translation>
 <translation id="1316248800168909509">Methu â chysylltu â <ph name="DEVICE" />. Rhowch gynnig arall arni.</translation>
 <translation id="1316495628809031177">Mae cysoni wedi'i seibio</translation>
@@ -2922,6 +2923,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3429160811076349561">Mae nodweddion prawf wedi'u diffodd</translation>
 <translation id="3429271624041785769">Ieithoedd cynnwys gwe</translation>
 <translation id="3429275422858276529">Creu nod tudalen o'r dudalen hon i ddod o hyd iddi'n hawdd yn nes ymlaen</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> wedi'i ryddhau</translation>
 <translation id="3432762828853624962">Gweithwyr Cyffredin</translation>
 <translation id="3433507769937235446">Cloi wrth adael</translation>
 <translation id="3433621910545056227">Wps!  Gwnaeth y system fethu â sefydlu clo priodweddau amser gosod y ddyfais.</translation>
@@ -4025,6 +4027,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4361142739114356624">Mae'r Allwedd Breifat ar gyfer y Dystysgrif Cleient hon ar goll neu'n annilys</translation>
 <translation id="4361745360460842907">Agor fel tab</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> yw'r cyfrif diofyn ar eich <ph name="DEVICE_TYPE" /></translation>
+<translation id="4363215264289239958">Apiau Bruschetta</translation>
 <translation id="4363771538994847871">Ni chanfuwyd unrhyw gyrchfannau Cast. Angen help?</translation>
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364567974334641491">Mae <ph name="APP_NAME" /> yn rhannu ffenestr.</translation>
@@ -5125,6 +5128,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5319359161174645648">Mae Google yn argymell Chrome</translation>
 <translation id="5319712128756744240">Paru dyfais newydd</translation>
 <translation id="5320135788267874712">Enw dyfais newydd</translation>
+<translation id="5320261549977878764">Dad-gadw'r grŵp</translation>
 <translation id="532247166573571973">Mae'n bosib bod y gweinydd yn anghyraeddadwy. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="5324300749339591280">Rhestr apiau</translation>
 <translation id="5324780743567488672">Gosod y gylchfa amser yn awtomatig gan ddefnyddio'ch lleoliad</translation>

@@ -389,6 +389,7 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">열려 있는 탭을 포함한 모든 사이트에서 로그아웃됩니다.</translation>
 <translation id="1313705515580255288">북마크, 방문 기록 및 기타 설정이 Google 계정에 동기화됩니다.</translation>
+<translation id="1315184295353569363">그룹 저장 해제</translation>
 <translation id="1316136264406804862">검색 중...</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" />에 연결할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="1316495628809031177">동기화 일시중지됨</translation>
@@ -2921,6 +2922,7 @@
 <translation id="3429160811076349561">무료 체험 기능 사용 안함</translation>
 <translation id="3429271624041785769">웹 콘텐츠 언어</translation>
 <translation id="3429275422858276529">이 페이지를 북마크에 추가하여 나중에 쉽게 찾으세요.</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> 확보됨</translation>
 <translation id="3432762828853624962">공유 작업자</translation>
 <translation id="3433507769937235446">두고 가면 잠그기</translation>
 <translation id="3433621910545056227">시스템이 기기 설치 시간 속성 잠금을 설정하는 데 실패했습니다.</translation>
@@ -4022,6 +4024,7 @@
 <translation id="4361142739114356624">이 클라이언트 인증서의 비공개 키가 없거나 잘못되었습니다.</translation>
 <translation id="4361745360460842907">탭으로 열기</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> 주소는 <ph name="DEVICE_TYPE" />의 기본 계정입니다.</translation>
+<translation id="4363215264289239958">Bruschetta 앱</translation>
 <translation id="4363771538994847871">전송 대상을 찾을 수 없습니다. 도움이 필요하세요?</translation>
 <translation id="4364327530094270451">멜론</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" />이(가) 창을 공유합니다.</translation>
@@ -5122,6 +5125,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5319359161174645648">Google에서 추천하는 Chrome</translation>
 <translation id="5319712128756744240">새 기기와 페어링</translation>
 <translation id="5320135788267874712">새 기기 이름</translation>
+<translation id="5320261549977878764">그룹 저장 해제</translation>
 <translation id="532247166573571973">서버 접속이 불가능할 수 있습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="5324300749339591280">앱 목록</translation>
 <translation id="5324780743567488672">사용자 위치를 사용하여 자동으로 시간대 설정</translation>

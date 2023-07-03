@@ -389,6 +389,7 @@
 <translation id="131364520783682672">Caps Lock 鍵</translation>
 <translation id="1313660246522271310">您將會從所有網站 (包括已開啟的分頁) 登出</translation>
 <translation id="1313705515580255288">系統會將您的書籤、記錄和其他設定與您的 Google 帳戶同步處理。</translation>
+<translation id="1315184295353569363">取消儲存群組</translation>
 <translation id="1316136264406804862">正在搜尋…</translation>
 <translation id="1316248800168909509">無法連接 <ph name="DEVICE" />。請再試一次。</translation>
 <translation id="1316495628809031177">已暫停同步處理</translation>
@@ -2919,6 +2920,7 @@
 <translation id="3429160811076349561">試用功能已關閉</translation>
 <translation id="3429271624041785769">網頁內容語言</translation>
 <translation id="3429275422858276529">將此網頁加入書籤，以便日後輕鬆查找</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - 釋出咗 <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">離開時鎖定</translation>
 <translation id="3433621910545056227">糟糕！系統無法鎖定裝置安裝時的屬性。</translation>
@@ -4022,6 +4024,7 @@
 <translation id="4361142739114356624">此用戶端憑證沒有私密金鑰或此金鑰無效</translation>
 <translation id="4361745360460842907">在分頁中開啟</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> 是 <ph name="DEVICE_TYPE" /> 上的預設帳戶</translation>
+<translation id="4363215264289239958">Bruschetta 應用程式</translation>
 <translation id="4363771538994847871">找不到 Cast 目標。需要協助嗎？</translation>
 <translation id="4364327530094270451">蜜瓜</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共用視窗。</translation>
@@ -5122,6 +5125,7 @@
 <translation id="5319359161174645648">Google 建議使用 Chrome</translation>
 <translation id="5319712128756744240">配對新裝置</translation>
 <translation id="5320135788267874712">新的裝置名稱</translation>
+<translation id="5320261549977878764">取消儲存群組</translation>
 <translation id="532247166573571973">可能無法連接伺服器，請稍後再試。</translation>
 <translation id="5324300749339591280">應用程式清單</translation>
 <translation id="5324780743567488672">自動使用您的位置設定時區</translation>

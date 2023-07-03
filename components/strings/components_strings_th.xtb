@@ -127,6 +127,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">คุณป้อนรหัสผ่านในเว็บไซต์ที่องค์กรไม่ได้จัดการ เพื่อปกป้องบัญชี โปรดอย่าใช้รหัสผ่านซ้ำในแอปและเว็บไซต์อื่นๆ</translation>
 <translation id="1257553931232494454">ระดับการซูม</translation>
+<translation id="1259843033850529027">เลือกระดับนโยบาย</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการการตั้งค่า Chrome</translation>
 <translation id="1264309058268477500">อื่นๆ</translation>
 <translation id="1264974993859112054">กีฬา</translation>
@@ -304,6 +305,7 @@
 <translation id="1593359183944365958">270 องศา</translation>
 <translation id="1594030484168838125">เลือก</translation>
 <translation id="1596296697375291157">ภาพยนตร์ลึกลับ สืบสวน และเขย่าขวัญ</translation>
+<translation id="1597473228022844713">คุณกำลังติดตามผลิตภัณฑ์นี้ บันทึกหน้านี้ใน<ph name="LAST_BOOKMARKS_FOLDER" /> แล้ว</translation>
 <translation id="1599199147673445968">บัตรใหม่ใช่ไหม <ph name="BEGIN_LINK" />ป้อนรายละเอียดบัตร<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">เล่นเกมไดโนเสาร์วิ่งใน Chrome</translation>
 <translation id="161042844686301425">สีฟ้า</translation>
@@ -949,6 +951,7 @@
 <translation id="3140646734028448730">บริการทางธุรกิจ</translation>
 <translation id="3141093262818886744">เปิดต่อไป</translation>
 <translation id="3141641372357166056">ไม่มีการตัดสินใจให้ความยินยอม</translation>
+<translation id="3144458715650412431">ใช้นโยบายทดสอบแล้ว ตรวจสอบและรีเซ็ตได้ที่ chrome://policy/test นโยบายของผู้ดูแลระบบจะไม่มีผล</translation>
 <translation id="3145945101586104090">การถอดรหัสการตอบกลับล้มเหลว</translation>
 <translation id="3150653042067488994">ข้อผิดพลาดชั่วคราวของเซิร์ฟเวอร์</translation>
 <translation id="3150889484970506196">ปุ่มสร้างชีต เปิดใช้งานเพื่อสร้างสเปรดชีตใหม่ใน Google ชีตอย่างรวดเร็ว</translation>
@@ -1342,6 +1345,7 @@
 <translation id="3987940399970879459">ไม่ถึง 1 MB</translation>
 <translation id="3990250421422698716">การชดเชยพื้นผิวที่ไม่สม่ำเสมอ</translation>
 <translation id="3992684624889376114">เกี่ยวกับหน้านี้</translation>
+<translation id="3995639283717357522">ใช้นโยบาย</translation>
 <translation id="399952081411886534">ฟีเจอร์อื่นๆ ที่ทำให้โฆษณาเป็นส่วนตัวมากขึ้น</translation>
 <translation id="4000598935132966791">ดูข้อมูลเพิ่มเติมเกี่ยวกับการจำกัดเว็บไซต์ในเบราว์เซอร์ที่มีการจัดการ</translation>
 <translation id="4006465311664329701">วิธีการชำระเงิน ข้อเสนอ และที่อยู่จาก Google Pay</translation>
@@ -1522,6 +1526,7 @@
 <translation id="4333561522337981382">จัดการหน้าต่างบนจอแสดงผลทั้งหมดของคุณ</translation>
 <translation id="4338709847516294988">กดค้นหา + m และแปลงรูปภาพเป็นข้อความในเมนูตามบริบท</translation>
 <translation id="4340575312453649552">โฆษณานี้ใช้ทรัพยากรมากเกินไปสำหรับอุปกรณ์ของคุณ Chrome จึงนำโฆษณานี้ออก</translation>
+<translation id="4340810192899866471">นําเข้าจาก JSON</translation>
 <translation id="4340982228985273705">ไม่มีการตรวจพบว่าคอมพิวเตอร์เครื่องนี้ได้รับการจัดการโดยองค์กร ดังนั้นนโยบายจะติดตั้งเฉพาะส่วนขยายที่โฮสต์ใน Chrome เว็บสโตร์โดยอัตโนมัติ URL การอัปเดตของ Chrome เว็บสโตร์คือ "<ph name="CWS_UPDATE_URL" />"</translation>
 <translation id="4348834659292907206">การเชื่อมต่อกับ <ph name="SITE" /> ไม่ปลอดภัย</translation>
 <translation id="4349365535725594680">แชร์เนื้อหาที่เป็นความลับไม่ได้</translation>
@@ -1770,6 +1775,7 @@
 <translation id="4901778704868714008">บันทึก...</translation>
 <translation id="4901952598169637881">รองเท้าลำลอง</translation>
 <translation id="4905659621780993806">ผู้ดูแลระบบจะรีสตาร์ทอุปกรณ์โดยอัตโนมัติในวันที่ <ph name="TIME" /> เวลา <ph name="DATE" /> บันทึกรายการที่เปิดอยู่ก่อนอุปกรณ์จะรีสตาร์ท</translation>
+<translation id="4907289208610706508">เป้าหมาย</translation>
 <translation id="4913987521957242411">เจาะรูด้านซ้ายบน</translation>
 <translation id="4918221908152712722">ติดตั้ง <ph name="APP_NAME" /> (ไม่จำเป็นต้องดาวน์โหลด)</translation>
 <translation id="4920457992177678649">ที่พักให้เช่าและบ้านพักสัญญาระยะสั้น</translation>
@@ -1879,6 +1885,7 @@
 <translation id="5145883236150621069">มีรหัสข้อผิดพลาดในการตอบกลับนโยบาย</translation>
 <translation id="5146995429444047494">บล็อกการแจ้งเตือนของ <ph name="ORIGIN" /> ไว้</translation>
 <translation id="514704532284964975"><ph name="URL" /> ต้องการดูและเปลี่ยนแปลงข้อมูลในอุปกรณ์ NFC ที่คุณแตะจากโทรศัพท์</translation>
+<translation id="5147633291963801297">ดูการลดราคาในแผงด้านข้าง</translation>
 <translation id="5148809049217731050">หงายหน้าขึ้น</translation>
 <translation id="5153314898060540200">ฮาร์ดร็อคและโพรเกรสซีฟ</translation>
 <translation id="5157504274688344097">ผู้ขายรายใหญ่และห้างสรรพสินค้า</translation>
@@ -2454,6 +2461,7 @@
 <translation id="6450212216969386944">Envelope Chou 40</translation>
 <translation id="6451458296329894277">ยืนยันการส่งแบบฟอร์มอีกครั้ง</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">เลือกเป้าหมายนโยบาย</translation>
 <translation id="6456955391422100996">นำโฆษณาออกแล้ว</translation>
 <translation id="6457206614190510200">เย็บด้วยลวดเย็บกระดาษที่สัน</translation>
 <translation id="6457455098507772300">การแจ้งเตือนราคาลดลงจะแสดงเป็นแบบป๊อปอัปบนเดสก์ท็อป</translation>
@@ -2737,6 +2745,7 @@
 <translation id="7108819624672055576">อนุญาตโดยส่วนขยาย</translation>
 <translation id="7109510814665441393">เกมขับรถแข่ง</translation>
 <translation id="7110116949943042888">งานชั่วคราวและตามช่วงเวลา</translation>
+<translation id="7110553203952632623">คุณจะได้รับการแจ้งเตือนทางอีเมลหากราคาต่ำลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="7111012039238467737">(ถูกต้อง)</translation>
 <translation id="7111507312244504964">การประเมินมูลค่าและการตรวจสอบอสังหาริมทรัพย์</translation>
 <translation id="7112327784801341716">หากไม่เห็นข้อมูลปัจจุบัน โปรดติดต่อธนาคารให้อัปเดต</translation>
@@ -3228,6 +3237,7 @@
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ไม่ได้ติดตั้งในคอมพิวเตอร์หรือเครือข่ายอย่างถูกต้อง โปรดขอให้ผู้ดูแลระบบ IT แก้ไขปัญหานี้</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>
 <translation id="8134058435519644366">การรับสมัครงาน</translation>
+<translation id="8144303576836498784">เกิดข้อผิดพลาด ยังไม่ได้บันทึกการเปลี่ยนแปลงของคุณ</translation>
 <translation id="8148608574971654810">เวอร์ชัน PDF:</translation>
 <translation id="8149426793427495338">คอมพิวเตอร์ของคุณเข้าสู่โหมดสลีปแล้ว</translation>
 <translation id="8150722005171944719">ไฟล์ที่ <ph name="URL" /> ไม่สามารถอ่านได้ เนื่องจากอาจถูกลบ ย้ายไปแล้ว หรือการอนุญาตของไฟล์อาจป้องกันการเข้าถึง</translation>
@@ -3241,6 +3251,7 @@
 <translation id="8184538546369750125">ใช้ค่าเริ่มต้นสากล (อนุญาต)</translation>
 <translation id="8186706823560132848">ซอฟต์แวร์</translation>
 <translation id="8190193880870196235">จัดการโดยส่วนขยาย</translation>
+<translation id="8194412401381329820">คุณไม่สามารถใช้หน้านี้จากบัญชีที่จัดการในอุปกรณ์ที่ไม่มีการจัดการนี้ ระบบจะล็อกบัญชีที่จัดการทั้งหมดหากคุณใช้หน้านี้ ยกเว้นบัญชีที่จัดการโดยบุคคลเดียวกับอุปกรณ์นี้ (บัญชีที่เชื่อมโยง)</translation>
 <translation id="8194797478851900357">&amp;เลิกทำการย้าย</translation>
 <translation id="8194956568907463262">เกมยิง</translation>
 <translation id="8200772114523450471">ทำต่อ</translation>
@@ -3248,6 +3259,7 @@
 <translation id="8202370299023114387">ความขัดแย้ง</translation>
 <translation id="8207625368992715508">กีฬาแข่งรถ</translation>
 <translation id="8208363704094329105">300 x 400 มม.</translation>
+<translation id="8210490490377416373">เลือกชื่อนโยบาย</translation>
 <translation id="8210604850413485128">เว็บโฮสติ้ง</translation>
 <translation id="8211406090763984747">การเชื่อมต่อปลอดภัย</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3363,6 +3375,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการค่ากำหนดของคุกกี้ในการตั้งค่า Chrome</translation>
 <translation id="8433057134996913067">วิธีนี้จะทำให้คุณออกจากระบบของเว็บไซต์ส่วนใหญ่</translation>
 <translation id="8434840396568290395">สัตว์เลี้ยง</translation>
+<translation id="8436623588884785770">เพิ่มนโยบาย</translation>
 <translation id="8437238597147034694">&amp;เลิกทำการย้าย</translation>
 <translation id="8438786541497918448">ใช้กล้องและไมโครโฟนไหม</translation>
 <translation id="8438923942245957911">องค์กรของคุณติดธงคำเตือนเว็บไซต์นี้ไว้</translation>
@@ -3385,6 +3398,7 @@
 <translation id="8483229036294884935">ระบบจะลบที่อยู่นี้ออกจากบัญชี Google <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">ใช้กับ</translation>
 <translation id="8490137692873530638">สแต็กเกอร์ 10</translation>
+<translation id="8493829133024050711">เลือกแหล่งที่มาของนโยบาย</translation>
 <translation id="8493948351860045254">เพิ่มพื้นที่ว่าง</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ใช้เวลาตอบกลับนานเกินไป</translation>
 <translation id="8503559462189395349">รหัสผ่าน Chrome</translation>
