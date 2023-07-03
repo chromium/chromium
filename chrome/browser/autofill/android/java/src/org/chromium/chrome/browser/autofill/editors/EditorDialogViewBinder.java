@@ -85,6 +85,10 @@ public class EditorDialogViewBinder {
         } else if (key == VALUE) {
             view.setValue(model.get(VALUE));
         } else if (key == TEXT_INPUT_TYPE) {
+            // Setting text input triggers TextWatcher, which overwrites the
+            // model's text value. Always set value before the text input type
+            // to avoid loosing the text value.
+            view.setValue(model.get(VALUE));
             view.setTextInputType(model.get(TEXT_INPUT_TYPE));
         } else if (key == TEXT_SUGGESTIONS) {
             view.setTextSuggestions(model.get(TEXT_SUGGESTIONS));
