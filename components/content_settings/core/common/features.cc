@@ -55,6 +55,11 @@ const base::FeatureParam<base::TimeDelta>
         &kSafetyCheckUnusedSitePermissions,
         "unused-site-permissions-revocation-cleanup-threshold", base::Days(30)};
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Enables Safety Hub feature.
+BASE_FEATURE(kSafetyHub, "SafetyHub", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 BASE_FEATURE(kUserBypassUI, "UserBypassUI", base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kUserBypassUIExceptionExpiration{
