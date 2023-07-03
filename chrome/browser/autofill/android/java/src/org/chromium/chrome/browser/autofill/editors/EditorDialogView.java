@@ -88,6 +88,8 @@ public class EditorDialogView
     // TODO(crbug.com/1435314): substitute this with SimpleRecyclerViewMCP.
     private final List<PropertyModelChangeProcessor<PropertyModel, TextFieldView, PropertyKey>>
             mTextFieldMCPs;
+    private final List<PropertyModelChangeProcessor<PropertyModel, DropdownFieldView, PropertyKey>>
+            mDropdownFieldMCPs;
     private final List<EditText> mEditableTextFields;
     private final List<Spinner> mDropdownFields;
 
@@ -131,6 +133,7 @@ public class EditorDialogView
                 R.dimen.editor_dialog_section_large_spacing);
         mFieldViews = new ArrayList<>();
         mTextFieldMCPs = new ArrayList<>();
+        mDropdownFieldMCPs = new ArrayList<>();
         mEditableTextFields = new ArrayList<>();
         mDropdownFields = new ArrayList<>();
 
@@ -237,14 +240,6 @@ public class EditorDialogView
     }
 
     public void findAndScrollToInvalidField() {
-        // Iterate over all the fields to update what errors are displayed, which is necessary
-        // to to clear existing errors on any newly valid fields.
-        mFieldViews.forEach(view -> {
-            if (view instanceof DropdownFieldView) {
-                ((DropdownFieldView) view).updateDisplayedError();
-            }
-        });
-
         // Make sure that focus is on an invalid field.
         @Nullable
         FieldView focusedField = getTextFieldView(getCurrentFocus());
@@ -413,7 +408,9 @@ public class EditorDialogView
         mContentView.removeAllViews();
         mFieldViews.clear();
         mTextFieldMCPs.forEach(PropertyModelChangeProcessor::destroy);
+        mDropdownFieldMCPs.forEach(PropertyModelChangeProcessor::destroy);
         mTextFieldMCPs.clear();
+        mDropdownFieldMCPs.clear();
         mEditableTextFields.clear();
         mDropdownFields.clear();
 
@@ -503,9 +500,10 @@ public class EditorDialogView
             case DROPDOWN: {
                 DropdownFieldView dropdownView =
                         new DropdownFieldView(mActivity, parent, fieldItem.model);
+                mDropdownFieldMCPs.add(PropertyModelChangeProcessor.create(fieldItem.model,
+                        dropdownView, EditorDialogViewBinder::bindDropdownFieldView));
                 mFieldViews.add(dropdownView);
                 mDropdownFields.add(dropdownView.getDropdown());
-
                 childView = dropdownView.getLayout();
                 break;
             }

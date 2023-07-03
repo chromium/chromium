@@ -4,13 +4,9 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_HINT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.getDropdownKeyByValue;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.getDropdownValueByKey;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.setDropdownKey;
@@ -34,12 +30,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.autofill.R;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,6 +52,11 @@ class DropdownFieldView implements FieldView {
     private final TextView mErrorLabel;
     private int mSelectedIndex;
     private ArrayAdapter<String> mAdapter;
+    @Nullable
+    private String mHint;
+    @Nullable
+    private EditorFieldValidator mValidator;
+    private boolean mShowRequiredIndicator;
 
     /**
      * Builds a dropdown view.
@@ -82,54 +81,20 @@ class DropdownFieldView implements FieldView {
 
         mErrorLabel = mLayout.findViewById(R.id.spinner_error);
 
-        final List<DropdownKeyValue> dropdownKeyValues = mFieldModel.get(DROPDOWN_KEY_VALUE_LIST);
-        final List<String> dropdownValues = getDropdownValues(dropdownKeyValues);
-        if (mFieldModel.get(DROPDOWN_HINT) != null) {
-            mAdapter = new HintedDropDownAdapter<String>(context, R.layout.multiline_spinner_item,
-                    R.id.spinner_item, dropdownValues, mFieldModel.get(DROPDOWN_HINT));
-            // Wrap the TextView in the dropdown popup around with a FrameLayout to display the text
-            // in multiple lines.
-            // Note that the TextView in the dropdown popup is displayed in a DropDownListView for
-            // the dropdown style Spinner and the DropDownListView sets to display TextView instance
-            // in a single line.
-            mAdapter.setDropDownViewResource(R.layout.payment_request_dropdown_item);
-        } else {
-            mAdapter = new DropdownFieldAdapter<String>(
-                    context, R.layout.multiline_spinner_item, dropdownValues);
-            mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        }
-
-        // If no value is selected or the value previously entered is not valid, we'll  select the
-        // hint, which is the first item on the dropdown adapter. We also need to check for both key
-        // and value, because the saved value could take both forms (as in NY or New York).
-        mSelectedIndex = TextUtils.isEmpty(mFieldModel.get(VALUE))
-                ? 0
-                : mAdapter.getPosition(mFieldModel.get(VALUE));
-        if (mSelectedIndex < 0) {
-            // Assuming that mFieldModel.get(VALUE) is the value (New York).
-            mSelectedIndex = mAdapter.getPosition(
-                    getDropdownValueByKey(mFieldModel, mFieldModel.get(VALUE)));
-        }
-        // Invalid value in the mFieldModel
-        if (mSelectedIndex < 0) mSelectedIndex = 0;
-
         mDropdown = (Spinner) mLayout.findViewById(R.id.spinner);
         mDropdown.setTag(this);
-        mDropdown.setAdapter(mAdapter);
-        mDropdown.setSelection(mSelectedIndex);
         mDropdown.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (mSelectedIndex != position) {
                     String key = getDropdownKeyByValue(mFieldModel, mAdapter.getItem(position));
                     // If the hint is selected, it means that no value is entered by the user.
-                    if (mFieldModel.get(DROPDOWN_HINT) != null && position == 0) {
+                    if (mHint != null && position == 0) {
                         key = null;
                     }
                     mSelectedIndex = position;
                     setDropdownKey(mFieldModel, key);
                     mFieldModel.set(ERROR_MESSAGE, null);
-                    updateDisplayedError();
                 }
                 if (sObserverForTest != null) {
                     sObserverForTest.onEditorTextUpdate();
@@ -150,11 +115,79 @@ class DropdownFieldView implements FieldView {
         });
     }
 
+    void setLabel(String label, boolean isRequired) {
+        mLabel.setText(isRequired && mShowRequiredIndicator
+                        ? label + EditorDialogView.REQUIRED_FIELD_INDICATOR
+                        : label);
+    }
+
+    void setDropdownValues(List<String> values, @Nullable String hint) {
+        mHint = hint;
+        if (mHint != null) {
+            mAdapter = new HintedDropDownAdapter<String>(
+                    mContext, R.layout.multiline_spinner_item, R.id.spinner_item, values, mHint);
+            // Wrap the TextView in the dropdown popup around with a FrameLayout to display the text
+            // in multiple lines.
+            // Note that the TextView in the dropdown popup is displayed in a DropDownListView for
+            // the dropdown style Spinner and the DropDownListView sets to display TextView instance
+            // in a single line.
+            mAdapter.setDropDownViewResource(R.layout.payment_request_dropdown_item);
+        } else {
+            mAdapter = new DropdownFieldAdapter<String>(
+                    mContext, R.layout.multiline_spinner_item, values);
+            mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        }
+        mDropdown.setAdapter(mAdapter);
+    }
+
+    void setValue(@Nullable String value) {
+        if (mAdapter == null) {
+            // Can't set value when adapter hasn't been initialized.
+            return;
+        }
+        // If no value is selected or the value previously entered is not valid, we'll  select the
+        // hint, which is the first item on the dropdown adapter. We also need to check for both key
+        // and value, because the saved value could take both forms (NY or New York).
+        mSelectedIndex = TextUtils.isEmpty(value) ? 0 : mAdapter.getPosition(value);
+        if (mSelectedIndex < 0) {
+            // Assuming that value is the value (NY).
+            mSelectedIndex = mAdapter.getPosition(getDropdownValueByKey(mFieldModel, value));
+        }
+        // Invalid value in the mFieldModel
+        if (mSelectedIndex < 0) mSelectedIndex = 0;
+        mDropdown.setSelection(mSelectedIndex);
+    }
+
+    void setErrorMessage(@Nullable String errorMessage) {
+        View view = mDropdown.getSelectedView();
+        if (view == null || !(view instanceof TextView)) {
+            return;
+        }
+        if (errorMessage == null) {
+            ((TextView) view).setError(null);
+            mUnderline.setBackgroundColor(mContext.getColor(R.color.modern_grey_600));
+            mErrorLabel.setText(null);
+            mErrorLabel.setVisibility(View.GONE);
+            return;
+        }
+
+        Drawable drawable = TraceEventVectorDrawableCompat.create(
+                mContext.getResources(), R.drawable.ic_error, mContext.getTheme());
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        ((TextView) view).setError(errorMessage, drawable);
+        mUnderline.setBackgroundColor(mContext.getColor(R.color.default_text_color_error));
+        mErrorLabel.setText(errorMessage);
+        mErrorLabel.setVisibility(View.VISIBLE);
+    }
+
+    void setValidator(@Nullable EditorFieldValidator validator) {
+        mValidator = validator;
+    }
+
     @Override
     public void setShowRequiredIndicator(boolean showRequiredIndicator) {
-        mLabel.setText(mFieldModel.get(IS_REQUIRED) && showRequiredIndicator
-                        ? mFieldModel.get(LABEL) + EditorDialogView.REQUIRED_FIELD_INDICATOR
-                        : mFieldModel.get(LABEL));
+        mShowRequiredIndicator = showRequiredIndicator;
+        setLabel(mFieldModel.get(LABEL), mFieldModel.get(IS_REQUIRED));
     }
 
     /** @return The View containing everything. */
@@ -179,11 +212,11 @@ class DropdownFieldView implements FieldView {
 
     @Override
     public boolean isValid() {
-        if (mFieldModel.get(VALIDATOR) == null) {
+        if (mValidator == null) {
             return true;
         }
-        mFieldModel.get(VALIDATOR).validate(mFieldModel);
-        return mFieldModel.get(ERROR_MESSAGE) != null;
+        mValidator.validate(mFieldModel);
+        return mFieldModel.get(ERROR_MESSAGE) == null;
     }
 
     @Override
@@ -191,37 +224,10 @@ class DropdownFieldView implements FieldView {
         return mFieldModel.get(IS_REQUIRED);
     }
 
-    /**
-     * Updates the error display.
-     */
-    public void updateDisplayedError() {
-        View view = mDropdown.getSelectedView();
-        if (view == null || !(view instanceof TextView)) {
-            return;
-        }
-        String errorMessage = mFieldModel.get(ERROR_MESSAGE);
-        if (errorMessage == null) {
-            ((TextView) view).setError(null);
-            mUnderline.setBackgroundColor(mContext.getColor(R.color.modern_grey_600));
-            mErrorLabel.setText(null);
-            mErrorLabel.setVisibility(View.GONE);
-            return;
-        }
-
-        Drawable drawable = TraceEventVectorDrawableCompat.create(
-                mContext.getResources(), R.drawable.ic_error, mContext.getTheme());
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        ((TextView) view).setError(errorMessage, drawable);
-        mUnderline.setBackgroundColor(mContext.getColor(R.color.default_text_color_error));
-        mErrorLabel.setText(errorMessage);
-        mErrorLabel.setVisibility(View.VISIBLE);
-    }
-
     @Override
     public void scrollToAndFocus() {
-        if (mFieldModel.get(VALIDATOR) != null) {
-            mFieldModel.get(VALIDATOR).validate(mFieldModel);
-            updateDisplayedError();
+        if (mValidator != null) {
+            mValidator.validate(mFieldModel);
         }
         requestFocusAndHideKeyboard();
     }
@@ -231,14 +237,6 @@ class DropdownFieldView implements FieldView {
         ViewGroup parent = (ViewGroup) mDropdown.getParent();
         if (parent != null) parent.requestChildFocus(mDropdown, mDropdown);
         mDropdown.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-    }
-
-    private static List<String> getDropdownValues(List<DropdownKeyValue> dropdownKeyValues) {
-        List<String> dropdownValues = new ArrayList<String>();
-        for (int i = 0; i < dropdownKeyValues.size(); i++) {
-            dropdownValues.add(dropdownKeyValues.get(i).getValue());
-        }
-        return dropdownValues;
     }
 
     @VisibleForTesting
