@@ -235,7 +235,12 @@ ResourceRequest::WebBundleTokenParams::CloneHandle() const {
   return new_remote;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+ResourceRequest::ResourceRequest(const base::Location& location)
+    : created_location(location.ToString()) {}
+#else
 ResourceRequest::ResourceRequest() = default;
+#endif
 ResourceRequest::ResourceRequest(const ResourceRequest& request) = default;
 ResourceRequest::~ResourceRequest() = default;
 

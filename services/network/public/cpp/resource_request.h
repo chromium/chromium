@@ -10,8 +10,10 @@
 
 #include "base/component_export.h"
 #include "base/debug/crash_logging.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
+#include "build/buildflag.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/base/request_priority.h"
@@ -110,7 +112,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     int32_t render_process_id = -1;
   };
 
+#if BUILDFLAG(IS_ANDROID)
+  explicit ResourceRequest(const base::Location& = base::Location::Current());
+#else
   ResourceRequest();
+#endif
   ResourceRequest(const ResourceRequest& request);
   ~ResourceRequest();
 
@@ -206,6 +212,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   network::AttributionReportingRuntimeFeatures
       attribution_reporting_runtime_features;
   bool shared_dictionary_writer_enabled = false;
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/1456586): Remove this once the issue is fixed.
+  std::string created_location;
+#endif
 };
 
 // This does not accept |kDefault| referrer policy.

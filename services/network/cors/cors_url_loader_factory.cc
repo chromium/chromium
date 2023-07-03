@@ -423,7 +423,13 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
                                           uint32_t options) {
   if (request.url.SchemeIs(url::kDataScheme)) {
     LOG(WARNING) << "CorsURLLoaderFactory doesn't support `data` scheme.";
-    mojo::ReportBadMessage("CorsURLLoaderFactory: data: URL is not supported.");
+    mojo::ReportBadMessage(
+        "CorsURLLoaderFactory: data: URL is not supported."
+#if BUILDFLAG(IS_ANDROID)
+        " Request created location is " +
+        request.created_location
+#endif
+    );
     return false;
   }
 
