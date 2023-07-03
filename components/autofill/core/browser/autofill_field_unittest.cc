@@ -341,6 +341,10 @@ class AutofillLocalHeuristicsOverridesTest
     : public testing::TestWithParam<AutofillLocalHeuristicsOverridesParams> {
  public:
   AutofillLocalHeuristicsOverridesTest() = default;
+
+ private:
+  base::test::ScopedFeatureList feature_{
+      features::kAutofillLocalHeuristicsOverrides};
 };
 
 // Tests the correctness of local heuristic overrides while computing the

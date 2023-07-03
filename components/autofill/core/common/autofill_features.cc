@@ -355,6 +355,13 @@ BASE_FEATURE(kAutofillIgnoreUnmappableAutocompleteValues,
              "AutofillIgnoreUnmappableAutocompleteValues",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, some local heuristic predictions will take precedence over the
+// autocomplete attribute and server predictions, when determining a field's
+// overall type.
+BASE_FEATURE(kAutofillLocalHeuristicsOverrides,
+             "AutofillLocalHeuristicsOverrides",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, only changed values are highlighted in preview mode.
 // TODO(crbug/1248585): Remove when launched.
 BASE_FEATURE(kAutofillHighlightOnlyChangedValuesInPreviewMode,
