@@ -212,8 +212,10 @@ export namespace Message {
   }
 
   export class UnknownErrorException extends ErrorResponse {
-    constructor(message: string, stacktrace?: string) {
-      super(ErrorCode.UnknownError, message, stacktrace);
+    constructor(error: string | Error) {
+      const message = typeof error === 'string' ? error : error.message;
+      const trace = typeof error === 'string' ? new Error().stack : error.stack;
+      super(ErrorCode.UnknownError, message, trace);
     }
   }
 
