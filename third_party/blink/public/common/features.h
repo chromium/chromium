@@ -826,6 +826,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRunTextInputUpdatePostLifecycle);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kRuntimeFeatureStateControllerApplyFeatureDiff);
 
+// When enabled, it adds FTP / FTPS / SFTP to the safe list for
+// registerProtocolHandler. This feature is enabled by default and meant to
+// be used as a killswitch.
+// https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSafelistFTPToRegisterProtocolHandler);
+
 // These control a major serialization change to include information about
 // exposed interfaces in trailer data, to allow emergency fixes.
 // Regardless, data which might have been serialized to disk must continue to be
