@@ -77,9 +77,17 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
       // WebStateActivatedAt() to here. Note that here is reachable only when
       // `reason` == ActiveWebStateChangeReason::Activated.
       break;
-    case WebStateListChange::Type::kDetach:
-      // Do nothing when a WebState is detached.
+    case WebStateListChange::Type::kDetach: {
+      if (batch_operation_) {
+        ++batch_operation_->close_count;
+        return;
+      }
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+      LogTabClosedAt(GetTabId(detach_change.detached_web_state()),
+                     selection.index);
       break;
+    }
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& move_change =
           change.As<WebStateListChangeMove>();
@@ -107,18 +115,6 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
       break;
     }
   }
-}
-
-void BreadcrumbManagerBrowserAgent::WillCloseWebStateAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool user_action) {
-  if (batch_operation_) {
-    ++batch_operation_->close_count;
-    return;
-  }
-  LogTabClosedAt(GetTabId(web_state), index);
 }
 
 void BreadcrumbManagerBrowserAgent::WebStateActivatedAt(
