@@ -2466,32 +2466,23 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   for (size_t i : GetFieldsToFill(
            action, result, *form_structure, field, *autofill_trigger_field,
            profile_or_credit_card, fill_event_id, optional_cvc, is_refill)) {
-    std::string field_number = base::StringPrintf("Field %zu", i);
-
-    // Log events when the fields on the form are filled by autofill suggestion.
     AutofillField* autofill_field = form_structure->field(i);
-    bool has_value_before = !result.fields[i].value.empty();
+    if (could_attempt_refill) {
+      filling_context->type_groups_originally_filled.insert(
+          autofill_field->Type().group());
+    }
 
-    FieldTypeGroup field_group_type = autofill_field->Type().group();
-
-    if (could_attempt_refill)
-      filling_context->type_groups_originally_filled.insert(field_group_type);
-
+    const bool has_value_before = !result.fields[i].value.empty();
+    const bool is_autofilled_before = result.fields[i].is_autofilled;
     // Must match ForEachMatchingFormField() in form_autofill_util.cc.
     // Only notify autofilling of empty fields and the field that initiated the
     // filling (note that "select-one" controls may not be empty but will still
     // be autofilled).
-    bool should_notify =
-        !is_credit_card && (result.fields[i].SameFieldAs(field) ||
-                            result.fields[i].IsSelectOrSelectMenuElement() ||
-                            result.fields[i].value.empty());
-
-    has_value_before = !result.fields[i].value.empty();
-    bool is_autofilled_before = result.fields[i].is_autofilled;
-
-    const std::u16string kEmptyCvc{};
+    const bool should_notify =
+        !is_credit_card &&
+        (result.fields[i].SameFieldAs(field) ||
+         result.fields[i].IsSelectOrSelectMenuElement() || !has_value_before);
     std::string failure_to_fill;  // Reason for failing to fill.
-
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values =
         filling_context ? filling_context->forced_fill_values
                         : std::map<FieldGlobalId, std::u16string>();
@@ -2501,16 +2492,15 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     // fill a field if it had been autofilled or manually filled before, and
     // also returns true in such a case; however, such fields don't reach this
     // code.
-    bool is_newly_autofilled = FillFieldWithValue(
+    const bool is_newly_autofilled = FillFieldWithValue(
         autofill_field, profile_or_credit_card, forced_fill_values,
-        &result.fields[i], should_notify,
-        optional_cvc ? *optional_cvc : kEmptyCvc,
+        &result.fields[i], should_notify, optional_cvc ? *optional_cvc : u"",
         data_util::DetermineGroups(*form_structure), action, &failure_to_fill);
     if (is_newly_autofilled)
       newly_filled_fields.insert(result.fields[i].global_id());
 
-    bool has_value_after = !result.fields[i].value.empty();
-    bool is_autofilled_after = result.fields[i].is_autofilled;
+    const bool has_value_after = !result.fields[i].value.empty();
+    const bool is_autofilled_after = result.fields[i].is_autofilled;
 
     // Log when the suggestion is selected and log on non-checkable fields that
     // have been filled.
@@ -2525,10 +2515,10 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     }
 
     LOG_AF(buffer)
-        << Tr{} << field_number
+        << Tr{}
         << base::StringPrintf(
-               "Fillable - has value: %d->%d; autofilled: %d->%d. %s",
-               has_value_before, has_value_after, is_autofilled_before,
+               "Field %zu Fillable - has value: %d->%d; autofilled: %d->%d. %s",
+               i, has_value_before, has_value_after, is_autofilled_before,
                is_autofilled_after, failure_to_fill.c_str());
 
     if (!autofill_field->IsFocusable() && result.fields[i].is_autofilled) {
