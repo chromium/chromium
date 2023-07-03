@@ -215,11 +215,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     WaitForPersonalDataManagerToBeLoaded(GetProfile(0));
 
     // Set up this class as the ObserverForTest implementation.
-    credit_card_save_manager_ = autofill_manager()
-                                    ->client()
-                                    ->GetFormDataImporter()
-                                    ->credit_card_save_manager_.get();
-    credit_card_save_manager_->SetEventObserverForTesting(this);
+    credit_card_save_manager()->SetEventObserverForTesting(this);
     AddEventObserverToController();
 
     // Set up the fake geolocation data.
@@ -228,16 +224,16 @@ class SaveCardBubbleViewsFullFormBrowserTest
             kFakeGeolocationLatitude, kFakeGeolocationLongitude);
   }
 
-  void TearDownOnMainThread() override {
-    // Explicitly reset this pointer to avoid that it becomes dangling.
-    credit_card_save_manager_ = nullptr;
-
-    SyncTest::TearDownOnMainThread();
-  }
-
   // The primary main frame's AutofillManager.
   TestAutofillManager* autofill_manager() {
     return autofill_manager_injector_[GetActiveWebContents()];
+  }
+
+  CreditCardSaveManager* credit_card_save_manager() {
+    return autofill_manager()
+        ->client()
+        ->GetFormDataImporter()
+        ->credit_card_save_manager_.get();
   }
 
   // CreditCardSaveManager::ObserverForTest:
@@ -746,9 +742,6 @@ class SaveCardBubbleViewsFullFormBrowserTest
   }
 
   bool move_legal_terms_and_icon() const { return GetParam(); }
-
-  raw_ptr<CreditCardSaveManager, DanglingUntriaged> credit_card_save_manager_ =
-      nullptr;
 
  private:
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
@@ -1929,9 +1922,9 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
                        MAYBE_StrikeDatabase_Local_FullFlowTest) {
   // Show and ignore the bubble enough times in order to accrue maximum strikes.
-  for (int i = 0;
-       i < credit_card_save_manager_->GetCreditCardSaveStrikeDatabase()
-               ->GetMaxStrikesLimit();
+  for (int i = 0; i < credit_card_save_manager()
+                          ->GetCreditCardSaveStrikeDatabase()
+                          ->GetMaxStrikesLimit();
        ++i) {
     FillForm();
     SubmitFormAndWaitForCardLocalSaveBubble();
@@ -2003,9 +1996,9 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(SetupSync());
 
   // Show and ignore the bubble enough times in order to accrue maximum strikes.
-  for (int i = 0;
-       i < credit_card_save_manager_->GetCreditCardSaveStrikeDatabase()
-               ->GetMaxStrikesLimit();
+  for (int i = 0; i < credit_card_save_manager()
+                          ->GetCreditCardSaveStrikeDatabase()
+                          ->GetMaxStrikesLimit();
        ++i) {
     FillForm();
     SubmitFormAndWaitForCardUploadSaveBubble();
