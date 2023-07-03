@@ -8,6 +8,12 @@
 
 namespace base::test {
 
+QueryResultOrError::QueryResultOrError(const QueryResult& result)
+    : result_(result) {}
+QueryResultOrError::QueryResultOrError(const std::string& error)
+    : error_(error) {}
+QueryResultOrError::~QueryResultOrError() = default;
+
 TestTraceProcessorImpl::TestTraceProcessorImpl() {
   config_ = std::make_unique<perfetto::trace_processor::Config>();
   trace_processor_ =
@@ -21,12 +27,9 @@ TestTraceProcessorImpl::TestTraceProcessorImpl(TestTraceProcessorImpl&& other) =
 TestTraceProcessorImpl& TestTraceProcessorImpl::operator=(
     TestTraceProcessorImpl&& other) = default;
 
-// We use absl::variant instead of base::expected because we can not have a
-// dependency on base in this shared lib due to symbol conflicts between
-// libtrace_processor and libperfetto.
-absl::variant<TestTraceProcessorImpl::QueryResult, std::string>
-TestTraceProcessorImpl::ExecuteQuery(const std::string& sql) const {
-  TestTraceProcessorImpl::QueryResult result;
+QueryResultOrError TestTraceProcessorImpl::ExecuteQuery(
+    const std::string& sql) const {
+  QueryResultOrError::QueryResult result;
   auto it = trace_processor_->ExecuteQuery(sql);
   // Write column names.
   std::vector<std::string> column_names;
@@ -65,9 +68,9 @@ TestTraceProcessorImpl::ExecuteQuery(const std::string& sql) const {
     result.push_back(row);
   }
   if (!it.Status().ok()) {
-    return it.Status().message();
+    return QueryResultOrError(it.Status().message());
   }
-  return result;
+  return QueryResultOrError(result);
 }
 
 absl::Status TestTraceProcessorImpl::ParseTrace(std::unique_ptr<uint8_t[]> buf,

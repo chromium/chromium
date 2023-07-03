@@ -78,11 +78,11 @@ absl::Status TestTraceProcessor::StopAndParseTrace() {
 
 base::expected<TestTraceProcessor::QueryResult, std::string>
 TestTraceProcessor::RunQuery(const std::string& query) {
-  auto result = test_trace_processor_.ExecuteQuery(query);
-  if (absl::holds_alternative<std::string>(result)) {
-    return base::unexpected(absl::get<std::string>(result));
+  auto result_or_error = test_trace_processor_.ExecuteQuery(query);
+  if (!result_or_error.ok()) {
+    return base::unexpected(result_or_error.error());
   }
-  return base::ok(absl::get<TestTraceProcessorImpl::QueryResult>(result));
+  return base::ok(result_or_error.result());
 }
 
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

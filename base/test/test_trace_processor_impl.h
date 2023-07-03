@@ -20,10 +20,37 @@ class TraceProcessor;
 
 namespace base::test {
 
-class TEST_TRACE_PROCESSOR_EXPORT TestTraceProcessorImpl {
+// Chrome uses a custom memory allocator in non-component builds that manages
+// all allocations on the heap. Since test_trace_processor is a separate library
+// even in a non-component build, Chrome is not able to free memory allocated by
+// the code in this library. This leads to crashes when e.g. vectors created
+// here are passed to the code in Chrome tests.
+// So we define a custom class to hold the result of the query execution.
+// Since its destructor is defined in this library, it will be freed using
+// the same allocator that was used to create it.
+// See crbug.com/1453617 for more info.
+class TEST_TRACE_PROCESSOR_EXPORT QueryResultOrError {
  public:
   using QueryResult = std::vector<std::vector<std::string>>;
 
+  QueryResultOrError(const QueryResult& result);
+  QueryResultOrError(const std::string& error);
+
+  bool ok() const { return error_.empty(); }
+
+  const QueryResult& result() const { return result_; }
+
+  const std::string& error() const { return error_; }
+
+  ~QueryResultOrError();
+
+ private:
+  QueryResult result_;
+  std::string error_;
+};
+
+class TEST_TRACE_PROCESSOR_EXPORT TestTraceProcessorImpl {
+ public:
   TestTraceProcessorImpl();
   ~TestTraceProcessorImpl();
 
@@ -35,8 +62,7 @@ class TEST_TRACE_PROCESSOR_EXPORT TestTraceProcessorImpl {
 
   // Runs the sql query on the parsed trace and returns the result as a
   // vector of strings.
-  absl::variant<QueryResult, std::string> ExecuteQuery(
-      const std::string& sql) const;
+  QueryResultOrError ExecuteQuery(const std::string& sql) const;
 
  private:
   std::unique_ptr<perfetto::trace_processor::Config> config_;
