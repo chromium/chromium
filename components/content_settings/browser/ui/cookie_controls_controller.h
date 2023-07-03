@@ -10,12 +10,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class WebContents;
@@ -72,7 +74,8 @@ class CookieControlsController
   // TODO(dullweber): Make it possible to change the observed class and maybe
   // convert SiteDataObserver to a pure virtual interface.
   class TabObserver
-      : public content_settings::PageSpecificContentSettings::SiteDataObserver {
+      : public content_settings::PageSpecificContentSettings::SiteDataObserver,
+        public content::WebContentsObserver {
    public:
     TabObserver(CookieControlsController* cookie_controls,
                 content::WebContents* web_contents);
@@ -84,8 +87,21 @@ class CookieControlsController
     void OnSiteDataAccessed(const AccessDetails& access_details) override;
     void OnStatefulBounceDetected() override;
 
+    // content::WebContentsObserver:
+    void PrimaryPageChanged(content::Page& page) override;
+
    private:
     raw_ptr<CookieControlsController> cookie_controls_;
+    base::RepeatingTimer timer_;
+
+    // The last URL observed in `PrimaryPageChanged()`.
+    GURL last_visited_url_;
+
+    // The number of detected page reloads for |last_visited_url_| in the last
+    // 30 seconds.
+    int reload_count_ = 0;
+
+    void ResetReloadCounter();
   };
 
   void OnThirdPartyCookieBlockingChanged(
@@ -103,10 +119,12 @@ class CookieControlsController
   CookieControlsBreakageConfidenceLevel GetConfidenceLevel(
       CookieControlsStatus status,
       int allowed_sites,
-      int blocked_site);
+      int blocked_sites);
 
   // Updates the blocked cookie count of |icon_|.
   void PresentBlockedCookieCounter();
+
+  void OnPageReloadDetected(int recent_reloads_count);
 
   // Returns the number of allowed cookies.
   int GetAllowedCookieCount() const;
@@ -123,7 +141,7 @@ class CookieControlsController
   // Returns the number of blocked sites.
   int GetBlockedSitesCount() const;
 
-  content::WebContents* GetWebContents();
+  content::WebContents* GetWebContents() const;
 
   std::unique_ptr<TabObserver> tab_observer_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
@@ -138,6 +156,9 @@ class CookieControlsController
       cookie_observation_{this};
 
   bool should_reload_ = false;
+
+  // The number of page reloads in last 30 seconds.
+  int recent_reloads_count_ = 0;
 
   base::ObserverList<OldCookieControlsObserver> old_observers_;
   base::ObserverList<CookieControlsObserver> observers_;

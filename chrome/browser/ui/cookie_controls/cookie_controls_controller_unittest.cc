@@ -128,6 +128,10 @@ class CookieControlsTest : public ChromeRenderViewHostTestHarness {
         web_contents()->GetPrimaryMainFrame());
   }
 
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment()->FastForwardBy(delta);
+  }
+
  private:
   MockOldCookieControlsObserver mock_;
   std::unique_ptr<content_settings::CookieControlsController> cookie_controls_;
@@ -653,6 +657,8 @@ TEST_P(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
                               CookieControlsEnforcement::kNoEnforcement,
                               zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -668,6 +674,10 @@ TEST_P(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
                               CookieControlsEnforcement::kNoEnforcement,
                               zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0)).Times(2);
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kLow));
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
   testing::Mock::VerifyAndClearExpectations(mock());
 }
@@ -687,6 +697,8 @@ TEST_P(CookieControlsUserBypassTest, ThirdPartyCookieAndUserBypassException) {
                               CookieControlsEnforcement::kNoEnforcement,
                               zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -702,7 +714,133 @@ TEST_P(CookieControlsUserBypassTest, ThirdPartyCookieAndUserBypassException) {
                               CookieControlsEnforcement::kNoEnforcement,
                               zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0)).Times(2);
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kLow));
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
+  NavigateAndCommit(GURL("https://example.com"));
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(CookieControlsStatus::kEnabled,
+                              CookieControlsEnforcement::kNoEnforcement,
+                              zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kLow));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Accessing cookies should be notified.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE, GURL("https://example.com"),
+      /*blocked_by_policy=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Reload the page and simulate accessing storage on page load.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  NavigateAndCommit(GURL("https://example.com"));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE, GURL("https://example.com"),
+      /*blocked_by_policy=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // ...and again.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  NavigateAndCommit(GURL("https://example.com"));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE, GURL("https://example.com"),
+      /*blocked_by_policy=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // After the third reload and accessing storage, the confidence level is high.
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kLow));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kHigh));
+  NavigateAndCommit(GURL("https://example.com"));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE, GURL("https://example.com"),
+      /*blocked_by_policy=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Visiting some other site, should reset the confidence level.
+  NavigateAndCommit(GURL("https://somethingelse.com"));
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(CookieControlsStatus::kEnabled,
+                              CookieControlsEnforcement::kNoEnforcement,
+                              zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kLow));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
+  NavigateAndCommit(GURL("https://example.com"));
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(CookieControlsStatus::kEnabled,
+                              CookieControlsEnforcement::kNoEnforcement,
+                              zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kLow));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Accessing cookies should be notified.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE, GURL("https://example.com"),
+      /*blocked_by_policy=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Reload the page and simulate accessing storage on page load.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  NavigateAndCommit(GURL("https://example.com"));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE, GURL("https://example.com"),
+      /*blocked_by_policy=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // ...and again.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  NavigateAndCommit(GURL("https://example.com"));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE, GURL("https://example.com"),
+      /*blocked_by_policy=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Wait for 30 seconds.
+  FastForwardBy(base::Seconds(30));
+
+  // The third reload happens with a delay and doesn't trigger the confidence
+  // level change.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  NavigateAndCommit(GURL("https://example.com"));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE, GURL("https://example.com"),
+      /*blocked_by_policy=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
