@@ -52,28 +52,28 @@ RouterUrlPatternConditionToBlink(
   return condition;
 }
 
-absl::optional<blink::ServiceWorkerRouterSource> RouterSourceEnumToBlink(
+blink::ServiceWorkerRouterSource RouterSourceEnumToBlink(
     blink::V8RouterSourceEnum v8_source_enum) {
-  if (v8_source_enum == blink::V8RouterSourceEnum::Enum::kNetwork) {
-    blink::ServiceWorkerRouterSource source;
-    source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
-    source.network_source.emplace();
-    return source;
+  switch (v8_source_enum.AsEnum()) {
+    case blink::V8RouterSourceEnum::Enum::kNetwork: {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.network_source.emplace();
+      return source;
+    }
+    case blink::V8RouterSourceEnum::Enum::kRaceNetworkAndFetchHandler: {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kRace;
+      source.race_source.emplace();
+      return source;
+    }
+    case blink::V8RouterSourceEnum::Enum::kFetchEvent: {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+      source.fetch_event_source.emplace();
+      return source;
+    }
   }
-  if (v8_source_enum ==
-      blink::V8RouterSourceEnum::Enum::kRaceNetworkAndFetchHandler) {
-    blink::ServiceWorkerRouterSource source;
-    source.type = blink::ServiceWorkerRouterSource::SourceType::kRace;
-    source.race_source.emplace();
-    return source;
-  }
-  if (v8_source_enum == blink::V8RouterSourceEnum::Enum::kFetchEvent) {
-    blink::ServiceWorkerRouterSource source;
-    source.type = blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
-    source.fetch_event_source.emplace();
-    return source;
-  }
-  return absl::nullopt;
 }
 
 }  // namespace
@@ -93,11 +93,6 @@ TypeConverter<absl::optional<blink::ServiceWorkerRouterRule>,
   if (!condition) {
     return absl::nullopt;
   }
-  absl::optional<blink::ServiceWorkerRouterSource> source =
-      RouterSourceEnumToBlink(input->source());
-  if (!source) {
-    return absl::nullopt;
-  }
 
   // TODO(crbug.com/1371756): support multiple conditions and sources.
   // i.e. support full form shown in
@@ -108,7 +103,7 @@ TypeConverter<absl::optional<blink::ServiceWorkerRouterRule>,
   // sources are set. The current IDL has been implemented for this level, but
   // the mojo IPC has been implemented to support the final form.
   rule.conditions.emplace_back(*condition);
-  rule.sources.emplace_back(*source);
+  rule.sources.emplace_back(RouterSourceEnumToBlink(input->source()));
   return rule;
 }
 
