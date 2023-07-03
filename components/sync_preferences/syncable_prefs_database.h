@@ -27,8 +27,6 @@ class SyncablePrefMetadata {
 
   // Returns whether the pref requires history opt-in to be synced.
   bool is_history_opt_in_required() const {
-    // TODO(crbug.com/1448000): Remove once db is populated.
-    NOTREACHED() << "Database is not populated correctly yet";
     return is_history_opt_in_required_;
   }
 
