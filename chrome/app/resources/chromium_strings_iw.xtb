@@ -8,6 +8,7 @@
 <translation id="1104942323762546749">‏Chromium רוצה לייצא את הסיסמאות שלך. יש להקליד את הסיסמה שלך ל-Windows כדי לאפשר זאת.</translation>
 <translation id="113122355610423240">‏Chromium מוגדר כדפדפן ברירת המחדל</translation>
 <translation id="1131805035311359397">‏כדי לבדוק אם שאר הסיסמאות מוגנות מפני פרצות באבטחת מידע ובעיות אבטחה אחרות, <ph name="BEGIN_LINK" />יש להיכנס ל-Chromium<ph name="END_LINK" />.</translation>
+<translation id="1153368717515616349">‏לוחצים על תפריט Chromium</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{‏תוספים ל-Chromium ניגשו למכשירי ממשק אנושי (HID)}=1{‏תוספים ל-Chromium ניגשים למכשירי ממשק אנושי (HID)}one{‏תוספים ל-Chromium ניגשים ל-# מכשירי ממשק אנושי (HID)}two{‏תוספים ל-Chromium ניגשים ל-# מכשירי ממשק אנושי (HID)}other{‏תוספים ל-Chromium ניגשים ל-# מכשירי ממשק אנושי (HID)}}</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1203500561924088507">תודה שהתקנת. עליך להפעיל מחדש את הדפדפן לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
@@ -57,6 +58,7 @@
 <translation id="2384373936468275798">‏לא בוצע סנכרון של הנתונים שלך ב-ChromiumOS כי פרטי הכניסה לחשבון לא מעודכנים.</translation>
 <translation id="2396765026452590966">‏התוסף "<ph name="EXTENSION_NAME" />" שינה את הדף שמוצג כשמפעילים את Chromium.</translation>
 <translation id="2401032172288869980">‏נדרשות הרשאות גישה למצלמה ולמיקרופון ב-Chromium עבור האתר הזה</translation>
+<translation id="2451727308784734061">באמצעות קיצורי הדרך אפשר להגיע מהר למנהל הסיסמאות. ניתן להעביר את קיצור הדרך למרכז האפליקציות או למסך הבית של המחשב.</translation>
 <translation id="2478295928299953161">‏Chromium ייסגר בקרוב</translation>
 <translation id="2483889755041906834">‏ב-Chromium</translation>
 <translation id="2485422356828889247">הסרת התקנה</translation>
@@ -246,6 +248,7 @@
 <translation id="6333502561965082103">‏מתבצעת כרגע פעולה אחרת ב-Chromium. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="6334986366598267305">‏קל יותר כעת להשתמש ב-Chromium באמצעות חשבון Google שלך ובמחשבים משותפים.</translation>
 <translation id="6373523479360886564">‏ברצונך באמת להסיר את התקנת Chromium?</translation>
+<translation id="6375219077595103062">ניתן להוסיף קיצור דרך למנהל הסיסמאות</translation>
 <translation id="6384011394608460044">‏<ph name="BEGIN_BOLD" />איך אנחנו משתמשים בנתונים האלה:<ph name="END_BOLD" /> Chromium יכול להעריך מהם תחומי העניין שלך. לאחר מכן, אתר שבו ביקרת יכול לשלוח בקשה ל-Chromium כדי לגלות מהם תחומי העניין שלך ולהתאים אישית את המודעות שמוצגות לך.</translation>
 <translation id="6403826409255603130">‏Chromium הוא דפדפן אינטרנט המפעיל דפי אינטרנט ואפליקציות במהירות הבזק. זהו דפדפן מהיר, יציב וקל לשימוש שמאפשר לך לגלוש באינטרנט בצורה מאובטחת יותר הודות להגנה מפני תוכנות זדוניות ופישינג המובנית ב-Chromium.</translation>
 <translation id="6442900851116057561">‏הפעלה מחדש של ChromiumOS</translation>
@@ -370,6 +373,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8697124171261953979">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chromium או מבצעים חיפוש מסרגל הכתובות.</translation>
 <translation id="8704119203788522458">‏זהו ה-Chromium שלך</translation>
 <translation id="8796602469536043152">‏Chromium זקוק להרשאת גישה אל המצלמה והמיקרופון בשביל האתר הזה</translation>
+<translation id="8826492472752484139">לוחצים על 'מנהל הסיסמאות'</translation>
 <translation id="8833697763442816810">‏מערכת ChromiumOS</translation>
 <translation id="8846118132221683440">‏<ph name="BEGIN_BOLD" />באילו נתונים נעשה שימוש:<ph name="END_BOLD" /> היסטוריית הגלישה – תיעוד האתרים שביקרת בהם באמצעות Chromium במכשיר הזה.</translation>
 <translation id="8862326446509486874">אין לך זכויות שמתאימות להתקנה ברמת המערכת. יש לנסות להפעיל שוב את המתקין כמנהל מערכת.</translation>

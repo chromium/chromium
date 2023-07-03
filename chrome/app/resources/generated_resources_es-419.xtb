@@ -113,7 +113,7 @@
 <translation id="1084288067399862432">Cambiaste correctamente la contraseña hackeada.
 
 Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
-<translation id="1084824384139382525">Copiar dir&amp;ección de enlace</translation>
+<translation id="1084824384139382525">Copiar dir&amp;ección del vínculo</translation>
 <translation id="1085064499066015002">Siempre en todos los sitios</translation>
 <translation id="1085697365578766383">Se produjo un error al iniciar la máquina virtual. Vuelve a intentarlo.</translation>
 <translation id="1087965115100412394">No permitir que los sitios se conecten a dispositivos MIDI</translation>
@@ -3120,7 +3120,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3626032419324745085">Los sitios que agregues siempre permanecerán activos y no se liberará la memoria. <ph name="BEGIN_LINK" />Más información sobre la exclusión de sitios<ph name="END_LINK" /></translation>
 <translation id="3626296069957678981">Para cargar esta Chromebook, usa una batería Dell compatible.</translation>
 <translation id="3627320433825461852">Falta menos de un minuto.</translation>
-<translation id="3627588569887975815">Abrir el enlace en una ventana de navegación de incó&amp;gnito</translation>
+<translation id="3627588569887975815">Abrir el vínculo en una ventana de navegación de incó&amp;gnito</translation>
 <translation id="3627671146180677314">Tiempo de renovación del certificado Netscape</translation>
 <translation id="3628275722731025472">Desactivar Bluetooth</translation>
 <translation id="3629664892718440872">Recordar esta opción</translation>
