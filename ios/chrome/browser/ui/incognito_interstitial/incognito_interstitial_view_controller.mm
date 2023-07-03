@@ -285,25 +285,21 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
     _expandURLButton =
         [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero
                                            primaryAction:readMoreAction];
-    [_expandURLButton setAttributedTitle:readMoreString
-                                forState:UIControlStateNormal];
 
-    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-    // iOS 15.
-    if (base::ios::IsRunningOnIOS15OrLater() &&
-        IsUIButtonConfigurationEnabled()) {
-      if (@available(iOS 15, *)) {
-        UIButtonConfiguration* buttonConfiguration =
-            [UIButtonConfiguration plainButtonConfiguration];
-        buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-            CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON);
-        _expandURLButton.configuration = buttonConfiguration;
-      }
+    if (IsUIButtonConfigurationEnabled()) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON);
+      buttonConfiguration.attributedTitle = readMoreString;
+      _expandURLButton.configuration = buttonConfiguration;
     } else {
       UIEdgeInsets insets = UIEdgeInsetsMake(CGFLOAT_EPSILON, CGFLOAT_EPSILON,
                                              CGFLOAT_EPSILON, CGFLOAT_EPSILON);
       SetTitleEdgeInsets(_expandURLButton, insets);
       SetContentEdgeInsets(_expandURLButton, insets);
+      [_expandURLButton setAttributedTitle:readMoreString
+                                  forState:UIControlStateNormal];
     }
 
     _expandURLButton.backgroundColor = self.view.backgroundColor;
