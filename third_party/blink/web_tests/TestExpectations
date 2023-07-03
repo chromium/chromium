@@ -3906,7 +3906,6 @@ crbug.com/921583 http/tests/preload/meta-viewport-link-headers.html [ Failure Pa
 crbug.com/922951 fast/css/pseudo-hover-active-display-none.html [ Crash Failure Pass Timeout ]
 crbug.com/922951 fast/forms/number/number-input-event-composed.html [ Crash Failure Pass Timeout ]
 crbug.com/922951 http/tests/cache/subresource-fragment-identifier.html [ Crash Failure Pass Timeout ]
-crbug.com/922951 http/tests/devtools/tracing/timeline-network-received-data.js [ Crash Failure Pass Timeout ]
 crbug.com/922951 http/tests/history/back-to-post.html [ Crash Failure Pass Timeout ]
 crbug.com/922951 http/tests/security/cookies/basic.html [ Crash Failure Pass Timeout ]
 crbug.com/922951 http/tests/webaudio/autoplay-crossorigin.html [ Crash Failure Pass Timeout ]
@@ -5187,9 +5186,6 @@ crbug.com/1272955 http/tests/devtools/extensions/extensions-timeline-api.js [ Fa
 
 # Test is very flaky (score of 223).
 crbug.com/1274919 http/tests/inspector-protocol/page/consecutive-navigate.js [ Failure Pass Timeout ]
-
-# Sheriff 2021-11-23
-crbug.com/1046784 http/tests/devtools/tracing/timeline-receive-response-event.js [ Failure Pass ]
 
 # Sheriff 2021-11-24
 crbug.com/1273541 fast/block/float/float-on-clean-line-subsequently-dirtied.html [ Failure Pass ]
