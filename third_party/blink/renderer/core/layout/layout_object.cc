@@ -2640,7 +2640,7 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
       SetNeedsLayoutAndIntrinsicWidthsRecalc(
           layout_invalidation_reason::kStyleChange);
     } else if (updated_diff.NeedsPositionedMovementLayout()) {
-      if (IsOutOfFlowPositioned()) {
+      if (StyleRef().HasOutOfFlowPosition()) {
         ContainingBlock()->SetNeedsSimplifiedLayout();
       } else {
         ContainingBlock()->SetChildNeedsLayout();
@@ -3021,7 +3021,7 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     SetNeedsLayoutAndIntrinsicWidthsRecalc(
         layout_invalidation_reason::kStyleChange);
   } else if (diff.NeedsPositionedMovementLayout()) {
-    if (IsOutOfFlowPositioned()) {
+    if (StyleRef().HasOutOfFlowPosition()) {
       ContainingBlock()->SetNeedsSimplifiedLayout();
     } else {
       ContainingBlock()->SetChildNeedsLayout();
