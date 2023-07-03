@@ -349,3 +349,79 @@ test_scope_invalidation(document.currentScript, () => {
   assert_green(b);
 }, 'Scope limit with :has()');
 </script>
+
+<template>
+  <style>
+    @scope (.a) {
+      .b ~ :scope { background-color:green; }
+    }
+  </style>
+  <div></div>
+  <div></div>
+</template>
+<script>
+test_scope_invalidation(document.currentScript, () => {
+  let div1 = main.querySelector('main > div:nth-of-type(1)');
+  let div2 = main.querySelector('main > div:nth-of-type(2)');
+
+  assert_not_green(div2);
+  div1.classList.add('b');
+  assert_not_green(div2);
+  div2.classList.add('a');
+  assert_green(div2);
+  div1.classList.remove('b');
+  assert_not_green(div2);
+}, 'Element becoming root, with :scope selected by ~ combinator');
+</script>
+
+<template>
+  <style>
+    @scope (.a ~ .b) {
+      .c { background-color:green; }
+    }
+  </style>
+  <div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div class=b>
+      <div class=c></div>
+    </div>
+  </div>
+</template>
+<script>
+test_scope_invalidation(document.currentScript, () => {
+  let root = main.querySelector('div > div:first-child');
+  let c = main.querySelector('.c');
+  assert_not_green(c);
+  root.classList.add('a');
+  assert_green(c);
+  root.classList.remove('a');
+  assert_not_green(c);
+}, 'Element becoming root via ~ combinator');
+</script>
+
+<template>
+  <style>
+    @scope (.a + .b) {
+      .c { background-color:green; }
+    }
+  </style>
+  <div>
+    <div></div>
+    <div class=b>
+      <div class=c></div>
+    </div>
+  </div>
+</template>
+<script>
+test_scope_invalidation(document.currentScript, () => {
+  let root = main.querySelector('div > div:first-child');
+  let c = main.querySelector('.c');
+  assert_not_green(c);
+  root.classList.add('a');
+  assert_green(c);
+  root.classList.remove('a');
+  assert_not_green(c);
+}, 'Element becoming root via + combinator');
+</script>

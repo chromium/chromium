@@ -1037,7 +1037,8 @@ const CSSSelector* RuleFeatureSet::ExtractInvalidationSetFeaturesFromCompound(
     }
 
     if (!simple_selector->NextSimpleSelector() ||
-        simple_selector->Relation() != CSSSelector::kSubSelector) {
+        (simple_selector->Relation() != CSSSelector::kSubSelector &&
+         simple_selector->Relation() != CSSSelector::kScopeActivation)) {
       return simple_selector;
     }
   }

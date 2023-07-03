@@ -2034,6 +2034,13 @@ RefTestData ref_scope_equal_test_data[] = {
     {"@scope (.a) { [foo] {} }", ".a [foo], .a[foo] {}"},
     {"@scope (.a) { .a {} }", ".a .a, .a.a {}"},
 
+    // Sibling combinators:
+    {"@scope (.a) { .b + .c {} }", ".b + .c, .a .c, .a {}"},
+    {"@scope (.a, .b) { .c + .d {} }",
+     ".c + .d, :is(.a, .b) .d, :is(.a, .b) {}"},
+    {"@scope (.a) { .b ~ :scope {} }", ".b ~ *, .a *, .a {}"},
+    {"@scope (.a) { .b + :scope {} }", ".b + *, .a *, .a {}"},
+
     // Multiple items in selector lists:
     {"@scope (.a, .b) { div {} }", ":is(.a, .b) div, :is(.a, .b):is(div) {}"},
     {"@scope (.a, :is(.b, .c)) { div {} }",
