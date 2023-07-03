@@ -368,8 +368,15 @@ ChromePageInfoDelegate::GetVisibleSecurityState() {
 }
 
 void ChromePageInfoDelegate::OnCookiesPageOpened() {
-  GetProfile()->GetPrefs()->SetBoolean(prefs::kInContextCookieControlsOpened,
-                                       true);
+  auto* profile = GetProfile();
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(profile);
+  // Don't record the preference if 3PC are allowed by default. Since then
+  // cookie controls are not available in the cookies page.
+  if (!cookie_settings || !cookie_settings->ShouldBlockThirdPartyCookies()) {
+    return;
+  }
+
+  profile->GetPrefs()->SetBoolean(prefs::kInContextCookieControlsOpened, true);
 }
 
 std::unique_ptr<content_settings::PageSpecificContentSettings::Delegate>

@@ -1213,7 +1213,14 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
     run_loop2.Run();
     EXPECT_EQ(
         user_actions_stats.GetActionCount("PageInfo.CookiesSubpage.Opened"), 1);
-    EXPECT_TRUE(prefs_->GetBoolean(prefs::kInContextCookieControlsOpened));
+
+    // The preference should only be recorded when blocking 3P cookies.
+    const bool block_third_party =
+        prefs_->GetInteger(prefs::kCookieControlsMode) ==
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty);
+    EXPECT_EQ(prefs_->GetBoolean(prefs::kInContextCookieControlsOpened),
+              block_third_party);
   }
 
  private:
