@@ -29,6 +29,7 @@ namespace android_webview {
 // The Safe Browsing service is responsible for checking URLs against
 // anti-phishing and anti-malware tables. This is an Android WebView-specific UI
 // manager.
+// Lifetime: Singleton
 class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
  public:
   class UIManagerClient {
