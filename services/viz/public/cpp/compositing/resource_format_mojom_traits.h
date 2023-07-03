@@ -5,17 +5,19 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_RESOURCE_FORMAT_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_RESOURCE_FORMAT_MOJOM_TRAITS_H_
 
-#include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "services/viz/public/mojom/compositing/resource_format.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct EnumTraits<viz::mojom::ResourceFormat, viz::ResourceFormat> {
-  static viz::mojom::ResourceFormat ToMojom(viz::ResourceFormat type);
+struct EnumTraits<viz::mojom::ResourceFormat,
+                  viz::SharedImageFormat::ResourceFormat> {
+  static viz::mojom::ResourceFormat ToMojom(
+      viz::SharedImageFormat::ResourceFormat type);
 
   static bool FromMojom(viz::mojom::ResourceFormat input,
-                        viz::ResourceFormat* out);
+                        viz::SharedImageFormat::ResourceFormat* out);
 };
 
 }  // namespace mojo

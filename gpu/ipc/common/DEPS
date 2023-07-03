@@ -1,6 +1,5 @@
 include_rules = [
   "+base",
-  "+components/viz/common/resources/resource_format.h",
   "+components/viz/common/resources/shared_image_format.h",
   "+ipc",
   "+mojo",

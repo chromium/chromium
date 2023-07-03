@@ -150,6 +150,34 @@ class VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat {
   bool operator!=(const SharedImageFormat& o) const;
   bool operator<(const SharedImageFormat& o) const;
 
+  // TODO(blundell): Make this enum private if it's feasible to work around
+  // mojom_traits access issues.
+  enum ResourceFormat {
+    RGBA_8888,
+    RGBA_4444,
+    BGRA_8888,
+    ALPHA_8,
+    LUMINANCE_8,
+    RGB_565,
+    BGR_565,
+    ETC1,
+    RED_8,
+    RG_88,
+    LUMINANCE_F16,
+    RGBA_F16,
+    R16_EXT,
+    RG16_EXT,
+    RGBX_8888,
+    BGRX_8888,
+    RGBA_1010102,
+    BGRA_1010102,
+    YVU_420,
+    YUV_420_BIPLANAR,
+    YUVA_420_TRIPLANAR,
+    P010,
+    RESOURCE_FORMAT_MAX = P010,
+  };
+
  private:
   enum class PlaneType : uint8_t {
     kUnknown,
@@ -221,41 +249,41 @@ class VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat {
 class SinglePlaneFormat {
  public:
   static constexpr SharedImageFormat kRGBA_8888 =
-      SharedImageFormat(ResourceFormat::RGBA_8888);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::RGBA_8888);
   static constexpr SharedImageFormat kRGBA_4444 =
-      SharedImageFormat(ResourceFormat::RGBA_4444);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::RGBA_4444);
   static constexpr SharedImageFormat kBGRA_8888 =
-      SharedImageFormat(ResourceFormat::BGRA_8888);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::BGRA_8888);
   static constexpr SharedImageFormat kALPHA_8 =
-      SharedImageFormat(ResourceFormat::ALPHA_8);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::ALPHA_8);
   static constexpr SharedImageFormat kLUMINANCE_8 =
-      SharedImageFormat(ResourceFormat::LUMINANCE_8);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::LUMINANCE_8);
   static constexpr SharedImageFormat kRGB_565 =
-      SharedImageFormat(ResourceFormat::RGB_565);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::RGB_565);
   static constexpr SharedImageFormat kBGR_565 =
-      SharedImageFormat(ResourceFormat::BGR_565);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::BGR_565);
   static constexpr SharedImageFormat kETC1 =
-      SharedImageFormat(ResourceFormat::ETC1);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::ETC1);
   static constexpr SharedImageFormat kR_8 =
-      SharedImageFormat(ResourceFormat::RED_8);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::RED_8);
   static constexpr SharedImageFormat kRG_88 =
-      SharedImageFormat(ResourceFormat::RG_88);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::RG_88);
   static constexpr SharedImageFormat kLUMINANCE_F16 =
-      SharedImageFormat(ResourceFormat::LUMINANCE_F16);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::LUMINANCE_F16);
   static constexpr SharedImageFormat kRGBA_F16 =
-      SharedImageFormat(ResourceFormat::RGBA_F16);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::RGBA_F16);
   static constexpr SharedImageFormat kR_16 =
-      SharedImageFormat(ResourceFormat::R16_EXT);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::R16_EXT);
   static constexpr SharedImageFormat kRG_1616 =
-      SharedImageFormat(ResourceFormat::RG16_EXT);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::RG16_EXT);
   static constexpr SharedImageFormat kRGBX_8888 =
-      SharedImageFormat(ResourceFormat::RGBX_8888);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::RGBX_8888);
   static constexpr SharedImageFormat kBGRX_8888 =
-      SharedImageFormat(ResourceFormat::BGRX_8888);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::BGRX_8888);
   static constexpr SharedImageFormat kRGBA_1010102 =
-      SharedImageFormat(ResourceFormat::RGBA_1010102);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::RGBA_1010102);
   static constexpr SharedImageFormat kBGRA_1010102 =
-      SharedImageFormat(ResourceFormat::BGRA_1010102);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::BGRA_1010102);
 
   // All known singleplanar formats.
   static constexpr SharedImageFormat kAll[18] = {
@@ -274,25 +302,23 @@ class SinglePlaneFormat {
 class LegacyMultiPlaneFormat {
  public:
   static constexpr SharedImageFormat kYV12 =
-      SharedImageFormat(ResourceFormat::YVU_420);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::YVU_420);
   static constexpr SharedImageFormat kNV12 =
-      SharedImageFormat(ResourceFormat::YUV_420_BIPLANAR);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::YUV_420_BIPLANAR);
   static constexpr SharedImageFormat kNV12A =
-      SharedImageFormat(ResourceFormat::YUVA_420_TRIPLANAR);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::YUVA_420_TRIPLANAR);
   static constexpr SharedImageFormat kP010 =
-      SharedImageFormat(ResourceFormat::P010);
+      SharedImageFormat(SharedImageFormat::ResourceFormat::P010);
 
   // All known legacy multiplanar formats.
   static constexpr SharedImageFormat kAll[4] = {kYV12, kNV12, kNV12A, kP010};
-};
 
-// The number of singleplanar and legacy multiplanar formats should correspond
-// exactly to the number of ResourceFormat types. Note that RESOURCE_FORMAT_MAX
-// uses zero-based indexing.
-constexpr auto kNumResourceFormatTypes = RESOURCE_FORMAT_MAX + 1;
-static_assert(std::size(SinglePlaneFormat::kAll) +
-                  std::size(LegacyMultiPlaneFormat::kAll) ==
-              kNumResourceFormatTypes);
+  // The number of singleplanar and legacy multiplanar formats should correspond
+  // exactly to the number of ResourceFormat types. Note that
+  // RESOURCE_FORMAT_MAX uses zero-based indexing.
+  static_assert(std::size(SinglePlaneFormat::kAll) + std::size(kAll) ==
+                SharedImageFormat::RESOURCE_FORMAT_MAX + 1);
+};
 
 // Constants for common multi-planar formats.
 namespace MultiPlaneFormat {

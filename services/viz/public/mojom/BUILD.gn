@@ -621,7 +621,7 @@ mojom("resource_format") {
       types = [
         {
           mojom = "viz.mojom.ResourceFormat"
-          cpp = "::viz::ResourceFormat"
+          cpp = "::viz::SharedImageFormat::ResourceFormat"
         },
       ]
       traits_headers = [
