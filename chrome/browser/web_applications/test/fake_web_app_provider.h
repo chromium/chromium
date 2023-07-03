@@ -9,6 +9,8 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
+#include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -174,6 +176,9 @@ class FakeWebAppProvider : public WebAppProvider {
   // FakeWebAppProvider::Shutdown() as part of test teardown.
   void Shutdown() override;
 
+  // Returns the file utils used by default subsystems.
+  TestFileUtils& file_utils() const { return *file_utils_; }
+
   syncer::MockModelTypeChangeProcessor& processor() { return mock_processor_; }
 
  private:
@@ -192,6 +197,9 @@ class FakeWebAppProvider : public WebAppProvider {
   // If true, preinstalled apps will be processed & installed (or uninstalled)
   // after the system starts.
   bool synchronize_preinstalled_app_on_startup_ = false;
+
+  scoped_refptr<TestFileUtils> file_utils_ =
+      base::MakeRefCounted<TestFileUtils>();
 
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
 };

@@ -281,11 +281,10 @@ void FakeWebAppProvider::SetDefaultFakeSubsystems() {
   SetSyncBridge(std::make_unique<WebAppSyncBridge>(
       &GetRegistrarMutable(), processor().CreateForwardingProcessor()));
 
-  SetIconManager(std::make_unique<WebAppIconManager>(
-      profile_, base::MakeRefCounted<TestFileUtils>()));
+  SetIconManager(std::make_unique<WebAppIconManager>(profile_, file_utils_));
 
-  SetTranslationManager(std::make_unique<WebAppTranslationManager>(
-      profile_, base::MakeRefCounted<TestFileUtils>()));
+  SetTranslationManager(
+      std::make_unique<WebAppTranslationManager>(profile_, file_utils_));
 
   SetWebAppUiManager(std::make_unique<FakeWebAppUiManager>());
 
