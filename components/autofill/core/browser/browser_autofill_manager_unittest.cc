@@ -941,7 +941,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   // Wrappers around the TestAutofillExternalDelegate::GetSuggestions call that
-  // take a hardcoded number of expected results so callsites are cleaner.
+  // take a hardcoded number of expected results so call sites are cleaner.
   void CheckSuggestions(FieldGlobalId field_id, const Suggestion& suggestion0) {
     std::vector<Suggestion> suggestion_vector;
     suggestion_vector.push_back(suggestion0);
@@ -2176,8 +2176,8 @@ TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
       test::ObfuscatedCardDigitsAsUTF8("8765", ObfuscationLength());
 
 #if BUILDFLAG(IS_ANDROID)
-  // For Android, when keyboard accessary is enabled, always show obfuscated
-  // last four. When keyboard accessary is not enabled (drop-down suggestion):
+  // For Android, when keyboard accessory is enabled, always show obfuscated
+  // last four. When keyboard accessory is not enabled (drop-down suggestion):
   // 1) if nickname feature is enabled and nickname is available, show nickname
   // + last four. 2) Otherwise, show network + last four.
   // Visa card does not have a nickname.
@@ -3136,7 +3136,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
     histogram_tester.ExpectTotalCount(
         "Autofill.Ablation.FormSubmissionAfterInteraction." + form_type_str +
             ".ConditionalAblation",
-        /*count=*/0);
+        /*expected_count=*/0);
   }
   // Only if data was on file an a submission happened, we can record the
   // duration from interaction to submission.
@@ -3150,7 +3150,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
     histogram_tester.ExpectTotalCount(
         "Autofill.Ablation.FillDurationSinceInteraction." + form_type_str +
             ".ConditionalAblation",
-        /*count=*/0);
+        /*expected_count=*/0);
   }
   // The unconditional ablation metrics should always be logged as this the
   // ablation study is always enabled.
@@ -3170,7 +3170,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
     histogram_tester.ExpectTotalCount(
         "Autofill.Ablation.FillDurationSinceInteraction." + form_type_str +
             ".UnconditionalAblation",
-        /*count=*/0);
+        /*expected_count=*/0);
   }
 
   // Ensure that no metrics are recorded for the complementary form type.
@@ -3189,7 +3189,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
           base::StrCat({"Autofill.Ablation.", metric, ".",
                         complementary_form_type_str.c_str(), ".",
                         ablation_type}),
-          /*count=*/0);
+          /*expected_count=*/0);
     }
   }
 }
@@ -5232,7 +5232,7 @@ TEST_F(BrowserAutofillManagerTest,
 // are filled best-effort.
 // Phone number local heuristics only succeed if a PHONE_HOME_NUMBER field is
 // present.
-TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_BestEfforFilling) {
+TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_BestEffortFilling) {
   AutofillProfile* work_profile =
       personal_data().GetProfileByGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
@@ -8585,8 +8585,8 @@ TEST_P(CreditCardSuggestionTest,
   personal_data().AddCreditCard(credit_card);
 
 #if BUILDFLAG(IS_ANDROID)
-  // When keyboard accessary is enabled, always show "7777".
-  // When keyboard accessary is disabled, if nickname is valid, show "Nickname
+  // When keyboard accessory is enabled, always show "7777".
+  // When keyboard accessory is disabled, if nickname is valid, show "Nickname
   // ****7777", otherwise, show "Visa  ****7777".
   const std::string visa_label =
       IsKeyboardAccessoryEnabled()
@@ -8910,7 +8910,7 @@ TEST_F(BrowserAutofillManagerTest,
     EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
   }
 
-  // Modify form action URL. This can happen on in-page navitaion if the form
+  // Modify form action URL. This can happen on in-page navigation if the form
   // doesn't have an actual action (attribute is empty).
   form.action = net::AppendQueryParameter(form.action, "arg", "value");
 
@@ -10143,7 +10143,7 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedForm) {
 
 // Test that if a form is mixed content we do not show a warning if the opt out
 // policy is set.
-TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormOptoutPolicy) {
+TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormOptOutPolicy) {
   // Set pref to disabled.
   autofill_client_.GetPrefs()->SetBoolean(::prefs::kMixedFormsWarningsEnabled,
                                           false);

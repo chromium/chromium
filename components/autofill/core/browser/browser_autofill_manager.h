@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
+#include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -46,6 +47,7 @@
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -529,6 +531,28 @@ class BrowserAutofillManager : public AutofillManager,
     // field (it does not matter whether the field already contains a value).
     std::map<FieldGlobalId, std::u16string> forced_fill_values;
   };
+
+  // Given a `form` (and corresponding `form_structure`) to fill with a
+  // `profile_or_credit_card`, return a list of field indices of the fields that
+  // should be filled and not skipped. Also logs the reason for skipping the
+  // other fields.
+  // `trigger_field` and corresponding `trigger_autofill_field` are the field
+  // that initiated the filling.
+  // `action` records whether the browser filling is a renderer fill or preview
+  // operation. `fill_event_id` is used to record log events.
+  // TODO(crbug/1331312): Keep only one of 'form' and 'form_structure', and one
+  // of `trigger_field` and `autofill_trigger_field`.
+  std::vector<size_t> GetFieldsToFill(
+      mojom::RendererFormDataAction action,
+      FormData& form,
+      FormStructure& form_structure,
+      const FormFieldData& trigger_field,
+      const AutofillField& autofill_trigger_field,
+      absl::variant<const AutofillProfile*, const CreditCard*>
+          profile_or_credit_card,
+      absl::optional<FillEventId> fill_event_id,
+      const std::u16string* optional_cvc,
+      bool is_refill);
 
   // CreditCardAccessManager::Accessor
   void OnCreditCardFetched(CreditCardFetchResult result,
