@@ -820,6 +820,25 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_KEYBOARD_COLEMAK" desc="The label for the choice to use Colemak keyboard.">
     Colemak
   </message>
+  <!-- Vietnamese Input Method (VNI/Telex) setting strings  -->
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_MODERN_TONE_MARK_PLACEMENT" desc="This is a label for the settings option to use the modern (as opposed to classic) set of rules in which vowel letter to place tone marks on a Vietnamese syllable (when there are multiple vowel letters) in flexible typing mode (where tone marks don’t need to be typed immediately after the vowel). The Vietnamese writing system has tone marks that can be placed on vowel letters.">
+   Use modern tone mark placement
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_FLEXIBLE_TYPING" desc="This is a label for the settings option to enable flexible typing mode in a Vietnamese input method. In flexible typing mode, users don’t need to assign diacritics immediately after the target letters, but can do so later e.g. towards or at the end of the syllable.">
+   Flexible typing
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_SHOW_UNDERLINE" desc="This is a label for the settings option to allow the Vietnamese input method to show underline when typing.">
+   Show underline for composition text
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_VNI_UO_HOOK_SHORTCUT" desc="This is a label for the settings option to enable a shortcut way of typing in the Vietnamese VNI input method whereby typing keys U-O-7 gives characters ƯƠ directly, without having to type the canonical U-7-O-7. Note that the characters are U-with-horn and O-with-horn.">
+   Type "uo7" to get "ươ"
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_TELEX_UO_HOOK_SHORTCUT" desc="This is a label for the settings option to enable a shortcut way of typing in the Vietnamese Telex input method whereby typing keys U-O-W gives characters ƯƠ directly, without having to type the canonical U-W-O-W. Note that the characters are U-with-horn and O-with-horn.">
+   Type "uow" to get "ươ"
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_TELEX_W_SHORTCUT" desc="This is a label for the settings option to enable a shortcut way of typing in the Vietnamese Telex input method whereby typing the key W gives the character Ư directly, without having to type the canonical U-W. Note that the character is U-with-horn.">
+   Type "w" to get "ư"
+  </message>
 
   <!-- Device Page (OS Settings) -->
   <message name="IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_LABEL">

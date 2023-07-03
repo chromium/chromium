@@ -153,7 +153,16 @@ chrome.inputMethodPrivate.InputContext;
  *   }|undefined),
  *   zhuyinKeyboardLayout: (string|undefined),
  *   zhuyinPageSize: (number|undefined),
- *   zhuyinSelectKeys: (string|undefined)
+ *   zhuyinSelectKeys: (string|undefined),
+ *   vietnameseVniAllowFlexibleDiacritics: (boolean|undefined),
+ *   vietnameseVniNewStyleToneMarkPlacement: (boolean|undefined),
+ *   vietnameseVniInsertDoubleHornOnUo: (boolean|undefined),
+ *   vietnameseVniShowUnderline: (boolean|undefined),
+ *   vietnameseTelexAllowFlexibleDiacritics: (boolean|undefined),
+ *   vietnameseTelexNewStyleToneMarkPlacement: (boolean|undefined),
+ *   vietnameseTelexInsertDoubleHornOnUo: (boolean|undefined),
+ *   vietnameseTelexInsertUHornOnW: (boolean|undefined),
+ *   vietnameseTelexShowUnderline: (boolean|undefined)
  * }}
  */
 chrome.inputMethodPrivate.InputMethodSettings;

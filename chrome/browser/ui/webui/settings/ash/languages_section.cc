@@ -339,6 +339,18 @@ void AddInputMethodOptionsStrings(
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_KEYBOARD_DVORAK},
       {"inputMethodOptionsColemakKeyboard",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_KEYBOARD_COLEMAK},
+      {"inputMethodOptionsVietnameseModernToneMarkPlacement",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_MODERN_TONE_MARK_PLACEMENT},
+      {"inputMethodOptionsVietnameseFlexibleTyping",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_FLEXIBLE_TYPING},
+      {"inputMethodOptionsVietnameseVniUoHookShortcut",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_VNI_UO_HOOK_SHORTCUT},
+      {"inputMethodOptionsVietnameseTelexUoHookShortcut",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_TELEX_UO_HOOK_SHORTCUT},
+      {"inputMethodOptionsVietnameseTelexWShortcut",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_TELEX_W_SHORTCUT},
+      {"inputMethodOptionsVietnameseShowUnderline",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_SHOW_UNDERLINE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddBoolean("isPhysicalKeyboardAutocorrectAllowed",
@@ -357,6 +369,9 @@ void AddInputMethodOptionsStrings(
   html_source->AddBoolean(
       "autocorrectEnableByDefault",
       base::FeatureList::IsEnabled(features::kAutocorrectByDefault));
+  html_source->AddBoolean(
+      "allowFirstPartyVietnameseInput",
+      base::FeatureList::IsEnabled(features::kFirstPartyVietnameseInput));
 }
 
 void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {

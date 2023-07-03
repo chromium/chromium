@@ -10,6 +10,7 @@ export interface SettingsContext {
   isPhysicalKeyboardAutocorrectAllowed: boolean;
   isPhysicalKeyboardPredictiveWritingAllowed: boolean;
   isJapaneseSettingsAllowed: boolean;
+  isVietnameseFirstPartyInputSettingsAllowed: boolean;
 }
 
 /**
@@ -26,6 +27,8 @@ export enum SettingsType {
   SUGGESTION_SETTINGS = 7,
   JAPANESE_SETTINGS = 9,
   LATIN_PHYSICAL_KEYBOARD_SETTINGS = 10,
+  VIETNAMESE_VNI_SETTINGS = 11,
+  VIETNAMESE_TELEX_SETTINGS = 12,
 }
 
 type SettingsMap = Partial<Record<string, SettingsType[]>>;
@@ -145,11 +148,20 @@ export function getInputMethodSettings(context: SettingsContext): SettingsMap {
     'xkb:in::eng': [SettingsType.ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS],
     'xkb:pk::eng': [SettingsType.ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS],
     'xkb:za:gb:eng': [SettingsType.ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS],
+
   };
+
   // MOZC settings
   if (context.isJapaneseSettingsAllowed) {
     settingsMap['nacl_mozc_jp'] = [SettingsType.JAPANESE_SETTINGS];
     settingsMap['nacl_mozc_us'] = [SettingsType.JAPANESE_SETTINGS];
   }
+
+  // Vietnamese first party input
+  if (context.isVietnameseFirstPartyInputSettingsAllowed) {
+    settingsMap['vkd_vi_telex'] = [SettingsType.VIETNAMESE_TELEX_SETTINGS];
+    settingsMap['vkd_vi_vni'] = [SettingsType.VIETNAMESE_VNI_SETTINGS];
+  }
+
   return settingsMap;
 }

@@ -166,16 +166,43 @@ bool IsVietnameseVniEngine(base::StringPiece engine_id) {
 mojom::VietnameseVniSettingsPtr CreateVietnameseVniSettings(
     const base::Value::Dict& input_method_specific_pref) {
   auto settings = mojom::VietnameseVniSettings::New();
-  settings->allow_flexible_diacritics = true;
-  settings->show_underline_for_composition_text = true;
+  settings->allow_flexible_diacritics =
+      input_method_specific_pref
+          .FindBool("vietnameseVniAllowFlexibleDiacritics")
+          .value_or(true);
+  settings->new_style_tone_mark_placement =
+      input_method_specific_pref
+          .FindBool("vietnameseVniNewStyleToneMarkPlacement")
+          .value_or(false);
+  settings->enable_insert_double_horn_on_uo =
+      input_method_specific_pref.FindBool("vietnameseVniInsertDoubleHornOnUo")
+          .value_or(false);
+  settings->show_underline_for_composition_text =
+      input_method_specific_pref.FindBool("vietnameseVniShowUnderline")
+          .value_or(true);
   return settings;
 }
 
 mojom::VietnameseTelexSettingsPtr CreateVietnameseTelexSettings(
     const base::Value::Dict& input_method_specific_pref) {
   auto settings = mojom::VietnameseTelexSettings::New();
-  settings->allow_flexible_diacritics = true;
-  settings->show_underline_for_composition_text = true;
+  settings->allow_flexible_diacritics =
+      input_method_specific_pref
+          .FindBool("vietnameseTelexAllowFlexibleDiacritics")
+          .value_or(true);
+  settings->new_style_tone_mark_placement =
+      input_method_specific_pref
+          .FindBool("vietnameseTelexNewStyleToneMarkPlacement")
+          .value_or(false);
+  settings->enable_insert_double_horn_on_uo =
+      input_method_specific_pref.FindBool("vietnameseTelexInsertDoubleHornOnUo")
+          .value_or(false);
+  settings->enable_w_for_u_horn_shortcut =
+      input_method_specific_pref.FindBool("vietnameseTelexInsertUHornOnW")
+          .value_or(false);
+  settings->show_underline_for_composition_text =
+      input_method_specific_pref.FindBool("vietnameseTelexShowUnderline")
+          .value_or(true);
   return settings;
 }
 

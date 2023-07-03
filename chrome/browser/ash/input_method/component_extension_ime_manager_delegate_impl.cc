@@ -332,7 +332,12 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
 
   const std::string* option_page =
       dict.FindString(extensions::manifest_keys::kOptionsPage);
-  if (option_page) {
+
+  bool flag_allows_settings_page =
+      (*engine_id != "vkd_vi_vni" && *engine_id != "vkd_vi_telex") ||
+      base::FeatureList::IsEnabled(features::kFirstPartyVietnameseInput);
+
+  if (option_page && flag_allows_settings_page) {
     url_string = *option_page;
     GURL options_page_url = extensions::Extension::GetResourceURL(
         extensions::Extension::GetBaseURLFromExtensionId(

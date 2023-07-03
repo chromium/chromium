@@ -114,6 +114,21 @@ export enum OptionType {
   ZHUYIN_KEYBOARD_LAYOUT = 'zhuyinKeyboardLayout',
   ZHUYIN_PAGE_SIZE = 'zhuyinPageSize',
   ZHUYIN_SELECT_KEYS = 'zhuyinSelectKeys',
+  // Options for Vietnamese VNI input method
+  VIETNAMESE_VNI_ALLOW_FLEXIBLE_DIACRITICS =
+      'vietnameseVniAllowFlexibleDiacritics',
+  VIETNAMESE_VNI_NEW_STYLE_TONE_MARK_PLACEMENT =
+      'vietnameseVniNewStyleToneMarkPlacement',
+  VIETNAMESE_VNI_INSERT_DOUBLE_HORN_ON_UO = 'vietnameseVniInsertDoubleHornOnUo',
+  VIETNAMESE_VNI_SHOW_UNDERLINE = 'vietnameseVniShowUnderline',
+  VIETNAMESE_TELEX_ALLOW_FLEXIBLE_DIACRITICS =
+      'vietnameseTelexAllowFlexibleDiacritics',
+  VIETNAMESE_TELEX_NEW_STYLE_TONE_MARK_PLACEMENT =
+      'vietnameseTelexNewStyleToneMarkPlacement',
+  VIETNAMESE_TELEX_INSERT_DOUBLE_HORN_ON_UO =
+      'vietnameseTelexInsertDoubleHornOnUo',
+  VIETNAMESE_TELEX_INSERT_U_HORN_ON_W = 'vietnameseTelexInsertUHornOnW',
+  VIETNAMESE_TELEX_SHOW_UNDERLINE = 'vietnameseTelexShowUnderline',
 }
 
 /**
@@ -386,6 +401,27 @@ const Settings = {
       name: OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
     }],
   }],
+  [SettingsType.VIETNAMESE_TELEX_SETTINGS]: [{
+    // TODO(b/288763256): Remove this placeholder and add correct title.
+    title: SettingsHeaders.PHYSICAL_KEYBOARD,
+    optionNames: [
+      {name: OptionType.VIETNAMESE_TELEX_ALLOW_FLEXIBLE_DIACRITICS},
+      {name: OptionType.VIETNAMESE_TELEX_NEW_STYLE_TONE_MARK_PLACEMENT},
+      {name: OptionType.VIETNAMESE_TELEX_INSERT_DOUBLE_HORN_ON_UO},
+      {name: OptionType.VIETNAMESE_TELEX_INSERT_U_HORN_ON_W},
+      {name: OptionType.VIETNAMESE_TELEX_SHOW_UNDERLINE},
+    ],
+  }],
+  [SettingsType.VIETNAMESE_VNI_SETTINGS]: [{
+    // TODO(b/288763256): Remove this placeholder and add correct title.
+    title: SettingsHeaders.PHYSICAL_KEYBOARD,
+    optionNames: [
+      {name: OptionType.VIETNAMESE_VNI_ALLOW_FLEXIBLE_DIACRITICS},
+      {name: OptionType.VIETNAMESE_VNI_NEW_STYLE_TONE_MARK_PLACEMENT},
+      {name: OptionType.VIETNAMESE_VNI_INSERT_DOUBLE_HORN_ON_UO},
+      {name: OptionType.VIETNAMESE_VNI_SHOW_UNDERLINE},
+    ],
+  }],
 } satisfies Record<SettingsType, Array<{
                      title: SettingsHeaders,
                      optionNames: Array<{
@@ -502,6 +538,15 @@ export function getOptionUiType(option: OptionType): UiType {
     case OptionType.PINYIN_L_N:
     case OptionType.PINYIN_S_SH:
     case OptionType.PINYIN_Z_ZH:
+    case OptionType.VIETNAMESE_VNI_ALLOW_FLEXIBLE_DIACRITICS:
+    case OptionType.VIETNAMESE_VNI_NEW_STYLE_TONE_MARK_PLACEMENT:
+    case OptionType.VIETNAMESE_VNI_INSERT_DOUBLE_HORN_ON_UO:
+    case OptionType.VIETNAMESE_VNI_SHOW_UNDERLINE:
+    case OptionType.VIETNAMESE_TELEX_ALLOW_FLEXIBLE_DIACRITICS:
+    case OptionType.VIETNAMESE_TELEX_NEW_STYLE_TONE_MARK_PLACEMENT:
+    case OptionType.VIETNAMESE_TELEX_INSERT_DOUBLE_HORN_ON_UO:
+    case OptionType.VIETNAMESE_TELEX_INSERT_U_HORN_ON_W:
+    case OptionType.VIETNAMESE_TELEX_SHOW_UNDERLINE:
       return UiType.TOGGLE_BUTTON;
     case OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
     case OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
@@ -641,6 +686,24 @@ export function getOptionLabelName(option: OptionType): string {
       return 'inputMethodOptionsKoreanLayout';
     case OptionType.KOREAN_ENABLE_SYLLABLE_INPUT:
       return 'inputMethodOptionsKoreanSyllableInput';
+    case OptionType.VIETNAMESE_VNI_ALLOW_FLEXIBLE_DIACRITICS:
+      return 'inputMethodOptionsVietnameseFlexibleTyping';
+    case OptionType.VIETNAMESE_VNI_NEW_STYLE_TONE_MARK_PLACEMENT:
+      return 'inputMethodOptionsVietnameseModernToneMarkPlacement';
+    case OptionType.VIETNAMESE_VNI_INSERT_DOUBLE_HORN_ON_UO:
+      return 'inputMethodOptionsVietnameseVniUoHookShortcut';
+    case OptionType.VIETNAMESE_VNI_SHOW_UNDERLINE:
+      return 'inputMethodOptionsVietnameseShowUnderline';
+    case OptionType.VIETNAMESE_TELEX_ALLOW_FLEXIBLE_DIACRITICS:
+      return 'inputMethodOptionsVietnameseFlexibleTyping';
+    case OptionType.VIETNAMESE_TELEX_NEW_STYLE_TONE_MARK_PLACEMENT:
+      return 'inputMethodOptionsVietnameseModernToneMarkPlacement';
+    case OptionType.VIETNAMESE_TELEX_INSERT_DOUBLE_HORN_ON_UO:
+      return 'inputMethodOptionsVietnameseTelexUoHookShortcut';
+    case OptionType.VIETNAMESE_TELEX_SHOW_UNDERLINE:
+      return 'inputMethodOptionsVietnameseShowUnderline';
+    case OptionType.VIETNAMESE_TELEX_INSERT_U_HORN_ON_W:
+      return 'inputMethodOptionsVietnameseTelexWShortcut';
     case OptionType.ENABLE_COMPLETION:
     case OptionType.PINYIN_FUZZY_CONFIG:
       // Not implemented.

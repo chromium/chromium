@@ -262,6 +262,8 @@ export class SettingsInputMethodOptionsPageElement extends
           loadTimeData.getBoolean('isPhysicalKeyboardPredictiveWritingAllowed'),
       isJapaneseSettingsAllowed:
           loadTimeData.getBoolean('systemJapanesePhysicalTyping'),
+      isVietnameseFirstPartyInputSettingsAllowed:
+          loadTimeData.getBoolean('allowFirstPartyVietnameseInput'),
     });
     // The settings for Japanese for both engine nacl_mozc_us and nacl_mozc_jp
     // types will be stored in nacl_mozc_us. See:

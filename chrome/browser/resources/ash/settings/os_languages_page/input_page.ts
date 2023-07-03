@@ -311,6 +311,8 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
           loadTimeData.getBoolean('isPhysicalKeyboardPredictiveWritingAllowed'),
       isJapaneseSettingsAllowed:
           loadTimeData.getBoolean('systemJapanesePhysicalTyping'),
+      isVietnameseFirstPartyInputSettingsAllowed:
+          loadTimeData.getBoolean('allowFirstPartyVietnameseInput'),
     });
   }
 
