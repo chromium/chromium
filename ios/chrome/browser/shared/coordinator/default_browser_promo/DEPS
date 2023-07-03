@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/default_browser",
+  "+ios/chrome/browser/overlays/public",
+]
