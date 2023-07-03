@@ -244,7 +244,7 @@ class PageSpecificContentSettings
       mojom::ContentSettingsManager::StorageType storage_type,
       int render_process_id,
       int render_frame_id,
-      const GURL& url,
+      const blink::StorageKey& storage_key,
       bool blocked_by_policy);
 
   static void BrowsingDataAccessed(content::RenderFrameHost* rfh,
@@ -391,7 +391,7 @@ class PageSpecificContentSettings
   // embedded page (through |MaybeUpdateParent|).
   void OnStorageAccessed(
       mojom::ContentSettingsManager::StorageType storage_type,
-      const GURL& url,
+      const blink::StorageKey& storage_key,
       bool blocked_by_policy,
       content::RenderFrameHost* rfh = nullptr,
       content::Page* originating_page = nullptr);
