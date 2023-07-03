@@ -43,8 +43,8 @@ gfx::Transform WvrPoseToTransform(const mozilla::gfx::VRPose* pose) {
                       pose->orientation[2], pose->orientation[3]);
 
   decomp.translate[0] = pose->position[0];
-  decomp.translate[1] = pose->position[0];
-  decomp.translate[2] = pose->position[0];
+  decomp.translate[1] = pose->position[1];
+  decomp.translate[2] = pose->position[2];
 
   return gfx::Transform::Compose(decomp);
 }
