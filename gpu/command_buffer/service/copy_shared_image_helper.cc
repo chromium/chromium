@@ -711,10 +711,19 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
         source_image_reinterpreted = source_image->reinterpretColorSpace(
             canvas->imageInfo().refColorSpace());
       }
+      // Flip via canvas as Graphite doesn't support bottom left origin images.
+      // TODO(crbug.com/1449764): Remove this once Graphite supports bottom left
+      // origin images and we remove bottom left destination surfaces.
+      const int save_count = canvas->save();
+      if (shared_context_state_->graphite_context() && unpack_flip_y) {
+        canvas->translate(0.0f, static_cast<float>(dest_rect.height()));
+        canvas->scale(1.0f, -1.0f);
+      }
       canvas->drawImageRect(source_image_reinterpreted,
                             gfx::RectToSkRect(source_rect),
                             gfx::RectToSkRect(dest_rect), SkSamplingOptions(),
                             &paint, SkCanvas::kStrict_SrcRectConstraint);
+      canvas->restoreToCount(save_count);
     } else {
       SkSurface* yuva_sk_surfaces[SkYUVAInfo::kMaxPlanes] = {};
       for (int plane_index = 0; plane_index < dest_format.NumberOfPlanes();
