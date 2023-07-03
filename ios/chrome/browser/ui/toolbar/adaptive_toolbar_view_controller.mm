@@ -75,7 +75,7 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   return self.view.toolsMenuButton;
 }
 
-- (void)updateForSideSwipeSnapshotOnNTP:(BOOL)onNTP {
+- (void)updateForSideSwipeSnapshot:(BOOL)onNonIncognitoNTP {
   self.view.progressBar.hidden = YES;
   self.view.progressBar.alpha = 0;
 }

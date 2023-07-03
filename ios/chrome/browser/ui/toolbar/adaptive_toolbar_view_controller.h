@@ -56,8 +56,8 @@
 - (ToolbarButton*)toolsMenuButton;
 
 // Updates the view so a snapshot can be taken. It needs to be adapted,
-// depending on if it is a snapshot displayed `onNTP` or not.
-- (void)updateForSideSwipeSnapshotOnNTP:(BOOL)onNTP;
+// depending on if it is a snapshot displayed `onNonIncognitoNTP` or not.
+- (void)updateForSideSwipeSnapshot:(BOOL)onNonIncognitoNTP;
 // Resets the view after taking a snapshot for a side swipe.
 - (void)resetAfterSideSwipeSnapshot;
 // Sets the toolbar location bar alpha and vertical offset based on `progress`.

@@ -63,10 +63,11 @@
 
 #pragma mark - AdaptiveToolbarViewController
 
-- (void)updateForSideSwipeSnapshotOnNTP:(BOOL)onNTP {
-  [super updateForSideSwipeSnapshotOnNTP:onNTP];
-  if (!onNTP)
+- (void)updateForSideSwipeSnapshot:(BOOL)onNonIncognitoNTP {
+  [super updateForSideSwipeSnapshot:onNonIncognitoNTP];
+  if (!onNonIncognitoNTP) {
     return;
+  }
 
   // An opaque image is expected during a snapshot. Make sure the view is not
   // hidden and display a blank view by using the NTP background and by hidding

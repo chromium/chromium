@@ -113,10 +113,11 @@
 }
 
 - (void)updateToolbarForSideSwipeSnapshot:(web::WebState*)webState {
-  BOOL isNTP = IsVisibleURLNewTabPage(webState);
+  BOOL isNonIncognitoNTP = !self.browser->GetBrowserState()->IsOffTheRecord() &&
+                           IsVisibleURLNewTabPage(webState);
 
   [self.mediator updateConsumerForWebState:webState];
-  [self.viewController updateForSideSwipeSnapshotOnNTP:isNTP];
+  [self.viewController updateForSideSwipeSnapshot:isNonIncognitoNTP];
 }
 
 - (void)resetToolbarAfterSideSwipeSnapshot {
