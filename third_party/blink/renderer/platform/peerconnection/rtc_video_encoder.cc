@@ -299,17 +299,15 @@ BASE_FEATURE(kForcingSoftwareIncludes360,
 }  // namespace features
 
 namespace {
-media::VideoEncodeAccelerator::Config::InterLayerPredMode
-CopyFromWebRtcInterLayerPredMode(
+media::SVCInterLayerPredMode CopyFromWebRtcInterLayerPredMode(
     const webrtc::InterLayerPredMode inter_layer_pred) {
   switch (inter_layer_pred) {
     case webrtc::InterLayerPredMode::kOff:
-      return media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOff;
+      return media::SVCInterLayerPredMode::kOff;
     case webrtc::InterLayerPredMode::kOn:
-      return media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOn;
+      return media::SVCInterLayerPredMode::kOn;
     case webrtc::InterLayerPredMode::kOnKeyPic:
-      return media::VideoEncodeAccelerator::Config::InterLayerPredMode::
-          kOnKeyPic;
+      return media::SVCInterLayerPredMode::kOnKeyPic;
   }
 }
 
@@ -319,8 +317,7 @@ bool CreateSpatialLayersConfig(
     const webrtc::VideoCodec& codec_settings,
     std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>*
         spatial_layers,
-    media::VideoEncodeAccelerator::Config::InterLayerPredMode*
-        inter_layer_pred) {
+    media::SVCInterLayerPredMode* inter_layer_pred) {
   absl::optional<webrtc::ScalabilityMode> scalability_mode =
       codec_settings.GetScalabilityMode();
 
@@ -1733,8 +1730,7 @@ int32_t RTCVideoEncoder::InitEncode(
 
   std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>
       spatial_layers;
-  auto inter_layer_pred =
-      media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOff;
+  auto inter_layer_pred = media::SVCInterLayerPredMode::kOff;
   if (!CreateSpatialLayersConfig(*codec_settings, &spatial_layers,
                                  &inter_layer_pred)) {
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;

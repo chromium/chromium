@@ -381,46 +381,6 @@ bool EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_ContentType,
 }
 
 // static
-media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode
-EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode,
-           media::VideoEncodeAccelerator::Config::InterLayerPredMode>::
-    ToMojom(media::VideoEncodeAccelerator::Config::InterLayerPredMode input) {
-  switch (input) {
-    case media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOff:
-      return media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode::
-          kOff;
-    case media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOn:
-      return media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode::kOn;
-    case media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic:
-      return media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode::
-          kOnKeyPic;
-  }
-  NOTREACHED_NORETURN();
-}
-
-// static
-bool EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode,
-                media::VideoEncodeAccelerator::Config::InterLayerPredMode>::
-    FromMojom(
-        media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode input,
-        media::VideoEncodeAccelerator::Config::InterLayerPredMode* output) {
-  switch (input) {
-    case media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode::kOff:
-      *output = media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOff;
-      return true;
-    case media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode::kOn:
-      *output = media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOn;
-      return true;
-    case media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode::
-        kOnKeyPic:
-      *output =
-          media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic;
-      return true;
-  }
-  NOTREACHED_NORETURN();
-}
-
-// static
 bool StructTraits<media::mojom::SpatialLayerDataView,
                   media::VideoEncodeAccelerator::Config::SpatialLayer>::
     Read(media::mojom::SpatialLayerDataView input,
@@ -545,7 +505,7 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   if (!input.ReadSpatialLayers(&spatial_layers))
     return false;
 
-  media::VideoEncodeAccelerator::Config::InterLayerPredMode inter_layer_pred;
+  media::SVCInterLayerPredMode inter_layer_pred;
   if (!input.ReadInterLayerPred(&inter_layer_pred))
     return false;
 

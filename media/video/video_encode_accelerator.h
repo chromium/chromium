@@ -187,11 +187,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // Indicates if video content should be treated as a "normal" camera feed
     // or as generated (e.g. screen capture).
     enum class ContentType { kCamera, kDisplay };
-    enum class InterLayerPredMode : int {
-      kOff = 0,      // Inter-layer prediction is disabled.
-      kOn = 1,       // Inter-layer prediction is enabled.
-      kOnKeyPic = 2  // Inter-layer prediction is enabled for key picture.
-    };
+
     // Indicates the storage type of a video frame provided on Encode().
     // kShmem if a video frame has a shared memory.
     // kGpuMemoryBuffer if a video frame has a GpuMemoryBuffer.
@@ -231,7 +227,8 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
            absl::optional<StorageType> storage_type = absl::nullopt,
            ContentType content_type = ContentType::kCamera,
            const std::vector<SpatialLayer>& spatial_layers = {},
-           InterLayerPredMode inter_layer_pred = InterLayerPredMode::kOnKeyPic);
+           SVCInterLayerPredMode inter_layer_pred =
+               SVCInterLayerPredMode::kOnKeyPic);
 
     ~Config();
 
@@ -293,7 +290,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     std::vector<SpatialLayer> spatial_layers;
 
     // Indicates the inter layer prediction mode for SVC encoding.
-    InterLayerPredMode inter_layer_pred;
+    SVCInterLayerPredMode inter_layer_pred;
 
     // This flag forces the encoder to use low latency mode, suitable for
     // RTC use cases.

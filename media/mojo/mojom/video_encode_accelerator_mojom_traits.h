@@ -349,17 +349,6 @@ struct EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_EncoderType,
 };
 
 template <>
-struct EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode,
-                  media::VideoEncodeAccelerator::Config::InterLayerPredMode> {
-  static media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode ToMojom(
-      media::VideoEncodeAccelerator::Config::InterLayerPredMode input);
-
-  static bool FromMojom(
-      media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode,
-      media::VideoEncodeAccelerator::Config::InterLayerPredMode* output);
-};
-
-template <>
 struct EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_ContentType,
                   media::VideoEncodeAccelerator::Config::ContentType> {
   static media::mojom::VideoEncodeAcceleratorConfig_ContentType ToMojom(
@@ -523,8 +512,8 @@ struct StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
     return input.spatial_layers;
   }
 
-  static media::VideoEncodeAccelerator::Config::InterLayerPredMode
-  inter_layer_pred(const media::VideoEncodeAccelerator::Config& input) {
+  static media::SVCInterLayerPredMode inter_layer_pred(
+      const media::VideoEncodeAccelerator::Config& input) {
     return input.inter_layer_pred;
   }
 

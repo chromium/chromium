@@ -461,8 +461,8 @@ mojom("mojom") {
           cpp = "::media::VideoEncodeAccelerator::Config"
         },
         {
-          mojom = "media.mojom.InterLayerPredMode"
-          cpp = "::media::VideoEncodeAccelerator::Config::InterLayerPredMode"
+          mojom = "media.mojom.SVCInterLayerPredMode"
+          cpp = "::media::SVCInterLayerPredMode"
         },
         {
           mojom = "media.mojom.SpatialLayer"

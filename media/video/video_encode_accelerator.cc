@@ -73,7 +73,7 @@ VideoEncodeAccelerator::Config::Config(
     absl::optional<StorageType> storage_type,
     ContentType content_type,
     const std::vector<SpatialLayer>& spatial_layers,
-    InterLayerPredMode inter_layer_pred)
+    SVCInterLayerPredMode inter_layer_pred)
     : input_format(input_format),
       input_visible_size(input_visible_size),
       output_profile(output_profile),
@@ -151,13 +151,13 @@ std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
 
   str += ", InterLayerPredMode::";
   switch (inter_layer_pred) {
-    case Config::InterLayerPredMode::kOff:
+    case SVCInterLayerPredMode::kOff:
       str += "kOff";
       break;
-    case Config::InterLayerPredMode::kOn:
+    case SVCInterLayerPredMode::kOn:
       str += "kOn";
       break;
-    case Config::InterLayerPredMode::kOnKeyPic:
+    case SVCInterLayerPredMode::kOnKeyPic:
       str += "kOnKeyPic";
       break;
   }

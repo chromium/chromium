@@ -42,24 +42,17 @@ struct SVCConfig {
   const char* svc_mode;
   const size_t num_spatial_layers;
   const size_t num_temporal_layers;
-  const VideoEncodeAccelerator::Config::InterLayerPredMode
-      inter_layer_pred_mode;
+  const SVCInterLayerPredMode inter_layer_pred_mode;
 } kSVCModeParamToSVCConfig[] = {
-    {"L1T1", 1, 1, VideoEncodeAccelerator::Config::InterLayerPredMode::kOff},
-    {"L1T2", 1, 2, VideoEncodeAccelerator::Config::InterLayerPredMode::kOff},
-    {"L1T3", 1, 3, VideoEncodeAccelerator::Config::InterLayerPredMode::kOff},
-    {"L2T1_KEY", 2, 1,
-     VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic},
-    {"L2T2_KEY", 2, 2,
-     VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic},
-    {"L2T3_KEY", 2, 3,
-     VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic},
-    {"L3T1_KEY", 3, 1,
-     VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic},
-    {"L3T2_KEY", 3, 2,
-     VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic},
-    {"L3T3_KEY", 3, 3,
-     VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic},
+    {"L1T1", 1, 1, SVCInterLayerPredMode::kOff},
+    {"L1T2", 1, 2, SVCInterLayerPredMode::kOff},
+    {"L1T3", 1, 3, SVCInterLayerPredMode::kOff},
+    {"L2T1_KEY", 2, 1, SVCInterLayerPredMode::kOnKeyPic},
+    {"L2T2_KEY", 2, 2, SVCInterLayerPredMode::kOnKeyPic},
+    {"L2T3_KEY", 2, 3, SVCInterLayerPredMode::kOnKeyPic},
+    {"L3T1_KEY", 3, 1, SVCInterLayerPredMode::kOnKeyPic},
+    {"L3T2_KEY", 3, 2, SVCInterLayerPredMode::kOnKeyPic},
+    {"L3T3_KEY", 3, 3, SVCInterLayerPredMode::kOnKeyPic},
 };
 
 uint32_t GetDefaultTargetBitrate(const gfx::Size& resolution,
@@ -150,8 +143,7 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
 
   size_t num_temporal_layers = 1u;
   size_t num_spatial_layers = 1u;
-  auto inter_layer_pred_mode =
-      VideoEncodeAccelerator::Config::InterLayerPredMode::kOff;
+  auto inter_layer_pred_mode = SVCInterLayerPredMode::kOff;
   const auto* svc_it = base::ranges::find(kSVCModeParamToSVCConfig, svc_mode,
                                           &SVCConfig::svc_mode);
   if (svc_it == std::end(kSVCModeParamToSVCConfig)) {
@@ -229,7 +221,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
     const base::FilePath& output_folder,
     const base::FilePath& output_bitstream_file_base_name,
     VideoCodecProfile profile,
-    VideoEncodeAccelerator::Config::InterLayerPredMode inter_layer_pred_mode,
+    SVCInterLayerPredMode inter_layer_pred_mode,
     size_t num_spatial_layers,
     size_t num_temporal_layers,
     const Bitrate& bitrate,
@@ -290,8 +282,7 @@ VideoEncoderTestEnvironment::SpatialLayers() const {
   return spatial_layers_;
 }
 
-VideoEncodeAccelerator::Config::InterLayerPredMode
-VideoEncoderTestEnvironment::InterLayerPredMode() const {
+SVCInterLayerPredMode VideoEncoderTestEnvironment::InterLayerPredMode() const {
   return inter_layer_pred_mode_;
 }
 

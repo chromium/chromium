@@ -250,14 +250,13 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
       return false;
     }
     if (num_spatial_layers > 1 &&
-        config.inter_layer_pred !=
-            VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic) {
+        config.inter_layer_pred != SVCInterLayerPredMode::kOnKeyPic) {
       std::string inter_layer_pred;
-      if (config.inter_layer_pred ==
-          VideoEncodeAccelerator::Config::InterLayerPredMode::kOn)
+      if (config.inter_layer_pred == SVCInterLayerPredMode::kOn) {
         inter_layer_pred = base::StringPrintf("InterLayerPredMode::kOn");
-      else
+      } else {
         inter_layer_pred = base::StringPrintf("InterLayerPredMode::kOff");
+      }
       VLOGF(1) << "Support only k-SVC encoding. inter_layer_pred="
                << inter_layer_pred;
       return false;

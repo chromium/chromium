@@ -170,8 +170,7 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTrip) {
       kBitrate, kBaseFramerate, absl::nullopt, absl::nullopt, false,
       ::media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
       ::media::VideoEncodeAccelerator::Config::ContentType::kCamera,
-      input_spatial_layers,
-      ::media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic);
+      input_spatial_layers, ::media::SVCInterLayerPredMode::kOnKeyPic);
 
   ::media::VideoEncodeAccelerator::Config output_config{};
   ASSERT_TRUE(

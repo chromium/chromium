@@ -64,7 +64,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   // Get the spatial layers config for SVC. Return empty vector in non SVC mode.
   const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
   SpatialLayers() const;
-  VideoEncodeAccelerator::Config::InterLayerPredMode InterLayerPredMode() const;
+  SVCInterLayerPredMode InterLayerPredMode() const;
   // Get the target bitrate (bits/second).
   const VideoBitrateAllocation& BitrateAllocation() const;
   // Whether the encoded bitstream is saved to disk.
@@ -96,7 +96,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       const base::FilePath& output_folder,
       const base::FilePath& output_bitstream_file_base_name,
       VideoCodecProfile profile,
-      VideoEncodeAccelerator::Config::InterLayerPredMode inter_layer_pred_mode,
+      SVCInterLayerPredMode inter_layer_pred_mode,
       size_t num_temporal_layers,
       size_t num_spatial_layers,
       const media::Bitrate& bitrate,
@@ -119,8 +119,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   // VideoCodecProfile to be produced by VideoEncoder.
   const VideoCodecProfile profile_;
   // Inter layer predict mode.
-  const VideoEncodeAccelerator::Config::InterLayerPredMode
-      inter_layer_pred_mode_;
+  const SVCInterLayerPredMode inter_layer_pred_mode_;
   // Targeted bitrate (bits/second) of the stream produced by VideoEncoder.
   const VideoBitrateAllocation bitrate_;
   // The spatial layers of the stream which aligned with |num_spatial_layers_|

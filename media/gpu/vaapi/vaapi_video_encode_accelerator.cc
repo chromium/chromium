@@ -159,7 +159,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    if (config.inter_layer_pred != Config::InterLayerPredMode::kOnKeyPic) {
+    if (config.inter_layer_pred != SVCInterLayerPredMode::kOnKeyPic) {
       MEDIA_LOG(ERROR, media_log.get()) << "Only K-SVC encoding is supported.";
       return false;
     }

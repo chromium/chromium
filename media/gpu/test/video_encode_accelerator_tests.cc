@@ -575,8 +575,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
     num_temporal_layers = spatial_layers[0].num_of_temporal_layers;
   }
   VideoEncoderClientConfig config(
-      nv12_video, g_env->Profile(), spatial_layers,
-      VideoEncodeAccelerator::Config::InterLayerPredMode::kOff,
+      nv12_video, g_env->Profile(), spatial_layers, SVCInterLayerPredMode::kOff,
       AllocateDefaultBitrateForTesting(/*num_spatial_layers=*/1u,
                                        num_temporal_layers, new_bitrate),
       g_env->Reverse());

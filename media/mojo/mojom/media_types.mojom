@@ -133,6 +133,14 @@ enum SVCScalabilityMode {
   kL3T3Key,
 };
 
+// This mojo enum only list hardware codec supported scalability mode.
+// See media/base/svc_scalability_mode.h for description.
+enum SVCInterLayerPredMode {
+  kOff,
+  kOn,
+  kOnKeyPic
+};
+
 // This defines a mojo transport format for media::VideoColorSpace.
 // See media/base/video_color_space.h for description.
 struct VideoColorSpace {
