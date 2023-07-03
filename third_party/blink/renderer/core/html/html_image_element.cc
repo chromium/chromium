@@ -811,7 +811,7 @@ gfx::SizeF HTMLImageElement::DefaultDestinationSize(
   if (auto* svg_image = DynamicTo<SVGImage>(image))
     return svg_image->ConcreteObjectSize(default_object_size);
 
-  LayoutSize size(image->Size(respect_orientation));
+  PhysicalSize size(image->Size(respect_orientation));
   if (GetLayoutObject() && GetLayoutObject()->IsLayoutImage() &&
       image->HasIntrinsicSize())
     size.Scale(To<LayoutImage>(GetLayoutObject())->ImageDevicePixelRatio());

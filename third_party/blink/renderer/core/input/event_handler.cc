@@ -595,7 +595,8 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
                 nullptr,  // no ancestor maps all the way up the hierarchy
                 kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform) -
             PhysicalOffset(hot_spot);
-        PhysicalRect cursor_rect(cursor_offset, LayoutSize(size));
+        PhysicalRect cursor_rect(cursor_offset,
+                                 PhysicalSize::FromSizeFFloor(size));
         if (!PhysicalRect(page->GetVisualViewport().VisibleContentRect())
                  .Contains(cursor_rect)) {
           continue;

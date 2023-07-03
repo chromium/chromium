@@ -430,19 +430,19 @@ bool CanScrollInDirection(const LocalFrame* frame,
       mojom::blink::ScrollbarMode::kAlwaysOff == vertical_mode)
     return false;
   ScrollableArea* scrollable_area = frame->View()->GetScrollableArea();
-  LayoutSize size(scrollable_area->ContentsSize());
-  LayoutSize offset(scrollable_area->ScrollOffsetInt());
+  gfx::Size size = scrollable_area->ContentsSize();
+  gfx::Vector2d offset = scrollable_area->ScrollOffsetInt();
   PhysicalRect rect(scrollable_area->VisibleContentRect(kIncludeScrollbars));
 
   switch (direction) {
     case SpatialNavigationDirection::kLeft:
-      return offset.Width() > 0;
+      return offset.x() > 0;
     case SpatialNavigationDirection::kUp:
-      return offset.Height() > 0;
+      return offset.y() > 0;
     case SpatialNavigationDirection::kRight:
-      return rect.Width() + offset.Width() < size.Width();
+      return rect.Width() + offset.x() < size.width();
     case SpatialNavigationDirection::kDown:
-      return rect.Height() + offset.Height() < size.Height();
+      return rect.Height() + offset.y() < size.height();
     default:
       NOTREACHED();
       return false;

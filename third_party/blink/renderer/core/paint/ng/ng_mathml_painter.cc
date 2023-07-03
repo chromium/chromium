@@ -149,11 +149,9 @@ void NGMathMLPainter::PaintRadicalSymbol(
   LogicalOffset bar_offset =
       LogicalOffset(inline_offset, block_offset) +
       LogicalSize(parameters.operator_inline_size, LayoutUnit());
-  LayoutSize bar_size = {base_width, rule_thickness};
   auto bar_physical_offset = bar_offset.ConvertToPhysical(
-      style.GetWritingDirection(),
-      PhysicalSize(box_fragment_.Size().width, box_fragment_.Size().height),
-      PhysicalSize(bar_size));
+      style.GetWritingDirection(), box_fragment_.Size(),
+      PhysicalSize(base_width, rule_thickness));
   PhysicalRect bar_rect = {bar_physical_offset.left, bar_physical_offset.top,
                            base_width, rule_thickness};
   bar_rect.Move(paint_offset);

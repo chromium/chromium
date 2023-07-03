@@ -605,7 +605,7 @@ gfx::Vector2d ScrollAnchor::ComputeAdjustment() const {
     // See the effect delta would have on the anchor rect.
     // If the anchor is now off-screen (in block direction) then make sure it's
     // just at the edge.
-    anchor_rect.Move(-LayoutSize(delta));
+    anchor_rect.Move(-delta.x(), -delta.y());
     if (scroller_box->IsHorizontalWritingMode()) {
       if (anchor_rect.MaxY() < 0)
         delta.set_y(delta.y() + anchor_rect.MaxY().ToInt());

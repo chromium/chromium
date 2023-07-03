@@ -131,7 +131,7 @@ static const unsigned kBackgroundObscurationTestMaxDepth = 4;
 
 struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutRect frame_rect;
-  LayoutSize previous_size;
+  PhysicalSize previous_size;
   NGPhysicalBoxStrut margin_box_outsets;
   MinMaxSizes intrinsic_logical_widths;
   LayoutUnit intrinsic_logical_widths_initial_block_size;
@@ -4018,11 +4018,11 @@ LayoutUnit LayoutBox::ContainingBlockLogicalWidthForPositioned(
     if (LocalFrameView* frame_view = view->GetFrameView()) {
       // Don't use visibleContentRect since the PaintLayer's size has not been
       // set yet.
-      LayoutSize viewport_size(
-          frame_view->LayoutViewport()->ExcludeScrollbars(frame_view->Size()));
+      gfx::Size viewport_size =
+          frame_view->LayoutViewport()->ExcludeScrollbars(frame_view->Size());
       return LayoutUnit(containing_block->IsHorizontalWritingMode()
-                            ? viewport_size.Width()
-                            : viewport_size.Height());
+                            ? viewport_size.width()
+                            : viewport_size.height());
     }
   }
 
@@ -4052,11 +4052,11 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
     if (LocalFrameView* frame_view = view->GetFrameView()) {
       // Don't use visibleContentRect since the PaintLayer's size has not been
       // set yet.
-      LayoutSize viewport_size(
-          frame_view->LayoutViewport()->ExcludeScrollbars(frame_view->Size()));
-      return containing_block->IsHorizontalWritingMode()
-                 ? viewport_size.Height()
-                 : viewport_size.Width();
+      gfx::Size viewport_size =
+          frame_view->LayoutViewport()->ExcludeScrollbars(frame_view->Size());
+      return LayoutUnit(containing_block->IsHorizontalWritingMode()
+                            ? viewport_size.height()
+                            : viewport_size.width());
     }
   }
 
