@@ -40,14 +40,32 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
 
   ~RealizedWebState() final;
 
-  // Initialize the RealizedWebState. The initialisation *must* be done after
-  // the object has been constructed because some of the object created during
-  // the initialisation will invoke methods on the owning WebState. To support
-  // this, the RealizedWebState object must have been constructed and assigned
-  // to WebState's `pimpl_` pointer.
-  void Init(const CreateParams& params,
-            CRWSessionStorage* session_storage,
-            FaviconStatus favicon_status);
+  // Note on initialisation:
+  //
+  // Some of the objects constructed internally during the initialisation
+  // access member on the WebState when they are constructed (e.g. to get
+  // the BrowserState, ...).
+  //
+  // This means that the initialisation must happen after the object has
+  // been fully constructed and after WebStateImpl's `pimpl_` pointer is
+  // updated to point to the instance.
+  //
+  // The initialisation is done by calling either Init() for a new object
+  // or InitWithStorage() for creating an object from serialised state.
+
+  // Initializes the instance with `browser_state`. The other parameters
+  // are described in `WebState::CreateParams`.
+  void Init(BrowserState* browser_state,
+            base::Time last_active_time,
+            bool created_with_opener);
+
+  // Initializes the RealizedWebState with `browser_state`, serialized data
+  // from `session_storage` and `favicon_status`. The other parameters are
+  // described in `WebState::CreateParams`.
+  void InitWithStorage(BrowserState* browser_state,
+                       CRWSessionStorage* session_storage,
+                       FaviconStatus favicon_status,
+                       base::Time last_active_time);
 
   // Tears down the RealizedWebState. The tear down *must* be called before
   // the object is destroyed because the WebStateObserver may call methods on
@@ -262,8 +280,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   // The current page MIME type.
   std::string mime_type_;
 
-  // Whether this WebState has an opener.  See
-  // WebState::CreateParams::created_with_opener_ for more details.
+  // Whether this WebState has an opener.
   bool created_with_opener_ = false;
 
   // The time that this WebState was last made active. The initial value is

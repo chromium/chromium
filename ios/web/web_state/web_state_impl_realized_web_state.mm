@@ -80,62 +80,65 @@ WebStateImpl::RealizedWebState::RealizedWebState(WebStateImpl* owner,
 
 WebStateImpl::RealizedWebState::~RealizedWebState() = default;
 
-void WebStateImpl::RealizedWebState::Init(const CreateParams& params,
-                                          CRWSessionStorage* session_storage,
-                                          FaviconStatus favicon_status) {
-  created_with_opener_ = params.created_with_opener;
-  favicon_status_ = std::move(favicon_status);
+void WebStateImpl::RealizedWebState::Init(BrowserState* browser_state,
+                                          base::Time last_active_time,
+                                          bool created_with_opener) {
+  created_with_opener_ = created_with_opener;
+  last_active_time_ = last_active_time;
+  creation_time_ = base::Time::Now();
 
   navigation_manager_ =
-      std::make_unique<NavigationManagerImpl>(params.browser_state, this);
+      std::make_unique<NavigationManagerImpl>(browser_state, this);
   web_controller_ = [[CRWWebController alloc] initWithWebState:owner_];
 
-  // Restore session history last because NavigationManagerImpl relies on
-  // CRWWebController to restore history into the web view.
-  if (session_storage) {
-    // Set the callback used to load the native session data blob from the
-    // session cache.
-    navigation_manager_->SetNativeSessionFetcher(
-        base::BindOnce(&FetchSessionDataBlob, owner_->GetWeakPtr()));
+  certificate_policy_cache_ =
+      std::make_unique<SessionCertificatePolicyCacheImpl>(browser_state);
+}
 
-    // Session storage restore is asynchronous because it involves a page
-    // load in WKWebView. Temporarily cache the restored session so it can
-    // be returned if BuildSessionStorage() or GetTitle() is called before
-    // the actual restoration completes. This can happen to inactive tabs
-    // when a navigation in the current tab triggers the serialization of
-    // all tabs and when user clicks on tab switcher without switching to
-    // a tab.
-    restored_session_storage_ = session_storage;
-    SessionStorageBuilder::ExtractSessionState(*owner_, *navigation_manager_,
-                                               restored_session_storage_);
+void WebStateImpl::RealizedWebState::InitWithStorage(
+    BrowserState* browser_state,
+    CRWSessionStorage* session_storage,
+    FaviconStatus favicon_status,
+    base::Time last_active_time) {
+  CHECK(session_storage);
+  favicon_status_ = std::move(favicon_status);
+  creation_time_ = session_storage.creationTime;
+  last_active_time_ = session_storage.lastActiveTime;
 
-    // Update the BrowserState's CertificatePolicyCache with the newly
-    // restored policy cache entries.
-    DCHECK(certificate_policy_cache_);
-    certificate_policy_cache_->UpdateCertificatePolicyCache();
-
-    // Restore the last active time, even if it is null, as that would mean
-    // the session predates M-99 (when the last active time started to be
-    // saved in CRWSessionStorage) and thus the WebState can be considered
-    // "infinitely" old.
-    last_active_time_ = session_storage.lastActiveTime;
-
-    // Restore the last active time, even if it is null, as that would mean
-    // the session predates M-107 (when the creation time started to be saved in
-    // CRWSessionStorage) and thus the WebState can be considered "infinitely"
-    // old.
-    creation_time_ = session_storage.creationTime;
-  } else {
-    certificate_policy_cache_ =
-        std::make_unique<SessionCertificatePolicyCacheImpl>(
-            params.browser_state);
-
-    creation_time_ = base::Time::Now();
+  // If not null, `last_active_time` overrides the restored value.
+  if (!last_active_time.is_null()) {
+    last_active_time_ = last_active_time;
   }
 
-  // Let CreateParams override the last active time.
-  if (!params.last_active_time.is_null())
-    last_active_time_ = params.last_active_time;
+  // Session storage restore is asynchronous because it involves a page
+  // load in WKWebView. Temporarily cache the restored session so it can
+  // be returned if BuildSessionStorage() or GetTitle() is called before
+  // the actual restoration completes. This can happen to inactive tabs
+  // when a navigation in the current tab triggers the serialization of
+  // all tabs and when user clicks on tab switcher without switching to
+  // a tab.
+  restored_session_storage_ = session_storage;
+
+  // The restoration of the session history in NavigationManagerImpl needs
+  // the WebState to have a valid CRWWebController, so create both objects
+  // before starting the restoration.
+  navigation_manager_ =
+      std::make_unique<NavigationManagerImpl>(browser_state, this);
+  web_controller_ = [[CRWWebController alloc] initWithWebState:owner_];
+
+  // Set the callback used to load the native session data blob from the
+  // session cache.
+  navigation_manager_->SetNativeSessionFetcher(
+      base::BindOnce(&FetchSessionDataBlob, owner_->GetWeakPtr()));
+
+  // Restore the session from `session_storage`.
+  SessionStorageBuilder::ExtractSessionState(*owner_, *navigation_manager_,
+                                             restored_session_storage_);
+
+  // Update the BrowserState's CertificatePolicyCache with the newly
+  // restored policy cache entries.
+  DCHECK(certificate_policy_cache_);
+  certificate_policy_cache_->UpdateCertificatePolicyCache();
 }
 
 void WebStateImpl::RealizedWebState::TearDown() {
