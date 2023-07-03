@@ -116,17 +116,17 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
 }
 
 TEST_F(SyncUserSettingsImplTest, SetSelectedType) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kReplaceSyncPromosWithSignInPromos);
+
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes(), /*in_transport_mode=*/true);
 
   UserSelectableTypeSet registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
   UserSelectableTypeSet selected_types = sync_user_settings->GetSelectedTypes();
-  UserSelectableTypeSet expected_disabled_types = {};
-#if BUILDFLAG(IS_IOS)
-  expected_disabled_types = {UserSelectableType::kBookmarks,
-                             UserSelectableType::kReadingList};
-#endif  // BUILDFLAG(IS_IOS)
+  UserSelectableTypeSet expected_disabled_types = {UserSelectableType::kHistory,
+                                                   UserSelectableType::kTabs};
 
   EXPECT_EQ(selected_types,
             Difference(registered_types, expected_disabled_types));

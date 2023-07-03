@@ -23,6 +23,10 @@ class PrefRegistrySimple;
 class PrefService;
 class PrefValueMap;
 
+namespace signin {
+class GaiaIdHash;
+}  // namespace signin
+
 namespace syncer {
 
 class SyncPrefObserver {
@@ -88,7 +92,15 @@ class SyncPrefs {
   // If Sync-the-feature is enabled, this takes HasKeepEverythingSynced() into
   // account (i.e. returns "all types").
   // If some types are force-disabled by policy, they will not be included.
+  // Note: this is used for syncing users, and for signed-in not syncing users
+  // when the kReplaceSyncPromosWithSignInPromos is disabled.
   UserSelectableTypeSet GetSelectedTypes(SyncAccountState account_state) const;
+  // Returns the set of types for the given gaia_id_hash for sign-in users.
+  // If some types are force-disabled by policy, they will not be included.
+  // Note: this is used for signed-in not syncing users when the
+  // kReplaceSyncPromosWithSignInPromos is enabled only.
+  UserSelectableTypeSet GetSelectedTypesForAccount(
+      const signin::GaiaIdHash& gaia_id_hash) const;
 
   // Returns whether `type` is "managed" i.e. controlled by enterprise policy.
   bool IsTypeManagedByPolicy(UserSelectableType type) const;
@@ -102,11 +114,17 @@ class SyncPrefs {
   // Changes are still made to the individual selectable type prefs even if
   // |keep_everything_synced| is true, but won't be visible until it's set to
   // false.
+  // Note: this is used for syncing users, and for signed-in not syncing
+  // users when the kReplaceSyncPromosWithSignInPromos is disabled.
   void SetSelectedTypes(bool keep_everything_synced,
                         UserSelectableTypeSet registered_types,
                         UserSelectableTypeSet selected_types);
   // Used to set user's selected types prefs in Sync-the-transport mode.
-  void SetSelectedType(UserSelectableType type, bool is_type_on);
+  // Note: this is used for signed-in not syncing users when the
+  // kReplaceSyncPromosWithSignInPromos is enabled only.
+  void SetSelectedTypeForAccount(UserSelectableType type,
+                                 bool is_type_on,
+                                 const signin::GaiaIdHash& gaia_id_hash);
 
 #if BUILDFLAG(IS_IOS)
   // Sets the opt-in for bookmarks & reading list in transport mode.
@@ -118,8 +136,8 @@ class SyncPrefs {
   void SetBookmarksAndReadingListAccountStorageOptIn(bool value);
 
   // Gets the opt-in state for bookmarks & reading list in transport mode, for
-  // testing. Production code should use `GetSelectedTypes()` instead which
-  // already takes this into account.
+  // testing. Production code should use `GetSelectedTypes()`
+  // instead which already takes this into account.
   bool IsOptedInForBookmarksAndReadingListAccountStorageForTesting();
 
   // Clears the opt-in for bookmarks & reading list in transport mode.

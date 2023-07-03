@@ -19,6 +19,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_map.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -77,6 +79,7 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::internal::kBookmarksAndReadingListAccountStorageOptIn, false);
 #endif  // BUILDFLAG(IS_IOS)
+  registry->RegisterDictionaryPref(prefs::internal::kSelectedTypesPerAccount);
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     RegisterTypeSelectedPref(registry, type);
   }
@@ -157,10 +160,47 @@ bool SyncPrefs::HasKeepEverythingSynced() const {
   return pref_service_->GetBoolean(prefs::internal::kSyncKeepEverythingSynced);
 }
 
+UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
+    const signin::GaiaIdHash& gaia_id_hash) const {
+  UserSelectableTypeSet selected_types;
+
+  for (UserSelectableType type : UserSelectableTypeSet::All()) {
+    const char* pref_name = GetPrefNameForType(type);
+    DCHECK(pref_name);
+    bool type_enabled = false;
+    if (IsTypeManagedByPolicy(type)) {
+      type_enabled = pref_service_->GetBoolean(pref_name);
+    } else {
+      const base::Value::Dict* account_settings =
+          pref_service_->GetDict(prefs::internal::kSelectedTypesPerAccount)
+              .FindDict(gaia_id_hash.ToBase64());
+      absl::optional<bool> pref_value;
+      if (account_settings) {
+        pref_value = account_settings->FindBool(pref_name);
+      }
+      if (pref_value.has_value()) {
+        type_enabled = *pref_value;
+      } else {
+        // All types except for History and Tabs are enabled by default.
+        type_enabled = type != UserSelectableType::kHistory &&
+                       type != UserSelectableType::kTabs;
+      }
+    }
+    if (type_enabled) {
+      selected_types.Put(type);
+    }
+  }
+  return selected_types;
+}
+
 UserSelectableTypeSet SyncPrefs::GetSelectedTypes(
     SyncAccountState account_state) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // TODO(crbug.com/1447020, crbug.com/1451509): When the migration logic is
+  // updated add a check here verifying this method never gets called when
+  // kReplaceSyncPromosWithSignInPromos is enabled and the account_state is
+  // kSignedInNotSyncing. Otherwise it will be reading from the wrong pref.
   UserSelectableTypeSet selected_types;
 
   switch (account_state) {
@@ -244,9 +284,17 @@ void SyncPrefs::SetSelectedTypes(bool keep_everything_synced,
   }
 }
 
-void SyncPrefs::SetSelectedType(UserSelectableType type, bool is_type_on) {
-  pref_service_->SetBoolean(GetPrefNameForType(type), is_type_on);
-
+void SyncPrefs::SetSelectedTypeForAccount(
+    UserSelectableType type,
+    bool is_type_on,
+    const signin::GaiaIdHash& gaia_id_hash) {
+  {
+    ScopedDictPrefUpdate update_selected_types_dict(
+        pref_service_, prefs::internal::kSelectedTypesPerAccount);
+    base::Value::Dict* account_settings =
+        update_selected_types_dict->EnsureDict(gaia_id_hash.ToBase64());
+    account_settings->Set(GetPrefNameForType(type), is_type_on);
+  }
   for (SyncPrefObserver& observer : sync_pref_observers_) {
     observer.OnPreferredDataTypesPrefChange();
   }
@@ -477,6 +525,9 @@ void SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
     return;
   }
 
+  // TODO(crbug.com/1447020, crbug.com/1451509): Update the migration logic to
+  // write to the gaia-keyed pref when kReplaceSyncPromosWithSignInPromos is
+  // enabled.
   // Don't migrate again if this profile was previously migrated.
   if (pref_service_->GetInteger(kSyncToSigninMigrationState) != kNotMigrated) {
     return;

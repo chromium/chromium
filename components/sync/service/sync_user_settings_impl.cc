@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/sync_prefs.h"
@@ -91,8 +92,16 @@ bool SyncUserSettingsImpl::IsSyncEverythingEnabled() const {
 }
 
 UserSelectableTypeSet SyncUserSettingsImpl::GetSelectedTypes() const {
-  UserSelectableTypeSet types =
-      prefs_->GetSelectedTypes(sync_account_state_for_prefs_callback_.Run());
+  UserSelectableTypeSet types;
+
+  if (ShouldUsePerAccountPrefs()) {
+    signin::GaiaIdHash gaia_id_hash =
+        signin::GaiaIdHash::FromGaiaId(sync_account_info_callback_.Run().gaia);
+    types = prefs_->GetSelectedTypesForAccount(gaia_id_hash);
+  } else {
+    types =
+        prefs_->GetSelectedTypes(sync_account_state_for_prefs_callback_.Run());
+  }
   types.RetainAll(GetRegisteredSelectableTypes());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -117,12 +126,17 @@ bool SyncUserSettingsImpl::IsTypeManagedByPolicy(
 
 void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
                                             UserSelectableTypeSet types) {
-  // TODO(crbug.com/1429254): Add check to insure this setter is only used when
-  // sync-the-feature is running.
   UserSelectableTypeSet registered_types = GetRegisteredSelectableTypes();
   DCHECK(registered_types.HasAll(types))
       << "\n registered: " << UserSelectableTypeSetToString(registered_types)
       << "\n setting to: " << UserSelectableTypeSetToString(types);
+
+  if (ShouldUsePerAccountPrefs()) {
+    for (UserSelectableType type : registered_types) {
+      SetSelectedType(type, types.Has(type) || sync_everything);
+    }
+    return;
+  }
   prefs_->SetSelectedTypes(sync_everything, registered_types, types);
 }
 
@@ -131,9 +145,10 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
   UserSelectableTypeSet registered_types = GetRegisteredSelectableTypes();
   CHECK(registered_types.Has(type));
   // To insure this setter is used in transport-mode only.
-  CHECK(sync_account_state_for_prefs_callback_.Run() ==
-        SyncPrefs::SyncAccountState::kSignedInNotSyncing);
-  prefs_->SetSelectedType(type, is_type_on);
+  CHECK(ShouldUsePerAccountPrefs());
+  signin::GaiaIdHash gaia_id_hash =
+      signin::GaiaIdHash::FromGaiaId(sync_account_info_callback_.Run().gaia);
+  prefs_->SetSelectedTypeForAccount(type, is_type_on, gaia_id_hash);
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -325,6 +340,12 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypeEnabled() const {
   const ModelTypeSet encrypted_types = GetEncryptedDataTypes();
   DCHECK(encrypted_types.HasAll(AlwaysEncryptedUserTypes()));
   return !Intersection(preferred_types, encrypted_types).Empty();
+}
+
+bool SyncUserSettingsImpl::ShouldUsePerAccountPrefs() const {
+  return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
+         sync_account_state_for_prefs_callback_.Run() ==
+             SyncPrefs::SyncAccountState::kSignedInNotSyncing;
 }
 
 }  // namespace syncer

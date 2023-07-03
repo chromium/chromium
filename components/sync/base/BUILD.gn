@@ -84,6 +84,7 @@ static_library("base") {
     "//build:chromeos_buildflags",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/signin/public/base",
     "//components/version_info",
     "//components/version_info:generate_version_info",
     "//crypto",

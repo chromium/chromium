@@ -13,6 +13,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -31,11 +32,13 @@ class SyncPrefsTest : public testing::Test {
   SyncPrefsTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
+    gaia_id_hash_ = signin::GaiaIdHash::FromGaiaId("account_gaia");
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SyncPrefs> sync_prefs_;
+  signin::GaiaIdHash gaia_id_hash_;
 };
 
 TEST_F(SyncPrefsTest, EncryptionBootstrapToken) {
@@ -281,30 +284,81 @@ TEST_F(SyncPrefsTest, SelectedTypesInTransportMode) {
 }
 
 TEST_F(SyncPrefsTest, SetSelectedTypeInTransportMode) {
+  base::test::ScopedFeatureList feature_list(
+      kReplaceSyncPromosWithSignInPromos);
+
   UserSelectableTypeSet default_selected_types = UserSelectableTypeSet::All();
 
-#if BUILDFLAG(IS_IOS)
-  // In transport-only mode, bookmarks and reading list require an
-  // additional opt-in.
-  // TODO(crbug.com/1440628): Cleanup the temporary behaviour of an
-  // additional opt in for Bookmarks and Reading Lists.
-  default_selected_types.Remove(UserSelectableType::kBookmarks);
-  default_selected_types.Remove(UserSelectableType::kReadingList);
-#endif  // BUILDFLAG(IS_IOS)
+  default_selected_types.Remove(UserSelectableType::kHistory);
+  default_selected_types.Remove(UserSelectableType::kTabs);
 
   // Get default values of selected types in transport-mode.
-  UserSelectableTypeSet selected_types = sync_prefs_->GetSelectedTypes(
-      SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  UserSelectableTypeSet selected_types =
+      sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_);
   EXPECT_EQ(default_selected_types, selected_types);
-
   // Change one of the default values for example kPasswords.
-  sync_prefs_->SetSelectedType(UserSelectableType::kPasswords, false);
-  selected_types = sync_prefs_->GetSelectedTypes(
-      SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, false,
+                                         gaia_id_hash_);
+  selected_types = sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_);
 
   // kPasswords should be disabled, other default values should be unaffected.
   EXPECT_EQ(selected_types, Difference(default_selected_types,
                                        {UserSelectableType::kPasswords}));
+}
+
+TEST_F(SyncPrefsTest,
+       SetSelectedTypeInTransportModeWithMultipleAccountsOnDevice) {
+  base::test::ScopedFeatureList feature_list(
+      kReplaceSyncPromosWithSignInPromos);
+
+  UserSelectableTypeSet default_selected_types = UserSelectableTypeSet::All();
+
+  default_selected_types.Remove(UserSelectableType::kHistory);
+  default_selected_types.Remove(UserSelectableType::kTabs);
+
+  // Change one of the prefs for example kPasswords for account 2.
+  sync_prefs_->SetSelectedTypeForAccount(
+      UserSelectableType::kPasswords, false,
+      signin::GaiaIdHash::FromGaiaId("account_gaia_2"));
+
+  // Get selected types of both accounts.
+  UserSelectableTypeSet selected_types_for_account_1 =
+      sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_);
+  UserSelectableTypeSet selected_types_for_account_2 =
+      sync_prefs_->GetSelectedTypesForAccount(
+          signin::GaiaIdHash::FromGaiaId("account_gaia_2"));
+
+  // kPasswords should be disabled in account 2 only.
+  EXPECT_EQ(default_selected_types, selected_types_for_account_1);
+  EXPECT_EQ(
+      selected_types_for_account_2,
+      Difference(default_selected_types, {UserSelectableType::kPasswords}));
+}
+
+TEST_F(SyncPrefsTest, SetSelectedTypeInTransportModeWithPolicyRestrictedType) {
+  base::test::ScopedFeatureList feature_list(
+      kReplaceSyncPromosWithSignInPromos);
+
+  pref_service_.SetManagedPref(prefs::internal::kSyncPreferences,
+                               base::Value(false));
+  // History and Tabs are disabled by default. Preferences should be disabled
+  // due to the policy.
+  UserSelectableTypeSet expected_enabled_types =
+      Difference(UserSelectableTypeSet::All(),
+                 {UserSelectableType::kPreferences,
+                  UserSelectableType::kHistory, UserSelectableType::kTabs});
+
+  // Get the selected types in transport-mode.
+  UserSelectableTypeSet selected_types =
+      sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_);
+  EXPECT_EQ(expected_enabled_types, selected_types);
+
+  // User tries to enable kPreferences.
+  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPreferences, true,
+                                         gaia_id_hash_);
+  selected_types = sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_);
+  // kPreferences should still be disabled.
+  EXPECT_EQ(expected_enabled_types, selected_types);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -494,6 +548,7 @@ class SyncPrefsMigrationTest : public testing::Test {
  protected:
   SyncPrefsMigrationTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
+    gaia_id_hash_ = signin::GaiaIdHash::FromGaiaId("account_gaia");
   }
 
   void SetBooleanUserPrefValue(const char* pref_name, BooleanPrefState state) {
@@ -544,6 +599,7 @@ class SyncPrefsMigrationTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
+  signin::GaiaIdHash gaia_id_hash_;
 };
 
 TEST_F(SyncPrefsMigrationTest, SyncToSignin_NoMigrationForSignedOutUser) {
@@ -695,6 +751,8 @@ TEST_F(SyncPrefsMigrationTest, SyncToSignin_TurnsPreferencesOff) {
   EXPECT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_FALSE));
 }
 
+// TODO(crbug.com/1447020, crbug/com/1451509): Move the migration tests
+// one level higher to sync_user_settings_impl_unittest.
 TEST_F(SyncPrefsMigrationTest, SyncToSignin_MigratesBookmarksOptedIn) {
   {
     // The feature starts disabled.

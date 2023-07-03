@@ -291,10 +291,11 @@ class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
  private:
   base::test::ScopedFeatureList override_features_;
 };
-
+// TODO(crbug.com/1447020, crbug.com/1451509): Re-enable after migration logic
+// is updated to use per account pref.
 IN_PROC_BROWSER_TEST_F(
     SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest,
-    DataTypesEnabledInTransportMode) {
+    DISABLED_DataTypesEnabledInTransportMode) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Sign in, without turning on Sync-the-feature.
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
@@ -342,10 +343,11 @@ class SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest
  private:
   base::test::ScopedFeatureList override_features_;
 };
-
+// TODO(crbug.com/1447020, crbug.com/1451509): Re-enable after migration logic
+// is updated to use per account pref.
 IN_PROC_BROWSER_TEST_F(
     SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest,
-    DataTypesNotEnabledInTransportMode) {
+    DISABLED_DataTypesNotEnabledInTransportMode) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Sign in, without turning on Sync-the-feature.
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
@@ -416,10 +418,11 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
 }
-
+// TODO(crbug.com/1447020, crbug.com/1451509): Re-enable after migration logic
+// is updated to use per account pref.
 IN_PROC_BROWSER_TEST_F(
     SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest,
-    MigratesSignedInUser) {
+    DISABLED_MigratesSignedInUser) {
   ASSERT_TRUE(SetupClients());
 
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
@@ -460,10 +463,11 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kAutofill));
 }
-
+// TODO(crbug.com/1447020, crbug.com/1451509): Re-enable after migration logic
+// is updated to use per account pref.
 IN_PROC_BROWSER_TEST_F(
     SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest,
-    MigratesSignedInCustomPassphraseUser) {
+    DISABLED_MigratesSignedInCustomPassphraseUser) {
   ASSERT_TRUE(SetupClients());
 
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());

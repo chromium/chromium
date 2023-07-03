@@ -84,6 +84,8 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   bool IsEncryptedDatatypeEnabled() const;
 
  private:
+  bool ShouldUsePerAccountPrefs() const;
+
   const raw_ptr<SyncServiceCrypto> crypto_;
   const raw_ptr<SyncPrefs> prefs_;
   const raw_ptr<const SyncTypePreferenceProvider> preference_provider_;
