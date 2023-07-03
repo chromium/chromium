@@ -23,6 +23,7 @@
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/sync_device_info/device_info_tracker.h"
 #import "components/sync_device_info/local_device_info_provider.h"
+#import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/bookmark_undo_service_factory.h"
@@ -190,6 +191,11 @@ std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
           device_info_sync_service->GetLocalDeviceInfoProvider());
     }
   }
+
+  // Allow sync_preferences/ components to use SyncService.
+  sync_preferences::PrefServiceSyncable* pref_service =
+      browser_state->GetSyncablePrefs();
+  pref_service->OnSyncServiceInitialized(sync_service.get());
 
   return sync_service;
 }

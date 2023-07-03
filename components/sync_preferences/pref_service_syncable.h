@@ -23,6 +23,7 @@ class PrefValueStore;
 
 namespace syncer {
 class SyncableService;
+class SyncService;
 }
 
 namespace sync_preferences {
@@ -114,6 +115,8 @@ class PrefServiceSyncable : public PrefService,
                              SyncedPrefObserver* observer);
   void RemoveSyncedPrefObserver(const std::string& name,
                                 SyncedPrefObserver* observer);
+
+  void OnSyncServiceInitialized(syncer::SyncService* sync_service);
 
  private:
   void ConnectAssociatorsAndRegisterPreferences();

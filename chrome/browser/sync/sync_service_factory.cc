@@ -22,6 +22,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
+#include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -49,6 +50,7 @@
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/service/sync_service_impl.h"
+#include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -176,6 +178,11 @@ std::unique_ptr<KeyedService> BuildSyncService(
   if (password_store) {
     password_store->OnSyncServiceInitialized(sync_service.get());
   }
+
+  // Allow sync_preferences/ components to use SyncService.
+  sync_preferences::PrefServiceSyncable* pref_service =
+      PrefServiceSyncableFromProfile(profile);
+  pref_service->OnSyncServiceInitialized(sync_service.get());
 
   return sync_service;
 }

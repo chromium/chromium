@@ -281,4 +281,9 @@ uint32_t PrefServiceSyncable::GetWriteFlags(
   return PrefService::GetWriteFlags(pref);
 }
 
+void PrefServiceSyncable::OnSyncServiceInitialized(
+    syncer::SyncService* sync_service) {
+  // TODO(crbug.com/1448001): Pass `sync_service` to the associators.
+}
+
 }  // namespace sync_preferences
