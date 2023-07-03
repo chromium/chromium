@@ -6613,8 +6613,6 @@ crbug.com/1459347 [ Fuchsia ] paint/invalidation/shadow-multiple.html [ Failure 
 
 # Sheriff 2023-06-30
 crbug.com/1459560 [ Linux ] http/tests/devtools/profiler/heap-snapshot-location.js [ Failure Pass Timeout ]
-# Flaky, seemingly across all platforms
-crbug.com/1459575 webexposed/global-interface-listing-dedicated-worker.html [ Pass Timeout ]
 
 # Remove when crbug.com/1453780 is fixed
 crbug.com/1453780 external/wpt/infrastructure/testdriver/test_win_open_with_interaction.html [ Failure Pass ]
