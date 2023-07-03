@@ -1777,8 +1777,6 @@ void ShellSurfaceBase::UpdateShadow() {
 
     if (!window->GetProperty(aura::client::kUseWindowBoundsForShadow)) {
       origin += GetSurfaceOrigin().OffsetFromOrigin();
-      origin -= ToFlooredVector2d(ScaleVector2d(
-          root_surface_origin().OffsetFromOrigin(), 1.f / GetScale()));
       if (origin.x() != 0 || origin.y() != 0) {
         shadow_bounds.set_origin(origin);
         if (widget_) {

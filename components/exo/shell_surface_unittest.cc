@@ -2482,6 +2482,95 @@ TEST_F(ShellSurfaceTest, CommitShouldNotMoveDisplay) {
                 .id());
 }
 
+TEST_F(ShellSurfaceTest, ShadowBoundsWithNegativeCoordinate) {
+  constexpr gfx::Point kOrigin(20, 20);
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetOrigin(kOrigin)
+          .BuildShellSurface();
+  shell_surface->root_surface()->Commit();
+  ASSERT_TRUE(shell_surface->GetWidget());
+
+  // Create subsurface outside of root surface.
+  constexpr gfx::Size kChildBufferSize(32, 32);
+  auto child_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(kChildBufferSize));
+  auto child_surface = std::make_unique<Surface>();
+  child_surface->Attach(child_buffer.get());
+  auto subsurface = std::make_unique<SubSurface>(child_surface.get(),
+                                                 shell_surface->root_surface());
+  // Set subsurface to left and upper of the window.
+  subsurface->SetPosition(gfx::PointF(-10, -10));
+  child_surface->Commit();
+  shell_surface->root_surface()->Commit();
+
+  ASSERT_TRUE(shell_surface->GetWidget());
+  auto* widget = shell_surface->GetWidget();
+  // Geometry is relative to the root surface.
+  shell_surface->SetGeometry(gfx::Rect(0, 0, 256, 256));
+  shell_surface->root_surface()->SetFrame(SurfaceFrameType::SHADOW);
+  shell_surface->root_surface()->Commit();
+  EXPECT_FALSE(widget->GetNativeWindow()->GetProperty(
+      aura::client::kUseWindowBoundsForShadow));
+  // Host window should be a rectangle including root surface and subsurface.
+  EXPECT_EQ(gfx::Rect(-10, -10, 266, 266),
+            shell_surface->host_window()->bounds());
+
+  // Shadow content bounds is relative to ExoShellSurface and should use window
+  // bounds.
+  ui::Shadow* shadow =
+      wm::ShadowController::GetShadowForWindow(widget->GetNativeWindow());
+  ASSERT_TRUE(shadow);
+  EXPECT_EQ(gfx::Rect(0, 0, 256, 256), shadow->content_bounds());
+}
+
+TEST_F(ShellSurfaceTest, ShadowBoundsWithScaleFactor) {
+  constexpr gfx::Point kOrigin(20, 20);
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetOrigin(kOrigin)
+          .BuildShellSurface();
+  shell_surface->root_surface()->Commit();
+  ASSERT_TRUE(shell_surface->GetWidget());
+
+  // Set scale.
+  constexpr float kScaleFactor = 2.0;
+  shell_surface->set_client_submits_surfaces_in_pixel_coordinates(true);
+  shell_surface->SetScaleFactor(kScaleFactor);
+
+  // Create subsurface outside of root surface.
+  constexpr gfx::Size kChildBufferSize(32, 32);
+  auto child_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(kChildBufferSize));
+  auto child_surface = std::make_unique<Surface>();
+  child_surface->Attach(child_buffer.get());
+  auto subsurface = std::make_unique<SubSurface>(child_surface.get(),
+                                                 shell_surface->root_surface());
+  // Set subsurface to left and upper of the window.
+  subsurface->SetPosition(gfx::PointF(-10, -10));
+  child_surface->Commit();
+  shell_surface->root_surface()->Commit();
+
+  ASSERT_TRUE(shell_surface->GetWidget());
+  auto* widget = shell_surface->GetWidget();
+  // Geometry is relative to the root surface.
+  shell_surface->SetGeometry(gfx::Rect(0, 0, 256, 256));
+  shell_surface->root_surface()->SetFrame(SurfaceFrameType::SHADOW);
+  shell_surface->root_surface()->Commit();
+  EXPECT_FALSE(widget->GetNativeWindow()->GetProperty(
+      aura::client::kUseWindowBoundsForShadow));
+  // Host window should be a rectangle including root surface and subsurface.
+  EXPECT_EQ(gfx::Rect(-5, -5, 133, 133),
+            shell_surface->host_window()->bounds());
+
+  // Shadow content bounds is relative to ExoShellSurface and should use window
+  // bounds.
+  ui::Shadow* shadow =
+      wm::ShadowController::GetShadowForWindow(widget->GetNativeWindow());
+  ASSERT_TRUE(shadow);
+  EXPECT_EQ(gfx::Rect(0, 0, 256, 256), shadow->content_bounds());
+}
+
 // Make sure that resize shadow does not update until commit when the window
 // property |aura::client::kUseWindowBoundsForShadow| is false.
 TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {

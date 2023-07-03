@@ -479,6 +479,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
                            HostWindowBoundsUpdatedWithNegativeCoordinate);
   FRIEND_TEST_ALL_PREFIXES(ShellSurfaceTest,
                            HostWindowIncludesAllSubSurfacesWithScaleFactor);
+  FRIEND_TEST_ALL_PREFIXES(ShellSurfaceTest,
+                           ShadowBoundsWithNegativeCoordinate);
+  FRIEND_TEST_ALL_PREFIXES(ShellSurfaceTest, ShadowBoundsWithScaleFactor);
 
   // Called on widget creation to initialize its window state.
   // TODO(reveman): Remove virtual functions below to avoid FBC problem.
