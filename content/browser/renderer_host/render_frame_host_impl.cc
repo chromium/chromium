@@ -1857,10 +1857,6 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
 }
 
-const blink::StorageKey& RenderFrameHostImpl::storage_key() const {
-  return storage_key_;
-}
-
 int RenderFrameHostImpl::GetRoutingID() const {
   return routing_id_;
 }

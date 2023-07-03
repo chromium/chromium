@@ -49,10 +49,6 @@ class MockCookieControlsObserver
               (CookieControlsBreakageConfidenceLevel));
 };
 
-blink::StorageKey CreateFirstPartyStorageKey(const GURL& url) {
-  return blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
-}
-
 }  // namespace
 
 // More readable output for test expectation.
@@ -161,8 +157,7 @@ TEST_F(CookieControlsTest, SomeWebSite) {
   // Accessing cookies should be notified.
   EXPECT_CALL(*mock(), OnCookiesCountChanged(1, 0));
   page_specific_content_settings()->OnStorageAccessed(
-      StorageType::DATABASE,
-      CreateFirstPartyStorageKey(GURL("https://example.com")),
+      StorageType::DATABASE, GURL("https://example.com"),
       /*blocked_by_policy=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -176,8 +171,7 @@ TEST_F(CookieControlsTest, SomeWebSite) {
   // Blocking cookies should update the blocked cookie count.
   EXPECT_CALL(*mock(), OnCookiesCountChanged(1, 1));
   page_specific_content_settings()->OnStorageAccessed(
-      StorageType::DATABASE,
-      CreateFirstPartyStorageKey(GURL("https://thirdparty.com")),
+      StorageType::DATABASE, GURL("https://thirdparty.com"),
       /*blocked_by_policy=*/true);
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -382,8 +376,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kMedium));
   page_specific_content_settings()->OnStorageAccessed(
-      StorageType::DATABASE,
-      CreateFirstPartyStorageKey(GURL("https://example.com")),
+      StorageType::DATABASE, GURL("https://example.com"),
       /*blocked_by_policy=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -403,8 +396,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kMedium));
   page_specific_content_settings()->OnStorageAccessed(
-      StorageType::DATABASE,
-      CreateFirstPartyStorageKey(GURL("https://thirdparty.com")),
+      StorageType::DATABASE, GURL("https://thirdparty.com"),
       /*blocked_by_policy=*/true);
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -424,8 +416,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kMedium));
   page_specific_content_settings()->OnStorageAccessed(
-      StorageType::DATABASE,
-      CreateFirstPartyStorageKey(GURL("https://example.com")),
+      StorageType::DATABASE, GURL("https://example.com"),
       /*blocked_by_policy=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -434,8 +425,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kMedium));
   page_specific_content_settings()->OnStorageAccessed(
-      StorageType::DATABASE,
-      CreateFirstPartyStorageKey(GURL("https://anothersite.com")),
+      StorageType::DATABASE, GURL("https://anothersite.com"),
       /*blocked_by_policy=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 

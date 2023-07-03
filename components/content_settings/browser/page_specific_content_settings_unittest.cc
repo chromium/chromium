@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -67,10 +66,6 @@ class MockPageSpecificContentSettingsDelegate
   MOCK_METHOD(void, OnContentAllowed, (ContentSettingsType type));
   MOCK_METHOD(void, OnContentBlocked, (ContentSettingsType type));
 };
-
-blink::StorageKey CreateFirstPartyStorageKey(const GURL& url) {
-  return blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
-}
 
 }  // namespace
 
@@ -247,19 +242,21 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
 
 TEST_F(PageSpecificContentSettingsTest, BlockedFileSystems) {
   NavigateAndCommit(GURL("http://google.com"));
-  auto* rfh = web_contents()->GetPrimaryMainFrame();
   PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(rfh);
-  auto google_storage_key = rfh->storage_key();
+      PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+
   // Access a file system.
   content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
-                                      google_storage_key, false, rfh);
+                                      GURL("http://google.com"), false,
+                                      web_contents()->GetPrimaryMainFrame());
   EXPECT_FALSE(
       content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
 
   // Block access to a file system.
   content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
-                                      google_storage_key, true, rfh);
+                                      GURL("http://google.com"), true,
+                                      web_contents()->GetPrimaryMainFrame());
   EXPECT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
 }
 
@@ -402,9 +399,9 @@ TEST_F(PageSpecificContentSettingsTest, EmptyCookieList) {
 
 TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
   NavigateAndCommit(GURL("http://google.com"));
-  auto* rfh = web_contents()->GetPrimaryMainFrame();
   PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(rfh);
+      PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
   MockSiteDataObserver mock_observer(web_contents());
   EXPECT_CALL(mock_observer, OnSiteDataAccessed).Times(6);
 
@@ -429,21 +426,23 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
                                    absl::nullopt /* cookie_partition_key */));
   ASSERT_TRUE(other_cookie);
 
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
   cookie_list.push_back(*other_cookie);
   GetHandle()->OnCookiesAccessed(
       rfh,
       {content::CookieAccessDetails::Type::kRead, GURL("http://google.com"),
        GURL("http://google.com"), cookie_list, blocked_by_policy});
-
-  auto google_storage_key = rfh->storage_key();
-  content_settings->OnStorageAccessed(
-      StorageType::FILE_SYSTEM, google_storage_key, blocked_by_policy, rfh);
-  content_settings->OnStorageAccessed(
-      StorageType::INDEXED_DB, google_storage_key, blocked_by_policy, rfh);
-  content_settings->OnStorageAccessed(
-      StorageType::LOCAL_STORAGE, google_storage_key, blocked_by_policy, rfh);
-  content_settings->OnStorageAccessed(StorageType::DATABASE, google_storage_key,
+  content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
+                                      GURL("http://google.com"),
                                       blocked_by_policy, rfh);
+  content_settings->OnStorageAccessed(StorageType::INDEXED_DB,
+                                      GURL("http://google.com"),
+                                      blocked_by_policy, rfh);
+  content_settings->OnStorageAccessed(StorageType::LOCAL_STORAGE,
+                                      GURL("http://google.com"),
+                                      blocked_by_policy, rfh);
+  content_settings->OnStorageAccessed(
+      StorageType::DATABASE, GURL("http://google.com"), blocked_by_policy, rfh);
 }
 
 TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
@@ -462,26 +461,21 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
                                   GURL("http://google.com"),
                                   {*cookie},
                                   blocked_by_policy});
-  content_settings->OnStorageAccessed(
-      StorageType::FILE_SYSTEM,
-      CreateFirstPartyStorageKey(GURL("https://www.google.com")),
-      blocked_by_policy, rfh);
-  content_settings->OnStorageAccessed(
-      StorageType::INDEXED_DB,
-      CreateFirstPartyStorageKey(GURL("https://localhost")), blocked_by_policy,
-      rfh);
-  content_settings->OnStorageAccessed(
-      StorageType::LOCAL_STORAGE,
-      CreateFirstPartyStorageKey(GURL("http://maps.google.com:8080")),
-      blocked_by_policy, rfh);
-  content_settings->OnStorageAccessed(
-      StorageType::LOCAL_STORAGE,
-      CreateFirstPartyStorageKey(GURL("http://example.com")), blocked_by_policy,
-      rfh);
-  content_settings->OnStorageAccessed(
-      StorageType::DATABASE,
-      CreateFirstPartyStorageKey(GURL("http://192.168.0.1")), blocked_by_policy,
-      rfh);
+  content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
+                                      GURL("https://www.google.com"),
+                                      blocked_by_policy, rfh);
+  content_settings->OnStorageAccessed(StorageType::INDEXED_DB,
+                                      GURL("https://localhost"),
+                                      blocked_by_policy, rfh);
+  content_settings->OnStorageAccessed(StorageType::LOCAL_STORAGE,
+                                      GURL("http://maps.google.com:8080"),
+                                      blocked_by_policy, rfh);
+  content_settings->OnStorageAccessed(StorageType::LOCAL_STORAGE,
+                                      GURL("http://example.com"),
+                                      blocked_by_policy, rfh);
+  content_settings->OnStorageAccessed(StorageType::DATABASE,
+                                      GURL("http://192.168.0.1"),
+                                      blocked_by_policy, rfh);
   content_settings->OnSharedWorkerAccessed(
       GURL("http://youtube.com/worker.js"), "worker",
       blink::StorageKey::CreateFromStringForTesting("https://youtube.com"),
@@ -659,24 +653,19 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerHostsCount) {
                                   {*cookie4},
                                   blocked_by_policy});
   content_settings->OnStorageAccessed(
-      StorageType::FILE_SYSTEM,
-      CreateFirstPartyStorageKey(GURL("https://www.google.com")),
+      StorageType::FILE_SYSTEM, GURL("https://www.google.com"),
       blocked_by_policy, web_contents()->GetPrimaryMainFrame());
   content_settings->OnStorageAccessed(
-      StorageType::INDEXED_DB,
-      CreateFirstPartyStorageKey(GURL("https://localhost")), blocked_by_policy,
+      StorageType::INDEXED_DB, GURL("https://localhost"), blocked_by_policy,
       web_contents()->GetPrimaryMainFrame());
   content_settings->OnStorageAccessed(
-      StorageType::LOCAL_STORAGE,
-      CreateFirstPartyStorageKey(GURL("http://maps.google.com:8080")),
+      StorageType::LOCAL_STORAGE, GURL("http://maps.google.com:8080"),
       blocked_by_policy, web_contents()->GetPrimaryMainFrame());
   content_settings->OnStorageAccessed(
-      StorageType::LOCAL_STORAGE,
-      CreateFirstPartyStorageKey(GURL("http://example.com")), blocked_by_policy,
+      StorageType::LOCAL_STORAGE, GURL("http://example.com"), blocked_by_policy,
       web_contents()->GetPrimaryMainFrame());
   content_settings->OnStorageAccessed(
-      StorageType::DATABASE,
-      CreateFirstPartyStorageKey(GURL("http://192.168.0.1")), blocked_by_policy,
+      StorageType::DATABASE, GURL("http://192.168.0.1"), blocked_by_policy,
       web_contents()->GetPrimaryMainFrame());
   content_settings->OnSharedWorkerAccessed(
       GURL("http://youtube.com/worker.js"), "worker",
@@ -773,46 +762,6 @@ TEST_F(PageSpecificContentSettingsTest, AllowedSitesCountedFromBothModels) {
                                            *allowed_browsing_data_model));
 }
 
-class PageSpecificContentSettingsWithBDMTest
-    : public PageSpecificContentSettingsTest {
- public:
-  PageSpecificContentSettingsWithBDMTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{browsing_data::features::kMigrateStorageToBDM, {}},
-         {browsing_data::features::kDeprecateCookiesTreeModel, {}}},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(PageSpecificContentSettingsWithBDMTest, BrowsingDataModelStorageAccess) {
-  NavigateAndCommit(GURL("http://google.com"));
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetPrimaryMainFrame());
-  bool blocked_by_policy = false;
-
-  content_settings->OnBrowsingDataAccessed(
-      CreateFirstPartyStorageKey(GURL("https://www.google.com")),
-      BrowsingDataModel::StorageType::kQuotaStorage, blocked_by_policy);
-  content_settings->OnBrowsingDataAccessed(
-      CreateFirstPartyStorageKey(GURL("http://example.com")),
-      BrowsingDataModel::StorageType::kLocalStorage, blocked_by_policy);
-  content_settings->OnBrowsingDataAccessed(
-      CreateFirstPartyStorageKey(GURL("https://www.youtube.com")),
-      BrowsingDataModel::StorageType::kSessionStorage, blocked_by_policy);
-
-  const auto* allowed_browsing_data_model =
-      content_settings->allowed_browsing_data_model();
-
-  EXPECT_EQ(3, browsing_data::GetUniqueHostCount(
-                   content_settings->allowed_local_shared_objects(),
-                   *allowed_browsing_data_model));
-}
-
 class PageSpecificContentSettingsWithPrerenderTest
     : public PageSpecificContentSettingsTest {
  public:
@@ -896,6 +845,7 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest,
   EXPECT_CALL(*mock_delegate, OnContentBlocked).Times(0);
 
   const GURL url = GURL("http://google.com");
+  const url::Origin origin = url::Origin::Create(url);
   auto cookie = net::CanonicalCookie::Create(
       url, "k=v", base::Time::Now(), absl::nullopt /* server_time */,
       absl::nullopt /* cookie_partition_key */);
@@ -904,8 +854,7 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest,
                            url,
                            {*cookie},
                            /*blocked_by_policy=*/false});
-  pscs->OnStorageAccessed(StorageType::INDEXED_DB,
-                          prerender_frame->storage_key(),
+  pscs->OnStorageAccessed(StorageType::INDEXED_DB, url,
                           /*blocked_by_policy=*/true, prerender_frame);
 
   EXPECT_CALL(*mock_delegate, OnContentAllowed(ContentSettingsType::COOKIES))
@@ -1078,8 +1027,7 @@ TEST_F(PageSpecificContentSettingsWithFencedFrameTest, DelegateUpdatesSent) {
                               ff_url,
                               {*cookie},
                               /*blocked_by_policy=*/false});
-  ff_pscs->OnStorageAccessed(StorageType::INDEXED_DB,
-                             fenced_frame_root->storage_key(),
+  ff_pscs->OnStorageAccessed(StorageType::INDEXED_DB, ff_url,
                              /*blocked_by_policy=*/true, fenced_frame_root);
 }
 

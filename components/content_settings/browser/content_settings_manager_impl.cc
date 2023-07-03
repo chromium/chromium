@@ -18,7 +18,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using content_settings::PageSpecificContentSettings;
 
@@ -52,6 +51,7 @@ void OnStorageAccessed(int process_id,
 void NotifyStorageAccess(int render_process_id,
                          int32_t render_frame_id,
                          StorageType storage_type,
+                         const GURL& url,
                          const url::Origin& top_frame_origin,
                          bool allowed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -69,13 +69,6 @@ void NotifyStorageAccess(int render_process_id,
         return false;
     }
   })();
-
-  auto* rfh =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-
-  if (!rfh) {
-    return;
-  }
 
   auto metrics_type =
       ([storage_type]() -> absl::optional<page_load_metrics::StorageType> {
@@ -98,14 +91,13 @@ void NotifyStorageAccess(int render_process_id,
 
   if (should_notify_pscs) {
     PageSpecificContentSettings::StorageAccessed(
-        storage_type, render_process_id, render_frame_id, rfh->storage_key(),
-        !allowed);
+        storage_type, render_process_id, render_frame_id, url, !allowed);
   }
 
   if (metrics_type) {
-    OnStorageAccessed(render_process_id, render_frame_id,
-                      rfh->GetLastCommittedURL(), top_frame_origin.GetURL(),
-                      !allowed, metrics_type.value());
+    OnStorageAccessed(render_process_id, render_frame_id, url,
+                      top_frame_origin.GetURL(), !allowed,
+                      metrics_type.value());
   }
 }
 
@@ -179,7 +171,7 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NotifyStorageAccess, render_process_id_, render_frame_id,
-                     storage_type, top_frame_origin, allowed));
+                     storage_type, url, top_frame_origin, allowed));
 
   std::move(callback).Run(allowed);
 }
