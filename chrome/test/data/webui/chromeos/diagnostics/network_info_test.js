@@ -20,7 +20,7 @@ suite('networkInfoTestSuite', function() {
   let networkInfoElement = null;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
   });
 
   teardown(() => {

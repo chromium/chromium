@@ -23,6 +23,7 @@ static_library("diagnostics_ui") {
     "//ash/constants",
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/common:keyboard_diagram_strings",
+    "//ash/webui/common:trusted_types_util",
     "//ash/webui/common/backend",
     "//ash/webui/diagnostics_ui/backend",
     "//ash/webui/diagnostics_ui/mojom",
