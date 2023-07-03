@@ -13,12 +13,6 @@ found in the LICENSE file.
     android:gravity="start"
     style="@style/AlertDialogContent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="18dp"
-        android:text="@string/quick_delete_dialog_description" />
-
     <RelativeLayout
         android:id="@+id/quick_delete_history_row"
         android:layout_width="match_parent"
