@@ -6662,7 +6662,10 @@ interface RTCRtpTransceiver
     getter sender
     getter stopped
     method constructor
+    method getHeaderExtensionsToNegotiate
+    method getNegotiatedHeaderExtensions
     method setCodecPreferences
+    method setHeaderExtensionsToNegotiate
     method stop
     setter direction
 interface RTCSctpTransport : EventTarget

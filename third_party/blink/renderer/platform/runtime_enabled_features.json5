@@ -3018,13 +3018,12 @@
       status: "experimental",
       base_feature: "none",
     },
-    // Enables the use of |RTCRtpTransceiver::setOfferedRtpHeaderExtensions|,
-    // |RTCRtpTransceiver::headerExtensionsToOffer|, and
-    // |RTCRtpTransceiver::headerExtensionsNegotiated|.
+    // Enables the use of |RTCRtpTransceiver::getHeaderExtensionsToNegotiate|,
+    // |RTCRtpTransceiver::setHeaderExtensionsToNegotiate|, and
+    // |RTCRtpTransceiver::getNegotiatedHeaderExtensions|.
     {
       name: "RTCRtpHeaderExtensionControl",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
     },
     {
       name: "RTCStatsRelativePacketArrivalDelay",
