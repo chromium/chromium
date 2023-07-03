@@ -4,8 +4,8 @@ name: 'Update the pinned browser version'
 
 on:
   schedule:
-    # Run every Monday at midnight and noon: https://crontab.guru/#0_0_*_*_1.
-    - cron: '0 0 * * 1'
+    # Run hourly at xx:30.
+    - cron: '30 * * * *'
   workflow_dispatch:
 
 jobs:
