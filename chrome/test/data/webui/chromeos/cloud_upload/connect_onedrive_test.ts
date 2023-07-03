@@ -53,6 +53,7 @@ suite('<connect-onedrive>', () => {
 
   test('Successful connection leads to finished page', async () => {
     await setUp({
+      fileNames: [],
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
       odfsMounted: true,
@@ -80,6 +81,7 @@ suite('<connect-onedrive>', () => {
 
   test('Failed connection leads to error page', async () => {
     await setUp({
+      fileNames: [],
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
       odfsMounted: true,

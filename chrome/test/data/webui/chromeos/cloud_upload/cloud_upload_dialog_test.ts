@@ -185,7 +185,7 @@ suite('<cloud-upload>', () => {
     const officeWebAppInstalled = false;
     const odfsMounted = false;
     await setUp({
-      fileName: 'file.docx',
+      fileNames: ['file.docx'],
       officeWebAppInstalled,
       installOfficeWebAppResult: true,
       odfsMounted,
@@ -209,6 +209,7 @@ suite('<cloud-upload>', () => {
     const officeWebAppInstalled = false;
     const odfsMounted = false;
     await setUp({
+      fileNames: [],
       officeWebAppInstalled,
       installOfficeWebAppResult: true,
       odfsMounted,
@@ -232,6 +233,7 @@ suite('<cloud-upload>', () => {
     const officeWebAppInstalled = true;
     const odfsMounted = false;
     await setUp({
+      fileNames: ['file.docx'],
       officeWebAppInstalled,
       installOfficeWebAppResult: true,
       odfsMounted,
@@ -252,7 +254,7 @@ suite('<cloud-upload>', () => {
     const officeWebAppInstalled = false;
     const odfsMounted = true;
     await setUp({
-      fileName: 'file.docx',
+      fileNames: ['file.docx'],
       officeWebAppInstalled,
       installOfficeWebAppResult: true,
       odfsMounted,
@@ -277,6 +279,7 @@ suite('<cloud-upload>', () => {
         const officeWebAppInstalled = true;
         const odfsMounted = true;
         await setUp({
+          fileNames: ['file.docx'],
           officeWebAppInstalled,
           installOfficeWebAppResult: true,
           odfsMounted,
@@ -290,6 +293,58 @@ suite('<cloud-upload>', () => {
       });
 
   /**
+   * Tests that when the Office PWA is already installed and ODFS is already
+   * mounted, but there is no file to upload. For a first time setup, the
+   * welcome page should not be skipped, as opposed to the Office PWA install
+   * page and the sign in page.
+   */
+  test(
+      'Set up Office with PWA already installed, already signed in, no file' +
+          ' to upload',
+      async () => {
+        const officeWebAppInstalled = true;
+        const odfsMounted = true;
+        await setUp({
+          fileNames: [],
+          officeWebAppInstalled,
+          installOfficeWebAppResult: true,
+          odfsMounted,
+          dialogPage: DialogPage.kOneDriveSetup,
+          firstTimeSetup: true,
+          operationType: OperationType.kMove,
+        });
+
+        await doWelcomePage(officeWebAppInstalled, odfsMounted);
+
+        checkIsOneDriveUploadPage();
+      });
+
+  /**
+   * Tests that when the Office PWA is already installed and ODFS is already
+   * mounted, but there is no file to upload. If it's not a first time setup,
+   * the welcome page should be skipped, as well as the Office PWA install page
+   * and the sign in page.
+   */
+  test(
+      'Set up Office with PWA already installed, already signed in, no file' +
+          ' to upload, not first time setup',
+      async () => {
+        const officeWebAppInstalled = true;
+        const odfsMounted = true;
+        await setUp({
+          fileNames: [],
+          officeWebAppInstalled,
+          installOfficeWebAppResult: true,
+          odfsMounted,
+          dialogPage: DialogPage.kOneDriveSetup,
+          firstTimeSetup: false,
+          operationType: OperationType.kMove,
+        });
+
+        checkIsOneDriveUploadPage();
+      });
+
+  /**
    * Tests that clicking the done button triggers the right
    * `respondWithUserActionAndClose` mojo request.
    */
@@ -297,7 +352,7 @@ suite('<cloud-upload>', () => {
     const officeWebAppInstalled = false;
     const odfsMounted = false;
     await setUp({
-      fileName: 'file.docx',
+      fileNames: ['file.docx'],
       officeWebAppInstalled,
       installOfficeWebAppResult: true,
       odfsMounted,
@@ -331,6 +386,7 @@ suite('<cloud-upload>', () => {
         const officeWebAppInstalled = false;
         const odfsMounted = false;
         await setUp({
+          fileNames: ['file.docx'],
           officeWebAppInstalled,
           installOfficeWebAppResult: true,
           odfsMounted,
@@ -380,6 +436,7 @@ suite('<cloud-upload>', () => {
         const officeWebAppInstalled = false;
         const odfsMounted = true;
         await setUp({
+          fileNames: ['file.docx'],
           officeWebAppInstalled,
           installOfficeWebAppResult: true,
           odfsMounted,
@@ -410,6 +467,7 @@ suite('<cloud-upload>', () => {
         const officeWebAppInstalled = false;
         const odfsMounted = true;
         await setUp({
+          fileNames: ['file.docx'],
           officeWebAppInstalled,
           installOfficeWebAppResult: true,
           odfsMounted,

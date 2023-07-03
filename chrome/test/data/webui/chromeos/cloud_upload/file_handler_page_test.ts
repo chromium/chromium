@@ -94,7 +94,7 @@ suite('<file-handler-page>', () => {
   test('Open file with Drive when Office PWA installed', async () => {
     const numTasks = 5;
     await setUp({
-      fileName: 'file.docx',
+      fileNames: ['file.docx'],
       officeWebAppInstalled: true,
       installOfficeWebAppResult: false,
       odfsMounted: false,
@@ -128,7 +128,7 @@ suite('<file-handler-page>', () => {
   test('Open file with Drive when Office PWA not installed', async () => {
     const numTasks = 5;
     await setUp({
-      fileName: 'file.docx',
+      fileNames: ['file.docx'],
       officeWebAppInstalled: false,
       installOfficeWebAppResult: false,
       odfsMounted: false,
@@ -161,7 +161,7 @@ suite('<file-handler-page>', () => {
   test('Open file with OneDrive when Office PWA installed', async () => {
     const numTasks = 5;
     await setUp({
-      fileName: 'file.docx',
+      fileNames: ['file.docx'],
       officeWebAppInstalled: true,
       installOfficeWebAppResult: false,
       odfsMounted: false,
@@ -195,7 +195,7 @@ suite('<file-handler-page>', () => {
   test('Open file with OneDrive when Office PWA not installed', async () => {
     const numTasks = 5;
     await setUp({
-      fileName: 'file.docx',
+      fileNames: ['file.docx'],
       officeWebAppInstalled: false,
       installOfficeWebAppResult: false,
       odfsMounted: false,
@@ -231,7 +231,7 @@ suite('<file-handler-page>', () => {
           async () => {
             const numTasks = 5;
             await setUp({
-              fileName: 'file.docx',
+              fileNames: ['file.docx'],
               officeWebAppInstalled: true,
               installOfficeWebAppResult: false,
               odfsMounted: false,
@@ -278,7 +278,7 @@ suite('<file-handler-page>', () => {
           async () => {
             const numTasks = 5;
             await setUp({
-              fileName: 'file.docx',
+              fileNames: ['file.docx'],
               officeWebAppInstalled: false,
               installOfficeWebAppResult: false,
               odfsMounted: false,
@@ -317,7 +317,7 @@ suite('<file-handler-page>', () => {
   test(`No accordion when no local task`, async () => {
     const numTasks = 0;
     await setUp({
-      fileName: 'file.docx',
+      fileNames: ['file.docx'],
       officeWebAppInstalled: false,
       installOfficeWebAppResult: false,
       odfsMounted: false,
@@ -339,7 +339,7 @@ suite('<file-handler-page>', () => {
       async () => {
         const numTasks = 1;
         await setUp({
-          fileName: 'file.docx',
+          fileNames: ['file.docx'],
           officeWebAppInstalled: false,
           installOfficeWebAppResult: false,
           odfsMounted: false,

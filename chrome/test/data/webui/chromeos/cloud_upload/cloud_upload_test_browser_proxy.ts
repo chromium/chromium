@@ -7,7 +7,7 @@ import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browse
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 export interface ProxyOptions {
-  fileName?: string|null;
+  fileNames: string[];
   officeWebAppInstalled: boolean;
   installOfficeWebAppResult: boolean;
   odfsMounted: boolean;
@@ -31,15 +31,12 @@ export class CloudUploadTestBrowserProxy implements CloudUploadBrowserProxy {
   constructor(options: ProxyOptions) {
     this.handler = TestMock.fromClass(PageHandlerRemote);
     const args: DialogArgs = {
-      fileNames: [],
+      fileNames: options.fileNames,
       dialogPage: options.dialogPage,
       localTasks: [],
       firstTimeSetup: true,
       operationType: options.operationType,
     };
-    if (options.fileName != null) {
-      args.fileNames.push(options.fileName);
-    }
     if (options.localTasks != null) {
       args.localTasks = options.localTasks;
     }

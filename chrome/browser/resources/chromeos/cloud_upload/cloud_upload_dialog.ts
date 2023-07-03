@@ -63,10 +63,13 @@ export class CloudUploadElement extends HTMLElement {
           this.proxy.handler.isODFSMounted(),
         ]);
 
-    // TODO(b/251046341): Adjust this once the rest of the pages are in place.
-    const welcomePage = new WelcomePageElement();
-    welcomePage.setInstalled(isOfficeWebAppInstalled, isOdfsMounted);
-    this.pages.push(welcomePage);
+    // Only skip this page if the setup flow is not run as part of the "file
+    // upload" flow, and the file handlers have already been set.
+    if (this.fileNames.length !== 0 || this.firstTimeSetup) {
+      const welcomePage = new WelcomePageElement();
+      welcomePage.setInstalled(isOfficeWebAppInstalled, isOdfsMounted);
+      this.pages.push(welcomePage);
+    }
 
     if (!isOfficeWebAppInstalled) {
       this.pages.push(new OfficePwaInstallPageElement());

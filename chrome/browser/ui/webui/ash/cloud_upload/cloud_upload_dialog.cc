@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -1339,7 +1340,32 @@ bool ShowConnectOneDriveDialog(gfx::NativeWindow modal_parent) {
 }
 
 void LaunchMicrosoft365Setup(Profile* profile, gfx::NativeWindow modal_parent) {
-  // TODO(b/283171260) Implement setup flow.
+  mojom::DialogPage dialog_page = mojom::DialogPage::kOneDriveSetup;
+  mojom::DialogArgsPtr args = mojom::DialogArgs::New();
+  args->dialog_page = dialog_page;
+  std::set<std::string> office_extensions =
+      file_manager::file_tasks::WordGroupExtensions();
+  office_extensions.merge(file_manager::file_tasks::ExcelGroupExtensions());
+  office_extensions.merge(
+      file_manager::file_tasks::PowerPointGroupExtensions());
+  // If `first_time_setup` is false, it indicates that we ran the Office setup
+  // and set file handler preferences for all handled Office file types, or that
+  // the user has pre-existing preferences for these file types.
+  args->first_time_setup = !std::all_of(
+      office_extensions.begin(), office_extensions.end(),
+      [profile](const std::string& extension) {
+        return file_manager::file_tasks::HasExplicitDefaultFileHandler(
+            profile, extension);
+      });
+
+  // This CloudUploadDialog pointer is managed by an instance of
+  // `views::WebDialogView` and deleted in
+  // `SystemWebDialogDelegate::OnDialogClosed`.
+  CloudUploadDialog* dialog =
+      new CloudUploadDialog(std::move(args), base::DoNothing(), dialog_page,
+                            /*office_move_confirmation_shown=*/false);
+
+  dialog->ShowSystemDialog(modal_parent);
 }
 
 }  // namespace ash::cloud_upload
