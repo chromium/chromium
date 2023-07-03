@@ -17,7 +17,6 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/resources/release_callback.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
