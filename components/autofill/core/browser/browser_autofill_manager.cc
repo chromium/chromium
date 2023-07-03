@@ -3088,10 +3088,10 @@ bool BrowserAutofillManager::FillFieldWithValue(
       // Mark the cached field as autofilled, so that we can detect when a
       // user edits an autofilled field (for metrics).
       autofill_field->is_autofilled = true;
-    }
-    if (const AutofillProfile** profile =
-            absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
-      autofill_field->set_autofill_source_profile_guid((*profile)->guid());
+      if (const AutofillProfile** profile =
+              absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
+        autofill_field->set_autofill_source_profile_guid((*profile)->guid());
+      }
     }
 
     // Mark the field as autofilled when a non-empty value is assigned to
