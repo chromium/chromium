@@ -254,6 +254,16 @@ void InjectNTP(Browser* browser) {
   // View controller presents the signed in accounts when they have changed
   // while the application was in background.
   SignedInAccountsViewController* _accountsViewController;
+  std::unique_ptr<
+      base::ScopedObservation<WebStateList, WebStateListObserverBridge>>
+      _incognitoWebStateObserver;
+  std::unique_ptr<
+      base::ScopedObservation<WebStateList, WebStateListObserverBridge>>
+      _mainWebStateObserver;
+  std::unique_ptr<
+      base::ScopedObservation<PolicyWatcherBrowserAgent,
+                              PolicyWatcherBrowserAgentObserverBridge>>
+      _policyWatcherObserver;
 }
 
 // Navigation View controller for the settings.
@@ -908,7 +918,10 @@ void InjectNTP(Browser* browser) {
   // changes.
   PolicyWatcherBrowserAgent* policyWatcherAgent =
       PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser);
-  policyWatcherAgent->AddObserver(_policyWatcherObserverBridge.get());
+  _policyWatcherObserver = std::make_unique<base::ScopedObservation<
+      PolicyWatcherBrowserAgent, PolicyWatcherBrowserAgentObserverBridge>>(
+      _policyWatcherObserverBridge.get());
+  _policyWatcherObserver->Observe(policyWatcherAgent);
   policyWatcherAgent->Initialize(policyChangeCommandsHandler);
 
   self.screenshotDelegate = [[ScreenshotDelegate alloc]
@@ -998,10 +1011,15 @@ void InjectNTP(Browser* browser) {
   UrlLoadingBrowserAgent::FromBrowser(self.incognitoInterface.browser)
       ->SetSceneService(self.sceneURLLoadingService);
   // Observe the web state lists for both browsers.
-  self.mainInterface.browser->GetWebStateList()->AddObserver(
+  _incognitoWebStateObserver = std::make_unique<
+      base::ScopedObservation<WebStateList, WebStateListObserverBridge>>(
       _webStateListForwardingObserver.get());
-  self.incognitoInterface.browser->GetWebStateList()->AddObserver(
+  _incognitoWebStateObserver->Observe(
+      self.incognitoInterface.browser->GetWebStateList());
+  _mainWebStateObserver = std::make_unique<
+      base::ScopedObservation<WebStateList, WebStateListObserverBridge>>(
       _webStateListForwardingObserver.get());
+  _mainWebStateObserver->Observe(self.mainInterface.browser->GetWebStateList());
 
   // Enables UI initializations to query the keyWindow's size.
   [self.sceneState.window makeKeyAndVisible];
@@ -1159,13 +1177,7 @@ void InjectNTP(Browser* browser) {
   }
 }
 
-// This method completely destroys all of the UI. It should be called when the
-// scene is disconnected.
 - (void)teardownUI {
-  if (!self.sceneState.UIEnabled) {
-    return;  // Nothing to do.
-  }
-
   [_accountsViewController teardownUI];
   _accountsViewController.delegate = nil;
   _accountsViewController = nil;
@@ -1188,15 +1200,9 @@ void InjectNTP(Browser* browser) {
   [_mainCoordinator stop];
   _mainCoordinator = nil;
 
-  // Stop observing web state list changes before tearing down the web state
-  // lists.
-  self.mainInterface.browser->GetWebStateList()->RemoveObserver(
-      _webStateListForwardingObserver.get());
-  self.incognitoInterface.browser->GetWebStateList()->RemoveObserver(
-      _webStateListForwardingObserver.get());
-
-  PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser)
-      ->RemoveObserver(_policyWatcherObserverBridge.get());
+  _incognitoWebStateObserver.reset();
+  _mainWebStateObserver.reset();
+  _policyWatcherObserver.reset();
 
   // TODO(crbug.com/1229306): Consider moving this at the beginning of
   // teardownUI to indicate that the UI is about to be torn down and that the
@@ -1210,10 +1216,12 @@ void InjectNTP(Browser* browser) {
   self.browserViewWrangler = nil;
 
   [self.sceneState.appState removeObserver:self];
+  _sceneURLLoadingService = nullptr;
 }
 
 - (void)dealloc {
   CHECK(!self.sceneState.UIEnabled);
+  CHECK(!_sceneURLLoadingService);
 }
 
 // Formats string for display on iPadOS application switcher with the
@@ -3469,8 +3477,7 @@ void InjectNTP(Browser* browser) {
         ->SetLoggingEnabled(false);
   }
 
-  self.incognitoInterface.browser->GetWebStateList()->RemoveObserver(
-      _webStateListForwardingObserver.get());
+  _incognitoWebStateObserver.reset();
   [self.browserViewWrangler willDestroyIncognitoBrowserState];
 }
 
@@ -3481,9 +3488,11 @@ void InjectNTP(Browser* browser) {
   // so set the scene URL loading service on it.
   UrlLoadingBrowserAgent::FromBrowser(self.incognitoInterface.browser)
       ->SetSceneService(self.sceneURLLoadingService);
-  self.incognitoInterface.browser->GetWebStateList()->AddObserver(
+  _incognitoWebStateObserver = std::make_unique<
+      base::ScopedObservation<WebStateList, WebStateListObserverBridge>>(
       _webStateListForwardingObserver.get());
-
+  _incognitoWebStateObserver->Observe(
+      self.incognitoInterface.browser->GetWebStateList());
   if (self.currentInterface.incognito) {
     [self activateBVCAndMakeCurrentBVCPrimary];
   }

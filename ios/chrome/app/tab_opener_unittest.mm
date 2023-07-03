@@ -44,6 +44,10 @@ typedef void (^HandleLaunchOptions)(id self,
 class TabOpenerTest : public PlatformTest {
  protected:
   void TearDown() override {
+    if (scene_controller_) {
+      [scene_controller_ teardownUI];
+      scene_controller_ = nil;
+    }
     PlatformTest::TearDown();
   }
 

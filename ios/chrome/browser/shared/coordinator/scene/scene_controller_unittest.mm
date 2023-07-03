@@ -21,6 +21,8 @@ class SceneControllerTest : public PlatformTest {
         [[SceneController alloc] initWithSceneState:scene_state_];
   }
 
+  ~SceneControllerTest() override { [scene_controller_ teardownUI]; }
+
   SceneController* scene_controller_;
   SceneState* scene_state_;
 };
