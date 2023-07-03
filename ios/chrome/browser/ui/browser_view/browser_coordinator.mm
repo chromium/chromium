@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/feature_engagement/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/util.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/followed_web_site.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
@@ -198,7 +199,6 @@
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
@@ -1735,7 +1735,7 @@ enum class ToolbarKind {
     return;
   }
 
-  if (ios::provider::IsNativeFindInPageWithSystemFindPanel()) {
+  if (IsNativeFindInPageAvailable()) {
     [self showSystemFindPanel];
   } else {
     [self showFindBar];
@@ -1764,7 +1764,7 @@ enum class ToolbarKind {
     return;
   }
 
-  if (ios::provider::IsNativeFindInPageWithSystemFindPanel()) {
+  if (IsNativeFindInPageAvailable()) {
     [self showSystemFindPanel];
   } else if (!_toolbarAccessoryPresenter.isPresenting) {
     DCHECK(!self.findBarCoordinator);
@@ -1774,7 +1774,7 @@ enum class ToolbarKind {
 }
 
 - (void)hideFindUI {
-  if (ios::provider::IsNativeFindInPageWithSystemFindPanel()) {
+  if (IsNativeFindInPageAvailable()) {
     web::WebState* activeWebState = self.activeWebState;
     DCHECK(activeWebState);
     auto* helper = FindTabHelper::FromWebState(activeWebState);
@@ -1785,7 +1785,7 @@ enum class ToolbarKind {
 }
 
 - (void)defocusFindInPage {
-  if (ios::provider::IsNativeFindInPageWithSystemFindPanel()) {
+  if (IsNativeFindInPageAvailable()) {
     // The System Find Panel UI cannot be "defocused" so closing Find in Page
     // altogether instead.
     [self closeFindInPage];

@@ -61,7 +61,7 @@ source_set("flags") {
     "//ios/chrome/browser/credential_provider_promo:features",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/drag_and_drop",
-    "//ios/chrome/browser/find_in_page:features",
+    "//ios/chrome/browser/find_in_page:util",
     "//ios/chrome/browser/follow:feature_flags",
     "//ios/chrome/browser/iph_for_new_chrome_user",
     "//ios/chrome/browser/ntp:features",

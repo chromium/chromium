@@ -72,7 +72,7 @@
 #import "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/default_browser/utils.h"
-#import "ios/chrome/browser/find_in_page/features.h"
+#import "ios/chrome/browser/find_in_page/util.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/follow/follow_features.h"
@@ -583,12 +583,6 @@ const FeatureEntry::FeatureVariation kFollowingFeedDefaultSortTypeVariations[] =
       std::size(kFollowingFeedSortTypeGroupedByPublisher), nullptr},
      {"Sort by Latest", kFollowingFeedSortTypeSortByLatest,
       std::size(kFollowingFeedSortTypeSortByLatest), nullptr}};
-
-const FeatureEntry::FeatureParam kNativeFindInPageWithChromeFindBar[] = {
-    {kNativeFindInPageParameterName, kNativeFindInPageWithChromeFindBarParam}};
-const FeatureEntry::FeatureVariation kNativeFindInPageVariations[] = {
-    {"With Chrome Find Bar", kNativeFindInPageWithChromeFindBar,
-     std::size(kNativeFindInPageWithChromeFindBar), nullptr}};
 
 const FeatureEntry::FeatureParam kTabInactivityThresholdOneWeek[] = {
     {kTabInactivityThresholdParameterName,
@@ -1355,11 +1349,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSuggestServerCardInsteadOfLocalCard)},
-    {"native-find-in-page", flag_descriptions::kNativeFindInPageName,
-     flag_descriptions::kNativeFindInPageDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kNativeFindInPage,
-                                    kNativeFindInPageVariations,
-                                    "NativeFindInPage")},
     {"intents-on-email", flag_descriptions::kEmailName,
      flag_descriptions::kEmailDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kEnableEmails)},

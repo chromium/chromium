@@ -5323,11 +5323,6 @@
     "owners": [ "knollr@chromium.org", "peter@chromium.org" ],
     "expiry_milestone": 96
   },
-  {
-    "name": "native-find-in-page",
-    "owners": ["qpubert@google.com", "djean@google.com"],
-    "expiry_milestone": 115
-  },
   {"name": "nearby-sharing-self-share",
    "owners": ["brandosocarras@google.com", "hansenmichael@google.com", "chromeos-cross-device-eng@google.com"],
    "expiry_milestone": 125

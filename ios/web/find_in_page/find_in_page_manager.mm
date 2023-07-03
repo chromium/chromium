@@ -11,15 +11,13 @@
 
 namespace web {
 
-void FindInPageManager::CreateForWebState(WebState* web_state,
-                                          bool use_find_interaction) {
+void FindInPageManager::CreateForWebState(WebState* web_state) {
   DCHECK(web_state);
   // Should not create this if the web state is not realized.
   DCHECK(web_state->IsRealized());
   if (!FromWebState(web_state)) {
     web_state->SetUserData(UserDataKey(),
-                           std::make_unique<FindInPageManagerImpl>(
-                               web_state, use_find_interaction));
+                           std::make_unique<FindInPageManagerImpl>(web_state));
   }
 }
 

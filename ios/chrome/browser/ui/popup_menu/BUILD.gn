@@ -223,7 +223,7 @@ source_set("eg2_tests") {
     "//components/strings",
     "//components/version_info",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/find_in_page:features",
+    "//ios/chrome/browser/find_in_page:util",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/test:eg_test_support+eg2",

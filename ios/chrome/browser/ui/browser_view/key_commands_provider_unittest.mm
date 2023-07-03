@@ -11,7 +11,9 @@
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/util.h"
 #import "ios/chrome/browser/lens/lens_browser_agent.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
@@ -40,6 +42,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -158,7 +161,7 @@ class KeyCommandsProviderTest : public PlatformTest {
     EXPECT_EQ(user_action_tester_.GetActionCount(user_action), 1);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   WebStateList* web_state_list_;
@@ -285,24 +288,35 @@ TEST_F(KeyCommandsProviderTest, CanPerform_FindInPageActions) {
 
   // Open a tab.
   web::FakeWebState* web_state = InsertNewWebState(0);
-  web_state->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
-                                 std::make_unique<web::FakeWebFramesManager>());
-  web::JavaScriptFindInPageManagerImpl::CreateForWebState(web_state);
-  JavaScriptFindTabHelper::CreateForWebState(web_state);
+  if (IsNativeFindInPageAvailable()) {
+    NewTabPageTabHelper::CreateForWebState(web_state);
+    FindTabHelper::CreateForWebState(web_state);
+  } else {
+    web_state->SetWebFramesManager(
+        web::ContentWorld::kIsolatedWorld,
+        std::make_unique<web::FakeWebFramesManager>());
+    web::JavaScriptFindInPageManagerImpl::CreateForWebState(web_state);
+    JavaScriptFindTabHelper::CreateForWebState(web_state);
+  }
 
-  // No Find in Page.
-  web_state->SetContentIsHTML(false);
-  EXPECT_FALSE(CanPerform(@"keyCommand_find"));
+  if (IsNativeFindInPageAvailable()) {
+    EXPECT_TRUE(CanPerform(@"keyCommand_find"));
+  } else {
+    // If Native Find in Page unavailable, then Find in Page only works if
+    // content is HTML.
+    web_state->SetContentIsHTML(false);
+    EXPECT_FALSE(CanPerform(@"keyCommand_find"));
 
-  // Can Find in Page.
-  web_state->SetContentIsHTML(true);
-  EXPECT_TRUE(CanPerform(@"keyCommand_find"));
-  EXPECT_FALSE(CanPerform(@"keyCommand_findNext"));
-  EXPECT_FALSE(CanPerform(@"keyCommand_findPrevious"));
+    // Can Find in Page.
+    web_state->SetContentIsHTML(true);
+    EXPECT_TRUE(CanPerform(@"keyCommand_find"));
+    EXPECT_FALSE(CanPerform(@"keyCommand_findNext"));
+    EXPECT_FALSE(CanPerform(@"keyCommand_findPrevious"));
+  }
 
   // Find UI active.
-  JavaScriptFindTabHelper* helper =
-      JavaScriptFindTabHelper::FromWebState(web_state);
+  AbstractFindTabHelper* helper =
+      GetConcreteFindTabHelperFromWebState(web_state);
   helper->SetFindUIActive(YES);
   EXPECT_TRUE(CanPerform(@"keyCommand_findNext"));
   EXPECT_TRUE(CanPerform(@"keyCommand_findPrevious"));
@@ -837,13 +851,21 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
 TEST_F(KeyCommandsProviderTest, ValidateCommands) {
   // Open a tab.
   web::FakeWebState* web_state = InsertNewWebState(0);
-  web_state->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
-                                 std::make_unique<web::FakeWebFramesManager>());
-  web::JavaScriptFindInPageManagerImpl::CreateForWebState(web_state);
-  JavaScriptFindTabHelper::CreateForWebState(web_state);
+  if (IsNativeFindInPageAvailable()) {
+    NewTabPageTabHelper::CreateForWebState(web_state);
+    FindTabHelper::CreateForWebState(web_state);
+  } else {
+    web_state->SetWebFramesManager(
+        web::ContentWorld::kIsolatedWorld,
+        std::make_unique<web::FakeWebFramesManager>());
+    web::JavaScriptFindInPageManagerImpl::CreateForWebState(web_state);
+    JavaScriptFindTabHelper::CreateForWebState(web_state);
+  }
 
-  // Can Find in Page.
-  web_state->SetContentIsHTML(true);
+  if (!IsNativeFindInPageAvailable()) {
+    // JavaScript Find in Page only works if content is HTML.
+    web_state->SetContentIsHTML(true);
+  }
   EXPECT_TRUE(CanPerform(@"keyCommand_find"));
   EXPECT_TRUE(CanPerform(@"keyCommand_select1"));
 

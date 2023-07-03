@@ -124,23 +124,6 @@ bool WebClient::IsPointingToSameDocument(const GURL& url1,
   return url1 == url2;
 }
 
-id<CRWFindSession> WebClient::CreateFindSessionForWebState(
-    web::WebState* web_state) const API_AVAILABLE(ios(16)) {
-  // Subclasses need to provide their own implementation to use this method.
-  NOTREACHED();
-  return nil;
-}
-
-void WebClient::StartTextSearchInWebState(web::WebState* web_state) {
-  // Subclasses need to provide their own implementation to use this method.
-  NOTREACHED();
-}
-
-void WebClient::StopTextSearchInWebState(web::WebState* web_state) {
-  // Subclasses need to provide their own implementation to use this method.
-  NOTREACHED();
-}
-
 bool WebClient::IsMixedContentAutoupgradeEnabled(
     web::BrowserState* browser_state) const {
   return true;

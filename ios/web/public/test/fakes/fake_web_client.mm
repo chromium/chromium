@@ -105,27 +105,4 @@ UserAgentType FakeWebClient::GetDefaultUserAgent(web::WebState* web_state,
   return default_user_agent_;
 }
 
-void FakeWebClient::SetFindSessionPrototype(
-    CRWFakeFindSession* find_session_prototype) API_AVAILABLE(ios(16)) {
-  find_session_prototype_ = find_session_prototype;
-}
-
-id<CRWFindSession> FakeWebClient::CreateFindSessionForWebState(
-    web::WebState* web_state) const API_AVAILABLE(ios(16)) {
-  return find_session_prototype_ ? [find_session_prototype_ copy]
-                                 : [[CRWFakeFindSession alloc] init];
-}
-
-void FakeWebClient::StartTextSearchInWebState(web::WebState* web_state) {
-  text_search_started_ = true;
-}
-
-void FakeWebClient::StopTextSearchInWebState(web::WebState* web_state) {
-  text_search_started_ = false;
-}
-
-bool FakeWebClient::IsTextSearchStarted() const {
-  return text_search_started_;
-}
-
 }  // namespace web

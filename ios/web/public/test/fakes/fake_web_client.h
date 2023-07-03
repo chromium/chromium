@@ -68,31 +68,12 @@ class FakeWebClient : public web::WebClient {
 
   void SetDefaultUserAgent(UserAgentType type) { default_user_agent_ = type; }
 
-  // Sets `find_session_prototype_` for testing purposes.
-  void SetFindSessionPrototype(CRWFakeFindSession* find_session_prototype)
-      API_AVAILABLE(ios(16));
-
-  // Returns a copy of `find_session_prototype_` for testing purposes.
-  id<CRWFindSession> CreateFindSessionForWebState(
-      web::WebState* web_state) const override API_AVAILABLE(ios(16));
-
-  // Sets `text_search_started_` to `true` for testing purposes.
-  void StartTextSearchInWebState(web::WebState* web_state) override;
-
-  // Sets `text_search_started_` to `false` for testing purposes.
-  void StopTextSearchInWebState(web::WebState* web_state) override;
-
-  // Returns `text_search_started_` for testing purposes.
-  bool IsTextSearchStarted() const;
-
  private:
   std::u16string plugin_not_supported_text_;
   std::vector<JavaScriptFeature*> java_script_features_;
   NSString* early_page_script_for_all_frames_ = nil;
   NSString* early_page_script_for_main_frame_ = nil;
   UserAgentType default_user_agent_ = UserAgentType::MOBILE;
-  CRWFakeFindSession* find_session_prototype_ API_AVAILABLE(ios(16)) = nil;
-  bool text_search_started_ = false;
 };
 
 }  // namespace web

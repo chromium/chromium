@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/find_in_page/find_in_page_egtest_util.h"
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/find_in_page/features.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_app_interface.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -42,21 +41,6 @@ constexpr char kFindInPageClearButtonKindOfClassName[] =
 
 @implementation FindInPageTestCase {
   FindInPageTestCaseHelper* _helper;
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  // Enable `kNativeFindInPage`. This test case only tests the "System Find
-  // Panel" variant of Native Find in Page i.e. the one relying on a Find
-  // interaction and the new system UI.
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kNativeFindInPage.name) + "<" +
-      std::string(kNativeFindInPage.name));
-  config.additional_args.push_back(
-      "--force-fieldtrials=" + std::string(kNativeFindInPage.name) + "/Test");
-
-  return config;
 }
 
 - (void)setUp {

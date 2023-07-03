@@ -6,7 +6,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/feature_constants.h"
-#import "ios/chrome/browser/find_in_page/features.h"
+#import "ios/chrome/browser/find_in_page/util.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -33,14 +33,6 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 @end
 
 @implementation PopupMenuTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // This test suite assumes JavaScript Find in Page is used. This is required
-  // for `testNoSearchForPDF`.
-  config.features_disabled.push_back(kNativeFindInPage);
-  return config;
-}
 
 // Rotate the device back to portrait if needed, since some tests attempt to run
 // in landscape.

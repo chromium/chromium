@@ -7,10 +7,10 @@
 #import <memory>
 
 #import "base/check.h"
+#import "ios/chrome/browser/find_in_page/util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_mediator.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
-#import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -102,7 +102,7 @@
 }
 
 - (void)keyboardWillShow {
-  if (ios::provider::IsNativeFindInPageWithSystemFindPanel()) {
+  if (IsNativeFindInPageAvailable()) {
     // If Native Find in Page with system Find panel is active, then triggering
     // Find in Page will show the keyboard AND make Chrome enter full screen
     // mode.
