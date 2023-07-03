@@ -987,3 +987,77 @@ async def test_browsingContext_navigationStarted_event(websocket, context_id,
             "url": url,
         }
     }
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_userPromptOpened_event(websocket, context_id):
+
+    await subscribe(websocket, ["browsingContext.userPromptOpened"])
+
+    message = 'Prompt Opened'
+
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"""alert('{message}')""",
+                "awaitPromise": True,
+                "target": {
+                    "context": context_id,
+                }
+            }
+        })
+
+    response = await wait_for_event(websocket,
+                                    "browsingContext.userPromptOpened")
+    assert response == {
+        "method": "browsingContext.userPromptOpened",
+        "params": {
+            "context": context_id,
+            "type": 'alert',
+            "message": message,
+        }
+    }
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_userPromptClosed_event(websocket, context_id):
+
+    await subscribe(websocket, [
+        "browsingContext.userPromptOpened", "browsingContext.userPromptClosed"
+    ])
+
+    message = 'Prompt Opened'
+
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"""alert('{message}')""",
+                "awaitPromise": True,
+                "target": {
+                    "context": context_id,
+                }
+            }
+        })
+
+    await wait_for_event(websocket, "browsingContext.userPromptOpened")
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.handleUserPrompt",
+            "params": {
+                "context": context_id,
+            }
+        })
+
+    response = await wait_for_event(websocket,
+                                    "browsingContext.userPromptClosed")
+
+    assert response == {
+        "method": "browsingContext.userPromptClosed",
+        "params": {
+            "context": context_id,
+            "accepted": True
+        }
+    }

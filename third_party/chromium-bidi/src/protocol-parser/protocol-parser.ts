@@ -583,6 +583,18 @@ export namespace BrowsingContext {
   ): BrowsingContextTypes.SetViewportParameters {
     return parseObject(params, SetViewportActionSchema);
   }
+
+  const HandleUserPromptActionSchema = zod.object({
+    context: CommonDataTypes.BrowsingContextSchema,
+    accept: zod.boolean().optional(),
+    userText: zod.string().optional(),
+  });
+
+  export function parseHandleUserPromptParameters(
+    params: object
+  ): BrowsingContextTypes.HandleUserPromptParameters {
+    return parseObject(params, HandleUserPromptActionSchema);
+  }
 }
 
 export namespace Cdp {

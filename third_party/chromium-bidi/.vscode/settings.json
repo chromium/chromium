@@ -6,6 +6,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
+  "files.insertFinalNewline": true,
   "python.formatting.provider": "yapf",
   "python.testing.pytestEnabled": true,
   "python.testing.pytestArgs": ["tests"],

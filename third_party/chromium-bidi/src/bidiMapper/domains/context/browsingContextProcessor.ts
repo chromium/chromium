@@ -499,6 +499,14 @@ export class BrowsingContextProcessor {
     return {result: {}};
   }
 
+  async process_browsingContext_handleUserPrompt(
+    params: BrowsingContext.HandleUserPromptParameters
+  ): Promise<Message.EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    await context.handleUserPrompt(params);
+    return {result: {}};
+  }
+
   async process_browsingContext_close(
     commandParams: BrowsingContext.CloseParameters
   ): Promise<Message.EmptyResult> {

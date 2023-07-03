@@ -513,6 +513,35 @@ export class BrowsingContextImpl {
         cdpSessionId: this.#cdpTarget.cdpSessionId,
       });
     });
+
+    this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
+      this.#eventManager.registerEvent(
+        {
+          method: BrowsingContext.EventNames.UserPromptClosed,
+          params: {
+            context: this.id,
+            accepted: params.result,
+            // Cast empty string to undefined
+            userText: params.userInput ? params.userInput : undefined,
+          },
+        },
+        this.id
+      );
+    });
+
+    this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
+      this.#eventManager.registerEvent(
+        {
+          method: BrowsingContext.EventNames.UserPromptOpened,
+          params: {
+            context: this.id,
+            type: params.type,
+            message: params.message,
+          },
+        },
+        this.id
+      );
+    });
   }
 
   #getOrigin(params: Protocol.Runtime.ExecutionContextCreatedEvent) {
@@ -684,6 +713,15 @@ export class BrowsingContextImpl {
         throw err;
       }
     }
+  }
+
+  async handleUserPrompt(
+    params: BrowsingContext.HandleUserPromptParameters
+  ): Promise<void> {
+    await this.#cdpTarget.cdpClient.sendCommand('Page.handleJavaScriptDialog', {
+      accept: params.accept ?? true,
+      promptText: params.userText,
+    });
   }
 
   async captureScreenshot(): Promise<BrowsingContext.CaptureScreenshotResult> {

@@ -840,7 +840,8 @@ export namespace BrowsingContext {
     | NavigateCommand
     | PrintCommand
     | ReloadCommand
-    | SetViewportCommand;
+    | SetViewportCommand
+    | HandleUserPromptCommand;
   export type Result =
     | CaptureScreenshotResult
     | CreateResult
@@ -853,7 +854,9 @@ export namespace BrowsingContext {
     | DomContentLoadedEvent
     | FragmentNavigatedEvent
     | LoadEvent
-    | NavigationStartedEvent;
+    | NavigationStartedEvent
+    | UserPromptClosedEvent
+    | UserPromptOpenEvent;
 
   export type Navigation = string;
 
@@ -1018,6 +1021,17 @@ export namespace BrowsingContext {
     viewport: Viewport | null;
   };
 
+  export type HandleUserPromptCommand = {
+    method: 'browsingContext.handleUserPrompt';
+    params: HandleUserPromptParameters;
+  };
+
+  export type HandleUserPromptParameters = {
+    context: CommonDataTypes.BrowsingContext;
+    accept?: boolean;
+    userText?: string;
+  };
+
   export type LoadEvent = EventResponse<EventNames.LoadEvent, NavigationInfo>;
 
   export type DomContentLoadedEvent = EventResponse<
@@ -1051,6 +1065,28 @@ export namespace BrowsingContext {
     BrowsingContext.NavigationInfo
   >;
 
+  export type UserPromptClosedParameters = {
+    context: CommonDataTypes.BrowsingContext;
+    accepted: boolean;
+    userText?: string;
+  };
+
+  export type UserPromptClosedEvent = EventResponse<
+    EventNames.UserPromptClosed,
+    UserPromptClosedParameters
+  >;
+
+  export type UserPromptOpenedParameters = {
+    context: CommonDataTypes.BrowsingContext;
+    type: 'alert' | 'confirm' | 'prompt' | 'beforeunload';
+    message: string;
+  };
+
+  export type UserPromptOpenEvent = EventResponse<
+    EventNames.UserPromptOpened,
+    UserPromptOpenedParameters
+  >;
+
   export enum EventNames {
     // keep-sorted start
     ContextCreatedEvent = 'browsingContext.contextCreated',
@@ -1059,6 +1095,8 @@ export namespace BrowsingContext {
     FragmentNavigated = 'browsingContext.fragmentNavigated',
     LoadEvent = 'browsingContext.load',
     NavigationStarted = 'browsingContext.navigationStarted',
+    UserPromptClosed = 'browsingContext.userPromptClosed',
+    UserPromptOpened = 'browsingContext.userPromptOpened',
     // keep-sorted end
   }
 

@@ -27,6 +27,7 @@ import type {BidiParser} from '../bidiMapper/bidiMapper.js';
 
 export class BidiParserImpl implements BidiParser {
   // Browsing Context domain
+  // keep-sorted start block=yes
   parseCaptureScreenshotParams(
     params: object
   ): BrowsingContext.CaptureScreenshotParameters {
@@ -40,6 +41,11 @@ export class BidiParserImpl implements BidiParser {
   }
   parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters {
     return Parser.BrowsingContext.parseGetTreeParams(params);
+  }
+  parseHandleUserPromptParams(
+    params: object
+  ): BrowsingContext.HandleUserPromptParameters {
+    return Parser.BrowsingContext.parseHandleUserPromptParameters(params);
   }
   parseNavigateParams(params: object): BrowsingContext.NavigateParameters {
     return Parser.BrowsingContext.parseNavigateParams(params);
@@ -55,24 +61,30 @@ export class BidiParserImpl implements BidiParser {
   ): BrowsingContext.SetViewportParameters {
     return Parser.BrowsingContext.parseSetViewportParams(params);
   }
+  // keep-sorted end block=yes
 
   // CDP domain
+  // keep-sorted start block=yes
   parseGetSessionParams(params: object): Cdp.GetSessionParams {
     return Parser.Cdp.parseGetSessionParams(params);
   }
   parseSendCommandParams(params: object): Cdp.SendCommandParams {
     return Parser.Cdp.parseSendCommandParams(params);
   }
+  // keep-sorted end block=yes
 
   // Input domain
+  // keep-sorted start block=yes
   parsePerformActionsParams(params: object): Input.PerformActionsParameters {
     return Parser.Input.parsePerformActionsParams(params);
   }
   parseReleaseActionsParams(params: object): Input.ReleaseActionsParameters {
     return Parser.Input.parseReleaseActionsParams(params);
   }
+  // keep-sorted end block=yes
 
   // Network domain
+  // keep-sorted start block=yes
   parseAddInterceptParams(params: object): Network.AddInterceptParameters {
     return Parser.Network.parseAddInterceptParams(params);
   }
@@ -104,8 +116,10 @@ export class BidiParserImpl implements BidiParser {
   ): Network.RemoveInterceptParameters {
     return Parser.Network.parseRemoveInterceptParams(params);
   }
+  // keep-sorted end block=yes
 
   // Script domain
+  // keep-sorted start block=yes
   parseAddPreloadScriptParams(
     params: object
   ): Script.AddPreloadScriptParameters {
@@ -128,9 +142,12 @@ export class BidiParserImpl implements BidiParser {
   ): Script.RemovePreloadScriptParameters {
     return Parser.Script.parseRemovePreloadScriptParams(params);
   }
+  // keep-sorted end block=yes
 
   // Session domain
+  // keep-sorted start block=yes
   parseSubscribeParams(params: object): Session.SubscriptionRequest {
     return Parser.Session.parseSubscribeParams(params);
   }
+  // keep-sorted end block=yes
 }

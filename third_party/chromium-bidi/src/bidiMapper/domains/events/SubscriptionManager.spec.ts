@@ -433,6 +433,8 @@ describe('SubscriptionManager', () => {
         BrowsingContext.EventNames.FragmentNavigated,
         BrowsingContext.EventNames.LoadEvent,
         BrowsingContext.EventNames.NavigationStarted,
+        BrowsingContext.EventNames.UserPromptClosed,
+        BrowsingContext.EventNames.UserPromptOpened,
       ]);
     });
 

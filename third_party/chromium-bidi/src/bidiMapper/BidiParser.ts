@@ -26,26 +26,36 @@ import type {
 
 export interface IBidiParser {
   // Browsing Context domain
+  // keep-sorted start block=yes
   parseCaptureScreenshotParams(
     params: object
   ): BrowsingContext.CaptureScreenshotParameters;
   parseCloseParams(params: object): BrowsingContext.CloseParameters;
   parseCreateParams(params: object): BrowsingContext.CreateParameters;
   parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters;
+  parseHandleUserPromptParams(
+    params: object
+  ): BrowsingContext.HandleUserPromptParameters;
   parseNavigateParams(params: object): BrowsingContext.NavigateParameters;
   parsePrintParams(params: object): BrowsingContext.PrintParameters;
   parseReloadParams(params: object): BrowsingContext.ReloadParameters;
   parseSetViewportParams(params: object): BrowsingContext.SetViewportParameters;
+  // keep-sorted end
 
   // CDP domain
-  parseSendCommandParams(params: object): Cdp.SendCommandParams;
+  // keep-sorted start block=yes
   parseGetSessionParams(params: object): Cdp.GetSessionParams;
+  parseSendCommandParams(params: object): Cdp.SendCommandParams;
+  // keep-sorted end
 
   // Input domain
+  // keep-sorted start block=yes
   parsePerformActionsParams(params: object): Input.PerformActionsParameters;
   parseReleaseActionsParams(params: object): Input.ReleaseActionsParameters;
+  // keep-sorted end block=yes
 
   // Network domain
+  // keep-sorted start block=yes
   parseAddInterceptParams(params: object): Network.AddInterceptParameters;
   parseContinueRequestParams(params: object): Network.ContinueRequestParameters;
   parseContinueResponseParams(
@@ -57,8 +67,10 @@ export interface IBidiParser {
   parseFailRequestParams(params: object): Network.FailRequestParameters;
   parseProvideResponseParams(params: object): Network.ProvideResponseParameters;
   parseRemoveInterceptParams(params: object): Network.RemoveInterceptParameters;
+  // keep-sorted end
 
   // Script domain
+  // keep-sorted start block=yes
   parseAddPreloadScriptParams(
     params: object
   ): Script.AddPreloadScriptParameters;
@@ -69,7 +81,10 @@ export interface IBidiParser {
   parseRemovePreloadScriptParams(
     params: object
   ): Script.RemovePreloadScriptParameters;
+  // keep-sorted end
 
   // Session domain
+  // keep-sorted start block=yes
   parseSubscribeParams(params: object): Session.SubscriptionRequest;
+  // keep-sorted end
 }
