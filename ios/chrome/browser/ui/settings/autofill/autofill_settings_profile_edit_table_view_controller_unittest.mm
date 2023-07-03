@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -56,7 +58,8 @@ class AutofillSettingsProfileEditTableViewControllerTest
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
                             initWithDelegate:nil
-            shouldShowMigrateToAccountButton:NO];
+            shouldShowMigrateToAccountButton:NO
+                                   userEmail:nil];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
             initWithDelegate:delegate_mock_
@@ -171,7 +174,9 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
                             initWithDelegate:nil
-            shouldShowMigrateToAccountButton:NO];
+            shouldShowMigrateToAccountButton:NO
+                                   userEmail:base::SysUTF16ToNSString(
+                                                 kTestSyncingEmail)];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
             initWithDelegate:delegate_mock_
@@ -264,8 +269,9 @@ class AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
                             initWithDelegate:nil
-            shouldShowMigrateToAccountButton:YES];
-
+            shouldShowMigrateToAccountButton:YES
+                                   userEmail:base::SysUTF16ToNSString(
+                                                 kTestSyncingEmail)];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
             initWithDelegate:delegate_mock_
@@ -290,6 +296,17 @@ TEST_F(AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest,
   EXPECT_EQ(2, [model numberOfSections]);
   EXPECT_EQ(rowCnt, [model numberOfItemsInSection:0]);
   EXPECT_EQ(2, [model numberOfItemsInSection:1]);
+  NSString* migrateButtonDescription = l10n_util::GetNSStringF(
+      IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_BUTTON_DESCRIPTION,
+      kTestSyncingEmail);
+  TableViewItem* descriptionItem = GetTableViewItem(1, 0);
+  EXPECT_NSEQ(
+      static_cast<SettingsImageDetailTextItem*>(descriptionItem).detailText,
+      migrateButtonDescription);
+  EXPECT_NSEQ(
+      static_cast<TableViewTextItem*>(GetTableViewItem(1, 1)).text,
+      l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_BUTTON_TITLE));
 }
 
 }  // namespace

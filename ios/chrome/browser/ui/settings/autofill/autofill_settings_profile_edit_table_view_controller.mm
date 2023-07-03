@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -34,6 +35,10 @@ const CGFloat kSymbolSize = 22;
 // If YES, a section is shown in the view to migrate the profile to account.
 @property(nonatomic, assign) BOOL showMigrateToAccountSection;
 
+// Stores the signed in user email, or the empty string if the user is not
+// signed-in.
+@property(nonatomic, readonly) NSString* userEmail;
+
 @end
 
 @implementation AutofillSettingsProfileEditTableViewController
@@ -43,12 +48,14 @@ const CGFloat kSymbolSize = 22;
 - (instancetype)initWithDelegate:
                     (id<AutofillSettingsProfileEditTableViewControllerDelegate>)
                         delegate
-    shouldShowMigrateToAccountButton:(BOOL)showMigrateToAccount {
+    shouldShowMigrateToAccountButton:(BOOL)showMigrateToAccount
+                           userEmail:(NSString*)userEmail {
   self = [super initWithStyle:ChromeTableViewStyle()];
 
   if (self) {
     _delegate = delegate;
     _showMigrateToAccountSection = showMigrateToAccount;
+    _userEmail = userEmail;
   }
 
   return self;
@@ -114,6 +121,13 @@ const CGFloat kSymbolSize = 22;
 
   [self loadModel];
   [self.handler reconfigureCells];
+  if (self.showMigrateToAccountSection) {
+    [self
+        reconfigureCellsForItems:
+            [self.tableViewModel
+                itemsInSectionWithIdentifier:
+                    AutofillProfileDetailsSectionIdentifierMigrationToAccount]];
+  }
 }
 
 #pragma mark - UITableViewDataSource
@@ -183,11 +197,15 @@ const CGFloat kSymbolSize = 22;
 #pragma mark - Items
 
 - (SettingsImageDetailTextItem*)migrateToAccountRecommendationItem {
+  CHECK(_userEmail.length)
+      << "User must be signed-in to migrate an address to the "
+         "account;";
   SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
       initWithType:
           AutofillProfileDetailsItemTypeMigrateToAccountRecommendation];
-  // TODO(crbug.com/1407666): Replace with i18n string.
-  item.detailText = @"Test Migrate To account recommendation";
+  item.detailText = l10n_util::GetNSStringF(
+      IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_BUTTON_DESCRIPTION,
+      base::SysNSStringToUTF16(self.userEmail));
   item.image = CustomSymbolWithPointSize(kCloudAndArrowUpSymbol, kSymbolSize);
   item.imageViewTintColor = [UIColor colorNamed:kBlueColor];
   return item;
@@ -196,8 +214,8 @@ const CGFloat kSymbolSize = 22;
 - (TableViewTextItem*)migrateToAccountButtonItem {
   TableViewTextItem* item = [[TableViewTextItem alloc]
       initWithType:AutofillProfileDetailsItemTypeMigrateToAccountButton];
-  // TODO(crbug.com/1407666): Replace with i18n string.
-  item.text = @"Test Migrate Button";
+  item.text = l10n_util::GetNSString(
+      IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_BUTTON_TITLE);
   item.textColor = self.tableView.editing
                        ? [UIColor colorNamed:kTextSecondaryColor]
                        : [UIColor colorNamed:kBlueColor];

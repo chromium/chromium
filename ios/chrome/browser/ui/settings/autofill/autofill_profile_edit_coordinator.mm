@@ -94,7 +94,8 @@
 
   self.viewController = [[AutofillSettingsProfileEditTableViewController alloc]
                       initWithDelegate:self.mediator
-      shouldShowMigrateToAccountButton:self.showMigrateToAccountButton];
+      shouldShowMigrateToAccountButton:self.showMigrateToAccountButton
+                             userEmail:[self userEmail]];
   self.sharedViewController = [[AutofillProfileEditTableViewController alloc]
       initWithDelegate:self.mediator
              userEmail:[self userEmail]

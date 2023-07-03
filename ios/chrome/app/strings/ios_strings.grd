@@ -3007,6 +3007,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
           =1 {This address will be deleted from this device.}
           other {These addresses will be deleted from this device.}}
       </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_BUTTON_TITLE" desc="Button title asking the user to migrate the local address to account. [iOS only]">
+          Move Address to Account
+      </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_BUTTON_DESCRIPTION" desc="Button description asking the user to migrate the local address to account. [iOS only]">
+          This address is only saved on this device. To use it on your other devices, move it to your Google Account, <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>
+      </message>
       <message name="IDS_IOS_SETTINGS_EXPORT_PASSWORDS_SET_UP_SCREENLOCK_CONTENT" desc="Message informing the user that in order to export the passwords, a screen lock needs to be set up on the device. This is shown as an alert message after the user tries to view or copy the password from a settings page. [Length: about two lines]">
         To export passwords, you must first set a passcode on your device.
       </message>
