@@ -8,7 +8,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -29,10 +28,10 @@
 
 namespace {
 
-// TODO(crbug.com/1434661): rename to TrustedVaultEncryptionKeysTabHelperTest.
-class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
+class TrustedVaultEncryptionKeysTabHelperTest
+    : public ChromeRenderViewHostTestHarness {
  public:
-  SyncEncryptionKeysTabHelperTest() {
+  TrustedVaultEncryptionKeysTabHelperTest() {
     // Avoid the disabling of site isolation due to memory constraints, required
     // on Android so that ApplyGlobalIsolatedOrigins() takes effect regardless
     // of available memory when running the test (otherwise low-memory bots may
@@ -47,12 +46,12 @@ class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
           "0"}});
   }
 
-  ~SyncEncryptionKeysTabHelperTest() override = default;
+  ~TrustedVaultEncryptionKeysTabHelperTest() override = default;
 
-  SyncEncryptionKeysTabHelperTest(const SyncEncryptionKeysTabHelperTest&) =
-      delete;
-  SyncEncryptionKeysTabHelperTest& operator=(
-      const SyncEncryptionKeysTabHelperTest&) = delete;
+  TrustedVaultEncryptionKeysTabHelperTest(
+      const TrustedVaultEncryptionKeysTabHelperTest&) = delete;
+  TrustedVaultEncryptionKeysTabHelperTest& operator=(
+      const TrustedVaultEncryptionKeysTabHelperTest&) = delete;
 
  protected:
   // content::RenderViewHostTestHarness:
@@ -93,20 +92,21 @@ class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(SyncEncryptionKeysTabHelperTest, ShouldExposeMojoApiToAllowedOrigin) {
+TEST_F(TrustedVaultEncryptionKeysTabHelperTest,
+       ShouldExposeMojoApiToAllowedOrigin) {
   ASSERT_FALSE(HasEncryptionKeysApiInMainFrame());
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
   EXPECT_TRUE(HasEncryptionKeysApiInMainFrame());
 }
 
-TEST_F(SyncEncryptionKeysTabHelperTest,
+TEST_F(TrustedVaultEncryptionKeysTabHelperTest,
        ShouldNotExposeMojoApiToUnallowedOrigin) {
   web_contents_tester()->NavigateAndCommit(GURL("http://page.com"));
   EXPECT_FALSE(HasEncryptionKeysApiInMainFrame());
 }
 
 // TODO(https://crbug.com/1394191): flaky on android bots.
-TEST_F(SyncEncryptionKeysTabHelperTest,
+TEST_F(TrustedVaultEncryptionKeysTabHelperTest,
        DISABLED_ShouldNotExposeMojoApiIfNavigatedAway) {
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
   ASSERT_TRUE(HasEncryptionKeysApiInMainFrame());
@@ -114,7 +114,7 @@ TEST_F(SyncEncryptionKeysTabHelperTest,
   EXPECT_FALSE(HasEncryptionKeysApiInMainFrame());
 }
 
-TEST_F(SyncEncryptionKeysTabHelperTest,
+TEST_F(TrustedVaultEncryptionKeysTabHelperTest,
        ShouldExposeMojoApiEvenIfSubframeNavigatedAway) {
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
   content::RenderFrameHost* subframe =
@@ -130,7 +130,7 @@ TEST_F(SyncEncryptionKeysTabHelperTest,
   EXPECT_TRUE(HasEncryptionKeysApiInMainFrame());
 }
 
-TEST_F(SyncEncryptionKeysTabHelperTest,
+TEST_F(TrustedVaultEncryptionKeysTabHelperTest,
        ShouldNotExposeMojoApiIfNavigationFailed) {
   auto* render_frame_host =
       content::NavigationSimulator::NavigateAndFailFromBrowser(
@@ -141,7 +141,7 @@ TEST_F(SyncEncryptionKeysTabHelperTest,
 }
 
 // TODO(https://crbug.com/1394191): flaky on android bots.
-TEST_F(SyncEncryptionKeysTabHelperTest,
+TEST_F(TrustedVaultEncryptionKeysTabHelperTest,
        DISABLED_ShouldNotExposeMojoApiIfNavigatedAwayToErrorPage) {
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
   ASSERT_TRUE(HasEncryptionKeysApiInMainFrame());
@@ -162,12 +162,10 @@ TEST_F(SyncEncryptionKeysTabHelperTest,
   EXPECT_FALSE(HasEncryptionKeysApiInMainFrame());
 }
 
-// TODO(crbug.com/1434661): rename to
-// TrustedVaultEncryptionKeysTabHelperPrerenderingTest.
-class SyncEncryptionKeysTabHelperPrerenderingTest
-    : public SyncEncryptionKeysTabHelperTest {
+class TrustedVaultEncryptionKeysTabHelperPrerenderingTest
+    : public TrustedVaultEncryptionKeysTabHelperTest {
  public:
-  SyncEncryptionKeysTabHelperPrerenderingTest() = default;
+  TrustedVaultEncryptionKeysTabHelperPrerenderingTest() = default;
 
  private:
   content::test::ScopedPrerenderFeatureList prerender_feature_list_;
@@ -177,9 +175,9 @@ class SyncEncryptionKeysTabHelperPrerenderingTest
 // also creates EncryptionKeys as it's a main frame. But, if EncryptionKeys
 // is accessed thrugh Mojo in prerendering, it causes canceling prerendering.
 // See the browser test, 'ShouldNotBindEncryptionKeysApiInPrerendering', from
-// 'sync_encryption_keys_tab_helper_browsertest.cc' for the details about
+// 'trusted_vault_keys_tab_helper_browsertest.cc' for the details about
 // canceling prerendering.
-TEST_F(SyncEncryptionKeysTabHelperPrerenderingTest,
+TEST_F(TrustedVaultEncryptionKeysTabHelperPrerenderingTest,
        CreateEncryptionKeysInPrerendering) {
   content::test::ScopedPrerenderWebContentsDelegate web_contents_delegate(
       *web_contents());
