@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
 
   auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
   EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
-      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, 1));
+      .WillRepeatedly(RunOnceCallback<0>(drive::FILE_ERROR_OK, 1));
 
   // Expect the free space to be 1 GB (1,073,741,824 bytes), the required space
   // to be 0 KB (0 items).
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
 
   auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
   EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
-      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, 1));
+      .WillRepeatedly(RunOnceCallback<0>(drive::FILE_ERROR_OK, 1));
 
   // Each item is 250 MB in size, total required space should be 1 GB.
   int64_t file_size = 250 << 20;
