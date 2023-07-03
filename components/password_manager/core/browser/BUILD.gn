@@ -239,6 +239,7 @@ static_library("browser") {
     "sharing/password_sender_service_impl.h",
     "sharing/password_sharing_recipients_downloader.cc",
     "sharing/password_sharing_recipients_downloader.h",
+    "sharing/recipients_fetcher.h",
     "sharing_invitations.cc",
     "sharing_invitations.h",
     "smart_bubble_stats_store.h",
