@@ -23,6 +23,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.selection.ChromeSelectionDropdownMenuDelegate;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
@@ -63,9 +64,10 @@ public class ChromeActionModeHandler {
     public ChromeActionModeHandler(ActivityTabProvider activityTabProvider,
             Callback<String> searchCallback, Supplier<ShareDelegate> shareDelegateSupplier) {
         mInitWebContentsObserver = (webContents) -> {
-            SelectionPopupController.fromWebContents(webContents)
-                    .setActionModeCallback(new ActionModeCallback(mActiveTab, webContents,
-                            searchCallback, shareDelegateSupplier));
+            SelectionPopupController spc = SelectionPopupController.fromWebContents(webContents);
+            spc.setActionModeCallback(new ActionModeCallback(
+                    mActiveTab, webContents, searchCallback, shareDelegateSupplier));
+            spc.setDropdownMenuDelegate(new ChromeSelectionDropdownMenuDelegate());
         };
 
         mActivityTabTabObserver =

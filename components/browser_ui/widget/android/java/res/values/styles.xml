@@ -56,6 +56,14 @@ found in the LICENSE file.
         <item name="android:paddingStart">@dimen/default_list_row_padding</item>
         <item name="android:paddingEnd">@dimen/default_list_row_padding</item>
     </style>
+    <style name="ListMenuItemIconStyle">
+        <item name="android:layout_width">@dimen/list_menu_item_icon_size</item>
+        <item name="android:layout_height">@dimen/list_menu_item_icon_size</item>
+    </style>
+    <style name="ListMenuItemIconStyle.Start">
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginEnd">@dimen/menu_padding_start</item>
+    </style>
 
     <style name="EndIconMenuAnim" parent="AnchoredPopupAnimEndTop" />
     <style name="EndIconMenuAnimBottom" parent="AnchoredPopupAnimEndBottom" />

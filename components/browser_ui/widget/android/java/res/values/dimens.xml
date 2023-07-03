@@ -41,7 +41,9 @@ found in the LICENSE file.
     <dimen name="radio_button_with_description_and_aux_button_aux_button_length"
         tools:ignore="UnusedResources">61dp</dimen>
 
+    <!-- List menu item dimensions -->
     <dimen name="list_menu_width">180dp</dimen>
+    <dimen name="list_menu_item_icon_size">24dp</dimen>
 
     <!-- Custom Menu dimensions -->
     <dimen name="menu_divider_padding">8dp</dimen>
