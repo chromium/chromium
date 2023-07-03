@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
 };
 
 // Returns a matching dictionary for `url` from `dictionary_info_map`.
-// This is a template method because SharedDictionaryStorageOnDisk and
+// This is a template method because SharedDictionaryStorageInMemory and
 // SharedDictionaryStorageOnDisk are using different class for
 // DictionaryInfoType.
 template <class DictionaryInfoType>
