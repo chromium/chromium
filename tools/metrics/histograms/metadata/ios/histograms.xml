@@ -617,6 +617,8 @@ chromium-metrics-reviews@google.com.
     <variant name="LastPromoNumDays"
         summary="Represents number of days since last default browser promo
                  was displayed"/>
+    <variant name="OmniboxClipboardUseCount"
+        summary="Represents number of times user copy-pasted in omnibox."/>
     <variant name="PasswordManagerUseCount"
         summary="Represents number of times password manager features were
                  used"/>

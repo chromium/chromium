@@ -110,7 +110,7 @@ void OmniboxPopupViewIOS::OnMatchSelected(
       match.type == AutocompleteMatchType::CLIPBOARD_TEXT) {
     // A search using clipboard link or text is activity that should indicate a
     // user that would be interested in setting Chrome as the default browser.
-    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+    LogCopyPasteInOmniboxForDefaultBrowserPromo();
   }
 
   if (match.type == AutocompleteMatchType::CLIPBOARD_URL) {

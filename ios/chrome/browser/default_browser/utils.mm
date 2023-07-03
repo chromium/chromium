@@ -423,6 +423,15 @@ int NumActiveDays() {
                         kTriggerCriteriaExperimentStatExpiration, active_dates);
   return active_dates.size();
 }
+
+// Adds current timestamp in the array of timestamps for the given key.
+void StoreCurrentTimestampForKey(NSString* key) {
+  std::vector<base::Time> timestamps =
+      LoadActiveTimestampsForKey(key, kTriggerCriteriaExperimentStatExpiration);
+  timestamps.push_back(base::Time::Now());
+  StoreTimestampsForKey(key, timestamps);
+}
+
 }  // namespace
 
 NSString* const kLastTimeUserInteractedWithPromo =
@@ -435,6 +444,8 @@ NSString* const kAllTimestampsAppLaunchIndirectStart =
     @"AllTimestampsAppLaunchIndirectStart";
 NSString* const kLastSignificantUserEventStaySafe =
     @"lastSignificantUserEventStaySafe";
+NSString* const kOmniboxUseCount = @"OmniboxUseCount";
+
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data) {
   UpdateStorageWithDictionary(@{key : data});
 }
@@ -637,6 +648,11 @@ void LogUserInteractionWithFirstRunPromo(BOOL openedSettings) {
     kLastTimeUserInteractedWithPromo : [NSDate date],
     kDisplayedPromoCount : @(displayed_promo_count + 1),
   });
+}
+
+void LogCopyPasteInOmniboxForDefaultBrowserPromo() {
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+  StoreCurrentTimestampForKey(kOmniboxUseCount);
 }
 
 bool HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch() {
@@ -921,6 +937,9 @@ void RecordPromoStatsToUMAForActionString(PromoStatistics* promo_stats,
   base::UmaHistogramCounts100(
       base::StrCat({histogram_prefix, ".PasswordManagerUseCount"}),
       promo_stats.passwordManagerUseCount);
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, ".OmniboxClipboardUseCount"}),
+      promo_stats.omniboxClipboardUseCount);
 }
 
 PromoStatistics* CalculatePromoStatistics() {
@@ -944,6 +963,8 @@ PromoStatistics* CalculatePromoStatistics() {
   promo_stats.passwordManagerUseCount = NumRecordedEventForKeyLessThanDelay(
       kLastSignificantUserEventStaySafe,
       kTriggerCriteriaExperimentStatExpiration);
+  promo_stats.omniboxClipboardUseCount = NumRecordedEventForKeyLessThanDelay(
+      kOmniboxUseCount, kTriggerCriteriaExperimentStatExpiration);
 
   return promo_stats;
 }
@@ -956,13 +977,6 @@ void RecordPromoStatsToUMAForAction(PromoStatistics* promo_stats,
 
 void RecordPromoStatsToUMAForAppear(PromoStatistics* promo_stats) {
   RecordPromoStatsToUMAForActionString(promo_stats, kAppearAction);
-}
-
-void StoreCurrentTimestampForKey(NSString* key) {
-  std::vector<base::Time> timestamps =
-      LoadActiveTimestampsForKey(key, kTriggerCriteriaExperimentStatExpiration);
-  timestamps.push_back(base::Time::Now());
-  StoreTimestampsForKey(key, timestamps);
 }
 
 void LogBrowserLaunched(bool is_cold_start) {

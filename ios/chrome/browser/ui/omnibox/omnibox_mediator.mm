@@ -341,7 +341,7 @@ using base::UserMetricsAction;
   __weak __typeof(self) weakSelf = self;
   auto textCompletion =
       ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
-        LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+        LogCopyPasteInOmniboxForDefaultBrowserPromo();
         dispatch_async(dispatch_get_main_queue(), ^{
           NSString* text = static_cast<NSString*>(providedItem);
           if (text) {
