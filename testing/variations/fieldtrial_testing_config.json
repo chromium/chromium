@@ -1941,6 +1941,28 @@
             ]
         }
     ],
+    "BackForwardCacheForPageWithCacheControlNotStoredHeader": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230628",
+                    "params": {
+                        "level": "store-and-evict"
+                    },
+                    "enable_features": [
+                        "CacheControlNoStoreEnterBackForwardCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackForwardCacheMemoryControls": [
         {
             "platforms": [
