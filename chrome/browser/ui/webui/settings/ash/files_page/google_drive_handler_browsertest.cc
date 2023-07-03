@@ -28,6 +28,7 @@
 using base::test::RunOnceCallback;
 using testing::_;
 using testing::DoAll;
+using testing::InSequence;
 using testing::Return;
 
 namespace ash::settings {
@@ -224,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
   int64_t pinned_size = 1024 * 1024;
   auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
   EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
-      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, pinned_size));
+      .WillRepeatedly(RunOnceCallback<0>(drive::FILE_ERROR_OK, pinned_size));
 
   auto google_drive_settings = OpenGoogleDriveSettings();
   google_drive_settings.AssertBulkPinningPinnedSize(
@@ -242,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
 
   auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
   EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
-      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, -1));
+      .WillRepeatedly(RunOnceCallback<0>(drive::FILE_ERROR_OK, -1));
 
   auto google_drive_settings = OpenGoogleDriveSettings();
   google_drive_settings.AssertBulkPinningPinnedSize("Unknown");
@@ -259,10 +260,13 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
 
   int64_t pinned_size = 1024 * 1024;
   auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
-  EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
-      .Times(2)
-      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, pinned_size))
-      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, 0));
+  {
+    InSequence s;
+    EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
+        .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, pinned_size));
+    EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
+        .WillRepeatedly(RunOnceCallback<0>(drive::FILE_ERROR_OK, 0));
+  }
 
   auto google_drive_settings = OpenGoogleDriveSettings();
   google_drive_settings.ClickClearOfflineFilesAndAssertNewSize(
