@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/passwords/manage_passwords_view.h"
 
+#include <utility>
+
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -33,8 +35,9 @@ class ManagePasswordsViewTest : public PasswordBubbleViewTestBase {
   void CreateViewAndShow();
 
   void TearDown() override {
-    view_->GetWidget()->CloseWithReason(
-        views::Widget::ClosedReason::kCloseButtonClicked);
+    std::exchange(view_, nullptr)
+        ->GetWidget()
+        ->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
 
     PasswordBubbleViewTestBase::TearDown();
   }
@@ -43,7 +46,7 @@ class ManagePasswordsViewTest : public PasswordBubbleViewTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<ManagePasswordsView, DanglingUntriaged> view_;
+  raw_ptr<ManagePasswordsView> view_ = nullptr;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
 };
 
