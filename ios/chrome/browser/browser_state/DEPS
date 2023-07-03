@@ -1,6 +1,24 @@
+include_rules = [
+  "+ios/chrome/browser/sync",
+  "+ios/chrome/browser/bookmarks",
+  "+ios/chrome/browser/net",
+  "+ios/chrome/browser/policy",
+  "+ios/chrome/browser/prefs",
+  "+ios/chrome/browser/content_settings",
+  "+ios/chrome/browser/browser_state_metrics",
+  "+ios/chrome/browser/optimization_guide",
+  "+ios/chrome/browser/push_notification",
+  "+ios/chrome/browser/segmentation_platform",
+  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/supervised_user",
+  "+ios/chrome/browser/unified_consent",
+]
+
 specific_include_rules = {
   # TODO(crbug.com/1294160): Remove this dependency.
   "^browser_state_keyed_service_factories.mm": [
+    "+ios/chrome/browser",
+    "-ios/chrome/browser/ui",
     "+ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h",
   ],
 }

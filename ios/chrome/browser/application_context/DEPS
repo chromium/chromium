@@ -1,0 +1,14 @@
+include_rules = [
+  "+ios/chrome/browser/browser_state",
+  "+ios/chrome/browser/component_updater",
+  "+ios/chrome/browser/crash_report",
+  "+ios/chrome/browser/default_browser",
+  "+ios/chrome/browser/gcm",
+  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/metrics",
+  "+ios/chrome/browser/policy",
+  "+ios/chrome/browser/prefs",
+  "+ios/chrome/browser/push_notification",
+  "+ios/chrome/browser/segmentation_platform",
+  "+ios/chrome/browser/update_client",
+]
