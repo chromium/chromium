@@ -3133,7 +3133,7 @@
   {
     "name": "enable-pinned-tabs",
     "owners": [ "ewannpv", "pakzhygitov", "bling-flags@google.com" ],
-    "expiry_milestone": 116
+    "expiry_milestone": 126
   },
   {
     "name": "enable-pip-double-tap-to-resize",
