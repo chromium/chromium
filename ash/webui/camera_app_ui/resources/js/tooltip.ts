@@ -8,12 +8,12 @@ import * as dom from './dom.js';
 /**
  * Wrapper element that shows tooltip.
  */
-let wrapper: HTMLElement|null = null;
+let tooltipElement: HTMLElement|null = null;
 
 /**
- * Hovered element whose tooltip to be shown.
+ * The element whose tooltip should be shown.
  */
-let hovered: HTMLElement|null = null;
+let activeElement: HTMLElement|null = null;
 
 /**
  * Name of event triggered for positioning tooltip.
@@ -26,43 +26,42 @@ export const TOOLTIP_POSITION_EVENT_NAME = 'tooltipposition';
  * @param rect UI's reference region.
  */
 export function position(rect: DOMRectReadOnly): void {
-  assert(wrapper !== null);
+  assert(tooltipElement !== null);
 
   const [edgeMargin, elementMargin] = [5, 8];
-  let tooltipTop = rect.top - wrapper.offsetHeight - elementMargin;
+  let tooltipTop = rect.top - tooltipElement.offsetHeight - elementMargin;
   if (tooltipTop < edgeMargin) {
     tooltipTop = rect.bottom + elementMargin;
   }
-  wrapper.style.top = tooltipTop + 'px';
+  tooltipElement.style.top = tooltipTop + 'px';
 
-  // Center over the hovered element but avoid touching edges.
-  const hoveredCenter = rect.left + rect.width / 2;
+  // Center over the active element but avoid touching edges.
+  const activeElementCenter = rect.left + rect.width / 2;
   const left = Math.min(
-      Math.max(hoveredCenter - wrapper.clientWidth / 2, edgeMargin),
-      document.body.offsetWidth - wrapper.offsetWidth - edgeMargin);
-  wrapper.style.left = Math.round(left) + 'px';
+      Math.max(
+          activeElementCenter - tooltipElement.clientWidth / 2, edgeMargin),
+      document.body.offsetWidth - tooltipElement.offsetWidth - edgeMargin);
+  tooltipElement.style.left = Math.round(left) + 'px';
 }
 
 /**
- * Hides the shown tooltip if any.
+ * Hides the shown tooltip.
  */
 export function hide(): void {
-  assert(wrapper !== null);
+  assert(tooltipElement !== null);
 
-  if (hovered !== null) {
-    hovered = null;
-    wrapper.textContent = '';
-    wrapper.classList.remove('visible');
-  }
+  activeElement = null;
+  tooltipElement.textContent = '';
+  tooltipElement.classList.remove('visible');
 }
 
 /**
- * Shows a tooltip over the hovered element.
+ * Shows a tooltip over the active element.
  *
- * @param element Hovered element whose tooltip to be shown.
+ * @param element Active element whose tooltip to be shown.
  */
 function show(element: HTMLElement) {
-  assert(wrapper !== null);
+  assert(tooltipElement !== null);
 
   hide();
   let message = element.getAttribute('aria-label');
@@ -74,15 +73,10 @@ function show(element: HTMLElement) {
       message = element.getAttribute('tooltip-false');
     }
   }
-  wrapper.textContent = message;
-  hovered = element;
-  const positionEvent =
-      new CustomEvent(TOOLTIP_POSITION_EVENT_NAME, {cancelable: true});
-  const doDefault = hovered.dispatchEvent(positionEvent);
-  if (doDefault) {
-    position(hovered.getBoundingClientRect());
-  }
-  wrapper.classList.add('visible');
+  tooltipElement.textContent = message;
+  activeElement = element;
+  triggerPosition(element);
+  tooltipElement.classList.add('visible');
 }
 
 /**
@@ -90,19 +84,42 @@ function show(element: HTMLElement) {
  *
  * @param elements Elements whose tooltips to be shown.
  */
-export function setup(elements: HTMLElement[]): void {
-  wrapper = dom.get('#tooltip', HTMLElement);
+export function setupElements(elements: HTMLElement[]): void {
   for (const el of elements) {
-    function handler() {
-      // Handler hides tooltip only when it's for the element.
-      if (el === hovered) {
+    function hideHandler() {
+      if (activeElement === el) {
         hide();
       }
     }
-    el.addEventListener('mouseleave', handler);
-    el.addEventListener('click', handler);
-    el.addEventListener('blur', handler);
-    el.addEventListener('mouseenter', () => show(el));
-    el.addEventListener('focus', () => show(el));
+    function showHandler() {
+      show(el);
+    }
+    el.addEventListener('mouseleave', hideHandler);
+    el.addEventListener('click', hideHandler);
+    el.addEventListener('blur', hideHandler);
+    el.addEventListener('mouseenter', showHandler);
+    el.addEventListener('focus', showHandler);
+  }
+}
+
+/**
+ *  Initializes the tooltips. This should be called before other methods.
+ */
+export function init(): void {
+  tooltipElement = dom.get('#tooltip', HTMLElement);
+
+  window.addEventListener('resize', () => {
+    if (activeElement !== null) {
+      triggerPosition(activeElement);
+    }
+  });
+}
+
+function triggerPosition(element: HTMLElement) {
+  const event =
+      new CustomEvent(TOOLTIP_POSITION_EVENT_NAME, {cancelable: true});
+  const doDefault = element.dispatchEvent(event);
+  if (doDefault) {
+    position(element.getBoundingClientRect());
   }
 }

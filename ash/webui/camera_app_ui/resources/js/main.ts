@@ -157,33 +157,37 @@ export class App {
    * Note `i18n-label` attribute should not be removed from elements.
    */
   private setupTooltip() {
+    tooltip.init();
     const tooltipAttribute = 'i18n-label';
+    const tooltipAttributeSelector = `[${tooltipAttribute}]`;
     const elements =
-        Array.from(dom.getAll(`[${tooltipAttribute}]`, HTMLElement));
-    tooltip.setup(elements);
+        Array.from(dom.getAll(tooltipAttributeSelector, HTMLElement));
+    tooltip.setupElements(elements);
     const observer = new MutationObserver((mutations) => {
       const elements: HTMLElement[] = [];
       for (const mutation of mutations) {
-        if (mutation.type === 'childList') {
-          for (const node of mutation.addedNodes) {
-            if (node instanceof HTMLElement &&
-                node.hasAttribute(tooltipAttribute)) {
-              elements.push(node);
-            }
+        if (mutation.type === 'attributes') {
+          // Check newly added attributes on existing elements.
+          const {target, oldValue} = mutation;
+          if (target instanceof HTMLElement && oldValue === null) {
+            elements.push(target);
           }
-        } else if (mutation.type === 'attributes') {
-          const {target: node, attributeName, oldValue} = mutation;
-          if (node instanceof HTMLElement &&
-              attributeName === tooltipAttribute && oldValue === null) {
-            elements.push(node);
+        } else if (mutation.type === 'childList') {
+          const {target} = mutation;
+          if (target instanceof HTMLElement) {
+            elements.push(
+                ...dom.getAllFrom(
+                    target, tooltipAttributeSelector, HTMLElement),
+            );
           }
         }
       }
-      tooltip.setup(elements);
+      tooltip.setupElements(elements);
     });
     observer.observe(document.body, {
       subtree: true,
       childList: true,
+      attributeFilter: [tooltipAttribute],
       attributes: true,
       attributeOldValue: true,
     });
