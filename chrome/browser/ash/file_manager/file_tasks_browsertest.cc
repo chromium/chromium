@@ -46,6 +46,8 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -84,6 +86,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 using web_app::kMediaAppId;
 
@@ -1357,7 +1360,8 @@ class FakeWebAppPublisher : public apps::AppPublisher {
 // testing with a fake ODFS.
 // Tests the office fallback flow that occurs when a
 // user fails to open an office file from ODFS.
-class OneDriveTest : public TestAccountBrowserTest {
+class OneDriveTest : public TestAccountBrowserTest,
+                     public NotificationDisplayService::Observer {
  public:
   OneDriveTest() : TestAccountBrowserTest(kNonManaged) {
     feature_list_.InitAndEnableFeature(
@@ -1451,11 +1455,25 @@ class OneDriveTest : public TestAccountBrowserTest {
         connection_type);
   }
 
+  // Record the notification message shown.
+  void OnNotificationDisplayed(
+      const message_center::Notification& notification,
+      const NotificationCommon::Metadata* const metadata) override {
+    notification_message_ = base::UTF16ToUTF8(notification.message());
+  }
+
+  void OnNotificationClosed(const std::string& notification_id) override {}
+  void OnNotificationDisplayServiceDestroyed(
+      NotificationDisplayService* service) override {}
+
  protected:
+  std::string notification_message_;
   FileSystemURL odfs_test_file_url_;
   std::unique_ptr<FakeWebAppPublisher> web_app_publisher_;
   base::FilePath relative_test_path_;
   base::FilePath test_path_within_odfs_;
+  raw_ptr<test::FakeProvidedFileSystemOneDrive, ExperimentalAsh>
+      provided_file_system_;  // Owned by Service.
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("chrome://abc");
 
@@ -1464,8 +1482,6 @@ class OneDriveTest : public TestAccountBrowserTest {
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
   std::string test_file_name_;
-  raw_ptr<test::FakeProvidedFileSystemOneDrive, ExperimentalAsh>
-      provided_file_system_;  // Owned by Service.
 };
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1609,6 +1625,71 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileNotFromODFS) {
   // Wait for setup flow dialog to open.
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+}
+
+// Test that when opening a file from ODFS fails due reauthentication to
+// OneDrive being required, the reauthentication required notification is shown.
+IN_PROC_BROWSER_TEST_F(OneDriveTest,
+                       FailToOpenFileFromODFSReauthenticationRequired) {
+  // Creates a fake ODFS with a test file.
+  SetUpTest();
+  // Ensure the open fails due to reauthentication to OneDrive being required.
+  provided_file_system_->SetGetActionsError(
+      base::File::Error::FILE_ERROR_ACCESS_DENIED);
+  provided_file_system_->SetReauthenticationRequired(true);
+
+  NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
+
+  std::vector<storage::FileSystemURL> file_urls{odfs_test_file_url_};
+
+  web_app_publisher_->ClearPastLaunches();
+
+  // Open file directly from ODFS.
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive,
+      nullptr));
+  task->OpenOrMoveFiles();
+  // Expect that there was a notification.
+  EXPECT_FALSE(notification_message_.empty());
+  // Expect that the reauthentication required notification was shown.
+  EXPECT_EQ(notification_message_,
+            ash::cloud_upload::kReauthenticationRequiredMessage);
+
+  NotificationDisplayService::GetForProfile(browser()->profile())
+      ->RemoveObserver(this);
+}
+
+// Test that when opening a file from ODFS fails due an access error that is not
+// because reauthentication to OneDrive is required, the generic access error
+// notification is shown.
+IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
+  // Creates a fake ODFS with a test file.
+  SetUpTest();
+  // Ensure the open fails due to some access error which is not because
+  // reauthentication to OneDrive is required.
+  provided_file_system_->SetGetActionsError(
+      base::File::Error::FILE_ERROR_ACCESS_DENIED);
+  provided_file_system_->SetReauthenticationRequired(false);
+
+  NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
+
+  std::vector<storage::FileSystemURL> file_urls{odfs_test_file_url_};
+
+  web_app_publisher_->ClearPastLaunches();
+
+  // Open file directly from ODFS.
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive,
+      nullptr));
+  task->OpenOrMoveFiles();
+  // Expect that there was a notification.
+  EXPECT_FALSE(notification_message_.empty());
+  // Expect that the reauthentication required notification was shown.
+  EXPECT_EQ(notification_message_,
+            ash::cloud_upload::kGenericOneDriveAccessErrorMessage);
+
+  NotificationDisplayService::GetForProfile(browser()->profile())
+      ->RemoveObserver(this);
 }
 
 // Test that OpenOrMoveFiles() will open an Android OneDrive office file via

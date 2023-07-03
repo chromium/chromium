@@ -174,19 +174,27 @@ void HandleSignInClick(Profile* profile, absl::optional<int> button_index) {
 // Show system error notification to communicate why their file can't be opened.
 // If the user needs to reauthenticate to OneDrive, prompt the user to
 // reauthenticate to ODFS via a "Sign in" button.
-void ShowUnableToOpenNotification(Profile* profile, base::File::Error error) {
+void ShowUnableToOpenNotification(Profile* profile,
+                                  base::File::Error error,
+                                  bool reauthentication_required = false) {
   std::string message;
   std::vector<message_center::ButtonInfo> notification_buttons;
-  switch (error) {
-    case base::File::Error::FILE_ERROR_ACCESS_DENIED:
-      // TODO(b/288022200 b/275911611): Distinguish between reauthentication
-      // required and generic error.
-      message = kReauthenticationRequiredMessage;
-      //  Add "Sign in" button.
-      notification_buttons.emplace_back(u"Sign in");
-      break;
-    default:
-      message = kGenericErrorMessage;
+
+  // Special case of |FILE_ERROR_ACCESS_DENIED| where the user needs to
+  // reauthenticate to OneDrive.
+  if (reauthentication_required) {
+    message = kReauthenticationRequiredMessage;
+    //  Add "Sign in" button.
+    notification_buttons.emplace_back(u"Sign in");
+  } else {
+    switch (error) {
+      // Regular case of |FILE_ERROR_ACCESS_DENIED|.
+      case base::File::Error::FILE_ERROR_ACCESS_DENIED:
+        message = kGenericOneDriveAccessErrorMessage;
+        break;
+      default:
+        message = kGenericErrorMessage;
+    }
   }
 
   // TODO(b/254586358): i18n these strings.
@@ -218,6 +226,38 @@ void ShowUnableToOpenNotification(Profile* profile, base::File::Error error) {
                                 /*metadata=*/nullptr);
 }
 
+// Check if reauthentication to OneDrive is required from the ODFS metadata
+// and show the reuathentication is required notification if true. Otherwise
+// show the generic access error notification.
+void OnGetReauthenticationRequired(
+    Profile* profile,
+    base::expected<ODFSMetadata, base::File::Error> metadata_or_error) {
+  if (!metadata_or_error.has_value()) {
+    LOG(ERROR) << "Failed to get reauthentication required state: "
+               << metadata_or_error.error();
+    return;
+  }
+  ShowUnableToOpenNotification(profile,
+                               base::File::Error::FILE_ERROR_ACCESS_DENIED,
+                               metadata_or_error->reauthentication_required);
+}
+
+// Show the correct error notification for base::File::FILE_ERROR_ACCESS_DENIED.
+// Request ODFS metadata and show the correct notification in the
+// |OnGetReauthenticationRequired| callback.
+void ShowAccessDeniedNotification(Profile* profile) {
+  absl::optional<file_system_provider::ProvidedFileSystemInterface*>
+      file_system = GetODFS(profile);
+  if (!file_system.has_value()) {
+    ShowUnableToOpenNotification(profile,
+                                 base::File::Error::FILE_ERROR_ACCESS_DENIED,
+                                 /*reauthentication_required=*/false);
+    return;
+  }
+  GetODFSMetadata(file_system.value(),
+                  base::BindOnce(&OnGetReauthenticationRequired, profile));
+}
+
 // Open file with |file_path| from ODFS |file_system|. Open in the OneDrive PWA
 // without link capturing.
 void OpenFileFromODFS(
@@ -232,6 +272,10 @@ void OpenFileFromODFS(
              base::File::Error result) {
             Profile* profile = profile_weak_ptr.get();
             if (!profile) {
+              return;
+            }
+            if (result == base::File::Error::FILE_ERROR_ACCESS_DENIED) {
+              ShowAccessDeniedNotification(profile);
               return;
             }
             if (result != base::File::Error::FILE_OK) {
@@ -709,8 +753,7 @@ absl::optional<ODFSFileSystemAndPath> AndroidOneDriveUrlToODFS(
 
 void CloudOpenTask::CheckEmailAndOpenURLs(
     const std::string& android_onedrive_email,
-    base::expected<cloud_upload::ODFSMetadata, base::File::Error>
-        metadata_or_error) {
+    base::expected<ODFSMetadata, base::File::Error> metadata_or_error) {
   if (!metadata_or_error.has_value()) {
     LOG(ERROR) << "Failed to get user email: " << metadata_or_error.error();
     return;

@@ -101,7 +101,8 @@ void AddFakeWebApp(const std::string& app_id,
 
 // Fake provided file system implementation specific to mimic ODFS. Override
 // `CreateFile` method to fail with a specific error, if set. Override
-// `GetActions` method to return fake actions.
+// `GetActions` method to return fake actions and to fail with a specific error
+// for a non-root entry, if set.
 class FakeProvidedFileSystemOneDrive
     : public ash::file_system_provider::FakeProvidedFileSystem {
  public:
@@ -115,10 +116,12 @@ class FakeProvidedFileSystemOneDrive
       const base::FilePath& file_path,
       storage::AsyncFileUtil::StatusCallback callback) override;
 
-  // Parallel what ODFS does:
+  // Parallel what ODFS does but fail to get non-root entry metadata if
+  // |get_actions_error_| is set:
   // - If the number of entries requested is not 1, fail.
   // - If the root is requested, return (test) ODFS metadata.
-  // - If the entry is found, return (test) file metadata.
+  // - If |get_actions_error_| is set, fail request with it.
+  // - If the entry is found, return (test) entry metadata.
   // - Otherwise, fail.
   ash::file_system_provider::AbortCallback GetActions(
       const std::vector<base::FilePath>& entry_paths,
@@ -127,11 +130,16 @@ class FakeProvidedFileSystemOneDrive
   // Set error for the `CreateFile` to fail with.
   void SetCreateFileError(base::File::Error error);
 
+  // Set error for the `GetActions` to fail with when non-root entry actions are
+  // requested.
+  void SetGetActionsError(base::File::Error error);
+
   // Set value for the `kReauthenticationRequiredId` ODFS metadata action.
   void SetReauthenticationRequired(bool reauthentication_required);
 
  private:
   base::File::Error create_file_error_ = base::File::Error::FILE_OK;
+  base::File::Error get_actions_error_ = base::File::Error::FILE_OK;
   bool reauthentication_required_ = false;
 };
 

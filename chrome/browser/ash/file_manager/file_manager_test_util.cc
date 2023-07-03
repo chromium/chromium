@@ -273,6 +273,11 @@ void FakeProvidedFileSystemOneDrive::SetCreateFileError(
   create_file_error_ = error;
 }
 
+void FakeProvidedFileSystemOneDrive::SetGetActionsError(
+    base::File::Error error) {
+  get_actions_error_ = error;
+}
+
 void FakeProvidedFileSystemOneDrive::SetReauthenticationRequired(
     bool reauthentication_required) {
   reauthentication_required_ = reauthentication_required;
@@ -297,13 +302,18 @@ FakeProvidedFileSystemOneDrive::GetActions(
     std::move(callback).Run(actions, base::File::FILE_OK);
     return ash::file_system_provider::AbortCallback();
   }
-  // Otherwise, return |kODFSSampleUrl| if entry exists.
+  // If `get_actions_error_` set, mock error for non-root entry.
+  if (get_actions_error_ != base::File::Error::FILE_OK) {
+    std::move(callback).Run(actions, get_actions_error_);
+    return ash::file_system_provider::AbortCallback();
+  }
   ash::file_system_provider::FakeEntry* entry = GetEntry(entry_paths[0]);
+  // If no entry exists, return error.
   if (!entry) {
     std::move(callback).Run(actions, base::File::FILE_ERROR_NOT_FOUND);
     return ash::file_system_provider::AbortCallback();
   }
-
+  // Otherwise, return |kODFSSampleUrl|.
   actions.push_back({ash::cloud_upload::kOneDriveUrlActionId, kODFSSampleUrl});
 
   std::move(callback).Run(actions, base::File::FILE_OK);

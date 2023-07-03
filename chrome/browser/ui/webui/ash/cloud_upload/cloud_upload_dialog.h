@@ -33,6 +33,9 @@ namespace file_manager::file_tasks {
 FORWARD_DECLARE_TEST(DriveTest, OpenFileInDrive);
 FORWARD_DECLARE_TEST(OneDriveTest, OpenFileFromODFS);
 FORWARD_DECLARE_TEST(OneDriveTest, OpenFileNotFromODFS);
+FORWARD_DECLARE_TEST(OneDriveTest,
+                     FailToOpenFileFromODFSReauthenticationRequired);
+FORWARD_DECLARE_TEST(OneDriveTest, FailToOpenFileFromODFSOtherAccessError);
 FORWARD_DECLARE_TEST(OneDriveTest, OpenFileFromAndroidOneDriveViaODFS);
 FORWARD_DECLARE_TEST(OneDriveTest,
                      FailToOpenFileFromAndroidOneDriveViaODFSDiffEmail);
@@ -130,6 +133,10 @@ class CloudOpenTask : public BrowserListObserver,
                            OpenFileFromODFS);
   FRIEND_TEST_ALL_PREFIXES(::file_manager::file_tasks::OneDriveTest,
                            OpenFileNotFromODFS);
+  FRIEND_TEST_ALL_PREFIXES(::file_manager::file_tasks::OneDriveTest,
+                           FailToOpenFileFromODFSReauthenticationRequired);
+  FRIEND_TEST_ALL_PREFIXES(::file_manager::file_tasks::OneDriveTest,
+                           FailToOpenFileFromODFSOtherAccessError);
   FRIEND_TEST_ALL_PREFIXES(::file_manager::file_tasks::OneDriveTest,
                            OpenFileFromAndroidOneDriveViaODFS);
   FRIEND_TEST_ALL_PREFIXES(::file_manager::file_tasks::OneDriveTest,
