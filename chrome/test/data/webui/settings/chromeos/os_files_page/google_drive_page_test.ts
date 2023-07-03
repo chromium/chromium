@@ -388,8 +388,8 @@ suite('<settings-google-drive-subpage>', function() {
 
     clearOfflineStorageButton.click();
     await assertAsync(
-        () =>
-            page.dialogType === ConfirmationDialogType.BULK_PINNING_CLEAR_FILES,
+        () => page.dialogType ===
+            ConfirmationDialogType.BULK_PINNING_CLEAN_UP_STORAGE,
         5000);
     await clickConfirmationDialogButton('.cancel-button');
     assertEquals(testBrowserProxy.handler.getCallCount('clearPinnedFiles'), 0);
@@ -399,8 +399,8 @@ suite('<settings-google-drive-subpage>', function() {
 
     clearOfflineStorageButton.click();
     await assertAsync(
-        () =>
-            page.dialogType === ConfirmationDialogType.BULK_PINNING_CLEAR_FILES,
+        () => page.dialogType ===
+            ConfirmationDialogType.BULK_PINNING_CLEAN_UP_STORAGE,
         5000);
     await clickConfirmationDialogButton('.action-button');
     await assertAsync(

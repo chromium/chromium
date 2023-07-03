@@ -473,6 +473,10 @@ const char kSmartPrivacySettingsLearnMoreURL[] =
 const char kSmbSharesLearnMoreURL[] =
     "https://support.google.com/chromebook?p=network_file_shares";
 
+// TODO(b/289450495): Update this to a p link once we have it.
+const char kGoogleDriveOfflineLearnMoreURL[] =
+    "https://support.google.com/chromebook/answer/2809731";
+
 const char kSpeakOnMuteDetectionLearnMoreURL[] =
     "https://support.google.com/chromebook?p=mic-mute";
 

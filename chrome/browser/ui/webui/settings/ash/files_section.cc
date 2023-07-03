@@ -105,6 +105,8 @@ FilesSection::~FilesSection() = default;
 void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"disconnectGoogleDriveAccount", IDS_SETTINGS_DISCONNECT_GOOGLE_DRIVE},
+      {"disconnectGoogleDriveAccountDescription",
+       IDS_SETTINGS_DISCONNECT_GOOGLE_DRIVE_DESC},
       {"googleDriveLabel", IDS_SETTINGS_GOOGLE_DRIVE},
       {"googleDriveDisabledLabel", IDS_SETTINGS_GOOGLE_DRIVE_DISABLED},
       {"googleDriveDisconnectLabel", IDS_SETTINGS_GOOGLE_DRIVE_DISCONNECT},
@@ -120,14 +122,14 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_CALCULATING_SUBTITLE},
       {"googleDriveOfflineClearErrorSubtitle",
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_ERROR_SUBTITLE},
-      {"googleDriveOfflineClearAction",
-       IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_ACTION},
-      {"googleDriveOfflineClearDialogTitle",
-       IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_DIALOG_TITLE},
-      {"googleDriveOfflineClearDialogBody",
-       IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_DIALOG_BODY},
-      {"googleDriveClearStorageDisabledTooltip",
-       IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_DISABLED_TOOLTIP},
+      {"googleDriveCleanUpStorageAction",
+       IDS_SETTINGS_GOOGLE_DRIVE_CLEAN_UP_STORAGE_ACTION},
+      {"googleDriveOfflineCleanStorageDialogTitle",
+       IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_TITLE},
+      {"googleDriveOfflineCleanStorageDialogBody",
+       IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_BODY},
+      {"googleDriveCleanUpStorageDisabledTooltip",
+       IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_DISABLED_TOOLTIP},
       {"googleDriveTurnOffLabel",
        IDS_SETTINGS_GOOGLE_DRIVE_TURN_OFF_BUTTON_LABEL},
       {"googleDriveTurnOffTitle",
@@ -184,6 +186,10 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString("smbSharesLearnMoreURL",
                          GetHelpUrlWithBoard(chrome::kSmbSharesLearnMoreURL));
+
+  html_source->AddString(
+      "googleDriveCleanUpStorageLearnMoreLink",
+      GetHelpUrlWithBoard(chrome::kGoogleDriveOfflineLearnMoreURL));
 
   html_source->AddBoolean(
       "showOfficeSettings",

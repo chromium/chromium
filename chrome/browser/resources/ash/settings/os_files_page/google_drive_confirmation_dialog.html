@@ -2,7 +2,10 @@
 <cr-dialog id="dialog" show-on-attach close-text="$i18n{close}"
     on-cancel="onDialogCancel_" on-close="onDialogClose_">
   <div slot="title">[[titleText]]</div>
-  <div slot="body">[[bodyText]]</div>
+  <div slot="body">
+    <slot></slot>
+    [[bodyText]]
+  </div>
   <div slot="button-container">
     <template is="dom-if" if="[[cancelButtonText]]" restamp>
       <cr-button class="cancel-button" on-click="onCancelClick_">
