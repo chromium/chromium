@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
 
+#import "base/mac/foundation_util.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_member.h"
@@ -12,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/web_selection/web_selection_response.h"
@@ -26,6 +28,10 @@
 #endif
 
 namespace {
+typedef void (^ProceduralBlockWithItemArray)(NSArray<UIMenuElement*>*);
+typedef void (^ProceduralBlockWithBlockWithItemArray)(
+    ProceduralBlockWithItemArray);
+
 enum class PartialTranslateError {
   kSelectionTooLong,
   kSelectionEmpty,
@@ -248,17 +254,16 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   self.controller = ios::provider::NewPartialTranslateController(
       response.selectedText, sourceRect, self.incognito);
   __weak __typeof(self) weakSelf = self;
-  [self.controller
-      presentOnViewController:self.baseViewController
-        flowCompletionHandler:^(BOOL success) {
-          weakSelf.controller = nil;
-          if (success) {
-            ReportOutcome(PartialTranslateOutcomeStatus::kSuccess);
-          } else {
-            [weakSelf switchToFullTranslateWithError:PartialTranslateError::
-                                                         kGenericError];
-          }
-        }];
+  [self.controller presentOnViewController:self.baseViewController
+                     flowCompletionHandler:^(BOOL success) {
+                       weakSelf.controller = nil;
+                       if (success) {
+                         ReportOutcome(PartialTranslateOutcomeStatus::kSuccess);
+                       } else {
+                         [weakSelf switchToFullTranslateWithError:
+                                       PartialTranslateError::kGenericError];
+                       }
+                     }];
 }
 
 - (void)triggerFullTranslate {
@@ -273,6 +278,116 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   }
   WebSelectionTabHelper* helper = WebSelectionTabHelper::FromWebState(webState);
   return helper;
+}
+
+- (void)addItemWithCompletion:(ProceduralBlockWithItemArray)completion {
+  if (![self canHandlePartialTranslateSelection]) {
+    completion(@[]);
+    return;
+  }
+  WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
+  if (!tabHelper) {
+    completion(@[]);
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  tabHelper->GetSelectedText(base::BindOnce(^(WebSelectionResponse* response) {
+    if (weakSelf) {
+      [weakSelf addItemWithResponse:response completion:completion];
+    } else {
+      completion(@[]);
+    }
+  }));
+}
+
+- (void)addItemWithResponse:(WebSelectionResponse*)response
+                 completion:(ProceduralBlockWithItemArray)completion {
+  __weak __typeof(self) weakSelf = self;
+  if (!response.valid ||
+      [[response.selectedText
+          stringByTrimmingCharactersInSet:[NSCharacterSet
+                                              whitespaceAndNewlineCharacterSet]]
+          length] == 0u) {
+    completion(@[]);
+    return;
+  }
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_PARTIAL_TRANSLATE_EDIT_MENU_ENTRY);
+  NSString* partialTranslateId = @"chromecommand.partialTranslate";
+  UIAction* action =
+      [UIAction actionWithTitle:title
+                          image:CustomSymbolWithPointSize(
+                                    kTranslateSymbol, kSymbolActionPointSize)
+                     identifier:partialTranslateId
+                        handler:^(UIAction* a) {
+                          [weakSelf receivedWebSelectionResponse:response];
+                        }];
+  completion(@[ action ]);
+}
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+  if (![self shouldInstallPartialTranslate]) {
+    return;
+  }
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_PARTIAL_TRANSLATE_EDIT_MENU_ENTRY);
+  NSString* partialTranslateId = @"chromecommand.menu.partialTranslate";
+
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlockWithBlockWithItemArray provider =
+      ^(ProceduralBlockWithItemArray completion) {
+        [weakSelf addItemWithCompletion:completion];
+      };
+  // Use a deferred element so that the item is displayed depending on the text
+  // selection and updated on selection change.
+  UIDeferredMenuElement* deferredMenuElement =
+      [UIDeferredMenuElement elementWithProvider:provider];
+
+  // Translate command is in the lookup menu.
+  // Retrieve the menu so it can be replaced with partial translate.
+  UIMenu* lookupMenu = [builder menuForIdentifier:UIMenuLookup];
+  NSArray* children = lookupMenu.children;
+  NSInteger translateIndex = -1;
+  for (NSUInteger index = 0; index < children.count; index++) {
+    UIMenuElement* element = children[index];
+    // Translate is a command.
+    if (![element isKindOfClass:[UICommand class]]) {
+      continue;
+    }
+    UICommand* command = base::mac::ObjCCast<UICommand>(element);
+    if (command.action != NSSelectorFromString(@"_translate:")) {
+      continue;
+    }
+    translateIndex = index;
+    break;
+  }
+
+  if (translateIndex == -1) {
+    // Translate command not found. Fallback adding the partial translate before
+    // the lookup menu.
+    // TODO(crbug.com/1417639): Catch this so it can be fixed.
+    UIMenu* partialTranslateMenu =
+        [UIMenu menuWithTitle:title
+                        image:nil
+                   identifier:partialTranslateId
+                      options:UIMenuOptionsDisplayInline
+                     children:@[ deferredMenuElement ]];
+    [builder insertSiblingMenu:partialTranslateMenu
+        beforeMenuForIdentifier:UIMenuLookup];
+    return;
+  }
+
+  // Rebuild the lookup menu with partial translate
+  NSMutableArray* newChildren = [NSMutableArray arrayWithArray:children];
+  newChildren[translateIndex] = deferredMenuElement;
+  UIMenu* newPartialTranslate = [UIMenu menuWithTitle:lookupMenu.title
+                                                image:lookupMenu.image
+                                           identifier:lookupMenu.identifier
+                                              options:lookupMenu.options
+                                             children:newChildren];
+
+  [builder replaceMenuForIdentifier:UIMenuLookup withMenu:newPartialTranslate];
 }
 
 @end

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_PARTIAL_TRANSLATE_PARTIAL_TRANSLATE_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_PARTIAL_TRANSLATE_PARTIAL_TRANSLATE_DELEGATE_H_
 
+@protocol UIMenuBuilder;
+
 // Protocol for handling link to text and presenting related UI.
 @protocol PartialTranslateDelegate
 
@@ -17,6 +19,9 @@
 // Whether partial translate action should be proposed (independently of the
 // current selection).
 - (BOOL)shouldInstallPartialTranslate;
+
+// Adds partial translate entry to the menu.
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder;
 
 @end
 
