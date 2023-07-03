@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import sys
-
 from .argument import Argument
 from .ast_group import AstGroup
 from .attribute import Attribute
@@ -30,11 +28,6 @@ from .literal_constant import LiteralConstant
 from .namespace import Namespace
 from .operation import Operation
 from .typedef import Typedef
-
-
-# TODO(crbug.com/1174969): Remove this once Python2 is obsoleted.
-if sys.version_info.major != 2:
-    long = int
 
 
 def load_and_register_idl_definitions(filepaths, register_ir,
@@ -557,7 +550,7 @@ class _IRBuilder(object):
         elif type_token == 'integer':
             idl_type = factory.simple_type(name='long', debug_info=debug_info)
             assert isinstance(value_token, str)
-            value = long(value_token, base=0)
+            value = int(value_token, base=0)
             literal = value_token
         elif type_token == 'float':
             idl_type = factory.simple_type(
