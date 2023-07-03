@@ -160,6 +160,7 @@ const char kWebAppTaskType[] = "web";
 
 constexpr char kPdfMimeType[] = "application/pdf";
 constexpr char kPdfFileExtension[] = ".pdf";
+constexpr char kEncryptedMimeType[] = "application/vnd.google-gsuite.encrypted";
 
 void RecordChangesInDefaultPdfApp(const std::string& new_default_app_id,
                                   const std::set<std::string>& mime_types,
@@ -425,7 +426,7 @@ bool ShouldBeOpenedWithBrowser(const std::string& extension_id,
                                const std::string& action_id) {
   return IsFilesAppId(extension_id) &&
          (action_id == "view-pdf" || action_id == "view-in-browser" ||
-          action_id == "open-hosted-generic" ||
+          action_id == "open-encrypted" || action_id == "open-hosted-generic" ||
           action_id == "open-hosted-gdoc" ||
           action_id == "open-hosted-gsheet" ||
           action_id == "open-hosted-gslides");
@@ -1099,7 +1100,23 @@ void FindAllTypesOfTasks(Profile* profile,
                          FindTasksCallback callback) {
   DCHECK(profile);
   auto resulting_tasks = std::make_unique<ResultingTasks>();
-  if (!ash::features::ShouldArcFileTasksUseAppService()) {
+  bool has_encrypted_item = std::any_of(
+      entries.begin(), entries.end(), [](const extensions::EntryInfo& entry) {
+        return IsEncryptedMimeType(entry.mime_type);
+      });
+  bool all_encrypted_items = std::all_of(
+      entries.begin(), entries.end(), [](const extensions::EntryInfo& entry) {
+        return IsEncryptedMimeType(entry.mime_type);
+      });
+  if (has_encrypted_item) {
+    if (all_encrypted_items) {
+      resulting_tasks->tasks.emplace_back(FullTaskDescriptor(
+          TaskDescriptor(kFileManagerAppId, TASK_TYPE_FILE_HANDLER,
+                         "open-encrypted"),
+          "", GURL(), false, false, false));
+    }
+    std::move(callback).Run(std::move(resulting_tasks));
+  } else if (!ash::features::ShouldArcFileTasksUseAppService()) {
     // 1. Find and append ARC handler tasks if ARC file tasks aren't
     // provided by App Service.
     FindArcTasks(
@@ -1276,6 +1293,10 @@ bool IsOfficeFile(const base::FilePath& path) {
     }
   }
   return false;
+}
+
+bool IsEncryptedMimeType(std::string mime_type) {
+  return mime_type.substr(0, strlen(kEncryptedMimeType)) == kEncryptedMimeType;
 }
 
 namespace {

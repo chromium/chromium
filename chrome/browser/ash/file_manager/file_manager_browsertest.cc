@@ -1200,10 +1200,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("textOpenDrive")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    OpenHostedFiles, /* open_hosted_files.js */
+    OpenFilesInWebDrive, /* open_files_in_web_drive.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("hostedOpenDrive"),
-                      TestCase("encryptedHostedOpenDrive")));
+                      TestCase("encryptedHostedOpenDrive"),
+                      TestCase("encryptedNonHostedOpenDrive")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ZipFiles, /* zip_files.js */

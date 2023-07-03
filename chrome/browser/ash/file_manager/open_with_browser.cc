@@ -112,6 +112,21 @@ void OpenHostedDriveFsFile(const base::FilePath& file_path,
   OpenNewTab(hosted_url);
 }
 
+// Open an encrypted file by redirecting the user to Google Drive.
+void OpenEncryptedDriveFsFile(const base::FilePath& file_path,
+                              drive::FileError error,
+                              drivefs::mojom::FileMetadataPtr metadata) {
+  if (error != drive::FILE_ERROR_OK) {
+    return;
+  }
+  GURL hosted_url(metadata->alternate_url);
+  if (!hosted_url.is_valid()) {
+    return;
+  }
+
+  OpenNewTab(hosted_url);
+}
+
 }  // namespace
 
 bool OpenFileWithBrowser(Profile* profile,
@@ -121,6 +136,22 @@ bool OpenFileWithBrowser(Profile* profile,
   DCHECK(profile);
 
   const base::FilePath file_path = file_system_url.path();
+
+  if (action_id == "open-encrypted") {
+    drive::DriveIntegrationService* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+    base::FilePath path;
+    if (integration_service && integration_service->IsMounted() &&
+        integration_service->GetDriveFsInterface() &&
+        integration_service->GetRelativeDrivePath(file_path, &path)) {
+      integration_service->GetDriveFsInterface()->GetMetadata(
+          path, base::BindOnce(&OpenEncryptedDriveFsFile, file_path));
+      return true;
+    }
+    LOG(WARNING) << "Failed to open file: " << file_path.value()
+                 << ": no connection to integration service";
+    return false;
+  }
 
   // For things supported natively by the browser, we should open it in a tab.
   if (IsViewableInBrowser(file_path) || action_id == "view-pdf" ||

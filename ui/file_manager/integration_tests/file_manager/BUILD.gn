@@ -36,7 +36,7 @@ js_type_check("closure_compile") {
     ":my_files",
     ":office",
     ":open_audio_media_app",
-    ":open_hosted_files",
+    ":open_files_in_web_drive",
     ":open_image_media_app",
     ":open_media_app",
     ":open_sniffed_files",
@@ -279,7 +279,7 @@ js_library("open_audio_media_app") {
   ]
 }
 
-js_library("open_hosted_files") {
+js_library("open_files_in_web_drive") {
   testonly = true
   deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }

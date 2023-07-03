@@ -11,11 +11,11 @@ import {testcase} from '../testcase.js';
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
 
 /**
- * Tests opening a hosted file from Files app.
+ * Tests opening a file from Files app in Web Drive.
  *
  * @param {Object<TestEntryInfo>} entry FileSystem entry to use.
  */
-async function hostedFileOpen(entry) {
+async function webDriveFileOpen(entry, expected_hostname) {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [entry.targetPath],
@@ -50,15 +50,19 @@ async function hostedFileOpen(entry) {
   // Get the url of the tab, which may still be pending.
   const url = new URL(tabs[0].pendingUrl || tabs[0].url);
   // Check the end of the URL matches the file we tried to open.
-  chrome.test.assertEq(url.hostname, 'document_alternate_link');
+  chrome.test.assertEq(expected_hostname, url.hostname);
   chrome.test.assertEq(
       url.pathname, '/' + encodeURIComponent(entry.targetPath));
 }
 
 testcase.hostedOpenDrive = () => {
-  return hostedFileOpen(ENTRIES.testDocument);
+  return webDriveFileOpen(ENTRIES.testDocument, 'document_alternate_link');
 };
 
 testcase.encryptedHostedOpenDrive = () => {
-  return hostedFileOpen(ENTRIES.testCSEDocument);
+  return webDriveFileOpen(ENTRIES.testCSEDocument, 'document_alternate_link');
+};
+
+testcase.encryptedNonHostedOpenDrive = () => {
+  return webDriveFileOpen(ENTRIES.testCSEFile, 'file_alternate_link');
 };

@@ -414,6 +414,10 @@ bool IsHtmlFile(const base::FilePath& path);
 // Returns whether |path| is a MS Office file according to its extension.
 bool IsOfficeFile(const base::FilePath& path);
 
+// Files encrypted with Google Drive CSE have a specific MIME type; this helper
+// returns whether the given MIME type denotes such a file.
+bool IsEncryptedMimeType(std::string mime_type);
+
 // Returns the group of extensions we consider to be 'Word', 'Excel' or
 // 'PowerPoint' files for the purpose of setting preferences. The extensions
 // contain the '.' character at the start.
