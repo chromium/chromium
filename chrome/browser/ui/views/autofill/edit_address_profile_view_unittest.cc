@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -62,7 +64,8 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
   }
 
   void TearDown() override {
-    widget_->Close();
+    dialog_ = nullptr;
+    std::exchange(widget_, nullptr)->Close();
     parent_widget_.reset();
     ChromeViewsTestBase::TearDown();
   }
@@ -83,8 +86,8 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<views::Widget> parent_widget_;
-  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
-  raw_ptr<EditAddressProfileView, DanglingUntriaged> dialog_;
+  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<EditAddressProfileView> dialog_ = nullptr;
   testing::NiceMock<MockEditAddressProfileDialogController> mock_controller_;
 };
 
