@@ -131,20 +131,6 @@
   FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
 }
 
-#pragma mark - SideSwipeToolbarSnapshotProviding
-
-- (UIImage*)toolbarSideSwipeSnapshotForWebState:(web::WebState*)webState {
-  [self updateToolbarForSideSwipeSnapshot:webState];
-
-  UIImage* toolbarSnapshot = CaptureViewWithOption(
-      [self.viewController view], [[UIScreen mainScreen] scale],
-      kClientSideRendering);
-
-  [self resetToolbarAfterSideSwipeSnapshot];
-
-  return toolbarSnapshot;
-}
-
 #pragma mark - NewTabPageControllerDelegate
 
 - (void)setScrollProgressForTabletOmnibox:(CGFloat)progress {

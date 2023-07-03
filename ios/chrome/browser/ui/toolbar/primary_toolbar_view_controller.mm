@@ -68,6 +68,10 @@
   if (!onNTP)
     return;
 
+  // An opaque image is expected during a snapshot. Make sure the view is not
+  // hidden and display a blank view by using the NTP background and by hidding
+  // the location bar.
+  self.view.hidden = NO;
   self.view.backgroundColor =
       self.buttonFactory.toolbarConfiguration.NTPBackgroundColor;
   self.view.locationBarContainer.hidden = YES;
@@ -75,6 +79,8 @@
 
 - (void)resetAfterSideSwipeSnapshot {
   [super resetAfterSideSwipeSnapshot];
+  // Note: the view is made visible or not by an `updateToolbar` call when the
+  // snapshot animation ends.
   self.view.backgroundColor =
       self.buttonFactory.toolbarConfiguration.backgroundColor;
   if (self.hasOmnibox) {
