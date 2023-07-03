@@ -323,6 +323,8 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 + (void)recordStartupInactiveTabCount:(int)tabCount;
 // Logs the number of tabs older than 21 days.
 + (void)recordStartupAbsoluteInactiveTabCount:(int)tabCount;
+// Logs the number of pinned tabs at startup.
++ (void)recordStartupPinnedTabCount:(int)tabCount;
 // Logs the number of tabs with UMAHistogramCount100 and allows testing.
 + (void)recordStartupTabCount:(int)tabCount;
 // Logs the number of tabs with UMAHistogramCount100 and allows testing.
@@ -413,6 +415,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
   RecordAndResetUkmLogSizeOnSuccessCounter();
 
   int tabCount = 0;
+  int pinnedTabCount = 0;
   int NTPTabCount = 0;
   int liveNTPTabCount = 0;
   int oldTabCount = 0;
@@ -449,6 +452,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
     const int inactiveWebStateListCount = inactiveWebStateList->count();
 
     tabCount += webStateListCount + inactiveWebStateListCount;
+    pinnedTabCount += webStateList->GetIndexOfFirstNonPinnedWebState();
     activeTabCount += webStateListCount;
     inactiveTabCount += inactiveWebStateListCount;
     // All inactive tabs are inactive since minimum 7 days or more.
@@ -512,6 +516,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
     [self recordStartupActiveTabCount:activeTabCount];
     [self recordStartupInactiveTabCount:inactiveTabCount];
     [self recordStartupAbsoluteInactiveTabCount:absoluteInactiveTabCount];
+    [self recordStartupPinnedTabCount:pinnedTabCount];
     [self recordStartupTabCount:tabCount];
     [self recordStartupNTPTabCount:NTPTabCount];
     [self recordStartupOldTabCount:oldTabCount];
@@ -739,6 +744,10 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 
 + (void)recordStartupAbsoluteInactiveTabCount:(int)tabCount {
   base::UmaHistogramCounts100("Tabs.OldCountAtStartup", tabCount);
+}
+
++ (void)recordStartupPinnedTabCount:(int)tabCount {
+  base::UmaHistogramCounts1000("Tabs.PinnedCountAtStartup", tabCount);
 }
 
 + (void)recordStartupTabCount:(int)tabCount {
