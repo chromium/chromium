@@ -47,6 +47,8 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       {"continueSetup", IDS_OFFICE_CANCEL_SETUP_CONTINUE_BUTTON},
       {"animationPlayText", IDS_OOBE_PLAY_ANIMATION_MESSAGE},
       {"animationPauseText", IDS_OOBE_PAUSE_ANIMATION_MESSAGE},
+      {"moveAndOpen", IDS_OFFICE_MOVE_CONFIRMATION_MOVE_BUTTON},
+      {"copyAndOpen", IDS_OFFICE_MOVE_CONFIRMATION_COPY_BUTTON},
       // Connect To OneDrive dialog.
       {"connectToOneDriveTitle", IDS_CONNECT_TO_ONEDRIVE_TITLE},
       {"connectToOneDriveSignInFlowBodyText",
@@ -78,7 +80,6 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       {"oneDriveSetupCompleteTitle", IDS_OFFICE_ONEDRIVE_SETUP_COMPLETE_TITLE},
       {"oneDriveSetupCompleteBodyText",
        IDS_OFFICE_ONEDRIVE_SETUP_COMPLETE_BODY_TEXT},
-      {"installPWABodyText", IDS_OFFICE_INSTALL_PWA_BODY_TEXT},
       // Welcome dialog.
       {"welcomeBodyText", IDS_OFFICE_WELCOME_BODY_TEXT},
       {"welcomeGetStarted", IDS_OFFICE_WELCOME_GET_STARTED},
@@ -86,7 +87,23 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       {"welcomeInstallOfficeWebApp", IDS_OFFICE_WELCOME_INSTALL_MICROSOFT365},
       {"welcomeMoveFiles", IDS_OFFICE_WELCOME_FILES_WILL_MOVE},
       {"welcomeSetUp", IDS_OFFICE_WELCOME_SET_UP},
-      {"welcomeTitle", IDS_OFFICE_WELCOME_TITLE}};
+      {"welcomeTitle", IDS_OFFICE_WELCOME_TITLE},
+      // Copy/Move confirmation dialog.
+      {"moveConfirmationMoveTitle", IDS_OFFICE_MOVE_CONFIRMATION_MOVE_TITLE},
+      {"moveConfirmationMoveTitlePlural",
+       IDS_OFFICE_MOVE_CONFIRMATION_MOVE_TITLE_PLURAL},
+      {"moveConfirmationCopyTitle", IDS_OFFICE_MOVE_CONFIRMATION_COPY_TITLE},
+      {"moveConfirmationCopyTitlePlural",
+       IDS_OFFICE_MOVE_CONFIRMATION_COPY_TITLE_PLURAL},
+      {"moveConfirmationOneDriveBodyText",
+       IDS_OFFICE_MOVE_CONFIRMATION_ONEDRIVE_BODY_TEXT},
+      {"moveConfirmationGoogleDriveBodyText",
+       IDS_OFFICE_MOVE_CONFIRMATION_GOOGLE_DRIVE_BODY_TEXT},
+      {"moveConfirmationAlwaysMove",
+       IDS_OFFICE_MOVE_CONFIRMATION_ALWAYS_MOVE_CHECKBOX},
+      {"oneDrive", IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE},
+      {"googleDrive", IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE},
+  };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
   webui::SetupWebUIDataSource(

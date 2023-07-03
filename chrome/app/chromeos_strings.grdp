@@ -6925,6 +6925,41 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     When opening Word, Excel, and Powerpoint files, the files will move to Microsoft OneDrive before opening in Microsoft 365
   </message>
 
+  <!-- Office move confirmation dialog -->
+  <message name="IDS_OFFICE_MOVE_CONFIRMATION_MOVE_TITLE" desc="Title for a dialog asking the user to confirm moving one file to OneDrive/Google Drive before opening it.">
+    Move 1 file to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> to open?
+  </message>
+  <message name="IDS_OFFICE_MOVE_CONFIRMATION_MOVE_TITLE_PLURAL" desc="Title for a dialog asking the user to confirm moving more than one files to OneDrive/Google Drive before opening it.">
+    Move <ph name="NUM_OF_FILES">$2<ex>5</ex></ph> files to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> to open?
+  </message>
+  <message name="IDS_OFFICE_MOVE_CONFIRMATION_COPY_TITLE" desc="Title for a dialog asking the user to confirm copying one file to OneDrive/Google Drive before opening it.">
+    Copy 1 file to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> to open?
+  </message>
+  <message name="IDS_OFFICE_MOVE_CONFIRMATION_COPY_TITLE_PLURAL" desc="Title for a dialog asking the user to confirm copying more than one files to OneDrive/Google Drive before opening it.">
+    Copy <ph name="NUM_OF_FILES">$2<ex>5</ex></ph> files to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> to open?
+  </message>
+  <message name="IDS_OFFICE_MOVE_CONFIRMATION_ONEDRIVE_BODY_TEXT" desc="Explanation text for a dialog asking the user to confirm moving files to OneDrive before opening it.">
+    Microsoft 365 requires files to be stored in OneDrive. Local files will move and files from other locations will copy. Your files can be found in the Microsoft OneDrive folder in the Files app.
+  </message>
+  <message name="IDS_OFFICE_MOVE_CONFIRMATION_GOOGLE_DRIVE_BODY_TEXT" desc="Explanation text for a dialog asking the user to confirm moving files to Google Drive before opening it.">
+    Google Docs, Sheets, and Slides require files to be stored in Google Drive. Local files will move and files from other locations will copy. Your files can be found in the Google Drive folder in the Files app.
+  </message>
+  <message name="IDS_OFFICE_MOVE_CONFIRMATION_ALWAYS_MOVE_CHECKBOX" desc="Checkbox label which allows the user to always move/copy files to OneDrive/Google Drive without asking each time.">
+    Don’t ask again
+  </message>
+  <message name="IDS_OFFICE_MOVE_CONFIRMATION_MOVE_BUTTON" desc="Text for a button which triggers the move and open action for the file.">
+    Move and open
+  </message>
+  <message name="IDS_OFFICE_MOVE_CONFIRMATION_COPY_BUTTON" desc="Text for a button which triggers the copy and open action for the file.">
+    Copy and open
+  </message>
+  <message name="IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE" desc="Cloud provider name for OneDrive.">
+    Microsoft OneDrive
+  </message>
+  <message name="IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE" desc="Cloud provider name for Google Drive.">
+    Google Drive
+  </message>
+
   <!-- security curtain -->
   <message name="IDS_SECURITY_CURTAIN_TITLE" desc="Title text displayed to inform the user a remote admin has taken control of the ChromeOs device.">
     Your administrator is controlling your device
