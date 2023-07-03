@@ -99,13 +99,9 @@ void AddFakeWebApp(const std::string& app_id,
                    absl::optional<bool> handles_intents,
                    apps::AppServiceProxy* app_service_proxy);
 
-// Fake provided file system implementation specific to mimic ODFS.
-// Overrides the `GetActions` method to parallel what ODFS does:
-// - If the number of entries requested is not 1, fail.
-// - If the root is requested, return ODFS metadata.
-// - If the entry is found, return constant ODFS file metadata
-// (`kODFSSampleUrl`).
-// - Otherwise, fail.
+// Fake provided file system implementation specific to mimic ODFS. Override
+// `CreateFile` method to fail with a specific error, if set. Override
+// `GetActions` method to return fake actions.
 class FakeProvidedFileSystemOneDrive
     : public ash::file_system_provider::FakeProvidedFileSystem {
  public:
@@ -113,9 +109,30 @@ class FakeProvidedFileSystemOneDrive
       const ash::file_system_provider::ProvidedFileSystemInfo&
           file_system_info);
 
+  // Fail the create file request with |create_file_error_| if it exists.
+  // Otherwise, create a file as normal.
+  ash::file_system_provider::AbortCallback CreateFile(
+      const base::FilePath& file_path,
+      storage::AsyncFileUtil::StatusCallback callback) override;
+
+  // Parallel what ODFS does:
+  // - If the number of entries requested is not 1, fail.
+  // - If the root is requested, return (test) ODFS metadata.
+  // - If the entry is found, return (test) file metadata.
+  // - Otherwise, fail.
   ash::file_system_provider::AbortCallback GetActions(
       const std::vector<base::FilePath>& entry_paths,
       GetActionsCallback callback) override;
+
+  // Set error for the `CreateFile` to fail with.
+  void SetCreateFileError(base::File::Error error);
+
+  // Set value for the `kReauthenticationRequiredId` ODFS metadata action.
+  void SetReauthenticationRequired(bool reauthentication_required);
+
+ private:
+  base::File::Error create_file_error_ = base::File::Error::FILE_OK;
+  bool reauthentication_required_ = false;
 };
 
 // Fake extension provider to create a `FakeProvidedFileSystemOneDrive`.

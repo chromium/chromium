@@ -70,6 +70,7 @@ const char kReauthenticationRequiredId[] =
 const char kGenericErrorMessage[] = "Something went wrong. Try again.";
 const char kReauthenticationRequiredMessage[] =
     "Sign in to your Microsoft account and then try again";
+const char kGenericOneDriveAccessErrorMessage[] = "Access denied";
 
 // Converts an absolute FilePath into a filesystem URL.
 storage::FileSystemURL FilePathToFileSystemURL(

@@ -213,6 +213,34 @@ void OneDriveUploadHandler::OnIOTaskStatus(
   }
 }
 
+void OneDriveUploadHandler::OnGetReauthenticationRequired(
+    base::expected<ODFSMetadata, base::File::Error> metadata_or_error) {
+  std::string error_message = kGenericOneDriveAccessErrorMessage;
+  if (!metadata_or_error.has_value()) {
+    LOG(ERROR) << "Failed to get reauthentication required state: "
+               << metadata_or_error.error();
+  } else if (metadata_or_error->reauthentication_required) {
+    // Show the reauthentication required error notification.
+    error_message = kReauthenticationRequiredMessage;
+  }
+  OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kCloudAuthError,
+              error_message);
+}
+
+void OneDriveUploadHandler::ShowAccessDeniedError() {
+  absl::optional<file_system_provider::ProvidedFileSystemInterface*>
+      file_system = GetODFS(profile_);
+  if (!file_system.has_value()) {
+    OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kCloudAuthError,
+                kGenericOneDriveAccessErrorMessage);
+    return;
+  }
+  GetODFSMetadata(
+      file_system.value(),
+      base::BindOnce(&OneDriveUploadHandler::OnGetReauthenticationRequired,
+                     this));
+}
+
 void OneDriveUploadHandler::ShowIOTaskError(
     const file_manager::io_task::ProgressStatus& status) {
   OfficeFilesUploadResult upload_result;
@@ -234,11 +262,8 @@ void OneDriveUploadHandler::ShowIOTaskError(
 
   switch (file_error) {
     case base::File::FILE_ERROR_ACCESS_DENIED:
-      // TODO(b/288022200): query '/' actions to distinguish between
-      // reauthentication required and generic access error.
-      upload_result = OfficeFilesUploadResult::kCloudAuthError;
-      error_message = kReauthenticationRequiredMessage;
-      break;
+      ShowAccessDeniedError();
+      return;
     case base::File::FILE_ERROR_NO_SPACE:
       upload_result = OfficeFilesUploadResult::kCloudQuotaFull;
       // TODO(b/242685536) Use "these files" for multi-files when support for

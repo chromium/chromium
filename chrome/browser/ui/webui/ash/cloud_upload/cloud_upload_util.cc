@@ -136,7 +136,9 @@ void OnODFSMetadataActions(GetODFSMetadataCallback callback,
                            const Actions& actions,
                            base::File::Error result) {
   if (result != base::File::Error::FILE_OK) {
-    LOG(ERROR) << "Failed to get actions: " << result;
+    LOG(ERROR) << "Unexpectedly failed to get ODFS metadata actions as these "
+                  "should always be returned: "
+               << result;
     std::move(callback).Run(base::unexpected(result));
     return;
   }

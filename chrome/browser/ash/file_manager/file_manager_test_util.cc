@@ -258,6 +258,27 @@ FakeProvidedFileSystemOneDrive::FakeProvidedFileSystemOneDrive(
     : FakeProvidedFileSystem(file_system_info) {}
 
 ash::file_system_provider::AbortCallback
+FakeProvidedFileSystemOneDrive::CreateFile(
+    const base::FilePath& file_path,
+    storage::AsyncFileUtil::StatusCallback callback) {
+  if (create_file_error_ != base::File::Error::FILE_OK) {
+    std::move(callback).Run(create_file_error_);
+    return ash::file_system_provider::AbortCallback();
+  }
+  return FakeProvidedFileSystem::CreateFile(file_path, std::move(callback));
+}
+
+void FakeProvidedFileSystemOneDrive::SetCreateFileError(
+    base::File::Error error) {
+  create_file_error_ = error;
+}
+
+void FakeProvidedFileSystemOneDrive::SetReauthenticationRequired(
+    bool reauthentication_required) {
+  reauthentication_required_ = reauthentication_required;
+}
+
+ash::file_system_provider::AbortCallback
 FakeProvidedFileSystemOneDrive::GetActions(
     const std::vector<base::FilePath>& entry_paths,
     GetActionsCallback callback) {
@@ -271,6 +292,8 @@ FakeProvidedFileSystemOneDrive::GetActions(
   if (entry_paths[0].value() == ash::cloud_upload::kODFSMetadataQueryPath) {
     actions.push_back(
         {ash::cloud_upload::kUserEmailActionId, kSampleUserEmail1});
+    actions.push_back({ash::cloud_upload::kReauthenticationRequiredId,
+                       reauthentication_required_ ? "true" : "false"});
     std::move(callback).Run(actions, base::File::FILE_OK);
     return ash::file_system_provider::AbortCallback();
   }

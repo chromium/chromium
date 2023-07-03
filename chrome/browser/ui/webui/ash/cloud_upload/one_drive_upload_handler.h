@@ -66,6 +66,17 @@ class OneDriveUploadHandler
   // an appropriate error notification.
   void ShowIOTaskError(const file_manager::io_task::ProgressStatus& status);
 
+  // Show the correct error notification for
+  // base::File::FILE_ERROR_ACCESS_DENIED. Request ODFS metadata and show the
+  // correct notification in the |OnGetReauthenticationRequired| callback.
+  void ShowAccessDeniedError();
+
+  // Check if reauthentication to OneDrive is required from the ODFS metadata
+  // and show the reuathentication is required notification if true. Otherwise
+  // show the generic access error notification.
+  void OnGetReauthenticationRequired(
+      base::expected<ODFSMetadata, base::File::Error> metadata_or_error);
+
   // OnGetActions callback which checks the |result| to see if reauthentication
   // is required. If reauthentication is required, show the reauthentication
   // required error. Otherwise show a generic move upload error.
