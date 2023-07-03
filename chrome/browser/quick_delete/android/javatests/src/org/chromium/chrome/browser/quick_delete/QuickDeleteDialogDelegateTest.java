@@ -76,6 +76,7 @@ public class QuickDeleteDialogDelegateTest {
         openQuickDeleteDialog();
 
         onView(withText(R.string.quick_delete_dialog_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
         onView(withId(R.id.quick_delete_history_row_title)).check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_dialog_browsing_history_secondary_text))
                 .check(matches(isDisplayed()));

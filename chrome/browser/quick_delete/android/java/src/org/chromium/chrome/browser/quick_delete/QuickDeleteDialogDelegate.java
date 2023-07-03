@@ -10,12 +10,16 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -33,6 +37,9 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A delegate responsible for providing logic around the quick delete modal dialog.
  */
@@ -44,6 +51,9 @@ class QuickDeleteDialogDelegate {
     /**The {@link PropertyModel} of the underlying dialog where the quick dialog view would be
      * shown.*/
     private PropertyModel mModalDialogPropertyModel;
+
+    // TODO(crbug.com/1412087): Take into account this time period when the actual deletion happens.
+    private TimePeriodSpinnerOption mCurrentTimePeriodOption;
 
     /**
      * The modal dialog controller to detect events on the dialog.
@@ -66,6 +76,38 @@ class QuickDeleteDialogDelegate {
                     mOnDismissCallback.onResult(dismissalCause);
                 }
             };
+
+    /**
+     * TODO(crbug.com/1412087): This is duplicated from {@link ClearBrowsingDataFragment}, merge
+     * both the implementation into chrome/browser/browsing_data/android.
+     */
+    @VisibleForTesting
+    static class TimePeriodSpinnerOption {
+        private @TimePeriod int mTimePeriod;
+        private String mTitle;
+
+        /**
+         * Constructs this time period spinner option.
+         * @param timePeriod The time period.
+         * @param title The text that will be used to represent this item in the spinner.
+         */
+        public TimePeriodSpinnerOption(@TimePeriod int timePeriod, String title) {
+            mTimePeriod = timePeriod;
+            mTitle = title;
+        }
+
+        /**
+         * @return The time period.
+         */
+        public @TimePeriod int getTimePeriod() {
+            return mTimePeriod;
+        }
+
+        @Override
+        public String toString() {
+            return mTitle;
+        }
+    }
 
     /**
      * Stores the data needed for the dialog.
@@ -107,6 +149,9 @@ class QuickDeleteDialogDelegate {
         mModalDialogManager = modalDialogManager;
         mOnDismissCallback = onDismissCallback;
         mTabModelSelector = tabModelSelector;
+
+        mCurrentTimePeriodOption = new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
+                mContext.getString(R.string.clear_browsing_data_tab_period_15_minutes));
     }
 
     /**
@@ -117,6 +162,10 @@ class QuickDeleteDialogDelegate {
             @NonNull QuickDeleteDialogData quickDeleteDialogData) {
         View quickDeleteDialogView =
                 LayoutInflater.from(mContext).inflate(R.layout.quick_delete_dialog, /*root=*/null);
+
+        // Update Spinner
+        Spinner quickDeleteSpinner = quickDeleteDialogView.findViewById(R.id.quick_delete_spinner);
+        updateSpinner(quickDeleteSpinner);
 
         // Add the browsing history row.
         ViewGroup quickDeleteHistoryRow =
@@ -146,6 +195,61 @@ class QuickDeleteDialogDelegate {
                 .with(ModalDialogProperties.BUTTON_STYLES,
                         ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                 .build();
+    }
+
+    /**
+     * Returns the Array of time periods. Options are displayed in the same order as they appear
+     * in the array.
+     *
+     * TODO(crbug.com/1412087): This is duplicated from {@link ClearBrowsingDataFragment}, merge
+     * both the implementation into chrome/browser/browsing_data/android.
+     *
+     */
+    private TimePeriodSpinnerOption[] getTimePeriodSpinnerOptions() {
+        List<TimePeriodSpinnerOption> options = new ArrayList<>();
+        options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
+                mContext.getString(R.string.clear_browsing_data_tab_period_15_minutes)));
+        options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_HOUR,
+                mContext.getString(R.string.clear_browsing_data_tab_period_hour)));
+        options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_DAY,
+                mContext.getString(R.string.clear_browsing_data_tab_period_24_hours)));
+        options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_WEEK,
+                mContext.getString(R.string.clear_browsing_data_tab_period_7_days)));
+        options.add(new TimePeriodSpinnerOption(TimePeriod.FOUR_WEEKS,
+                mContext.getString(R.string.clear_browsing_data_tab_period_four_weeks)));
+        options.add(new TimePeriodSpinnerOption(TimePeriod.ALL_TIME,
+                mContext.getString(R.string.clear_browsing_data_tab_period_everything)));
+        return options.toArray(new TimePeriodSpinnerOption[0]);
+    }
+
+    /**
+     * Sets up the {@link Spinner} shown in the dialog.
+     *
+     * @param quickDeleteSpinner The quick delete {@link Spinner} which would be shown in the
+     *         dialog.
+     */
+    private void updateSpinner(@NonNull Spinner quickDeleteSpinner) {
+        TimePeriodSpinnerOption[] options = getTimePeriodSpinnerOptions();
+        ArrayAdapter<TimePeriodSpinnerOption> adapter = new ArrayAdapter<>(
+                mContext, android.R.layout.simple_spinner_dropdown_item, options);
+        quickDeleteSpinner.setAdapter(adapter);
+
+        quickDeleteSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(
+                    AdapterView<?> adapterView, View view, int position, long id) {
+                TimePeriodSpinnerOption item =
+                        (TimePeriodSpinnerOption) adapterView.getItemAtPosition(position);
+                mCurrentTimePeriodOption = item;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // Revert back to default time.
+                mCurrentTimePeriodOption = new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
+                        mContext.getString(R.string.clear_browsing_data_tab_period_15_minutes));
+            }
+        });
     }
 
     /**
