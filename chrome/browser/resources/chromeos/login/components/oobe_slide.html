@@ -37,6 +37,10 @@ found in the LICENSE file.
     padding-top: 8px;
   }
 
+  :host-context(.jelly-enabled) #slide-title {
+    padding-top: 16px;
+  }
+
   #slide-title ::slotted(*) {
     color: var(--cros-text-color-prominent);
     font-family: var(--oobe-header-font-family);
@@ -45,12 +49,28 @@ found in the LICENSE file.
     line-height: 28px;
   }
 
+  :host-context(.jelly-enabled) #slide-title ::slotted(*) {
+    color: var(--cros-sys-on_surface);
+    font-family: var(--cros-display-6-font-family);
+    font-size: var(--cros-display-6-font-size);
+    font-weight: var(--cros-display-6-font-weight);
+    line-height: var(--cros-display-6-line-height);
+  }
+
   #slide-title[is-warning] ::slotted(*) {
     color: var(--cros-text-color-alert);
   }
 
+  :host-context(.jelly-enabled) #slide-title[is-warning] ::slotted(*) {
+    color: var(--cros-sys-error);
+  }
+
   #slide-text {
     padding-top: 8px;
+  }
+
+  :host-context(.jelly-enabled) #slide-text {
+    padding-top: 16px;
   }
 
   #slide-text ::slotted(*) {
@@ -59,6 +79,14 @@ found in the LICENSE file.
     font-size: 14px;
     font-weight: 400; /* regular */
     line-height: 20px;
+  }
+
+  :host-context(.jelly-enabled) #slide-text ::slotted(*) {
+    color: var(--cros-sys-on_surface_variant);
+    font-family: var(--cros-body-1-font-family);
+    font-size: var(--cros-body-1-font-size);
+    font-weight: var(--cros-body-1-font-weight);
+    line-height: var(--cros-body-1-line-height);
   }
 
   #context-container ::slotted(*) {

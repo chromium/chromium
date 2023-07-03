@@ -32,6 +32,10 @@ found in the LICENSE file.
     width: 100%;
   }
 
+  :host-context(.jelly-enabled) #slidesContainer {
+    background: var(--cros-sys-app_base);
+  }
+
   #navigationContainer {
     bottom: 8px;
     display: flex;
@@ -94,9 +98,31 @@ found in the LICENSE file.
     outline: none;
   }
 
+  :host-context(.jelly-enabled) .slider-dot {
+    height: 8px;
+    width: 8px;
+    margin: 6px;
+    background: transparent;
+    outline: 1px solid var(--cros-sys-primary);
+    outline-offset: -1px;
+  }
+  :host-context(.jelly-enabled) .slider-dot:hover {
+    background: var(--cros-sys-highlight_shape);
+  }
+  :host-context(.jelly-enabled) .slider-dot[active] {
+    background: var(--cros-sys-primary);
+  }
+  :host-context(.jelly-enabled) .slider-dot:focus {
+    box-shadow: none;
+  }
+
   .arrow-button {
     /* TODO(https://crbug.com/1320715) Revise the color */
     --cr-icon-button-fill-color: var(--cros-app-shield-color);
+  }
+
+  :host-context(.jelly-enabled) .arrow-button {
+    --cr-icon-button-fill-color: var(--cros-sys-secondary);
   }
 </style>
 <div id="container">
