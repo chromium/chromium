@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/passwords/post_save_compromised_bubble_view.h"
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 
@@ -20,7 +22,7 @@ class PostSaveCompromisedBubbleViewTest : public PasswordBubbleViewTestBase {
   void TearDown() override;
 
  protected:
-  raw_ptr<PostSaveCompromisedBubbleView, DanglingUntriaged> view_;
+  raw_ptr<PostSaveCompromisedBubbleView> view_ = nullptr;
 };
 
 void PostSaveCompromisedBubbleViewTest::CreateViewAndShow(
@@ -33,8 +35,9 @@ void PostSaveCompromisedBubbleViewTest::CreateViewAndShow(
 }
 
 void PostSaveCompromisedBubbleViewTest::TearDown() {
-  view_->GetWidget()->CloseWithReason(
-      views::Widget::ClosedReason::kCloseButtonClicked);
+  std::exchange(view_, nullptr)
+      ->GetWidget()
+      ->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
 
   PasswordBubbleViewTestBase::TearDown();
 }
