@@ -41,23 +41,23 @@ PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected token '(', "({
 function(jsonObject){
         return jsonObject.parse('{a}');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Expected property name or '}' in JSON at position 1.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2).
 function(jsonObject){
         return jsonObject.parse('{a:}');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Expected property name or '}' in JSON at position 1.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2).
 function(jsonObject){
         return jsonObject.parse('{a:5}');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Expected property name or '}' in JSON at position 1.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2).
 function(jsonObject){
         return jsonObject.parse('{a:5,}');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Expected property name or '}' in JSON at position 1.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2).
 function(jsonObject){
         return jsonObject.parse('{"a"}');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Expected ':' after property name in JSON at position 4.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Expected ':' after property name in JSON at position 4 (line 1 column 5).
 function(jsonObject){
         return jsonObject.parse('{"a":}');
     }
@@ -73,12 +73,12 @@ FAIL JSON.stringify(tests[i](nativeJSON)) should be {}. Was {"__proto__":5}.
 function(jsonObject){
         return jsonObject.parse('{"a":5,}');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Expected double-quoted property name in JSON at position 7.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Expected double-quoted property name in JSON at position 7 (line 1 column 8).
 json2.js did not throw for a test we expect to throw.
 function(jsonObject){
         return jsonObject.parse('{"a":5,,}');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Expected double-quoted property name in JSON at position 7.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Expected double-quoted property name in JSON at position 7 (line 1 column 8).
 function(jsonObject){
         return jsonObject.parse('{"a":5,"a",}');
     }
@@ -129,15 +129,15 @@ PASS JSON.stringify(tests[i](nativeJSON)) is JSON.stringify(tests[i](JSON))
 function(jsonObject){
         return jsonObject.parse('"a\\"');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Unterminated string in JSON at position 4.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Unterminated string in JSON at position 4 (line 1 column 5).
 function(jsonObject){
         return jsonObject.parse('"a\\z"');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad escaped character in JSON at position 3.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad escaped character in JSON at position 3 (line 1 column 4).
 function(jsonObject){
         return jsonObject.parse('"a\\\z"');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad escaped character in JSON at position 3.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad escaped character in JSON at position 3 (line 1 column 4).
 function(jsonObject){
         return jsonObject.parse('"a\\\\z"');
     }
@@ -145,7 +145,7 @@ PASS JSON.stringify(tests[i](nativeJSON)) is JSON.stringify(tests[i](JSON))
 function(jsonObject){
         return jsonObject.parse('"a\tz"');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad control character in string literal in JSON at position 2.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad control character in string literal in JSON at position 2 (line 1 column 3).
 json2.js did not throw for a test we expect to throw.
 function(jsonObject){
         return jsonObject.parse('"a\\tz"');
@@ -154,7 +154,7 @@ PASS JSON.stringify(tests[i](nativeJSON)) is JSON.stringify(tests[i](JSON))
 function(jsonObject){
         return jsonObject.parse('"a\nz"');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad control character in string literal in JSON at position 2.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad control character in string literal in JSON at position 2 (line 1 column 3).
 function(jsonObject){
         return jsonObject.parse('"a\\nz"');
     }
@@ -162,7 +162,7 @@ PASS JSON.stringify(tests[i](nativeJSON)) is JSON.stringify(tests[i](JSON))
 function(jsonObject){
         return jsonObject.parse('"a\rz"');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad control character in string literal in JSON at position 2.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad control character in string literal in JSON at position 2 (line 1 column 3).
 function(jsonObject){
         return jsonObject.parse('"a\\rz"');
     }
@@ -178,7 +178,7 @@ PASS JSON.stringify(tests[i](nativeJSON)) is JSON.stringify(tests[i](JSON))
 function(jsonObject){
         return jsonObject.parse('"a\bz"');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad control character in string literal in JSON at position 2.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad control character in string literal in JSON at position 2 (line 1 column 3).
 json2.js did not throw for a test we expect to throw.
 function(jsonObject){
         return jsonObject.parse('"a\\bz"');
@@ -187,7 +187,7 @@ PASS JSON.stringify(tests[i](nativeJSON)) is JSON.stringify(tests[i](JSON))
 function(jsonObject){
         return jsonObject.parse('"a\rz"');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad control character in string literal in JSON at position 2.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad control character in string literal in JSON at position 2 (line 1 column 3).
 function(jsonObject){
         return jsonObject.parse('"a\\rz"');
     }
@@ -195,19 +195,19 @@ PASS JSON.stringify(tests[i](nativeJSON)) is JSON.stringify(tests[i](JSON))
 function(jsonObject){
         return jsonObject.parse('"a\\uz"     ');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 4.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 4 (line 1 column 5).
 function(jsonObject){
         return jsonObject.parse('"a\\u0z"    ');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 5.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 5 (line 1 column 6).
 function(jsonObject){
         return jsonObject.parse('"a\\u00z"   ');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 6.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 6 (line 1 column 7).
 function(jsonObject){
         return jsonObject.parse('"a\\u000z"  ');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 7.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 7 (line 1 column 8).
 function(jsonObject){
         return jsonObject.parse('"a\\u0000z" ');
     }
@@ -223,11 +223,11 @@ PASS JSON.stringify(tests[i](nativeJSON)) is JSON.stringify(tests[i](JSON))
 function(jsonObject){
         return jsonObject.parse('"a\\u000Gz" ');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 7.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 7 (line 1 column 8).
 function(jsonObject){
         return jsonObject.parse('"a\\u000gz" ');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 7.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 7 (line 1 column 8).
 function(jsonObject){
         return jsonObject.parse('"a\\u00A0z" ');
     }
@@ -239,11 +239,11 @@ PASS JSON.stringify(tests[i](nativeJSON)) is JSON.stringify(tests[i](JSON))
 function(jsonObject){
         return jsonObject.parse('"a\\u00G0z" ');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 6.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 6 (line 1 column 7).
 function(jsonObject){
         return jsonObject.parse('"a\\u00g0z" ');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 6.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 6 (line 1 column 7).
 function(jsonObject){
         return jsonObject.parse('"a\\u0A00z" ');
     }
@@ -255,11 +255,11 @@ PASS JSON.stringify(tests[i](nativeJSON)) is JSON.stringify(tests[i](JSON))
 function(jsonObject){
         return jsonObject.parse('"a\\u0G00z" ');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 5.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 5 (line 1 column 6).
 function(jsonObject){
         return jsonObject.parse('"a\\u0g00z" ');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 5.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 5 (line 1 column 6).
 function(jsonObject){
         return jsonObject.parse('"a\\uA000z" ');
     }
@@ -271,71 +271,71 @@ PASS JSON.stringify(tests[i](nativeJSON)) is JSON.stringify(tests[i](JSON))
 function(jsonObject){
         return jsonObject.parse('"a\\uG000z" ');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 4.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 4 (line 1 column 5).
 function(jsonObject){
         return jsonObject.parse('"a\\ug000z" ');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 4.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Bad Unicode escape in JSON at position 4 (line 1 column 5).
 function(jsonObject){
         return jsonObject.parse('00');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected number in JSON at position 1.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected number in JSON at position 1 (line 1 column 2).
 json2.js did not throw for a test we expect to throw.
 function(jsonObject){
         return jsonObject.parse('01');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected number in JSON at position 1.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected number in JSON at position 1 (line 1 column 2).
 json2.js did not throw for a test we expect to throw.
 function(jsonObject){
         return jsonObject.parse('0.a');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Unterminated fractional number in JSON at position 2.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Unterminated fractional number in JSON at position 2 (line 1 column 3).
 function(jsonObject){
         return jsonObject.parse('0x0');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected non-whitespace character after JSON at position 1.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected non-whitespace character after JSON at position 1 (line 1 column 2).
 function(jsonObject){
         return jsonObject.parse('2e1.3');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected non-whitespace character after JSON at position 3.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected non-whitespace character after JSON at position 3 (line 1 column 4).
 function(jsonObject){
         return jsonObject.parse('2e-+10');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Exponent part is missing a number in JSON at position 3.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Exponent part is missing a number in JSON at position 3 (line 1 column 4).
 function(jsonObject){
         return jsonObject.parse('2e+-10');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Exponent part is missing a number in JSON at position 3.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Exponent part is missing a number in JSON at position 3 (line 1 column 4).
 function(jsonObject){
         return jsonObject.parse('2e3e4');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected non-whitespace character after JSON at position 3.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected non-whitespace character after JSON at position 3 (line 1 column 4).
 function(jsonObject){
         return jsonObject.parse('-01.0');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected number in JSON at position 2.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected number in JSON at position 2 (line 1 column 3).
 function(jsonObject){
         return jsonObject.parse('-01');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected number in JSON at position 2.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected number in JSON at position 2 (line 1 column 3).
 json2.js did not throw for a test we expect to throw.
 function(jsonObject){
         return jsonObject.parse('-01.a');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected number in JSON at position 2.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Unexpected number in JSON at position 2 (line 1 column 3).
 function(jsonObject){
         return jsonObject.parse('1.e1');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Unterminated fractional number in JSON at position 2.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Unterminated fractional number in JSON at position 2 (line 1 column 3).
 json2.js did not throw for a test we expect to throw.
 function(jsonObject){
         return jsonObject.parse('{/* block comments are not allowed */}');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Expected property name or '}' in JSON at position 1.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2).
 function(jsonObject){
         return jsonObject.parse('{// line comments are not allowed \n}');
     }
-PASS tests[i](nativeJSON) threw exception SyntaxError: Expected property name or '}' in JSON at position 1.
+PASS tests[i](nativeJSON) threw exception SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2).
 function(jsonObject){
         return jsonObject.parse('true');
     }
