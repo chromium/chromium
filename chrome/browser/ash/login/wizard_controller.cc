@@ -372,6 +372,12 @@ bool IsGaiaPageDefaultsToSAML() {
   return authentication_behavior_set && authentication_behavior;
 }
 
+bool IsContextNeededForScreen(OobeScreenId screen_id) {
+  return screen_id == SamlConfirmPasswordView::kScreenId ||
+         screen_id == CryptohomeRecoveryScreenView::kScreenId ||
+         screen_id == GaiaPasswordChangedView::kScreenId;
+}
+
 }  // namespace
 
 // static
@@ -913,12 +919,12 @@ void WizardController::ShowSignInFatalErrorScreen(
 void WizardController::OnSignInFatalErrorScreenExit() {
   OnScreenExit(SignInFatalErrorView::kScreenId, kDefaultExitReason);
   if (base::Contains(previous_screens_, current_screen_) &&
-      previous_screens_[current_screen_]->screen_id() ==
-          SamlConfirmPasswordView::kScreenId) {
+      IsContextNeededForScreen(
+          previous_screens_[current_screen_]->screen_id())) {
     // If the last screen user have visited before reaching SignInFatalError
-    // screen was SamlConfirmPassword screen we should not go back there because
-    // the context is lost at this point. We should go to the Gaia screen
-    // instead.
+    // screen was a screen that needs user context, we should not go back there
+    // because the context is lost at this point. We should go to the Gaia
+    // screen instead.
     previous_screens_[current_screen_] = GetScreen(GaiaView::kScreenId);
     GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
   }
