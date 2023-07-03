@@ -158961,6 +158961,19 @@
        {}
       ]
      ],
+     "scrollbar-gutter-dynamic-003.html": [
+      "f92beaaa477b48b5785e50c397ff818b71fd6f4c",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scrollbar-gutter-dynamic-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "scrollbar-gutter-rtl-002.html": [
       "8d0376defdfc69ecb44fc2134c81573e553db2bb",
       [
@@ -274503,6 +274516,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "7ba5f09f4f61db5c2c49f6112a0b81cf621dc758",
+     []
+    ],
+    "mtime.json": [
+     "9c9ddf7fac86fccf5848b2a7c50bbe2f5582fa50",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -287142,6 +287165,10 @@
        "131604bada0da9c77c799abb83714d178a5a4e1b",
        []
       ],
+      "absolute-non-replaced-height-008.xht.ini": [
+       "7adda209a815358977af8f0b24b89c37b025bd27",
+       []
+      ],
       "absolute-non-replaced-height-009-ref.xht": [
        "51ec44e9cf55daa92b0822590933275a6706b9aa",
        []
@@ -295543,6 +295570,10 @@
      ],
      "contain-paint-stacking-context-001-ref.html": [
       "c7553716ab6c257bb0d9407582eed186bd763369",
+      []
+     ],
+     "contain-size-062.html.ini": [
+      "d79c6508aa147766a8349543b312afd26cd90e90",
       []
      ],
      "contain-size-block-001-ref.html": [
@@ -317087,6 +317118,14 @@
       "b1db1a8cb719dad46703275cf66cc6b2c20708e8",
       []
      ],
+     "scrollbar-gutter-dynamic-003-ref.html": [
+      "259afc014ec4c5ece4af5bb62a0a2d2d44d867d7",
+      []
+     ],
+     "scrollbar-gutter-dynamic-003.html.ini": [
+      "dc11616533f9bf55a546fb86227a245275db943d",
+      []
+     ],
      "scrollbar-gutter-rtl-002-ref.html": [
       "e6510a081353db996c4ead14ad6a167b90d48297",
       []
@@ -333809,7 +333848,7 @@
        []
       ],
       "kind-of-widget-fallback-textarea-border-block-end-width-001.html.ini": [
-       "3ac36428281fdd02077258489022b0b58613d097",
+       "5b55ab87c0e4eecd17124488da4c4723dfd53a0d",
        []
       ],
       "kind-of-widget-fallback-textarea-border-block-start-style-001.html.ini": [
@@ -383689,7 +383728,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "6e2f42f5031d484f0b305ea9c185ac3d23304a22",
+     "2d51018c7948ab11b15453df3e38c19cd06857f3",
      []
     ],
     "modulepreload-expected.txt": [
@@ -398683,7 +398722,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "3a8a6c5f3c0e77de7303ee37aef59f5fd9ad7f1c",
+     "cf77f1b44a02f93b7e5471791466fa64ca5e5fc5",
      []
     ],
     "h264.annexb": [
@@ -398719,7 +398758,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "d4181820e479212ce1ea82e05c186959857a261e",
+     "8731a7e513e5aab903b71bb4af391abb7982dcb9",
      []
     ],
     "sfx-aac.mp4": [
