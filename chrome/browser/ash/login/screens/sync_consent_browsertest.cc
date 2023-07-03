@@ -82,13 +82,9 @@ const test::UIPath kWifiSyncToggle = {kSyncConsent, "wifiTogglebutton"};
 const test::UIPath kWallpaperSyncToggle = {kSyncConsent,
                                            "wallpaperTogglebutton"};
 
-syncer::SyncService* GetSyncService() {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  return SyncServiceFactory::GetForProfile(profile);
-}
-
 syncer::SyncUserSettings* GetSyncUserSettings() {
-  return GetSyncService()->GetUserSettings();
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  return SyncServiceFactory::GetForProfile(profile)->GetUserSettings();
 }
 
 class ConsentRecordedWaiter
@@ -223,16 +219,6 @@ class SyncConsentTest
 
   void LoginAndWaitForSyncConsentScreen(bool is_known_capability) {
     login_manager_mixin_.LoginAsNewRegularUser();
-
-    // Note: In production, SyncFeatureRequested and
-    // InitialSyncFeatureSetupComplete get set automatically the first time the
-    // SyncServiceImpl gets initialized. In this test, that doesn't happen,
-    // because at that point in time there was no signed-in user yet (something
-    // that's impossible in real-life ChromeOS-Ash). To work around that, set
-    // these flags explicitly here.
-    GetSyncService()->SetSyncFeatureRequested();
-    GetSyncUserSettings()->SetInitialSyncFeatureSetupComplete(
-        syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
     if (is_known_capability) {
       SetIsMinorUser(is_minor_user_);
