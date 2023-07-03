@@ -9,9 +9,10 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './file_path.mojom-lite.js';
 import './strings.m.js';
 
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppState, ScanCompleteAction} from './scanning_app_types.js';
@@ -96,9 +97,12 @@ Polymer({
     this.browserProxy_.getPluralString('fileSavedText', this.numFilesSaved)
         .then(
             /* @type {string} */ (pluralString) => {
-              this.fileSavedTextContent_ =
+              const fileSavedTextContent =
                   this.getAriaLabelledContent_(loadTimeData.substituteString(
-                      pluralString, this.selectedFolder));
+                      pluralString.toString(), this.selectedFolder));
+              this.fileSavedTextContent_ = sanitizeInnerHtml(
+                  fileSavedTextContent,
+                  {attrs: ['id', 'aria-hidden', 'aria-labelledby']});
               const linkElement = this.$$('#folderLink');
               linkElement.setAttribute('href', '#');
               linkElement.addEventListener(
@@ -118,7 +122,7 @@ Polymer({
    */
   getAriaLabelledContent_(localizedString) {
     const tempEl = document.createElement('div');
-    tempEl.innerHTML = localizedString;
+    tempEl.innerHTML = sanitizeInnerHtml(localizedString, {attrs: ['id']});
 
     const ariaLabelledByIds = [];
     tempEl.childNodes.forEach((node, index) => {
