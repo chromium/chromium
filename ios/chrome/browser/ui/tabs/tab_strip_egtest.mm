@@ -120,6 +120,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests dragging URL into regular tab strip.
 - (void)testDragAndDropURLIntoRegularTabStrip {
+  // TODO(crbug.com/1459995): Test flakes on ipad simulator.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iPad Simualtor");
+  }
+
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
@@ -142,6 +147,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests dragging URL into incognito tab strip.
 - (void)testDragAndDropURLIntoIncognitoTabStrip {
+  // TODO(crbug.com/1459995): Test flakes on ipad simulator.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iPad Simualtor");
+  }
+
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
