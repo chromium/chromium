@@ -2061,6 +2061,18 @@ RefTestData ref_scope_equal_test_data[] = {
 
     {"@scope (.a) to (:scope) { .b {} }", ".a .b, .a.b {}"},
     {"@scope (.a) to (:scope) { :scope {} }", ".a *, .a {}"},
+    {"@scope (.a, .b) { @scope (.c, :scope .d) { .e {} } }",
+     ":is(.a, .b):is(.c, .d) .e, :is(.a, .b):is(.c, .d):is(.e) {}"},
+
+    // &
+    {"@scope (.a) { & {} }", ".a .a {}"},
+    {"@scope (.a) { .b & {} }", ".b .a, .a .a {}"},
+    {"@scope (.a, .b) { & {} }", ":is(.a, .b) :is(.a, .b) {}"},
+
+    {"@scope (.a, .b) { @scope (.c, & .d) { .e {} } }",
+     ":is(.a, .b, .c, .d) .e, :is(.a, .b), :is(.c, .d) {}"},
+    {"@scope (.a) to (&) { .b {} }", ".a .b, .a {}"},
+    {"@scope (.a) to (&) { & {} }", ".a .a {}"},
 
     // Nested @scopes
     {"@scope (.a, .b) { @scope (.c, .d) { .e {} } }",
