@@ -85,7 +85,7 @@ bool ThreadProfilerConfiguration::IsProfilerEnabledForCurrentProcessAndThread(
   return IsProfilerEnabledForCurrentProcess() &&
          platform_configuration_->IsEnabledForThread(
              GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess()),
-             thread, GetReleaseChannel());
+             thread);
 }
 
 bool ThreadProfilerConfiguration::IsStartupProfilingEnabled() const {
