@@ -7,6 +7,9 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {createChild} from '../../common/js/dom_utils.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import {installMockChrome} from '../../common/js/mock_chrome.js';
+import {MockEntry} from '../../common/js/mock_entry.js';
+import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -76,6 +79,22 @@ export function setUp() {
       chrome.fileManagerPrivate.FileCategory.ALL);
   emptyFolderController = new EmptyFolderController(
       element, directoryModel, providersModel, recentEntry);
+
+  // Mock fileManagerPrivate.getCustomActions for |testShownForODFS|.
+  const mockChrome = {
+    fileManagerPrivate: {
+      getCustomActions: function(entries, callback) {
+        // This is called for the test when Reauthentication Required state is
+        // true.
+        const actions = [{
+          id: constants.FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED,
+          title: 'true',
+        }];
+        callback(actions);
+      },
+    },
+  };
+  installMockChrome(mockChrome);
 }
 
 /**
@@ -217,7 +236,7 @@ export function testShownForTrash() {
  * set and read.
  * @suppress {accessControls} access private method in test.
  */
-export function testShownForODFS() {
+export async function testShownForODFS(done) {
   // Add ODFS volume to the store.
   setUpFileManagerOnWindow();
   const initialState = getEmptyState();
@@ -237,17 +256,19 @@ export function testShownForODFS() {
     return /** @type {!VolumeInfo} */ (odfsVolumeInfo);
   };
 
-  // Pass a NO_MODIFICATION_ALLOWED_ERR error (implies reauthentication
-  // required).
+  // Pass a NO_MODIFICATION_ALLOWED_ERR error (triggers a call to
+  // getCustomActions to which is stubbed out to return reauthentication
+  // required as true).
   const event = new Event('scan-failed');
   event.error = {name: util.FileError.NO_MODIFICATION_ALLOWED_ERR};
   emptyFolderController.onScanFailed_(event);
 
   // Expect that the empty-folder element is shown and the sign in link is
-  // present.
-  assertFalse(element.hidden);
-  const signInLink = emptyFolderController.label_.querySelector('.sign-in');
-  assertNotEquals(signInLink, null);
+  // present. Need to wait for |updateUI_| to be called as the check for
+  // reauthentication is required is asynchronous.
+  await waitUntil(() => !element.hidden);
+  await waitUntil(() => emptyFolderController.label_.querySelector('.sign-in'));
+  done();
 }
 
 /**

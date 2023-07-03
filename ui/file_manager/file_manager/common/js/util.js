@@ -1555,7 +1555,18 @@ util.isOneDrive = (volumeInfo) => {
 };
 
 /**
- * Return true if the volume with |volumeInfo| is an interactive volume.
+ * Returns the ODFS root as an Entry. Request the actions of this
+ * Entry to get ODFS metadata.
+ * @param {VolumeInfo} odfsVolumeInfo
+ * @return {Entry|FilesAppEntry}
+ */
+util.getODFSMetadataQueryEntry = (odfsVolumeInfo) => {
+  return util.unwrapEntry(odfsVolumeInfo.displayRoot);
+};
+
+/**
+ * Return true if the volume with |volumeInfo| is an
+ * interactive volume.
  * @param {VolumeInfo} volumeInfo
  * @return {boolean}
  */
