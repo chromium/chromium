@@ -287,7 +287,7 @@ vars = {
   # Fetch siso CIPD package
   'checkout_siso': False,
   # siso CIPD package version.
-  'siso_version': 'git_revision:f24aa67d370e1a05b99a57eaddb9900bf944995a',
+  'siso_version': 'git_revision:8d5603d096a56d6cfe7307871c0385c214c01981',
 
   # download libaom test data
   'download_libaom_testdata': False,
