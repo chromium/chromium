@@ -22,12 +22,15 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -48,6 +51,7 @@ class QuickDeleteDialogDelegate {
     private final @NonNull Context mContext;
     private final @NonNull Callback<Integer> mOnDismissCallback;
     private final @NonNull TabModelSelector mTabModelSelector;
+    private final @NonNull Profile mProfile;
     /**The {@link PropertyModel} of the underlying dialog where the quick dialog view would be
      * shown.*/
     private PropertyModel mModalDialogPropertyModel;
@@ -111,22 +115,44 @@ class QuickDeleteDialogDelegate {
 
     /**
      * Stores the data needed for the dialog.
-     *
-     * TODO(crbug.com/1412087): Update the class to include domain related data.
      */
     static class QuickDeleteDialogData {
+        private final String mLastVisitedDomain;
+        private final int mDomainsCount;
         private final int mTabsToCloseCount;
 
         /**
+         * @param lastVisitedDomain the most recently visited synced domain on all devices.
+         * @param domainsCount the unique domain count of synced domain visited on all devices.
+         *         history disambiguation notice.
          * @param tabsToCloseCount the count of tabs that the user visited within range and will
          *         be closed with the deletion.
          */
-        QuickDeleteDialogData(int tabsToCloseCount) {
+        QuickDeleteDialogData(
+                @NonNull String lastVisitedDomain, int domainsCount, int tabsToCloseCount) {
+            mLastVisitedDomain = lastVisitedDomain;
+            mDomainsCount = domainsCount;
             mTabsToCloseCount = tabsToCloseCount;
         }
 
         @VisibleForTesting
         QuickDeleteDialogData() {
+            mLastVisitedDomain = "";
+            mDomainsCount = 0;
+            mTabsToCloseCount = 0;
+        }
+
+        @VisibleForTesting
+        QuickDeleteDialogData(int tabsToCloseCount) {
+            mLastVisitedDomain = "";
+            mDomainsCount = 0;
+            mTabsToCloseCount = tabsToCloseCount;
+        }
+
+        @VisibleForTesting
+        QuickDeleteDialogData(@NonNull String lastVisitedDomain, int domainsCount) {
+            mLastVisitedDomain = lastVisitedDomain;
+            mDomainsCount = domainsCount;
             mTabsToCloseCount = 0;
         }
     }
@@ -140,15 +166,18 @@ class QuickDeleteDialogDelegate {
      *                              cancels the deletion;
      * @param tabModelSelector      {@link TabModelSelector} to use for opening the links in search
      *                              history disambiguation notice.
+     * @param profile               The {@link Profile} for which to check if the user is signed in
+     *                              or syncing.
      */
     QuickDeleteDialogDelegate(@NonNull Context context,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull Callback<Integer> onDismissCallback,
-            @NonNull TabModelSelector tabModelSelector) {
+            @NonNull TabModelSelector tabModelSelector, @NonNull Profile profile) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mOnDismissCallback = onDismissCallback;
         mTabModelSelector = tabModelSelector;
+        mProfile = profile;
 
         mCurrentTimePeriodOption = new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
                 mContext.getString(R.string.clear_browsing_data_tab_period_15_minutes));
@@ -170,7 +199,7 @@ class QuickDeleteDialogDelegate {
         // Add the browsing history row.
         ViewGroup quickDeleteHistoryRow =
                 quickDeleteDialogView.findViewById(R.id.quick_delete_history_row);
-        addBrowsingHistoryRow(quickDeleteHistoryRow);
+        addBrowsingHistoryRowIfAvailable(quickDeleteHistoryRow, quickDeleteDialogData);
 
         // Add the tabs close row.
         TextViewWithCompoundDrawables quickDeleteTabsCloseRow =
@@ -253,30 +282,36 @@ class QuickDeleteDialogDelegate {
     }
 
     /**
-     * Sets up the browsing history row in the dialog.
+     * Checks whether the user has any browsing history in range to delete and updates the views
+     * accordingly.
      * @param row The browsing history row view.
-     *
-     * TODO(crbug.com/1412087): Update the method name when the logic is in place.
+     * @param data The dialog related data.
      */
-    private void addBrowsingHistoryRow(@NonNull ViewGroup row) {
-        // TODO(crbug.com/1412087): Supply the right domain and count values once the logic is in
-        // place and hide the row if there are no domains visited within the time range.
+    private void addBrowsingHistoryRowIfAvailable(
+            @NonNull ViewGroup row, @NonNull QuickDeleteDialogData data) {
+        if (data.mDomainsCount < 1) return;
+
         TemplatePreservingTextView title = row.findViewById(R.id.quick_delete_history_row_title);
         TextView subtitle = row.findViewById(R.id.quick_delete_history_row_subtitle);
+        int domainsCount = data.mDomainsCount;
 
-        String lastVisitedDomain = "figma.com";
-        String domainCountText = mContext.getResources().getQuantityString(
-                R.plurals.quick_delete_dialog_browsing_history_domain_count_text, 1);
+        // Subtract 1 from the domainsCount to not count the lastVisitedDomain twice.
+        domainsCount--;
 
-        String browsingHistoryRowTitleTemplate = "%s " + domainCountText;
+        // If there is at least 1 other site counted, add the count template, eg `+ 1 site`.
+        if (domainsCount > 0) {
+            String domainCountText = mContext.getResources().getQuantityString(
+                    R.plurals.quick_delete_dialog_browsing_history_domain_count_text, domainsCount,
+                    domainsCount);
+            String browsingHistoryRowTitleTemplate = "%s " + domainCountText;
+            title.setTemplate(browsingHistoryRowTitleTemplate);
+        }
 
-        title.setTemplate(browsingHistoryRowTitleTemplate);
-        title.setText(lastVisitedDomain);
-
+        title.setText(data.mLastVisitedDomain);
         row.setVisibility(View.VISIBLE);
-
-        // TODO(crbug.com/1412087): Check if history sync is enabled before showing this.
-        subtitle.setVisibility(View.VISIBLE);
+        if (isSyncingHistory()) {
+            subtitle.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -340,9 +375,18 @@ class QuickDeleteDialogDelegate {
      * @return A boolean indicating whether the user is signed in or not.
      */
     private boolean isSignedIn() {
-        Profile profile = mTabModelSelector.getCurrentModel().getProfile();
-        return IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount(
+        return IdentityServicesProvider.get().getIdentityManager(mProfile).hasPrimaryAccount(
                 ConsentLevel.SIGNIN);
+    }
+
+    /**
+     * @return A boolean indicating whether the user is syncing history and history deletions are
+     *         propagated.
+     */
+    private boolean isSyncingHistory() {
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        return syncService != null && syncService.isSyncFeatureEnabled()
+                && syncService.getActiveDataTypes().contains(ModelType.HISTORY_DELETE_DIRECTIVES);
     }
 
     /**

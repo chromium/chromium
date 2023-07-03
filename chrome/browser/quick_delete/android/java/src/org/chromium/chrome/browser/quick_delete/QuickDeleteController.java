@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -28,7 +29,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 /**
  *  A controller responsible for setting up quick delete.
  */
-public class QuickDeleteController {
+public class QuickDeleteController implements QuickDeleteBridge.DomainVisitsCallback {
     private static final MutableFlagWithSafeDefault sQuickDeleteForAndroidFlag =
             new MutableFlagWithSafeDefault(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID, false);
 
@@ -62,17 +63,14 @@ public class QuickDeleteController {
         mLayoutManager = layoutManager;
         mDeleteTabsFilter =
                 new QuickDeleteTabsFilter(tabModelSelector.getModel(/*incognito=*/false));
+        Profile profile = tabModelSelector.getCurrentModel().getProfile();
         mDialogDelegate = new QuickDeleteDialogDelegate(
-                context, modalDialogManager, this::onDialogDismissed, tabModelSelector);
+                context, modalDialogManager, this::onDialogDismissed, tabModelSelector, profile);
 
         mAnimationView = animationView;
         mAnimationView.setBackgroundResource(R.drawable.quick_delete_animation);
 
-        // TODO(crbug.com/1412087): Fetch the domain related data.
-        QuickDeleteDialogDelegate.QuickDeleteDialogData data =
-                new QuickDeleteDialogDelegate.QuickDeleteDialogData(
-                        mDeleteTabsFilter.getListOfTabsToBeClosed().size());
-        mDialogDelegate.showDialog(data);
+        new QuickDeleteBridge(profile).getLastVisitedDomainAndUniqueDomainCount(this);
     }
 
     /**
@@ -154,5 +152,23 @@ public class QuickDeleteController {
             }
         });
         deleteAnimation.start();
+    }
+
+    /**
+     * Called when the domain count and last visited domain are fetched from local history.
+     * This method passes the data needed for constructing the dialog and shows the quick
+     * delete dialog.
+     * @param lastVisitedDomain The synced last visited domain on all devices in the last 15
+     *                          minutes.
+     * @param domainCount The number of synced unique domains visited on all devices in the
+     *                    last 15 minutes.
+     */
+    @Override
+    public void onLastVisitedDomainAndUniqueDomainCountReady(
+            String lastVisitedDomain, int domainCount) {
+        QuickDeleteDialogDelegate.QuickDeleteDialogData data =
+                new QuickDeleteDialogDelegate.QuickDeleteDialogData(lastVisitedDomain, domainCount,
+                        mDeleteTabsFilter.getListOfTabsToBeClosed().size());
+        mDialogDelegate.showDialog(data);
     }
 }
