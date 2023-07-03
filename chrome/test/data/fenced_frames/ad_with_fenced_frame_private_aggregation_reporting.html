@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<!-- Used by browsertests (such as InterestGroupFencedFrameBrowserTest's
+RunAdAuctionWithWinnerRegisterPrivateAggregationBuyer) that require private
+aggregation reporting. As soon as the page loads, it sends a private aggregation
+event using the PA `reportEvent` path. This file should used as the url loaded
+into a fenced frame, and the `bidding_logic.js` file should include a call to
+privateAggregation.contributeToHistogramOnEvent('auctionwinner', {...}).
+
+Copied from the file of the same name in content/test/data/fenced_frames/.-->
+<body>
+<script>
+    window.fence.reportEvent('auctionwinner');
+</script>
+</body>
+</html>
