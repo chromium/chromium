@@ -139,6 +139,8 @@ export class SettingsGoogleDriveSubpageElement extends
    */
   private showSpinner: boolean = false;
 
+  private updatePinnedSizeInterval_: number;
+
   /**
    * Returns the browser proxy page handler (to invoke functions).
    */
@@ -191,6 +193,10 @@ export class SettingsGoogleDriveSubpageElement extends
     this.callbackRouter.onProgress.addListener(this.onProgress_.bind(this));
   }
 
+  override disconnectedCallback() {
+    clearInterval(this.updatePinnedSizeInterval_);
+  }
+
   /**
    * Invoked when the underlying service is not longer available.
    */
@@ -224,8 +230,11 @@ export class SettingsGoogleDriveSubpageElement extends
    * Retrieves the total pinned size of items in Drive and stores the total.
    */
   private async updateTotalPinnedSize_() {
-    this.totalPinnedSize_ =
-        this.i18n('googleDriveOfflineClearCalculatingSubtitle');
+    if (!this.totalPinnedSize_) {
+      // Only set the total pinned size to calculating on the first update.
+      this.totalPinnedSize_ =
+          this.i18n('googleDriveOfflineClearCalculatingSubtitle');
+    }
     const {size} = await this.pageHandler.getTotalPinnedSize();
     if (size) {
       this.totalPinnedSize_ = size;
@@ -245,6 +254,7 @@ export class SettingsGoogleDriveSubpageElement extends
   override currentRouteChanged(route: Route, _oldRoute?: Route) {
     // Does not apply to this page.
     if (route !== routes.GOOGLE_DRIVE) {
+      clearInterval(this.updatePinnedSizeInterval_);
       return;
     }
 
@@ -258,6 +268,9 @@ export class SettingsGoogleDriveSubpageElement extends
     this.attemptDeepLink();
     this.pageHandler.calculateRequiredSpace();
     this.updateTotalPinnedSize_();
+    clearInterval(this.updatePinnedSizeInterval_);
+    this.updatePinnedSizeInterval_ =
+        setInterval(this.updateTotalPinnedSize_.bind(this), 5000);
   }
 
   /**
