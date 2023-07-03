@@ -9,7 +9,7 @@ from .composition_parts import WithCodeGeneratorInfo
 from .composition_parts import WithComponent
 from .composition_parts import WithDebugInfo
 from .composition_parts import WithIdentifier
-from .idl_type import IdlType  # pylint: disable=cyclic-import
+from .idl_type import IdlType
 
 
 class ObservableArray(WithIdentifier, WithCodeGeneratorInfo, WithComponent,

@@ -3,12 +3,15 @@
 # found in the LICENSE file.
 
 import collections
+import dataclasses
 import functools
 import itertools
 import posixpath
+import typing
 
 from blinkbuild.name_style_converter import NameStyleConverter
 
+from .attribute import Attribute
 from .callback_function import CallbackFunction
 from .callback_interface import CallbackInterface
 from .composition_parts import DebugInfo
@@ -22,6 +25,7 @@ from .enumeration import Enumeration
 from .exposure import ExposureMutable
 from .extended_attribute import ExtendedAttribute
 from .extended_attribute import ExtendedAttributesMutable
+from .idl_type import IdlType
 from .idl_type import IdlTypeFactory
 from .interface import Interface
 from .interface import LegacyWindowAlias
@@ -886,14 +890,13 @@ class IdlCompiler(object):
         # We go through all attributes that are ObservableArrayTypes, group the
         # indistinguishable ones together and later assign one ObservableArray
         # to all items in the group.
-
-        # This can become a dataclasses.dataclass once we can start using
-        # Python 3 language features in this file.
+        @dataclasses.dataclass
         class ObservableArrayTypeInfo(object):
-            def __init__(self):
-                self.attributes = []
-                self.for_testing = True
-                self.idl_types = []
+            attributes: typing.List[Attribute] = dataclasses.field(
+                default_factory=list)
+            for_testing: bool = True
+            idl_types: typing.List[IdlType] = dataclasses.field(
+                default_factory=list)
 
         grouped_type_info = collections.defaultdict(ObservableArrayTypeInfo)
 

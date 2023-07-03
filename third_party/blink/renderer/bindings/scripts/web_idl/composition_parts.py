@@ -249,8 +249,6 @@ class WithOwnerMixin(object):
     def __init__(self, owner_mixin=None):
         if isinstance(owner_mixin, WithOwnerMixin):
             owner_mixin = owner_mixin._owner_mixin
-        # pylint: disable=cyclic-import
-        # In Python2, we need to avoid circular imports.
         from .reference import RefById
         assert owner_mixin is None or isinstance(owner_mixin, RefById)
 
@@ -265,8 +263,6 @@ class WithOwnerMixin(object):
         return self._owner_mixin.target_object if self._owner_mixin else None
 
     def set_owner_mixin(self, mixin):
-        # pylint: disable=cyclic-import
-        # In Python2, we need to avoid circular imports.
         from .reference import RefById
         assert isinstance(mixin, RefById)
         assert self._owner_mixin is None

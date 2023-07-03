@@ -12,9 +12,6 @@ from .composition_parts import WithIdentifier
 from .extended_attribute import ExtendedAttributes
 from .reference import RefById
 from .reference import RefByIdFactory
-from .typedef import Typedef
-from .union import Union
-from .user_defined_type import UserDefinedType
 
 # The implementation class hierarchy of IdlType
 #
@@ -803,7 +800,6 @@ class DefinitionType(IdlType, WithIdentifier):
 
     def __init__(self, reference_type, user_defined_type, pass_key=None):
         assert isinstance(reference_type, ReferenceType)
-        assert isinstance(user_defined_type, UserDefinedType)
         IdlType.__init__(
             self,
             is_optional=reference_type.is_optional,
@@ -870,7 +866,6 @@ class TypedefType(IdlType, WithIdentifier):
 
     def __init__(self, reference_type, typedef, pass_key=None):
         assert isinstance(reference_type, ReferenceType)
-        assert isinstance(typedef, Typedef)
         IdlType.__init__(
             self,
             is_optional=reference_type.is_optional,
@@ -1071,9 +1066,6 @@ class ObservableArrayType(_ArrayLikeType):
 
     def set_observable_array_definition_object(
             self, observable_array_definition_object):
-        # In Python2, we need to avoid circular imports.
-        from .observable_array import ObservableArray
-        assert isinstance(observable_array_definition_object, ObservableArray)
         assert self._observable_array_definition_object is None
         self._observable_array_definition_object = (
             observable_array_definition_object)
@@ -1323,7 +1315,6 @@ class UnionType(IdlType):
         return self._union_definition_object
 
     def set_union_definition_object(self, union_definition_object):
-        assert isinstance(union_definition_object, Union)
         assert self._union_definition_object is None
         self._union_definition_object = union_definition_object
 

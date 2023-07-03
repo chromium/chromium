@@ -10,7 +10,7 @@ from .composition_parts import WithExtendedAttributes
 from .composition_parts import WithIdentifier
 from .composition_parts import WithOwner
 from .composition_parts import WithOwnerMixin
-from .idl_type import IdlType  # pylint: disable=cyclic-import
+from .idl_type import IdlType
 from .make_copy import make_copy
 
 
