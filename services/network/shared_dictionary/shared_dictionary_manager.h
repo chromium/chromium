@@ -8,7 +8,9 @@
 #include <map>
 
 #include "base/component_export.h"
+#include "base/containers/lru_cache.h"
 #include "base/functional/callback.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -95,8 +97,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
   }
 
  private:
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel level);
+
+  base::LRUCache<net::SharedDictionaryIsolationKey,
+                 scoped_refptr<SharedDictionaryStorage>>
+      cached_storages_;
+  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level_ =
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+
   std::map<net::SharedDictionaryIsolationKey, raw_ptr<SharedDictionaryStorage>>
       storages_;
+
   base::WeakPtrFactory<SharedDictionaryManager> weak_factory_{this};
 };
 

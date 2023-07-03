@@ -234,6 +234,204 @@ TEST_P(SharedDictionaryManagerTest, DifferentStorageForDifferentIsolationKey) {
   EXPECT_NE(storage1.get(), storage2.get());
 }
 
+TEST_P(SharedDictionaryManagerTest, CachedStorage) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  // Write the test data to the dictionary.
+  WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
+                  {"Hello"}, base::Time::Now());
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin1.test/p?")));
+
+  storage.reset();
+
+  // Even after resetting `storage`, `storage` should be in `manager`'s
+  // `cached_storages_`. So the metadata is still in the memory.
+  storage = manager->GetStorage(isolation_key);
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin1.test/p?")));
+}
+
+TEST_P(SharedDictionaryManagerTest, CachedStorageEvicted) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  // Write the test data to the dictionary.
+  WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
+                  {"Hello"}, base::Time::Now());
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin1.test/p?")));
+
+  storage.reset();
+
+  for (int i = 0; i < 9; ++i) {
+    const GURL url = GURL(base::StringPrintf("https://test%d.test", i));
+    scoped_refptr<SharedDictionaryStorage> tmp_storage =
+        manager->GetStorage(net::SharedDictionaryIsolationKey(
+            url::Origin::Create(url), net::SchemefulSite(url)));
+    EXPECT_TRUE(tmp_storage);
+  }
+
+  // Even after creating 10 (kCachedStorageMaxSize) storages, the first storage
+  // should still be in the cache.
+  storage = manager->GetStorage(isolation_key);
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin1.test/p?")));
+  storage.reset();
+
+  for (int i = 0; i < 10; ++i) {
+    const GURL url = GURL(base::StringPrintf("https://test%d.test", i));
+    scoped_refptr<SharedDictionaryStorage> tmp_storage =
+        manager->GetStorage(net::SharedDictionaryIsolationKey(
+            url::Origin::Create(url), net::SchemefulSite(url)));
+    EXPECT_TRUE(tmp_storage);
+  }
+
+  // When we create 11 (kCachedStorageMaxSize + 1) storages, the first storage
+  // must be evicted
+  storage = manager->GetStorage(isolation_key);
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin1.test/p?")));
+}
+
+TEST_P(SharedDictionaryManagerTest,
+       StorageNotCachedWithModerateMemoryPressure) {
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MemoryPressureListener::MemoryPressureLevel::
+          MEMORY_PRESSURE_LEVEL_MODERATE);
+  task_environment_.RunUntilIdle();
+
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  // Write the test data to the dictionary.
+  WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
+                  {"Hello"}, base::Time::Now());
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin1.test/p?")));
+
+  storage.reset();
+
+  // If `manager` has observed moderate memory pressure, it should not cache the
+  // stoarge.
+  storage = manager->GetStorage(isolation_key);
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin1.test/p?")));
+}
+
+TEST_P(SharedDictionaryManagerTest,
+       StorageNotCachedWithCriticalMemoryPressure) {
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MemoryPressureListener::MemoryPressureLevel::
+          MEMORY_PRESSURE_LEVEL_CRITICAL);
+  task_environment_.RunUntilIdle();
+
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  // Write the test data to the dictionary.
+  WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
+                  {"Hello"}, base::Time::Now());
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin1.test/p?")));
+
+  storage.reset();
+
+  // If `manager` has observed critical memory pressure, it should not cache the
+  // stoarge.
+  storage = manager->GetStorage(isolation_key);
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin1.test/p?")));
+}
+
+TEST_P(SharedDictionaryManagerTest,
+       CachedStorageClearedOnModerateMemoryPressure) {
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  // Write the test data to the dictionary.
+  WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
+                  {"Hello"}, base::Time::Now());
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin1.test/p?")));
+
+  storage.reset();
+
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MemoryPressureListener::MemoryPressureLevel::
+          MEMORY_PRESSURE_LEVEL_MODERATE);
+  task_environment_.RunUntilIdle();
+
+  // If `manager` observed moderate memory pressure, it should clear the cached
+  // storage.
+  storage = manager->GetStorage(isolation_key);
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin1.test/p?")));
+}
+
+TEST_P(SharedDictionaryManagerTest,
+       CachedStorageClearedOnCriticalMemoryPressure) {
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  // Write the test data to the dictionary.
+  WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
+                  {"Hello"}, base::Time::Now());
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin1.test/p?")));
+
+  storage.reset();
+
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MemoryPressureListener::MemoryPressureLevel::
+          MEMORY_PRESSURE_LEVEL_CRITICAL);
+  task_environment_.RunUntilIdle();
+
+  // If `manager` observed critical memory pressure, it should clear the cached
+  // storage.
+  storage = manager->GetStorage(isolation_key);
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin1.test/p?")));
+}
+
 TEST_P(SharedDictionaryManagerTest, NoWriterForNoUseAsDictionaryHeader) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
