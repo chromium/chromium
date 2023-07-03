@@ -552,10 +552,6 @@ const base::FeatureParam<bool> kAutofillSectioningModeCreateGaps{
     &kAutofillUseParameterizedSectioning, "create_gaps", false};
 const base::FeatureParam<bool> kAutofillSectioningModeExpand{
     &kAutofillUseParameterizedSectioning, "expand_assigned_sections", false};
-const base::FeatureParam<bool>
-    kAutofillSectioningModeExpandOverUnfocusableFields{
-        &kAutofillUseParameterizedSectioning, "expand_over_unfocsuable_fields",
-        false};
 
 // Controls whether to use form renderer IDs to find the form which contains the
 // field that was last interacted with in

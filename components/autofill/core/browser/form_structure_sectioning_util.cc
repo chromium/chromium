@@ -106,8 +106,7 @@ void AssignFieldIdentifierSections(
   }
 }
 
-void ExpandSections(base::span<const std::unique_ptr<AutofillField>> fields,
-                    bool overwrite_non_sectionable_fields) {
+void ExpandSections(base::span<const std::unique_ptr<AutofillField>> fields) {
   auto HasSection = [](auto& field) {
     return IsSectionable(*field) && field->section;
   };
@@ -116,7 +115,7 @@ void ExpandSections(base::span<const std::unique_ptr<AutofillField>> fields,
     auto end = base::ranges::find_if(it + 1, fields.end(), HasSection);
     if (end != fields.end() && (*it)->section == (*end)->section) {
       for (auto& field : base::make_span(it + 1, end)) {
-        if (overwrite_non_sectionable_fields || IsSectionable(*field)) {
+        if (IsSectionable(*field)) {
           field->section = (*it)->section;
         }
       }
@@ -207,7 +206,7 @@ void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields) {
     AssignAutocompleteSections(fields);
   AssignCreditCardSections(fields, frame_token_ids);
   if (features::kAutofillSectioningModeExpand.Get()) {
-    ExpandSections(fields, /*overwrite_non_sectionable_fields=*/false);
+    ExpandSections(fields);
   }
 
   auto begin = fields.begin();
@@ -217,10 +216,6 @@ void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields) {
     DCHECK(begin != end || end == fields.end());
     AssignFieldIdentifierSections({begin, end}, frame_token_ids);
     begin = end;
-  }
-
-  if (features::kAutofillSectioningModeExpandOverUnfocusableFields.Get()) {
-    ExpandSections(fields, /*overwrite_non_sectionable_fields=*/true);
   }
 }
 
