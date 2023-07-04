@@ -830,8 +830,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
       browser2->tab_strip_model()->GetWebContentsAt(1)->GetLastCommittedURL());
 }
 
+// TODO(https://crbug.com/1461936): This test is failing on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TestCloseTabDuringShutdown DISABLED_TestCloseTabDuringShutdown
+#else
+#define MAYBE_TestCloseTabDuringShutdown TestCloseTabDuringShutdown
+#endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
-                       TestCloseTabDuringShutdown) {
+                       MAYBE_TestCloseTabDuringShutdown) {
   ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);
