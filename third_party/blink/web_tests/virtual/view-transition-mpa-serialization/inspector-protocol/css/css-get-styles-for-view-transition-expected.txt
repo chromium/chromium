@@ -37,6 +37,8 @@ The test verifies functionality of querying style information for view-transitio
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -78,6 +80,8 @@ The test verifies functionality of querying style information for view-transitio
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -124,6 +128,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -190,6 +196,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -239,6 +247,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -284,6 +294,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -335,6 +347,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -384,6 +398,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -429,6 +445,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -482,6 +500,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -545,6 +565,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -606,6 +628,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -651,6 +675,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -698,6 +724,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -759,6 +787,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -804,6 +834,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -851,6 +883,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -912,6 +946,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -961,6 +997,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -1002,6 +1040,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : regular
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -1159,6 +1199,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -1220,6 +1262,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -1269,6 +1313,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -1310,6 +1356,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : regular
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -1467,6 +1515,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -1528,6 +1578,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -1577,6 +1629,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -1624,6 +1678,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -1685,6 +1741,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -1734,6 +1792,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : user-agent
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -1775,6 +1835,8 @@ The test verifies functionality of querying style information for view-transitio
                             media : [
                             ]
                             origin : regular
+                            ruleTypes : [
+                            ]
                             scopes : [
                             ]
                             selectorList : {
@@ -1858,6 +1920,8 @@ Dumping styles for : ::view-transition with id undefined{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -1929,6 +1993,8 @@ Dumping styles for : ::view-transition-group with id root{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -1978,6 +2044,8 @@ Dumping styles for : ::view-transition-group with id root{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2023,6 +2091,8 @@ Dumping styles for : ::view-transition-group with id root{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2078,6 +2148,8 @@ Dumping styles for : ::view-transition-image-pair with id root{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2139,6 +2211,8 @@ Dumping styles for : ::view-transition-image-pair with id root{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2184,6 +2258,8 @@ Dumping styles for : ::view-transition-image-pair with id root{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2235,6 +2311,8 @@ Dumping styles for : ::view-transition-old with id root{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2296,6 +2374,8 @@ Dumping styles for : ::view-transition-old with id root{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2345,6 +2425,8 @@ Dumping styles for : ::view-transition-old with id root{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2386,6 +2468,8 @@ Dumping styles for : ::view-transition-old with id root{
                     media : [
                     ]
                     origin : regular
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2547,6 +2631,8 @@ Dumping styles for : ::view-transition-new with id root{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2608,6 +2694,8 @@ Dumping styles for : ::view-transition-new with id root{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2657,6 +2745,8 @@ Dumping styles for : ::view-transition-new with id root{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2708,6 +2798,8 @@ Dumping styles for : ::view-transition-group with id shared{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2757,6 +2849,8 @@ Dumping styles for : ::view-transition-group with id shared{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2802,6 +2896,8 @@ Dumping styles for : ::view-transition-group with id shared{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2855,6 +2951,8 @@ Dumping styles for : ::view-transition-group with id shared{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2922,6 +3020,8 @@ Dumping styles for : ::view-transition-image-pair with id shared{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -2983,6 +3083,8 @@ Dumping styles for : ::view-transition-image-pair with id shared{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -3028,6 +3130,8 @@ Dumping styles for : ::view-transition-image-pair with id shared{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -3079,6 +3183,8 @@ Dumping styles for : ::view-transition-old with id shared{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -3140,6 +3246,8 @@ Dumping styles for : ::view-transition-old with id shared{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -3189,6 +3297,8 @@ Dumping styles for : ::view-transition-old with id shared{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -3230,6 +3340,8 @@ Dumping styles for : ::view-transition-old with id shared{
                     media : [
                     ]
                     origin : regular
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -3391,6 +3503,8 @@ Dumping styles for : ::view-transition-new with id shared{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -3452,6 +3566,8 @@ Dumping styles for : ::view-transition-new with id shared{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -3501,6 +3617,8 @@ Dumping styles for : ::view-transition-new with id shared{
                     media : [
                     ]
                     origin : user-agent
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {
@@ -3542,6 +3660,8 @@ Dumping styles for : ::view-transition-new with id shared{
                     media : [
                     ]
                     origin : regular
+                    ruleTypes : [
+                    ]
                     scopes : [
                     ]
                     selectorList : {

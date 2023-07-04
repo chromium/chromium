@@ -258,11 +258,14 @@ class CORE_EXPORT InspectorCSSAgent final
 
   protocol::Response setLocalFontsEnabled(bool enabled) override;
 
-  void CollectMediaQueriesFromRule(CSSRule*,
-                                   protocol::Array<protocol::CSS::CSSMedia>*);
+  void CollectMediaQueriesFromRule(
+      CSSRule*,
+      protocol::Array<protocol::CSS::CSSMedia>*,
+      protocol::Array<protocol::CSS::CSSRuleType>*);
   void CollectMediaQueriesFromStyleSheet(
       CSSStyleSheet*,
-      protocol::Array<protocol::CSS::CSSMedia>*);
+      protocol::Array<protocol::CSS::CSSMedia>*,
+      protocol::Array<protocol::CSS::CSSRuleType>*);
   std::unique_ptr<protocol::CSS::CSSMedia> BuildMediaObject(const MediaList*,
                                                             MediaListSource,
                                                             const String&,
@@ -365,13 +368,15 @@ class CORE_EXPORT InspectorCSSAgent final
       CSSContainerRule*);
   void CollectContainerQueriesFromRule(
       CSSRule*,
-      protocol::Array<protocol::CSS::CSSContainerQuery>*);
+      protocol::Array<protocol::CSS::CSSContainerQuery>*,
+      protocol::Array<protocol::CSS::CSSRuleType>*);
 
   // Supports at-rule implementation
   std::unique_ptr<protocol::CSS::CSSSupports> BuildSupportsObject(
       CSSSupportsRule*);
   void CollectSupportsFromRule(CSSRule*,
-                               protocol::Array<protocol::CSS::CSSSupports>*);
+                               protocol::Array<protocol::CSS::CSSSupports>*,
+                               protocol::Array<protocol::CSS::CSSRuleType>*);
 
   std::unique_ptr<protocol::CSS::CSSLayerData> BuildLayerDataObject(
       const CascadeLayer* layer,
@@ -383,14 +388,16 @@ class CORE_EXPORT InspectorCSSAgent final
   std::unique_ptr<protocol::CSS::CSSLayer> BuildLayerObjectFromImport(
       CSSImportRule* rule);
   void CollectLayersFromRule(CSSRule*,
-                             protocol::Array<protocol::CSS::CSSLayer>*);
+                             protocol::Array<protocol::CSS::CSSLayer>*,
+                             protocol::Array<protocol::CSS::CSSRuleType>*);
 
   void FillAncestorData(CSSRule* rule, protocol::CSS::CSSRule* result);
 
   // Scope at-rule implementation
   std::unique_ptr<protocol::CSS::CSSScope> BuildScopeObject(CSSScopeRule*);
   void CollectScopesFromRule(CSSRule*,
-                             protocol::Array<protocol::CSS::CSSScope>*);
+                             protocol::Array<protocol::CSS::CSSScope>*,
+                             protocol::Array<protocol::CSS::CSSRuleType>*);
 
   // InspectorDOMAgent::DOMListener implementation
   void DidAddDocument(Document*) override;

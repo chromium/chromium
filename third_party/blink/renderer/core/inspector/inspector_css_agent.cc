@@ -905,13 +905,13 @@ protocol::Response InspectorCSSAgent::getMediaQueries(
   for (auto& style : id_to_inspector_style_sheet_) {
     InspectorStyleSheet* style_sheet = style.value;
     CollectMediaQueriesFromStyleSheet(style_sheet->PageStyleSheet(),
-                                      medias->get());
+                                      medias->get(), nullptr);
     const CSSRuleVector& flat_rules = style_sheet->FlatRules();
     for (unsigned i = 0; i < flat_rules.size(); ++i) {
       CSSRule* rule = flat_rules.at(i).Get();
       if (rule->GetType() == CSSRule::kMediaRule ||
           rule->GetType() == CSSRule::kImportRule)
-        CollectMediaQueriesFromRule(rule, medias->get());
+        CollectMediaQueriesFromRule(rule, medias->get(), nullptr);
     }
   }
   return protocol::Response::Success();
@@ -2116,7 +2116,8 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
 
 void InspectorCSSAgent::CollectMediaQueriesFromStyleSheet(
     CSSStyleSheet* style_sheet,
-    protocol::Array<protocol::CSS::CSSMedia>* media_array) {
+    protocol::Array<protocol::CSS::CSSMedia>* media_array,
+    protocol::Array<protocol::CSS::CSSRuleType>* rule_types) {
   MediaList* media_list = style_sheet->media();
   String source_url;
   if (media_list && media_list->length()) {
@@ -2132,12 +2133,16 @@ void InspectorCSSAgent::CollectMediaQueriesFromStyleSheet(
                          style_sheet->ownerNode() ? kMediaListSourceLinkedSheet
                                                   : kMediaListSourceInlineSheet,
                          source_url, style_sheet));
+    if (rule_types) {
+      rule_types->emplace_back(protocol::CSS::CSSRuleTypeEnum::MediaRule);
+    }
   }
 }
 
 void InspectorCSSAgent::CollectMediaQueriesFromRule(
     CSSRule* rule,
-    protocol::Array<protocol::CSS::CSSMedia>* media_array) {
+    protocol::Array<protocol::CSS::CSSMedia>* media_array,
+    protocol::Array<protocol::CSS::CSSRuleType>* rule_types) {
   MediaList* media_list;
   String source_url;
   CSSStyleSheet* parent_style_sheet = nullptr;
@@ -2162,11 +2167,15 @@ void InspectorCSSAgent::CollectMediaQueriesFromRule(
     source_url = "";
   }
 
-  if (media_list && media_list->length())
+  if (media_list && media_list->length()) {
     media_array->emplace_back(BuildMediaObject(
         media_list,
         is_media_rule ? kMediaListSourceMediaRule : kMediaListSourceImportRule,
         source_url, parent_style_sheet));
+    if (rule_types) {
+      rule_types->emplace_back(protocol::CSS::CSSRuleTypeEnum::MediaRule);
+    }
+  }
 }
 
 std::unique_ptr<protocol::CSS::CSSContainerQuery>
@@ -2220,9 +2229,12 @@ InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
 
 void InspectorCSSAgent::CollectContainerQueriesFromRule(
     CSSRule* rule,
-    protocol::Array<protocol::CSS::CSSContainerQuery>* container_queries) {
-  if (auto* container_rule = DynamicTo<CSSContainerRule>(rule))
+    protocol::Array<protocol::CSS::CSSContainerQuery>* container_queries,
+    protocol::Array<protocol::CSS::CSSRuleType>* rule_types) {
+  if (auto* container_rule = DynamicTo<CSSContainerRule>(rule)) {
     container_queries->emplace_back(BuildContainerQueryObject(container_rule));
+    rule_types->emplace_back(protocol::CSS::CSSRuleTypeEnum::ContainerRule);
+  }
 }
 
 std::unique_ptr<protocol::CSS::CSSSupports>
@@ -2249,9 +2261,12 @@ InspectorCSSAgent::BuildSupportsObject(CSSSupportsRule* rule) {
 
 void InspectorCSSAgent::CollectSupportsFromRule(
     CSSRule* rule,
-    protocol::Array<protocol::CSS::CSSSupports>* supports_list) {
-  if (auto* supports_rule = DynamicTo<CSSSupportsRule>(rule))
+    protocol::Array<protocol::CSS::CSSSupports>* supports_list,
+    protocol::Array<protocol::CSS::CSSRuleType>* rule_types) {
+  if (auto* supports_rule = DynamicTo<CSSSupportsRule>(rule)) {
     supports_list->emplace_back(BuildSupportsObject(supports_rule));
+    rule_types->emplace_back(protocol::CSS::CSSRuleTypeEnum::SupportsRule);
+  }
 }
 
 std::unique_ptr<protocol::CSS::CSSLayer> InspectorCSSAgent::BuildLayerObject(
@@ -2294,11 +2309,16 @@ InspectorCSSAgent::BuildLayerObjectFromImport(CSSImportRule* rule) {
 
 void InspectorCSSAgent::CollectLayersFromRule(
     CSSRule* rule,
-    protocol::Array<protocol::CSS::CSSLayer>* layers_list) {
+    protocol::Array<protocol::CSS::CSSLayer>* layers_list,
+    protocol::Array<protocol::CSS::CSSRuleType>* rule_types) {
   if (auto* layer_rule = DynamicTo<CSSLayerBlockRule>(rule)) {
     layers_list->emplace_back(BuildLayerObject(layer_rule));
+    rule_types->emplace_back(protocol::CSS::CSSRuleTypeEnum::LayerRule);
   } else if (auto* import_rule = DynamicTo<CSSImportRule>(rule)) {
-    layers_list->emplace_back(BuildLayerObjectFromImport(import_rule));
+    if (import_rule->layerName() != g_null_atom) {
+      layers_list->emplace_back(BuildLayerObjectFromImport(import_rule));
+      rule_types->emplace_back(protocol::CSS::CSSRuleTypeEnum::LayerRule);
+    }
   }
 }
 
@@ -2314,20 +2334,28 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
       std::make_unique<protocol::Array<protocol::CSS::CSSContainerQuery>>();
   auto scopes_list =
       std::make_unique<protocol::Array<protocol::CSS::CSSScope>>();
+  auto rule_types_list =
+      std::make_unique<protocol::Array<protocol::CSS::CSSRuleType>>();
 
   CSSRule* parent_rule = rule;
   while (parent_rule) {
-    CollectLayersFromRule(parent_rule, layers_list.get());
-    CollectMediaQueriesFromRule(parent_rule, media_list.get());
-    CollectContainerQueriesFromRule(parent_rule, container_queries_list.get());
-    CollectSupportsFromRule(parent_rule, supports_list.get());
-    CollectScopesFromRule(parent_rule, scopes_list.get());
+    CollectLayersFromRule(parent_rule, layers_list.get(),
+                          rule_types_list.get());
+    CollectMediaQueriesFromRule(parent_rule, media_list.get(),
+                                rule_types_list.get());
+    CollectContainerQueriesFromRule(parent_rule, container_queries_list.get(),
+                                    rule_types_list.get());
+    CollectSupportsFromRule(parent_rule, supports_list.get(),
+                            rule_types_list.get());
+    CollectScopesFromRule(parent_rule, scopes_list.get(),
+                          rule_types_list.get());
     if (parent_rule->parentRule()) {
       parent_rule = parent_rule->parentRule();
     } else {
       CSSStyleSheet* style_sheet = parent_rule->parentStyleSheet();
       while (style_sheet) {
-        CollectMediaQueriesFromStyleSheet(style_sheet, media_list.get());
+        CollectMediaQueriesFromStyleSheet(style_sheet, media_list.get(),
+                                          rule_types_list.get());
         parent_rule = style_sheet->ownerRule();
         if (parent_rule)
           break;
@@ -2341,6 +2369,7 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
   std::reverse(layers_list.get()->begin(), layers_list.get()->end());
   result->setLayers(std::move(layers_list));
   result->setContainerQueries(std::move(container_queries_list));
+  result->setRuleTypes(std::move(rule_types_list));
 }
 
 std::unique_ptr<protocol::CSS::CSSScope> InspectorCSSAgent::BuildScopeObject(
@@ -2364,9 +2393,12 @@ std::unique_ptr<protocol::CSS::CSSScope> InspectorCSSAgent::BuildScopeObject(
 
 void InspectorCSSAgent::CollectScopesFromRule(
     CSSRule* rule,
-    protocol::Array<protocol::CSS::CSSScope>* scopes_list) {
-  if (auto* scope_rule = DynamicTo<CSSScopeRule>(rule))
+    protocol::Array<protocol::CSS::CSSScope>* scopes_list,
+    protocol::Array<protocol::CSS::CSSRuleType>* rule_types) {
+  if (auto* scope_rule = DynamicTo<CSSScopeRule>(rule)) {
     scopes_list->emplace_back(BuildScopeObject(scope_rule));
+    rule_types->emplace_back(protocol::CSS::CSSRuleTypeEnum::ScopeRule);
+  }
 }
 
 InspectorStyleSheetForInlineStyle* InspectorCSSAgent::AsInspectorStyleSheet(
