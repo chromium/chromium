@@ -6,7 +6,6 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_COMMON_IMAGE_BACKING_FACTORY_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 

@@ -12,7 +12,6 @@
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/gpu/gpu_vsync_callback.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/service/display/pending_swap_params.h"
 #include "components/viz/service/display/software_output_device.h"

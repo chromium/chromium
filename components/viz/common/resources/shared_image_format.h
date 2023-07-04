@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/viz_resource_format_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"

@@ -12,7 +12,6 @@
 #include <string.h>
 
 #include "base/atomicops.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/common/common_cmd_format.h"
 #include "gpu/command_buffer/common/constants.h"
