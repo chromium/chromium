@@ -233,12 +233,12 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
     return;
   }
 
-  BOOL typedOrGeneratedTransition =
+  const bool typed_or_generated_transition =
       PageTransitionCoreTypeIs(web_params.transition_type,
                                ui::PAGE_TRANSITION_TYPED) ||
       PageTransitionCoreTypeIs(web_params.transition_type,
                                ui::PAGE_TRANSITION_GENERATED);
-  if (typedOrGeneratedTransition) {
+  if (typed_or_generated_transition) {
     LoadTimingTabHelper::FromWebState(current_web_state)->DidInitiatePageLoad();
   }
 
