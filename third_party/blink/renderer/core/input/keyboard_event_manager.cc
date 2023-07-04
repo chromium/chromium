@@ -390,7 +390,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
   return event_handling_util::ToWebInputEventResult(dispatch_result);
 }
