@@ -533,6 +533,7 @@ src/webgpu/shader/validation/shader_io/entry_point.spec.ts
 src/webgpu/shader/validation/shader_io/interpolate.spec.ts
 src/webgpu/shader/validation/shader_io/invariant.spec.ts
 src/webgpu/shader/validation/shader_io/locations.spec.ts
+src/webgpu/shader/validation/types/vector.spec.ts
 src/webgpu/shader/validation/uniformity/uniformity.spec.ts
 src/webgpu/util/color_space_conversion.ts
 src/webgpu/util/copy_to_texture.ts
