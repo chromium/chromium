@@ -413,6 +413,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestGetSBThreatTypeForRTThreatType) {
                 RTLookupResponse::ThreatInfo::WARN));
 }
 
+// TODO(crbug.com/1462150): This test is very often flaky on iOS. Fix it.
 TEST_F(RealTimeUrlLookupServiceTest, TestCanCheckUrl) {
   struct CanCheckUrlCases {
     const char* url;
