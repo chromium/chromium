@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/check.h"
-#include "components/viz/common/viz_resource_format_export.h"
+#include "base/component_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,7 +30,7 @@ class MultiplanarFormatDataView;
 // images (eg. RGBA) or multiplanar images (eg. NV12). This format can be
 // either ResourceFormat or MultiplanarFormat (PlaneConfig + Subsampling +
 // ChannelFormat).
-class VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat {
+class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
  public:
   // Specifies how YUV (and optionally A) are divided among planes. Planes are
   // separated by underscores in the enum value names. Within each plane the

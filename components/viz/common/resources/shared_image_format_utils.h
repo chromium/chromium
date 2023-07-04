@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_VIZ_COMMON_RESOURCES_SHARED_IMAGE_FORMAT_UTILS_H_
 #define COMPONENTS_VIZ_COMMON_RESOURCES_SHARED_IMAGE_FORMAT_UTILS_H_
 
+#include "base/component_export.h"
 #include "components/viz/common/resources/shared_image_format.h"
-#include "components/viz/common/viz_resource_format_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "ui/gfx/buffer_types.h"
@@ -39,42 +39,46 @@ class TestInProcessContextProvider;
 // with R/G channels reversed. This is because from GPU perspective, GL format
 // is always RGBA and there is no difference between RGBA/BGRA. Also, these
 // formats should not be used for software SkImages/SkSurfaces.
-VIZ_RESOURCE_FORMAT_EXPORT SkColorType
-ToClosestSkColorType(bool gpu_compositing, SharedImageFormat format);
+COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+SkColorType ToClosestSkColorType(bool gpu_compositing,
+                                 SharedImageFormat format);
 
 // Returns the closest SkColorType for a given `format` and `plane_index`. For
 // single planar formats (eg. RGBA) the plane_index must be zero and it's
 // equivalent to calling function above.
-VIZ_RESOURCE_FORMAT_EXPORT SkColorType
-ToClosestSkColorType(bool gpu_compositing,
-                     SharedImageFormat format,
-                     int plane_index);
+COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+SkColorType ToClosestSkColorType(bool gpu_compositing,
+                                 SharedImageFormat format,
+                                 int plane_index);
 
 // Returns the single-plane SharedImageFormat corresponding to `color_type.`
-VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat
-SkColorTypeToSinglePlaneSharedImageFormat(SkColorType color_type);
+COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
+    SkColorType color_type);
 
 // Returns whether `format`, which must be a single-planar format, can be used
 // with GpuMemoryBuffer texture storage.
-VIZ_RESOURCE_FORMAT_EXPORT bool
-CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(
+COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+bool CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(
     SharedImageFormat format);
 
 // Checks if there is an equivalent BufferFormat.
-VIZ_RESOURCE_FORMAT_EXPORT bool HasEquivalentBufferFormat(
-    SharedImageFormat format);
+COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+bool HasEquivalentBufferFormat(SharedImageFormat format);
 
 // Returns the BufferFormat corresponding to `format`, which must be a
 // single-planar format.
-VIZ_RESOURCE_FORMAT_EXPORT gfx::BufferFormat
-SinglePlaneSharedImageFormatToBufferFormat(SharedImageFormat format);
+COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+gfx::BufferFormat SinglePlaneSharedImageFormatToBufferFormat(
+    SharedImageFormat format);
 
-VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat
-GetSharedImageFormat(gfx::BufferFormat format);
+COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+SharedImageFormat GetSharedImageFormat(gfx::BufferFormat format);
 
 // Utilities that conceptually belong only on the service side, but are
 // currently used by some clients. Usage is restricted to friended clients.
-class VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormatRestrictedSinglePlaneUtils {
+class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+    SharedImageFormatRestrictedSinglePlaneUtils {
  private:
   friend class ContextProviderCommandBuffer;
   friend class TestContextProvider;

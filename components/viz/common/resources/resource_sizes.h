@@ -10,15 +10,15 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/component_export.h"
 #include "base/numerics/safe_math.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/resources/shared_image_format.h"
-#include "components/viz/common/viz_resource_format_export.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace viz {
 
-class VIZ_RESOURCE_FORMAT_EXPORT ResourceSizes {
+class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) ResourceSizes {
  public:
   // Returns true if the size is valid and fits in bytes, false otherwise.
   // Sets the bytes result in the out parameter |bytes|.

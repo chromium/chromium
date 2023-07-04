@@ -14,12 +14,11 @@ import("//third_party/inspector_protocol/inspector_protocol.gni")
 viz_component("resource_format") {
   output_name = "viz_resource_format"
 
-  defines = [ "VIZ_RESOURCE_FORMAT_IMPLEMENTATION" ]
+  defines = [ "IS_VIZ_SHARED_IMAGE_FORMAT_IMPL" ]
 
   sources = [
     "resources/shared_image_format.cc",
     "resources/shared_image_format.h",
-    "viz_resource_format_export.h",
   ]
   public_deps = [
     "//base",
@@ -43,7 +42,7 @@ buildflag_header("buildflags") {
 viz_component("resource_format_utils") {
   output_name = "viz_resource_format_utils"
 
-  defines = [ "VIZ_RESOURCE_FORMAT_IMPLEMENTATION" ]
+  defines = [ "IS_VIZ_SHARED_IMAGE_FORMAT_IMPL" ]
 
   sources = [
     "resources/resource_sizes.h",
