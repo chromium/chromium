@@ -244,7 +244,6 @@ crbug.com/1225630 fast/multicol/nested-very-tall-inside-short-crash.html [ Skip 
 # View transition failures
 crbug.com/1351556 virtual/view-transition/view-transition/capture-callback-exception.html [ Failure ]
 crbug.com/1351556 virtual/view-transition-wide-gamut/view-transition/capture-callback-exception.html [ Failure ]
-crbug.com/1308431 virtual/view-transition/external/wpt/css/css-view-transitions/old-content-captures-clip-path.html [ Failure ]
 crbug.com/1412910 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
 crbug.com/1412910 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
 crbug.com/1430357 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
@@ -6568,7 +6567,6 @@ crbug.com/891944 [ Mac ] external/wpt/css/css-scrollbars/viewport-scrollbar.html
 
 crbug.com/1456514 [ Linux ] fast/forms/number/number-appearance-spinbutton-disabled-readonly.html [ Failure Pass ]
 
-crbug.com/1457660 external/wpt/editing/other/white-spaces-after-execCommand-forwarddelete.tentative.html [ Pass Timeout ]
 
 # Gardener 2023-06-26
 crbug.com/1457850 [ Linux ] virtual/plz-dedicated-worker/http/tests/inspector-protocol/runtime/serialization_options.js [ Failure Pass ]
