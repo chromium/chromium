@@ -727,8 +727,15 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MainFrameHitWithReferrer) {
 }
 
 // TODO(https://crbug.com/1399454): Test is flaky.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SubResourceHitWithMainFrameReferrer \
+  DISABLED_SubResourceHitWithMainFrameReferrer
+#else
+#define MAYBE_SubResourceHitWithMainFrameReferrer \
+  SubResourceHitWithMainFrameReferrer
+#endif
 IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
-                       SubResourceHitWithMainFrameReferrer) {
+                       MAYBE_SubResourceHitWithMainFrameReferrer) {
   GURL first_url = embedded_test_server()->GetURL(kEmptyPage);
   GURL second_url = embedded_test_server()->GetURL(kMalwarePage);
   GURL bad_url = embedded_test_server()->GetURL(kMalwareImg);
