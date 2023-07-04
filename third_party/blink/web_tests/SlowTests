@@ -1454,4 +1454,8 @@ crbug.com/626703 [ Mac13-arm64 Release ] external/wpt/html/semantics/forms/form-
 crbug.com/626703 [ Release Win ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Slow ]
 
 crbug.com/1457660 external/wpt/editing/other/white-spaces-after-execCommand-forwarddelete.tentative.html [ Slow ]
+
+crbug.com/1453708 [ Win ] http/tests/inspector-protocol/network/blocked-setcookie-invalid-domain.js [ Slow ]
+crbug.com/1453303 [ Win ] http/tests/inspector-protocol/network/blocked-setcookie-overwrite-secure.js [ Slow ]
+
 crbug.com/1459575 webexposed/global-interface-listing-dedicated-worker.html [ Slow ]
