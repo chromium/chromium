@@ -138,7 +138,7 @@ class LinkerDriver(object):
                 # produced by rustc for LTO includes these arguments, but the
                 # Apple linker doesn't accept them.
                 # Upstream bug: https://github.com/rust-lang/rust/issues/60059
-                BAD_RUSTC_ARGS = ['-plugin-opt=O3', '-plugin-opt=mcpu=core2']
+                BAD_RUSTC_ARGS = ['-Wl,-plugin-opt=O3,-plugin-opt=mcpu=core2']
                 if arg not in BAD_RUSTC_ARGS:
                     compiler_driver_args.append(arg)
 
