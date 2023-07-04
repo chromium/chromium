@@ -4,19 +4,11 @@
 
 import {assertEquals, assertGT, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {FileOperationHandler} from './file_operation_handler.js';
 import {Speedometer} from './file_operation_util.js';
 import {MockFileOperationManager} from './mock_file_operation_manager.js';
-import {MockProgressCenter} from './mock_progress_center.js';
 
 /** @type {!MockFileOperationManager} */
 let fileOperationManager;
-
-/** @type {!MockProgressCenter} */
-let progressCenter;
-
-/** @type {!FileOperationHandler} */
-let fileOperationHandler;
 
 /**
  * Mock JS Date.
@@ -58,12 +50,6 @@ class MockDate {
 export function setUp() {
   // Create mock items needed for FileOperationHandler.
   fileOperationManager = new MockFileOperationManager();
-  progressCenter = new MockProgressCenter();
-
-  // Create FileOperationHandler. Note: the file operation handler is
-  // required, but not used directly, by the unittests.
-  fileOperationHandler =
-      new FileOperationHandler(fileOperationManager, progressCenter);
 }
 
 /**

@@ -102,8 +102,8 @@ export class FileManagerBase {
       });
 
       this.fileOperationManager = new FileOperationManagerImpl();
-      this.fileOperationHandler_ = new FileOperationHandler(
-          this.fileOperationManager, this.progressCenter);
+      this.fileOperationHandler_ =
+          new FileOperationHandler(this.progressCenter);
     });
 
     // Handle newly mounted FSP file systems. Workaround for crbug.com/456648.

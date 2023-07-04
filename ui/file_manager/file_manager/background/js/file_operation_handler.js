@@ -6,7 +6,6 @@ import {startIOTask} from '../../common/js/api.js';
 import {PolicyErrorType, ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {State} from '../../externs/ts/state.js';
 import {getStore} from '../../state/store.js';
@@ -16,16 +15,9 @@ import {getStore} from '../../state/store.js';
  */
 export class FileOperationHandler {
   /**
-   * @param {!FileOperationManager} fileOperationManager
    * @param {!ProgressCenter} progressCenter
    */
-  constructor(fileOperationManager, progressCenter) {
-    /**
-     * File operation manager.
-     * @type {!FileOperationManager}
-     * @private
-     */
-    this.fileOperationManager_ = fileOperationManager;
+  constructor(progressCenter) {
 
     /**
      * Progress center.
