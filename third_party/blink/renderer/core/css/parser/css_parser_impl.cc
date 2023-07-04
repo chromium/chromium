@@ -1005,8 +1005,6 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(
   }
   CSSParserTokenStream::BlockGuard guard(stream);
 
-  HeapVector<Member<StyleRuleBase>, 4> rules;
-
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kMedia, prelude_offset_start);
     observer_->EndRuleHeader(prelude_offset_end);
@@ -1027,25 +1025,9 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(
       CachedMediaQuerySet(prelude_string, prelude, offsets);
   DCHECK(media);
 
-  if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
-      nesting_type == CSSNestingType::kNesting) {
-    // Parse the interior as if it were a style rule.
-    if (observer_) {
-      // Observe an empty rule header to ensure the observer has a new rule data
-      // on the stack for the following ConsumeDeclarationList.
-      observer_->StartRuleHeader(StyleRule::kStyle, stream.Offset());
-      observer_->EndRuleHeader(stream.Offset());
-    }
-    ConsumeDeclarationList(stream, StyleRule::kStyle, nesting_type,
-                           parent_rule_for_nesting, &rules);
-    if (!parsed_properties_.empty()) {
-      rules.push_front(CreateImplicitNestedRule(parent_rule_for_nesting));
-    }
-  } else {
-    ConsumeRuleList(
-        stream, kRegularRuleList, nesting_type, parent_rule_for_nesting,
-        [&rules](StyleRuleBase* rule, wtf_size_t) { rules.push_back(rule); });
-  }
+  HeapVector<Member<StyleRuleBase>, 4> rules;
+  ConsumeRuleListOrNestedDeclarationList(stream, nesting_type,
+                                         parent_rule_for_nesting, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -1094,25 +1076,8 @@ StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
           .SimplifyWhiteSpace();
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
-  if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
-      nesting_type == CSSNestingType::kNesting) {
-    // Parse the interior as if it were a style rule.
-    if (observer_) {
-      // Observe an empty rule header to ensure the observer has a new rule data
-      // on the stack for the following ConsumeDeclarationList.
-      observer_->StartRuleHeader(StyleRule::kStyle, stream.Offset());
-      observer_->EndRuleHeader(stream.Offset());
-    }
-    ConsumeDeclarationList(stream, StyleRule::kStyle, nesting_type,
-                           parent_rule_for_nesting, &rules);
-    if (!parsed_properties_.empty()) {
-      rules.push_front(CreateImplicitNestedRule(parent_rule_for_nesting));
-    }
-  } else {
-    ConsumeRuleList(
-        stream, kRegularRuleList, nesting_type, parent_rule_for_nesting,
-        [&rules](StyleRuleBase* rule, wtf_size_t) { rules.push_back(rule); });
-  }
+  ConsumeRuleListOrNestedDeclarationList(stream, nesting_type,
+                                         parent_rule_for_nesting, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -1148,25 +1113,8 @@ StyleRuleStartingStyle* CSSParserImpl::ConsumeStartingStyleRule(
   }
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
-  if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
-      nesting_type == CSSNestingType::kNesting) {
-    // Parse the interior as if it were a style rule.
-    if (observer_) {
-      // Observe an empty rule header to ensure the observer has a new rule data
-      // on the stack for the following ConsumeDeclarationList.
-      observer_->StartRuleHeader(StyleRule::kStyle, stream.Offset());
-      observer_->EndRuleHeader(stream.Offset());
-    }
-    ConsumeDeclarationList(stream, StyleRule::kStyle, nesting_type,
-                           parent_rule_for_nesting, &rules);
-    if (!parsed_properties_.empty()) {
-      rules.push_front(CreateImplicitNestedRule(parent_rule_for_nesting));
-    }
-  } else {
-    ConsumeRuleList(
-        stream, kRegularRuleList, nesting_type, parent_rule_for_nesting,
-        [&rules](StyleRuleBase* rule, wtf_size_t) { rules.push_back(rule); });
-  }
+  ConsumeRuleListOrNestedDeclarationList(stream, nesting_type,
+                                         parent_rule_for_nesting, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -1663,25 +1611,8 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
   }
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
-  if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
-      nesting_type == CSSNestingType::kNesting) {
-    // Parse the interior as if it were a style rule.
-    if (observer_) {
-      // Observe an empty rule header to ensure the observer has a new rule data
-      // on the stack for the following ConsumeDeclarationList.
-      observer_->StartRuleHeader(StyleRule::kStyle, stream.Offset());
-      observer_->EndRuleHeader(stream.Offset());
-    }
-    ConsumeDeclarationList(stream, StyleRule::kStyle, nesting_type,
-                           parent_rule_for_nesting, &rules);
-    if (!parsed_properties_.empty()) {
-      rules.push_front(CreateImplicitNestedRule(parent_rule_for_nesting));
-    }
-  } else {
-    ConsumeRuleList(
-        stream, kRegularRuleList, nesting_type, parent_rule_for_nesting,
-        [&rules](StyleRuleBase* rule, wtf_size_t) { rules.push_back(rule); });
-  }
+  ConsumeRuleListOrNestedDeclarationList(stream, nesting_type,
+                                         parent_rule_for_nesting, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -1766,25 +1697,8 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(
   }
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
-  if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
-      nesting_type == CSSNestingType::kNesting) {
-    // Parse the interior as if it were a style rule.
-    if (observer_) {
-      // Observe an empty rule header to ensure the observer has a new rule data
-      // on the stack for the following ConsumeDeclarationList.
-      observer_->StartRuleHeader(StyleRule::kStyle, stream.Offset());
-      observer_->EndRuleHeader(stream.Offset());
-    }
-    ConsumeDeclarationList(stream, StyleRule::kStyle, nesting_type,
-                           parent_rule_for_nesting, &rules);
-    if (!parsed_properties_.empty()) {
-      rules.push_front(CreateImplicitNestedRule(parent_rule_for_nesting));
-    }
-  } else {
-    ConsumeRuleList(
-        stream, kRegularRuleList, nesting_type, parent_rule_for_nesting,
-        [&rules](StyleRuleBase* rule, wtf_size_t) { rules.push_back(rule); });
-  }
+  ConsumeRuleListOrNestedDeclarationList(stream, nesting_type,
+                                         parent_rule_for_nesting, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -2175,6 +2089,54 @@ void CSSParserImpl::ConsumeDeclarationList(
 
   if (use_observer) {
     observer_->EndRuleBody(stream.LookAheadOffset());
+  }
+}
+
+// Consumes a list of style rules and stores the result in `child_rules`,
+// or (if `nesting_type` is kNesting) consumes the interior of a nested
+// group rule [1]. Nested group rules allow a list of declarations to appear
+// directly in place of where a list of rules would normally go.
+//
+// [1] https://drafts.csswg.org/css-nesting-1/#nested-group-rules
+void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
+    CSSParserTokenStream& stream,
+    CSSNestingType nesting_type,
+    StyleRule* parent_rule_for_nesting,
+    HeapVector<Member<StyleRuleBase>, 4>* child_rules) {
+  DCHECK(child_rules);
+
+  if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
+      nesting_type == CSSNestingType::kNesting) {
+    // This is a nested group rule, which allows *declarations* to appear
+    // directly within the body of the rule, e.g.:
+    //
+    // .foo {
+    //    @media (width > 800px) {
+    //      color: green;
+    //    }
+    //  }
+    //
+    // Note that nested group rules may also contain *rules* within its body.
+    // This is handled by `ConsumeDeclarationList`, see comment near that
+    // function.
+    if (observer_) {
+      // Observe an empty rule header to ensure the observer has a new rule data
+      // on the stack for the following ConsumeDeclarationList.
+      observer_->StartRuleHeader(StyleRule::kStyle, stream.Offset());
+      observer_->EndRuleHeader(stream.Offset());
+    }
+    ConsumeDeclarationList(stream, StyleRule::kStyle, nesting_type,
+                           parent_rule_for_nesting, child_rules);
+    if (!parsed_properties_.empty()) {
+      child_rules->push_front(
+          CreateImplicitNestedRule(parent_rule_for_nesting));
+    }
+  } else {
+    ConsumeRuleList(stream, kRegularRuleList, nesting_type,
+                    parent_rule_for_nesting,
+                    [child_rules](StyleRuleBase* rule, wtf_size_t) {
+                      child_rules->push_back(rule);
+                    });
   }
 }
 
