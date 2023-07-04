@@ -271,13 +271,6 @@ void MultiColumnFragmentainerGroup::ExtendColumnBlockSizeFromNG(
   logical_height_ += block_size;
 }
 
-LayoutUnit MultiColumnFragmentainerGroup::HeightAdjustedForRowOffset(
-    LayoutUnit height) const {
-  LayoutUnit adjusted_height =
-      height - LogicalTop() - column_set_->LogicalTopFromMulticolContentEdge();
-  return adjusted_height.ClampNegativeToZero();
-}
-
 LayoutRect MultiColumnFragmentainerGroup::ColumnRectAt(
     unsigned column_index) const {
   LayoutUnit column_logical_width = column_set_->PageLogicalWidth();

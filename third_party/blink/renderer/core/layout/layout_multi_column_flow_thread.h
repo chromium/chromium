@@ -214,8 +214,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   LayoutSize FlowThreadTranslationAtPoint(const LayoutPoint& flow_thread_point,
                                           CoordinateSpaceConversion) const;
 
-  LayoutPoint FlowThreadPointToVisualPoint(
-      const LayoutPoint& flow_thread_point) const final;
   PhysicalOffset VisualPointToFlowThreadPoint(
       const PhysicalOffset& visual_point) const final;
 

@@ -307,13 +307,6 @@ LayoutPoint LayoutMultiColumnSet::VisualPointToFlowThreadPoint(
                                           row.OffsetFromColumnSet());
 }
 
-LayoutUnit LayoutMultiColumnSet::PageLogicalTopForOffset(
-    LayoutUnit offset) const {
-  NOT_DESTROYED();
-  return FragmentainerGroupAtFlowThreadOffset(offset, kAssociateWithLatterPage)
-      .ColumnLogicalTopForOffset(offset);
-}
-
 void LayoutMultiColumnSet::ResetColumnHeight() {
   NOT_DESTROYED();
   fragmentainer_groups_.DeleteExtraGroups();
@@ -374,23 +367,6 @@ void LayoutMultiColumnSet::ComputeLogicalHeight(
     LogicalExtentComputedValues& computed_values) const {
   NOT_DESTROYED();
   NOTREACHED_NORETURN();
-}
-
-PositionWithAffinity LayoutMultiColumnSet::PositionForPoint(
-    const PhysicalOffset& point) const {
-  NOT_DESTROYED();
-  DCHECK_GE(GetDocument().Lifecycle().GetState(),
-            DocumentLifecycle::kPrePaintClean);
-  LayoutPoint flipped_point = FlipForWritingMode(point);
-  // Convert the visual point to a flow thread point.
-  const MultiColumnFragmentainerGroup& row =
-      FragmentainerGroupAtVisualPoint(flipped_point);
-  LayoutPoint flow_thread_point = row.VisualPointToFlowThreadPoint(
-      flipped_point + row.OffsetFromColumnSet(),
-      MultiColumnFragmentainerGroup::kSnapToColumn);
-  // Then drill into the flow thread, where we'll find the actual content.
-  return FlowThread()->PositionForPoint(
-      FlowThread()->FlipForWritingMode(flow_thread_point));
 }
 
 LayoutUnit LayoutMultiColumnSet::ColumnGap() const {
@@ -638,15 +614,6 @@ void LayoutMultiColumnSet::DetachFromFlowThread() {
     flow_thread_->RemoveColumnSetFromThread(this);
     flow_thread_ = nullptr;
   }
-}
-
-LayoutRect LayoutMultiColumnSet::FlowThreadPortionRect() const {
-  NOT_DESTROYED();
-  LayoutRect portion_rect(LayoutUnit(), LogicalTopInFlowThread(),
-                          PageLogicalWidth(), LogicalHeightInFlowThread());
-  if (!IsHorizontalWritingMode())
-    return portion_rect.TransposedRect();
-  return portion_rect;
 }
 
 bool LayoutMultiColumnSet::ComputeColumnRuleBounds(

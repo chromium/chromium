@@ -167,8 +167,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   void Trace(Visitor*) const;
 
  private:
-  LayoutUnit HeightAdjustedForRowOffset(LayoutUnit height) const;
-
   LayoutRect ColumnRectAt(unsigned column_index) const;
   LayoutUnit LogicalTopInFlowThreadAt(unsigned column_index) const {
     return logical_top_in_flow_thread_ + column_index * ColumnLogicalHeight();

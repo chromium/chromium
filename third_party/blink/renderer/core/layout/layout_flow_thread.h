@@ -170,8 +170,6 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   void FlowThreadToContainingCoordinateSpace(LayoutUnit& block_position,
                                              LayoutUnit& inline_position) const;
 
-  virtual LayoutPoint FlowThreadPointToVisualPoint(
-      const LayoutPoint& flow_thread_point) const = 0;
   virtual PhysicalOffset VisualPointToFlowThreadPoint(
       const PhysicalOffset& visual_point) const = 0;
 

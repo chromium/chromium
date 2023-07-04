@@ -169,8 +169,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
     return group.ColumnLogicalHeight() * UsedColumnCount();
   }
 
-  LayoutRect FlowThreadPortionRect() const;
-
   // The used CSS value of column-count, i.e. how many columns there are room
   // for without overflowing.
   unsigned UsedColumnCount() const {
@@ -208,10 +206,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
 
   void AttachToFlowThread();
   void DetachFromFlowThread();
-
-  // The top of the page nearest to the specified block offset. All in
-  // flowthread coordinates.
-  LayoutUnit PageLogicalTopForOffset(LayoutUnit offset) const;
 
   LayoutRect FragmentsBoundingBox(
       const LayoutRect& bounding_box_in_flow_thread) const;
@@ -253,7 +247,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   void ComputeLogicalHeight(LayoutUnit logical_height,
                             LayoutUnit logical_top,
                             LogicalExtentComputedValues&) const override;
-  PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   void ComputeVisualOverflow() final;
 

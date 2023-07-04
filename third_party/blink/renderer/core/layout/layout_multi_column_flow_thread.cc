@@ -388,14 +388,6 @@ LayoutSize LayoutMultiColumnFlowThread::FlowThreadTranslationAtPoint(
   return FlowThreadTranslationAtOffset(block_offset, rule, mode);
 }
 
-LayoutPoint LayoutMultiColumnFlowThread::FlowThreadPointToVisualPoint(
-    const LayoutPoint& flow_thread_point) const {
-  NOT_DESTROYED();
-  return flow_thread_point +
-         FlowThreadTranslationAtPoint(flow_thread_point,
-                                      CoordinateSpaceConversion::kVisual);
-}
-
 PhysicalOffset LayoutMultiColumnFlowThread::VisualPointToFlowThreadPoint(
     const PhysicalOffset& visual_point) const {
   NOT_DESTROYED();
