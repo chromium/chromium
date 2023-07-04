@@ -68,6 +68,10 @@ class PromiseAppService {
   // care about Almanac responses.
   void SetSkipAlmanacForTesting(bool skip_almanac);
 
+  // Allows tests to skip the check of whether the user has an official Google
+  // API key so that we can trigger an Almanac query.
+  void SetSkipApiKeyCheckForTesting(bool skip_almanac);
+
  private:
   // Update a promise app's fields with the info retrieved from the Almanac API.
   void OnGetPromiseAppInfoCompleted(
@@ -99,6 +103,7 @@ class PromiseAppService {
   std::map<PackageId, int> pending_download_count_;
 
   bool skip_almanac_for_testing_ = false;
+  bool skip_api_key_check_for_testing_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

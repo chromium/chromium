@@ -17,6 +17,7 @@
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
+#include "google_apis/google_api_keys.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -101,6 +102,13 @@ void PromiseAppService::OnPromiseApp(PromiseAppPtr delta) {
     return;
   }
 
+  // Ensure that the build uses the Google-internal file containing the
+  // official API keys, which are required to make queries to the Almanac.
+  if (!google_apis::IsGoogleChromeAPIKeyUsed() &&
+      !skip_api_key_check_for_testing_) {
+    return;
+  }
+
   // If this is a new promise app, send an Almanac request to fetch more
   // details.
   promise_app_almanac_connector_->GetPromiseAppInfo(
@@ -111,6 +119,10 @@ void PromiseAppService::OnPromiseApp(PromiseAppPtr delta) {
 
 void PromiseAppService::SetSkipAlmanacForTesting(bool skip_almanac) {
   skip_almanac_for_testing_ = skip_almanac;
+}
+
+void PromiseAppService::SetSkipApiKeyCheckForTesting(bool skip_api_key_check) {
+  skip_api_key_check_for_testing_ = skip_api_key_check;
 }
 
 void PromiseAppService::OnGetPromiseAppInfoCompleted(

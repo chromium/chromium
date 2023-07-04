@@ -43,6 +43,7 @@ class PromiseAppServiceTest : public testing::Test,
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             url_loader_factory_.get());
     service_ = std::make_unique<PromiseAppService>(profile_.get());
+    service_->SetSkipApiKeyCheckForTesting(true);
   }
 
   network::TestURLLoaderFactory* url_loader_factory() {
