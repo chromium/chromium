@@ -104,6 +104,12 @@ GetAutofillProfileRequirementResult(const AutofillProfile& profile,
 bool IsMinimumAddress(const AutofillProfile& profile,
                       const std::string& predicted_country_code,
                       const std::string& app_locale) {
+  const std::vector<std::string>& country_codes =
+      autofill::CountryDataMap::GetInstance()->country_codes();
+  if (!base::Contains(country_codes, predicted_country_code)) {
+    return false;
+  }
+
   base::flat_set<AddressImportRequirement> address_import_requirements =
       GetAutofillProfileRequirementResult(profile, predicted_country_code,
                                           app_locale,
@@ -120,11 +126,7 @@ bool IsMinimumAddress(const AutofillProfile& profile,
                       const std::string& app_locale) {
   std::string country_code = base::UTF16ToUTF8(
       profile.GetRawInfo(autofill::ServerFieldType::ADDRESS_HOME_COUNTRY));
-  const std::vector<std::string>& country_codes =
-      autofill::CountryDataMap::GetInstance()->country_codes();
-  return base::Contains(country_codes, country_code)
-             ? IsMinimumAddress(profile, country_code, app_locale)
-             : false;
+  return IsMinimumAddress(profile, country_code, app_locale);
 }
 
 bool IsEligibleForMigrationToAccount(
