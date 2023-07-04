@@ -77355,7 +77355,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Microsoft OneDrive setup (welcome page)"/>
   <int value="4" label="Microsoft OneDrive setup (PWA install page)"/>
   <int value="5" label="Microsoft OneDrive setup (ODFS setup page)"/>
-  <int value="6" label="Microsoft OneDrive setup (upload page)"/>
+  <int value="6" label="Microsoft OneDrive setup (setup complete page)"/>
 </enum>
 
 <enum name="OfficeTaskResult">

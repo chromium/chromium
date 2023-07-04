@@ -40,7 +40,7 @@ enum MetricsRecordedSetupPage {
   kOneDriveSetupWelcome = 3,
   kOneDriveSetupPWAInstall = 4,
   kOneDriveSetupODFSMount = 5,
-  kOneDriveSetupUpload = 6,
+  kOneDriveSetupComplete = 6,
 };
 
 // Operation used to upload the source file.
@@ -72,9 +72,9 @@ struct DialogArgs {
   // the `kFileHandlerDialog` dialog.
   array<DialogTask> local_tasks;
 
-  // True if the setup flow is running for the first time. False if running
-  // fixup flow.
-  bool first_time_setup;
+  // True if the setup flow should end with setting Microsoft 365 as default
+  // handler.
+  bool set_office_as_default_handler;
 
   // Indicates what operation is used to upload the source file (copy or move).
   OperationType operation_type;

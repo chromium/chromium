@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,37 +7,29 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {BaseSetupPageElement} from './base_setup_page.js';
 import {UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
-import {getTemplate} from './one_drive_upload_page.html.js';
+import {getTemplate} from './office_setup_complete_page.html.js';
 
 /**
- * The OneDriveUploadPageElement represents the setup page that prompts the user
- * to upload the file to OneDrive.
+ * The OfficeSetupCompletePageElement represents the page that shows the
+ * completed state of the setup flow.
  */
-export class OneDriveUploadPageElement extends BaseSetupPageElement {
-  /** The names of the files to upload. */
-  // Commented out to meet current UX specifications.
-  // private fileNames: string[] = [];
-
+export class OfficeSetupCompletePageElement extends BaseSetupPageElement {
   /**
-    True if the setup flow is being run for the first time. False if the fixup
-    flow is being run.
+    True if Microsoft 365 should be set as default handler when this page gets
+    displayed.
   */
-  private firstTimeSetup: boolean = true;
+  private setOfficeAsDefaultHandler: boolean = true;
 
   constructor() {
     super();
   }
 
   /**
-   * Sets the file name to be displayed by this dialog. Can be null if there is
-   * no file to upload. Sets whether the setup flow is running for the first
-   * time.
-   * @param fileName Name of the file to be displayed.
-   * @param firstTimeSetup Whether the setup flow is running for the first time.
+   * @param setOfficeAsDefaultHandler Whether Microsoft 365 should be set as
+   *     default handler when this page gets displayed.
    */
-  setFileNamesAndFirstTimeSetup(_fileNames: string[], firstTimeSetup: boolean) {
-    // this.fileNames = fileNames;
-    this.firstTimeSetup = firstTimeSetup;
+  setDefaultHandlerOnPageShown(setOfficeAsDefaultHandler: boolean) {
+    this.setOfficeAsDefaultHandler = setOfficeAsDefaultHandler;
     if (this.isConnected) {
       this.connectedCallback();
     }
@@ -56,7 +48,7 @@ export class OneDriveUploadPageElement extends BaseSetupPageElement {
     this.innerHTML = getTemplate();
     const uploadButton = this.querySelector('.action-button')! as HTMLElement;
 
-    if (this.firstTimeSetup) {
+    if (this.setOfficeAsDefaultHandler) {
       this.proxy.handler.setOfficeAsDefaultHandler();
     }
 
@@ -69,4 +61,4 @@ export class OneDriveUploadPageElement extends BaseSetupPageElement {
   }
 }
 
-customElements.define('upload-page', OneDriveUploadPageElement);
+customElements.define('complete-page', OfficeSetupCompletePageElement);

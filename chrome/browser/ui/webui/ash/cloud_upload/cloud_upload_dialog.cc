@@ -894,7 +894,8 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(
     args->file_names.push_back(file_url.path().BaseName().value());
   }
   args->dialog_page = dialog_page;
-  args->first_time_setup = !HaveExplicitFileHandlers(profile_, file_urls_);
+  args->set_office_as_default_handler =
+      !HaveExplicitFileHandlers(profile_, file_urls_);
   const file_manager::io_task::OperationType operation_type =
       GetOperationTypeForUpload(profile_, file_urls_[0]);
   switch (operation_type) {
@@ -1352,10 +1353,11 @@ void LaunchMicrosoft365Setup(Profile* profile, gfx::NativeWindow modal_parent) {
   office_extensions.merge(file_manager::file_tasks::ExcelGroupExtensions());
   office_extensions.merge(
       file_manager::file_tasks::PowerPointGroupExtensions());
-  // If `first_time_setup` is false, it indicates that we ran the Office setup
-  // and set file handler preferences for all handled Office file types, or that
-  // the user has pre-existing preferences for these file types.
-  args->first_time_setup = !std::all_of(
+  // If `set_office_as_default_handler` is false, it indicates that we already
+  // ran the Office setup and set file handler preferences for all handled
+  // Office file types, or that the user has pre-existing preferences for these
+  // file types.
+  args->set_office_as_default_handler = !std::all_of(
       office_extensions.begin(), office_extensions.end(),
       [profile](const std::string& extension) {
         return file_manager::file_tasks::HasExplicitDefaultFileHandler(

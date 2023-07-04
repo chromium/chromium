@@ -13,7 +13,7 @@ export interface ProxyOptions {
   odfsMounted: boolean;
   dialogPage: DialogPage;
   localTasks?: DialogTask[]|null;
-  firstTimeSetup?: boolean|null;
+  setOfficeAsDefaultHandler?: boolean|null;
   alwaysMoveOfficeFilesToDrive?: boolean|null;
   alwaysMoveOfficeFilesToOneDrive?: boolean|null;
   officeMoveConfirmationShownForDrive?: boolean|null;
@@ -34,14 +34,14 @@ export class CloudUploadTestBrowserProxy implements CloudUploadBrowserProxy {
       fileNames: options.fileNames,
       dialogPage: options.dialogPage,
       localTasks: [],
-      firstTimeSetup: true,
+      setOfficeAsDefaultHandler: true,
       operationType: options.operationType,
     };
     if (options.localTasks != null) {
       args.localTasks = options.localTasks;
     }
-    if (options.firstTimeSetup != null) {
-      args.firstTimeSetup = options.firstTimeSetup;
+    if (options.setOfficeAsDefaultHandler != null) {
+      args.setOfficeAsDefaultHandler = options.setOfficeAsDefaultHandler;
     }
     this.handler.setResultFor('getDialogArgs', {args: args});
     this.handler.setResultFor(

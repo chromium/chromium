@@ -918,10 +918,10 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   }
 
   // Click through the Upload Page.
-  while (
-      !content::ExecJs(web_contents,
-                       "document.querySelector('cloud-upload').$('upload-page')"
-                       ".querySelector('.action-button').click()")) {
+  while (!content::ExecJs(
+      web_contents,
+      "document.querySelector('cloud-upload').$('complete-page')"
+      ".querySelector('.action-button').click()")) {
   }
 
   // Check that the Office PWA has been made the default for doc and xlsx files.
@@ -987,10 +987,10 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   }
 
   // Click through the Upload Page.
-  while (
-      !content::ExecJs(web_contents,
-                       "document.querySelector('cloud-upload').$('upload-page')"
-                       ".querySelector('.action-button').click()")) {
+  while (!content::ExecJs(
+      web_contents,
+      "document.querySelector('cloud-upload').$('complete-page')"
+      ".querySelector('.action-button').click()")) {
   }
 
   // Check that the default task for doc files is still Drive, and not OneDrive,

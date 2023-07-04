@@ -10,7 +10,7 @@ import {CANCEL_SETUP_EVENT, NEXT_PAGE_EVENT} from './base_setup_page.js';
 import {MetricsRecordedSetupPage, UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
 import {OfficePwaInstallPageElement} from './office_pwa_install_page.js';
-import {OneDriveUploadPageElement} from './one_drive_upload_page.js';
+import {OfficeSetupCompletePageElement} from './office_setup_complete_page.js';
 import type {SetupCancelDialogElement} from './setup_cancel_dialog.js';
 import {SignInPageElement} from './sign_in_page.js';
 import {WelcomePageElement} from './welcome_page.js';
@@ -35,10 +35,12 @@ export class CloudUploadElement extends HTMLElement {
   private cancelDialog: SetupCancelDialogElement;
 
   /**
-    True if the setup flow is being run for the first time. False if the fixup
-    flow is being run.
+    True if the setup flow should end with setting Microsoft 365 as default
+    handler. Note: This is usually done if no default file handlers have been
+    set for Office files, which means that the setup flow is being completed for
+    the first time.
   */
-  private firstTimeSetup: boolean = true;
+  private setOfficeAsDefaultHandler: boolean = true;
 
   /** The names of the files to upload. */
   private fileNames: string[] = [];
@@ -64,8 +66,8 @@ export class CloudUploadElement extends HTMLElement {
         ]);
 
     // Only skip this page if the setup flow is not run as part of the "file
-    // upload" flow, and the file handlers have already been set.
-    if (this.fileNames.length !== 0 || this.firstTimeSetup) {
+    // upload" flow, and file handlers still need to be set.
+    if (this.fileNames.length !== 0 || this.setOfficeAsDefaultHandler) {
       const welcomePage = new WelcomePageElement();
       welcomePage.setInstalled(isOfficeWebAppInstalled, isOdfsMounted);
       this.pages.push(welcomePage);
@@ -79,10 +81,10 @@ export class CloudUploadElement extends HTMLElement {
       this.pages.push(new SignInPageElement());
     }
 
-    const oneDriveUploadPage = new OneDriveUploadPageElement();
-    oneDriveUploadPage.setFileNamesAndFirstTimeSetup(
-        this.fileNames, this.firstTimeSetup);
-    this.pages.push(oneDriveUploadPage);
+    const officeSetupCompletePage = new OfficeSetupCompletePageElement();
+    officeSetupCompletePage.setDefaultHandlerOnPageShown(
+        this.setOfficeAsDefaultHandler);
+    this.pages.push(officeSetupCompletePage);
 
     this.pages.forEach((page, index) => {
       page.setAttribute('total-pages', String(this.pages.length));
@@ -122,7 +124,8 @@ export class CloudUploadElement extends HTMLElement {
     try {
       const dialogArgs = await this.proxy.handler.getDialogArgs();
       assert(dialogArgs.args);
-      this.firstTimeSetup = dialogArgs.args.firstTimeSetup;
+      this.setOfficeAsDefaultHandler =
+          dialogArgs.args.setOfficeAsDefaultHandler;
       this.fileNames = dialogArgs.args.fileNames;
     } catch (e) {
       // TODO(b/243095484) Define expected behavior.
@@ -146,8 +149,8 @@ export class CloudUploadElement extends HTMLElement {
       return MetricsRecordedSetupPage.kOneDriveSetupPWAInstall;
     } else if (this.currentPage instanceof SignInPageElement) {
       return MetricsRecordedSetupPage.kOneDriveSetupODFSMount;
-    } else if (this.currentPage instanceof OneDriveUploadPageElement) {
-      return MetricsRecordedSetupPage.kOneDriveSetupUpload;
+    } else if (this.currentPage instanceof OfficeSetupCompletePageElement) {
+      return MetricsRecordedSetupPage.kOneDriveSetupComplete;
     }
     return null;
   }
@@ -156,7 +159,7 @@ export class CloudUploadElement extends HTMLElement {
    * Invoked when a page fires a `CANCEL_SETUP_EVENT` event.
    */
   private cancelSetup(): void {
-    if (this.currentPage instanceof OneDriveUploadPageElement) {
+    if (this.currentPage instanceof OfficeSetupCompletePageElement) {
       // No need to show the cancel dialog as setup is finished.
       this.proxy.handler.respondWithUserActionAndClose(UserAction.kCancel);
       return;
