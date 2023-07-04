@@ -157,21 +157,6 @@
         "swarming": {
           "dimension_sets": [
             {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
               "cores": "8",
               "os": "Ubuntu-18.04"
             }
@@ -291,21 +276,6 @@
         "swarming": {
           "dimension_sets": [
             {
-              "os": "Ubuntu-22.04"
-            }
-          ],
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
               "cores": "2",
               "os": "Ubuntu-22.04"
             }
@@ -398,22 +368,6 @@
         },
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-13"
-            }
-          ],
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
       },
       {
         "merge": {
@@ -529,22 +483,6 @@
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-12"
-            }
-          ],
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "unit_tests",
         "test_id_prefix": "ninja://chrome/test:unit_tests/"
       }
@@ -639,21 +577,6 @@
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Windows-10-19045"
-            }
-          ],
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "unit_tests",
         "test_id_prefix": "ninja://chrome/test:unit_tests/"
       }
@@ -735,21 +658,6 @@
         },
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "os": "Windows-11-22000"
-            }
-          ],
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
       },
       {
         "merge": {
