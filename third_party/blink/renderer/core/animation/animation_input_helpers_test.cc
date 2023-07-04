@@ -164,8 +164,9 @@ TEST_F(AnimationAnimationInputHelpersTest, PropertyHandleToKeyframeAttribute) {
             PropertyHandleToKeyframeAttribute(GetCSSPropertyOffset()));
 
   // CSS custom properties.
-  EXPECT_EQ("--x", PropertyHandleToKeyframeAttribute("--x"));
-  EXPECT_EQ("--test-prop", PropertyHandleToKeyframeAttribute("--test-prop"));
+  EXPECT_EQ("--x", PropertyHandleToKeyframeAttribute(AtomicString("--x")));
+  EXPECT_EQ("--test-prop",
+            PropertyHandleToKeyframeAttribute(AtomicString("--test-prop")));
 
   // Presentation attributes.
   EXPECT_EQ("svg-top",
@@ -178,10 +179,11 @@ TEST_F(AnimationAnimationInputHelpersTest, PropertyHandleToKeyframeAttribute) {
             PropertyHandleToKeyframeAttribute(GetCSSPropertyOffset(), true));
 
   // SVG attributes.
-  EXPECT_EQ("calcMode",
-            PropertyHandleToKeyframeAttribute(QualifiedName("calcMode")));
-  EXPECT_EQ("overline-position", PropertyHandleToKeyframeAttribute(
-                                     QualifiedName("overline-position")));
+  EXPECT_EQ("calcMode", PropertyHandleToKeyframeAttribute(
+                            QualifiedName(AtomicString("calcMode"))));
+  EXPECT_EQ("overline-position",
+            PropertyHandleToKeyframeAttribute(
+                QualifiedName(AtomicString("overline-position"))));
 }
 
 }  // namespace blink

@@ -13,7 +13,7 @@ namespace {
 
 TEST(CSSURIValueTest, ComputedCSSValue) {
   cssvalue::CSSURIValue* rel = MakeGarbageCollected<cssvalue::CSSURIValue>(
-      "a", KURL("http://foo.com/a"));
+      AtomicString("a"), KURL("http://foo.com/a"));
   cssvalue::CSSURIValue* abs =
       rel->ComputedCSSValue(KURL("http://bar.com"), WTF::TextEncoding());
   EXPECT_EQ("url(\"http://bar.com/a\")", abs->CssText());
@@ -21,7 +21,7 @@ TEST(CSSURIValueTest, ComputedCSSValue) {
 
 TEST(CSSURIValueTest, AlreadyComputedCSSValue) {
   cssvalue::CSSURIValue* rel = MakeGarbageCollected<cssvalue::CSSURIValue>(
-      "http://baz.com/a", KURL("http://baz.com/a"));
+      AtomicString("http://baz.com/a"), KURL("http://baz.com/a"));
   cssvalue::CSSURIValue* abs =
       rel->ComputedCSSValue(KURL("http://bar.com"), WTF::TextEncoding());
   EXPECT_EQ("url(\"http://baz.com/a\")", abs->CssText());

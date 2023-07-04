@@ -51,7 +51,7 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
                                           const char* has_anchor_element_id,
                                           const char* selector_text) const {
     Element* has_anchor_element =
-        document->getElementById(has_anchor_element_id);
+        document->getElementById(AtomicString(has_anchor_element_id));
     if (!has_anchor_element) {
       ADD_FAILURE() << "Failed : test iterator on #" << has_anchor_element_id
                     << " (Cannot find element)";
@@ -69,7 +69,7 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
       AtomicString current_element_id =
           iterator.CurrentElement()
               ? iterator.CurrentElement()->GetIdAttribute()
-              : "nullptr";
+              : g_null_atom;
       int current_depth = iterator.CurrentDepth();
       ADD_FAILURE() << "Iteration failed : exceeded expected iteration"
                     << " (selector: " << selector_text
@@ -99,7 +99,7 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
       const char* selector_text,
       const ExpectedTraversalStep (&expected_traversal_steps)[length]) const {
     Element* has_anchor_element =
-        document->getElementById(has_anchor_element_id);
+        document->getElementById(AtomicString(has_anchor_element_id));
     if (!has_anchor_element) {
       ADD_FAILURE() << "Failed : test iterator on #" << has_anchor_element_id
                     << " (Cannot find element)";
@@ -118,7 +118,7 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
       AtomicString current_element_id =
           iterator.CurrentElement()
               ? iterator.CurrentElement()->GetIdAttribute()
-              : "nullptr";
+              : g_null_atom;
       int current_depth = iterator.CurrentDepth();
       if (i >= length) {
         ADD_FAILURE() << "Iteration failed : exceeded expected iteration"
@@ -147,9 +147,9 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
                     << ", has_anchor_element: #" << has_anchor_element_id
                     << ", index: " << i << ", expected_element: "
                     << expected_traversal_steps[i].element_id << ")";
-      EXPECT_NE(
-          document->getElementById(expected_traversal_steps[i].element_id),
-          nullptr);
+      EXPECT_NE(document->getElementById(
+                    AtomicString(expected_traversal_steps[i].element_id)),
+                nullptr);
     }
   }
 };

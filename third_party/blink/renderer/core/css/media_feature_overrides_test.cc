@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
+#include "third_party/blink/renderer/core/css/media_feature_names.h"
 
 namespace blink {
 
@@ -19,21 +20,25 @@ TEST(MediaFeatureOverrides, GetOverrideInitial) {
 TEST(MediaFeatureOverrides, SetOverrideInvalid) {
   MediaFeatureOverrides overrides;
 
-  overrides.SetOverride("prefers-color-scheme", "1px");
+  overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
+                        "1px");
   EXPECT_FALSE(overrides.GetPreferredColorScheme().has_value());
 
-  overrides.SetOverride("prefers-color-scheme", "orange");
+  overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
+                        "orange");
   EXPECT_FALSE(overrides.GetPreferredColorScheme().has_value());
 }
 
 TEST(MediaFeatureOverrides, SetOverrideValid) {
   MediaFeatureOverrides overrides;
 
-  overrides.SetOverride("prefers-color-scheme", "light");
+  overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
+                        "light");
   EXPECT_EQ(mojom::blink::PreferredColorScheme::kLight,
             overrides.GetPreferredColorScheme());
 
-  overrides.SetOverride("prefers-color-scheme", "dark");
+  overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
+                        "dark");
   EXPECT_EQ(mojom::blink::PreferredColorScheme::kDark,
             overrides.GetPreferredColorScheme());
 }
@@ -41,14 +46,18 @@ TEST(MediaFeatureOverrides, SetOverrideValid) {
 TEST(MediaFeatureOverrides, ResetOverride) {
   MediaFeatureOverrides overrides;
 
-  overrides.SetOverride("prefers-color-scheme", "light");
+  overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
+                        "light");
   EXPECT_TRUE(overrides.GetPreferredColorScheme().has_value());
-  overrides.SetOverride("prefers-color-scheme", "");
+  overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
+                        "");
   EXPECT_FALSE(overrides.GetPreferredColorScheme().has_value());
 
-  overrides.SetOverride("prefers-color-scheme", "light");
+  overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
+                        "light");
   EXPECT_TRUE(overrides.GetPreferredColorScheme().has_value());
-  overrides.SetOverride("prefers-color-scheme", "invalid");
+  overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
+                        "invalid");
   EXPECT_FALSE(overrides.GetPreferredColorScheme().has_value());
 }
 

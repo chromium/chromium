@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 
 namespace blink {
 namespace multipart_image_resource_parser_test {
@@ -82,9 +83,10 @@ TEST(MultipartResponseTest, FindBoundary) {
 
 TEST(MultipartResponseTest, NoStartBoundary) {
   ResourceResponse response(NullURL());
-  response.SetMimeType("multipart/x-mixed-replace");
-  response.SetHttpHeaderField("Foo", "Bar");
-  response.SetHttpHeaderField("Content-type", "text/plain");
+  response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
+  response.SetHttpHeaderField(AtomicString("Foo"), AtomicString("Bar"));
+  response.SetHttpHeaderField(http_names::kContentType,
+                              AtomicString("text/plain"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
   boundary.Append("bound", 5);
@@ -110,9 +112,10 @@ TEST(MultipartResponseTest, NoStartBoundary) {
 
 TEST(MultipartResponseTest, NoEndBoundary) {
   ResourceResponse response(NullURL());
-  response.SetMimeType("multipart/x-mixed-replace");
-  response.SetHttpHeaderField("Foo", "Bar");
-  response.SetHttpHeaderField("Content-type", "text/plain");
+  response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
+  response.SetHttpHeaderField(AtomicString("Foo"), AtomicString("Bar"));
+  response.SetHttpHeaderField(http_names::kContentType,
+                              AtomicString("text/plain"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
   boundary.Append("bound", 5);
@@ -136,9 +139,10 @@ TEST(MultipartResponseTest, NoEndBoundary) {
 
 TEST(MultipartResponseTest, NoStartAndEndBoundary) {
   ResourceResponse response(NullURL());
-  response.SetMimeType("multipart/x-mixed-replace");
-  response.SetHttpHeaderField("Foo", "Bar");
-  response.SetHttpHeaderField("Content-type", "text/plain");
+  response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
+  response.SetHttpHeaderField(AtomicString("Foo"), AtomicString("Bar"));
+  response.SetHttpHeaderField(http_names::kContentType,
+                              AtomicString("text/plain"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
   boundary.Append("bound", 5);
@@ -163,9 +167,10 @@ TEST(MultipartResponseTest, NoStartAndEndBoundary) {
 TEST(MultipartResponseTest, MalformedBoundary) {
   // Some servers send a boundary that is prefixed by "--".  See bug 5786.
   ResourceResponse response(NullURL());
-  response.SetMimeType("multipart/x-mixed-replace");
-  response.SetHttpHeaderField("Foo", "Bar");
-  response.SetHttpHeaderField("Content-type", "text/plain");
+  response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
+  response.SetHttpHeaderField(AtomicString("Foo"), AtomicString("Bar"));
+  response.SetHttpHeaderField(http_names::kContentType,
+                              AtomicString("text/plain"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
   boundary.Append("--bound", 7);
@@ -213,7 +218,7 @@ void VariousChunkSizesTest(const TestChunk chunks[],
       "--bound--";                   // 101-109
 
   ResourceResponse response(NullURL());
-  response.SetMimeType("multipart/x-mixed-replace");
+  response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
   boundary.Append("bound", 5);
@@ -317,8 +322,9 @@ TEST(MultipartResponseTest, BreakInData) {
 
 TEST(MultipartResponseTest, SmallChunk) {
   ResourceResponse response(NullURL());
-  response.SetMimeType("multipart/x-mixed-replace");
-  response.SetHttpHeaderField("Content-type", "text/plain");
+  response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
+  response.SetHttpHeaderField(http_names::kContentType,
+                              AtomicString("text/plain"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
   boundary.Append("bound", 5);
@@ -354,7 +360,7 @@ TEST(MultipartResponseTest, SmallChunk) {
 TEST(MultipartResponseTest, MultipleBoundaries) {
   // Test multiple boundaries back to back
   ResourceResponse response(NullURL());
-  response.SetMimeType("multipart/x-mixed-replace");
+  response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
   boundary.Append("bound", 5);
@@ -373,7 +379,7 @@ TEST(MultipartResponseTest, MultipleBoundaries) {
 
 TEST(MultipartResponseTest, EatLeadingLF) {
   ResourceResponse response(NullURL());
-  response.SetMimeType("multipart/x-mixed-replace");
+  response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
   boundary.Append("bound", 5);
@@ -392,19 +398,23 @@ TEST(MultipartResponseTest, EatLeadingLF) {
 
   ASSERT_EQ(4u, client->responses_.size());
   ASSERT_EQ(4u, client->data_.size());
-  EXPECT_EQ(String(), client->responses_[0].HttpHeaderField("content-type"));
+  EXPECT_EQ(String(), client->responses_[0].HttpHeaderField(
+                          http_names::kLowerContentType));
   EXPECT_EQ("", ToString(client->data_[0]));
-  EXPECT_EQ(String(), client->responses_[1].HttpHeaderField("content-type"));
+  EXPECT_EQ(String(), client->responses_[1].HttpHeaderField(
+                          http_names::kLowerContentType));
   EXPECT_EQ("\ncontent-type: 1\n\n\n\n", ToString(client->data_[1]));
-  EXPECT_EQ(String(), client->responses_[2].HttpHeaderField("content-type"));
+  EXPECT_EQ(String(), client->responses_[2].HttpHeaderField(
+                          http_names::kLowerContentType));
   EXPECT_EQ("content-type: 2\n\n\n\n", ToString(client->data_[2]));
-  EXPECT_EQ("3", client->responses_[3].HttpHeaderField("content-type"));
+  EXPECT_EQ("3", client->responses_[3].HttpHeaderField(
+                     http_names::kLowerContentType));
   EXPECT_EQ("", ToString(client->data_[3]));
 }
 
 TEST(MultipartResponseTest, EatLeadingCRLF) {
   ResourceResponse response(NullURL());
-  response.SetMimeType("multipart/x-mixed-replace");
+  response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
   boundary.Append("bound", 5);
@@ -423,13 +433,17 @@ TEST(MultipartResponseTest, EatLeadingCRLF) {
 
   ASSERT_EQ(4u, client->responses_.size());
   ASSERT_EQ(4u, client->data_.size());
-  EXPECT_EQ(String(), client->responses_[0].HttpHeaderField("content-type"));
+  EXPECT_EQ(String(), client->responses_[0].HttpHeaderField(
+                          http_names::kLowerContentType));
   EXPECT_EQ("", ToString(client->data_[0]));
-  EXPECT_EQ(String(), client->responses_[1].HttpHeaderField("content-type"));
+  EXPECT_EQ(String(), client->responses_[1].HttpHeaderField(
+                          http_names::kLowerContentType));
   EXPECT_EQ("\r\ncontent-type: 1\r\n\r\n\r\n\r\n", ToString(client->data_[1]));
-  EXPECT_EQ(String(), client->responses_[2].HttpHeaderField("content-type"));
+  EXPECT_EQ(String(), client->responses_[2].HttpHeaderField(
+                          http_names::kLowerContentType));
   EXPECT_EQ("content-type: 2\r\n\r\n\r\n\r\n", ToString(client->data_[2]));
-  EXPECT_EQ("3", client->responses_[3].HttpHeaderField("content-type"));
+  EXPECT_EQ("3", client->responses_[3].HttpHeaderField(
+                     http_names::kLowerContentType));
   EXPECT_EQ("", ToString(client->data_[3]));
 }
 

@@ -60,7 +60,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
   }
 
   void SetImage(const char* id, int width, int height, int bytes = 0) {
-    To<HTMLImageElement>(GetDocument().getElementById(id))
+    To<HTMLImageElement>(GetElementById(id))
         ->SetImageForTest(CreateImageForTest(width, height, bytes));
   }
 

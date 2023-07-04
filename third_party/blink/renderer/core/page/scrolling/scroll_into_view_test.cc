@@ -1023,7 +1023,8 @@ TEST_F(ScrollIntoViewTest, FromDisplayNoneIframe) {
   Element* target = child_document->getElementById(AtomicString("target"));
   PhysicalRect rect(target->GetLayoutObject()->AbsoluteBoundingBoxRect());
 
-  child_frame->setAttribute(html_names::kStyleAttr, "display:none");
+  child_frame->setAttribute(html_names::kStyleAttr,
+                            AtomicString("display:none"));
   Compositor().BeginFrame();
 
   // Calling scroll into view on an element without a LayoutObject shouldn't

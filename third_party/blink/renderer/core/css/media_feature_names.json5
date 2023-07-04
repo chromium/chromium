@@ -1,7 +1,7 @@
 {
   metadata: {
     namespace: "media_feature_names",
-    export: "",
+    export: "CORE_EXPORT",
   },
 
   data: [

@@ -140,7 +140,7 @@ TEST_F(SVGUseElementTest, NullInstanceRootWhenShadowTreePendingRebuild) {
 
   GetDocument()
       .getElementById(AtomicString("r"))
-      ->setAttribute(html_names::kWidthAttr, "50");
+      ->setAttribute(html_names::kWidthAttr, AtomicString("50"));
 
   ASSERT_FALSE(target->InstanceRoot());
 }

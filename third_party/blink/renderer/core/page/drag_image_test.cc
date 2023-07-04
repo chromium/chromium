@@ -33,6 +33,7 @@
 #include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -134,7 +135,7 @@ TEST(DragImageTest, TrimWhitespace) {
   float device_scale_factor = 1.0f;
 
   FontDescription font_description;
-  font_description.FirstFamily().SetFamily("Arial",
+  font_description.FirstFamily().SetFamily(font_family_names::kArial,
                                            FontFamily::Type::kFamilyName);
   font_description.SetSpecifiedSize(16);
   font_description.SetIsAbsoluteSize(true);

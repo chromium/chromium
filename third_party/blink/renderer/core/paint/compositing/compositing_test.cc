@@ -90,12 +90,12 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
         ->LayerTreeHostForTesting();
   }
 
-  Element* GetElementById(const AtomicString& id) {
+  Element* GetElementById(const char* id) {
     WebLocalFrameImpl* frame = web_view_helper_->LocalMainFrame();
-    return frame->GetFrame()->GetDocument()->getElementById(id);
+    return frame->GetFrame()->GetDocument()->getElementById(AtomicString(id));
   }
 
-  LayoutObject* GetLayoutObjectById(const AtomicString& id) {
+  LayoutObject* GetLayoutObjectById(const char* id) {
     return GetElementById(id)->GetLayoutObject();
   }
 

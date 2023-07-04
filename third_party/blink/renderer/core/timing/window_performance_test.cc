@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -309,7 +310,8 @@ TEST_P(WindowPerformanceTest, EnsureEntryListOrder) {
     performance_->mark(GetScriptState(), AtomicString::Number(i), nullptr,
                        exception_state);
   }
-  PerformanceEntryVector entries = performance_->getEntriesByType("mark");
+  PerformanceEntryVector entries =
+      performance_->getEntriesByType(performance_entry_names::kMark);
   EXPECT_EQ(17U, entries.size());
   for (int i = 0; i < 8; i++) {
     EXPECT_EQ(AtomicString::Number(i), entries[i]->name());
@@ -437,7 +439,7 @@ TEST_P(WindowPerformanceTest, FirstInput) {
     SimulatePaintAndResolvePresentationPromise(GetTimeOrigin() +
                                                base::Milliseconds(3));
     PerformanceEntryVector firstInputs =
-        performance_->getEntriesByType("first-input");
+        performance_->getEntriesByType(performance_entry_names::kFirstInput);
     EXPECT_GE(1u, firstInputs.size());
     EXPECT_EQ(input.should_report, firstInputs.size() == 1u);
     ResetPerformance();
@@ -447,7 +449,9 @@ TEST_P(WindowPerformanceTest, FirstInput) {
 // Test that the 'first-input' is populated after some irrelevant events are
 // ignored.
 TEST_P(WindowPerformanceTest, FirstInputAfterIgnored) {
-  AtomicString several_events[] = {"mouseover", "mousedown", "pointerup"};
+  AtomicString several_events[] = {event_type_names::kMouseover,
+                                   event_type_names::kMousedown,
+                                   event_type_names::kPointerup};
   for (const auto& event : several_events) {
     RegisterPointerEvent(event, GetTimeOrigin(),
                          GetTimeOrigin() + base::Milliseconds(1),
@@ -455,9 +459,13 @@ TEST_P(WindowPerformanceTest, FirstInputAfterIgnored) {
     SimulatePaintAndResolvePresentationPromise(GetTimeOrigin() +
                                                base::Milliseconds(3));
   }
-  ASSERT_EQ(1u, performance_->getEntriesByType("first-input").size());
-  EXPECT_EQ("mousedown",
-            performance_->getEntriesByType("first-input")[0]->name());
+  ASSERT_EQ(1u,
+            performance_->getEntriesByType(performance_entry_names::kFirstInput)
+                .size());
+  EXPECT_EQ(
+      "mousedown",
+      performance_->getEntriesByType(performance_entry_names::kFirstInput)[0]
+          ->name());
 }
 
 // Test that pointerdown followed by pointerup works as a 'firstInput'.
@@ -469,14 +477,20 @@ TEST_P(WindowPerformanceTest, FirstPointerUp) {
   RegisterPointerEvent("pointerdown", start_time, processing_start,
                        processing_end, 4);
   SimulatePaintAndResolvePresentationPromise(swap_time);
-  EXPECT_EQ(0u, performance_->getEntriesByType("first-input").size());
+  EXPECT_EQ(0u,
+            performance_->getEntriesByType(performance_entry_names::kFirstInput)
+                .size());
   RegisterPointerEvent("pointerup", start_time, processing_start,
                        processing_end, 4);
   SimulatePaintAndResolvePresentationPromise(swap_time);
-  EXPECT_EQ(1u, performance_->getEntriesByType("first-input").size());
+  EXPECT_EQ(1u,
+            performance_->getEntriesByType(performance_entry_names::kFirstInput)
+                .size());
   // The name of the entry should be "pointerdown".
-  EXPECT_EQ(
-      1u, performance_->getEntriesByName("pointerdown", "first-input").size());
+  EXPECT_EQ(1u, performance_
+                    ->getEntriesByName(event_type_names::kPointerdown,
+                                       performance_entry_names::kFirstInput)
+                    .size());
 }
 
 // When the pointerdown is optimized out, the mousedown works as a
@@ -489,10 +503,14 @@ TEST_P(WindowPerformanceTest, PointerdownOptimizedOut) {
   RegisterPointerEvent("mousedown", start_time, processing_start,
                        processing_end, 4);
   SimulatePaintAndResolvePresentationPromise(swap_time);
-  EXPECT_EQ(1u, performance_->getEntriesByType("first-input").size());
-  // The name of the entry should be "pointerdown".
   EXPECT_EQ(1u,
-            performance_->getEntriesByName("mousedown", "first-input").size());
+            performance_->getEntriesByType(performance_entry_names::kFirstInput)
+                .size());
+  // The name of the entry should be "mousedown".
+  EXPECT_EQ(1u, performance_
+                    ->getEntriesByName(event_type_names::kMousedown,
+                                       performance_entry_names::kFirstInput)
+                    .size());
 }
 
 // Test that pointerdown followed by mousedown, pointerup works as a
@@ -505,18 +523,26 @@ TEST_P(WindowPerformanceTest, PointerdownOnDesktop) {
   RegisterPointerEvent("pointerdown", start_time, processing_start,
                        processing_end, 4);
   SimulatePaintAndResolvePresentationPromise(swap_time);
-  EXPECT_EQ(0u, performance_->getEntriesByType("first-input").size());
+  EXPECT_EQ(0u,
+            performance_->getEntriesByType(performance_entry_names::kFirstInput)
+                .size());
   RegisterPointerEvent("mousedown", start_time, processing_start,
                        processing_end, 4);
   SimulatePaintAndResolvePresentationPromise(swap_time);
-  EXPECT_EQ(0u, performance_->getEntriesByType("first-input").size());
+  EXPECT_EQ(0u,
+            performance_->getEntriesByType(performance_entry_names::kFirstInput)
+                .size());
   RegisterPointerEvent("pointerup", start_time, processing_start,
                        processing_end, 4);
   SimulatePaintAndResolvePresentationPromise(swap_time);
-  EXPECT_EQ(1u, performance_->getEntriesByType("first-input").size());
+  EXPECT_EQ(1u,
+            performance_->getEntriesByType(performance_entry_names::kFirstInput)
+                .size());
   // The name of the entry should be "pointerdown".
-  EXPECT_EQ(
-      1u, performance_->getEntriesByName("pointerdown", "first-input").size());
+  EXPECT_EQ(1u, performance_
+                    ->getEntriesByName(event_type_names::kPointerdown,
+                                       performance_entry_names::kFirstInput)
+                    .size());
 }
 
 TEST_P(WindowPerformanceTest, OneKeyboardInteraction) {

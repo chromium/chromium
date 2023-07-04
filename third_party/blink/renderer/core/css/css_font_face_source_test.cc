@@ -78,8 +78,8 @@ TEST(CSSFontFaceSourceTest, UnboundedGrowth) {
     for (float wdth = 100; wdth < 125; wdth += 1 / 4.f) {
       scoped_refptr<FontVariationSettings> variation_settings =
           FontVariationSettings::Create();
-      variation_settings->Append(FontVariationAxis("wght", wght));
-      variation_settings->Append(FontVariationAxis("wdth", wdth));
+      variation_settings->Append(FontVariationAxis(AtomicString("wght"), wght));
+      variation_settings->Append(FontVariationAxis(AtomicString("wdth"), wdth));
       font_description_variable.SetVariationSettings(variation_settings);
       font_face_source.GetFontData(font_description_variable,
                                    normal_capabilities);

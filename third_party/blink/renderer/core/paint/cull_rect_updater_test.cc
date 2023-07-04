@@ -1017,31 +1017,31 @@ class CullRectUpdateOnPaintPropertyChangeTest : public CullRectUpdaterTest {
         << old_style << " -> " << new_style;
   }
 
-  void TestTargetChange(const AtomicString& old_style,
-                        const AtomicString& new_style,
+  void TestTargetChange(const char* old_style,
+                        const char* new_style,
                         bool expected_needs_repaint,
                         bool expected_needs_cull_rect_update,
                         bool expected_needs_repaint_after_cull_rect_update) {
     SetBodyInnerHTML(html_);
     auto* target = GetDocument().getElementById(AtomicString("target"));
-    target->setAttribute(html_names::kStyleAttr, old_style);
+    target->setAttribute(html_names::kStyleAttr, AtomicString(old_style));
     UpdateAllLifecyclePhasesForTest();
-    target->setAttribute(html_names::kStyleAttr, new_style);
+    target->setAttribute(html_names::kStyleAttr, AtomicString(new_style));
     Check(old_style, new_style, expected_needs_repaint,
           expected_needs_cull_rect_update,
           expected_needs_repaint_after_cull_rect_update);
   }
 
-  void TestChildChange(const AtomicString& old_style,
-                       const AtomicString& new_style,
+  void TestChildChange(const char* old_style,
+                       const char* new_style,
                        bool expected_needs_repaint,
                        bool expected_needs_cull_rect_update,
                        bool expected_needs_repaint_after_cull_rect_update) {
     SetBodyInnerHTML(html_);
     auto* child = GetDocument().getElementById(AtomicString("child"));
-    child->setAttribute(html_names::kStyleAttr, old_style);
+    child->setAttribute(html_names::kStyleAttr, AtomicString(old_style));
     UpdateAllLifecyclePhasesForTest();
-    child->setAttribute(html_names::kStyleAttr, new_style);
+    child->setAttribute(html_names::kStyleAttr, AtomicString(new_style));
     Check(old_style, new_style, expected_needs_repaint,
           expected_needs_cull_rect_update,
           expected_needs_repaint_after_cull_rect_update);
