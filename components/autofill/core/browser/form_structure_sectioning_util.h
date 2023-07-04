@@ -42,7 +42,7 @@ namespace autofill {
 //   ------------------------------------------------------+-------------------
 //   Name:      <input id=1>                               | field 1 based
 //   Country:   <input id=2>                               | field 1 based
-//   Name:      <input id=3 autocomplete=”section-A name”> | A
+//   Name:      <input id=3 autocomplete="section-A name"> | A
 //   Street:    <input id=4>                               | field 1 based
 //   CC number: <input id=5>                               | field 5 based
 //   CC number: <input id=6 style="display:none">          | field 5 based
@@ -63,7 +63,7 @@ namespace autofill {
 //   ------------------------------------------------------+-------------------
 //   Name:      <input id=1>                               | field 1 based
 //   Country:   <input id=2>                               | field 1 based
-//   Name:      <input id=3 autocomplete=”section-A name”> | field 3 based
+//   Name:      <input id=3 autocomplete="section-A name"> | field 3 based
 //   Street:    <input id=4>                               | field 3 based
 //   CC number: <input id=5>                               | field 5 based
 //   CC number: <input id=6 style="display:none">          | field 5 based
@@ -82,7 +82,7 @@ namespace autofill {
 //   ------------------------------------------------------+-------------------
 //   Name:      <input id=1>                               | field 1 based
 //   Country:   <input id=2>                               | field 1 based
-//   Name:      <input id=3 autocomplete=”section-A name”> | A
+//   Name:      <input id=3 autocomplete="section-A name"> | A
 //   Street:    <input id=4>                               | field 4 based
 //   CC number: <input id=5>                               | field 5 based
 //   CC number: <input id=6 style="display:none">          | field 5 based
@@ -105,7 +105,7 @@ namespace autofill {
 //   ------------------------------------------------------+-------------------
 //   Name:      <input id=1>                               | field 1 based
 //   Country:   <input id=2>                               | field 1 based
-//   Name:      <input id=3 autocomplete=”section-A name”> | A
+//   Name:      <input id=3 autocomplete="section-A name"> | A
 //   Street:    <input id=4>                               | field 1 based
 //   CC number: <input id=5>                               | field 5 based
 //   CC number: <input id=6 style="display:none">          | field 5 based

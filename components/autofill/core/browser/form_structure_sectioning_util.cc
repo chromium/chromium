@@ -228,8 +228,12 @@ void LogSectioningMetrics(
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
   // UMA:
   base::flat_map<Section, size_t> fields_per_section;
-  for (auto& field : fields)
+  for (auto& field : fields) {
+    if (!IsSectionable(*field) || !field->IsFieldFillable()) {
+      continue;
+    }
     ++fields_per_section[field->section];
+  }
   AutofillMetrics::LogSectioningMetrics(fields_per_section);
   // UKM:
   if (form_interactions_ukm_logger) {
@@ -245,6 +249,9 @@ uint32_t ComputeSectioningSignature(
   std::stringstream signature;
   base::flat_map<Section, size_t> section_ids;
   for (auto& field : fields) {
+    if (!IsSectionable(*field) || !field->IsFieldFillable()) {
+      continue;
+    }
     size_t section_id =
         section_ids.emplace(field->section, section_ids.size()).first->second;
     signature << section_id;
