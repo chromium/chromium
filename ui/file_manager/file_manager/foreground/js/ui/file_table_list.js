@@ -4,6 +4,7 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
+import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {EntryLocation} from '../../../externs/entry_location.js';
@@ -996,6 +997,32 @@ filelist.focusParentList = event => {
 };
 
 /**
+ * Update the item's inline status when it's restored from List's cache..
+ * @param {!ListItem} restoredItem Item being restored from the List cache.
+ * @param {ArrayDataModel} dataModel Data model corresponding to the item.
+ * @param {MetadataModel} metadataModel Cache to retrieve metadata.
+ */
+filelist.updateCacheItemInlineStatus =
+    (restoredItem, dataModel, metadataModel) => {
+      if (!dataModel || !metadataModel) {
+        console.error('dataModel or metadataModel unavailable.');
+        return;
+      }
+
+      const entry = dataModel.item(restoredItem.listIndex);
+
+      const metadata = metadataModel.getCache([entry], [
+        'availableOffline',
+        'pinned',
+        'syncStatus',
+        'progress',
+        'syncCompletedTime',
+      ])[0];
+
+      filelist.updateInlineStatus(restoredItem, metadata);
+    };
+
+/**
  * Update status icon for file or directory entry.
  * @param {!HTMLLIElement} li The grid item.
  * @param {?MetadataItem} metadata Metadata.
@@ -1018,8 +1045,7 @@ filelist.updateInlineStatus = (li, metadata) => {
   if (util.isDriveFsBulkPinningEnabled()) {
     const inlineIcon = inlineStatus.querySelector('xf-icon');
 
-    if (!util.isNullOrUndefined(metadata.canPin) &&
-        !metadata.canPin) {
+    if (!util.isNullOrUndefined(metadata.canPin) && !metadata.canPin) {
       // Items that can't be pinned should show a dashed icon to indicate
       // they cannot be used offline (e.g. google forms can't be made
       // available offline).

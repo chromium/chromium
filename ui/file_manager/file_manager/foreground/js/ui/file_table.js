@@ -519,6 +519,12 @@ export class FileTable extends Table {
 
     self.list.addEventListener(
         'mouseover', self.onMouseOver_.bind(self), {passive: true});
+
+    // Update the item's inline status when it's restored from List's cache.
+    self.list.addEventListener(
+        'cachedItemRestored',
+        (e) => filelist.updateCacheItemInlineStatus(
+            e.detail, self.dataModel, self.metadataModel_));
   }
 
   onMouseOver_(event) {

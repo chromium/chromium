@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ENTRIES, EntryType, expectHistogramTotalCount, getCaller, getUserActionCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {addEntries, createTestFile, ENTRIES, EntryType, expectHistogramTotalCount, getCaller, getUserActionCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady, waitForMediaApp} from './background.js';
@@ -1707,4 +1707,92 @@ testcase.driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin =
   // Wait for the `.cant-pin` class to be removed.
   await remoteCall.waitForElement(
       appId, '#file-list [file-name="text.txt"]:not(.cant-pin)');
+};
+
+
+/**
+ * Tests that files that can't be pinned should have the correct CSS class
+ * applied to them. When they go back to being able to be pinned (e.g. from Docs
+ * offline coming back online) then ensure the inline icon is updated.
+ */
+testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
+  const entries = [];
+  const emptyFile = createTestFile('text.txt');
+  for (let i = 0; i < 50; ++i) {
+    entries.push(emptyFile.cloneWithNewName(`File ${i}`));
+  }
+
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], entries);
+
+  // Sort the table by the `name` column.
+  await remoteCall.waitAndClickElement(
+      appId, ['.table-header-cell:nth-of-type(1)']);
+
+  // Wait for the first entry to appear in the file list.
+  const firstFileName = entries[0].nameText;
+  await remoteCall.waitForElement(
+      appId, `#file-list [file-name="${firstFileName}"]`);
+
+  // Scroll to the bottom of the virtual list which ensures the first element
+  // should be removed from the DOM and cached.
+  await remoteCall.callRemoteTestUtil(
+      'setScrollTop', appId, ['#file-list', 10000]);
+
+  await remoteCall.waitForElementLost(
+      appId, `#file-list [file-name="${firstFileName}"]`);
+  const lastFileName = entries[entries.length - 1].nameText;
+  await remoteCall.waitForElement(
+      appId, `#file-list [file-name="${lastFileName}"]`);
+
+  // Send a file sync progress for the first file name.
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${firstFileName}`,
+    progress: 50,
+  });
+
+  // Send a file sync progress event for the last file name to use as a marker
+  // to know when the first file has made it to 50% pie progress.
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${lastFileName}`,
+    progress: 50,
+  });
+
+  const inlineSyncSelector = fileName => `#file-list [file-name="${
+      fileName}"][data-sync-status=in_progress] .progress`;
+
+  // Wait for the progress to appear on the last file and assert it received the
+  // correct progress value.
+  let lastFileInlineStatus =
+      await remoteCall.waitForElement(appId, inlineSyncSelector(lastFileName));
+  chrome.test.assertEq(
+      Number(lastFileInlineStatus.attributes['progress']), 0.5);
+
+  // Scroll back up to the first element.
+  await remoteCall.callRemoteTestUtil('setScrollTop', appId, ['#file-list', 0]);
+
+  // Assert that the first element has the 50% progress as the event was sent
+  // before the last file event was sent.
+  const firstFileInlineStatus =
+      await remoteCall.waitForElement(appId, inlineSyncSelector(firstFileName));
+  chrome.test.assertEq(
+      Number(firstFileInlineStatus.attributes['progress']), 0.5);
+
+  // Switch to grid view.
+  await remoteCall.waitAndClickElement(appId, '#view-button');
+
+  // Wait for the first entry to appear in the file grid.
+  await remoteCall.waitForElement(
+      appId, `grid#file-list [file-name="${firstFileName}"]`);
+
+  // Scroll back down to the last element.
+  await remoteCall.callRemoteTestUtil(
+      'setScrollTop', appId, ['grid#file-list', 10000]);
+
+  // Assert that the last element still has 50% progress.
+  lastFileInlineStatus =
+      await remoteCall.waitForElement(appId, inlineSyncSelector(lastFileName));
+  chrome.test.assertEq(
+      Number(lastFileInlineStatus.attributes['progress']), 0.5);
 };
