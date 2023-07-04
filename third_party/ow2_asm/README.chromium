@@ -1,8 +1,0 @@
-Name: ASM
-URL: http://asm.ow2.org/
-Version: 7.0
-License: BSD 3-Clause
-License File: NOT_SHIPPED
-Security Critical: no
-Description: ASM is a Java bytecode manipulation and analysis framework.
-Local Modifications: None
