@@ -157,14 +157,12 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
   // DialogBrowserTest:
   void SetUpOnMainThread() override {
     runner_ = new content::MessageLoopRunner;
-    contents_ = browser()->tab_strip_model()->GetActiveWebContents();
     controller_ =
-        std::make_unique<TestCardUnmaskPromptController>(contents_, runner_);
+        std::make_unique<TestCardUnmaskPromptController>(contents(), runner_);
     delegate_ = std::make_unique<TestCardUnmaskDelegate>();
   }
 
   void TearDownOnMainThread() override {
-    contents_ = nullptr;
     controller_.reset();
     DialogBrowserTest::TearDownOnMainThread();
   }
@@ -196,7 +194,9 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
 
   void FreeDelegate() { delegate_.reset(); }
 
-  content::WebContents* contents() { return contents_; }
+  content::WebContents* contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
   TestCardUnmaskPromptController* controller() { return controller_.get(); }
   TestCardUnmaskDelegate* delegate() { return delegate_.get(); }
 
@@ -205,7 +205,6 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
   scoped_refptr<content::MessageLoopRunner> runner_;
 
  private:
-  raw_ptr<content::WebContents, DanglingUntriaged> contents_ = nullptr;
   std::unique_ptr<TestCardUnmaskPromptController> controller_;
   std::unique_ptr<TestCardUnmaskDelegate> delegate_;
 };
@@ -266,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
   // destroyed before CardUnmaskPromptViewBridge::OnConstrainedWindowClosed() is
   // called.
   FreeDelegate();
-  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  contents()->Close();
 
   content::RunAllPendingInMessageLoop();
 }
