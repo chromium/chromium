@@ -149,6 +149,11 @@ id<GREYMatcher> CarouselMatcher() {
 
 // Tests adding most visited tiles by visiting sites multiple times.
 - (void)testAddingMostVisitedTiles {
+  // TODO(crbug.com/1460029): Test consistently failed on ipad simulator.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad Simulator");
+  }
+
   [self addNumberOfMostVisitedTiles:kCarouselCapacity];
   [self focusOmniboxFromWebPageZero];
   [[EarlGrey selectElementWithMatcher:TileWithTitle(PageTitle(1))]
