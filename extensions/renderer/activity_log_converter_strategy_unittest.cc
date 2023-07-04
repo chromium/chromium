@@ -110,9 +110,9 @@ TEST_F(ActivityLogConverterStrategyTest, ConversionTest) {
       "};"
       "})();";
 
-  v8::MicrotasksScope microtasks(
-      isolate_, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Context> context = context_.Get(isolate_);
+  v8::MicrotasksScope microtasks(context,
+                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Script> script(
       v8::Script::Compile(
           context, v8::String::NewFromUtf8(isolate_, source,
