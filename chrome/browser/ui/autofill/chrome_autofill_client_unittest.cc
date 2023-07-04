@@ -53,6 +53,12 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(GURL("about:blank"));
   }
 
+  void TearDown() override {
+    // Avoid that the raw pointer becomes dangling.
+    personal_data_manager_ = nullptr;
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
  protected:
   ChromeAutofillClient* client() {
     return test_autofill_client_injector_[web_contents()];
@@ -89,8 +95,7 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   }
 
-  raw_ptr<TestPersonalDataManager, DanglingUntriaged> personal_data_manager_ =
-      nullptr;
+  raw_ptr<TestPersonalDataManager> personal_data_manager_ = nullptr;
   TestAutofillClientInjector<TestChromeAutofillClient>
       test_autofill_client_injector_;
   TestAutofillDriverInjector<TestContentAutofillDriver>
