@@ -312,7 +312,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
     const {allEntries} = getStore().getState();
     const completedEntries = [];
     for (const url of completedUrls) {
-      const entry = allEntries[url];
+      const entry = allEntries[url]?.entry;
       if (!entry) {
         continue;
       }
