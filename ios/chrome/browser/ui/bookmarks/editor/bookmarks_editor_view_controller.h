@@ -31,8 +31,9 @@ class Browser;
 @property(nonatomic, assign) BOOL edited;
 
 // Designated initializer.
-// TODO(crbug.com/1404311) Remove the model from init.
-- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithName:(NSString*)name
+                         URL:(NSString*)URL
+                  folderName:(NSString*)folderName NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // Cancels the editor.

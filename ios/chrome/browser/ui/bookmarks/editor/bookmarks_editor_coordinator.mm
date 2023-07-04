@@ -8,6 +8,8 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_node.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -16,6 +18,7 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mediator_delegate.h"
@@ -78,8 +81,10 @@
 
 - (void)start {
   [super start];
-  _viewController =
-      [[BookmarksEditorViewController alloc] initWithBrowser:self.browser];
+  _viewController = [[BookmarksEditorViewController alloc]
+      initWithName:bookmark_utils_ios::TitleForBookmarkNode(_node)
+               URL:base::SysUTF8ToNSString(_node->url().spec())
+        folderName:bookmark_utils_ios::TitleForBookmarkNode(_node->parent())];
   _viewController.delegate = self;
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
@@ -90,6 +95,7 @@
       ios::AccountBookmarkModelFactory::GetForBrowserState(browserState);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
+
   _mediator = [[BookmarksEditorMediator alloc]
       initWithProfileBookmarkModel:profileBookmarkModel
               accountBookmarkModel:accountBookmarkModel

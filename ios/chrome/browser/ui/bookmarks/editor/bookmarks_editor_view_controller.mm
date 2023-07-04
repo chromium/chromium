@@ -66,7 +66,14 @@ const CGFloat kEstimatedTableRowHeight = 50;
 const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }  // namespace
 
-@interface BookmarksEditorViewController () <BookmarkTextFieldItemDelegate>
+@interface BookmarksEditorViewController () <BookmarkTextFieldItemDelegate> {
+  // The name of the presented bookmark.
+  NSString* _name;
+  // The URL of the presented bookmark.
+  NSString* _URL;
+  // The name of the folder of the presented bookmark.
+  NSString* _folderName;
+}
 
 @property(nonatomic, assign) Browser* browser;
 
@@ -108,14 +115,15 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithBrowser:(Browser*)browser {
-  DCHECK(browser);
+- (instancetype)initWithName:(NSString*)name
+                         URL:(NSString*)URL
+                  folderName:(NSString*)folderName {
   UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
-    // Browser may be OTR, which is why the original browser state is being
-    // explicitly requested.
-    _browser = browser;
+    _name = name;
+    _URL = URL;
+    _folderName = folderName;
   }
   return self;
 }
@@ -176,7 +184,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   [self setToolbarItems:@[ spaceButton, deleteButton, spaceButton ]
                animated:NO];
 
-  [self updateUIFromBookmark];
+  [self updateUI];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -193,6 +201,42 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }
 
 #pragma mark - Private
+
+- (void)updateUI {
+  [self loadModel];
+  TableViewModel* model = self.tableViewModel;
+
+  [model addSectionWithIdentifier:SectionIdentifierInfo];
+
+  self.nameItem = [[BookmarkTextFieldItem alloc] initWithType:ItemTypeName];
+  self.nameItem.accessibilityIdentifier = @"Title Field";
+  self.nameItem.placeholder =
+      l10n_util::GetNSString(IDS_IOS_BOOKMARK_NAME_FIELD_HEADER);
+  self.nameItem.text = _name;
+  self.nameItem.delegate = self;
+  [model addItem:self.nameItem toSectionWithIdentifier:SectionIdentifierInfo];
+
+  self.folderItem =
+      [[BookmarkParentFolderItem alloc] initWithType:ItemTypeFolder];
+  self.folderItem.title = _folderName;
+  [model addItem:self.folderItem toSectionWithIdentifier:SectionIdentifierInfo];
+
+  self.URLItem = [[BookmarkTextFieldItem alloc] initWithType:ItemTypeURL];
+  self.URLItem.accessibilityIdentifier = @"URL Field";
+  self.URLItem.placeholder =
+      l10n_util::GetNSString(IDS_IOS_BOOKMARK_URL_FIELD_HEADER);
+  self.URLItem.text = _URL;
+  self.URLItem.delegate = self;
+  [model addItem:self.URLItem toSectionWithIdentifier:SectionIdentifierInfo];
+
+  TableViewHeaderFooterItem* errorFooter =
+      [[TableViewHeaderFooterItem alloc] initWithType:ItemTypeInvalidURLFooter];
+  [model setFooter:errorFooter forSectionWithIdentifier:SectionIdentifierInfo];
+  self.displayingValidURL = YES;
+
+  // Save button state.
+  [self updateSaveButtonState];
+}
 
 - (BOOL)inputURLIsValid {
   return bookmark_utils_ios::ConvertUserDataToGURL([self inputURLString])
@@ -235,20 +279,14 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 #pragma mark - BookmarksEditorConsumer
 
-- (void)updateFolderLabel {
+- (void)updateFolderLabel:(NSString*)folderName {
   NSIndexPath* indexPath =
       [self.tableViewModel indexPathForItemType:ItemTypeFolder
                               sectionIdentifier:SectionIdentifierInfo];
   if (!indexPath) {
     return;
   }
-
-  NSString* folderName = @"";
-  if ([self.mutator bookmark]) {
-    folderName =
-        bookmark_utils_ios::TitleForBookmarkNode([self.mutator folder]);
-  }
-
+  _folderName = folderName;
   self.folderItem.title = folderName;
   self.folderItem.shouldDisplayCloudSlashIcon =
       [self.mutator shouldDisplayCloudSlashSymbolForParentFolder];
@@ -256,50 +294,13 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
                         withRowAnimation:UITableViewRowAnimationNone];
 }
 
-- (void)updateUIFromBookmark {
-  // If there is no current bookmark, don't update.
-  if (![self.mutator bookmark]) {
-    return;
-  }
-
-  [self loadModel];
-  TableViewModel* model = self.tableViewModel;
-
-  [model addSectionWithIdentifier:SectionIdentifierInfo];
-
-  self.nameItem = [[BookmarkTextFieldItem alloc] initWithType:ItemTypeName];
-  self.nameItem.accessibilityIdentifier = @"Title Field";
-  self.nameItem.placeholder =
-      l10n_util::GetNSString(IDS_IOS_BOOKMARK_NAME_FIELD_HEADER);
-  self.nameItem.text =
-      bookmark_utils_ios::TitleForBookmarkNode([self.mutator bookmark]);
-  self.nameItem.delegate = self;
-  [model addItem:self.nameItem toSectionWithIdentifier:SectionIdentifierInfo];
-
-  self.folderItem =
-      [[BookmarkParentFolderItem alloc] initWithType:ItemTypeFolder];
-  self.folderItem.title =
-      bookmark_utils_ios::TitleForBookmarkNode([self.mutator folder]);
-  self.folderItem.shouldDisplayCloudSlashIcon =
-      [self.mutator shouldDisplayCloudSlashSymbolForParentFolder];
-  [model addItem:self.folderItem toSectionWithIdentifier:SectionIdentifierInfo];
-
-  self.URLItem = [[BookmarkTextFieldItem alloc] initWithType:ItemTypeURL];
-  self.URLItem.accessibilityIdentifier = @"URL Field";
-  self.URLItem.placeholder =
-      l10n_util::GetNSString(IDS_IOS_BOOKMARK_URL_FIELD_HEADER);
-  self.URLItem.text =
-      base::SysUTF8ToNSString([self.mutator bookmark]->url().spec());
-  self.URLItem.delegate = self;
-  [model addItem:self.URLItem toSectionWithIdentifier:SectionIdentifierInfo];
-
-  TableViewHeaderFooterItem* errorFooter =
-      [[TableViewHeaderFooterItem alloc] initWithType:ItemTypeInvalidURLFooter];
-  [model setFooter:errorFooter forSectionWithIdentifier:SectionIdentifierInfo];
-  self.displayingValidURL = YES;
-
-  // Save button state.
-  [self updateSaveButtonState];
+- (void)updateUIWithName:(NSString*)name
+                     URL:(NSString*)URL
+              folderName:(NSString*)folderName {
+  _name = name;
+  _URL = URL;
+  _folderName = folderName;
+  [self updateUI];
 }
 
 - (void)updateSync {
