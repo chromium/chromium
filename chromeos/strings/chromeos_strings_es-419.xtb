@@ -123,7 +123,7 @@
 <translation id="1838374766361614909">Borrar la búsqueda</translation>
 <translation id="1840474674287087346">Color del escritorio</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
-<translation id="1852934301711881861">Instalar Chrome OS Flex</translation>
+<translation id="1852934301711881861">Instalar ChromeOS Flex</translation>
 <translation id="1856388568474281774">Flecha hacia abajo</translation>
 <translation id="1858620243986915808">Adjuntar captura de pantalla</translation>
 <translation id="1871569928317311284">Desactivar el tema oscuro</translation>
@@ -362,7 +362,7 @@
 <translation id="3954678691475912818">El tipo de dispositivo es desconocido.</translation>
 <translation id="3966286471246132217">Para obtener resultados más precisos, cierra todas las apps hasta que se complete la prueba.</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
-<translation id="3969602104473960991">Se actualizó la contraseña de Chrome OS</translation>
+<translation id="3969602104473960991">Se actualizó la contraseña de ChromeOS</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="39823212440917567">Se quitarán los trabajos de impresión que tengan más de <ph name="NUMBER_OF_DAYS" /> días</translation>
 <translation id="3993704782688964914">Tu <ph name="DEVICE_NAME" /> está actualizado</translation>
@@ -641,7 +641,7 @@
 <translation id="6113701710518389813">Flecha hacia arriba</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + otros <ph name="NUMBER" /> álbumes</translation>
 <translation id="6122191549521593678">En línea</translation>
-<translation id="6122277663991249694">Servicio de método de entrada de Chrome OS</translation>
+<translation id="6122277663991249694">Servicio de método de entrada de ChromeOS</translation>
 <translation id="6136285399872347291">retroceso</translation>
 <translation id="6137767437444130246">Certificado del usuario</translation>
 <translation id="6146993107019042706">Para finalizar, ingresa tu nueva contraseña</translation>
@@ -927,7 +927,7 @@
 <translation id="8410244574650205435">Detectado automáticamente</translation>
 <translation id="8420955526972171689">Ejecuta pruebas y soluciona problemas de hardware.</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8431300646573772016">Novedades de Chrome OS</translation>
+<translation id="8431300646573772016">Novedades de ChromeOS</translation>
 <translation id="843568408673868420">Conexión a Internet</translation>
 <translation id="844521431886043384">No se configuró el DNS</translation>
 <translation id="8456761643544401578">Modo oscuro automático</translation>

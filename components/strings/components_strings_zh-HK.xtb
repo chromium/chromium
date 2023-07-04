@@ -475,7 +475,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> 要求在您的本機電腦上永久儲存大量數據</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{和另外 1 個應用程式}other{和另外 # 個應用程式}}</translation>
-<translation id="2001469757375372617">發生錯誤，系統未儲存你的變更。</translation>
+<translation id="2001469757375372617">發生問題，系統未儲存你的變更。</translation>
 <translation id="2003709556000175978">立即重設您的密碼</translation>
 <translation id="2003775180883135320">四孔 (頂端)</translation>
 <translation id="2009942480257059311">建立活動按鈕，啟動之後就可以喺 Google 日曆度快速建立新活動</translation>
@@ -924,7 +924,7 @@
 <translation id="3054512251683174387">Chrome 會自動刪除超過 4 星期的主題。在您瀏覽同時，清單中可能會再次出現特定主題。您亦可封鎖不希望 Chrome 與網站分享的主題。進一步瞭解如何在 Chrome 中管理廣告私隱權。</translation>
 <translation id="3061707000357573562">修補服務</translation>
 <translation id="306573536155379004">啟動咗遊戲。</translation>
-<translation id="3067505415088964188">價格較低</translation>
+<translation id="3067505415088964188">價格偏低</translation>
 <translation id="3068991664510324412">電腦遊戲和電視遊戲</translation>
 <translation id="3080254622891793721">圖片</translation>
 <translation id="3081538120861307764">為評估廣告成效，網站之間會分享特定類型的資料，例如系統向您顯示廣告的時段。</translation>
@@ -3673,7 +3673,7 @@
 <translation id="9141013498910525015">管理地址</translation>
 <translation id="9144951720726881238">到期日：</translation>
 <translation id="9148507642005240123">復原編輯(&amp;U)</translation>
-<translation id="9148599396704355100">價格較低</translation>
+<translation id="9148599396704355100">價格偏低</translation>
 <translation id="9150045010208374699">使用您的相機。</translation>
 <translation id="9150685862434908345">您的管理員可遠端變更瀏覽器設定。此裝置上的活動也可透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">已更新</translation>
