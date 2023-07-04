@@ -203,6 +203,7 @@ into the product and does any of the following:
 * Collects new data
 * Influences or sets security-related policy (including the user experience)
 
+**CPE Prefix**
 One of the fields is CPEPrefix. This is used by Chromium and Google systems to
 spot known upstream security vulnerabilities, and ensure we merge the fixes
 into our third-party copy. These systems are not foolproof, so as the OWNER,
@@ -223,6 +224,16 @@ public versions, please "round downwards" to the lower of the public versions
 (it's better for us to be notified of false-positive vulnerabilities than
 false-negatives).
 
+
+**Shipped**
+Your README.chromium should also specify whether your third party dependency
+will be shipped as part of a final binary. The "Shipped" field replaces the now
+deprecated special value of "NOT_SHIPPED" which was previously allowed in the
+"License File" field. This use is no longer supported and if your third party
+dependency includes a license you should also use the "Licence File" field to
+reference it, regardless of whether it is shipped or not.
+
+
 ### Add a LICENSE file and run related checks
 
 You need a LICENSE file. Example:
@@ -233,8 +244,8 @@ data for third_party checkins. We use `licenses.py credits` to generate the
 about:credits page in Google Chrome builds.
 
 If the library will never be shipped as a part of Chrome (e.g. build-time tools,
-testing tools), make sure to set "License File" as "NOT_SHIPPED" so that the
-license is not included in about:credits page ([more on this below](#credits)).
+testing tools), make sure to set the "Shipped" field to "no" so that the license
+is  not included in about:credits page ([more on this below](#credits)).
 
 ## Get a review
 
@@ -283,6 +294,7 @@ That page displays a resource embedded in the browser as part of the
 GRIT file; the actual HTML text is generated in the
 [//components/resources:about_credits](../components/resources/BUILD.gn)
 build target using a template from the output of the
-[//tools/licenses/licenses.py](../tools/licenses/licenses.py) script. Assuming you've followed
-the rules above to ensure that you have the proper LICENSE file and it passes
-the checks, it'll be included automatically.
+[//tools/licenses/licenses.py](../tools/licenses/licenses.py) script. Assuming
+you‘ve followed the rules above to ensure that you have the proper path to the
+LICENSE file and set the Shipped value, if it passes the checks, it’ll be
+included automatically.
