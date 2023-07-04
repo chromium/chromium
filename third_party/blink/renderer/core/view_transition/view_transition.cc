@@ -588,7 +588,17 @@ void ViewTransition::ProcessCurrentState() {
         // created by the script API.
         DCHECK(script_bound_state_);
 
-        switch (InvokeDOMChangeCallback()) {
+        DOMCallbackResult result = InvokeDOMChangeCallback();
+
+        // Since invoking the callback could yield (at least when devtools
+        // breakpoint is hit, but maybe in other situations), we could have
+        // timed out already. Make sure we don't advance the state out of a
+        // terminal state.
+        if (IsTerminalState(state_)) {
+          break;
+        }
+
+        switch (result) {
           case DOMCallbackResult::kFinished:
             process_next_state = AdvanceTo(State::kDOMCallbackFinished);
             DCHECK(process_next_state);
