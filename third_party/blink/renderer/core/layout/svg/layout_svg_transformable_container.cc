@@ -31,7 +31,7 @@ namespace blink {
 
 LayoutSVGTransformableContainer::LayoutSVGTransformableContainer(
     SVGGraphicsElement* node)
-    : LayoutSVGContainer(node), needs_transform_update_(true) {}
+    : LayoutSVGContainer(node) {}
 
 static bool HasValidPredecessor(const Node* node) {
   DCHECK(node);
@@ -70,14 +70,6 @@ bool LayoutSVGTransformableContainer::IsChildAllowed(
   return LayoutSVGContainer::IsChildAllowed(child, style);
 }
 
-void LayoutSVGTransformableContainer::SetNeedsTransformUpdate() {
-  NOT_DESTROYED();
-  // The transform paint property relies on the SVG transform being up-to-date
-  // (see: PaintPropertyTreeBuilder::updateTransformForNonRootSVG).
-  SetNeedsPaintPropertyUpdate();
-  needs_transform_update_ = true;
-}
-
 SVGTransformChange LayoutSVGTransformableContainer::CalculateLocalTransform(
     bool bounds_changed) {
   NOT_DESTROYED();
@@ -98,20 +90,20 @@ SVGTransformChange LayoutSVGTransformableContainer::CalculateLocalTransform(
     additional_translation_ = translation;
   }
 
-  if (!needs_transform_update_ && TransformUsesReferenceBox()) {
-    if (CheckForImplicitTransformChange(bounds_changed))
+  if (!NeedsTransformUpdate() && TransformUsesReferenceBox()) {
+    if (CheckForImplicitTransformChange(bounds_changed)) {
       SetNeedsTransformUpdate();
+    }
   }
 
-  if (!needs_transform_update_)
+  if (!NeedsTransformUpdate()) {
     return SVGTransformChange::kNone;
-
+  }
   SVGTransformChangeDetector change_detector(local_transform_);
   local_transform_ =
       element->CalculateTransform(SVGElement::kIncludeMotionTransform);
   local_transform_.Translate(additional_translation_.x(),
                              additional_translation_.y());
-  needs_transform_update_ = false;
   return change_detector.ComputeChange(local_transform_);
 }
 

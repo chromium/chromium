@@ -31,9 +31,7 @@
 namespace blink {
 
 LayoutSVGViewportContainer::LayoutSVGViewportContainer(SVGSVGElement* node)
-    : LayoutSVGContainer(node),
-      is_layout_size_changed_(false),
-      needs_transform_update_(true) {}
+    : LayoutSVGContainer(node), is_layout_size_changed_(false) {}
 
 void LayoutSVGViewportContainer::UpdateLayout() {
   NOT_DESTROYED();
@@ -59,26 +57,17 @@ void LayoutSVGViewportContainer::UpdateLayout() {
   LayoutSVGContainer::UpdateLayout();
 }
 
-void LayoutSVGViewportContainer::SetNeedsTransformUpdate() {
-  NOT_DESTROYED();
-  // The transform paint property relies on the SVG transform being up-to-date
-  // (see: PaintPropertyTreeBuilder::updateTransformForNonRootSVG).
-  SetNeedsPaintPropertyUpdate();
-  needs_transform_update_ = true;
-}
-
 SVGTransformChange LayoutSVGViewportContainer::CalculateLocalTransform(
     bool bounds_changed) {
   NOT_DESTROYED();
-  if (!needs_transform_update_)
+  if (!NeedsTransformUpdate()) {
     return SVGTransformChange::kNone;
-
+  }
   const auto* svg = To<SVGSVGElement>(GetElement());
   SVGTransformChangeDetector change_detector(local_to_parent_transform_);
   local_to_parent_transform_ =
       AffineTransform::Translation(viewport_.x(), viewport_.y()) *
       svg->ViewBoxToViewTransform(viewport_.size());
-  needs_transform_update_ = false;
   return change_detector.ComputeChange(local_to_parent_transform_);
 }
 

@@ -36,6 +36,7 @@ LayoutSVGContainer::LayoutSVGContainer(SVGElement* node)
     : LayoutSVGModelObject(node),
       object_bounding_box_valid_(false),
       needs_boundaries_update_(true),
+      needs_transform_update_(true),
       did_screen_scale_factor_change_(false),
       transform_uses_reference_box_(false),
       has_non_isolated_blending_descendants_(false),
@@ -57,7 +58,8 @@ void LayoutSVGContainer::UpdateLayout() {
   // transforms will be incorrect. Since descendants only require the scaling
   // components to be correct, this should be fine. We update the transform
   // again, if needed, after computing the bounding box below.
-  SVGTransformChange transform_change = CalculateLocalTransform(false);
+  SVGTransformChange transform_change =
+      CalculateLocalTransform(/*bounds_changed=*/false);
   did_screen_scale_factor_change_ =
       transform_change == SVGTransformChange::kFull ||
       SVGLayoutSupport::ScreenScaleFactorChanged(Parent());
@@ -79,9 +81,13 @@ void LayoutSVGContainer::UpdateLayout() {
   if (EverHadLayout() && (SelfNeedsLayout() || bbox_changed))
     SVGResourceInvalidator(*this).InvalidateEffects();
 
-  if (transform_change != SVGTransformChange::kNone || bbox_changed) {
-    CalculateLocalTransform(bbox_changed);
+  if (needs_transform_update_ || bbox_changed) {
+    transform_change =
+        std::max(CalculateLocalTransform(bbox_changed), transform_change);
+    needs_transform_update_ = false;
+  }
 
+  if (transform_change != SVGTransformChange::kNone || bbox_changed) {
     // If our bounds or transform changed, notify the parents.
     LayoutSVGModelObject::SetNeedsBoundariesUpdate();
   }
@@ -246,6 +252,14 @@ bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
   // under the pointer (i.e., there is no target element), the event is not
   // dispatched."
   return false;
+}
+
+void LayoutSVGContainer::SetNeedsTransformUpdate() {
+  NOT_DESTROYED();
+  // The transform paint property relies on the SVG transform being up-to-date
+  // (see: `FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild`).
+  SetNeedsPaintPropertyUpdate();
+  needs_transform_update_ = true;
 }
 
 SVGTransformChange LayoutSVGContainer::CalculateLocalTransform(

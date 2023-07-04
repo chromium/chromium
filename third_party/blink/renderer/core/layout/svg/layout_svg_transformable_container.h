@@ -44,8 +44,6 @@ class LayoutSVGTransformableContainer final : public LayoutSVGContainer {
     return additional_translation_;
   }
 
-  void SetNeedsTransformUpdate() override;
-
  private:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   SVGTransformChange CalculateLocalTransform(bool bounds_changed) override;
@@ -54,7 +52,6 @@ class LayoutSVGTransformableContainer final : public LayoutSVGContainer {
     return local_transform_;
   }
 
-  bool needs_transform_update_ : 1;
   AffineTransform local_transform_;
   gfx::Vector2dF additional_translation_;
 };

@@ -80,7 +80,6 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
 
   AffineTransform local_to_parent_transform_;
   gfx::SizeF viewport_size_;
-  bool needs_transform_update_;
   bool is_in_layout_;
 };
 

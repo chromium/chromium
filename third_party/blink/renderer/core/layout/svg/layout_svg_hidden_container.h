@@ -32,6 +32,8 @@ class LayoutSVGHiddenContainer : public LayoutSVGContainer {
  public:
   explicit LayoutSVGHiddenContainer(SVGElement*);
 
+  void SetNeedsTransformUpdate() override { NOT_DESTROYED(); }
+
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutSVGHiddenContainer";

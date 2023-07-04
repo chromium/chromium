@@ -125,6 +125,12 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
                    const PhysicalOffset& accumulated_offset,
                    HitTestPhase) override;
 
+  void SetNeedsTransformUpdate() override;
+  bool NeedsTransformUpdate() const {
+    NOT_DESTROYED();
+    return needs_transform_update_;
+  }
+
   // Called during layout to update the local transform.
   virtual SVGTransformChange CalculateLocalTransform(bool bounds_changed);
 
@@ -136,6 +142,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   SVGContentContainer content_;
   bool object_bounding_box_valid_;
   bool needs_boundaries_update_ : 1;
+  bool needs_transform_update_ : 1;
   bool did_screen_scale_factor_change_ : 1;
   bool transform_uses_reference_box_ : 1;
   mutable bool has_non_isolated_blending_descendants_ : 1;
