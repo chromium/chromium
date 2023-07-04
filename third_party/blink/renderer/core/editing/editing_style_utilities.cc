@@ -71,11 +71,14 @@ Position AdjustedSelectionStartForStyleComputation(const Position& position) {
 bool EditingStyleUtilities::HasAncestorVerticalAlignStyle(Node& node,
                                                           CSSValueID value) {
   for (Node& runner : NodeTraversal::InclusiveAncestorsOf(node)) {
-    auto* ancestor_style =
-        MakeGarbageCollected<CSSComputedStyleDeclaration>(&runner);
-    if (GetIdentifierValue(ancestor_style, CSSPropertyID::kVerticalAlign) ==
-        value)
-      return true;
+    if (Element* ancestor = DynamicTo<Element>(runner)) {
+      auto* ancestor_style =
+          MakeGarbageCollected<CSSComputedStyleDeclaration>(ancestor);
+      if (GetIdentifierValue(ancestor_style, CSSPropertyID::kVerticalAlign) ==
+          value) {
+        return true;
+      }
+    }
   }
   return false;
 }
@@ -229,7 +232,12 @@ bool EditingStyleUtilities::HasTransparentBackgroundColor(
 
 const CSSValue* EditingStyleUtilities::BackgroundColorValueInEffect(
     Node* node) {
-  for (Node* ancestor = node; ancestor; ancestor = ancestor->parentNode()) {
+  CHECK(node);
+  Element* ancestor = DynamicTo<Element>(node);
+  if (!ancestor) {
+    ancestor = FlatTreeTraversal::ParentElement(*node);
+  }
+  for (; ancestor; ancestor = FlatTreeTraversal::ParentElement(*ancestor)) {
     auto* ancestor_style =
         MakeGarbageCollected<CSSComputedStyleDeclaration>(ancestor);
     if (!HasTransparentBackgroundColor(ancestor_style)) {
