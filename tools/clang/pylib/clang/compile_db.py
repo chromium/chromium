@@ -12,7 +12,7 @@ import sys
 
 _RSP_RE = re.compile(r' (@(.+?\.rsp)) ')
 _GOMA_CMD_LINE_RE = re.compile(
-    r'^(?P<gomacc>.*gomacc(\.exe)?"?\s+)?(?P<clang>\S*clang\S*)\s+(?P<args>.*)$'
+    r'(?P<gomacc>.*gomacc(\.exe)?"?\s+)?(?P<clang>\S*clang\S*)\s+(?P<args>.*)'
 )
 _debugging = False
 
@@ -101,7 +101,7 @@ def _ProcessCommand(command, filtered_args, target_os):
   #
   # Instead, use a regex, with the simplifying assumption that the path to
   # clang-cl.exe contains no spaces.
-  match = _GOMA_CMD_LINE_RE.search(command)
+  match = _GOMA_CMD_LINE_RE.fullmatch(command)
   if match:
     match_dict = match.groupdict()
     command = ' '.join([match_dict['clang'], driver_mode, match_dict['args']])
