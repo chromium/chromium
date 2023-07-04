@@ -32,6 +32,10 @@ class HelpAppUIDelegate {
   // Gets locally stored users preferences and state.
   virtual PrefService* GetLocalState() = 0;
 
+  // Launches the MS365 setup flow (or shows the final screen of the flow if it
+  // was already completed).
+  virtual void LaunchMicrosoft365Setup() = 0;
+
   // Asks the help app notification controller to show the discover notification
   // if the required heuristics are present and if a notification for the help
   // app has not yet been shown in the current milestone.

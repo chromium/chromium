@@ -292,6 +292,10 @@ guestMessagePipe.registerHandler(
       return searchHandlerRemote.update(dataFiltered);
     });
 
+guestMessagePipe.registerHandler(Message.LAUNCH_MICROSOFT_365_SETUP, () => {
+  help_app.handler.launchMicrosoft365Setup();
+});
+
 guestMessagePipe.registerHandler(
     Message.MAYBE_SHOW_DISCOVER_NOTIFICATION, () => {
       help_app.handler.maybeShowDiscoverNotification();

@@ -34,6 +34,7 @@ class HelpAppPageHandler : public help_app::mojom::PageHandler {
   void IsLssEnabled(IsLssEnabledCallback callback) override;
   void IsLauncherSearchEnabled(
       IsLauncherSearchEnabledCallback callback) override;
+  void LaunchMicrosoft365Setup() override;
   void MaybeShowDiscoverNotification() override;
   void MaybeShowReleaseNotesNotification() override;
   void GetDeviceInfo(GetDeviceInfoCallback callback) override;

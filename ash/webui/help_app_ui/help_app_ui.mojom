@@ -42,6 +42,10 @@ interface PageHandler {
   // Returns true if the Help App Launcher Search feature is enabled.
   IsLauncherSearchEnabled() => (bool enabled);
 
+  // Launches the MS365 setup flow (or shows the final screen of the flow if it
+  // was already completed).
+  LaunchMicrosoft365Setup();
+
   // Requests that the help app discover notification is shown if the required
   // heuristics are present and if a notification for the Help App has not yet
   // been shown in the current milestone.

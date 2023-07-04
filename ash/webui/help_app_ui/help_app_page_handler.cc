@@ -46,6 +46,10 @@ void HelpAppPageHandler::IsLauncherSearchEnabled(
   std::move(callback).Run(is_launcher_search_enabled_);
 }
 
+void HelpAppPageHandler::LaunchMicrosoft365Setup() {
+  help_app_ui_->delegate()->LaunchMicrosoft365Setup();
+}
+
 void HelpAppPageHandler::MaybeShowDiscoverNotification() {
   help_app_ui_->delegate()->MaybeShowDiscoverNotification();
 }

@@ -246,6 +246,13 @@ helpApp.ClientApiDelegate.prototype.updateLauncherSearchIndex
     = function(data) {};
 
 /**
+ * Launches the MS365 setup flow (or shows the final screen of the flow if it
+ * was already completed).
+ * @return {!Promise<undefined>}
+ */
+helpApp.ClientApiDelegate.prototype.launchMicrosoft365Setup = function() {};
+
+/**
  * Request for the discover page notification to be shown to the user. The
  * notification will only be shown if the relevant heuristics are true, i.e.
  * user is a child, is using a supported language etc.

@@ -42,13 +42,16 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -85,7 +88,8 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
       : https_server_{std::make_unique<net::EmbeddedTestServer>(
             net::EmbeddedTestServer::TYPE_HTTPS)} {
     scoped_feature_list_.InitWithFeatures(
-        {features::kHelpAppDiscoverTabNotificationAllChannels,
+        {chromeos::features::kUploadOfficeToCloud,
+         features::kHelpAppDiscoverTabNotificationAllChannels,
          features::kReleaseNotesNotificationAllChannels,
          features::kHelpAppLauncherSearch},
         {});
@@ -736,6 +740,30 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
     // The tab should still be the default "about:blank" URL.
     EXPECT_TRUE(GetActiveWebContents()->GetVisibleURL().IsAboutBlank());
   }
+}
+
+// Test that the Help App delegate can open the Microsoft 365 setup flow.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2CanOpenMS365Setup) {
+  WaitForTestSystemAppInstall();
+  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
+
+  // Script that tells the Help App to call the `LaunchMicrosoft365Setup` Mojo
+  // function.
+  constexpr char kScript[] = R"(
+    (async () => {
+      const delegate = window.customLaunchData.delegate;
+      await delegate.launchMicrosoft365Setup();
+      return true;
+    })();
+  )";
+  EXPECT_EQ(true,
+            content::EvalJs(
+                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
+
+  ash::SystemWebDialogDelegate* dialog =
+      ash::SystemWebDialogDelegate::FindInstance(
+          chrome::kChromeUICloudUploadURL);
+  EXPECT_TRUE(dialog);
 }
 
 // Test that the Help App delegate can update the index for launcher search.

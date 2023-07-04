@@ -17,11 +17,13 @@
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
@@ -74,6 +76,15 @@ void ChromeHelpAppUIDelegate::ShowParentalControls() {
 
 PrefService* ChromeHelpAppUIDelegate::GetLocalState() {
   return g_browser_process->local_state();
+}
+
+void ChromeHelpAppUIDelegate::LaunchMicrosoft365Setup() {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  if (!chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
+    return;
+  }
+  ash::cloud_upload::LaunchMicrosoft365Setup(
+      profile, web_ui_->GetWebContents()->GetTopLevelNativeWindow());
 }
 
 void ChromeHelpAppUIDelegate::MaybeShowDiscoverNotification() {

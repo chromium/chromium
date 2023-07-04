@@ -63,6 +63,9 @@ const DELEGATE = {
     await parentMessagePipe.sendMessage(
         Message.UPDATE_LAUNCHER_SEARCH_INDEX, data);
   },
+  async launchMicrosoft365Setup() {
+    await parentMessagePipe.sendMessage(Message.LAUNCH_MICROSOFT_365_SETUP);
+  },
   async maybeShowDiscoverNotification() {
     await parentMessagePipe.sendMessage(
         Message.MAYBE_SHOW_DISCOVER_NOTIFICATION);
