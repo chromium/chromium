@@ -333,7 +333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.ConfirmationChip.PageInfoDialogAccessType"
-    enum="PageInfoDialogAccessType" expires_after="2023-10-31">
+    enum="PageInfoDialogAccessType" expires_after="2023-12-31">
   <owner>fjacky@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>

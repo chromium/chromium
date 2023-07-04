@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Branding.BrandingCheckCanceled"
-    enum="BooleanCanceled" expires_after="2023-10-22">
+    enum="BooleanCanceled" expires_after="2023-12-31">
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Branding.IsPackageNameValid" enum="BooleanValid"
-    expires_after="2023-10-22">
+    expires_after="2023-12-31">
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>

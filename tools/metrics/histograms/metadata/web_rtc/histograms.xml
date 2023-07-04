@@ -1232,7 +1232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ConnectionState"
-    enum="IceConnectionStates" expires_after="2023-11-01">
+    enum="IceConnectionStates" expires_after="2023-12-31">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -2091,7 +2091,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.UserMediaRequest.Result2"
-    enum="MediaStreamRequestResult2" expires_after="2023-10-15">
+    enum="MediaStreamRequestResult2" expires_after="2023-12-31">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <summary>

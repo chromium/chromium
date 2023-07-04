@@ -5220,7 +5220,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.AspectRatio" units="%" expires_after="M120">
+<histogram name="Media.VideoCapture.AspectRatio" units="%"
+    expires_after="2023-12-31">
   <owner>mcasas@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <summary>
@@ -5342,7 +5343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.FrameDrop"
-    enum="VideoCaptureFrameDropReason" expires_after="M120">
+    enum="VideoCaptureFrameDropReason" expires_after="2023-12-31">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -5359,7 +5360,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.FrameRate" units="fps" expires_after="M120">
+<histogram name="Media.VideoCapture.FrameRate" units="fps"
+    expires_after="2023-12-31">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -5383,7 +5385,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.Height" units="pixels" expires_after="M120">
+<histogram name="Media.VideoCapture.Height" units="pixels"
+    expires_after="2023-12-31">
   <owner>mcasas@chromium.org</owner>
   <owner>handellm@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
@@ -5506,7 +5509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.ScaleOverrideChangeCount" units="units"
-    expires_after="M120">
+    expires_after="2023-12-31">
   <owner>jophba@chromium.org</owner>
   <owner>klausw@chromium.org</owner>
   <summary>
@@ -5548,7 +5551,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.Width" units="pixels" expires_after="M120">
+<histogram name="Media.VideoCapture.Width" units="pixels"
+    expires_after="2023-12-31">
   <owner>mcasas@chromium.org</owner>
   <owner>handellm@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
@@ -5963,7 +5967,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VTVDA.SessionFailureReason"
-    enum="VTVDASessionFailureType" expires_after="2023-10-15">
+    enum="VTVDASessionFailureType" expires_after="2023-12-31">
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>

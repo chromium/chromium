@@ -794,14 +794,14 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.ListFamilyMembersRequest.Latency" units="ms"
-    expires_after="2023-11-01">
+    expires_after="2023-12-31">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>Tracks the latency of calls to the Kids Management API.</summary>
 </histogram>
 
 <histogram name="Signin.ListFamilyMembersRequest.Status"
-    enum="SupervisedUserProtoFetcherStatus" expires_after="2023-11-01">
+    enum="SupervisedUserProtoFetcherStatus" expires_after="2023-12-31">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>The status of the fetch to the Kids Management API.</summary>

@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Extensions.InstallDuration" units="ms"
-    expires_after="2023-10-15">
+    expires_after="2023-12-31">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Extensions.InstallTimedOut" enum="BooleanYesNo"
-    expires_after="2023-10-15">
+    expires_after="2023-12-31">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -173,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Launch.CryptohomeFailure" enum="LoginFailureReason"
-    expires_after="2023-10-22">
+    expires_after="2023-12-31">
   <owner>xiyuan@chromium.org</owner>
   <owner>apotapchuk@chromium.org</owner>
   <summary>Tracks cryptohome failure during kiosk launch.</summary>

@@ -2823,7 +2823,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.CriticalCHRestart" enum="CriticalCHRestart"
-    expires_after="2023-10-31">
+    expires_after="2023-12-31">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -2867,7 +2867,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.StoreLatency" units="ms"
-    expires_after="2023-10-31">
+    expires_after="2023-12-31">
   <owner>miketaylr@chromium.org</owner>
   <owner>potassium-katabolism@google.com</owner>
   <summary>
@@ -14237,7 +14237,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebFont.CacheHit" enum="WebFontCacheHit"
-    expires_after="2023-10-22">
+    expires_after="2023-12-31">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kenjibaheux@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>

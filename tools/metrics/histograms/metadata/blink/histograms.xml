@@ -2623,7 +2623,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MemoryCache.CrossDocumentCachedResource2"
-    enum="ResourceType" expires_after="2023-10-15">
+    enum="ResourceType" expires_after="2023-12-31">
   <owner>gjc@chromium.org</owner>
   <owner>blink-network-dev@chromium.org</owner>
   <summary>
@@ -3828,7 +3828,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.VisibleLoadTime.LazyLoadImages" units="ms"
-    expires_after="2023-12-24">
+    expires_after="2023-12-31">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
