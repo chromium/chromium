@@ -137,12 +137,6 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
     return;
   }
 
-  // TODO(crbug.com/1442546): Remove this check after removing the second call
-  // of WebStateListWillChange(). Closed WebStates are always detached first.
-  if (detachChange.is_closing()) {
-    return;
-  }
-
   if (!webStateList->IsWebStatePinnedAt(selection.index)) {
     [self.consumer
         selectItemWithID:GetActiveWebStateIdentifier(

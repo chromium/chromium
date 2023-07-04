@@ -131,24 +131,9 @@
 - (void)willChangeWebStateList:(WebStateList*)webStateList
                         change:(const WebStateListChangeDetach&)detachChange
                      selection:(const WebStateSelection&)selection {
-  web::WebState* detachedWebState = detachChange.detached_web_state();
-  // TODO(crbug.com/1442546): Refactor this `if` block and always execute
-  // the part for `is_closing=false` because
-  // willChangeWebStateList:change:selection: will be called only once.
-  if (detachChange.is_closing()) {
-    // When an NTP web state is closed, check if the coordinator should be
-    // stopped.
-    NewTabPageTabHelper* NTPTabHelper =
-        NewTabPageTabHelper::FromWebState(detachedWebState);
-    if (NTPTabHelper->IsActive()) {
-      [self stopNTPIfNeeded];
-    }
-  } else {
-    // When the active webState is detached, the view should be reset.
-    web::WebState* currentWebState = _webStateList->GetActiveWebState();
-    if (detachedWebState == currentWebState) {
-      [self.consumer resetTab];
-    }
+  // When the active webState is detached, the view should be reset.
+  if (detachChange.detached_web_state() == _webStateList->GetActiveWebState()) {
+    [self.consumer resetTab];
   }
 }
 
@@ -162,9 +147,20 @@
       // here. Note that here is reachable only when `reason` ==
       // ActiveWebStateChangeReason::Activated.
       break;
-    case WebStateListChange::Type::kDetach:
-      // Do nothing when a WebState is detached.
+    case WebStateListChange::Type::kDetach: {
+      // When an NTP web state is closed, check if the coordinator should be
+      // stopped.
+      const WebStateListChangeDetach& detachChange =
+          change.As<WebStateListChangeDetach>();
+      if (detachChange.is_closing()) {
+        NewTabPageTabHelper* NTPTabHelper = NewTabPageTabHelper::FromWebState(
+            detachChange.detached_web_state());
+        if (NTPTabHelper->IsActive()) {
+          [self stopNTPIfNeeded];
+        }
+      }
       break;
+    }
     case WebStateListChange::Type::kMove:
       // Do nothing when a WebState is moved.
       break;

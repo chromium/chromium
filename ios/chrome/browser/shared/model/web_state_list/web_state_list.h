@@ -248,7 +248,9 @@ class WebStateList {
   // to the caller (abandon ownership of the returned WebState).
   //
   // Assumes that the WebStateList is locked.
-  std::unique_ptr<web::WebState> DetachWebStateAtImpl(int index);
+  std::unique_ptr<web::WebState> DetachWebStateAtImpl(int index,
+                                                      bool is_closing,
+                                                      bool is_user_action);
 
   // Closes and destroys the WebState at the specified index. The `close_flags`
   // is a bitwise combination of ClosingFlags values.

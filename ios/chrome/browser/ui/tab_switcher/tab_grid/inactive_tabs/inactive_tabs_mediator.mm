@@ -279,12 +279,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     return;
   }
 
-  // TODO(crbug.com/1442546): Remove this check after removing the second call
-  // of WebStateListWillChange(). Closed WebStates are always detached first.
-  if (detachChange.is_closing()) {
-    return;
-  }
-
   web::WebState* detachedWebState = detachChange.detached_web_state();
   [_consumer removeItemWithID:detachedWebState->GetStableIdentifier()
                selectedItemID:nil];

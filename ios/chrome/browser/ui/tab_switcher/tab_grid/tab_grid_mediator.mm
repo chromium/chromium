@@ -258,12 +258,6 @@ void RecordTabGridCloseTabsCount(int count) {
     return;
   }
 
-  // TODO(crbug.com/1442546): Remove this check after removing the second call
-  // of WebStateListWillChange(). Closed WebStates are always detached first.
-  if (detachChange.is_closing()) {
-    return;
-  }
-
   web::WebState* detachedWebState = detachChange.detached_web_state();
   // If the WebState is pinned and it is not in the consumer's items list,
   // consumer will filter it out in the method's implementation.

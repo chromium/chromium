@@ -88,13 +88,6 @@ class TabHelperDelegateInstaller {
     void WebStateListWillChange(WebStateList* web_state_list,
                                 const WebStateListChangeDetach& detach_change,
                                 const WebStateSelection& selection) override {
-      // TODO(crbug.com/1442546): Remove this check after removing the second
-      // call of WebStateListWillChange(). Closed WebStates are always detached
-      // first.
-      if (detach_change.is_closing()) {
-        return;
-      }
-
       SetTabHelperDelegate(detach_change.detached_web_state(), nullptr);
     }
 
