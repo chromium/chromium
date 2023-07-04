@@ -9,10 +9,25 @@
 
 BoundSessionCookieController::BoundSessionCookieController(
     const GURL& url,
-    const std::string& cookie_name,
+    const std::vector<std::string>& cookie_names,
     Delegate* delegate)
-    : url_(url), cookie_name_(cookie_name), delegate_(delegate) {}
+    : url_(url), delegate_(delegate) {
+  CHECK(!url.is_empty());
+  CHECK(!cookie_names.empty());
+  for (const std::string& cookie_name : cookie_names) {
+    bound_cookies_info_.insert({cookie_name, base::Time()});
+  }
+}
 
 BoundSessionCookieController::~BoundSessionCookieController() = default;
 
 void BoundSessionCookieController::Initialize() {}
+
+const std::string& BoundSessionCookieController::cookie_name() const {
+  CHECK(!bound_cookies_info_.empty());
+  return bound_cookies_info_.begin()->first;
+}
+base::Time BoundSessionCookieController::cookie_expiration_time() {
+  CHECK(!bound_cookies_info_.empty());
+  return bound_cookies_info_.begin()->second;
+}

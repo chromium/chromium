@@ -44,7 +44,7 @@ class BoundSessionCookieControllerImplTest
     bound_session_cookie_controller_ =
         std::make_unique<BoundSessionCookieControllerImpl>(
             &signin_client_, GaiaUrls::GetInstance()->secure_google_url(),
-            kSIDTSCookieName, this);
+            std::vector<std::string>({kSIDTSCookieName}), this);
 
     bound_session_cookie_controller_
         ->set_refresh_cookie_fetcher_factory_for_testing(

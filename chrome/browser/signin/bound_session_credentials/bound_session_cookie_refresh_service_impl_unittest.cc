@@ -39,10 +39,11 @@ constexpr char kRegistrationParamsPref[] =
 
 class FakeBoundSessionCookieController : public BoundSessionCookieController {
  public:
-  explicit FakeBoundSessionCookieController(const GURL& url,
-                                            const std::string& cookie_name,
-                                            Delegate* delegate)
-      : BoundSessionCookieController(url, cookie_name, delegate) {}
+  explicit FakeBoundSessionCookieController(
+      const GURL& url,
+      const std::vector<std::string>& cookie_names,
+      Delegate* delegate)
+      : BoundSessionCookieController(url, cookie_names, delegate) {}
 
   ~FakeBoundSessionCookieController() override {
     DCHECK(on_destroy_callback_);
@@ -59,8 +60,9 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
   }
 
   void SimulateOnCookieExpirationDateChanged(
+      const std::string& cookie_name,
       const base::Time& cookie_expiration_date) {
-    cookie_expiration_time_ = cookie_expiration_date;
+    bound_cookies_info_[cookie_name] = cookie_expiration_date;
     delegate_->OnCookieExpirationDateChanged();
   }
 
@@ -108,10 +110,10 @@ class BoundSessionCookieRefreshServiceImplTest
 
   std::unique_ptr<BoundSessionCookieController> GetBoundSessionCookieController(
       const GURL& url,
-      const std::string& cookie_name,
+      const std::vector<std::string>& cookie_names,
       BoundSessionCookieController::Delegate* delegate) {
     std::unique_ptr<FakeBoundSessionCookieController> controller =
-        std::make_unique<FakeBoundSessionCookieController>(url, cookie_name,
+        std::make_unique<FakeBoundSessionCookieController>(url, cookie_names,
                                                            delegate);
     controller->set_on_destroy_callback(base::BindOnce(
         &BoundSessionCookieRefreshServiceImplTest::OnCookieControllerDestroy,
@@ -290,7 +292,8 @@ TEST_P(BoundSessionCookieRefreshServiceImplTest,
     EXPECT_TRUE(service->IsBoundSession());
     EXPECT_FALSE(service->GetBoundSessionParams().is_null());
   });
-  cookie_controller()->SimulateOnCookieExpirationDateChanged(base::Time::Now());
+  cookie_controller()->SimulateOnCookieExpirationDateChanged(
+      cookie_controller()->cookie_name(), base::Time::Now());
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 }
 

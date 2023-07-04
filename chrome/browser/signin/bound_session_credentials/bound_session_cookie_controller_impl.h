@@ -26,7 +26,7 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
  public:
   BoundSessionCookieControllerImpl(SigninClient* client,
                                    const GURL& url,
-                                   const std::string& cookie_name,
+                                   const std::vector<std::string>& cookie_names,
                                    Delegate* delegate);
 
   void Initialize() override;

@@ -77,7 +77,7 @@ class BoundSessionCookieRefreshServiceImpl
   using BoundSessionCookieControllerFactoryForTesting =
       base::RepeatingCallback<std::unique_ptr<BoundSessionCookieController>(
           const GURL& url,
-          const std::string& cookie_name,
+          const std::vector<std::string>& cookie_names,
           Delegate* delegate)>;
 
   // BoundSessionCookieRefreshService:

@@ -319,8 +319,8 @@ BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
     const std::string& cookie_name) {
   return controller_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionCookieControllerImpl>(
-                   client_, url, cookie_name, this)
-             : controller_factory_for_testing_.Run(url, cookie_name, this);
+                   client_, url, std::vector<std::string>({cookie_name}), this)
+             : controller_factory_for_testing_.Run(url, {cookie_name}, this);
 }
 
 void BoundSessionCookieRefreshServiceImpl::StartManagingBoundSessionCookie() {

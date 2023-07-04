@@ -19,9 +19,9 @@
 BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     SigninClient* client,
     const GURL& url,
-    const std::string& cookie_name,
+    const std::vector<std::string>& cookie_names,
     Delegate* delegate)
-    : BoundSessionCookieController(url, cookie_name, delegate),
+    : BoundSessionCookieController(url, cookie_names, delegate),
       client_(client) {}
 
 BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() {
@@ -33,7 +33,7 @@ void BoundSessionCookieControllerImpl::Initialize() {
   // `base::Unretained(this)` is safe because `this` owns
   // `cookie_observer_`.
   cookie_observer_ = std::make_unique<BoundSessionCookieObserver>(
-      client_, url_, cookie_name_,
+      client_, url_, cookie_name(),
       base::BindRepeating(
           &BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify,
           base::Unretained(this)));
@@ -59,11 +59,11 @@ void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
     expiration_time -= kCookieExpirationThreshold;
   }
 
-  if (cookie_expiration_time_ == expiration_time) {
+  if (cookie_expiration_time() == expiration_time) {
     return;
   }
 
-  cookie_expiration_time_ = expiration_time;
+  bound_cookies_info_.begin()->second = expiration_time;
   if (IsCookieFresh()) {
     ResumeBlockedRequests();
   }
@@ -76,7 +76,7 @@ BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
   return refresh_cookie_fetcher_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(client_)
              : refresh_cookie_fetcher_factory_for_testing_.Run(client_, url_,
-                                                               cookie_name_);
+                                                               cookie_name());
 }
 
 bool BoundSessionCookieControllerImpl::IsCookieFresh() {
@@ -117,7 +117,7 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
 void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation() {
   const base::TimeDelta kCookieRefreshInterval = base::Minutes(2);
   base::TimeDelta refresh_in =
-      cookie_expiration_time_ - base::Time::Now() - kCookieRefreshInterval;
+      cookie_expiration_time() - base::Time::Now() - kCookieRefreshInterval;
   if (!refresh_in.is_positive()) {
     MaybeRefreshCookie();
     return;
