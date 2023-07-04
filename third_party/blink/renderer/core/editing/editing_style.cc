@@ -839,37 +839,41 @@ void EditingStyle::RemoveBlockProperties(
 }
 
 void EditingStyle::RemoveStyleAddedByElement(Element* element) {
-  if (!element || !element->parentNode())
+  if (!element || !element->parentElement()) {
     return;
-  MutableCSSPropertyValueSet* parent_style = CopyEditingProperties(
-      element->parentNode()->GetExecutionContext(),
-      MakeGarbageCollected<CSSComputedStyleDeclaration>(element->parentNode()),
-      kAllEditingProperties);
-  MutableCSSPropertyValueSet* node_style = CopyEditingProperties(
+  }
+  MutableCSSPropertyValueSet* parent_style =
+      CopyEditingProperties(element->parentElement()->GetExecutionContext(),
+                            MakeGarbageCollected<CSSComputedStyleDeclaration>(
+                                element->parentElement()),
+                            kAllEditingProperties);
+  MutableCSSPropertyValueSet* element_style = CopyEditingProperties(
       element->GetExecutionContext(),
       MakeGarbageCollected<CSSComputedStyleDeclaration>(element),
       kAllEditingProperties);
-  node_style->RemoveEquivalentProperties(parent_style);
-  mutable_style_->RemoveEquivalentProperties(node_style);
+  element_style->RemoveEquivalentProperties(parent_style);
+  mutable_style_->RemoveEquivalentProperties(element_style);
 }
 
 void EditingStyle::RemoveStyleConflictingWithStyleOfElement(Element* element) {
-  if (!element || !element->parentNode() || !mutable_style_)
+  if (!element || !element->parentElement() || !mutable_style_) {
     return;
+  }
 
-  MutableCSSPropertyValueSet* parent_style = CopyEditingProperties(
-      element->parentNode()->GetExecutionContext(),
-      MakeGarbageCollected<CSSComputedStyleDeclaration>(element->parentNode()),
-      kAllEditingProperties);
-  MutableCSSPropertyValueSet* node_style = CopyEditingProperties(
+  MutableCSSPropertyValueSet* parent_style =
+      CopyEditingProperties(element->parentElement()->GetExecutionContext(),
+                            MakeGarbageCollected<CSSComputedStyleDeclaration>(
+                                element->parentElement()),
+                            kAllEditingProperties);
+  MutableCSSPropertyValueSet* element_style = CopyEditingProperties(
       element->GetExecutionContext(),
       MakeGarbageCollected<CSSComputedStyleDeclaration>(element),
       kAllEditingProperties);
-  node_style->RemoveEquivalentProperties(parent_style);
+  element_style->RemoveEquivalentProperties(parent_style);
 
-  unsigned property_count = node_style->PropertyCount();
+  unsigned property_count = element_style->PropertyCount();
   for (unsigned i = 0; i < property_count; ++i)
-    mutable_style_->RemoveProperty(node_style->PropertyAt(i).Id());
+    mutable_style_->RemoveProperty(element_style->PropertyAt(i).Id());
 }
 
 void EditingStyle::CollapseTextDecorationProperties(
