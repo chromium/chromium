@@ -109,6 +109,15 @@ source_set("tab_grid") {
   frameworks = [ "UniformTypeIdentifiers.framework" ]
 }
 
+source_set("tab_grid_metrics") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tab_grid_metrics.h",
+    "tab_grid_metrics.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("tab_collection_commands") {
   sources = [ "tab_collection_commands.h" ]
 
@@ -151,6 +160,7 @@ source_set("tab_grid_ui") {
 
   deps = [
     ":tab_collection_commands",
+    ":tab_grid_metrics",
     ":tab_grid_paging",
     ":tab_grid_ui_constants",
     "grid:grid_ui",

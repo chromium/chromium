@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_empty_state_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_new_tab_button.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
@@ -68,20 +69,6 @@ namespace {
 typedef NS_ENUM(NSUInteger, TabGridConfiguration) {
   TabGridConfigurationBottomToolbar = 1,
   TabGridConfigurationFloatingButton,
-};
-
-// Key of the UMA IOS.TabSwitcher.PageChangeInteraction histogram.
-const char kUMATabSwitcherPageChangeInteractionHistogram[] =
-    "IOS.TabSwitcher.PageChangeInteraction";
-
-// Values of the UMA IOS.TabSwitcher.PageChangeInteraction histogram.
-enum class TabSwitcherPageChangeInteraction {
-  kNone = 0,
-  kScrollDrag = 1,
-  kControlTap = 2,
-  kControlDrag = 3,
-  kItemDrag = 4,
-  kMaxValue = kItemDrag,
 };
 
 // Computes the page from the offset and width of `scrollView`.
