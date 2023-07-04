@@ -640,6 +640,7 @@ mojom("url_loader_base") {
         "//services/network/public/mojom/trust_token_access_observer.mojom.h",
       ]
       traits_public_deps = [
+        ":mojom_network_isolation_key",
         "//base",
         "//url/mojom:url_mojom_gurl",
       ]
