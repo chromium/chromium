@@ -222,15 +222,23 @@ class BrowsingDataModel {
 
   // Removes all browsing data associated with `data_owner`, reaches out to
   // all supported storage backends to remove the data, and updates the model.
-  // Deletion at more granularity than `data_owner` is purposefully not
-  // supported by this model. UI that wishes to support such deletion should
-  // consider whether it is really required, and if so, implement it separately.
   // The in-memory representation of the model is updated immediately, while
   // actual deletion from disk occurs async, completion reported by `completed`.
   // Invalidates any iterators.
   // Virtual to allow an in-memory only fake to be created.
   virtual void RemoveBrowsingData(const DataOwner& data_owner,
                                   base::OnceClosure completed);
+
+  // Removes data for `data_owner` partitioned on `top_level_site`.
+  // This supports more granular data deletion needed by UI surfaces.
+  // The in-memory representation of the model is updated immediately, while
+  // actual deletion from disk occurs async, completion reported by `completed`.
+  // Invalidates any iterators.
+  // Virtual to allow an in-memory only fake to be created.
+  virtual void RemovePartitionedBrowsingData(
+      const DataOwner& data_owner,
+      const net::SchemefulSite& top_level_site,
+      base::OnceClosure completed);
 
  protected:
   friend class BrowsingDataModelTest;

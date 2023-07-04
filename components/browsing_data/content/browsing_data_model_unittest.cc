@@ -373,3 +373,48 @@ TEST_F(BrowsingDataModelTest, DelegateDataCanBeOriginOwned) {
   browsing_data_model_test_util::ValidateBrowsingDataEntries(model.get(),
                                                              expected_entries);
 }
+
+TEST_F(BrowsingDataModelTest, RemovePartitionedBrowsingData) {
+  std::unique_ptr<BrowsingDataModel> model = BrowsingDataModel::BuildEmpty(
+      storage_partition(),
+      std::make_unique<browsing_data::TestBrowsingDataModelDelegate>());
+
+  auto first_party_storage_key =
+      blink::StorageKey::CreateFirstParty(kSiteOrigin);
+  auto partitioned_storage_key =
+      blink::StorageKey::Create(kSiteOrigin, net::SchemefulSite(kTestOrigin),
+                                blink::mojom::AncestorChainBit::kCrossSite,
+                                /*third_party_partitioning_allowed=*/true);
+
+  model->AddBrowsingData(first_party_storage_key,
+                         BrowsingDataModel::StorageType::kLocalStorage, 0);
+  model->AddBrowsingData(partitioned_storage_key,
+                         BrowsingDataModel::StorageType::kLocalStorage, 0);
+
+  auto expected_entries = std::vector<BrowsingDataEntry>{
+      {kSiteOriginHost,
+       first_party_storage_key,
+       {{BrowsingDataModel::StorageType::kLocalStorage}, 0, 0}},
+      {kSiteOriginHost,
+       partitioned_storage_key,
+       {{BrowsingDataModel::StorageType::kLocalStorage}, 0, 0}},
+  };
+
+  browsing_data_model_test_util::ValidateBrowsingDataEntries(model.get(),
+                                                             expected_entries);
+  {
+    base::RunLoop run_loop;
+    model->RemovePartitionedBrowsingData(kSiteOriginHost,
+                                         net::SchemefulSite(kTestOrigin),
+                                         run_loop.QuitWhenIdleClosure());
+    run_loop.Run();
+  }
+
+  expected_entries = std::vector<BrowsingDataEntry>{
+      {kSiteOriginHost,
+       first_party_storage_key,
+       {{BrowsingDataModel::StorageType::kLocalStorage}, 0, 0}},
+  };
+  browsing_data_model_test_util::ValidateBrowsingDataEntries(model.get(),
+                                                             expected_entries);
+}

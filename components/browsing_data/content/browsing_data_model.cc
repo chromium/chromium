@@ -141,14 +141,13 @@ struct StorageRemoverHelper {
         local_storage_helper_(local_storage_helper),
         delegate_(delegate) {}
 
-  void RemoveByPrimaryHost(
-      const BrowsingDataModel::DataOwner& data_owner,
+  void RemoveDataKeyEntries(
       const BrowsingDataModel::DataKeyEntries& data_key_entries,
       base::OnceClosure completed);
 
  private:
   // Visitor struct to hold information used for deletion. absl::visit doesn't
-  // support multiple arguments elegently.
+  // support multiple arguments elegantly.
   struct Visitor {
     raw_ptr<StorageRemoverHelper> helper;
     BrowsingDataModel::StorageTypeSet types;
@@ -175,8 +174,7 @@ struct StorageRemoverHelper {
   base::WeakPtrFactory<StorageRemoverHelper> weak_ptr_factory_{this};
 };
 
-void StorageRemoverHelper::RemoveByPrimaryHost(
-    const BrowsingDataModel::DataOwner& data_owner,
+void StorageRemoverHelper::RemoveDataKeyEntries(
     const BrowsingDataModel::DataKeyEntries& data_key_entries,
     base::OnceClosure completed) {
   // At a helper level, only a single deletion may occur at a time. However
@@ -234,6 +232,9 @@ void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
         blink::mojom::StorageType::kTemporary,
         blink::mojom::StorageType::kSyncable};
     for (auto type : quota_types) {
+      // TODO(crbug/1456335): This needs to be updated to delete by `StorageKey`
+      // to support partitioned storage deletion, instead of deleting everything
+      // the host stores.
       helper->quota_helper_->DeleteHostData(storage_key.origin().host(), type);
     }
   }
@@ -276,6 +277,21 @@ void StorageRemoverHelper::Visitor::operator()<
       ->RemovePendingDataKey(data_key, helper->GetCompleteCallback());
 }
 
+void RemoveBrowsingDataEntries(
+    const BrowsingDataModel::DataKeyEntries& browsing_data_entries,
+    std::unique_ptr<StorageRemoverHelper> storage_remover_helper,
+    base::OnceClosure completed) {
+  // Bind the lifetime of the helper to the lifetime of the callback.
+  auto* helper_pointer = storage_remover_helper.get();
+
+  base::OnceClosure wrapped_completed = base::BindOnce(
+      [](std::unique_ptr<StorageRemoverHelper> storage_remover,
+         base::OnceClosure completed) { std::move(completed).Run(); },
+      std::move(storage_remover_helper), std::move(completed));
+
+  helper_pointer->RemoveDataKeyEntries(browsing_data_entries,
+                                       std::move(wrapped_completed));
+}
 base::OnceClosure StorageRemoverHelper::GetCompleteCallback() {
   callbacks_expected_++;
   return base::BindOnce(&StorageRemoverHelper::BackendFinished,
@@ -556,25 +572,54 @@ void BrowsingDataModel::RemoveBrowsingData(const DataOwner& data_owner,
                                            base::OnceClosure completed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Bind the lifetime of the helper to the lifetime of the callback.
   auto helper = std::make_unique<StorageRemoverHelper>(
       storage_partition_, quota_helper_, local_storage_helper_,
       delegate_.get());
-  auto* helper_pointer = helper.get();
-
-  base::OnceClosure wrapped_completed = base::BindOnce(
-      [](std::unique_ptr<StorageRemoverHelper> storage_remover,
-         base::OnceClosure completed) { std::move(completed).Run(); },
-      std::move(helper), std::move(completed));
-
-  helper_pointer->RemoveByPrimaryHost(data_owner,
-                                      browsing_data_entries_[data_owner],
-                                      std::move(wrapped_completed));
+  RemoveBrowsingDataEntries(browsing_data_entries_[data_owner],
+                            std::move(helper), std::move(completed));
 
   // Immediately remove the affected entries from the in-memory model. Different
   // UI elements have different sync vs. async expectations. Exposing a
   // completed callback, but updating the model synchronously, serves both.
   browsing_data_entries_.erase(data_owner);
+}
+
+void BrowsingDataModel::RemovePartitionedBrowsingData(
+    const DataOwner& data_owner,
+    const net::SchemefulSite& top_level_site,
+    base::OnceClosure completed) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  DataKeyEntries affected_data_key_entries;
+
+  for (const auto& entry : browsing_data_entries_[data_owner]) {
+    // Only blink::StorageKeys data keys can represent partitioned storage.
+    // TODO(crbug/1455899): If this list of data keys starts to grow, consider
+    // revisiting an implementation of a visitor pattern here.
+    auto* storage_key = absl::get_if<blink::StorageKey>(&entry.first);
+    if (!storage_key) {
+      continue;
+    }
+
+    if (storage_key->top_level_site() == top_level_site) {
+      affected_data_key_entries.insert(entry);
+    }
+  }
+
+  auto helper = std::make_unique<StorageRemoverHelper>(
+      storage_partition_, quota_helper_, local_storage_helper_,
+      delegate_.get());
+  RemoveBrowsingDataEntries(affected_data_key_entries, std::move(helper),
+                            std::move(completed));
+
+  // Immediately remove the affected entries from the in-memory model.
+  // Different UI elements have different sync vs. async expectations.
+  // Exposing a completed callback, but updating the model synchronously,
+  // serves both.
+  auto& data_owner_entries = browsing_data_entries_[data_owner];
+  for (auto& entry : affected_data_key_entries) {
+    data_owner_entries.erase(entry.first);
+  }
 }
 
 void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {

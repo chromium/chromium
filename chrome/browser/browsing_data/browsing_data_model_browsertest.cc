@@ -41,6 +41,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -61,6 +62,7 @@ namespace {
 
 constexpr char kTestHost[] = "a.test";
 constexpr char kTestHost2[] = "b.test";
+constexpr char kTestHost3[] = "c.test";
 
 void ProvideRequestHandlerKeyCommitmentsToNetworkService(
     base::StringPiece host,
@@ -244,7 +246,8 @@ class BrowsingDataModelBrowserTest
         {blink::features::kAdInterestGroupAPI, {}},
         {blink::features::kFledge, {}},
         {blink::features::kFencedFrames, {}},
-        {blink::features::kBrowsingTopics, {}}};
+        {blink::features::kBrowsingTopics, {}},
+        {net::features::kThirdPartyStoragePartitioning, {}}};
     std::vector<FeatureRef> disabled_features = {};
 
     if (GetParam()) {
@@ -768,8 +771,8 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
     // Ensure that quota data is fetched
     browsing_data_model = BuildBrowsingDataModel();
 
-    bool is_cookies_tree_model_deprecated = GetParam();
-    if (is_cookies_tree_model_deprecated) {
+    bool is_migrate_storage_to_bdm_enabled = GetParam();
+    if (is_migrate_storage_to_bdm_enabled) {
       // Validate that quota data is fetched to browsing data model.
       url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
       auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
@@ -812,41 +815,57 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
   ASSERT_EQ(browsing_data_model->size(), 0u);
 
+  if (!GetParam()) {
+    return;
+  }
+
   SetDataForType("LocalStorage", web_contents());
+
+  //  Flush storage size to disk.
+  auto* storage_partition = browser()->profile()->GetDefaultStoragePartition();
+  storage_partition->Flush();
+
+  // To ensure that flushing is completed.
+  base::RunLoop().RunUntilIdle();
+
+  auto* dom_storage_context = storage_partition->GetDOMStorageContext();
+
+  // Fetch local storage size from backend.
+  base::test::TestFuture<uint64_t> test_entry_storage_size;
+  dom_storage_context->GetLocalStorageUsage(base::BindLambdaForTesting(
+      [&](const std::vector<content::StorageUsageInfo>& storage_usage_info) {
+        ASSERT_EQ(1U, storage_usage_info.size());
+        test_entry_storage_size.SetValue(
+            storage_usage_info[0].total_size_bytes);
+      }));
 
   // Ensure that local storage is fetched
   browsing_data_model = BuildBrowsingDataModel();
 
-  bool is_cookies_tree_model_deprecated = GetParam();
-  if (is_cookies_tree_model_deprecated) {
-    // Validate that local storage is fetched to browsing data model.
-    url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
-    auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
-    ValidateBrowsingDataEntriesIgnoreUsage(
-        browsing_data_model.get(),
-        {{kTestHost,
-          data_key,
-          {{BrowsingDataModel::StorageType::kLocalStorage},
-           /*storage_size=*/0,
-           /*cookie_count=*/0}}});
-    ASSERT_EQ(browsing_data_model->size(), 1u);
+  // Validate that local storage is fetched to browsing data model.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
+  ValidateBrowsingDataEntriesIgnoreUsage(
+      browsing_data_model.get(),
+      {{kTestHost,
+        data_key,
+        {{BrowsingDataModel::StorageType::kLocalStorage},
+         test_entry_storage_size.Get(),
+         /*cookie_count=*/0}}});
+  ASSERT_EQ(browsing_data_model->size(), 1u);
 
-    // Remove local storage entry.
-    {
-      base::RunLoop run_loop;
-      browsing_data_model.get()->RemoveBrowsingData(kTestHost,
-                                                    run_loop.QuitClosure());
-      run_loop.Run();
-    }
-
-    // Rebuild Browsing Data Model and verify entries are empty.
-    browsing_data_model = BuildBrowsingDataModel();
-    ValidateBrowsingDataEntries(browsing_data_model.get(), {});
-    ASSERT_EQ(browsing_data_model->size(), 0u);
-  } else {
-    ValidateBrowsingDataEntries(browsing_data_model.get(), {});
-    ASSERT_EQ(browsing_data_model->size(), 0u);
+  // Remove local storage entry.
+  {
+    base::RunLoop run_loop;
+    browsing_data_model.get()->RemoveBrowsingData(kTestHost,
+                                                  run_loop.QuitClosure());
+    run_loop.Run();
   }
+
+  // Rebuild Browsing Data Model and verify entries are empty.
+  browsing_data_model = BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+  ASSERT_EQ(browsing_data_model->size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
@@ -992,6 +1011,128 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
     ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
     ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
   }
+}
+
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+                       PartitionedLocalStorageRemoved) {
+  // Build BDM from disk.
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+  if (!GetParam()) {
+    return;
+  }
+
+  // Navigate to a.test.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL(
+                     kTestHost, "/browsing_data/embedded_site_data.html")));
+
+  // Set local storage (a on a).
+  SetDataForType("LocalStorage", content::ChildFrameAt(web_contents(), 0));
+
+  // Navigate to b.test.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL(
+                     kTestHost2, "/browsing_data/embedded_site_data.html")));
+
+  // Set local storage (a on b).
+  SetDataForType("LocalStorage", content::ChildFrameAt(web_contents(), 0));
+
+  // Navigate to c.test.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL(
+                     kTestHost3, "/browsing_data/embedded_site_data.html")));
+
+  // Set local storage (a on c).
+  SetDataForType("LocalStorage", content::ChildFrameAt(web_contents(), 0));
+
+  //  Flush storage size to disk.
+  auto* storage_partition = browser()->profile()->GetDefaultStoragePartition();
+  storage_partition->Flush();
+
+  // To ensure that flushing is completed.
+  base::RunLoop().RunUntilIdle();
+
+  auto* dom_storage_context = storage_partition->GetDOMStorageContext();
+
+  // Fetch local storage size from backend.
+  base::test::TestFuture<uint64_t> test_entry_storage_size[3];
+  dom_storage_context->GetLocalStorageUsage(base::BindLambdaForTesting(
+      [&](const std::vector<content::StorageUsageInfo>& storage_usage_info) {
+        ASSERT_EQ(3U, storage_usage_info.size());
+        test_entry_storage_size[0].SetValue(
+            storage_usage_info[0].total_size_bytes);
+
+        test_entry_storage_size[1].SetValue(
+            storage_usage_info[1].total_size_bytes);
+
+        test_entry_storage_size[2].SetValue(
+            storage_usage_info[2].total_size_bytes);
+      }));
+
+  // Rebuild from disk.
+  browsing_data_model = BuildBrowsingDataModel();
+
+  auto testHostOrigin = https_test_server()->GetOrigin(kTestHost);
+  auto top_level_site_a = net::SchemefulSite(GURL("https://a.test"));
+  auto storage_key_a =
+      blink::StorageKey::Create(testHostOrigin, top_level_site_a,
+                                blink::mojom::AncestorChainBit::kSameSite);
+
+  auto top_level_site_b = net::SchemefulSite(GURL("https://b.test"));
+  auto storage_key_b =
+      blink::StorageKey::Create(testHostOrigin, top_level_site_b,
+                                blink::mojom::AncestorChainBit::kCrossSite);
+
+  auto top_level_site_c = net::SchemefulSite(GURL("https://c.test"));
+  auto storage_key_c =
+      blink::StorageKey::Create(testHostOrigin, top_level_site_c,
+                                blink::mojom::AncestorChainBit::kCrossSite);
+
+  // Validate entries {{a on a}, {a on b}, {a on c}}.
+  ValidateBrowsingDataEntries(
+      browsing_data_model.get(),
+      {{kTestHost,
+        storage_key_a,
+        {{BrowsingDataModel::StorageType::kLocalStorage},
+         test_entry_storage_size[0].Get(),
+         /*cookie_count=*/0}},
+       {kTestHost,
+        storage_key_b,
+        {{BrowsingDataModel::StorageType::kLocalStorage},
+         test_entry_storage_size[1].Get(),
+         /*cookie_count=*/0}},
+       {kTestHost,
+        storage_key_c,
+        {{BrowsingDataModel::StorageType::kLocalStorage},
+         test_entry_storage_size[2].Get(),
+         /*cookie_count=*/0}}});
+
+  // Remove {a on b}.
+  {
+    base::RunLoop run_loop;
+    browsing_data_model->RemovePartitionedBrowsingData(
+        kTestHost, top_level_site_b, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Rebuild from disk.
+  browsing_data_model = BuildBrowsingDataModel();
+
+  // Validate entries {{a on a}, {a on c}}.
+  ValidateBrowsingDataEntries(
+      browsing_data_model.get(),
+      {{kTestHost,
+        storage_key_a,
+        {{BrowsingDataModel::StorageType::kLocalStorage},
+         test_entry_storage_size[0].Get(),
+         /*cookie_count=*/0}},
+       {kTestHost,
+        storage_key_c,
+        {{BrowsingDataModel::StorageType::kLocalStorage},
+         test_entry_storage_size[2].Get(),
+         /*cookie_count=*/0}}});
 }
 
 INSTANTIATE_TEST_SUITE_P(All, BrowsingDataModelBrowserTest, ::testing::Bool());

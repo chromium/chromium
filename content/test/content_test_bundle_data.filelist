@@ -5261,6 +5261,7 @@ data/blank.jpg
 data/blob_storage/blob_creation_and_slicing.html
 data/blob_storage/common.js
 data/body_overflow_hidden.html
+data/browsing_data/embedded_site_data.html
 data/browsing_data/embeds_storage_accessor.html
 data/browsing_data/empty.js
 data/browsing_data/empty_worker.js
