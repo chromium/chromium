@@ -355,10 +355,18 @@ void WelcomeScreen::ShowImpl() {
   // resources. This would load fallback, but properly show "selected" locale
   // in the UI.
   if (selected_language_code_.empty()) {
-    const StartupCustomizationDocument* startup_manifest =
-        StartupCustomizationDocument::GetInstance();
-    SetApplicationLocale(startup_manifest->initial_locale_default(),
-                         /*is_from_ui*/ false);
+    std::string stored_locale = g_browser_process->local_state()->GetString(
+        language::prefs::kApplicationLocale);
+
+    if (!stored_locale.empty()) {
+      SetApplicationLocale(stored_locale,
+                           /*is_from_ui=*/false);
+    } else {
+      const StartupCustomizationDocument* startup_manifest =
+          StartupCustomizationDocument::GetInstance();
+      SetApplicationLocale(startup_manifest->initial_locale_default(),
+                           /*is_from_ui=*/false);
+    }
   }
 
   // Skip this screen if this is an automatic enrollment as part of Zero-Touch
