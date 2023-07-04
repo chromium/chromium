@@ -366,13 +366,14 @@ void AccountTrackerService::SetAccountCapabilities(
   AccountInfo& account_info = accounts_[account_id];
 
   bool modified = account_info.capabilities.UpdateWith(account_capabilities);
-  if (!modified)
-    return;
 
 #if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
   // Set the child account status based on the account capabilities.
   if (base::FeatureList::IsEnabled(
           supervised_user::kEnableSupervisionOnDesktopAndIOS)) {
+    // TODO(crbug.com/1458356): avoid notifying account observers and saving
+    // to prefs twice in the case where the child status and account
+    // capabilities have both changed.
     SetIsChildAccount(
         account_id,
         account_info.capabilities.is_subject_to_parental_controls() ==
@@ -380,8 +381,13 @@ void AccountTrackerService::SetAccountCapabilities(
   }
 #endif
 
-  if (!account_info.gaia.empty())
+  if (!modified) {
+    return;
+  }
+
+  if (!account_info.gaia.empty()) {
     NotifyAccountUpdated(account_info);
+  }
   SaveToPrefs(account_info);
 }
 
