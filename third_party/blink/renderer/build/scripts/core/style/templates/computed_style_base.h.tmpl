@@ -251,7 +251,7 @@ class ComputedStyleBuilderBase {
     {% endfor %}
   }
 
-  CORE_EXPORT void InheritFrom(const ComputedStyleBase& other, IsAtShadowBoundary isAtShadowBoundary);
+  CORE_EXPORT void InheritFrom(const ComputedStyleBase& other);
   CORE_EXPORT void CopyNonInheritedFromCached(const ComputedStyleBase& other);
 
   void PropagateIndependentInheritedProperties(const ComputedStyleBase& parent_style);

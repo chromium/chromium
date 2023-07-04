@@ -80,8 +80,7 @@ ComputedStyleBase::DebugDiffFields(const ComputedStyleBase& o) const {
 
 {% endfor %}
 
-void ComputedStyleBuilderBase::InheritFrom(const ComputedStyleBase& other,
-                                    IsAtShadowBoundary isAtShadowBoundary) {
+void ComputedStyleBuilderBase::InheritFrom(const ComputedStyleBase& other) {
   ComputedStyleBase& style = *style_;
   {{fieldwise_copy(computed_style, computed_style.all_fields
       |selectattr("is_property")

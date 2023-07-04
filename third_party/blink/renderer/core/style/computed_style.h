@@ -2918,8 +2918,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
       IsAtShadowBoundary is_at_shadow_boundary = kNotAtShadowBoundary) {
     EUserModify current_user_modify = UserModify();
     EUserSelect current_user_select = UserSelect();
-    ComputedStyleBuilderBase::InheritFrom(inherit_parent,
-                                          is_at_shadow_boundary);
+    ComputedStyleBuilderBase::InheritFrom(inherit_parent);
 
     // Even if surrounding content is user-editable, shadow DOM should act as a
     // single unit, and not necessarily be editable
