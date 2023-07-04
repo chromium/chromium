@@ -26,8 +26,6 @@ constexpr char kFindInPageSearchFieldID[] = "find.searchField";
 constexpr char kFindInPageResultLabelID[] = "find.resultLabel";
 constexpr char kFindInPageNextButtonID[] = "find.nextButton";
 constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
-constexpr char kFindInPageClearButtonKindOfClassName[] =
-    "_UITextFieldClearButton";
 }
 
 // Tests for Native Find in Page. This tests the variant of Native Find in Page
@@ -81,10 +79,9 @@ constexpr char kFindInPageClearButtonKindOfClassName[] =
       performAction:grey_tap()];
 }
 
-- (void)typeFindInPageText:(NSString*)text {
-  // TODO(crbug.com/1454851): This should use grey_replaceText, but the clear
-  // button doesn't show up, so use simulatePhysicalKeyboardEvent instead.
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:text flags:0];
+- (void)replaceFindInPageText:(NSString*)text {
+  [[EarlGrey selectElementWithMatcher:[self findInPageInputField]]
+      performAction:grey_replaceText(text)];
 }
 
 - (void)pasteTextToFindInPage:(NSString*)text {
@@ -95,10 +92,8 @@ constexpr char kFindInPageClearButtonKindOfClassName[] =
 }
 
 - (void)clearFindInPageText {
-  [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(
-                                   @(kFindInPageClearButtonKindOfClassName))]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:[self findInPageInputField]]
+      performAction:grey_replaceText(@"")];
 }
 
 - (id<GREYMatcher>)findInPageInputField {

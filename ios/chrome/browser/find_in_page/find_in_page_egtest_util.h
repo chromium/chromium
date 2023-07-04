@@ -46,8 +46,8 @@ id<GREYMatcher> PasteButton();
 - (void)openFindInPageWithOverflowMenu;
 // Closes Find in page.
 - (void)closeFindInPageWithDoneButton;
-// Types text into Find in page textfield.
-- (void)typeFindInPageText:(NSString*)text;
+// Replaces the text in the Find in page textfield.
+- (void)replaceFindInPageText:(NSString*)text;
 // Paste text into Find in page textfield.
 - (void)pasteTextToFindInPage:(NSString*)text;
 // Clear text in Find in Page text field.
