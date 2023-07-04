@@ -17,7 +17,6 @@ polymer_browser_test_base.js
 print_preview/print_preview_interactive_ui_tests.js
 settings/cr_settings_interactive_ui_tests.js
 side_panel/side_panel_interactive_ui_tests.js
-signin/local_profile_customization_interactive_ui_test.js
 tab_search/tab_search_interactive_ui_tests.js
 tab_strip/tab_strip_interactive_ui_tests.js
 **/*_browsertest.js

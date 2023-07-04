@@ -181,9 +181,9 @@ class SigninViewController {
                            EnterpriseConfirmationDefaultFocus);
   FRIEND_TEST_ALL_PREFIXES(SigninViewControllerDelegateViewsBrowserTest,
                            CloseImmediately);
-  FRIEND_TEST_ALL_PREFIXES(ProfilePickerLocalProfileCreationDialogBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
                            CreateLocalProfile);
-  FRIEND_TEST_ALL_PREFIXES(ProfilePickerLocalProfileCreationDialogBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
                            CancelLocalProfileCreation);
   friend class login_ui_test_utils::SigninViewControllerTestUtil;
   friend class SigninReauthViewControllerBrowserTest;

@@ -5,6 +5,5 @@
 // <if expr="chromeos_lacros">
 export {AccountSelectionLacrosElement} from './profile_creation_flow/account_selection_lacros.js';
 // </if>
-export {LocalProfileCustomizationElement} from './profile_creation_flow/local_profile_customization.js';
 export {ProfileTypeChoiceElement} from './profile_creation_flow/profile_type_choice.js';
 export {ProfileSwitchElement} from './profile_switch.js';

@@ -17,7 +17,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       'openManageProfileSettingsSubPage', 'launchSelectedProfile',
       'askOnStartupChanged', 'getNewProfileSuggestedThemeInfo',
       'getProfileThemeInfo', 'removeProfile', 'getProfileStatistics',
-      'closeProfileStatistics', 'selectNewAccount', 'createProfile',
+      'closeProfileStatistics', 'selectNewAccount',
       'createProfileAndOpenCustomizationDialog', 'setProfileName',
       'recordSignInPromoImpression', 'getAvailableIcons', 'getSwitchProfile',
       'confirmProfileSwitch', 'cancelProfileSwitch',
@@ -108,14 +108,6 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
 
   selectNewAccount(profileColor: number|null) {
     this.methodCalled('selectNewAccount', [profileColor]);
-  }
-
-  createProfile(
-      profileName: string, profileColor: number, avatarIndex: number,
-      createShortcut: boolean) {
-    this.methodCalled(
-        'createProfile',
-        [profileName, profileColor, avatarIndex, createShortcut]);
   }
 
   createProfileAndOpenCustomizationDialog(profileColor: number) {

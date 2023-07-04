@@ -277,9 +277,6 @@ void AddStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("profileShortcutsEnabled",
                           ProfileShortcutManager::IsFeatureEnabled());
   html_source->AddBoolean("isAskOnStartupAllowed", ask_on_startup_allowed);
-  // TODO(crbug.com/1442940): Remove local profile creation code from the
-  // Profile Picker.
-  html_source->AddBoolean("isLocalProfileCreationDialogEnabled", true);
 
   html_source->AddResourcePath("images/left_banner.svg",
                                IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
