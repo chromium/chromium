@@ -607,11 +607,6 @@ void WebStateImpl::RealizedWebState::Stop() {
 CRWSessionStorage* WebStateImpl::RealizedWebState::BuildSessionStorage() const {
   [web_controller_ recordStateInHistory];
   if (restored_session_storage_) {
-    // UserData can be updated in an uncommitted WebState. Even if a WebState
-    // hasn't been restored, its opener value may have changed.
-    restored_session_storage_.userData =
-        SerializableUserDataManager::FromWebState(owner_)
-            ->GetUserDataForSession();
     return restored_session_storage_;
   }
   return SessionStorageBuilder::BuildStorage(*owner_, *navigation_manager_,

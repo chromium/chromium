@@ -7,7 +7,6 @@
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
-#import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_state_observer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,13 +25,6 @@ WebStateImpl::SerializedData::SerializedData(WebStateImpl* owner,
   DCHECK(session_storage_);
   DCHECK(session_storage_.stableIdentifier.length);
   DCHECK(session_storage_.uniqueIdentifier.is_valid());
-
-  // Restore the serializable user data as user code may depend on accessing
-  // on those values even for an unrealized WebState.
-  if (session_storage_.userData) {
-    SerializableUserDataManager::FromWebState(owner_)->SetUserDataFromSession(
-        session_storage_.userData);
-  }
 }
 
 WebStateImpl::SerializedData::~SerializedData() = default;
@@ -51,18 +43,6 @@ WebState::CreateParams WebStateImpl::SerializedData::GetCreateParams() const {
 }
 
 CRWSessionStorage* WebStateImpl::SerializedData::GetSessionStorage() const {
-  // If a SerializableUserDataManager is attached to the WebState, the user
-  // may have changed its content. Thus, update the serializable user data
-  // if needed. Use a const pointer to the WebState to avoid creating the
-  // manager if it does not exists yet.
-  const SerializableUserDataManager* user_data_manager =
-      SerializableUserDataManager::FromWebState(
-          const_cast<const WebStateImpl*>(owner_));
-
-  if (user_data_manager) {
-    session_storage_.userData = user_data_manager->GetUserDataForSession();
-  }
-
   return session_storage_;
 }
 

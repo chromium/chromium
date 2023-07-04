@@ -16,6 +16,7 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/global_web_state_event_tracker.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
@@ -84,6 +85,13 @@ WebStateImpl::WebStateImpl(const CreateParams& params) {
 WebStateImpl::WebStateImpl(const CreateParams& params,
                            CRWSessionStorage* session_storage) {
   AddWebStateImplMarker();
+
+  // Restore the serializable user data as user code may depend on accessing
+  // on those values even for an unrealized WebState.
+  if (session_storage.userData) {
+    SerializableUserDataManager::FromWebState(this)->SetUserDataFromSession(
+        session_storage.userData);
+  }
 
   saved_ = std::make_unique<SerializedData>(this, params, session_storage);
 
@@ -509,8 +517,21 @@ WebStateImpl::GetSessionCertificatePolicyCache() {
 }
 
 CRWSessionStorage* WebStateImpl::BuildSessionStorage() const {
-  return LIKELY(pimpl_) ? pimpl_->BuildSessionStorage()
-                        : saved_->GetSessionStorage();
+  CRWSessionStorage* session_storage = LIKELY(pimpl_)
+                                           ? pimpl_->BuildSessionStorage()
+                                           : saved_->GetSessionStorage();
+
+  // If a SerializableUserDataManager is attached to the WebState, the user
+  // may have changed its content. Thus, update the serializable user data
+  // if needed. Since `BuildSessionStorage()` is marked const, the manager
+  // will not be created if it does not exist.
+  const SerializableUserDataManager* user_data_manager =
+      SerializableUserDataManager::FromWebState(this);
+  if (user_data_manager) {
+    session_storage.userData = user_data_manager->GetUserDataForSession();
+  }
+
+  return session_storage;
 }
 
 void WebStateImpl::LoadData(NSData* data,

@@ -18,7 +18,6 @@
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/navigation.pb.h"
 #import "ios/web/public/session/proto/session.pb.h"
-#import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/web_state_impl.h"
@@ -43,12 +42,6 @@ CRWSessionStorage* SessionStorageBuilder::BuildStorage(
   session_storage.uniqueIdentifier = web_state.GetUniqueIdentifier();
   session_storage.hasOpener = web_state.HasOpener();
   session_storage.userAgentType = web_state.GetUserAgentForSessionRestoration();
-
-  const SerializableUserDataManager* user_data_manager =
-      SerializableUserDataManager::FromWebState(&web_state);
-  if (user_data_manager) {
-    session_storage.userData = user_data_manager->GetUserDataForSession();
-  }
 
   // Serialize the NavigationManagerImpl to proto representation then
   // fill CRWSessionStorage `lastCommittedItemIndex` and `itemStorages`
@@ -91,9 +84,6 @@ void SessionStorageBuilder::ExtractSessionState(
 
   web_state.SetHasOpener(session_storage.hasOpener);
   web_state.SetUserAgent(session_storage.userAgentType);
-
-  SerializableUserDataManager::FromWebState(&web_state)
-      ->SetUserDataFromSession(session_storage.userData);
 
   // Restore the NavigationManagerImpl by extracting the `itemStorages` and
   // `lastCommittedItemIndex` creating a proto representation and using the
