@@ -2759,6 +2759,9 @@ extern const char kRealboxSecondaryZeroSuggestDescription[];
 extern const char kSCTAuditingName[];
 extern const char kSCTAuditingDescription[];
 
+extern const char kSmartCardWebApiName[];
+extern const char kSmartCardWebApiDescription[];
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kSettingsEnableGetTheMostOutOfChromeName[];
 extern const char kSettingsEnableGetTheMostOutOfChromeDescription[];

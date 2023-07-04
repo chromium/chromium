@@ -62302,6 +62302,7 @@ from previous Chrome versions.
   <int value="-755776824" label="OmniboxRedoCurrentMatch:disabled"/>
   <int value="-755068996" label="AutofillEnableCardArtImage:disabled"/>
   <int value="-754726495" label="WebUITabStripContextMenuAfterTap:enabled"/>
+  <int value="-754479863" label="SmartCard:disabled"/>
   <int value="-753833897" label="AppLaunchAutomation:disabled"/>
   <int value="-752321357" label="AutofillEnableGoogleIssuedCard:enabled"/>
   <int value="-750175757" label="ClientLoFi:enabled"/>
@@ -65236,6 +65237,7 @@ from previous Chrome versions.
       label="AutofillFillCreditCardAsPerFormatString:enabled"/>
   <int value="763947368" label="HomepageLocationPolicy:disabled"/>
   <int value="764508124" label="NavigationNetworkResponseQueue:disabled"/>
+  <int value="764797356" label="SmartCard:enabled"/>
   <int value="765266228" label="TabGroupsCollapse:disabled"/>
   <int value="765306424" label="ModuleScriptsDynamicImport:disabled"/>
   <int value="765650925" label="LauncherItemSuggest:disabled"/>

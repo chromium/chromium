@@ -3374,6 +3374,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "enable-smart-card-web-api",
+    "owners": ["dandrader@google.com", "vkovalova@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-start-surface",
     "owners": [ "hanxi", "wychen" ],
     "expiry_milestone": 140
