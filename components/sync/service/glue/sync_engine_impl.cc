@@ -27,7 +27,6 @@
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/invalidation_helper.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/engine_components_factory_impl.h"
@@ -42,6 +41,7 @@
 #include "components/sync/service/active_devices_provider.h"
 #include "components/sync/service/glue/sync_engine_backend.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
+#include "components/sync/service/sync_prefs.h"
 
 namespace syncer {
 

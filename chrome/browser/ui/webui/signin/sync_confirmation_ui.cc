@@ -56,7 +56,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/sync_prefs.h"
+#include "components/sync/service/sync_prefs.h"
 #endif
 
 namespace {

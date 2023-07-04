@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/base/sync_prefs.h"
+#include "components/sync/service/sync_prefs.h"
 
 #include <utility>
 
@@ -479,15 +479,17 @@ void SyncPrefs::SetTypeDisabledByPolicy(PrefValueMap* policy_prefs,
 
 void SyncPrefs::OnSyncManagedPrefChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (SyncPrefObserver& observer : sync_pref_observers_)
+  for (SyncPrefObserver& observer : sync_pref_observers_) {
     observer.OnSyncManagedPrefChange(*pref_sync_managed_);
+  }
 }
 
 void SyncPrefs::OnFirstSetupCompletePrefChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (SyncPrefObserver& observer : sync_pref_observers_)
+  for (SyncPrefObserver& observer : sync_pref_observers_) {
     observer.OnFirstSetupCompletePrefChange(
         *pref_initial_sync_feature_setup_complete_);
+  }
 }
 
 // static

@@ -54,8 +54,6 @@ static_library("base") {
     "sync_invalidation_adapter.cc",
     "sync_invalidation_adapter.h",
     "sync_mode.h",
-    "sync_prefs.cc",
-    "sync_prefs.h",
     "sync_stop_metadata_fate.h",
     "sync_util.cc",
     "sync_util.h",

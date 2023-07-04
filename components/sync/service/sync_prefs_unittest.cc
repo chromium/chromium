@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/base/sync_prefs.h"
+#include "components/sync/service/sync_prefs.h"
 
 #include <memory>
 

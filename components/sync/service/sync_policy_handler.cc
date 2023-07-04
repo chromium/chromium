@@ -12,8 +12,8 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/sync/base/pref_names.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_prefs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {

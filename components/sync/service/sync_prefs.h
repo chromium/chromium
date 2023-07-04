@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_BASE_SYNC_PREFS_H_
-#define COMPONENTS_SYNC_BASE_SYNC_PREFS_H_
+#ifndef COMPONENTS_SYNC_SERVICE_SYNC_PREFS_H_
+#define COMPONENTS_SYNC_SERVICE_SYNC_PREFS_H_
 
 #include <stdint.h>
 
@@ -240,4 +240,4 @@ class SyncPrefs {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_BASE_SYNC_PREFS_H_
+#endif  // COMPONENTS_SYNC_SERVICE_SYNC_PREFS_H_

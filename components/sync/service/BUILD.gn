@@ -45,6 +45,8 @@ static_library("service") {
     "sync_internals_util.h",
     "sync_policy_handler.cc",
     "sync_policy_handler.h",
+    "sync_prefs.cc",
+    "sync_prefs.h",
     "sync_service.cc",
     "sync_service.h",
     "sync_service_crypto.cc",

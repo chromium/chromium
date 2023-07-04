@@ -13,8 +13,8 @@
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_type_preference_provider.h"
 #include "components/sync/service/sync_user_settings.h"
 
