@@ -276,10 +276,11 @@ Symbols that are made public (or package-private) for the sake of tests
 should be annotated with [`@VisibleForTesting`]. Android Lint will check
 that calls from non-test code respect the "otherwise" visibility.
 
-Symbols with a `ForTesting` suffix should **not** be annotated with
+Symbols with a `ForTesting` suffix **should not** be annotated with
 `@VisibleForTesting`. While `otherwise=VisibleForTesting.NONE` exists, it
 is redundant given the "ForTesting" suffix and the associated lint check
-is redundant given our trybot check.
+is redundant given our trybot check. You should, however, use it for
+test-only constructors.
 
 [ensure they are removed]: /docs/speed/binary_size/android_binary_size_trybot.md#Added-Symbols-named-ForTest
 [`PRESUMBIT.py`]: https://chromium.googlesource.com/chromium/src/+/main/PRESUBMIT.py
