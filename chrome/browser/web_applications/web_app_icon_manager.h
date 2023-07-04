@@ -36,7 +36,6 @@ class Time;
 
 namespace web_app {
 
-class FileUtilsWrapper;
 class WebAppInstallManager;
 class WebAppProvider;
 
@@ -51,7 +50,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   using ReadImageSkiaCallback =
       base::OnceCallback<void(gfx::ImageSkia image_skia)>;
 
-  WebAppIconManager(Profile* profile, scoped_refptr<FileUtilsWrapper> utils);
+  explicit WebAppIconManager(Profile* profile);
   WebAppIconManager(const WebAppIconManager&) = delete;
   WebAppIconManager& operator=(const WebAppIconManager&) = delete;
   ~WebAppIconManager() override;
@@ -242,7 +241,6 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   raw_ptr<WebAppProvider> provider_ = nullptr;
 
   base::FilePath web_apps_directory_;
-  scoped_refptr<FileUtilsWrapper> utils_;
   scoped_refptr<base::SequencedTaskRunner> icon_task_runner_;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>

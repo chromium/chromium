@@ -129,11 +129,9 @@ class UninstallAllUserInstalledWebAppsCommandWithIconManagerTest
   void SetUp() override {
     WebAppTest::SetUp();
 
-    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
     file_utils_wrapper_ =
         base::MakeRefCounted<testing::NiceMock<MockFileUtilsWrapper>>();
-    provider->SetIconManager(
-        std::make_unique<WebAppIconManager>(profile(), file_utils_wrapper_));
+    fake_provider().SetFileUtils(file_utils_wrapper_);
 
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }

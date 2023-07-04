@@ -69,17 +69,6 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    file_utils_ = base::MakeRefCounted<TestFileUtils>();
-    auto icon_manager =
-        std::make_unique<WebAppIconManager>(profile(), file_utils_);
-
-    auto ui_manager = std::make_unique<FakeWebAppUiManager>();
-    fake_ui_manager_ = ui_manager.get();
-
-    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    provider->SetIconManager(std::move(icon_manager));
-    provider->SetWebAppUiManager(std::move(ui_manager));
-
     test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     web_contents_manager().SetUrlLoaded(web_contents(), kWebAppUrl);
@@ -114,13 +103,17 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
 
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
-  FakeWebAppUiManager* fake_ui_manager() { return fake_ui_manager_; }
+  FakeWebAppUiManager& fake_ui_manager() {
+    return static_cast<FakeWebAppUiManager&>(fake_provider().ui_manager());
+  }
 
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
   }
 
-  TestFileUtils& file_utils() { return *file_utils_; }
+  TestFileUtils& file_utils() {
+    return *fake_provider().file_utils()->AsTestFileUtils();
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ArcAppTest& arc_test() { return arc_test_; }
@@ -196,8 +189,6 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
 
  private:
   base::HistogramTester histogram_tester_;
-  scoped_refptr<TestFileUtils> file_utils_;
-  raw_ptr<FakeWebAppUiManager, DanglingUntriaged> fake_ui_manager_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ArcAppTest arc_test_;
@@ -219,7 +210,7 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
       webapps::InstallResultCode::kSuccessNewInstall);
   auto& registrar = provider()->registrar_unsafe();
   EXPECT_TRUE(registrar.IsLocallyInstalled(kWebAppId));
-  EXPECT_EQ(1, fake_ui_manager()->num_reparent_tab_calls());
+  EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Sanity check to confirm the experimental web app profile feature logic is
@@ -247,7 +238,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
             webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId), "foo");
-  EXPECT_EQ(1, fake_ui_manager()->num_reparent_tab_calls());
+  EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 }
 
 TEST_F(FetchManifestAndInstallCommandTest,
@@ -266,7 +257,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
   EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId),
             "test app");
-  EXPECT_EQ(1, fake_ui_manager()->num_reparent_tab_calls());
+  EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 }
 
 TEST_F(FetchManifestAndInstallCommandTest,
@@ -279,7 +270,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
                 /*use_fallback=*/true),
             webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
   EXPECT_FALSE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
-  EXPECT_EQ(0, fake_ui_manager()->num_reparent_tab_calls());
+  EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 }
 
 TEST_F(FetchManifestAndInstallCommandTest, SuccessWithoutReparent) {
@@ -288,7 +279,7 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithoutReparent) {
                 kWebAppId, webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kBrowser)),
             webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_EQ(0, fake_ui_manager()->num_reparent_tab_calls());
+  EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 }
 
 TEST_F(FetchManifestAndInstallCommandTest, UserInstallDeclined) {
@@ -299,7 +290,7 @@ TEST_F(FetchManifestAndInstallCommandTest, UserInstallDeclined) {
           CreateDialogCallback(false, mojom::UserDisplayMode::kStandalone)),
       webapps::InstallResultCode::kUserInstallDeclined);
   EXPECT_FALSE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
-  EXPECT_EQ(0, fake_ui_manager()->num_reparent_tab_calls());
+  EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 }
 
 TEST_F(FetchManifestAndInstallCommandTest, Shutdown) {

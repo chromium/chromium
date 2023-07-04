@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -127,6 +129,7 @@ class WebAppProvider : public KeyedService {
   // chrome/browser/web_applications/locks/ for more info).
   WebAppRegistrar& registrar_unsafe();
   const WebAppRegistrar& registrar_unsafe() const;
+  // Must be exclusively accessed by WebAppSyncBridge.
   WebAppRegistrarMutable& registrar_mutable(base::PassKey<WebAppSyncBridge>);
   // Unsafe access to the WebAppSyncBridge. Reading or data from here should be
   // considered an 'uncommitted read', and writing data is unsafe and could
@@ -153,6 +156,10 @@ class WebAppProvider : public KeyedService {
   WebAppUiManager& ui_manager();
 
   WebAppAudioFocusIdMap& audio_focus_id_map();
+
+  // Interface for file access, allowing mocking for tests. `scoped_refptr` for
+  // thread safety as this is used on other task runners.
+  scoped_refptr<FileUtilsWrapper> file_utils();
 
   // Implements fetching of app icons.
   WebAppIconManager& icon_manager();
@@ -237,6 +244,7 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppOriginAssociationManager> origin_association_manager_;
   std::unique_ptr<WebContentsManager> web_contents_manager_;
   std::unique_ptr<ExtensionsManager> extensions_manager_;
+  scoped_refptr<FileUtilsWrapper> file_utils_;
 
   base::OneShotEvent on_registry_ready_;
   base::OneShotEvent on_external_managers_synchronized_;

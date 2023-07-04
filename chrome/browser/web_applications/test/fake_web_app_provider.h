@@ -112,6 +112,7 @@ class FakeWebAppProvider : public WebAppProvider {
   void SetDatabaseFactory(
       std::unique_ptr<AbstractWebAppDatabaseFactory> database_factory);
   void SetSyncBridge(std::unique_ptr<WebAppSyncBridge> sync_bridge);
+  void SetFileUtils(scoped_refptr<FileUtilsWrapper> file_utils);
   void SetIconManager(std::unique_ptr<WebAppIconManager> icon_manager);
   void SetTranslationManager(
       std::unique_ptr<WebAppTranslationManager> translation_manager);
@@ -176,9 +177,6 @@ class FakeWebAppProvider : public WebAppProvider {
   // FakeWebAppProvider::Shutdown() as part of test teardown.
   void Shutdown() override;
 
-  // Returns the file utils used by default subsystems.
-  TestFileUtils& file_utils() const { return *file_utils_; }
-
   syncer::MockModelTypeChangeProcessor& processor() { return mock_processor_; }
 
  private:
@@ -197,9 +195,6 @@ class FakeWebAppProvider : public WebAppProvider {
   // If true, preinstalled apps will be processed & installed (or uninstalled)
   // after the system starts.
   bool synchronize_preinstalled_app_on_startup_ = false;
-
-  scoped_refptr<TestFileUtils> file_utils_ =
-      base::MakeRefCounted<TestFileUtils>();
 
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
 };

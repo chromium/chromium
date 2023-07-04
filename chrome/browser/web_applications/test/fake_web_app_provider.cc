@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/one_shot_event.h"
 #include "base/test/bind.h"
@@ -111,6 +112,12 @@ void FakeWebAppProvider::SetSyncBridge(
     std::unique_ptr<WebAppSyncBridge> sync_bridge) {
   CheckNotStartedAndDisconnect();
   sync_bridge_ = std::move(sync_bridge);
+}
+
+void FakeWebAppProvider::SetFileUtils(
+    scoped_refptr<FileUtilsWrapper> file_utils) {
+  CheckNotStartedAndDisconnect();
+  file_utils_ = file_utils;
 }
 
 void FakeWebAppProvider::SetIconManager(
@@ -281,10 +288,7 @@ void FakeWebAppProvider::SetDefaultFakeSubsystems() {
   SetSyncBridge(std::make_unique<WebAppSyncBridge>(
       &GetRegistrarMutable(), processor().CreateForwardingProcessor()));
 
-  SetIconManager(std::make_unique<WebAppIconManager>(profile_, file_utils_));
-
-  SetTranslationManager(
-      std::make_unique<WebAppTranslationManager>(profile_, file_utils_));
+  SetFileUtils(base::MakeRefCounted<TestFileUtils>());
 
   SetWebAppUiManager(std::make_unique<FakeWebAppUiManager>());
 

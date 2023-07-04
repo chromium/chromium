@@ -72,17 +72,6 @@ class WebAppIconManagerTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    provider_ = FakeWebAppProvider::Get(profile());
-    auto install_manager = std::make_unique<WebAppInstallManager>(profile());
-    install_manager_ = install_manager.get();
-    provider_->SetInstallManager(std::move(install_manager));
-
-    file_utils_ = base::MakeRefCounted<TestFileUtils>();
-    auto icon_manager =
-        std::make_unique<WebAppIconManager>(profile(), file_utils_);
-    icon_manager_ = icon_manager.get();
-    provider_->SetIconManager(std::move(icon_manager));
-
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -215,8 +204,6 @@ class WebAppIconManagerTest : public WebAppTest {
     update->CreateApp(std::move(web_app));
   }
 
-  FakeWebAppProvider& provider() { return *provider_; }
-
   // Read favicons on web_app installation and await
   // WebAppIconManager::favicon_read_callback_ synchronously.
   void AwaitReadFaviconOnAddingWebApp(std::unique_ptr<WebApp> web_app) {
@@ -250,21 +237,17 @@ class WebAppIconManagerTest : public WebAppTest {
     run_loop.Run();
   }
 
-  WebAppRegistrar& registrar() { return provider().registrar_unsafe(); }
-  WebAppInstallManager& install_manager() { return *install_manager_; }
-  WebAppSyncBridge& sync_bridge() { return provider().sync_bridge_unsafe(); }
-  WebAppIconManager& icon_manager() { return *icon_manager_; }
-  TestFileUtils& file_utils() {
-    DCHECK(file_utils_);
-    return *file_utils_;
+  WebAppRegistrar& registrar() { return fake_provider().registrar_unsafe(); }
+  WebAppInstallManager& install_manager() {
+    return fake_provider().install_manager();
   }
-
- private:
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
-  raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_;
-  raw_ptr<WebAppIconManager, DanglingUntriaged> icon_manager_;
-
-  scoped_refptr<TestFileUtils> file_utils_;
+  WebAppSyncBridge& sync_bridge() {
+    return fake_provider().sync_bridge_unsafe();
+  }
+  WebAppIconManager& icon_manager() { return fake_provider().icon_manager(); }
+  TestFileUtils& file_utils() {
+    return *fake_provider().file_utils()->AsTestFileUtils();
+  }
 };
 
 TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyOnly) {

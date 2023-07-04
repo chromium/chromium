@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/proto/web_app_translations.pb.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -126,14 +127,16 @@ bool WriteTranslationsBlocking(
 
 }  // namespace
 
-WebAppTranslationManager::WebAppTranslationManager(
-    Profile* profile,
-    scoped_refptr<FileUtilsWrapper> utils)
-    : utils_(std::move(utils)) {
+WebAppTranslationManager::WebAppTranslationManager(Profile* profile) {
   web_apps_directory_ = GetWebAppsRootDirectory(profile);
 }
 
 WebAppTranslationManager::~WebAppTranslationManager() = default;
+
+void WebAppTranslationManager::SetProvider(base::PassKey<WebAppProvider>,
+                                           WebAppProvider& provider) {
+  provider_ = &provider;
+}
 
 void WebAppTranslationManager::Start() {
   if (base::FeatureList::IsEnabled(
@@ -163,8 +166,8 @@ void WebAppTranslationManager::WriteTranslations(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
-      base::BindOnce(WriteTranslationsBlocking, utils_, web_apps_directory_,
-                     app_id, translations),
+      base::BindOnce(WriteTranslationsBlocking, provider_->file_utils(),
+                     web_apps_directory_, app_id, translations),
       std::move(callback));
 }
 
@@ -179,15 +182,16 @@ void WebAppTranslationManager::DeleteTranslations(const AppId& app_id,
   translation_cache_.erase(app_id);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
-      base::BindOnce(DeleteTranslationsBlocking, utils_, web_apps_directory_,
-                     app_id),
+      base::BindOnce(DeleteTranslationsBlocking, provider_->file_utils(),
+                     web_apps_directory_, app_id),
       std::move(callback));
 }
 
 void WebAppTranslationManager::ReadTranslations(ReadCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
-      base::BindOnce(ReadProtoBlocking, utils_, web_apps_directory_),
+      base::BindOnce(ReadProtoBlocking, provider_->file_utils(),
+                     web_apps_directory_),
       base::BindOnce(&WebAppTranslationManager::OnTranslationsRead,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

@@ -915,10 +915,8 @@ class WriteIconsJob {
 
 }  // namespace
 
-WebAppIconManager::WebAppIconManager(Profile* profile,
-                                     scoped_refptr<FileUtilsWrapper> utils)
-    : utils_(std::move(utils)),
-      icon_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+WebAppIconManager::WebAppIconManager(Profile* profile)
+    : icon_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
   web_apps_directory_ = GetWebAppsRootDirectory(profile);
@@ -939,8 +937,8 @@ void WebAppIconManager::WriteData(
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          &WriteIconsJob::WriteIconsBlocking, utils_, web_apps_directory_,
-          std::move(app_id), std::move(icon_bitmaps),
+          &WriteIconsJob::WriteIconsBlocking, provider_->file_utils(),
+          web_apps_directory_, std::move(app_id), std::move(icon_bitmaps),
           std::move(shortcuts_menu_icon_bitmaps), std::move(other_icons_map)),
       base::BindOnce(&LogErrorsCallCallback<bool>, GetWeakPtr(),
                      std::move(callback)));
@@ -951,8 +949,8 @@ void WebAppIconManager::DeleteData(AppId app_id, WriteDataCallback callback) {
 
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(DeleteDataBlocking, utils_, web_apps_directory_,
-                     std::move(app_id)),
+      base::BindOnce(DeleteDataBlocking, provider_->file_utils(),
+                     web_apps_directory_, std::move(app_id)),
       std::move(callback));
 }
 
@@ -1031,7 +1029,8 @@ void WebAppIconManager::ReadIcons(const AppId& app_id,
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          ReadIconsBlocking, utils_, web_apps_directory_, app_id, purpose,
+          ReadIconsBlocking, provider_->file_utils(), web_apps_directory_,
+          app_id, purpose,
           std::vector<SquareSizePx>(icon_sizes.begin(), icon_sizes.end())),
       base::BindOnce(&LogErrorsCallCallback<std::map<SquareSizePx, SkBitmap>>,
                      GetWeakPtr(), std::move(callback)));
@@ -1048,8 +1047,8 @@ void WebAppIconManager::ReadAllShortcutMenuIconsWithTimestamp(
   }
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(ReadShortcutMenuIconsWithTimestampBlocking, utils_,
-                     web_apps_directory_, app_id,
+      base::BindOnce(ReadShortcutMenuIconsWithTimestampBlocking,
+                     provider_->file_utils(), web_apps_directory_, app_id,
                      web_app->shortcuts_menu_item_infos()),
       base::BindOnce(&LogErrorsCallCallback<ShortcutIconDataVector>,
                      GetWeakPtr(), std::move(callback)));
@@ -1070,8 +1069,8 @@ void WebAppIconManager::ReadIconsLastUpdateTime(
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          ReadIconsLastUpdateTimeBlocking, utils_, web_apps_directory_, app_id,
-          IconPurpose::ANY,
+          ReadIconsLastUpdateTimeBlocking, provider_->file_utils(),
+          web_apps_directory_, app_id, IconPurpose::ANY,
           std::vector<SquareSizePx>(sizes_px.begin(), sizes_px.end())),
       base::BindOnce(
           &LogErrorsCallCallback<base::flat_map<SquareSizePx, base::Time>>,
@@ -1097,7 +1096,8 @@ void WebAppIconManager::ReadAllIcons(const AppId& app_id,
 
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(ReadAllIconsBlocking, utils_, web_apps_directory_, app_id,
+      base::BindOnce(ReadAllIconsBlocking, provider_->file_utils(),
+                     web_apps_directory_, app_id,
                      std::move(icon_purposes_to_sizes)),
       base::BindOnce(&LogErrorsCallCallback<IconBitmaps>, GetWeakPtr(),
                      std::move(callback)));
@@ -1115,7 +1115,7 @@ void WebAppIconManager::ReadAllShortcutsMenuIcons(
 
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(ReadShortcutsMenuIconsBlocking, utils_,
+      base::BindOnce(ReadShortcutsMenuIconsBlocking, provider_->file_utils(),
                      web_apps_directory_, app_id,
                      web_app->shortcuts_menu_item_infos()),
       base::BindOnce(&LogErrorsCallCallback<ShortcutsMenuIconBitmaps>,
@@ -1135,8 +1135,9 @@ void WebAppIconManager::ReadBestHomeTabIcon(
   }
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(ReadHomeTabIconBlocking, utils_, web_apps_directory_,
-                     app_id, icons, min_home_tab_icon_size_px),
+      base::BindOnce(ReadHomeTabIconBlocking, provider_->file_utils(),
+                     web_apps_directory_, app_id, icons,
+                     min_home_tab_icon_size_px),
       base::BindOnce(&LogErrorsCallCallback<SkBitmap>, GetWeakPtr(),
                      std::move(callback)));
 }
@@ -1157,8 +1158,8 @@ void WebAppIconManager::ReadSmallestIcon(
 
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(ReadIconBlocking, utils_, web_apps_directory_,
-                     std::move(icon_id)),
+      base::BindOnce(ReadIconBlocking, provider_->file_utils(),
+                     web_apps_directory_, std::move(icon_id)),
       base::BindOnce(&LogErrorsCallCallback<SkBitmap>, GetWeakPtr(),
                      std::move(wrapped)));
 }
@@ -1179,8 +1180,8 @@ void WebAppIconManager::ReadSmallestCompressedIcon(
 
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(ReadCompressedIconBlocking, utils_, web_apps_directory_,
-                     std::move(icon_id)),
+      base::BindOnce(ReadCompressedIconBlocking, provider_->file_utils(),
+                     web_apps_directory_, std::move(icon_id)),
       base::BindOnce(&LogErrorsCallCallback<std::vector<uint8_t>>, GetWeakPtr(),
                      std::move(wrapped)));
 }
@@ -1238,8 +1239,9 @@ void WebAppIconManager::ReadIconAndResize(const AppId& app_id,
   IconId icon_id(app_id, best_icon->purpose, best_icon->size_px);
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(ReadIconAndResizeBlocking, utils_, web_apps_directory_,
-                     std::move(icon_id), desired_icon_size),
+      base::BindOnce(ReadIconAndResizeBlocking, provider_->file_utils(),
+                     web_apps_directory_, std::move(icon_id),
+                     desired_icon_size),
       base::BindOnce(&LogErrorsCallCallback<std::map<SquareSizePx, SkBitmap>>,
                      GetWeakPtr(), std::move(callback)));
 }
@@ -1295,8 +1297,9 @@ void WebAppIconManager::CheckForEmptyOrMissingIconFiles(
 
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(CheckForEmptyOrMissingIconFilesBlocking, utils_,
-                     web_apps_directory_, app_id, std::move(purpose_to_sizes)),
+      base::BindOnce(CheckForEmptyOrMissingIconFilesBlocking,
+                     provider_->file_utils(), web_apps_directory_, app_id,
+                     std::move(purpose_to_sizes)),
       std::move(callback));
 }
 

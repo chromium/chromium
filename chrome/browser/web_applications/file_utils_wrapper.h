@@ -24,6 +24,8 @@ class FilePath;
 
 namespace web_app {
 
+class TestFileUtils;
+
 // A simple wrapper for base/files/file_util.h utilities.
 // See detailed comments for functionality in corresponding
 // base/files/file_util.h functions.
@@ -60,6 +62,8 @@ class FileUtilsWrapper : public base::RefCountedThreadSafe<FileUtilsWrapper> {
   bool DeleteFile(const base::FilePath& path, bool recursive);
 
   virtual bool DeleteFileRecursively(const base::FilePath& path);
+
+  virtual TestFileUtils* AsTestFileUtils();
 
  protected:
   friend class base::RefCountedThreadSafe<FileUtilsWrapper>;

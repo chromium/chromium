@@ -54,26 +54,25 @@ class WebAppUninstallCommandTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
     file_utils_wrapper_ =
         base::MakeRefCounted<testing::StrictMock<MockFileUtilsWrapper>>();
-    provider->SetIconManager(
-        std::make_unique<WebAppIconManager>(profile(), file_utils_wrapper_));
+    fake_provider().SetFileUtils(file_utils_wrapper_);
     auto manager =
         std::make_unique<testing::StrictMock<MockOsIntegrationManager>>();
     os_integration_manager_ = manager.get();
-    provider->SetOsIntegrationManager(std::move(manager));
+    fake_provider().SetOsIntegrationManager(std::move(manager));
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
   void TearDown() override {
     file_utils_wrapper_ = nullptr;
+    os_integration_manager_ = nullptr;
     WebAppTest::TearDown();
   }
 
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
-  raw_ptr<testing::StrictMock<MockOsIntegrationManager>, DanglingUntriaged>
+  raw_ptr<testing::StrictMock<MockOsIntegrationManager>>
       os_integration_manager_;
   scoped_refptr<testing::StrictMock<MockFileUtilsWrapper>> file_utils_wrapper_;
   base::HistogramTester histogram_tester_;

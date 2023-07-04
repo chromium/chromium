@@ -109,7 +109,9 @@ class ExternallyManagedAppInstallTaskTest : public WebAppTest {
     return static_cast<FakeWebAppUiManager&>(fake_provider().ui_manager());
   }
 
-  TestFileUtils& file_utils() { return fake_provider().file_utils(); }
+  TestFileUtils& file_utils() {
+    return *fake_provider().file_utils()->AsTestFileUtils();
+  }
 
   // Wrapper to hold the WebAppUrlLoader being used by the task.
   // TODO(b/262606416): Make ExternallyManagedAppInstallTask use

@@ -216,6 +216,11 @@ WebAppAudioFocusIdMap& WebAppProvider::audio_focus_id_map() {
   return *audio_focus_id_map_;
 }
 
+scoped_refptr<FileUtilsWrapper> WebAppProvider::file_utils() {
+  CheckIsConnected();
+  return file_utils_;
+}
+
 WebAppIconManager& WebAppProvider::icon_manager() {
   CheckIsConnected();
   return *icon_manager_;
@@ -292,10 +297,10 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   registrar_ = std::make_unique<WebAppRegistrarMutable>(profile);
   sync_bridge_ = std::make_unique<WebAppSyncBridge>(registrar_.get());
 
-  icon_manager_ = std::make_unique<WebAppIconManager>(
-      profile, base::MakeRefCounted<FileUtilsWrapper>());
-  translation_manager_ = std::make_unique<WebAppTranslationManager>(
-      profile, base::MakeRefCounted<FileUtilsWrapper>());
+  file_utils_ = base::MakeRefCounted<FileUtilsWrapper>();
+
+  icon_manager_ = std::make_unique<WebAppIconManager>(profile);
+  translation_manager_ = std::make_unique<WebAppTranslationManager>(profile);
   install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile);
 
   if (g_os_integration_manager_factory_for_testing) {
@@ -350,6 +355,8 @@ void WebAppProvider::ConnectSubsystems() {
   command_manager_->SetProvider(pass_key, *this);
   command_scheduler_->SetProvider(pass_key, *this);
   iwa_command_line_install_manager_->SetProvider(pass_key, *this);
+  icon_manager_->SetProvider(pass_key, *this);
+  translation_manager_->SetProvider(pass_key, *this);
 
   connected_ = true;
 }
