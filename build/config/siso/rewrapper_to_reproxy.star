@@ -161,8 +161,7 @@ def __step_config(ctx, step_config):
             # TODO(b/278225415): change gn so this wrapper (and by extension this rule) becomes unnecessary.
             "name": "clang-coverage-win/cxx",
             "command_prefix": "python3.exe ../../build/toolchain/clang_code_coverage_wrapper.py",
-            # Fall back to rewrapper for now until reclient can recognize clang_code_coverage_wrapper during input processing.
-            "use_remote_exec_wrapper": True,
+            "handler": "rewrite_clang_code_coverage_wrapper",
         },
         {
             "name": "action_remote",
