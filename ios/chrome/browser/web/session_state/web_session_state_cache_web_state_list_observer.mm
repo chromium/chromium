@@ -25,6 +25,18 @@ WebSessionStateCacheWebStateListObserver::
 
 #pragma mark - WebStateListObserver
 
+void WebSessionStateCacheWebStateListObserver::WebStateListWillChange(
+    WebStateList* web_state_list,
+    const WebStateListChangeDetach& detach_change,
+    const WebStateSelection& selection) {
+  if (!detach_change.is_closing()) {
+    return;
+  }
+
+  [web_session_state_cache_
+      removeSessionStateDataForWebState:detach_change.detached_web_state()];
+}
+
 void WebSessionStateCacheWebStateListObserver::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
@@ -51,14 +63,6 @@ void WebSessionStateCacheWebStateListObserver::WebStateListDidChange(
       // Do nothing when a new WebState is inserted.
       break;
   }
-}
-
-void WebSessionStateCacheWebStateListObserver::WillCloseWebStateAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool user_action) {
-  [web_session_state_cache_ removeSessionStateDataForWebState:web_state];
 }
 
 void WebSessionStateCacheWebStateListObserver::WillBeginBatchOperation(

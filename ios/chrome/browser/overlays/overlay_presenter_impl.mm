@@ -520,6 +520,24 @@ void OverlayPresenterImpl::OverlayPresentationContextDidMoveToWindow(
 
 #pragma mark - WebStateListObserver
 
+void OverlayPresenterImpl::WebStateListWillChange(
+    WebStateList* web_state_list,
+    const WebStateListChangeDetach& detach_change,
+    const WebStateSelection& selection) {
+  // TODO(crbug.com/1442546): Remove this check after removing the second call
+  // of WebStateListWillChange(). Closed WebStates are always detached first.
+  if (detach_change.is_closing()) {
+    return;
+  }
+
+  web::WebState* detached_web_state = detach_change.detached_web_state();
+  detaching_presenting_web_state_ =
+      presented_request_
+          ? presented_request_->GetQueueWebState() == detached_web_state
+          : false;
+  WebStateRemovedFromBrowser(detached_web_state);
+}
+
 void OverlayPresenterImpl::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
@@ -550,15 +568,6 @@ void OverlayPresenterImpl::WebStateListDidChange(
       break;
     }
   }
-}
-
-void OverlayPresenterImpl::WillDetachWebStateAt(WebStateList* web_state_list,
-                                                web::WebState* web_state,
-                                                int index) {
-  detaching_presenting_web_state_ =
-      presented_request_ ? presented_request_->GetQueueWebState() == web_state
-                         : false;
-  WebStateRemovedFromBrowser(web_state);
 }
 
 void OverlayPresenterImpl::WebStateActivatedAt(

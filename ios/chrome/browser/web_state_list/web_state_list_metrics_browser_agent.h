@@ -28,16 +28,6 @@ class WebStateListMetricsBrowserAgent
 
   ~WebStateListMetricsBrowserAgent() override;
 
-  // WebStateListObserver implementation.
-  void WebStateListDidChange(WebStateList* web_state_list,
-                             const WebStateListChange& change,
-                             const WebStateSelection& selection) override;
-  void WebStateActivatedAt(WebStateList* web_state_list,
-                           web::WebState* old_web_state,
-                           web::WebState* new_web_state,
-                           int active_index,
-                           ActiveWebStateChangeReason reason) override;
-
  private:
   friend class BrowserUserData<WebStateListMetricsBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
@@ -61,10 +51,17 @@ class WebStateListMetricsBrowserAgent
       web::PageLoadCompletionStatus load_completion_status) override;
 
   // WebStateListObserver:
-  void WillCloseWebStateAt(WebStateList* web_state_list,
-                           web::WebState* web_state,
-                           int index,
-                           bool user_action) override;
+  void WebStateListWillChange(WebStateList* web_state_list,
+                              const WebStateListChangeDetach& detach_change,
+                              const WebStateSelection& selection) override;
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateSelection& selection) override;
+  void WebStateActivatedAt(WebStateList* web_state_list,
+                           web::WebState* old_web_state,
+                           web::WebState* new_web_state,
+                           int active_index,
+                           ActiveWebStateChangeReason reason) override;
 
   // The WebStateList containing all the monitored tabs.
   WebStateList* web_state_list_ = nullptr;

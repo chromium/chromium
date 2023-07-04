@@ -62,6 +62,19 @@ void TextToSpeechPlaybackController::Shutdown() {
 
 #pragma mark WebStateListObserver
 
+void TextToSpeechPlaybackController::WebStateListWillChange(
+    WebStateList* web_state_list,
+    const WebStateListChangeDetach& detach_change,
+    const WebStateSelection& selection) {
+  if (!detach_change.is_closing()) {
+    return;
+  }
+
+  if (web_state_ == detach_change.detached_web_state()) {
+    SetWebState(nullptr);
+  }
+}
+
 void TextToSpeechPlaybackController::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
@@ -110,15 +123,6 @@ void TextToSpeechPlaybackController::WebStateActivatedAt(
     int active_index,
     ActiveWebStateChangeReason reason) {
   SetWebState(new_web_state);
-}
-
-void TextToSpeechPlaybackController::WillCloseWebStateAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool user_action) {
-  if (web_state_ == web_state)
-    SetWebState(nullptr);
 }
 
 #pragma mark WebStateObserver

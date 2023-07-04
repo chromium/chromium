@@ -81,16 +81,12 @@ class WebStateListObserverBridge final : public WebStateListObserver {
 
  private:
   // WebStateListObserver implementation.
+  void WebStateListWillChange(WebStateList* web_state_list,
+                              const WebStateListChangeDetach& detach_change,
+                              const WebStateSelection& selection) override;
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
                              const WebStateSelection& selection) override;
-  void WillDetachWebStateAt(WebStateList* web_state_list,
-                            web::WebState* web_state,
-                            int index) final;
-  void WillCloseWebStateAt(WebStateList* web_state_list,
-                           web::WebState* web_state,
-                           int index,
-                           bool user_action) final;
   void WebStateActivatedAt(WebStateList* web_state_list,
                            web::WebState* old_web_state,
                            web::WebState* new_web_state,

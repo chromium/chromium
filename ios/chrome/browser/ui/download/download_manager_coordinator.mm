@@ -139,12 +139,16 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
           DownloadedFileAction::Count);
     }
   }
+
   // WebStateListObserver overrides:
-  void WillCloseWebStateAt(WebStateList* web_state_list,
-                           web::WebState* web_state,
-                           int index,
-                           bool user_action) override {
-    if (!user_action) {
+  void WebStateListWillChange(WebStateList* web_state_list,
+                              const WebStateListChangeDetach& detach_change,
+                              const WebStateSelection& selection) override {
+    if (!detach_change.is_closing()) {
+      return;
+    }
+
+    if (!detach_change.is_user_action()) {
       did_close_web_state_without_user_action = true;
     }
   }

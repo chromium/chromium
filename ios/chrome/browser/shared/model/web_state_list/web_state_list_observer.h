@@ -58,7 +58,9 @@ class WebStateListChangeDetach final : public WebStateListChange {
  public:
   static constexpr Type kType = Type::kDetach;
 
-  explicit WebStateListChangeDetach(raw_ptr<web::WebState> detached_web_state);
+  WebStateListChangeDetach(raw_ptr<web::WebState> detached_web_state,
+                           bool is_closing,
+                           bool is_user_action);
   ~WebStateListChangeDetach() final = default;
 
   Type type() const final;
@@ -71,8 +73,15 @@ class WebStateListChangeDetach final : public WebStateListChange {
     return detached_web_state_;
   }
 
+  // Returns true when a detached WebState will be closed as well.
+  bool is_closing() const { return is_closing_; }
+  // Returns true when a detached WebState will be closed by the user action.
+  bool is_user_action() const { return is_user_action_; }
+
  private:
   raw_ptr<web::WebState> detached_web_state_;
+  const bool is_closing_;
+  const bool is_user_action_;
 };
 
 // Represents a change that corresponds to moving one WebState to a new index in
@@ -200,19 +209,13 @@ class WebStateListObserver : public base::CheckedObserver {
                                      const WebStateListChange& change,
                                      const WebStateSelection& selection);
 
-  // Invoked before the specified WebState is detached from the WebStateList.
-  // The WebState is still valid and still in the WebStateList.
-  virtual void WillDetachWebStateAt(WebStateList* web_state_list,
-                                    web::WebState* web_state,
-                                    int index);
-
-  // Invoked before the specified WebState is destroyed via the WebStateList.
-  // The WebState is still valid but is no longer in the WebStateList. If the
-  // WebState is closed due to user action, `user_action` will be true.
-  virtual void WillCloseWebStateAt(WebStateList* web_state_list,
-                                   web::WebState* web_state,
-                                   int index,
-                                   bool user_action);
+  // Invoked before the specified WebState is updated. Is is currently used to
+  // notify the event before a WebState is detached from WebStateList. So the
+  // type of `change` is always `WebStateListChangeDetach`.
+  virtual void WebStateListWillChange(
+      WebStateList* web_state_list,
+      const WebStateListChangeDetach& detach_change,
+      const WebStateSelection& selection);
 
   // Invoked after `new_web_state` was activated at the specified index. Both
   // WebState are either valid or null (if there was no selection or there is

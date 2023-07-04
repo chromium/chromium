@@ -62,6 +62,28 @@ void WebStateListMetricsBrowserAgent::SessionRestorationFinished(
 
 #pragma mark - WebStateListObserver
 
+void WebStateListMetricsBrowserAgent::WebStateListWillChange(
+    WebStateList* web_state_list,
+    const WebStateListChangeDetach& detach_change,
+    const WebStateSelection& selection) {
+  if (!detach_change.is_closing()) {
+    return;
+  }
+
+  if (metric_collection_paused_) {
+    return;
+  }
+
+  base::TimeDelta age_at_deletion =
+      base::Time::Now() - detach_change.detached_web_state()->GetCreationTime();
+  base::UmaHistogramCustomTimes("Tab.AgeAtDeletion", age_at_deletion,
+                                base::Minutes(1), base::Days(24), 50);
+
+  if (detach_change.is_user_action()) {
+    base::RecordAction(base::UserMetricsAction("MobileTabClosed"));
+  }
+}
+
 void WebStateListMetricsBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
@@ -105,25 +127,6 @@ void WebStateListMetricsBrowserAgent::WebStateActivatedAt(
   }
 
   base::RecordAction(base::UserMetricsAction("MobileTabSwitched"));
-}
-
-void WebStateListMetricsBrowserAgent::WillCloseWebStateAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool user_action) {
-  if (metric_collection_paused_) {
-    return;
-  }
-
-  base::TimeDelta age_at_deletion =
-      base::Time::Now() - web_state->GetCreationTime();
-  base::UmaHistogramCustomTimes("Tab.AgeAtDeletion", age_at_deletion,
-                                base::Minutes(1), base::Days(24), 50);
-
-  if (user_action) {
-    base::RecordAction(base::UserMetricsAction("MobileTabClosed"));
-  }
 }
 
 #pragma mark - WebStateObserver

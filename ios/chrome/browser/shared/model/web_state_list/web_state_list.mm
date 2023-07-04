@@ -447,9 +447,19 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
   DCHECK(ContainsIndex(index));
+
   web::WebState* web_state = web_state_wrappers_[index]->web_state();
+  // TODO(crbug.com/1442546): Set `is_closing` to true and `is_user_action` to
+  // the value of IsClosingFlagSet() when this method is called from
+  // CloseWebStateAtImpl().
+  const WebStateListChangeDetach detach_change(web_state, /*is_closing=*/false,
+                                               /*is_user_action=*/false);
+  // TODO(crbug.com/1442546): Remove `activating` and introduce `active_index`
+  // which is the index of the currently active WebState.
+  const WebStateSelection selection = {.index = index, .activating = false};
+
   for (auto& observer : observers_) {
-    observer.WillDetachWebStateAt(this, web_state, index);
+    observer.WebStateListWillChange(this, detach_change, selection);
   }
 
   // Update the active index to prevent observer from seeing an invalid WebState
@@ -472,10 +482,6 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(int index) {
   // Check that the active element (if there is one) is valid.
   DCHECK(active_index_ == kInvalidIndex || ContainsIndex(active_index_));
 
-  const WebStateListChangeDetach detach_change(web_state);
-  // TODO(crbug.com/1442546): Remove `activating` and introduce `active_index`
-  // which is the index of the currently active WebState.
-  const WebStateSelection selection = {.index = index, .activating = false};
   for (auto& observer : observers_) {
     observer.WebStateListDidChange(this, detach_change, selection);
   }
@@ -492,12 +498,26 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(int index) {
 void WebStateList::CloseWebStateAtImpl(int index, int close_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
+  const bool is_user_action = IsClosingFlagSet(close_flags, CLOSE_USER_ACTION);
   std::unique_ptr<web::WebState> detached_web_state =
       DetachWebStateAtImpl(index);
-  const bool user_action = IsClosingFlagSet(close_flags, CLOSE_USER_ACTION);
+
+  // TODO(crbug.com/1442546): Do not call WebStateListWillChange() here.
+  // Currently, 3 observer APIs are called when a WebState is closed in the
+  // following order:
+  // 1. WebStateListWillChange() with kDetach and is_closing=false
+  // 2. WebStateListDidChange() with kDetach
+  // 3. WebStateListWillChange() with kDetach and is_closing=true
+  //
+  // WebStateListWillChange() will be merged into one by crbug.com/1442546 and 2
+  // observer APIs will be called like this:
+  // 1. WebStateListWillChange() with kDetach (is_closing can be true)
+  // 2. WebStateListDidChange() with kDetach
+  const WebStateListChangeDetach close_change(
+      detached_web_state.get(), /*is_closing=*/true, is_user_action);
+  const WebStateSelection selection = {.index = index, .activating = false};
   for (auto& observer : observers_) {
-    observer.WillCloseWebStateAt(this, detached_web_state.get(), index,
-                                 user_action);
+    observer.WebStateListWillChange(this, close_change, selection);
   }
 
   // Dropping detached_web_state will destroy it.
