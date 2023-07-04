@@ -775,3 +775,5 @@ crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/find_elements_fr
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/pointer_touch.py>>test_stale_element_reference[top_context] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/pointer_pen.py>>test_stale_element_reference[top_context] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/find_element_from_element/find.py>>test_null_parameter_value [ Failure ]
+crbug.com/1462005 [ Linux ] external/wpt/webdriver/tests/classic/find_elements_from_shadow_root/find.py>>test_detached_shadow_root[child_context] [ Failure ]
+crbug.com/1462005 [ Linux ] external/wpt/webdriver/tests/classic/get_element_attribute/get.py>>test_stale_element_reference[child_context] [ Failure ]
