@@ -296,12 +296,12 @@ struct WebSitePlaceholder: View {
     static let placeholderSize: CGFloat = 28
   }
   enum Colors {
-    static let widgetBackgroundColor = Color("widget_background_color")
+    static let placeholderBackgroundColor = Color("widget_text_color")
   }
   var body: some View {
     Circle()
       .frame(width: Dimensions.placeholderSize, height: Dimensions.placeholderSize)
-      .foregroundColor(Colors.widgetBackgroundColor)
+      .foregroundColor(Colors.placeholderBackgroundColor)
       .opacity(0.2)
       .frame(minWidth: 0, maxWidth: .infinity)
   }
