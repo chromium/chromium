@@ -2867,10 +2867,6 @@ SINGLE_THREAD_TEST_F(NonScrollingNonFastScrollableRegion);
 // from LayerTreeHostScrollTest since that enables LayerLists.
 class UnifiedScrollingRepaintOnScroll : public LayerTreeTest {
  public:
-  UnifiedScrollingRepaintOnScroll() {
-    scoped_feature_list.InitAndEnableFeature(features::kScrollUnification);
-  }
-
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
   void SetupTree() override {

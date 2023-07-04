@@ -422,9 +422,6 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
 }
 
 TEST_F(AnimationHostTest, TickScrollLinkedAnimationNonCompositedScroll) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kScrollUnification);
-
   client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
   client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);
   client_impl_.RegisterElementId(element_id_, ElementListType::ACTIVE);

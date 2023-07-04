@@ -17802,7 +17802,6 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
   using ScrollStatus = InputHandler::ScrollStatus;
 
   void SetUp() override {
-    scoped_feature_list.InitAndEnableFeature(features::kScrollUnification);
     LayerTreeHostImplTest::SetUp();
 
     cur_time_ = base::TimeTicks() + base::Milliseconds(100);
