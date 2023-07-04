@@ -42,17 +42,6 @@ interface StorageManager {
   getDirectory(): Promise<FileSystemDirectoryHandle>;
 }
 
-// Chrome WebUI specific helper.
-// https://source.chromium.org/chromium/chromium/src/+/main:ui/webui/resources/js/load_time_data.js
-
-interface Window {
-  loadTimeData: {
-    getBoolean(id: string): boolean,
-    getString(id: string): string,
-    getStringF(id: string, ...args: Array<number|string>): string,
-  };
-}
-
 // v8 specific stack information.
 interface CallSite {
   getFileName(): string|undefined;
