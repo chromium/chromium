@@ -1157,13 +1157,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit beleid niet instelt, staan zoeksuggesties in eerste instantie aan, maar kunnen gebruikers deze op elk moment uitzetten.</translation>
 <translation id="2000937390924915996">Automatische schijfopruiming niet uitvoeren tijdens inloggen</translation>
-<translation id="2001420846508294174">Als je dit beleid instelt, kun je regels voor de selectie van de standaardprinter instellen in <ph name="PRODUCT_NAME" />, die de standaardregels overschrijven. Als gebruikers voor het eerst iets afdrukken en <ph name="PRODUCT_NAME" /> een printer zoekt die aan de opgegeven kenmerken voldoet, moeten ze een printer selecteren. <ph name="PRODUCT_NAME" /> kan zo worden ingesteld dat als er geen perfecte overeenkomst is, een willekeurige geschikte printer wordt geselecteerd op basis van de volgorde waarin printers worden gevonden.
-
-      Als je het beleid niet instelt of instelt op kenmerken zonder overeenkomst, wordt standaard de geïntegreerde pdf-printer gebruikt. Als er geen pdf-printer is, heeft <ph name="PRODUCT_NAME" /> standaard geen waarde (None).
-
-      Printers die aan <ph name="CLOUD_PRINT_NAME" /> zijn gekoppeld, worden als printers van het type <ph name="PRINTER_TYPE_CLOUD" /> beschouwd. De overige printers worden geclassificeerd als <ph name="PRINTER_TYPE_LOCAL" />.
-
-      Opmerking: Als een veld wordt overgeslagen, betekent dit dat alle waarden overeenkomen. Als je bijvoorbeeld geen connectiviteit specificeert, wordt bij een afdrukvoorbeeld gezocht naar alle soorten printers, <ph name="PRINTER_TYPE_LOCAL" /> en <ph name="PRINTER_TYPE_CLOUD" />. Reguliere-expressiepatronen moeten de RegExp-syntaxis voor JavaScript volgen en namen komen alleen overeen als ook het hoofdlettergebruik klopt (hoofdlettergevoelig).</translation>
 <translation id="2004382785802837840">Afwijzen van meldingen over gehackte wachtwoorden uitzetten</translation>
 <translation id="2005506794355327448">Actie die moet worden ondernomen als de klep wordt gesloten</translation>
 <translation id="2006530844219044261">Energiebeheer</translation>
@@ -5010,7 +5003,6 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
       Als dit beleid wordt afgedwongen, kunnen pagina's UITSLUITEND worden geopend in de incognitomodus. De optie Afgedwongen werkt niet voor Android in Chrome.
 
 Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sessie, treedt de aanpassing pas in werking na een herstart.</translation>
-<translation id="5497565614013170656">Reguliere expressie die moet overeenkomen met de printer-ID.</translation>
 <translation id="5499375345075963939">Dit beleid is alleen actief in de commerciële modus.
 
       Wanneer de waarde van dit beleid is ingesteld en niet 0 is, wordt de momenteel ingelogde demogebruiker automatisch uitgelogd nadat een inactiviteitsperiode met de opgegeven duur is verstreken.

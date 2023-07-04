@@ -1153,13 +1153,6 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Wenn du die Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, sind die Suchvorschläge standardmäßig aktiviert, können aber jederzeit von Nutzern deaktiviert werden.</translation>
 <translation id="2000937390924915996">Automatische Datenträgerbereinigung während der Anmeldung nicht ausführen</translation>
-<translation id="2001420846508294174">Durch diese Richtlinie werden die Regeln für die Auswahl des Standarddruckers in <ph name="PRODUCT_NAME" /> festgelegt. Die Standardregeln werden dadurch überschrieben. Die Druckerauswahl wird angezeigt, wenn die Nutzer zum ersten Mal einen Druckauftrag ausführen und <ph name="PRODUCT_NAME" /> einen Drucker sucht, der den angegebenen Attributen entspricht. Falls kein Drucker gefunden wird, der allen Attributen entspricht, kann in <ph name="PRODUCT_NAME" /> eingestellt werden, dass ein beliebiger übereinstimmender Drucker ausgewählt werden soll. Die Auswahl hängt dann von der Reihenfolge ab, in der die Drucker gefunden werden.
-
-      Wenn die Richtlinie nicht konfiguriert ist oder auf Attribute eingestellt wird, für die keine Übereinstimmungen vorliegen, wird als Standardeinstellung der integrierte PDF-Drucker verwendet. Sollte kein PDF-Drucker vorhanden sein, wählt <ph name="PRODUCT_NAME" /> gar keinen Drucker aus.
-
-      Mit <ph name="CLOUD_PRINT_NAME" /> verbundene Drucker werden als <ph name="PRINTER_TYPE_CLOUD" /> klassifiziert, alle anderen als <ph name="PRINTER_TYPE_LOCAL" />.
-
-      Hinweis: Wenn du ein Feld auslässt, gelten alle Werte als übereinstimmend. Wenn du z. B. keinen Wert für die Konnektivität angibst, wird die Erkennung sämtlicher Druckertypen, <ph name="PRINTER_TYPE_LOCAL" /> und <ph name="PRINTER_TYPE_CLOUD" />, über die Druckvorschau gestartet. Reguläre Ausdrücke müssen in der RegExp-Syntax von JavaScript angegeben werden und es wird zwischen Groß- und Kleinschreibung unterschieden.</translation>
 <translation id="2004382785802837840">Schließen von Warnungen zu gehackten Passwörtern deaktivieren</translation>
 <translation id="2005506794355327448">Auszuführende Aktion, wenn das Gerät zugeklappt wird.</translation>
 <translation id="2006530844219044261">Energieverwaltung</translation>
@@ -5015,7 +5008,6 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
       Wenn die Option „Forced“ ausgewählt ist, können Seiten ausschließlich im Inkognitomodus geöffnet werden. Die Option „Forced“ funktioniert nicht bei Android-Apps, die auf Chrome ausgeführt werden.
 
       Hinweis: Wenn die Richtlinie unter iOS während einer Sitzung geändert wird, gilt sie erst beim Neustart.</translation>
-<translation id="5497565614013170656">Regulärer Ausdruck für die Suche nach der Drucker-ID.</translation>
 <translation id="5499375345075963939">Diese Richtlinie ist nur im Händlermodus aktiv.
 
       Wenn für diese Richtlinie ein Wert festgelegt wurde und dieser Wert nicht "0" ist, wird der aktuell angemeldete Demo-Nutzer nach der angegebenen Inaktivitätsdauer automatisch abgemeldet.

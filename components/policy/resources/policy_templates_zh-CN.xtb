@@ -1096,12 +1096,6 @@
 
       如果您设置了此政策，用户便无法更改相关设置。如果您不设置此政策，系统最初会显示搜索建议，但用户可随时停用此功能。</translation>
 <translation id="2000937390924915996">不在登录期间运行“自动清理磁盘”功能</translation>
-<translation id="2001420846508294174">通过设置此政策，您可以配置让系统遵循什么样的规则来选择默认打印机以供用户在 <ph name="PRODUCT_NAME" /> 中使用，并覆盖默认规则。当用户首次尝试打印时需要选择打印机，<ph name="PRODUCT_NAME" /> 会寻找一台与指定属性匹配的打印机。如果没有与指定属性完全匹配的打印机，可以通过设置让 <ph name="PRODUCT_NAME" /> 选择任意一台与指定属性部分匹配的打印机，具体选择哪一台取决于这些打印机被发现的顺序。
-
-      如果此政策未设置，或没有打印机与所设属性匹配，系统会选择内置的 PDF 打印机作为默认打印机。如果没有 PDF 打印机，<ph name="PRODUCT_NAME" /> 默认不会选择任何打印机。
-
-      连接到 <ph name="CLOUD_PRINT_NAME" />的打印机会被视为<ph name="PRINTER_TYPE_CLOUD" />打印机，其余打印机则会归类为<ph name="PRINTER_TYPE_LOCAL" />打印机。
-      注意：如果您未在某个字段中输入值，则意味着所有打印机都符合此项属性。例如，如果不指定网络连接状态，那么进行打印预览时，系统将会查找所有类型的打印机（<ph name="PRINTER_TYPE_LOCAL" />和<ph name="PRINTER_TYPE_CLOUD" />）。正则表达式的格式必须遵循 JavaScript RegExp 语法，并在匹配时区分大小写。</translation>
 <translation id="2004382785802837840">不允许关闭密码泄露警示</translation>
 <translation id="2005506794355327448">当设备的盖子合上后应执行的操作</translation>
 <translation id="2006530844219044261">电源管理</translation>
@@ -4878,7 +4872,6 @@
       如果您选择了“Forced”，用户将只能以无痕模式打开网页。请注意，“Forced”不适用于 Android 版 Chrome
 
       另请注意：在 iOS 上，如果此政策在会话期间发生更改，相应更改要等到重新启动浏览器时才会生效。</translation>
-<translation id="5497565614013170656">用于匹配打印机 ID 的正则表达式。</translation>
 <translation id="5499375345075963939">此策略仅在零售模式下有效。
 
       当该策略值已设置，且不为零，那么当不活动期达到指定的时间期间后，当前登录的演示用户就会自动退出。

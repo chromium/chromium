@@ -1165,13 +1165,6 @@ Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên b
 
       Nếu bạn thiết lập chính sách này, người dùng sẽ không thay đổi được. Nếu bạn không thiết lập chính sách này, thì tính năng đề xuất cụm từ tìm kiếm sẽ bật lúc đầu nhưng người dùng có thể tắt bất cứ lúc nào.</translation>
 <translation id="2000937390924915996">Không chạy chế độ tự động dọn dẹp ổ đĩa trong quá trình đăng nhập</translation>
-<translation id="2001420846508294174">Việc đặt chính sách này sẽ đặt các quy tắc để chọn máy in mặc định trong <ph name="PRODUCT_NAME" />, ghi đè các quy tắc mặc định. Máy in sẽ được chọn ngay trong lần đầu tiên người dùng cố gắng in, khi <ph name="PRODUCT_NAME" /> tìm kiếm một máy in phù hợp với các thuộc tính đã chỉ định. Trong trường hợp có một máy in hoàn toàn không phù hợp, <ph name="PRODUCT_NAME" /> có thể được đặt để chọn máy in phù hợp bất kỳ, tùy theo thứ tự tìm thấy máy in.
-
-      Nếu bạn không đặt chính sách này hoặc đặt thành các thuộc tính mà theo đó, không có máy in nào phù hợp, thì máy in tệp PDF tích hợp sẽ là máy in mặc định. Nếu không có máy in tệp PDF, <ph name="PRODUCT_NAME" /> sẽ đặt mặc định là không có.
-
-      Máy in đã kết nối với <ph name="CLOUD_PRINT_NAME" /> được coi là <ph name="PRINTER_TYPE_CLOUD" />, các máy in còn lại được phân loại là <ph name="PRINTER_TYPE_LOCAL" />.
-
-      Lưu ý: Việc bỏ qua một trường tức là mọi giá trị đều trùng khớp. Ví dụ: nếu bạn không chỉ định khả năng kết nối, chế độ Xem trước bản in sẽ bắt đầu tìm kiếm tất cả loại máy in, <ph name="PRINTER_TYPE_LOCAL" /> và <ph name="PRINTER_TYPE_CLOUD" />. Mẫu biểu thức chính quy phải tuân theo cú pháp JavaScript RegExp và kết quả trùng khớp có phân biệt chữ hoa/chữ thường.</translation>
 <translation id="2004382785802837840">Tắt chế độ đóng cảnh báo mật khẩu bị lộ</translation>
 <translation id="2005506794355327448">Hành động cần thực hiện khi đóng nắp</translation>
 <translation id="2006530844219044261">Quản lý nguồn</translation>
@@ -5126,7 +5119,6 @@ Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính 
       Nếu bạn chọn "Bắt buộc", người dùng CHỈ có thể mở trang ở Chế độ ẩn danh. Chú ý rằng tùy chọn "Bắt buộc" không hoạt động trên Android-on-Chrome
 
       Lưu ý: Trên iOS, nếu bạn thay đổi chính sách này trong một phiên đăng nhập, thì chính sách sẽ chỉ có hiệu lực sau khi chạy lại.</translation>
-<translation id="5497565614013170656">Biểu thức chính quy để so khớp với mã máy in.</translation>
 <translation id="5499375345075963939">Chính sách này chỉ hoạt động trong chế độ bán lẻ.
 
       Khi giá trị của chính sách này được đặt và giá trị đó khác 0, người dùng hiện được đăng nhập vào bản trình diễn sẽ tự động bị đăng xuất sau khi thời gian không hoạt động của khoảng thời gian đã chỉ định trôi qua.

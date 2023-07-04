@@ -1169,13 +1169,6 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, las sugerencias de búsqueda estarán activadas al principio, pero los usuarios podrán desactivarlas en cualquier momento.</translation>
 <translation id="2000937390924915996">No ejecutar la limpieza automática del disco durante el acceso</translation>
-<translation id="2001420846508294174">Si estableces la política, se determinarán las reglas para seleccionar la impresora predeterminada en <ph name="PRODUCT_NAME" /> y se anularán las reglas predeterminadas. Los usuarios eligen la impresora la primera vez que realizan una impresión, cuando <ph name="PRODUCT_NAME" /> busca una impresora que coincida con los atributos especificados. En caso de no haber una coincidencia perfecta, podrá determinarse que <ph name="PRODUCT_NAME" /> seleccione cualquier impresora que coincida con la política, en función del orden en el que se detectaron.
-
-      Si no estableces la política o la estableces según los atributos cuando no hay coincidencias, la impresora PDF integrada será la predeterminada. Si no hay impresora PDF, <ph name="PRODUCT_NAME" /> no seleccionará ninguna como predeterminada.
-
-      Las impresoras conectadas a <ph name="CLOUD_PRINT_NAME" /> se consideran <ph name="PRINTER_TYPE_CLOUD" />; el resto de las impresoras se clasifican como <ph name="PRINTER_TYPE_LOCAL" />.
-
-      Nota: Si se omite algún campo, cualquier valor será válido. Por ejemplo, si no se especifica la conectividad, la vista previa de impresión iniciará la búsqueda de todo tipo de impresoras, <ph name="PRINTER_TYPE_LOCAL" /> y <ph name="PRINTER_TYPE_CLOUD" />. Los patrones de las expresiones regulares deben seguir la sintaxis de JavaScript RegExp, y las coincidencias distinguen entre mayúsculas y minúsculas.</translation>
 <translation id="2004382785802837840">Inhabilitar la opción de descartar las alertas de contraseña hackeada</translation>
 <translation id="2005506794355327448">La acción que se debe tomar cuando la tapa esté cerrada.</translation>
 <translation id="2006530844219044261">Administración de energía</translation>
@@ -5144,7 +5137,6 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
       Si seleccionas "Forced" (forzada), las páginas se abrirán SOLO en modo Incógnito. Ten en cuenta que la opción "Forced" no funciona para Android-on-Chrome
 
       Nota: en iOS, si la política cambia durante una sesión, solo tendrá efecto en el reinicio.</translation>
-<translation id="5497565614013170656">La expresión regular que coincide con el ID de la impresora.</translation>
 <translation id="5499375345075963939">Esta política solo se encuentra activa en el modo de venta.
 
       Cuando se establece el valor de esta política y este no es 0, la sesión del usuario que haya accedido en ese momento en el modo de demostración se cerrará automáticamente una vez transcurrido el período de inactividad especificado.

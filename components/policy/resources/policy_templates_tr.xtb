@@ -1157,13 +1157,6 @@ Politika ayarlanmadan bırakılırsa başlangıçta Yeni Sekme sayfası açılı
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Ayarlanmazsa arama önerileri ilk başta açıktır, ancak kullanıcılar istedikleri zaman kapatabilir.</translation>
 <translation id="2000937390924915996">Giriş sırasında otomatik disk temizlemeyi çalıştırma</translation>
-<translation id="2001420846508294174">Politika ayarlanırsa <ph name="PRODUCT_NAME" /> ürününde varsayılan yazıcıyı seçme kuralları belirlenir ve varsayılan kurallar geçersiz kılınır. Yazıcı seçimi, kullanıcılar ilk kez yazdırmaya çalıştığında, yani <ph name="PRODUCT_NAME" /> belirtilen özelliklere uygun bir yazıcı aradığında yapılır. Kusursuz eşleşme sağlanamazsa <ph name="PRODUCT_NAME" />, bulunma sırasına bağlı olarak eşleşen yazıcılardan herhangi birini seçecek şekilde ayarlanabilir.
-
-      Politika ayarlanmadan bırakılır veya hiçbir yazıcıyla eşleşmeyen özelliklere ayarlanırsa yerleşik PDF yazıcısı varsayılan olur. PDF yazıcısı yoksa <ph name="PRODUCT_NAME" /> için varsayılan yazıcı ayarlanmaz.
-
-      <ph name="CLOUD_PRINT_NAME" /> bağlantılı yazıcılar <ph name="PRINTER_TYPE_CLOUD" /> yazıcı sayılır, geri kalan yazıcılar <ph name="PRINTER_TYPE_LOCAL" /> olarak sınıflandırılır.
-
-      Not: Bir alanın atlanması, tüm değerlerin eşleştiği anlamına gelir. Örneğin, bağlantının belirtilmemesi, Baskı Önizleme'nin <ph name="PRINTER_TYPE_LOCAL" /> ve <ph name="PRINTER_TYPE_CLOUD" /> üzerindeki her tür yazıcının bulunması için işlem başlatmasına neden olur. Normal ifade kalıpları JavaScript RegExp söz dizimine uygun olmalıdır. Eşleşmeler büyük/küçük harfe duyarlıdır.</translation>
 <translation id="2004382785802837840">Güvenliği ihlal edilmiş şifre uyarılarını kapatmayı devre dışı bırak</translation>
 <translation id="2005506794355327448">Kapak kapalıyken yapılacak işlem</translation>
 <translation id="2006530844219044261">Güç yönetimi</translation>
@@ -5074,7 +5067,6 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa gi
       "Zorunlu" seçeneği belirlenirse sayfalar YALNIZCA Gizli modda açılabilir. "Zorunlu" seçeneğinin Android-on-Chrome'da çalışmadığını unutmayın
 
       Not: iOS'ta oturum esnasında yapılan politika değişiklikleri yeniden başlatmadan sonra devreye girer.</translation>
-<translation id="5497565614013170656">Yazıcı kimliğiyle eşleşecek normal ifade.</translation>
 <translation id="5499375345075963939">Bu politika yalnızca mağaza modunda etkindir.
 
       Bu politika için 0 dışında bir değer ayarlandığında, belirtilen sürede herhangi bir etkinlik gerçekleştirilmezse giriş yapmış olan tanıtım kullanıcısının oturumu otomatik olarak kapanır.
