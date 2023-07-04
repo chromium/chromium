@@ -4219,7 +4219,7 @@ CSSValue* ConsumeScrollFunction(CSSParserTokenRange& range,
   if (range.Peek().FunctionId() != CSSValueID::kScroll) {
     return nullptr;
   }
-  CSSParserTokenRange block = range.ConsumeBlock();
+  CSSParserTokenRange block = ConsumeFunction(range);
 
   CSSValue* scroller = nullptr;
   CSSIdentifierValue* axis = nullptr;
@@ -4263,7 +4263,7 @@ CSSValue* ConsumeViewFunction(CSSParserTokenRange& range,
     return nullptr;
   }
 
-  CSSParserTokenRange block = range.ConsumeBlock();
+  CSSParserTokenRange block = ConsumeFunction(range);
   CSSIdentifierValue* axis = nullptr;
   CSSValue* inset = nullptr;
 
