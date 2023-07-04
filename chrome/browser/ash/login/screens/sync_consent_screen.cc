@@ -53,6 +53,7 @@ namespace {
 constexpr char kUserActionContinue[] = "continue";
 constexpr char kUserActionLacrosSync[] = "sync-everything";
 constexpr char kUserActionLacrosCustom[] = "sync-custom";
+constexpr char kUserActionLacrosDecline[] = "lacros-decline";
 // OS Sync type options
 constexpr char kOsApps[] = "osApps";
 constexpr char kOsPreferences[] = "osPreferences";
@@ -132,6 +133,8 @@ std::string SyncConsentScreen::GetResultString(Result result) {
   switch (result) {
     case Result::NEXT:
       return "Next";
+    case Result::DECLINE:
+      return "DeclineOnLacros";
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
@@ -200,6 +203,7 @@ void SyncConsentScreen::Finish(Result result) {
                       service->GetUserSettings()->IsSyncEverythingEnabled();
   base::UmaHistogramBoolean("OOBE.SyncConsentScreen.SyncEnabled", sync_enabled);
   if (test_exit_delegate_) {
+    CHECK_IS_TEST();
     test_exit_delegate_->OnSyncConsentScreenExit(result, exit_callback_);
   } else {
     exit_callback_.Run(result);
@@ -553,12 +557,34 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/true, os_empty_set);
 
     if (test_exit_delegate_) {
+      CHECK_IS_TEST();
       test_exit_delegate_->OnSyncConsentScreenExit(Result::NEXT,
                                                    exit_callback_);
     } else {
       exit_callback_.Run(Result::NEXT);
     }
 
+    return;
+  }
+  if (action_id == kUserActionLacrosDecline) {
+    CHECK_EQ(args.size(), 1u);
+    syncer::SyncService* sync_service = GetSyncService(profile_);
+    syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
+
+    base::UmaHistogramBoolean(
+        "OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything", false);
+
+    syncer::UserSelectableOsTypeSet os_empty_set;
+    sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
+                                      os_empty_set);
+
+    if (test_exit_delegate_) {
+      CHECK_IS_TEST();
+      test_exit_delegate_->OnSyncConsentScreenExit(Result::DECLINE,
+                                                   exit_callback_);
+    } else {
+      exit_callback_.Run(Result::DECLINE);
+    }
     return;
   }
   if (action_id == kUserActionLacrosCustom) {
@@ -603,6 +629,7 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
                                      wallpaper_synced);
 
     if (test_exit_delegate_) {
+      CHECK_IS_TEST();
       test_exit_delegate_->OnSyncConsentScreenExit(Result::NEXT,
                                                    exit_callback_);
     } else {

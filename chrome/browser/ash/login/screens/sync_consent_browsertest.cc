@@ -73,7 +73,11 @@ const test::UIPath kLacrosOverviewDialog = {kSyncConsent,
                                             "syncConsentLacrosOverviewDialog"};
 
 const test::UIPath kLacrosAcceptButton = {kSyncConsent, "syncEverythingButton"};
-const test::UIPath kLacrosManageButton = {kSyncConsent, "manageButton"};
+const test::UIPath kLacrosManageButtonRegular = {kSyncConsent,
+                                                 "manageButtonRegularUser"};
+const test::UIPath kLacrosManageButtonMinor = {kSyncConsent,
+                                               "manageButtonMinorUser"};
+const test::UIPath kLacrosDeclineButton = {kSyncConsent, "declineLacrosButton"};
 const test::UIPath kLacrosNextButton = {kSyncConsent, "nextButton"};
 
 const test::UIPath kAppsSyncToggle = {kSyncConsent, "appsTogglebutton"};
@@ -827,6 +831,8 @@ class SyncConsentLacrosRevampTest : public SyncConsentTest {
     };
   }
 
+  void SetMinorMode() { is_minor_user_ = true; }
+
  private:
   base::test::ScopedFeatureList sync_feature_list_;
 };
@@ -843,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentLacrosRevampTest, TurnOnSync) {
 
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
   test::OobeJS().ExpectVisiblePath(kLacrosOverviewDialog);
-  test::OobeJS().ExpectVisiblePath(kLacrosManageButton);
+  test::OobeJS().ExpectVisiblePath(kLacrosManageButtonRegular);
   test::OobeJS().TapOnPath(kLacrosAcceptButton);
   consent_recorded_waiter.Wait();
   screen->SetDelegateForTesting(nullptr);  // cleanup
@@ -897,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentLacrosRevampTest, OnManage) {
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
   test::OobeJS().ExpectVisiblePath(kLacrosOverviewDialog);
   test::OobeJS().ExpectVisiblePath(kLacrosAcceptButton);
-  test::OobeJS().TapOnPath(kLacrosManageButton);
+  test::OobeJS().TapOnPath(kLacrosManageButtonRegular);
   test::OobeJS().TapOnPath(kLacrosNextButton);
 
   consent_recorded_waiter.Wait();
@@ -916,6 +922,38 @@ IN_PROC_BROWSER_TEST_F(SyncConsentLacrosRevampTest, OnManage) {
 
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NEXT);
+
+  histogram_tester_.ExpectUniqueSample(
+      "OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything", false, 1);
+
+  // Expect all data types are disabled for minor users when initialized.
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  syncer::SyncUserSettings* settings = GetSyncUserSettings();
+
+  EXPECT_FALSE(settings->IsSyncAllOsTypesEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(SyncConsentLacrosRevampTest, OnDecline) {
+  SetMinorMode();
+  LoginAndShowSyncConsentScreenWithCapability();
+  WaitForScreenShown();
+
+  SyncConsentScreen* screen = GetSyncConsentScreen();
+  ConsentRecordedWaiter consent_recorded_waiter;
+  screen->SetDelegateForTesting(&consent_recorded_waiter);
+
+  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
+  test::OobeJS().ExpectVisiblePath(kLacrosOverviewDialog);
+  test::OobeJS().ExpectVisiblePath(kLacrosAcceptButton);
+  test::OobeJS().ExpectVisiblePath(kLacrosManageButtonMinor);
+  test::OobeJS().TapOnPath(kLacrosDeclineButton);
+
+  screen->SetDelegateForTesting(nullptr);  // cleanup
+
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::DECLINE);
 
   histogram_tester_.ExpectUniqueSample(
       "OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything", false, 1);
@@ -969,7 +1007,7 @@ IN_PROC_BROWSER_TEST_P(SyncConsentTestLacrosRevampWithParams, ManageSync) {
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
   test::OobeJS().ExpectVisiblePath(kLacrosOverviewDialog);
   test::OobeJS().ExpectVisiblePath(kLacrosAcceptButton);
-  test::OobeJS().TapOnPath(kLacrosManageButton);
+  test::OobeJS().TapOnPath(kLacrosManageButtonRegular);
 
   // check Toggle are enabled by default
   test::OobeJS().ExpectAttributeEQ("checked", kAppsSyncToggle, true);

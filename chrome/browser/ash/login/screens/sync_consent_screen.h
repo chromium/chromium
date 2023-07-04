@@ -49,7 +49,7 @@ class SyncConsentScreen : public BaseScreen,
 
   enum ConsentGiven { CONSENT_NOT_GIVEN, CONSENT_GIVEN };
 
-  enum class Result { NEXT, NOT_APPLICABLE };
+  enum class Result { NEXT, DECLINE, NOT_APPLICABLE };
 
   static std::string GetResultString(Result result);
 

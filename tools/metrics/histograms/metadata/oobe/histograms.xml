@@ -212,6 +212,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Signin-fatal-error.Next"/>
   <variant name="Smart-privacy-protection.ContinueWithFeatureOff"/>
   <variant name="Smart-privacy-protection.ContinueWithFeatureOn"/>
+  <variant name="Sync-consent.DeclineOnLacros"/>
   <variant name="Sync-consent.Next"/>
   <variant name="Terms-of-service.Accepted"/>
   <variant name="Terms-of-service.Declined"/>

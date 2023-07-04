@@ -51,6 +51,7 @@ const UserAction = {
   CONTINUE: 'continue',
   SYNC_EVERYTHING: 'sync-everything',
   SYNC_CUSTOM: 'sync-custom',
+  LACROS_DECLINE: 'lacros-decline',
 };
 
 
@@ -365,6 +366,10 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
       this.consentDescription_,
       this.consentConfirmation_,
     ]);
+  }
+
+  onLacrosDeclineClicked_() {
+    this.userActed(UserAction.LACROS_DECLINE);
   }
 
   getAriaLabeltooltip_(locale) {
