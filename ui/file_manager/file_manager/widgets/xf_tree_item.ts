@@ -200,20 +200,22 @@ export class XfTreeItem extends XfBase {
         aria-expanded=${ifDefined(showExpandIcon ? this.expanded : undefined)}
         aria-disabled=${this.disabled}
       >
-        <div
-          class="tree-row"
-          style=${styleMap(treeRowStyles)}
-        >
-          <paper-ripple></paper-ripple>
-          <span class="expand-icon"></span>
-          <xf-icon
-            class="tree-label-icon"
-            type=${ifDefined(this.iconSet ? undefined : this.icon)}
-            .iconSet=${this.iconSet}
-          ></xf-icon>
-          <span class="tree-label" id="tree-label">${this.label || ''}</span>
-          <slot name="rename"></slot>
-          <slot name="trailingIcon"></slot>
+        <div class="tree-row-wrapper">
+          <div
+            class="tree-row"
+            style=${styleMap(treeRowStyles)}
+          >
+            <paper-ripple></paper-ripple>
+            <span class="expand-icon"></span>
+            <xf-icon
+              class="tree-label-icon"
+              type=${ifDefined(this.iconSet ? undefined : this.icon)}
+              .iconSet=${this.iconSet}
+            ></xf-icon>
+            <span class="tree-label" id="tree-label">${this.label || ''}</span>
+            <slot name="rename"></slot>
+            <slot name="trailingIcon"></slot>
+          </div>
         </div>
         <ul
           class="tree-children"
@@ -587,17 +589,22 @@ function getCSS() {
       width: 100%;
     }
 
+    /* We need this layer to make sure there's no gap between tree items, so
+    when we drag items onto the tree items, it won't activate the parent tree
+    item unexpectedly. */
+    .tree-row-wrapper {
+      cursor: pointer;
+      padding: 4px;
+    }
+
     .tree-row {
       align-items: center;
       border-inline-start-width: 0 !important;
       border-radius: 20px;
       box-sizing: border-box;
       color: var(--cros-sys-on_surface);
-      cursor: pointer;
       display: flex;
       height: 40px;
-      margin-inline: 4px;
-      margin-block: 8px;
       padding-inline-end: 12px;
       position: relative;
       user-select: none;

@@ -384,7 +384,7 @@ export async function expandTreeItem(appId, treeItem) {
       await sendTestMessage({name: 'isFilesExperimentalEnabled'}) === 'true';
   const expandIcon = useNewTree ?
       // expand-icon is inside shadow DOM.
-      [treeItem, '.tree-item > .tree-row > .expand-icon'] :
+      [treeItem, '.tree-item > .tree-row-wrapper > .tree-row > .expand-icon'] :
       (treeItem +
        ' > .tree-row:is([has-children=true], [may-have-children]) .expand-icon');
   await remoteCall.waitAndClickElement(appId, expandIcon);
