@@ -1493,8 +1493,16 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSecurityStateTest, SecurityLevelIsSecure) {
       false /* expect_ran_mixed_content */, false /* expect_cert_error */);
 }
 
+// TODO(https://crbug.com/1461939): This test is failing on Mac12 Tests.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SecurityLevelIsSecureAfterPrefetch \
+  DISABLED_SecurityLevelIsSecureAfterPrefetch
+#else
+#define MAYBE_SecurityLevelIsSecureAfterPrefetch \
+  SecurityLevelIsSecureAfterPrefetch
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(SignedExchangeSecurityStateTest,
-                       SecurityLevelIsSecureAfterPrefetch) {
+                       MAYBE_SecurityLevelIsSecureAfterPrefetch) {
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
 
