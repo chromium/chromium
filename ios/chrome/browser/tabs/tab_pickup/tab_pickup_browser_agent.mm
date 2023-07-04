@@ -92,6 +92,16 @@ void TabPickupBrowserAgent::WebStateRealized(web::WebState* web_state) {
   ForeignSessionsChanged();
 }
 
+#pragma mark - infobars::InfoBarManager::Observer
+
+void TabPickupBrowserAgent::OnInfoBarRemoved(infobars::InfoBar* infobar,
+                                             bool animate) {
+  if (infobar == infobar_) {
+    infobar_manager_scoped_observation_.Reset();
+    infobar_ = nullptr;
+  }
+}
+
 #pragma mark - Private methods
 
 void TabPickupBrowserAgent::ForeignSessionsChanged() {
@@ -144,12 +154,21 @@ void TabPickupBrowserAgent::ShowInfoBar() {
     return;
   }
 
+  if (infobar_) {
+    infobars::InfoBarManager* previous_infobar_manager =
+        InfoBarManagerImpl::FromWebState(infobar_web_state_);
+    previous_infobar_manager->RemoveInfoBar(infobar_);
+    DCHECK(!infobar_);
+  }
+
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(active_web_state_);
+  infobar_manager_scoped_observation_.Observe(infobar_manager);
   std::unique_ptr<infobars::InfoBar> infobar = std::make_unique<InfoBarIOS>(
       InfobarType::kInfobarTypeTabPickup, std::move(delegate_));
-  infobar_manager->AddInfoBar(std::move(infobar),
-                              /*replace_existing=*/true);
+  infobar_ = infobar_manager->AddInfoBar(std::move(infobar),
+                                         /*replace_existing=*/true);
+  infobar_web_state_ = active_web_state_;
   infobar_displayed = true;
 }
 
