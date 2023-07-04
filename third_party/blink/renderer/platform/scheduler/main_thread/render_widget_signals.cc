@@ -8,6 +8,8 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 namespace scheduler {
 
@@ -32,6 +34,10 @@ void RenderWidgetSignals::DecNumVisibleRenderWidgets() {
 }
 
 void RenderWidgetSignals::IncNumVisibleRenderWidgetsWithTouchHandlers() {
+  recordreplay::Assert(
+      "[RUN-2300] "
+      "RenderWidgetSignals::IncNumVisibleRenderWidgetsWithTouchHandlers %d",
+      num_visible_render_widgets_with_touch_handlers_);
   num_visible_render_widgets_with_touch_handlers_++;
 
   if (num_visible_render_widgets_with_touch_handlers_ == 1)

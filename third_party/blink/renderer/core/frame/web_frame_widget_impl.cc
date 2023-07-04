@@ -1677,6 +1677,9 @@ void WebFrameWidgetImpl::SetEventListenerProperties(
   widget_base_->LayerTreeHost()->SetEventListenerProperties(
       listener_class, listener_properties);
 
+  recordreplay::Assert(
+      "[RUN-2300] WebFrameWidgetImpl::SetEventListenerProperties A %d",
+      (int)listener_class);
   if (listener_class == cc::EventListenerClass::kTouchStartOrMove ||
       listener_class == cc::EventListenerClass::kTouchEndOrCancel) {
     bool has_touch_handlers =
@@ -1684,8 +1687,14 @@ void WebFrameWidgetImpl::SetEventListenerProperties(
             cc::EventListenerProperties::kNone ||
         EventListenerProperties(cc::EventListenerClass::kTouchEndOrCancel) !=
             cc::EventListenerProperties::kNone;
+
+    recordreplay::Assert(
+        "[RUN-2300] WebFrameWidgetImpl::SetEventListenerProperties B");
+
     if (!has_touch_handlers_ || *has_touch_handlers_ != has_touch_handlers) {
       has_touch_handlers_ = has_touch_handlers;
+      recordreplay::Assert(
+          "[RUN-2300] WebFrameWidgetImpl::SetEventListenerProperties C");
 
       widget_base_->WidgetScheduler()->SetHasTouchHandler(has_touch_handlers);
       // Set touch event consumers based on whether there are touch event
@@ -1699,6 +1708,8 @@ void WebFrameWidgetImpl::SetEventListenerProperties(
     SetHasPointerRawUpdateEventHandlers(listener_properties !=
                                         cc::EventListenerProperties::kNone);
   }
+  recordreplay::Assert(
+      "[RUN-2300] WebFrameWidgetImpl::SetEventListenerProperties D");
 }
 
 cc::EventListenerProperties WebFrameWidgetImpl::EventListenerProperties(

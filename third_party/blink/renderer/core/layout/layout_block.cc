@@ -229,7 +229,7 @@ static double ComputeSquaredLocalFontSizeScalingFactor(
 
 void LayoutBlock::StyleDidChange(StyleDifference diff,
                                  const ComputedStyle* old_style) {
-  recordreplay::Assert("[RUN-1688] LayoutBlock::StyleDidChange %d",
+  recordreplay::Assert("[RUN-2300] LayoutBlock::StyleDidChange %d",
                        RecordReplayId());
 
   NOT_DESTROYED();

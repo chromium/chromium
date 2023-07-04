@@ -125,6 +125,9 @@ void WidgetSchedulerImpl::SetHidden(bool hidden) {
 }
 
 void WidgetSchedulerImpl::SetHasTouchHandler(bool has_touch_handler) {
+  recordreplay::Assert(
+      "[RUN-2300] WidgetSchedulerImpl::SetHasTouchHandler %d %d %d",
+      has_touch_handler, has_touch_handler_, hidden_);
   if (has_touch_handler_ == has_touch_handler)
     return;
 

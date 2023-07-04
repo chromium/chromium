@@ -230,8 +230,7 @@ size_t PaintShader::GetSerializedSize(const PaintShader* shader) {
 
 PaintShader::PaintShader(Type type) : shader_type_(type) {}
 PaintShader::~PaintShader() {
-  if (!recordreplay::AreEventsDisallowed())
-    recordreplay::Assert("[RUN-2104-2266] ~PaintShader %u", id_);
+  recordreplay::AssertMaybeEventsDisallowed("[RUN-2104-2266] ~PaintShader %u", id_);
 }
 
 bool PaintShader::has_discardable_images() const {
