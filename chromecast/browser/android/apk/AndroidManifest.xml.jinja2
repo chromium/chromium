@@ -13,6 +13,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.START_ACTIVITIES_FROM_BACKGROUND"
                      tools:ignore="ProtectedPermissions" />
@@ -28,13 +29,20 @@
                  android:hardwareAccelerated="true"
                  android:label="Chromecast Web Browser"
                  android:exported="true"
+                 android:foregroundServiceType="specialUse"
                  tools:ignore="ExportedService">
+             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                       android:value="cast" />
             <intent-filter>
                 <action android:name="com.google.cast.action.START_CAST_BROWSER" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
-        <service android:name="org.chromium.chromecast.shell.CastWebContentsService"/>
+        <service android:name="org.chromium.chromecast.shell.CastWebContentsService"
+                 android:foregroundServiceType="specialUse">
+             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                       android:value="cast" />
+        </service>
 
         <activity android:name="org.chromium.chromecast.shell.CastWebContentsActivity"
                   android:theme="@style/CastShellTheme"

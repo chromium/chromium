@@ -35,6 +35,17 @@
     </issue>
 
     <issue
+        id="SystemPermissionTypo"
+        message="Did you mean `android.permission.FOREGROUND_SERVICE`?"
+        errorLine1="  &lt;uses-permission android:name=&quot;android.permission.FOREGROUND_SERVICE_SPECIAL_USE&quot;/>"
+        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"
+            line="16"
+            column="34"/>
+    </issue>
+
+    <issue
         id="Overdraw"
         message="Possible overdraw: Root element paints background `#FFFFFF` with a theme that also paints a background (inferred theme is `@style/CastShellTheme`)"
         errorLine1="    android:background=&quot;#FFFFFF&quot;"
