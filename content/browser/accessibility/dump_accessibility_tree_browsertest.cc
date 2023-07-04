@@ -1932,8 +1932,17 @@ IN_PROC_BROWSER_TEST_P(
       "form-validation-message-removed-after-error-corrected.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityFormValidationMessageAfterHideTimeout) {
+// TODO(https://crbug.com/1461931): This test is failing on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AccessibilityFormValidationMessageAfterHideTimeout \
+  DISABLED_AccessibilityFormValidationMessageAfterHideTimeout
+#else
+#define MAYBE_AccessibilityFormValidationMessageAfterHideTimeout \
+  AccessibilityFormValidationMessageAfterHideTimeout
+#endif  // BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    MAYBE_AccessibilityFormValidationMessageAfterHideTimeout) {
   RunHtmlTest(
       FILE_PATH_LITERAL("form-validation-message-after-hide-timeout.html"));
 }
