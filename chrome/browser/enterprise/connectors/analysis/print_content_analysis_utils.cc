@@ -45,11 +45,9 @@ void ScanAndPrint(scoped_refptr<base::RefCountedMemory> data,
         std::move(callback).Run(result.page_result);
       },
       std::move(on_verdict));
-  // TODO(b/289243948): Add browser test coverage for web contents received and
-  // passed to the delegate.
   ContentAnalysisDelegate::CreateForWebContents(
-      initiator->GetOutermostWebContents(), std::move(scanning_data),
-      std::move(on_scan_result), safe_browsing::DeepScanAccessPoint::PRINT);
+      initiator, std::move(scanning_data), std::move(on_scan_result),
+      safe_browsing::DeepScanAccessPoint::PRINT);
 }
 
 }  // namespace
@@ -59,11 +57,21 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
                             std::string printer_name,
                             base::OnceCallback<void(bool)> on_verdict,
                             base::OnceClosure hide_preview) {
+  DCHECK(initiator);
+
   ContentAnalysisDelegate::Data scanning_data;
 
+  // This needs to be done to avoid having an embedded page compare against
+  // policies and report its URL. This is especially important when Chrome's PDF
+  // reader is used, as a cryptic extension URL will be sent for
+  // scanning/reporting in that case.
+  // TODO(b/289243948): Add browser test coverage for web contents received and
+  // passed to the delegate.
+  content::WebContents* web_contents = initiator->GetOutermostWebContents();
+
   if (ContentAnalysisDelegate::IsEnabled(
-          Profile::FromBrowserContext(initiator->GetBrowserContext()),
-          initiator->GetLastCommittedURL(), &scanning_data,
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+          web_contents->GetLastCommittedURL(), &scanning_data,
           AnalysisConnector::PRINT) &&
       base::FeatureList::IsEnabled(
           printing::features::kEnableLocalScanAfterPreview) &&
@@ -76,7 +84,7 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
     // TODO(b/281087582): May need to be handled differently when the scan
     // takes place in the cloud instead of locally.
     std::move(hide_preview).Run();
-    ScanAndPrint(data, initiator, std::move(scanning_data),
+    ScanAndPrint(data, web_contents, std::move(scanning_data),
                  std::move(on_verdict));
     return;
   }
