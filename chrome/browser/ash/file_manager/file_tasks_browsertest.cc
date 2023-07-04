@@ -1653,7 +1653,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   EXPECT_FALSE(notification_message_.empty());
   // Expect that the reauthentication required notification was shown.
   EXPECT_EQ(notification_message_,
-            ash::cloud_upload::kReauthenticationRequiredMessage);
+            ash::cloud_upload::GetReauthenticationRequiredMessage());
 
   NotificationDisplayService::GetForProfile(browser()->profile())
       ->RemoveObserver(this);
@@ -1686,7 +1686,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
   EXPECT_FALSE(notification_message_.empty());
   // Expect that the reauthentication required notification was shown.
   EXPECT_EQ(notification_message_,
-            ash::cloud_upload::kGenericOneDriveAccessErrorMessage);
+            ash::cloud_upload::GetGenericOneDriveAccessErrorMessage());
 
   NotificationDisplayService::GetForProfile(browser()->profile())
       ->RemoveObserver(this);

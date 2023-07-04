@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_UTIL_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_UTIL_H_
 
+#include <string>
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -66,11 +67,12 @@ const char kUserEmailActionId[] = "HIDDEN_ONEDRIVE_USER_EMAIL";
 const char kReauthenticationRequiredId[] =
     "HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED";
 
-// TODO(b/254586358): i18n these strings.
-const char kGenericErrorMessage[] = "Something went wrong. Try again.";
-const char kReauthenticationRequiredMessage[] =
-    "Sign in to your Microsoft account and then try again";
-const char kGenericOneDriveAccessErrorMessage[] = "Access denied";
+// Get generic error message for uploading office files.
+std::string GetGenericErrorMessage();
+// Get Microsoft authentication error message for uploading office files.
+std::string GetReauthenticationRequiredMessage();
+// Get access denied error message.
+std::string GetGenericOneDriveAccessErrorMessage();
 
 // Converts an absolute FilePath into a filesystem URL.
 storage::FileSystemURL FilePathToFileSystemURL(

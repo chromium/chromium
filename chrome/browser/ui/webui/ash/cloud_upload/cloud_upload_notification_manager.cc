@@ -8,6 +8,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/message_formatter.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -80,21 +82,24 @@ CloudUploadNotificationManager::GetNotificationDisplayService() {
 
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadProgressNotification() {
-  std::string operation =
-      operation_type_ == file_manager::io_task::OperationType::kCopy ? "Copying"
-                                                                     : "Moving";
-  std::string title =
-      // TODO(b/242685536) Use "files" for multi-files when support for
-      // multi-files is added.
-      operation + " " + base::NumberToString(num_files_) + " file to " +
-      cloud_provider_name_;
-  std::string message = "File will open in " + target_app_name_;
+  bool is_copy_operation =
+      operation_type_ == file_manager::io_task::OperationType::kCopy;
+  // TODO(b/242685536) Use "files" for multi-files when support for
+  // multi-files is added.
+  std::u16string title = base::i18n::MessageFormatter::FormatWithNumberedArgs(
+      l10n_util::GetStringUTF16(is_copy_operation
+                                    ? IDS_OFFICE_NOTIFICATION_COPYING_FILES
+                                    : IDS_OFFICE_NOTIFICATION_MOVING_FILES),
+      num_files_, cloud_provider_name_);
+  std::u16string message = base::i18n::MessageFormatter::FormatWithNumberedArgs(
+      l10n_util::GetStringUTF16(IDS_OFFICE_NOTIFICATION_FILES_WILL_OPEN),
+      num_files_, target_app_name_);
 
   return ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_PROGRESS,
-      /*id=*/notification_id_, base::UTF8ToUTF16(title),
+      /*id=*/notification_id_, title,
       // TODO(b/272601262) Display or delete this message.
-      base::UTF8ToUTF16(message), /*display_source=*/display_source_,
+      message, /*display_source=*/display_source_,
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
       /*delegate=*/
@@ -108,18 +113,21 @@ CloudUploadNotificationManager::CreateUploadProgressNotification() {
 
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadCompleteNotification() {
+  bool is_copy_operation =
+      operation_type_ == file_manager::io_task::OperationType::kCopy;
   // TODO(b/242685536) Use "files" for multi-files when support for multi-files
   // is added.
-  std::string operation =
-      operation_type_ == file_manager::io_task::OperationType::kCopy ? "Copied"
-                                                                     : "Moved";
-  std::string title = operation + " " + base::NumberToString(num_files_) +
-                      " file to " + cloud_provider_name_;
-  std::string message = "Opening in " + target_app_name_;
+  std::u16string title = base::i18n::MessageFormatter::FormatWithNumberedArgs(
+      l10n_util::GetStringUTF16(is_copy_operation
+                                    ? IDS_OFFICE_NOTIFICATION_FILES_COPIED
+                                    : IDS_OFFICE_NOTIFICATION_FILES_MOVED),
+      num_files_, cloud_provider_name_);
+  std::u16string message =
+      l10n_util::GetStringFUTF16(IDS_OFFICE_NOTIFICATION_FILES_OPENING,
+                                 base::UTF8ToUTF16(target_app_name_));
   auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
-      /*id=*/notification_id_, base::UTF8ToUTF16(title),
-      base::UTF8ToUTF16(message),
+      /*id=*/notification_id_, title, message,
       /*display_source=*/display_source_,
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
@@ -135,9 +143,10 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
   DCHECK(!destination_path_.empty());
   if (!destination_path_.empty()) {
     //  Add "Show in folder" button.
-    std::string button_title = "Show in folder";
+    std::u16string button_title = l10n_util::GetStringUTF16(
+        IDS_OFFICE_NOTIFICATION_SHOW_IN_FOLDER_BUTTON);
     std::vector<message_center::ButtonInfo> notification_buttons = {
-        message_center::ButtonInfo(base::UTF8ToUTF16(button_title))};
+        message_center::ButtonInfo(button_title)};
     notification->set_buttons(notification_buttons);
   }
   return notification;
@@ -146,19 +155,18 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadErrorNotification(
     std::string message) {
-  // TODO(b/254586358): i18n these strings.
-  std::string operation =
-      operation_type_ == file_manager::io_task::OperationType::kCopy ? "copy"
-                                                                     : "move";
-  std::string file_string = num_files_ == 1 ? "file" : "files";
-  std::string title =
-      "Can't " + operation + " " + file_string + " to " + cloud_provider_name_;
+  bool is_copy_operation =
+      operation_type_ == file_manager::io_task::OperationType::kCopy;
+  std::u16string title = base::i18n::MessageFormatter::FormatWithNumberedArgs(
+      l10n_util::GetStringUTF16(is_copy_operation
+                                    ? IDS_OFFICE_UPLOAD_ERROR_CANT_COPY_FILES
+                                    : IDS_OFFICE_UPLOAD_ERROR_CANT_MOVE_FILES),
+      num_files_, cloud_provider_name_);
   std::vector<message_center::ButtonInfo> notification_buttons;
 
   auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
-      /*id=*/notification_id_, base::UTF8ToUTF16(title),
-      base::UTF8ToUTF16(message),
+      /*id=*/notification_id_, title, base::UTF8ToUTF16(message),
       /*display_source=*/display_source_,
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
@@ -172,9 +180,10 @@ CloudUploadNotificationManager::CreateUploadErrorNotification(
       message_center::SystemNotificationWarningLevel::WARNING);
 
   //  Add "Sign in" button if this is a reauthentication error.
-  if (message == kReauthenticationRequiredMessage) {
-    std::string button_title = "Sign in";
-    notification_buttons.emplace_back(base::UTF8ToUTF16(button_title));
+  if (message == GetReauthenticationRequiredMessage()) {
+    std::u16string button_title =
+        l10n_util::GetStringUTF16(IDS_OFFICE_NOTIFICATION_SIGN_IN_BUTTON);
+    notification_buttons.emplace_back(button_title);
   }
 
   notification->set_buttons(notification_buttons);

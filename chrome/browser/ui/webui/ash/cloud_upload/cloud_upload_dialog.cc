@@ -37,10 +37,12 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user_manager.h"
@@ -184,27 +186,29 @@ void ShowUnableToOpenNotification(Profile* profile,
   // Special case of |FILE_ERROR_ACCESS_DENIED| where the user needs to
   // reauthenticate to OneDrive.
   if (reauthentication_required) {
-    message = kReauthenticationRequiredMessage;
+    message = GetReauthenticationRequiredMessage();
     //  Add "Sign in" button.
-    notification_buttons.emplace_back(u"Sign in");
+    notification_buttons.emplace_back(
+        l10n_util::GetStringUTF16(IDS_OFFICE_NOTIFICATION_SIGN_IN_BUTTON));
   } else {
     switch (error) {
       // Regular case of |FILE_ERROR_ACCESS_DENIED|.
       case base::File::Error::FILE_ERROR_ACCESS_DENIED:
-        message = kGenericOneDriveAccessErrorMessage;
+        message = GetGenericOneDriveAccessErrorMessage();
         break;
       default:
-        message = kGenericErrorMessage;
+        message = GetGenericErrorMessage();
     }
   }
 
-  // TODO(b/254586358): i18n these strings.
   auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/kNotificationId,
       // TODO(b/242685536) Use "files" for multi-files when support for
       // multi-files is added.
-      /*title=*/u"Can't open file",
+      /*title=*/
+      l10n_util::GetPluralStringFUTF16(IDS_OFFICE_UPLOAD_ERROR_CANT_OPEN_FILE,
+                                       1),
       /*message=*/base::UTF8ToUTF16(message),
       /*display_source=*/
       l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES),

@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
   provided_file_system_->SetReauthenticationRequired(true);
   NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
   // Expect the reauthentication required notification.
-  SetExpectedErrorMessage(kReauthenticationRequiredMessage);
+  SetExpectedErrorMessage(GetReauthenticationRequiredMessage());
 
   // Create test docx file within My files.
   const base::FilePath test_file_path = GetTestFilePath(test_file_name);
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
   provided_file_system_->SetReauthenticationRequired(false);
   NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
   // Expect generic access error notification.
-  SetExpectedErrorMessage(kGenericOneDriveAccessErrorMessage);
+  SetExpectedErrorMessage(GetGenericOneDriveAccessErrorMessage());
 
   // Create test docx file within My files.
   const base::FilePath test_file_path = GetTestFilePath(test_file_name);

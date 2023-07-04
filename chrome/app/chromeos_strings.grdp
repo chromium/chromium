@@ -6956,8 +6956,93 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE" desc="Cloud provider name for OneDrive.">
     Microsoft OneDrive
   </message>
+  <message name="IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE_SHORT" desc="Short name for OneDrive.">
+    OneDrive
+  </message>
   <message name="IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE" desc="Cloud provider name for Google Drive.">
     Google Drive
+  </message>
+  <message name="IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE_SHORT" desc="Short name for Google Drive.">
+    Drive
+  </message>
+
+  <!-- Office notification -->
+  <message name="IDS_OFFICE_NOTIFICATION_MOVING_FILES" desc="Title for a notification indicating that files are in the process of moving to OneDrive/Google Drive.">
+    {NUM_OF_FILES, plural,
+      =1 {Moving 1 file to <ph name="CLOUD_PROVIDER">{1}<ex>Microsoft OneDrive</ex></ph>}
+      other {Moving {NUM_OF_FILES} files to <ph name="CLOUD_PROVIDER">{1}<ex>Google Drive</ex></ph>}}
+  </message>
+  <message name="IDS_OFFICE_NOTIFICATION_FILES_MOVED" desc="Title for a notification indicating that files are already moved to OneDrive/Google Drive.">
+    {NUM_OF_FILES, plural,
+      =1 {Moved 1 file}
+      other {Moved {NUM_OF_FILES} files}}
+  </message>
+  <message name="IDS_OFFICE_NOTIFICATION_COPYING_FILES" desc="Title for a notification indicating that files are in the process of copying to OneDrive/Google Drive.">
+    {NUM_OF_FILES, plural,
+      =1 {Copying 1 file to <ph name="CLOUD_PROVIDER">{1}<ex>Microsoft OneDrive</ex></ph>}
+      other {Copying {NUM_OF_FILES} files to <ph name="CLOUD_PROVIDER">{1}<ex>Microsoft OneDrive</ex></ph>}}
+  </message>
+  <message name="IDS_OFFICE_NOTIFICATION_FILES_COPIED" desc="Title for a notification indicating that files are already copied to OneDrive/Google Drive.">
+    {NUM_OF_FILES, plural,
+      =1 {Copied 1 file}
+      other {Copied {NUM_OF_FILES} files}}
+  </message>
+  <!-- TODO(b/272601262) Display or delete this message. -->
+  <message name="IDS_OFFICE_NOTIFICATION_FILES_WILL_OPEN" desc="Subtitle for a notification indicating that files will open in Microsoft 365 or Google Docs/Sheets/Slides." translateable="false">
+    {NUM_OF_FILES, plural,
+      =1 {File will open in <ph name="TARGET_APP">{1}<ex>Microsoft 365</ex></ph>}
+      other {Files will open in <ph name="TARGET_APP">{1}<ex>Google Docs</ex></ph>}}
+  </message>
+  <message name="IDS_OFFICE_NOTIFICATION_FILES_OPENING" desc="Subtitle for a notification indicating that files is opening in Microsoft 365 or Google Docs/Sheets/Slides.">
+    Opening in <ph name="TARGET_APP">$1<ex>Microsoft 365</ex></ph>
+  </message>
+  <message name="IDS_OFFICE_NOTIFICATION_SHOW_IN_FOLDER_BUTTON" desc="Text for a button in the office notification which allows the user to see the file in the Files folder after clicking.">
+    Show in folder
+  </message>
+  <message name="IDS_OFFICE_NOTIFICATION_SIGN_IN_BUTTON" desc="Text for a button in the office notification which allows the user to sign in when reauthentication is needed.">
+    Sign in
+  </message>
+
+  <!-- Office upload errors -->
+  <message name="IDS_OFFICE_UPLOAD_ERROR_CANT_MOVE_FILES" desc="Error message for uploading office files indicating that the files cannot be moved to OneDrive/Google Drive.">
+    {NUM_OF_FILES, plural,
+      =1 {Can't move file to <ph name="CLOUD_PROVIDER">{1}<ex>Microsoft OneDrive</ex></ph>}
+      other {Can't move files to <ph name="CLOUD_PROVIDER">{1}<ex>Google Drive</ex></ph>}}
+  </message>
+  <message name="IDS_OFFICE_UPLOAD_ERROR_CANT_COPY_FILES" desc="Error message for uploading office files indicating that files cannot be copied to OneDrive/Google Drive.">
+    {NUM_OF_FILES, plural,
+      =1 {Can't copy file to <ph name="CLOUD_PROVIDER">{1}<ex>Microsoft OneDrive</ex></ph>}
+      other {Can't copy files to <ph name="CLOUD_PROVIDER">{1}<ex>Google Drive</ex></ph>}}
+  </message>
+  <message name="IDS_OFFICE_UPLOAD_ERROR_FREE_UP_SPACE_TO_MOVE" desc="Error message for uploading office files indicating that the user needs to free up space before moving files to OneDrive/Google Drive.">
+    {NUM_OF_FILES, plural,
+      =1 {Free up space in <ph name="CLOUD_PROVIDER">{1}<ex>Microsoft OneDrive</ex></ph> to move this file}
+      other {Free up space in <ph name="CLOUD_PROVIDER">{1}<ex>Google Drive</ex></ph> to move these files}}
+  </message>
+  <message name="IDS_OFFICE_UPLOAD_ERROR_FREE_UP_SPACE_TO_COPY" desc="Error message for uploading office files indicating that the user needs to free up space before copying files to OneDrive/Google Drive.">
+    {NUM_OF_FILES, plural,
+      =1 {Free up space in <ph name="CLOUD_PROVIDER">{1}<ex>Microsoft OneDrive</ex></ph> to copy this file}
+      other {Free up space in <ph name="CLOUD_PROVIDER">{1}<ex>Google Drive</ex></ph> to copy these files}}
+  </message>
+  <message name="IDS_OFFICE_UPLOAD_ERROR_FILE_NOT_EXIST_TO_MOVE" desc="Error message for uploading office files indicating that the file does not exist so it cannot be moved.">
+    The file can't be moved because it no longer exists
+  </message>
+  <message name="IDS_OFFICE_UPLOAD_ERROR_FILE_NOT_EXIST_TO_COPY" desc="Error message for uploading office files indicating that the file does not exist so it cannot be copied.">
+    The file can't be copied because it no longer exists
+  </message>
+  <message name="IDS_OFFICE_UPLOAD_ERROR_GENERIC" desc="Generic error message for uploading office files.">
+    Something went wrong. Try again.
+  </message>
+  <message name="IDS_OFFICE_UPLOAD_ERROR_REAUTHENTICATION_REQUIRED" desc="Error message for uploading office files indicating that the needs to sign in to Microsoft first before uploading the files.">
+    Sign in to your Microsoft account and then try again
+  </message>
+  <message name="IDS_OFFICE_UPLOAD_ERROR_ACCESS_DENIED" desc="Error message for uploading office files indicating that access is denied.">
+    Access denied
+  </message>
+  <message name="IDS_OFFICE_UPLOAD_ERROR_CANT_OPEN_FILE" desc="Error message for uploading office files indicating that file cannot be open.">
+    {NUM_OF_FILES, plural,
+      =1 {Can't open file}
+      other {Can't open files}}
   </message>
 
   <!-- security curtain -->

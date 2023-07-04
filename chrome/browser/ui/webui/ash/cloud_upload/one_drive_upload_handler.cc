@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
+#include "base/i18n/message_formatter.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
@@ -17,9 +18,11 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using ash::file_system_provider::ProvidedFileSystemInfo;
 using ash::file_system_provider::ProviderId;
@@ -62,8 +65,8 @@ OneDriveUploadHandler::OneDriveUploadHandler(Profile* profile,
           base::MakeRefCounted<CloudUploadNotificationManager>(
               profile,
               source_url.path().BaseName().value(),
-              "Microsoft OneDrive",
-              "Microsoft 365",
+              l10n_util::GetStringUTF8(IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE),
+              l10n_util::GetStringUTF8(IDS_OFFICE_FILE_HANDLER_APP_MICROSOFT),
               // TODO(b/242685536) Update when support for multi-files is added.
               /*num_files=*/1,
               GetOperationTypeForUpload(profile, source_url))),
@@ -86,7 +89,7 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
   if (!profile_) {
     LOG(ERROR) << "No profile";
     OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kOtherError,
-                kGenericErrorMessage);
+                GetGenericErrorMessage());
     return;
   }
 
@@ -95,14 +98,14 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
   if (!volume_manager) {
     LOG(ERROR) << "No volume manager";
     OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kOtherError,
-                kGenericErrorMessage);
+                GetGenericErrorMessage());
     return;
   }
   io_task_controller_ = volume_manager->io_task_controller();
   if (!io_task_controller_) {
     LOG(ERROR) << "No task_controller";
     OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kOtherError,
-                kGenericErrorMessage);
+                GetGenericErrorMessage());
     return;
   }
 
@@ -123,7 +126,7 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
       LOG(ERROR) << "Multiple file systems found for the ODFS Extension";
     }
     OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kFileSystemNotFound,
-                kGenericErrorMessage);
+                GetGenericErrorMessage());
     return;
   }
   destination_folder_path_ = file_systems[0].mount_path();
@@ -133,7 +136,7 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
   if (!destination_folder_url.is_valid()) {
     LOG(ERROR) << "Unable to generate destination folder ODFS URL";
     OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kFileSystemNotFound,
-                kGenericErrorMessage);
+                GetGenericErrorMessage());
     return;
   }
 
@@ -196,11 +199,11 @@ void OneDriveUploadHandler::OnIOTaskStatus(
       if (status.type == file_manager::io_task::OperationType::kCopy) {
         OnEndUpload(FileSystemURL(),
                     OfficeFilesUploadResult::kCopyOperationCancelled,
-                    kGenericErrorMessage);
+                    GetGenericErrorMessage());
       } else {
         OnEndUpload(FileSystemURL(),
                     OfficeFilesUploadResult::kMoveOperationCancelled,
-                    kGenericErrorMessage);
+                    GetGenericErrorMessage());
       }
       return;
     case file_manager::io_task::State::kError:
@@ -215,13 +218,13 @@ void OneDriveUploadHandler::OnIOTaskStatus(
 
 void OneDriveUploadHandler::OnGetReauthenticationRequired(
     base::expected<ODFSMetadata, base::File::Error> metadata_or_error) {
-  std::string error_message = kGenericOneDriveAccessErrorMessage;
+  std::string error_message = GetGenericOneDriveAccessErrorMessage();
   if (!metadata_or_error.has_value()) {
     LOG(ERROR) << "Failed to get reauthentication required state: "
                << metadata_or_error.error();
   } else if (metadata_or_error->reauthentication_required) {
     // Show the reauthentication required error notification.
-    error_message = kReauthenticationRequiredMessage;
+    error_message = GetReauthenticationRequiredMessage();
   }
   OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kCloudAuthError,
               error_message);
@@ -232,7 +235,7 @@ void OneDriveUploadHandler::ShowAccessDeniedError() {
       file_system = GetODFS(profile_);
   if (!file_system.has_value()) {
     OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kCloudAuthError,
-                kGenericOneDriveAccessErrorMessage);
+                GetGenericOneDriveAccessErrorMessage());
     return;
   }
   GetODFSMetadata(
@@ -246,8 +249,6 @@ void OneDriveUploadHandler::ShowIOTaskError(
   OfficeFilesUploadResult upload_result;
   std::string error_message;
   bool copy = status.type == file_manager::io_task::OperationType::kCopy;
-  std::string operation = copy ? "copy" : "move";
-  std::string operation_past_tense = copy ? "copied" : "moved";
 
   base::File::Error file_error = base::File::FILE_ERROR_FAILED;
   // TODO(b/242685536) Find most relevant error in a multi-file upload when
@@ -268,8 +269,15 @@ void OneDriveUploadHandler::ShowIOTaskError(
       upload_result = OfficeFilesUploadResult::kCloudQuotaFull;
       // TODO(b/242685536) Use "these files" for multi-files when support for
       // multi-files is added.
-      error_message =
-          "Free up space in OneDrive to " + operation + " this file";
+      error_message = base::UTF16ToUTF8(
+          base::i18n::MessageFormatter::FormatWithNumberedArgs(
+              l10n_util::GetStringUTF16(
+                  copy ? IDS_OFFICE_UPLOAD_ERROR_FREE_UP_SPACE_TO_COPY
+                       : IDS_OFFICE_UPLOAD_ERROR_FREE_UP_SPACE_TO_MOVE),
+              // TODO(b/242685536) Update when support for multi-files is added.
+              1,
+              l10n_util::GetStringUTF16(
+                  IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE_SHORT)));
       break;
     case base::File::FILE_ERROR_NOT_FOUND:
       if (copy) {
@@ -277,8 +285,9 @@ void OneDriveUploadHandler::ShowIOTaskError(
       } else {
         upload_result = OfficeFilesUploadResult::kMoveOperationError;
       }
-      error_message = "The file could not be " + operation_past_tense +
-                      " because it no longer exists";
+      error_message = l10n_util::GetStringUTF8(
+          copy ? IDS_OFFICE_UPLOAD_ERROR_FILE_NOT_EXIST_TO_COPY
+               : IDS_OFFICE_UPLOAD_ERROR_FILE_NOT_EXIST_TO_MOVE);
       break;
     default:
       if (copy) {
@@ -286,7 +295,7 @@ void OneDriveUploadHandler::ShowIOTaskError(
       } else {
         upload_result = OfficeFilesUploadResult::kMoveOperationError;
       }
-      error_message = kGenericErrorMessage;
+      error_message = GetGenericErrorMessage();
   }
 
   OnEndUpload(FileSystemURL(), upload_result, error_message);
