@@ -389,6 +389,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Odjavit ćete se sa svih web-lokacija, uključujući otvorene kartice</translation>
 <translation id="1313705515580255288">Vaše oznake, povijest i ostale postavke sinkronizirat će se s vašim Google računom.</translation>
+<translation id="1315184295353569363">Poništi spremanje grupe</translation>
 <translation id="1316136264406804862">Pretraživanje...</translation>
 <translation id="1316248800168909509">Povezivanje s uređajem <ph name="DEVICE" /> nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="1316495628809031177">Sinkronizacija je pauzirana</translation>
@@ -2907,6 +2908,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3429160811076349561">Probne značajke su isključene</translation>
 <translation id="3429271624041785769">Jezici web-sadržaja</translation>
 <translation id="3429275422858276529">Označite ovu stranicu da biste je kasnije lakše pronašli</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – oslobodili ste <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Zaključavanje prilikom odlaska</translation>
 <translation id="3433621910545056227">Ups! Sustav nije uspješno uspostavio zaključavanje atributa vremena instalacije uređaja.</translation>
@@ -4010,6 +4012,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4361142739114356624">Privatni ključ za ovaj certifikat klijenta nedostaje ili nije važeći</translation>
 <translation id="4361745360460842907">Otvori kao karticu</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> zadani je račun na vašem uređaju <ph name="DEVICE_TYPE" /></translation>
+<translation id="4363215264289239958">Bruschetta aplikacije</translation>
 <translation id="4363771538994847871">Nije pronađeno nijedno odredište za Cast. Trebate li pomoć?</translation>
 <translation id="4364327530094270451">Dinja</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> dijeli prozor.</translation>
@@ -5109,6 +5112,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5319359161174645648">Google preporučuje Chrome</translation>
 <translation id="5319712128756744240">Uparite novi uređaj</translation>
 <translation id="5320135788267874712">Novi naziv uređaja</translation>
+<translation id="5320261549977878764">Poništi spremanje grupe</translation>
 <translation id="532247166573571973">Poslužitelj možda nije dostupan. Pokušajte ponovo kasnije.</translation>
 <translation id="5324300749339591280">Popis aplikacija</translation>
 <translation id="5324780743567488672">Automatski postavi vremensku zonu pomoću vlastite lokacije</translation>

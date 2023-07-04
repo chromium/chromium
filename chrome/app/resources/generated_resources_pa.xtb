@@ -312,6 +312,7 @@
 <translation id="1244265436519979884">ਇਸ ਵੇਲੇ Linux ਦੀ ਮੁੜ-ਬਹਾਲੀ ਜਾਰੀ ਹੈ</translation>
 <translation id="1244303850296295656">ਐਕਸਟੈਂਸ਼ਨ ਗੜਬੜ</translation>
 <translation id="1244917379075403655">"ਸੈਟਿੰਗਾਂ" 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
+<translation id="1245331638296910488">Microsoft 365 ਵਿੱਚ ਖੋਲ੍ਹਣ 'ਤੇ ਫ਼ਾਈਲਾਂ OneDrive ਵਿੱਚ ਚਲੇ ਜਾਣਗੀਆਂ</translation>
 <translation id="1245628370644070008">ਸਥਾਨਕ ਡਾਟਾ ਰਿਕਵਰੀ</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ: ਚਿੱਤਰ URL 'ਤੇ <ph name="HTTP_ERROR" /> ਗੜਬੜ ਕੋਡ ਆਇਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="1247372569136754018">ਮਾਈਕ੍ਰੋਫ਼ੋਨ (ਅੰਦਰੂਨੀ)</translation>
@@ -673,6 +674,7 @@
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" ਐਕਸਟੈਂਸ਼ਨ ਨੇ <ph name="SEARCH_PROVIDER_DOMAIN" /> ਨੂੰ ਵਰਤਣ ਲਈ ਖੋਜ ਇੰਜਣ ਨੂੰ ਬਦਲਿਆ</translation>
 <translation id="1552752544932680961">ਐਕਸਟੈਂਸ਼ਨ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="1553538517812678578">ਅਸੀਮਿਤ</translation>
+<translation id="1553947773881524342">ਆਪਣੀ Chromebook 'ਤੇ Microsoft 365 ਬਾਰੇ <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" />।</translation>
 <translation id="1555130319947370107">ਨੀਲਾ</translation>
 <translation id="1556127816860282890">ਬੈਕਗ੍ਰਾਊਂਡ ਸਰਗਰਮੀ ਅਤੇ ਸਹਿਜ ਸਕ੍ਰੋਲ ਵਰਗੇ ਕੁਝ ਦ੍ਰਿਸ਼ਟੀਗਤ ਪ੍ਰਭਾਵਾਂ ਨੂੰ ਸੀਮਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="1556537182262721003">ਐਕਸਟੈਂਸ਼ਨ ਡਾਇਰੈਕਟਰੀ 'ਚ ਪ੍ਰੋਫਾਈਲ ਦੀ ਹਲਚਲ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ।</translation>
@@ -1130,6 +1132,7 @@
 <translation id="1904580727789512086">ਉਹ URL ਤੁਹਾਡੇ Google ਖਾਤੇ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ, ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਗਏ ਹੋ</translation>
 <translation id="1905375423839394163">Chromebook ਡੀਵਾਈਸ ਦਾ ਨਾਮ</translation>
 <translation id="1906181697255754968">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਤੁਹਾਡੇ ਕੰਮ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਰੱਖਿਅਤ ਕਰਨ ਜਿਹੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਫੋਲਡਰਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਦੀਆਂ ਹਨ</translation>
+<translation id="1906488504371069394"><ph name="BEGIN_LINK" />Chrome ਵੈੱਬ ਸਟੋਰ<ph name="END_LINK" /> 'ਤੇ ਹੋਰ ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਥੀਮ ਖੋਜੋ</translation>
 <translation id="1907044622262489040">ਆਪਣੀ ਅਵਾਜ਼ ਨਾਲ ਟਾਈਪ ਕਰੋ। Search + D ਵਰਤੋ, ਫਿਰ ਬੋਲਣਾ ਸ਼ੁਰੂ ਕਰੋ।</translation>
 <translation id="1908591798274282246">ਬੰਦ ਕੀਤਾ ਗਰੁੱਪ ਟੈਬ ਦੁਬਾਰਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="1909880997794698664">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਸਥਾਈ ਤੌਰ 'ਤੇ ਕਿਓਸਕ ਮੋਡ ਵਿੱਚ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
@@ -1944,6 +1947,7 @@
 <translation id="2561211427862644160">ਆਪਣੇ ਸਾਰੇ ਬੁੱਕਮਾਰਕ ਇੱਥੇ ਦੇਖੋ</translation>
 <translation id="2564520396658920462">AppleScript ਦੇ ਰਾਹੀਂ JavaScript ਨੂੰ ਚਲਾਉਣਾ ਬੰਦ ਹੈ। ਇਸਨੂੰ ਮੀਨੂ ਬਾਰ ਤੋਂ ਚਲਾਉਣ ਲਈ, ਦ੍ਰਿਸ਼ &gt; ਵਿਕਾਸਕਾਰ &gt; Apple ਇਵੈਂਟਾਂ ਤੋਂ JavaScript ਚੱਲਣ ਦਿਓ 'ਤੇ ਜਾਓ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">ਬਿਹਤਰ ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ</translation>
+<translation id="2565214867520763227">ਸਕ੍ਰੀਨ ਰੀਡਰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2568694057933302218">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਹੋਣ ਦੌਰਾਨ, ਸਾਈਟਾਂ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਨੂੰ ਸਾਈਟਾਂ ਵਿਚਾਲੇ ਦੇਖਣ ਲਈ ਤੁਹਾਡੀਆਂ ਕੁਕੀਜ਼ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ। ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਵਰਗੀਆਂ ਚੀਜ਼ਾਂ ਲਈ ਨਹੀਂ ਵਰਤੀ ਜਾਂਦੀ। ਸ਼ਾਇਦ ਕੁਝ ਸਾਈਟਾਂ 'ਤੇ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਕੰਮ ਨਾ ਕਰਨ।</translation>
 <translation id="2568774940984945469">ਇੰਫੋਬਾਰ ਕੰਟੇਨਰ</translation>
 <translation id="2569972178052279830">ਵਿਕਰੇਤਾ ਦਾ ਨਾਮ</translation>
@@ -2575,6 +2579,7 @@
 <translation id="3089948625237571254">ਵੀਡੀਓ ਫ੍ਰੇਮ ਕਾ&amp;ਪੀ ਕਰੋ</translation>
 <translation id="3090227230165225418">ਡਾਊਨਲੋਡ ਸੂਚਨਾਵਾਂ ਬਾਰੇ ਸੂਚਿਤ ਕਰੋ</translation>
 <translation id="3090589793601454425">ਨਾ ਲਿਜਾਓ</translation>
+<translation id="309079592386854321">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਪ੍ਰਿੰਟਰ ਉਸੇ Wi-Fi ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਹੈ ਜਿਸ ਨਾਲ ਤੁਹਾਡੀ Chromebook ਕਨੈਕਟ ਹੈ ਜਾਂ USB ਕੇਬਲ ਦੀ ਵਰਤੋਂ ਕਰੋ। <ph name="LINK_BEGIN" />ਅਨੁਰੂਪਤਾ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="LINK_END" />।</translation>
 <translation id="3090819949319990166"><ph name="TEMP_CRX_FILE" /> 'ਤੇ ਬਾਹਰੀ crx ਫਾਈਲ ਨੂੰ ਕਾਪੀ ਨਹੀਂ ਕਰ ਸਕਦਾ।</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ਪੇਅਰ ਕੀਤਾ</translation>
 <translation id="3093714882666365141">ਸਾਈਟਾਂ ਨੂੰ ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
@@ -4089,6 +4094,7 @@
 <translation id="4410545552906060960">ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਪਾਸਵਰਡ ਦੀ ਬਜਾਏ ਨੰਬਰ (ਪਿੰਨ) ਵਰਤੋ। ਬਾਅਦ ਵਿੱਚ ਆਪਣਾ ਪਿੰਨ ਸੈੱਟ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="4411578466613447185">ਕੋਡ ਸਾਈਨਰ</translation>
 <translation id="4411719918614785832">ਇਨ੍ਹਾਂ ਪਾਸਕੀਆਂ ਨੂੰ ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ ਮੌਜੂਦ Windows Hello ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਉਨ੍ਹਾਂ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
+<translation id="4412275763838812196">ChromeOS, ChromeVox 'ਤੇ ਸਕ੍ਰੀਨ ਰੀਡਰ ਦੀ ਵਰਤੋਂ ਮੁੱਖ ਤੌਰ 'ਤੇ ਅੰਨ੍ਹੇਪਣ ਅਤੇ ਘੱਟ ਨਜ਼ਰ ਨਾਲ ਪੀੜਿਤ ਲੋਕਾਂ ਵੱਲੋਂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ChromeVox ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਸਪੇਸ ਬਾਰ ਨੂੰ ਦਬਾਓ। ChromeVox ਦੇ ਕਿਰਿਆਸ਼ੀਲ ਹੋਣ 'ਤੇ, ਤੁਹਾਨੂੰ ਇਸ ਬਾਰੇ ਤਤਕਾਲ ਜਾਣਕਾਰੀ ਦਿੱਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="4412632005703201014">Chrome ਐਪਾਂ ਪ੍ਰੋਗਰੈਸਿਵ ਵੈੱਬ ਐਪਾਂ 'ਤੇ ਮਾਈਗ੍ਰੇਟ ਹੋ ਰਹੀਆਂ ਹਨ। ਇਹ Chrome ਐਪ ਤੁਹਾਡੀ ਸੰਸਥਾ ਰਾਹੀਂ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ 'ਤੇ ਸਥਾਪਤ ਕੀਤੀ ਗਈ ਸੀ। ਐਪਾਂ ਦੀ ਸੂਚੀ ਤੋਂ ਪ੍ਰੋਗਰੈਸਿਵ ਵੈੱਬ ਐਪ ਖੋਲ੍ਹਣ ਲਈ, ਪਹਿਲਾਂ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ ਅਤੇ ਉਸਨੂੰ Chrome ਐਪ ਅਣਸਥਾਪਤ ਕਰਨ ਲਈ ਕਹੋ। ਇਸੇ ਦੌਰਾਨ, ਤੁਸੀਂ ਵੈੱਬ 'ਤੇ <ph name="EXTENSION_NAME" /> ਖੋਲ੍ਹਣ ਲਈ <ph name="EXTENSION_LAUNCH_URL" /> 'ਤੇ ਜਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4412698727486357573">ਮਦਦ ਕੇਂਦਰ</translation>
 <translation id="4412992751769744546">ਤੀਜੀ-ਪਾਰਟੀ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
@@ -4301,6 +4307,7 @@
 <translation id="4585793705637313973">ਪੰਨੇ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="4586275095964870617"><ph name="URL" /> ਕਿਸੇ ਵਿਕਲਪਿਕ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਨਹੀਂ ਖੁੱਲ੍ਹ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="4587589328781138893">ਸਾਈਟਾਂ</translation>
+<translation id="4588882777927162244">ChromeOS Flex, ChromeVox 'ਤੇ ਸਕ੍ਰੀਨ ਰੀਡਰ ਦੀ ਵਰਤੋਂ ਮੁੱਖ ਤੌਰ 'ਤੇ ਅੰਨ੍ਹੇਪਣ ਅਤੇ ਘੱਟ ਨਜ਼ਰ ਨਾਲ ਪੀੜਿਤ ਲੋਕਾਂ ਵੱਲੋਂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ChromeVox ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਸਪੇਸ ਬਾਰ ਨੂੰ ਦਬਾਓ। ChromeVox ਦੇ ਕਿਰਿਆਸ਼ੀਲ ਹੋਣ 'ਤੇ, ਤੁਹਾਨੂੰ ਇਸ ਬਾਰੇ ਤਤਕਾਲ ਜਾਣਕਾਰੀ ਦਿੱਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="4589713469967853491">ਲੌਗਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ ਸਫਲਤਾਪੂਰਕ ਲਿਖਿਆ ਗਿਆ।</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> ਵਿੱਚ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4592525994536856567">ਬ੍ਰਾਊਜ਼ ਅਤੇ ਖੋਜ ਕਰਨਾ ਤੇਜ਼ ਹੈ।</translation>
@@ -5084,6 +5091,7 @@
 <translation id="5284445933715251131">ਡਾਊਨਲੋਡ ਕਰਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="5285635972691565180">ਡਿਸਪਲੇ <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="5287073652040102781">ChromeOS Flex, ChromeVox 'ਤੇ ਸਕ੍ਰੀਨ ਰੀਡਰ ਦੀ ਵਰਤੋਂ ਮੁੱਖ ਤੌਰ 'ਤੇ ਅੰਨ੍ਹੇਪਣ ਅਤੇ ਘੱਟ ਨਜ਼ਰ ਨਾਲ ਪੀੜਿਤ ਲੋਕਾਂ ਵੱਲੋਂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ChromeVox ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਪੰਜ ਸਕਿੰਟਾਂ ਲਈ ਦੋਵੇਂ ਅਵਾਜ਼ੀ ਕੁੰਜੀਆਂ ਨੂੰ ਦਬਾਈ ਰੱਖੋ। ChromeVox ਦੇ ਕਿਰਿਆਸ਼ੀਲ ਹੋਣ 'ਤੇ, ਤੁਹਾਨੂੰ ਇਸ ਬਾਰੇ ਤਤਕਾਲ ਜਾਣਕਾਰੀ ਦਿੱਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="5287425679749926365">ਤੁਹਾਡੇ ਖਾਤੇ</translation>
 <translation id="5288106344236929384"><ph name="DOMAIN" /> 'ਤੇ <ph name="USERNAME" /> ਲਈ ਹੋਰ ਕਾਰਵਾਈਆਂ, ਪਾਸਕੀ ਦੇ ਵਿਕਲਪ</translation>
 <translation id="5288678174502918605">ਬੰਦ ਟੈਬ ਦੁ&amp;ਬਾਰਾ ਖੋਲ੍ਹੋ</translation>
@@ -5632,6 +5640,7 @@
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> ਤੁਹਾਨੂੰ ਆਪਣੀ Chromebook 'ਤੇ Windows® ਐਪਾਂ ਨੂੰ ਚਲਾਉਣ ਦਿੰਦਾ ਹੈ। ਸਥਾਪਤ ਕਰਨ ਲਈ <ph name="MINIMUM_SPACE" /> ਖਾਲੀ ਜਗ੍ਹਾ ਦੀ ਸਿਫਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{ਤੁਸੀਂ ਇਸਦੇ ਪ੍ਰਤਿਕਿਰਿਆ ਦੇਣ ਤੱਕ ਉਡੀਕ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਪੰਨੇ ਤੋਂ ਬਾਹਰ ਜਾ ਸਕਦੇ ਹੋ।}one{ਤੁਸੀਂ ਇਸਦੇ ਪ੍ਰਤਿਕਿਰਿਆ ਦੇਣ ਤੱਕ ਉਡੀਕ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਪੰਨੇ ਤੋਂ ਬਾਹਰ ਜਾ ਸਕਦੇ ਹੋ।}other{ਤੁਸੀਂ ਇਸਦੇ ਪ੍ਰਤਿਕਿਰਿਆ ਦੇਣ ਤੱਕ ਉਡੀਕ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਪੰਨਿਆਂ ਤੋਂ ਬਾਹਰ ਜਾ ਸਕਦੇ ਹੋ।}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" /> ਹੋਰ ਵੇਰਵੇ</translation>
+<translation id="577313026359983030">ਮੇਰੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ</translation>
 <translation id="5774295353725270860">Files ਐਪ ਖੋਲ੍ਹੋ</translation>
 <translation id="5776450228446082914">ਉਨ੍ਹਾਂ ਵੈੱਬਸਾਈਟਾਂ ਦੀ ਸੂਚੀ ਜੋ ਕਿਸੇ ਵੀ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਖੁੱਲ੍ਹ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="5776571780337000608">ਤੁਸੀਂ ਆਪਣੇ ਫ਼ਾਈਲ ਬ੍ਰਾਊਜ਼ਰ ਜਾਂ ਹੋਰ ਐਪਾਂ ਤੋਂ ਇਸ ਐਪ ਨਾਲ ਸਮਰਥਿਤ ਫ਼ਾਈਲਾਂ ਨੂੰ ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੇ ਹੋ। ਇਹ ਕੰਟਰੋਲ ਕਰਨ ਲਈ ਕਿ ਕਿਹੜੀਆਂ ਫ਼ਾਈਲਾਂ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਇਸ ਐਪ ਨੂੰ ਖੋਲ੍ਹਣ, ਇਸ ਲਈ <ph name="BEGIN_LINK" />ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਐਪਾਂ ਨੂੰ ਸੈੱਟ ਕਰਨ ਦਾ ਤਰੀਕਾ ਜਾਣੋ<ph name="END_LINK" />।</translation>
@@ -6837,6 +6846,7 @@
 <translation id="6798780071646309401">ਕੈਪਸ ਲੌਕ ਚਾਲੂ</translation>
 <translation id="6798954102094737107">ਪਲੱਗਇਨ: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">ਆਮ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{ਚੁਣੋ ਕਿ ਕੀ ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਇਸ ਸਾਈਟ ਨੂੰ ਪੜ੍ਹ ਸਕਦੀ ਹੈ ਜਾਂ ਬਦਲ ਸਕਦੀ ਹੈ}one{ਚੁਣੋ ਕਿ ਕੀ ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਇਸ ਸਾਈਟ ਨੂੰ ਪੜ੍ਹ ਸਕਦੀ ਹੈ ਜਾਂ ਬਦਲ ਸਕਦੀ ਹੈ}other{ਚੁਣੋ ਕਿ ਕੀ ਇਹ ਐਕਸਟੈਂਸ਼ਨਾਂ ਇਸ ਸਾਈਟ ਨੂੰ ਪੜ੍ਹ ਸਕਦੀਆਂ ਹਨ ਜਾਂ ਬਦਲ ਸਕਦੀਆਂ ਹਨ}}</translation>
 <translation id="6801435275744557998">ਟੱਚਸਕ੍ਰੀਨ ਨੂੰ ਕੈਲੀਬ੍ਰੇਟ ਕਰੋ</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">VM "<ph name="DEFAULT_VM_NAME" />" ਮੌਜੂਦ ਹੈ</translation>
@@ -8042,6 +8052,7 @@
 <translation id="7800518121066352902">ਕਾ&amp;ਉਂਟਰਕਲੌਕਵਾਈਜ ਰੋਟੇਟ ਕਰੋ</translation>
 <translation id="7801679634091975683">ਤੁਹਾਡੇ ਵੱਲੋਂ ਇੱਥੇ ਕੀਤੀਆਂ ਤਬਦੀਲੀਆਂ ਸਿਰਫ਼ Lacros Chrome ਬ੍ਰਾਊਜ਼ਰ 'ਤੇ ਹੀ ਲਾਗੂ ਹੁੰਦੀਆਂ ਹਨ। ਆਪਣੇ Chrome ਬ੍ਰਾਊਜ਼ਰ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਤਬਦੀਲੀਆਂ ਕਰਨ ਲਈ, Chrome ਬ੍ਰਾਊਜ਼ਰ ਖੋਲ੍ਹੋ ਅਤੇ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="780301667611848630">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
+<translation id="7803267169006795990">ChromeOS, ChromeVox 'ਤੇ ਸਕ੍ਰੀਨ ਰੀਡਰ ਦੀ ਵਰਤੋਂ ਮੁੱਖ ਤੌਰ 'ਤੇ ਅੰਨ੍ਹੇਪਣ ਅਤੇ ਘੱਟ ਨਜ਼ਰ ਨਾਲ ਪੀੜਿਤ ਲੋਕਾਂ ਵੱਲੋਂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ChromeVox ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਪੰਜ ਸਕਿੰਟਾਂ ਲਈ ਦੋਵੇਂ ਅਵਾਜ਼ੀ ਕੁੰਜੀਆਂ ਨੂੰ ਦਬਾਈ ਰੱਖੋ। ChromeVox ਦੇ ਕਿਰਿਆਸ਼ੀਲ ਹੋਣ 'ਤੇ, ਤੁਹਾਨੂੰ ਇਸ ਬਾਰੇ ਤਤਕਾਲ ਜਾਣਕਾਰੀ ਦਿੱਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="7803657407897251194">ਆਪਣੇ Android ਡੀਵਾਈਸ ਨਾਲ ਸੈੱਟਅੱਪ ਜਾਰੀ ਰੱਖਣ ਲਈ, ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਕਿਸੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7804072833593604762">ਟੈਬ ਬੰਦ ਹੋਈ</translation>
 <translation id="7805768142964895445">ਸਥਿਤੀ</translation>
@@ -9591,6 +9602,7 @@
 <translation id="9108808586816295166">ਸੁਰੱਖਿਅਤ DNS ਸ਼ਾਇਦ ਹਰ ਵੇਲੇ ਉਪਲਬਧ ਨਾ ਹੋਵੇ</translation>
 <translation id="9109122242323516435">ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਨ ਲਈ, ਡੀਵਾਈਸ ਸਟੋਰੇਜ ਵਿੱਚੋਂ ਫ਼ਾਈਲਾਂ ਮਿਟਾਓ।</translation>
 <translation id="9109283579179481106">ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
+<translation id="9110739391922513676">ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਲਈ Microsoft 365 ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="9111102763498581341">ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="9111305600911828693">ਲਾਇਸੰਸ ਦਾ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਹੋਇਆ</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9713,6 +9725,7 @@
 <translation id="9220820413868316583">ਚੁੱਕੋ ਫਿਰ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="922152298093051471">Chrome ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="923467487918828349">ਸਾਰੇ ਦਿਖਾਓ</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{ਇਸਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ, ਐਕਸਟੈਂਸ਼ਨਾਂ ਖੋਲ੍ਹੋ}one{ਇਸਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ, ਐਕਸਟੈਂਸ਼ਨਾਂ ਖੋਲ੍ਹੋ}other{ਉਨ੍ਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ, ਐਕਸਟੈਂਸ਼ਨਾਂ ਖੋਲ੍ਹੋ}}</translation>
 <translation id="924818813611903184">ChromeOS ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਭਾਸ਼ਾਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="925270020047573546">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਡੈਸਕਟਾਪ ਆਡੀਓ ਨੂੰ ਕਾਸਟ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨਹੀਂ ਹੈ।</translation>
 <translation id="930268624053534560">ਵਿਸਤ੍ਰਿਤ ਟਾਈਮਸਟੈਂਪਸ</translation>

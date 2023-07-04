@@ -127,6 +127,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Introduziu a palavra-passe num site que não é gerido pela sua organização. Para proteger a conta, não reutilize a sua palavra-passe noutras aplicações e sites.</translation>
 <translation id="1257553931232494454">níveis de zoom</translation>
+<translation id="1259843033850529027">Selecionar nível da política</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para gerir as definições do Chrome</translation>
 <translation id="1264309058268477500">Alternativo</translation>
 <translation id="1264974993859112054">Desporto</translation>
@@ -304,6 +305,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1593359183944365958">270 graus</translation>
 <translation id="1594030484168838125">Escolher</translation>
 <translation id="1596296697375291157">Filmes policiais, de mistério e tríleres</translation>
+<translation id="1597473228022844713">Está a acompanhar este produto. Esta página foi guardada em <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1599199147673445968">Tem um cartão novo? <ph name="BEGIN_LINK" />Introduza os detalhes do cartão<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Jogue o Dino Run no Chrome</translation>
 <translation id="161042844686301425">Turquesa</translation>
@@ -949,6 +951,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3140646734028448730">Serviços empresariais</translation>
 <translation id="3141093262818886744">Abrir mesmo assim</translation>
 <translation id="3141641372357166056">Sem decisão sobre o consentimento</translation>
+<translation id="3144458715650412431">As políticas de teste foram aplicadas. Reveja-as e reponha-as em chrome://policy/test. As políticas de administrador não vão ser aplicadas.</translation>
 <translation id="3145945101586104090">Falha ao descodificar resposta</translation>
 <translation id="3150653042067488994">Erro temporário do servidor</translation>
 <translation id="3150889484970506196">Botão Criar página; ative para criar rapidamente uma nova Folha de cálculo do Google Sheets</translation>
@@ -1343,6 +1346,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Separar conjuntos</translation>
 <translation id="3992684624889376114">Acerca desta página</translation>
+<translation id="3995639283717357522">Aplicar políticas</translation>
 <translation id="399952081411886534">Outras funcionalidades que tornam os anúncios mais privados</translation>
 <translation id="4000598935132966791">Saiba mais sobre restrições de sites em navegadores geridos</translation>
 <translation id="4006465311664329701">Métodos de pagamento, ofertas e endereços com o Google Pay</translation>
@@ -1523,6 +1527,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4333561522337981382">Gerir janelas em todos os seus ecrãs</translation>
 <translation id="4338709847516294988">Prima Pesquisa + m e converta a imagem em texto no menu de contexto</translation>
 <translation id="4340575312453649552">Uma vez que este anúncio utiliza demasiados recursos para o seu dispositivo, o Chrome removeu-o.</translation>
+<translation id="4340810192899866471">Importar de JSON</translation>
 <translation id="4340982228985273705">Este computador não é detetado como sendo gerido pela empresa, por isso, a política apenas pode instalar automaticamente extensões alojadas na Web Store do Chrome. O URL de atualização da Web Store do Chrome é "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206">A ligação para <ph name="SITE" /> não é segura</translation>
 <translation id="4349365535725594680">Não é possível partilhar o conteúdo confidencial</translation>
@@ -1771,6 +1776,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4901952598169637881">Calçado casual</translation>
 <translation id="4905659621780993806">O seu administrador vai reiniciar o dispositivo à(s) <ph name="TIME" /> de <ph name="DATE" />. Guarde os itens abertos antes de o dispositivo ser reiniciado.</translation>
+<translation id="4907289208610706508">Alvo</translation>
 <translation id="4913987521957242411">Perfurar na parte superior esquerda</translation>
 <translation id="4918221908152712722">Instale a aplicação <ph name="APP_NAME" /> (não é necessária qualquer transferência).</translation>
 <translation id="4920457992177678649">Alugueres de férias e estadias de curto prazo</translation>
@@ -1880,6 +1886,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>
 <translation id="5146995429444047494">As notificações de <ph name="ORIGIN" /> estão bloqueadas</translation>
 <translation id="514704532284964975"><ph name="URL" /> quer ver e alterar informações em dispositivos NFC nos quais toca com o telemóvel</translation>
+<translation id="5147633291963801297">Veja as descidas de preços no painel lateral</translation>
 <translation id="5148809049217731050">Com orientação para cima</translation>
 <translation id="5153314898060540200">Hard rock e rock progressivo</translation>
 <translation id="5157504274688344097">Grandes comerciantes e armazéns comerciais</translation>
@@ -2455,6 +2462,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6450212216969386944">Envelope Chou 40</translation>
 <translation id="6451458296329894277">Confirmar nova submissão de formulário</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">Selecionar alvo da política</translation>
 <translation id="6456955391422100996">Anúncio removido.</translation>
 <translation id="6457206614190510200">Agrafar ao meio</translation>
 <translation id="6457455098507772300">Os alertas de descida do preço aparecem como notificações de pop-up no ambiente de trabalho</translation>
@@ -2738,6 +2746,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7108819624672055576">Permitida por uma extensão</translation>
 <translation id="7109510814665441393">Jogos de condução e corridas</translation>
 <translation id="7110116949943042888">Empregos temporários e sazonais</translation>
+<translation id="7110553203952632623">Vai obter alertas por email se o preço descer em qualquer site</translation>
 <translation id="7111012039238467737">(Válido)</translation>
 <translation id="7111507312244504964">Inspeções e avaliações de propriedades</translation>
 <translation id="7112327784801341716">Não vê as suas informações atuais? Contacte o banco para as atualizar.</translation>
@@ -3228,6 +3237,7 @@ Detalhes adicionais:
 <translation id="8127301229239896662">O "<ph name="SOFTWARE_NAME" />" não foi instalado corretamente no computador ou na rede. Peça ao gestor de TI que resolva este problema.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8134058435519644366">Recrutamento e pessoal</translation>
+<translation id="8144303576836498784">Algo correu mal. A alteração não foi guardada</translation>
 <translation id="8148608574971654810">Versão do PDF:</translation>
 <translation id="8149426793427495338">O computador entrou em suspensão.</translation>
 <translation id="8150722005171944719">O ficheiro em <ph name="URL" /> não é legível. Pode ter sido removido, movido ou as permissões do ficheiro podem estar a impedir o acesso.</translation>
@@ -3241,6 +3251,7 @@ Detalhes adicionais:
 <translation id="8184538546369750125">Usar predefinição global (Permitir)</translation>
 <translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Gerida por uma extensão</translation>
+<translation id="8194412401381329820">Não pode usar esta página de uma conta gerida neste dispositivo não gerido. Todas as contas geridas vão ser bloqueadas se usar esta página, exceto as contas geridas pela mesma entidade que este dispositivo (contas afiliadas).</translation>
 <translation id="8194797478851900357">&amp;Anular movimentação</translation>
 <translation id="8194956568907463262">Jogos de tiro</translation>
 <translation id="8200772114523450471">Continuar</translation>
@@ -3248,6 +3259,7 @@ Detalhes adicionais:
 <translation id="8202370299023114387">Conflito</translation>
 <translation id="8207625368992715508">Desportos motorizados</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
+<translation id="8210490490377416373">Selecionar nome da política</translation>
 <translation id="8210604850413485128">Alojamento Web</translation>
 <translation id="8211406090763984747">A ligação é segura</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3363,6 +3375,7 @@ Detalhes adicionais:
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para gerir as suas preferências de cookies nas Definições do Chrome.</translation>
 <translation id="8433057134996913067">Esta opção termina a sessão na maioria dos Sites.</translation>
 <translation id="8434840396568290395">Animais de estimação</translation>
+<translation id="8436623588884785770">Adicionar política</translation>
 <translation id="8437238597147034694">&amp;Anular movimentação</translation>
 <translation id="8438786541497918448">Pretende utilizar a câmara e o microfone?</translation>
 <translation id="8438923942245957911">Este site foi denunciado pela sua organização</translation>
@@ -3385,6 +3398,7 @@ Detalhes adicionais:
 <translation id="8483229036294884935">Esta morada vai ser apagada da sua Conta Google, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Aplica-se a</translation>
 <translation id="8490137692873530638">Empilhador 10</translation>
+<translation id="8493829133024050711">Selecionar origem da política</translation>
 <translation id="8493948351860045254">Libertar espaço</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> demorou demasiado tempo a responder.</translation>
 <translation id="8503559462189395349">Palavras-passe do Chrome</translation>

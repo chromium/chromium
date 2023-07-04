@@ -128,6 +128,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">آپ نے اپنا پاس ورڈ ایک ایسی سائٹ پر درج کیا ہے جو آپ کی تنظیم کے زیر انتظام نہیں ہے۔ اپنے اکاؤنٹ کے تحفظ کے لیے، دیگر ایپس اور سائٹس پر اپنا پاس ورڈ دوبارہ استعمال نہ کریں۔</translation>
 <translation id="1257553931232494454">زوم کے لیولز</translation>
+<translation id="1259843033850529027">پالیسی لیول منتخب کریں</translation>
 <translation id="1262388120645841613">‏<ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنے Chrome کی ترتیبات کا نظم کرنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="1264309058268477500">متبادل</translation>
 <translation id="1264974993859112054">کھیل</translation>
@@ -305,6 +306,7 @@
 <translation id="1593359183944365958">270 ڈگریز</translation>
 <translation id="1594030484168838125">منتخب کریں</translation>
 <translation id="1596296697375291157">ہیجانی، جرم اور پُراسرار فلمیں</translation>
+<translation id="1597473228022844713">آپ اس پروڈکٹ کو ٹریک کر رہے ہیں۔ یہ صفحہ <ph name="LAST_BOOKMARKS_FOLDER" /> میں محفوظ ہے</translation>
 <translation id="1599199147673445968">نیا کارڈ؟ <ph name="BEGIN_LINK" />کارڈ کی تفصیلات درج کریں<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">‏Chrome میں Dino Run گیم کھیلیں</translation>
 <translation id="161042844686301425">سیان</translation>
@@ -950,6 +952,7 @@
 <translation id="3140646734028448730">کاروباری سروسز</translation>
 <translation id="3141093262818886744">بہر صورت کھولیں</translation>
 <translation id="3141641372357166056">منظوری کا کوئی فیصلہ نہیں</translation>
+<translation id="3144458715650412431">‏ٹیسٹ سے متعلق پالیسیاں لاگو کر دی گئی ہیں۔ chrome://policy/test پر ان کا جائزہ لیں ساتھ ہی انہیں ری سیٹ بھی کریں۔ منتظم کی پالیسیاں لاگو نہیں کی جائیں گی۔</translation>
 <translation id="3145945101586104090">جواب کو ڈیکوڈ کرنے میں ناکام</translation>
 <translation id="3150653042067488994">سرور کی عارضی خرابی</translation>
 <translation id="3150889484970506196">‏شیٹ تخلیق کریں بٹن، تیزی سے نئی Google Sheet تخلیق کرنے کے لیے فعال کریں</translation>
@@ -1345,6 +1348,7 @@
 <translation id="3987940399970879459">‏‎1 MB‎ سے کم</translation>
 <translation id="3990250421422698716">جاگ آفسیٹ</translation>
 <translation id="3992684624889376114">اس صفحہ کے بارے میں</translation>
+<translation id="3995639283717357522">پالیسیاں لاگو کریں</translation>
 <translation id="399952081411886534">دیگر وہ خصوصیات جو اشتہارات کو مزید نجی بناتی ہیں</translation>
 <translation id="4000598935132966791">نظم کردہ براؤزرز میں سائٹ کی پابندیوں کے بارے میں مزید جانیں</translation>
 <translation id="4006465311664329701">‏Google Pay استعمال کرنے والے ادائیگی کے طریقے، پیشکشیں اور پتے</translation>
@@ -1525,6 +1529,7 @@
 <translation id="4333561522337981382">اپنے سبھی ڈسپلیز پر ونڈوز کا نظم کریں</translation>
 <translation id="4338709847516294988">‏تلاش کے ساتھ m دبائیں اور سیاق و سباق کے مینو میں تصویر کو ٹیکسٹ میں تبدیل کریں</translation>
 <translation id="4340575312453649552">‏اس اشتہار نے آپ کے آلہ کے لیے بہت سے وسائل کا استعمال کیا، لہذا Chrome نے اسے ہٹا دیا ہے۔</translation>
+<translation id="4340810192899866471">‏JSON سے درآمد کریں</translation>
 <translation id="4340982228985273705">‏اس کمپیوٹر کا انٹرپرائز کے زیر انتظام کے طور پر پتہ نہیں چلا ہے، اسلئے پالیسی خودکار طور پر صرف Chrome ویب اسٹور پر میزبانی کردہ ایکسٹینشنز انسٹال کر سکتی ہے۔ Chrome ویب اسٹور اپ ڈیٹ URL "<ph name="CWS_UPDATE_URL" />" ہے۔</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> سے کنکشن محفوظ نہیں ہے</translation>
 <translation id="4349365535725594680">رازدارانہ مواد کا اشتراک نہیں کیا جا سکتا</translation>
@@ -1773,6 +1778,7 @@
 <translation id="4901778704868714008">محفوظ کریں...</translation>
 <translation id="4901952598169637881">عام پہننے والے جوتے</translation>
 <translation id="4905659621780993806"><ph name="DATE" /> کو <ph name="TIME" /> پر آپ کا منتظم خودکار طور پر آپ کے آلے کو ری اسٹارٹ کرے گا۔ اپنے آلے کے ری اسٹارٹ ہونے سے پہلے کسی بھی کھلے آئٹم کو محفوظ کریں۔</translation>
+<translation id="4907289208610706508">ہدف</translation>
 <translation id="4913987521957242411">اوپر بائیں طرف فولڈ</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> انسٹال کریں (ڈاؤن لوڈ درکار نہیں ہے)</translation>
 <translation id="4920457992177678649">تعطیل کے رینٹلز اور قلیل مدتی قیام گاہیں</translation>
@@ -1882,6 +1888,7 @@
 <translation id="5145883236150621069">خرابی کوڈ پالیسی جواب میں موجود ہے</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> کیلئے اطلاعات مسدود ہیں</translation>
 <translation id="514704532284964975">‏<ph name="URL" /> NFC آلات پر معلومات دیکھنا اور تبدیل کرنا چاہتا ہے جسے آپ اپنے فون سے تھپتھپاتے ہیں</translation>
+<translation id="5147633291963801297">سائیڈ پینل میں قیمت میں کمی دیکھیں</translation>
 <translation id="5148809049217731050">سامنے</translation>
 <translation id="5153314898060540200">ہارڈ راک اور پروگریسیو</translation>
 <translation id="5157504274688344097">بڑے تاجر اور ڈپارٹمنٹ اسٹورز</translation>
@@ -2458,6 +2465,7 @@
 <translation id="6450212216969386944">‏Chou 40 لفافہ</translation>
 <translation id="6451458296329894277">فارم دوبارہ جمع کرانے کی توثیق کریں</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">پالیسی کے ہدف کو منتخب کریں</translation>
 <translation id="6456955391422100996">اشتہار ہٹا دیا گیا۔</translation>
 <translation id="6457206614190510200">سیڈل سلائی</translation>
 <translation id="6457455098507772300">قیمت میں کمی کے الرٹس آپ کے ڈیسک ٹاپ پر پاپ اپ اطلاعات کے طور پر ظاہر ہوتے ہیں</translation>
@@ -2741,6 +2749,7 @@
 <translation id="7108819624672055576">ایک ایکسٹینشین کی جانب سے اجازت یافتہ</translation>
 <translation id="7109510814665441393">ڈرائیونگ اور دوڑ والی گیمز</translation>
 <translation id="7110116949943042888">عارضی اور موسمی جابز</translation>
+<translation id="7110553203952632623">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر آپ کو ای میل الرٹس ملیں گے</translation>
 <translation id="7111012039238467737">(درست)</translation>
 <translation id="7111507312244504964">املاک کے معائنے اور تخمینے</translation>
 <translation id="7112327784801341716">آپ کی موجودہ معلومات نظر نہیں آ رہی ہے؟ اپنے بینک سے رابطہ کر کے اسے اپ ڈیٹ کریں۔</translation>
@@ -3232,6 +3241,7 @@
 <translation id="8127301229239896662">‏"<ph name="SOFTWARE_NAME" />" آپ کے کمپیوٹر یا نیٹ ورک پر مناسب طریقے سے انسٹال نہیں ہوا تھا۔ اس مسئلے کو حل کرنے کے لیے اپنے IT منتظم سے کہیں۔</translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8134058435519644366">تقرری اور عملہ سازی</translation>
+<translation id="8144303576836498784">کچھ غلط ہو گیا۔ آپ کی تبدیلی محفوظ نہیں ہوئی</translation>
 <translation id="8148608574971654810">‏PDF ورژن:</translation>
 <translation id="8149426793427495338">آپ کا کمپیوٹر سلیپ وضع میں چلا گیا۔</translation>
 <translation id="8150722005171944719"><ph name="URL" /> پر موجود فائل پڑھنے لائق نہیں ہے۔ ممکن ہے اسے ہٹا دیا گیا ہو، منتقل کر دیا گیا ہو یا ممکن ہے فائل کی اجازتیں رسائی روک رہی ہوں۔</translation>
@@ -3245,6 +3255,7 @@
 <translation id="8184538546369750125">عالمی ڈیفالٹ استعمال کریں (اجازت دیں)</translation>
 <translation id="8186706823560132848">سافٹ ویئر</translation>
 <translation id="8190193880870196235">ایکسٹینشن کے ذریعے نظم کردہ</translation>
+<translation id="8194412401381329820">آپ اس غیر ںظم کردہ آلہ پر کسی نظم کردہ اکاؤنٹ سے اس صفحہ کا استعمال نہیں کر سکتے ہیں۔ اگر آپ اس صفحہ کا استعمال کرتے ہیں تو سبھی نظم کردہ اکاؤنٹس مقفل ہو جائیں گے، سوائے ان صورتوں کے جہاں اکاؤنٹس اور اس آلے کا نظم ایک ہی ادارے (ملحق اکاؤنٹس) کے ذریعے کیے جاتے ہیں۔</translation>
 <translation id="8194797478851900357">منتقلی کو &amp;کالعدم کریں</translation>
 <translation id="8194956568907463262">شوٹر گیمز</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
@@ -3252,6 +3263,7 @@
 <translation id="8202370299023114387">تصادم</translation>
 <translation id="8207625368992715508">موٹر اسپورٹس</translation>
 <translation id="8208363704094329105">‏‎300 x 400 ملی میٹر</translation>
+<translation id="8210490490377416373">پالیسی کا نام منتخب کریں</translation>
 <translation id="8210604850413485128">ویب ہوسٹنگ</translation>
 <translation id="8211406090763984747">کنکشن محفوظ ہے</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3367,6 +3379,7 @@
 <translation id="8431194080598727332">‏<ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں اپنی کوکی کی ترجیحات کا نظم کرنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="8433057134996913067">یہ آپ کو بیشتر ویب سائٹس سے سائن آؤٹ کر دے گا۔</translation>
 <translation id="8434840396568290395">پالتو جانور</translation>
+<translation id="8436623588884785770">پالیسی شامل کریں</translation>
 <translation id="8437238597147034694">منتقلی کو &amp;کالعدم کریں</translation>
 <translation id="8438786541497918448">کیمرا اور مائیکروفون استعمال کریں؟</translation>
 <translation id="8438923942245957911">اس سائٹ پر آپ کی تنظیم نے جھنڈا لگایا ہے</translation>
@@ -3389,6 +3402,7 @@
 <translation id="8483229036294884935">‏یہ پتہ آپ کے Google اکاؤنٹ <ph name="ACCOUNT" /> سے حذف کر دیا جائے گا</translation>
 <translation id="8488350697529856933">اس پر اطلاق ہوتا ہے</translation>
 <translation id="8490137692873530638">اسٹیکر 10</translation>
+<translation id="8493829133024050711">پالیسی کا ماخذ منتخب کریں</translation>
 <translation id="8493948351860045254">جگہ خالی کریں</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> کو جواب دینے میں کافی وقت لگا۔</translation>
 <translation id="8503559462189395349">‏Chrome کے پاس ورڈز</translation>

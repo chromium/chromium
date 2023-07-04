@@ -92,7 +92,7 @@
 <translation id="1742316578210444689">Hebreo (transliteración)</translation>
 <translation id="1747761757048858544">Holandés (Países Bajos)</translation>
 <translation id="174937106936716857">Cantidad total de archivos</translation>
-<translation id="1755345808328621801">Este archivo está diseñado para PCs que utilizan software de Windows, por lo que no es compatible con tu dispositivo, el cual ejecuta Chrome OS. Busca una aplicación equivalente adecuada en Chrome Web Store.</translation>
+<translation id="1755345808328621801">Este archivo está diseñado para PCs que utilizan software de Windows, por lo que no es compatible con tu dispositivo, el cual ejecuta ChromeOS. Busca una aplicación equivalente adecuada en Chrome Web Store.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">Certificado de autenticación rechazado de forma local</translation>
 <translation id="1775381402323441512">Información del video</translation>
@@ -235,7 +235,7 @@
 <translation id="2949781154072577687">Formateando <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Medusa</translation>
 <translation id="2958458230122209142">Hay poco almacenamiento; queda <ph name="REMAINING_PERCENTAGE" />% de <ph name="TOTAL_SPACE" /> del almacenamiento individual.</translation>
-<translation id="2977940621473452797">Este archivo está diseñado para computadoras que utilizan software de Macintosh, por lo que no es compatible con tu dispositivo, el cual ejecuta Chrome OS. Busca una aplicación equivalente adecuada en Chrome Web Store.</translation>
+<translation id="2977940621473452797">Este archivo está diseñado para computadoras que utilizan software de Macintosh, por lo que no es compatible con tu dispositivo, el cual ejecuta ChromeOS. Busca una aplicación equivalente adecuada en Chrome Web Store.</translation>
 <translation id="2984337792991268709">Hoy a las <ph name="TODAY_DAYTIME" /></translation>
 <translation id="299638574917407533">Francés (Canadá)</translation>
 <translation id="3003189754374775221">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, conectar</translation>
@@ -453,7 +453,7 @@
 <translation id="4694604912444486114">Mono</translation>
 <translation id="469612310041132144">Chino (rápido)</translation>
 <translation id="4697043402264950621">La lista de archivos se organiza por <ph name="COLUMN_NAME" /> en orden ascendente.</translation>
-<translation id="469897186246626197">Este archivo se diseñó para PCs que usan software Windows. No es compatible con tu dispositivo, el cual ejecuta Chrome OS. <ph name="BEGIN_LINK_HELP" />Obtén más información<ph name="END_LINK_HELP" /> para abrir archivos en Chrome OS.</translation>
+<translation id="469897186246626197">Este archivo se diseñó para PCs que usan software Windows. No es compatible con tu dispositivo, el cual ejecuta ChromeOS. <ph name="BEGIN_LINK_HELP" />Obtén más información<ph name="END_LINK_HELP" /> para abrir archivos en ChromeOS.</translation>
 <translation id="4706042980341760088">Tamil con teclado Typewriter</translation>
 <translation id="4711094779914110278">Turco</translation>
 <translation id="4712283082407695269">Abriendo "<ph name="PATH" />"</translation>
@@ -592,7 +592,7 @@
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5602622065581044566">Búlgaro con teclado fonético</translation>
 <translation id="5605830556594064952">Inglés (Estados Unidos; Dvorak)</translation>
-<translation id="5618330573454123917">Este archivo se diseñó para computadoras que usan software Macintosh. No es compatible con tu dispositivo, el cual ejecuta Chrome OS. <ph name="BEGIN_LINK_HELP" />Obtén más información<ph name="END_LINK_HELP" /> para abrir archivos en Chrome OS.</translation>
+<translation id="5618330573454123917">Este archivo se diseñó para computadoras que usan software Macintosh. No es compatible con tu dispositivo, el cual ejecuta ChromeOS. <ph name="BEGIN_LINK_HELP" />Obtén más información<ph name="END_LINK_HELP" /> para abrir archivos en ChromeOS.</translation>
 <translation id="5625294776298156701">Tamil con teclado Tamil99</translation>
 <translation id="5633226425545095130">Si mueves este elemento, se compartirá con las personas que pueden ver la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Escuchar</translation>
@@ -726,7 +726,7 @@
 <translation id="6740270213273127264">Compartir carpeta con Bruschetta</translation>
 <translation id="6750737795876287924">Directorio actual</translation>
 <translation id="6751256176799620176">1 carpeta seleccionada</translation>
-<translation id="6755827872271341378">Dispositivo Chrome OS Flex</translation>
+<translation id="6755827872271341378">Dispositivo ChromeOS Flex</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6794539005637808366">Restablece el elemento o arrástralo a una nueva carpeta fuera de la papelera</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -808,11 +808,11 @@
 <translation id="7309413087278791451">Alemán (Bélgica)</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7343393116438664539">Vietnamita (Télex)</translation>
-<translation id="7357762654218998920">Este tipo de archivo no es compatible. <ph name="BEGIN_LINK_HELP" />Obtén más información<ph name="END_LINK_HELP" /> para abrir archivos en Chrome OS.</translation>
+<translation id="7357762654218998920">Este tipo de archivo no es compatible. <ph name="BEGIN_LINK_HELP" />Obtén más información<ph name="END_LINK_HELP" /> para abrir archivos en ChromeOS.</translation>
 <translation id="7359359531237882347">Copiando <ph name="NUMBER_OF_ITEMS" /> elementos…</translation>
 <translation id="7375951387215729722">La lista de archivos se organiza por <ph name="COLUMN_NAME" /> en orden descendente.</translation>
 <translation id="7377161162143020057">La política del administrador no permite copiar este archivo</translation>
-<translation id="7402503521691663770">Dispositivos Chrome OS Flex</translation>
+<translation id="7402503521691663770">Dispositivos ChromeOS Flex</translation>
 <translation id="7408870451288633753">Checo</translation>
 <translation id="7417453074306512035">Teclado etíope</translation>
 <translation id="7417705661718309329">Mapa de Google</translation>

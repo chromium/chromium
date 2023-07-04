@@ -944,6 +944,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6674571176963658787">Pour lancer la synchronisation, saisissez votre phrase secrète</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6684906340059221832">Suivi des prix activé</translation>
+<translation id="6689804622901271327">Saisir automatiquement les infos de paiement</translation>
 <translation id="6710079714193676716">Géré par votre organisation. Certaines fonctionnalités peuvent être indisponibles. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Accédez à vos favoris, à vos mots de passe et plus encore sur tous vos appareils.</translation>
@@ -1000,6 +1001,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7062545763355031412">Accepter et changer de compte</translation>
 <translation id="7080806333218412752">Il envoie des URL à la navigation sécurisée pour les vérifier. Il transmet également un petit échantillon de pages, de téléchargements, d'informations système et de l'activité des extensions afin d'identifier de nouvelles menaces. De même, pour vous protéger dans l'ensemble des applications Google, il associe temporairement ces données à votre compte Google lorsque vous êtes connecté.</translation>
+<translation id="7082853213442715471">Lorsque cette option est activée, certaines technologies Web sont bloquées, ce qui peut ralentir le chargement ou perturber le fonctionnement de certains sites Web.</translation>
 <translation id="7095110968493193530">Dans le Gestionnaire de mots de passe de Google pour <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Onglets récents</translation>
 <translation id="7102005569666697658">Téléchargement… <ph name="FILE_SIZE" /></translation>

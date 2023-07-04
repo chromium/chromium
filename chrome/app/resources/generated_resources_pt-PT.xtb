@@ -309,6 +309,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1244265436519979884">Neste momento, está a decorrer o restauro do Linux.</translation>
 <translation id="1244303850296295656">Erro de extensão</translation>
 <translation id="1244917379075403655">Clique em "Definições"</translation>
+<translation id="1245331638296910488">Os ficheiros vão ser movidos para o OneDrive quando os abrir no Microsoft 365</translation>
 <translation id="1245628370644070008">Recuperação de dados locais</translation>
 <translation id="1246863218384630739">Não foi possível instalar o <ph name="VM_NAME" />: o URL da imagem devolveu um código de erro <ph name="HTTP_ERROR" />. Contacte o seu administrador.</translation>
 <translation id="1247372569136754018">Microfone (interno)</translation>
@@ -669,6 +670,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1552301827267621511">A extensão "<ph name="EXTENSION_NAME" />" alterou a pesquisa para utilizar <ph name="SEARCH_PROVIDER_DOMAIN" />.</translation>
 <translation id="1552752544932680961">Gerir extensão</translation>
 <translation id="1553538517812678578">ilimitado</translation>
+<translation id="1553947773881524342"><ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /> acerca do Microsoft 365 no seu Chromebook.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1556127816860282890">A atividade em segundo plano e alguns efeitos visuais, como o deslocamento suave, podem ser limitados</translation>
 <translation id="1556537182262721003">Não foi possível mover o directório da extensão para o perfil.</translation>
@@ -1117,6 +1119,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1904580727789512086">Os URLs que visita são guardados na sua Conta Google</translation>
 <translation id="1905375423839394163">Nome do dispositivo do Chromebook</translation>
 <translation id="1906181697255754968">Normalmente, os sites acedem a ficheiros e pastas no seu dispositivo para funcionalidades como guardar automaticamente o seu trabalho.</translation>
+<translation id="1906488504371069394">Descubra mais extensões e temas na <ph name="BEGIN_LINK" />Web Store do Chrome<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Escreva com a sua voz. Use Pesquisa + D e, em seguida, comece a falar.</translation>
 <translation id="1908591798274282246">Voltar a abrir grupo fechado</translation>
 <translation id="1909880997794698664">Tem a certeza de que pretende manter permanentemente este dispositivo no modo de quiosque?</translation>
@@ -1928,6 +1931,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2561211427862644160">Veja todos os marcadores aqui</translation>
 <translation id="2564520396658920462">A opção de execução do JavaScript através do AppleScript está desativada. Para a ativar, na barra de menu aceda a Vista &gt; Programador &gt; Permitir JavaScript de eventos Apple. Para mais informações: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Verificação ortográfica melhorada</translation>
+<translation id="2565214867520763227">Ative o leitor de ecrã</translation>
 <translation id="2568694057933302218">Quando estiver na Navegação anónima, os sites não podem usar cookies para ver a sua atividade de navegação em diferentes sites. A sua atividade de navegação não é usada para, por exemplo, personalizar anúncios. As funcionalidades em alguns sites podem não funcionar.</translation>
 <translation id="2568774940984945469">Contentor da Barra de informações</translation>
 <translation id="2569972178052279830">Nome do retalhista</translation>
@@ -2561,6 +2565,7 @@ Pretende pará-lo?</translation>
 <translation id="3089948625237571254">C&amp;opiar frame do vídeo</translation>
 <translation id="3090227230165225418">Anunciar notificações de transferências</translation>
 <translation id="3090589793601454425">Não mover</translation>
+<translation id="309079592386854321">Certifique-se de que a impressora está ligada à mesma rede Wi-Fi que o Chromebook ou use um cabo USB. <ph name="LINK_BEGIN" />Saiba mais acerca da compatibilidade<ph name="LINK_END" />.</translation>
 <translation id="3090819949319990166">Não é possível copiar o ficheiro crx externo para <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" sincronizado</translation>
 <translation id="3093714882666365141">Não permitir que os sites instalem controladores de pagamentos</translation>
@@ -4075,6 +4080,7 @@ Pretende pará-lo?</translation>
 <translation id="4410545552906060960">Utilize um número (PIN) em vez de uma palavra-passe para desbloquear o dispositivo. Para definir o PIN mais tarde, aceda a Definições.</translation>
 <translation id="4411578466613447185">Signatário do código</translation>
 <translation id="4411719918614785832">Estas chaves de acesso são guardadas no Windows Hello neste computador. Não são guardadas na sua Conta Google.</translation>
+<translation id="4412275763838812196">O ChromeVox, o leitor de ecrã no ChromeOS, é usado principalmente por pessoas cegas e com visão reduzida. Prima a barra de espaço para ativar o ChromeVox. Quando o ChromeVox for ativado, irá ver uma apresentação rápida.</translation>
 <translation id="4412632005703201014">As Apps do Chrome estão a ser migradas para apps Web progressivas. Esta App do Chrome foi instalada no seu navegador pela sua organização. Para abrir a app Web progressiva a partir da lista Apps, contacte primeiro o seu administrador e peça-lhe para desinstalar a App do Chrome. Entretanto, pode visitar <ph name="EXTENSION_LAUNCH_URL" /> para abrir a extensão <ph name="EXTENSION_NAME" /> na Web.</translation>
 <translation id="4412698727486357573">Centro de Ajuda</translation>
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
@@ -4286,6 +4292,7 @@ Os sinais do dispositivo podem incluir informações acerca do seu navegador, SO
 <translation id="4585793705637313973">Editar página</translation>
 <translation id="4586275095964870617">Não foi possível abrir <ph name="URL" /> num navegador alternativo. Contacte o administrador do sistema.</translation>
 <translation id="4587589328781138893">Sites</translation>
+<translation id="4588882777927162244">O ChromeVox, o leitor de ecrã no ChromeOS Flex, é usado principalmente por pessoas cegas e com visão reduzida. Prima a barra de espaço para ativar o ChromeVox. Quando o ChromeVox for ativado, irá ver uma apresentação rápida.</translation>
 <translation id="4589713469967853491">Os registos foram escritos com êxito no diretório Transferências.</translation>
 <translation id="459204634473266369">Nenhum dispositivo guardado em <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">A navegação e a pesquisa são mais rápidas.</translation>
@@ -5069,6 +5076,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5284445933715251131">Continuar a transferir</translation>
 <translation id="5285635972691565180">Ecrã <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">A procurar</translation>
+<translation id="5287073652040102781">O ChromeVox, o leitor de ecrã no ChromeOS Flex, é usado principalmente por pessoas cegas e com visão reduzida. Prima sem soltar ambas as teclas de volume durante cinco segundos para ativar o ChromeVox. Quando o ChromeVox for ativado, irá ver uma apresentação rápida.</translation>
 <translation id="5287425679749926365">As suas contas</translation>
 <translation id="5288106344236929384">Mais ações, opções de token de acesso para <ph name="USERNAME" /> em <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Voltar a Abrir o S&amp;eparador Fechado</translation>
@@ -5618,6 +5626,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5772114492540073460">O <ph name="PARALLELS_NAME" /> permite-lhe executar apps Windows® no Chromebook. Recomenda-se, pelo menos, <ph name="MINIMUM_SPACE" /> de espaço livre para a instalação.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Pode aguardar que a página responda ou sair da mesma.}other{Pode aguardar que as páginas respondam ou sair das mesmas.}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" />, mais detalhes</translation>
+<translation id="577313026359983030">As minhas extensões</translation>
 <translation id="5774295353725270860">Aplicação Abrir Ficheiros</translation>
 <translation id="5776450228446082914">A lista de Websites que podem ser abertos em qualquer navegador.</translation>
 <translation id="5776571780337000608">Pode abrir e editar ficheiros suportados com esta app a partir do navegador de ficheiros ou outras apps. Para controlar que ficheiros abrem esta app por predefinição, <ph name="BEGIN_LINK" />saiba como definir apps predefinidas no dispositivo<ph name="END_LINK" />.</translation>
@@ -6820,6 +6829,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6798780071646309401">caps lock ativado</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">Definições gerais</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Escolha se esta extensão pode ler ou alterar este site}other{Escolha se estas extensões podem ler ou alterar este site}}</translation>
 <translation id="6801435275744557998">Calibrar ecrã tátil</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">A VM "<ph name="DEFAULT_VM_NAME" />" existe</translation>
@@ -8026,6 +8036,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7800518121066352902">Rodar para a &amp;Esquerda</translation>
 <translation id="7801679634091975683">As alterações que efetuar aqui aplicam-se apenas ao navegador Chrome Lacros. Para efetuar alterações às definições do navegador Chrome, abra o navegador Chrome e aceda às definições.</translation>
 <translation id="780301667611848630">Não</translation>
+<translation id="7803267169006795990">O ChromeVox, o leitor de ecrã no ChromeOS, é usado principalmente por pessoas cegas e com visão reduzida. Prima sem soltar ambas as teclas de volume durante cinco segundos para ativar o ChromeVox. Quando o ChromeVox for ativado, irá ver uma apresentação rápida.</translation>
 <translation id="7803657407897251194">Para continuar a configuração com o seu dispositivo Android, ligue o dispositivo <ph name="DEVICE_TYPE" /> a uma rede</translation>
 <translation id="7804072833593604762">Separador fechado</translation>
 <translation id="7805768142964895445">Estado</translation>
@@ -9575,6 +9586,7 @@ Pode enviá-lo para a Navegação segura do Google para verificar se é inseguro
 <translation id="9108808586816295166">O DNS seguro pode não estar sempre disponível.</translation>
 <translation id="9109122242323516435">Para libertar espaço, elimine ficheiros do armazenamento do dispositivo.</translation>
 <translation id="9109283579179481106">Ligue-se à rede móvel</translation>
+<translation id="9110739391922513676">Configure o Microsoft 365 para abrir ficheiros</translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="9111305600911828693">A licença não está configurada</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9697,6 +9709,7 @@ Pode enviá-lo para a Navegação segura do Google para verificar se é inseguro
 <translation id="9220820413868316583">Levante e tente novamente.</translation>
 <translation id="922152298093051471">Personalizar o Chrome</translation>
 <translation id="923467487918828349">Mostrar tudo</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Para a gerir, abra as Extensões}other{Para as gerir, abra as Extensões}}</translation>
 <translation id="924818813611903184">Gerir idiomas nas definições do ChromeOS</translation>
 <translation id="925270020047573546">A transmissão do áudio do computador não é suportada neste dispositivo.</translation>
 <translation id="930268624053534560">Data/hora em detalhe</translation>

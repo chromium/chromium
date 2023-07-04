@@ -312,6 +312,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1244265436519979884">Kasalukuyang isinasagawa ang pag-restore ng Linux</translation>
 <translation id="1244303850296295656">Error sa extension</translation>
 <translation id="1244917379075403655">I-click ang “Mga Setting”</translation>
+<translation id="1245331638296910488">Malilipat ang mga file sa OneDrive kapag binubuksan ang mga ito sa Microsoft 365</translation>
 <translation id="1245628370644070008">Pag-recover ng lokal na data</translation>
 <translation id="1246863218384630739">Hindi ma-install ang <ph name="VM_NAME" />: Nagbalik ang URL ng Larawan ng code ng error na <ph name="HTTP_ERROR" />. Makipag-ugnayan sa iyong administrator.</translation>
 <translation id="1247372569136754018">Mikropono (internal)</translation>
@@ -673,6 +674,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1552301827267621511">Pinalitan ng extension na "<ph name="EXTENSION_NAME" />" ang paghahanap para magamit ang <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Mamahala ng extension</translation>
 <translation id="1553538517812678578">walang limitasyon</translation>
+<translation id="1553947773881524342"><ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /> tungkol sa Microsoft 365 sa iyong Chromebook.</translation>
 <translation id="1555130319947370107">Asul</translation>
 <translation id="1556127816860282890">Posibleng maging limitado ang aktibidad sa background at ilang visual effect, tulad ng maayos na pag-scroll</translation>
 <translation id="1556537182262721003">Hindi maililipat ang direktoryo ng extension papunta sa profile.</translation>
@@ -1130,6 +1132,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1904580727789512086">Naka-save sa iyong Google Account ang mga URL na iyong binibisita</translation>
 <translation id="1905375423839394163">Pangalan ng Chromebook device</translation>
 <translation id="1906181697255754968">Karaniwang ina-access ng mga site ang mga file at folder sa iyong device para sa mga feature gaya ng awtomatikong pag-save sa trabaho mo</translation>
+<translation id="1906488504371069394">Tumuklas ng higit pang extension at tema sa <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Mag-type gamit ang iyong boses. Gamitin ang Search + D, pagkatapos ay magsimulang magsalita.</translation>
 <translation id="1908591798274282246">Buksan Ulit ang Nakasarang Grupo</translation>
 <translation id="1909880997794698664">Sigurado ka bang gusto mong permanenteng panatilihin sa kiosk mode ang device na ito?</translation>
@@ -1944,6 +1947,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2561211427862644160">Tingnan ang lahat ng iyong bookmark dito</translation>
 <translation id="2564520396658920462">Na-off ang pagpapatupad ng JavaScript sa pamamagitan ng AppleScript. Para i-on ito, mula sa menu bar, pumunta sa Tingnan &gt; Developer &gt; Payagan ang JavaScript mula sa Mga Event ng Apple. Para sa higit pang impormasyon: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Pinahusay na pang-check ng pagbabaybay</translation>
+<translation id="2565214867520763227">I-on ang screen reader</translation>
 <translation id="2568694057933302218">Habang nasa Incognito, hindi magagamit ng mga site ang cookies mo para makita ang iyong aktibidad sa pag-browse sa lahat ng site. Hindi ginagamit ang iyong aktibidad sa pag-browse para sa mga bagay tulad ng pag-personalize ng mga ad. Posibleng hindi gumana ang mga feature sa ilang site.</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
 <translation id="2569972178052279830">Pangalan ng Retailer</translation>
@@ -2576,6 +2580,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3089948625237571254">C&amp;opy Video Frame</translation>
 <translation id="3090227230165225418">Ianunsyo ang mga notification ng pag-download</translation>
 <translation id="3090589793601454425">Huwag ilipat</translation>
+<translation id="309079592386854321">Tiyaking nakakonekta ang iyong printer sa Wi-Fi network kung saan nakakonekta ang Chromebook mo o gumamit ng USB cable. <ph name="LINK_BEGIN" />Matuto pa tungkol sa compatibility<ph name="LINK_END" />.</translation>
 <translation id="3090819949319990166">Hindi makopya ang external na crx file sa <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Napares na ang "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3093714882666365141">Huwag payagan ang mga site na mag-install ng mga tagapangasiwa ng pagbabayad</translation>
@@ -4090,6 +4095,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4410545552906060960">Gumamit ng numero (PIN) sa halip na password para i-unlock ang iyong device. Para maitakda ang PIN mo sa ibang pagkakataon, pumunta sa Mga Setting.</translation>
 <translation id="4411578466613447185">Code Signer</translation>
 <translation id="4411719918614785832">Naka-save ang mga passkey na ito sa Windows Hello sa computer na ito. Hindi naka-save ang mga ito sa iyong Google Account.</translation>
+<translation id="4412275763838812196">Ang screen reader sa ChromeOS na ChromeVox ay pangunahing ginagamit ng mga taong bulag at malabo ang paningin. Pindutin ang space bar para i-on ang ChromeVox. Kapag na-activate na ang ChromeVox, may gagawin kang mabilis na tour.</translation>
 <translation id="4412632005703201014">Nagma-migrate ang Mga Chrome App sa Mga Progressive Web App. Na-install ng iyong organisasyon ang Chrome App na ito sa browser mo. Para buksan ang Progressive Web App mula sa listahan ng Mga App, makipag-ugnayan muna sa iyong administrator at hilingin sa kanyang i-uninstall ang Chrome App. Sa ngayon, puwede mong bisitahin ang <ph name="EXTENSION_LAUNCH_URL" /> para buksan ang <ph name="EXTENSION_NAME" /> sa web.</translation>
 <translation id="4412698727486357573">Help center</translation>
 <translation id="4412992751769744546">Payagan ang third-party na cookies</translation>
@@ -4302,6 +4308,7 @@ Puwedeng kasama sa mga signal ng device ang impormasyon tungkol sa iyong browser
 <translation id="4585793705637313973">I-edit ang page</translation>
 <translation id="4586275095964870617">Hindi mabuksan ang <ph name="URL" /> sa isang alternatibong browser. Mangyaring makipag-ugnayan sa iyong system administrator.</translation>
 <translation id="4587589328781138893">Mga Site</translation>
+<translation id="4588882777927162244">Ang screen reader sa ChromeOS Flex na ChromeVox ay pangunahing ginagamit ng mga taong bulag at malabo ang paningin. Pindutin ang space bar para i-on ang ChromeVox. Kapag na-activate na ang ChromeVox, may gagawin kang mabilis na tour.</translation>
 <translation id="4589713469967853491">Na-write na ang mga log sa directory na Mga Download.</translation>
 <translation id="459204634473266369">Walang device na naka-save sa <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">Mas mabilis na ang pag-browse at paghahanap.</translation>
@@ -5085,6 +5092,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5284445933715251131">Ituloy ang Pag-download</translation>
 <translation id="5285635972691565180">Display <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Nagsa-scan</translation>
+<translation id="5287073652040102781">Ang screen reader sa ChromeOS Flex na ChromeVox ay pangunahing ginagamit ng mga taong bulag at malabo ang paningin. Pindutin nang matagal ang parehong volume key sa loob ng limang segundo para i-on ang ChromeVox. Kapag na-activate na ang ChromeVox, may gagawin kang mabilis na tour.</translation>
 <translation id="5287425679749926365">Ang iyong mga account</translation>
 <translation id="5288106344236929384">Higit pang pagkilos, opsyon sa passkey para kay <ph name="USERNAME" /> sa <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">M&amp;uling Buksan ang Nakasarang Tab</translation>
@@ -5633,6 +5641,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5772114492540073460">Nagbibigay-daan sa iyo ang <ph name="PARALLELS_NAME" /> na magpatakbo ng mga Windows® app sa iyong Chromebook. <ph name="MINIMUM_SPACE" /> na bakanteng espasyo ang inirerekomenda para sa pag-install.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Maaari mong hintaying tumugon ito o umalis sa page.}one{Maaari mong hintaying tumugon ang mga ito o umalis sa mga page.}other{Maaari mong hintaying tumugon ang mga ito o umalis sa mga page.}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" /> higit pang detalye</translation>
+<translation id="577313026359983030">Mga extension ko</translation>
 <translation id="5774295353725270860">App na Buksan ang Mga File</translation>
 <translation id="5776450228446082914">Ang listahan ng mga website na mabubuksan sa alinmang browser.</translation>
 <translation id="5776571780337000608">Magagawa mong magbukas at mag-edit ng mga sinusuportahang file mula sa iyong file browser o iba pang app gamit ang app na ito. Para kontrolin kung aling mga file ang magbubukas sa app na ito bilang default, <ph name="BEGIN_LINK" />alamin kung paano magtakda ng mga default na app sa iyong device<ph name="END_LINK" />.</translation>
@@ -6837,6 +6846,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6798780071646309401">naka-on ang caps lock</translation>
 <translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">Mga pangkalahatang setting</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Piliin kung mababasa o mababago ng extension na ito ang site na ito}one{Piliin kung mababasa o mababago ng mga extension na ito ang site na ito}other{Piliin kung mababasa o mababago ng mga extension na ito ang site na ito}}</translation>
 <translation id="6801435275744557998">I-calibrate ang touchscreen</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">Mayroong VM na "<ph name="DEFAULT_VM_NAME" />"</translation>
@@ -8043,6 +8053,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7800518121066352902">I-rotate P&amp;akaliwa</translation>
 <translation id="7801679634091975683">Malalapat lang sa Lacros na Chrome Browser ang mga pagbabagong gagawin mo rito. Para gumawa ng mga pagbabago sa mga setting ng iyong Chrome Browser, buksan ang Chrome Browser at pumunta sa mga setting.</translation>
 <translation id="780301667611848630">Hindi salamat</translation>
+<translation id="7803267169006795990">Ang screen reader sa ChromeOS na ChromeVox ay pangunahing ginagamit ng mga taong bulag at malabo ang paningin. Pindutin nang matagal ang parehong volume key sa loob ng limang segundo para i-on ang ChromeVox. Kapag na-activate na ang ChromeVox, may gagawin kang mabilis na tour.</translation>
 <translation id="7803657407897251194">Para ipagpatuloy ang pag-set up gamit ang iyong Android device, ikonekta ang <ph name="DEVICE_TYPE" /> mo sa isang network</translation>
 <translation id="7804072833593604762">Isinara ang Tab</translation>
 <translation id="7805768142964895445">Katayuan</translation>
@@ -9595,6 +9606,7 @@ Puwede mo itong ipadala sa Ligtas na Pag-browse sa Google para masuri kung hindi
 <translation id="9108808586816295166">Posibleng hindi available sa lahat ng oras ang secure na DNS</translation>
 <translation id="9109122242323516435">Upang magbakante ng espasyo, mag-delete ng mga file mula sa storage ng device.</translation>
 <translation id="9109283579179481106">Kumonekta sa mobile network</translation>
+<translation id="9110739391922513676">I-set up ang Microsoft 365 para magbukas ng mga file</translation>
 <translation id="9111102763498581341">I-unlock</translation>
 <translation id="9111305600911828693">Hindi naka-set up ang lisensya</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9717,6 +9729,7 @@ Puwede mo itong ipadala sa Ligtas na Pag-browse sa Google para masuri kung hindi
 <translation id="9220820413868316583">Iangat at pagkatapos ay subukan ulit.</translation>
 <translation id="922152298093051471">I-customize ang Chrome</translation>
 <translation id="923467487918828349">Ipakita Lahat</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Para pamahalaan ito, buksan ang Mga Extension}one{Para pamahalaan ang mga ito, buksan ang Mga Extension}other{Para pamahalaan ang mga ito, buksan ang Mga Extension}}</translation>
 <translation id="924818813611903184">Pamahalaan ang mga wika sa mga setting ng ChromeOS</translation>
 <translation id="925270020047573546">Hindi sinusuportahan sa device na ito ang pag-cast ng audio ng desktop.</translation>
 <translation id="930268624053534560">Mga Detalyadong Timestamp</translation>

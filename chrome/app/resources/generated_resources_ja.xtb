@@ -5521,7 +5521,7 @@
 <translation id="5684661240348539843">アセット ID</translation>
 <translation id="5684950556880280580">パスワードが更新されました</translation>
 <translation id="5687326903064479980">タイムゾーン</translation>
-<translation id="5687606994963670306">30 日以上経過したサイトは自動削除されます。サイトにもう一度アクセスすると、リストに再度表示される場合もあります。広告の提案を行わないようサイトをブロックすることもできます。詳しくは、<ph name="BEGIN_LINK" />Chrome で広告のプライバシーを管理する<ph name="END_LINK" />をご覧ください。</translation>
+<translation id="5687606994963670306">Chrome では、30 日以上経過したサイトは自動削除されます。サイトにもう一度アクセスすると、リストに再度表示される場合もあります。広告の提案を行わないようサイトをブロックすることもできます。詳しくは、<ph name="BEGIN_LINK" />Chrome で広告のプライバシーを管理する<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="5687935527303996204">デバイスが電源に接続されていることを確認してください。電源をオフにしないでください。インストールには 20 分ほどかかる場合があります。インストールが完了するとデバイスは自動的にシャットダウンします。</translation>
 <translation id="5689516760719285838">位置情報</translation>
 <translation id="5689531695336322499">アシスタントの Voice Match は、<ph name="SUPERVISED_USER_NAME" /> さんがすでに別のデバイスで設定済みのようです。このデバイスの音声モデルは、登録済みの音声を使って作成されています。</translation>

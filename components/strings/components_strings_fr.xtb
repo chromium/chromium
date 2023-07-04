@@ -127,6 +127,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Vous avez saisi votre mot de passe sur un site qui n'est pas géré par votre organisation. Pour protéger votre compte, ne réutilisez pas ce mot de passe dans d'autres applications ni sur d'autres sites.</translation>
 <translation id="1257553931232494454">niveaux de zoom</translation>
+<translation id="1259843033850529027">Sélectionner le niveau de la règle</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer vos paramètres Chrome</translation>
 <translation id="1264309058268477500">Autre</translation>
 <translation id="1264974993859112054">Sports</translation>
@@ -304,6 +305,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1593359183944365958">270 degrés</translation>
 <translation id="1594030484168838125">Sélectionner</translation>
 <translation id="1596296697375291157">Films policiers et thrillers</translation>
+<translation id="1597473228022844713">Vous suivez ce produit. Cette page est enregistrée dans <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1599199147673445968">Nouvelle carte ? <ph name="BEGIN_LINK" />Saisir les informations relatives à la carte<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Jouer au jeu du dino dans Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
@@ -949,6 +951,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3140646734028448730">Services professionnels</translation>
 <translation id="3141093262818886744">Ouvrir quand même</translation>
 <translation id="3141641372357166056">Aucune décision d'autorisation</translation>
+<translation id="3144458715650412431">Les règles de test ont été appliquées. Accédez à chrome://policy/test pour les examiner ou les réinitialiser. Les règles d'administration ne seront pas appliquées.</translation>
 <translation id="3145945101586104090">Échec du décodage de la réponse.</translation>
 <translation id="3150653042067488994">Erreur temporaire du serveur.</translation>
 <translation id="3150889484970506196">Bouton "Créer une feuille" à activer pour créer rapidement une feuille de calcul Google Sheets</translation>
@@ -1343,6 +1346,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3987940399970879459">Moins de 1 Mo</translation>
 <translation id="3990250421422698716">Décalage</translation>
 <translation id="3992684624889376114">À propos de cette page</translation>
+<translation id="3995639283717357522">Appliquer les règles</translation>
 <translation id="399952081411886534">Autres fonctionnalités améliorant la confidentialité des annonces</translation>
 <translation id="4000598935132966791">En savoir plus sur les restrictions liées au site dans les navigateurs gérés</translation>
 <translation id="4006465311664329701">Modes de paiement, offres et adresses utilisant Google Pay</translation>
@@ -1523,6 +1527,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4333561522337981382">Gérer les fenêtres sur tous vos écrans</translation>
 <translation id="4338709847516294988">Appuyez sur Recherche+M et convertissez l'image en texte dans le menu contextuel</translation>
 <translation id="4340575312453649552">Cette annonce a utilisé trop de ressources pour votre appareil. Par conséquent, Chrome l'a supprimée.</translation>
+<translation id="4340810192899866471">Importer à partir d'un fichier JSON</translation>
 <translation id="4340982228985273705">Cet ordinateur n'est pas détecté comme étant géré par une entreprise. Selon la règle définie, seules les extensions hébergées par le Chrome Web Store peuvent y être installées. L'URL de mise à jour du Chrome Web Store est "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206">La connexion à <ph name="SITE" /> n'est pas sécurisée</translation>
 <translation id="4349365535725594680">Impossible de partager le contenu confidentiel</translation>
@@ -1771,6 +1776,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4901778704868714008">Enregistrer…</translation>
 <translation id="4901952598169637881">Chaussures décontractées</translation>
 <translation id="4905659621780993806">L'administrateur redémarrera votre appareil automatiquement le <ph name="DATE" /> à <ph name="TIME" />. Enregistrez tous les éléments ouverts avant que votre appareil ne redémarre.</translation>
+<translation id="4907289208610706508">Cible</translation>
 <translation id="4913987521957242411">Perforation en haut à gauche</translation>
 <translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (aucun téléchargement requis)</translation>
 <translation id="4920457992177678649">Locations de vacances et courts séjours</translation>
@@ -1880,6 +1886,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5145883236150621069">Code d'erreur présent dans la réponse de la règle.</translation>
 <translation id="5146995429444047494">Les notifications sont bloquées pour <ph name="ORIGIN" /></translation>
 <translation id="514704532284964975"><ph name="URL" /> souhaite consulter et modifier des informations sur les appareils NFC que vous touchez avec votre téléphone</translation>
+<translation id="5147633291963801297">Consultez les baisses de prix dans le panneau latéral</translation>
 <translation id="5148809049217731050">Vers le haut</translation>
 <translation id="5153314898060540200">Hard-rock et rock progressif</translation>
 <translation id="5157504274688344097">Grands magasins et hypermarchés</translation>
@@ -2455,6 +2462,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6450212216969386944">Enveloppe Chou 40</translation>
 <translation id="6451458296329894277">Confirmer le nouvel envoi du formulaire</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">Sélectionner la cible de la règle</translation>
 <translation id="6456955391422100996">Annonce supprimée.</translation>
 <translation id="6457206614190510200">Agrafage à cheval</translation>
 <translation id="6457455098507772300">Les alertes en cas de baisse de prix s'affichent dans une notification pop-up sur le bureau</translation>
@@ -2738,6 +2746,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7108819624672055576">Autorisé par une extension</translation>
 <translation id="7109510814665441393">Jeux de conduite et de courses</translation>
 <translation id="7110116949943042888">Emplois temporaires et saisonniers</translation>
+<translation id="7110553203952632623">Vous recevrez des alertes par e-mail si le prix baisse sur un site</translation>
 <translation id="7111012039238467737">(Valide)</translation>
 <translation id="7111507312244504964">Évaluations et expertises immobilières</translation>
 <translation id="7112327784801341716">Vos informations ne sont pas à jour ? Contactez votre banque pour les modifier.</translation>
@@ -3230,6 +3239,7 @@ Informations supplémentaires :
 <translation id="8127301229239896662">Le logiciel "<ph name="SOFTWARE_NAME" />" n'a pas été installé correctement sur votre ordinateur ou sur votre réseau. Demandez à l'administrateur informatique de résoudre le problème.</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8134058435519644366">Recrutement et gestion du personnel</translation>
+<translation id="8144303576836498784">Un problème est survenu. Votre modification n'a pas été enregistrée</translation>
 <translation id="8148608574971654810">Version PDF :</translation>
 <translation id="8149426793427495338">Votre ordinateur s'est mis en veille.</translation>
 <translation id="8150722005171944719">Le fichier disponible à l'adresse <ph name="URL" /> n'est pas lisible. Il est possible qu'il ait été supprimé ou déplacé, ou que les autorisations associées empêchent d'y accéder.</translation>
@@ -3243,6 +3253,7 @@ Informations supplémentaires :
 <translation id="8184538546369750125">Utiliser le paramètre global par défaut ("Autoriser")</translation>
 <translation id="8186706823560132848">Logiciel</translation>
 <translation id="8190193880870196235">Gérée par une extension</translation>
+<translation id="8194412401381329820">Vous ne pouvez pas utiliser cette page à partir d'un compte géré sur cet appareil non géré. Tous les comptes gérés seront verrouillés si vous utilisez cette page, à l'exception des comptes gérés par la même entité que cet appareil (comptes affiliés).</translation>
 <translation id="8194797478851900357">&amp;Annuler le déplacement</translation>
 <translation id="8194956568907463262">Jeux de tir</translation>
 <translation id="8200772114523450471">Reprendre</translation>
@@ -3250,6 +3261,7 @@ Informations supplémentaires :
 <translation id="8202370299023114387">Conflit</translation>
 <translation id="8207625368992715508">Sport automobile</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
+<translation id="8210490490377416373">Sélectionner un nom de règle</translation>
 <translation id="8210604850413485128">Hébergement Web</translation>
 <translation id="8211406090763984747">La connexion est sécurisée</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3365,6 +3377,7 @@ Informations supplémentaires :
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyez sur Tabulation, puis sur Entrée pour gérer vos préférences de cookies dans les paramètres Chrome</translation>
 <translation id="8433057134996913067">Vous serez déconnecté de la plupart des sites.</translation>
 <translation id="8434840396568290395">Animaux de compagnie</translation>
+<translation id="8436623588884785770">Ajouter une règle</translation>
 <translation id="8437238597147034694">&amp;Annuler le déplacement</translation>
 <translation id="8438786541497918448">Utiliser la caméra et le micro ?</translation>
 <translation id="8438923942245957911">Ce site est signalé par votre organisation</translation>
@@ -3387,6 +3400,7 @@ Informations supplémentaires :
 <translation id="8483229036294884935">Cette adresse sera supprimée de votre compte Google, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">S'applique à</translation>
 <translation id="8490137692873530638">Empileur 10</translation>
+<translation id="8493829133024050711">Sélectionner une source de règles</translation>
 <translation id="8493948351860045254">Libérer de l'espace</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> a mis trop de temps à répondre.</translation>
 <translation id="8503559462189395349">Mots de passe Chrome</translation>

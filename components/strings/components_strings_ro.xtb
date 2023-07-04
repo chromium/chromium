@@ -127,6 +127,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ai introdus parola pe un site care nu este gestionat de organizația ta. Pentru a proteja contul, nu folosi aceeași parolă pentru alte aplicații și site-uri.</translation>
 <translation id="1257553931232494454">Niveluri de zoom</translation>
+<translation id="1259843033850529027">Selectează nivelul politicii</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Apasă pe Tab, apoi pe Enter pentru a gestiona setările Chrome</translation>
 <translation id="1264309058268477500">Alternativă</translation>
 <translation id="1264974993859112054">Sport</translation>
@@ -304,6 +305,7 @@
 <translation id="1593359183944365958">270 de grade</translation>
 <translation id="1594030484168838125">Alegeți</translation>
 <translation id="1596296697375291157">Thrillere, filme polițiste și de mister</translation>
+<translation id="1597473228022844713">Urmărești acest produs. Pagina este salvată în <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1599199147673445968">Card nou? <ph name="BEGIN_LINK" />Introdu detaliile cardului<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Joacă jocul Dino Run în Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
@@ -949,6 +951,7 @@
 <translation id="3140646734028448730">Servicii comerciale</translation>
 <translation id="3141093262818886744">Deschide oricum</translation>
 <translation id="3141641372357166056">Nicio decizie privind consimțământul</translation>
+<translation id="3144458715650412431">Politicile de testare au fost aplicate. Examinează-le și resetează-le la chrome://policy/test. Politicile pentru administratori nu vor fi aplicate.</translation>
 <translation id="3145945101586104090">Răspunsul nu a putut fi decodificat</translation>
 <translation id="3150653042067488994">Eroare temporară de server</translation>
 <translation id="3150889484970506196">Butonul Creează o foaie, activează pentru a crea rapid o Foaie de calcul Google</translation>
@@ -1343,6 +1346,7 @@
 <translation id="3987940399970879459">Mai puțin de 1 MB</translation>
 <translation id="3990250421422698716">Decalaj de îndoire</translation>
 <translation id="3992684624889376114">Despre această pagină</translation>
+<translation id="3995639283717357522">Aplică politicile</translation>
 <translation id="399952081411886534">Alte funcții care fac anunțurile mai private</translation>
 <translation id="4000598935132966791">Află mai multe despre restricțiile pentru site-uri din browserele gestionate</translation>
 <translation id="4006465311664329701">Metode de plată, oferte și adrese care folosesc Google Pay</translation>
@@ -1523,6 +1527,7 @@
 <translation id="4333561522337981382">Gestionează ferestre de pe toate ecranele</translation>
 <translation id="4338709847516294988">Apasă pe tastele căutare, + și M și convertește imaginea în text din meniul contextual</translation>
 <translation id="4340575312453649552">Anunțul folosea prea multe resurse pentru dispozitivul tău, așa că Chrome l-a eliminat.</translation>
+<translation id="4340810192899866471">Importă din JSON</translation>
 <translation id="4340982228985273705">Acest computer nu este detectat ca fiind gestionat de companie, deci politica poate instala automat doar extensiile găzduite în Magazinul web Chrome. Adresa URL pentru actualizare din Magazinul web Chrome este „<ph name="CWS_UPDATE_URL" />”.</translation>
 <translation id="4348834659292907206">Conexiunea la <ph name="SITE" /> nu este securizată</translation>
 <translation id="4349365535725594680">Nu poți permite accesul la conținut confidențial</translation>
@@ -1771,6 +1776,7 @@
 <translation id="4901778704868714008">Salvează...</translation>
 <translation id="4901952598169637881">Încălțăminte casual</translation>
 <translation id="4905659621780993806">Administratorul îți va reporni dispozitivul automat la ora <ph name="TIME" />, pe <ph name="DATE" />. Salvează elementele deschise înainte ca dispozitivul să repornească.</translation>
+<translation id="4907289208610706508">Obiectiv</translation>
 <translation id="4913987521957242411">Perforare în stânga sus</translation>
 <translation id="4918221908152712722">Instalează <ph name="APP_NAME" /> (nu necesită descărcare)</translation>
 <translation id="4920457992177678649">Locuințe de închiriat pentru vacanțe și locuințe pe termen scurt</translation>
@@ -1880,6 +1886,7 @@
 <translation id="5145883236150621069">Răspunsul pentru politică include un cod de eroare</translation>
 <translation id="5146995429444047494">Notificările pentru <ph name="ORIGIN" /> sunt blocate</translation>
 <translation id="514704532284964975"><ph name="URL" /> solicită să vadă și să modifice informații de pe un dispozitiv NFC când atingi pe telefon</translation>
+<translation id="5147633291963801297">Vezi scăderile de prețuri în panoul lateral</translation>
 <translation id="5148809049217731050">Cu fața în sus</translation>
 <translation id="5153314898060540200">Muzică hard rock și progresivă</translation>
 <translation id="5157504274688344097">Comerț de masă și supermarketuri</translation>
@@ -2455,6 +2462,7 @@
 <translation id="6450212216969386944">Plic Chou 40</translation>
 <translation id="6451458296329894277">Confirmă retrimiterea formularului</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">Selectează obiectivul privind politica</translation>
 <translation id="6456955391422100996">Anunțul a fost eliminat.</translation>
 <translation id="6457206614190510200">Broșare pe mijloc</translation>
 <translation id="6457455098507772300">Alertele privind scăderile de preț apar ca notificări pop-up pe desktop</translation>
@@ -2738,6 +2746,7 @@
 <translation id="7108819624672055576">Permisă de o extensie</translation>
 <translation id="7109510814665441393">Jocuri cu șofat și curse de mașini</translation>
 <translation id="7110116949943042888">Job temporar/sezonier</translation>
+<translation id="7110553203952632623">Vei primi alerte prin e-mail dacă prețul scade pe orice site</translation>
 <translation id="7111012039238467737">(Valid)</translation>
 <translation id="7111507312244504964">Inspecții și evaluări ale proprietăților</translation>
 <translation id="7112327784801341716">Nu apar informațiile curente? Contactează-ți banca pentru a le actualiza.</translation>
@@ -3229,6 +3238,7 @@ Detalii suplimentare:
 <translation id="8127301229239896662">„<ph name="SOFTWARE_NAME" />” nu a fost instalat corect pe computer sau în rețea. Contactează administratorul IT pentru a remedia această problemă.</translation>
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8134058435519644366">Recrutare și personal</translation>
+<translation id="8144303576836498784">A apărut o eroare. Modificarea nu a fost salvată.</translation>
 <translation id="8148608574971654810">Versiune PDF:</translation>
 <translation id="8149426793427495338">Computerul este inactiv.</translation>
 <translation id="8150722005171944719">Fișierul de la <ph name="URL" /> nu poate fi citit.  Este posibil să fi fost eliminat ori mutat sau ca permisiunile pentru fișiere să împiedice accesarea acestuia.</translation>
@@ -3242,6 +3252,7 @@ Detalii suplimentare:
 <translation id="8184538546369750125">Utilizați setarea prestabilită la nivel global (Permiteți)</translation>
 <translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Gestionată printr-o extensie</translation>
+<translation id="8194412401381329820">Nu poți folosi această pagină dintr-un cont gestionat pe acest dispozitiv negestionat. Toate conturile gestionate vor fi blocate dacă folosești această pagină, cu excepția conturilor gestionate de aceeași entitate ca acest dispozitiv (conturi afiliate).</translation>
 <translation id="8194797478851900357">&amp;Anulați mutarea</translation>
 <translation id="8194956568907463262">Shootere</translation>
 <translation id="8200772114523450471">Reia</translation>
@@ -3249,6 +3260,7 @@ Detalii suplimentare:
 <translation id="8202370299023114387">Conflict</translation>
 <translation id="8207625368992715508">Sporturi cu motor</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
+<translation id="8210490490377416373">Selectează numele politicii</translation>
 <translation id="8210604850413485128">Găzduire web</translation>
 <translation id="8211406090763984747">Conexiunea este securizată</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3364,6 +3376,7 @@ Detalii suplimentare:
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona preferințele privind cookie-urile din setările Chrome</translation>
 <translation id="8433057134996913067">Astfel, te vei deconecta de pe majoritatea site-urilor.</translation>
 <translation id="8434840396568290395">Animale de companie</translation>
+<translation id="8436623588884785770">Adaugă o politică</translation>
 <translation id="8437238597147034694">&amp;Anulați mutarea</translation>
 <translation id="8438786541497918448">Folosești camera foto și microfonul?</translation>
 <translation id="8438923942245957911">Site-ul este semnalat de organizația ta</translation>
@@ -3386,6 +3399,7 @@ Detalii suplimentare:
 <translation id="8483229036294884935">Adresa va fi ștearsă din Contul tău Google <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Se aplică pentru</translation>
 <translation id="8490137692873530638">Receptorul de hârtie 10</translation>
+<translation id="8493829133024050711">Selectează sursa politicii</translation>
 <translation id="8493948351860045254">Eliberează spațiu</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> a răspuns prea târziu.</translation>
 <translation id="8503559462189395349">Parole Chrome</translation>

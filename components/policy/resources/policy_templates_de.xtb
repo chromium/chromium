@@ -7066,6 +7066,15 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7298197471363105063">„First-Party-Sets“ überschreiben.</translation>
 <translation id="7302043767260300182">Verzögerung für die Bildschirmsperre im Netzbetrieb</translation>
 <translation id="7303902834678570827">Nutzer verwalteter Gastsitzungen können keine Anzeigeeinstellungen für das ganze Gerät speichern</translation>
+<translation id="7306926210354955892">Wenn die Richtlinie konfiguriert ist, wird festgelegt, welche Aktion durchgeführt werden soll, wenn das Verzeichnis für ARC-Daten des Nutzers mit virtio-fs erstellt wurde. Wenn virtio-fs-Daten zu virtio-blk migriert werden, laufen Android-Apps auf der ARC-VM möglicherweise langsamer.
+
+      Wenn die Richtlinie konfiguriert ist, gilt Folgendes: 
+
+      * <ph name="DO_NOT_PROMPT" /> bedeutet, dass Nutzer nicht zur Migration aufgefordert werden. Dies ist die Standardeinstellung, wenn die Richtlinie nicht konfiguriert ist.
+
+      * <ph name="PROMPT" /> (oder ein nicht unterstützter Wert) bedeutet, dass Nutzer bei der Anmeldung aufgefordert werden, die Daten zu migrieren. Das kann bis zu 10 Minuten dauern.
+
+      Diese Richtlinie gilt nur für ARM-Geräte, die zur ARC-VM migrieren.</translation>
 <translation id="731208205557053914">VPD-Informationen melden</translation>
 <translation id="7313672174502374994">SHA-256-Hash des Hintergrundbilds.</translation>
 <translation id="7313681786668291607">Mit dieser Richtlinie kannst du festlegen, wie sich das System beim Start verhält. Wenn diese Einstellung deaktiviert ist, hat das den gleichen Effekt, als wäre sie nicht konfiguriert, da <ph name="PRODUCT_NAME" /> ein festgelegtes Verhalten beim Start benötigt.

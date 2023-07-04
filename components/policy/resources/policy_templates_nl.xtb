@@ -1445,6 +1445,11 @@ In de <ph name="PRODUCT_OS_NAME" />-kiosk biedt dit beleid niet de optie Gebruik
       Als dit beleid niet wordt toegepast, wordt elke plug-in uitgezet die overeenkomt met de patronen in DisabledPlugins, en kan de gebruiker deze niet aanzetten.</translation>
 <translation id="2236488539271255289">Niet toestaan dat sites lokaal gegevens instellen</translation>
 <translation id="2236593201136596376">Verzamelen van WebRTC-tekstlogboeken van Google-services toestaan</translation>
+<translation id="2237705286848619561">Als je dit beleid toepast, wordt in door de beheerder gestarte zakelijke sessies voor externe support het overzetten van bestanden tussen de client en de host toegestaan.
+
+Dit beleid heeft geen effect op scenario's voor externe toegang.
+
+Als je dit beleid niet instelt of niet toepast, is bestandsoverdracht niet toegestaan.</translation>
 <translation id="2241498944622759244">Deze functie is nooit gelanceerd. Het beleid is daardoor beëindigd. Als dit beleid is ingesteld op True of niet is ingesteld, stelt <ph name="PRODUCT_NAME" /> pagina's voor met betrekking tot de huidige pagina.
       Deze suggesties worden extern opgehaald van Google-servers.
 
@@ -4022,6 +4027,7 @@ Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor u
 <translation id="4561560385824323005">Gebruikers toestaan een vooraf ingestelde bureaubladindeling te laden</translation>
 <translation id="4561940244682063697">Niet toestaan dat sites gebruikers vragen om een videostream van hun scherm te delen</translation>
 <translation id="4562165737444703281">Toestaan dat gebruikers Crostini-poortdoorschakeling [aanzetten/configureren]</translation>
+<translation id="456450545863578630">Bestandsoverdracht in verbindingen voor externe support van bedrijfsbeheerders aanzetten</translation>
 <translation id="456686782928669977">Met dit beleid wordt bepaald of de regels van het SiteList-beleid van <ph name="IE_PRODUCT_NAME" /> moeten worden geladen.
 
       Als je dit beleid instelt op True, leest <ph name="PRODUCT_NAME" /> het <ph name="IEEM_SITELIST_POLICY" />-beleid van <ph name="IE_PRODUCT_NAME" /> om de URL van de lijst met sites op te halen. Vervolgens downloadt <ph name="PRODUCT_NAME" /> de lijst met sites van die URL en worden de regels toegepast alsof ze zijn geconfigureerd met het <ph name="BROWSER_SWITCHER_URL_LIST_POLICY_NAME" />-beleid.
@@ -5539,6 +5545,7 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid
 
       Als je het beleid niet toepast, kunnen gebruikers deze aanbiedingen niet inwisselen.</translation>
 <translation id="6042407236638640864">Toestaan dat pagina's met de koptekst <ph name="CACHE_CONTROL_NO_STORE_NAME" /> worden opgeslagen in Back-Forward Cache.</translation>
+<translation id="604243460476563291">Bestandsoverdracht in verbindingen voor externe support van bedrijfsbeheerders uitzetten</translation>
 <translation id="6042629184389251062">Verzameling van URL-sleutelstatistieken is niet toegestaan</translation>
 <translation id="6046615715547751255">Opties voor gedetailleerde rapportage niet toestaan</translation>
 <translation id="6048199181629830227">Stroombeheer voor piekuren aanzetten</translation>
@@ -7617,6 +7624,7 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
 <translation id="7827127381981620448">Platform-app</translation>
 <translation id="7829436838673974723">Toestaan dat pagina's synchrone XHR-verzoeken sturen tijdens het sluiten van pagina's</translation>
 <translation id="782978857350824974">Verzoeken voor webverificatie toestaan op sites met niet-werkende TLS-certificaten.</translation>
+<translation id="7830775338190021763">De mogelijkheid voor bestandsoverdracht aanzetten in zakelijke sessies voor externe support</translation>
 <translation id="7832225468415136704">Chrome Cleanup niet toestaan om het systeem periodiek te scannen, en handmatige scans uitzetten</translation>
 <translation id="7833148823006528332">Android-app-ID, bijvoorbeeld 'com.google.android.gm' voor Gmail</translation>
 <translation id="7835218570504220753">Automatisch klikken uitzetten</translation>

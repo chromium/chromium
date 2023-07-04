@@ -311,6 +311,7 @@
 <translation id="1244265436519979884">ການກູ້ຄືນຂໍ້ມູນຂອງ Linux ພວມດຳເນີນຢູ່ໃນປັດຈຸບັນ</translation>
 <translation id="1244303850296295656">ສ່ວນຂະຫຍາຍຜິດພາດ</translation>
 <translation id="1244917379075403655">ຄລິກ "ການຕັ້ງຄ່າ"</translation>
+<translation id="1245331638296910488">ໄຟລ໌ຈະຍ້າຍໄປໃສ່ OneDrive ເມື່ອເປີດໃນ Microsoft 365</translation>
 <translation id="1245628370644070008">ການກູ້ຄືນຂໍ້ມູນໃນເຄື່ອງ</translation>
 <translation id="1246863218384630739">ບໍ່ສາມາດຕິດຕັ້ງ <ph name="VM_NAME" /> ໄດ້: URL ຮູບພາບຕອບລະຫັດຜິດພາດ <ph name="HTTP_ERROR" /> ກັບມາ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="1247372569136754018">ໄມໂຄຣໂຟນ (ພາຍໃນ)</translation>
@@ -670,6 +671,7 @@
 <translation id="1552301827267621511">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ໄດ້ປ່ຽນການຊອກຫາໄປໃຊ້ <ph name="SEARCH_PROVIDER_DOMAIN" /> ແລ້ວ</translation>
 <translation id="1552752544932680961">ຈັດການສ່ວນຂະຫຍາຍ</translation>
 <translation id="1553538517812678578">ບໍ່ຈໍາກັດ</translation>
+<translation id="1553947773881524342"><ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /> ກ່ຽວກັບ Microsoft 365 ໃນ Chromebook ຂອງທ່ານ.</translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="1556127816860282890">ການເຄື່ອນໄຫວໃນພື້ນຫຼັງ ແລະ ເອັບເຟັກທາງພາບຈຳນວນໜຶ່ງອາດຖືກຈຳກັດໄວ້, ເຊັ່ນ: ການເລື່ອນແບບຄ່ອງຕົວ</translation>
 <translation id="1556537182262721003">ບໍ່ສາມາດຍ້າຍໄດເຣັກຕໍຣີສ່ວນຂະຫຍາຍເພີ່ມເຕີມໄປເປັນໂປຣໄຟລ໌ໄດ້.</translation>
@@ -1126,6 +1128,7 @@
 <translation id="1904580727789512086">URL ທີ່ທ່ານເຂົ້ານັ້ນຖືກບັນທຶກໄປໃສ່ບັນຊີ Google ທ່ານແລ້ວ</translation>
 <translation id="1905375423839394163">ຊື່ອຸປະກອນ Chromebook</translation>
 <translation id="1906181697255754968">ໂດຍປົກກະຕິແລ້ວ ເວັບໄຊຈະເຂົ້າເຖິງໄຟລ໌ ແລະ ໂຟນເດີໃນອຸປະກອນຂອງທ່ານສຳລັບຄຸນສົມບັດ ເຊັ່ນ: ການບັນທຶກວຽກຂອງທ່ານໄວ້ໂດຍອັດຕະໂນມັດ</translation>
+<translation id="1906488504371069394">ຄົ້ນພົບສ່ວນຂະຫຍາຍ ແລະ ຮູບແບບສີສັນເພີ່ມເຕີມຢູ່ <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">ພິມດ້ວຍສຽງຂອງທ່ານ. ໃຊ້ຊອກຫາ + D, ຈາກນັ້ນເລີ່ມເວົ້າ.</translation>
 <translation id="1908591798274282246">ເປີດກຸ່ມທີ່ປິດໄປແລ້ວຄືນໃໝ່</translation>
 <translation id="1909880997794698664">ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການຮັກສາເຄື່ອງນີ້ໄວ້ຢູ່ໃນໂໝດ kiosk ຢ່າງຖາວອນ?</translation>
@@ -1942,6 +1945,7 @@
 <translation id="2561211427862644160">ເບິ່ງບຸກມາກທັງໝົດຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
 <translation id="2564520396658920462">ການດຳເນີນ JavaScript ຜ່ານ AppleScript ປິດຢູ່. ເພື່ອເປີດມັນ, ຈາກແຖບເມນູ, ກະລຸນາໄປຫາ ເບິ່ງ &gt; ຜູ້ພັດທະນາ &gt; ອະນຸຍາດ JavaScript ຈາກ Apple Events. ສຳລັບຂໍ້ມູນເພີ່ມເຕີມ: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">ການກວດການສະກົດຄຳທີ່ປັບປຸງແລ້ວ</translation>
+<translation id="2565214867520763227">ເປີດໂປຣແກຣມອ່ານໜ້າຈໍ</translation>
 <translation id="2568694057933302218">ເມື່ອຢູ່ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ເວັບໄຊຈະບໍ່ສາມາດໃຊ້ຄຸກກີ້ຂອງທ່ານເພື່ອເບິ່ງການເຄື່ອນໄຫວການທ່ອງເວັບຂອງທ່ານໃນເວັບໄຊຕ່າງໆໄດ້. ການເຄື່ອນໄຫວການທ່ອງເວັບຂອງທ່ານແມ່ນບໍ່ໄດ້ໃຊ້ເພື່ອສິ່ງຕ່າງໆ ເຊັ່ນ: ການປັບແຕ່ງໂຄສະນາໃຫ້ເປັນສ່ວນຕົວ. ຄຸນສົມບັດຢູ່ບາງເວັບໄຊອາດບໍ່ເຮັດວຽກ.</translation>
 <translation id="2568774940984945469">ພາຊະນະບັນຈຸແຖບຂໍ້ມູນ</translation>
 <translation id="2569972178052279830">ຊື່ຜູ້ຂາຍຍ່ອຍ</translation>
@@ -2574,6 +2578,7 @@
 <translation id="3089948625237571254">ສຳເ&amp;ນົາເຟຣມວິດີໂອ</translation>
 <translation id="3090227230165225418">ປະກາດການແຈ້ງເຕືອນການດາວໂຫຼດ</translation>
 <translation id="3090589793601454425">ຢ່າຍ້າຍ</translation>
+<translation id="309079592386854321">ກວດສອບໃຫ້ໝັ້ນໃຈວ່າເຄື່ອງພິມຂອງທ່ານເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍ Wi-Fi ດຽວກັນກັບ Chromebook ຂອງທ່ານ ຫຼື ໃຊ້ສາຍ USB. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄວາມເຂົ້າກັນໄດ້<ph name="LINK_END" />.</translation>
 <translation id="3090819949319990166">ບໍ່​ສາ​ມາດ​ກັອບປີ້​ໄຟລ​໌ crx ທາງນອກໃສ່ <ph name="TEMP_CRX_FILE" /> ໄດ້.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ຈັບຄູ່ແລ້ວ</translation>
 <translation id="3093714882666365141">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊຕິດຕັ້ງຕົວຈັດການການຈ່າຍເງິນ</translation>
@@ -4088,6 +4093,7 @@
 <translation id="4410545552906060960">ໃຊ້ຕົວເລກ (PIN) ແທນລະຫັດຜ່ານເພື່ອປົດລັອກອຸປະກອນຂອງທ່ານ. ເພື່ອຕັ້ງຄ່າ PIN ຂອງທ່ານໃນພາຍຫຼັງ, ກະລຸນາໄປທີ່ການຕັ້ງຄ່າ.</translation>
 <translation id="4411578466613447185">ເຄື່ອງເຊັນລະ​ຫັດ</translation>
 <translation id="4411719918614785832">ກະແຈຜ່ານເຫຼົ່ານີ້ຖືກບັນທຶກໄວ້ຢູ່ Windows Hello ຢູ່ຄອມພິວເຕີນີ້ເທົ່ານັ້ນ. ພວກມັນບໍ່ໄດ້ຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
+<translation id="4412275763838812196">ChromeVox ຫຼື ໂປຣແກຣມອ່ານໜ້າຈໍໃນ ChromeOS ແມ່ນເຄື່ອງມືທີ່ຜູ້ພິການຕາ ຫຼື ຜູ້ທີ່ມີບັນຫາດ້ານການເບິ່ງເຫັນໃຊ້ເປັນຫຼັກ. ກົດປຸ່ມຍະຫວ່າງເພື່ອເປີດ ChromeVox. ເມື່ອເປີດການນຳໃຊ້ ChromeVox, ລະບົບຈະແນະນຳການນຳໃຊ້ແບບສັ້ນໆໃຫ້ກັບທ່ານ.</translation>
 <translation id="4412632005703201014">ແອັບ Chrome ກຳລັງໂອນຍ້າຍໄປເປັນ Progressive Web Apps. ແອັບ Chrome ຖືກຕິດຕັ້ງຢູ່ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານໂດຍອົງກອນຂອງທ່ານ. ເພື່ອເປີດ Progressive Web App ຈາກລາຍການແອັບ, ທຳອິດໃຫ້ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ ແລະ ຂໍໃຫ້ພວກເຂົາຖອນການຕິດຕັ້ງແອັບ Chrome. ໃນລະຫວ່າງນີ້, ທ່ານສາມາດເຂົ້າເບິ່ງ <ph name="EXTENSION_LAUNCH_URL" /> ເພື່ອເປີດ <ph name="EXTENSION_NAME" /> ຢູ່ເວັບໄດ້.</translation>
 <translation id="4412698727486357573">ສູນຊ່ວຍເຫຼືອ</translation>
 <translation id="4412992751769744546">ອະ​ນຸ​ຍາດ​ຄຸກ​ກີ້​ບຸກ​ຄົນ​ທີ​ສາມ</translation>
@@ -4300,6 +4306,7 @@
 <translation id="4585793705637313973">ແກ້ໄຂໜ້າ</translation>
 <translation id="4586275095964870617">ບໍ່ສາມາດເປີດ <ph name="URL" /> ໃນໂປຣແກຣມທ່ອງເວັບສຳຮອງໄດ້ ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="4587589328781138893">ເວັບໄຊ</translation>
+<translation id="4588882777927162244">ChromeVox ຫຼື ໂປຣແກຣມອ່ານໜ້າຈໍໃນ ChromeOS Flex ແມ່ນເຄື່ອງມືທີ່ຜູ້ພິການຕາ ຫຼື ຜູ້ທີ່ມີບັນຫາດ້ານການເບິ່ງເຫັນໃຊ້ເປັນຫຼັກ. ກົດປຸ່ມຍະຫວ່າງເພື່ອເປີດ ChromeVox. ເມື່ອເປີດການນຳໃຊ້ ChromeVox, ລະບົບຈະແນະນຳການນຳໃຊ້ແບບສັ້ນໆໃຫ້ກັບທ່ານ.</translation>
 <translation id="4589713469967853491">ຂຽນບັນທຶກໃສ່ແຟ້ມການດາວໂຫຼດສຳເລັດແລ້ວ.</translation>
 <translation id="459204634473266369">ບໍ່ມີອຸປະກອນຖືກບັນທຶກໄວ້ໃນ <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">ການເລືອກເບິ່ງ ແລະ ການຊອກຫາແມ່ນໄວຂຶ້ນ.</translation>
@@ -5083,6 +5090,7 @@
 <translation id="5284445933715251131">ສືບຕໍ່ການດາວໂຫລດ</translation>
 <translation id="5285635972691565180">ຈໍສະແດງຜົນ <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">ກຳລັງສະແກນ</translation>
+<translation id="5287073652040102781">ChromeVox ຫຼື ໂປຣແກຣມອ່ານໜ້າຈໍໃນ ChromeOS Flex ແມ່ນເຄື່ອງມືທີ່ຜູ້ພິການຕາ ຫຼື ຜູ້ທີ່ມີບັນຫາດ້ານການເບິ່ງເຫັນໃຊ້ເປັນຫຼັກ. ກົດປຸ່ມລະດັບສຽງທັງ 2 ປຸ່ມຄ້າງໄວ້ 5 ວິນາທີ ເພື່ອເປີດ ChromeVox. ເມື່ອເປີດການນຳໃຊ້ ChromeVox, ລະບົບຈະແນະນຳການນຳໃຊ້ແບບສັ້ນໆໃຫ້ກັບທ່ານ.</translation>
 <translation id="5287425679749926365">ບັນ​ຊີ​ຂອງ​ທ່ານ</translation>
 <translation id="5288106344236929384">ຄຳສັ່ງເພີ່ມເຕີມ, ຕົວເລືອກກະແຈຜ່ານສຳລັບ <ph name="USERNAME" /> ຢູ່ <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">ເປີດແຖບທີ່ປິດແລ້ວຄືນໃໝ່</translation>
@@ -5630,6 +5638,7 @@
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> ອະນຸຍາດໃຫ້ທ່ານເອີ້ນໃຊ້ແອັບ Windows® ໃນ Chromebook ຂອງທ່ານ. ແນະນຳໃຫ້ມີພື້ນທີ່ຫວ່າງ <ph name="MINIMUM_SPACE" /> ສຳລັບການຕິດຕັ້ງ.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{ທ່ານສາມາດລໍຖ້າມັນຕອບສະໜອງ ຫຼື ອອກຈາກໜ້ານີ້ໄດ້.}other{ທ່ານສາມາດລໍຖ້າພວກມັນຕອບສະໜອງ ຫຼື ອອກຈາກໜ້າເຫຼົ່ານີ້ກໍໄດ້.}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" /> ລາຍລະອຽດເພີ່ມເຕີມ</translation>
+<translation id="577313026359983030">ສ່ວນຂະຫຍາຍຂອງຂ້ອຍ</translation>
 <translation id="5774295353725270860">ເປີດ​ແອັບໄຟລ​໌</translation>
 <translation id="5776450228446082914">ລາຍຊື່ຂອງເວັບໄຊທີ່ສາມາດເປີດໃນໂປຣແກຣມທ່ອງເວັບໃດໜຶ່ງໄດ້.</translation>
 <translation id="5776571780337000608">ທ່ານສາມາດເປີດ ແລະ ແກ້ໄຂໄຟລ໌ທີ່ຮອງຮັບໄດ້ດ້ວຍແອັບນີ້ຈາກຕົວເລືອກເບິ່ງໄຟລ໌ ຫຼື ແອັບອື່ນຂອງທ່ານ. ເພື່ອຄວບຄຸມວ່າໄຟລ໌ໃດເປີດແອັບນີ້ແບບເລີ່ມຕົ້ນ, <ph name="BEGIN_LINK" />ໃຫ້ສຶກສາວິທີຕັ້ງແອັບເລີ່ມຕົ້ນຢູ່ອຸປະກອນຂອງທ່ານ<ph name="END_LINK" />.</translation>
@@ -6832,6 +6841,7 @@
 <translation id="6798780071646309401">Caps Lock ເປີດຢູ່</translation>
 <translation id="6798954102094737107">ປ​ລັກ​ອິນ: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">ການຕັ້ງຄ່າທົ່ວໄປ</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{ເລືອກວ່າສ່ວນຂະຫຍາຍນີ້ສາມາດອ່ານ ຫຼື ປ່ຽນເວັບໄຊນີ້ໄດ້ຫຼືບໍ່}other{ເລືອກວ່າສ່ວນຂະຫຍາຍເຫຼົ່ານີ້ສາມາດອ່ານ ຫຼື ປ່ຽນເວັບໄຊນີ້ໄດ້ຫຼືບໍ່}}</translation>
 <translation id="6801435275744557998">ປັບຕັ້ງຄ່າໜ້າຈໍສຳຜັດ</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">ມີ VM "<ph name="DEFAULT_VM_NAME" />"</translation>
@@ -8036,6 +8046,7 @@
 <translation id="7800518121066352902">ໝຸນທວນເຂັມໂມງ</translation>
 <translation id="7801679634091975683">ການປ່ຽນແປງທີ່ທ່ານສ້າງຢູ່ບ່ອນນີ້ຈະມີຜົນກັບໂປຣແກຣມທ່ອງເວັບ Lacros Chrome ເທົ່ານັ້ນ. ເພື່ອປ່ຽນການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບ Chrome ຂອງທ່ານ, ໃຫ້ເປີດໂປຣແກຣມທ່ອງເວັບ Chrome ຂຶ້ນມາແລ້ວໄປຫາການຕັ້ງຄ່າ.</translation>
 <translation id="780301667611848630">ບໍ່​, ​ຂອບ​ໃຈ</translation>
+<translation id="7803267169006795990">ChromeVox ຫຼື ໂປຣແກຣມອ່ານໜ້າຈໍໃນ ChromeOS ແມ່ນເຄື່ອງມືທີ່ຜູ້ພິການຕາ ຫຼື ຜູ້ທີ່ມີບັນຫາດ້ານການເບິ່ງເຫັນໃຊ້ເປັນຫຼັກ. ກົດປຸ່ມລະດັບສຽງທັງ 2 ປຸ່ມຄ້າງໄວ້ 5 ວິນາທີ ເພື່ອເປີດ ChromeVox. ເມື່ອເປີດການນຳໃຊ້ ChromeVox, ລະບົບຈະແນະນຳການນຳໃຊ້ແບບສັ້ນໆໃຫ້ກັບທ່ານ.</translation>
 <translation id="7803657407897251194">ເພື່ອສືບຕໍ່ການຕັ້ງຄ່າກັບອຸປະກອນ Android ຂອງທ່ານ, ໃຫ້ເຊື່ອມຕໍ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານຫາເຄືອຂ່າຍ</translation>
 <translation id="7804072833593604762">ປິດແຖບແລ້ວ</translation>
 <translation id="7805768142964895445">ສະ​ຖາ​ນະ​</translation>
@@ -9584,6 +9595,7 @@
 <translation id="9108808586816295166">DNS ທີ່ປອດໄພອາດຈະບໍ່ສາມາດໃຊ້ໄດ້ຕະຫຼອດເວລາ</translation>
 <translation id="9109122242323516435">ເພື່ອຂະຫຍາຍພື້ນທີ່ຫວ່າງ, ໃຫ້ລຶບໄຟລ໌ຕ່າງໆຈາກບ່ອນເກັບຂໍ້ມູນຂອງອຸປະກອນ.</translation>
 <translation id="9109283579179481106">ເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍມືຖື</translation>
+<translation id="9110739391922513676">ຕັ້ງຄ່າ Microsoft 365 ເພື່ອເປີດໄຟລ໌</translation>
 <translation id="9111102763498581341">ປົດລັອກ</translation>
 <translation id="9111305600911828693">ບໍ່ໄດ້ຕັ້ງຄ່າໃບອະນຸຍາດ</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9706,6 +9718,7 @@
 <translation id="9220820413868316583">ຍົກນິ້ວມືຂຶ້ນແລ້ວລອງອີກຄັ້ງ.</translation>
 <translation id="922152298093051471">ປັບແຕ່ງ Chrome</translation>
 <translation id="923467487918828349">ສະ​ແດງ​ທັງ​ຫມົດ</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{ເພື່ອຈັດການ, ໃຫ້ເປີດສ່ວນຂະຫຍາຍ}other{ເພື່ອຈັດການ, ໃຫ້ເປີດສ່ວນຂະຫຍາຍ}}</translation>
 <translation id="924818813611903184">ຈັດການພາສາໃນການຕັ້ງຄ່າ ChromeOS</translation>
 <translation id="925270020047573546">ອຸປະກອນນີ້ບໍ່ຮອງຮັບການສົ່ງສັນຍານສຽງໃນເດັສທັອບ.</translation>
 <translation id="930268624053534560">ສະແຕັມເວລາລະອຽດ</translation>

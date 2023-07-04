@@ -127,6 +127,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">ທ່ານໄດ້ປ້ອນລະຫັດຜ່ານຂອງທ່ານໃນເວັບໄຊທີ່ບໍ່ຖືກຈັດການໂດຍອົງການຈັດຕັ້ງຂອງທ່ານ. ເພື່ອປົກປ້ອງບັນຊີຂອງທ່ານ, ກະລຸນາຢ່ານຳລະຫັດຜ່ານຂອງທ່ານມາໃຊ້ໃໝ່ຢູ່ໃນແອັບ ແລະ ເວັບໄຊອື່ນ.</translation>
 <translation id="1257553931232494454">ລະດັບການຊູມ</translation>
+<translation id="1259843033850529027">ເລືອກລະດັບນະໂຍບາຍ</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການການຕັ້ງຄ່າ Chrome ຂອງທ່ານ</translation>
 <translation id="1264309058268477500">ສຳຮອງ</translation>
 <translation id="1264974993859112054">ກິລາ</translation>
@@ -304,6 +305,7 @@
 <translation id="1593359183944365958">270 ອົງສາ</translation>
 <translation id="1594030484168838125">ເລືອກ</translation>
 <translation id="1596296697375291157">ໜັງເລິກລັບ, ສືບສວນ ແລະ ລະທຶກຂວັນ</translation>
+<translation id="1597473228022844713">ທ່ານກຳລັງຕິດຕາມຜະລິດຕະພັນນີ້. ໜ້ານີ້ຖືກບັນທຶກໄວ້ໃນ <ph name="LAST_BOOKMARKS_FOLDER" /> ແລ້ວ</translation>
 <translation id="1599199147673445968">ບັດໃໝ່ບໍ? <ph name="BEGIN_LINK" />ປ້ອນລາຍລະອຽດບັດ<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">ຫຼິ້ນເກມ Dino Run ໃນ Chrome</translation>
 <translation id="161042844686301425">ສີຟ້າຂຽວ</translation>
@@ -949,6 +951,7 @@
 <translation id="3140646734028448730">ການບໍລິການທຸລະກິດ</translation>
 <translation id="3141093262818886744">ຢືນຢັນການເປີດ</translation>
 <translation id="3141641372357166056">ບໍ່ມີການຕັດສິນໃຈໃຫ້ຄວາມຍິນຍອມ</translation>
+<translation id="3144458715650412431">ນຳໃຊ້ນະໂຍບາຍທົດສອບແລ້ວ. ກວດສອບ ແລະ ຣີເຊັດໄດ້ຢູ່ chrome://policy/test. ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງຈະບໍ່ຖືກນຳໃຊ້.</translation>
 <translation id="3145945101586104090">ຖອດລະຫັດການຕອບກັບບໍ່ສໍາເລັດ</translation>
 <translation id="3150653042067488994">ເຊີບເວີຜິດພາດຊົ່ວຄາວ</translation>
 <translation id="3150889484970506196">ປຸ່ມສ້າງຊີດ, ເປີດນຳໃຊ້ເພື່ອສ້າງ Google Sheet ໃໝ່ຢ່າງວ່ອງໄວ</translation>
@@ -1343,6 +1346,7 @@
 <translation id="3987940399970879459">ໜ້ອຍກວ່າ 1 MB</translation>
 <translation id="3990250421422698716">ການຊົດເຊີຍພື້ນຜິວທີ່ບໍ່ສະໝໍ່າສະເໝີ</translation>
 <translation id="3992684624889376114">ກ່ຽວກັບໜ້ານີ້</translation>
+<translation id="3995639283717357522">ນໍາໃຊ້ນະໂຍບາຍ</translation>
 <translation id="399952081411886534">ຄຸນສົມບັດອື່ນໆທີ່ເຮັດໃຫ້ໂຄສະນາເປັນສ່ວນຕົວຫຼາຍຂຶ້ນ</translation>
 <translation id="4000598935132966791">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຈຳກັດເວັບໄຊໃນໂປຣແກຣມທ່ອງເວັບທີ່ມີການຈັດການ</translation>
 <translation id="4006465311664329701">ວິທີການຈ່າຍເງິນ, ຂໍ້ສະເໜີ ແລະ ທີ່ຢູ່ໂດຍໃຊ້ Google Pay</translation>
@@ -1523,6 +1527,7 @@
 <translation id="4333561522337981382">ຈັດການໜ້າຈໍຢູ່ການສະແດງຜົນທັງໝົດຂອງທ່ານ</translation>
 <translation id="4338709847516294988">ກົດຊອກຫາພ້ອມກັບ m ແລະ ແປງຮູບເປັນຂໍ້ຄວາມໃນເມນູບໍລິບົດ</translation>
 <translation id="4340575312453649552">ໂຄສະນານີ້ໃຊ້ຊັບພະຍາກອນຫຼາຍເກີນໄປສຳລັບອຸປະກອນຂອງທ່ານ, ສະນັ້ນ Chrome ໄດ້ລຶບມັນອອກແລ້ວ.</translation>
+<translation id="4340810192899866471">ນຳເຂົ້າຈາກ JSON</translation>
 <translation id="4340982228985273705">ບໍ່ມີການກວດເຫັນວ່າຄອມພິວເຕີນີ້ເປັນຄອມພິວເຕີທີ່ຈັດການໂດຍອົງກອນ. ສະນັ້ນ, ນະໂຍບາຍສາມາດຕິດຕັ້ງໄດ້ແຕ່ສ່ວນຂະຫຍາຍທີ່ມີໂຮສໃນ Chrome Webstore ໂດຍອັດຕະໂນມັດເທົ່ານັ້ນ. URL ການອັບເດດ Chrome Webstore ແມ່ນ "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206">ການເຊື່ອມຕໍ່ຫາ <ph name="SITE" /> ນັ້ນບໍ່ປອດໄພ</translation>
 <translation id="4349365535725594680">ບໍ່ສາມາດແບ່ງປັນເນື້ອຫາທີ່ເປັນຄວາມລັບໄດ້</translation>
@@ -1771,6 +1776,7 @@
 <translation id="4901778704868714008">ບັນທຶກ...</translation>
 <translation id="4901952598169637881">ເກີບໃສ່ສະບາຍ</translation>
 <translation id="4905659621780993806">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຈະຣີສະຕາດອຸປະກອນຂອງທ່ານໂດຍອັດຕະໂນມັດເວລາ <ph name="TIME" /> ໃນ <ph name="DATE" />. ກະລຸນາບັນທຶກລາຍການທີ່ເປີດໄວ້ກ່ອນອຸປະກອນຂອງທ່ານຈະຣີສະຕາດ.</translation>
+<translation id="4907289208610706508">ເປົ້າໝາຍ</translation>
 <translation id="4913987521957242411">ເຈາະຮູຢູ່ເທິງສຸດເບື້ອງຊ້າຍ</translation>
 <translation id="4918221908152712722">ຕິດຕັ້ງ <ph name="APP_NAME" /> (ບໍ່ຈໍາເປັນຕ້ອງດາວໂຫຼດ)</translation>
 <translation id="4920457992177678649">ບ່ອນພັກໃຫ້ເຊົ່າ ແລະ ການພັກເຊົາໄລຍະສັ້ນ</translation>
@@ -1880,6 +1886,7 @@
 <translation id="5145883236150621069">ລະຫັດຄວາມຜິດພາດມີຢູ່ໃນການຕອບຮັບນະໂຍບາຍ</translation>
 <translation id="5146995429444047494">ການແຈ້ງເຕືອນສຳລັບ <ph name="ORIGIN" /> ຖືກບລັອກໄວ້</translation>
 <translation id="514704532284964975"><ph name="URL" /> ຕ້ອງການເບິ່ງ ແລະ ປ່ຽນຂໍ້ມູນຢູ່ອຸປະກອນ NFC ທີ່ທ່ານແຕະດ້ວຍໂທລະສັບຂອງທ່ານ</translation>
+<translation id="5147633291963801297">ເບິ່ງການຫຼຸດລາຄາໃນແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="5148809049217731050">ປີ້ນໜ້າຂຶ້ນ</translation>
 <translation id="5153314898060540200">ຮາດຣັອກ ແລະ ໂປຣເກຣດຊີບ</translation>
 <translation id="5157504274688344097">ຜູ້ຂາຍມວນຊົນ ແລະ ຫ້າງສັບພະສິນຄ້າ</translation>
@@ -2455,6 +2462,7 @@
 <translation id="6450212216969386944">Envelope Chou 40</translation>
 <translation id="6451458296329894277">ຢືນຢັນການສົ່ງແບບຟອມຄືນໃໝ່</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">ເລືອກເປົ້າໝາຍນະໂຍບາຍ</translation>
 <translation id="6456955391422100996">ລຶບໂຄສະນາອອກແລ້ວ.</translation>
 <translation id="6457206614190510200">ຫຍິບທີ່ສັນປຶ້ມ</translation>
 <translation id="6457455098507772300">ການແຈ້ງເຕືອນການຫຼຸດລາຄາຈະສະແດງຂຶ້ນເປັນການແຈ້ງເຕືອນປັອບອັບຢູ່ເດັສທັອບຂອງທ່ານ</translation>
@@ -2738,6 +2746,7 @@
 <translation id="7108819624672055576">ອະນຸຍາດໂດຍສ່ວນຂະຫຍາຍ</translation>
 <translation id="7109510814665441393">ເກມຂັບລົດ ແລະ ເກມແຂ່ງລົດ</translation>
 <translation id="7110116949943042888">ວຽກຊົ່ວຄາວ ແລະ ຕາມລະດູການ</translation>
+<translation id="7110553203952632623">ທ່ານຈະໄດ້ຮັບການເຕືອນອີເມວຫາກລາຄາຫຼຸດລົງຢູ່ເວັບໄຊໃດກໍຕາມ</translation>
 <translation id="7111012039238467737">(ໃຊ້ໄດ້)</translation>
 <translation id="7111507312244504964">ການກວດສອບ ແລະ ປະເມີນຄ່າສັບສິນ</translation>
 <translation id="7112327784801341716">ບໍ່ເຫັນຂໍ້ມູນປັດຈຸບັນຂອງທ່ານບໍ? ກະລຸນາຕິດຕໍ່ທະນາຄານຂອງທ່ານເພື່ອອັບເດດມັນ.</translation>
@@ -3229,6 +3238,7 @@
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ບໍ່ໄດ້ຖືກຕິດຕັ້ງຢ່າງຖືກຕ້ອງໃນຄອມພິວເຕີ ຫຼື ເຄືອຂ່າຍຂອງທ່ານ. ກະລຸນາຮ້ອງຂໍໃຫ້ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານແກ້ໄຂບັນຫານີ້.</translation>
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
 <translation id="8134058435519644366">ການຈັດຫາ ແລະ ຮັບພະນັກງານ</translation>
+<translation id="8144303576836498784">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ຍັງບໍ່ໄດ້ບັນທຶກການປ່ຽນແປງຂອງທ່ານເທື່ອ</translation>
 <translation id="8148608574971654810">ເວີຊັນ PDF:</translation>
 <translation id="8149426793427495338">ຄອມພິວເຕີຂອງທ່ານໄດ້ເຂົ້າສູ່ໂໝດນອນຫຼັບແລ້ວ.</translation>
 <translation id="8150722005171944719">ໄຟລ໌ຢູ່ທີ່ <ph name="URL" /> ບໍ່ສາມາດອ່ານໄດ້. ມັນອາດຈະຖືກເອົາອອກໄປ, ຍ້າຍໜີ,​ຫຼື ການອະນຸຍາດໄຟລ໌ອາດຈະກໍາລັງ​ປ້ອງ​ກັນການການເຂົ້າຫາ.</translation>
@@ -3242,6 +3252,7 @@
 <translation id="8184538546369750125">ໃຊ້ຄ່າມາດຕະຖານທົ່ວ​ໂລກ (ອະນຸຍາດ​)</translation>
 <translation id="8186706823560132848">ຊອບ​ແວ</translation>
 <translation id="8190193880870196235">ຈັດການໂດຍສ່ວນຂະຫຍາຍ</translation>
+<translation id="8194412401381329820">ທ່ານບໍ່ສາມາດໃຊ້ໜ້ານີ້ຈາກບັນຊີທີ່ມີຈັດການໃນອຸປະກອນທີ່ບໍ່ມີການຈັດການນີ້ໄດ້. ລະບົບຈະເລືອກບັນຊີທີ່ມີການຈັດການທັງໝົດຫາກທ່ານໃຊ້ໜ້ານີ້, ຍົກເວັ້ນບັນຊີທີ່ຈັດການໂດຍບຸກຄົນດຽວກັນກັບອຸປະກອນນີ້ (ບັນຊີທີ່ກ່ຽວຂ້ອງ).</translation>
 <translation id="8194797478851900357">ປ່ຽນ​ກັບ​ຄືນຄໍາສັ່ງຍ້າຍ</translation>
 <translation id="8194956568907463262">ເກມຍິງກັນ</translation>
 <translation id="8200772114523450471">ເລີ່ມຕົ້ນປິດເປີດໃໝ່</translation>
@@ -3249,6 +3260,7 @@
 <translation id="8202370299023114387">ຂັດແຍ່ງ</translation>
 <translation id="8207625368992715508">ກິລາແຂ່ງລົດ</translation>
 <translation id="8208363704094329105">300 x 400 ມມ</translation>
+<translation id="8210490490377416373">ເລືອກຊື່ນະໂຍບາຍ</translation>
 <translation id="8210604850413485128">ບໍລິການເວັບໂຮສຕິງ</translation>
 <translation id="8211406090763984747">ການເຊື່ອມຕໍ່ປອດໄພດີ</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3364,6 +3376,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການການຕັ້ງຄ່າຄຸກກີ້ຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="8433057134996913067">ນີ້ຈະນຳທ່ານອອກຈາກລະບົບເວັບໄຊສ່ວນໃຫຍ່.</translation>
 <translation id="8434840396568290395">ສັດລ້ຽງ</translation>
+<translation id="8436623588884785770">ເພີ່ມນະໂຍບາຍ</translation>
 <translation id="8437238597147034694">ປ່ຽນກັບຄືນຄໍາສັ່ງຍ້າຍ</translation>
 <translation id="8438786541497918448">ໃຊ້ກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນບໍ?</translation>
 <translation id="8438923942245957911">ອົງກອນຂອງທ່ານໄດ້ປັກທຸງເວັບໄຊນີ້ໄວ້ວ່າບໍ່ເໝາະສົມ</translation>
@@ -3386,6 +3399,7 @@
 <translation id="8483229036294884935">ທີ່ຢູ່ນີ້ຈະຖືກລຶບອອກຈາກບັນຊີ Google ຂອງທ່ານ, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">ນໍາໃຊ້ກັບ</translation>
 <translation id="8490137692873530638">ສະແຕັກເກີ້ 10</translation>
+<translation id="8493829133024050711">ເລືອກແຫຼ່ງທີ່ມາຂອງນະໂຍບາຍ</translation>
 <translation id="8493948351860045254">ຂະຫຍາຍພື້ນທີ່ຫວ່າງ</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ໃຊ້ເວລາດົນເກີນໄປໃນການຕອບສະໜອງ.</translation>
 <translation id="8503559462189395349">ລະຫັດຜ່ານຂອງ Chrome</translation>

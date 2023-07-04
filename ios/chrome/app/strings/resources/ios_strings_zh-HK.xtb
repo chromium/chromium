@@ -38,7 +38,7 @@
 <translation id="1176932207622159128">無法儲存圖片</translation>
 <translation id="1177414119866731261">開啟 Chrome 選單</translation>
 <translation id="1181037720776840403">移除</translation>
-<translation id="1200396280085622191">隨時可以使用 Chrome 開啟訊息和其他應用程式中的連結。</translation>
+<translation id="1200396280085622191">隨時使用 Chrome 開啟訊息和其他應用程式中的連結。</translation>
 <translation id="1207113853726624428">新搜尋</translation>
 <translation id="1207493287814084192">下午 5 時 30 分</translation>
 <translation id="1209206284964581585">暫時隱藏</translation>
@@ -324,7 +324,7 @@
 <translation id="2952246431280799028">輕觸並按住地址。</translation>
 <translation id="2952278131021475699">智能鏡頭相機搜尋功能</translation>
 <translation id="2952581218264071393">1. 開啟 Chrome 設定</translation>
-<translation id="2956733177489514605">登入 Google 帳戶就能同步處理密碼和其他資訊。</translation>
+<translation id="2956733177489514605">登入 Google 帳戶就能同步處理密碼和其他資料。</translation>
 <translation id="2958718410589002129">密碼</translation>
 <translation id="2961210776189273067">標題</translation>
 <translation id="2964349545761222050">封鎖第三方 Cookie</translation>
@@ -346,7 +346,7 @@
 建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="3080525922482950719">您可儲存網頁，以便稍後或離線閱讀</translation>
 <translation id="3081338492074632642">請確保您儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
-<translation id="309672519329227863">在其他應用程式中使用你的 Chrome 密碼和其他資訊。</translation>
+<translation id="309672519329227863">在其他應用程式中使用你的 Chrome 密碼和其他資料。</translation>
 <translation id="3112556859945124369">標示…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看您可同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">記錄和其他</translation>
@@ -707,7 +707,7 @@
 <translation id="5478327362747197944">按一下網頁上的日期，即可直接建立日曆活動。</translation>
 <translation id="5489208564673669003">如要管理所有網站的 Cookie，請參閱 <ph name="BEGIN_LINK" />Cookie 設定<ph name="END_LINK" />。</translation>
 <translation id="5490005495580364134">封鎖所有 Cookie (不建議)</translation>
-<translation id="5511959326926949696">選用的瀏覽器極端保護措施。除非你認為自己有可能成為網路攻擊的目標，否則不建議採用這項措施。</translation>
+<translation id="5511959326926949696">選用的瀏覽器極端保護功能。除非你認為自己有可能成為極危險網絡攻擊的目標，否則不建議採用功能。</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小時前</translation>
 <translation id="5520466080178053306">輕按 [密碼管理工具]，然後輕按 [新增]</translation>
 <translation id="5525095647255982834">如要將此分頁傳送至其他裝置，請在目的地裝置上登入 Chrome。</translation>
@@ -824,7 +824,7 @@
 <translation id="6149061208933997199">使用密碼</translation>
 <translation id="6152406514676263192">系統會根據您的興趣同步最相關的內容。</translation>
 <translation id="6159839020698489198">選填</translation>
-<translation id="6166946945007577435">你可以運用全新選單，在任何地點取用自己的資料。</translation>
+<translation id="6166946945007577435">你可運用全新選單，在任何地點取用自己的資料。</translation>
 <translation id="6170450281939467187">無法翻譯</translation>
 <translation id="6173499589275053515">密碼已儲存至您的 Google 帳戶 (<ph name="EMAIL" />)</translation>
 <translation id="6177442314419606057">在 Chrome 中搜尋</translation>
@@ -942,6 +942,7 @@
 <translation id="6674571176963658787">如要開始同步處理，請輸入密碼短語</translation>
 <translation id="667999046851023355">文件</translation>
 <translation id="6684906340059221832">正在追蹤價格</translation>
+<translation id="6689804622901271327">自動填入付款資訊</translation>
 <translation id="6710079714193676716">由您的機構管理。部分功能可能無法使用。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google 應用程式</translation>
 <translation id="672735642903863329">在任何裝置上存取書籤、密碼及其他設定。</translation>
@@ -998,6 +999,7 @@
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7062545763355031412">接受並切換帳戶</translation>
 <translation id="7080806333218412752">將網址傳送至「安全瀏覽」功能檢查。同時傳送少量網頁、下載檔案、擴充程式活動及系統資料，以協助探索新威脅。當您登入 Google 帳戶時，這些資料會暫時連結至您的帳戶，保護各個 Google 應用程式的使用安全。</translation>
+<translation id="7082853213442715471">開啟後，系統會封鎖特定的網頁技術，部分網站載入速度可能會因此變慢或無法正常運作。</translation>
 <translation id="7095110968493193530">儲存至 <ph name="EMAIL" /> 的「Google 密碼管理工具」</translation>
 <translation id="7099761977003084116">最近開啟的分頁</translation>
 <translation id="7102005569666697658">正在下載…<ph name="FILE_SIZE" /></translation>
@@ -1062,7 +1064,7 @@
 <translation id="7554645225856321710">全部關閉</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7561196759112975576">永遠使用</translation>
-<translation id="7582857256643797524">裝置已啟用這項設定</translation>
+<translation id="7582857256643797524">裝置已啟用此設定</translation>
 <translation id="7583004045319035904">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕式分頁。</translation>
 <translation id="7600965453749440009">永遠不要翻譯<ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">已封鎖彈出式視窗 (<ph name="NUMBER_OF_BLOCKED_POPUPS" /> 個)</translation>
@@ -1341,11 +1343,11 @@
 <translation id="952704832371081537">取消</translation>
 <translation id="953008885340860025">您已登出 Chrome</translation>
 <translation id="959066944189734975">您正在追蹤「<ph name="CHANNEL_NAME" />」</translation>
-<translation id="97300214378190234">隨時可以使用 Chrome 開啟其他應用程式中的連結。</translation>
+<translation id="97300214378190234">隨時使用 Chrome 開啟其他應用程式中的連結。</translation>
 <translation id="973493300226275298">追蹤產品在網上商店中的價格。如果產品降價，系統將通知您。</translation>
 <translation id="981498610235328462">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。</translation>
 <translation id="984509647832111802">同步功能無法正常運作。</translation>
-<translation id="984879470761322682">在裝置上關閉鎖定模式，就能在 Chrome 中停用這個模式。</translation>
+<translation id="984879470761322682">在裝置上關閉「封鎖模式」，就能在 Chrome 中停用此模式。</translation>
 <translation id="988141524645182168">其他裝置</translation>
 <translation id="989988560359834682">編輯地址</translation>
 <translation id="994757059139821576">文章建議</translation>

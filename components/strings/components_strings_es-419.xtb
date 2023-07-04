@@ -617,7 +617,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2300306941146563769">No se subió</translation>
 <translation id="230286397113210245">Botón Abrir ventana de incógnito: actívalo para abrir una nueva ventana de incógnito y así navegar de forma privada</translation>
 <translation id="2312234273148520048">Condimentos y aderezos</translation>
-<translation id="2316159751672436664">Personaliza tus herramientas de accesibilidad en la configuración de Chrome OS</translation>
+<translation id="2316159751672436664">Personaliza tus herramientas de accesibilidad en la configuración de ChromeOS</translation>
 <translation id="2316887270356262533">Esta acción libera menos de 1 MB. Es posible que algunos sitios se carguen más lento en tu próxima visita.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requiere un nombre de usuario y una contraseña.</translation>
 <translation id="2318594867107319532">Marca de tiempo de la última política:</translation>
@@ -1398,7 +1398,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4121428309786185360">Vence el</translation>
 <translation id="4123572138124678573">Perforación triple en la parte inferior</translation>
 <translation id="4127317221386336246">Accesorios de vestir</translation>
-<translation id="4127575959421463246">¿Buscas funciones experimentales de Chrome OS? Visitar</translation>
+<translation id="4127575959421463246">¿Buscas funciones experimentales de ChromeOS? Visitar</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 más}other{# más}}</translation>
 <translation id="4130226655945681476">Comprobar los cables de red, el módem y el router</translation>
 <translation id="4132448310531350254">Controladores duplicados para la extensión de archivo "<ph name="FILE_EXTENSION" />" a los que hacen referencia las apps "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -2043,7 +2043,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5521782189689806907">Ebanistería</translation>
 <translation id="5523118979700054094">Nombre de la política</translation>
 <translation id="5525755241743357906">Se copió o movió el archivo</translation>
-<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar tus herramientas de accesibilidad en la configuración de Chrome OS</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar tus herramientas de accesibilidad en la configuración de ChromeOS</translation>
 <translation id="5528532273234423708">Automatización del hogar</translation>
 <translation id="55293785478302737">Costura de borde</translation>
 <translation id="553377674408670169">Trabajos en educación</translation>
@@ -3277,7 +3277,7 @@ Detalles adicionales:
 <translation id="8249463483885748674">Pruebas estandarizadas y de admisión</translation>
 <translation id="824968735947741546">Traduciendo del <ph name="SOURCE" /> (detectado automáticamente) al <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Actualmente, esta dirección se guarda en este dispositivo. Para usarla en todos los productos de Google, guárdala en tu Cuenta de Google, <ph name="ACCOUNT" />.</translation>
-<translation id="8252991034201168845">Botón Administrar la configuración de accesibilidad, presiona Intro para personalizar tus herramientas de accesibilidad en la configuración de Chrome OS</translation>
+<translation id="8252991034201168845">Botón Administrar la configuración de accesibilidad, presiona Intro para personalizar tus herramientas de accesibilidad en la configuración de ChromeOS</translation>
 <translation id="8253091569723639551">Se requiere una dirección de facturación</translation>
 <translation id="8257387598443225809">Esta app está diseñada para dispositivos móviles</translation>
 <translation id="825929999321470778">Mostrar todas las contraseñas guardadas</translation>

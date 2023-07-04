@@ -944,6 +944,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6674571176963658787">Pentru a porni sincronizarea, introdu expresia de acces</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6684906340059221832">Se urmăresc prețurile</translation>
+<translation id="6689804622901271327">Completează automat informațiile de plată</translation>
 <translation id="6710079714193676716">Gestionat de organizația ta. Este posibil ca unele funcții să nu fie disponibile. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Accesează marcajele, parolele și multe altele pe toate dispozitivele.</translation>
@@ -1000,6 +1001,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7053983685419859001">Blochează</translation>
 <translation id="7062545763355031412">Acceptă și comută conturile</translation>
 <translation id="7080806333218412752">Trimite adresele URL la funcția Navigare sigură, pentru a le verifica. În plus, trimite un mic eșantion cu pagini, descărcări, activități ale extensiilor și informații despre sistem pentru a descoperi noi amenințări. Conectează temporar aceste date la Contul tău Google dacă te-ai conectat, pentru a te proteja în aplicațiile Google.</translation>
+<translation id="7082853213442715471">Când opțiunea este activată, anumite tehnologii web sunt blocate, ceea ce poate determina încărcarea mai lentă a unor site-uri sau funcționarea incorectă.</translation>
 <translation id="7095110968493193530">În Manager de parole Google pentru <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">File recente</translation>
 <translation id="7102005569666697658">Se descarcă… <ph name="FILE_SIZE" /></translation>

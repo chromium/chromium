@@ -314,6 +314,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1244265436519979884">Šiuo metu vykdomas „Linux“ atkūrimas</translation>
 <translation id="1244303850296295656">Plėtinio klaida</translation>
 <translation id="1244917379075403655">Spustelėkite „Nustatymai“.</translation>
+<translation id="1245331638296910488">Atidarius „Microsoft 365“, failai bus perkelti į „OneDrive“</translation>
 <translation id="1245628370644070008">Vietinių duomenų atkūrimas</translation>
 <translation id="1246863218384630739">Nepavyko įdiegti „<ph name="VM_NAME" />“: vaizdo URL pateikė <ph name="HTTP_ERROR" /> klaidos kodą. Susisiekite su administratoriumi.</translation>
 <translation id="1247372569136754018">Mikrofonas (vidinis)</translation>
@@ -392,6 +393,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Būsite atjungti nuo visų svetainių, įskaitant atidarytus skirtukus</translation>
 <translation id="1313705515580255288">Žymės, istorija ir kiti nustatymai bus sinchronizuojami su „Google“ paskyra.</translation>
+<translation id="1315184295353569363">Atšaukti grupės išsaugojimą</translation>
 <translation id="1316136264406804862">Ieškoma...</translation>
 <translation id="1316248800168909509">Nepavyko prisijungti prie „<ph name="DEVICE" />“. Bandykite dar kartą.</translation>
 <translation id="1316495628809031177">Sinchronizavimas pristabdytas</translation>
@@ -674,6 +676,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1552301827267621511">Pritaikius plėtinį „<ph name="EXTENSION_NAME" />“, paieškos svetainė buvo pakeista į <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Valdyti plėtinį</translation>
 <translation id="1553538517812678578">neribotas</translation>
+<translation id="1553947773881524342"><ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /> apie „Microsoft 365“ „Chromebook“ įrenginyje.</translation>
 <translation id="1555130319947370107">Mėlyna</translation>
 <translation id="1556127816860282890">Veikla fone ir kai kurie vaizdiniai efektai, pvz., sklandus slinkimas, gali būti apriboti</translation>
 <translation id="1556537182262721003">Nepavyko perkelti plėtinio katalogo į profilį.</translation>
@@ -1131,6 +1134,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1904580727789512086">URL, kuriais lankotės, išsaugomi jūsų „Google“ paskyroje</translation>
 <translation id="1905375423839394163">„Chromebook“ įrenginio pavadinimas</translation>
 <translation id="1906181697255754968">Paprastai svetainės pasiekia failus ir aplankus jūsų įrenginyje vykdydamos tokias funkcijas kaip automatinis darbo išsaugojimas</translation>
+<translation id="1906488504371069394">Daugiau plėtinių ir temų rasite <ph name="BEGIN_LINK" />„Chrome“ internetinėje parduotuvėje<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Veskite tekstą balsu. Paspauskite paieškos klavišą + D, tada pradėkite kalbėti.</translation>
 <translation id="1908591798274282246">Uždarytos grupės atidarymas iš naujo</translation>
 <translation id="1909880997794698664">Ar tikrai norite šį įrenginį visam laikui nustatyti veikti viešojo terminalo režimu?</translation>
@@ -1945,6 +1949,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2561211427862644160">Peržiūrėkite visas žymes čia</translation>
 <translation id="2564520396658920462">„JavaScript“ vykdymas naudojant „AppleScript“ išjungtas. Kad tai įjungtumėte, meniu juostoje eikite į skiltį „Peržiūra“ &gt; „Kūrėjas“ &gt; „Leisti „JavaScript“ iš „Apple“ įvykių“. Daugiau informacijos pateikiama apsilankius adresu https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Patobulinta rašybos tikrinimo funkcija</translation>
+<translation id="2565214867520763227">Ekrano skaitytuvo įjungimas</translation>
 <translation id="2568694057933302218">Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą svetainėse. Jūsų naršymo veikla nenaudojama skelbimams suasmeninti. Funkcijos gali neveikti kai kuriose svetainėse.</translation>
 <translation id="2568774940984945469">Informacinės juostos sudėtinis rodinys</translation>
 <translation id="2569972178052279830">Mažmenininko pavadinimas</translation>
@@ -2577,6 +2582,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3089948625237571254">K&amp;opijuoti vaizdo įrašo rėmelį</translation>
 <translation id="3090227230165225418">Pateikti atsisiuntimo pranešimus</translation>
 <translation id="3090589793601454425">Neperkelti</translation>
+<translation id="309079592386854321">Įsitikinkite, kad spausdintuvas prijungtas prie to paties „Wi-Fi“ tinklo kaip „Chromebook“ įrenginys, arba naudokite USB laidą. <ph name="LINK_BEGIN" />Sužinokite daugiau apie suderinamumą<ph name="LINK_END" />.</translation>
 <translation id="3090819949319990166">Nepavyko nukopijuoti išorinio CRX failo į „<ph name="TEMP_CRX_FILE" />“.</translation>
 <translation id="3090871774332213558">Įrenginys „<ph name="DEVICE_NAME" />“ susietas</translation>
 <translation id="3093714882666365141">Neleisti svetainėms įdiegti mokėjimo doroklių</translation>
@@ -2922,6 +2928,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3429160811076349561">Bandomosios funkcijos išjungtos</translation>
 <translation id="3429271624041785769">Žiniatinklio turinio kalbos</translation>
 <translation id="3429275422858276529">Pažymėkite šį puslapį, kad galėtumėte lengvai jį rasti vėliau</translation>
+<translation id="3431715928297727378">„<ph name="WINDOW_TITLE" />“ – atlaisvinta <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Užrakinti nesinaudojant</translation>
 <translation id="3433621910545056227">Deja, sistemai vykdant įrenginio diegimo laiko atributų fiksavimą įvyko klaida.</translation>
@@ -4025,6 +4032,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4361142739114356624">Trūksta šio kliento sertifikato privataus rakto arba jis netinkamas</translation>
 <translation id="4361745360460842907">Atidaryti kaip skirtuko lapą</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> yra numatytoji paskyra šiame „<ph name="DEVICE_TYPE" />“ įrenginyje</translation>
+<translation id="4363215264289239958">„Bruschetta“ programos</translation>
 <translation id="4363771538994847871">Nerasta jokių „Cast“ paskirties vietų. Reikia pagalbos?</translation>
 <translation id="4364327530094270451">Melionas</translation>
 <translation id="4364567974334641491">„<ph name="APP_NAME" />“ bendrina langą.</translation>
@@ -4089,6 +4097,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4410545552906060960">Naudokite skaičių (PIN kodą) vietoje slaptažodžio įrenginiui atrakinti. Jei norite PIN kodą nustatyti vėliau, eikite į skiltį „Nustatymai“.</translation>
 <translation id="4411578466613447185">Kodą pasirašanti šalis</translation>
 <translation id="4411719918614785832">Šie slaptažodžiai išsaugomi „Windows Hello“ šiame kompiuteryje. Jie neišsaugomi „Google“ paskyroje.</translation>
+<translation id="4412275763838812196">Ekrano skaitytuvą sistemoje „ChromeOS“ („ChromeVox“) daugiausia naudoja aklieji ir sutrikusio regėjimo asmenys. Jei norite įjungti „ChromeVox“, paspauskite tarpo klavišą. Kai „ChromeVox“ bus suaktyvintas, bus pateikta trumpa apžvalga.</translation>
 <translation id="4412632005703201014">„Chrome“ programos perkeliamos į laipsniškąsias žiniatinklio programas. Šią „Chrome“ programą naršyklėje įdiegė jūsų organizacija. Jei norite atidaryti laipsniškąją žiniatinklio programą iš programų sąrašo, pirmiausia susisiekite su administratoriumi ir paprašykite pašalinti „Chrome“ programą. Kol kas galite apsilankyti adresu <ph name="EXTENSION_LAUNCH_URL" /> ir atidaryti „<ph name="EXTENSION_NAME" />“ žiniatinklyje.</translation>
 <translation id="4412698727486357573">Pagalbos centras</translation>
 <translation id="4412992751769744546">Leisti trečiųjų šalių slapukus</translation>
@@ -4301,6 +4310,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4585793705637313973">Redaguoti puslapį</translation>
 <translation id="4586275095964870617">Nepavyko atidaryti <ph name="URL" /> alternatyvioje naršyklėje. Susisiekite su sistemos administratoriumi.</translation>
 <translation id="4587589328781138893">Svetainės</translation>
+<translation id="4588882777927162244">Ekrano skaitytuvą sistemoje „ChromeOS Flex“ („ChromeVox“) daugiausia naudoja aklieji ir sutrikusio regėjimo asmenys. Jei norite įjungti „ChromeVox“, paspauskite tarpo klavišą. Kai „ChromeVox“ bus suaktyvintas, bus pateikta trumpa apžvalga.</translation>
 <translation id="4589713469967853491">Žurnalai sėkmingai įrašyti kataloge „Atsisiuntimai“.</translation>
 <translation id="459204634473266369">Jokie įrenginiai neišsaugoti adresu <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">Spartesnis naršymas ir paieška.</translation>
@@ -5084,6 +5094,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5284445933715251131">Tęsti atsisiuntimą</translation>
 <translation id="5285635972691565180"><ph name="DISPLAY_ID" /> ekranas</translation>
 <translation id="5286194356314741248">Nuskaitoma</translation>
+<translation id="5287073652040102781">Ekrano skaitytuvą sistemoje „ChromeOS Flex“ („ChromeVox“) daugiausia naudoja aklieji ir sutrikusio regėjimo asmenys. Jei norite įjungti „ChromeVox“, paspauskite ir penkias sekundes palaikykite abu garsumo klavišus. Kai „ChromeVox“ bus suaktyvintas, bus pateikta trumpa apžvalga.</translation>
 <translation id="5287425679749926365">Jūsų paskyros</translation>
 <translation id="5288106344236929384">Daugiau veiksmų, naudotojo <ph name="USERNAME" /> slaptažodžio parinktys domene <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">I&amp;š naujo atidaryti uždarytą skirtuką</translation>
@@ -5125,6 +5136,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5319359161174645648">„Google“ rekomenduoja „Chrome“</translation>
 <translation id="5319712128756744240">Naujo įrenginio susiejimas</translation>
 <translation id="5320135788267874712">Naujas įrenginio pavadinimas</translation>
+<translation id="5320261549977878764">Atšaukti grupės išsaugojimą</translation>
 <translation id="532247166573571973">Serveris gali būti nepasiekiamas. Vėliau bandykite dar kartą.</translation>
 <translation id="5324300749339591280">Programų sąrašas</translation>
 <translation id="5324780743567488672">Automatiškai nustatyti laiko juostą pagal jūsų vietovę</translation>
@@ -5632,6 +5644,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5772114492540073460">Su „<ph name="PARALLELS_NAME" />“ galite vykdyti „Windows®“ programas „Chromebook“ įrenginyje. Rekomenduojama įdiegti <ph name="MINIMUM_SPACE" /> laisvos vietos.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Galite palaukti, kol puslapis pradės reaguoti į komandas, arba išeiti iš puslapio.}one{Galite palaukti, kol puslapiai pradės reaguoti į komandas, arba išeiti iš puslapių.}few{Galite palaukti, kol puslapiai pradės reaguoti į komandas, arba išeiti iš puslapių.}many{Galite palaukti, kol puslapiai pradės reaguoti į komandas, arba išeiti iš puslapių.}other{Galite palaukti, kol puslapiai pradės reaguoti į komandas, arba išeiti iš puslapių.}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" /> daugiau informacijos</translation>
+<translation id="577313026359983030">Mano plėtiniai</translation>
 <translation id="5774295353725270860">Atidaryti failų programą</translation>
 <translation id="5776450228446082914">Svetainių, kurias galima atidaryti bet kurioje naršyklėje, sąrašas.</translation>
 <translation id="5776571780337000608">Galite atidaryti ir redaguoti palaikomus failus naudodami šią programą iš failų naršyklės arba kitų programų. Jei norite valdyti, kuriuos failus atidarant pagal numatytuosius nustatymus atidaroma ši programa, <ph name="BEGIN_LINK" />sužinokite, kaip nustatyti numatytąsias programas įrenginyje<ph name="END_LINK" />.</translation>
@@ -6840,6 +6853,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6798780071646309401">didžiųjų raidžių klavišas paspaustas</translation>
 <translation id="6798954102094737107">Papildinys: „<ph name="PLUGIN_NAME" />“</translation>
 <translation id="6801129617625983991">Bendrieji nustatymai</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Pasirinkite, ar šis plėtinys gali skaityti arba keisti šią svetainę}one{Pasirinkite, ar šie plėtiniai gali skaityti arba keisti šią svetainę}few{Pasirinkite, ar šie plėtiniai gali skaityti arba keisti šią svetainę}many{Pasirinkite, ar šie plėtiniai gali skaityti arba keisti šią svetainę}other{Pasirinkite, ar šie plėtiniai gali skaityti arba keisti šią svetainę}}</translation>
 <translation id="6801435275744557998">Kalibruoti jutiklinį ekraną</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">Virtualus įrenginys „<ph name="DEFAULT_VM_NAME" />“ yra</translation>
@@ -8046,6 +8060,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7800518121066352902">Sukti prieš l&amp;aikrodžio rodyklę</translation>
 <translation id="7801679634091975683">Čia atlikti pakeitimai taikomi tik „Lacros“ naršyklei „Chrome“. Jei norite atlikti naršyklės „Chrome“ nustatymų pakeitimus, atidarykite naršyklę „Chrome“ ir eikite į nustatymus.</translation>
 <translation id="780301667611848630">Ačiū, ne</translation>
+<translation id="7803267169006795990">Ekrano skaitytuvą sistemoje „ChromeOS“ („ChromeVox“) daugiausia naudoja aklieji ir sutrikusio regėjimo asmenys. Jei norite įjungti „ChromeVox“, paspauskite ir penkias sekundes palaikykite abu garsumo klavišus. Kai „ChromeVox“ bus suaktyvintas, bus pateikta trumpa apžvalga.</translation>
 <translation id="7803657407897251194">Jei norite tęsti sąranką „Android“ įrenginyje, prijunkite „<ph name="DEVICE_TYPE" />“ prie tinklo</translation>
 <translation id="7804072833593604762">Skirtukas uždarytas</translation>
 <translation id="7805768142964895445">Būsena</translation>
@@ -9598,6 +9613,7 @@ Galite išsiųsti jį į „Google“ saugaus naršymo sistemą, kad patikrintum
 <translation id="9108808586816295166">Saugi DNS gali būti pasiekiama ne visą laiką</translation>
 <translation id="9109122242323516435">Kad atlaisvintumėte vietos, ištrinkite failus iš įrenginio saugyklos.</translation>
 <translation id="9109283579179481106">Prisijungimas prie mobiliojo ryšio tinklo</translation>
+<translation id="9110739391922513676">„Microsoft 365“ nustatymas failams atidaryti</translation>
 <translation id="9111102763498581341">Atrakinti</translation>
 <translation id="9111305600911828693">Licencija nenustatyta</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9720,6 +9736,7 @@ Galite išsiųsti jį į „Google“ saugaus naršymo sistemą, kad patikrintum
 <translation id="9220820413868316583">Pakelkite ir bandykite dar kartą.</translation>
 <translation id="922152298093051471">Tinkinti „Chrome“</translation>
 <translation id="923467487918828349">Rodyti visas</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Jei norite tvarkyti, atidarykite skiltį „Plėtiniai“}one{Jei norite tvarkyti, atidarykite skiltį „Plėtiniai“}few{Jei norite tvarkyti, atidarykite skiltį „Plėtiniai“}many{Jei norite tvarkyti, atidarykite skiltį „Plėtiniai“}other{Jei norite tvarkyti, atidarykite skiltį „Plėtiniai“}}</translation>
 <translation id="924818813611903184">Tvarkyti kalbas „Chrome“ OS nustatymuose</translation>
 <translation id="925270020047573546">Stalinio kompiuterio garso perdavimas šiame įrenginyje nepalaikomas.</translation>
 <translation id="930268624053534560">Išsamios laiko žymės</translation>

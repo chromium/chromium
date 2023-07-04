@@ -944,6 +944,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6674571176963658787">Angiv din adgangssætning for at starte synkroniseringen</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6684906340059221832">Overvågning af priser</translation>
+<translation id="6689804622901271327">Udfyld betalingsoplysninger automatisk</translation>
 <translation id="6710079714193676716">Administreret af din organisation. Nogle funktioner er muligvis ikke tilgængelige. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Få dine bogmærker, adgangskoder og meget mere på alle dine enheder.</translation>
@@ -1000,6 +1001,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7053983685419859001">Bloker</translation>
 <translation id="7062545763355031412">Acceptér, og skift konto</translation>
 <translation id="7080806333218412752">Sender webadresser til tjek i Beskyttet browsing. Der sendes også et mindre antal sider, downloads, udvidelsesaktivitet og systemoplysninger for at identificere nye trusler. Disse data knyttes midlertidigt til din Google-konto, når du er logget ind, for at beskytte dig i Google-apps.</translation>
+<translation id="7082853213442715471">Når denne funktion er aktiveret, blokeres visse webteknologier, hvilket kan medføre, at nogle websites indlæses langsommere eller ikke fungerer korrekt.</translation>
 <translation id="7095110968493193530">I Google Adgangskodeadministrator for <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Seneste faner</translation>
 <translation id="7102005569666697658">Downloader… <ph name="FILE_SIZE" /></translation>

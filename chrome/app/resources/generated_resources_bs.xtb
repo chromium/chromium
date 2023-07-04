@@ -313,6 +313,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1244265436519979884">Vraćanje Linuxa je trenutno u toku</translation>
 <translation id="1244303850296295656">Greška ekstenzije</translation>
 <translation id="1244917379075403655">Kliknite na "Postavke"</translation>
+<translation id="1245331638296910488">Fajlovi će se premjestiti na OneDrive prilikom otvaranja u softveru Microsoft 365</translation>
 <translation id="1245628370644070008">Oporavak lokalnih podataka</translation>
 <translation id="1246863218384630739">Instaliranje virtualnog računara <ph name="VM_NAME" /> nije uspjelo: URL slike je rezultirao kodom greške <ph name="HTTP_ERROR" />. Kontaktirajte administratora.</translation>
 <translation id="1247372569136754018">Mikrofon (interno)</translation>
@@ -674,6 +675,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1552301827267621511">Ekstenzija "<ph name="EXTENSION_NAME" />" je promijenila pretraživanje da koristi <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Upravljajte ekstenzijom</translation>
 <translation id="1553538517812678578">neograničeno</translation>
+<translation id="1553947773881524342"><ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /> o softveru Microsoft 365 na Chromebooku.</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="1556127816860282890">Aktivnost u pozadini i neki vizuelni efekti poput glatkog klizanja mogu biti ograničeni</translation>
 <translation id="1556537182262721003">Prebacivanje direktorija ekstenzije u profil nije uspjelo.</translation>
@@ -1128,6 +1130,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1904580727789512086">URL-ovi koje posjećujete pohranjuju se na vaš Google račun</translation>
 <translation id="1905375423839394163">Naziv Chromebook uređaja</translation>
 <translation id="1906181697255754968">Web lokacije obično pristupaju fajlovima i folderima na vašem uređaju radi funkcija kao što je automatsko snimanje napretka</translation>
+<translation id="1906488504371069394">Otkrijte više ekstenzija i tema u <ph name="BEGIN_LINK" />Chrome Web trgovini<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Pišite tekst glasom. Koristite tipku za pretraživanje + D, a zatim počnite govoriti.</translation>
 <translation id="1908591798274282246">Ponovo otvori zatvorenu grupu</translation>
 <translation id="1909880997794698664">Jeste li sigurni da želite trajno držati ovaj uređaj u načinu rada kioska?</translation>
@@ -1942,6 +1945,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2561211427862644160">Pregledajte sve oznake ovdje</translation>
 <translation id="2564520396658920462">Izvršavanje JavaScripti kroz AppleScript je isključeno. Da ga uključite, iz trake menija idite na Prikaz &gt; Programer &gt; Omogući JavaScript iz Appleovih događaja. Za više informacija, posjetite: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Poboljšana provjera pravopisa</translation>
+<translation id="2565214867520763227">Uključite čitač ekrana</translation>
 <translation id="2568694057933302218">U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na web lokacijama. Aktivnost pregledanja se ne koristi za stvari kao što je personaliziranje oglasa. Moguće je da funkcije neće raditi na nekim web lokacijama.</translation>
 <translation id="2568774940984945469">Spremnik trake s informacijama</translation>
 <translation id="2569972178052279830">Naziv maloprodavca</translation>
@@ -2574,6 +2578,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3089948625237571254">K&amp;opiraj kadar videozapisa</translation>
 <translation id="3090227230165225418">Objavi obavještenja o preuzimanju</translation>
 <translation id="3090589793601454425">Nemoj premjestiti</translation>
+<translation id="309079592386854321">Provjerite je li štampač povezan s istom WiFi mrežom s kojom je povezan i Chromebook ili koristite USB kabl. <ph name="LINK_BEGIN" />Saznajte više o kompatibilnosti.<ph name="LINK_END" /></translation>
 <translation id="3090819949319990166">Nije moguće kopirati crx fajl u <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Uparen je uređaj "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3093714882666365141">Nemoj dozvoliti web lokacijama instaliranje obrađivača plaćanja</translation>
@@ -4088,6 +4093,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4410545552906060960">Koristite broj (PIN) umjesto lozinke da otključate uređaj. Idite u Postavke da postavite PIN kasnije.</translation>
 <translation id="4411578466613447185">Potpisnik koda</translation>
 <translation id="4411719918614785832">Ovi pristupni ključevi su sačuvani u Windows Hellou na ovom računaru. Nisu sačuvani na vašem Google računu.</translation>
+<translation id="4412275763838812196">Čitač ekrana na ChromeOS-u, ChromeVox, prvenstveno koriste osobe koje su slijepe ili imaju slab vid. Pritisnite tipku za razmak da uključite ChromeVox. Kada se ChromeVox aktivira, proći ćete brz obilazak.</translation>
 <translation id="4412632005703201014">Chromeove aplikacije se premještaju u progresivne web aplikacije. Vaša organizacija je instalirala ovu Chromeovu aplikaciju u vašem pregledniku. Da otvorite progresivnu web aplikaciju s liste aplikacija, prvo kontaktirajte administratora i zatražite da deinstalira Chromeovu aplikaciju. U međuvremenu, možete posjetiti <ph name="EXTENSION_LAUNCH_URL" /> da otvorite ekstenziju <ph name="EXTENSION_NAME" /> na webu.</translation>
 <translation id="4412698727486357573">Centar za pomoć</translation>
 <translation id="4412992751769744546">Dopusti kolačiće trećih strana</translation>
@@ -4300,6 +4306,7 @@ Signali uređaja mogu sadržavati informacije o pregledniku, OS-u, uređaju, ins
 <translation id="4585793705637313973">Uredite stranicu</translation>
 <translation id="4586275095964870617">Otvaranje web lokacije <ph name="URL" /> u alternativnom pregledniku nije uspjelo. Kontaktirajte administratora sistema.</translation>
 <translation id="4587589328781138893">Web lokacije</translation>
+<translation id="4588882777927162244">Čitač ekrana na sistemu ChromeOS Flex, ChromeVox, prvenstveno koriste osobe koje su slijepe ili imaju slab vid. Pritisnite tipku za razmak da uključite ChromeVox. Kada se ChromeVox aktivira, proći ćete brz obilazak.</translation>
 <translation id="4589713469967853491">Zapisnici su uspješno ispisani u direktorij Preuzimanja.</translation>
 <translation id="459204634473266369">Nema sačuvanih uređaja na <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">Pregledanje i pretraživanje je brže.</translation>
@@ -5083,6 +5090,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5284445933715251131">Nastavi preuzimati</translation>
 <translation id="5285635972691565180">Ekran <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Skeniranje</translation>
+<translation id="5287073652040102781">Čitač ekrana na sistemu ChromeOS Flex, ChromeVox, prvenstveno koriste osobe koje su slijepe ili imaju slab vid. Da uključite ChromeVox, pritisnite i pet sekundi zadržite obje tipke za jačinu zvuka. Kada se ChromeVox aktivira, proći ćete brz obilazak.</translation>
 <translation id="5287425679749926365">Vaši računi</translation>
 <translation id="5288106344236929384">Više radnji, opcije pristupnog ključa za korisnika <ph name="USERNAME" /> na domeni <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Ponovo otvo&amp;ri zatvorene kartice</translation>
@@ -5631,6 +5639,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> vam omogućava da pokrenete Windows® aplikacije na Chromebooku. Za instalaciju se preporučuje najmanje <ph name="MINIMUM_SPACE" /> slobodnog prostora.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Možete sačekati da počne reagirati ili izaći sa stranice.}one{Možete sačekati da počnu reagirati ili izaći sa stranica.}few{Možete sačekati da počnu reagirati ili izaći sa stranica.}other{Možete sačekati da počnu reagirati ili izaći sa stranica.}}</translation>
 <translation id="5772737134857645901">Više detalja: <ph name="FILE_NAME" /> <ph name="STATUS" /></translation>
+<translation id="577313026359983030">Moje ekstenzije</translation>
 <translation id="5774295353725270860">Otvori aplikaciju Fajlovi</translation>
 <translation id="5776450228446082914">Lista web lokacija koje se mogu otvarati u bilo kojem pregledniku.</translation>
 <translation id="5776571780337000608">Možete otvoriti i uređivati podržane fajlove pomoću ove aplikaciju u pregledniku fajla ili u drugim aplikacijama. Da kontrolirate koji fajlovi zadano otvaraju ovu aplikaciju, <ph name="BEGIN_LINK" />saznajte kako postaviti zadane aplikacije na svom uređaju<ph name="END_LINK" />.</translation>
@@ -6837,6 +6846,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6798780071646309401">velika slova su uključena</translation>
 <translation id="6798954102094737107">Dodatak: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">Opće postavke</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Odaberite može li ova ekstenzija čitati ili mijenjati ovu web lokaciju}one{Odaberite mogu li ove ekstenzije čitati ili mijenjati ovu web lokaciju}few{Odaberite mogu li ove ekstenzije čitati ili mijenjati ovu web lokaciju}other{Odaberite mogu li ove ekstenzije čitati ili mijenjati ovu web lokaciju}}</translation>
 <translation id="6801435275744557998">Kalibriraj ekran osjetljiv na dodir</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">VM "<ph name="DEFAULT_VM_NAME" />" postoji</translation>
@@ -8043,6 +8053,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7800518121066352902">Rotiraj u smjeru suprotnom od kazaljke na satu</translation>
 <translation id="7801679634091975683">Izmjene koje izvršite ovdje se primjenjuju samo na preglednik Lacros Chrome. Da izvršite izmjene preglednika Chrome, otvorite Chrome i idite u postavke.</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
+<translation id="7803267169006795990">Čitač ekrana na ChromeOS-u, ChromeVox, prvenstveno koriste osobe koje su slijepe ili imaju slab vid. Da uključite ChromeVox, pritisnite i pet sekundi zadržite obje tipke za jačinu zvuka. Kada se ChromeVox aktivira, proći ćete brz obilazak.</translation>
 <translation id="7803657407897251194">Da nastavite postavljanje putem Android uređaja, povežite uređaj <ph name="DEVICE_TYPE" /> s mrežom</translation>
 <translation id="7804072833593604762">Kartica je zatvorena</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -9594,6 +9605,7 @@ Možete ga poslati na Sigurno pregledanje na Googleu da provjerite je li opasan.
 <translation id="9108808586816295166">Moguće je da sigurnosni DNS neće uvijek biti dostupan</translation>
 <translation id="9109122242323516435">Da oslobodite prostor, izbrišite fajlove iz pohrane uređaja.</translation>
 <translation id="9109283579179481106">Povežite se s mobilnom mrežom</translation>
+<translation id="9110739391922513676">Postavite Microsoft 365 da otvorite fajlove</translation>
 <translation id="9111102763498581341">Otključaj</translation>
 <translation id="9111305600911828693">Licenca nije postavljena</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9716,6 +9728,7 @@ Možete ga poslati na Sigurno pregledanje na Googleu da provjerite je li opasan.
 <translation id="9220820413868316583">Podignite prst, a zatim pokušajte ponovo.</translation>
 <translation id="922152298093051471">Prilagodite Chrome</translation>
 <translation id="923467487918828349">Prikaži sve</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Da upravljate time, otvorite Ekstenzije}one{Da upravljate njima, otvorite Ekstenzije}few{Da upravljate njima, otvorite Ekstenzije}other{Da upravljate njima, otvorite Ekstenzije}}</translation>
 <translation id="924818813611903184">Upravljajte jezicima u postavkama ChromeOS-a</translation>
 <translation id="925270020047573546">Emitiranje zvuka računara nije podržano na ovom uređaju.</translation>
 <translation id="930268624053534560">Detaljne vremenske oznake</translation>

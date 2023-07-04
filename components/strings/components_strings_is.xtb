@@ -1208,6 +1208,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3677008721441257057">Vildirðu fara á &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Ekki var hægt að undirrita beiðni</translation>
 <translation id="3678529606614285348">Opna síðu í nýjum huliðsstillingarglugga (Ctrl-Shift-N)</translation>
+<translation id="3678914302246317895">Sláðu inn <ph name="OTP_LENGTH" /> tölustafa staðfestingarkóða</translation>
 <translation id="3681007416295224113">Upplýsingar um vottorð</translation>
 <translation id="3681421644246505351">Chrome skráir áhugasvið í samræmi við nýlegan vafraferil.</translation>
 <translation id="3693327506115126094">Veldu hvernig þú ætlar að staðfesta hver þú ert</translation>
@@ -2013,6 +2014,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}one{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}other{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}}</translation>
 <translation id="5463625433003343978">Leitar að tækjum...</translation>
 <translation id="5464236009658034488">Skrifstofuvörur</translation>
+<translation id="5466018172325111652">Fékkstu ekki kóðann? <ph name="BEGIN_LINK" />Fá nýjan kóða<ph name="END_LINK" /></translation>
 <translation id="5470230812924696184">Byggingarverkfræði</translation>
 <translation id="5470861586879999274">&amp;Endurtaka breytingu</translation>
 <translation id="5471337644440862957">Grínmyndir</translation>
@@ -2316,6 +2318,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6157754950574419155">Fjarlægja allt úr ferli</translation>
 <translation id="6157877588268064908">Veldu heimilisfang til að sjá sendingarmáta og kröfur</translation>
 <translation id="6159554577634054750">Meindýravarnir</translation>
+<translation id="6160391204859821737">Kveikja á persónuverndareiginleika auglýsinga</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6167577165590485365">Síðast reynt að sækja:</translation>
 <translation id="6169916984152623906">Nú geturðu vafrað í næði og aðrir notendur tækisins geta ekki séð það sem þú gerir. Niðurhal og bókamerki eru hinsvegar vistuð.</translation>

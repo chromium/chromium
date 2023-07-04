@@ -389,6 +389,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Jūs tiksiet izrakstīts no visām vietnēm, tostarp visās atvērtajās cilnēs.</translation>
 <translation id="1313705515580255288">Jūsu grāmatzīmes, vēsture un citi iestatījumi tiks sinhronizēti ar jūsu Google kontu</translation>
+<translation id="1315184295353569363">Nesaglabāt grupu</translation>
 <translation id="1316136264406804862">Notiek meklēšana...</translation>
 <translation id="1316248800168909509">Nevarēja izveidot savienojumu ar ierīci “<ph name="DEVICE" />”. Mēģiniet vēlreiz.</translation>
 <translation id="1316495628809031177">Sinhronizācija ir apturēta</translation>
@@ -2906,6 +2907,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3429160811076349561">Izmēģinājuma versijas funkcijas ir izslēgtas</translation>
 <translation id="3429271624041785769">Tīmekļa satura valodas</translation>
 <translation id="3429275422858276529">Saglabājiet šo lapu kā grāmatzīmi, lai vēlāk varētu to viegli atrast</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> — atbrīvotā vieta: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Bloķēšana izejot</translation>
 <translation id="3433621910545056227">Hmm... Sistēma nevarēja iestatīt ierīces instalēšanas laika atribūta bloķēšanu.</translation>
@@ -4009,6 +4011,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4361142739114356624">Nav norādīta šī klienta sertifikāta privātā atslēga, vai tā nav derīga.</translation>
 <translation id="4361745360460842907">Atvērt kā cilni</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> ir ierīces <ph name="DEVICE_TYPE" /> noklusējuma konts.</translation>
+<translation id="4363215264289239958">Bruschetta lietotnes</translation>
 <translation id="4363771538994847871">Netika atrasta neviens Cast galamērķis. Vai jums ir nepieciešama palīdzība?</translation>
 <translation id="4364327530094270451">Melone</translation>
 <translation id="4364567974334641491">Lietotne <ph name="APP_NAME" /> koplieto logu.</translation>
@@ -5108,6 +5111,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5319359161174645648">Google iesaka pārlūku Chrome</translation>
 <translation id="5319712128756744240">Savienot pārī ar jaunu ierīci</translation>
 <translation id="5320135788267874712">Jaunais ierīces nosaukums</translation>
+<translation id="5320261549977878764">Nesaglabāt grupu</translation>
 <translation id="532247166573571973">Iespējams, serveris nav sasniedzams. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="5324300749339591280">Lietotņu saraksts</translation>
 <translation id="5324780743567488672">Automātiski iestatīt laika joslu, izmantojot atrašanās vietu</translation>

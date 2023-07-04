@@ -298,6 +298,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2318576281648121272">Šiandien <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, paieškos rezultatų kategorija</translation>
 <translation id="2322173485024759474">Grįžti per vieną raidę</translation>
+<translation id="2335091074961603075">„Chromebook“ ar „Bluetooth“ įrenginyje naudojamas senesnės versijos „Bluetooth“. Naudokite vidinį mikrofoną, kad garso kokybė būtų geresnė.</translation>
 <translation id="2339073806695260576">Palieskite rašiklio mygtuką lentynoje, kad galėtumėte sukurti užrašą, ekrano kopiją, naudoti lazerinį žymeklį arba didinamąjį stiklą.</translation>
 <translation id="2341729377289034582">Užrakinta vertikali padėtis</translation>
 <translation id="2345226652884463045">Paspauskite „Enter“ arba paieškos ir tarpo klavišus, kad pasirinktumėte norimą redaguoti tekstą.</translation>
@@ -1759,6 +1760,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790998409862094015">Smarkus</translation>
 <translation id="8792626944327216835">mikrofonas</translation>
+<translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Aplankas „<ph name="FOLDER_NAME" />“</translation>
 <translation id="880709030178078220">„Pagalba“</translation>
 <translation id="8814190375133053267">WI-Fi</translation>

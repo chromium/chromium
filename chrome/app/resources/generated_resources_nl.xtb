@@ -309,6 +309,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1244265436519979884">Linux-herstel wordt momenteel uitgevoerd</translation>
 <translation id="1244303850296295656">Fout met extensie</translation>
 <translation id="1244917379075403655">Klik op Instellingen</translation>
+<translation id="1245331638296910488">Bestanden worden verplaatst naar OneDrive als ze worden geopend in Microsoft 365</translation>
 <translation id="1245628370644070008">Herstel van lokale gegevens</translation>
 <translation id="1246863218384630739">Kan <ph name="VM_NAME" /> niet installeren: image-URL heeft een <ph name="HTTP_ERROR" />-foutcode geretourneerd. Neem contact op met je beheerder.</translation>
 <translation id="1247372569136754018">Microfoon (intern)</translation>
@@ -669,6 +670,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1552301827267621511">De extensie '<ph name="EXTENSION_NAME" />' heeft ingesteld dat <ph name="SEARCH_PROVIDER_DOMAIN" /> wordt gebruikt voor zoekopdrachten</translation>
 <translation id="1552752544932680961">Extensie beheren</translation>
 <translation id="1553538517812678578">onbeperkt</translation>
+<translation id="1553947773881524342"><ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /> over Microsoft 365 op je Chromebook</translation>
 <translation id="1555130319947370107">Blauw</translation>
 <translation id="1556127816860282890">Achtergrondactiviteit en sommige visuele effecten, zoals vloeiend scrollen, kunnen beperkt zijn</translation>
 <translation id="1556537182262721003">Kan extensiedirectory niet verplaatsen naar profiel.</translation>
@@ -1117,6 +1119,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1904580727789512086">De URL's die je bezoekt, worden opgeslagen in je Google-account</translation>
 <translation id="1905375423839394163">Naam Chromebook-apparaat</translation>
 <translation id="1906181697255754968">Sites vragen meestal toegang tot bestanden en mappen op je apparaat voor functies zoals het automatisch opslaan van je werk</translation>
+<translation id="1906488504371069394">Ontdek meer extensies en thema's in de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Typ met je stem. Gebruik Zoeken + D en begin met praten.</translation>
 <translation id="1908591798274282246">Gesloten groep heropenen</translation>
 <translation id="1909880997794698664">Weet je zeker dat je dit apparaat permanent in de kioskmodus wilt houden?</translation>
@@ -1928,6 +1931,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2561211427862644160">Bekijk hier al je bookmarks</translation>
 <translation id="2564520396658920462">Het uitvoeren van JavaScript via AppleScript staat uit. Als je dit wilt aanzetten, ga je vanaf de menubalk naar Weergave &gt; Ontwikkelaar &gt; JavaScript vanuit Apple Events toestaan. Meer informatie: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Uitgebreide spellingcontrole</translation>
+<translation id="2565214867520763227">Schermlezer aanzetten</translation>
 <translation id="2568694057933302218">Als je de incognitomodus gebruikt, kunnen sites je cookies niet gebruiken om je browse-activiteit op verschillende sites te bekijken. Je browse-activiteit wordt bijvoorbeeld niet gebruikt om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet.</translation>
 <translation id="2568774940984945469">Container voor infobalk</translation>
 <translation id="2569972178052279830">Naam verkoper</translation>
@@ -2560,6 +2564,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="3089948625237571254">Videoframe kopiëren</translation>
 <translation id="3090227230165225418">Downloadmeldingen aankondigen</translation>
 <translation id="3090589793601454425">Niet verplaatsen</translation>
+<translation id="309079592386854321">Zorg dat je printer is verbonden met hetzelfde wifi-netwerk als je Chromebook of gebruik een USB-kabel. <ph name="LINK_BEGIN" />Meer informatie over compatibiliteit<ph name="LINK_END" /></translation>
 <translation id="3090819949319990166">Kan extern crx-bestand niet kopiëren naar <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">'<ph name="DEVICE_NAME" />' gekoppeld</translation>
 <translation id="3093714882666365141">Niet toestaan dat sites betalingshandlers installeren</translation>
@@ -4073,6 +4078,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4410545552906060960">Gebruik een nummer (pincode) in plaats van een wachtwoord om je apparaat te ontgrendelen. Als je later een pincode wilt instellen, ga je naar Instellingen.</translation>
 <translation id="4411578466613447185">Ondertekening van code</translation>
 <translation id="4411719918614785832">Deze toegangssleutels worden opgeslagen in Windows Hello op deze computer. Ze worden niet opgeslagen in je Google-account.</translation>
+<translation id="4412275763838812196">ChromeVox, de schermlezer op ChromeOS, wordt voornamelijk gebruikt door blinden en slechtzienden. Druk op de spatiebalk om ChromeVox aan te zetten. Als ChromeVox is geactiveerd, volg je een korte rondleiding.</translation>
 <translation id="4412632005703201014">Chrome-apps worden overgezet naar progressive web-apps. Je organisatie heeft deze Chrome-app in je browser geïnstalleerd. Als je de progressive web-app wilt openen vanuit de lijst met apps, neem je eerst contact op met je beheerder en vraag je deze de Chrome-app te verwijderen. In de tussentijd kun je naar <ph name="EXTENSION_LAUNCH_URL" /> gaan om <ph name="EXTENSION_NAME" /> op het web te openen.</translation>
 <translation id="4412698727486357573">Helpcentrum</translation>
 <translation id="4412992751769744546">Cookies van derden toestaan</translation>
@@ -4284,6 +4290,7 @@ Apparaatsignalen kunnen informatie geven over je browser, OS, apparaat, geïnsta
 <translation id="4585793705637313973">Pagina bewerken</translation>
 <translation id="4586275095964870617"><ph name="URL" /> kan niet in een alternatieve browser worden geopend. Neem contact op met je systeembeheerder.</translation>
 <translation id="4587589328781138893">Sites</translation>
+<translation id="4588882777927162244">ChromeVox, de schermlezer op ChromeOS Flex, wordt voornamelijk gebruikt door blinden en slechtzienden. Druk op de spatiebalk om ChromeVox aan te zetten. Als ChromeVox is geactiveerd, volg je een korte rondleiding.</translation>
 <translation id="4589713469967853491">Logboeken zijn naar de map Downloads geschreven.</translation>
 <translation id="459204634473266369">Geen apparaten opgeslagen in <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">Browsen en zoeken gaan sneller.</translation>
@@ -5066,6 +5073,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5284445933715251131">Doorgaan met downloaden</translation>
 <translation id="5285635972691565180">Scherm <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Scannen</translation>
+<translation id="5287073652040102781">ChromeVox, de schermlezer op ChromeOS Flex, wordt voornamelijk gebruikt door blinden en slechtzienden. Houd beide volumeknoppen 5 seconden ingedrukt om ChromeVox aan te zetten. Als ChromeVox is geactiveerd, volg je een korte rondleiding.</translation>
 <translation id="5287425679749926365">Je accounts</translation>
 <translation id="5288106344236929384">Meer acties, toegangscodeopties voor <ph name="USERNAME" /> op <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Gesloten tabblad opni&amp;euw openen</translation>
@@ -5612,6 +5620,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5772114492540073460">Met <ph name="PARALLELS_NAME" /> kun je Windows®-apps uitvoeren op je Chromebook. Er wordt <ph name="MINIMUM_SPACE" /> vrije ruimte aanbevolen voor de installatie.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Je kunt wachten tot de pagina reageert of de pagina afsluiten.}other{Je kunt wachten tot de pagina's reageren of de pagina's afsluiten.}}</translation>
 <translation id="5772737134857645901">Meer informatie over <ph name="FILE_NAME" /> <ph name="STATUS" /></translation>
+<translation id="577313026359983030">Mijn extensies</translation>
 <translation id="5774295353725270860">App Bestanden openen</translation>
 <translation id="5776450228446082914">De lijst met websites die in beide browsers kunnen worden geopend.</translation>
 <translation id="5776571780337000608">Je kunt ondersteunde bestanden openen en bewerken met deze app vanuit je bestandsbrowser of andere apps. <ph name="BEGIN_LINK" />Bekijk hoe je standaard-apps instelt op je apparaat<ph name="END_LINK" /> om te bepalen welke bestanden standaard worden geopend in deze app.</translation>
@@ -6812,6 +6821,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6798780071646309401">Caps Lock aan</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">Algemene instellingen</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Kies of deze extensie deze site kan lezen of wijzigen}other{Kies of deze extensies deze site kunnen lezen of wijzigen}}</translation>
 <translation id="6801435275744557998">Touchscreen kalibreren</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">VM <ph name="DEFAULT_VM_NAME" /> bestaat</translation>
@@ -8014,6 +8024,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7800518121066352902">Links&amp;om draaien</translation>
 <translation id="7801679634091975683">Wijzigingen die je hier aanbrengt, zijn alleen van toepassing op de Lacros Chrome-browser. Als je wijzigingen wilt aanbrengen in je Chrome-browserinstellingen, open je de Chrome-browser en ga je naar Instellingen.</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
+<translation id="7803267169006795990">ChromeVox, de schermlezer op ChromeOS, wordt voornamelijk gebruikt door blinden en slechtzienden. Houd beide volumeknoppen 5 seconden ingedrukt om ChromeVox aan te zetten. Als ChromeVox is geactiveerd, volg je een korte rondleiding.</translation>
 <translation id="7803657407897251194">Verbind je <ph name="DEVICE_TYPE" /> met een netwerk om door te gaan met instellen op je Android-apparaat</translation>
 <translation id="7804072833593604762">Tabblad gesloten</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -9564,6 +9575,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9108808586816295166">Beveiligde DNS is mogelijk niet altijd beschikbaar</translation>
 <translation id="9109122242323516435">Verwijder bestanden uit de opslag van je apparaat om ruimte vrij te maken.</translation>
 <translation id="9109283579179481106">Verbinden met mobiel netwerk</translation>
+<translation id="9110739391922513676">Microsoft 365 instellen om bestanden te openen</translation>
 <translation id="9111102763498581341">Ontgrendelen</translation>
 <translation id="9111305600911828693">Licentie is niet ingesteld</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9686,6 +9698,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="9220820413868316583">Til je vinger op en probeer het opnieuw.</translation>
 <translation id="922152298093051471">Chrome aanpassen</translation>
 <translation id="923467487918828349">Alle bekijken</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Open Extensies om de extensie te beheren}other{Open Extensies om de extensies te beheren}}</translation>
 <translation id="924818813611903184">Talen beheren in de instellingen van Chrome OS</translation>
 <translation id="925270020047573546">Het casten van desktopaudio wordt niet ondersteund op dit apparaat.</translation>
 <translation id="930268624053534560">Gedetailleerde tijdstempels</translation>

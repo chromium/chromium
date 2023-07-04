@@ -309,6 +309,7 @@
 <translation id="1244265436519979884">‏Linux بحالی فی الحال جاری ہے</translation>
 <translation id="1244303850296295656">ایکسٹینشن میں خرابی</translation>
 <translation id="1244917379075403655">"ترتیبات" پر کلک کریں</translation>
+<translation id="1245331638296910488">‏Microsoft 365 میں کھلنے پر فائلز OneDrive میں منتقل ہو جائیں گی</translation>
 <translation id="1245628370644070008">مقامی ڈیٹا کی بازیابی</translation>
 <translation id="1246863218384630739">‏<ph name="VM_NAME" /> کو انسٹال نہیں کیا جا سکا: تصویری URL نے <ph name="HTTP_ERROR" /> خرابی کا کوڈ واپس کر دیا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="1247372569136754018">مائیکروفون (داخلی)</translation>
@@ -669,6 +670,7 @@
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> کے استعمال کے لیے "<ph name="EXTENSION_NAME" />" ایکسٹینشن نے تلاش کو تبدیل کر دیا</translation>
 <translation id="1552752544932680961">ایکسٹینشن کا نظم کریں</translation>
 <translation id="1553538517812678578">لا محدود</translation>
+<translation id="1553947773881524342">‏اپنے Chromebook پر Microsoft 365 کے بارے میں <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" />۔</translation>
 <translation id="1555130319947370107">نیلا</translation>
 <translation id="1556127816860282890">پس منظر کی سرگرمی اور کچھ بصری اثرات، جیسے ہموار اسکرولنگ، محدود ہو سکتے ہیں</translation>
 <translation id="1556537182262721003">ایکسٹینشن ڈائرکٹری کو پروفائل میں منتقل نہیں کیا جا سکا۔</translation>
@@ -1117,6 +1119,7 @@
 <translation id="1904580727789512086">‏آپ کے ملاحظہ کردہ URLs آپ کے Google اکاؤنٹ میں محفوظ ہوتے ہیں</translation>
 <translation id="1905375423839394163">‏Chromebook آلہ کا نام</translation>
 <translation id="1906181697255754968">سائٹس عام طور پر آپ کے آلہ پر موجود فائلز اور فولڈز تک آپ کا کام خودکار طور پر محفوظ کرنے جیسی خصوصیات کے لیے رسائی کرتی ہیں</translation>
+<translation id="1906488504371069394">‏<ph name="BEGIN_LINK" />Chrome ویب اسٹور<ph name="END_LINK" /> پر مزید ایکسٹینشنز اور تھیمز دریافت کریں</translation>
 <translation id="1907044622262489040">‏اپنی آواز کی مدد سے ٹائپ کریں۔ Search + D استعمال کریں، پھر بولنا شروع کریں۔</translation>
 <translation id="1908591798274282246">بند گروپ دوبارہ کھولیں</translation>
 <translation id="1909880997794698664">کیا آپ واقعی مستقل طور پر اس آلے کو کیوسک وضع میں رکھنا چاہتے ہیں؟</translation>
@@ -1930,6 +1933,7 @@
 <translation id="2561211427862644160">اپنے تمام بُک مارکس یہاں دیکھیں</translation>
 <translation id="2564520396658920462">‏AppleScript کے ذریعے JavaScript کو رو بہ عمل لانا آف ہے۔ مینیو بار سے اسے آن کرنے کے لئے دیکھیں &gt; ڈویلپر &gt; Apple ایونٹس سے JavaScript کو اجازت دیں پر جائیں۔ مزید معلومات کے لئے: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">بہتر کردہ املا کی جانچ</translation>
+<translation id="2565214867520763227">سکرین قاری کو آن کریں</translation>
 <translation id="2568694057933302218">پوشیدگی موڈ میں ہونے پر سائٹس آپ کی کوکیز کا سائٹس میں آپ کی براؤزنگ کی سرگرمی کو دیکھنے کے لیے استعمال نہیں کر سکتی ہیں۔ آپ کی براؤزنگ کی سرگرمی اشتہارات کو ذاتی نوعیت کا بنانے جیسی چیزوں کے لیے استعمال نہیں کی جاتی ہے۔ ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں۔</translation>
 <translation id="2568774940984945469">معلومات بار کنٹینر</translation>
 <translation id="2569972178052279830">ریٹیلر کا نام</translation>
@@ -2562,6 +2566,7 @@
 <translation id="3089948625237571254">ویڈیو فریم کاپی کریں</translation>
 <translation id="3090227230165225418">ڈاؤن لوڈ کی اطلاعات کا اعلان کریں</translation>
 <translation id="3090589793601454425">منتقل نہ کریں</translation>
+<translation id="309079592386854321">‏یقینی بنائیں کہ آپ کا پرنٹر اسی Wi-Fi نیٹ ورک سے منسلک ہے جس سے آپ کا Chromebook منسلک ہے یا USB کیبل استعمال کریں۔ <ph name="LINK_BEGIN" />موافقت کے بارے میں مزید جانیں<ph name="LINK_END" />۔</translation>
 <translation id="3090819949319990166">‏خارجی crx فائل کو <ph name="TEMP_CRX_FILE" /> پر کاپی نہیں کیا جا سکتا ہے۔</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" کا جوڑا بنایا گیا</translation>
 <translation id="3093714882666365141">سائٹس کو ادائیگی کے ہینڈلرز انسٹال کرنے کی اجازت نہ دیں</translation>
@@ -4076,6 +4081,7 @@
 <translation id="4410545552906060960">‏اپنے آلہ کو غیر مقفل کرنے کے لیے پاس ورڈ کی بجائے نمبر (PIN) کا استعمال کریں۔ بعد میں اپنا PIN سیٹ کرنے کے لیے، ترتیبات میں جائیں۔</translation>
 <translation id="4411578466613447185">کوڈ دستخط کنندہ</translation>
 <translation id="4411719918614785832">‏یہ پاس کیز اس کمپیوٹر پر Windows Hello میں محفوظ ہیں۔ وہ آپ کے Google اکاؤنٹ میں محفوظ نہیں ہیں۔</translation>
+<translation id="4412275763838812196">‏ChromeOS، ChromeVox پر سکرین قاری کا استعمال بنیادی طور پر اندھے پن اور کم بصارت والے لوگ کرتے ہیں۔ ChromeVox کو آن کرنے کے لیے اسپیس بار کو دبائیں۔ ChromeVox کے فعال ہو جانے پر، آپ کو ایک فوری ٹؤر سے گزرنا ہو گا۔</translation>
 <translation id="4412632005703201014">‏Chrome Apps پروگریسو ویب ایپس میں منتقل ہو رہی ہیں۔ یہ Chrome App آپ کی تنظیم کے ذریعے آپ کے براؤزر پر انسٹال کی گئی۔ Apps کی فہرست سے پروگریسیو ویب ایپ کھولنے کے لیے، پہلے اپنے منتظم سے رابطہ کریں اور ان سے Chrome App کو اَن انسٹال کرنے کو کہیں۔ اس دوران، آپ ویب پر <ph name="EXTENSION_NAME" /> کو کھولنے کے لیے <ph name="EXTENSION_LAUNCH_URL" /> کو ملاحظہ کر سکتے ہیں۔</translation>
 <translation id="4412698727486357573">مرکز امداد</translation>
 <translation id="4412992751769744546">فریق ثالث کی کوکیز کی اجازت دیں</translation>
@@ -4287,6 +4293,7 @@
 <translation id="4585793705637313973">صفحہ میں ترمیم کریں</translation>
 <translation id="4586275095964870617"><ph name="URL" /> کو متبادل براؤزر میں نہیں کھولا جا سکا۔ براہ کرم اپنے سسٹم کے منتظم سے رابطہ کریں۔</translation>
 <translation id="4587589328781138893">سائٹیں</translation>
+<translation id="4588882777927162244">‏ChromeOS Flex، ChromeVox پر سکرین قاری کا استعمال بنیادی طور پر اندھے پن اور کم بصارت والے لوگ کرتے ہیں۔ ChromeVox کو آن کرنے کے لیے اسپیس بار کو دبائیں۔ ChromeVox کے فعال ہو جانے پر، آپ کو ایک فوری ٹؤر سے گزرنا ہو گا۔</translation>
 <translation id="4589713469967853491">ڈاؤن لوڈ ڈائریکٹری میں کامیابی کے ساتھ لکھے گئے لاگز۔</translation>
 <translation id="459204634473266369">کوئی بھی آلہ <ph name="PRIMARY_EMAIL" /> میں محفوظ نہیں ہے</translation>
 <translation id="4592525994536856567">براؤز اور تلاش کرنا تیزر تر ہے۔</translation>
@@ -5070,6 +5077,7 @@
 <translation id="5284445933715251131">ڈاؤن لوڈ کرنا جاری رکھیں</translation>
 <translation id="5285635972691565180">ڈسپلے <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">اسکین کی جا رہی ہیں</translation>
+<translation id="5287073652040102781">‏ChromeOS Flex، ChromeVox پر سکرین قاری کا استعمال بنیادی طور پر اندھے پن اور کم بصارت والے لوگ کرتے ہیں۔ ChromeVox کو آن کرنے کے لیے والیوم کی دونوں کلیدوں کو پانچ سیکنڈ کے لیے چھوئیں اور دبائے رکھیں۔ ChromeVox کے فعال ہو جانے پر، آپ کو ایک فوری ٹؤر سے گزرنا ہو گا۔</translation>
 <translation id="5287425679749926365">آپ کے اکاؤنٹس</translation>
 <translation id="5288106344236929384">مزید کارروائیاں، <ph name="DOMAIN" /> پر <ph name="USERNAME" /> کے لیے پاس کے اختیارات</translation>
 <translation id="5288678174502918605">بند ٹیب کو &amp;دوبارہ کھولیں</translation>
@@ -5617,6 +5625,7 @@
 <translation id="5772114492540073460">‏<ph name="PARALLELS_NAME" /> آپ کو آپ کے Chromebook پر ®Windows ایپس چلانے کی اجازت دیتا ہے۔ انسٹالیشن کیلئے <ph name="MINIMUM_SPACE" /> فری اسپیس درکار ہے۔</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{جب تک صفحہ کوئی رد عمل ظاہر نہیں کرتا آپ انتظار کر سکتے ہیں یا صفحہ سے خارج ہو سکتے ہیں۔}other{جب تک صفحات کوئی رد عمل ظاہر نہیں کرتے آپ انتظار کر سکتے ہیں یا صفحات سے خارج ہو سکتے ہیں۔}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" /> مزید تفصیلات</translation>
+<translation id="577313026359983030">میری ایکسٹینشنز</translation>
 <translation id="5774295353725270860">فائلز ایپ کھولیں</translation>
 <translation id="5776450228446082914">ویب سائٹس کی وہ فہرست جو کسی بھی براؤزر میں کھل سکتی ہیں۔</translation>
 <translation id="5776571780337000608">آپ اس ایپ کے ساتھ اپنے فائل براؤزر یا دیگر ایپس سے تعاون یافتہ فائلز کو کھول اور ان میں ترمیم کر سکتے ہیں۔ جو فائلز بطور ڈیفالٹ اس ایپ کو کھولتی ہیں انہیں کنٹرول کرنے کے لیے، <ph name="BEGIN_LINK" />جانیں کہ اپنے آلے پر ڈیفالٹ ایپس کیسے سیٹ کریں<ph name="END_LINK" />۔</translation>
@@ -6819,6 +6828,7 @@
 <translation id="6798780071646309401">‏caps lock آن ہے</translation>
 <translation id="6798954102094737107">پلگ ان: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">عام ترتیبات</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{منتخب کریں کہ آیا یہ ایکسٹینشن اس سائٹ کو پڑھ سکتی ہے یا اس میں تبدیلی کر سکتی ہے}other{منتخب کریں کہ آیا یہ ایکسٹینشنز اس سائٹ کو پڑھ سکتی ہیں یا اس میں تبدیلی کر سکتی ہیں}}</translation>
 <translation id="6801435275744557998">ٹچ اسکرین کو کیلیبریٹ کریں</translation>
 <translation id="6802031077390104172">‎<ph name="USAGE" /> (<ph name="OID" />)‎</translation>
 <translation id="680488281839478944">‏VM "<ph name="DEFAULT_VM_NAME" />" موجود ہے</translation>
@@ -8025,6 +8035,7 @@
 <translation id="7800518121066352902">گ&amp;ھڑی کی مخالف سمت میں گھمائیں</translation>
 <translation id="7801679634091975683">‏آپ یہاں جو تبدیلیاں کرتے ہیں وہ صرف Lacros Chrome براؤزر پر لاگو ہوتی ہیں۔ اپنے Chrome براؤزر کی ترتیبات میں تبدیلیاں کرنے کے لیے، Chrome براؤزر کھولیں اور ترتیبات پر جائیں۔</translation>
 <translation id="780301667611848630">نہیں شکریہ</translation>
+<translation id="7803267169006795990">‏ChromeOS، ChromeVox پر سکرین قاری کا استعمال بنیادی طور پر اندھے پن اور کم بصارت والے لوگ کرتے ہیں۔ ChromeVox کو آن کرنے کے لیے والیوم کی دونوں کلیدوں کو پانچ سیکنڈ کے لیے چھوئیں اور دبائے رکھیں۔ ChromeVox کے فعال ہو جانے پر، آپ کو ایک فوری ٹؤر سے گزرنا ہو گا۔</translation>
 <translation id="7803657407897251194">‏اپنے Android آلے کی مدد سے سیٹ اپ کرنا جاری رکھنے کیلئے، اپنے <ph name="DEVICE_TYPE" /> کو کسی نیٹ ورک سے منسلک کریں</translation>
 <translation id="7804072833593604762">ٹیب بند ہو گیا</translation>
 <translation id="7805768142964895445">صورتحال</translation>
@@ -9573,6 +9584,7 @@
 <translation id="9108808586816295166">‏ممکن ہے کہ محفوظ DNS ہر وقت دستیاب نہ ہو</translation>
 <translation id="9109122242323516435">جگہ خالی کرنے کیلئے، آلہ کے اسٹوریج سے فائلیں حذف کریں۔</translation>
 <translation id="9109283579179481106">موبائل نیٹ ورک سے منسلک ہوں</translation>
+<translation id="9110739391922513676">‏فائلز کھولنے کے لیے Microsoft 365 سیٹ اپ کریں</translation>
 <translation id="9111102763498581341">غیر مقفل کریں</translation>
 <translation id="9111305600911828693">لائسنس سیٹ اپ نہیں ہے</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9695,6 +9707,7 @@
 <translation id="9220820413868316583">اٹھائیں پھر دوبارہ کوشش کریں۔</translation>
 <translation id="922152298093051471">‏Chrome کو حسب ضرورت بنائیں</translation>
 <translation id="923467487918828349">سبھی کو دکھائیں</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{اس کا نظم کرنے کے لیے، ایکسٹینشنز کھولیں}other{ان کا نظم کرنے کے لیے، ایکسٹینشنز کھولیں}}</translation>
 <translation id="924818813611903184">‏ChromeOS ترتیبات میں زبانوں کا نظم کریں</translation>
 <translation id="925270020047573546">ڈیسک ٹاپ آڈیو کاسٹ کرنا اس آلہ پر تعاون یافتہ نہیں ہے۔</translation>
 <translation id="930268624053534560">تفصیلی ٹائم اسٹامپس</translation>

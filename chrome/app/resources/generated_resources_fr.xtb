@@ -310,6 +310,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1244265436519979884">Restauration Linux…</translation>
 <translation id="1244303850296295656">Erreur au niveau des extensions.</translation>
 <translation id="1244917379075403655">Cliquez sur "Paramètres"</translation>
+<translation id="1245331638296910488">Les fichiers ouverts dans Microsoft 365 seront déplacés vers OneDrive</translation>
 <translation id="1245628370644070008">Récupération des données locales</translation>
 <translation id="1246863218384630739">Impossible d'installer <ph name="VM_NAME" />, car l'URL de l'image a renvoyé une erreur <ph name="HTTP_ERROR" />. Veuillez contacter votre administrateur.</translation>
 <translation id="1247372569136754018">Micro (interne)</translation>
@@ -670,6 +671,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1552301827267621511">L'extension "<ph name="EXTENSION_NAME" />" a remplacé le moteur de recherche par <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Gérer l'extension</translation>
 <translation id="1553538517812678578">sans limite</translation>
+<translation id="1553947773881524342"><ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /> sur Microsoft 365 pour Chromebook</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1556127816860282890">Les activités en arrière-plan et certains effets visuels, comme le défilement fluide, peuvent être limités</translation>
 <translation id="1556537182262721003">Impossible de déplacer le répertoire d'extensions dans le profil.</translation>
@@ -1118,6 +1120,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1904580727789512086">Les URL que vous consultez sont enregistrées dans votre compte Google</translation>
 <translation id="1905375423839394163">Nom du Chromebook</translation>
 <translation id="1906181697255754968">Les sites accèdent généralement aux fichiers et aux dossiers sur votre appareil pour proposer des fonctionnalités comme la sauvegarde automatique de votre travail</translation>
+<translation id="1906488504371069394">Découvrez d'autres extensions et thèmes sur le <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.</translation>
 <translation id="1907044622262489040">Dictez du texte. Appuyez sur Recherche+D, puis commencez à parler.</translation>
 <translation id="1908591798274282246">Rouvrir le groupe fermé</translation>
 <translation id="1909880997794698664">Voulez-vous vraiment conserver cet appareil en mode Kiosque de manière permanente ?</translation>
@@ -1929,6 +1932,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2561211427862644160">Voir tous vos favoris ici</translation>
 <translation id="2564520396658920462">L'exécution de JavaScript via AppleScript est désactivée. Pour l'activer, dans la barre de menu, accédez à Affichage &gt; Développeur &gt; Autoriser JavaScript dans les événements AppleScript. Pour en savoir plus, consultez la page https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Correcteur orthographique amélioré</translation>
+<translation id="2565214867520763227">Activer le lecteur d'écran</translation>
 <translation id="2568694057933302218">Lorsque vous êtes en navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur l'ensemble des sites. Votre activité de navigation n'est pas utilisée pour personnaliser les annonces, par exemple. Il est possible que les fonctionnalités de certains sites ne fonctionnent pas.</translation>
 <translation id="2568774940984945469">Conteneur de barres d'infos</translation>
 <translation id="2569972178052279830">Nom du marchand</translation>
@@ -2561,6 +2565,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3089948625237571254">C&amp;opier le cadre de la vidéo</translation>
 <translation id="3090227230165225418">Annoncer les notifications de téléchargement</translation>
 <translation id="3090589793601454425">Ne pas transférer</translation>
+<translation id="309079592386854321">Assurez-vous que votre imprimante est connectée au même réseau Wi-Fi que votre Chromebook ou utilisez un câble USB. <ph name="LINK_BEGIN" />En savoir plus sur la compatibilité.<ph name="LINK_END" /></translation>
 <translation id="3090819949319990166">Impossible de copier le fichier crx externe dans <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" associé.</translation>
 <translation id="3093714882666365141">Ne pas autoriser les sites à installer des gestionnaires de paiement</translation>
@@ -4075,6 +4080,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4410545552906060960">Utilisez un numéro (code) au lieu d'un mot de passe pour déverrouiller votre appareil. Pour définir votre code ultérieurement, accédez aux paramètres.</translation>
 <translation id="4411578466613447185">Signataire de code</translation>
 <translation id="4411719918614785832">Ces clés d'accès sont enregistrées dans Windows Hello sur cet ordinateur. Elles ne sont pas enregistrées dans votre compte Google.</translation>
+<translation id="4412275763838812196">ChromeVox, le lecteur d'écran sur ChromeOS, est principalement utilisé par des personnes non-voyantes ou malvoyantes. Appuyez sur la barre d'espace pour activer ChromeVox. Une fois activé, ChromeVox propose une présentation rapide.</translation>
 <translation id="4412632005703201014">Les applis Chrome deviennent des progressive web apps. Cette appli Chrome a été installée sur votre navigateur par votre organisation. Pour ouvrir la progressive web app à partir de la liste des applis, contactez d'abord votre administrateur et demandez-lui de désinstaller l'appli Chrome. En attendant, vous pouvez accéder à <ph name="EXTENSION_LAUNCH_URL" /> pour ouvrir <ph name="EXTENSION_NAME" /> sur le Web.</translation>
 <translation id="4412698727486357573">Centre d'aide</translation>
 <translation id="4412992751769744546">Autoriser les cookies tiers</translation>
@@ -4286,6 +4292,7 @@ Ces signaux peuvent inclure des informations sur votre navigateur, votre OS, vot
 <translation id="4585793705637313973">Modifier la page</translation>
 <translation id="4586275095964870617">Impossible d'ouvrir <ph name="URL" /> dans le navigateur secondaire. Veuillez contacter votre administrateur système.</translation>
 <translation id="4587589328781138893">Sites</translation>
+<translation id="4588882777927162244">ChromeVox, le lecteur d'écran sur ChromeOS Flex, est principalement utilisé par des personnes non-voyantes ou malvoyantes. Appuyez sur la barre d'espace pour activer ChromeVox. Une fois activé, ChromeVox propose une présentation rapide.</translation>
 <translation id="4589713469967853491">Les journaux ont bien été écrits dans le répertoire des téléchargements.</translation>
 <translation id="459204634473266369">Aucun appareil enregistré sur <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">La navigation et la recherche sont plus rapides.</translation>
@@ -5069,6 +5076,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5284445933715251131">Continuer le téléchargement</translation>
 <translation id="5285635972691565180">Écran <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Recherche…</translation>
+<translation id="5287073652040102781">ChromeVox, le lecteur d'écran sur ChromeOS Flex, est principalement utilisé par des personnes non-voyantes ou malvoyantes. Appuyez sur les deux boutons de volume pendant cinq secondes pour activer ChromeVox. Une fois activé, ChromeVox propose une présentation rapide.</translation>
 <translation id="5287425679749926365">Vos comptes</translation>
 <translation id="5288106344236929384">Plus d'actions, options de clé d'accès pour <ph name="USERNAME" /> sur <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">&amp;Rouvrir l'onglet fermé</translation>
@@ -5618,6 +5626,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> vous permet d'exécuter les applications Windows® sur votre Chromebook. Espace libre recommandé pour cette installation : <ph name="MINIMUM_SPACE" />.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Vous pouvez attendre que la page soit de nouveau accessible ou la quitter.}one{Vous pouvez attendre que la page soit de nouveau accessible ou la quitter.}other{Vous pouvez attendre que les pages soient de nouveau accessibles ou les quitter.}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" /> Plus de détails</translation>
+<translation id="577313026359983030">Mes extensions</translation>
 <translation id="5774295353725270860">Ouvrir l'application Fichiers</translation>
 <translation id="5776450228446082914">La liste des sites Web qui peuvent s'ouvrir dans les deux navigateurs.</translation>
 <translation id="5776571780337000608">Vous pouvez ouvrir et modifier les fichiers compatibles avec cette appli depuis le navigateur de fichiers ou d'autres applis. Pour contrôler quels fichiers s'ouvrent dans cette appli par défaut, découvrez comment <ph name="BEGIN_LINK" />définir les applis par défaut sur votre appareil<ph name="END_LINK" />.</translation>
@@ -6822,6 +6831,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6798780071646309401">touche de verrouillage des majuscules activée</translation>
 <translation id="6798954102094737107">Plug-in : <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">Paramètres généraux</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Indiquez si cette extension peut lire ou modifier ce site}one{Indiquez si cette extension peut lire ou modifier ce site}other{Indiquez si ces extensions peuvent lire ou modifier ce site}}</translation>
 <translation id="6801435275744557998">Calibrer l'écran tactile</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">Une VM "<ph name="DEFAULT_VM_NAME" />" existe</translation>
@@ -8028,6 +8038,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7800518121066352902">Rotation &amp;antihoraire</translation>
 <translation id="7801679634091975683">Les modifications que vous apportez ici ne concernent que le navigateur Chrome Lacros. Pour changer les paramètres du navigateur Chrome, ouvrez Chrome et accédez aux paramètres.</translation>
 <translation id="780301667611848630">Non, merci</translation>
+<translation id="7803267169006795990">ChromeVox, le lecteur d'écran sur ChromeOS, est principalement utilisé par des personnes non-voyantes ou malvoyantes. Appuyez sur les deux boutons de volume pendant cinq secondes pour activer ChromeVox. Une fois activé, ChromeVox propose une présentation rapide.</translation>
 <translation id="7803657407897251194">Pour poursuivre la configuration avec votre appareil Android, connectez votre <ph name="DEVICE_TYPE" /> à un réseau</translation>
 <translation id="7804072833593604762">Onglet fermé</translation>
 <translation id="7805768142964895445">État</translation>
@@ -9578,6 +9589,7 @@ Vous pouvez l'envoyer à la navigation sécurisée Google pour vérifier s'il es
 <translation id="9108808586816295166">Il est possible que le DNS sécurisé ne soit pas disponible à tout moment</translation>
 <translation id="9109122242323516435">Pour libérer de l'espace, supprimez des fichiers de l'espace de stockage de l'appareil.</translation>
 <translation id="9109283579179481106">Se connecter au réseau mobile</translation>
+<translation id="9110739391922513676">Configurer Microsoft 365 pour ouvrir des fichiers</translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
 <translation id="9111305600911828693">Licence non configurée</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" /> : <ph name="STATUS" /></translation>
@@ -9700,6 +9712,7 @@ Vous pouvez l'envoyer à la navigation sécurisée Google pour vérifier s'il es
 <translation id="9220820413868316583">Soulevez votre doigt, puis reposez-le.</translation>
 <translation id="922152298093051471">Personnaliser Chrome</translation>
 <translation id="923467487918828349">Tout afficher</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Pour la gérer, ouvrez "Extensions"}one{Pour la gérer, ouvrez "Extensions"}other{Pour les gérer, ouvrez "Extensions"}}</translation>
 <translation id="924818813611903184">Gérer les langues dans les paramètres de Chrome OS</translation>
 <translation id="925270020047573546">Impossible de caster le contenu audio de l'ordinateur de bureau sur cet appareil.</translation>
 <translation id="930268624053534560">Horodatage détaillé</translation>

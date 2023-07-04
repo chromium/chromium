@@ -1447,6 +1447,11 @@ Dans <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle ne propose pas l'option 
       Si cette règle n'est pas configurée, tous les plug-ins détectés par "DisabledPlugins" sont verrouillés/désactivés, et les utilisateurs ne sont pas en mesure de les activer</translation>
 <translation id="2236488539271255289">Interdire à tous les sites de définir des données locales</translation>
 <translation id="2236593201136596376">Autoriser la collecte des journaux texte WebRTC à partir des services Google</translation>
+<translation id="2237705286848619561">Si cette règle est activée, le transfert de fichiers entre le client et l'hôte est autorisé lors des sessions d'assistance à distance initiées par un administrateur de l'entreprise.
+
+Cette règle ne concerne pas les cas d'accès à distance.
+
+Si cette règle est désactivée ou qu'elle n'est pas configurée, le transfert de fichiers n'est pas autorisé.</translation>
 <translation id="2241498944622759244">Cette fonctionnalité n'a jamais été lancée, la règle est donc obsolète. Si cette règle est définie sur "True" ou n'est pas définie, <ph name="PRODUCT_NAME" /> vous proposera des pages en lien avec la page actuelle.
       Ces suggestions sont récupérées à distance depuis les serveurs Google.
 
@@ -4030,6 +4035,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
 <translation id="4561560385824323005">Autoriser les utilisateurs à sélectionner l'interface de bureau préconfigurée à charger</translation>
 <translation id="4561940244682063697">Ne pas autoriser les sites à inviter l'utilisateur à partager un flux vidéo de son écran</translation>
 <translation id="4562165737444703281">Autoriser les utilisateurs à [activer/configurer] le transfert de port Crostini</translation>
+<translation id="456450545863578630">Activer le transfert de fichiers dans les connexions d'assistance à distance avec les administrateurs de l'entreprise</translation>
 <translation id="456686782928669977">Permet de déterminer si les instructions de la règle SiteListe d'<ph name="IE_PRODUCT_NAME" /> doivent être ou non chargées.
 
       Si cette règle est définie sur "True", <ph name="PRODUCT_NAME" /> lit la règle <ph name="IEEM_SITELIST_POLICY" /> d'<ph name="IE_PRODUCT_NAME" /> pour obtenir l'URL de la liste des sites. <ph name="PRODUCT_NAME" /> télécharge ensuite la liste en question à partir de cette URL, puis applique les instructions comme si elles avaient été configurées avec la règle <ph name="BROWSER_SWITCHER_URL_LIST_POLICY_NAME" />.
@@ -5569,6 +5575,7 @@ Si cette règle est désactivée, la protection des extensions de la <ph name="S
 
       Si elle est désactivée, ils ne peuvent pas en bénéficier.</translation>
 <translation id="6042407236638640864">Autoriser les pages avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> à accéder au cache amélioré</translation>
+<translation id="604243460476563291">Désactiver le transfert de fichiers dans les connexions d'assistance à distance avec les administrateurs de l'entreprise</translation>
 <translation id="6042629184389251062">La collecte de métriques incluant les URL n'est pas autorisée</translation>
 <translation id="6046615715547751255">Ne pas autoriser les contrôles de rapports précis</translation>
 <translation id="6048199181629830227">Activer l'alimentation alternée en heures pleines</translation>
@@ -7651,6 +7658,7 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
 <translation id="7827127381981620448">Application de plate-forme</translation>
 <translation id="7829436838673974723">Autoriser les pages à envoyer des requêtes XHR synchrones pendant leur fermeture</translation>
 <translation id="782978857350824974">Autoriser les requêtes d'authentification Web sur les sites avec des certificats TLS non fonctionnels.</translation>
+<translation id="7830775338190021763">Activer la fonctionnalité de transfert de fichiers dans les sessions d'assistance à distance internes à l'entreprise</translation>
 <translation id="7832225468415136704">Empêcher Chrome Cleanup d'analyser périodiquement le système, et désactiver les analyses manuelles</translation>
 <translation id="7833148823006528332">Identifiant d'appli Android (par ex. : "com.google.android.gm" pour Gmail)</translation>
 <translation id="7835218570504220753">Désactiver les clics automatiques</translation>

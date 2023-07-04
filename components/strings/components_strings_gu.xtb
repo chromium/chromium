@@ -127,6 +127,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">તમે એવી સાઇટ પર તમારો પાસવર્ડ દાખલ કર્યો કે જે તમારી કંપની દ્વારા મેનેજ કરવામાં આવતો નથી. તમારા એકાઉન્ટને સુરક્ષિત કરવા માટે, અન્ય ઍપ અને સાઇટ પર તમારા પાસવર્ડનો ફરી ઉપયોગ કરશો નહીં.</translation>
 <translation id="1257553931232494454">નાનું-મોટું કરવાના લેવલ</translation>
+<translation id="1259843033850529027">પૉલિસીનું લેવલ પસંદ કરો</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા Chrome સેટિંગ મેનેજ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="1264309058268477500">વૈકલ્પિક</translation>
 <translation id="1264974993859112054">રમત-ગમત</translation>
@@ -304,6 +305,7 @@
 <translation id="1593359183944365958">270 ડિગ્રી</translation>
 <translation id="1594030484168838125">પસંદ કરો</translation>
 <translation id="1596296697375291157">થ્રિલર, ક્રાઇમ અને મિસ્ટ્રી મૂવી</translation>
+<translation id="1597473228022844713">તમે આ પ્રોડક્ટને ટ્રૅક કરી રહ્યાં છો. આ પેજને <ph name="LAST_BOOKMARKS_FOLDER" />માં સાચવવામાં આવે છે</translation>
 <translation id="1599199147673445968">નવું કાર્ડ? <ph name="BEGIN_LINK" />કાર્ડની વિગતો દાખલ કરો<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chromeમાં Dino Run ગેમ રમો</translation>
 <translation id="161042844686301425">સ્યાન</translation>
@@ -949,6 +951,7 @@
 <translation id="3140646734028448730">વ્યવસાય સેવાઓ</translation>
 <translation id="3141093262818886744">તેમ છતાં ખોલો</translation>
 <translation id="3141641372357166056">સંમતિ સંબંધિત કોઈ નિર્ણય લેવાયો નથી</translation>
+<translation id="3144458715650412431">પરીક્ષણ માટેની પૉલિસીઓ લાગુ કરવામાં આવી છે. chrome પર તેમનો રિવ્યૂ કરો અને રીસેટ કરો://પૉલિસી/પરીક્ષણ. ઍડમિન માટેની પૉલિસીઓ લાગુ કરવામાં આવશે.</translation>
 <translation id="3145945101586104090">પ્રતિક્રિયા ડિકોડ કરવી નિષ્ફળ થઇ</translation>
 <translation id="3150653042067488994">અસ્થાયી સર્વર ભૂલ</translation>
 <translation id="3150889484970506196">'શીટ બનાવો' બટન, Google Sheetsમાં ઝડપથી કોઈ નવી શીટ બનાવવા માટે સક્રિય કરો</translation>
@@ -1343,6 +1346,7 @@
 <translation id="3987940399970879459">1 MB કરતાં ઓછું</translation>
 <translation id="3990250421422698716">બહાર નીકળેલા ભાગને અંદર દબાવો</translation>
 <translation id="3992684624889376114">આ પેજ વિશે</translation>
+<translation id="3995639283717357522">પૉલિસીઓ લાગુ કરો</translation>
 <translation id="399952081411886534">જાહેરાતોને વધુ ખાનગી બનાવતી અન્ય સુવિધાઓ</translation>
 <translation id="4000598935132966791">મેનેજ કરાયેલા બ્રાઉઝરમાં સાઇટના પ્રતિબંધો વિશે વધુ જાણો</translation>
 <translation id="4006465311664329701">Google Payનો ઉપયોગ કરતી ચુકવણી પદ્ધતિઓ, ઑફરો અને સરનામાં</translation>
@@ -1523,6 +1527,7 @@
 <translation id="4333561522337981382">તમારા બધા ડિસ્પ્લે પર વિન્ડો મેનેજ કરો</translation>
 <translation id="4338709847516294988">Search + M કી દબાવો અને સંદર્ભ મેનૂમાં છબીનું રૂપાંતરણ ટેક્સ્ટમાં કરો</translation>
 <translation id="4340575312453649552">આ જાહેરાતે તમારા ડિવાઇસ માટે ઘણાં વધારે સાધનોનો ઉપયોગ કર્યો, આથી Chrome દ્વારા તેને કાઢી નાખવામાં આવી છે.</translation>
+<translation id="4340810192899866471">JSON પરથી આયાત કરો</translation>
 <translation id="4340982228985273705">આ કમ્પ્યુટર એન્ટરપ્રાઇઝ દ્વારા મેનેજ થતું હોય તેવું જણાયું નથી, તેથી પૉલિસી માત્ર Chrome Webstore પર હોસ્ટ થયેલા એક્સ્ટેન્શન ઑટોમૅટિક રીતે ઇન્સ્ટૉલ કરી શકશે. Chrome Webstore અપડેટનું URL "<ph name="CWS_UPDATE_URL" />" છે.</translation>
 <translation id="4348834659292907206"><ph name="SITE" />નું કનેક્શન સુરક્ષિત નથી</translation>
 <translation id="4349365535725594680">ગોપનીય કન્ટેન્ટ શેર કરી શકાતું નથી</translation>
@@ -1771,6 +1776,7 @@
 <translation id="4901778704868714008">સાચવો...</translation>
 <translation id="4901952598169637881">કેઝ્યુઅલ શૂઝ</translation>
 <translation id="4905659621780993806">તમારા ઍડમિનિસ્ટ્રેટર <ph name="DATE" />ના રોજ <ph name="TIME" /> વાગ્યે ઑટોમૅટિક રીતે તમારું ડિવાઇસ ફરી શરૂ કરશે. તમારું ડિવાઇસ ફરી શરૂ થાય તે પહેલાં ખુલી હોય એવી કોઈપણ આઇટમ સાચવો.</translation>
+<translation id="4907289208610706508">લક્ષ્ય</translation>
 <translation id="4913987521957242411">ઉપર ડાબી બાજુએ કાણું પાડો</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" />ને ઇન્સ્ટૉલ કરો (કોઈ ડાઉનલોડ આવશ્યક નથી)</translation>
 <translation id="4920457992177678649">વેકેશનમાં ભાડા પર અને ટૂંકાગાળાનું રોકાણ</translation>
@@ -1880,6 +1886,7 @@
 <translation id="5145883236150621069">પૉલિસી પ્રતિક્રિયામાં ભૂલ કોડ હાજર</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> માટેના નોટિફિકેશન બ્લૉક કર્યા છે</translation>
 <translation id="514704532284964975">તમે તમારા ફોન વડે NFC ડિવાઇસ પર જે માહિતી ટૅપ કરો છો તેને <ph name="URL" /> જોવા અને બદલવા માગે છે</translation>
+<translation id="5147633291963801297">બાજુની પૅનલમાં કિંમતમાં ઘટાડો જુઓ</translation>
 <translation id="5148809049217731050">ઉપર તરફ</translation>
 <translation id="5153314898060540200">હાર્ડ રૉક અને પ્રોગ્રેસિવ</translation>
 <translation id="5157504274688344097">થોક વેપારીઓ અને ડિપાર્ટમેન્ટ સ્ટોર</translation>
@@ -2455,6 +2462,7 @@
 <translation id="6450212216969386944">એન્વલપ ચોઉ 40</translation>
 <translation id="6451458296329894277">ફોર્મનાં ફરી સબમિશનની પુષ્ટિ કરો</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">પૉલિસીનું લક્ષ્ય પસંદ કરો</translation>
 <translation id="6456955391422100996">જાહેરાત કાઢી નાખી.</translation>
 <translation id="6457206614190510200">સૅડલ સ્ટિચ</translation>
 <translation id="6457455098507772300">કિંમતમાં ઘટાડા વિશેના અલર્ટને તમારા ડેસ્કટૉપ પર પૉપઅપ નોટિફિકેશન તરીકે બતાવવામાં આવે છે</translation>
@@ -2738,6 +2746,7 @@
 <translation id="7108819624672055576">એક્સટેન્શન દ્વારા મંજૂર</translation>
 <translation id="7109510814665441393">ડ્રાઇવિંગ અને રેસિંગ ગેમ</translation>
 <translation id="7110116949943042888">હંગામી અને મોસમી નોકરીઓ</translation>
+<translation id="7110553203952632623">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો તમને ઇમેઇલ દ્વારા અલર્ટ મળશે</translation>
 <translation id="7111012039238467737">(માન્ય)</translation>
 <translation id="7111507312244504964">સંપત્તિ નિરીક્ષણ અને મૂલ્યાંકન</translation>
 <translation id="7112327784801341716">શું તમારી હાલની માહિતી દેખાઈ રહી નથી? તેને અપડેટ કરવા માટે તમારી બેંકનો સંપર્ક કરો.</translation>
@@ -3229,6 +3238,7 @@
 <translation id="8127301229239896662">તમારા કમ્પ્યુટરમાં અથવા નેટવર્ક પર "<ph name="SOFTWARE_NAME" />" યોગ્ય રીતે ઇન્સ્ટૉલ થયું નથી. તમારા IT વ્યવસ્થાપકને આ સમસ્યા હલ કરવાનું કહો.</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8134058435519644366">ભરતી અને કર્મચારીની નિયુક્તિ</translation>
+<translation id="8144303576836498784">કંઈક ખોટું થયું. તમારો ફેરફાર સાચવવામાં આવ્યો ન હતો</translation>
 <translation id="8148608574971654810">PDF વર્ઝન:</translation>
 <translation id="8149426793427495338">તમારું કમ્પ્યુટર નિષ્ક્રિય થઈ ગયું હતું.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> પરની ફાઇલ વાંચનયોગ્ય નથી. તે દૂર કરવામાં, ખસેડવામાં આવી હોઈ શકે છે અથવા ફાઇલ પરવાનગીઓ ઍક્સેસ કરવાથી અટકાવતી હોઈ શકે છે.</translation>
@@ -3242,6 +3252,7 @@
 <translation id="8184538546369750125">વૈશ્વિક ડિફોલ્ટનો ઉપયોગ કરો (મંજૂરી આપો)</translation>
 <translation id="8186706823560132848">સૉફ્ટવેર</translation>
 <translation id="8190193880870196235">કોઈ એક્સ્ટેન્શન દ્વારા મેનેજ કરવામાં આવે છે</translation>
+<translation id="8194412401381329820">તમે આ મેનેજ કરવામાં આવ્યા ન હોય તેવા ડિવાઇસ પર મેનેજ કરવામાં આવેલા એકાઉન્ટમાંથી આ પેજનો ઉપયોગ કરી શકતા નથી. જો તમે આ પેજનો ઉપયોગ કરશો તો બધા મેનેજ કરેલા એકાઉન્ટ લૉક થઈ જશે, સિવાય કે આ ડિવાઇસ (આનુષંગિક હોય તેવા એકાઉન્ટ) જેવા જ એકમ દ્વારા મેનેજ કરવામાં આવતા એકાઉન્ટ.</translation>
 <translation id="8194797478851900357">&amp;ખસેડવું પૂર્વવત્‌ કરો</translation>
 <translation id="8194956568907463262">શૂટર ગેમ</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
@@ -3249,6 +3260,7 @@
 <translation id="8202370299023114387">વિરોધ</translation>
 <translation id="8207625368992715508">મોટર સ્પોર્ટ</translation>
 <translation id="8208363704094329105">300 x 400 મિમી</translation>
+<translation id="8210490490377416373">પૉલિસીનું નામ પસંદ કરો</translation>
 <translation id="8210604850413485128">વેબ હોસ્ટિંગ</translation>
 <translation id="8211406090763984747">કનેક્શન સુરક્ષિત છે</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3364,6 +3376,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ટૅબ દબાવો અને પછી Chrome સેટિંગમાં કુકીની તમારી પસંદગીઓ મેનેજ કરવા માટે Enter કી દબાવો</translation>
 <translation id="8433057134996913067">આ તમને મોટાભાગની વેબસાઇટ્સમાંથી સાઇન આઉટ કરશે.</translation>
 <translation id="8434840396568290395">પાળેલાં પ્રાણીઓ</translation>
+<translation id="8436623588884785770">પૉલિસી ઉમેરો</translation>
 <translation id="8437238597147034694">&amp;ખસેડવું પૂર્વવત્‌ કરો</translation>
 <translation id="8438786541497918448">કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરીએ?</translation>
 <translation id="8438923942245957911">તમારી સંસ્થા દ્વારા આ સાઇટને ચિહ્નિત કરવામાં આવી છે</translation>
@@ -3386,6 +3399,7 @@
 <translation id="8483229036294884935">આ ઍડ્રેસ તમારા Google એકાઉન્ટ, <ph name="ACCOUNT" />માંથી ડિલીટ કરવામાં આવશે</translation>
 <translation id="8488350697529856933">આમને લાગુ</translation>
 <translation id="8490137692873530638">સ્ટૅકર 10</translation>
+<translation id="8493829133024050711">પૉલિસી સૉર્સ પસંદ કરો</translation>
 <translation id="8493948351860045254">સ્થાન ખાલી કરો</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> એ પ્રતિસાદ આપવા માટે ઘણો સમય લીધો.</translation>
 <translation id="8503559462189395349">Chrome પાસવર્ડ</translation>

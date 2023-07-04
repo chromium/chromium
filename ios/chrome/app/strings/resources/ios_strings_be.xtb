@@ -1059,6 +1059,7 @@
 <translation id="7531345132340165516">Бягучы сайт</translation>
 <translation id="7537586195939242955">Зараз усталяваць пароль у Passbook не ўдалося.</translation>
 <translation id="754655535278952384">Праверана <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Апошняя ўкладка, адкрытая на наступнай прыладзе: <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Каб выключыць аўтазапаўненне, выберыце <ph name="BEGIN_LINK" />Settings ("Налады")<ph name="END_LINK" /> і перайдзіце ў раздзел Password Options ("Параметры пароляў").</translation>
 <translation id="7554645225856321710">Закрыць усе</translation>
 <translation id="7554791636758816595">Новая ўкладка</translation>
@@ -1204,6 +1205,7 @@
 <translation id="8428045167754449968">Горад або населены пункт</translation>
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8428634594422941299">Зразумела</translation>
+<translation id="8446201778524791138">Змяніць дзеянні</translation>
 <translation id="8446884382197647889">Даведацца больш</translation>
 <translation id="8458397775385147834">1 элемент выдалены</translation>
 <translation id="8459333855531264009">Небяспечны сайт</translation>

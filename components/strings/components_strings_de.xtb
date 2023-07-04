@@ -1208,7 +1208,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3678529606614285348">Seite in einem neuen Inkognitofenster öffnen (Strg + Umschalttaste + N)</translation>
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" />-stelligen Bestätigungscode eingeben</translation>
 <translation id="3681007416295224113">Zertifikatinformationen</translation>
-<translation id="3681421644246505351">Chrome schließt aufgrund deines aktuellen Browserverlaufs auf Themen, die dich interessieren könnten.</translation>
+<translation id="3681421644246505351">Chrome nutzt zur Ermittlung deiner Interessengebiete deinen aktuellen Browserverlauf.</translation>
 <translation id="3693327506115126094">Methode zur Bestätigung deiner Identität auswählen</translation>
 <translation id="3698629142018988477">Schaltfläche „Website erstellen“ – aktivieren, um schnell eine neue Website in Google Sites zu erstellen</translation>
 <translation id="3701325639446035885">Ticketverkauf</translation>
@@ -3373,6 +3373,7 @@ Weitere Details:
 <translation id="8449836157089738489">Alle in neuer Tabgruppe öffnen</translation>
 <translation id="8457125768502047971">Unbestimmt</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Aktivieren</translation>
 <translation id="8461694314515752532">Synchronisierte Daten mit eigener Synchronisierungspassphrase verschlüsseln</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 Kreditkarte}other{# Kreditkarten}}</translation>
 <translation id="8468358362970107653">Umschlag C3</translation>

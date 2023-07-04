@@ -127,6 +127,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">你在不是由貴機構管理的網站上輸入了你的密碼。為確保帳戶安全，請勿在其他應用程式和網站上重複使用你的密碼。</translation>
 <translation id="1257553931232494454">縮放等級</translation>
+<translation id="1259843033850529027">選取政策層級</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可管理 Chrome 設定</translation>
 <translation id="1264309058268477500">替用匣</translation>
 <translation id="1264974993859112054">運動資訊</translation>
@@ -304,6 +305,7 @@
 <translation id="1593359183944365958">270 度</translation>
 <translation id="1594030484168838125">選擇</translation>
 <translation id="1596296697375291157">恐怖、犯罪與懸疑片</translation>
+<translation id="1597473228022844713">你正在追蹤這項產品，這個網頁已儲存到「<ph name="LAST_BOOKMARKS_FOLDER" />」中</translation>
 <translation id="1599199147673445968">要更新信用卡資訊嗎？<ph name="BEGIN_LINK" />輸入卡片資料<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="161042844686301425">青色</translation>
@@ -948,6 +950,7 @@
 <translation id="3140646734028448730">商業服務</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
 <translation id="3141641372357166056">沒有同意聲明決定</translation>
+<translation id="3144458715650412431">已套用測試政策。如要查看和進行重設，請前往 chrome://policy/test。請注意，系統不會套用管理員政策。</translation>
 <translation id="3145945101586104090">無法將回應解碼</translation>
 <translation id="3150653042067488994">伺服器暫時發生錯誤</translation>
 <translation id="3150889484970506196">「建立試算表」按鈕，啟動後即可快速建立新的 Google 試算表</translation>
@@ -1342,6 +1345,7 @@
 <translation id="3987940399970879459">不到 1 MB</translation>
 <translation id="3990250421422698716">撞頁偏移</translation>
 <translation id="3992684624889376114">為何顯示此頁</translation>
+<translation id="3995639283717357522">套用政策</translation>
 <translation id="399952081411886534">其他有助於保障使用者隱私的廣告控管機制</translation>
 <translation id="4000598935132966791">進一步瞭解受管理瀏覽器中的網站限制</translation>
 <translation id="4006465311664329701">儲存在 Google Pay 的付款方式、優惠和地址資訊</translation>
@@ -1522,6 +1526,7 @@
 <translation id="4333561522337981382">管理所有螢幕上的視窗</translation>
 <translation id="4338709847516294988">按下搜尋鍵 + m 鍵，接著點選內容選單中的「將圖片轉成文字」</translation>
 <translation id="4340575312453649552">這個廣告使用了太多裝置資源，因此 Chrome 已將其移除。</translation>
+<translation id="4340810192899866471">從 JSON 匯入</translation>
 <translation id="4340982228985273705">系統偵測結果顯示這台電腦未受企業管理，因此政策只能自動安裝透過 Chrome 線上應用程式商店代管的擴充功能。Chrome 線上應用程式商店更新網址為「<ph name="CWS_UPDATE_URL" />」。</translation>
 <translation id="4348834659292907206">與 <ph name="SITE" /> 的連線並不安全</translation>
 <translation id="4349365535725594680">無法分享機密內容</translation>
@@ -1770,6 +1775,7 @@
 <translation id="4901778704868714008">儲存...</translation>
 <translation id="4901952598169637881">休閒鞋</translation>
 <translation id="4905659621780993806">管理員將自動於 <ph name="DATE" /><ph name="TIME" />重新啟動你的裝置。在裝置重新啟動前，請記得儲存開啟的項目。</translation>
+<translation id="4907289208610706508">目標</translation>
 <translation id="4913987521957242411">打孔 (左上方)</translation>
 <translation id="4918221908152712722">安裝「<ph name="APP_NAME" />」(無須下載)</translation>
 <translation id="4920457992177678649">度假民宿與短期住宿</translation>
@@ -1879,6 +1885,7 @@
 <translation id="5145883236150621069">政策回應中存在錯誤代碼</translation>
 <translation id="5146995429444047494">已封鎖 <ph name="ORIGIN" /> 的通知</translation>
 <translation id="514704532284964975"><ph name="URL" /> 希望查看和變更你透過手機在 NFC 裝置上輕觸的資訊</translation>
+<translation id="5147633291963801297">在側邊面板查看降價資訊</translation>
 <translation id="5148809049217731050">正面朝上</translation>
 <translation id="5153314898060540200">硬式搖滾與前衛音樂</translation>
 <translation id="5157504274688344097">量販店與百貨公司</translation>
@@ -2454,6 +2461,7 @@
 <translation id="6450212216969386944">Envelope Chou 40</translation>
 <translation id="6451458296329894277">確認重新提交表單</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">選取政策目標</translation>
 <translation id="6456955391422100996">已移除廣告。</translation>
 <translation id="6457206614190510200">騎馬訂</translation>
 <translation id="6457455098507772300">系統會以彈出式通知形式在電腦上顯示降價快訊</translation>
@@ -2737,6 +2745,7 @@
 <translation id="7108819624672055576">依據擴充功能設定允許</translation>
 <translation id="7109510814665441393">駕駛與賽車遊戲</translation>
 <translation id="7110116949943042888">臨時和季節性工作</translation>
+<translation id="7110553203952632623">如果產品在任何網站上降價，系統會透過電子郵件快訊通知你</translation>
 <translation id="7111012039238467737">(有效)</translation>
 <translation id="7111507312244504964">物業檢查與估價</translation>
 <translation id="7112327784801341716">資料與現況不符嗎？請聯絡銀行辦理資料更新。</translation>
@@ -3228,6 +3237,7 @@
 <translation id="8127301229239896662">「<ph name="SOFTWARE_NAME" />」未正確安裝在電腦或網路上。請通知 IT 管理員解決這個問題。</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8134058435519644366">人才招募與人力派遣</translation>
+<translation id="8144303576836498784">發生錯誤，系統未儲存變更。</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
 <translation id="8149426793427495338">您的電腦已進入睡眠模式。</translation>
 <translation id="8150722005171944719">無法讀取位於 <ph name="URL" /> 的檔案。這個檔案可能已遭移除或移動位置，或者檔案權限為禁止存取。</translation>
@@ -3241,6 +3251,7 @@
 <translation id="8184538546369750125">使用全域預設值 (允許)</translation>
 <translation id="8186706823560132848">軟體</translation>
 <translation id="8190193880870196235">由擴充功能管理</translation>
+<translation id="8194412401381329820">你無法在這部非受管裝置上透過受管理的帳戶使用這個網頁。除非帳戶是由這部裝置的實體管理 (即關聯帳戶)，否則系統會在你使用這個網頁時封鎖所有受管理的帳戶。</translation>
 <translation id="8194797478851900357">復原移動(&amp;U)</translation>
 <translation id="8194956568907463262">射擊遊戲</translation>
 <translation id="8200772114523450471">繼續</translation>
@@ -3248,6 +3259,7 @@
 <translation id="8202370299023114387">衝突</translation>
 <translation id="8207625368992715508">賽車運動</translation>
 <translation id="8208363704094329105">300 x 400 公釐</translation>
+<translation id="8210490490377416373">選取政策名稱</translation>
 <translation id="8210604850413485128">網站代管</translation>
 <translation id="8211406090763984747">已建立安全連線</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3363,6 +3375,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理 Cookie 偏好設定</translation>
 <translation id="8433057134996913067">您會因此登出大多數網站。</translation>
 <translation id="8434840396568290395">寵物</translation>
+<translation id="8436623588884785770">新增政策</translation>
 <translation id="8437238597147034694">復原移動(&amp;U)</translation>
 <translation id="8438786541497918448">要使用攝影機和麥克風嗎？</translation>
 <translation id="8438923942245957911">貴機構已標記這個網站</translation>
@@ -3385,6 +3398,7 @@
 <translation id="8483229036294884935">這個地址將從 Google 帳戶 (<ph name="ACCOUNT" />) 中刪除</translation>
 <translation id="8488350697529856933">適用對象</translation>
 <translation id="8490137692873530638">堆疊出紙器 10</translation>
+<translation id="8493829133024050711">選取政策來源</translation>
 <translation id="8493948351860045254">釋出空間</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> 的回應時間過長。</translation>
 <translation id="8503559462189395349">Chrome 密碼</translation>

@@ -1061,6 +1061,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7531345132340165516">Bieżąca witryna</translation>
 <translation id="7537586195939242955">Twojego hasła nie można teraz umieścić w Passbooku.</translation>
 <translation id="754655535278952384">Sprawdzono <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Ostatnia karta otwarta na: <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Aby wyłączyć funkcję, otwórz <ph name="BEGIN_LINK" />Ustawienia<ph name="END_LINK" /> i kliknij Opcje haseł.</translation>
 <translation id="7554645225856321710">Zamknij wszystko</translation>
 <translation id="7554791636758816595">Nowa karta</translation>
@@ -1206,6 +1207,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8428045167754449968">Miejscowość</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8428634594422941299">OK</translation>
+<translation id="8446201778524791138">Edytuj działania</translation>
 <translation id="8446884382197647889">Więcej informacji</translation>
 <translation id="8458397775385147834">Usunąłeś 1 element</translation>
 <translation id="8459333855531264009">Niebezpieczne</translation>

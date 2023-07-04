@@ -1059,6 +1059,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7531345132340165516">Sajti aktual</translation>
 <translation id="7537586195939242955">Na vjen keq, "Pass" nuk mund të instalohet te "Passbook" në këtë moment.</translation>
 <translation id="754655535278952384">Kontrolluar <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Skeda e fundit e përdorur në <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Për ta çaktivizuar, hap <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" /> dhe shko te "Opsionet e fjalëkalimeve".</translation>
 <translation id="7554645225856321710">Mbylli të gjitha</translation>
 <translation id="7554791636758816595">Skedë e re</translation>
@@ -1204,6 +1205,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8428045167754449968">Qyteti / Qyteza</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8428634594422941299">E kuptova</translation>
+<translation id="8446201778524791138">Modifiko veprimet</translation>
 <translation id="8446884382197647889">Mëso më shumë</translation>
 <translation id="8458397775385147834">1 element u fshi</translation>
 <translation id="8459333855531264009">Jo e sigurt</translation>

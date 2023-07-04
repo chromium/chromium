@@ -944,6 +944,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6674571176963658787">Jei norite pradėti sinchronizuoti, įveskite slaptafrazę</translation>
 <translation id="667999046851023355">Dokumentas</translation>
 <translation id="6684906340059221832">Kainų stebėjimas</translation>
+<translation id="6689804622901271327">Automatinio pildymo mokėjimo informacija</translation>
 <translation id="6710079714193676716">Valdo jūsų organizacija. Kai kurios funkcijos gali būti nepasiekiamos. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Gaukite žymes, slaptažodžius ir kitus duomenis visuose įrenginiuose.</translation>
@@ -1000,6 +1001,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7053983685419859001">Blokuoti</translation>
 <translation id="7062545763355031412">Sutikti ir perjungti paskyras</translation>
 <translation id="7080806333218412752">Siunčia URL Saugaus naršymo funkcijai, kad juos patikrintų. Taip pat siunčia nedaug puslapių, atsisiuntimų, plėtinių veiklos ir sistemos informacijos, kad padėtų aptikti naujas grėsmes. Laikinai susieja šiuos duomenis su „Google“ paskyra, kai esate prisijungę, kad apsaugotų jus „Google“ programose.</translation>
+<translation id="7082853213442715471">Įjungus, tam tikros žiniatinklio technologijos yra blokuojamos, todėl kai kurios svetainės gali būti įkeliamos lėčiau arba gali tinkamai neveikti.</translation>
 <translation id="7095110968493193530">„Google“ slaptažodžių tvarkytuvė, naudotojas <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Naujausi skirtukai</translation>
 <translation id="7102005569666697658">Atsisiunčiama… <ph name="FILE_SIZE" /></translation>
@@ -1059,6 +1061,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7531345132340165516">Dabartinė svetainė</translation>
 <translation id="7537586195939242955">Deja, šiuo metu negalima įdiegti „Pass“ į „Passbook“.</translation>
 <translation id="754655535278952384">Tikrinta <ph name="TIME" /></translation>
+<translation id="7552154146060018538">Paskutinis skirtukas naudotas „<ph name="SOURCE_DEVICE" />“ įrenginyje</translation>
 <translation id="7553234618121028547">Jei norite išjungti, atidarykite skiltį <ph name="BEGIN_LINK" />„Nustatymai“<ph name="END_LINK" /> ir eikite į skiltį „Slaptažodžio parinktys“.</translation>
 <translation id="7554645225856321710">Uždaryti viską</translation>
 <translation id="7554791636758816595">Naujas skirtukas</translation>
@@ -1204,6 +1207,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8428045167754449968">Didm. / miest.</translation>
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8428634594422941299">Supratau</translation>
+<translation id="8446201778524791138">Redaguoti veiksmus</translation>
 <translation id="8446884382197647889">Sužinokite daugiau</translation>
 <translation id="8458397775385147834">Ištrinta elementų: 1</translation>
 <translation id="8459333855531264009">Nesaugūs</translation>

@@ -387,6 +387,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="131364520783682672">Kyçja e kapitaleve</translation>
 <translation id="1313660246522271310">Do të dalësh nga të gjitha sajtet, duke përfshirë edhe në skedat e hapura</translation>
 <translation id="1313705515580255288">Faqeshënuesit e tu, historiku dhe cilësime të tjera do të sinkronizohen në llogarinë tënde të Google.</translation>
+<translation id="1315184295353569363">Anulo ruajtjen e grupit</translation>
 <translation id="1316136264406804862">Po kërkon...</translation>
 <translation id="1316248800168909509">Nuk mund të lidhej me <ph name="DEVICE" />. Provo përsëri.</translation>
 <translation id="1316495628809031177">Sinkronizimi është vendosur në pauzë</translation>
@@ -2902,6 +2903,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3429160811076349561">Veçoritë e provës janë joaktive</translation>
 <translation id="3429271624041785769">Gjuhët e përmbajtjes së uebit</translation>
 <translation id="3429275422858276529">Shënoje këtë faqe për ta gjetur me lehtësi më vonë</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> nemorie e liruar</translation>
 <translation id="3432762828853624962">Punëtorët e përbashkët</translation>
 <translation id="3433507769937235446">Kyç kur largohesh</translation>
 <translation id="3433621910545056227">Gabim! Sistemi dështoi në vendosjen e kyçjes së cilësive të instalimit në kohë të pajisjes.</translation>
@@ -4005,6 +4007,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4361142739114356624">Çelësi privat për këtë "Certifikatë të klientit" mungon ose është i pavlefshëm</translation>
 <translation id="4361745360460842907">Hape si skedë</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> është llogaria e parazgjedhur në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
+<translation id="4363215264289239958">Aplikacionet e Bruschetta</translation>
 <translation id="4363771538994847871">Nuk u gjetën pajisje për të transmetuar me Cast. Ke nevojë për ndihmë?</translation>
 <translation id="4364327530094270451">Pjepër</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> po ndan një dritare.</translation>
@@ -5104,6 +5107,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5319359161174645648">Google rekomandon Chrome</translation>
 <translation id="5319712128756744240">Çifto pajisjen e re</translation>
 <translation id="5320135788267874712">Emri i ri i pajisjes</translation>
+<translation id="5320261549977878764">Anulo ruajtjen e grupit</translation>
 <translation id="532247166573571973">Serveri mund të jetë i paarritshëm. Provo përsëri më vonë.</translation>
 <translation id="5324300749339591280">Lista e aplikacioneve</translation>
 <translation id="5324780743567488672">Caktoje automatikisht brezin orar duke përdorur vendndodhjen tënde</translation>

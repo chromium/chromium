@@ -940,6 +940,7 @@
 <translation id="6674571176963658787">如要開始同步處理，請輸入通關密語</translation>
 <translation id="667999046851023355">文件</translation>
 <translation id="6684906340059221832">正在追蹤價格</translation>
+<translation id="6689804622901271327">自動填入付款資訊</translation>
 <translation id="6710079714193676716">由貴機構管理，部分功能可能無法使用。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">在任何裝置上存取書籤、密碼及其他設定。</translation>
@@ -996,6 +997,7 @@
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7062545763355031412">接受並切換帳戶</translation>
 <translation id="7080806333218412752">可將網址傳送至安全瀏覽功能進行檢查。同時也會傳送少量網頁、下載內容、擴充功能活動及系統資訊，以協助找出新的威脅。當你登入 Google 帳戶後，系統會將這些資料暫時連結至你的帳戶，以便在你使用各項 Google 應用程式時提供保護。</translation>
+<translation id="7082853213442715471">開啟後，系統會封鎖特定的網頁技術，部分網站載入速度可能會因此變慢或無法正常運作。</translation>
 <translation id="7095110968493193530">儲存到 <ph name="EMAIL" /> 的 Google 密碼管理工具</translation>
 <translation id="7099761977003084116">最近開啟的分頁</translation>
 <translation id="7102005569666697658">下載中… <ph name="FILE_SIZE" /></translation>

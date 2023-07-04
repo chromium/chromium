@@ -701,6 +701,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1576594961618857597">Sjálfgefin hvít notandamynd</translation>
 <translation id="1576729678809834061">Tilkynna þessa leitarniðurstöðu</translation>
 <translation id="1578558981922970608">Þvinga fram lokun</translation>
+<translation id="157931050206866263">Nánar um spilliforritaleit</translation>
 <translation id="1580772913177567930">Hafðu samband við kerfisstjórann þinn</translation>
 <translation id="1581962803218266616">Sýna í Finder</translation>
 <translation id="1582955169539260415">eyða [<ph name="FINGERPRINT_NAME" />]</translation>
@@ -933,6 +934,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1757132445735080748">Til að ljúka uppsetningu á Linux skaltu uppfæra ChromeOS Flex og reyna aftur.</translation>
 <translation id="1757301747492736405">Fjarlæging í bið</translation>
 <translation id="175772926354468439">Virkja þema</translation>
+<translation id="1757786065507923842">Beiðni um heimild frá foreldri mistókst.</translation>
 <translation id="17584710573359123">Skoða í vefverslun Chrome</translation>
 <translation id="1761845175367251960">Reikningar sem <ph name="NAME" /> á</translation>
 <translation id="176272781006230109">innkaupatillögur</translation>
@@ -985,6 +987,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1795214765651529549">Nota hefðbundið þema</translation>
 <translation id="1796588414813960292">Eiginleikar sem þarfnast hljóðs munu ekki virka</translation>
 <translation id="1797117170091578105">Spilaðu með Chromebook lyklaborðinu. Þú getur sérsniðið lykla fyrir ákveðnar aðgerðir.</translation>
+<translation id="1801571666562084067">Umbreyta PDF-myndum í texta</translation>
 <translation id="180203835522132923">Leita + O og svo W</translation>
 <translation id="1802624026913571222">Svefn þegar hulstrið er lokað</translation>
 <translation id="1802687198411089702">Síðan svarar ekki. Þú getur beðið eftir henni eða hætt.</translation>
@@ -2648,6 +2651,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3165390001037658081">Sum símafyrirtæki gætu lokað á þennan eiginleika.</translation>
 <translation id="3169930038976362151">Veldu þemað sem hentar þér best. Haltu inni á skjáborðinu til að skipta um þema, veggfóður, skjávara og fleira.</translation>
 <translation id="3170072451822350649">Þú getur líka sleppt því að skrá þig inn og verið <ph name="LINK_START" />gestanotandi<ph name="LINK_END" />.</translation>
+<translation id="3174311489448105660">Skannaðu PDF-myndir til að umbreyta efni í texta fyrir skjálesara, þegar það er í boði. Aðeins stutt í Chrome-vafra.</translation>
 <translation id="31774765611822736">Nýr flipi vinstra megin</translation>
 <translation id="3177909033752230686">Tungumál síðu:</translation>
 <translation id="3177914167275935955">Tækið þitt er með Chrome Education-uppfærslu en notandanafnið þitt er ekki tengt við Google for Education-reikning. Stofnaðu Google for Education-reikning með því að opna g.co/workspace/edusignup í öðru tæki.</translation>
@@ -4747,6 +4751,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Staðfesta aðgang</translation>
 <translation id="4979263087381759787">Forritunarkostir</translation>
+<translation id="4979510648199782334">Uppsetningu Microsoft 365 er lokið</translation>
 <translation id="4980805016576257426">Þessi viðbót inniheldur spilliforrit.</translation>
 <translation id="4981449534399733132">Til að hreinsa vafragögn úr öllum samstilltum tækjum og af Google reikningnum þínum skaltu <ph name="BEGIN_LINK" />skrá þig inn<ph name="END_LINK" />.</translation>
 <translation id="4986706507552097681">Þú getur alltaf valið hvað á að samstilla í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
@@ -8161,6 +8166,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7910768399700579500">&amp;Ný mappa</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Aðgangsorðinu þínu hefur verið breytt á netþjóni. Skráðu þig út og aftur inn.</translation>
+<translation id="791247712619243506">Hætta við uppsetningu</translation>
 <translation id="7912974581251770345">Þýðing</translation>
 <translation id="7915457674565721553">Tengstu við internetið til að setja upp barnalæsingu</translation>
 <translation id="7916364730877325865">Fyrirtækið leyfir þér ekki kveikja á samstillingu við þennan reikning</translation>
@@ -8948,6 +8954,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8592141010104017453">Sýna engar tilkynningar</translation>
 <translation id="859246725979739260">Lokað hefur verið á aðgang þessa vefsvæðis að staðsetningunni þinni.</translation>
 <translation id="8593121833493516339">Senda notkunar- og greiningargögn. Hjálpaðu okkur að bæta Android fyrir barnið þitt með því að senda sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta verður ekki notað til að bera kennsl á barnið þitt og mun stuðla að því að bæta stöðugleika kerfa og forrita auk annarra endurbóta. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Ef kveikt er á ítarlegri vef- og forritavirkni fyrir barnið geta þessi gögn verið vistuð á Google reikningi barnsins. <ph name="BEGIN_LINK1" />Frekari upplýsingar<ph name="END_LINK1" /></translation>
+<translation id="8593450223647418235">Þú getur ekki opnað skrár í Microsoft 365 fyrr en uppsetningu lýkur.</translation>
 <translation id="8596540852772265699">Sérsniðnar skrár</translation>
 <translation id="8597845839771543242">Snið eigindar:</translation>
 <translation id="8599681327221583254">Ein eða fleiri reglur eru rangt stilltar. Hafðu samband við kerfisstjórann</translation>
@@ -9365,6 +9372,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8941173171815156065">Afturkalla heimildina „<ph name="PERMISSION" />“'</translation>
 <translation id="8941688920560496412">Slökkt er á <ph name="DEVICE_NAME" /></translation>
 <translation id="894191600409472540">Búðu til traust aðgangsorð</translation>
+<translation id="8942714513622077633">Hætta við uppsetningu Microsoft 365?</translation>
 <translation id="894360074127026135">Alþjóðleg uppreiknun Netscape</translation>
 <translation id="8944099748578356325">Nota rafhlöðu hraðar (<ph name="BATTERY_PERCENTAGE" />% að svo stöddu)</translation>
 <translation id="8944725102565796255">Ef þú vilt aðeins nota þennan reikning einu sinni geturðu <ph name="GUEST_LINK_BEGIN" />notað tækið sem gestur<ph name="GUEST_LINK_END" />. Ef þú vilt bæta við reikningi fyrir einhvern annan skaltu <ph name="LINK_BEGIN" />bæta við nýjum einstaklingi<ph name="LINK_END" /> í <ph name="DEVICE_TYPE" />.
@@ -9409,10 +9417,14 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8978154919215542464">Kveikt – samstilla allt</translation>
 <translation id="8978670037548431647">Endurnýja tjóðrunareiginleika</translation>
 <translation id="897939795688207351">Á <ph name="ORIGIN" /></translation>
+<translation id="8980335421826918629">Þessi skrá gæti verið vírus eða spilliforrit.
+
+Þú getur sent hana til öruggrar vefskoðunar Google til að athuga hvort hún sé ótraust. Almennt tekur aðeins nokkrar sekúndur að skanna.</translation>
 <translation id="8980345560318123814">Ábendingaskýrslur</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – hrundi</translation>
 <translation id="8981038076986775523">Nánar um notkun hljóðnema</translation>
 <translation id="8981825781894055334">Lítið eftir af pappír</translation>
+<translation id="8982043802480025357">Þegar Word-, Excel- og PowerPoint-skrár eru opnaðar eru þær fluttar í Microsoft OneDrive áður en þær opnast í Microsoft 365</translation>
 <translation id="8983018820925880511">Prófílnum verður stjórnað af <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> getur breytt <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Þú verður sýnileg(ur) öllum í <ph name="MINUTES" /> mínútur. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>

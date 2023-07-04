@@ -944,6 +944,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6674571176963658787">For å starte synkroniseringen, skriv inn passordfrasen din</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6684906340059221832">Sporer prisene</translation>
+<translation id="6689804622901271327">Autofyll betalingsopplysninger</translation>
 <translation id="6710079714193676716">Administreres av organisasjonen din. Noen funksjoner er kanskje ikke tilgjengelige. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Få bokmerker, passord med mer på alle enhetene dine.</translation>
@@ -1000,6 +1001,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7053983685419859001">Blokkér</translation>
 <translation id="7062545763355031412">Godta og bytt konto</translation>
 <translation id="7080806333218412752">Sender nettadresser til Safe Browsing for å sjekke dem. Sender også et lite utvalg av sider, nedlastinger, utvidelsesaktivitet og systeminformasjon for å bidra til å oppdage nye trusler. Knytter disse dataene til Google-kontoen din midlertidig når du er pålogget, slik at du er beskyttet i alle Google-appene.</translation>
+<translation id="7082853213442715471">Når denne innstillingen er på, blokkeres enkelte netteknologier, noe som kan føre til at enkelte nettsteder lastes inn tregere eller ikke fungerer som de skal.</translation>
 <translation id="7095110968493193530">I Google Passordlagring for <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Nylige faner</translation>
 <translation id="7102005569666697658">Laster ned … <ph name="FILE_SIZE" /></translation>

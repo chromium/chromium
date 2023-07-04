@@ -309,6 +309,7 @@
 <translation id="1244265436519979884">目前正在執行 Linux 還原作業</translation>
 <translation id="1244303850296295656">擴充功能錯誤</translation>
 <translation id="1244917379075403655">按一下「設定」</translation>
+<translation id="1245331638296910488">使用 Microsoft 365 開啟檔案時，系統會將檔案移至 OneDrive</translation>
 <translation id="1245628370644070008">本機資料復原</translation>
 <translation id="1246863218384630739">無法安裝 <ph name="VM_NAME" />：映像檔網址傳回 <ph name="HTTP_ERROR" /> 錯誤代碼。請與管理員聯絡。</translation>
 <translation id="1247372569136754018">麥克風 (內部)</translation>
@@ -669,6 +670,7 @@
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」擴充功能已將搜尋引擎改為 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">管理擴充功能</translation>
 <translation id="1553538517812678578">無限制</translation>
+<translation id="1553947773881524342"><ph name="LINK_BEGIN" />進一步瞭解<ph name="LINK_END" /> Chromebook 上的 Microsoft 365。</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1556127816860282890">背景活動和某些視覺效果 (例如平滑捲動) 可能會受到限制</translation>
 <translation id="1556537182262721003">無法將擴充功能目錄移至設定檔。</translation>
@@ -1117,6 +1119,7 @@
 <translation id="1904580727789512086">系統會將你造訪的網址儲存到 Google 帳戶</translation>
 <translation id="1905375423839394163">Chromebook 裝置名稱</translation>
 <translation id="1906181697255754968">網站通常會存取裝置上的檔案和資料夾，以提供自動儲存作業等功能</translation>
+<translation id="1906488504371069394">前往 <ph name="BEGIN_LINK" />Chrome 線上應用程式商店<ph name="END_LINK" />探索更多擴充功能和主題</translation>
 <translation id="1907044622262489040">使用語音輸入。按下搜尋鍵 + D 鍵，然後開始說話。</translation>
 <translation id="1908591798274282246">重新開啟先前關閉的群組</translation>
 <translation id="1909880997794698664">你確定要讓這個裝置永久使用 Kiosk 模式嗎？</translation>
@@ -1928,6 +1931,7 @@
 <translation id="2561211427862644160">你的所有書籤會顯示在這裡</translation>
 <translation id="2564520396658920462">透過 AppleScript 執行 JavaScript 的功能已關閉。如要開啟，請在選單列中依序前往 [檢視] &gt; [開發人員] &gt; [允許 Apple 事件的 JavaScript]。詳情請見：https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">進階拼字檢查</translation>
+<translation id="2565214867520763227">開啟螢幕閱讀器</translation>
 <translation id="2568694057933302218">在無痕模式下，網站無法使用 Cookie 瞭解你在各網站的瀏覽活動，因此無法根據瀏覽活動提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
 <translation id="2568774940984945469">資訊列容器</translation>
 <translation id="2569972178052279830">零售商名稱</translation>
@@ -2560,6 +2564,7 @@
 <translation id="3089948625237571254">複製視訊畫面頁框(&amp;O)</translation>
 <translation id="3090227230165225418">朗讀下載通知</translation>
 <translation id="3090589793601454425">不要移動</translation>
+<translation id="309079592386854321">確認印表機已連上 Chromebook 使用的 Wi-Fi 網路，或使用 USB 傳輸線。<ph name="LINK_BEGIN" />進一步瞭解相容性<ph name="LINK_END" />。</translation>
 <translation id="3090819949319990166">無法將外部 crx 檔案複製到 <ph name="TEMP_CRX_FILE" />。</translation>
 <translation id="3090871774332213558">「<ph name="DEVICE_NAME" />」已配對</translation>
 <translation id="3093714882666365141">禁止網站安裝付款處理常式</translation>
@@ -4073,6 +4078,7 @@
 <translation id="4410545552906060960">你可以使用一組數字 (PIN 碼) 來解鎖裝置，這組數字與密碼不同。如要稍後再設定 PIN 碼，請前往「設定」。</translation>
 <translation id="4411578466613447185">程式碼簽署者</translation>
 <translation id="4411719918614785832">這些密碼金鑰會儲存在這部電腦的 Windows Hello 上，不會儲存到你的 Google 帳戶。</translation>
+<translation id="4412275763838812196">ChromeOS 的螢幕閱讀器 ChromeVox 主要供失明和低視能人士使用。按下空白鍵即可開啟 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
 <translation id="4412632005703201014">Chrome 應用程式即將遷移至漸進式網頁應用程式。這個 Chrome 應用程式是由貴機構安裝在你的瀏覽器中。如要從「應用程式」清單中開啟漸進式網頁應用程式，請先與系統管理員聯絡，要求對方解除安裝 Chrome 應用程式。於此期間，你可以前往 <ph name="EXTENSION_LAUNCH_URL" />，在網頁上開啟 <ph name="EXTENSION_NAME" />。</translation>
 <translation id="4412698727486357573">說明中心</translation>
 <translation id="4412992751769744546">允許第三方 Cookie</translation>
@@ -4282,6 +4288,7 @@
 <translation id="4585793705637313973">編輯頁面</translation>
 <translation id="4586275095964870617">無法在替代瀏覽器中開啟 <ph name="URL" />。請與你的系統管理員聯絡。</translation>
 <translation id="4587589328781138893">網站</translation>
+<translation id="4588882777927162244">ChromeOS Flex 的螢幕閱讀器 ChromeVox 主要供失明和低視能人士使用。按下空白鍵即可開啟 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> 中未儲存任何裝置</translation>
 <translation id="4592525994536856567">瀏覽及搜尋內容時，載入速度更快了。</translation>
@@ -5065,6 +5072,7 @@
 <translation id="5284445933715251131">繼續下載</translation>
 <translation id="5285635972691565180">螢幕 <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">掃描中</translation>
+<translation id="5287073652040102781">ChromeOS Flex 的螢幕閱讀器 ChromeVox 主要供失明和低視能人士使用。同時按住音量調高鍵和調低鍵五秒，即可啟用 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
 <translation id="5287425679749926365">你的帳戶</translation>
 <translation id="5288106344236929384">其他操作，<ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 的密碼金鑰選項</translation>
 <translation id="5288678174502918605">重新開啟先前關閉的分頁(&amp;E)</translation>
@@ -5611,6 +5619,7 @@
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> 可讓你在 Chromebook 上執行 Windows® 應用程式。建議你為安裝作業保留 <ph name="MINIMUM_SPACE" /> 的可用空間。</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{你可以等待回應，也可以離開這個網頁。}other{你可以等待回應，也可以離開這些網頁。}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" /> 更多詳細資料</translation>
+<translation id="577313026359983030">我的擴充功能</translation>
 <translation id="5774295353725270860">開啟「檔案」應用程式</translation>
 <translation id="5776450228446082914">可在任一瀏覽器中開啟的網站清單。</translation>
 <translation id="5776571780337000608">你可以在檔案瀏覽器或其他應用程式中，透過這個應用程式開啟及編輯支援的檔案。如要控管要在這個應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
@@ -6811,6 +6820,7 @@
 <translation id="6798780071646309401">大寫鎖定模式已開啟</translation>
 <translation id="6798954102094737107">外掛程式：<ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">一般設定</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{選擇這項擴充功能可否讀取或變更這個網站}other{選擇這些擴充功能可否讀取或變更這個網站}}</translation>
 <translation id="6801435275744557998">校正觸控螢幕</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">VM「<ph name="DEFAULT_VM_NAME" />」已存在</translation>
@@ -8017,6 +8027,7 @@
 <translation id="7800518121066352902">逆時針旋轉(&amp;O)</translation>
 <translation id="7801679634091975683">你在這裡所做的變更僅適用於 Lacros Chrome 瀏覽器。如要變更 Chrome 瀏覽器設定，請開啟 Chrome 瀏覽器並前往設定頁面。</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
+<translation id="7803267169006795990">ChromeOS 的螢幕閱讀器 ChromeVox 主要供失明和低視能人士使用。同時按住音量調高鍵和調低鍵五秒，即可啟用 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
 <translation id="7803657407897251194">如要繼續使用 Android 裝置進行設定，請將 <ph name="DEVICE_TYPE" /> 連上網路</translation>
 <translation id="7804072833593604762">已關閉分頁</translation>
 <translation id="7805768142964895445">狀態</translation>
@@ -9562,6 +9573,7 @@
 <translation id="9108808586816295166">可能無法隨時使用安全 DNS</translation>
 <translation id="9109122242323516435">如要釋出空間，請刪除裝置儲存空間內的檔案</translation>
 <translation id="9109283579179481106">連線至行動網路</translation>
+<translation id="9110739391922513676">設定使用 Microsoft 365 開啟檔案</translation>
 <translation id="9111102763498581341">解除鎖定</translation>
 <translation id="9111305600911828693">未設定授權</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />：<ph name="STATUS" /></translation>
@@ -9684,6 +9696,7 @@
 <translation id="9220820413868316583">請移開手指，然後再試一次。</translation>
 <translation id="922152298093051471">自訂 Chrome</translation>
 <translation id="923467487918828349">全部顯示</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{如要管理這個項目，請開啟「擴充功能」}other{如要管理這些項目，請開啟「擴充功能」}}</translation>
 <translation id="924818813611903184">在 Chrome OS 設定中管理語言</translation>
 <translation id="925270020047573546">這部裝置不支援電腦音訊投放功能。</translation>
 <translation id="930268624053534560">詳細時間戳記</translation>
