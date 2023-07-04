@@ -571,7 +571,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2293443924986248631">Cuando esta opción está activada, los sitios no pueden usar cookies para rastrearte en la Web. Es posible que las características de algunos sitios no funcionen de forma adecuada.</translation>
 <translation id="2298855485018661510">Botón Administrar cookies: presiona Intro para administrar tus preferencias de cookies en la configuración de Chrome</translation>
 <translation id="2300306941146563769">No se subió</translation>
-<translation id="2316159751672436664">Personaliza tus herramientas de accesibilidad en la configuración de Chrome OS</translation>
+<translation id="2316159751672436664">Personaliza tus herramientas de accesibilidad en la configuración de ChromeOS</translation>
 <translation id="2316887270356262533">Esta acción libera menos de 1 MB. Es posible que algunos sitios se carguen más lento en tu próxima visita.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requiere un nombre de usuario y una contraseña.</translation>
 <translation id="2318594867107319532">Marca de tiempo de la última política:</translation>
@@ -1284,7 +1284,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4117700440116928470">No se admite el alcance de la política.</translation>
 <translation id="4121428309786185360">Vence el</translation>
 <translation id="4123572138124678573">Perforación triple en la parte inferior</translation>
-<translation id="4127575959421463246">¿Buscas funciones experimentales de Chrome OS? Visitar</translation>
+<translation id="4127575959421463246">¿Buscas funciones experimentales de ChromeOS? Visitar</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 más}other{# más}}</translation>
 <translation id="4130226655945681476">Comprobar los cables de red, el módem y el router</translation>
 <translation id="4132448310531350254">Controladores duplicados para la extensión de archivo "<ph name="FILE_EXTENSION" />" a los que hacen referencia las apps "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -1878,7 +1878,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5519516356611866228">Con tus cambios</translation>
 <translation id="5523118979700054094">Nombre de la política</translation>
 <translation id="5525755241743357906">Se copió o movió el archivo</translation>
-<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar tus herramientas de accesibilidad en la configuración de Chrome OS</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar tus herramientas de accesibilidad en la configuración de ChromeOS</translation>
 <translation id="5528532273234423708">Automatización del hogar</translation>
 <translation id="55293785478302737">Costura de borde</translation>
 <translation id="5535133333442455806">Botón Borrar datos de navegación: presiona Intro para borrar tu historial de navegación, cookies, memoria caché y más en la configuración de Chrome</translation>
@@ -2133,6 +2133,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> pulgadas (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Quitar todo del historial</translation>
 <translation id="6157877588268064908">Para ver los requisitos y métodos de envío, selecciona una dirección</translation>
+<translation id="6160391204859821737">Activa una función de privacidad en los anuncios</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6167577165590485365">Último intento de recuperación:</translation>
 <translation id="6169916984152623906">Ahora puedes navegar con privacidad. Si otras personas usan este dispositivo, no verán tu actividad. Sin embargo, se guardarán las descargas y los favoritos.</translation>
@@ -3004,7 +3005,7 @@ Detalles adicionales:
 <translation id="8249296373107784235">Anular</translation>
 <translation id="8249463483885748674">Pruebas estandarizadas y de admisión</translation>
 <translation id="8250094606476360498">Actualmente, esta dirección se guarda en este dispositivo. Para usarla en todos los productos de Google, guárdala en tu Cuenta de Google, <ph name="ACCOUNT" />.</translation>
-<translation id="8252991034201168845">Botón Administrar la configuración de accesibilidad, presiona Intro para personalizar tus herramientas de accesibilidad en la configuración de Chrome OS</translation>
+<translation id="8252991034201168845">Botón Administrar la configuración de accesibilidad, presiona Intro para personalizar tus herramientas de accesibilidad en la configuración de ChromeOS</translation>
 <translation id="8253091569723639551">Se requiere una dirección de facturación</translation>
 <translation id="8257387598443225809">Esta app está diseñada para dispositivos móviles</translation>
 <translation id="825929999321470778">Mostrar todas las contraseñas guardadas</translation>
@@ -3092,6 +3093,7 @@ Detalles adicionales:
 <translation id="8449836157089738489">Abrir todo en un grupo nuevo de pestañas</translation>
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8458202188076138974">Carta extra</translation>
+<translation id="8460854335417802511">Activar</translation>
 <translation id="8461694314515752532">Encriptar los datos sincronizados con tu propia frase de contraseña de sincronización</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 tarjeta de crédito}other{# tarjetas de crédito}}</translation>
 <translation id="8468358362970107653">Sobre C3</translation>

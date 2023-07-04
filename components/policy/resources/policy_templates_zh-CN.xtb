@@ -2410,6 +2410,7 @@
       如果此政策已启用，系统将为用户提供通过使用访问代码或扫描二维码选择投放设备的选项。
       如果此政策已停用或未设置，系统将不会为用户提供通过使用访问代码或扫描二维码选择投放设备的选项。</translation>
 <translation id="3208615748170745525">自发现有可用更新之日起算的天数。</translation>
+<translation id="3209947902706795852">提示用户进行迁移。</translation>
 <translation id="3210408472559816322">通过设置此政策，您可以指定不应加载哪些本地消息传递主机。拒绝名单值 <ph name="WILDCARD_VALUE" /> 表示所有本地消息传递主机均会被拒绝，除非它们已获得明确许可。
 
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 便会加载已安装的所有本地消息传递主机。</translation>
@@ -5163,6 +5164,7 @@
 <translation id="5790763087505467169">减少受管理访客会话的自动启动通知</translation>
 <translation id="5800329278018669527">处于离线状态时不弹出网络配置提示</translation>
 <translation id="5802931736499687181">停用加密报告管道</translation>
+<translation id="5804795151506109282">不提示用户进行迁移。</translation>
 <translation id="5806128552675651249">仅允许在没有背景图片的情况下打印</translation>
 <translation id="5809210507920527553">控制 Linux 容器 (Crostini) 的设置。</translation>
 <translation id="5809728392451418079">设置设备本地帐号的显示名称</translation>
@@ -5770,6 +5772,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
         如果您向 |app_list| 中添加某个应用及其 |app_id| 和 |app_type|，该应用便可不受应用级使用时限的约束。
        </translation>
 <translation id="6334397544347592516">允许企业管理员与这台计算机建立远程支持连接</translation>
+<translation id="6335206050538331829">ARC 虚拟机数据迁移的迁移策略</translation>
 <translation id="6337782882143073193">此政策已被弃用，请改用 <ph name="URL_BLOCKLIST_POLICY_NAME" />。
 
       此政策让您能够以列表形式指定要在 <ph name="PRODUCT_NAME" /> 中停用的协议。
@@ -6898,6 +6901,15 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7298197471363105063">覆盖 First-Party Sets 功能。</translation>
 <translation id="7302043767260300182">使用交流电源供电时的屏幕锁定延迟时间</translation>
 <translation id="7303902834678570827">受管理访客会话用户无法存储设备级显示设置</translation>
+<translation id="7306926210354955892">通过设置此政策，您可以指定在使用 virtio-fs 创建用户的 ARC 数据目录时，系统会执行的操作。除非将 virtio-fs 数据迁移到 virtio-blk，否则 Android 应用在 ARC 虚拟机上的运行速度可能会变慢。
+
+      如果将此政策设为：
+
+      * <ph name="DO_NOT_PROMPT" />，则表示系统不会要求用户完成迁移流程。在未设置此政策时，这就是默认值。
+
+      * <ph name="PROMPT" />（或不受支持的值），则表示系统会在用户登录时提示完成数据迁移流程。完成此流程最多可能需要 10 分钟时间。
+
+      此政策仅适用于向 ARCVM 迁移的 ARM 设备。</translation>
 <translation id="731208205557053914">报告 VPD 信息</translation>
 <translation id="7313672174502374994">相应壁纸图片的 SHA-256 哈希值。</translation>
 <translation id="7322825363493984512">用于向远程网络代理验证系统服务身份的密码。</translation>

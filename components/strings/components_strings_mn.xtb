@@ -2132,6 +2132,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> инч (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Түүхээс бүгдийг нь хасах</translation>
 <translation id="6157877588268064908">Хүргэлтийн арга болон шаардлагыг харахын тулд хаяг сонгоно уу</translation>
+<translation id="6160391204859821737">Зарын нууцлалын онцлогийг асаах</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6167577165590485365">Сүүлд дуудахаар оролдсон:</translation>
 <translation id="6169916984152623906">Ta одоо хувийн хайлт хийж болох ба энэ төхөөрөмжийг ашигладаг бусад хүмүүс таны ажиллагааг харахгүй. Гэхдээ татаж авсан файл, хавчуурга хадгалагдана.</translation>
@@ -3091,6 +3092,7 @@
 <translation id="8449836157089738489">Бүгдийг шинэ табын бүлэгт нээх</translation>
 <translation id="8457125768502047971">Тодорхойгүй</translation>
 <translation id="8458202188076138974">Илүү том захидал</translation>
+<translation id="8460854335417802511">Үүнийг асаах</translation>
 <translation id="8461694314515752532">Синк хийсэн өгөгдлийг синкийн нэвтрэх үгээрээ шифрлэх</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредит карт}other{# кредит карт}}</translation>
 <translation id="8468358362970107653">Дугтуй C3</translation>

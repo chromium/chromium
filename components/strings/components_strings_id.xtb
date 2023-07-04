@@ -2131,6 +2131,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> inci (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Hapus semua dari histori</translation>
 <translation id="6157877588268064908">Untuk melihat persyaratan dan metode pengiriman, pilih alamat</translation>
+<translation id="6160391204859821737">Aktifkan fitur privasi iklan</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6167577165590485365">Upaya pengambilan terakhir:</translation>
 <translation id="6169916984152623906">Anda kini dapat mengakses secara rahasia, dan orang lain yang menggunakan perangkat ini tidak akan melihat aktivitas Anda. Namun, hasil download dan bookmark akan disimpan.</translation>
@@ -3086,6 +3087,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8449836157089738489">Buka semua di grup tab baru</translation>
 <translation id="8457125768502047971">Tak terbatas</translation>
 <translation id="8458202188076138974">Surat Ekstra</translation>
+<translation id="8460854335417802511">Aktifkan</translation>
 <translation id="8461694314515752532">Enkripsikan data yang disinkronkan dengan frasa sandi sinkronisasi Anda sendiri</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kartu kredit}other{# kartu kredit}}</translation>
 <translation id="8468358362970107653">Envelope C3</translation>

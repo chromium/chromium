@@ -2132,6 +2132,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> po (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Retirer tous les éléments de l'historique</translation>
 <translation id="6157877588268064908">Pour voir les exigences et les modes de livraison, sélectionnez une adresse</translation>
+<translation id="6160391204859821737">Activer une fonctionnalité de confidentialité des annonces</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6167577165590485365">Dernière tentative de récupération :</translation>
 <translation id="6169916984152623906">Vous pouvez maintenant naviguer de façon privée, et les autres personnes qui utilisent cet appareil ne verront pas votre activité. Cependant, les téléchargements et les favoris seront sauvegardés.</translation>
@@ -3091,6 +3092,7 @@ Détails supplémentaires :
 <translation id="8449836157089738489">Tout ouvrir dans un nouveau groupe d'onglets</translation>
 <translation id="8457125768502047971">Indéfini</translation>
 <translation id="8458202188076138974">Lettre extra</translation>
+<translation id="8460854335417802511">Activer l'initiative</translation>
 <translation id="8461694314515752532">Chiffrer vos données synchronisées avec votre propre phrase de passe de synchronisation</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 carte de crédit}one{# carte de crédit}other{# cartes de crédit}}</translation>
 <translation id="8468358362970107653">Enveloppe C3</translation>

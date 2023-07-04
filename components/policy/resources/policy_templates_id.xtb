@@ -2449,6 +2449,7 @@ Jika kebijakan disetel ke Nonaktif, pop-up Rating App Store tidak akan ditampilk
       Jika kebijakan ini disetel ke Aktif, pengguna akan diberi opsi untuk memilih perangkat transmisi dengan menggunakan kode akses atau dengan memindai kode QR.
       Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna tidak akan diberi opsi untuk memilih perangkat transmisi dengan menggunakan kode akses atau dengan memindai kode QR.</translation>
 <translation id="3208615748170745525">Hari sejak penemuan update.</translation>
+<translation id="3209947902706795852">Minta pengguna untuk melakukan migrasi.</translation>
 <translation id="3210408472559816322">Menyetel kebijakan akan menentukan host pesan native mana yang tidak boleh dimuat. Nilai <ph name="WILDCARD_VALUE" /> untuk daftar yang ditolak berarti semua host pesan native ditolak, kecuali diizinkan secara eksplisit.
 
       Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan memuat semua host pesan native yang terinstal.</translation>
@@ -5329,6 +5330,7 @@ Jika kebijakan ini dinonaktifkan, perlindungan ekstensi <ph name="SAFE_BROWSING_
 <translation id="5790763087505467169">Mengurangi Notifikasi otomatis untuk sesi tamu terkelola</translation>
 <translation id="5800329278018669527">Nonaktifkan perintah konfigurasi jaringan saat offline</translation>
 <translation id="5802931736499687181">Nonaktifkan Pipeline Pelaporan Terenkripsi</translation>
+<translation id="5804795151506109282">Jangan meminta pengguna untuk melakukan migrasi.</translation>
 <translation id="5806128552675651249">Izinkan pencetakan hanya tanpa grafis latar belakang</translation>
 <translation id="5809210507920527553">Mengontrol setelan untuk container Linux (Crostini).</translation>
 <translation id="5809728392451418079">Setel nama tampilan untuk akun lokal perangkat</translation>
@@ -5970,6 +5972,7 @@ mengetahui detail tambahan.</translation>
         Tambahkan aplikasi menggunakan |app_id| dan |app_type|-nya ke |app_list| untuk mengizinkan aplikasi tersebut.
        </translation>
 <translation id="6334397544347592516">Izinkan koneksi dukungan jarak jauh dari admin perusahaan ke perangkat ini</translation>
+<translation id="6335206050538331829">Strategi migrasi untuk Migrasi Data VM ARC</translation>
 <translation id="6337782882143073193">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
       Menonaktifkan skema protokol yang tercantum di <ph name="PRODUCT_NAME" />.
@@ -7117,6 +7120,15 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7298197471363105063">Mengganti Set Pihak Pertama.</translation>
 <translation id="7302043767260300182">Penundaan kunci layar saat menggunakan daya AC</translation>
 <translation id="7303902834678570827">Pengguna Sesi Tamu Terkelola tidak dapat menyimpan setelan tampilan di seluruh perangkat</translation>
+<translation id="7306926210354955892">Menyetel kebijakan akan menentukan tindakan yang akan diambil saat direktori data ARC pengguna dibuat dengan virtio-fs. Aplikasi Android mungkin berjalan lebih lambat di VM ARC, kecuali jika data virtio-fs dimigrasikan ke virtio-blk.
+
+      Jika kebijakan disetel ke:
+
+      * <ph name="DO_NOT_PROMPT" />, pengguna tidak akan diminta untuk melalui alur migrasi. Ini adalah nilai default saat kebijakan tidak disetel.
+
+      * <ph name="PROMPT" /> (atau nilai yang tidak didukung), pengguna akan diminta untuk melalui alur migrasi data saat login. Proses ini dapat memerlukan waktu hingga 10 menit.
+
+      Kebijakan ini hanya berlaku untuk perangkat ARM yang bermigrasi ke VM ARC.</translation>
 <translation id="731208205557053914">Melaporkan info VPD</translation>
 <translation id="7313672174502374994">Hash SHA-256 gambar wallpaper.</translation>
 <translation id="7322825363493984512">Sandi untuk mengautentikasi layanan sistem ke proxy web jarak jauh.</translation>

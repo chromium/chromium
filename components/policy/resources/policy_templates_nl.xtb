@@ -2420,6 +2420,7 @@ Als je het beleid niet toepast, wordt de promotie voor appstore-beoordelingen ni
       Als je dit beleid toepast, krijgen gebruikers de optie om cast-apparaten te selecteren met een toegangscode of door een QR-code te scannen.
       Als je dit beleid niet toepast of niet instelt, krijgen gebruikers niet de optie om cast-apparaten te selecteren met een toegangscode of door een QR-code te scannen.</translation>
 <translation id="3208615748170745525">Dagen vanaf ontdekking van update.</translation>
+<translation id="3209947902706795852">Gebruikers vragen om te migreren.</translation>
 <translation id="3210408472559816322">Als je dit beleid toepast, geef je aan welke hosts voor systeemeigen berichten niet mogen worden geladen. Een weigeringslijst met de waarde <ph name="WILDCARD_VALUE" /> betekent dat alle hosts voor systeemeigen berichten worden geweigerd, tenzij ze expliciet zijn toegestaan.
 
       Als je het beleid niet instelt, laadt <ph name="PRODUCT_NAME" /> alle geïnstalleerde hosts voor systeemeigen berichten.</translation>
@@ -3458,7 +3459,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 
       De pagina 'Nieuw tabblad' wordt geopend als er nieuwe tabbladen en vensters worden geopend.
 
-      Met dit beleid bepaal je niet welke pagina's worden geopend als de browser wordt opgestart. Deze pagina's worden beheerd door het beleid <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Dit beleid is wel van invloed op de homepage als hiervoor is ingesteld dat de pagina 'Nieuw tabblad' moet worden geopend, maar ook op de startpagina als deze is ingesteld op de pagina 'Nieuw tabblad'.
+      Met dit beleid bepaal je niet welke pagina's worden geopend als de browser wordt opgestart. Deze pagina's worden beheerd door het beleid <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Dit beleid is wel van invloed op de homepage als hiervoor is ingesteld dat de pagina 'Nieuw tabblad' moet worden geopend, maar ook op de homepage als deze is ingesteld op de pagina 'Nieuw tabblad'.
 
       Het is verstandig om de volledige canonieke URL op te geven. Als de URL niet volledig canoniek is, gebruikt <ph name="PRODUCT_NAME" /> standaard https://.
 
@@ -5177,6 +5178,7 @@ Als je dit beleid niet toepast, wordt <ph name="SAFE_BROWSING_NAME" />-extensieb
 <translation id="5790763087505467169">Minder meldingen voor automatisch starten van beheerde gastsessies</translation>
 <translation id="5800329278018669527">Prompt voor netwerkconfiguratie uitzetten als je offline bent</translation>
 <translation id="5802931736499687181">De Encrypted Reporting Pipeline uitzetten</translation>
+<translation id="5804795151506109282">Gebruikers niet vragen om te migreren.</translation>
 <translation id="5806128552675651249">Alleen afdrukken zonder achtergrondbeelden toestaan</translation>
 <translation id="5809210507920527553">Beheert instellingen voor de Linux-container (Crostini).</translation>
 <translation id="5809728392451418079">De weergavenaam voor lokale accounts van het apparaat instellen</translation>
@@ -5782,6 +5784,7 @@ Zie https://developer.chrome.com/blog/immutable-document-domain/ voor meer infor
         Voeg een app met de bijbehorende |app_id| en |app_type| aan |app_list| toe om de app op de toelatingslijst te zetten.
        </translation>
 <translation id="6334397544347592516">Verbindingen voor externe support van bedrijfsbeheerders met deze machine toestaan</translation>
+<translation id="6335206050538331829">Migratiestrategie voor ARC VM-gegevensmigratie</translation>
 <translation id="6337782882143073193">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
       Hiermee worden de vermelde protocolschema's uitgezet in <ph name="PRODUCT_NAME" />.
@@ -6908,6 +6911,15 @@ De <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> geeft de minimale hoevee
 <translation id="7298197471363105063">First-Party Sets overschrijven.</translation>
 <translation id="7302043767260300182">Vertraging van schermvergrendeling wanneer op netstroom wordt gewerkt</translation>
 <translation id="7303902834678570827">Gebruikers van beheerde gastsessies kunnen geen weergave-eigenschappen voor het hele apparaat opslaan</translation>
+<translation id="7306926210354955892">Als je het beleid instelt, geef je de actie op die moet worden uitgevoerd als de ARC-gegevensdirectory van de gebruiker is gemaakt met virtio-fs. Tenzij virtio-fs-gegevens worden gemigreerd naar virtio-blk, worden Android-apps misschien langzamer uitgevoerd op ARC VM.
+
+      Als je het beleid instelt op:
+
+* <ph name="DO_NOT_PROMPT" />, dan wordt de gebruiker niet gevraagd om het migratieproces te doorlopen. Dit is de standaardwaarde als het beleid niet is ingesteld.
+
+      * <ph name="PROMPT" /> (of een niet-ondersteunde waarde), dan wordt de gebruiker bij het inloggen gevraagd het proces voor gegevensmigratie te doorlopen. Dit kan tot 10 minuten duren.
+
+      Dit beleid geldt alleen voor ARM-apparaten die naar ARC VM worden gemigreerd.</translation>
 <translation id="731208205557053914">VPD-gegevens rapporteren</translation>
 <translation id="7313672174502374994">De SHA-256-hash van de achtergrondafbeelding.</translation>
 <translation id="7322825363493984512">Het wachtwoord om systeemservices te verifiëren bij de externe webproxy.</translation>

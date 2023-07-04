@@ -2424,6 +2424,7 @@ Si esta política se inhabilita, la promoción de valoraciones del App Store no 
       Si se habilita esta política, a los usuarios se les ofrecerá la opción de seleccionar dispositivos de emisión mediante un código de acceso o un código QR.
       Si se inhabilita esta política o no se establece, a los usuarios no se les ofrecerá la opción de seleccionar dispositivos de emisión mediante un código de acceso o un código QR.</translation>
 <translation id="3208615748170745525">Días desde que se descubrió la actualización.</translation>
+<translation id="3209947902706795852">Pedir a los usuarios que migren.</translation>
 <translation id="3210408472559816322">Si se establece esta política, se especificará qué hosts de mensajería nativa no se deben cargar. Un valor de lista de bloqueados de <ph name="WILDCARD_VALUE" /> significa que todos los hosts de mensajería nativa han sido denegados, excepto los que estén permitidos explícitamente.
 
       Si no se le asigna un valor a la política, <ph name="PRODUCT_NAME" /> cargará todos los hosts de mensajería nativa instalados.</translation>
@@ -5229,6 +5230,7 @@ Si se inhabilita esta política, se inhabilitará la protección de extensiones 
 <translation id="5790763087505467169">Reducir las notificaciones de inicio automático de las sesiones de invitado administradas</translation>
 <translation id="5800329278018669527">Inhabilitar el mensaje de configuración de red si no hay conexión</translation>
 <translation id="5802931736499687181">Inhabilitar el flujo de procesamiento de informes cifrados</translation>
+<translation id="5804795151506109282">No pedir a los usuarios que migren</translation>
 <translation id="5806128552675651249">Permitir imprimir solo sin gráficos de fondo</translation>
 <translation id="5809210507920527553">Controla la configuración del contenedor de Linux (Crostini).</translation>
 <translation id="5809728392451418079">Establecer el nombre visible de cuentas locales del dispositivo</translation>
@@ -5851,6 +5853,7 @@ Consulta https://developer.chrome.com/blog/immutable-document-domain/ para obten
         Añade una aplicación con su |app_id| y |app_type| a |app_list| para incluir la aplicación en la lista de permitidas.
        </translation>
 <translation id="6334397544347592516">Permitir conexiones de asistencia remota de administradores de empresa en este equipo.</translation>
+<translation id="6335206050538331829">Estrategia de migración para la migración de datos de la VM de ARC</translation>
 <translation id="6337782882143073193">Esta política está obsoleta. Usa la política <ph name="URL_BLOCKLIST_POLICY_NAME" /> en su lugar.
 
       Inhabilita los esquemas de protocolo de <ph name="PRODUCT_NAME" /> incluidos en la lista.
@@ -6983,6 +6986,15 @@ El campo <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad
 <translation id="7298197471363105063">Anular Conjuntos propios.</translation>
 <translation id="7302043767260300182">Retraso de bloqueo de pantalla cuando el dispositivo está conectado a la red</translation>
 <translation id="7303902834678570827">Los usuarios de sesiones de invitado gestionadas pueden almacenar ajustes de pantalla que se apliquen a todo el dispositivo</translation>
+<translation id="7306926210354955892">Si se asigna un valor a esta política, se especificará la acción que debe llevarse a cabo si el directorio de datos de ARC del usuario se ha creado con virtio-fs. A menos que los datos de virtio-fs se migren a virtio-blk, es posible que las aplicaciones Android funcionen más lentamente en la VM de ARC.
+
+      Si se asigna a esta política:
+
+      * <ph name="DO_NOT_PROMPT" />: no se solicitará al usuario que realice el proceso de migración. Este es el valor predeterminado si no se define la política.
+
+      * <ph name="PROMPT" /> (o un valor no admitido): al iniciar sesión, se pedirá al usuario que realice el proceso de migración de datos. Este proceso puede tardar hasta 10 minutos.
+
+      Esta política solo se aplica a los dispositivos ARM que se migren a la VM de ARC.</translation>
 <translation id="731208205557053914">Enviar información sobre VPD</translation>
 <translation id="7313672174502374994">El hash SHA-256 de la imagen de fondo de pantalla.</translation>
 <translation id="7322825363493984512">La contraseña para autenticar los servicios del sistema para el proxy web remoto.</translation>

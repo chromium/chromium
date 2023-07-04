@@ -2126,6 +2126,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> duym (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Barchasini tarixdan olib tashlash</translation>
 <translation id="6157877588268064908">Yetkazib berish usuli va talablari bilan tanishish uchun manzilni tanlang</translation>
+<translation id="6160391204859821737">Reklamalarda maxfiylik funksiyasini yoqing</translation>
 <translation id="6165508094623778733">Batafsil</translation>
 <translation id="6167577165590485365">Oxirgi olishga urinish:</translation>
 <translation id="6169916984152623906">Inkognito rejimida bajargan amallaringiz ushbu qurilmaning boshqa foydalanuvchilariga ko‘rinmaydi. Biroq xatcho‘plar va yuklab olingan fayllar saqlanib qoladi.</translation>
@@ -3085,6 +3086,7 @@ Batafsil axborot:
 <translation id="8449836157089738489">Barchasini yangi varaqlar guruhida ochish</translation>
 <translation id="8457125768502047971">Noaniq</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Yoqish</translation>
 <translation id="8461694314515752532">Sinxronlangan ma’lumotlarni kodli ibora bilan shifrlash</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ta kredit karta}other{# ta kredit karta}}</translation>
 <translation id="8468358362970107653">Envelope C3</translation>

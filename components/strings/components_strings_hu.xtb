@@ -2130,6 +2130,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6153243098246946146"><ph name="WIDTH" /> ×<ph name="HEIGHT" /> hüvelyk (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Az összes eltávolítása az előzményekből</translation>
 <translation id="6157877588268064908">A szállítási módok és követelmények megtekintéséhez válassza ki a címet</translation>
+<translation id="6160391204859821737">Hirdetésekhez kapcsolódó adatvédelmi funkció bekapcsolása</translation>
 <translation id="6165508094623778733">További információ</translation>
 <translation id="6167577165590485365">Legutóbbi lekérési próbálkozás:</translation>
 <translation id="6169916984152623906">Most privát módon böngészhet, így az eszközt használó többi személy nem láthatja az Ön tevékenységeit. A letöltéseket és a könyvjelzőket azonban menti a rendszer.</translation>
@@ -3089,6 +3090,7 @@ További részletek:
 <translation id="8449836157089738489">Az összes megnyitása új lapcsoportban</translation>
 <translation id="8457125768502047971">Határozatlan</translation>
 <translation id="8458202188076138974">„Letter Extra” méret</translation>
+<translation id="8460854335417802511">Bekapcsolás</translation>
 <translation id="8461694314515752532">A szinkronizált adatok titkosítása saját összetett szinkronizálási jelszóval</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 hitelkártya}other{# hitelkártya}}</translation>
 <translation id="8468358362970107653">C3 boríték</translation>

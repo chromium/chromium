@@ -1066,7 +1066,7 @@
 <translation id="3587738293690942763">中</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{グループはいつでもリセットできます。新しいグループに分類されるまでには約 1 日かかります。}=1{グループはいつでもリセットできます。新しいグループに分類されるまでには約 1 日かかります。}other{グループはいつでもリセットできます。新しいグループに分類されるまでには {NUM_DAYS} 日かかります。}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />、<ph name="DOMAIN" />、<ph name="TIME" /></translation>
-<translation id="360335678635752619">30 日以上経過したトピックと広告を提案するサイトは自動削除されます。または、必要のないトピックやサイトをブロックすることもできます。</translation>
+<translation id="360335678635752619">Chrome では、30 日以上経過したトピックや広告を提案した広告主のウェブサイトが自動削除されます。また、提案してほしくないトピックやウェブサイトをユーザーがブロックすることもできます。</translation>
 <translation id="3603507503523709">アプリケーションは管理者によってブロックされています</translation>
 <translation id="3605899229568538311">5x5 インチ</translation>
 <translation id="3608932978122581043">給紙方向</translation>
@@ -2132,6 +2132,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" />（<ph name="ORIENTATION" />）</translation>
 <translation id="6157754950574419155">履歴からすべて削除</translation>
 <translation id="6157877588268064908">配送方法と要件を確認するには、住所を選択してください</translation>
+<translation id="6160391204859821737">広告のプライバシー機能をオンにする</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6167577165590485365">最後に取得を試行した時間:</translation>
 <translation id="6169916984152623906">現在、シークレット モードで閲覧しています。あなたのアクティビティは、このデバイスを利用する他のユーザーには表示されません。ただし、ダウンロードしたファイルとブックマークは通常どおり保存されます。</translation>
@@ -3091,6 +3092,7 @@
 <translation id="8449836157089738489">すべてを新しいタブグループで開く</translation>
 <translation id="8457125768502047971">無期限</translation>
 <translation id="8458202188076138974">レター エクストラ</translation>
+<translation id="8460854335417802511">オンにする</translation>
 <translation id="8461694314515752532">同期データを同期パスフレーズで暗号化する</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 件のクレジット カード}other{# 件のクレジット カード}}</translation>
 <translation id="8468358362970107653">C3 封筒</translation>

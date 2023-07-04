@@ -304,7 +304,7 @@
 <translation id="6545864417968258051">Bluetooth құрылғыларын іздеу</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға тыйым салынған.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға тыйым салынған.}}</translation>
 <translation id="6554732001434021288">Соңғы кіру: <ph name="NUM_DAYS" /> күн бұрын</translation>
-<translation id="6561560012278703671">Дыбысы бәсең шығатын хабарларды пайдаланыңыз (кедергі келтіретін хабарландыруларды бөгейді).</translation>
+<translation id="6561560012278703671">Дыбыссыз хабарландыру функциясын пайдалану (хабарландырулар кедергі келтірмейді)</translation>
 <translation id="6593061639179217415">Компьютерге арналған сайт</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Қорғалған контент</translation>

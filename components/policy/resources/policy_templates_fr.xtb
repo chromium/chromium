@@ -2424,6 +2424,7 @@ Si cette règle est désactivée, l'utilisateur ne verra pas la promo.</translat
       Si cette règle est activée, les utilisateurs auront la possibilité de sélectionner des appareils Cast en utilisant un code d'accès ou en scannant un code QR.
       Si cette règle est désactivée ou n'est pas configurée, les utilisateurs n'auront pas cette possibilité.</translation>
 <translation id="3208615748170745525">Jours à compter de la détection de mises à jour.</translation>
+<translation id="3209947902706795852">Invitez les utilisateurs à migrer.</translation>
 <translation id="3210408472559816322">Cette règle permet de spécifier les hôtes de messagerie native qui ne doivent pas être chargés. Si vous définissez la valeur liée à la liste noire sur <ph name="WILDCARD_VALUE" />, tous les hôtes de messagerie native sont refusés, sauf s'ils sont explicitement autorisés.
 
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> charge tous les hôtes de messagerie native qui sont installés.</translation>
@@ -5207,6 +5208,7 @@ Si cette règle est désactivée, la protection des extensions de la <ph name="S
 <translation id="5790763087505467169">Réduire les notifications de lancement automatique des sessions Invité gérées</translation>
 <translation id="5800329278018669527">Désactiver l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
 <translation id="5802931736499687181">Désactiver le pipeline de rapports chiffrés</translation>
+<translation id="5804795151506109282">N'invitez pas les utilisateurs à migrer.</translation>
 <translation id="5806128552675651249">Autoriser l'impression uniquement sans images de fond</translation>
 <translation id="5809210507920527553">Contrôle les paramètres du conteneur Linux (Crostini).</translation>
 <translation id="5809728392451418079">Définir le nom à afficher pour les comptes locaux des appareils</translation>
@@ -5812,6 +5814,7 @@ Pour en savoir plus, consultez https://developer.chrome.com/blog/immutable-docum
         Pour autoriser une application, ajoutez-la à |app_list| en indiquant son |app_id| et son |app_type|.
        </translation>
 <translation id="6334397544347592516">Autoriser les connexions d'assistance à distance des administrateurs d'entreprise à cet ordinateur</translation>
+<translation id="6335206050538331829">Stratégie de migration des données sur ARC VM</translation>
 <translation id="6337782882143073193">Cette règle est obsolète (veuillez utiliser à la place la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />).
 
       Elle permet de désactiver les schémas de protocoles répertoriés dans <ph name="PRODUCT_NAME" />.
@@ -6941,6 +6944,15 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 <translation id="7298197471363105063">Ignorer les ensembles propriétaires.</translation>
 <translation id="7302043767260300182">Délai de verrouillage de l'écran (secteur)</translation>
 <translation id="7303902834678570827">Les utilisateurs d'une session Invité gérée ne peuvent pas stocker les paramètres d'affichage au niveau de l'appareil</translation>
+<translation id="7306926210354955892">Cette règle permet de spécifier l'action à effectuer lorsque le répertoire de données ARC de l'utilisateur a été créé avec virtio-fs. À moins que les données virtio-fs ne soient migrées vers virtio-blk, les applications Android peuvent s'exécuter plus lentement sur ARCVM.
+
+      La règle peut être définie comme suit :
+
+      * <ph name="DO_NOT_PROMPT" />, auquel cas l'utilisateur n'est pas invité à passer par le flux de migration. Il s'agit de la valeur par défaut lorsque la règle n'est pas configurée.
+
+      * <ph name="PROMPT" /> (ou une valeur non acceptée), auquel cas l'utilisateur est invité à suivre le processus de migration des données lorsqu'il se connecte. Cette opération peut prendre jusqu'à 10 minutes.
+
+      Cette règle ne s'applique qu'aux appareils ARM migrant vers ARCVM.</translation>
 <translation id="731208205557053914">Transmettre des informations sur les données VPD</translation>
 <translation id="7313672174502374994">Hachage SHA-256 du fond d'écran.</translation>
 <translation id="7322825363493984512">Mot de passe pour authentifier les services système auprès du proxy Web à distance.</translation>

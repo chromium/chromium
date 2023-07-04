@@ -2132,6 +2132,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> pol. (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Remover tudo do histórico</translation>
 <translation id="6157877588268064908">Para ver os métodos de envio e os requisitos, selecione um endereço</translation>
+<translation id="6160391204859821737">Ative uma funcionalidade de privacidade dos anúncios</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6167577165590485365">Última tentativa de obtenção:</translation>
 <translation id="6169916984152623906">Agora, pode navegar em privado e as outras pessoas que utilizarem este dispositivo não veem a sua atividade. No entanto, as transferências e os marcadores são guardados.</translation>
@@ -3090,6 +3091,7 @@ Detalhes adicionais:
 <translation id="8449836157089738489">Abrir tudo num novo grupo de separadores</translation>
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Ativar</translation>
 <translation id="8461694314515752532">Encriptar dados sincronizados com a sua própria frase de acesso de sincronização</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 cartão de crédito}other{# cartões de crédito}}</translation>
 <translation id="8468358362970107653">Envelope C3</translation>

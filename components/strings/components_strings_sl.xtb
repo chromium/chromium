@@ -2132,6 +2132,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6153243098246946146"><ph name="WIDTH" />x<ph name="HEIGHT" /> palcev (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Odstrani vse iz zgodovine</translation>
 <translation id="6157877588268064908">Če si želite ogledati načine pošiljanja in zahteve, izberite naslov</translation>
+<translation id="6160391204859821737">Vklop funkcije za zasebnost pri oglaševanju</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6167577165590485365">Zadnji poskus pridobivanja:</translation>
 <translation id="6169916984152623906">Zdaj je mogoče brskati zasebno in drugi, ki uporabljajo to napravo, ne bodo videli vaše dejavnosti. Prenosi in zaznamki bodo vseeno shranjeni.</translation>
@@ -3091,6 +3092,7 @@ Dodatne podrobnosti:
 <translation id="8449836157089738489">Odpri vse v novi skupini zavihkov</translation>
 <translation id="8457125768502047971">Neomejeno</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Vklopi</translation>
 <translation id="8461694314515752532">Šifriranje sinhroniziranih podatkov z vašim geslom za sinhronizacijo</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditna kartica}one{# kreditna kartica}two{# kreditni kartici}few{# kreditne kartice}other{# kreditnih kartic}}</translation>
 <translation id="8468358362970107653">Kuverta C3</translation>

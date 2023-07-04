@@ -2132,6 +2132,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Șterge tot istoricul</translation>
 <translation id="6157877588268064908">Pentru a vedea metodele de expediere și cerințele, selectează o adresă</translation>
+<translation id="6160391204859821737">Activează funcțiile pentru confidențialitatea anunțurilor</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6167577165590485365">Ultima încercare de preluare:</translation>
 <translation id="6169916984152623906">Acum poți naviga în mod privat, iar celelalte persoane care folosesc acest dispozitiv nu îți vor vedea activitatea. Cu toate acestea, descărcările și marcajele vor fi salvate.</translation>
@@ -3091,6 +3092,7 @@ Detalii suplimentare:
 <translation id="8449836157089738489">Deschideți-le pe toate într-un nou grup de file</translation>
 <translation id="8457125768502047971">Durată nedefinită</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Activează</translation>
 <translation id="8461694314515752532">Criptează datele sincronizate folosind propria expresie de acces pentru sincronizare</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 card de credit}few{# carduri de credit}other{# de carduri de credit}}</translation>
 <translation id="8468358362970107653">Plic C3</translation>

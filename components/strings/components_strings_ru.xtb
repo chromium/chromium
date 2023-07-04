@@ -2131,6 +2131,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> дюйм. (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Удалить все из истории</translation>
 <translation id="6157877588268064908">Выберите адрес, чтобы посмотреть способы и условия доставки.</translation>
+<translation id="6160391204859821737">Включите функцию для обеспечения конфиденциальности в рекламе</translation>
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6167577165590485365">Последняя попытка получения:</translation>
 <translation id="6169916984152623906">Ваши действия в режиме инкогнито будут недоступны другим пользователям этого устройства. Однако закладки и скачанные файлы сохранятся.</translation>
@@ -3090,6 +3091,7 @@
 <translation id="8449836157089738489">Открыть все URL в новой группе вкладок</translation>
 <translation id="8457125768502047971">Бессрочно</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Включить</translation>
 <translation id="8461694314515752532">Задать кодовую фразу для шифрования синхронизированных данных</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 банковская карта}one{# банковская карта}few{# банковские карты}many{# банковских карт}other{# банковской карты}}</translation>
 <translation id="8468358362970107653">Конверт C3</translation>

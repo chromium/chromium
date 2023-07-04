@@ -2132,6 +2132,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> इंच (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">इतिहास से सभी आइटम हटाएं</translation>
 <translation id="6157877588268064908">शिपिंग के तरीके और ज़रूरतें देखने केे लिए, कोई पता चुनें</translation>
+<translation id="6160391204859821737">विज्ञापन देखने वाले की निजता बनाए रखने से जुड़ी सुविधा चालू करें</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
 <translation id="6167577165590485365">पिछली बार फ़ेच करने का समय:</translation>
 <translation id="6169916984152623906">अब आप निजी रूप से ब्राउज़ कर सकते हैं और इस डिवाइस का उपयोग करने वाले दूसरे लोगों को आपकी गतिविधि दिखाई नहीं देगी. लेकिन डाउनलोड और बुकमार्क सेव होंगे.</translation>
@@ -3091,6 +3092,7 @@
 <translation id="8449836157089738489">सभी यूआरएल नए टैब ग्रुप में खोलें</translation>
 <translation id="8457125768502047971">कोई तय अवधि नहीं</translation>
 <translation id="8458202188076138974">लेटर एक्स्ट्रा</translation>
+<translation id="8460854335417802511">इसे चालू करें</translation>
 <translation id="8461694314515752532">सिंक किए गए डेटा को अपने सिंक किए गए लंबे पासवर्ड से सुरक्षित करें</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 क्रेडिट कार्ड}one{# क्रेडिट कार्ड}other{# क्रेडिट कार्ड}}</translation>
 <translation id="8468358362970107653">C3 साइज़ का लिफ़ाफ़ा</translation>

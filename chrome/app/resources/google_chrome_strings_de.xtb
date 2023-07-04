@@ -127,7 +127,7 @@
 <translation id="3114643501466072395">Wenn du prüfen möchtest, ob deine anderen Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melde dich in Chrome an<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Deine Änderungen werden beim nächsten Neustart von Google Chrome wirksam.</translation>
 <translation id="3149510190863420837">Chrome-Apps</translation>
-<translation id="3169523567916669830">Während die Tests laufen, kannst du Themen von Interesse sehen, die von Websites verwendet werden, um dir Werbung anzuzeigen, und diese Themen entfernen. Chrome schätzt auf Grundlage deines aktuellen Browserverlaufs, welche Themen dich interessieren.</translation>
+<translation id="3169523567916669830">Während die Tests laufen, kannst du Angaben zu Interessengebieten sehen und entfernen, die von Websites verwendet werden, um dir relevante Werbung anzuzeigen. Chromium nutzt zur Ermittlung deiner Interessengebiete deinen aktuellen Browserverlauf.</translation>
 <translation id="3245429137663807393">Wenn du Chrome-Nutzungsberichte teilst, enthalten diese Berichte die von dir aufgerufenen URLs</translation>
 <translation id="3282568296779691940">In Chrome anmelden</translation>
 <translation id="3286538390144397061">Jetzt neu starten</translation>
@@ -165,7 +165,7 @@
 <translation id="3865754807470779944">Chrome-Version <ph name="PRODUCT_VERSION" /> ist installiert</translation>
 <translation id="3873044882194371212">Link in Chrome-Inkognitofenster öffnen</translation>
 <translation id="3889417619312448367">Google Chrome deinstallieren</translation>
-<translation id="3999683152997576765">Du kannst Themen sehen, die Websites verwenden, um dir Werbung anzuzeigen, die dich interessieren könnte, und diese Themen entfernen. Chrome schätzt auf Grundlage deines aktuellen Browserverlaufs, welche Themen dich interessieren könnten.</translation>
+<translation id="3999683152997576765">Du kannst Angaben zu Interessengebieten sehen und entfernen, die Websites verwenden, um dir relevante Werbung anzuzeigen. Chrome nutzt zur Ermittlung deiner Interessengebiete deinen aktuellen Browserverlauf.</translation>
 <translation id="4035053306113201399">Chrome OS muss neu gestartet werden, um das Update zu installieren.</translation>
 <translation id="4050175100176540509">Wichtige Sicherheitsverbesserungen und neue Funktionen sind in der aktuellen Version verfügbar.</translation>
 <translation id="4053720452172726777">Google Chrome anpassen und verwalten</translation>

@@ -2132,6 +2132,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" />×<ph name="HEIGHT" />(<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">방문 기록에서 모두 삭제</translation>
 <translation id="6157877588268064908">배송 방법과 요구사항을 확인하려면 주소를 선택하세요.</translation>
+<translation id="6160391204859821737">광고 개인 정보 보호 기능 사용 설정</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6167577165590485365">마지막 가져오기 시도:</translation>
 <translation id="6169916984152623906">이제 비공개로 인터넷을 사용할 수 있으며, 이 기기를 사용하는 다른 사용자가 내 활동을 볼 수 없습니다. 하지만 다운로드한 항목과 북마크는 저장됩니다.</translation>
@@ -3090,6 +3091,7 @@
 <translation id="8449836157089738489">새로운 탭 그룹에서 모두 열기</translation>
 <translation id="8457125768502047971">무기한</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">사용 설정</translation>
 <translation id="8461694314515752532">나만의 동기화 암호로 동기화된 데이터 암호화</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{신용카드 1개}other{신용카드 #개}}</translation>
 <translation id="8468358362970107653">봉투 C3</translation>

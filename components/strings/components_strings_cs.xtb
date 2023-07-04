@@ -2127,6 +2127,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Vše z historie odstranit</translation>
 <translation id="6157877588268064908">Chcete-li zobrazit způsoby dopravy a požadavky, vyberte adresu</translation>
+<translation id="6160391204859821737">Zapnutí funkce ochrany soukromí v reklamách</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6167577165590485365">Poslední pokus o načtení:</translation>
 <translation id="6169916984152623906">Nyní můžete procházet internet v soukromí a ostatní uživatelé tohoto zařízení vaši aktivitu neuvidí. Stažené soubory a záložky budou uloženy.</translation>
@@ -3085,6 +3086,7 @@ Další podrobnosti:
 <translation id="8449836157089738489">Otevřít vše v nové skupině karet</translation>
 <translation id="8457125768502047971">Bez časového omezení</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Zapnout</translation>
 <translation id="8461694314515752532">Šifrovat synchronizovaná data pomocí vlastní heslové fráze pro synchronizaci</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 platební karta}few{# platební karty}many{# platební karty}other{# platebních karet}}</translation>
 <translation id="8468358362970107653">Obálka C3</translation>

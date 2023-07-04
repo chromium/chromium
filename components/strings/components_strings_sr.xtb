@@ -2131,6 +2131,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" />×<ph name="HEIGHT" /> инча (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Уклони све из историје</translation>
 <translation id="6157877588268064908">Да бисте видели начине и захтеве за слање, изаберите адресу</translation>
+<translation id="6160391204859821737">Укључите функцију за приватност са огласима</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6167577165590485365">Последњи покушај преузимања:</translation>
 <translation id="6169916984152623906">Сада можете да прегледате приватно и други људи који користе овај уређај неће видети ваше активности. Међутим, преузимања и обележивачи ће бити сачувани.</translation>
@@ -3090,6 +3091,7 @@
 <translation id="8449836157089738489">Отвори све у новој групи картица</translation>
 <translation id="8457125768502047971">Неограничено</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Укључи</translation>
 <translation id="8461694314515752532">Шифрујте синхронизоване податке помоћу сопствене приступне фразе за синхронизацију</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредитна картица}one{# кредитна картица}few{# кредитне картице}other{# кредитних картица}}</translation>
 <translation id="8468358362970107653">Коверта C3</translation>

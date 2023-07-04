@@ -2133,6 +2133,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> col. (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Pašalinti viską iš istorijos</translation>
 <translation id="6157877588268064908">Jei norite peržiūrėti pristatymo metodus ir reikalavimus, pasirinkite adresą.</translation>
+<translation id="6160391204859821737">Skelbimų privatumo funkcijos įjungimas</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6167577165590485365">Paskutinis bandymas gauti:</translation>
 <translation id="6169916984152623906">Dabar galite naršyti privačiai, o kiti šį įrenginį naudojantys žmonės nematys jūsų veiklos. Tačiau atsisiuntimai ir žymės bus išsaugoti.</translation>
@@ -3092,6 +3093,7 @@ Papildoma išsami informacija:
 <translation id="8449836157089738489">Atidaryti viską naujoje skirtukų grupėje</translation>
 <translation id="8457125768502047971">Neribota</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Įjungti</translation>
 <translation id="8461694314515752532">Šifruokite sinchronizuojamus duomenis taikydami savo sinchronizavimo slaptafrazę</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredito kortelė}one{# kredito kortelė}few{# kredito kortelės}many{# kredito kortelės}other{# kredito kortelių}}</translation>
 <translation id="8468358362970107653">C3 vokas</translation>

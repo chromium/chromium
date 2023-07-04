@@ -2132,6 +2132,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> tommer (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Fjern alt fra loggen</translation>
 <translation id="6157877588268064908">For å se fraktmetoder og -krav, velg en adresse</translation>
+<translation id="6160391204859821737">Slå på funksjonen for annonsepersonvern</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6167577165590485365">Forrige forsøk på henting:</translation>
 <translation id="6169916984152623906">Nå kan du surfe privat. Andre som bruker denne enheten, ser ikke aktiviteten din, men nedlastinger og bokmerker blir lagret.</translation>
@@ -3090,6 +3091,7 @@ Mer informasjon:
 <translation id="8449836157089738489">Åpne alle i en ny fanegruppe</translation>
 <translation id="8457125768502047971">På ubestemt tid</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Slå den på</translation>
 <translation id="8461694314515752532">Kryptér synkroniserte data med din egen passordfrase for synkronisering</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredittkort}other{# kredittkort}}</translation>
 <translation id="8468358362970107653">C3-konvolutt</translation>

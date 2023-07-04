@@ -2132,6 +2132,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> to. (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Fjarlægja allt úr ferli</translation>
 <translation id="6157877588268064908">Veldu heimilisfang til að sjá sendingarmáta og kröfur</translation>
+<translation id="6160391204859821737">Kveikja á persónuverndareiginleika auglýsinga</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6167577165590485365">Síðast reynt að sækja:</translation>
 <translation id="6169916984152623906">Nú geturðu vafrað í næði og aðrir notendur tækisins geta ekki séð það sem þú gerir. Niðurhal og bókamerki eru hinsvegar vistuð.</translation>
@@ -3091,6 +3092,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8449836157089738489">Opna allt í nýjum flipahóp</translation>
 <translation id="8457125768502047971">Ótiltekið</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Kveikja</translation>
 <translation id="8461694314515752532">Dulkóða samstillt gögn með eigin aðgangsorði samstillingar</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{Eitt kreditkort}one{# kreditkort}other{# kreditkort}}</translation>
 <translation id="8468358362970107653">Umslag: C3</translation>

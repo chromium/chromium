@@ -2131,6 +2131,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Ukloni sve iz povijesti</translation>
 <translation id="6157877588268064908">Odaberite adresu za prikaz načina dostave i zahtjeva za dostavu</translation>
+<translation id="6160391204859821737">Uključite značajku zaštite privatnosti u online oglašavanju</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6167577165590485365">Posljednji pokušaj dohvaćanja:</translation>
 <translation id="6169916984152623906">Sada možete pregledavati privatno i ostali korisnici ovog uređaja neće vidjeti vaše aktivnosti. No spremit će se preuzimanja i oznake.</translation>
@@ -3090,6 +3091,7 @@ Dodatne pojedinosti:
 <translation id="8449836157089738489">Otvori sve u novoj grupi kartica</translation>
 <translation id="8457125768502047971">Neodređeno</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Uključite</translation>
 <translation id="8461694314515752532">Šifriraj sinkronizirane podatke vlastitom šifrom za sinkronizaciju</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditna kartica}one{# kreditna kartica}few{# kreditne kartice}other{# kreditnih kartica}}</translation>
 <translation id="8468358362970107653">Omotnica C3</translation>

@@ -2132,6 +2132,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Remove all from history</translation>
 <translation id="6157877588268064908">To see delivery methods and requirements, select an address</translation>
+<translation id="6160391204859821737">Turn on an ad privacy feature</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6167577165590485365">Last fetch attempted:</translation>
 <translation id="6169916984152623906">Now you can browse privately, and other people who use this device won’t see your activity. However, downloads and bookmarks will be saved.</translation>
@@ -3091,6 +3092,7 @@ Additional details:
 <translation id="8449836157089738489">Open all in new tab group</translation>
 <translation id="8457125768502047971">Indefinite</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Turn it on</translation>
 <translation id="8461694314515752532">Encrypt synced data with your own sync passphrase</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 credit card}other{# credit cards}}</translation>
 <translation id="8468358362970107653">Envelope C3</translation>

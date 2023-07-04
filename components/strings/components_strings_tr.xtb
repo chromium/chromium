@@ -2132,6 +2132,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> inç (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Tümünü geçmişten kaldır</translation>
 <translation id="6157877588268064908">Gönderim yöntemlerini ve gereksinimlerini görmek için bir adres seçin</translation>
+<translation id="6160391204859821737">Reklam gizlilik özelliklerini etkinleştirme</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6167577165590485365">Son getirme girişimi:</translation>
 <translation id="6169916984152623906">Artık gizli olarak göz atabilirsiniz ve bu cihazı kullanan diğer kişiler etkinliğinizi görmez. Yine de indirdikleriniz ve yer işaretleri kaydedilir.</translation>
@@ -3091,6 +3092,7 @@ Ek ayrıntılar:
 <translation id="8449836157089738489">Tümünü yeni sekme grubunda aç</translation>
 <translation id="8457125768502047971">Süresiz</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Etkinleştir</translation>
 <translation id="8461694314515752532">Senkronize edilen verileri kendi senkronizasyon parolanızla şifreleyin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredi kartı}other{# kredi kartı}}</translation>
 <translation id="8468358362970107653">Zarf C3</translation>

@@ -2132,6 +2132,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> pouces (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Tout supprimer de l'historique</translation>
 <translation id="6157877588268064908">Sélectionnez une adresse pour consulter les modes et conditions d'expédition disponibles</translation>
+<translation id="6160391204859821737">Activer une fonctionnalité de confidentialité des annonces</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6167577165590485365">Dernière tentative d'extraction :</translation>
 <translation id="6169916984152623906">Vous pouvez désormais naviguer de façon privée. Les autres utilisateurs de cet appareil ne verront pas votre activité. Les téléchargements et les favoris seront cependant enregistrés.</translation>
@@ -3092,6 +3093,7 @@ Informations supplémentaires :
 <translation id="8449836157089738489">Tout ouvrir dans un nouveau groupe d'onglets</translation>
 <translation id="8457125768502047971">Indéfiniment</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Activer l'option</translation>
 <translation id="8461694314515752532">Chiffrer les données synchronisées avec votre propre phrase secrète de synchronisation</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 carte de paiement}one{# carte de paiement}other{# cartes de paiement}}</translation>
 <translation id="8468358362970107653">Enveloppe C3</translation>

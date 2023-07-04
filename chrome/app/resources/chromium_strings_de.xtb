@@ -24,7 +24,7 @@
 Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten möglicherweise für dieses Konto. Du kannst deine Google-Konten in den <ph name="SETTINGS_LINK_BEGIN" />Einstellungen<ph name="SETTINGS_LINK_END" /> verwalten.</translation>
 <translation id="1640672724030957280">Download wird ausgeführt...</translation>
 <translation id="1708666629004767631">Es gibt eine neue, sicherere Version von Chromium.</translation>
-<translation id="17264556997921157">Du kannst Themen von Interesse sehen, die von Websites verwendet werden, um dir Werbung anzuzeigen, und diese Themen entfernen. Chromium schätzt auf Grundlage deines aktuellen Browserverlaufs, welche Themen dich interessieren.</translation>
+<translation id="17264556997921157">Du kannst Angaben zu Interessengebieten sehen und entfernen, die Websites verwenden, um dir relevante Werbung anzuzeigen. Chromium nutzt zur Ermittlung deiner Interessengebiete deinen aktuellen Browserverlauf.</translation>
 <translation id="1733725117201708356">Browserdaten in Chromium werden bald gelöscht</translation>
 <translation id="1745121272106313518">Chromium wird in <ph name="REMAINING_TIME" /> neu gestartet</translation>
 <translation id="1774152462503052664">Chromium im Hintergrund ausführen</translation>
@@ -384,7 +384,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="9106612006984859720">Du benötigst Windows 10 oder höher, um zukünftige Chromium-Updates zu erhalten. Dieser Computer verwendet Windows 8.1.</translation>
 <translation id="91086099826398415">Link in neuem Chromium-Tab öffnen</translation>
 <translation id="911206726377975832">Auch die Browserdaten löschen?</translation>
-<translation id="9144490074902256427">Während die Tests laufen, kannst du Themen von Interesse sehen, die von Websites verwendet werden, um dir Werbung anzuzeigen, und diese Themen entfernen. Chromium schätzt auf Grundlage deines aktuellen Browserverlaufs, welche Themen dich interessieren.</translation>
+<translation id="9144490074902256427">Während die Tests laufen, kannst du Angaben zu Interessengebieten sehen und entfernen, die von Websites verwendet werden, um dir relevante Werbung anzuzeigen. Chromium nutzt zur Ermittlung deiner Interessengebiete deinen aktuellen Browserverlauf.</translation>
 <translation id="9158494823179993217">Dein Systemadministrator hat Chromium so konfiguriert, dass ein alternativer Browser für den Zugriff auf <ph name="TARGET_URL_HOSTNAME" /> geöffnet wird.</translation>
 <translation id="9185526690718004400">Neu starten, um &amp;Chromium zu aktualisieren</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

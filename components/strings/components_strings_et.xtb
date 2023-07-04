@@ -2132,6 +2132,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> tolli (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Eemalda kõik ajaloost</translation>
 <translation id="6157877588268064908">Tarneviiside ja nõuete nägemiseks valige aadress</translation>
+<translation id="6160391204859821737">Reklaamiprivaatsusfunktsiooni sisselülitamine</translation>
 <translation id="6165508094623778733">Lisateave</translation>
 <translation id="6167577165590485365">Viimane toomiskatse:</translation>
 <translation id="6169916984152623906">Nüüd saate sirvida privaatselt ja teised seadme kasutajad ei näe teie tegevusi. Allalaaditud failid ja järjehoidjad siiski salvestatakse.</translation>
@@ -3091,6 +3092,7 @@ Lisateave:
 <translation id="8449836157089738489">Ava kõik uues vahelehegrupis</translation>
 <translation id="8457125768502047971">Määramata</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Jah, nõustun</translation>
 <translation id="8461694314515752532">Krüpteeri sünkroonitud andmed sünkroonimisparooliga</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 krediitkaart}other{# krediitkaarti}}</translation>
 <translation id="8468358362970107653">Ümbrik C3</translation>

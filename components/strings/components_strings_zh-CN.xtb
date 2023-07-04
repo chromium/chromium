@@ -2127,6 +2127,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> 英寸（<ph name="ORIENTATION" />）</translation>
 <translation id="6157754950574419155">移除历史记录中的所有内容</translation>
 <translation id="6157877588268064908">要查看送货方式和要求，请选择相应地址</translation>
+<translation id="6160391204859821737">开启一项广告隐私权功能</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6167577165590485365">上次尝试提取时的时间：</translation>
 <translation id="6169916984152623906">现在，您便可进行私密浏览了。共用此设备的其他用户将不会看到您的活动，但您下载的内容和添加的书签仍会保存在设备上。</translation>
@@ -3086,6 +3087,7 @@
 <translation id="8449836157089738489">在新标签页组中打开全部网址</translation>
 <translation id="8457125768502047971">无限期</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">开启</translation>
 <translation id="8461694314515752532">使用您自己的同步密码加密已同步的数据</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 张信用卡}other{# 张信用卡}}</translation>
 <translation id="8468358362970107653">C3 信封</translation>

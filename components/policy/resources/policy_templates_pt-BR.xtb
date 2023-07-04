@@ -2446,6 +2446,7 @@ Se a política for desativada, a promoção de avaliação na App Store não vai
       Quando esta política for definida como "Ativada", os usuários terão a opção de selecionar dispositivos de transmissão usando um código de acesso ou QR.
       Se esta política for definida como "Desativada" ou deixada sem definição, os usuários não terão essa opção.</translation>
 <translation id="3208615748170745525">Dias a partir da descoberta da atualização.</translation>
+<translation id="3209947902706795852">Pedir para os usuários migrarem</translation>
 <translation id="3210408472559816322">A definição da política especifica quais hosts de mensagens nativas não serão carregados. Um valor de <ph name="WILDCARD_VALUE" /> da lista de proibições significa que todos os hosts de mensagens nativas serão proibidos, a menos que tenham permissão explícita.
 
       Se a política for deixada sem definição, o <ph name="PRODUCT_NAME" /> carregará todos os hosts de mensagens nativas instalados.</translation>
@@ -5314,6 +5315,7 @@ Se a política for desativada, a proteção de extensões pelo recurso <ph name=
 <translation id="5790763087505467169">Reduzir notificações de lançamento automático para sessões de visitante gerenciadas</translation>
 <translation id="5800329278018669527">Desativar a solicitação de configuração de rede quando estiver off-line</translation>
 <translation id="5802931736499687181">Desativar o pipeline de geração de relatórios criptografados</translation>
+<translation id="5804795151506109282">Não pedir para os usuários migrarem.</translation>
 <translation id="5806128552675651249">Permitir impressão apenas sem gráficos de segundo plano</translation>
 <translation id="5809210507920527553">Controla configurações do contêiner Linux (Crostini).</translation>
 <translation id="5809728392451418079">Definir o nome de exibição das contas locais de dispositivo</translation>
@@ -5952,6 +5954,7 @@ Confira mais detalhes em https://developer.chrome.com/blog/immutable-document-do
         Adicione um aplicativo com o |app_id| e |app_type| dele à |app_list| para permiti-lo.
        </translation>
 <translation id="6334397544347592516">Permitir conexões de suporte remoto de administradores corporativos a esta máquina</translation>
+<translation id="6335206050538331829">Estratégia de migração de dados da VM do ARC</translation>
 <translation id="6337782882143073193">Esta política está obsoleta. Use <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
       Ela desativa os esquemas de protocolo listados no <ph name="PRODUCT_NAME" />.
@@ -7096,6 +7099,15 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7298197471363105063">Substituir o First-Party Sets.</translation>
 <translation id="7302043767260300182">Intervalo de bloqueio da tela no funcionamento com alimentação CA</translation>
 <translation id="7303902834678570827">Usuários de Sessões de visitante gerenciadas não podem armazenar configurações de tela para o dispositivo</translation>
+<translation id="7306926210354955892">A definição da política especifica a ação a ser executada quando o diretório de dados ARC do usuário tiver sido criado com virtio-fs. A menos que os dados do virtio-fs sejam migrados para o virtio-blk, os apps Android poderão ficar mais lentos na VM do ARC.
+
+      Se a política for definida como:
+
+      * <ph name="DO_NOT_PROMPT" />, o usuário não precisará passar pelo fluxo de migração. Esse é o valor padrão quando a política não está definida.
+
+      * <ph name="PROMPT" /> (ou um valor sem suporte), o usuário precisará passar pelo fluxo de migração de dados no momento do login. Isso pode levar até 10 minutos.
+
+      Esta política se aplica apenas a dispositivos ARM que migram para a VM do ARC.</translation>
 <translation id="731208205557053914">Enviar informações sobre os VPD</translation>
 <translation id="7313672174502374994">A hash SHA-256 da imagem de plano de fundo.</translation>
 <translation id="7322825363493984512">A senha para autenticação de serviços do sistema para o proxy remoto da Web.</translation>

@@ -2132,6 +2132,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> дюйм. (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Видалити всю історію</translation>
 <translation id="6157877588268064908">Укажіть адресу, щоб переглянути способи відправлення та вимоги.</translation>
+<translation id="6160391204859821737">Увімкнути функції конфіденційності в рекламі</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6167577165590485365">Остання спроба отримання:</translation>
 <translation id="6169916984152623906">Тепер ви можете переглядати вміст анонімно. Інші користувачі вашого пристрою не бачитимуть дані про вашу активність. Однак завантаження та закладки зберігатимуться.</translation>
@@ -3091,6 +3092,7 @@
 <translation id="8449836157089738489">Відкрити всі в новій групі вкладок</translation>
 <translation id="8457125768502047971">Необмежено</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Увімкнути</translation>
 <translation id="8461694314515752532">Шифрувати синхронізовані дані за допомогою власної парольної фрази</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредитна картка}one{# кредитна картка}few{# кредитні картки}many{# кредитних карток}other{# кредитної картки}}</translation>
 <translation id="8468358362970107653">Конверт C3</translation>

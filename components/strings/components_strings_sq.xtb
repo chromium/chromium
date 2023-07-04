@@ -2131,6 +2131,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> inç (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Hiqi të gjitha nga historiku</translation>
 <translation id="6157877588268064908">Për të parë mënyrat dhe kërkesat e dërgimit, zgjidh një adresë</translation>
+<translation id="6160391204859821737">Aktivizo veçorinë e privatësisë së reklamave</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6167577165590485365">Përpjekja e fundit për nxjerrje:</translation>
 <translation id="6169916984152623906">Tani mund të shfletosh në mënyrë private dhe personat e tjerë që përdorin këtë pajisje nuk do të shikojnë aktivitetin tënd. Sidoqoftë, shkarkimet dhe faqeshënuesit do të ruhen.</translation>
@@ -3090,6 +3091,7 @@ Detaje shtesë:
 <translation id="8449836157089738489">Hapi të gjitha në një grup të ri skedash</translation>
 <translation id="8457125768502047971">E papërcaktuar</translation>
 <translation id="8458202188076138974">Letër shtesë</translation>
+<translation id="8460854335417802511">Aktivizoje</translation>
 <translation id="8461694314515752532">Enkripto të dhënat e sinkronizuara me frazën tënde të kalimit për sinkronizimin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kartë krediti}other{# karta krediti}}</translation>
 <translation id="8468358362970107653">Zarf C3</translation>

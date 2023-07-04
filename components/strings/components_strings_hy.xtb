@@ -2133,6 +2133,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> դյմ (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Հեռացնել ամբողջը պատմությունից</translation>
 <translation id="6157877588268064908">Ուղարկման եղանակներն ու պայմանները տեսնելու համար ընտրեք հասցե</translation>
+<translation id="6160391204859821737">Միացրեք գովազդի գաղտնիության գործառույթը</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6167577165590485365">Բեռնման վերջին փորձը՝</translation>
 <translation id="6169916984152623906">Ինկոգնիտո ռեժիմում ձեր գործողությունները տեսանելի չեն լինի այս սարքի մյուս օգտատերերին: Սակայն ներբեռնումներն ու էջանիշները կպահվեն։</translation>
@@ -3092,6 +3093,7 @@
 <translation id="8449836157089738489">Բացել բոլորը նոր ներդիրների խմբում</translation>
 <translation id="8457125768502047971">Անորոշ</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Միացնել</translation>
 <translation id="8461694314515752532">Գաղտնագրել համաժամացված տվյալները սեփական համաժամացման անցաբառով</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 վարկային քարտ}one{# վարկային քարտ}other{# վարկային քարտ}}</translation>
 <translation id="8468358362970107653">Envelope C3</translation>

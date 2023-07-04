@@ -2131,6 +2131,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> นิ้ว (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">นำทั้งหมดออกจากประวัติการเข้าชม</translation>
 <translation id="6157877588268064908">หากต้องการดูวิธีการจัดส่งสินค้าและข้อกำหนด โปรดเลือกที่อยู่</translation>
+<translation id="6160391204859821737">เปิดฟีเจอร์ความเป็นส่วนตัวเกี่ยวกับโฆษณา</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6167577165590485365">การพยายามดึงข้อมูลครั้งล่าสุด:</translation>
 <translation id="6169916984152623906">ขณะนี้คุณสามารถท่องเว็บแบบเป็นส่วนตัว และผู้อื่นที่ใช้อุปกรณ์เครื่องนี้จะไม่เห็นกิจกรรมของคุณ แต่จะมีการบันทึกการดาวน์โหลดและบุ๊กมาร์กไว้</translation>
@@ -3090,6 +3091,7 @@
 <translation id="8449836157089738489">เปิดทั้งหมดในกลุ่มแท็บใหม่</translation>
 <translation id="8457125768502047971">ไม่จำกัด</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">เปิด</translation>
 <translation id="8461694314515752532">เข้ารหัสลับข้อมูลที่ซิงค์ด้วยรหัสผ่านการซิงค์ของคุณเอง</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{บัตรเครดิต 1 ใบ}other{บัตรเครดิต # ใบ}}</translation>
 <translation id="8468358362970107653">Envelope C3</translation>

@@ -2127,6 +2127,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> hazbete (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Kendu guztiak historiatik</translation>
 <translation id="6157877588268064908">Bidalketa-metodoak eta -eskakizunak ikusteko, hautatu helbide bat</translation>
+<translation id="6160391204859821737">Aktibatu iragarkietarako pribatutasun-eginbide bat</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>
 <translation id="6167577165590485365">Eskuratzeko azken saiakera:</translation>
 <translation id="6169916984152623906">Modu pribatuan arakatu ahal izango duzu sarea, gailua erabiltzen duten gainerakoek zure jardueren berririk izan ez dezaten. Hala ere, deskargak eta laster-markak gordeta geratuko dira.</translation>
@@ -3086,6 +3087,7 @@ Xehetasun gehiago:
 <translation id="8449836157089738489">Ireki guztiak beste fitxa talde batean</translation>
 <translation id="8457125768502047971">Zehaztugabea</translation>
 <translation id="8458202188076138974">Eskutitza (are handiagoa)</translation>
+<translation id="8460854335417802511">Aktibatu</translation>
 <translation id="8461694314515752532">Enkriptatu sinkronizatutako datuak sinkronizazio-pasaesaldiarekin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditu-txartel}other{# kreditu-txartel}}</translation>
 <translation id="8468358362970107653">C3 gutun-azala</translation>

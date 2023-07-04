@@ -2131,6 +2131,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (у цалях) (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Выдаліць усе даныя з гісторыі</translation>
 <translation id="6157877588268064908">Выберыце адрас, каб убачыць спосабы дастаўкі і патрабаванні для дастаўкі</translation>
+<translation id="6160391204859821737">Уключыце функцыю захавання прыватнасці ў рэкламе</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6167577165590485365">Апошняя спроба атрымання:</translation>
 <translation id="6169916984152623906">Цяпер вы можаце праглядаць вэб-старонкі ў прыватным рэжыме, іншыя карыстальнікі гэтай прылады не будуць бачыць вашы дзеянні. Аднак спампоўкі і закладкі будуць захоўвацца.</translation>
@@ -3091,6 +3092,7 @@
 <translation id="8449836157089738489">Адкрыць усе ў новай групе ўкладак</translation>
 <translation id="8457125768502047971">Бясконца</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Уключыць</translation>
 <translation id="8461694314515752532">Зашыфраваць сінхранізаваныя даныя з дапамогай фразы-пароля.</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 крэдытная картка}one{# крэдытная картка}few{# крэдытныя карткі}many{# крэдытных картак}other{# крэдытнай карткі}}</translation>
 <translation id="8468358362970107653">Канверт C3</translation>

@@ -2136,6 +2136,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">إزالة جميع عمليات البحث من السجلّ</translation>
 <translation id="6157877588268064908">لعرض طرق الشحن ومتطلباته، اختَر عنوانًا</translation>
+<translation id="6160391204859821737">تفعيل إحدى ميزات الخصوصية في عرض الإعلانات</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6167577165590485365">وقت آخر محاولة استرجاع:</translation>
 <translation id="6169916984152623906">يمكنك الآن التصفّح بخصوصية تامّة، ولن يتمكّن الأشخاص الآخرون الذين يستخدمون هذا الجهاز من مشاهدة نشاطك. ولكن، سيتم حفظ عمليات التنزيل والإشارات المرجعيّة.</translation>
@@ -3097,6 +3098,7 @@
 <translation id="8449836157089738489">فتح الكل في مجموعة علامات تبويب جديدة</translation>
 <translation id="8457125768502047971">غير محدَّد</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">تفعيل</translation>
 <translation id="8461694314515752532">ترميز البيانات المتزامنة باستخدام عبارة مرور المزامنة الخاصة بك</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{بطاقة ائتمان واحدة}zero{# بطاقة ائتمان}two{بطاقتا ائتمان (#)}few{# بطاقات ائتمان}many{# بطاقة ائتمان}other{# بطاقة ائتمان}}</translation>
 <translation id="8468358362970107653">‏ظرف C3</translation>

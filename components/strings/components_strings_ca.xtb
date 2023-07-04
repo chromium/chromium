@@ -2132,6 +2132,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> polzades (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Suprimeix tots els elements de l'historial</translation>
 <translation id="6157877588268064908">Per veure els mètodes i els requisits d'enviament, selecciona una adreça</translation>
+<translation id="6160391204859821737">Activa una funció de privadesa d'anuncis</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6167577165590485365">Darrer intent de recollida:</translation>
 <translation id="6169916984152623906">Ara pots navegar de manera privada i les altres persones que utilitzin aquest dispositiu no veuran la teva activitat. Tanmateix, les baixades i les adreces d'interès sí que es desaran.</translation>
@@ -3091,6 +3092,7 @@ Detalls addicionals:
 <translation id="8449836157089738489">Obre'ls tots en un grup de pestanyes nou</translation>
 <translation id="8457125768502047971">Indefinit</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Activa</translation>
 <translation id="8461694314515752532">Encripta les dades sincronitzades amb la teva frase de contrasenya de sincronització</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 targeta de crèdit}other{# targetes de crèdit}}</translation>
 <translation id="8468358362970107653">Sobre C3</translation>

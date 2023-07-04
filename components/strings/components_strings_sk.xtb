@@ -2127,6 +2127,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6153243098246946146"><ph name="WIDTH" />″ × <ph name="HEIGHT" />″ (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Odstrániť všetko z histórie</translation>
 <translation id="6157877588268064908">Ak chcete zobraziť spôsoby a požiadavky dodania, vyberte adresu</translation>
+<translation id="6160391204859821737">Zapnutie funkcie ochrany súkromia pri reklamách</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6167577165590485365">Posledný pokus o načítanie:</translation>
 <translation id="6169916984152623906">Teraz môžete prehliadať internet v súkromí a ostatní používatelia tohto zariadenia vašu aktivitu neuvidia. Stiahnuté súbory a záložky však budú uložené.</translation>
@@ -3086,6 +3087,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8449836157089738489">Otvoriť všetko v novej skupine kariet</translation>
 <translation id="8457125768502047971">Bez časového obmedzenia</translation>
 <translation id="8458202188076138974">List (Extra)</translation>
+<translation id="8460854335417802511">Zapnutie</translation>
 <translation id="8461694314515752532">Šifrovať synchronizované údaje pomocou vlastnej prístupovej frázy synchronizácie</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditná karta}few{# kreditné karty}many{# kreditnej karty}other{# kreditných kariet}}</translation>
 <translation id="8468358362970107653">Obálka C3</translation>

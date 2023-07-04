@@ -2132,6 +2132,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> duim (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Verwyder alles uit geskeidenis</translation>
 <translation id="6157877588268064908">Kies 'n adres om versendingmetodes en -vereistes te sien</translation>
+<translation id="6160391204859821737">Skakel ’n advertensieprivaatheidkenmerk aan</translation>
 <translation id="6165508094623778733">Kom meer te wete</translation>
 <translation id="6167577165590485365">Laaste haalpoging:</translation>
 <translation id="6169916984152623906">Jy kan nou privaat blaai en ander mense wat hierdie toestel gebruik sal nie jou aktiwiteit sien nie. Aflaaie en boekmerke sal egter gestoor word.</translation>
@@ -3091,6 +3092,7 @@ Bykomende besonderhede:
 <translation id="8449836157089738489">Maak almal in nuwe oortjiegroep oop</translation>
 <translation id="8457125768502047971">Onbepaald</translation>
 <translation id="8458202188076138974">Brief Ekstra</translation>
+<translation id="8460854335417802511">Skakel dit aan</translation>
 <translation id="8461694314515752532">Enkripteer gesinkroniseerde data met jou eie sinkroniseringwagfrase</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredietkaart}other{# kredietkaarte}}</translation>
 <translation id="8468358362970107653">Koevert C3</translation>

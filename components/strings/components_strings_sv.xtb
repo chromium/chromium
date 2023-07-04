@@ -2132,6 +2132,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> tum (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Ta bort alla från historiken</translation>
 <translation id="6157877588268064908">Välj en adress för att visa fraktalternativ och krav</translation>
+<translation id="6160391204859821737">Aktivera en funktion för annonsintegritet</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6167577165590485365">Senaste hämtningsförsök:</translation>
 <translation id="6169916984152623906">Nu kan du surfa privat. Din aktivitet visas inte för andra som använder enheten, men nedladdningar och bokmärken sparas.</translation>
@@ -3091,6 +3092,7 @@ Mer information:
 <translation id="8449836157089738489">Öppna alla i en ny flikgrupp</translation>
 <translation id="8457125768502047971">Obestämd</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Aktivera</translation>
 <translation id="8461694314515752532">Kryptera synkroniserad data med en egen lösenfras för synkronisering</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditkort}other{# kreditkort}}</translation>
 <translation id="8468358362970107653">C3-kuvert</translation>

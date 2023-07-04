@@ -2137,6 +2137,7 @@ Del</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> אינץ' (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">הסרת כל הפריטים מההיסטוריה</translation>
 <translation id="6157877588268064908">עליך לבחור כתובת כדי לראות שיטות משלוח ודרישות</translation>
+<translation id="6160391204859821737">הפעלת תכונה לשמירה על פרטיות בפרסום</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6167577165590485365">ניסיון האחזור האחרון:</translation>
 <translation id="6169916984152623906">עכשיו באפשרותך לגלוש באופן פרטי, ואנשים אחרים שמשתמשים במכשיר הזה לא יראו את הפעילות שלך. עם זאת, עדיין תתבצע שמירה של הורדות וסימניות.</translation>
@@ -3096,6 +3097,7 @@ Del</translation>
 <translation id="8449836157089738489">פתיחת הכול בקבוצת כרטיסיות חדשה</translation>
 <translation id="8457125768502047971">ללא הגבלת זמן</translation>
 <translation id="8458202188076138974">‏9.5x12 אינץ' (Letter Extra)</translation>
+<translation id="8460854335417802511">להפעלת ההגדרה</translation>
 <translation id="8461694314515752532">הצפנת נתונים מסונכרנים בעזרת ביטוי סיסמה אישי לסנכרון</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{כרטיס אשראי אחד}one{# כרטיסי אשראי}two{שני כרטיסי אשראי}other{# כרטיסי אשראי}}</translation>
 <translation id="8468358362970107653">‏מעטפה – C3</translation>

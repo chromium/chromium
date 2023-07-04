@@ -2131,6 +2131,7 @@
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> 英寸 (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">移除歷史記錄中的所有項目</translation>
 <translation id="6157877588268064908">如要查看運送方式和相關規定，請選取一個地址</translation>
+<translation id="6160391204859821737">開啟廣告隱私權功能</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6167577165590485365">上次擷取時間：</translation>
 <translation id="6169916984152623906">現在，你可以進行私密瀏覽了。共用這部裝置的其他使用者不會看到你的活動，不過，你下載的內容和新增的書籤仍會保留在裝置上。</translation>
@@ -3090,6 +3091,7 @@
 <translation id="8449836157089738489">在新分頁群組中開啟所有網址</translation>
 <translation id="8457125768502047971">無限期</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">啟用</translation>
 <translation id="8461694314515752532">使用你自己的同步通關密語，加密保護同步資料</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 張信用卡}other{# 張信用卡}}</translation>
 <translation id="8468358362970107653">Envelope C3</translation>

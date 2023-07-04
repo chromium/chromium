@@ -2132,6 +2132,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (w calach) (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Usuń wszystkie z historii</translation>
 <translation id="6157877588268064908">Aby zobaczyć metody wysyłki oraz wymagania, wybierz adres</translation>
+<translation id="6160391204859821737">Włączanie funkcji ochrony prywatności w reklamach</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6167577165590485365">Ostatnia próba pobrania:</translation>
 <translation id="6169916984152623906">Teraz możesz korzystać z internetu w trybie prywatnym. Inne osoby używające tego urządzenia nie zobaczą Twojej aktywności. Pamiętaj tylko, że zakładki i pobrane pliki są zapisywane.</translation>
@@ -3091,6 +3092,7 @@ Dodatkowe informacje:
 <translation id="8449836157089738489">Otwórz wszystko w nowej grupie kart</translation>
 <translation id="8457125768502047971">Bez ograniczeń</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Włącz</translation>
 <translation id="8461694314515752532">Szyfruj synchronizowane dane własnym hasłem synchronizacji</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 karta kredytowa}few{# karty kredytowe}many{# kart kredytowych}other{# karty kredytowej}}</translation>
 <translation id="8468358362970107653">Koperta C3</translation>

@@ -2132,6 +2132,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Alisin ang lahat sa history</translation>
 <translation id="6157877588268064908">Para makita ang mga paraan at kinakailangan sa pagpapadala, pumili ng address</translation>
+<translation id="6160391204859821737">Mag-on ng feature ng privacy sa ad</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6167577165590485365">Huling sinubukan ang pag-fetch:</translation>
 <translation id="6169916984152623906">Makakapag-browse ka na ngayon nang pribado, at hindi makikita ng ibang taong gumagamit sa device na ito ang iyong aktibidad. Gayunpaman, mase-save ang mga download at bookmark.</translation>
@@ -3091,6 +3092,7 @@ Mga karagdagang detalye:
 <translation id="8449836157089738489">Buksan lahat sa bagong grupo ng tab</translation>
 <translation id="8457125768502047971">Walang katiyakan</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">I-on ito</translation>
 <translation id="8461694314515752532">I-encrypt ang naka-sync na data gamit ang iyong sariling passphrase sa pag-sync</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 credit card}one{# credit card}other{# na credit card}}</translation>
 <translation id="8468358362970107653">Envelope C3</translation>

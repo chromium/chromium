@@ -1106,7 +1106,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3678342917559046352">Ungültige Erweiterung: Für den Wert wurde eines der folgenden Formate erwartet: &lt;extension_id&gt; oder &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Seite in einem neuen Inkognitofenster öffnen (Strg + Umschalttaste + N)</translation>
 <translation id="3681007416295224113">Zertifikatinformationen</translation>
-<translation id="3681421644246505351">Chrome schließt aufgrund deines aktuellen Browserverlaufs auf Themen, die dich interessieren könnten.</translation>
+<translation id="3681421644246505351">Chrome nutzt zur Ermittlung deiner Interessengebiete deinen aktuellen Browserverlauf.</translation>
 <translation id="3693327506115126094">Methode zur Bestätigung deiner Identität auswählen</translation>
 <translation id="3701427423622901115">Zurücksetzen bestätigt.</translation>
 <translation id="3704162925118123524">Eventuell musst du die Anmeldeseite des verwendeten Netzwerks aufrufen.</translation>
@@ -2130,6 +2130,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Alle aus Verlauf entfernen</translation>
 <translation id="6157877588268064908">Wähle eine Adresse aus, um Versandoptionen und -anforderungen zu sehen</translation>
+<translation id="6160391204859821737">Eine Funktion zum Datenschutz bei Werbung aktivieren</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6167577165590485365">Letzter Abrufversuch:</translation>
 <translation id="6169916984152623906">Du kannst jetzt privat surfen. Für andere Personen, die dieses Gerät nutzen, sind deine Aktivitäten nicht sichtbar. Deine Downloads und Lesezeichen werden jedoch gespeichert.</translation>
@@ -3089,6 +3090,7 @@ Weitere Details:
 <translation id="8449836157089738489">Alle in neuer Tabgruppe öffnen</translation>
 <translation id="8457125768502047971">Unbestimmt</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Aktivieren</translation>
 <translation id="8461694314515752532">Synchronisierte Daten mit eigener Synchronisierungspassphrase verschlüsseln</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 Kreditkarte}other{# Kreditkarten}}</translation>
 <translation id="8468358362970107653">Umschlag C3</translation>

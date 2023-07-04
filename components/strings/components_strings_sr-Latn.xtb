@@ -2131,6 +2131,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6153243098246946146"><ph name="WIDTH" />×<ph name="HEIGHT" /> inča (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Ukloni sve iz istorije</translation>
 <translation id="6157877588268064908">Da biste videli načine i zahteve za slanje, izaberite adresu</translation>
+<translation id="6160391204859821737">Uključite funkciju za privatnost sa oglasima</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6167577165590485365">Poslednji pokušaj preuzimanja:</translation>
 <translation id="6169916984152623906">Sada možete da pregledate privatno i drugi ljudi koji koriste ovaj uređaj neće videti vaše aktivnosti. Međutim, preuzimanja i obeleživači će biti sačuvani.</translation>
@@ -3090,6 +3091,7 @@ Dodatni detalji:
 <translation id="8449836157089738489">Otvori sve u novoj grupi kartica</translation>
 <translation id="8457125768502047971">Neograničeno</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Uključi</translation>
 <translation id="8461694314515752532">Šifrujte sinhronizovane podatke pomoću sopstvene pristupne fraze za sinhronizaciju</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditna kartica}one{# kreditna kartica}few{# kreditne kartice}other{# kreditnih kartica}}</translation>
 <translation id="8468358362970107653">Koverta C3</translation>
