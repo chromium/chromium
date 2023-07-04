@@ -12493,6 +12493,7 @@ namespace console
     method requestIdleCallback
     method resizeBy
     method resizeTo
+    method restore
     method scroll
     method scrollBy
     method scrollTo

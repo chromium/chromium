@@ -2524,6 +2524,11 @@ void LocalDOMWindow::minimize() {
 #endif
 }
 
+void LocalDOMWindow::restore() {
+  // TODO(isandrk): API is WIP. Explainer link:
+  // https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
+}
+
 void LocalDOMWindow::GenerateNewNavigationId() {
   navigation_id_ = WTF::CreateCanonicalUUIDString();
 }

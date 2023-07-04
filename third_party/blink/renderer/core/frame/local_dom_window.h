@@ -537,6 +537,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   void maximize();
   void minimize();
+  void restore();
 
  protected:
   // EventTarget overrides.
