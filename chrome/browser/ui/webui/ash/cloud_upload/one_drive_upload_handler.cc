@@ -88,8 +88,8 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
 
   if (!profile_) {
     LOG(ERROR) << "No profile";
-    OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kOtherError,
-                GetGenericErrorMessage());
+    OnEndUpload(base::unexpected(GetGenericErrorMessage()),
+                OfficeFilesUploadResult::kOtherError);
     return;
   }
 
@@ -97,15 +97,15 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
       (file_manager::VolumeManager::Get(profile_));
   if (!volume_manager) {
     LOG(ERROR) << "No volume manager";
-    OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kOtherError,
-                GetGenericErrorMessage());
+    OnEndUpload(base::unexpected(GetGenericErrorMessage()),
+                OfficeFilesUploadResult::kOtherError);
     return;
   }
   io_task_controller_ = volume_manager->io_task_controller();
   if (!io_task_controller_) {
     LOG(ERROR) << "No task_controller";
-    OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kOtherError,
-                GetGenericErrorMessage());
+    OnEndUpload(base::unexpected(GetGenericErrorMessage()),
+                OfficeFilesUploadResult::kOtherError);
     return;
   }
 
@@ -125,8 +125,8 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
     } else {
       LOG(ERROR) << "Multiple file systems found for the ODFS Extension";
     }
-    OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kFileSystemNotFound,
-                GetGenericErrorMessage());
+    OnEndUpload(base::unexpected(GetGenericErrorMessage()),
+                OfficeFilesUploadResult::kFileSystemNotFound);
     return;
   }
   destination_folder_path_ = file_systems[0].mount_path();
@@ -135,8 +135,8 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
   // TODO (b/243095484) Define error behavior.
   if (!destination_folder_url.is_valid()) {
     LOG(ERROR) << "Unable to generate destination folder ODFS URL";
-    OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kFileSystemNotFound,
-                GetGenericErrorMessage());
+    OnEndUpload(base::unexpected(GetGenericErrorMessage()),
+                OfficeFilesUploadResult::kFileSystemNotFound);
     return;
   }
 
@@ -152,21 +152,23 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
   observed_task_id_ = io_task_controller_->Add(std::move(task));
 }
 
-void OneDriveUploadHandler::OnEndUpload(const FileSystemURL& uploaded_file_url,
-                                        OfficeFilesUploadResult result,
-                                        std::string error_message) {
-  UMA_HISTOGRAM_ENUMERATION(kUploadResultMetricName, result);
+void OneDriveUploadHandler::OnEndUpload(
+    base::expected<storage::FileSystemURL, std::string> url_or_error,
+    OfficeFilesUploadResult result_metric) {
+  UMA_HISTOGRAM_ENUMERATION(kUploadResultMetricName, result_metric);
   // Resolve notifications.
   if (notification_manager_) {
-    if (uploaded_file_url.is_valid()) {
+    if (url_or_error.has_value()) {
       notification_manager_->MarkUploadComplete();
-    } else if (!error_message.empty()) {
+    } else if (const std::string& error_message = url_or_error.error();
+               !error_message.empty()) {
       LOG(ERROR) << "Upload to OneDrive: " << error_message;
       notification_manager_->ShowUploadError(error_message);
     }
   }
   if (callback_) {
-    std::move(callback_).Run(uploaded_file_url, upload_size_);
+    std::move(callback_).Run(url_or_error.value_or(FileSystemURL()),
+                             upload_size_);
   }
 }
 
@@ -197,13 +199,11 @@ void OneDriveUploadHandler::OnIOTaskStatus(
       return;
     case file_manager::io_task::State::kCancelled:
       if (status.type == file_manager::io_task::OperationType::kCopy) {
-        OnEndUpload(FileSystemURL(),
-                    OfficeFilesUploadResult::kCopyOperationCancelled,
-                    GetGenericErrorMessage());
+        OnEndUpload(base::unexpected(GetGenericErrorMessage()),
+                    OfficeFilesUploadResult::kCopyOperationCancelled);
       } else {
-        OnEndUpload(FileSystemURL(),
-                    OfficeFilesUploadResult::kMoveOperationCancelled,
-                    GetGenericErrorMessage());
+        OnEndUpload(base::unexpected(GetGenericErrorMessage()),
+                    OfficeFilesUploadResult::kMoveOperationCancelled);
       }
       return;
     case file_manager::io_task::State::kError:
@@ -226,16 +226,16 @@ void OneDriveUploadHandler::OnGetReauthenticationRequired(
     // Show the reauthentication required error notification.
     error_message = GetReauthenticationRequiredMessage();
   }
-  OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kCloudAuthError,
-              error_message);
+  OnEndUpload(base::unexpected(error_message),
+              OfficeFilesUploadResult::kCloudAuthError);
 }
 
 void OneDriveUploadHandler::ShowAccessDeniedError() {
   absl::optional<file_system_provider::ProvidedFileSystemInterface*>
       file_system = GetODFS(profile_);
   if (!file_system.has_value()) {
-    OnEndUpload(FileSystemURL(), OfficeFilesUploadResult::kCloudAuthError,
-                GetGenericOneDriveAccessErrorMessage());
+    OnEndUpload(base::unexpected(GetGenericOneDriveAccessErrorMessage()),
+                OfficeFilesUploadResult::kCloudAuthError);
     return;
   }
   GetODFSMetadata(
@@ -298,7 +298,7 @@ void OneDriveUploadHandler::ShowIOTaskError(
       error_message = GetGenericErrorMessage();
   }
 
-  OnEndUpload(FileSystemURL(), upload_result, error_message);
+  OnEndUpload(base::unexpected(error_message), upload_result);
 }
 
 }  // namespace ash::cloud_upload

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
@@ -54,9 +55,9 @@ class OneDriveUploadHandler
   void Run(UploadCallback callback);
 
   // Ends upload and runs Upload callback.
-  void OnEndUpload(const storage::FileSystemURL& uploaded_file_url,
-                   OfficeFilesUploadResult result,
-                   std::string error_message = "");
+  void OnEndUpload(
+      base::expected<storage::FileSystemURL, std::string> url_or_error,
+      OfficeFilesUploadResult result_metric);
 
   // IOTaskController::Observer:
   void OnIOTaskStatus(
