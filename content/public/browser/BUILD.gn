@@ -242,6 +242,8 @@ source_set("browser_sources") {
     "media_request_state.h",
     "media_service.h",
     "media_session.h",
+    "media_session_client.cc",
+    "media_session_client.h",
     "media_session_service.h",
     "media_stream_request.cc",
     "media_stream_request.h",

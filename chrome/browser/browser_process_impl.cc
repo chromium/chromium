@@ -54,6 +54,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/switch_utils.h"
+#include "chrome/browser/media/chrome_media_session_client.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
@@ -336,6 +337,9 @@ void BrowserProcessImpl::Init() {
 
   // Make sure permissions client has been set.
   ChromePermissionsClient::GetInstance();
+
+  // Make sure media session client has been set.
+  ChromeMediaSessionClient::GetInstance();
 
   // Make sure webapps client has been set.
   webapps::ChromeWebappsClient::GetInstance();

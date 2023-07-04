@@ -99,6 +99,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "incognito_menu_art.icon",
     "incognito_profile.icon",
     "incognito_refresh_menu.icon",
+    "incognito_white_circle.icon",
     "ink_highlighter.icon",
     "input.icon",
     "install_desktop_chrome_refresh.icon",

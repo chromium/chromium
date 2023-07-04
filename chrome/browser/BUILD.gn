@@ -686,6 +686,8 @@ static_library("browser") {
     "lookalikes/safety_tip_web_contents_observer.h",
     "media/audio_service_util.cc",
     "media/audio_service_util.h",
+    "media/chrome_media_session_client.cc",
+    "media/chrome_media_session_client.h",
     "media/history/media_history_contents_observer.cc",
     "media/history/media_history_contents_observer.h",
     "media/history/media_history_images_table.cc",
