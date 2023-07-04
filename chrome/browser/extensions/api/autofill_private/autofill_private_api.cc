@@ -82,25 +82,25 @@ constexpr char kCountryField[] = "COUNTY_CODE";
 // Converts an autofill::ServerFieldType to string format. Used in serilization
 // of field type info to be used in JavaScript code, and hence those values
 // shouldn't be modified.
-const char* GetStringFromAddressField(i18n::addressinput::AddressField type) {
+const char* GetStringFromAddressField(autofill::ServerFieldType type) {
   switch (type) {
-    case i18n::addressinput::RECIPIENT:
+    case autofill::NAME_FULL:
       return kFullNameField;
-    case i18n::addressinput::ORGANIZATION:
+    case autofill::COMPANY_NAME:
       return kCompanyNameField;
-    case i18n::addressinput::STREET_ADDRESS:
+    case autofill::ADDRESS_HOME_STREET_ADDRESS:
       return kAddressLineField;
-    case i18n::addressinput::DEPENDENT_LOCALITY:
+    case autofill::ADDRESS_HOME_DEPENDENT_LOCALITY:
       return kDependentLocalityField;
-    case i18n::addressinput::LOCALITY:
+    case autofill::ADDRESS_HOME_CITY:
       return kCityField;
-    case i18n::addressinput::ADMIN_AREA:
+    case autofill::ADDRESS_HOME_STATE:
       return kStateField;
-    case i18n::addressinput::POSTAL_CODE:
+    case autofill::ADDRESS_HOME_ZIP:
       return kPostalCodeField;
-    case i18n::addressinput::SORTING_CODE:
+    case autofill::ADDRESS_HOME_SORTING_CODE:
       return kSortingCodeField;
-    case i18n::addressinput::COUNTRY:
+    case autofill::ADDRESS_HOME_COUNTRY:
       return kCountryField;
     default:
       NOTREACHED();
@@ -113,11 +113,8 @@ base::Value::Dict AddressUiComponentAsValueMap(
     const autofill::AutofillAddressUIComponent& address_ui_component) {
   base::Value::Dict info;
   info.Set(kFieldNameKey, address_ui_component.name);
-  // TODO(crbug.com/1441904): Remove conversion once Desktop is adapted to using
-  // ServerFieldType.
-  i18n::addressinput::AddressField type;
-  CHECK(autofill::i18n::FieldForType(address_ui_component.field, &type));
-  info.Set(kFieldTypeKey, GetStringFromAddressField(type));
+  info.Set(kFieldTypeKey,
+           GetStringFromAddressField(address_ui_component.field));
   info.Set(kFieldLengthKey,
            address_ui_component.length_hint ==
                autofill::AutofillAddressUIComponent::HINT_LONG);
