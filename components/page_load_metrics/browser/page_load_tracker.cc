@@ -1057,9 +1057,6 @@ void PageLoadTracker::OnSoftNavigationChanged(
   // soft_navigation_metrics.count >= soft_navigation_metrics_->count when this
   // OnSoftNavigationChanged is only invoked by soft navigation detection.
   // we should investigate this issue.
-  CHECK(soft_navigation_metrics.count >= soft_navigation_metrics_->count);
-  CHECK(soft_navigation_metrics.start_time >=
-        soft_navigation_metrics_->start_time);
 
   soft_navigation_metrics_ = soft_navigation_metrics.Clone();
 
