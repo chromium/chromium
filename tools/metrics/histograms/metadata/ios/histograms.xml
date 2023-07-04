@@ -2976,7 +2976,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WKWebViewFinishBeforeCommit" enum="Boolean"
-    expires_after="M77">
+    expires_after="2024-06-30">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -2984,6 +2984,8 @@ chromium-metrics-reviews@google.com.
     exceptions have been observed. This histogram counts the frequency of this
     invariant violation at the time when a new navigation is finished. True
     means navigation finish callback happened before navigation commit.
+
+    Expired between M77 and M117.
   </summary>
 </histogram>
 
