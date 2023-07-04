@@ -34,8 +34,7 @@ export function getStore(): Store {
   // TODO(b/272120634): Put the store on window to prevent Store being created
   // twice.
   if (!window.store) {
-    window.store =
-        new BaseStore<State, Action>({allEntries: {}} as State, rootReducer);
+    window.store = new BaseStore<State, Action>(getEmptyState(), rootReducer);
   }
 
   return window.store;
