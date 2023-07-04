@@ -697,10 +697,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, NavigateOnTabSwitchLostTest) {
 
   NavigateHelper(GURL("chrome://about"), browser(),
                  WindowOpenDisposition::NEW_FOREGROUND_TAB, true);
-  int previous_tab_count = browser()->tab_strip_model()->count();
   browser()->tab_strip_model()->CloseWebContentsAt(0,
                                                    TabCloseTypes::CLOSE_NONE);
-  EXPECT_EQ(previous_tab_count - 1, browser()->tab_strip_model()->count());
   // This expects a new WebContents, since we just closed the tab.
   NavigateHelper(singleton_url, browser(), WindowOpenDisposition::SWITCH_TO_TAB,
                  true, nullptr /* expected_contents */);
@@ -1612,10 +1610,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_CloseSingletonTab) {
     observer.Wait();
   }
 
-  int previous_tab_count = browser()->tab_strip_model()->count();
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      2, TabCloseTypes::CLOSE_USER_GESTURE);
-  EXPECT_EQ(previous_tab_count - 1, browser()->tab_strip_model()->count());
+  EXPECT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
+      2, TabCloseTypes::CLOSE_USER_GESTURE));
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 }
 

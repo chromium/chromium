@@ -81,9 +81,9 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, TabStripEmpty) {
       profile, ProfileKeepAliveOrigin::kBrowserWindow);
   BrowserRemovalWaiter waiter(browser());
   tab_strip_model->SetTabPinned(0, false);
-  int previous_tab_count = tab_strip_model->count();
-  tab_strip_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
-  EXPECT_EQ(previous_tab_count - 1, tab_strip_model->count());
+  EXPECT_TRUE(
+      tab_strip_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE));
+  EXPECT_TRUE(tab_strip_model->empty());
   waiter.WaitForRemoval();
 
   // Let's see it's cleared out properly.

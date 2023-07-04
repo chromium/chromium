@@ -121,9 +121,7 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
       return false;
     }
 
-    int previous_tab_count = tab_strip->count();
-    tab_strip->CloseWebContentsAt(tab_index, 0);
-    return (previous_tab_count - 1) == tab_strip->count();
+    return tab_strip->CloseWebContentsAt(tab_index, 0);
   }
 
  protected:

@@ -393,9 +393,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   EXPECT_TRUE(IsBubbleShowing());
 
   // Close the tab.
-  int previous_tab_count = tab_model->count();
-  tab_model->CloseWebContentsAt(0, 0);
-  ASSERT_EQ(previous_tab_count - 1, tab_model->count());
+  ASSERT_TRUE(tab_model->CloseWebContentsAt(0, 0));
   EXPECT_FALSE(IsBubbleShowing());
 
   // The bubble is now hidden, but not destroyed. However, the WebContents _is_

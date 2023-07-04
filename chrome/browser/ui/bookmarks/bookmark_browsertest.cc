@@ -303,9 +303,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
   auto close_all_tabs_except_first = [](Browser* browser) {
     int num_tabs = browser->tab_strip_model()->GetTabCount();
     for (int i = 0; i < num_tabs - 1; ++i) {
-      browser->tab_strip_model()->CloseWebContentsAt(num_tabs - 1 - i, 0);
+      ASSERT_TRUE(
+          browser->tab_strip_model()->CloseWebContentsAt(num_tabs - 1 - i, 0));
     }
-    EXPECT_EQ(1, browser->tab_strip_model()->count());
   };
 
   auto open_urls_and_test = [&regular_browser, &incognito_browser, &bbar,

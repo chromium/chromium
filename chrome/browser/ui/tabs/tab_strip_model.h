@@ -214,8 +214,11 @@ class TabStripModel : public TabGroupController {
       absl::optional<tab_groups::TabGroupId> group = absl::nullopt);
   // Closes the WebContents at the specified index. This causes the
   // WebContents to be destroyed, but it may not happen immediately.
-  // |close_types| is a bitmask of CloseTypes.
-  void CloseWebContentsAt(int index, uint32_t close_types);
+  // |close_types| is a bitmask of CloseTypes. Returns true if the
+  // WebContents was closed immediately, false if it was not closed (we
+  // may be waiting for a response from an onunload handler, or waiting for the
+  // user to confirm closure).
+  bool CloseWebContentsAt(int index, uint32_t close_types);
 
   // Replaces the WebContents at |index| with |new_contents|. The
   // WebContents that was at |index| is returned and its ownership returns
@@ -346,10 +349,6 @@ class TabStripModel : public TabGroupController {
 
   // Returns true if the tab at |index| is allowed to be closed.
   bool IsTabClosable(int index) const;
-
-  // Returns true if the tab corresponding to |contents| is allowed to be
-  // closed.
-  bool IsTabClosable(const content::WebContents* contents) const;
 
   // Returns the group that contains the tab at |index|, or nullopt if the tab
   // index is invalid or not grouped.
@@ -553,12 +552,6 @@ class TabStripModel : public TabGroupController {
   // corresponding browser command exists, false otherwise.
   static bool ContextMenuCommandToBrowserCommand(int cmd_id, int* browser_cmd);
 
-  // Some tests require tab closure even if a tab is not closable (e.g. for
-  // cleanup purposes). This function lets the test bypass the IsTabClosable
-  // check.
-  static void SetBypassIsTabClosableCheckForTesting(
-      bool bypass_is_tab_closable);
-
   // Returns the index of the next WebContents in the sequence of WebContentses
   // spawned by the specified WebContents after |start_index|.
   int GetIndexOfNextWebContentsOpenedBy(const content::WebContents* opener,
@@ -676,7 +669,10 @@ class TabStripModel : public TabGroupController {
   // the page in question has an unload event the WebContents will not be
   // destroyed until after the event has completed, which will then call back
   // into this method.
-  void CloseTabs(base::span<content::WebContents* const> items,
+  //
+  // Returns true if the WebContentses were closed immediately, false if we
+  // are waiting for the result of an onunload handler.
+  bool CloseTabs(base::span<content::WebContents* const> items,
                  uint32_t close_types);
 
   // |close_types| is a bitmask of the types in CloseTypes.
@@ -804,9 +800,6 @@ class TabStripModel : public TabGroupController {
 
   // Takes the |selection| change and decides whether to forget the openers.
   void OnActiveTabChanged(const TabStripSelectionChange& selection);
-
-  // Checks if policy allows a tab to be closed.
-  bool PolicyAllowsTabClosing(content::WebContents* contents) const;
 
   // Determine where to shift selection after a tab is closed.
   absl::optional<int> DetermineNewSelectedIndex(int removed_index) const;
