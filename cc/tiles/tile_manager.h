@@ -18,6 +18,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "cc/base/unique_notifier.h"
 #include "cc/paint/target_color_params.h"
 #include "cc/raster/raster_buffer_provider.h"
@@ -324,6 +326,10 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
 
   void set_active_url(const GURL& url) { active_url_ = url; }
 
+  void SetOverridesForTesting(
+      scoped_refptr<base::TaskRunner> task_runner_for_testing,
+      const base::TickClock* clock);
+
  protected:
   friend class Tile;
   // Must be called by tile during destruction.
@@ -380,6 +386,10 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
 
   // Frees the resources of all occluded tiles.
   void FreeResourcesForOccludedTiles();
+
+  // If we haven't produced a frame in a while, drop the "nice to have" tiles.
+  void ScheduleReduceTileMemoryWhenIdle(base::TimeDelta time_since_last_active);
+  void ReduceTileMemoryWhenIdle();
 
   void FreeResourcesForTile(Tile* tile);
   void FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(Tile* tile);
@@ -441,7 +451,12 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   void CheckRasterFinishedQueries();
 
   bool ShouldRasterOccludedTiles() const;
+  base::TimeTicks NowWithOverride() const;
 
+ public:
+  static constexpr base::TimeDelta kDelayBeforeTimeReclaim = base::Minutes(5);
+
+ private:
   raw_ptr<TileManagerClient, DanglingUntriaged> client_;
   raw_ptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<ResourcePool, DanglingUntriaged> resource_pool_;
@@ -496,6 +511,11 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   int num_of_tiles_with_checker_images_ = 0;
 
   GURL active_url_;
+
+  base::TimeTicks last_active_time_;
+  bool has_pending_idle_task_ = false;
+  scoped_refptr<base::TaskRunner> task_runner_for_testing_ = nullptr;
+  raw_ptr<const base::TickClock> tick_clock_for_testing_ = nullptr;
 
   // The callback scheduled to poll whether the GPU side work for pending tiles
   // has completed.

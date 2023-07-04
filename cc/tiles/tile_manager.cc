@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -21,7 +22,9 @@
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/features.h"
@@ -34,6 +37,7 @@
 #include "cc/raster/task_category.h"
 #include "cc/tiles/frame_viewer_instrumentation.h"
 #include "cc/tiles/tile.h"
+#include "cc/tiles/tile_priority.h"
 #include "cc/tiles/tiles_with_resource_iterator.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -473,6 +477,50 @@ void TileManager::FinishTasksAndCleanUp() {
   locked_image_tasks_.clear();
 }
 
+void TileManager::ScheduleReduceTileMemoryWhenIdle(
+    base::TimeDelta time_since_last_active) {
+  if (!base::FeatureList::IsEnabled(features::kReclaimPrepaintTilesWhenIdle) ||
+      has_pending_idle_task_) {
+    return;
+  }
+
+  has_pending_idle_task_ = true;
+  base::TimeDelta delay = kDelayBeforeTimeReclaim - time_since_last_active;
+  base::TaskRunner* task_runner =
+      task_runner_for_testing_ ? task_runner_for_testing_.get() : task_runner_;
+
+  task_runner->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&TileManager::ReduceTileMemoryWhenIdle,
+                     ready_to_draw_callback_weak_ptr_factory_.GetWeakPtr()),
+      delay);
+}
+
+void TileManager::ReduceTileMemoryWhenIdle() {
+  has_pending_idle_task_ = false;
+  base::TimeDelta time_since_last_active =
+      NowWithOverride() - last_active_time_;
+
+  if (time_since_last_active < kDelayBeforeTimeReclaim) {
+    ScheduleReduceTileMemoryWhenIdle(time_since_last_active);
+    return;
+  }
+
+  MemoryUsage limit(0, 0);
+  MemoryUsage usage(resource_pool_->memory_usage_bytes(),
+                    resource_pool_->resource_count());
+
+  // Ensures that all the resources that are not at least as important as this
+  // one are evicted.
+  constexpr TilePriority kVisiblePriority =
+      TilePriority(HIGH_RESOLUTION, TilePriority::NOW, 0);
+  // Note: we don't need to flush anything here, even though this is a case
+  // where frames are not being produced. The resource pool will itself issue a
+  // flush after a few seconds when a resource becomes unused.
+  FreeTileResourcesWithLowerPriorityUntilUsageIsWithinLimit(
+      nullptr, limit, kVisiblePriority, &usage);
+}
+
 void TileManager::SetResources(ResourcePool* resource_pool,
                                ImageDecodeCache* image_decode_cache,
                                TaskGraphRunner* task_graph_runner,
@@ -551,6 +599,8 @@ void TileManager::DidFinishRunningAllTileTasks(bool has_pending_queries) {
 bool TileManager::PrepareTiles(
     const GlobalStateThatImpactsTilePriority& state) {
   ++prepare_tiles_count_;
+  last_active_time_ = NowWithOverride();
+  ScheduleReduceTileMemoryWhenIdle(base::TimeDelta());
 
   TRACE_EVENT1("cc,benchmark", "TileManager::PrepareTiles", "prepare_tiles_id",
                prepare_tiles_count_);
@@ -1883,9 +1933,21 @@ void TileManager::ActivationStateAsValueInto(
   state->EndArray();
 }
 
+void TileManager::SetOverridesForTesting(
+    scoped_refptr<base::TaskRunner> task_runner_for_testing,
+    const base::TickClock* clock) {
+  task_runner_for_testing_ = task_runner_for_testing;
+  tick_clock_for_testing_ = clock;
+}
+
 bool TileManager::ShouldRasterOccludedTiles() const {
   return (global_state_.memory_limit_policy != ALLOW_NOTHING &&
           global_state_.memory_limit_policy != ALLOW_ABSOLUTE_MINIMUM);
+}
+
+base::TimeTicks TileManager::NowWithOverride() const {
+  return tick_clock_for_testing_ ? tick_clock_for_testing_->NowTicks()
+                                 : base::TimeTicks::Now();
 }
 
 TileManager::MemoryUsage::MemoryUsage()

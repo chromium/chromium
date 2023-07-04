@@ -122,4 +122,8 @@ BASE_FEATURE(kDetectHiDpiForMsaa,
              "DetectHiDpiForMsaa",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kReclaimPrepaintTilesWhenIdle,
+             "ReclaimPrepaintTilesWhenIdle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

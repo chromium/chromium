@@ -107,6 +107,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReducedFrameRateEstimation);
 // Use 4x MSAA (vs 8) on High DPI screens.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDetectHiDpiForMsaa);
 
+// When no frames are produced in a certain time interval, reclaim prepaint
+// tiles.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimPrepaintTilesWhenIdle);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
