@@ -26,6 +26,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -2179,6 +2180,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, testForwardedKeysChanged) {
   OpenDevToolsWindow("about:blank", true);
   RunTestFunction(window_, "testForwardedKeysChanged");
   CloseDevToolsWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsTest, testCloseActionRecorded) {
+  base::UserActionTester user_action_tester;
+  OpenDevToolsWindow("about:blank", true);
+  CloseDevToolsWindow();
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount("DevTools_Close"));
 }
 
 // Test that showing a certificate in devtools does not crash the process.

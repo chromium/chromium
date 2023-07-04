@@ -450,6 +450,8 @@ DevToolsWindow::~DevToolsWindow() {
 
   life_stage_ = kClosing;
 
+  base::RecordAction(base::UserMetricsAction("DevTools_Close"));
+
   UpdateBrowserWindow();
   UpdateBrowserToolbar();
 

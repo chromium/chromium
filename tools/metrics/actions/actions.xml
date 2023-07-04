@@ -8338,6 +8338,11 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="DevTools_Close">
+  <owner>dsv@chromium.org</owner>
+  <description>DevTools window is closed in any way.</description>
+</action>
+
 <action name="DevTools_InspectAndroidPage">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
