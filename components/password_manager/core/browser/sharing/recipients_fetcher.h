@@ -21,8 +21,13 @@ enum class FetchFamilyMembersRequestStatus {
 // The RecipientInfo struct represents a recipient with whom the user can share
 // a password.
 struct RecipientInfo {
-  std::string gaia_id;
+  // Recipient's user identifier (obfuscated Gaia ID).
+  std::string user_id;
+  // Recipients's user name for display in the UI.
+  std::string user_name;
+  // The email address of the recipients account for display in the UI.
   std::string email;
+  // URL to the profile picture of the recipient for display in the UI.
   std::string profile_image_url;
 
   // TODO(crbug.com/1456309): Add a field for the public certificate after the
