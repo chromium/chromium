@@ -611,6 +611,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   virtual std::u16string GetLocalizedStringForRoleDescription() const;
   virtual std::u16string GetStyleNameAttributeAsLocalizedString() const;
 
+  virtual void SetIsPrimaryWebContentsForWindow();
+  virtual bool IsPrimaryWebContentsForWindow() const;
+
   //
   // Testing.
   //

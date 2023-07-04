@@ -70,14 +70,6 @@ int32_t AXPlatformNode::GetUniqueId() const {
   return GetDelegate() ? GetDelegate()->GetUniqueId().Get() : -1;
 }
 
-void AXPlatformNode::SetIsPrimaryWebContentsForWindow(bool is_primary) {
-  is_primary_web_contents_for_window_ = is_primary;
-}
-
-bool AXPlatformNode::IsPrimaryWebContentsForWindow() const {
-  return is_primary_web_contents_for_window_;
-}
-
 std::string AXPlatformNode::ToString() {
   return GetDelegate() ? GetDelegate()->ToString() : "No delegate";
 }

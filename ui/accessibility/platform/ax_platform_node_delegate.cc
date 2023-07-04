@@ -1171,6 +1171,12 @@ std::u16string AXPlatformNodeDelegate::GetStyleNameAttributeAsLocalizedString()
   return std::u16string();
 }
 
+void AXPlatformNodeDelegate::SetIsPrimaryWebContentsForWindow() {}
+
+bool AXPlatformNodeDelegate::IsPrimaryWebContentsForWindow() const {
+  return false;
+}
+
 bool AXPlatformNodeDelegate::ShouldIgnoreHoveredStateForTesting() {
   return true;
 }

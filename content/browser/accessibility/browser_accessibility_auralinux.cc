@@ -5,6 +5,7 @@
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
 
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/browser/accessibility/browser_accessibility_manager_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 
 namespace content {
@@ -67,6 +68,19 @@ std::u16string BrowserAccessibilityAuraLinux::GetHypertext() const {
 ui::TextAttributeList BrowserAccessibilityAuraLinux::ComputeTextAttributes()
     const {
   return GetNode()->ComputeTextAttributes();
+}
+
+void BrowserAccessibilityAuraLinux::SetIsPrimaryWebContentsForWindow() {
+  manager()
+      ->ToBrowserAccessibilityManagerAuraLinux()
+      ->SetPrimaryWebContentsForWindow(GetId());
+}
+
+bool BrowserAccessibilityAuraLinux::IsPrimaryWebContentsForWindow() const {
+  auto primary_id = manager()
+                        ->ToBrowserAccessibilityManagerAuraLinux()
+                        ->GetPrimaryWebContentsForWindow();
+  return primary_id != ui::kInvalidAXNodeID && primary_id == GetId();
 }
 
 }  // namespace content

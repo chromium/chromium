@@ -66,6 +66,20 @@ ui::AXTreeUpdate BrowserAccessibilityManagerAuraLinux::GetEmptyDocument() {
   return update;
 }
 
+void BrowserAccessibilityManagerAuraLinux::SetPrimaryWebContentsForWindow(
+    ui::AXNodeID node_id) {
+  DCHECK_NE(node_id, ui::kInvalidAXNodeID);
+  DCHECK(GetFromID(node_id));
+  DCHECK(primary_web_contents_for_window_id_ == node_id ||
+         primary_web_contents_for_window_id_ == ui::kInvalidAXNodeID);
+  primary_web_contents_for_window_id_ = node_id;
+}
+
+ui::AXNodeID
+BrowserAccessibilityManagerAuraLinux::GetPrimaryWebContentsForWindow() const {
+  return primary_web_contents_for_window_id_;
+}
+
 void BrowserAccessibilityManagerAuraLinux::FireFocusEvent(ui::AXNode* node) {
   ui::AXTreeManager::FireFocusEvent(node);
   FireEvent(GetFromAXNode(node), ax::mojom::Event::kFocus);
@@ -370,6 +384,14 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
       break;
   }
+}
+
+void BrowserAccessibilityManagerAuraLinux::OnNodeDeleted(ui::AXTree* tree,
+                                                         int32_t node_id) {
+  if (primary_web_contents_for_window_id_ == node_id) {
+    primary_web_contents_for_window_id_ = ui::kInvalidAXNodeID;
+  }
+  BrowserAccessibilityManager::OnNodeDeleted(tree, node_id);
 }
 
 void BrowserAccessibilityManagerAuraLinux::OnIgnoredWillChange(

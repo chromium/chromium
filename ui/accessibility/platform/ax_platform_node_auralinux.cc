@@ -2508,8 +2508,9 @@ AtkObject* AXPlatformNodeAuraLinux::FindPrimaryWebContentDocument() {
   for (auto* object : web_content_candidates) {
     auto* child_node = AXPlatformNodeAuraLinux::FromAtkObject(object);
     // If it is a primary web contents, return it.
-    if (child_node->IsPrimaryWebContentsForWindow())
+    if (child_node->GetDelegate()->IsPrimaryWebContentsForWindow()) {
       return object;
+    }
   }
   return nullptr;
 }

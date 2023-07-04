@@ -42,6 +42,9 @@ class BrowserAccessibilityAuraLinux : public BrowserAccessibility {
 
   ui::TextAttributeList ComputeTextAttributes() const override;
 
+  void SetIsPrimaryWebContentsForWindow() override;
+  bool IsPrimaryWebContentsForWindow() const override;
+
  private:
   // TODO: use a unique_ptr since the node is owned by this class.
   raw_ptr<ui::AXPlatformNodeAuraLinux> platform_node_;
