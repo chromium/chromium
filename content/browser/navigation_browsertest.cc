@@ -7316,4 +7316,109 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, AboutMumble) {
       GURL("about:blank#blocked"));
 }
 
+// Verifies that cross-origin iframes cannot navigate the top frame to a
+// different origin (sometimes called "framebusting") without user activation.
+//
+// This is non-standard, unspecified behavior.
+// See also https://www.chromestatus.com/features/5851021045661696.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       FramebustingWithoutUserActivationFails) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/defaultresponse")));
+
+  RenderFrameHost* child = CreateSubframe(
+      web_contents(), "child",
+      embedded_test_server()->GetURL("other.test", "/defaultresponse"),
+      /*wait_for_navigation=*/true);
+
+  EXPECT_FALSE(
+      ExecJs(child, "top.location = 'foo'", EXECUTE_SCRIPT_NO_USER_GESTURE));
+}
+
+// Verifies that cross-origin iframes can navigate the top frame to a different
+// origin (sometimes called "framebusting") with user activation.
+//
+// This is non-standard, unspecified behavior.
+// See also https://www.chromestatus.com/features/5851021045661696.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       FramebustingWithUserActivationSucceeds) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/defaultresponse")));
+
+  GURL other_url =
+      embedded_test_server()->GetURL("other.test", "/defaultresponse");
+  RenderFrameHost* child = CreateSubframe(web_contents(), "child", other_url,
+                                          /*wait_for_navigation=*/true);
+
+  TestNavigationObserver observer(web_contents());
+
+  // By default `ExecJs()` executes the provided script with user activation.
+  EXPECT_TRUE(ExecJs(child, "top.location = '/defaultresponse'"));
+
+  // The top frame is indeed navigated successfully.
+  observer.Wait();
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), other_url);
+}
+
+// Verifies that cross-origin iframes can navigate the top frame to a different
+// origin (sometimes called "framebusting") with user activation, even after
+// a couple `setTimeout()` calls.
+//
+// This is non-standard, unspecified behavior.
+// See also https://www.chromestatus.com/features/5851021045661696.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       FramebustingWithAsyncUserActivationSucceeds) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/defaultresponse")));
+
+  GURL other_url =
+      embedded_test_server()->GetURL("other.test", "/defaultresponse");
+  RenderFrameHost* child = CreateSubframe(web_contents(), "child", other_url,
+                                          /*wait_for_navigation=*/true);
+
+  TestNavigationObserver observer(web_contents());
+
+  // By default `ExecJs()` executes the provided script with a user activation.
+  //
+  // With user activation, the navigation should succeed even through nested
+  // `setTimeout()` calls.
+  EXPECT_TRUE(ExecJs(child, R"(
+    setTimeout(() => {
+      setTimeout(() => {
+        top.location = '/defaultresponse';
+      }, 0);
+    }, 0);
+  )"));
+
+  // The top frame is indeed navigated successfully.
+  observer.Wait();
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), other_url);
+}
+
+// Verifies that cross-origin iframes can navigate the top frame to another URL
+// belonging to the top frame's origin without user activation.
+//
+// This is non-standard, unspecified behavior.
+// See also https://www.chromestatus.com/features/5851021045661696.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       FramebustingSameOriginWithoutUserActivationSucceeds) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/defaultresponse")));
+
+  RenderFrameHost* child = CreateSubframe(
+      web_contents(), "child",
+      embedded_test_server()->GetURL("other.test", "/defaultresponse"),
+      /*wait_for_navigation=*/true);
+
+  TestNavigationObserver observer(web_contents());
+
+  GURL destination = embedded_test_server()->GetURL("/echo");
+  EXPECT_TRUE(ExecJs(child, JsReplace("top.location = $1", destination),
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // The top frame is indeed navigated successfully.
+  observer.Wait();
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), destination);
+}
+
 }  // namespace content

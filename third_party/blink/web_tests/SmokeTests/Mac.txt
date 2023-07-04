@@ -959,7 +959,6 @@ http/tests/navigation/location-change-repeated-from-blank.html
 http/tests/permissions/chromium/test-request-worker.html
 http/tests/preload/meta-viewport-link-headers-imagesrcset.html
 http/tests/security/cross-origin-shared-worker-allowed.html
-http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html
 http/tests/security/offscreencanvas-placeholder-read-blocked-no-crossorigin.html
 ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm
 images/color-profile-image-filter-all.html

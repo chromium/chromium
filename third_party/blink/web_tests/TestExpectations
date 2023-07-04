@@ -1967,12 +1967,6 @@ crbug.com/1218715 external/wpt/content-security-policy/reporting-api/reporting-a
 crbug.com/846981 fast/webgl/texImage-imageBitmap-from-imageData-resize.html [ Crash Failure Pass Timeout ]
 
 # crbug.com/1095379: These fail with a timeout, even when they're given extra time (via SlowTests)
-crbug.com/1072022 [ Mac13 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Failure Pass Timeout ]
-crbug.com/1072022 [ Mac10.15 Release ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
-crbug.com/1072022 [ Mac11 Release ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
-crbug.com/1072022 [ Mac11-arm64 Release ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
-crbug.com/1072022 [ Linux ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
-crbug.com/1072022 [ Win ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
 crbug.com/915903 http/tests/security/inactive-document-with-empty-security-origin.html [ Pass Timeout ]
 crbug.com/987138 [ Linux ] media/controls/doubletap-to-jump-forwards.html [ Pass Timeout ]
 crbug.com/987138 [ Win ] media/controls/doubletap-to-jump-forwards.html [ Pass Timeout ]
@@ -4647,9 +4641,6 @@ crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.fil
 crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.strokeStyle.colorObject.html [ Failure ]
 crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.strokeStyle.colorObject.transparency.html [ Failure ]
 
-# Sheriff 2021-03-17
-crbug.com/1072022 http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change.html [ Pass Timeout ]
-
 # Sheriff 2021-03-19
 crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints.js [ Failure Pass Timeout ]
 crbug.com/1190176 [ Linux ] fast/peerconnection/RTCPeerConnection-addMultipleTransceivers.html [ Crash Failure Pass ]
@@ -6491,7 +6482,6 @@ crbug.com/1422552 http/tests/devtools/tracing/timeline-misc/timeline-window-filt
 crbug.com/1451210 [ Mac ] external/wpt/scroll-to-text-fragment/iframe-scroll.sub.html [ Failure Pass ]
 crbug.com/1452222 [ Debug Linux ] http/tests/devtools/sources/debugger-breakpoints/breakpoint-manager-listeners-count.js [ Failure Pass ]
 crbug.com/1453235 [ Mac ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Failure Pass Timeout ]
-crbug.com/1072022 [ Mac12 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Failure Pass Timeout ]
 crbug.com/1453398 [ Linux ] images/image-hover-display-alt.html [ Failure Pass ]
 crbug.com/1451895 [ Linux ] external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html [ Failure Pass ]
 crbug.com/1451895 [ Linux ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html [ Failure Pass ]
@@ -6501,8 +6491,6 @@ external/wpt/https-upgrades/tentative/upgrade.https.sub.html [ Timeout ]
 
 # Sherrif 2023-06-09
 crbug.com/1358175 [ Mac12 ] media/controls/closed-captions-single-track.html [ Failure Pass ]
-crbug.com/1072022 [ Mac12-arm64 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Failure Pass Timeout ]
-crbug.com/1072022 [ Mac13-arm64 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Failure Pass Timeout ]
 
 # Sherrif 2023-06-12
 crbug.com/1452003 [ Mac13-arm64 ] svg/W3C-SVG-1.1/text-fonts-01-t.svg [ Failure Pass ]

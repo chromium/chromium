@@ -1359,8 +1359,6 @@ http/tests/security/cross-frame-mouse-source-capabilities.html
 http/tests/security/cross-origin-OffscreenCanvas2D-convertToBlob.html
 http/tests/security/cross-origin-createImageBitmap.html
 http/tests/security/document-domain-canonicalizes.html
-http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html
-http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change.html
 http/tests/security/inactive-document-with-empty-security-origin.html
 http/tests/security/isolatedWorld/bypass-main-world-csp-font-src.html
 http/tests/security/javascriptURL/xss-DENIED-from-javascript-url-in-foreign-domain-window-open.html
