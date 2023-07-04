@@ -378,7 +378,7 @@ inline ScrollbarGutter& operator|=(ScrollbarGutter& a, ScrollbarGutter b) {
 
 enum class EBaselineShiftType : unsigned { kLength, kSub, kSuper };
 
-enum EPaintOrderType {
+enum EPaintOrderType : uint8_t {
   PT_NONE = 0,
   PT_FILL = 1,
   PT_STROKE = 2,

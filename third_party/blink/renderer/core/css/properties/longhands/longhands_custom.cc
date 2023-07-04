@@ -6416,7 +6416,7 @@ const CSSValue* PaintOrder::CSSValueFromComputedStyleInternal(
   // to emit the last keyword.
   //
   // https://svgwg.org/svg2-draft/painting.html#PaintOrder
-  static const uint8_t canonical_form[][2] = {
+  static const EPaintOrderType canonical_form[][2] = {
       // kPaintOrderNormal is handled above.
       {PT_FILL, PT_NONE},       // kPaintOrderFillStrokeMarkers
       {PT_FILL, PT_MARKERS},    // kPaintOrderFillMarkersStroke
@@ -6428,11 +6428,10 @@ const CSSValue* PaintOrder::CSSValueFromComputedStyleInternal(
   DCHECK_LT(static_cast<size_t>(paint_order) - 1, std::size(canonical_form));
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   for (const auto& keyword : canonical_form[paint_order - 1]) {
-    const auto paint_order_type = static_cast<EPaintOrderType>(keyword);
-    if (paint_order_type == PT_NONE) {
+    if (keyword == PT_NONE) {
       break;
     }
-    list->Append(*CSSIdentifierValue::Create(paint_order_type));
+    list->Append(*CSSIdentifierValue::Create(keyword));
   }
   return list;
 }

@@ -918,9 +918,6 @@ class ComputedStyle : public ComputedStyleBase,
     return MarkerStartResource() || MarkerMidResource() || MarkerEndResource();
   }
 
-  // paint-order helper
-  EPaintOrderType PaintOrderType(unsigned index) const;
-
   // stroke helpers
   bool HasStroke() const { return !StrokePaint().IsNone(); }
   bool HasVisibleStroke() const {
