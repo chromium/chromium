@@ -47,6 +47,10 @@ void ValidateAllowedUnpartitionedSites(
                           }));
 }
 
+blink::StorageKey CreateFirstPartyStorageKey(const GURL& url) {
+  return blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
+}
+
 }  // namespace
 
 class PageSpecificSiteDataDialogUnitTest
@@ -420,10 +424,12 @@ TEST_P(PageSpecificSiteDataDialogStorageUnitTest, StorageAccessed) {
   // displayed in the dialog.
   auto* content_settings = GetContentSettings();
 
-  content_settings->OnStorageAccessed(GetParam(), GURL(kCurrentUrl),
-                                      /*blocked_by_policy=*/false);
-  content_settings->OnStorageAccessed(GetParam(), GURL(kThirdPartyUrl),
-                                      /*blocked_by_policy=*/false);
+  content_settings->OnStorageAccessed(
+      GetParam(), CreateFirstPartyStorageKey(GURL(kCurrentUrl)),
+      /*blocked_by_policy=*/false);
+  content_settings->OnStorageAccessed(
+      GetParam(), CreateFirstPartyStorageKey(GURL(kThirdPartyUrl)),
+      /*blocked_by_policy=*/false);
 
   auto delegate =
       std::make_unique<test::PageSpecificSiteDataDialogTestApi>(web_contents());

@@ -45,6 +45,7 @@ class BrowsingDataModel {
     kTrustTokens = 1,  // Only issuance information considered.
     kSharedStorage = 2,
     kLocalStorage,
+    kSessionStorage,
     kInterestGroup,
     kAttributionReporting,
     kPrivateAggregation,
