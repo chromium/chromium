@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">Επιλέξτε πότε θα γίνεται αποκλεισμός cookie τρίτου μέρους</translation>
 <translation id="3428747202529429621">Διατηρεί την ασφάλειά σας στο Chrome και μπορεί να χρησιμοποιηθεί για τη βελτίωση της ασφάλειάς σας σε άλλες εφαρμογές Google όταν είστε συνδεδεμένοι.</translation>
 <translation id="3429160811076349561">Οι δοκιμαστικές λειτουργίες είναι απενεργοποιημένες</translation>
-<translation id="3432973700170747422">Διαγραφή τελευταίων 15 λεπ.</translation>
 <translation id="3435465986463792564">Χρησιμοποιείτε πολλά παράθυρα; Μπορείτε να τα διαχειρίζεστε από εδώ.</translation>
 <translation id="3435738964857648380">Ασφάλεια</translation>
 <translation id="3443221991560634068">Επαναφόρτωση της τρέχουσας σελίδας</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">Συμβάλ. στη βελτίωση της ασφάλ.</translation>
 <translation id="3597179440835065298">Δείτε καλύτερες προτάσεις</translation>
 <translation id="3602290021589620013">Προεπισκόπηση</translation>
-<translation id="360901359071773787">Διαγραφή των τελευταίων 15 λεπτών;</translation>
 <translation id="3616113530831147358">Ήχος</translation>
 <translation id="3622349720008044802">Διαχείριση παραθύρων</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 ιστότοπος}other{+ # ιστότοποι}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">Οπτική προβολή</translation>
 <translation id="5011311129201317034">Ο ιστότοπος <ph name="SITE" /> επιθυμεί σύνδεση</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Τελευταία 15 λεπτά</translation>
 <translation id="5032430150487044192">Δεν είναι δυνατή η δημιουργία κωδικού QR</translation>
 <translation id="5039804452771397117">Επιτρέπεται</translation>
 <translation id="5040262127954254034">Απόρρητο</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">Βελτίωση των προτάσεων αναζήτησης</translation>
 <translation id="6026538407078977628">Ανάπτυξη σε πλήρη οθόνη</translation>
 <translation id="6030719887161080597">Διαχειριστείτε πληροφορίες που χρησιμοποιούνται από ιστοτόπους για τη μέτρηση της απόδοσης διαφημίσεων</translation>
-<translation id="6034146297924778597">Το ιστορικό των τελευταίων 15 λεπτών θα διαγραφεί:</translation>
 <translation id="6039379616847168523">Μετάβαση στην επόμενη καρτέλα</translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="604124094241169006">Αυτόματη</translation>

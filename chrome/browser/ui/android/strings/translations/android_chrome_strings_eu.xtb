@@ -446,7 +446,6 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="3421726884497337397">Aukeratu noiz blokeatu nahi dituzun hirugarrenen cookieak</translation>
 <translation id="3428747202529429621">Babestuta mantentzen zaitu Chrome-n, eta segurtasuna hobetzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean</translation>
 <translation id="3429160811076349561">Probako eginbideak desaktibatuta daude</translation>
-<translation id="3432973700170747422">Ezabatu azken 15 minutuak</translation>
 <translation id="3435465986463792564">Leiho gehiegi dituzu? Hemen kudea ditzakezu.</translation>
 <translation id="3435738964857648380">Segurtasuna</translation>
 <translation id="3443221991560634068">Kargatu berriro oraingo orria</translation>
@@ -480,7 +479,6 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="3587596251841506391">Hobetu sareko segurtasuna</translation>
 <translation id="3597179440835065298">Lortu iradokizun hobeak</translation>
 <translation id="3602290021589620013">Aurrebista</translation>
-<translation id="360901359071773787">Azken 15 minutuak ezabatu nahi dituzu?</translation>
 <translation id="3616113530831147358">Audioa</translation>
 <translation id="3622349720008044802">Kudeatu leihoak</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{eta beste webgune bat}other{eta beste # webgune}}</translation>
@@ -752,6 +750,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5010886807652684893">Ikuspegi bisuala</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> webguneak konektatu egin nahi du</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Azken 15 minutuetan</translation>
 <translation id="5032430150487044192">Ezin da sortu QR kodea</translation>
 <translation id="5039804452771397117">Baimendu</translation>
 <translation id="5040262127954254034">Pribatutasuna</translation>
@@ -930,7 +929,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6011308810877101166">Hobetu bilaketa-iradokizunak</translation>
 <translation id="6026538407078977628">Zabaldu pantaila osoan ikusteko</translation>
 <translation id="6030719887161080597">Kudeatu webguneek iragarkien errendimendua neurtzeko erabiltzen duten informazioa</translation>
-<translation id="6034146297924778597">Azken 15 minutuetako historia ezabatuko da:</translation>
 <translation id="6039379616847168523">Saltatu hurrengo fitxara</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="604124094241169006">Automatikoa</translation>

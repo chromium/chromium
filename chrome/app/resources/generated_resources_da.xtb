@@ -4102,7 +4102,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4413087696295876280">Læs enhedsoplysninger og -data for ChromeOS Flex</translation>
 <translation id="44141919652824029">Vil du give "<ph name="APP_NAME" />" adgang til listen over dine tilsluttede USB-enheder?</translation>
 <translation id="4414232939543644979">Nyt &amp;inkognitovindue</translation>
-<translation id="4414648713167199100">Bruger mobildata på din Chromebook, og dit mobilselskab kan i den forbindelse opkræve yderligere gebyrer. Kan øge batteriforbruget. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Din <ph name="DEVICE_TYPE" /> er klar til brug.</translation>
 <translation id="4415245286584082850">Der blev ikke fundet nogen enheder. Åbn en artikel i Hjælp på en ny fane.</translation>
 <translation id="4415276339145661267">Administrer din Google-konto</translation>
@@ -6902,7 +6901,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6833479554815567477">Fanen blev fjernet fra gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Skift til en smart og sikker browser</translation>
 <translation id="6833996806551876956">Prøveperiode til Privacy Sandbox</translation>
-<translation id="6835712061486505758">Opret et Wi-Fi-hotspot for at give andre enheder adgang til internettet. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Opret forbindelse til internettet for at opdatere din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Fejl under sletning af certifikat</translation>
 <translation id="6839916869147598086">Login blev ændret</translation>
@@ -7073,6 +7071,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6978717888677691380">Websites, du har blokeret</translation>
 <translation id="6979041727349121225">Energisparefunktion</translation>
 <translation id="6979044105893951891">Start og afslut administrerede gæstesessioner</translation>
+<translation id="6979158407327259162">Google Drev</translation>
 <translation id="6979440798594660689">Slå lyden fra (standard)</translation>
 <translation id="6979737339423435258">Altid</translation>
 <translation id="6981553172137913845">Hvis du vil bruge nettet privat, skal du klikke på prikmenuen for at åbne et inkognitovindue</translation>
@@ -8062,6 +8061,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7807711621188256451">Tillad altid, at <ph name="HOST" /> har adgang til dit kamera</translation>
 <translation id="7810202088502699111">Pop op-vinduer blev blokeret på denne side.</translation>
 <translation id="7814458197256864873">&amp;Kopier</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Rediger genvejen <ph name="SHORTCUT" /> til <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">En farlig download blev blokeret</translation>
 <translation id="7817361223956157679">Skærmtastaturet fungerer endnu ikke i Linux-apps</translation>
@@ -8141,7 +8141,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7881483672146086348">Vis konto</translation>
 <translation id="7883792253546618164">Du kan afmelde dig når som helst.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Gennemgå 1 website, der har sendt mange notifikationer}one{Gennemgå {NUM_SITES} website, der har sendt mange notifikationer}other{Gennemgå {NUM_SITES} websites, der har sendt mange notifikationer}}</translation>
-<translation id="7884446017008693258">Indstillinger for hotspot</translation>
 <translation id="788453346724465748">Indlæser kontooplysninger...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{et element}one{# element}other{# elementer}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8670,6 +8669,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8322814362483282060">Denne side er blokeret fra at få adgang til din mikrofon.</translation>
 <translation id="8323167517179506834">Angiv webadresse</translation>
 <translation id="8323317289166663449">Læse og redigere alle dine data på din computer og alle websites</translation>
+<translation id="8324158725704657629">Spørg ikke igen</translation>
 <translation id="8324784016256120271">Websites kan anvende cookies til at se din browseraktivitet på forskellige websites for f.eks. at personligt tilpasse annoncer</translation>
 <translation id="8325413836429495820">Har ikke tilladelse til at se din udklipsholder</translation>
 <translation id="8326478304147373412">PKCS #7, certifikatkæde</translation>

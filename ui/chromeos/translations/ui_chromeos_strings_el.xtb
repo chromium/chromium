@@ -42,7 +42,6 @@
 <translation id="1358735829858566124">Το αρχείο ή ο κατάλογος δεν μπορούν να χρησιμοποιηθούν.</translation>
 <translation id="1363028406613469049">Κομμάτι</translation>
 <translation id="1378727793141957596">Καλώς ήρθατε στο Google Drive!</translation>
-<translation id="1379156577998569384">Τα αρχεία σας στην ενότητα Τo Drive μου είναι διαθέσιμα εκτός σύνδεσης</translation>
 <translation id="1379911846207762492">Μπορείτε να καταστήσετε τα αρχεία διαθέσιμα εκτός σύνδεσης για να έχετε πρόσβαση σε αυτά χωρίς σύνδεση στο διαδίκτυο.</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1388045380422025115">Όλοι οι τύποι</translation>
@@ -133,7 +132,6 @@
 <translation id="2084108471225856927">Ρυθμίσεις συσκευής</translation>
 <translation id="2084809735218147718">Άτομο που λέει ευχαριστώ στη νοηματική γλώσσα</translation>
 <translation id="2088690981887365033">Δίκτυο VPN</translation>
-<translation id="2089751716171649322">Εύκολη πρόσβαση στα αρχεία σας στο Google Drive όταν είστε εκτός σύνδεσης</translation>
 <translation id="2111134541987263231">Ενεργοποιήστε την επιλογή <ph name="BEGIN_BOLD" />Να επιτρέπεται στην ανώνυμη περιήγηση<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> στοιχεία θα διαγραφούν και δεν θα είστε σε θέση να τα επαναφέρετε.</translation>
 <translation id="2122305276694332719">Η αυτόματη σύνδεση σε ένα κρυφό δίκτυο επιτρέπει σε άλλα άτομα να βλέπουν τη συσκευή σας και ορισμένες ρυθμίσεις δικτύου σας και δεν συνιστάται.</translation>
@@ -591,12 +589,10 @@
 <translation id="5494920125229734069">Επιλογή όλων</translation>
 <translation id="5500122897333236901">Ισλανδικά</translation>
 <translation id="5508696409934741614">Τελείες</translation>
-<translation id="5519161320735100193">Ρυθμίσεις Google Drive</translation>
 <translation id="5522908512596376669">Η λίστα αρχείων έχει αλλάξει σε προβολή λίστας.</translation>
 <translation id="5524517123096967210">Δεν ήταν δυνατή η ανάγνωση του αρχείου.</translation>
 <translation id="5533102081734025921">Εικόνα <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Υπολογισμός μεγέθους</translation>
-<translation id="5536122250858122375">Δεν είναι δυνατός ο συγχρονισμός αυτού του τύπου αρχείου</translation>
 <translation id="554153475311314364">Μεταγραφή Ελληνικών</translation>
 <translation id="5554171655917412781">Έχουν επιλεγεί <ph name="SELECTED_FOLDERS_COUNT" /> φάκελοι</translation>
 <translation id="5580591966435005537">εικονική μηχανή</translation>
@@ -758,7 +754,6 @@
 <translation id="6874758081814639712">Άτομο που κάνει Τάι Τσι</translation>
 <translation id="6876155724392614295">Ποδήλατο</translation>
 <translation id="6878261347041253038">Πληκτρολόγιο Ντεβαναγκάρι (Φωνητικό)</translation>
-<translation id="6882444584974399416">Η συσκευή σας δεν έχει αρκετό αποθηκευτικό χώρο για να διατηρεί τα αρχεία σας διαθέσιμα εκτός σύνδεσης. Τα νέα αρχεία δεν θα συγχρονίζονται πλέον αυτόματα.</translation>
 <translation id="6885780034956018177">Σαλιγκάρι</translation>
 <translation id="6896758677409633944">Αντιγραφή</translation>
 <translation id="6898028766943174120">Περισσότεροι υποφακέλοι…</translation>
@@ -1001,7 +996,6 @@
 <translation id="8560515948038859357">Καντονικά</translation>
 <translation id="8561206103590473338">Ελέφαντας</translation>
 <translation id="8566466896628108558">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Αποκλείστηκε από τον διαχειριστή σας, Λεπτομέρειες</translation>
-<translation id="8567555211227790801">Είστε εκτός σύνδεσης αυτήν τη στιγμή Ο συγχρονισμός θα συνεχιστεί όταν συνδεθείτε στο διαδίκτυο.</translation>
 <translation id="8568374623837201676">Οριστική διαγραφή αυτού του αρχείου;</translation>
 <translation id="8569764466147087991">Επιλέξτε αρχείο για άνοιγμα</translation>
 <translation id="8577897833047451336">Κροατικά</translation>

@@ -204,7 +204,6 @@
 <translation id="2491955442992294626">Tastele nu sunt testate când folosești altă fereastră</translation>
 <translation id="2493126929778606526">Cele mai bune fotografii, selectate automat</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2498950423397131220">Flotant</translation>
 <translation id="2505327257735685095">Actualizează imaginea de fundal actuală</translation>
 <translation id="2512979179176933762">afișează ferestrele</translation>
 <translation id="2513396635448525189">Imagine de conectare</translation>
@@ -328,7 +327,6 @@
 <translation id="3607216139080387279">Afișează screensaverul</translation>
 <translation id="361575905210396100">Îți mulțumim pentru feedback</translation>
 <translation id="3632579075709132555">Activarea / dezactivarea ecranului de confidențialitate</translation>
-<translation id="3639846061339007994">sus</translation>
 <translation id="3651050199673793219">Selectează o unitate de temperatură</translation>
 <translation id="3663574643422533538">Selectează opera de artă exclusivă <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">Imagine de fundal Cloud Flow</translation>
@@ -411,7 +409,6 @@
 <translation id="4289849978083912975">Slideshow</translation>
 <translation id="4297501883039923494">Oprită – Eroare necunoscută</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagini</translation>
-<translation id="4311195029067684288">Maxim</translation>
 <translation id="4333390807948134856">A fost apăsată tasta <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Gestionează setările APN ale rețelei. APN-urile stabilesc o conexiune între o rețea de date mobile și internet. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Resetează toate comenzile rapide</translation>
@@ -501,7 +498,6 @@
 <translation id="4930320165497208503">Pentru a configura sau a actualiza o conexiune, accesează <ph name="BEGIN_LINK" />Setările<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4950314376641394653">Firmware-ul <ph name="DEVICE_NAME" /> a fost actualizat la versiunea <ph name="VERSION" /></translation>
-<translation id="4971925105143343452">Parțial</translation>
 <translation id="4972592110715526173">schimbarea modului</translation>
 <translation id="498186245079027698">Verifică scanerul și încearcă din nou. Asigură-te că există spațiu suficient la nivel local pentru a salva fișierele scanate.</translation>
 <translation id="4985509611418653372">Rulează</translation>
@@ -655,7 +651,6 @@
 <translation id="6191293864534840972">Servere de nume cu formă incorectă</translation>
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
-<translation id="6223066887782788441">Ieși din ecranul complet</translation>
 <translation id="6223752125779001553">Niciun scaner disponibil</translation>
 <translation id="6232017090690406397">Baterie</translation>
 <translation id="6235460611964961764">Resetează manual utilizarea datelor</translation>
@@ -814,7 +809,6 @@
 <translation id="7481312909269577407">Înainte</translation>
 <translation id="7487067081878637334">Tehnologie</translation>
 <translation id="7490813197707563893">Adresă MAC</translation>
-<translation id="7491478667760509108">Ieși din modul flotant</translation>
 <translation id="7497215489070763236">Certificat CA de server</translation>
 <translation id="7501957181231305652">sau</translation>
 <translation id="7502658306369382406">Adresă IPv6</translation>
@@ -834,7 +828,6 @@
 <translation id="763165478673169849">Data ultimei resetări</translation>
 <translation id="7633068090678117093">Imagine de fundal</translation>
 <translation id="7648838807254605802">Latență mare a solicitărilor HTTPS</translation>
-<translation id="765159867434478292">Pe jumătate</translation>
 <translation id="7656388927906093505">Dispozitivul este un mouse.</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7665800271478495366">Schimbă avatarul</translation>
@@ -865,7 +858,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tip furnizor</translation>
 <translation id="7882501334836096755">Cheie publică</translation>
-<translation id="78957024357676568">stânga</translation>
 <translation id="7915220255123750251">Gestionează setările APN ale rețelei. APN-urile stabilesc o conexiune între o rețea de date mobile și internet.</translation>
 <translation id="7936303884198020182">Nu s-au găsit servere de nume</translation>
 <translation id="7942349550061667556">Roșu</translation>
@@ -903,7 +895,6 @@
 <translation id="8183974620058026102">Atașează</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208861521865154048">Avantaje</translation>
-<translation id="8210733748736414123">jos</translation>
 <translation id="8226628635270268143">Alege fotografiile și albumele preferate</translation>
 <translation id="8227119283605456246">Atașează un fișier</translation>
 <translation id="8230672074305416752">Nu s-a putut da ping către gateway-ul de rețea prestabilit</translation>
@@ -1004,7 +995,6 @@
 <translation id="8936793075252196307">Adresa IP a clientului</translation>
 <translation id="8944651180182756621">Culoarea lansatorului</translation>
 <translation id="894617464444543719">Dispozitivul este un telefon.</translation>
-<translation id="8957423540740801332">dreapta</translation>
 <translation id="8968751544471797276">Rata de încărcare</translation>
 <translation id="8970109610781093811">Rulați din nou</translation>
 <translation id="8983038754672563810">HSPA</translation>

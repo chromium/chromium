@@ -4079,7 +4079,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4413087696295876280">Ler datos e información dos dispositivos con ChromeOS Flex</translation>
 <translation id="44141919652824029">Queres permitir que a aplicación <ph name="APP_NAME" /> acceda á lista de dispositivos USB conectados?</translation>
 <translation id="4414232939543644979">Nova ventá de &amp;incógnito</translation>
-<translation id="4414648713167199100">Usa os datos móbiles do teu Chromebook, polo que o teu operador pode aplicar cargos adicionais. Pode aumentar o uso da batería. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Xa podes comezar a utilizar o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Non se atoparon dispositivos. Abre un artigo do centro de axuda nunha nova pestana.</translation>
 <translation id="4415276339145661267">Xestionar a túa Conta de Google</translation>
@@ -6869,7 +6868,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6833479554815567477">A pestana quitouse automaticamente do grupo <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="683373380308365518">Cambiar a un navegador intelixente e seguro</translation>
 <translation id="6833996806551876956">Proba de Privacy Sandbox</translation>
-<translation id="6835712061486505758">Crea unha zona wifi para conectar outros dispositivos a Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar o teu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Erro de eliminación do certificado</translation>
 <translation id="6839916869147598086">O inicio de sesión cambiou</translation>
@@ -7040,6 +7038,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6978717888677691380">Sitios bloqueados</translation>
 <translation id="6979041727349121225">Aforro de enerxía</translation>
 <translation id="6979044105893951891">Iniciar e pechar sesións de invitado xestionadas</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Silenciar (opción predeterminada)</translation>
 <translation id="6979737339423435258">Desde sempre</translation>
 <translation id="6981553172137913845">Se queres navegar de forma privada, fai clic no menú coa icona dos puntos para abrir unha ventá do modo de incógnito</translation>
@@ -8029,6 +8028,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7807711621188256451">Permitir sempre a <ph name="HOST" /> acceder á túa cámara</translation>
 <translation id="7810202088502699111">Bloqueáronse as ventás emerxentes nesta páxina.</translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editar atallo <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Bloqueouse unha descarga perigosa</translation>
 <translation id="7817361223956157679">O teclado en pantalla aínda non está dispoñible en aplicacións de Linux</translation>
@@ -8108,7 +8108,6 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7881483672146086348">Ver conta</translation>
 <translation id="7883792253546618164">Podes cancelar a subscrición en calquera momento.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Revisar 1 sitio que enviou moitas notificacións}other{Revisar {NUM_SITES} sitios que enviaron moitas notificacións}}</translation>
-<translation id="7884446017008693258">Configuración da zona wifi</translation>
 <translation id="788453346724465748">Cargando información da conta...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{1 elemento}other{# elementos}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8636,6 +8635,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8322814362483282060">Bloqueouse o acceso desta páxina ao teu micrófono.</translation>
 <translation id="8323167517179506834">Escribe o URL</translation>
 <translation id="8323317289166663449">Ler e cambiar todos os teus datos no teu ordenador e en todos os sitios web</translation>
+<translation id="8324158725704657629">Non preguntar de novo</translation>
 <translation id="8324784016256120271">Os sitios poden utilizar cookies para ver a túa actividade de navegación en distintos sitios (por exemplo, para personalizar os anuncios)</translation>
 <translation id="8325413836429495820">Sitios que non poden consultar o portapapeis</translation>
 <translation id="8326478304147373412">PKCS n.º 7, cadea de certificados</translation>

@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">থার্ড-পার্টি কুকি কখন ব্লক করবেন সেটি বেছে নিন</translation>
 <translation id="3428747202529429621">সাইন-ইন করা অবস্থায় আপনাকে Chrome-এ নিরাপদ রাখতে এবং হয়ত অন্যান্য Google অ্যাপে নিরাপত্তা আরও ভাল করতে এই মোডটি ব্যবহার করা হয়</translation>
 <translation id="3429160811076349561">ট্রায়াল ফিচার বন্ধ করা আছে</translation>
-<translation id="3432973700170747422">শেষ ১৫ মিনিটের তথ্য মুছুন</translation>
 <translation id="3435465986463792564">অনেক উইন্ডো খোলা আছে? আপনি সেগুলি এখানে ম্যানেজ করতে পারেন</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
 <translation id="3443221991560634068">বর্তমান পৃষ্ঠাটি রিলোড করুন</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">ওয়েবে নিরাপত্তা উন্নত করতে সাহায্য করে</translation>
 <translation id="3597179440835065298">আরও ভাল পরামর্শ পাওয়া</translation>
 <translation id="3602290021589620013">প্রিভিউ</translation>
-<translation id="360901359071773787">শেষ ১৫ মিনিটের তথ্য মুছবেন?</translation>
 <translation id="3616113530831147358">অডিও</translation>
 <translation id="3622349720008044802">উইন্ডো ম্যানেজ করুন</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ ১টি সাইট}one{+ #টি সাইট}other{+ #টি সাইট}}</translation>
@@ -754,6 +752,7 @@
 <translation id="5010886807652684893">ভিজ্যুয়াল ভিউ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> এদের সঙ্গে সংযুক্ত হতে চায়</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">গত ১৫ মিনিট</translation>
 <translation id="5032430150487044192">QR কোড তৈরি করা যায়নি</translation>
 <translation id="5039804452771397117">অনুমতি দিন</translation>
 <translation id="5040262127954254034">গোপনীয়তা</translation>
@@ -932,7 +931,6 @@
 <translation id="6011308810877101166">সার্চ সাজেশন উন্নত করুন</translation>
 <translation id="6026538407078977628">'ফুল-স্ক্রিন' মোডে পরিবর্তন করুন</translation>
 <translation id="6030719887161080597">বিজ্ঞাপন সংক্রান্ত পারফর্ম্যান্স পরিমাপ করতে সাইটের মাধ্যমে ব্যবহার করা তথ্য ম্যানেজ করুন</translation>
-<translation id="6034146297924778597">শেষ ১৫ মিনিটের ইতিহাস মুছে দেওয়া হবে:</translation>
 <translation id="6039379616847168523">পরবর্তী ট্যাবে চলে যান</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="604124094241169006">স্বয়ংক্রিয়</translation>

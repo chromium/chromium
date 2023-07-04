@@ -4095,7 +4095,6 @@
 <translation id="4413087696295876280">‏קריאת נתונים ומידע ממכשיר ChromeOS Flex</translation>
 <translation id="44141919652824029">‏רוצה להעניק לאפליקציה "<ph name="APP_NAME" />" גישה לרשימת ההתקנים המחוברים ב-USB?</translation>
 <translation id="4414232939543644979">חלון &amp;אנונימי חדש</translation>
-<translation id="4414648713167199100">‏נעשה שימוש בחבילת הגלישה של Chromebook, והספק עשוי לחייב בעלויות נוספות. עשוי להיות שימוש מוגבר בסוללה. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">ה-<ph name="DEVICE_TYPE" /> שלך מוכן לשימוש.</translation>
 <translation id="4415245286584082850">לא נמצאו מכשירים. אפשר לפתוח מאמר מרכז עזרה בכרטיסייה חדשה.</translation>
 <translation id="4415276339145661267">‏ניהול חשבון Google שלך</translation>
@@ -6893,7 +6892,6 @@
 <translation id="6833479554815567477">הכרטיסייה הוסרה מהקבוצה <ph name="GROUP_NAME" /> ‏– <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">החלפה לדפדפן חכם ובטוח</translation>
 <translation id="6833996806551876956">תקופת ניסיון של ארגז חול של הגדרות פרטיות</translation>
-<translation id="6835712061486505758">‏יש אפשרות ליצור נקודת Wi-Fi לשיתוף אינטרנט כדי לספק אינטרנט למכשירים אחרים. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">יש להתחבר לאינטרנט כדי לעדכן את ה-<ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">שגיאה של מחיקת אישור</translation>
 <translation id="6839916869147598086">תהליך הכניסה השתנה</translation>
@@ -7064,6 +7062,7 @@
 <translation id="6978717888677691380">אתרים שחסמת</translation>
 <translation id="6979041727349121225">חיסכון באנרגיה</translation>
 <translation id="6979044105893951891">הפעלה של גלישות מנוהלות כאורח, ויציאה מהן</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">השתקה (ברירת מחדל)</translation>
 <translation id="6979737339423435258">משחר ההיסטוריה</translation>
 <translation id="6981553172137913845">כדי לגלוש באופן פרטי, יש ללחוץ על תפריט סמל הנקודות כדי לפתוח חלון אנונימי</translation>
@@ -8052,6 +8051,7 @@
 <translation id="7807711621188256451">התרה תמיד ל-<ph name="HOST" /> לגשת למצלמה שלך</translation>
 <translation id="7810202088502699111">חלונות קופצים נחסמו בדף זה.</translation>
 <translation id="7814458197256864873">&amp;העתקה</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">עריכת קיצור הדרך <ph name="SHORTCUT" /> עבור <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">נחסמה הורדה מסוכנת</translation>
 <translation id="7817361223956157679">‏המקלדת שמופיעה במסך לא עובדת עדיין באפליקציות Linux</translation>
@@ -8131,7 +8131,6 @@
 <translation id="7881483672146086348">הצגת חשבון</translation>
 <translation id="7883792253546618164">בכל שלב ניתן לבטל את ההרשמה.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{יש לבדוק אתר אחד ששלח הרבה התראות}one{יש לבדוק {NUM_SITES} אתרים ששלחו הרבה התראות}two{יש לבדוק {NUM_SITES} אתרים ששלחו הרבה התראות}other{יש לבדוק {NUM_SITES} אתרים ששלחו הרבה התראות}}</translation>
-<translation id="7884446017008693258">הגדרות הנקודה לשיתוף אינטרנט</translation>
 <translation id="788453346724465748">פרטי החשבון בטעינה…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{פריט}one{# פריטים}two{# פריטים}other{# פריטים}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8662,6 +8661,7 @@
 <translation id="8322814362483282060">דף זה נחסם לגישה למיקרופון שלך.</translation>
 <translation id="8323167517179506834">הקלדת כתובת אתר</translation>
 <translation id="8323317289166663449">קריאה ושינוי של כל הנתונים שלך במחשב ובכל האתרים</translation>
+<translation id="8324158725704657629">לא לשאול שוב</translation>
 <translation id="8324784016256120271">‏אתרים יכולים להשתמש בקובצי cookie כדי לראות את פעילות הגלישה שלך באתרים שונים, למשל לצורך התאמה אישית של מודעות</translation>
 <translation id="8325413836429495820">לא מורשים לראות את הלוח</translation>
 <translation id="8326478304147373412">‏PKCS #7, שרשרת אישורים</translation>

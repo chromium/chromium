@@ -446,7 +446,6 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="3421726884497337397">Üçüncü taraf çerezleri ne zaman engelleyeceğinizi seçin</translation>
 <translation id="3428747202529429621">Chrome'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarındaki güvenliğinizi artırmak için kullanılabilir</translation>
 <translation id="3429160811076349561">Deneme özellikleri kapalı</translation>
-<translation id="3432973700170747422">Son 15 dakikayı sil</translation>
 <translation id="3435465986463792564">Çok fazla pencere mi açık? Hepsini buradan yönetebilirsiniz</translation>
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="3443221991560634068">Geçerli sayfayı yeniden yükler</translation>
@@ -480,7 +479,6 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="3587596251841506391">Web'de güvenliğin iyileştirilmesine yardımcı olun</translation>
 <translation id="3597179440835065298">Daha iyi öneriler alın</translation>
 <translation id="3602290021589620013">Önizleme</translation>
-<translation id="360901359071773787">Son 15 dakika silinsin mi?</translation>
 <translation id="3616113530831147358">Ses</translation>
 <translation id="3622349720008044802">Pencereleri yönetin</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}other{+ # site}}</translation>
@@ -752,6 +750,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5010886807652684893">Görsel görünüm</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> bağlanmak istiyor</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Son 15 dakika</translation>
 <translation id="5032430150487044192">QR Kodu oluşturulamıyor</translation>
 <translation id="5039804452771397117">İzin ver</translation>
 <translation id="5040262127954254034">Gizlilik</translation>
@@ -930,7 +929,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6011308810877101166">Arama önerilerini iyileştir</translation>
 <translation id="6026538407078977628">Tam ekrana genişlet</translation>
 <translation id="6030719887161080597">Reklam performansını ölçmek için sitelerin kullandığı bilgileri yönetin</translation>
-<translation id="6034146297924778597">Son 15 dakikalık geçmiş silinecek:</translation>
 <translation id="6039379616847168523">Sonraki sekmeye gider</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="604124094241169006">Otomatik</translation>

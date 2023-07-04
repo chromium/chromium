@@ -446,7 +446,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="3421726884497337397">Piliin kung kailan iba-block ang cookies ng third-party</translation>
 <translation id="3428747202529429621">Pinapanatili kang ligtas sa Chrome at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka</translation>
 <translation id="3429160811076349561">Naka-off ang mga feature ng trial</translation>
-<translation id="3432973700170747422">I-delete ang huling 15 min</translation>
 <translation id="3435465986463792564">Maraming window? Puwede mong pamahalaan ang mga ito mula rito</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3443221991560634068">I-reload ang kasalukuyang page</translation>
@@ -480,7 +479,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="3587596251841506391">Pahusayin ang seguridad sa web</translation>
 <translation id="3597179440835065298">Makakuha ng mas magandang suhestyon</translation>
 <translation id="3602290021589620013">I-preview</translation>
-<translation id="360901359071773787">I-delete ang huling 15 minuto?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Pamahalaan ang mga window</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}one{+ # site}other{+ # na site}}</translation>
@@ -752,6 +750,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5010886807652684893">Visual view</translation>
 <translation id="5011311129201317034">Gustong kumonekta ng <ph name="SITE" /></translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Nakalipas na 15 minuto</translation>
 <translation id="5032430150487044192">Hindi magawa ang QR Code</translation>
 <translation id="5039804452771397117">Payagan</translation>
 <translation id="5040262127954254034">Privacy</translation>
@@ -930,7 +929,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="6011308810877101166">Pahusayin ang mga suhestyon sa paghahanap</translation>
 <translation id="6026538407078977628">I-expand sa full screen</translation>
 <translation id="6030719887161080597">Pamahalaan ang impormasyong ginagamit ng mga site para sukatin ang performance ng ad</translation>
-<translation id="6034146297924778597">Made-delete ang history mula sa huling 15 minuto:</translation>
 <translation id="6039379616847168523">Pumunta sa susunod na tab</translation>
 <translation id="6040143037577758943">Isara</translation>
 <translation id="604124094241169006">Awtomatiko</translation>

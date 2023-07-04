@@ -446,7 +446,6 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="3421726884497337397">Valige, millal kolmandate osapoolte küpsiseid blokeerida</translation>
 <translation id="3428747202529429621">Kaitseb teid Chrome'is ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud</translation>
 <translation id="3429160811076349561">Prooviversiooni funktsioonid on välja lülitatud</translation>
-<translation id="3432973700170747422">Kustuta viimased 15 minutit</translation>
 <translation id="3435465986463792564">Kas teil on palju aknaid? Saate neid kõiki siin hallata.</translation>
 <translation id="3435738964857648380">Turvalisus</translation>
 <translation id="3443221991560634068">Praeguse lehe uuesti laadimine</translation>
@@ -480,7 +479,6 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="3587596251841506391">Aidake veebi turvalisemaks muuta</translation>
 <translation id="3597179440835065298">Hankige paremaid soovitusi</translation>
 <translation id="3602290021589620013">Eelvaade</translation>
-<translation id="360901359071773787">Kas kustutada viimased 15 minutit?</translation>
 <translation id="3616113530831147358">Heli</translation>
 <translation id="3622349720008044802">Akende haldamine</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{ja veel üks sait}other{ja veel # saiti}}</translation>
@@ -752,6 +750,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5010886807652684893">Visuaalne vaade</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> soovib ühenduse luua</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Viimased 15 minutit</translation>
 <translation id="5032430150487044192">QR-koodi ei saa luua</translation>
 <translation id="5039804452771397117">Luba</translation>
 <translation id="5040262127954254034">Privaatsus</translation>
@@ -930,7 +929,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="6011308810877101166">Otsingusoovituste täiustamine</translation>
 <translation id="6026538407078977628">Laienda täisekraanile</translation>
 <translation id="6030719887161080597">Saate hallata teavet, mida saidid kasutavad reklaami toimivuse mõõtmiseks</translation>
-<translation id="6034146297924778597">Kustutatakse viimase 15 minuti ajalugu.</translation>
 <translation id="6039379616847168523">Järgmisele vahelehele liikumine</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="604124094241169006">Automaatne</translation>

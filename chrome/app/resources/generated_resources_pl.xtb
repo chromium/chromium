@@ -4073,7 +4073,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4413087696295876280">Odczytywanie informacji i danych z urządzenia z ChromeOS Flex</translation>
 <translation id="44141919652824029">Zezwolić aplikacji <ph name="APP_NAME" /> na odczyt listy podłączonych urządzeń USB?</translation>
 <translation id="4414232939543644979">Nowe okno &amp;incognito</translation>
-<translation id="4414648713167199100">Korzysta z mobilnej transmisji danych na Chromebooku, za którą operator może naliczyć dodatkowe opłaty. Może zwiększać wykorzystanie baterii. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Możesz już zacząć używać tego urządzenia (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="4415245286584082850">Nie znaleziono żadnego urządzenia. Otwórz artykuł w Centrum pomocy na nowej karcie.</translation>
 <translation id="4415276339145661267">Zarządzaj kontem Google</translation>
@@ -6873,7 +6872,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6833479554815567477">Karta została usunięta z grupy <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Przejdź na inteligentną i bezpieczną przeglądarkę</translation>
 <translation id="6833996806551876956">Okres próbny piaskownicy prywatności</translation>
-<translation id="6835712061486505758">Utwórz hotspot Wi-Fi, aby udostępniać internet na innych urządzeniach. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Aby zaktualizować urządzenie <ph name="DEVICE_TYPE" />, połącz się z internetem.</translation>
 <translation id="6839225236531462745">Błąd usuwania certyfikatu</translation>
 <translation id="6839916869147598086">Logowanie wygląda teraz inaczej</translation>
@@ -7042,6 +7040,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6978717888677691380">Zablokowane witryny</translation>
 <translation id="6979041727349121225">Oszczędzanie energii</translation>
 <translation id="6979044105893951891">Rozpoczynanie i kończenie zarządzanych sesji gościa</translation>
+<translation id="6979158407327259162">Dysk Google</translation>
 <translation id="6979440798594660689">Wycisz (domyślnie)</translation>
 <translation id="6979737339423435258">Od początku</translation>
 <translation id="6981553172137913845">Aby przeglądać prywatnie, kliknij ikonę menu z kropkami i otwórz okno incognito</translation>
@@ -8031,6 +8030,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7807711621188256451">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do kamery</translation>
 <translation id="7810202088502699111">Wyskakujące okienka na tej stronie zostały zablokowane.</translation>
 <translation id="7814458197256864873">&amp;Kopiuj</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Edytuj skrót <ph name="SHORTCUT" /> dotyczący rozszerzenia <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Zablokowano niebezpieczne pobieranie</translation>
 <translation id="7817361223956157679">W aplikacjach na Linuksa klawiatura ekranowa jeszcze nie działa</translation>
@@ -8110,7 +8110,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7881483672146086348">Wyświetl konto</translation>
 <translation id="7883792253546618164">W dowolnej chwili możesz zrezygnować z subskrypcji.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Sprawdź 1 witrynę, która wysłała wiele powiadomień}few{Sprawdź {NUM_SITES} witryny, które wysłały wiele powiadomień}many{Sprawdź {NUM_SITES} witryn, które wysłały wiele powiadomień}other{Sprawdź {NUM_SITES} witryny, które wysłały wiele powiadomień}}</translation>
-<translation id="7884446017008693258">Ustawienia hotspota</translation>
 <translation id="788453346724465748">Ładuję informacje o koncie…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{element}few{# elementy}many{# elementów}other{# elementu}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8639,6 +8638,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8322814362483282060">Ta strona ma zablokowany dostęp do mikrofonu.</translation>
 <translation id="8323167517179506834">Wpisz URL</translation>
 <translation id="8323317289166663449">Odczytywanie i zmienianie wszystkich Twoich danych na komputerze i we wszystkich witrynach</translation>
+<translation id="8324158725704657629">Nie pytaj ponownie</translation>
 <translation id="8324784016256120271">Strony mogą używać plików cookie do śledzenia Twojej aktywność związanej z przeglądaniem różnych stron, na przykład w celu personalizowania reklam</translation>
 <translation id="8325413836429495820">Nie zezwolono na wyświetlanie schowka</translation>
 <translation id="8326478304147373412">PKCS #7, łańcuch certyfikatów</translation>

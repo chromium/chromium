@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">மூன்றாம் தரப்புக் குக்கீகளை எப்போது தடுக்க வேண்டும் என்பதைத் தேர்வுசெய்யவும்</translation>
 <translation id="3428747202529429621">Chromeமைப் பயன்படுத்தும்போது இது பாதுகாப்பை வழங்கும், அத்துடன் நீங்கள் பிற Google ஆப்ஸில் உள்நுழைந்திருக்கும்போது உங்கள் பாதுகாப்பை மேம்படுத்துவதற்காக இதைப் பயன்படுத்தலாம்</translation>
 <translation id="3429160811076349561">சோதனையிலுள்ள அம்சங்கள் முடக்கப்பட்டுள்ளன</translation>
-<translation id="3432973700170747422">கடந்த 15 நிமிட விவரங்களை நீக்கு</translation>
 <translation id="3435465986463792564">பல சாளரங்கள் உள்ளனவா? இங்கிருந்தே அவற்றை நிர்வகிக்கலாம்</translation>
 <translation id="3435738964857648380">பாதுகாப்பு</translation>
 <translation id="3443221991560634068">தற்போதைய பக்கத்தை மீண்டும் ஏற்றும்</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">இணையத்தில் பாதுகாப்பை மேம்படுத்த உதவுங்கள்</translation>
 <translation id="3597179440835065298">சிறந்த பரிந்துரைகளைப் பெறுங்கள்</translation>
 <translation id="3602290021589620013">மாதிரிக்காட்சி</translation>
-<translation id="360901359071773787">கடந்த 15 நிமிட உலாவல் தரவை நீக்கவா?</translation>
 <translation id="3616113530831147358">ஆடியோ</translation>
 <translation id="3622349720008044802">சாளரங்களை நிர்வகித்தல்</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 தளம்}other{+ # தளங்கள்}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">விஷுவல் காட்சி</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> இணைய விரும்புகிறது</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">கடந்த 15 நிமிடங்கள்</translation>
 <translation id="5032430150487044192">QR குறியீட்டை உருவாக்க முடியவில்லை</translation>
 <translation id="5039804452771397117">அனுமதி</translation>
 <translation id="5040262127954254034">தனியுரிமை</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">தேடல் பரிந்துரைகளை மேம்படுத்து</translation>
 <translation id="6026538407078977628">முழுத்திரைக்கு மாறும்</translation>
 <translation id="6030719887161080597">விளம்பரச் செயல்திறனை அளவிட தளங்களால் பயன்படுத்தப்பட்ட தகவலை நிர்வகிக்கலாம்</translation>
-<translation id="6034146297924778597">கடந்த 15 நிமிடத்தில் பார்த்தவை நீக்கப்படும்:</translation>
 <translation id="6039379616847168523">அடுத்த தாவலுக்குச் செல்லும்</translation>
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="604124094241169006">தானியங்கு</translation>

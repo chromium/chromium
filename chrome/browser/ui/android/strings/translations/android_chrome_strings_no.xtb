@@ -446,7 +446,6 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="3421726884497337397">Velg når informasjonskapsler fra tredjeparter skal blokkeres</translation>
 <translation id="3428747202529429621">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget</translation>
 <translation id="3429160811076349561">Prøvefunksjoner er avslått</translation>
-<translation id="3432973700170747422">Slett de siste 15 minuttene</translation>
 <translation id="3435465986463792564">Har du mange vinduer? Du kan administrere dem her</translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="3443221991560634068">Last inn den aktive siden på nytt</translation>
@@ -480,7 +479,6 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="3587596251841506391">Bidra til å gjøre nettet sikrere</translation>
 <translation id="3597179440835065298">Få bedre forslag</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
-<translation id="360901359071773787">Vil du slette de siste 15 minuttene?</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3622349720008044802">Administrer vinduer</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 nettsted}other{+ # nettsteder}}</translation>
@@ -752,6 +750,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5010886807652684893">Visuell visning</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> vil koble til</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">De siste 15 minuttene</translation>
 <translation id="5032430150487044192">Kan ikke opprette QR-kode</translation>
 <translation id="5039804452771397117">Tillat</translation>
 <translation id="5040262127954254034">Personvern</translation>
@@ -930,7 +929,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="6011308810877101166">Gjør søkeforslagene bedre</translation>
 <translation id="6026538407078977628">Utvid til fullskjerm</translation>
 <translation id="6030719887161080597">Administrer informasjon som nettsteder bruker til å måle annonseresultater</translation>
-<translation id="6034146297924778597">Loggen fra de siste 15 minuttene blir slettet:</translation>
 <translation id="6039379616847168523">Gå til den neste fanen</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="604124094241169006">Automatisk</translation>

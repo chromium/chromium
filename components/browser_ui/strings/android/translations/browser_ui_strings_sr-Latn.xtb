@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">Obriši podatke i resetuj dozvole</translation>
 <translation id="6527303717912515753">Deli</translation>
 <translation id="6545864417968258051">Bluetooth skeniranje</translation>
-<translation id="6552691050538553146">Još opcija <ph name="BANNER_TITLE" /></translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Poslednja poseta: pre <ph name="NUM_DAYS" /> dana</translation>
 <translation id="6561560012278703671">Koristite nenametljivu razmenu poruka (sprečava upite sa obaveštenjima da vas ometaju)</translation>

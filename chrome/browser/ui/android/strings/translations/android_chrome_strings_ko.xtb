@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">타사 쿠키를 차단하는 경우 선택</translation>
 <translation id="3428747202529429621">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 개선하는 데 사용될 수 있습니다.</translation>
 <translation id="3429160811076349561">무료 체험 기능 사용 안함</translation>
-<translation id="3432973700170747422">지난 15분 데이터 삭제</translation>
 <translation id="3435465986463792564">창이 많이 열렸나요? 여기에서 관리할 수 있습니다.</translation>
 <translation id="3435738964857648380">보안</translation>
 <translation id="3443221991560634068">현재 페이지 새로고침</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">웹 보안 개선에 참여</translation>
 <translation id="3597179440835065298">추천 기능 개선하기</translation>
 <translation id="3602290021589620013">미리보기</translation>
-<translation id="360901359071773787">지난 15분 동안의 데이터를 삭제하시겠습니까?</translation>
 <translation id="3616113530831147358">오디오</translation>
 <translation id="3622349720008044802">창 관리</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{외 사이트 1개}other{외 사이트 #개}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">시각 뷰</translation>
 <translation id="5011311129201317034"><ph name="SITE" />에서 연결하려고 함</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">최근 15분</translation>
 <translation id="5032430150487044192">QR 코드를 만들 수 없음</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5040262127954254034">개인정보 보호</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">추천 검색어 개선</translation>
 <translation id="6026538407078977628">전체 화면으로 확장</translation>
 <translation id="6030719887161080597">사이트에서 광고 실적을 측정하는 데 사용하는 정보를 관리합니다.</translation>
-<translation id="6034146297924778597">지난 15분 동안의 다음 기록이 삭제됩니다.</translation>
 <translation id="6039379616847168523">다음 탭으로 이동</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="604124094241169006">자동</translation>

@@ -204,7 +204,6 @@
 <translation id="2491955442992294626">Keys aren't tested when you're using another window</translation>
 <translation id="2493126929778606526">Your best photos, selected automatically</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2498950423397131220">Float</translation>
 <translation id="2505327257735685095">Refresh the current wallpaper image</translation>
 <translation id="2512979179176933762">show windows</translation>
 <translation id="2513396635448525189">Login image</translation>
@@ -328,7 +327,6 @@
 <translation id="3607216139080387279">Show screensaver</translation>
 <translation id="361575905210396100">Thanks for your feedback</translation>
 <translation id="3632579075709132555">Privacy screen toggle</translation>
-<translation id="3639846061339007994">top</translation>
 <translation id="3651050199673793219">Select a temperature unit</translation>
 <translation id="3663574643422533538">Select <ph name="PRODUCT_NAME" /> exclusive artwork</translation>
 <translation id="3668449597372804501">Cloud flow wallpaper</translation>
@@ -411,7 +409,6 @@
 <translation id="4289849978083912975">Slideshow</translation>
 <translation id="4297501883039923494">Stopped – unknown error</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
-<translation id="4311195029067684288">Full</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> key pressed</translation>
 <translation id="435692326371619097">Manage network APN settings. APNs establish a connection between a mobile network and the Internet. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Reset all shortcuts</translation>
@@ -501,7 +498,6 @@
 <translation id="4930320165497208503">To set up or update a connection, go to <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" /> has been updated to version <ph name="VERSION" /></translation>
-<translation id="4971925105143343452">Partial</translation>
 <translation id="4972592110715526173">mode change</translation>
 <translation id="498186245079027698">Check the scanner and try again. Make sure that there is enough local space to save scanned files.</translation>
 <translation id="4985509611418653372">Run</translation>
@@ -655,7 +651,6 @@
 <translation id="6191293864534840972">Malformed name servers</translation>
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
-<translation id="6223066887782788441">Exit full</translation>
 <translation id="6223752125779001553">No scanners available</translation>
 <translation id="6232017090690406397">Battery</translation>
 <translation id="6235460611964961764">Manually reset data usage</translation>
@@ -814,7 +809,6 @@
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7487067081878637334">Technology</translation>
 <translation id="7490813197707563893">MAC address</translation>
-<translation id="7491478667760509108">Exit float</translation>
 <translation id="7497215489070763236">Server CA certificate</translation>
 <translation id="7501957181231305652">or</translation>
 <translation id="7502658306369382406">IPv6 address</translation>
@@ -834,7 +828,6 @@
 <translation id="763165478673169849">Last reset time</translation>
 <translation id="7633068090678117093">Background image</translation>
 <translation id="7648838807254605802">High HTTPS latency</translation>
-<translation id="765159867434478292">Split</translation>
 <translation id="7656388927906093505">Device is a mouse.</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7665800271478495366">Change avatar</translation>
@@ -865,7 +858,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Provider type</translation>
 <translation id="7882501334836096755">Public key</translation>
-<translation id="78957024357676568">left</translation>
 <translation id="7915220255123750251">Manage network APN settings. APNs establish a connection between a mobile network and the Internet.</translation>
 <translation id="7936303884198020182">No name servers found</translation>
 <translation id="7942349550061667556">Red</translation>
@@ -903,7 +895,6 @@
 <translation id="8183974620058026102">Attach</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Perks</translation>
-<translation id="8210733748736414123">bottom</translation>
 <translation id="8226628635270268143">Choose your favourite photos and albums</translation>
 <translation id="8227119283605456246">Attach file</translation>
 <translation id="8230672074305416752">Failed to ping the default network gateway</translation>
@@ -1004,7 +995,6 @@
 <translation id="8936793075252196307">Client IP address</translation>
 <translation id="8944651180182756621">Launcher colour</translation>
 <translation id="894617464444543719">Device is a phone.</translation>
-<translation id="8957423540740801332">right</translation>
 <translation id="8968751544471797276">Charging rate</translation>
 <translation id="8970109610781093811">Run again</translation>
 <translation id="8983038754672563810">HSPA</translation>

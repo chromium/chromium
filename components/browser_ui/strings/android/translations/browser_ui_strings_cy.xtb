@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">Clirio data ac ailosod caniatadau</translation>
 <translation id="6527303717912515753">Rhannu</translation>
 <translation id="6545864417968258051">Sganio Bluetooth</translation>
-<translation id="6552691050538553146">Rhagor o ddewisiadau yn <ph name="BANNER_TITLE" /></translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ac <ph name="NUM_MORE" /> arall wedi'u rhwystro}zero{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}two{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}few{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}many{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}other{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}}</translation>
 <translation id="6554732001434021288">Ymwelwyd ddiwethaf <ph name="NUM_DAYS" /> o ddiwrnodau yn ôl</translation>
 <translation id="6561560012278703671">Defnyddiwch negeseuon tawelach (mae'n rhwystro anogwyr hysbysiadau rhag torri ar eich traws)</translation>

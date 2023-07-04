@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">ပြင်ပကုမ္ပဏီကွတ်ကီးများကို ပိတ်ဆို့ရမည့်အချိန် ရွေးခြင်း</translation>
 <translation id="3428747202529429621">Chrome တွင် ဘေးကင်းစေပြီး သင်လက်မှတ်ထိုးဝင်သည့်အခါ အခြား Google အက်ပ်များတွင် သင့်လုံခြုံရေး ပိုကောင်းမွန်စေရန် အသုံးပြုနိုင်သည်</translation>
 <translation id="3429160811076349561">အစမ်းသုံးလုပ်ဆောင်ချက်များကို ပိတ်ထားသည်</translation>
-<translation id="3432973700170747422">နောက်ဆုံး ၁၅ မိနစ် ဖျက်ရန်</translation>
 <translation id="3435465986463792564">ဝင်းဒိုးများ ရပြီလား။ ၎င်းတို့ကို ဤနေရာမှ စီမံနိုင်ပါသည်</translation>
 <translation id="3435738964857648380">လုံခြုံရေး</translation>
 <translation id="3443221991560634068">လက်ရှိစာမျက်နှာကို ပြန်ဖွင့်ရန်</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">ဝဘ်တွင် လုံခြုံရေးကောင်းအောင် ကူညီပါ</translation>
 <translation id="3597179440835065298">ပိုကောင်းသည့် အကြံပြုချက်ရယူပါ</translation>
 <translation id="3602290021589620013">ကြိုကြည့်ရန်</translation>
-<translation id="360901359071773787">ပြီးခဲ့သော ၁၅ မိနစ်စာ ဖျက်မလား။</translation>
 <translation id="3616113530831147358">အသံ</translation>
 <translation id="3622349720008044802">ဝင်းဒိုးများ စီမံပါ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{ဝဘ်ဆိုက် + ၁ ခု}other{ဝဘ်ဆိုက် + # ခု}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">ရုပ်မြင်ပြသခြင်း</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> သည် ချိတ်ဆက်လိုပါသည်</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">ပြီးခဲ့သော ၁၅ မိနစ်</translation>
 <translation id="5032430150487044192">QR ကုဒ် ပြုလုပ်၍မရပါ</translation>
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
 <translation id="5040262127954254034">ကိုယ်ရေးအချက်အလက်လုံခြုံမှု</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">ရှာဖွေမှု အကြံပြုချက်များ မွမ်းမံရန်</translation>
 <translation id="6026538407078977628">ဖန်သားပြင်အပြည့် ချဲ့ရန်</translation>
 <translation id="6030719887161080597">ကြော်ငြာစွမ်းဆောင်ရည်ကို တိုင်းတာရန်အတွက် ဝဘ်ဆိုက်များမှ သုံးသော အချက်အလက်ကို စီမံရန်</translation>
-<translation id="6034146297924778597">ပြီးခဲ့သော ၁၅ မိနစ်မှ မှတ်တမ်းကို ဖျက်မည်-</translation>
 <translation id="6039379616847168523">နောက်တဘ်သို့ သွားရန်</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="604124094241169006">အလိုအလျောက်</translation>

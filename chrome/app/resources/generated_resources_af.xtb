@@ -4095,7 +4095,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4413087696295876280">Lees ChromeOS Flex-toestelinligting en -data</translation>
 <translation id="44141919652824029">Laat "<ph name="APP_NAME" />" toe om die lys van jou aangehegte USB-toestelle te kry?</translation>
 <translation id="4414232939543644979">Nuwe incognito-venster</translation>
-<translation id="4414648713167199100">Gebruik jou Chromebook se mobiele data. Jou diensverskaffer kan bykomende fooie hef. Kan batterygebruik verhoog. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Jy is gereed om jou <ph name="DEVICE_TYPE" /> te begin gebruik.</translation>
 <translation id="4415245286584082850">Geen toestelle gekry nie. Maak 'n hulpsentrumartikel in 'n nuwe oortjie oop.</translation>
 <translation id="4415276339145661267">Bestuur jou Google-rekening</translation>
@@ -6890,7 +6889,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6833479554815567477">Oortjie is verwyder uit groep <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Wissel na 'n slim en veilige blaaier</translation>
 <translation id="6833996806551876956">Privaatheidsandputproeflopie</translation>
-<translation id="6835712061486505758">Skep ’n wi-fi-warmkol om internet aan ander dienste te verskaf. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Koppel aan die internet om jou <ph name="DEVICE_TYPE" /> op te dateer.</translation>
 <translation id="6839225236531462745">Sertifikaat-uitveefout</translation>
 <translation id="6839916869147598086">Aanmelding het verander</translation>
@@ -7061,6 +7059,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6978717888677691380">Werwe wat jy geblokkeer het</translation>
 <translation id="6979041727349121225">Energiebespaarder</translation>
 <translation id="6979044105893951891">Begin en verlaat bestuurde gastesessies</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Demp (verstek)</translation>
 <translation id="6979737339423435258">Van die begin af</translation>
 <translation id="6981553172137913845">Klik die kolle-ikoonkieslys om 'n Incognito-venster oop te maak as jy privaat wil blaai</translation>
@@ -8050,6 +8049,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7807711621188256451">Laat <ph name="HOST" /> altyd toe om by jou kamera in te gaan</translation>
 <translation id="7810202088502699111">Opspringers is op hierdie bladsy geblokkeer.</translation>
 <translation id="7814458197256864873">Kopieer</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Wysig kortpad <ph name="SHORTCUT" /> vir <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Gevaarlike aflaai is geblokkeer</translation>
 <translation id="7817361223956157679">Die skermsleutelbord werk nog nie in Linux-programme nie</translation>
@@ -8129,7 +8129,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7881483672146086348">Bekyk rekening</translation>
 <translation id="7883792253546618164">Teken enige tyd uit.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Gaan 1 werf na wat baie kennisgewings gestuur het}other{Gaan {NUM_SITES} werwe na wat baie kennisgewings gestuur het}}</translation>
-<translation id="7884446017008693258">Warmkolinstellings</translation>
 <translation id="788453346724465748">Laai tans rekeninginligting …</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{'n item}other{# items}}</translation>
 <translation id="7886605625338676841">e-SIM</translation>
@@ -8657,6 +8656,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8322814362483282060">Hierdie bladsy word geblokkeer om by jou mikrofoon in te gaan.</translation>
 <translation id="8323167517179506834">Tik URL</translation>
 <translation id="8323317289166663449">Lees en verander al jou data op jou rekenaar en alle webwerwe</translation>
+<translation id="8324158725704657629">Moenie weer vra nie</translation>
 <translation id="8324784016256120271">Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien, byvoorbeeld, om advertensies te personaliseer</translation>
 <translation id="8325413836429495820">Mag nie jou knipbord sien nie</translation>
 <translation id="8326478304147373412">PKCS # 7, sertifikaatketting</translation>

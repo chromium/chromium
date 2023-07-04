@@ -446,7 +446,6 @@ Private State Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="3421726884497337397">Lege fest, wann Drittanbieter-Cookies blockiert werden sollen</translation>
 <translation id="3428747202529429621">Schützt dich in Chrome und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn du angemeldet bist</translation>
 <translation id="3429160811076349561">Testfunktionen sind deaktiviert</translation>
-<translation id="3432973700170747422">Letzte 15 Minuten löschen</translation>
 <translation id="3435465986463792564">Du verwendest viele Fenster? Du kannst sie hier verwalten.</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
 <translation id="3443221991560634068">Aktuelle Seite neu laden</translation>
@@ -480,7 +479,6 @@ Private State Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="3587596251841506391">Dabei helfen, das Web sicherer zu machen</translation>
 <translation id="3597179440835065298">Bessere Vorschläge erhalten</translation>
 <translation id="3602290021589620013">Vorschau</translation>
-<translation id="360901359071773787">Letzte 15 Minuten löschen?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Fenster verwalten</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{und 1 weitere Website}other{und # weitere Websites}}</translation>
@@ -752,6 +750,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5010886807652684893">Visuelle Ansicht</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> möchte eine Verbindung herstellen</translation>
 <translation id="5016205925109358554">Serifenschrift</translation>
+<translation id="5017529052065664584">Letzte 15 Minuten</translation>
 <translation id="5032430150487044192">QR-Code konnte nicht erstellt werden</translation>
 <translation id="5039804452771397117">Zulassen</translation>
 <translation id="5040262127954254034">Datenschutz</translation>
@@ -930,7 +929,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="6011308810877101166">Suchvorschläge verbessern</translation>
 <translation id="6026538407078977628">Auf Vollbild maximieren</translation>
 <translation id="6030719887161080597">Informationen verwalten, die von Websites zur Messung der Anzeigenleistung verwendet werden</translation>
-<translation id="6034146297924778597">Der Verlauf der letzten 15 Minuten wird gelöscht:</translation>
 <translation id="6039379616847168523">Zum nächsten Tab wechseln</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="604124094241169006">Automatisch</translation>

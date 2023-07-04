@@ -4101,7 +4101,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4413087696295876280">Đọc dữ liệu và thông tin thiết bị ChromeOS Flex</translation>
 <translation id="44141919652824029">Cho phép "<ph name="APP_NAME" />" nhận danh sách các thiết bị USB đính kèm?</translation>
 <translation id="4414232939543644979">Cửa sổ ẩn &amp;danh mới</translation>
-<translation id="4414648713167199100">Sử dụng dữ liệu di động của Chromebook và nhà mạng của bạn có thể tính thêm phí. Có thể làm tăng mức sử dụng pin. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Bạn đã có thể bắt đầu sử dụng <ph name="DEVICE_TYPE" /> của mình.</translation>
 <translation id="4415245286584082850">Không tìm thấy thiết bị nào. Hãy mở một bài viết trong trung tâm trợ giúp trên một thẻ mới.</translation>
 <translation id="4415276339145661267">Quản lý Tài khoản Google của bạn</translation>
@@ -6899,7 +6898,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6833479554815567477">Đã di chuyển thẻ khỏi nhóm <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Chuyển sang trình duyệt an toàn và thông minh</translation>
 <translation id="6833996806551876956">Dùng thử hộp cát bảo vệ quyền riêng tư</translation>
-<translation id="6835712061486505758">Tạo điểm phát sóng Wi-Fi để cung cấp kết nối Internet cho các thiết bị khác. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Vui lòng kết nối Internet để cập nhật <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="6839225236531462745">Lỗi xóa chứng chỉ</translation>
 <translation id="6839916869147598086">Quy trình đăng nhập đã thay đổi</translation>
@@ -7070,6 +7068,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6978717888677691380">Các trang web bạn đã chặn</translation>
 <translation id="6979041727349121225">Trình tiết kiệm pin</translation>
 <translation id="6979044105893951891">Chạy và thoát khỏi các phiên khách được quản lý</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Tắt tiếng (mặc định)</translation>
 <translation id="6979737339423435258">Từ trước đến nay</translation>
 <translation id="6981553172137913845">Để duyệt web ở chế độ riêng tư, hãy nhấp vào trình đơn có biểu tượng ba dấu chấm để mở một cửa sổ Ẩn danh</translation>
@@ -8060,6 +8059,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7807711621188256451">Luôn cho phép <ph name="HOST" /> truy cập máy ảnh của bạn</translation>
 <translation id="7810202088502699111">Cửa sổ bật lên đã bị chặn trên trang này.</translation>
 <translation id="7814458197256864873">Sao &amp;chép</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Chỉnh sửa lối tắt <ph name="SHORTCUT" /> cho <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Tải xuống nguy hiểm đã chặn</translation>
 <translation id="7817361223956157679">Bàn phím ảo chưa hoạt động trên các ứng dụng Linux</translation>
@@ -8139,7 +8139,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7881483672146086348">Xem tài khoản</translation>
 <translation id="7883792253546618164">Bạn có thể hủy đăng ký bất kỳ lúc nào.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Xem xét 1 trang web đã gửi nhiều thông báo}other{Xem xét {NUM_SITES} trang web đã gửi nhiều thông báo}}</translation>
-<translation id="7884446017008693258">Cài đặt điểm phát sóng</translation>
 <translation id="788453346724465748">Đang tải thông tin tài khoản...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{một mục}other{# mục}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8668,6 +8667,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8322814362483282060">Trang này đã bị chặn truy cập micrô của bạn.</translation>
 <translation id="8323167517179506834">Nhập URL</translation>
 <translation id="8323317289166663449">Đọc và thay đổi tất cả dữ liệu trên mọi trang web và trên máy tính của bạn</translation>
+<translation id="8324158725704657629">Không hỏi lại</translation>
 <translation id="8324784016256120271">Các trang web có thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn để điều chỉnh quảng cáo cho phù hợp với bạn</translation>
 <translation id="8325413836429495820">Không được phép xem bảng nhớ tạm của bạn</translation>
 <translation id="8326478304147373412">PKCS #7, chuỗi chứng chỉ</translation>

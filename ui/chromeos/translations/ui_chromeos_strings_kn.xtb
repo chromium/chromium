@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">ಫೈಲ್ ಅಥವಾ ಡೈರೆಕ್ಟರಿ ಬಳಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="1363028406613469049">ಟ್ರ್ಯಾಕ್</translation>
 <translation id="1378727793141957596">Google ಡ್ರೈವ್‌ಗೆ ಸುಸ್ವಾಗತ!</translation>
-<translation id="1379156577998569384">ನಿಮ್ಮ ನನ್ನ ಡ್ರೈವ್ ಫೈಲ್‌ಗಳು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿವೆ</translation>
 <translation id="1379911846207762492">ನಿಮ್ಮ ಬಳಿ ಇಂಟರ್ನೆಟ್ ಕನೆಕ್ಷನ್ ಇಲ್ಲದಿದ್ದಾಗ, ಪ್ರವೇಶಕ್ಕಾಗಿ ಫೈಲ್‌ಗಳನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಾಗುವಂತೆ ನೀವು ಮಾಡಬಹುದು.</translation>
 <translation id="1383876407941801731">ಹುಡುಕಿ</translation>
 <translation id="1388045380422025115">ಎಲ್ಲಾ ಪ್ರಕಾರಗಳು</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">ಸಾಧನ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="2084809735218147718">ಧನ್ಯವಾದಗಳು ಎಂದು ಹಸ್ತಾಕ್ಷರ ಮಾಡುತ್ತಿರುವ ವ್ಯಕ್ತಿ</translation>
 <translation id="2088690981887365033">VPN ನೆಟ್‌ವರ್ಕ್</translation>
-<translation id="2089751716171649322">ನೀವು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಾಗ ನಿಮ್ಮ Google Drive ಫೈಲ್‌ಗಳನ್ನು ಸುಲಭವಾಗಿ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಿ</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಅನುಮತಿಸಿ<ph name="END_BOLD" /> ಎಂಬುದನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ಅವುಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="2122305276694332719">ಮರೆ ಮಾಡಿರುವ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸಂಪರ್ಕಗೊಳ್ಳುವುದರಿಂದ ಇತರರು ನಿಮ್ಮ ಸಾಧನ ಮತ್ತು ಕೆಲವು ನೆಟ್‌ವರ್ಕ್‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೋಡಲು ಅನುಮತಿಸುತ್ತದೆ, ಆದ್ದರಿಂದ ಇದನ್ನು ಬಳಸಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ.</translation>
@@ -580,12 +578,10 @@
 <translation id="5494920125229734069">ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="5500122897333236901">ಐಸ್‌ಲ್ಯಾಂಡಿಕ್</translation>
 <translation id="5508696409934741614">ಚುಕ್ಕೆಗಳು</translation>
-<translation id="5519161320735100193">Google Drive ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5522908512596376669">ಫೈಲ್ ಪಟ್ಟಿಯನ್ನು, ಪಟ್ಟಿ ವೀಕ್ಷಣೆಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
 <translation id="5524517123096967210">ಫೈಲ್ ಅನ್ನು ಓದಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ಚಿತ್ರ</translation>
 <translation id="5534520101572674276">ಗಾತ್ರವನ್ನು ಲೆಕ್ಕಹಾಕಲಾಗುತ್ತಿದೆ</translation>
-<translation id="5536122250858122375">ಈ ಫೈಲ್ ಪ್ರಕಾರವನ್ನು ಸಿಂಕ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="554153475311314364">ಗ್ರೀಕ್ ಲಿಪ್ಯಂತರಣ</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5580591966435005537">ವರ್ಚುವಲ್ ಮಷೀನ್</translation>
@@ -744,7 +740,6 @@
 <translation id="6874758081814639712">ತೈ ಚಿ ಮಾಡುತ್ತಿರುವ ವ್ಯಕ್ತಿ</translation>
 <translation id="6876155724392614295">ಬೈಕ್</translation>
 <translation id="6878261347041253038">ದೇವನಾಗರಿ ಕೀಬೋರ್ಡ್ (ಫೋನೆಟಿಕ್)</translation>
-<translation id="6882444584974399416">ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಾಗಿಸಲು ನಿಮ್ಮ ಸಾಧನ ಸಾಕಷ್ಟು ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳವನ್ನು ಹೊಂದಿಲ್ಲ. ಹೊಸ ಫೈಲ್‌ಗಳು ಇನ್ನು ಮುಂದೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸಿಂಕ್ ಆಗುವುದಿಲ್ಲ.</translation>
 <translation id="6885780034956018177">ಬಸವನ ಹುಳು</translation>
 <translation id="6896758677409633944">ನಕಲಿಸು</translation>
 <translation id="6898028766943174120">ಇನ್ನಷ್ಟು ಸಬ್-ಫೋಲ್ಡರ್‌ಗಳು...</translation>
@@ -981,7 +976,6 @@
 <translation id="8560515948038859357">ಕ್ಯಾಂಟೋನೀಸ್</translation>
 <translation id="8561206103590473338">ಆನೆ</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್,<ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
-<translation id="8567555211227790801">ನೀವು ಪ್ರಸ್ತುತ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಿರಿ. ನೀವು ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಆದಾಗ ಸಿಂಕ್ ಮಾಡುವಿಕೆ ಪುನರಾರಂಭಗೊಳ್ಳುತ್ತದೆ.</translation>
 <translation id="8568374623837201676">ಈ ಫೈಲ್ ಅನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಬೇಕೆ?</translation>
 <translation id="8569764466147087991">ತೆರೆಯಲು ಫೈಲ್‌ವೊಂದನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="8577897833047451336">ಕ್ರೋಯೇಶಿಯನ್</translation>

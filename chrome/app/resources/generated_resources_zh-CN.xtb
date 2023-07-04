@@ -4065,7 +4065,6 @@
 <translation id="4413087696295876280">读取 ChromeOS Flex 设备的相关信息和数据</translation>
 <translation id="44141919652824029">允许“<ph name="APP_NAME" />”获取您所连接的 USB 设备的列表？</translation>
 <translation id="4414232939543644979">打开新的无痕窗口(&amp;I)</translation>
-<translation id="4414648713167199100">热点会使用您 Chromebook 的移动流量，所以您的运营商可能会收取额外费用。另外，热点可能会增加耗电量。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">您现在可以开始使用 <ph name="DEVICE_TYPE" /> 了。</translation>
 <translation id="4415245286584082850">找不到设备。请在新的标签页中打开帮助中心文章。</translation>
 <translation id="4415276339145661267">管理您的 Google 帐号</translation>
@@ -6845,7 +6844,6 @@
 <translation id="6833479554815567477">此标签页已从“<ph name="GROUP_NAME" />”组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">改用智能且安全的浏览器</translation>
 <translation id="6833996806551876956">隐私沙盒试用</translation>
-<translation id="6835712061486505758">创建 WLAN 热点，以便向其他设备提供互联网连接。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">请连接到互联网，以便更新您的<ph name="DEVICE_TYPE" />。</translation>
 <translation id="6839225236531462745">证书删除错误</translation>
 <translation id="6839916869147598086">登录发生变化</translation>
@@ -7016,6 +7014,7 @@
 <translation id="6978717888677691380">您已屏蔽的网站</translation>
 <translation id="6979041727349121225">节能模式</translation>
 <translation id="6979044105893951891">启动和退出受管理访客会话</translation>
+<translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6979440798594660689">静音（默认）</translation>
 <translation id="6979737339423435258">时间不限</translation>
 <translation id="6981553172137913845">若要私密地浏览网页，请点击三点状图标菜单以打开一个无痕式窗口</translation>
@@ -8001,6 +8000,7 @@
 <translation id="7807711621188256451">始终允许 <ph name="HOST" /> 使用您的摄像头</translation>
 <translation id="7810202088502699111">已拦截此网页上的弹出式窗口。</translation>
 <translation id="7814458197256864873">复制(&amp;C)</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">修改“<ph name="EXTENSION_NAME" />”的快捷方式 <ph name="SHORTCUT" /></translation>
 <translation id="7815680994978050279">已屏蔽危险的下载内容</translation>
 <translation id="7817361223956157679">Linux 应用目前不支持屏幕键盘</translation>
@@ -8080,7 +8080,6 @@
 <translation id="7881483672146086348">查看帐号</translation>
 <translation id="7883792253546618164">可随时退订。</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{查看 1 个发送了很多通知的网站}other{查看 {NUM_SITES} 个发送了很多通知的网站}}</translation>
-<translation id="7884446017008693258">热点设置</translation>
 <translation id="788453346724465748">正在加载帐号信息…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{1 项内容}other{# 项内容}}</translation>
 <translation id="7886605625338676841">eSIM 卡</translation>
@@ -8606,6 +8605,7 @@
 <translation id="8322814362483282060">系统已阻止此网页使用您的麦克风。</translation>
 <translation id="8323167517179506834">输入网址</translation>
 <translation id="8323317289166663449">读取和更改您在自己的计算机上以及在所有网站上的所有数据</translation>
+<translation id="8324158725704657629">别再询问</translation>
 <translation id="8324784016256120271">网站可以使用 Cookie 查看您在各个不同网站上的浏览活动，以便实现某些功能或目的（例如为您展示个性化广告）</translation>
 <translation id="8325413836429495820">不允许查看您的剪贴板</translation>
 <translation id="8326478304147373412">PKCS #7，证书链</translation>

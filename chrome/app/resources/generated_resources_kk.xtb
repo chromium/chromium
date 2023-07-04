@@ -4077,7 +4077,6 @@
 <translation id="4413087696295876280">ChromeOS Flex құрылғысы туралы ақпарат пен деректерді оқу</translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" қолданбасына тіркелген USB құрылғыларыңыздың тізімін алуға рұқсат берілсін бе?</translation>
 <translation id="4414232939543644979">Жаңа &amp;инкогнито терезесі</translation>
-<translation id="4414648713167199100">Chromebook-тің мобильдік интернетін пайдаланады және операторыңыз қосымша ақы алуы мүмкін. Батарея шығынын арттыруы мүмкін. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> құрылғысын пайдалануды бастай беруіңізге болады.</translation>
 <translation id="4415245286584082850">Ешқандай құрылғы табылмады. Жаңа қойындыда "Анықтамалық орталық" бөлімін ашу.</translation>
 <translation id="4415276339145661267">Google аккаунтын басқару</translation>
@@ -6867,7 +6866,6 @@
 <translation id="6833479554815567477">Қойынды "<ph name="GROUP_NAME" />" тобынан (<ph name="GROUP_CONTENTS" />) өшірілді.</translation>
 <translation id="683373380308365518">Зерделі және қауіпсіз браузерге ауысыңыз</translation>
 <translation id="6833996806551876956">Privacy Sandbox сынақ мерзімі</translation>
-<translation id="6835712061486505758">Басқа құрылғыларды интернетпен қамтамасыз ету үшін Wi-Fi хотспотын жасаңыз. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> жаңарту үшін, интернетке қосылыңыз.</translation>
 <translation id="6839225236531462745">Сертификат жою қатесі</translation>
 <translation id="6839916869147598086">Аккаунтқа кіру жолы өзгерді</translation>
@@ -7038,6 +7036,7 @@
 <translation id="6978717888677691380">Сіз бөгеген сайттар</translation>
 <translation id="6979041727349121225">Қуат үнемдеу</translation>
 <translation id="6979044105893951891">Басқарылатын қонақ сеанстарын іске қосу және олардан шығу</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Дыбысын өшіру (әдепкі)</translation>
 <translation id="6979737339423435258">Барлық уақыт</translation>
 <translation id="6981553172137913845">Интернетті құпия пайдаланғыңыз келсе, инкогнито терезесін ашуға болады. Ол үшін нүктелер белгішесінің мәзірін басыңыз</translation>
@@ -8026,6 +8025,7 @@
 <translation id="7807711621188256451"><ph name="HOST" /> үшін камераға кіру рұқсатын әрдайым беру</translation>
 <translation id="7810202088502699111">Қалқымалы терезелерге бұл бетте тыйым салынған.</translation>
 <translation id="7814458197256864873">&amp;Көшіру</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> <ph name="SHORTCUT" /> таңбашасын өңдеу</translation>
 <translation id="7815680994978050279">Қауіпті жүктеп алу әрекеті бөгелді</translation>
 <translation id="7817361223956157679">Экрандағы пернетақта Linux қолданбаларында жұмыс істемейді.</translation>
@@ -8105,7 +8105,6 @@
 <translation id="7881483672146086348">Аккаунтты көру</translation>
 <translation id="7883792253546618164">Кез келген уақытта жазылымнан бас тарта аласыз.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Көп хабарландыру жіберген 1 сайтты қарап шығу}other{Көп хабарландыру жіберген {NUM_SITES} сайтты қарап шығу}}</translation>
-<translation id="7884446017008693258">Хотспот параметрлері</translation>
 <translation id="788453346724465748">Аккаунт туралы ақпарат жүктелуде…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{элемент}other{# элемент}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8633,6 +8632,7 @@
 <translation id="8322814362483282060">Бұл беттің микрофонды пайдалану мүмкіндігі шектелді.</translation>
 <translation id="8323167517179506834">URL енгізу</translation>
 <translation id="8323317289166663449">Компьютердегі және барлық веб-сайттағы деректі оқу және өзгерту</translation>
+<translation id="8324158725704657629">Қайта сұралмасын</translation>
 <translation id="8324784016256120271">Сайттар, мысалы, жарнамаларды жекелендіру үшін түрлі сайттарда браузерді пайдалану мәліметіңізді көру үшін cookie файлдарын пайдалана алады.</translation>
 <translation id="8325413836429495820">Буфердегі контентті көруге рұқсаты жоқтар</translation>
 <translation id="8326478304147373412">PKCS #7, сертификаттар тізбегі</translation>

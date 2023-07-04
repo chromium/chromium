@@ -4082,7 +4082,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4413087696295876280">ChromeOS Flex qurilmasi haqidagi axborot va maʼlumotlarni oʻqish.</translation>
 <translation id="44141919652824029">“<ph name="APP_NAME" />” uchun biriktirilgan USB qurilmalar ro‘yxatini olishiga ruxsat berilsinmi?</translation>
 <translation id="4414232939543644979">Yangi &amp;inkognito oynasi</translation>
-<translation id="4414648713167199100">Chromebook mobil internetidan foydalanadi va mobil trafik uchun qoʻshimcha haq olinishi mumkin. Batareya sarfini oshirishi mumkin. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> qurilmangiz xizmatga tayyor.</translation>
 <translation id="4415245286584082850">Hech qanday qurilma topilmadi. Yangi varaqda Crhome yordam markazi maqolasini oching.</translation>
 <translation id="4415276339145661267">Google hisobingizni boshqaring</translation>
@@ -6876,7 +6875,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6833479554815567477">Varaq <ph name="GROUP_NAME" /> guruhidan olib tashlandi – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Qulay va xavfsiz brauzerdan foydalaning</translation>
 <translation id="6833996806551876956">Privacy Sandbox sinov versiyasi</translation>
-<translation id="6835712061486505758">Boshqa qurilmalarni internet bilan taʼminlash uchun Wi-Fi ulanish nuqtasi yarating. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> qurilmasini yangilash uchun Internetga ulaning.</translation>
 <translation id="6839225236531462745">Sertifikatni o‘chirishda xatolik</translation>
 <translation id="6839916869147598086">Hisobga kirish usuli oʻzgardi</translation>
@@ -7047,6 +7045,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6978717888677691380">Siz bloklagan saytlar</translation>
 <translation id="6979041727349121225">Quvvat tejalishi</translation>
 <translation id="6979044105893951891">Boshqaruvdagi mehmon seanslariga ruxsat</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Ovozsiz (birlamchi)</translation>
 <translation id="6979737339423435258">Boshidan beri</translation>
 <translation id="6981553172137913845">Yashirin kezish uchun menyudagi nuqtalar ikonkasini bosib inkognito oyna oching</translation>
@@ -8035,6 +8034,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7807711621188256451"><ph name="HOST" /> saytiga kameradan foydalanishga doim ruxsat berish</translation>
 <translation id="7810202088502699111">Qalqib chiquvchi oynalar bloklandi.</translation>
 <translation id="7814458197256864873">&amp;Nuxsa olish</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> uchun <ph name="SHORTCUT" /> tezkor tugmasini tahrirlash</translation>
 <translation id="7815680994978050279">Xavfli yuklanma bloklandi</translation>
 <translation id="7817361223956157679">Ekran klaviaturasi hozircha Linux ilovalarda ishlamaydi</translation>
@@ -8114,7 +8114,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7881483672146086348">Hisobni ko‘rish</translation>
 <translation id="7883792253546618164">Istalgan vaqt obunani bekor qilish mumkin.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Ortiqcha bildirishnoma yuborgan 1 ta saytni tekshiring}other{Ortiqcha bildirishnoma yuborgan {NUM_SITES} ta saytni tekshiring}}</translation>
-<translation id="7884446017008693258">Hotspot sozlamalari</translation>
 <translation id="788453346724465748">Hisob axboroti yuklanmoqda...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{element}other{# ta element}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8642,6 +8641,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8322814362483282060">Bu sahifaning mikrofoningizdan foydalanishi bloklandi.</translation>
 <translation id="8323167517179506834">URL manzil kiriting</translation>
 <translation id="8323317289166663449">Kompyuter va barcha saytlardagi maʼlumotlaringizni oʻqish va oʻzgartirish</translation>
+<translation id="8324158725704657629">Boshqa soʻralmasin</translation>
 <translation id="8324784016256120271">Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzatishi mumkin</translation>
 <translation id="8325413836429495820">Vaqtinchalik xotirani koʻrish taqiqlangan</translation>
 <translation id="8326478304147373412">PKCS #7, sertifikat zanjiri</translation>

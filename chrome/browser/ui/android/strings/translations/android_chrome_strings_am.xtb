@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">የሶስተኛ ወገን ኩኪዎችን መቼ እንደሚታገዱ ይምረጡ</translation>
 <translation id="3428747202529429621">በChrome ላይ ደህንነትዎን ይጠብቃል፣ እና በመለያ በገቡባቸው ሌሎች የGoogle መተግበሪያዎች ላይ ደህንነትዎን ለማሻሻል ስራ ላይ ሊውል ይችላል።</translation>
 <translation id="3429160811076349561">የሙከራ ባህሪዎች ጠፍተዋል</translation>
-<translation id="3432973700170747422">የመጨረሻዎቹን 15 ደቂቃዎች ሰርዝ</translation>
 <translation id="3435465986463792564">ብዙ መስኮቶች አሉዎት? ከዚህ ሆነው እነሱን ማስተዳደር ይችላሉ።</translation>
 <translation id="3435738964857648380">የደህንነት ጥበቃ</translation>
 <translation id="3443221991560634068">የአሁኑን ገፅ ዳግም ጫን</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">ድር ላይ ደህንነትን ለማሻሻል ያግዙ</translation>
 <translation id="3597179440835065298">የተሻሉ ጥቆማዎችን ያግኙ</translation>
 <translation id="3602290021589620013">ቅድመ-ዕይታ</translation>
-<translation id="360901359071773787">የመጨረሻዎቹ 15 ደቂቃዎች ይሰረዙ?</translation>
 <translation id="3616113530831147358">ድምፅ</translation>
 <translation id="3622349720008044802">መስኮቶች ያቀናብሩ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 ጣቢያ}one{+ # ጣቢያ}other{+ # ጣቢያዎች}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">ምስላዊ እይታ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> መገናኘት ይፈልጋል</translation>
 <translation id="5016205925109358554">ሰሪፍ</translation>
+<translation id="5017529052065664584">ያለፉት 15 ደቂቃዎች</translation>
 <translation id="5032430150487044192">የQR ኮድ መፍጠር አልተቻለም</translation>
 <translation id="5039804452771397117">ፍቀድ</translation>
 <translation id="5040262127954254034">ግላዊነት</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">የፍለጋ አስተያየት ጥቆማዎችን ያሻሽሉ</translation>
 <translation id="6026538407078977628">ወደ ሙሉ ገፅ ዕይታ ዘርጋ</translation>
 <translation id="6030719887161080597">የማስታወቂያ አፈጻጸምን ለመለካት በጣቢያዎች ጥቅም ላይ የዋለ መረጃን ያስተዳድድሩ</translation>
-<translation id="6034146297924778597">ያለፉት 15 ደቂቃዎች ታሪክ ይሰረዛል፦</translation>
 <translation id="6039379616847168523">ወደ ቀጣዩ ትር ዝለል</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="604124094241169006">ራስ-ሰር</translation>

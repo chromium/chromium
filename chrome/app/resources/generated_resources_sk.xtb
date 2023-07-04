@@ -4082,7 +4082,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4413087696295876280">Čítať informácie a údaje zo zariadení ChromeOS Flex</translation>
 <translation id="44141919652824029">Povoliť aplikácii <ph name="APP_NAME" /> získať zoznam pripojených zariadení USB?</translation>
 <translation id="4414232939543644979">Nové okno &amp;inkognito</translation>
-<translation id="4414648713167199100">Používa mobilné dáta Chromebooku a operátor môže účtovať ďalšie poplatky. Spotreba batérie sa môže zvýšiť. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Teraz môžete začať používať svoje zariadenie <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Nenašli sa žiadne zariadenia. Otvorte článok centra pomoci na novej karte.</translation>
 <translation id="4415276339145661267">Spravovať účet Google</translation>
@@ -6879,7 +6878,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6833479554815567477">Karta bola odstránená zo skupiny <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Prepnite na inteligentný a bezpečný prehliadač</translation>
 <translation id="6833996806551876956">Skúšobné obdobie karantény ochrany súkromia</translation>
-<translation id="6835712061486505758">Vytvorením hotspotu Wi‐Fi pripojte k internetu ďalšie zariadenia. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Ak chcete aktualizovať zariadenie <ph name="DEVICE_TYPE" />, pripojte sa k internetu.</translation>
 <translation id="6839225236531462745">Chyba odstránenia certifikátu</translation>
 <translation id="6839916869147598086">Prihlásenie sa zmenilo</translation>
@@ -7050,6 +7048,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6978717888677691380">Weby, ktoré ste zablokovali</translation>
 <translation id="6979041727349121225">Šetrič energie</translation>
 <translation id="6979044105893951891">Spustenie a ukončenie spravovaných relácií hosťa</translation>
+<translation id="6979158407327259162">Disk Google</translation>
 <translation id="6979440798594660689">Ignorovať (predvolené)</translation>
 <translation id="6979737339423435258">Celé obdobie</translation>
 <translation id="6981553172137913845">Ak chcete prehliadať v súkromí, otvorte okno inkognito klepnutím na ponuku s ikonou bodiek</translation>
@@ -8038,6 +8037,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7807711621188256451">Vždy povoliť stránkam <ph name="HOST" /> prístup ku kamere</translation>
 <translation id="7810202088502699111">Na tejto stránke boli zablokované kontextové okná.</translation>
 <translation id="7814458197256864873">&amp;Kopírovať</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Upraviť odkaz <ph name="SHORTCUT" /> na rozšírenie <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Bolo zablokované sťahovanie nebezpečného súboru</translation>
 <translation id="7817361223956157679">Klávesnica na obrazovke ešte nie je v systéme Linux funkčná</translation>
@@ -8117,7 +8117,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7881483672146086348">Zobraziť účet</translation>
 <translation id="7883792253546618164">Odber môžete kedykoľvek zrušiť.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Skontrolujte 1 web, ktorý odoslal veľa upozornení}few{Skontrolujte {NUM_SITES} weby, ktoré odoslali veľa upozornení}many{Review {NUM_SITES} sites that sent a lot of notifications}other{Skontrolujte {NUM_SITES} webov, ktoré odoslali veľa upozornení}}</translation>
-<translation id="7884446017008693258">Nastavenia hotspotu</translation>
 <translation id="788453346724465748">Načítavajú sa informácie o účte…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{položku}few{# položky}many{# items}other{# položiek}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8646,6 +8645,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8322814362483282060">Táto stránka má zablokovaný prístup k mikrofónu.</translation>
 <translation id="8323167517179506834">Zadajte webovú adresu</translation>
 <translation id="8323317289166663449">Čítať a meniť všetky vaše údaje v počítači a na všetkých weboch</translation>
+<translation id="8324158725704657629">Nabudúce sa nepýtať</translation>
 <translation id="8324784016256120271">Weby si môžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám)</translation>
 <translation id="8325413836429495820">Nemôže zobrazovať vašu schránku</translation>
 <translation id="8326478304147373412">Štandard PKCS #7, certifikačná reťaz</translation>

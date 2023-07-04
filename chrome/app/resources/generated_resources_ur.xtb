@@ -4088,7 +4088,6 @@
 <translation id="4413087696295876280">‏ChromeOS Flex آلے کی معلومات اور ڈیٹا پڑھیں</translation>
 <translation id="44141919652824029">‏"<ph name="APP_NAME" />" کو آپ کے منسلک کردہ USB آلات کی فہرست حاصل کرنے کی اجازت دیں؟</translation>
 <translation id="4414232939543644979">نئی &amp;پوشیدگی ونڈو</translation>
-<translation id="4414648713167199100">‏آپ کے Chromebook کا موبائل ڈیٹا استعمال کرتا ہے اور آپ کا کیریئر اضافی فیس وصول سکتا ہے۔ بیٹری کے استعمال کو بڑھا سکتا ہے۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">آپ اپنا <ph name="DEVICE_TYPE" /> استعمال شروع کرنے کے لیے تیار ہیں۔</translation>
 <translation id="4415245286584082850">کوئی آلہ نہیں ملا۔ نئے ٹیب میں مرکز امداد کا مضمون کھولیں۔</translation>
 <translation id="4415276339145661267">‏اپنے Google اکاؤنٹ کا نظم کریں</translation>
@@ -6884,7 +6883,6 @@
 <translation id="6833479554815567477">ٹیب گروپ سے ہٹا دیا گیا <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">اسمارٹ اور محفوظ براؤزر پر سوئچ کریں</translation>
 <translation id="6833996806551876956">رازداری سینڈ باکس کا ٹرائل</translation>
-<translation id="6835712061486505758">‏دیگر آلات کو انٹرنیٹ فراہم کرنے کے لیے Wi‑Fi ہاٹ اسپاٹ تخلیق کریں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">براہ کرم اپنا <ph name="DEVICE_TYPE" /> اپ ڈیٹ کرنے کیلئے انٹرنیٹ سے منسلک ہوں۔</translation>
 <translation id="6839225236531462745">سرٹیفکیٹ حذف کرنے میں خرابی</translation>
 <translation id="6839916869147598086">سائن ان تبدیل ہو چکا ہے</translation>
@@ -7055,6 +7053,7 @@
 <translation id="6978717888677691380">آپ کی مسدود کردہ سائٹس</translation>
 <translation id="6979041727349121225">انرجی سیور</translation>
 <translation id="6979044105893951891">شروع کریں اور نظم کردہ مہمان سیشنز سے باہر نکلیں</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">خاموش کریں (ڈیفالٹ)</translation>
 <translation id="6979737339423435258">ہر وقت</translation>
 <translation id="6981553172137913845">نجی طور پر براؤز کرنے کی خاطر پوشیدگی ٹیب کھولنے کے لیے نقطے والے آئیکن مینیو پر کلک کریں</translation>
@@ -8045,6 +8044,7 @@
 <translation id="7807711621188256451"><ph name="HOST" /> کو ہمیشہ اپنے کیمرے تک رسائی حاصل کرنے کی اجازت دیں</translation>
 <translation id="7810202088502699111">پاپ اپس کو اس صفحہ پر مسدود کر دیا گیا۔</translation>
 <translation id="7814458197256864873">&amp;کاپی کریں</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> کے لیے شارٹ کٹ <ph name="SHORTCUT" /> میں ترمیم کریں</translation>
 <translation id="7815680994978050279">خطرناک ڈاؤن لوڈ مسدود کیا گیا</translation>
 <translation id="7817361223956157679">‏Linux ایپس پر آن اسکرین کی بورڈ ابھی کام نہیں کرتا ہے</translation>
@@ -8124,7 +8124,6 @@
 <translation id="7881483672146086348">اکاؤنٹ دیکھیں</translation>
 <translation id="7883792253546618164">کسی بھی وقت اَن سبسکرائب کریں۔</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{1 سائٹ کا جائزہ لیں جس نے بہت ساری اطلاعات بھیجی ہیں}other{{NUM_SITES} سائٹس کا جائزہ لیں جس نے بہت ساری اطلاعات بھیجی ہیں}}</translation>
-<translation id="7884446017008693258">ہاٹ اسپاٹ کی ترتیبات</translation>
 <translation id="788453346724465748">اکاؤنٹ کی معلومات لوڈ ہورہی ہے...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ایک آئٹم}other{# آئٹمز}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8652,6 +8651,7 @@
 <translation id="8322814362483282060">اس صفحہ کو آپ کے مائیکروفون تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
 <translation id="8323167517179506834">‏URL ٹائپ کریں</translation>
 <translation id="8323317289166663449">اپنے کمپیوٹر اور سبھی ویب سائٹس پر اپنا سبھی ڈیٹا پڑھیں اور تبدیل کریں</translation>
+<translation id="8324158725704657629">دوبارہ مت پوچھیں</translation>
 <translation id="8324784016256120271">سائٹس کوکیز کے ذریعے مختلف سائٹس پر، مثال کے طور پر، اشتہارات کو ذاتی نوعیت کا بنانے کے لیے آپ کی براؤزنگ کی سرگرمی دیکھ سکتی ہیں</translation>
 <translation id="8325413836429495820">آپ کے کلپ بورڈ کو دیکھنے کی اجازت نہیں ہے</translation>
 <translation id="8326478304147373412">‏PKCS #7، سرٹیفیکیٹ چین</translation>

@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">该文件或目录无法使用。</translation>
 <translation id="1363028406613469049">曲目</translation>
 <translation id="1378727793141957596">欢迎使用 Google 云端硬盘！</translation>
-<translation id="1379156577998569384">您在“我的云端硬盘”中存储的文件已可供离线访问</translation>
 <translation id="1379911846207762492">您可将文件设为“可离线使用”，以便在未联网的情况下访问。</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1388045380422025115">所有类型</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">设备设置</translation>
 <translation id="2084809735218147718">一个人在用手势表达谢意</translation>
 <translation id="2088690981887365033">VPN 网络</translation>
-<translation id="2089751716171649322">在离线状态下轻松访问您的 Google 云端硬盘文件</translation>
 <translation id="2111134541987263231">开启<ph name="BEGIN_BOLD" />在无痕模式下启用<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> 项内容将被删除且无法恢复。</translation>
 <translation id="2122305276694332719">自动连接至隐藏的网络会导致其他人能查看您的设备和一些网络设置，因此我们建议不要这样做。</translation>
@@ -572,12 +570,10 @@
 <translation id="5494920125229734069">全选</translation>
 <translation id="5500122897333236901">冰岛语</translation>
 <translation id="5508696409934741614">圆点</translation>
-<translation id="5519161320735100193">Google 云端硬盘设置</translation>
 <translation id="5522908512596376669">文件列表已切换到列表视图。</translation>
 <translation id="5524517123096967210">无法读取该文件。</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> 图片</translation>
 <translation id="5534520101572674276">正在计算大小</translation>
-<translation id="5536122250858122375">无法同步此文件类型</translation>
 <translation id="554153475311314364">希腊语音译</translation>
 <translation id="5554171655917412781">已选择 <ph name="SELECTED_FOLDERS_COUNT" /> 个文件夹</translation>
 <translation id="5580591966435005537">虚拟机</translation>
@@ -737,7 +733,6 @@
 <translation id="6874758081814639712">一个人在打太极</translation>
 <translation id="6876155724392614295">自行车</translation>
 <translation id="6878261347041253038">梵语键盘（注音）</translation>
-<translation id="6882444584974399416">您的设备的存储空间不足，无法支持离线访问您的文件。此设备将不再自动同步新文件。</translation>
 <translation id="6885780034956018177">蜗牛</translation>
 <translation id="6896758677409633944">复制</translation>
 <translation id="6898028766943174120">更多子文件夹…</translation>
@@ -973,7 +968,6 @@
 <translation id="8560515948038859357">粤语</translation>
 <translation id="8561206103590473338">大象</translation>
 <translation id="8566466896628108558">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，已被您的管理员禁用，详细信息</translation>
-<translation id="8567555211227790801">您目前处于离线状态。待连接到互联网后，设备会继续同步。</translation>
 <translation id="8568374623837201676">永久删除此文件？</translation>
 <translation id="8569764466147087991">选择要打开的文件</translation>
 <translation id="8577897833047451336">克罗地亚语</translation>

@@ -446,7 +446,6 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="3421726884497337397">Pilih kapan cookie pihak ketiga diblokir</translation>
 <translation id="3428747202529429621">Memastikan Anda tetap aman di Chrome dan dapat digunakan untuk menyempurnakan keamanan Anda di aplikasi Google lainnya saat login</translation>
 <translation id="3429160811076349561">Fitur uji coba nonaktif</translation>
-<translation id="3432973700170747422">Hapus 15 menit terakhir</translation>
 <translation id="3435465986463792564">Membuka banyak jendela Chrome? Anda dapat mengelolanya dari sini</translation>
 <translation id="3435738964857648380">Keamanan</translation>
 <translation id="3443221991560634068">Memuat ulang halaman saat ini</translation>
@@ -480,7 +479,6 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="3587596251841506391">Bantu sempurnakan keamanan di web</translation>
 <translation id="3597179440835065298">Dapatkan saran yang lebih baik</translation>
 <translation id="3602290021589620013">Pratinjau</translation>
-<translation id="360901359071773787">Hapus 15 menit terakhir?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Kelola jendela</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 situs}other{+ # situs}}</translation>
@@ -752,6 +750,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5010886807652684893">Tampilan visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ingin terhubung</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">15 menit terakhir</translation>
 <translation id="5032430150487044192">Tidak dapat membuat Kode QR</translation>
 <translation id="5039804452771397117">Izinkan</translation>
 <translation id="5040262127954254034">Privasi</translation>
@@ -930,7 +929,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="6011308810877101166">Tingkatkan saran penelusuran</translation>
 <translation id="6026538407078977628">Luaskan ke layar penuh</translation>
 <translation id="6030719887161080597">Mengelola info yang digunakan situs untuk mengukur performa iklan</translation>
-<translation id="6034146297924778597">Histori dari 15 menit terakhir akan dihapus:</translation>
 <translation id="6039379616847168523">Beralih ke tab berikutnya</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="604124094241169006">Otomatis</translation>

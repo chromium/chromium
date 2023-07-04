@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">파일 또는 디렉터리를 사용할 수 없습니다.</translation>
 <translation id="1363028406613469049">트랙</translation>
 <translation id="1378727793141957596">Google Drive에 오신 것을 환영합니다.</translation>
-<translation id="1379156577998569384">오프라인 상태에서 내 드라이브 파일을 사용할 수 있습니다.</translation>
 <translation id="1379911846207762492">파일을 오프라인에서 사용하도록 설정하면 인터넷에 연결되어 있지 않을 때도 액세스할 수 있습니다.</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1388045380422025115">모든 유형</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">기기 설정</translation>
 <translation id="2084809735218147718">고맙다는 노래를 부르는 사람</translation>
 <translation id="2088690981887365033">VPN 네트워크</translation>
-<translation id="2089751716171649322">오프라인 상태에서도 손쉽게 Google Drive 파일에 액세스</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />시크릿 모드에서 허용<ph name="END_BOLD" />을 사용 설정합니다.</translation>
 <translation id="2114191879048183086">항목 <ph name="NUMBER_OF_ITEMS" />개가 삭제되며 복원할 수 없습니다.</translation>
 <translation id="2122305276694332719">숨겨진 네트워크에 자동 연결하면 다른 사용자가 내 기기 및 일부 네트워크 설정을 볼 수 있으므로 권장되지 않습니다.</translation>
@@ -578,12 +576,10 @@
 <translation id="5494920125229734069">모두 선택</translation>
 <translation id="5500122897333236901">아이슬란드어</translation>
 <translation id="5508696409934741614">점</translation>
-<translation id="5519161320735100193">Google Drive 설정</translation>
 <translation id="5522908512596376669">파일 목록을 목록 보기로 변경했습니다.</translation>
 <translation id="5524517123096967210">파일을 읽지 못했습니다.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> 이미지</translation>
 <translation id="5534520101572674276">크기를 계산하는 중</translation>
-<translation id="5536122250858122375">동기화할 수 없는 파일 형식입니다.</translation>
 <translation id="554153475311314364">그리스어(음역)</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" />개의 폴더가 선택됨</translation>
 <translation id="5580591966435005537">가상 머신</translation>
@@ -744,7 +740,6 @@
 <translation id="6874758081814639712">태극권을 하는 사람</translation>
 <translation id="6876155724392614295">자전거</translation>
 <translation id="6878261347041253038">데바나가리 키보드(음역)</translation>
-<translation id="6882444584974399416">기기에 오프라인에서 파일을 사용할 수 있는 저장공간이 충분하지 않습니다. 새 파일이 더 이상 자동으로 동기화되지 않습니다.</translation>
 <translation id="6885780034956018177">달팽이</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6898028766943174120">하위 폴더 더보기...</translation>
@@ -981,7 +976,6 @@
 <translation id="8560515948038859357">광둥어</translation>
 <translation id="8561206103590473338">코끼리</translation>
 <translation id="8566466896628108558">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 차단함, 세부정보</translation>
-<translation id="8567555211227790801">현재 오프라인 상태 인터넷에 연결되면 동기화가 재개됩니다.</translation>
 <translation id="8568374623837201676">이 파일을 완전히 삭제하시겠습니까?</translation>
 <translation id="8569764466147087991">열려는 파일 선택</translation>
 <translation id="8577897833047451336">크로아티아어</translation>

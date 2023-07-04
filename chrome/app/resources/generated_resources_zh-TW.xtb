@@ -4085,7 +4085,6 @@
 <translation id="4413087696295876280">讀取 ChromeOS Flex 裝置資訊和資料</translation>
 <translation id="44141919652824029">要允許「<ph name="APP_NAME" />」取得已連結 USB 裝置的清單嗎？</translation>
 <translation id="4414232939543644979">新增無痕式視窗(&amp;I)</translation>
-<translation id="4414648713167199100">使用 Chromebook 的行動數據，且電信業者可能會向你收取費用。此外，這麼做也可能會增加電池用量。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">你的 <ph name="DEVICE_TYPE" /> 已準備就緒。</translation>
 <translation id="4415245286584082850">找不到裝置。您可以在新分頁中開啟說明中心文章。</translation>
 <translation id="4415276339145661267">管理你的 Google 帳戶</translation>
@@ -6876,7 +6875,6 @@
 <translation id="6833479554815567477">分頁已從包含「<ph name="GROUP_CONTENTS" />」的「<ph name="GROUP_NAME" />」群組中移除</translation>
 <translation id="683373380308365518">改用智慧又安全的瀏覽器</translation>
 <translation id="6833996806551876956">Privacy Sandbox 試用期</translation>
-<translation id="6835712061486505758">建立 Wi-Fi 無線基地台，為其他裝置提供網際網路連線。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">請連線至網際網路，以更新您的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="6839225236531462745">憑證刪除錯誤</translation>
 <translation id="6839916869147598086">登入方式已變更</translation>
@@ -7047,6 +7045,7 @@
 <translation id="6978717888677691380">你封鎖的網站</translation>
 <translation id="6979041727349121225">節能模式</translation>
 <translation id="6979044105893951891">啟動及結束受管理的訪客工作階段</translation>
+<translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6979440798594660689">靜音 (預設)</translation>
 <translation id="6979737339423435258">不限時間</translation>
 <translation id="6981553172137913845">如果想要進行私密瀏覽，請按一下三個圓點圖示的選單，然後開啟無痕式視窗</translation>
@@ -8037,6 +8036,7 @@
 <translation id="7807711621188256451">一律允許 <ph name="HOST" /> 存取你的攝影機</translation>
 <translation id="7810202088502699111">系統已封鎖此網頁的彈出式視窗。</translation>
 <translation id="7814458197256864873">複製(&amp;C)</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">編輯「<ph name="EXTENSION_NAME" />」的快速鍵 <ph name="SHORTCUT" /></translation>
 <translation id="7815680994978050279">已封鎖危險下載內容</translation>
 <translation id="7817361223956157679">Linux 應用程式目前不支援螢幕小鍵盤</translation>
@@ -8116,7 +8116,6 @@
 <translation id="7881483672146086348">查看帳戶</translation>
 <translation id="7883792253546618164">你隨時可以取消訂閱。</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{查看傳送大量通知的網站 (1 個)}other{查看傳送大量通知的網站 ({NUM_SITES} 個)}}</translation>
-<translation id="7884446017008693258">無線基地台設定</translation>
 <translation id="788453346724465748">正在載入帳戶資訊...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{1 個項目}other{# 個項目}}</translation>
 <translation id="7886605625338676841">eSIM 卡</translation>
@@ -8643,6 +8642,7 @@
 <translation id="8322814362483282060">系統已封鎖這個網頁存取你的麥克風。</translation>
 <translation id="8323167517179506834">輸入網址</translation>
 <translation id="8323317289166663449">讀取及變更你在個人電腦和所有網站上的所有資料</translation>
+<translation id="8324158725704657629">不要再詢問</translation>
 <translation id="8324784016256120271">網站可使用 Cookie 查看你在各網站的瀏覽活動，並提供個人化廣告等服務</translation>
 <translation id="8325413836429495820">不得查看剪貼簿</translation>
 <translation id="8326478304147373412">PKCS #7，憑證鏈結</translation>

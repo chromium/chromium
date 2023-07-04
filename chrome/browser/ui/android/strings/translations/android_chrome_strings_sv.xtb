@@ -446,7 +446,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="3421726884497337397">Välj när cookies från tredje part ska blockeras</translation>
 <translation id="3428747202529429621">Skyddar dig i Chrome och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad</translation>
 <translation id="3429160811076349561">Provfunktionerna är inaktiverade</translation>
-<translation id="3432973700170747422">Radera senaste 15 minuterna</translation>
 <translation id="3435465986463792564">Har du många fönster? Du kan hantera dem härifrån</translation>
 <translation id="3435738964857648380">Säkerhet</translation>
 <translation id="3443221991560634068">Läs in den aktuella sidan igen</translation>
@@ -480,7 +479,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="3587596251841506391">Förbättra säkerheten på webben</translation>
 <translation id="3597179440835065298">Få bättre förslag</translation>
 <translation id="3602290021589620013">Förhandsgranskning</translation>
-<translation id="360901359071773787">Vill du radera senaste 15 minuterna?</translation>
 <translation id="3616113530831147358">Ljud</translation>
 <translation id="3622349720008044802">Hantera fönster</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 webbplats}other{+ # webbplatser}}</translation>
@@ -753,6 +751,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5010886807652684893">Visuell vy</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> vill ansluta</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">De senaste 15 minuterna</translation>
 <translation id="5032430150487044192">Det gick inte att skapa QR-koden</translation>
 <translation id="5039804452771397117">Tillåt</translation>
 <translation id="5040262127954254034">Integritet</translation>
@@ -931,7 +930,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6011308810877101166">Förbättra sökförslag</translation>
 <translation id="6026538407078977628">Utöka till helskärmsläge</translation>
 <translation id="6030719887161080597">Hantera information som används av webbplatser för att mäta annonsresultat</translation>
-<translation id="6034146297924778597">Historik från de senaste 15 minuterna raderas:</translation>
 <translation id="6039379616847168523">Hoppa till nästa flik</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="604124094241169006">Automatisk</translation>

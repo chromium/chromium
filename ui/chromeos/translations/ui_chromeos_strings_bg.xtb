@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">Файлът или директорията не могат да се използват.</translation>
 <translation id="1363028406613469049">Запис</translation>
 <translation id="1378727793141957596">Добре дошли в Google Диск!</translation>
-<translation id="1379156577998569384">Файловете ви в „Моят Диск“ са налице офлайн</translation>
 <translation id="1379911846207762492">Можете да направите файловете да бъдат налице офлайн, за да имате достъп до тях, когато нямате връзка с интернет.</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1388045380422025115">Всички типове</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">Настройки на устройството</translation>
 <translation id="2084809735218147718">Благодарност</translation>
 <translation id="2088690981887365033">VPN мрежа</translation>
-<translation id="2089751716171649322">Лесен достъп до файловете ви в Google Диск, когато сте офлайн</translation>
 <translation id="2111134541987263231">Включете опцията <ph name="BEGIN_BOLD" />Да се разреши в режим „инкогнито“<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> елемента ще бъдат изтрити и няма да можете да ги възстановите.</translation>
 <translation id="2122305276694332719">Автоматичното свързване със скрита мрежа дава възможност на другите хора да виждат устройството ви и някои мрежови настройки и не се препоръчва.</translation>
@@ -578,12 +576,10 @@
 <translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="5500122897333236901">исландски</translation>
 <translation id="5508696409934741614">Точки</translation>
-<translation id="5519161320735100193">Настройки за Google Диск</translation>
 <translation id="5522908512596376669">Списъкът с файлове е превключен към списъчен изглед.</translation>
 <translation id="5524517123096967210">Файлът не можа да бъде прочетен.</translation>
 <translation id="5533102081734025921">Изображение във формат <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Размерът се изчислява</translation>
-<translation id="5536122250858122375">Този файлов тип не може да бъде синхронизиран</translation>
 <translation id="554153475311314364">Гръцки (транслитерация)</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> избрани папки</translation>
 <translation id="5580591966435005537">виртуална машина</translation>
@@ -744,7 +740,6 @@
 <translation id="6874758081814639712">Човек, който практикува тай чи</translation>
 <translation id="6876155724392614295">Колело</translation>
 <translation id="6878261347041253038">Деванагари клавиатура (фонетична)</translation>
-<translation id="6882444584974399416">Мястото в хранилището на устройството не е достатъчно, за да бъдат файловете ви налице офлайн. Новите файлове повече няма да се синхронизират автоматично.</translation>
 <translation id="6885780034956018177">Охлюв</translation>
 <translation id="6896758677409633944">Копиране</translation>
 <translation id="6898028766943174120">Още подпапки...</translation>
@@ -981,7 +976,6 @@
 <translation id="8560515948038859357">Кантонски</translation>
 <translation id="8561206103590473338">Слон</translation>
 <translation id="8566466896628108558">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, блокирана от администратора ви, подробности</translation>
-<translation id="8567555211227790801">Понастоящем сте офлайн. Синхронизирането ще се възобнови, когато имате връзка с интернет.</translation>
 <translation id="8568374623837201676">Да се изтрие ли за постоянно този файл?</translation>
 <translation id="8569764466147087991">Изберете файл за отваряне</translation>
 <translation id="8577897833047451336">Хърватски</translation>

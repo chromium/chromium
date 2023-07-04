@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">انتخاب مواقعی که کوکی‌های شخص ثالث باید مسدود شوند</translation>
 <translation id="3428747202529429621">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chrome حفظ می‌کند و ممکن است برای بهبود امنیت شما در برنامه‌های دیگر Google استفاده شود</translation>
 <translation id="3429160811076349561">ویژگی‌های آزمایشی خاموش است</translation>
-<translation id="3432973700170747422">حذف ۱۵ دقیقه آخر</translation>
 <translation id="3435465986463792564">پنجره‌های زیادی دارید؟ می‌توانید از اینجا مدیریتشان کنید</translation>
 <translation id="3435738964857648380">امنیت</translation>
 <translation id="3443221991560634068">بار کردن مجدد صفحه کنونی</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">به بهبود امنیت وب کمک کنید</translation>
 <translation id="3597179440835065298">دریافت پیشنهادهای بهتر</translation>
 <translation id="3602290021589620013">پیش‌نمایش</translation>
-<translation id="360901359071773787">۱۵ دقیقه آخر حذف شود؟</translation>
 <translation id="3616113530831147358">صوتی</translation>
 <translation id="3622349720008044802">مدیریت پنجره‌ها</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ یک سایت}one{+ # سایت}other{+ # سایت}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">نمای تصویری</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> می‌خواهد مرتبط شود</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">۱۵ دقیقه اخیر</translation>
 <translation id="5032430150487044192">رمزینه پاسخ‌سریع ایجاد نمی‌شود</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5040262127954254034">حریم خصوصی</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">بهبود پیشنهادهای جستجو</translation>
 <translation id="6026538407078977628">گسترده کردن به‌حالت تمام‌صفحه</translation>
 <translation id="6030719887161080597">مدیریت اطلاعات مورداستفاده سایت‌ها برای سنجش عملکرد آگهی</translation>
-<translation id="6034146297924778597">سابقه ۱۵ دقیقه آخر حذف خواهد شد:</translation>
 <translation id="6039379616847168523">رفتن به برگه بعدی</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="604124094241169006">خودکار</translation>

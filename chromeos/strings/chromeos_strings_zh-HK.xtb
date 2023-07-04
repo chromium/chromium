@@ -204,7 +204,6 @@
 <translation id="2491955442992294626">使用其他視窗時，系統不會測試按鍵</translation>
 <translation id="2493126929778606526">自動選取的最佳相片</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2498950423397131220">浮動</translation>
 <translation id="2505327257735685095">重新整理目前嘅桌布圖片</translation>
 <translation id="2512979179176933762">顯示視窗</translation>
 <translation id="2513396635448525189">登入圖片</translation>
@@ -328,7 +327,6 @@
 <translation id="3607216139080387279">顯示螢幕保護程式</translation>
 <translation id="361575905210396100">多謝您的意見</translation>
 <translation id="3632579075709132555">私隱保護畫面切換</translation>
-<translation id="3639846061339007994">頂部</translation>
 <translation id="3651050199673793219">揀溫度單位</translation>
 <translation id="3663574643422533538">選取 <ph name="PRODUCT_NAME" /> 獨家藝術圖片</translation>
 <translation id="3668449597372804501">雲朵動態桌布</translation>
@@ -411,7 +409,6 @@
 <translation id="4289849978083912975">投影片</translation>
 <translation id="4297501883039923494">已停止 - 不明錯誤</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 張圖片</translation>
-<translation id="4311195029067684288">完整</translation>
 <translation id="4333390807948134856">㩒咗 <ph name="KEY_NAME" /> 制</translation>
 <translation id="435692326371619097">管理網絡 APN 設定。APN 會在流動網絡和互聯網之間建立連線。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">重設所有快速鍵</translation>
@@ -501,7 +498,6 @@
 <translation id="4930320165497208503">如要設定或更新連線，請前往「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」頁面。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4950314376641394653">韌體「<ph name="DEVICE_NAME" />」已更新至 <ph name="VERSION" /> 版本</translation>
-<translation id="4971925105143343452">局部</translation>
 <translation id="4972592110715526173">改變模式</translation>
 <translation id="498186245079027698">請檢查掃瞄器，然後再試一次。請確保本機有足夠空間儲存已掃瞄的檔案。</translation>
 <translation id="4985509611418653372">執行</translation>
@@ -655,7 +651,6 @@
 <translation id="6191293864534840972">域名伺服器格式錯誤</translation>
 <translation id="6205145102504628069">雲朵動態</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
-<translation id="6223066887782788441">結束全螢幕模式</translation>
 <translation id="6223752125779001553">沒有可用的掃瞄器</translation>
 <translation id="6232017090690406397">電池</translation>
 <translation id="6235460611964961764">手動重設數據用量</translation>
@@ -814,7 +809,6 @@
 <translation id="7481312909269577407">向前</translation>
 <translation id="7487067081878637334">科技</translation>
 <translation id="7490813197707563893">MAC 地址</translation>
-<translation id="7491478667760509108">結束浮動模式</translation>
 <translation id="7497215489070763236">伺服器 CA 憑證</translation>
 <translation id="7501957181231305652">或</translation>
 <translation id="7502658306369382406">IPv6 位址</translation>
@@ -834,7 +828,6 @@
 <translation id="763165478673169849">上次重設時間</translation>
 <translation id="7633068090678117093">背景圖片</translation>
 <translation id="7648838807254605802">HTTPS 延遲時間長</translation>
-<translation id="765159867434478292">分割</translation>
 <translation id="7656388927906093505">裝置類型係滑鼠。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7665800271478495366">改顯示圖片</translation>
@@ -865,7 +858,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">供應商類型</translation>
 <translation id="7882501334836096755">公開金鑰</translation>
-<translation id="78957024357676568">向左</translation>
 <translation id="7915220255123750251">管理網絡 APN 設定。APN 會在流動網絡和互聯網之間建立連線。</translation>
 <translation id="7936303884198020182">找不到域名伺服器</translation>
 <translation id="7942349550061667556">紅色</translation>
@@ -903,7 +895,6 @@
 <translation id="8183974620058026102">附加</translation>
 <translation id="8206859287963243715">蜂窩</translation>
 <translation id="8208861521865154048">獎賞</translation>
-<translation id="8210733748736414123">底部</translation>
 <translation id="8226628635270268143">選擇喜愛的相片和相簿</translation>
 <translation id="8227119283605456246">附加檔案</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網絡閘道</translation>
@@ -1004,7 +995,6 @@
 <translation id="8936793075252196307">用戶端 IP 位址</translation>
 <translation id="8944651180182756621">啟動器顏色</translation>
 <translation id="894617464444543719">裝置類型係手機。</translation>
-<translation id="8957423540740801332">向右</translation>
 <translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再次執行</translation>
 <translation id="8983038754672563810">HSPA</translation>

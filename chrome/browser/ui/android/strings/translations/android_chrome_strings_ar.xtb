@@ -448,7 +448,6 @@
 <translation id="3421726884497337397">اختيار الحالات التي يتم فيها حظر ملفات ملف تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="3428747202529429621">‏يوفّر لك هذا الوضع حماية في Chrome، ويمكن استخدامه لتحسين مستوى أمانك في تطبيقات Google الأخرى عندما تكون مسجلًا دخولك.</translation>
 <translation id="3429160811076349561">ميزات الإصدار التجريبي غير مفعّلة</translation>
-<translation id="3432973700170747422">حذف بيانات آخر 15 دقيقة</translation>
 <translation id="3435465986463792564">هل لديك العديد من النوافذ؟ يمكنك إدارتها من هنا.</translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
 <translation id="3443221991560634068">إعادة تحميل الصفحة الحالية</translation>
@@ -482,7 +481,6 @@
 <translation id="3587596251841506391">المساعدة في تحسين الأمان على الويب</translation>
 <translation id="3597179440835065298">الحصول على اقتراحات أفضل</translation>
 <translation id="3602290021589620013">معاينة</translation>
-<translation id="360901359071773787">هل تريد حذف بيانات التصفّح لآخر 15 دقيقة؟</translation>
 <translation id="3616113530831147358">المقاطع الصوتية</translation>
 <translation id="3622349720008044802">إدارة النوافذ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ موقع إلكتروني واحد}zero{+ # موقع إلكتروني}two{+ موقعان إلكترونيان}few{+ # مواقع إلكترونية}many{+ # موقعًا إلكترونيًا}other{+ # موقع إلكتروني}}</translation>
@@ -754,6 +752,7 @@
 <translation id="5010886807652684893">العرض الموسّع</translation>
 <translation id="5011311129201317034">يريد <ph name="SITE" /> الاتصال</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">آخر 15 دقيقة</translation>
 <translation id="5032430150487044192">يتعذّر إنشاء رمز الاستجابة السريعة.</translation>
 <translation id="5039804452771397117">سماح</translation>
 <translation id="5040262127954254034">الخصوصية</translation>
@@ -932,7 +931,6 @@
 <translation id="6011308810877101166">تحسين اقتراحات البحث</translation>
 <translation id="6026538407078977628">التوسيع إلى وضع ملء الشاشة</translation>
 <translation id="6030719887161080597">إدارة المعلومات التي تستخدمها المواقع الإلكترونية لقياس أداء الإعلانات</translation>
-<translation id="6034146297924778597">سيتم حذف بيانات السجلّ التي تعود إلى آخر 15 دقيقة:</translation>
 <translation id="6039379616847168523">الانتقال السريع إلى علامة التبويب التالية</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="604124094241169006">تلقائي</translation>

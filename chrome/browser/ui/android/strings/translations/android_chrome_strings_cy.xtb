@@ -446,7 +446,6 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="3421726884497337397">Dewis pryd i rwystro cwcis trydydd parti</translation>
 <translation id="3428747202529429621">Yn eich cadw'n ddiogel ar Chrome a gellir ei ddefnyddio i wella'ch diogelwch mewn apiau Google eraill pan fyddwch wedi'ch mewngofnodi</translation>
 <translation id="3429160811076349561">Mae nodweddion prawf wedi'u diffodd</translation>
-<translation id="3432973700170747422">Dileu'r 15 munud diwethaf</translation>
 <translation id="3435465986463792564">Oes gennych chi lawer o ffenestri? Gallwch eu rheoli o'r fan hon</translation>
 <translation id="3435738964857648380">Diogelwch</translation>
 <translation id="3443221991560634068">Ail-lwytho'r dudalen bresennol</translation>
@@ -480,7 +479,6 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="3587596251841506391">Helpu i wella diogelwch ar y we</translation>
 <translation id="3597179440835065298">Cael awgrymiadau gwell</translation>
 <translation id="3602290021589620013">Rhagolwg</translation>
-<translation id="360901359071773787">Dileu'r 15 munud diwethaf?</translation>
 <translation id="3616113530831147358">Sain</translation>
 <translation id="3622349720008044802">Rheoli ffenestri</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 wefan}zero{+ # gwefannau}two{+ # wefan}few{+ # gwefan}many{+ # gwefan}other{+ # gwefan}}</translation>
@@ -752,6 +750,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5010886807652684893">Gwedd weledol</translation>
 <translation id="5011311129201317034">Mae <ph name="SITE" /> eisiau cysylltu</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Y 15 munud diwethaf</translation>
 <translation id="5032430150487044192">Methu â chreu Cod QR</translation>
 <translation id="5039804452771397117">Caniatáu</translation>
 <translation id="5040262127954254034">Preifatrwydd</translation>
@@ -930,7 +929,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="6011308810877101166">Gwella awgrymiadau chwilio</translation>
 <translation id="6026538407078977628">Ehangu i sgrîn lawn</translation>
 <translation id="6030719887161080597">Rheoli'r wybodaeth a ddefnyddir gan wefannau i fesur perfformiad hysbysebion</translation>
-<translation id="6034146297924778597">Bydd hanes o'r 15 munud diwethaf yn cael ei ddileu:</translation>
 <translation id="6039379616847168523">Neidio i'r tab nesaf</translation>
 <translation id="6040143037577758943">Cau</translation>
 <translation id="604124094241169006">Awtomatig</translation>

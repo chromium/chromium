@@ -4085,7 +4085,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4413087696295876280">ChromeOS Flex උපාංග තොරතුරු සහ දත්ත කියවන්න</translation>
 <translation id="44141919652824029">ඔබගේ අමුණා ඇති USB උපාංග ලැයිස්තුවක් ලබා ගැනීමට "<ph name="APP_NAME" />" හට ඉඩ දෙන්නද?</translation>
 <translation id="4414232939543644979">නව &amp;Incognito කවුළුව</translation>
-<translation id="4414648713167199100">ඔබේ Chromebook හි ජංගම දත්ත භාවිතා කරන අතර ඔබේ වාහකයා අතිරේක ගාස්තු අය කළ හැක. බැටරි භාවිතය වැඩි කළ හැක. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">ඔබ ඔබේ <ph name="DEVICE_TYPE" /> භාවිත කිරීමට සූදානම්.</translation>
 <translation id="4415245286584082850">උපාංග කිසිවක් හමු නොවිය. නව පටිත්තකින් උදවු මධ්‍යස්ථාන ලිපියක් විවෘත කරන්න.</translation>
 <translation id="4415276339145661267">ඔබේ Google ගිණුම කළමනාකරණය</translation>
@@ -6879,7 +6878,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6833479554815567477">ටැබය <ph name="GROUP_NAME" /> සමූහය වෙතින් ගෙන යන ලදි - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">බුද්ධිමත් සහ සුරක්ෂිත බ්‍රව්සරයකට මාරු වන්න</translation>
 <translation id="6833996806551876956">රහස්‍යතා සෑන්ඩ්බොක්ස් අත්හදා බැලීම</translation>
-<translation id="6835712061486505758">වෙනත් උපාංගවලට අන්තර්ජාලය සැපයීමට Wi-Fi හොට්ස්පොට් එකක් තනන්න. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">ඔබේ <ph name="DEVICE_TYPE" /> යාවත්කාලීන කිරීමට කරුණාකර අන්තර්ජාලය වෙත සබඳින්න.</translation>
 <translation id="6839225236531462745">සහතික මකාදැමීම් දෝශය</translation>
 <translation id="6839916869147598086">පුරනය වෙනස් වී ඇත</translation>
@@ -7050,6 +7048,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6978717888677691380">ඔබ අවහිර කළ අඩවි</translation>
 <translation id="6979041727349121225">බලශක්ති සුරැකුම</translation>
 <translation id="6979044105893951891">කළමනා කෙරෙන ආරාධිත සැසි දියත් කරන්න සහ එයින් පිටවන්න</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">නිහඬ කරන්න (පෙරනිමි)</translation>
 <translation id="6979737339423435258">සියලු කාලය තුළ</translation>
 <translation id="6981553172137913845">රහසිගතව බ්‍රවුස් කිරීම සඳහා, අප්‍රසිද්ධ කවුළුවක් විවෘත කිරීම සඳහා තිත් නිරූපක මෙනුව ක්ලික් කරන්න</translation>
@@ -8038,6 +8037,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7807711621188256451">ඔබේ කැමරාව වෙත පිවිසීමට <ph name="HOST" /> හට ඉඩ දෙන්න</translation>
 <translation id="7810202088502699111">මෙම පිටුව මත පොප්-අප් බාධාවිය.</translation>
 <translation id="7814458197256864873">&amp;පිටපත් කරන්න</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> සඳහා කෙටිමඟ සංස්කරණය කරන්න <ph name="SHORTCUT" /></translation>
 <translation id="7815680994978050279">හානිකර බාගැනීම් අවහිර කරන ලදී</translation>
 <translation id="7817361223956157679">තිරය-මත යතුරු පුවරුව තවමත් Linux යෙදුම් තුළ වැඩ නොකරයි</translation>
@@ -8117,7 +8117,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7881483672146086348">ගිණුම බලන්න</translation>
 <translation id="7883792253546618164">ඕනෑම වේලාවකදී දායකත්වයෙන් ඉවත් වන්න.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{බොහෝ දැනුම්දීම් එවූ 1 අඩවියක් සමාලෝචනය කරන්න}one{බොහෝ දැනුම්දීම් එවූ අඩවි {NUM_SITES}ක් සමාලෝචනය කරන්න}other{බොහෝ දැනුම්දීම් එවූ අඩවි {NUM_SITES}ක් සමාලෝචනය කරන්න}}</translation>
-<translation id="7884446017008693258">හොට්ස්පොට් සැකසීම්</translation>
 <translation id="788453346724465748">ගිණුම් තොරතුරු පූරණය කරමින්...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{අයිතමයක්}one{අයිතම #}other{අයිතම #}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8645,6 +8644,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8322814362483282060">ඔබේ මයික්‍රෙෆෝනය වෙත පිවිසීමෙන් මෙම පිටුව අවහිර කර තිබේ</translation>
 <translation id="8323167517179506834">ලිපිනය යොදන්න</translation>
 <translation id="8323317289166663449">ඔබගේ පරිගණකයේ සහ සියලු වෙබ් අඩවිවල ඔබගේ සියලු දත්ත කියවන්න සහ වෙනස් කරන්න</translation>
+<translation id="8324158725704657629">නැවත නොඅසන්න</translation>
 <translation id="8324784016256120271">විවිධ වෙබ් අඩවි අතරින් ඔබේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් බැලීමට, උදාහරණයක් වශයෙන්, දැන්වීම් පුද්ගලායන කිරීමට වෙබ් අඩවිවලට කුකී භාවිත කළ හැක</translation>
 <translation id="8325413836429495820">ඔබගේ පසුරු පුවරුව බැලීමට ඉඩ නොදේ</translation>
 <translation id="8326478304147373412">PKCS #7, සහතික දාමය</translation>

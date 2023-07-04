@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">Adatok törlése és engedélyek visszaállítása</translation>
 <translation id="6527303717912515753">Megosztás</translation>
 <translation id="6545864417968258051">Bluetooth-alapú keresés</translation>
-<translation id="6552691050538553146">További beállítások <ph name="BANNER_TITLE" /></translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> letiltva}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> letiltva}}</translation>
 <translation id="6554732001434021288">Utolsó látogatás: <ph name="NUM_DAYS" /> napja</translation>
 <translation id="6561560012278703671">Csendesebb üzenetküldés használata (letiltja az értesítéseket, hogy ne zavarják meg Önt)</translation>

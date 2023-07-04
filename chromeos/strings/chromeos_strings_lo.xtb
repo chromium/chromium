@@ -204,7 +204,6 @@
 <translation id="2491955442992294626">ປຸ່ມຕ່າງໆຈະບໍ່ໄດ້ຮັບການທົດສອບເມື່ອໃຊ້ໜ້າຈໍອື່ນ</translation>
 <translation id="2493126929778606526">ຮູບພາບທີ່ດີສຸດຂອງທ່ານ, ເລືອກໂດຍອັດຕະໂນມັດ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2498950423397131220">ລອຍ</translation>
 <translation id="2505327257735685095">ໂຫຼດຂໍ້ມູນຮູບພື້ນຫຼັງປັດຈຸບັນຄືນໃໝ່</translation>
 <translation id="2512979179176933762">ສະແດງໜ້າຈໍ</translation>
 <translation id="2513396635448525189">ຮູບການເຂົ້າສູ່ລະບົບ</translation>
@@ -328,7 +327,6 @@
 <translation id="3607216139080387279">ສະແດງພາບພັກໜ້າຈໍ</translation>
 <translation id="361575905210396100">ຂໍຂອບໃຈສຳລັບຄຳຕິຊົມຂອງທ່ານ</translation>
 <translation id="3632579075709132555">ສະຫຼັບໜ້າຈໍຄວາມເປັນສ່ວນຕົວ</translation>
-<translation id="3639846061339007994">ເທິງສຸດ</translation>
 <translation id="3651050199673793219">ເລືອກຫົວໜ່ວຍອຸນຫະພູມ</translation>
 <translation id="3663574643422533538">ເລືອກງານສິນລະປະພິເສດສະເພາະຂອງ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">ຮູບພື້ນຫຼັງການເຄື່ອນທີ່ຂອງເມກ</translation>
@@ -411,7 +409,6 @@
 <translation id="4289849978083912975">​ສະ​ໄລ້​ໂຊ</translation>
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ຮູບ</translation>
-<translation id="4311195029067684288">ເຕັມ</translation>
 <translation id="4333390807948134856">ກົດປຸ່ມ <ph name="KEY_NAME" /> ແລ້ວ</translation>
 <translation id="435692326371619097">ຈັດການການຕັ້ງຄ່າ APN ຂອງເຄືອຂ່າຍ. APN ສ້າງການເຊື່ອມຕໍ່ລະຫວ່າງເຄືອຂ່າຍມືຖື ແລະ ອິນເຕີເນັດ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">ຣີເຊັດທາງລັດທັງໝົດ</translation>
@@ -501,7 +498,6 @@
 <translation id="4930320165497208503">ເພື່ອຕັ້ງຄ່າ ຫຼື ອັບເດດການເຊື່ອມຕໍ່, ໃຫ້ເຂົ້າໄປຫາ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">ວັນ​ທີ</translation>
 <translation id="4950314376641394653">ອັບເດດເຟີມແວ <ph name="DEVICE_NAME" /> ເປັນເວີຊັນ <ph name="VERSION" /> ແລ້ວ</translation>
-<translation id="4971925105143343452">ບາງສ່ວນ</translation>
 <translation id="4972592110715526173">ປ່ຽນໂໝດ</translation>
 <translation id="498186245079027698">ກວດເບິ່ງເຄື່ອງສະແກນ ແລ້ວລອງໃໝ່. ກວດໃຫ້ແນ່ໃຈວ່າມີພື້ນທີ່ໃນເຄື່ອງຢ່າງພຽງພໍເພື່ອບັນທຶກໄຟລ໌ທີ່ສະແກນແລ້ວໄວ້.</translation>
 <translation id="4985509611418653372">ເອີ້ນໃຊ້</translation>
@@ -655,7 +651,6 @@
 <translation id="6191293864534840972">ເຊີບເວີຊື່ຜິດຮູບແບບ</translation>
 <translation id="6205145102504628069">ກະແສຄລາວ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
-<translation id="6223066887782788441">ອອກຈາກໂໝດເຕັມໜ້າຈໍ</translation>
 <translation id="6223752125779001553">ບໍ່ມີເຄື່ອງສະແກນ</translation>
 <translation id="6232017090690406397">ແບັດເຕີຣີ</translation>
 <translation id="6235460611964961764">ຣີເຊັດການນຳໃຊ້ອິນເຕີເນັດດ້ວຍຕົວເອງ</translation>
@@ -815,7 +810,6 @@
 <translation id="7481312909269577407">ສົ່ງຕໍ່</translation>
 <translation id="7487067081878637334">​ເທັກ​ໂນ​ໂລ​ຢີ</translation>
 <translation id="7490813197707563893">ທີ່ຢູ່ MAC</translation>
-<translation id="7491478667760509108">ອອກຈາກໂໝດລອຍ</translation>
 <translation id="7497215489070763236">ໃບຮັບຮອງ CA ຂອງເຊີບເວີ</translation>
 <translation id="7501957181231305652">ຫຼື</translation>
 <translation id="7502658306369382406">ທີ່ຢູ່ IPv6</translation>
@@ -835,7 +829,6 @@
 <translation id="763165478673169849">ເວລາຣີເຊັດຫຼ້າສຸດ</translation>
 <translation id="7633068090678117093">ພາບພື້ນຫຼັງ</translation>
 <translation id="7648838807254605802">ເວລາແຝງ HTTPS ສູງ</translation>
-<translation id="765159867434478292">ແຍກ</translation>
 <translation id="7656388927906093505">ອຸປະກອນແມ່ນເມົ້າ.</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7665800271478495366">ປ່ຽນຮູບແທນຕົວ</translation>
@@ -866,7 +859,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ປະ​ເພດ​ຜູ້ໃຫ້​ບໍ​ລິ​ການ​</translation>
 <translation id="7882501334836096755">ກະແຈສາທາລະນະ</translation>
-<translation id="78957024357676568">ເບື້ອງຊ້າຍ</translation>
 <translation id="7915220255123750251">ຈັດການການຕັ້ງຄ່າ APN ຂອງເຄືອຂ່າຍ. APN ສ້າງການເຊື່ອມຕໍ່ລະຫວ່າງເຄືອຂ່າຍມືຖື ແລະ ອິນເຕີເນັດ.</translation>
 <translation id="7936303884198020182">ບໍ່ພົບເຊີບເວີຊື່</translation>
 <translation id="7942349550061667556">ສີ​ແດງ</translation>
@@ -904,7 +896,6 @@
 <translation id="8183974620058026102">ແນບໄຟລ໌</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>
 <translation id="8208861521865154048">ສິດທິປະໂຫຍດຕ່າງໆ</translation>
-<translation id="8210733748736414123">ລຸ່ມສຸດ</translation>
 <translation id="8226628635270268143">ເລືອກຮູບພາບ ແລະ ອະລະບໍ້າທີ່ທ່ານມັກ</translation>
 <translation id="8227119283605456246">ຄັດ​ຕິດ​ໄຟລ໌</translation>
 <translation id="8230672074305416752">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
@@ -1005,7 +996,6 @@
 <translation id="8936793075252196307">ທີ່ຢູ່ IP ລູກຂ່າຍ</translation>
 <translation id="8944651180182756621">ສີຂອງຕົວເປີດໃຊ້</translation>
 <translation id="894617464444543719">ອຸປະກອນແມ່ນໂທລະສັບ.</translation>
-<translation id="8957423540740801332">ເບື້ອງຂວາ</translation>
 <translation id="8968751544471797276">ອັດຕາການສາກ</translation>
 <translation id="8970109610781093811">ເອີ້ນໃຊ້ອີກຄັ້ງ</translation>
 <translation id="8983038754672563810">HSPA</translation>

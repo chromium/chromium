@@ -1096,6 +1096,7 @@
 <translation id="3435738964857648380">セキュリティ</translation>
 <translation id="3438829137925142401">Google アカウントに保存したパスワードを使用する</translation>
 <translation id="3440783957068352691">スクエア</translation>
+<translation id="3441653493275994384">画面</translation>
 <translation id="3447661539832366887">このデバイスの所有者が恐竜ゲームを無効にしています。</translation>
 <translation id="3447884698081792621">証明書（発行元: <ph name="ISSUER" />）を表示</translation>
 <translation id="3452404311384756672">取得間隔:</translation>
@@ -2264,6 +2265,7 @@
 <translation id="6034514109191629503">外折り</translation>
 <translation id="6039846035001940113">この問題が何度も発生する場合は、サイト所有者にお問い合わせください。</translation>
 <translation id="6040143037577758943">閉じる</translation>
+<translation id="604124094241169006">自動設定</translation>
 <translation id="6041777658117377052">チャンバーの温度</translation>
 <translation id="6042308850641462728">もっと見る</translation>
 <translation id="6042688167654081154">画像をテキストに変換しました</translation>
@@ -2757,6 +2759,7 @@
 <translation id="7135130955892390533">ステータスを表示</translation>
 <translation id="7136009930065337683">シークレット モードの詳細</translation>
 <translation id="7138472120740807366">配達方法</translation>
+<translation id="7138678301420049075">その他</translation>
 <translation id="7139892792842608322">メイントレイ</translation>
 <translation id="7140087718106278457">お支払い方法のリストが閉じられています。</translation>
 <translation id="714064300541049402">2 面の画像の X 軸移動</translation>

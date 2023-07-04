@@ -4092,7 +4092,6 @@
 <translation id="4413087696295876280">ChromeOS Flex ডিভাইচৰ তথ্য আৰু ডেটা পঢ়া</translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />"ক আপোনাৰ সংলগ্ন হৈ থকা ইউএছবি ডিভাইচৰ তালিকাখন এক্সেছ কৰিব দিবনে?</translation>
 <translation id="4414232939543644979">নতুন &amp;ইনক'গনিট' ৱিণ্ড'</translation>
-<translation id="4414648713167199100">আপোনাৰ Chromebookৰ ম’বাইল ডেটা ব্যৱহাৰ কৰে আৰু বাহকে অতিৰিক্ত মাচুল ল’ব পাৰে। বেটাৰীৰ ব্যৱহাৰ বৃদ্ধি কৰিব পাৰে। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">আপুনি আপোনাৰ <ph name="DEVICE_TYPE" /> ব্যৱহাৰ কৰিবলৈ সাজু।</translation>
 <translation id="4415245286584082850">কোনো ডিভাইচ বিচাৰি পোৱা নগ’ল। এটা নতুন টেবত এটা সহায় কেন্দ্ৰৰ প্ৰবন্ধ খোলক।</translation>
 <translation id="4415276339145661267">আপোনাৰ Google একাউণ্ট পৰিচালনা কৰক</translation>
@@ -6888,7 +6887,6 @@
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> গোটৰ পৰা টেবটো আঁতৰোৱা হ'ল - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">স্মার্ট আৰু সুৰক্ষিত ব্ৰাউজাৰ ব্যৱহাৰ কৰক</translation>
 <translation id="6833996806551876956">গোপনীয়তা ছেণ্ডবক্সৰ ট্ৰায়েল</translation>
-<translation id="6835712061486505758">অন্য ডিভাইচত ইণ্টাৰনেট প্ৰদান কৰিবলৈ এটা ৱাই-ফাই হটস্পট সৃষ্টি কৰক। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">অনুগ্ৰহ কৰি আপোনাৰ <ph name="DEVICE_TYPE" /> আপডে’ট কৰিবলৈ ইন্টাৰনেটৰ সৈতে সংযোগ কৰক।</translation>
 <translation id="6839225236531462745">প্ৰমাণপত্ৰ মচাত আসোঁৱাহ</translation>
 <translation id="6839916869147598086">ছাইন ইন প্ৰক্ৰিয়া সলনি হৈছে</translation>
@@ -7059,6 +7057,7 @@
 <translation id="6978717888677691380">আপুনি অৱৰোধ কৰা ছাইট</translation>
 <translation id="6979041727349121225">শক্তি সঞ্চয়কাৰী</translation>
 <translation id="6979044105893951891">লঞ্চ কৰক আৰু পৰিচালিত অতিথিৰ ছেশ্বনসমূহপৰা বাহিৰ হওক</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">মিউট (ডিফ'ল্ট)</translation>
 <translation id="6979737339423435258">সকলো সময়তে</translation>
 <translation id="6981553172137913845">ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবলৈ বিন্দু চিহ্নৰ মেনুখনত ক্লিক কৰি এখন ইনক’গনিট’ ৱিণ্ড’ খোলক</translation>
@@ -8048,6 +8047,7 @@
 <translation id="7807711621188256451"><ph name="HOST" />ক সদায় আপোনাৰ কেমেৰালৈ এক্সেছ দিয়ক</translation>
 <translation id="7810202088502699111">এই পৃষ্ঠাটোট পপ্-আপ অৱৰোধ কৰা হৈছে।</translation>
 <translation id="7814458197256864873">&amp;প্ৰতিলিপি কৰক</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" />ৰ বাবে শ্বৰ্টকাট <ph name="SHORTCUT" /> সম্পাদনা কৰক</translation>
 <translation id="7815680994978050279">ক্ষতিকাৰক সমলৰ ডাউনল’ড অৱৰোধ কৰা হৈছে</translation>
 <translation id="7817361223956157679">অন-স্ক্রীণ কীব’ৰ্ডখনে এতিয়ালৈকে Linux এপত কাম কৰা হোৱা নাই</translation>
@@ -8127,7 +8127,6 @@
 <translation id="7881483672146086348">একাউণ্টটো চাওক</translation>
 <translation id="7883792253546618164">যিকোনো সময়তে আনছাবস্ক্ৰাইব কৰক।</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{বহুতো জাননী পঠিওৱা ১ টা ছাইট পৰ্যালোচনা কৰক}one{বহুতো জাননী পঠিওৱা {NUM_SITES} টা ছাইট পৰ্যালোচনা কৰক}other{বহুতো জাননী পঠিওৱা {NUM_SITES} টা ছাইট পৰ্যালোচনা কৰক}}</translation>
-<translation id="7884446017008693258">হটস্পটৰ ছেটিং</translation>
 <translation id="788453346724465748">একাউণ্টৰ তথ্য ল'ড কৰি থকা হৈছে...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{এটা বস্তু}one{# টা বস্তু}other{# টা বস্তু}}</translation>
 <translation id="7886605625338676841">ই-ছিম</translation>
@@ -8655,6 +8654,7 @@
 <translation id="8322814362483282060">এই পৃষ্ঠাটোৰ আপোনাৰ মাইক্ৰফ’নৰ এক্সেছ অৱৰোধ কৰি ৰখা হৈছিল।</translation>
 <translation id="8323167517179506834">URL টাইপ কৰক</translation>
 <translation id="8323317289166663449">আপোনাৰ কম্পিউটাৰ আৰু আটাইবোৰ ৱেবছাইটৰ ডেটা পঢ়িব আৰু সলনি কৰিব পাৰে</translation>
+<translation id="8324158725704657629">পুনৰ নুসুধিব</translation>
 <translation id="8324784016256120271">আপুনি বিভিন্ন ছাইটসমূহত কৰা ব্ৰাউজিঙৰ কার্যকলাপ চাবলৈ ছাইটসমূহে কুকিসমূহ ব্যৱহাৰ কৰিব পাৰে, যেনে, বিজ্ঞাপন ব্যক্তিগতকৃত কৰিবলৈ</translation>
 <translation id="8325413836429495820">আপোনাৰ ক্লিপব’ৰ্ড চোৱাৰ অনুমতি নাই</translation>
 <translation id="8326478304147373412">PKCS #7, প্ৰমাণপত্ৰ চ্চেইন</translation>

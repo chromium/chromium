@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">Skedari ose direktoria nuk është i përdorshëm.</translation>
 <translation id="1363028406613469049">Pjesa muzikore</translation>
 <translation id="1378727793141957596">Mirë se vjen te "Disku i Google"!</translation>
-<translation id="1379156577998569384">Skedarët te "Diskut im" janë të disponueshëm jashtë linje</translation>
 <translation id="1379911846207762492">Mund t'i bësh skedarët të disponueshëm jashtë linje për qasje kur nuk ke lidhje në internet.</translation>
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1388045380422025115">Të gjitha llojet</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">Cilësimet e pajisjes</translation>
 <translation id="2084809735218147718">Duke nënshkruar me faleminderit</translation>
 <translation id="2088690981887365033">Rrjeti VPN</translation>
-<translation id="2089751716171649322">Qasu me lehtësi te skedarët e tu të "Diskut të Google" kur je jashtë linje</translation>
 <translation id="2111134541987263231">Aktivizo <ph name="BEGIN_BOLD" />Lejo në modalitetin "e fshehtë"<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> artikuj do të fshihen dhe nuk do të mund t'i restaurosh.</translation>
 <translation id="2122305276694332719">Lidhja automatike me një rrjet të fshehtë u lejon të tjerëve të të shohin pajisjen dhe disa prej cilësimeve të rrjetit, dhe nuk rekomandohet.</translation>
@@ -577,12 +575,10 @@
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5500122897333236901">Islandisht</translation>
 <translation id="5508696409934741614">Pika</translation>
-<translation id="5519161320735100193">Cilësimet e "Diskut të Google"</translation>
 <translation id="5522908512596376669">Lista e skedarëve ka ndryshuar në pamjen e listës.</translation>
 <translation id="5524517123096967210">Ky skedar nuk mund të lexohej.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> imazh</translation>
 <translation id="5534520101572674276">Po llogarit madhësinë</translation>
-<translation id="5536122250858122375">Ky lloj skedari nuk mund të sinkronizohet</translation>
 <translation id="554153475311314364">Greqisht me transliterim</translation>
 <translation id="5554171655917412781">U zgjodhën <ph name="SELECTED_FOLDERS_COUNT" /> dosje</translation>
 <translation id="5580591966435005537">pajisja virtuale</translation>
@@ -743,7 +739,6 @@
 <translation id="6874758081814639712">Person duke bërë tai-çi</translation>
 <translation id="6876155724392614295">Biçikletë</translation>
 <translation id="6878261347041253038">Tastierë Devanagari (fonetike)</translation>
-<translation id="6882444584974399416">Pajisja jote nuk ka hapësirë ruajtëse të mjaftueshme për t'i mbajtur skedarët e tu të disponueshëm jashtë linje. Skedarët e rinj nuk do të sinkronizohen më automatikisht.</translation>
 <translation id="6885780034956018177">Kërmill</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6898028766943174120">Më shumë nëndosje...</translation>
@@ -980,7 +975,6 @@
 <translation id="8560515948038859357">Kantonisht</translation>
 <translation id="8561206103590473338">Elefant</translation>
 <translation id="8566466896628108558">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bllokuar nga administratori yt, detajet</translation>
-<translation id="8567555211227790801">Aktualisht je jashtë linje. Sinkronizimi do të vazhdojë kur të jesh lidhur me internetin.</translation>
 <translation id="8568374623837201676">Të fshihet përgjithmonë ky skedar?</translation>
 <translation id="8569764466147087991">Zgjidh një skedar për ta hapur</translation>
 <translation id="8577897833047451336">Kroatisht</translation>

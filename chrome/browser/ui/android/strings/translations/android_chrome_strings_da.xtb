@@ -446,7 +446,6 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3421726884497337397">Vælg, hvornår tredjepartscookies skal blokeres</translation>
 <translation id="3428747202529429621">Beskytter dig i Chrome og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind</translation>
 <translation id="3429160811076349561">Labs er slået fra</translation>
-<translation id="3432973700170747422">Slet de seneste 15 minutter</translation>
 <translation id="3435465986463792564">Har du mange åbne vinduer? Du kan administrere dem herfra</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
 <translation id="3443221991560634068">Genindlæs den aktuelle side</translation>
@@ -480,7 +479,6 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3587596251841506391">Gør sikkerheden på nettet bedre</translation>
 <translation id="3597179440835065298">Få bedre forslag</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
-<translation id="360901359071773787">Vil du slette de seneste 15 minutter?</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3622349720008044802">Administrer vinduer</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 website}one{+ # website}other{+ # websites}}</translation>
@@ -752,6 +750,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5010886807652684893">Visuel visning</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> vil gerne oprette forbindelse</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">De seneste 15 minutter</translation>
 <translation id="5032430150487044192">QR-koden kan ikke oprettes</translation>
 <translation id="5039804452771397117">Tillad</translation>
 <translation id="5040262127954254034">Privatliv</translation>
@@ -930,7 +929,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="6011308810877101166">Gør søgeforslag bedre</translation>
 <translation id="6026538407078977628">Udvid til fuld skærm</translation>
 <translation id="6030719887161080597">Administrer oplysninger, der anvendes af websites til at måle annonceeffektivitet</translation>
-<translation id="6034146297924778597">Historik fra de seneste 15 minutter slettes:</translation>
 <translation id="6039379616847168523">Gå til den næste fane</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="604124094241169006">Automatisk</translation>

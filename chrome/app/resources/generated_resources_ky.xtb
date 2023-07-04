@@ -4095,7 +4095,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4413087696295876280">ChromeOS Flex түзмөгү тууралуу маалыматты жана нерселерди окуу</translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" колдонмосуна туташкан USB түзмөктөрүңүздүн тизмесин алууга уруксат берилсинби?</translation>
 <translation id="4414232939543644979">Жаңы &amp;Жашыруун терезе</translation>
-<translation id="4414648713167199100">Chromebook’тагы мобилдик трафик колдонулуп, байланыш оператору кошумча акы алышы мүмкүн. Батарея көбүрөөк колдонулушу мүмкүн. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> түзмөгүңүздү колдоно берсеңиз болот.</translation>
 <translation id="4415245286584082850">Түзмөктөр табылган жок. Жардам борборунун макаласын жаңы өтмөктө ачуу.</translation>
 <translation id="4415276339145661267">Google аккаунтунун параметрлерине өтүү</translation>
@@ -6889,7 +6888,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6833479554815567477">Өтмөк төмөнкү топтон өчүрүлдү: <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Шамдагай жана коопсуз серепчиге которулуу</translation>
 <translation id="6833996806551876956">Купуя сыноо чөйрөсү</translation>
-<translation id="6835712061486505758">Wi-Fi байланыш түйүнүн түзүп, башка түзмөктөргө Интернетти таркатыңыз. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> түзмөгүңүздү жаңыртуу үчүн сырсөзүңүздү кайра киргизиңиз.</translation>
 <translation id="6839225236531462745">Тастыктаманы жок кылуу катасы</translation>
 <translation id="6839916869147598086">Аккаунтка кирүү өзгөрдү</translation>
@@ -7060,6 +7058,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6978717888677691380">Сиз бөгөттөгөн сайттар</translation>
 <translation id="6979041727349121225">Кубатты үнөмдөгүч</translation>
 <translation id="6979044105893951891">Башкарылган конок сеанстарын иштетүү жана чыгуу</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Үнсүз (демейки)</translation>
 <translation id="6979737339423435258">Бардыгы</translation>
 <translation id="6981553172137913845">Купуя серептөө үчүн чекиттердин сүрөтчөсү тартылган менюну чыкылдатып, жашыруун терезени ачыңыз</translation>
@@ -8049,6 +8048,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7807711621188256451"><ph name="HOST" /> камераңызды ар дайым колдоно берсин</translation>
 <translation id="7810202088502699111">Бул бетте калкып чыкмалар бөгөттөлгөн.</translation>
 <translation id="7814458197256864873">&amp;Көчүрүү</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> үчүн <ph name="SHORTCUT" /> ыкчам баскычын түзөтүү</translation>
 <translation id="7815680994978050279">Кооптуу файлды жүктөп алуу бөгөттөлдү</translation>
 <translation id="7817361223956157679">Экрандагы баскычтоп Linux колдонмолорунда азырынча иштебейт</translation>
@@ -8128,7 +8128,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7881483672146086348">Аккаунтту көрүү</translation>
 <translation id="7883792253546618164">Жазылууну каалаган убакта токтотууга болот.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Өтө көп билдирмелерди жөнөткөн 1 сайтты карап чыгуу}other{Өтө көп билдирмелерди жөнөткөн {NUM_SITES} сайтты карап чыгуу}}</translation>
-<translation id="7884446017008693258">Байланыш түйүнүнүн параметрлери</translation>
 <translation id="788453346724465748">Аккаунттун маалыматы жүктөлүүдө...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{нерсе}other{# нерсе}}</translation>
 <translation id="7886605625338676841">eSIM-карта</translation>
@@ -8656,6 +8655,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8322814362483282060">Бул беттин микрофонуңузду пайдалануу мүмкүнчүлүгү бөгөттөлгөн.</translation>
 <translation id="8323167517179506834">URL'ди териңиз</translation>
 <translation id="8323317289166663449">Компьютериңиздеги жана бардык вебсайттарыңыздагы дайын-даректериңизди көрүү жана өзгөртүү</translation>
+<translation id="8324158725704657629">Экинчи суралбасын</translation>
 <translation id="8324784016256120271">Сайттар жарнамаларды жекелештирүү максатында башка сайттардагы серептөө аракеттериңизди көрүү үчүн cookie файлдарын колдоно алышат</translation>
 <translation id="8325413836429495820">Алмашуу буфериңизди көрө албайт</translation>
 <translation id="8326478304147373412">PKCS #7, тастыктама чынжыры</translation>

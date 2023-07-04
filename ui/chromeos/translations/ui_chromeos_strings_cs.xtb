@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">Soubor nebo adresář nelze použít.</translation>
 <translation id="1363028406613469049">Stopa</translation>
 <translation id="1378727793141957596">Vítá vás Disk Google!</translation>
-<translation id="1379156577998569384">Vaše soubory ve složce Můj disk jsou dostupné offline</translation>
 <translation id="1379911846207762492">Soubory můžete zpřístupnit offline pro případ, že nebudete mít připojení k internetu.</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1388045380422025115">Všechny typy</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">Nastavení zařízení</translation>
 <translation id="2084809735218147718">Znakování poděkování</translation>
 <translation id="2088690981887365033">Síť VPN</translation>
-<translation id="2089751716171649322">Získejte snadný přístup ke svým souborům na Disku Google i offline</translation>
 <translation id="2111134541987263231">Zapněte možnost <ph name="BEGIN_BOLD" />Povolit v anonymním režimu<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Položky (<ph name="NUMBER_OF_ITEMS" />) budou smazány bez možnosti obnovy.</translation>
 <translation id="2122305276694332719">Automatické připojování ke skryté síti umožňuje ostatním uživatelům zobrazit vaše zařízení a některá vaše nastavení sítě a nedoporučujeme jej.</translation>
@@ -577,12 +575,10 @@
 <translation id="5494920125229734069">Vybrat vše</translation>
 <translation id="5500122897333236901">islandština</translation>
 <translation id="5508696409934741614">Tečky</translation>
-<translation id="5519161320735100193">Nastavení Disku Google</translation>
 <translation id="5522908512596376669">Seznam souborů byl změněn na seznamové zobrazení.</translation>
 <translation id="5524517123096967210">Soubor se nepodařilo načíst.</translation>
 <translation id="5533102081734025921">Obrázek <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Výpočet velikosti</translation>
-<translation id="5536122250858122375">Tento typ souboru nelze synchronizovat</translation>
 <translation id="554153475311314364">řečtina (přepis)</translation>
 <translation id="5554171655917412781">Vybrané složky: <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">virtuální počítač</translation>
@@ -743,7 +739,6 @@
 <translation id="6874758081814639712">Člověk cvičící taiči</translation>
 <translation id="6876155724392614295">Kolo</translation>
 <translation id="6878261347041253038">Klávesnice dévanágarí (fonetická)</translation>
-<translation id="6882444584974399416">V zařízení není dostatek místa k tomu, aby soubory mohly být dostupné offline. Nové soubory již nebudou automaticky synchronizovány.</translation>
 <translation id="6885780034956018177">Hlemýžď</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
 <translation id="6898028766943174120">Další dílčí složky...</translation>
@@ -980,7 +975,6 @@
 <translation id="8560515948038859357">kantonština</translation>
 <translation id="8561206103590473338">Slon</translation>
 <translation id="8566466896628108558">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, blokováno administrátorem, podrobnosti</translation>
-<translation id="8567555211227790801">Momentálně jste offline. Synchronizace bude pokračovat, až budete připojeni k internetu.</translation>
 <translation id="8568374623837201676">Trvale smazat tento soubor?</translation>
 <translation id="8569764466147087991">Vyberte soubor, který chcete otevřít</translation>
 <translation id="8577897833047451336">chorvatština</translation>

@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">Vymazat data a resetovat oprávnění</translation>
 <translation id="6527303717912515753">Sdílet</translation>
 <translation id="6545864417968258051">Vyhledávání Bluetooth</translation>
-<translation id="6552691050538553146">Další možnosti <ph name="BANNER_TITLE" /></translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}few{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}many{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}other{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}}</translation>
 <translation id="6554732001434021288">Naposledy navštíveno před <ph name="NUM_DAYS" /> dny</translation>
 <translation id="6561560012278703671">Použít méně rušivou zprávu (blokuje žádosti o zobrazení oznámení)</translation>

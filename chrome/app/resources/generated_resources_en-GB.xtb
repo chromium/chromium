@@ -4101,7 +4101,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4413087696295876280">Read ChromeOS Flex device information and data</translation>
 <translation id="44141919652824029">Allow '<ph name="APP_NAME" />' to get the list of your attached USB devices?</translation>
 <translation id="4414232939543644979">New &amp;Incognito Window</translation>
-<translation id="4414648713167199100">Uses your Chromebook’s mobile data and your operator may charge additional fees. May increase battery usage. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">You are ready to start using your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">No devices found. Open a help centre article in a new tab.</translation>
 <translation id="4415276339145661267">Manage your Google Account</translation>
@@ -6899,7 +6898,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6833479554815567477">Tab removed from group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Switch to a smart and secure browser</translation>
 <translation id="6833996806551876956">Privacy sandbox trial</translation>
-<translation id="6835712061486505758">Create a Wi-Fi hotspot to provide Internet to other devices. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Please connect to the Internet to update your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Certificate Deletion Error</translation>
 <translation id="6839916869147598086">Sign-in has changed</translation>
@@ -7070,6 +7068,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6978717888677691380">Sites that you blocked</translation>
 <translation id="6979041727349121225">Energy saver</translation>
 <translation id="6979044105893951891">Launch and exit managed guest sessions</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Mute (default)</translation>
 <translation id="6979737339423435258">All time</translation>
 <translation id="6981553172137913845">To browse privately, click the dots icon menu to open an Incognito window</translation>
@@ -8060,6 +8059,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7807711621188256451">Always allow <ph name="HOST" /> to access your camera</translation>
 <translation id="7810202088502699111">Pop-ups were blocked on this page.</translation>
 <translation id="7814458197256864873">&amp;Copy</translation>
+<translation id="7814857791038398352">Microsoft® OneDrive</translation>
 <translation id="7815583197273433531">Edit shortcut <ph name="SHORTCUT" /> for <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Dangerous download blocked</translation>
 <translation id="7817361223956157679">The on-screen keyboard doesn’t work in Linux apps yet</translation>
@@ -8139,7 +8139,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7881483672146086348">View Account</translation>
 <translation id="7883792253546618164">Unsubscribe at any time.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Review 1 site that sent a lot of notifications}other{Review {NUM_SITES} sites that sent a lot of notifications}}</translation>
-<translation id="7884446017008693258">Hotspot settings</translation>
 <translation id="788453346724465748">Loading account information…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{an item}other{# items}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8668,6 +8667,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8322814362483282060">This page has been blocked from accessing your microphone.</translation>
 <translation id="8323167517179506834">Type URL</translation>
 <translation id="8323317289166663449">Read and change all your data on your computer and all websites</translation>
+<translation id="8324158725704657629">Don't ask again</translation>
 <translation id="8324784016256120271">Sites can use cookies to see your browsing activity across different sites, for example, to personalise ads</translation>
 <translation id="8325413836429495820">Not allowed to see your clipboard</translation>
 <translation id="8326478304147373412">PKCS #7, certificate chain</translation>

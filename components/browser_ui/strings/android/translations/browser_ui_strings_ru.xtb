@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">Удалить данные и сбросить разрешения</translation>
 <translation id="6527303717912515753">Поделиться</translation>
 <translation id="6545864417968258051">Поиск Bluetooth-устройств</translation>
-<translation id="6552691050538553146"><ph name="BANNER_TITLE" />: другие действия</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Последнее посещение: <ph name="NUM_DAYS" /> дн. назад</translation>
 <translation id="6561560012278703671">Не прерывать мою работу при запросе разрешения на показ уведомлений</translation>

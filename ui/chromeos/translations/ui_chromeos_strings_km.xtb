@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">ឯកសារ ឬថតឯកសារមិនអាចប្រើបានទេ។</translation>
 <translation id="1363028406613469049">សំឡេង</translation>
 <translation id="1378727793141957596">ស្វាគមន៍មកកាន់ Google Drive!</translation>
-<translation id="1379156577998569384">អាចប្រើ​ឯកសារ "ថាស​ខ្ញុំ" របស់អ្នកបាន ពេលគ្មានអ៊ីនធឺណិត</translation>
 <translation id="1379911846207762492">អ្នកអាចទាញយកឯកសារសម្រាប់ចូលប្រើ នៅពេលគ្មានការតភ្ជាប់អ៊ីនធឺណិតបាន។</translation>
 <translation id="1383876407941801731">ស្វែងរក</translation>
 <translation id="1388045380422025115">គ្រប់​ប្រភេទ​</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">ការកំណត់ឧបករណ៍</translation>
 <translation id="2084809735218147718">កំពុងបង្ហាញ​កាយវិការ​អរគុណ</translation>
 <translation id="2088690981887365033">បណ្ដាញ VPN</translation>
-<translation id="2089751716171649322">ងាយស្រួល​ចូលប្រើ​ឯកសារ Google ថាស​របស់អ្នក នៅពេលដែលអ្នក​គ្មានអ៊ីនធឺណិត</translation>
 <translation id="2111134541987263231">បើក <ph name="BEGIN_BOLD" />អនុញ្ញាតនៅក្នុងមុខងារឯកជន<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">ធាតុ <ph name="NUMBER_OF_ITEMS" /> នឹង​ត្រូ​វបាន​លុប ហើយ​អ្នកនឹង​មិន​អាច​ស្ដារ​ធាតុ​ទាំងនេះ​បាន​ទេ។</translation>
 <translation id="2122305276694332719">ការតភ្ជាប់ទៅបណ្ដាញដែលបានលាក់ដោយស្វ័យប្រវត្តិ​​អាចឱ្យអ្នកដទៃ​អាចមើលឃើញការកំណត់បណ្ដាញមួយចំនួន​ និងឧបករណ៍​របស់អ្នក ដូច្នេះយើង​សូមណែនាំមិន​ឱ្យធ្វើការតភ្ជាប់​ទេ។</translation>
@@ -577,12 +575,10 @@
 <translation id="5494920125229734069">ជ្រើសរើសទាំងអស់</translation>
 <translation id="5500122897333236901">ភាសាអាយឡែន</translation>
 <translation id="5508696409934741614">ចំណុច</translation>
-<translation id="5519161320735100193">ការកំណត់ Google ថាស</translation>
 <translation id="5522908512596376669">បញ្ជីឯកសារ​បានប្ដូរទៅទិដ្ឋភាព​បញ្ជី។</translation>
 <translation id="5524517123096967210">ឯកសារមិនអាចត្រូវបានអានទេ។</translation>
 <translation id="5533102081734025921">រូបភាព <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">កំពុងគណនាទំហំ</translation>
-<translation id="5536122250858122375">មិនអាច​ធ្វើសម​កាលកម្ម​ប្រភេទ​ឯកសារនេះ​បានទេ</translation>
 <translation id="554153475311314364">ការសរសេរ​តាម​សូរសព្ទជា​ភាសាក្រិក</translation>
 <translation id="5554171655917412781">បានជ្រើសរើស​ថត <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">ម៉ាស៊ីននិម្មិត</translation>
@@ -743,7 +739,6 @@
 <translation id="6874758081814639712">មនុស្ស​កំពុងហាត់​ថៃជី</translation>
 <translation id="6876155724392614295">កង់</translation>
 <translation id="6878261347041253038">ក្តារចុចដេវ៉ាណាការី (Phonetic)</translation>
-<translation id="6882444584974399416">ឧបករណ៍​របស់អ្នក​មិនមាន​ទំហំផ្ទុក​គ្រប់គ្រាន់ ដើម្បី​រក្សាឯកសារ​របស់អ្នក​សម្រាប់ប្រើពេលគ្មានអ៊ីនធឺណិតទេ។ ឯកសារថ្មីៗ​នឹងលែង​ត្រូវបាន​ធ្វើសម​កាលកម្ម​ដោយស្វ័យប្រវត្តិ​ទៀតហើយ។</translation>
 <translation id="6885780034956018177">ខ្យង</translation>
 <translation id="6896758677409633944">ចម្លង</translation>
 <translation id="6898028766943174120">ថតរងច្រើនទៀត...</translation>
@@ -980,7 +975,6 @@
 <translation id="8560515948038859357">ភាសាចិនកាតាំង</translation>
 <translation id="8561206103590473338">ដំរី</translation>
 <translation id="8566466896628108558">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, បានទប់ស្កាត់ដោយអ្នកគ្រប់គ្រងរបស់អ្នក, ព័ត៌មានលម្អិត</translation>
-<translation id="8567555211227790801">បច្ចុប្បន្ននេះ អ្នកគ្មានអ៊ីនធឺណិតទេ។ សមកាលកម្ម​នឹងបន្ត នៅពេល​ដែលអ្នក​បានភ្ជាប់ទៅ​អ៊ីនធឺណិត។</translation>
 <translation id="8568374623837201676">លុប​ឯកសារ​នេះ​ជា​អចិន្ត្រៃយ៍ឬ?</translation>
 <translation id="8569764466147087991">ជ្រើសរើសឯកសារដើម្បីបើក</translation>
 <translation id="8577897833047451336">ភាសា​ក្រូអាត</translation>

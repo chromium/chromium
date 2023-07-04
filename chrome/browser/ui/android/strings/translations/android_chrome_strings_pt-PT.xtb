@@ -446,7 +446,6 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="3421726884497337397">Escolha quando pretende bloquear cookies de terceiros</translation>
 <translation id="3428747202529429621">Mantém a sua segurança no Chrome e pode ser utilizado para melhorar a sua segurança noutras apps Google quando tem sessão iniciada.</translation>
 <translation id="3429160811076349561">As funcionalidades de avaliação estão desativadas</translation>
-<translation id="3432973700170747422">Apagar últimos 15 minutos</translation>
 <translation id="3435465986463792564">Tem muitas janelas? Pode geri-las aqui</translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3443221991560634068">Atualizar a página atual</translation>
@@ -480,7 +479,6 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="3587596251841506391">Ajude a melhorar a segur. na Web</translation>
 <translation id="3597179440835065298">Obtenha sugestões melhores</translation>
 <translation id="3602290021589620013">Pré-visualizar</translation>
-<translation id="360901359071773787">Eliminar últimos 15 minutos?</translation>
 <translation id="3616113530831147358">Áudio</translation>
 <translation id="3622349720008044802">Faça a gestão das janelas</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}other{+ # sites}}</translation>
@@ -752,6 +750,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5010886807652684893">Vista visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> pretende estabelecer ligação</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Últimos 15 minutos</translation>
 <translation id="5032430150487044192">Não é possível criar o código QR</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidade</translation>
@@ -930,7 +929,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="6011308810877101166">Melhorar sugestões de pesquisa</translation>
 <translation id="6026538407078977628">Expandir para ecrã inteiro</translation>
 <translation id="6030719887161080597">Faça a gestão das informações usadas pelos sites para medir o desempenho dos anúncios</translation>
-<translation id="6034146297924778597">O histórico dos últimos 15 minutos vai ser eliminado:</translation>
 <translation id="6039379616847168523">Ir para o próximo separador</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="604124094241169006">Automático</translation>

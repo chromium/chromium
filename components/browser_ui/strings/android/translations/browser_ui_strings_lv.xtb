@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">Dzēst datus un atiestatīt atļaujas</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
 <translation id="6545864417968258051">Bluetooth meklēšana</translation>
-<translation id="6552691050538553146"><ph name="BANNER_TITLE" />: citas iespējas</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}zero{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}one{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}other{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Pēdējoreiz apmeklēta pirms <ph name="NUM_DAYS" /> dienām</translation>
 <translation id="6561560012278703671">Izmantot neuzkrītošāku ziņojumapmaiņu (bloķēt paziņojumu uzvednes, lai tās jūs netraucētu)</translation>

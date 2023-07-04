@@ -4098,7 +4098,6 @@
 <translation id="4413087696295876280">ChromeOS Flex စက်၏ အချက်အလက်နှင့် ဒေတာကို ဖတ်နိုင်သည်</translation>
 <translation id="44141919652824029">သင်ချိတ်ဆက်ထားသည့် USB စက်ပစ္စည်းစာရင်းကို "<ph name="APP_NAME" />" အား ရယူခွင့်ပြုလိုသလား။</translation>
 <translation id="4414232939543644979">ရုပ်ဖျက် &amp;ဝင်ဒိုး အသစ်</translation>
-<translation id="4414648713167199100">သင့် Chromebook ၏ မိုဘိုင်းဒေတာကို သုံးသဖြင့် သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီက နောက်ထပ်ဝန်ဆောင်ခများ ကောက်ခံနိုင်သည်။ ဘက်ထရီ အသုံးပြုမှု ပိုများနိုင်သည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">သင့် <ph name="DEVICE_TYPE" /> ကို စတင်အသုံးပြုရန် အဆင်သင့်ဖြစ်ပါပြီ။</translation>
 <translation id="4415245286584082850">မည်သည့်စက်မျှ မရှိပါ။ တဘ်အသစ်တွင် ကူညီရေးဌာန ဆောင်းပါးကို ဖွင့်ပါ။</translation>
 <translation id="4415276339145661267">သင့် Google Account ကို စီမံခြင်း</translation>
@@ -6894,7 +6893,6 @@
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> အုပ်စုမှ တဘ်ကို ဖယ်ရှားလိုက်သည် - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">ပါးနပ်ပြီး လုံခြုံမှုရှိသော ဘရောင်ဇာသို့ ပြောင်းလိုက်ပါ</translation>
 <translation id="6833996806551876956">Privacy Sandbox အစမ်းသုံးခြင်း</translation>
-<translation id="6835712061486505758">အခြားစက်များသို့ အင်တာနက်ပေးရန် Wi-Fi ဟော့စပေါ့တစ်ခု ပြုလုပ်နိုင်သည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">သင့် <ph name="DEVICE_TYPE" /> ကို အသစ်မွမ်းမံရန် ကျေးဇူးပြု၍ အင်တာနက်နှင့် ချိတ်ဆက်ပါ။</translation>
 <translation id="6839225236531462745">အသိမှတ်ပြု လက်မှတ် ဖျက်ခြင်း မှားယွင်းမှု</translation>
 <translation id="6839916869147598086">အကောင့်ဝင်ရောက်ခြင်းကို ပြောင်းထားသည်</translation>
@@ -7065,6 +7063,7 @@
 <translation id="6978717888677691380">သင်ပိတ်ထားသည့် ဝဘ်ဆိုက်များ</translation>
 <translation id="6979041727349121225">စွမ်းအင်ချွေတာစနစ်</translation>
 <translation id="6979044105893951891">စီမံခန့်ခွဲထားသည့် ဧည့်သည်စက်ရှင်များကို ဖွင့်ခြင်းနှင့် ပိတ်ခြင်း</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">အသံပိတ်ရန် (မူရင်း)</translation>
 <translation id="6979737339423435258">အားလုံး</translation>
 <translation id="6981553172137913845">သီးသန့်ကြည့်ရှုရန် အစက်သင်္ကေတ မီနူးကိုနှိပ်ပြီး ရုပ်ဖျက် ဝင်းဒိုးတစ်ခု ဖွင့်ပါ</translation>
@@ -8055,6 +8054,7 @@
 <translation id="7807711621188256451"><ph name="HOST" />အား သင့် ကင်မရာကို ရယူသုံးမှု အမြဲတမ်း ခွင့်ပြုရန်</translation>
 <translation id="7810202088502699111">ဤစာမျက်နှာတွင် ပေါ့ပ်အာ့ပ်များ ပိတ်ဆို့ထားသည်။</translation>
 <translation id="7814458197256864873">&amp;ကူးယူ</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> အတွက် ဖြတ်လမ်းလင့်ခ် <ph name="SHORTCUT" /> ပြင်ဆင်ရန်</translation>
 <translation id="7815680994978050279">အန္တရာယ်ရှိသော ဒေါင်းလုဒ်ကို ပိတ်ဆို့ထားသည်</translation>
 <translation id="7817361223956157679">မျက်နှာပြင် လက်ကွက်ကို Linux အက်ပ်များတွင် အသုံးပြု၍မရသေးပါ</translation>
@@ -8134,7 +8134,6 @@
 <translation id="7881483672146086348">အကောင့်ကို ကြည့်ရန်</translation>
 <translation id="7883792253546618164">မှာယူမှုကို အချိန်မရွေး ရပ်ဆိုင်းနိုင်သည်။</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{မကြာသေးမီက အကြောင်းကြားချက်များစွာ ပို့ထားသည့် ဝဘ်ဆိုက် ၁ ခု ကို ပြန်ကြည့်ရန်}other{မကြာသေးမီက အကြောင်းကြားချက်များစွာ ပို့ထားသည့် ဝဘ်ဆိုက် {NUM_SITES} ခု ကို ပြန်ကြည့်ရန်}}</translation>
-<translation id="7884446017008693258">ဟော့စပေါ့ ဆက်တင်</translation>
 <translation id="788453346724465748">အကောင့်အချက်အလက်ကို ဖွင့်နေသည်...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ဖိုင်တစ်ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8662,6 +8661,7 @@
 <translation id="8322814362483282060">ဒီစာမျက်နှာကို သင်၏ မိုက်ခရိုဖုန်းကို ရယူသုံးမရအောင် ပိတ်ဆို့ထားသည်။</translation>
 <translation id="8323167517179506834">URL ရိုက်ထည့်ရန်</translation>
 <translation id="8323317289166663449">သင့်ကွန်ပျူတာနှင့် ဝဘ်ဆိုက်အားလုံးပေါ်ရှိ ဒေတာအားလုံးကို ဖတ်ရှုခြင်းနှင့် ပြောင်းခြင်း</translation>
+<translation id="8324158725704657629">ထပ်မမေးပါနှင့်</translation>
 <translation id="8324784016256120271">ဝဘ်ဆိုက်များသည် ကြော်ငြာများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် ဥပမာအားဖြင့် မတူညီသည့် ဝဘ်ဆိုက်များတစ်လျှောက်တွင် ကွတ်ကီးများသုံးပြီး သင့်ကြည့်ရှုခြင်းများကို ကြည့်နိုင်သည်</translation>
 <translation id="8325413836429495820">သင့်ကလစ်ဘုတ်ကို ကြည့်ရန် ခွင့်ပြုမထားပါ</translation>
 <translation id="8326478304147373412">PKCS #7၊ လက်မှတ် ကွင်းဆက်</translation>

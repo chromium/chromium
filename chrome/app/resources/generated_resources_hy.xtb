@@ -4082,7 +4082,6 @@
 <translation id="4413087696295876280">Կարդալ ChromeOS Flex սարքի մասին տեղեկություններն ու տվյալները</translation>
 <translation id="44141919652824029">Տրամադրե՞լ կցված USB սարքերի ցանկը «<ph name="APP_NAME" />» հավելվածին</translation>
 <translation id="4414232939543644979">Նոր &amp;ինկոգնիտո պատուհան</translation>
-<translation id="4414648713167199100">Օգտագործում է Chromebook-ի բջջային ինտերնետը, ինչի արդյունքում կապի օպերատորը կարող է լրացուցիչ վճարներ գանձել։ Բացի այդ՝ կարող է ավելացնել մարտկոցի օգտագործումը։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> սարքը պատրաստ է օգտագործման։</translation>
 <translation id="4415245286584082850">Սարքեր չեն գտնվել։ Բացեք օգնության կենտրոնը նոր ներդիրում։</translation>
 <translation id="4415276339145661267">Կառավարել Google հաշիվը</translation>
@@ -6877,7 +6876,6 @@
 <translation id="6833479554815567477">Ներդիրը հեռացվեց «<ph name="GROUP_NAME" />» խմբից – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Ընտրեք խելացի ու անվտանգ դիտարկիչ</translation>
 <translation id="6833996806551876956">Privacy Sandbox-ի փորձաշրջան</translation>
-<translation id="6835712061486505758">Ստեղծեք Wi-Fi թեժ կետ՝ մյուս սարքերին ինտերնետով ապահովելու համար։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Ձեր <ph name="DEVICE_TYPE" /> սարքը թարմացնելու համար կապակցվեք համացանցին:</translation>
 <translation id="6839225236531462745">Վկայագիրը ջնջելիս սխալ առաջացավ</translation>
 <translation id="6839916869147598086">Մուտքի էջը փոխվել է</translation>
@@ -7048,6 +7046,7 @@
 <translation id="6978717888677691380">Ձեր արգելափակած կայքերը</translation>
 <translation id="6979041727349121225">Էներգիայի տնտեսում</translation>
 <translation id="6979044105893951891">Հյուրի կառավարվող աշխատաշրջանների գործարկում և դադարեցում</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Անձայն (կանխադրված)</translation>
 <translation id="6979737339423435258">Ամբողջ ժամանակաշրջանի</translation>
 <translation id="6981553172137913845">Կայքերը գաղտնի այցելելու համար սեղմեք երեք կետով պատկերակին՝ ինկոգնիտո պատուհան բացելու համար։</translation>
@@ -8036,6 +8035,7 @@
 <translation id="7807711621188256451">Միշտ թույլ տալ <ph name="HOST" />-ին օգտագործել տեսախցիկը</translation>
 <translation id="7810202088502699111">Ելնող պատուհաններն արգելափակված են այս էջում:</translation>
 <translation id="7814458197256864873">&amp;Պատճենել</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Փոփոխել <ph name="EXTENSION_NAME" /> ընդլայնման <ph name="SHORTCUT" /> դյուրացումը</translation>
 <translation id="7815680994978050279">Արգելափակվել է վտանգավոր ներբեռնում</translation>
 <translation id="7817361223956157679">Էկրանի ստեղնաշարն առայժմ չի աշխատում Լինուքսի հավելվածներում</translation>
@@ -8115,7 +8115,6 @@
 <translation id="7881483672146086348">Դիտել հաշիվը</translation>
 <translation id="7883792253546618164">Դուք ցանկացած պահի կարող եք չեղարկել բաժանորդագրությունը։</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Ստուգեք 1 կայք, որը բազմաթիվ ծանուցումներ է ուղարկել}one{Ստուգեք {NUM_SITES} կայք, որը բազմաթիվ ծանուցումներ է ուղարկել}other{Ստուգեք {NUM_SITES} կայքեր, որոնք բազմաթիվ ծանուցումներ են ուղարկել}}</translation>
-<translation id="7884446017008693258">Թեժ կետի կարգավորումներ</translation>
 <translation id="788453346724465748">Հաշվի տվյալները բեռնվում են...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{տարր}one{# տարր}other{# տարր}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8643,6 +8642,7 @@
 <translation id="8322814362483282060">Այս էջին արգելված է օգտագործել ձեր խոսափողը:</translation>
 <translation id="8323167517179506834">Մուտքագրեք URL-ը</translation>
 <translation id="8323317289166663449">Դիտել և փոփոխել ձեր տվյալները ձեր համակարգչում և բոլոր կայքերում</translation>
+<translation id="8324158725704657629">Նորից չհարցնել</translation>
 <translation id="8324784016256120271">Կայքերը կարող են օգտագործել քուքիներ՝ ձեր այցելությունների պատմությունը տեսնելու, օրինակ, գովազդն անհատականացնելու համար։</translation>
 <translation id="8325413836429495820">Չի թույլատրվում ցուցադրել ձեր սեղմատախտակի բովանդակությունը</translation>
 <translation id="8326478304147373412">PKCS #7, վկայագրերի շղթա</translation>

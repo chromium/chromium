@@ -4086,7 +4086,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4413087696295876280">ChromeOS Flexi seadme teabe ja andmete lugemine</translation>
 <translation id="44141919652824029">Kas lubate rakendusel „<ph name="APP_NAME" />” hankida ühendatud USB-seadmete loendi?</translation>
 <translation id="4414232939543644979">Uus &amp;inkognito aken</translation>
-<translation id="4414648713167199100">Kasutab teie Chromebooki mobiilset andmesidet ja teie operaator või lisatasusid nõuda. See võib suurendada akukasutust. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">OIete valmis seadet <ph name="DEVICE_TYPE" /> kasutama hakkama.</translation>
 <translation id="4415245286584082850">Seadmeid ei leitud. Avage abikeskuse artikkel uuel vahelehel.</translation>
 <translation id="4415276339145661267">Google'i konto haldamine</translation>
@@ -6879,7 +6878,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6833479554815567477">Vaheleht eemaldati grupist <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Minge üle nutikale ja turvalisele brauserile</translation>
 <translation id="6833996806551876956">Privaatsuse liivakasti prooviperiood</translation>
-<translation id="6835712061486505758">Looge WiFi-kuumkoht, et teistele seadmetele internetiühendust pakkuda. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Seadme <ph name="DEVICE_TYPE" /> värskendamiseks looge ühendus Internetiga.</translation>
 <translation id="6839225236531462745">Sertifikaadi kustutamise viga</translation>
 <translation id="6839916869147598086">Sisselogimine on muutunud</translation>
@@ -7050,6 +7048,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6978717888677691380">Blokeeritud saidid</translation>
 <translation id="6979041727349121225">Energiasäästja</translation>
 <translation id="6979044105893951891">Hallatavate külastajaseansside käivitamine ja nendest väljumine</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Vaigista (vaikeseade)</translation>
 <translation id="6979737339423435258">Algusest</translation>
 <translation id="6981553172137913845">Privaatselt sirvimiseks klõpsake punktidega menüüikoonil, et avada inkognito aken</translation>
@@ -8039,6 +8038,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7807711621188256451">Luba saidil <ph name="HOST" /> alati kaamera juurde pääseda</translation>
 <translation id="7810202088502699111">Hüpikaknad blokeeriti sellel lehel.</translation>
 <translation id="7814458197256864873">&amp;Kopeeri</translation>
+<translation id="7814857791038398352">Microsoft® OneDrive</translation>
 <translation id="7815583197273433531">Muuda laienduse <ph name="EXTENSION_NAME" /> otseteed <ph name="SHORTCUT" /></translation>
 <translation id="7815680994978050279">Ohtlik allalaadimine blokeeriti</translation>
 <translation id="7817361223956157679">Ekraanil kuvatav klaviatuur Linuxi rakendustes veel ei tööta</translation>
@@ -8118,7 +8118,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7881483672146086348">Kuva konto</translation>
 <translation id="7883792253546618164">Saate tellimuse alati tühistada.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Vaadake üle 1 sait, mis saatis hiljuti hulgaliselt märguandeid}other{Vaadake üle {NUM_SITES} saiti, mis saatsid hiljuti hulgaliselt märguandeid}}</translation>
-<translation id="7884446017008693258">Kuumkoha seaded</translation>
 <translation id="788453346724465748">Kontoteabe laadimine …</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{üksus}other{# üksust}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8647,6 +8646,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8322814362483282060">Sellel lehel on juurdepääs teie mikrofonile blokeeritud.</translation>
 <translation id="8323167517179506834">Sisestage URL</translation>
 <translation id="8323317289166663449">Arvutis ja kõigil veebisaitidel kõigi teie andmete lugemine ja muutmine</translation>
+<translation id="8324158725704657629">Ära enam küsi</translation>
 <translation id="8324784016256120271">Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, näiteks reklaamide isikupärastamiseks</translation>
 <translation id="8325413836429495820">Pole lubatud näha teie lõikelauda</translation>
 <translation id="8326478304147373412">PKCS 7, sertifikaadiahel</translation>

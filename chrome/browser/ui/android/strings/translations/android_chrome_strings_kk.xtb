@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">Үшінші тарап cookie файлдарын қашан бөгеу керек екенін таңдаңыз</translation>
 <translation id="3428747202529429621">Аккаунтқа кірген болсаңыз, сізді Chrome браузерінде қорғайды және басқа Google қолданбаларында қауіпсіздігіңізді жақсартуға пайдаланылуы мүмкін.</translation>
 <translation id="3429160811076349561">Сынақ нұсқасының функциялары өшірулі</translation>
-<translation id="3432973700170747422">Соңғы 15 минутты жою</translation>
 <translation id="3435465986463792564">Ашық тұрған терезе көп пе? Оларды осы жерден реттеңіз.</translation>
 <translation id="3435738964857648380">Қауіпсіздік</translation>
 <translation id="3443221991560634068">Ағымдағы бетті жаңарту</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">Интернет қауіпсіздігін күшейту</translation>
 <translation id="3597179440835065298">Жақсырақ ұсыныстар алыңыз</translation>
 <translation id="3602290021589620013">Алдын ала көру</translation>
-<translation id="360901359071773787">Соңғы 15 минутты жою керек пе?</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3622349720008044802">Терезелерді басқару</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайт}}</translation>
@@ -752,6 +750,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5010886807652684893">Көрнекі көрініс</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> сайты байланыс орнатқысы келеді</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Соңғы 15 минут</translation>
 <translation id="5032430150487044192">QR кодын жасау мүмкін емес.</translation>
 <translation id="5039804452771397117">Рұқсат беру</translation>
 <translation id="5040262127954254034">Құпиялық</translation>
@@ -930,7 +929,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6011308810877101166">Іздеу ұсыныстарын жақсарту</translation>
 <translation id="6026538407078977628">Толық экранға жаю</translation>
 <translation id="6030719887161080597">Жарнаманың өнімділігін өлшеу үшін сайттар пайдаланатын ақпаратты басқару</translation>
-<translation id="6034146297924778597">Соңғы 15 минуттағы тарих жойылады:</translation>
 <translation id="6039379616847168523">Келесі қойындыға өту</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="604124094241169006">Автоматты</translation>

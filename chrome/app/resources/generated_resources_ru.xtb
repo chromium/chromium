@@ -4079,7 +4079,6 @@
 <translation id="4413087696295876280">Чтение сведений об устройстве с ChromeOS Flex и данных на нем</translation>
 <translation id="44141919652824029">Разрешить приложению "<ph name="APP_NAME" />" доступ к списку подключенных USB-устройств?</translation>
 <translation id="4414232939543644979">Новое окно в режиме инкогнито</translation>
-<translation id="4414648713167199100">Используется мобильный интернет устройства Chromebook. Оператор связи может взимать дополнительную плату. Также может увеличиться расход заряда батареи. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Устройство <ph name="DEVICE_TYPE" /> готово к использованию.</translation>
 <translation id="4415245286584082850">Устройства не найдены. Открыть статью Справочного центра в новой вкладке.</translation>
 <translation id="4415276339145661267">Перейти в настройки аккаунта Google</translation>
@@ -6868,7 +6867,6 @@
 <translation id="6833479554815567477">Вкладка удалена из группы "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Перейдите на умный и безопасный браузер</translation>
 <translation id="6833996806551876956">Пробная версия Privacy Sandbox</translation>
-<translation id="6835712061486505758">Создайте точку доступа Wi-Fi, чтобы другие устройства получили доступ в интернет. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Чтобы обновить устройство <ph name="DEVICE_TYPE" />, требуется подключение к Интернету.</translation>
 <translation id="6839225236531462745">Ошибка при удалении сертификата</translation>
 <translation id="6839916869147598086">Изменения, связанные с аккаунтами</translation>
@@ -7039,6 +7037,7 @@
 <translation id="6978717888677691380">Заблокированные сайты</translation>
 <translation id="6979041727349121225">Режим энергосбережения</translation>
 <translation id="6979044105893951891">Запуск и завершение управляемых гостевых сеансов</translation>
+<translation id="6979158407327259162">Google Диск</translation>
 <translation id="6979440798594660689">Без звука (по умолчанию)</translation>
 <translation id="6979737339423435258">Все время</translation>
 <translation id="6981553172137913845">Чтобы просматривать сайты анонимно, нажмите на значок с тремя точками и выберите "Новое окно в режиме инкогнито"</translation>
@@ -8023,6 +8022,7 @@
 <translation id="7807711621188256451">Всегда предоставлять <ph name="HOST" /> доступ к моей камере</translation>
 <translation id="7810202088502699111">Всплывающие окна были заблокированы. </translation>
 <translation id="7814458197256864873">&amp;Копировать</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Изменить сочетание клавиш <ph name="SHORTCUT" /> для расширения "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7815680994978050279">Заблокировано скачивание опасного файла</translation>
 <translation id="7817361223956157679">Экранная клавиатура пока не работает в приложениях для Linux.</translation>
@@ -8102,7 +8102,6 @@
 <translation id="7881483672146086348">Просмотреть аккаунт</translation>
 <translation id="7883792253546618164">Отказаться от рассылки можно в любой момент.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Проверьте сайт, который недавно отправлял много уведомлений}one{Проверьте {NUM_SITES} сайт, которые недавно отправляли много уведомлений}few{Проверьте {NUM_SITES} сайта, которые недавно отправляли много уведомлений}many{Проверьте {NUM_SITES} сайтов, которые недавно отправляли много уведомлений}other{Проверьте {NUM_SITES} сайта, которые недавно отправляли много уведомлений}}</translation>
-<translation id="7884446017008693258">Настройки точки доступа</translation>
 <translation id="788453346724465748">Загрузка данных аккаунта…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{объект}one{# объект}few{# объекта}many{# объектов}other{# объекта}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8629,6 +8628,7 @@
 <translation id="8322814362483282060">Доступ к вашему микрофону для этой страницы заблокирован.</translation>
 <translation id="8323167517179506834">Введите URL</translation>
 <translation id="8323317289166663449">Просмотр и изменение ваших данных на компьютере и всех сайтах.</translation>
+<translation id="8324158725704657629">Больше не спрашивать</translation>
 <translation id="8324784016256120271">Сайты могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например, для показа персонализированной рекламы.</translation>
 <translation id="8325413836429495820">Запретить сайтам просматривать буфер обмена</translation>
 <translation id="8326478304147373412">PKCS #7, цепочка сертификатов</translation>

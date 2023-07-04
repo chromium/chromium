@@ -4104,7 +4104,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4413087696295876280">Skaityti „ChromeOS Flex“ įrenginio informaciją ir duomenis</translation>
 <translation id="44141919652824029">Leisti „<ph name="APP_NAME" />“ gauti prijungtų USB įrenginių sąrašą?</translation>
 <translation id="4414232939543644979">Naujas &amp;inkognito langas</translation>
-<translation id="4414648713167199100">Naudojami jūsų „Chromebook“ mobiliojo ryšio duomenys ir operatorius gali taikyti papildomus mokesčius. Gali padidėti akumuliatoriaus energijos vartojimas. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Esate pasirengę naudoti „<ph name="DEVICE_TYPE" />“ įrenginį.</translation>
 <translation id="4415245286584082850">Įrenginių nerasta. Atidarykite pagalbos centro straipsnį naujame skirtuke.</translation>
 <translation id="4415276339145661267">„Google“ paskyros tvarkymas</translation>
@@ -6909,7 +6908,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6833479554815567477">Skirtukas pašalintas iš grupės „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Perjunkite į išmanią ir saugią naršyklę</translation>
 <translation id="6833996806551876956">„Privacy Sandbox“ bandomasis laikotarpis</translation>
-<translation id="6835712061486505758">Sukurkite „Wi-Fi“ viešosios interneto prieigos tašką, kad galėtumėte teikti interneto ryšį kitiems įrenginiams. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Prisijunkite prie interneto, kad galėtumėte atnaujinti „<ph name="DEVICE_TYPE" />“.</translation>
 <translation id="6839225236531462745">Sertifikato ištrynimo klaida</translation>
 <translation id="6839916869147598086">Prisijungimas pakeistas</translation>
@@ -7080,6 +7078,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6978717888677691380">Svetainės, kurias užblokavote</translation>
 <translation id="6979041727349121225">Energijos taupymo priemonė</translation>
 <translation id="6979044105893951891">Pradėti ir užbaigti valdomas svečio sesijas</translation>
+<translation id="6979158407327259162">„Google“ diskas</translation>
 <translation id="6979440798594660689">Nutildyti (numatytasis)</translation>
 <translation id="6979737339423435258">Visas laikotarpis</translation>
 <translation id="6981553172137913845">Kad galėtumėte naršyti privačiai, spustelėdami taškų piktogramos meniu atidarykite inkognito langą</translation>
@@ -8070,6 +8069,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7807711621188256451">Visada leisti <ph name="HOST" /> pasiekti fotoaparatą</translation>
 <translation id="7810202088502699111">Šiame puslapyje iššokantieji langai buvo užblokuoti.</translation>
 <translation id="7814458197256864873">&amp;Kopijuoti</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Redaguoti „<ph name="EXTENSION_NAME" />“ spartųjį klavišą <ph name="SHORTCUT" /></translation>
 <translation id="7815680994978050279">Užblokuotas pavojingas atsisiuntimas</translation>
 <translation id="7817361223956157679">Ekrano klaviatūra „Linux“ programose kol kas neveikia</translation>
@@ -8149,7 +8149,6 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7881483672146086348">Žiūrėti paskyrą</translation>
 <translation id="7883792253546618164">Atsisakyti prenumeratos galėsite bet kuriuo metu.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Peržiūrėkite 1 svetainę, kuri išsiuntė daug pranešimų}one{Peržiūrėkite {NUM_SITES} svetainę, kuri išsiuntė daug pranešimų}few{Peržiūrėkite {NUM_SITES} svetaines, kurios išsiuntė daug pranešimų}many{Peržiūrėkite {NUM_SITES} svetainės, kurios išsiuntė daug pranešimų}other{Peržiūrėkite {NUM_SITES} svetainių, kurios išsiuntė daug pranešimų}}</translation>
-<translation id="7884446017008693258">Viešosios interneto prieigos taško nustatymai</translation>
 <translation id="788453346724465748">Įkeliama paskyros informacija...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{elementą}one{# elementą}few{# elementus}many{# elemento}other{# elementų}}</translation>
 <translation id="7886605625338676841">„eSIM“ kortelė</translation>
@@ -8678,6 +8677,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8322814362483282060">Šis puslapis užblokuotas, kad nepasiektų jūsų mikrofono.</translation>
 <translation id="8323167517179506834">Įveskite URL</translation>
 <translation id="8323317289166663449">Skaityti ir keisti visus jūsų duomenis kompiuteryje ir visose svetainėse</translation>
+<translation id="8324158725704657629">Daugiau neklausti</translation>
 <translation id="8324784016256120271">Svetainės gali naudoti slapukus, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus</translation>
 <translation id="8325413836429495820">Neleidžiama peržiūrėti iškarpinės</translation>
 <translation id="8326478304147373412">PKCS Nr. 7, sertifikato grandinė</translation>

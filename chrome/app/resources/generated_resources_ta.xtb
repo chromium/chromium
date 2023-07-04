@@ -4095,7 +4095,6 @@
 <translation id="4413087696295876280">ChromeOS Flexஸின் சாதனத் தகவலையும் தரவையும் படித்தல்</translation>
 <translation id="44141919652824029">உங்கள் இணைத்த USB சாதனங்களின் பட்டியலைப் பெற, "<ph name="APP_NAME" />"ஐ அனுமதிக்க வேண்டுமா?</translation>
 <translation id="4414232939543644979">புதிய &amp;மறைநிலை சாளரம்</translation>
-<translation id="4414648713167199100">Chromebookகின் மொபைல் தரவைப் பயன்படுத்தும். இதற்கு மொபைல் நிறுவனம் கூடுதல் கட்டணம் விதிக்கக்கூடும். பேட்டரி உபயோகத்தை அதிகரிக்கக்கூடும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> சாதனத்தைப் பயன்படுத்தத் தயாராகிவிட்டீர்கள்.</translation>
 <translation id="4415245286584082850">சாதனங்கள் எதுவுமில்லை. புதிய தாவலில் உதவி மையக் கட்டுரையைத் திறக்கவும்.</translation>
 <translation id="4415276339145661267">Google கணக்கை நிர்வகி</translation>
@@ -6890,7 +6889,6 @@
 <translation id="6833479554815567477">இந்தக் குழுவிலிருந்து தாவல் நகர்த்தப்பட்டது <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">ஸ்மார்ட்டான, பாதுகாப்பான உலாவிக்கு மாறவும்</translation>
 <translation id="6833996806551876956">தனியுரிமை சாண்ட்பாக்ஸ் இலவச உபயோகக் காலம்</translation>
-<translation id="6835712061486505758">பிற சாதனங்களுக்கு இணையத்தை வழங்குவதற்காக வைஃபை ஹாட்ஸ்பாட்டை உருவாக்கும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">உங்கள் <ph name="DEVICE_TYPE" />ஐப் புதுப்பிக்க இணையத்துடன் இணையவும்.</translation>
 <translation id="6839225236531462745">சான்றிதழ் நீக்குதல் பிழை</translation>
 <translation id="6839916869147598086">உள்நுழையும் முறை மாறியுள்ளது</translation>
@@ -7061,6 +7059,7 @@
 <translation id="6978717888677691380">நீங்கள் தடுத்துள்ள தளங்கள்</translation>
 <translation id="6979041727349121225">எனர்ஜி சேமிப்புப் பயன்முறை</translation>
 <translation id="6979044105893951891">நிர்வகிக்கப்பட்ட கெஸ்ட் அமர்வுகளைத் தொடங்கும்/வெளியேறும் அனுமதி</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">முடக்கு (இயல்பு)</translation>
 <translation id="6979737339423435258">இதுவரை அனைத்தும்</translation>
 <translation id="6981553172137913845">தனிப்பட்ட முறையில் உலாவ, புள்ளிகள் ஐகான் மெனுவைக் கிளிக் செய்து மறைநிலைத் தாவலைத் திறக்கவும்</translation>
@@ -8050,6 +8049,7 @@
 <translation id="7807711621188256451">உங்கள் கேமராவை எப்போதும் அணுக <ph name="HOST" /> ஐ அனுமதிக்கவும்</translation>
 <translation id="7810202088502699111">இந்தப் பக்கத்தில் பாப்-அப்கள் தடுக்கப்பட்டன.</translation>
 <translation id="7814458197256864873">&amp;நகலெடு</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" />க்கான <ph name="SHORTCUT" /> ஷார்ட்கட்டைத் திருத்து</translation>
 <translation id="7815680994978050279">ஆபத்தான பதிவிறக்கம் தடுக்கப்பட்டது</translation>
 <translation id="7817361223956157679">Linux ஆப்ஸிற்கு ஸ்கிரீன் கீபோர்டு இதுவரை இல்லை</translation>
@@ -8129,7 +8129,6 @@
 <translation id="7881483672146086348">கணக்கைப் பார்</translation>
 <translation id="7883792253546618164">எப்போது வேண்டுமானாலும் குழுவிலகலாம்.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{அதிகமான அறிவிப்புகளை அனுப்பிய 1 தளத்தைப் பாருங்கள்}other{அதிகமான அறிவிப்புகளை அனுப்பிய {NUM_SITES} தளங்களைப் பாருங்கள்}}</translation>
-<translation id="7884446017008693258">ஹாட்ஸ்பாட் அமைப்புகள்</translation>
 <translation id="788453346724465748">கணக்குத் தகவல்களை ஏற்றுகிறது...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ஓர் ஆவணத்தை}other{# ஆவணங்களை}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8658,6 +8657,7 @@
 <translation id="8322814362483282060">இந்தப் பக்கம் உங்கள் மைக்ரோஃபோனை அணுகுவதிலிருந்து தடுக்கப்பட்டுள்ளது.</translation>
 <translation id="8323167517179506834">URL ஐத் தட்டச்சு செய்யவும்</translation>
 <translation id="8323317289166663449">கம்ப்யூட்டரிலும் எல்லா இணையதளங்களிலும் உள்ள உங்கள் தரவைப் படிக்கலாம் திருத்தலாம்</translation>
+<translation id="8324158725704657629">மீண்டும் கேட்காதே</translation>
 <translation id="8324784016256120271">விளம்பரங்களைப் பிரத்தியேகமாக்குவது போன்று வெவ்வேறு தளங்களில் உங்களின் உலாவல் செயல்பாட்டைப் பார்க்கக் குக்கீகளைத் தளங்கள் பயன்படுத்த முடியும்</translation>
 <translation id="8325413836429495820">உங்கள் கிளிப்போர்டைப் பார்க்க அனுமதி இல்லாத தளங்கள்</translation>
 <translation id="8326478304147373412">PKCS #7, சான்றிதழ் சங்கிலி</translation>

@@ -4080,7 +4080,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4413087696295876280">Irakurri ChromeOS Flex-eko gailuari buruzko informazioa eta datuak</translation>
 <translation id="44141919652824029">Konektatutako USB bidezko gailuen zerrenda lortzeko baimena eman nahi diozu "<ph name="APP_NAME" />" aplikazioari?</translation>
 <translation id="4414232939543644979">&amp;Ezkutuko moduko leiho berria</translation>
-<translation id="4414648713167199100">Chromebook-aren datu-konexioa darabil. Baliteke zerbait ordaindu behar izatea. Agian bateria gehiago erabiliko du. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Prest zaude <ph name="DEVICE_TYPE" /> gailua erabiltzeko.</translation>
 <translation id="4415245286584082850">Ez da aurkitu gailurik. Ireki laguntza-zentroko artikulu bat beste fitxa batean.</translation>
 <translation id="4415276339145661267">Kudeatu Google-ko kontua</translation>
@@ -6870,7 +6869,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> taldetik kendu da fitxa (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="683373380308365518">Aldatu arakatzaile adimendun eta seguru batera</translation>
 <translation id="6833996806551876956">Privacy Sandbox-aren probaldia</translation>
-<translation id="6835712061486505758">Sortu wifi-gune bat beste gailu batzuei Internet erabiltzeko aukera emateko. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> eguneratzeko, konektatu Internetera.</translation>
 <translation id="6839225236531462745">Errore bat gertatu da ziurtagiria ezabatzean</translation>
 <translation id="6839916869147598086">Aldatu egin da saioa hasteko modua</translation>
@@ -7041,6 +7039,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6978717888677691380">Blokeatu dituzun webguneak</translation>
 <translation id="6979041727349121225">Energia-aurreztailea</translation>
 <translation id="6979044105893951891">Abiarazi eta amaitu gonbidatuentzako saio kudeatuak</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Desaktibatu audioa (lehenetsia)</translation>
 <translation id="6979737339423435258">Guztiak</translation>
 <translation id="6981553172137913845">Sarea modu pribatuan arakatzeko, sakatu hiru puntuen ikonoa duen menua eta ireki ezkutuko moduko leiho bat</translation>
@@ -8029,6 +8028,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7807711621188256451">Eman beti zure kamera erabiltzeko baimena <ph name="HOST" /> ostalariari</translation>
 <translation id="7810202088502699111">Orri honetako popup-mezuak blokeatu dira.</translation>
 <translation id="7814458197256864873">&amp;Kopiatu</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editatu <ph name="EXTENSION_NAME" /> luzapenaren <ph name="SHORTCUT" /> lasterbidea</translation>
 <translation id="7815680994978050279">Deskarga arriskutsu bat blokeatu da</translation>
 <translation id="7817361223956157679">Pantailako teklatua ezin da erabili Linux-erako aplikazioetan oraindik</translation>
@@ -8108,7 +8108,6 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7881483672146086348">Ikusi kontua</translation>
 <translation id="7883792253546618164">Edonoiz ken dezakezu harpidetza.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Berrikusi jakinarazpen asko bidali dituen webgune bat}other{Berrikusi jakinarazpen asko bidali dituzten {NUM_SITES} webgune}}</translation>
-<translation id="7884446017008693258">Wifi-gunearen ezarpenak</translation>
 <translation id="788453346724465748">Kontuari buruzko informazioa kargatzen…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{elementu bat}other{# elementu}}</translation>
 <translation id="7886605625338676841">eSIM sareak</translation>
@@ -8636,6 +8635,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8322814362483282060">Orriari zure kamera atzitzeko aukera blokeatu zaio.</translation>
 <translation id="8323167517179506834">Idatzi URLa</translation>
 <translation id="8323317289166663449">Ordenagailuan eta edozein webgunetan dauzkazun datu guztiak irakurri eta aldatu</translation>
+<translation id="8324158725704657629">Ez galdetu berriro</translation>
 <translation id="8324784016256120271">Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko.</translation>
 <translation id="8325413836429495820">Ezin dute ikusi arbela</translation>
 <translation id="8326478304147373412">PKCS #7, ziurtagiri-katea</translation>

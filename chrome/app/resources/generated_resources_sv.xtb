@@ -4095,7 +4095,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4413087696295876280">Läsa ChromeOS Flex-enhetsinformation och -data</translation>
 <translation id="44141919652824029">Vill du ge <ph name="APP_NAME" /> åtkomstbehörighet till listan med anslutna USB-enheter?</translation>
 <translation id="4414232939543644979">Nytt &amp;inkognitofönster</translation>
-<translation id="4414648713167199100">Använder Chromebooks mobildata. Operatören kan ta ut ytterligare avgifter. Kan öka batteriförbrukningen. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Nu kan du börja använda <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Inga enheter hittades. Öppna en hjälpsida på en ny flik.</translation>
 <translation id="4415276339145661267">Hantera Google-kontot</translation>
@@ -6889,7 +6888,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6833479554815567477">Fliken togs bort från gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Byt till en smart och säker webbläsare</translation>
 <translation id="6833996806551876956">Privacy Sandbox – provperiod</translation>
-<translation id="6835712061486505758">Skapa en wifi-surfzon för att ge andra enheter internetåtkomst. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Anslut till internet om du vill uppdatera din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Fel vid borttagning av certifikat</translation>
 <translation id="6839916869147598086">Inloggning fungerar annorlunda</translation>
@@ -7060,6 +7058,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6978717888677691380">Webbplatser du har blockerat</translation>
 <translation id="6979041727349121225">Strömsparläge</translation>
 <translation id="6979044105893951891">Starta och avsluta hanterade gästsessioner</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Ljud av (standard)</translation>
 <translation id="6979737339423435258">Sedan kontot skapades</translation>
 <translation id="6981553172137913845">Öppna ett inkognitofönster genom att klicka på menyn med tre punkter om du vill surfa privat</translation>
@@ -8049,6 +8048,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7807711621188256451">Låt alltid <ph name="HOST" /> använda din kamera</translation>
 <translation id="7810202088502699111">Popup-fönster är blockerade på den här sidan.</translation>
 <translation id="7814458197256864873">&amp;Kopiera</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Redigera genväg <ph name="SHORTCUT" /> för <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">En farlig nedladdning blockerades</translation>
 <translation id="7817361223956157679">Skärmtangentbordet fungerar inte i Linux-appar ännu</translation>
@@ -8128,7 +8128,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7881483672146086348">Visa konto</translation>
 <translation id="7883792253546618164">Du kan avsluta prenumerationen när du vill.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Granska 1 webbplats som nyligen har skickat många aviseringar}other{Granska {NUM_SITES} webbplatser som nyligen har skickat många aviseringar}}</translation>
-<translation id="7884446017008693258">Inställningar för surfzon</translation>
 <translation id="788453346724465748">Läser in kontouppgifter …</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ett objekt}other{# objekt}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8657,6 +8656,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8322814362483282060">Den här sidan har blockerats och kan inte komma åt mikrofonen.</translation>
 <translation id="8323167517179506834">Skriv en webbadress</translation>
 <translation id="8323317289166663449">Läsa och ändra all din data på datorn och alla webbplatser</translation>
+<translation id="8324158725704657629">Fråga inte igen</translation>
 <translation id="8324784016256120271">Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookies och till exempel anpassa annonser</translation>
 <translation id="8325413836429495820">Får inte se urklippet</translation>
 <translation id="8326478304147373412">PKCS #7, certifikatkedja</translation>

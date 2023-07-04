@@ -446,7 +446,6 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="3421726884497337397">Escolle cando queres bloquear as cookies de terceiros</translation>
 <translation id="3428747202529429621">Protéxete en Chrome e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas iniciada a sesión</translation>
 <translation id="3429160811076349561">As funcións de proba están desactivadas</translation>
-<translation id="3432973700170747422">Eliminar últimos 15 minutos</translation>
 <translation id="3435465986463792564">Tes varias ventás? Podes xestionalas desde aquí</translation>
 <translation id="3435738964857648380">Seguranza</translation>
 <translation id="3443221991560634068">Volver cargar a páxina actual</translation>
@@ -480,7 +479,6 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="3587596251841506391">Axudar a mellorar a seguranza na Web</translation>
 <translation id="3597179440835065298">Recibe mellores suxestións</translation>
 <translation id="3602290021589620013">Previsualizar</translation>
-<translation id="360901359071773787">Queres eliminar os últimos 15 minutos?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Xestionar as ventás</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{e 1 sitio máis}other{e # sitios máis}}</translation>
@@ -752,6 +750,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5010886807652684893">Vista visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> quere conectarse</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Últimos 15 minutos</translation>
 <translation id="5032430150487044192">Non se puido crear o código QR</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidade</translation>
@@ -930,7 +929,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="6011308810877101166">Mellorar as suxestións de busca</translation>
 <translation id="6026538407078977628">Ampliar a pantalla completa</translation>
 <translation id="6030719887161080597">Xestiona a información que usan os sitios para medir o rendemento publicitario</translation>
-<translation id="6034146297924778597">O historial dos últimos 15 minutos eliminarase:</translation>
 <translation id="6039379616847168523">Saltar á seguinte pestana</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="604124094241169006">Automático</translation>

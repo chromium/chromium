@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">Fayl və ya direktoriya qeyri-stabildir.</translation>
 <translation id="1363028406613469049">Trek</translation>
 <translation id="1378727793141957596">Google Diskə xoş gəlmisiniz!</translation>
-<translation id="1379156577998569384">Mənim diskim faylları oflayn əlçatandır</translation>
 <translation id="1379911846207762492">İnternet bağlantınız olmadıqda oflayn giriş üçün faylları əlçatan edə bilərsiniz.</translation>
 <translation id="1383876407941801731">Axtar</translation>
 <translation id="1388045380422025115">Bütün növlər</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">Cihaz ayarları</translation>
 <translation id="2084809735218147718">Təşəkkür edən adam</translation>
 <translation id="2088690981887365033">VPN şəbəkəsi</translation>
-<translation id="2089751716171649322">Oflayn olduqda Google Disk fayllarına asanlıqla daxil olun</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Anonim rejimdə icazə verin<ph name="END_BOLD" /> seçimini aktiv edin</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> element silinəcək və onları bərpa edə bilməyəcəksiniz.</translation>
 <translation id="2122305276694332719">Gizlədilmiş şəbəkəyə avtomatik qoşulduqda başqaları cihaz və şəbəkə ayarlarınızı görəcək. Bu, tövsiyə edilmir.</translation>
@@ -577,12 +575,10 @@
 <translation id="5494920125229734069">Hamısını seçin</translation>
 <translation id="5500122897333236901">İsland</translation>
 <translation id="5508696409934741614">Nöqtə</translation>
-<translation id="5519161320735100193">Google Disk ayarları</translation>
 <translation id="5522908512596376669">Fayl siyahısı siyahı görünüşünə dəyişdirilib.</translation>
 <translation id="5524517123096967210">Fayl oxunmadı.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> şəkli</translation>
 <translation id="5534520101572674276">Ölçü hesablanılır</translation>
-<translation id="5536122250858122375">Bu fayl növünü sinxronlaşdırmaq olmur</translation>
 <translation id="554153475311314364">Yunan dilində Transliterasiya</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> qovluq seçilib</translation>
 <translation id="5580591966435005537">virtual cihaz</translation>
@@ -743,7 +739,6 @@
 <translation id="6874758081814639712">Tay-çi ilə məşğul olan adam</translation>
 <translation id="6876155724392614295">Velosiped</translation>
 <translation id="6878261347041253038">Devanaqari klaviaturası (fonetik)</translation>
-<translation id="6882444584974399416">Faylları oflayn əlçatan saxlamaq üçün cihazda yaddaş yeri kifayət deyil. Yeni fayllar avtomatik sinxronlaşdırılmayacaq.</translation>
 <translation id="6885780034956018177">İlbiz</translation>
 <translation id="6896758677409633944">Kopyalayın</translation>
 <translation id="6898028766943174120">Digər alt qovluqlar...</translation>
@@ -978,7 +973,6 @@
 <translation id="8560515948038859357">Kanton</translation>
 <translation id="8561206103590473338">Fil</translation>
 <translation id="8566466896628108558">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administrator tərəfindən bloklanıb, Detallar</translation>
-<translation id="8567555211227790801">Oflaynsınız. İnternetə qoşulduqda sinxronlaşdırma bərpa ediləcək.</translation>
 <translation id="8568374623837201676">Bu fayl həmişəlik silinsin?</translation>
 <translation id="8569764466147087991">Açmaq üçün fayl seçin</translation>
 <translation id="8577897833047451336">Xorvat</translation>

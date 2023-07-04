@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">तृतीय पक्ष कुकी कधी ब्लॉक करायच्या ते निवडा</translation>
 <translation id="3428747202529429621">तुम्हाला Chrome वर सुरक्षित ठेवते आणि तुम्ही साइन इन केलेले असताना इतर Google अ‍ॅप्समध्ये तुमच्या सुरक्षिततेत सुधारणा करण्यासाठी वापरले जाऊ शकते</translation>
 <translation id="3429160811076349561">चाचणी वैशिष्ट्ये बंद आहेत</translation>
-<translation id="3432973700170747422">शेवटची १५ मिनिटे हटवा</translation>
 <translation id="3435465986463792564">खूप विंडो उघडल्या आहेत का? तुम्ही त्या येथे व्यवस्थापित करू शकता</translation>
 <translation id="3435738964857648380">सुरक्षितता</translation>
 <translation id="3443221991560634068">सध्याचे पेज रीलोड करा</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">वेबवरील सुरक्षेमध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="3597179440835065298">आणखी चांगल्या सूचना मिळवा</translation>
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
-<translation id="360901359071773787">शेवटची १५ मिनिटे हटवायची आहेत का?</translation>
 <translation id="3616113530831147358">ऑडिओ</translation>
 <translation id="3622349720008044802">विंडो व्यवस्थापित करा</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{आणि १ साइट}other{आणि # साइट}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">व्हिज्युअल दृश्य</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> कनेक्ट करू इच्छिते</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">शेवटची १५ मिनिटे</translation>
 <translation id="5032430150487044192">QR कोड तयार करता आला नाही</translation>
 <translation id="5039804452771397117">परवानगी द्या</translation>
 <translation id="5040262127954254034">गोपनीयता</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">शोध सूचनांमध्ये सुधारणा करा</translation>
 <translation id="6026538407078977628">फुलस्क्रीनवर विस्तार करा</translation>
 <translation id="6030719887161080597">जाहिरातीच्या परफॉर्मन्सचे मापन करण्यासाठी साइट वापरत असलेल्या माहितीचे व्यवस्थापन करा</translation>
-<translation id="6034146297924778597">शेवटच्या १५ मिनिटांमधील इतिहास हटवला जाईल:</translation>
 <translation id="6039379616847168523">पुढील टॅबवर जा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="604124094241169006">स्वयंचलित</translation>

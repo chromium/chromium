@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">データを消去して権限をリセット</translation>
 <translation id="6527303717912515753">共有</translation>
 <translation id="6545864417968258051">Bluetooth のスキャン</translation>
-<translation id="6552691050538553146">その他のオプション <ph name="BANNER_TITLE" /></translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限がブロックされています}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限がブロックされています}}</translation>
 <translation id="6554732001434021288">最終アクセス日: <ph name="NUM_DAYS" /> 日前</translation>
 <translation id="6561560012278703671">目立たない方法で通知する（割り込み通知を行わない）</translation>

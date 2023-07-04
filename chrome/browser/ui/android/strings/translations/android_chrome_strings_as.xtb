@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">কেতিয়া তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰিব লাগে সেয়া বাছনি কৰক</translation>
 <translation id="3428747202529429621">আপোনাক Chromeত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা সময়ত অন্য Google এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="3429160811076349561">ট্ৰায়েলৰ সুবিধা অফ আছে</translation>
-<translation id="3432973700170747422">যোৱা ১৫ মিনিটৰ ডেটা মচক</translation>
 <translation id="3435465986463792564">বহুতো ৱিণ্ড’ পাইছেনে? আপুনি ইয়াৰ পৰা সেইবোৰ পৰিচালনা কৰিব পাৰে</translation>
 <translation id="3435738964857648380">সুৰক্ষা</translation>
 <translation id="3443221991560634068">বর্তমানৰ পৃষ্ঠাটো পুনৰ ল’ড কৰক</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">ৱেবত সুৰক্ষা উন্নত কৰাত সহায় কৰক</translation>
 <translation id="3597179440835065298">উন্নত পৰামৰ্শ পাওক</translation>
 <translation id="3602290021589620013">পূৰ্বদৰ্শন</translation>
-<translation id="360901359071773787">যোৱা ১৫ মিনিটৰ ডেটা মচিবনে?</translation>
 <translation id="3616113530831147358">অডিঅ’</translation>
 <translation id="3622349720008044802">ৱিণ্ড’ পৰিচালনা কৰক</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ ১ টা ছাইট}one{+ # টা ছাইট}other{+ # টা ছাইট}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">ভিজুৱেল ভিউ</translation>
 <translation id="5011311129201317034"><ph name="SITE" />এ সংযোগ কৰিব বিচাৰিছে</translation>
 <translation id="5016205925109358554">ছেৰিফ</translation>
+<translation id="5017529052065664584">যোৱা ১৫ মিনিটৰ</translation>
 <translation id="5032430150487044192">কিউআৰ ক’ড সৃষ্টি কৰিব নোৱাৰি</translation>
 <translation id="5039804452771397117">অনুমতি দিয়ক</translation>
 <translation id="5040262127954254034">গোপনীয়তা</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">সন্ধানৰ পৰামৰ্শ উন্নত কৰক</translation>
 <translation id="6026538407078977628">পূৰ্ণ স্ক্ৰীনলৈ বিস্তাৰ কৰক</translation>
 <translation id="6030719887161080597">বিজ্ঞাপনৰ পাৰদৰ্শিতা জুখিবলৈ ছাইটসমূহে ব্যৱহাৰ কৰা তথ্য পৰিচালনা কৰক</translation>
-<translation id="6034146297924778597">যোৱা ১৫ মিনিটৰ ইতিহাস মচি পেলোৱা হ’ব:</translation>
 <translation id="6039379616847168523">পৰৱৰ্তী টেবলৈ যাওক</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
 <translation id="604124094241169006">স্বয়ংক্ৰিয়</translation>

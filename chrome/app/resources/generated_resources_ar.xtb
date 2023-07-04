@@ -4078,7 +4078,6 @@
 <translation id="4413087696295876280">‏الاطّلاع على معلومات وبيانات جهاز ChromeOS Flex</translation>
 <translation id="44141919652824029">‏هل تريد السماح لتطبيق "<ph name="APP_NAME" />" بالحصول على قائمة أجهزة USB المرفقة؟</translation>
 <translation id="4414232939543644979">&amp;نافذة جديدة للتصفح المتخفي</translation>
-<translation id="4414648713167199100">‏تستخدم نقطة الاتصال بيانات الجوّال في جهاز Chromebook وقد يفرض عليك مشغّل شبكة الجوّال رسومًا إضافية. وقد تؤدي أيضًا إلى زيادة معدّل استخدام البطارية. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">يمكنك الآن البدء باستخدام <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">لم يتم العثور على أيّ أجهزة. يُرجى فتح مقالة مركز المساعدة في علامة تبويب جديدة.</translation>
 <translation id="4415276339145661267">‏إدارة حسابك على Google</translation>
@@ -6878,7 +6877,6 @@
 <translation id="6833479554815567477">تمت إزالة علامة التبويب من المجموعة <ph name="GROUP_NAME" /> والتي تحتوي على <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="683373380308365518">التبديل إلى متصفح ذكي وآمن</translation>
 <translation id="6833996806551876956">‏الفترة التجريبية لاستخدام ميزة Privacy Sandbox</translation>
-<translation id="6835712061486505758">‏يمكنك إنشاء نقطة اتصال Wi-Fi لتوفير الإنترنت للأجهزة الأخرى. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">يُرجى الاتصال بالإنترنت لتحديث <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">خطأ حذف الشهادة</translation>
 <translation id="6839916869147598086">تم تغيير تسجيل الدخول</translation>
@@ -7049,6 +7047,7 @@
 <translation id="6978717888677691380">المواقع الإلكترونية التي حظرتها</translation>
 <translation id="6979041727349121225">وضع "توفير الطاقة"</translation>
 <translation id="6979044105893951891">بدء جلسات الضيوف المُدارة والخروج منها</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">كتم الصوت (تلقائي)</translation>
 <translation id="6979737339423435258">جميع الأوقات</translation>
 <translation id="6981553172137913845">للتصفُّح بخصوصية تامّة، انقر على القائمة المشار إليها برمز النقاط لفتح نافذة للتصفُّح المتخفي.</translation>
@@ -8038,6 +8037,7 @@
 <translation id="7807711621188256451">السماح دائمًا لـ <ph name="HOST" /> بالدخول إلى الكاميرا</translation>
 <translation id="7810202088502699111">تم منع عرض النوافذ المنبثقة في هذه الصفحة.</translation>
 <translation id="7814458197256864873">&amp;نسخ</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">تعديل الاختصار <ph name="SHORTCUT" /> للإضافة <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">تم حظر تنزيل خطير</translation>
 <translation id="7817361223956157679">‏لا تعمل لوحة المفاتيح على الشاشة على تطبيقات Linux بعد.</translation>
@@ -8117,7 +8117,6 @@
 <translation id="7881483672146086348">عرض حساب</translation>
 <translation id="7883792253546618164">يمكنك إلغاء الاشتراك في أي وقت.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{مراجعة أذونات موقع إلكتروني واحد أرسل الكثير من الإشعارات}zero{مراجعة أذونات {NUM_SITES} موقع إلكتروني أرسل الكثير من الإشعارات}two{مراجعة أذونات موقعَين إلكترونيَّين ({NUM_SITES}) أرسلا الكثير من الإشعارات}few{مراجعة أذونات {NUM_SITES} مواقع إلكترونية أرسلت الكثير من الإشعارات}many{مراجعة أذونات {NUM_SITES} موقعًا إلكترونيًا أرسل الكثير من الإشعارات}other{مراجعة أذونات {NUM_SITES} موقع إلكتروني أرسل الكثير من الإشعارات}}</translation>
-<translation id="7884446017008693258">إعدادات نقطة الاتصال</translation>
 <translation id="788453346724465748">جارٍ تحميل معلومات الحساب...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{عنصر واحد}zero{# عنصر}two{عنصران}few{# عناصر}many{# عنصرًا}other{# عنصر}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8645,6 +8644,7 @@
 <translation id="8322814362483282060">تم حظر دخول هذه الصفحة إلى الميكروفون التابع لك.</translation>
 <translation id="8323167517179506834">‏اكتب عنوان URL</translation>
 <translation id="8323317289166663449">الاطّلاع على جميع بياناتك وتغييرها على جهاز الكمبيوتر وجميع المواقع الإلكترونية</translation>
+<translation id="8324158725704657629">عدم السؤال مرة أخرى</translation>
 <translation id="8324784016256120271">يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفُّح الخاص بك على المواقع الإلكترونية المختلفة، وذلك لتقديم إعلانات مخصَّصة لك مثلاً.</translation>
 <translation id="8325413836429495820">المواقع الإلكترونية التي لا يُسمح لها بالاطّلاع على الحافظة</translation>
 <translation id="8326478304147373412">‏PKCS #7، سلسلة شهادات</translation>

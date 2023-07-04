@@ -4087,7 +4087,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4413087696295876280">Lire les infos provenant des appareils ChromeOS Flex et leurs données</translation>
 <translation id="44141919652824029">Autoriser <ph name="APP_NAME" /> à obtenir la liste des appareils USB connectés ?</translation>
 <translation id="4414232939543644979">Nouvelle fenêtre de nav&amp;igation privée</translation>
-<translation id="4414648713167199100">Utilise les données mobiles de votre Chromebook, et votre opérateur peut vous facturer des frais supplémentaires. Peut solliciter davantage la batterie. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Vous êtes prêt à utiliser votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Aucun appareil détecté. Ouvrir un article du centre d'aide dans un nouvel onglet.</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
@@ -6887,7 +6886,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6833479554815567477">Onglet supprimé du groupe <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Passez à un navigateur intelligent et sécurisé</translation>
 <translation id="6833996806551876956">Essai de Privacy Sandbox</translation>
-<translation id="6835712061486505758">Créez un point d'accès Wi-Fi pour fournir un accès Internet à d'autres appareils. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Connectez-vous à Internet pour mettre à jour votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Erreur de suppression de certificat</translation>
 <translation id="6839916869147598086">Le processus de connexion a été modifié</translation>
@@ -7058,6 +7056,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6978717888677691380">Sites que vous avez bloqués</translation>
 <translation id="6979041727349121225">Économiseur d'énergie</translation>
 <translation id="6979044105893951891">Lancer et quitter les sessions Invité gérées</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Coupé (par défaut)</translation>
 <translation id="6979737339423435258">Toutes les données</translation>
 <translation id="6981553172137913845">Pour parcourir le Web en mode privé, cliquez sur le menu à trois points afin d'ouvrir une fenêtre de navigation privée</translation>
@@ -8048,6 +8047,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7807711621188256451">Toujours autoriser <ph name="HOST" /> à accéder à votre caméra</translation>
 <translation id="7810202088502699111">Des fenêtres pop-up ont été bloquées sur cette page.</translation>
 <translation id="7814458197256864873">&amp;Copier</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Modifier le raccourci <ph name="SHORTCUT" /> pour <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Téléchargement dangereux bloqué</translation>
 <translation id="7817361223956157679">Le clavier à l'écran n'est pas compatible avec les applications Linux pour le moment</translation>
@@ -8127,7 +8127,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7881483672146086348">Afficher le compte</translation>
 <translation id="7883792253546618164">Vous pouvez vous désabonner à tout moment.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Examiner 1 site qui a récemment envoyé beaucoup de notifications}one{Examiner {NUM_SITES} site qui a récemment envoyé beaucoup de notifications}other{Examiner {NUM_SITES} sites qui ont récemment envoyé beaucoup de notifications}}</translation>
-<translation id="7884446017008693258">Paramètres de point d'accès</translation>
 <translation id="788453346724465748">Chargement des informations de compte…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{un élément}one{# élément}other{# éléments}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8656,6 +8655,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8322814362483282060">L'accès à votre micro est bloqué pour cette page</translation>
 <translation id="8323167517179506834">Saisir une URL</translation>
 <translation id="8323317289166663449">Accéder à toutes vos données sur votre ordinateur et tous les sites Web et les modifier</translation>
+<translation id="8324158725704657629">Ne plus me demander</translation>
 <translation id="8324784016256120271">Les sites peuvent utiliser des cookies afin de voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces)</translation>
 <translation id="8325413836429495820">Non autorisé à voir votre presse-papiers</translation>
 <translation id="8326478304147373412">PKCS #7, chaîne de certificats</translation>

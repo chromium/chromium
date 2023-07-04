@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">เลือกเวลาที่จะบล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="3428747202529429621">รักษาความปลอดภัยของคุณใน Chrome และอาจใช้เพื่อปรับปรุงความปลอดภัยในแอปอื่นๆ ของ Google เมื่อลงชื่อเข้าใช้</translation>
 <translation id="3429160811076349561">ฟีเจอร์ช่วงทดลองใช้ปิดอยู่</translation>
-<translation id="3432973700170747422">ลบ 15 นาทีที่ผ่านมา</translation>
 <translation id="3435465986463792564">หากมีหน้าต่างเปิดอยู่หลายหน้า คุณจัดการหน้าต่างเหล่านั้นได้จากที่นี่</translation>
 <translation id="3435738964857648380">ความปลอดภัย</translation>
 <translation id="3443221991560634068">โหลดหน้าปัจจุบันอีกครั้ง</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">ช่วยปรับปรุงความปลอดภัยในอินเทอร์เน็ต</translation>
 <translation id="3597179440835065298">รับคำแนะนำที่ดียิ่งขึ้น</translation>
 <translation id="3602290021589620013">ดูตัวอย่าง</translation>
-<translation id="360901359071773787">ลบ 15 นาทีที่ผ่านมาใช่ไหม</translation>
 <translation id="3616113530831147358">เสียง</translation>
 <translation id="3622349720008044802">จัดการหน้าต่าง</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{และอีก 1 เว็บไซต์}other{และอีก # เว็บไซต์}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">ดูภาพ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ต้องการเชื่อมต่อ</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">15 นาทีที่ผ่านมา</translation>
 <translation id="5032430150487044192">สร้างคิวอาร์โค้ดไม่ได้</translation>
 <translation id="5039804452771397117">อนุญาต</translation>
 <translation id="5040262127954254034">ความเป็นส่วนตัว</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">ปรับปรุงการแนะนำการค้นหา</translation>
 <translation id="6026538407078977628">ขยายเต็มหน้าจอ</translation>
 <translation id="6030719887161080597">จัดการข้อมูลที่เว็บไซต์ต่างๆ ใช้เพื่อวัดประสิทธิภาพโฆษณา</translation>
-<translation id="6034146297924778597">ระบบจะลบประวัติการเข้าชมจาก 15 นาทีที่ผ่านมา</translation>
 <translation id="6039379616847168523">ข้ามไปยังแท็บถัดไป</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="604124094241169006">อัตโนมัติ</translation>

@@ -4079,7 +4079,6 @@
 <translation id="4413087696295876280">Читање информација о ChromeOS Flex уређајима и података са уређаја</translation>
 <translation id="44141919652824029">Желите ли да дозволите да „<ph name="APP_NAME" />“ добије листу прикључених USB уређаја?</translation>
 <translation id="4414232939543644979">Нови &amp;прозор без архивирања</translation>
-<translation id="4414648713167199100">Користи мобилне податке Chromebook-а, а мобилни оператер може да наплати додатне накнаде. Може да повећа потрошњу батерије. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Можете да почнете са коришћењем уређаја <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Није пронађен ниједан уређај. Отворите чланак центра за помоћ на новој картици.</translation>
 <translation id="4415276339145661267">Управљајте Google налогом</translation>
@@ -6876,7 +6875,6 @@
 <translation id="6833479554815567477">Картица је уклоњена из групе <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Пређите на паметан и безбедан прегледач</translation>
 <translation id="6833996806551876956">Проба Заштићеног окружења приватности</translation>
-<translation id="6835712061486505758">Направите WiFi хотспот да бисте омогућили интернет другим уређајима. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Повежите се на интернет да бисте ажурирали <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Грешка при брисању сертификата</translation>
 <translation id="6839916869147598086">Пријављивање је промењено</translation>
@@ -7047,6 +7045,7 @@
 <translation id="6978717888677691380">Сајтови које сте блокирали</translation>
 <translation id="6979041727349121225">Уштеда енергије</translation>
 <translation id="6979044105893951891">Покретање и напуштање сесија госта којима се управља</translation>
+<translation id="6979158407327259162">Google диск</translation>
 <translation id="6979440798594660689">Искључен (подразумевано)</translation>
 <translation id="6979737339423435258">Одувек</translation>
 <translation id="6981553172137913845">Да бисте прегледали приватно, кликните на икону менија са тачкама да бисте отворили прозор без архивирања</translation>
@@ -8036,6 +8035,7 @@
 <translation id="7807711621188256451">Увек дозволи да <ph name="HOST" /> приступа камери</translation>
 <translation id="7810202088502699111">Искачући прозори су блокирани на овој страници.</translation>
 <translation id="7814458197256864873">&amp;Копирај</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Измените пречицу <ph name="SHORTCUT" /> за: <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Опасно преузимање је блокирано</translation>
 <translation id="7817361223956157679">Тастатура на екрану још увек не ради у Linux апликацијама</translation>
@@ -8115,7 +8115,6 @@
 <translation id="7881483672146086348">Прикажи налог</translation>
 <translation id="7883792253546618164">Опозовите пријаву било када.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Прегледајте 1 сајт који је послао много обавештења}one{Прегледајте {NUM_SITES} сајт који је послао много обавештења}few{Прегледајте {NUM_SITES} сајта који су послали много обавештења}other{Прегледајте {NUM_SITES} сајтова који су послали много обавештења}}</translation>
-<translation id="7884446017008693258">Подешавања хотспота</translation>
 <translation id="788453346724465748">Учитавају се информације о налогу…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ставка}one{# ставка}few{# ставке}other{# ставки}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8644,6 +8643,7 @@
 <translation id="8322814362483282060">Овој страници је забрањен приступ микрофону.</translation>
 <translation id="8323167517179506834">Унесите URL</translation>
 <translation id="8323317289166663449">да чита и мења све податке на вашем рачунару и свим веб-сајтовима</translation>
+<translation id="8324158725704657629">Не питај поново</translation>
 <translation id="8324784016256120271">Сајтови могу да користе колачиће да би видели ваше активности прегледања на различитим сајтовима, на пример, за персонализацију огласа</translation>
 <translation id="8325413836429495820">Није им дозвољено да виде привремену меморију</translation>
 <translation id="8326478304147373412">PKCS #7, ланац сертификата</translation>

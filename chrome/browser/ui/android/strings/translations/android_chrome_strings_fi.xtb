@@ -446,7 +446,6 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="3421726884497337397">Valitse, milloin kolmannen osapuolen evästeet estetään</translation>
 <translation id="3428747202529429621">Pitää sinut turvassa Chromessa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena</translation>
 <translation id="3429160811076349561">Kokeiluominaisuudet ovat poissa käytöstä</translation>
-<translation id="3432973700170747422">Poista aiemmat 15 minuuttia</translation>
 <translation id="3435465986463792564">Onko monta ikkunaa auki? Voit ylläpitää niitä täältä</translation>
 <translation id="3435738964857648380">Suojaus</translation>
 <translation id="3443221991560634068">Päivitä nykyinen sivu</translation>
@@ -480,7 +479,6 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="3587596251841506391">Paranna verkon turvallisuutta</translation>
 <translation id="3597179440835065298">Parempia ehdotuksia</translation>
 <translation id="3602290021589620013">Esikatselu</translation>
-<translation id="360901359071773787">Poistetaanko 15 viime minuuttia?</translation>
 <translation id="3616113530831147358">Ääni</translation>
 <translation id="3622349720008044802">Hallitse ikkunoita</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+1 sivusto}other{+# sivustoa}}</translation>
@@ -752,6 +750,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5010886807652684893">Visuaalinen näkymä</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> haluaa muodostaa yhteyden</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Viimeiset 15 minuuttia</translation>
 <translation id="5032430150487044192">QR-koodin luominen ei onnistu</translation>
 <translation id="5039804452771397117">Salli</translation>
 <translation id="5040262127954254034">Tietosuoja</translation>
@@ -930,7 +929,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="6011308810877101166">Paranna hakuehdotuksia</translation>
 <translation id="6026538407078977628">Laajenna koko näytölle</translation>
 <translation id="6030719887161080597">Ylläpidä tietoja, joita sivustot käyttävät mainostulosten mittaamiseen</translation>
-<translation id="6034146297924778597">15 viime minuutin historia poistetaan:</translation>
 <translation id="6039379616847168523">Siirry seuraavalle välilehdelle</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="604124094241169006">Automaattinen</translation>

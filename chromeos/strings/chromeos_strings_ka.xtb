@@ -204,7 +204,6 @@
 <translation id="2491955442992294626">კლავიშების ტესტირება ვერ მოხერხდება, როცა სხვა ფანჯარას იყენებთ</translation>
 <translation id="2493126929778606526">ავტომატურად არჩეული თქვენი საუკეთესო ფოტოები</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2498950423397131220">ლივლივი</translation>
 <translation id="2505327257735685095">ფონის ამჟამინდელი სურათის განახლება</translation>
 <translation id="2512979179176933762">ფანჯრების ჩვენება</translation>
 <translation id="2513396635448525189">შესვლის სურათი</translation>
@@ -328,7 +327,6 @@
 <translation id="3607216139080387279">ეკრანმზოგის ჩვენება</translation>
 <translation id="361575905210396100">გმადლობთ გამოხმაურებისთვის</translation>
 <translation id="3632579075709132555">კონფიდენციალური ეკრანის გადართვა</translation>
-<translation id="3639846061339007994">ზედა</translation>
 <translation id="3651050199673793219">აირჩიეთ ტემპერატურის ერთეული</translation>
 <translation id="3663574643422533538">აირჩიეთ ექსკლუზიურად <ph name="PRODUCT_NAME" />-ზე ხელმისაწვდომი ნამუშევრები</translation>
 <translation id="3668449597372804501">ღრუბლების ნაკადის ფონი</translation>
@@ -411,7 +409,6 @@
 <translation id="4289849978083912975">სლაიდშოუ</translation>
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> სურათი</translation>
-<translation id="4311195029067684288">მთლიანი</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> კლავიში დაჭერილია</translation>
 <translation id="435692326371619097">მართეთ ქსელის APN-ის პარამეტრები. APN ამყარებს კავშირს ფიჭურ ქსელსა და ინტერნეტს შორის. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">ყველა მალსახმობის გადაყენება</translation>
@@ -501,7 +498,6 @@
 <translation id="4930320165497208503">კავშირის დასაყენებლად ან გასაახლებლად გადადით <ph name="BEGIN_LINK" />პარამეტრებზე<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">თარიღი</translation>
 <translation id="4950314376641394653">ჩაშენებული პროგრამული უზრუნველყოფა <ph name="DEVICE_NAME" /> განახლდა ვერსიამდე <ph name="VERSION" /></translation>
-<translation id="4971925105143343452">ნაწილობრივი</translation>
 <translation id="4972592110715526173">რეჟიმის შეცვლა</translation>
 <translation id="498186245079027698">შეამოწმეთ სკანერი და ცადეთ ხელახლა. დარწმუნდით, რომ ადგილობრივი მეხსიერება საკმარისია სკანირებული ფაილების შესანახად.</translation>
 <translation id="4985509611418653372">გაშვება</translation>
@@ -655,7 +651,6 @@
 <translation id="6191293864534840972">სახელების სერვერი არასწორად არის ფორმირებული</translation>
 <translation id="6205145102504628069">ღრუბლების ნაკადი</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
-<translation id="6223066887782788441">სრულეკრანიანი რეჟიმიდან გასვლა</translation>
 <translation id="6223752125779001553">სკანერები მიუწვდომელია</translation>
 <translation id="6232017090690406397">ბატარეა</translation>
 <translation id="6235460611964961764">მონაცემთა მოხმარების ხელით გადაყენება</translation>
@@ -814,7 +809,6 @@
 <translation id="7481312909269577407">გადამისამართება</translation>
 <translation id="7487067081878637334">ტექნოლოგია</translation>
 <translation id="7490813197707563893">MAC მისამართი</translation>
-<translation id="7491478667760509108">ლივლივიდან გასვლა</translation>
 <translation id="7497215489070763236">სერვერის CA სერტიფიკატი</translation>
 <translation id="7501957181231305652">ან</translation>
 <translation id="7502658306369382406">IPv6 მისამართი</translation>
@@ -834,7 +828,6 @@
 <translation id="763165478673169849">ბოლო გადაყენების დრო</translation>
 <translation id="7633068090678117093">ფონური სურათი</translation>
 <translation id="7648838807254605802">HTTPS რეაგირების დრო დიდია</translation>
-<translation id="765159867434478292">გაყოფა</translation>
 <translation id="7656388927906093505">მოწყობილობა არის მაუსი.</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7665800271478495366">ავატარის შეცვლა</translation>
@@ -865,7 +858,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">პროვაიდერის ტიპი</translation>
 <translation id="7882501334836096755">საჯარო გასაღები</translation>
-<translation id="78957024357676568">მარცხნივ</translation>
 <translation id="7915220255123750251">მართეთ ქსელის APN-ის პარამეტრები. APN ამყარებს კავშირს ფიჭურ ქსელსა და ინტერნეტს შორის.</translation>
 <translation id="7936303884198020182">სახელების სერვერი ვერ მოიძებნა</translation>
 <translation id="7942349550061667556">წითელი</translation>
@@ -903,7 +895,6 @@
 <translation id="8183974620058026102">დანართი</translation>
 <translation id="8206859287963243715">ფიჭური</translation>
 <translation id="8208861521865154048">ბონუსები</translation>
-<translation id="8210733748736414123">ქვედა</translation>
 <translation id="8226628635270268143">აირჩიეთ თქვენი რჩეული ფოტოები და ალბომები</translation>
 <translation id="8227119283605456246">ფაილის მიმაგრება</translation>
 <translation id="8230672074305416752">ნაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
@@ -1004,7 +995,6 @@
 <translation id="8936793075252196307">კლიენტის IP მისამართი</translation>
 <translation id="8944651180182756621">გამშვების ფერი</translation>
 <translation id="894617464444543719">მოწყობილობა არის ტელეფონი.</translation>
-<translation id="8957423540740801332">მარჯვნივ</translation>
 <translation id="8968751544471797276">დატენის სიჩქარე</translation>
 <translation id="8970109610781093811">ხელახლა გაშვება</translation>
 <translation id="8983038754672563810">HSPA</translation>

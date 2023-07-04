@@ -4078,7 +4078,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4413087696295876280">Të lexojë informacionet dhe të dhënat e pajisjes me ChromeOS Flex</translation>
 <translation id="44141919652824029">Të lejohet që "<ph name="APP_NAME" />" të marrë listën e pajisjeve të tua USB të lidhura?</translation>
 <translation id="4414232939543644979">Dritare e re "e fshehtë"</translation>
-<translation id="4414648713167199100">Përdor të dhënat celulare të Chromebook dhe operatori yt celular mund të zbatojë tarifa shtesë. Mund të rritë përdorimin e baterisë. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Je gati për të filluar përdorimin e pajisjes sate <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Nuk u gjet asnjë pajisje. Hap një artikull të qendrës së ndihmës në një skedë të re.</translation>
 <translation id="4415276339145661267">Menaxho "Llogarinë tënde të Google"</translation>
@@ -6871,7 +6870,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6833479554815567477">Skeda u zhvendos nga grupi <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Kalo te një shfletues inteligjent dhe i sigurt</translation>
 <translation id="6833996806551876956">Prova e "Nismës për mjedis uebi privat"</translation>
-<translation id="6835712061486505758">Krijo një zonë qasjeje për internet me Wi-Fi për të ofruar internet për pajisjet e tjera. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Lidhu në internet për të përditësuar pajisjen <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Gabim në fshirjen e certifikatës</translation>
 <translation id="6839916869147598086">Identifikimi ka ndryshuar</translation>
@@ -7042,6 +7040,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6978717888677691380">Sajtet që ke bllokuar</translation>
 <translation id="6979041727349121225">Kursyesi i energjisë</translation>
 <translation id="6979044105893951891">Hap dhe dil nga sesionet e menaxhuara për vizitorët</translation>
+<translation id="6979158407327259162">Disku i Google</translation>
 <translation id="6979440798594660689">Heshtje (e parazgjedhur)</translation>
 <translation id="6979737339423435258">Gjatë të gjithë kohës</translation>
 <translation id="6981553172137913845">Për të shfletuar në mënyrë private, kliko te menyja e ikonës me pika për të hapur një dritare "të fshehtë"</translation>
@@ -8030,6 +8029,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7807711621188256451">Lejo gjithmonë që <ph name="HOST" /> të qaset në kamerën tënde</translation>
 <translation id="7810202088502699111">Dritaret kërcyese u bllokuan në këtë faqe.</translation>
 <translation id="7814458197256864873">&amp;Kopjo</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Modifiko shkurtoren <ph name="SHORTCUT" /> për <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Një shkarkim i rrezikshëm u bllokua</translation>
 <translation id="7817361223956157679">Tastiera në ekran nuk funksionin ende në aplikacionet e Linux</translation>
@@ -8109,7 +8109,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7881483672146086348">Shiko llogarinë</translation>
 <translation id="7883792253546618164">Çregjistrohu në çdo kohë.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Rishiko 1 sajt që ka dërguar shumë njoftime}other{Rishiko {NUM_SITES} sajte që kanë dërguar shumë njoftime}}</translation>
-<translation id="7884446017008693258">Cilësimet e zonës së qasjes për internet</translation>
 <translation id="788453346724465748">Informacionet e llogarisë po ngarkohen...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{një artikull}other{# artikuj}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8637,6 +8636,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8322814362483282060">Për këtë faqe është bllokuar qasja te mikrofoni.</translation>
 <translation id="8323167517179506834">Shkruaj URL-në</translation>
 <translation id="8323317289166663449">Lexo dhe ndrysho të gjitha të dhënat në kompjuterin tënd dhe të gjitha sajtet e uebit</translation>
+<translation id="8324158725704657629">Mos pyet më</translation>
 <translation id="8324784016256120271">Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, për shembull për t'i personalizuar reklamat</translation>
 <translation id="8325413836429495820">Nuk lejohen të shikojnë kujtesën e fragmenteve</translation>
 <translation id="8326478304147373412">PKCS #7, zinxhiri i certifikatës</translation>

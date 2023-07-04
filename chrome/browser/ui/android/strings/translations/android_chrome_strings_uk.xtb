@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">Виберіть, коли потрібно блокувати сторонні файли cookie</translation>
 <translation id="3428747202529429621">Захищає вас у Chrome і може покращувати безпеку в інших додатках Google після входу в обліковий запис</translation>
 <translation id="3429160811076349561">Пробні функції вимкнено</translation>
-<translation id="3432973700170747422">Видалити дані за ост. 15 хв</translation>
 <translation id="3435465986463792564">Забагато вікон? Можете керувати ними тут</translation>
 <translation id="3435738964857648380">Безпека</translation>
 <translation id="3443221991560634068">Оновити поточну сторінку</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">Покращувати безпеку в Інтернеті</translation>
 <translation id="3597179440835065298">Отримуйте кращі пропозиції</translation>
 <translation id="3602290021589620013">Попередній перегляд</translation>
-<translation id="360901359071773787">Видалити дані за останні 15 хвилин?</translation>
 <translation id="3616113530831147358">Аудіо</translation>
 <translation id="3622349720008044802">Керувати вікнами</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{і ще один сайт}one{і ще # сайт}few{і ще # сайти}many{і ще # сайтів}other{і ще # сайту}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">Візуальний перегляд</translation>
 <translation id="5011311129201317034">Сайт <ph name="SITE" /> хоче підключитися</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Останні 15 хвилин</translation>
 <translation id="5032430150487044192">Не вдається створити QR-код</translation>
 <translation id="5039804452771397117">Дозволити</translation>
 <translation id="5040262127954254034">Конфіденційність</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">Покращувати підказки в пошуку</translation>
 <translation id="6026538407078977628">Розгорнути на весь екран</translation>
 <translation id="6030719887161080597">Керуйте інформацією, яку сайти використовують для вимірювання ефективності оголошень</translation>
-<translation id="6034146297924778597">Історію за останні 15 хвилин буде видалено.</translation>
 <translation id="6039379616847168523">Перейти до наступної вкладки</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="604124094241169006">Автоматично</translation>

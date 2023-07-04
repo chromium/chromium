@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">മൂന്നാം കക്ഷി കുക്കികൾ എപ്പോഴാണ് ബ്ലോക്ക് ചെയ്യേണ്ടതെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3428747202529429621">നിങ്ങൾ സൈൻ ഇൻ ആയിരിക്കുമ്പോൾ Chrome-ൽ നിങ്ങളെ സുരക്ഷിതരാക്കുകയും മറ്റ് Google ആപ്പുകളിൽ നിങ്ങളുടെ സുരക്ഷ മെച്ചപ്പെടുത്താനും ഉപയോഗിച്ചേക്കാം</translation>
 <translation id="3429160811076349561">ട്രയൽ ഫീച്ചറുകൾ ഓഫാണ്</translation>
-<translation id="3432973700170747422">അവസാന 15 മിനിറ്റ് ഇല്ലാതാക്കൂ</translation>
 <translation id="3435465986463792564">നിരവധി വിൻഡോകളുണ്ടോ? അവ നിങ്ങൾക്ക് ഇവിടെ മാനേജ് ചെയ്യാം</translation>
 <translation id="3435738964857648380">സുരക്ഷ</translation>
 <translation id="3443221991560634068">നിലവിലെ പേജ് റീലോഡ് ചെയ്യുക</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">വെബിലെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>
 <translation id="3597179440835065298">മെച്ചപ്പെട്ട നിർദ്ദേശങ്ങൾ നേടൂ</translation>
 <translation id="3602290021589620013">പ്രിവ്യൂ</translation>
-<translation id="360901359071773787">അവസാന 15 മിനിറ്റ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="3616113530831147358">ഓഡിയോ</translation>
 <translation id="3622349720008044802">വിൻഡോകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 സൈറ്റ്}other{+ # സൈറ്റുകൾ}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">വിഷ്വൽ കാഴ്ച</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> കണക്‌റ്റുചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">കഴിഞ്ഞ 15 മിനിറ്റ്</translation>
 <translation id="5032430150487044192">QR കോഡ് സൃഷ്‌ടിക്കാനാകില്ല</translation>
 <translation id="5039804452771397117">അനുവദിക്കൂ</translation>
 <translation id="5040262127954254034">സ്വകാര്യത</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">തിരയൽ നിർദ്ദേശങ്ങൾ മെച്ചപ്പെടുത്തുക</translation>
 <translation id="6026538407078977628">പൂർണ്ണസ്ക്രീനിലേക്ക് വികസിപ്പിക്കുക</translation>
 <translation id="6030719887161080597">പരസ്യ പ്രകടനം അളക്കാൻ സൈറ്റുകൾ ഉപയോഗിക്കുന്ന വിവരങ്ങൾ മാനേജ് ചെയ്യുക</translation>
-<translation id="6034146297924778597">കഴിഞ്ഞ 15 മിനിറ്റിലെ ഇനിപ്പറയുന്ന ചരിത്രം ഇല്ലാതാക്കും:</translation>
 <translation id="6039379616847168523">അടുത്ത ടാബിലേക്ക് പോകുക</translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="604124094241169006">സ്വയമേവ</translation>

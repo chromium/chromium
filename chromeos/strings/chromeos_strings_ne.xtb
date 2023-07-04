@@ -204,7 +204,6 @@
 <translation id="2491955442992294626">तपाईंले अर्को विन्डो प्रयोग गरिरहेका बेला कीहरू परीक्षण गरिँदैन</translation>
 <translation id="2493126929778606526">स्वतः चयन गरिएका तपाईंका उत्कृष्ट फोटोहरू</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2498950423397131220">फ्लोट</translation>
 <translation id="2505327257735685095">हालको वालपेपर रिफ्रेस गर्नुहोस्</translation>
 <translation id="2512979179176933762">"विन्डोहरू देखाइऊन्" जनाउने आइकन</translation>
 <translation id="2513396635448525189">प्रोफाइल फोटो</translation>
@@ -327,7 +326,6 @@
 <translation id="3607216139080387279">स्क्रिन सेभर देखाइयोस्</translation>
 <translation id="361575905210396100">प्रतिक्रिया दिनुभएकोमा धन्यवाद</translation>
 <translation id="3632579075709132555">प्राइभेसी स्क्रिन टगल</translation>
-<translation id="3639846061339007994">सिरान</translation>
 <translation id="3651050199673793219">तापक्रमको एकाइ चयन गर्नुहोस्</translation>
 <translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> को खास कलाकृति चयन गर्नुहोस्</translation>
 <translation id="3668449597372804501">क्लाउड फ्लो वालपेपर</translation>
@@ -410,7 +408,6 @@
 <translation id="4289849978083912975">Slide show</translation>
 <translation id="4297501883039923494">रोकियो - अज्ञात त्रुटि भयो</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> वटा फोटो</translation>
-<translation id="4311195029067684288">फुल स्क्रिन खोल्नुहोस्</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> की थिचियो</translation>
 <translation id="435692326371619097">नेटवर्क APN सम्बन्धी सेटिङ मिलाउनुहोस्। APN ले मोबाइल नेटवर्क र इन्टरनेटबिचको कनेक्सन बनाउँछ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">सबै सर्टकटहरू रिसेट गर्नुहोस्</translation>
@@ -500,7 +497,6 @@
 <translation id="4930320165497208503">तपाईं नयाँ कनेक्सन सेटअप गर्न वा सेटअप गरिएको कनेक्सनसम्बन्धी सेटिङ बदल्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="4932733599132424254">मिति</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> को फर्मवेयर अपडेट गरी संस्करण <ph name="VERSION" /> इन्स्टल गरिएको छ</translation>
-<translation id="4971925105143343452">स्क्रिनको केही भाग स्प्लिट गर्नुहोस्</translation>
 <translation id="4972592110715526173">"मोड बदल्नुहोस्" जनाउने आइकन</translation>
 <translation id="498186245079027698">स्क्यानर जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्। स्क्यान गरिएका फाइलहरू सुरक्षित गर्न चाहिने पर्याप्त खाली ठाउँ छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="4985509611418653372">चलाउनुहोस्</translation>
@@ -654,7 +650,6 @@
 <translation id="6191293864534840972">डोमेन नेम सर्भरहरूको ढाँचा मिलेको छैन</translation>
 <translation id="6205145102504628069">क्लाउड फ्लो</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
-<translation id="6223066887782788441">फुल स्क्रिनबाट बाहिरिनुहोस्</translation>
 <translation id="6223752125779001553">कुनै पनि स्क्यानर उपलब्ध छैन</translation>
 <translation id="6232017090690406397">ब्याटरी</translation>
 <translation id="6235460611964961764">डेटा प्रयोग म्यानुअल तरिकाले रिसेट गर</translation>
@@ -813,7 +808,6 @@
 <translation id="7481312909269577407">अगाडि</translation>
 <translation id="7487067081878637334">प्रविधि</translation>
 <translation id="7490813197707563893">म्याक एड्रेस</translation>
-<translation id="7491478667760509108">फ्लोट विन्डोबाट बाहिरिनुहोस्</translation>
 <translation id="7497215489070763236">सर्भरको CA को सर्टिफिकेट</translation>
 <translation id="7501957181231305652">वा</translation>
 <translation id="7502658306369382406">IPv6 ठेगाना</translation>
@@ -833,7 +827,6 @@
 <translation id="763165478673169849">पछिल्लो पटक रिसेट गरिएको मिति र समय</translation>
 <translation id="7633068090678117093">ब्याकग्राउन्ड फोटो</translation>
 <translation id="7648838807254605802">HTTPS को विलम्बता धेरै छ</translation>
-<translation id="765159867434478292">विभाजन गर्नुहोस्</translation>
 <translation id="7656388927906093505">यो डिभाइस माउस हो।</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7665800271478495366">अवतार बदल्नुहोस्</translation>
@@ -864,7 +857,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">प्रदायकको प्रकार</translation>
 <translation id="7882501334836096755">सार्वजनिक की</translation>
-<translation id="78957024357676568">बायाँ</translation>
 <translation id="7915220255123750251">नेटवर्क APN सम्बन्धी सेटिङ मिलाउनुहोस्। APN ले मोबाइल नेटवर्क र इन्टरनेटबिचको कनेक्सन बनाउँछ।</translation>
 <translation id="7936303884198020182">कुनै पनि डोमेन नेम सर्भर फेला परेन</translation>
 <translation id="7942349550061667556">रातो</translation>
@@ -902,7 +894,6 @@
 <translation id="8183974620058026102">एट्याच गर्नुहोस्</translation>
 <translation id="8206859287963243715">सेल्युलर</translation>
 <translation id="8208861521865154048">लाभहरू</translation>
-<translation id="8210733748736414123">पुछार</translation>
 <translation id="8226628635270268143">आफूलाई मन पर्ने फोटो र एल्बमहरू छनौट गर्नुहोस्</translation>
 <translation id="8227119283605456246">फाइल समावेश गर्नुहोस्</translation>
 <translation id="8230672074305416752">डिफल्ट नेटवर्कको गेटवे पिङ गर्न सकिएन</translation>
@@ -1003,7 +994,6 @@
 <translation id="8936793075252196307">क्लाइन्टको IP ठेगाना</translation>
 <translation id="8944651180182756621">लन्चरको रङ</translation>
 <translation id="894617464444543719">यो डिभाइस फोन हो।</translation>
-<translation id="8957423540740801332">दायाँ</translation>
 <translation id="8968751544471797276">चार्ज भइरहेको दर</translation>
 <translation id="8970109610781093811">फेरि गर्नुहोस्</translation>
 <translation id="8983038754672563810">HSPA</translation>

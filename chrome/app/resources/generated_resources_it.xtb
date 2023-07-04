@@ -4080,7 +4080,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4413087696295876280">Lettura di dati e informazioni del dispositivo ChromeOS Flex</translation>
 <translation id="44141919652824029">Vuoi consentire a "<ph name="APP_NAME" />" di recuperare l'elenco di dispositivi USB collegati?</translation>
 <translation id="4414232939543644979">Nuova finestra di navigazione in &amp;incognito</translation>
-<translation id="4414648713167199100">Usa i dati mobili di Chromebook e il tuo operatore potrebbe addebitare costi aggiuntivi. Potrebbe anche aumentare l'utilizzo della batteria. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Puoi iniziare a utilizzare il tuo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Nessun dispositivo trovato. Apri un articolo del Centro assistenza in una nuova scheda.</translation>
 <translation id="4415276339145661267">Gestisci il tuo Account Google</translation>
@@ -6870,7 +6869,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6833479554815567477">Scheda spostata dal gruppo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Passa a un browser intelligente e sicuro</translation>
 <translation id="6833996806551876956">Prova di Privacy Sandbox</translation>
-<translation id="6835712061486505758">Crea un hotspot Wi-Fi per fornire internet ad altri dispositivi. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Connettiti a Internet per aggiornare il tuo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Errore di eliminazione del certificato</translation>
 <translation id="6839916869147598086">L'accesso è stato modificato</translation>
@@ -7041,6 +7039,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6978717888677691380">Siti che hai bloccato</translation>
 <translation id="6979041727349121225">Risparmio energetico</translation>
 <translation id="6979044105893951891">Avvio e chiusura di sessioni Ospite gestite</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Disattivazione audio (impostazione predefinita)</translation>
 <translation id="6979737339423435258">Dall'inizio</translation>
 <translation id="6981553172137913845">Per navigare in privato, fai clic sul menu con l'icona con tre puntini per aprire una finestra di navigazione in incognito</translation>
@@ -8030,6 +8029,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7807711621188256451">Consenti sempre a <ph name="HOST" /> di accedere alla webcam</translation>
 <translation id="7810202088502699111">I popup sono stati bloccati in questa pagina.</translation>
 <translation id="7814458197256864873">&amp;Copia</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Modifica la scorciatoia <ph name="SHORTCUT" /> per <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Download pericoloso bloccato</translation>
 <translation id="7817361223956157679">La tastiera sullo schermo non funziona ancora nelle app Linux</translation>
@@ -8109,7 +8109,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7881483672146086348">Visualizza account</translation>
 <translation id="7883792253546618164">Puoi annullare l'iscrizione in qualsiasi momento.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Controlla 1 sito che ha inviato molte notifiche}other{Controlla {NUM_SITES} siti che hanno inviato molte notifiche}}</translation>
-<translation id="7884446017008693258">Impostazioni hotspot</translation>
 <translation id="788453346724465748">Caricamento dei dati dell'account in corso…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{un elemento}other{# elementi}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8638,6 +8637,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8322814362483282060">A questa pagina è stato impedito l'accesso al microfono.</translation>
 <translation id="8323167517179506834">Digita un URL</translation>
 <translation id="8323317289166663449">Leggere e modificare tutti i tuoi dati sul computer e su tutti i siti web</translation>
+<translation id="8324158725704657629">Non chiedermelo più</translation>
 <translation id="8324784016256120271">I siti possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci</translation>
 <translation id="8325413836429495820">Non possono accedere agli appunti</translation>
 <translation id="8326478304147373412">PKCS #7, catena di certificati</translation>

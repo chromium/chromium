@@ -4101,7 +4101,6 @@
 <translation id="4413087696295876280">ChromeOS Flex ਦੀ ਡੀਵਾਈਸ ਜਾਣਕਾਰੀ ਅਤੇ ਡਾਟੇ ਨੂੰ ਪੜ੍ਹੋ</translation>
 <translation id="44141919652824029">ਕੀ "<ph name="APP_NAME" />" ਨੂੰ ਅਟੈਚ ਕੀਤੇ ਆਪਣੇ USB ਡੀਵਾਈਸਾਂ ਦੀ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਦੇਣੀ ਹੈ?</translation>
 <translation id="4414232939543644979">ਨਵੀਂ &amp;ਗੁਮਨਾਮ Window</translation>
-<translation id="4414648713167199100">ਤੁਹਾਡੀ Chromebook ਦੇ ਮੋਬਾਈਲ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡਾ ਕੈਰੀਅਰ ਵਧੀਕ ਫ਼ੀਸ ਲੈ ਸਕਦਾ ਹੈ। ਬੈਟਰੀ ਵਰਤੋਂ ਵਧ ਸਕਦੀ ਹੈ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">ਤੁਸੀਂ ਆਪਣਾ <ph name="DEVICE_TYPE" /> ਵਰਤਣਾ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਤਿਆਰ ਹੋ।</translation>
 <translation id="4415245286584082850">ਕੋਈ ਡੀਵਾਈਸ ਨਹੀਂ ਮਿਲਿਆ। ਇੱਕ ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਕੋਈ ਮਦਦ ਕੇਂਦਰ ਲੇਖ ਖੋਲ੍ਹੋ।</translation>
 <translation id="4415276339145661267">ਆਪਣੇ Google ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -6902,7 +6901,6 @@
 <translation id="6833479554815567477">ਟੈਬ ਨੂੰ <ph name="GROUP_NAME" /> ਗਰੁੱਪ ਵਿੱਚੋਂ ਹਟਾਇਆ ਗਿਆ - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">ਸਮਾਰਟ ਅਤੇ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਰ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="6833996806551876956">ਪਰਦੇਦਾਰੀ ਸੈਂਡਬਾਕਸ ਪਰਖ</translation>
-<translation id="6835712061486505758">ਦੂਜੇ ਡੀਵਾਈਸਾਂ ਨੂੰ ਇੰਟਰਨੈੱਟ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ ਵਾਈ-ਫਾਈ ਹੌਟਸਪੌਟ ਬਣਾਓ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਇੰਟਰਨੈਟ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
 <translation id="6839225236531462745">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਮਿਟਾਉਣ ਵਿੱਚ ਗੜਬੜ</translation>
 <translation id="6839916869147598086">ਸਾਈਨ-ਇਨ ਬਦਲ ਗਿਆ ਹੈ</translation>
@@ -7073,6 +7071,7 @@
 <translation id="6978717888677691380">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ</translation>
 <translation id="6979041727349121225">ਊਰਜਾ ਸੇਵਰ</translation>
 <translation id="6979044105893951891">ਪ੍ਰਬੰਧਿਤ ਮਹਿਮਾਨ ਸੈਸ਼ਨ ਲਾਂਚ ਕਰੋ ਅਤੇ ਇਹਨਾਂ ਤੋਂ ਬਾਹਰ ਨਿਕਲੋ</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">ਮਿਊਟ ਕਰੋ (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="6979737339423435258">ਸਾਰੇ ਸਮੇਂ</translation>
 <translation id="6981553172137913845">ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ, ਬਿੰਦੀਆਂ ਦੇ ਪ੍ਰਤੀਕ ਵਾਲੇ ਮੀਨੂ 'ਤੇ ਕਲਿੱਕ ਕਰਕੇ ਕੋਈ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
@@ -8062,6 +8061,7 @@
 <translation id="7807711621188256451">ਹਮੇਸ਼ਾਂ <ph name="HOST" /> ਨੂੰ ਆਪਣੇ ਕੈਮਰੇ ਤੇ ਪਹੁੰਚ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="7810202088502699111">ਪੌਪ-ਅਪਸ ਇਸ ਸਫ਼ੇ ਤੇ ਬਲੌਕ ਕੀਤੇ ਗਏ ਸੀ।</translation>
 <translation id="7814458197256864873">&amp;ਕਾਪੀ ਕਰੋ</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> ਲਈ <ph name="SHORTCUT" /> ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="7815680994978050279">ਖਤਰਨਾਕ ਡਾਊਨਲੋਡ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7817361223956157679">ਆਨ-ਸਕ੍ਰੀਨ ਕੀ-ਬੋਰਡ ਅਜੇ Linux ਐਪਾਂ ਵਿੱਚ ਕੰਮ ਨਹੀਂ ਕਰਦਾ</translation>
@@ -8141,7 +8141,6 @@
 <translation id="7881483672146086348">ਖਾਤਾ ਦੇਖੋ</translation>
 <translation id="7883792253546618164">ਕਿਸੇ ਵੀ ਵੇਲੇ ਅਣਸਬਸਕ੍ਰਾਈਬ ਕਰੋ।</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{ਬਹੁਤ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਵਾਲੀ 1 ਸਾਈਟ ਦੀ ਸਮੀਖਿਆ ਕਰੋ}one{ਬਹੁਤ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਵਾਲੀ {NUM_SITES} ਸਾਈਟ ਦੀ ਸਮੀਖਿਆ ਕਰੋ}other{ਬਹੁਤ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਵਾਲੀਆਂ {NUM_SITES} ਸਾਈਟਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ}}</translation>
-<translation id="7884446017008693258">ਹੌਟਸਪੌਟ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="788453346724465748">ਖਾਤਾ ਜਾਣਕਾਰੀ ਲੋਡ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ਇੱਕ ਆਈਟਮ}one{# ਆਈਟਮ}other{# ਆਈਟਮਾਂ}}</translation>
 <translation id="7886605625338676841">ਈ-ਸਿਮ</translation>
@@ -8669,6 +8668,7 @@
 <translation id="8322814362483282060">ਇਹ ਸਫ਼ਾ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫੋਨ ਤੱਕ ਪਹੁੰਚਣ ਤੋਂ ਬਲੌਕ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8323167517179506834">URL ਟਾਈਪ ਕਰੋ</translation>
 <translation id="8323317289166663449">ਆਪਣੇ ਕੰਪਿਊਟਰ ਅਤੇ ਸਾਰੀਆਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਆਪਣਾ ਸਾਰਾ ਡਾਟਾ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
+<translation id="8324158725704657629">ਦੁਬਾਰਾ ਨਾ ਪੁੱਛੋ</translation>
 <translation id="8324784016256120271">ਸਾਈਟਾਂ ਵੱਖ-ਵੱਖ ਸਾਈਟਾਂ ਵਿਚਲੀ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਦੇਖਣ ਲਈ ਕੁਕੀਜ਼ ਨੂੰ ਵਰਤ ਸਕਦੀਆਂ ਹਨ, ਉਦਾਹਰਨ ਲਈ, ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ</translation>
 <translation id="8325413836429495820">ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ ਨੂੰ ਦੇਖਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="8326478304147373412">PKCS #7, ਪ੍ਰਮਾਣ-ਪੱਤਰ ਚੇਨ</translation>

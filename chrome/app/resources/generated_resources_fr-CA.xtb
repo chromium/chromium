@@ -4075,7 +4075,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4413087696295876280">Lisez les renseignements et les données sur l'appareil ChromeOS Flex</translation>
 <translation id="44141919652824029">Autoriser « <ph name="APP_NAME" /> » à obtenir la liste de vos appareils USB connectés?</translation>
 <translation id="4414232939543644979">Nouvelle fenêtre de navigation pr&amp;ivée</translation>
-<translation id="4414648713167199100">Utilise les données cellulaires de votre Chromebook et votre fournisseur de services peut facturer des frais supplémentaires. Peut augmenter l'utilisation de la pile. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Vous êtes prêt à utiliser votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Aucun appareil trouvé. Ouvrez un article du Centre d'aide dans un nouvel onglet.</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
@@ -6858,7 +6857,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6833479554815567477">Onglet retiré du groupe <ph name="GROUP_NAME" /> : <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Passer à un navigateur intelligent et sécurisé</translation>
 <translation id="6833996806551876956">Essai du bac à sable de confidentialité</translation>
-<translation id="6835712061486505758">Créez un point d’accès Wi-Fi pour permettre à d’autres appareils de se connecter à Internet. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Veuillez vous connecter à Internet pour mettre à jour votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Erreur de suppression de certificat</translation>
 <translation id="6839916869147598086">La procédure de connexion a changé</translation>
@@ -7029,6 +7027,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6978717888677691380">Les sites que vous avez bloqués</translation>
 <translation id="6979041727349121225">Économiseur d'énergie</translation>
 <translation id="6979044105893951891">Lancer et quitter les sessions d'invité gérées</translation>
+<translation id="6979158407327259162">Google Disque</translation>
 <translation id="6979440798594660689">Désactiver le son (par défaut)</translation>
 <translation id="6979737339423435258">Toutes les périodes</translation>
 <translation id="6981553172137913845">Pour naviguer de manière anonyme, cliquez sur l'icône de menu à points pour ouvrir une fenêtre de navigation privée</translation>
@@ -8014,6 +8013,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7807711621188256451">Toujours autoriser <ph name="HOST" /> à accéder à votre caméra</translation>
 <translation id="7810202088502699111">Des fenêtres contextuelles ont été bloquées sur cette page.</translation>
 <translation id="7814458197256864873">&amp;Copier</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Modifier le raccourci <ph name="SHORTCUT" /> pour <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Téléchargement dangereux bloqué</translation>
 <translation id="7817361223956157679">Le clavier à l'écran ne fonctionne pas encore avec les applications Linux</translation>
@@ -8093,7 +8093,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7881483672146086348">Afficher le compte</translation>
 <translation id="7883792253546618164">Vous pouvez vous désabonner à tout moment.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Examiner 1 site qui a envoyé beaucoup de notifications récemment}one{Examiner {NUM_SITES} site qui a envoyé de nombreuses notifications récemment}other{Examiner {NUM_SITES} sites qui ont envoyé de nombreuses notifications récemment}}</translation>
-<translation id="7884446017008693258">Paramètres du point d’accès</translation>
 <translation id="788453346724465748">Chargement des renseignements sur le compte en cours…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{un élément}one{# élément}other{# éléments}}</translation>
 <translation id="7886605625338676841">Carte eSIM</translation>
@@ -8618,6 +8617,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8322814362483282060">L'accès à votre microphone est bloqué pour cette page</translation>
 <translation id="8323167517179506834">Entrer une adresse URL</translation>
 <translation id="8323317289166663449">Lire et modifier l'intégralité de vos données sur votre ordinateur et sur tous les sites Web</translation>
+<translation id="8324158725704657629">Ne plus me demander</translation>
 <translation id="8324784016256120271">Les sites peuvent utiliser des témoins afin de voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces)</translation>
 <translation id="8325413836429495820">Non autorisés à consulter le contenu de votre presse-papiers</translation>
 <translation id="8326478304147373412">PKCS n° 7, chaîne de certificats</translation>

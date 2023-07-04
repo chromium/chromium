@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">चुनें कि तीसरे पक्ष की कुकी को कब ब्लॉक करना है</translation>
 <translation id="3428747202529429621">अगर आप Chrome में साइन इन हैं, तो यह सुविधा आपको सुरक्षित रखती है. साथ ही, अन्य Google ऐप्लिकेशन में इसका इस्तेमाल सुरक्षा को बेहतर बनाने में भी हो सकता है</translation>
 <translation id="3429160811076349561">ट्रायल की सुविधाएं बंद हैं</translation>
-<translation id="3432973700170747422">पिछले 15 मिनट का डेटा मिटाएं</translation>
 <translation id="3435465986463792564">कई विंडो खुली हैं? उन सभी को यहां से मैनेज किया जा सकता है</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3443221991560634068">वर्तमान पेज फिर से लोड करें</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">वेब पर सुरक्षा बेहतर करने में मदद करें</translation>
 <translation id="3597179440835065298">बेहतर सुझाव पाएं</translation>
 <translation id="3602290021589620013">झलक देखें</translation>
-<translation id="360901359071773787">क्या आपको पिछले 15 मिनट का डेटा मिटाना है?</translation>
 <translation id="3616113530831147358">ऑडियो</translation>
 <translation id="3622349720008044802">विंडो मैनेज करें</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 साइट}one{+ # साइट}other{+ # साइटें}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">विज़ुअल व्यू</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> कनेक्ट करना चाहती है</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">पिछले 15 मिनट का</translation>
 <translation id="5032430150487044192">क्यूआर कोड नहीं बनाया जा सकता</translation>
 <translation id="5039804452771397117">अनुमति दें</translation>
 <translation id="5040262127954254034">निजता</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">खोज से जुड़े सुझावों को बेहतर बनाएं</translation>
 <translation id="6026538407078977628">बड़ा करके फ़ुल स्क्रीन पर दिखाएं</translation>
 <translation id="6030719887161080597">विज्ञापन की परफ़ॉर्मेंस मापने के लिए, साइटों की इस्तेमाल की गई जानकारी मैनेज करें</translation>
-<translation id="6034146297924778597">पिछले 15 मिनटों का इतिहास मिटा दिया जाएगा:</translation>
 <translation id="6039379616847168523">सीधे अगले टैब पर जाएं</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="604124094241169006">स्वचालित</translation>

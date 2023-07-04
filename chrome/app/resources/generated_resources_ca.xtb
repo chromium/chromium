@@ -4079,7 +4079,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4413087696295876280">Llegir informació i dades de dispositius ChromeOS Flex</translation>
 <translation id="44141919652824029">Vols permetre que <ph name="APP_NAME" /> obtingui la llista de dispositius USB vinculats?</translation>
 <translation id="4414232939543644979">F&amp;inestra d'incògnit nova</translation>
-<translation id="4414648713167199100">Utilitza les dades mòbils del teu Chromebook, i és possible que el teu operador et cobri càrrecs addicionals. També pot augmentar l'ús de la bateria. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Ja pots començar a utilitzar <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">No s'ha trobat cap dispositiu. Obre un article del centre d'ajuda en una pestanya nova.</translation>
 <translation id="4415276339145661267">Gestiona el teu Compte de Google</translation>
@@ -6871,7 +6870,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6833479554815567477">La pestanya s'ha suprimit del grup <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Canvia a un navegador intel·ligent i segur</translation>
 <translation id="6833996806551876956">Prova de la zona de proves de privadesa</translation>
-<translation id="6835712061486505758">Crea un punt d'accés Wi‐Fi per proporcionar Internet a altres dispositius. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Connecteu-vos a Internet per actualitzar el dispositiu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Error de supressió del certificat</translation>
 <translation id="6839916869147598086">L'inici de sessió ha canviat</translation>
@@ -7042,6 +7040,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6978717888677691380">Llocs web que has bloquejat</translation>
 <translation id="6979041727349121225">Estalvi d'energia</translation>
 <translation id="6979044105893951891">Llança sessions de convidat administrades i surt-ne</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Silencia (opció predeterminada)</translation>
 <translation id="6979737339423435258">Sempre</translation>
 <translation id="6981553172137913845">Per navegar de manera privada, fes clic al menú de la icona de tres punts per obrir una finestra d'incògnit</translation>
@@ -8031,6 +8030,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7807711621188256451">Permet sempre que <ph name="HOST" /> accedeixi a la càmera</translation>
 <translation id="7810202088502699111">S'han bloquejat finestres emergents en aquesta pàgina.</translation>
 <translation id="7814458197256864873">&amp;Copia</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Edita la drecera <ph name="SHORTCUT" /> per a <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">S'ha bloquejat una baixada perillosa</translation>
 <translation id="7817361223956157679">El teclat en pantalla encara no funciona en aplicacions per a Linux</translation>
@@ -8110,7 +8110,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7881483672146086348">Mostra el compte</translation>
 <translation id="7883792253546618164">Pots cancel·lar la subscripció en qualsevol moment.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Revisa 1 lloc web que ha enviat moltes notificacions}other{Revisa {NUM_SITES} llocs web que han enviat moltes notificacions}}</translation>
-<translation id="7884446017008693258">Configuració del punt d'accés Wi‐Fi</translation>
 <translation id="788453346724465748">S'està carregant informació del compte...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{1 element}other{# elements}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8640,6 +8639,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8322814362483282060">Aquesta pàgina no té permís per accedir al micròfon.</translation>
 <translation id="8323167517179506834">Escriviu l'URL</translation>
 <translation id="8323317289166663449">Llegir i canviar totes les dades de l'ordinador i de tots els llocs web</translation>
+<translation id="8324158725704657629">No m'ho tornis a preguntar</translation>
 <translation id="8324784016256120271">Els llocs web poden fer servir galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis</translation>
 <translation id="8325413836429495820">Sense permís per veure el porta-retalls</translation>
 <translation id="8326478304147373412">PKCS #7, cadena de certificats</translation>

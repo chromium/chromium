@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">Faili au saraka haitumiki.</translation>
 <translation id="1363028406613469049">Wimbo</translation>
 <translation id="1378727793141957596">Karibu kwenye Hifadhi ya Google!</translation>
-<translation id="1379156577998569384">Faili zako zilizo kwenye Hifadhi Yangu zinapatikana ukiwa nje ya mtandao</translation>
 <translation id="1379911846207762492">Unaweza kufanya faili zipatikane nje ya mtandao ili uweze kuzipata wakati huna muunganisho wa intaneti.</translation>
 <translation id="1383876407941801731">Tafuta</translation>
 <translation id="1388045380422025115">Aina zote</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">Mipangilio ya kifaa</translation>
 <translation id="2084809735218147718">Mtu anayesema asante kwa lugha ya ishara</translation>
 <translation id="2088690981887365033">Mtandao wa VPN</translation>
-<translation id="2089751716171649322">Fikia faili kwenye Hifadhi yako ya Google kwa urahisi ukiwa nje ya mtandao</translation>
 <translation id="2111134541987263231">Washa <ph name="BEGIN_BOLD" />Ruhusu katika Hali fiche<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Vipengee <ph name="NUMBER_OF_ITEMS" /> vitafutwa na hutaweza kuvirejesha.</translation>
 <translation id="2122305276694332719">Hatua ya kuunganisha kiotomatiki kwenye mtandao uliofichwa huruhusu watu wengine kuona kifaa chako na baadhi ya mipangilio ya mtandao, na hali hii haipendekezwi.</translation>
@@ -578,12 +576,10 @@
 <translation id="5494920125229734069">Chagua zote</translation>
 <translation id="5500122897333236901">Kiaislandi</translation>
 <translation id="5508696409934741614">Nukta</translation>
-<translation id="5519161320735100193">Mipangilio ya Hifadhi ya Google</translation>
 <translation id="5522908512596376669">Umebadilisha orodha ya faili kuwa mwonekano wa orodha.</translation>
 <translation id="5524517123096967210">Faili isingeweza kusomwa.</translation>
 <translation id="5533102081734025921">Picha ya <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Inakokotoa ukubwa</translation>
-<translation id="5536122250858122375">Aina hii ya faili haiwezi kusawazishwa</translation>
 <translation id="554153475311314364">Unukuzi wa mfumo wa kuandika Kigiriki</translation>
 <translation id="5554171655917412781">Umechagua folda <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">mashine pepe</translation>
@@ -744,7 +740,6 @@
 <translation id="6874758081814639712">Mtu anayefanya 'tai chi'</translation>
 <translation id="6876155724392614295">Baiskeli</translation>
 <translation id="6878261347041253038">Kibodi ya Kidevanagari (Fonetiki)</translation>
-<translation id="6882444584974399416">Kifaa chako hakina nafasi ya kutosha ya kuhifadhi ili faili zako zipatikane ukiwa nje ya mtandao. Faili mpya hazitasawazishwa tena kiotomatiki.</translation>
 <translation id="6885780034956018177">Konokono</translation>
 <translation id="6896758677409633944">Nakili</translation>
 <translation id="6898028766943174120">Folda nyingine ndogo...</translation>
@@ -981,7 +976,6 @@
 <translation id="8560515948038859357">Kikantoni</translation>
 <translation id="8561206103590473338">Tembo</translation>
 <translation id="8566466896628108558">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Uthabiti wa Mtandao, <ph name="SIGNAL_STRENGTH" />%, Umezuiwa na Msimamizi wako, Maelezo</translation>
-<translation id="8567555211227790801">Uko nje ya mtandao kwa sasa. Usawazishaji utaendelea utakapounganishwa kwenye intaneti.</translation>
 <translation id="8568374623837201676">Je, ungependa kufuta kabisa faili hii?</translation>
 <translation id="8569764466147087991">Chagua faili ya kufungua</translation>
 <translation id="8577897833047451336">Kikorasia</translation>

@@ -4078,7 +4078,6 @@
 <translation id="4413087696295876280">ChromeOS Flex ഉപകരണ വിവരങ്ങളും ഡാറ്റയും റീഡ് ചെയ്യുക</translation>
 <translation id="44141919652824029">നിങ്ങളുടെ അറ്റാച്ച് ചെയ്‌തിട്ടുള്ള USB ഉപകരണങ്ങളുടെ ഒരു ലിസ്റ്റ് സ്വീകരിക്കാൻ "<ph name="APP_NAME" />" ആപ്പിനെ അനുവദിക്കണോ?</translation>
 <translation id="4414232939543644979">പുതിയ &amp;അദൃശ്യ വിൻഡോ</translation>
-<translation id="4414648713167199100">നിങ്ങളുടെ Chromebook-ന്റെ മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കുന്നു, നിങ്ങളുടെ സേവനദാതാവ് അധിക ഫീസ് ഈടാക്കിയേക്കാം. ബാറ്ററി ഉപയോഗം വർദ്ധിപ്പിച്ചേക്കാം. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">നിങ്ങൾ <ph name="DEVICE_TYPE" /> ഉപയോഗിക്കുന്നത് ആരംഭിക്കാൻ തയ്യാറാണ്.</translation>
 <translation id="4415245286584082850">ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല. പുതിയൊരു ടാബിൽ സഹായ കേന്ദ്ര ലേഖനം തുറക്കുക.</translation>
 <translation id="4415276339145661267">നിങ്ങളുടെ Google Account മാനേജ് ചെയ്യുക</translation>
@@ -6873,7 +6872,6 @@
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> ഗ്രൂപ്പിൽ നിന്ന് ടാബ് നീക്കം ചെയ്തു - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">സ്‌മാർട്ടും സുരക്ഷിതവുമായൊരു ബ്രൗസറിലേക്ക് മാറുക</translation>
 <translation id="6833996806551876956">സ്വകാര്യതാ സാൻഡ്‌ബോക്‌സ് ട്രയൽ</translation>
-<translation id="6835712061486505758">മറ്റ് ഉപകരണങ്ങൾക്ക് ഇന്റർനെറ്റ് നൽകാൻ ഒരു വൈഫൈ ഹോട്ട്സ്പോട്ട് സൃഷ്ടിക്കുക. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> അപ്‌ഡേറ്റ് ചെയ്യാൻ ഇന്റർനെറ്റിൽ കണക്റ്റ് ചെയ്യുക.</translation>
 <translation id="6839225236531462745">സര്‍ട്ടിഫിക്കറ്റ് ഇല്ലാതാക്കല്‍ പിശക്</translation>
 <translation id="6839916869147598086">സൈൻ ഇൻ മാറ്റി</translation>
@@ -7044,6 +7042,7 @@
 <translation id="6978717888677691380">നിങ്ങൾ ബ്ലോക്ക് ചെയ്ത സൈറ്റുകൾ</translation>
 <translation id="6979041727349121225">എനർജി സേവർ</translation>
 <translation id="6979044105893951891">ആരംഭിക്കലും പുറത്തുകടക്കലും മാനേജ് ചെയ്‌ത അതിഥി സെഷനുകൾ</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">മ്യൂട്ട് ചെയ്യുക (ഡിഫോൾട്ട്)</translation>
 <translation id="6979737339423435258">എല്ലാ സമയത്തും</translation>
 <translation id="6981553172137913845">സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ, ഡോട്ട് ഐക്കൺ ക്ലിക്ക് ചെയ്ത് അദൃശ്യ വിൻഡോ തുറക്കുക</translation>
@@ -8032,6 +8031,7 @@
 <translation id="7807711621188256451">നിങ്ങളുടെ ക്യാമറ ആക്‌സസ് ചെയ്യുന്നതിന് എപ്പോഴും <ph name="HOST" />-ന് അനുമതി നൽകുക</translation>
 <translation id="7810202088502699111">ഈ പേജില്‍‌ പോപ്പ്-അപ്പുകളെ തടഞ്ഞു.</translation>
 <translation id="7814458197256864873">&amp;പകര്‍ത്തൂ</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> എന്നതിനുള്ള <ph name="SHORTCUT" /> കുറുക്കുവഴി എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="7815680994978050279">ദോഷകരമായ ഡൗൺലോഡ് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="7817361223956157679">Linux ആപ്പുകളിൽ ഇപ്പോഴും ഓൺ-സ്‌ക്രീൻ കീബോർഡ് പ്രവർത്തിക്കില്ല</translation>
@@ -8111,7 +8111,6 @@
 <translation id="7881483672146086348">അക്കൗണ്ട് കാണുക</translation>
 <translation id="7883792253546618164">ഏത് സമയത്തും വരിക്കാരല്ലാതാവുക.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{നിരവധി അറിയിപ്പുകൾ അയച്ച 1 സെെറ്റ് അവലോകനം ചെയ്യുക}other{നിരവധി അറിയിപ്പുകൾ അയച്ച {NUM_SITES} സെെറ്റുകൾ അവലോകനം ചെയ്യുക}}</translation>
-<translation id="7884446017008693258">ഹോട്ട്സ്പോട്ട് ക്രമീകരണം</translation>
 <translation id="788453346724465748">അക്കൗണ്ട് വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ഒരു ഇനം}other{# ഇനങ്ങൾ}}</translation>
 <translation id="7886605625338676841">ഇ-സിം</translation>
@@ -8640,6 +8639,7 @@
 <translation id="8322814362483282060">നിങ്ങളുടെ മൈക്രോഫോൺ ആക്‌സസ്സുചെയ്യുന്നതിൽ നിന്ന് ഈ പേജിനെ തടഞ്ഞിരിക്കുന്നു.</translation>
 <translation id="8323167517179506834">URL ടൈപ്പുചെയ്യുക</translation>
 <translation id="8323317289166663449">നിങ്ങളുടെ കമ്പ്യൂട്ടറിലെയും എല്ലാ വെബ്‌സൈറ്റുകളിലെയും എല്ലാ ഡാറ്റയും വായിക്കുക, മാറ്റുക</translation>
+<translation id="8324158725704657629">വീണ്ടും ആവശ്യപ്പെടരുത്</translation>
 <translation id="8324784016256120271">വ്യത്യസ്‌ത സൈറ്റുകളിലുടനീളമുള്ള നിങ്ങളുടെ ബ്രൗസിംഗ് ആക്റ്റിവിറ്റി കാണാൻ സൈറ്റുകൾക്ക് കുക്കികൾ ഉപയോഗിക്കാനാവും, ഉദാഹരണത്തിന്, പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാൻ</translation>
 <translation id="8325413836429495820">നിങ്ങളുടെ ക്ലിപ്പ്ബോർഡ് കാണാൻ അനുവാദമില്ല</translation>
 <translation id="8326478304147373412">PKCS #7, സര്‍‌ട്ടിഫിക്കറ്റ് ചെയിന്‍‌</translation>

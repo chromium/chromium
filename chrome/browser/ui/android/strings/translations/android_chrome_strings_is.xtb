@@ -446,7 +446,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="3421726884497337397">Veldu hvenær á að útiloka fótspor þriðju aðila</translation>
 <translation id="3428747202529429621">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú ert skráð(ur) inn</translation>
 <translation id="3429160811076349561">Slökkt er á prufueiginleikum</translation>
-<translation id="3432973700170747422">Eyða síðustu 15 mínútum</translation>
 <translation id="3435465986463792564">Ertu með of marga glugga opna? Þú getur stjórnað gluggunum héðan</translation>
 <translation id="3435738964857648380">Öryggi</translation>
 <translation id="3443221991560634068">Endurhlaða þessa síðu</translation>
@@ -480,7 +479,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="3587596251841506391">Hjálpaðu við að bæta netöryggi</translation>
 <translation id="3597179440835065298">Fáðu betri tillögur</translation>
 <translation id="3602290021589620013">Forskoða</translation>
-<translation id="360901359071773787">Eyða síðustu 15 mínútum?</translation>
 <translation id="3616113530831147358">Hljóð</translation>
 <translation id="3622349720008044802">Stjórna gluggum</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 vefsvæði}one{+ # vefsvæði}other{+ # vefsvæði}}</translation>
@@ -752,6 +750,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5010886807652684893">Myndrænt yfirlit</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> vill tengjast</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Síðustu 15 mínútur</translation>
 <translation id="5032430150487044192">Ekki hægt að búa til QR-kóða</translation>
 <translation id="5039804452771397117">Leyfa</translation>
 <translation id="5040262127954254034">Persónuvernd</translation>
@@ -930,7 +929,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="6011308810877101166">Bæta leitartillögur</translation>
 <translation id="6026538407078977628">Birta á öllum skjánum</translation>
 <translation id="6030719887161080597">Stjórna upplýsingum sem vefsvæði nota til að mæla árangur auglýsinga</translation>
-<translation id="6034146297924778597">Ferli síðustu 15 mínútna verður eytt:</translation>
 <translation id="6039379616847168523">Stökkva í næsta flipa</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="604124094241169006">Sjálfvirkt</translation>

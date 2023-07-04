@@ -446,7 +446,6 @@ Tokeny prywatności zwiększają prywatność w sieci i nie można za ich pomo
 <translation id="3421726884497337397">Zdecyduj, kiedy mają być blokowane pliki cookie innych firm</translation>
 <translation id="3428747202529429621">Dba o Twoje bezpieczeństwo w Chrome i może poprawiać Twoje bezpieczeństwo w innych aplikacjach Google, gdy się w nich zalogujesz</translation>
 <translation id="3429160811076349561">Funkcje próbne są wyłączone</translation>
-<translation id="3432973700170747422">Usuń ostatnie 15 minut</translation>
 <translation id="3435465986463792564">Masz sporo okien? Tutaj możesz nimi zarządzać</translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
 <translation id="3443221991560634068">Ponownie załaduj bieżącą stronę</translation>
@@ -480,7 +479,6 @@ Tokeny prywatności zwiększają prywatność w sieci i nie można za ich pomo
 <translation id="3587596251841506391">Pomóż poprawić bezpieczeństwo w sieci</translation>
 <translation id="3597179440835065298">Otrzymuj lepsze sugestie</translation>
 <translation id="3602290021589620013">Podgląd</translation>
-<translation id="360901359071773787">Usunąć ostatnie 15 minut?</translation>
 <translation id="3616113530831147358">Dźwięk</translation>
 <translation id="3622349720008044802">Zarządzaj oknami</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 witryna}few{+ # witryny}many{+ # witryn}other{+ # witryny}}</translation>
@@ -752,6 +750,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5010886807652684893">Widok graficzny</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> chce się połączyć</translation>
 <translation id="5016205925109358554">Szeryfowa</translation>
+<translation id="5017529052065664584">Ostatnie 15 minut</translation>
 <translation id="5032430150487044192">Nie udało się utworzyć kodu QR</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
 <translation id="5040262127954254034">Prywatność</translation>
@@ -930,7 +929,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="6011308810877101166">Ulepszanie sugestii wyszukiwania</translation>
 <translation id="6026538407078977628">Rozwiń do pełnego ekranu</translation>
 <translation id="6030719887161080597">Zarządzanie informacjami używanymi przez witryny do pomiaru skuteczności reklam</translation>
-<translation id="6034146297924778597">Historia z ostatnich 15 minut zostanie usunięta:</translation>
 <translation id="6039379616847168523">Przejdź do następnej karty</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="604124094241169006">Automatyczne</translation>

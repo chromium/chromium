@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">Выберыце, калі блакіраваць староннія файлы cookie</translation>
 <translation id="3428747202529429621">Абараняе вас у браўзеры Chrome і можа выкарыстоўвацца для паляпшэння бяспекі ў іншых праграмах Google, калі вы ўвайшлі ва ўліковы запіс</translation>
 <translation id="3429160811076349561">Пробныя функцыі выключаны</translation>
-<translation id="3432973700170747422">Выдаліць за апошнія 15 хв</translation>
 <translation id="3435465986463792564">Адкрылі шмат акон? Кіраваць імі можна тут</translation>
 <translation id="3435738964857648380">Бяспека</translation>
 <translation id="3443221991560634068">Перазагрузіць бягучую старонку</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">Павысіць бяспеку ў інтэрнэце</translation>
 <translation id="3597179440835065298">Атрымлівайце лепшыя прапановы</translation>
 <translation id="3602290021589620013">Перадпрагляд</translation>
-<translation id="360901359071773787">Выдаліць даныя за апошнія 15 хвілін?</translation>
 <translation id="3616113530831147358">Аўдыя</translation>
 <translation id="3622349720008044802">Кіраванне вокнамі</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}one{+ # сайт}few{+ # сайты}many{+ # сайтаў}other{+ # сайта}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">Нагляднае адлюстраванне</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> хоча падключыцца</translation>
 <translation id="5016205925109358554">З засечкамі</translation>
+<translation id="5017529052065664584">За апошнія 15 хвілін</translation>
 <translation id="5032430150487044192">Не ўдалося стварыць QR-код</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5040262127954254034">Прыватнасць</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">Паляпшаць прапановы пошуку</translation>
 <translation id="6026538407078977628">Разгарнуць на поўны экран</translation>
 <translation id="6030719887161080597">Кіруйце інфармацыяй, якую выкарыстоўваюць сайты для вымярэння эфектыўнасці аб'явы</translation>
-<translation id="6034146297924778597">Гісторыя за апошнія 15 хвілін будзе выдалена:</translation>
 <translation id="6039379616847168523">Перайсці на наступную ўкладку</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="604124094241169006">Аўтаматычна</translation>

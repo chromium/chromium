@@ -1099,6 +1099,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3435738964857648380">Security</translation>
 <translation id="3438829137925142401">Use passwords saved in your Google Account</translation>
 <translation id="3440783957068352691">square</translation>
+<translation id="3441653493275994384">Screen</translation>
 <translation id="3447661539832366887">The owner of this device turned off the dinosaur game.</translation>
 <translation id="3447884698081792621">Show certificate (issued by <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Fetch interval:</translation>
@@ -2271,6 +2272,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6034514109191629503">Accordion fold</translation>
 <translation id="6039846035001940113">If the problem continues, contact the site owner.</translation>
 <translation id="6040143037577758943">Close</translation>
+<translation id="604124094241169006">Automatic</translation>
 <translation id="6041777658117377052">Chamber temperature</translation>
 <translation id="6042308850641462728">More</translation>
 <translation id="6042688167654081154">Image converted to text</translation>
@@ -2766,6 +2768,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7135130955892390533">Show status</translation>
 <translation id="7136009930065337683">Learn more about Incognito</translation>
 <translation id="7138472120740807366">Delivery method</translation>
+<translation id="7138678301420049075">Other</translation>
 <translation id="7139892792842608322">Primary tray</translation>
 <translation id="7140087718106278457">List of payment methods is closed.</translation>
 <translation id="714064300541049402">Side 2 image X shift</translation>

@@ -4098,7 +4098,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4413087696295876280">Darllen gwybodaeth a data dyfais ChromeOS Flex</translation>
 <translation id="44141919652824029">Caniatáu i "<ph name="APP_NAME" />" gael y rhestr o'ch dyfeisiau USB sydd ynghlwm?</translation>
 <translation id="4414232939543644979">Ffenestr &amp;Anhysbys Newydd</translation>
-<translation id="4414648713167199100">Yn defnyddio data symudol eich Chromebook ac mae'n bosib bydd eich gweithredwr yn codi ffioedd ychwanegol. Mae'n bosib y bydd yn cynyddu'r defnydd o fatri. <ph name="BEGIN_LINK_LEARN_MORE" />Dysgu rhagor<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Rydych yn barod i ddechrau defnyddio <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Ni chanfuwyd unrhyw ddyfeisiau. Agor erthygl y ganolfan gymorth mewn tab newydd.</translation>
 <translation id="4415276339145661267">Rheoli'ch Cyfrif Google</translation>
@@ -6900,7 +6899,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6833479554815567477">Mae tab wedi'i dynnu o'r grŵp <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Newid i borwr clyfar a diogel</translation>
 <translation id="6833996806551876956">Prawf Privacy Sandbox</translation>
-<translation id="6835712061486505758">Creu poethfan Wi-Fi i ddarparu rhyngrwyd i ddyfeisiau eraill. <ph name="BEGIN_LINK_LEARN_MORE" />Dysgu rhagor<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Cysylltwch â'r Rhyngrwyd i ddiweddaru eich <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Gwall Dileu Tystysgrif</translation>
 <translation id="6839916869147598086">Mae mewngofnodi wedi newid</translation>
@@ -7071,6 +7069,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6978717888677691380">Gwefannau rydych wedi'u rhwystro</translation>
 <translation id="6979041727349121225">Arbedwr Ynni</translation>
 <translation id="6979044105893951891">Lansio a gadael sesiynau gwestai a reolir</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Distewi (diofyn)</translation>
 <translation id="6979737339423435258">Pob un</translation>
 <translation id="6981553172137913845">I bori'n breifat, cliciwch y ddewislen eicon dotiau i agor ffenestr Anhysbys</translation>
@@ -8060,6 +8059,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7807711621188256451">Rhoi mynediad i <ph name="HOST" /> at eich camera bob tro</translation>
 <translation id="7810202088502699111">Cafodd ffenestri naid eu rhwystro ar y dudalen hon.</translation>
 <translation id="7814458197256864873">&amp;Copïo</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Golygu'r llwybr byr <ph name="SHORTCUT" /> ar gyfer <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Rhwystrwyd lawrlwythiad peryglus</translation>
 <translation id="7817361223956157679">Nid yw'r bysellfwrdd ar y sgrîn yn gweithio mewn apiau Linux eto</translation>
@@ -8139,7 +8139,6 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7881483672146086348">Gweld y Cyfrif</translation>
 <translation id="7883792253546618164">Gallwch ddad-danysgrifio unrhyw bryd.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Adolygwch 1 wefan a anfonodd lawer o hysbysiadau}zero{Adolygwch {NUM_SITES} gwefan a anfonodd lawer o hysbysiadau}two{Adolygwch {NUM_SITES} gwefan a anfonodd lawer o hysbysiadau}few{Adolygwch {NUM_SITES} gwefan a anfonodd lawer o hysbysiadau}many{Adolygwch {NUM_SITES} gwefan a anfonodd lawer o hysbysiadau}other{Adolygwch {NUM_SITES} gwefan a anfonodd lawer o hysbysiadau}}</translation>
-<translation id="7884446017008693258">Gosodiadau Poethfan</translation>
 <translation id="788453346724465748">Wrthi'n llwytho gwybodaeth cyfrif...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{eitem}zero{# eitem}two{# eitem}few{# eitem}many{# eitem}other{# eitem}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8667,6 +8666,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8322814362483282060">Mae'r dudalen hon wedi'i rhwystro rhag cael mynediad at eich meicroffon.</translation>
 <translation id="8323167517179506834">Teipiwch URL</translation>
 <translation id="8323317289166663449">Darllen a newid eich holl ddata ar eich cyfrifiadur a phob gwefan</translation>
+<translation id="8324158725704657629">Peidio â gofyn eto</translation>
 <translation id="8324784016256120271">Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol wefannau, er enghraifft, i bersonoleiddio hysbysebion</translation>
 <translation id="8325413836429495820">Ni chaniateir gweld eich clipfwrdd</translation>
 <translation id="8326478304147373412">PKCS #7, cadwyn tystysgrifau</translation>

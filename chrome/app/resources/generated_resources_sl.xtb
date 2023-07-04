@@ -4104,7 +4104,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4413087696295876280">Branje podatkov o napravi ChromeOS Flex in podatkov</translation>
 <translation id="44141919652824029">Dovolite aplikaciji »<ph name="APP_NAME" />«, da pridobi seznam priključenih naprav USB?</translation>
 <translation id="4414232939543644979">Novo anonimno &amp;okno</translation>
-<translation id="4414648713167199100">Uporablja prenos podatkov v mobilnem omrežju v Chromebooku. Operater vam bo morda zaračunal dodatne stroške. Lahko poveča porabo energije baterije. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Pripravljeni ste na začetek uporabe naprave <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Ni naprav. Odprite članek v centru za pomoč na novem zavihku.</translation>
 <translation id="4415276339145661267">Upravljanje računa Google</translation>
@@ -6910,7 +6909,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6833479554815567477">Zavihek je odstranjen iz skupine <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="683373380308365518">Preklop na pametni in varni brskalnik</translation>
 <translation id="6833996806551876956">Preizkus za Privacy Sandbox</translation>
-<translation id="6835712061486505758">Ustvarite dostopno točko Wi-Fi, da omogočite internet drugim napravam. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Če želite posodobiti napravo <ph name="DEVICE_TYPE" />, vzpostavite internetno povezavo.</translation>
 <translation id="6839225236531462745">Napaka pri brisanju potrdila</translation>
 <translation id="6839916869147598086">Prijava je zdaj drugačna</translation>
@@ -7081,6 +7079,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6978717888677691380">Spletna mesta, ki ste jih blokirali</translation>
 <translation id="6979041727349121225">Varčevanje z energijo</translation>
 <translation id="6979044105893951891">Zagon in zapiranje upravljanih sej gosta</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Izklop zvoka (privzeto)</translation>
 <translation id="6979737339423435258">Od začetka</translation>
 <translation id="6981553172137913845">Če želite brskati zasebno, kliknite meni z ikono pik, da odprete anonimno okno.</translation>
@@ -8071,6 +8070,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7807711621188256451">Vedno dovoli gostitelju <ph name="HOST" /> dostop do kamere</translation>
 <translation id="7810202088502699111">Pojavna okna na tej strani so blokirana.</translation>
 <translation id="7814458197256864873">&amp;Kopiraj</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Uredi bližnjico <ph name="SHORTCUT" /> za razširitev <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Nevaren prenos je bil blokiran</translation>
 <translation id="7817361223956157679">Zaslonska tipkovnica še ne deluje v aplikacijah za Linux</translation>
@@ -8150,7 +8150,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7881483672146086348">Prikaz računa</translation>
 <translation id="7883792253546618164">Odjavite se lahko kadar koli.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Preglejte 1 spletno mesto, ki je nedavno poslalo veliko obvestil}one{Preglejte {NUM_SITES} spletno mesto, ki je nedavno poslalo veliko obvestil}two{Preglejte {NUM_SITES} spletni mesti, ki sta nedavno poslali veliko obvestil}few{Preglejte {NUM_SITES} spletna mesta, ki so nedavno poslala veliko obvestil}other{Preglejte {NUM_SITES} spletnih mest, ki so nedavno poslala veliko obvestil}}</translation>
-<translation id="7884446017008693258">Nastavitve dostopne točke</translation>
 <translation id="788453346724465748">Nalaganje podatkov o računu …</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{element}one{# element}two{# elementa}few{# elementi}other{# elementov}}</translation>
 <translation id="7886605625338676841">e-SIM</translation>
@@ -8679,6 +8678,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8322814362483282060">Tej strani je onemogočen dostop do mikrofona.</translation>
 <translation id="8323167517179506834">Vnesite URL</translation>
 <translation id="8323317289166663449">Branje in spreminjanje vseh vaših podatkov v računalniku in na vseh spletnih mestih</translation>
+<translation id="8324158725704657629">Ne vprašaj me več</translation>
 <translation id="8324784016256120271">Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov</translation>
 <translation id="8325413836429495820">Ni dovoljen ogled odložišča</translation>
 <translation id="8326478304147373412">PKCS #7, veriga potrdil</translation>

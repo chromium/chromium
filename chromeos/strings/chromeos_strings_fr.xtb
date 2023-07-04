@@ -204,7 +204,6 @@
 <translation id="2491955442992294626">Les touches ne sont pas testées lorsque vous utilisez une autre fenêtre</translation>
 <translation id="2493126929778606526">Vos plus belles photos sélectionnées automatiquement</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2498950423397131220">Superposition</translation>
 <translation id="2505327257735685095">Actualiser le fond d'écran actuel</translation>
 <translation id="2512979179176933762">afficher les fenêtres</translation>
 <translation id="2513396635448525189">Image de connexion</translation>
@@ -328,7 +327,6 @@
 <translation id="3607216139080387279">Afficher l'économiseur d'écran</translation>
 <translation id="361575905210396100">Merci pour vos commentaires</translation>
 <translation id="3632579075709132555">Activer/Désactiver l'écran de confidentialité</translation>
-<translation id="3639846061339007994">haut</translation>
 <translation id="3651050199673793219">Sélectionner une unité de température</translation>
 <translation id="3663574643422533538">Sélectionner une exclusivité <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">Fond d'écran Flux nuageux</translation>
@@ -411,7 +409,6 @@
 <translation id="4289849978083912975">Diaporama</translation>
 <translation id="4297501883039923494">Tâche suspendue - Erreur inconnue</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
-<translation id="4311195029067684288">Plein écran</translation>
 <translation id="4333390807948134856">Touche <ph name="KEY_NAME" /> appuyée</translation>
 <translation id="435692326371619097">Gérer les paramètres APN du réseau. Les APN établissent une connexion entre un réseau mobile et Internet. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Réinitialiser tous les raccourcis</translation>
@@ -501,7 +498,6 @@
 <translation id="4930320165497208503">Pour configurer ou mettre à jour une connexion, accédez à <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="4950314376641394653">La version <ph name="VERSION" /> du micrologiciel <ph name="DEVICE_NAME" /> a été installée</translation>
-<translation id="4971925105143343452">Partielle</translation>
 <translation id="4972592110715526173">changement de mode</translation>
 <translation id="498186245079027698">Vérifiez le scanner et réessayez. Assurez-vous que l'espace de stockage local est suffisant pour y enregistrer les fichiers numérisés.</translation>
 <translation id="4985509611418653372">Exécuter</translation>
@@ -655,7 +651,6 @@
 <translation id="6191293864534840972">Serveurs de noms non valides</translation>
 <translation id="6205145102504628069">Flux nuageux</translation>
 <translation id="6213737986933151570">CDMA 1xRTT</translation>
-<translation id="6223066887782788441">Quitter "plein écran"</translation>
 <translation id="6223752125779001553">Aucun scanner disponible</translation>
 <translation id="6232017090690406397">Batterie</translation>
 <translation id="6235460611964961764">Réinitialiser manuellement la consommation des données</translation>
@@ -814,7 +809,6 @@
 <translation id="7481312909269577407">Avancer</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">Adresse MAC</translation>
-<translation id="7491478667760509108">Quitter "flottant"</translation>
 <translation id="7497215489070763236">Certificat de l'autorité de certification du serveur</translation>
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502658306369382406">Adresse IPv6</translation>
@@ -834,7 +828,6 @@
 <translation id="763165478673169849">Heure de la dernière réinitialisation</translation>
 <translation id="7633068090678117093">Image de fond</translation>
 <translation id="7648838807254605802">Latence élevée des requêtes HTTPS</translation>
-<translation id="765159867434478292">Fractionner</translation>
 <translation id="7656388927906093505">L'appareil est une souris.</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7665800271478495366">Modifier l'avatar</translation>
@@ -865,7 +858,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type de fournisseur</translation>
 <translation id="7882501334836096755">Clé publique</translation>
-<translation id="78957024357676568">gauche</translation>
 <translation id="7915220255123750251">Gérer les paramètres APN du réseau. Les APN établissent une connexion entre un réseau mobile et Internet.</translation>
 <translation id="7936303884198020182">Aucun serveur de noms trouvé</translation>
 <translation id="7942349550061667556">Rouge</translation>
@@ -903,7 +895,6 @@
 <translation id="8183974620058026102">Joindre</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Avantages</translation>
-<translation id="8210733748736414123">bas</translation>
 <translation id="8226628635270268143">Choisir vos photos et vos albums préférés</translation>
 <translation id="8227119283605456246">Joindre un fichier</translation>
 <translation id="8230672074305416752">Impossible de pinguer la passerelle du réseau par défaut</translation>
@@ -1004,7 +995,6 @@
 <translation id="8936793075252196307">Adresse IP du client</translation>
 <translation id="8944651180182756621">Couleur du Lanceur d'applications</translation>
 <translation id="894617464444543719">L'appareil est un téléphone.</translation>
-<translation id="8957423540740801332">droite</translation>
 <translation id="8968751544471797276">Vitesse de recharge</translation>
 <translation id="8970109610781093811">Exécuter à nouveau</translation>
 <translation id="8983038754672563810">3G+</translation>

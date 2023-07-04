@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">Выдаліць даныя і скінуць дазволы</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
 <translation id="6545864417968258051">Пошук прылад Bluetooth</translation>
-<translation id="6552691050538553146"><ph name="BANNER_TITLE" />: іншыя параметры</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Апошняе наведванне: <ph name="NUM_DAYS" /> сут таму</translation>
 <translation id="6561560012278703671">Забараніць сайтам адцягваць вашу ўвагу запытамі дазволу на паказ апавяшчэнняў. Паказваць замест іх індыкатар блакіроўкі ў адрасным радку</translation>

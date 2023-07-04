@@ -446,7 +446,6 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="3421726884497337397">Annak eldöntése, hogy mikor tiltja le a harmadik féltől származó cookie-kat</translation>
 <translation id="3428747202529429621">Gondoskodik a biztonságáról a Chrome-ban, és használható a biztonság növelésére más Google-alkalmazásokban olyankor, amikor Ön be van jelentkezve.</translation>
 <translation id="3429160811076349561">A próbafunkciók ki vannak kapcsolva</translation>
-<translation id="3432973700170747422">Előző 15 perc törlése</translation>
 <translation id="3435465986463792564">Több ablak is meg van nyitva Önnél? Itt kezelheti őket.</translation>
 <translation id="3435738964857648380">Biztonság</translation>
 <translation id="3443221991560634068">Az aktuális oldal újratöltése</translation>
@@ -480,7 +479,6 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="3587596251841506391">Legyen biztonságos a böngészés</translation>
 <translation id="3597179440835065298">Relevánsabb javaslatokat kaphat</translation>
 <translation id="3602290021589620013">Előnézet</translation>
-<translation id="360901359071773787">Törli az előző 15 percet?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Ablakok kezelése</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+1 webhely}other{+# webhely}}</translation>
@@ -752,6 +750,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5010886807652684893">Vizuális nézet</translation>
 <translation id="5011311129201317034">A(z) <ph name="SITE" /> csatlakozni szeretne</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Elmúlt 15 perc</translation>
 <translation id="5032430150487044192">Nem lehet létrehozni a QR-kódot.</translation>
 <translation id="5039804452771397117">Engedélyezés</translation>
 <translation id="5040262127954254034">Adatvédelem</translation>
@@ -930,7 +929,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="6011308810877101166">Keresési javaslatok javítása</translation>
 <translation id="6026538407078977628">Kibontás teljes képernyőre</translation>
 <translation id="6030719887161080597">A webhelyek által a hirdetésteljesítmény méréséhez használt adatok kezelése</translation>
-<translation id="6034146297924778597">Az elmúlt 15 perc előzményeit töröljük:</translation>
 <translation id="6039379616847168523">Ugrás a következő lapra</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="604124094241169006">Automatikus</translation>

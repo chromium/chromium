@@ -446,7 +446,6 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="3421726884497337397">Elige cuándo bloquear las cookies de terceros</translation>
 <translation id="3428747202529429621">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión</translation>
 <translation id="3429160811076349561">Las funciones de prueba están desactivadas.</translation>
-<translation id="3432973700170747422">Eliminar últimos 15 minutos</translation>
 <translation id="3435465986463792564">¿Tienes demasiadas ventanas? Puedes gestionarlas desde aquí.</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3443221991560634068">Vuelve a cargar la página actual</translation>
@@ -480,7 +479,6 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="3587596251841506391">Ayudar a mejorar la seguridad en la Web</translation>
 <translation id="3597179440835065298">Recibir mejores sugerencias</translation>
 <translation id="3602290021589620013">Vista previa</translation>
-<translation id="360901359071773787">¿Eliminar últimos 15 minutos?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Gestionar ventanas</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 sitio}other{+ # sitios}}</translation>
@@ -752,6 +750,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5010886807652684893">Vista visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> quiere conectarse</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Últimos 15 minutos</translation>
 <translation id="5032430150487044192">No se puede crear el código QR</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidad</translation>
@@ -930,7 +929,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="6011308810877101166">Mejorar las sugerencias de búsqueda</translation>
 <translation id="6026538407078977628">Desplegar a pantalla completa</translation>
 <translation id="6030719887161080597">Gestiona la información que usan los sitios para medir el rendimiento de los anuncios</translation>
-<translation id="6034146297924778597">Se eliminará el historial de los últimos 15 minutos:</translation>
 <translation id="6039379616847168523">Te dirige a la siguiente pestaña</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="604124094241169006">Automático</translation>

@@ -446,7 +446,6 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="3421726884497337397">Pasirinkite, kada blokuoti trečiosios šalies slapukus</translation>
 <translation id="3428747202529429621">Apsaugo jus naršyklėje „Chrome“ ir gali būti naudojama apsaugai kitose „Google“ programose pagerinti, kai esate prisijungę</translation>
 <translation id="3429160811076349561">Bandomosios funkcijos išjungtos</translation>
-<translation id="3432973700170747422">Ištrinti paskutines 15 min.</translation>
 <translation id="3435465986463792564">Atidaryta daug langų? Galite tvarkyti juos čia</translation>
 <translation id="3435738964857648380">Sauga</translation>
 <translation id="3443221991560634068">Iš naujo įkelti dabartinį puslapį</translation>
@@ -480,7 +479,6 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="3587596251841506391">Padėti gerinti saugą žiniatinkl.</translation>
 <translation id="3597179440835065298">Gaukite geresnių pasiūlymų</translation>
 <translation id="3602290021589620013">Peržiūra</translation>
-<translation id="360901359071773787">Ištrinti pastarųjų penkiolikos minučių duomenis?</translation>
 <translation id="3616113530831147358">Garsas</translation>
 <translation id="3622349720008044802">Langų tvarkymas</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{ir dar 1 svetainė}one{ir dar # svetainė}few{ir dar # svetainės}many{ir dar # svetainės}other{ir dar # svetainių}}</translation>
@@ -752,6 +750,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5010886807652684893">Vizualinis rodinys</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> nori prisijungti</translation>
 <translation id="5016205925109358554">Su užraitais</translation>
+<translation id="5017529052065664584">Pastarosios penkiolika minučių</translation>
 <translation id="5032430150487044192">Nepavyko sukurti QR kodo</translation>
 <translation id="5039804452771397117">Leisti</translation>
 <translation id="5040262127954254034">Privatumas</translation>
@@ -930,7 +929,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="6011308810877101166">Paieškos pasiūlymų tobulinimas</translation>
 <translation id="6026538407078977628">Išskleisti viso ekrano režimu</translation>
 <translation id="6030719887161080597">Tvarkykite svetainių naudojamą informaciją skelbimų našumui įvertinti</translation>
-<translation id="6034146297924778597">Pastarųjų penkiolikos minučių istorija bus ištrinta:</translation>
 <translation id="6039379616847168523">Pereiti prie kito skirtuko</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="604124094241169006">Automatinis</translation>

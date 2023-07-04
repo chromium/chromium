@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">Ընտրեք, թե երբ պետք է կողմնակի քուքիները արգելափակվեն</translation>
 <translation id="3428747202529429621">Ապահովում է ձեր անվտանգությունը Chrome-ում և Google հավելվածներում, երբ մտել եք ձեր հաշիվ</translation>
 <translation id="3429160811076349561">Փորձնական գործառույթներն անջատված են</translation>
-<translation id="3432973700170747422">Ջնջել վերջին 15 րոպեն</translation>
 <translation id="3435465986463792564">Շատ պատուհաննե՞ր եք բացել։ Դրանք կարող եք կառավարել այստեղ</translation>
 <translation id="3435738964857648380">Անվտանգություն</translation>
 <translation id="3443221991560634068">Վերաբեռնել ընթացիկ էջը</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">Օգնեք բարելավել անվտանգությունը</translation>
 <translation id="3597179440835065298">Ստացեք ավելի լավ առաջարկներ</translation>
 <translation id="3602290021589620013">Նախադիտում</translation>
-<translation id="360901359071773787">Ջնջե՞լ վերջին 15 րոպեն</translation>
 <translation id="3616113530831147358">Աուդիո</translation>
 <translation id="3622349720008044802">Կառավարել պատուհանները</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 կայք}one{+ # կայք}other{+ # կայք}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">Վիզուալ տեսք</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> կայքն ուզում է միանալ</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Վերջին 15 րոպեն</translation>
 <translation id="5032430150487044192">Չհաջողվեց ստեղծել QR կոդը</translation>
 <translation id="5039804452771397117">Թույլ տալ</translation>
 <translation id="5040262127954254034">Գաղտնիություն</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">Բարելավել որոնման առաջարկները</translation>
 <translation id="6026538407078977628">Ցուցադրել լիաէկրան ռեժիմում</translation>
 <translation id="6030719887161080597">Կառավարեք կայքերի կողմից օգտագործվող տեղեկությունները՝ գովազդի արդյունավետությունը գնահատելու համար</translation>
-<translation id="6034146297924778597">Վերջին 15 րոպեի պատմությունը կջնջվի․</translation>
 <translation id="6039379616847168523">Անցնել հաջորդ ներդիր</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="604124094241169006">Ավտոմատ</translation>

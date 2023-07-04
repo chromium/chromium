@@ -446,7 +446,6 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="3421726884497337397">Defina quando bloquear cookies de terceiros</translation>
 <translation id="3428747202529429621">Protege você no Chrome e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada</translation>
 <translation id="3429160811076349561">Os recursos de teste estão desativados</translation>
-<translation id="3432973700170747422">Excluir últimos 15 minutos</translation>
 <translation id="3435465986463792564">Muitas janelas? Gerencie aqui.</translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3443221991560634068">Atualizar a página atual</translation>
@@ -480,7 +479,6 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="3587596251841506391">Ajudar a melhorar a segurança na Web</translation>
 <translation id="3597179440835065298">Receba sugestões melhores</translation>
 <translation id="3602290021589620013">Visualizar</translation>
-<translation id="360901359071773787">Excluir os últimos 15 minutos?</translation>
 <translation id="3616113530831147358">Áudio</translation>
 <translation id="3622349720008044802">Gerenciar janelas</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{e mais 1 site}one{e mais # site}other{e mais # sites}}</translation>
@@ -753,6 +751,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5010886807652684893">Exibição visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> deseja se conectar</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Últimos 15 minutos</translation>
 <translation id="5032430150487044192">Não é possível criar o código QR</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidade</translation>
@@ -931,7 +930,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="6011308810877101166">Melhorar as sugestões de pesquisa</translation>
 <translation id="6026538407078977628">Abrir em tela cheia</translation>
 <translation id="6030719887161080597">Gerencie as informações usadas por sites para avaliar a performance de anúncios</translation>
-<translation id="6034146297924778597">O histórico dos últimos 15 minutos será excluído:</translation>
 <translation id="6039379616847168523">Ir para a próxima guia</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="604124094241169006">Automático</translation>

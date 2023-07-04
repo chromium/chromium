@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">Избиране кога да се блокират „бисквитките“ на трети страни</translation>
 <translation id="3428747202529429621">Осигурява безопасността ви в Chrome и може да се използва с цел подобряване на сигурността ви в други приложения на Google, докато сте в профила си.</translation>
 <translation id="3429160811076349561">Функциите за изпробване са изключени</translation>
-<translation id="3432973700170747422">Изтриване на посл. 15 мин</translation>
 <translation id="3435465986463792564">Отворили сте много прозорци? Можете да ги управлявате оттук</translation>
 <translation id="3435738964857648380">Сигурност</translation>
 <translation id="3443221991560634068">Презареждане на текущата страница</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">Помогнете за по-сигурна мрежа</translation>
 <translation id="3597179440835065298">Получавайте по-добри предложения</translation>
 <translation id="3602290021589620013">Визуализация</translation>
-<translation id="360901359071773787">Да се изтрият ли последните 15 минути?</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3622349720008044802">Управление на прозорците</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайта}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">Детайлен изглед</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> иска да се свърже</translation>
 <translation id="5016205925109358554">Серифен</translation>
+<translation id="5017529052065664584">Последните 15 минути</translation>
 <translation id="5032430150487044192">Не може да се създаде QR код</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
 <translation id="5040262127954254034">Поверителност</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">Подобряване на предложенията за търсене</translation>
 <translation id="6026538407078977628">Разгъване на цял екран</translation>
 <translation id="6030719887161080597">Управление на информацията, използвана от сайтовете с цел измерване на ефективността на рекламите</translation>
-<translation id="6034146297924778597">Историята от последните 15 минути, която ще бъде изтрита:</translation>
 <translation id="6039379616847168523">Преминаване към следващия раздел</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="604124094241169006">Автоматично</translation>

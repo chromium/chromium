@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">Настройте параметры блокировки сторонних файлов cookie</translation>
 <translation id="3428747202529429621">Защищает вас в браузере Chrome и может использоваться для повышения безопасности в других приложениях Google при входе в аккаунт.</translation>
 <translation id="3429160811076349561">Функции отключены</translation>
-<translation id="3432973700170747422">Удалить за последн. 15 мин.</translation>
 <translation id="3435465986463792564">Открыто много окон? Ими можно управлять здесь.</translation>
 <translation id="3435738964857648380">Безопасность</translation>
 <translation id="3443221991560634068">Обновить страницу</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">Помогать Google делать Интернет безопаснее</translation>
 <translation id="3597179440835065298">Более подходящие подсказки</translation>
 <translation id="3602290021589620013">Предварительный просмотр</translation>
-<translation id="360901359071773787">Удалить данные за последние 15 минут?</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3622349720008044802">Управление окнами</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{и ещё 1 сайт}one{и ещё # сайт}few{и ещё # сайта}many{и ещё # сайтов}other{и ещё # сайта}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">Расширенный вид</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> запрашивает разрешение на подключение</translation>
 <translation id="5016205925109358554">С засечками</translation>
+<translation id="5017529052065664584">Последние 15 минут</translation>
 <translation id="5032430150487044192">Не удалось создать QR-код.</translation>
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5040262127954254034">Конфиденциальность</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">Улучшать подсказки при поиске</translation>
 <translation id="6026538407078977628">Перейти в полноэкранный режим</translation>
 <translation id="6030719887161080597">Управление информацией, которая помогает оценивать эффективность рекламы на сайтах</translation>
-<translation id="6034146297924778597">Указанные ниже сведения будут удалены.</translation>
 <translation id="6039379616847168523">Перейти к следующей вкладке</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="604124094241169006">Автоматически</translation>

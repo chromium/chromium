@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">ਚੁਣੋ ਕਿ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਸਾਰੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਕਦੋਂ ਬਲਾਕ ਕਰਨਾ ਹੈ</translation>
 <translation id="3428747202529429621">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਨੂੰ Chrome ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ ਅਤੇ ਸ਼ਾਇਦ ਹੋਰ Google ਐਪਾਂ ਵਿੱਚ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਨੂੰ ਸੁਧਾਰਨ ਲਈ ਵਰਤਿਆ ਜਾ ਸਕੇ</translation>
 <translation id="3429160811076349561">ਪਰਖ ਸੰਬੰਧੀ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬੰਦ ਹਨ</translation>
-<translation id="3432973700170747422">ਪਿਛਲੇ 15 ਮਿੰਟਾਂ ਦਾ ਖੋਜ ਇਤਿਹਾਸ ਮਿਟਾਓ</translation>
 <translation id="3435465986463792564">ਕੀ ਬਹੁਤ ਸਾਰੀਆਂ ਵਿੰਡੋ ਖੁੱਲ੍ਹੀਆਂ ਹੋਈਆਂ ਹਨ? ਤੁਸੀਂ ਇੱਥੇ ਉਨ੍ਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="3435738964857648380">ਸੁਰੱਖਿਆ</translation>
 <translation id="3443221991560634068">ਮੌਜੂਦਾ ਪੰਨੇ ਨੂੰ ਮੁੜ-ਲੋਡ ਕਰੋ</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">ਵੈੱਬ 'ਤੇ ਸੁਰੱਖਿਆ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="3597179440835065298">ਬਿਹਤਰ ਸੁਝਾਅ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="3602290021589620013">ਪ੍ਰੀਵਿਊ</translation>
-<translation id="360901359071773787">ਕੀ ਪਿਛਲੇ 15 ਮਿੰਟਾਂ ਦਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="3616113530831147358">ਆਡੀਓ</translation>
 <translation id="3622349720008044802">ਵਿੰਡੋਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 ਸਾਈਟ}one{+ # ਸਾਈਟ}other{+ # ਸਾਈਟਾਂ}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">ਦ੍ਰਿਸ਼ਟੀਗਤ ਦ੍ਰਿਸ਼</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ਕਨੈਕਟ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">ਪਿਛਲੇ 15 ਮਿੰਟ</translation>
 <translation id="5032430150487044192">QR ਕੋਡ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="5039804452771397117">ਆਗਿਆ ਦਿਓ</translation>
 <translation id="5040262127954254034">ਪਰਦੇਦਾਰੀ</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">ਖੋਜ ਸੁਝਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਓ</translation>
 <translation id="6026538407078977628">ਪੂਰੀ-ਸਕ੍ਰੀਨ 'ਤੇ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="6030719887161080597">ਵਿਗਿਆਪਨ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਮਾਪਣ ਲਈ ਸਾਈਟ ਵੱਲੋਂ ਵਰਤੀ ਗਈ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
-<translation id="6034146297924778597">ਪਿਛਲੇ 15 ਮਿੰਟਾਂ ਵਾਲਾ ਇਤਿਹਾਸ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ:</translation>
 <translation id="6039379616847168523">ਅਗਲੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="604124094241169006">ਆਟੋਮੈਟਿਕ</translation>

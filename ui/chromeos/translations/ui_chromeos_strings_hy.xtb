@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">Ֆայլը կամ գրացուցակը վնասված են:</translation>
 <translation id="1363028406613469049">Կատարում</translation>
 <translation id="1378727793141957596">Բարի գալուստ Google Drive:</translation>
-<translation id="1379156577998569384">«Իմ դրայվը» պանակի ձեր ֆայլերը հասանելի են անցանց ռեժիմում</translation>
 <translation id="1379911846207762492">Դուք կարող եք ներբեռնել ֆայլերը՝ անցանց ռեժիմում օգտագործելու համար։</translation>
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="1388045380422025115">Բոլոր տեսակները</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">Սարքի կարգավորումներ</translation>
 <translation id="2084809735218147718">Շնորհակալություն գրող մարդ</translation>
 <translation id="2088690981887365033">VPN ցանց</translation>
-<translation id="2089751716171649322">Հեշտությամբ բացեք Google Drive-ի ձեր ֆայլերը, երբ օֆլայն եք</translation>
 <translation id="2111134541987263231">Միացրեք <ph name="BEGIN_BOLD" />Թույլ տալ ինկոգնիտո ռեժիմում<ph name="END_BOLD" /> կարգավորումը</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> տարր կջնջվի, և դուք չեք կարողանա վերականգնել դրանք։</translation>
 <translation id="2122305276694332719">Թաքցված ցանցին ավտոմատ միացումը մյուս օգտատերերին թույլ է տալիս տեսնել ձեր սարքը և ցանցային որոշ կարգավորումներ: Այդ իսկ պատճառով Խորհուրդ չի տրվում միացնել այս գործառույթը:</translation>
@@ -577,12 +575,10 @@
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
 <translation id="5500122897333236901">Իսլանդական</translation>
 <translation id="5508696409934741614">Կետեր</translation>
-<translation id="5519161320735100193">Google Drive-ի կարգավորումներ</translation>
 <translation id="5522908512596376669">Ֆայլերի ցանկն այժմ ցուցադրված է ցանկի տեսքով:</translation>
 <translation id="5524517123096967210">Չհաջողվեց բացել ֆայլը:</translation>
 <translation id="5533102081734025921">Պատկեր (<ph name="IMAGE_TYPE" />)</translation>
 <translation id="5534520101572674276">Չափի հաշվարկում</translation>
-<translation id="5536122250858122375">Ֆայլի այս տեսակը հնարավոր չէ համաժամացնել</translation>
 <translation id="554153475311314364">հունարեն (տառադարձություն)</translation>
 <translation id="5554171655917412781">Ընտրված է <ph name="SELECTED_FOLDERS_COUNT" /> պանակ</translation>
 <translation id="5580591966435005537">վիրտուալ մեքենա</translation>
@@ -743,7 +739,6 @@
 <translation id="6874758081814639712">Թայ չիով զվաղվող մարդ</translation>
 <translation id="6876155724392614295">Հեծանիվ</translation>
 <translation id="6878261347041253038">Դևանագարի ստեղնաշար (հնչյունաբանական)</translation>
-<translation id="6882444584974399416">Ձեր սարքում չկա բավականաչափ տարածք, որպեսզի ձեր ֆայլերը շարունակեն հասանելի լինել անցանց ռեժիմում։ Նոր ֆայլերն այլևս ավտոմատ չեն համաժամացվի։</translation>
 <translation id="6885780034956018177">Խխունջ</translation>
 <translation id="6896758677409633944">Պատճենել</translation>
 <translation id="6898028766943174120">Այլ ենթապանակներ…</translation>
@@ -980,7 +975,6 @@
 <translation id="8560515948038859357">կանտոներեն</translation>
 <translation id="8561206103590473338">Փիղ</translation>
 <translation id="8566466896628108558">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, արգելափակված է ադմինիստրատորի կողմից, մանրամասներ</translation>
-<translation id="8567555211227790801">Այս պահին դուք անցանց ռեժիմում եք։ Համաժամացումը կվերսկսվի, երբ դուք միանաք ինտերնետին։</translation>
 <translation id="8568374623837201676">Ընդմիշտ ջնջե՞լ այս ֆայլը</translation>
 <translation id="8569764466147087991">Ընտրեք ֆայլ</translation>
 <translation id="8577897833047451336">խորվաթերեն</translation>

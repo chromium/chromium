@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">I-clear ang data at i-reset ang mga pahintulot</translation>
 <translation id="6527303717912515753">Ibahagi</translation>
 <translation id="6545864417968258051">Pag-scan ng Bluetooth</translation>
-<translation id="6552691050538553146">Higit pang opsyon <ph name="BANNER_TITLE" /></translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Naka-block ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}one{Naka-block ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}other{Naka-block ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}}</translation>
 <translation id="6554732001434021288">Huling binisita <ph name="NUM_DAYS" /> (na) araw ang nakalipas</translation>
 <translation id="6561560012278703671">Gamitin ang mas tahimik na pagmemensahe (bina-block ang mga prompt ng notification na gumagambala sa iyo)</translation>

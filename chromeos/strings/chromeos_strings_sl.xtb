@@ -204,7 +204,6 @@
 <translation id="2491955442992294626">Tipke se ne preizkušajo, če uporabljate drugo okno.</translation>
 <translation id="2493126929778606526">Vaše najboljše fotografije, izbrane samodejno</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2498950423397131220">Plavajoči gumb</translation>
 <translation id="2505327257735685095">Osveži trenutno sliko zaslonskega ozadja</translation>
 <translation id="2512979179176933762">prikaz oken</translation>
 <translation id="2513396635448525189">Slika za prijavo</translation>
@@ -328,7 +327,6 @@
 <translation id="3607216139080387279">Pokaži ohranjevalnik zaslona</translation>
 <translation id="361575905210396100">Hvala za povratne informacije</translation>
 <translation id="3632579075709132555">Preklop zaslona za zasebnost</translation>
-<translation id="3639846061339007994">zgoraj</translation>
 <translation id="3651050199673793219">Izbira enote temperature</translation>
 <translation id="3663574643422533538">Izberite ekskluzivna umetniška dela za <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">Zaslonsko ozadje premika oblakov</translation>
@@ -411,7 +409,6 @@
 <translation id="4289849978083912975">Diaprojekcija</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
 <translation id="4300073214558989">Št. slik: <ph name="IMAGE_COUNT" /></translation>
-<translation id="4311195029067684288">V celoti</translation>
 <translation id="4333390807948134856">Tipka <ph name="KEY_NAME" /> je bila pritisnjena.</translation>
 <translation id="435692326371619097">Upravljanje nastavitev APN-ja. APN-ji vzpostavijo povezavo med mobilnim omrežjem in internetom. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Ponastavi vse bližnjice</translation>
@@ -501,7 +498,6 @@
 <translation id="4930320165497208503">Če želite nastaviti ali posodobiti povezavo, odprite <ph name="BEGIN_LINK" />nastavitve<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4950314376641394653">Vdelana programska oprema za napravo <ph name="DEVICE_NAME" /> je posodobljena na različico <ph name="VERSION" />.</translation>
-<translation id="4971925105143343452">Delno</translation>
 <translation id="4972592110715526173">sprememba načina</translation>
 <translation id="498186245079027698">Preverite optični bralnik in poskusite znova. Poskrbite, da je na lokalnem disku dovolj prostora za shranjevanje optično prebranih datotek.</translation>
 <translation id="4985509611418653372">Izvedi</translation>
@@ -655,7 +651,6 @@
 <translation id="6191293864534840972">Napačno oblikovani imenski strežniki</translation>
 <translation id="6205145102504628069">Tok oblaka</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
-<translation id="6223066887782788441">Zapusti celozaslonski način</translation>
 <translation id="6223752125779001553">Na voljo ni optičnih bralnikov</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6235460611964961764">Ročno ponastavi preneseno količino podatkov.</translation>
@@ -814,7 +809,6 @@
 <translation id="7481312909269577407">Naprej</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
 <translation id="7490813197707563893">Naslov MAC</translation>
-<translation id="7491478667760509108">Zapusti plavajoči gumb</translation>
 <translation id="7497215489070763236">Strežniško overjeno potrdilo</translation>
 <translation id="7501957181231305652">ali</translation>
 <translation id="7502658306369382406">Naslov IPv6</translation>
@@ -834,7 +828,6 @@
 <translation id="763165478673169849">Čas zadnje ponastavitve</translation>
 <translation id="7633068090678117093">Slika ozadja</translation>
 <translation id="7648838807254605802">Velika zakasnitev HTTPS</translation>
-<translation id="765159867434478292">Delitev</translation>
 <translation id="7656388927906093505">Naprava je miška.</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7665800271478495366">Spremeni avatar</translation>
@@ -865,7 +858,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Vrsta ponudnika</translation>
 <translation id="7882501334836096755">Javni ključ</translation>
-<translation id="78957024357676568">levo</translation>
 <translation id="7915220255123750251">Upravljanje nastavitev APN-ja. APN-ji vzpostavijo povezavo med mobilnim omrežjem in internetom.</translation>
 <translation id="7936303884198020182">Najden ni bil noben imenski strežnik</translation>
 <translation id="7942349550061667556">Rdeča</translation>
@@ -903,7 +895,6 @@
 <translation id="8183974620058026102">Vpetje</translation>
 <translation id="8206859287963243715">Prenosni</translation>
 <translation id="8208861521865154048">Ugodnosti</translation>
-<translation id="8210733748736414123">spodaj</translation>
 <translation id="8226628635270268143">Izberite priljubljene fotografije in albume</translation>
 <translation id="8227119283605456246">Prilaganje datoteke</translation>
 <translation id="8230672074305416752">Ni mogoče preveriti privzetega prehoda omrežja</translation>
@@ -1004,7 +995,6 @@
 <translation id="8936793075252196307">Naslov IP odjemalca</translation>
 <translation id="8944651180182756621">Barva zaganjalnika</translation>
 <translation id="894617464444543719">Naprava je telefon.</translation>
-<translation id="8957423540740801332">desno</translation>
 <translation id="8968751544471797276">Hitrost polnjenja</translation>
 <translation id="8970109610781093811">Znova zaženi</translation>
 <translation id="8983038754672563810">HSPA</translation>

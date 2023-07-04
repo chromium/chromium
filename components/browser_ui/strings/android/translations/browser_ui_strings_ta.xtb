@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">தரவை அழித்து அனுமதிகளை மீட்டமை</translation>
 <translation id="6527303717912515753">பகிர்</translation>
 <translation id="6545864417968258051">புளூடூத் ஸ்கேனிங்</translation>
-<translation id="6552691050538553146">கூடுதல் விருப்பங்கள் <ph name="BANNER_TITLE" /></translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள் தடுக்கப்பட்டுள்ளன}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள் தடுக்கப்பட்டுள்ளன}}</translation>
 <translation id="6554732001434021288">கடைசியாகப் பார்த்தது: <ph name="NUM_DAYS" /> நாட்களுக்கு முன்</translation>
 <translation id="6561560012278703671">சத்தமில்லா மெசேஜாகக் காட்டு (குறுக்கீடுகளைத் தவிர்க்க அறிவிப்புகளைத் தடுக்கும்)</translation>

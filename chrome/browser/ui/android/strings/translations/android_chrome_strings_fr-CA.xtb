@@ -446,7 +446,6 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="3421726884497337397">Choisir le moment où les témoins tiers doivent être bloqués</translation>
 <translation id="3428747202529429621">Il vous protège dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte</translation>
 <translation id="3429160811076349561">Les fonctionnalités d'essai sont désactivées</translation>
-<translation id="3432973700170747422">Supprimer les 15 dernières minutes</translation>
 <translation id="3435465986463792564">Vous avez de nombreuses fenêtres ouvertes? Vous pouvez les gérer à partir d'ici</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3443221991560634068">Actualiser la page actuelle</translation>
@@ -480,7 +479,6 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="3587596251841506391">Contribuer à la sécurité sur le Web</translation>
 <translation id="3597179440835065298">Obtenez de meilleures suggestions</translation>
 <translation id="3602290021589620013">Aperçu</translation>
-<translation id="360901359071773787">Supprimer les 15 dernières minutes?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Gérer les fenêtres</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}one{+ # site}other{+ # sites}}</translation>
@@ -752,6 +750,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5010886807652684893">Vue visuelle</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> veut se connecter</translation>
 <translation id="5016205925109358554">Avec empattement</translation>
+<translation id="5017529052065664584">Les 15 dernières minutes</translation>
 <translation id="5032430150487044192">Impossible de créer un code QR</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5040262127954254034">Confidentialité</translation>
@@ -930,7 +929,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6026538407078977628">Ouvrir la fenêtre en plein écran</translation>
 <translation id="6030719887161080597">Gérer les informations utilisées par les sites pour mesurer les performances des annonces</translation>
-<translation id="6034146297924778597">L'historique des 15 dernières minutes sera supprimé :</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="604124094241169006">Automatique</translation>

@@ -4095,7 +4095,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4413087696295876280">Membaca data dan informasi perangkat ChromeOS Flex</translation>
 <translation id="44141919652824029">Izinkan "<ph name="APP_NAME" />" untuk mendapatkan daftar perangkat USB yang terpasang?</translation>
 <translation id="4414232939543644979">Jendela &amp;Penyamaran Baru</translation>
-<translation id="4414648713167199100">Menggunakan data seluler Chromebook dan operator Anda dapat dikenai biaya tambahan. Dapat meningkatkan penggunaan baterai. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Anda sudah siap untuk mulai menggunakan <ph name="DEVICE_TYPE" /> Anda.</translation>
 <translation id="4415245286584082850">Perangkat tidak ditemukan. Buka artikel pusat bantuan di tab baru.</translation>
 <translation id="4415276339145661267">Kelola Akun Google Anda</translation>
@@ -6889,7 +6888,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6833479554815567477">Tab dihapus dari grup <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Beralih ke browser cerdas dan aman</translation>
 <translation id="6833996806551876956">Uji coba Privacy Sandbox</translation>
-<translation id="6835712061486505758">Buat hotspot Wi-Fi guna menyediakan internet untuk perangkat lain. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Sambungkan ke internet untuk memperbarui <ph name="DEVICE_TYPE" /> Anda.</translation>
 <translation id="6839225236531462745">Kesalahan Penghapusan Sertifikat</translation>
 <translation id="6839916869147598086">Login telah berubah</translation>
@@ -7060,6 +7058,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6978717888677691380">Situs yang Anda blokir</translation>
 <translation id="6979041727349121225">Penghemat Energi</translation>
 <translation id="6979044105893951891">Luncurkan dan tutup sesi tamu terkelola</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Matikan (default)</translation>
 <translation id="6979737339423435258">Semua</translation>
 <translation id="6981553172137913845">Untuk melakukan penjelajahan rahasia, klik menu ikon titik untuk membuka jendela Samaran</translation>
@@ -8048,6 +8047,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7807711621188256451">Selalu izinkan <ph name="HOST" /> mengakses kamera Anda</translation>
 <translation id="7810202088502699111">Pop-up diblokir di halaman ini.</translation>
 <translation id="7814458197256864873">&amp;Salin</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Edit pintasan <ph name="SHORTCUT" /> untuk <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Download berbahaya diblokir</translation>
 <translation id="7817361223956157679">Keyboard di layar belum berfungsi di aplikasi Linux</translation>
@@ -8127,7 +8127,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7881483672146086348">Lihat Akun</translation>
 <translation id="7883792253546618164">Anda dapat berhenti berlangganan kapan saja.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Tinjau 1 situs yang mengirim banyak notifikasi}other{Tinjau {NUM_SITES} situs yang mengirim banyak notifikasi}}</translation>
-<translation id="7884446017008693258">Setelan Hotspot</translation>
 <translation id="788453346724465748">Memuat informasi akun ...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{1 item}other{# item}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8656,6 +8655,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8322814362483282060">Halaman ini telah diblokir agar tidak dapat mengakses mikrofon Anda.</translation>
 <translation id="8323167517179506834">Ketik URL</translation>
 <translation id="8323317289166663449">Membaca dan mengubah semua data Anda di komputer dan semua situs</translation>
+<translation id="8324158725704657629">Jangan tanya lagi</translation>
 <translation id="8324784016256120271">Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan</translation>
 <translation id="8325413836429495820">Tidak diizinkan melihat papan klip Anda</translation>
 <translation id="8326478304147373412">PKCS #7, rantai sertifikat</translation>

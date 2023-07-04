@@ -4100,7 +4100,6 @@
 <translation id="4413087696295876280">ອ່ານຂໍ້ມູນອຸປະກອນ ChromeOS Flex ແລະ ຂໍ້ມູນ</translation>
 <translation id="44141919652824029">ອະນຸຍາດໃຫ້ "<ph name="APP_NAME" />" ໄດ້ຮັບລາຍການອຸປະກອນ USB ທີ່ຄັດຕິດຂອງທ່ານບໍ?</translation>
 <translation id="4414232939543644979">ໜ້າ​ຕ່າງທີ່ບໍ່ເຜີຍຕົວໃໝ່</translation>
-<translation id="4414648713167199100">ໃຊ້ອິນເຕີເນັດມືຖືໃນ Chromebook ຂອງທ່ານ ແລະ ຜູ້ໃຫ້ບໍລິການຂອງທ່ານອາດຮຽກເກັບຄ່າບໍລິການເພີ່ມເຕີມ. ອາດເພີ່ມການໃຊ້ແບັດເຕີຣີ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">ທ່ານພ້ອມເລີ່ມໃຊ້ <ph name="DEVICE_TYPE" /> ຂອງທ່ານແລ້ວ.</translation>
 <translation id="4415245286584082850">ບໍ່ພົບອຸປະກອນໃດ. ເປີດບົດຄວາມຂອງສູນຊ່ວຍເຫຼືອໃນແຖບໃໝ່.</translation>
 <translation id="4415276339145661267">ຈັດການບັນຊີ Google ຂອງທ່ານ</translation>
@@ -6897,7 +6896,6 @@
 <translation id="6833479554815567477">ລຶບແຖບອອກຈາກກຸ່ມ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ແລ້ວ</translation>
 <translation id="683373380308365518">ປ່ຽນເປັນໂປຣແກຣມທ່ອງເວັບທີ່ສະຫຼາດ ແລະ ປອດໄພ</translation>
 <translation id="6833996806551876956">ການທົດລອງໃຊ້ກ່ອງຊາຍຄວາມເປັນສ່ວນຕົວ</translation>
-<translation id="6835712061486505758">ສ້າງ Wi‑Fi ຮັອດສະປອດເພື່ອສະໜອງອິນເຕີເນັດໃຫ້ອຸປະກອນອື່ນ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">ກະ​ລຸ​ນາ​ເຊື່ອມ​ຕໍ່​ກັບ​ອິນ​ເຕີ​ເນັດເພື່ອອັບເດດ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ.</translation>
 <translation id="6839225236531462745">ການລຶບໃບຢັ້ງຢືນຜິດພາດ</translation>
 <translation id="6839916869147598086">ການເຂົ້າສູ່ລະບົບໄດ້ປ່ຽນໄປແລ້ວ</translation>
@@ -7068,6 +7066,7 @@
 <translation id="6978717888677691380">ເວັບໄຊທີ່ທ່ານບລັອກແລ້ວ</translation>
 <translation id="6979041727349121225">ຕົວປະຢັດພະລັງງານ</translation>
 <translation id="6979044105893951891">ເປີດໃຊ້ ແລະ ອອກຈາກເຊດຊັນແຂກທີ່ມີການຈັດການ</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">ປິດສຽງ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="6979737339423435258">ທຸກເວລາ</translation>
 <translation id="6981553172137913845">ເພື່ອທ່ອງເວັບແບບສ່ວນຕົວ, ກະລຸນາຄລິກເມນູໄອຄອນຈ້ຳເມັດເພື່ອເປີດໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
@@ -8056,6 +8055,7 @@
 <translation id="7807711621188256451">​ອະ​ນຸ​ຍາດ​ໃຫ້ <ph name="HOST" /> ເຂົ້າຫາກ້ອງ​ຖ່າຍ​ຮູບ​ຂອງ​ທ່ານທຸກຄັ້ງ</translation>
 <translation id="7810202088502699111">ປັອບອັບຖືກບລັອກຢູ່​ເທິງ​ຫນ້າ​ນີ້.</translation>
 <translation id="7814458197256864873">ກັອບປີ້</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">ແກ້ໄຂທາງລັດ <ph name="SHORTCUT" /> ສຳລັບ <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">ບລັອກການດາວໂຫຼດອັນຕະລາຍໄວ້ແລ້ວ</translation>
 <translation id="7817361223956157679">ແປ້ນພິມໃນໜ້າຈໍໃຊ້ບໍ່ໄດ້ໃນແອັບ Linux ເທື່ອ</translation>
@@ -8135,7 +8135,6 @@
 <translation id="7881483672146086348">ເບິ່ງ​ບັນ​ຊີ​</translation>
 <translation id="7883792253546618164">ຍົກເລີກການສະໝັກໃຊ້ໄດ້ທຸກເວລາ.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{ກວດສອບ 1 ເວັບໄຊທີ່ສົ່ງການແຈ້ງເຕືອນຈຳນວນຫຼາຍລາຍການ}other{ກວດສອບ {NUM_SITES} ເວັບໄຊທີ່ສົ່ງການແຈ້ງເຕືອນຈຳນວນຫຼາຍລາຍການ}}</translation>
-<translation id="7884446017008693258">ການຕັ້ງຄ່າຮັອດສະປອດ</translation>
 <translation id="788453346724465748">ກຳລັງໂຫຼດຂໍ້ມູນບັນຊີ...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ລາຍການ}other{# ລາຍການ}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8663,6 +8662,7 @@
 <translation id="8322814362483282060">ໜ້ານີ້ຖືກບລັອກຈາກການເຂົ້າໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ.</translation>
 <translation id="8323167517179506834">ພິມ URL</translation>
 <translation id="8323317289166663449">ອ່ານ ແລະ ປ່ຽນຂໍ້ມູນທັງໝົດຂອງທ່ານຢູ່ຄອມພິວເຕີ ແລະ ທຸກເວັບໄຊ</translation>
+<translation id="8324158725704657629">ຢ່າຖາມອີກ</translation>
 <translation id="8324784016256120271">ເວັບໄຊສາມາດໃຊ້ຄຸກກີ້ເພື່ອເບິ່ງການເຄື່ອນໄຫວທ່ອງເວັບຂອງທ່ານໃນທົ່ວເວັບໄຊຕ່າງໆ ເຊັ່ນ: ເພື່ອປັບແຕ່ງໂຄສະນາໃຫ້ເປັນແບບສ່ວນຕົວ</translation>
 <translation id="8325413836429495820">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຫັນຄລິບບອດຂອງທ່ານ</translation>
 <translation id="8326478304147373412">PKCS #7, ຕ່ອງ​ໂສ້​ໃບຢັ້ງ​ຢືນ</translation>

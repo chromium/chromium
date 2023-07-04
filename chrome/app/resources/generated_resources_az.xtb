@@ -4077,7 +4077,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4413087696295876280">ChromeOS Flex cihaz məlumatı və datasının oxunması</translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" tətbiqinə əlavə edilmiş USB cihazlarının siyahısını əldə etmək icazəsi verilsin?</translation>
 <translation id="4414232939543644979">Yeni Anonim Pəncərə</translation>
-<translation id="4414648713167199100">Chromebook'unuzun mobil datasından istifadə edir və operatorunuz əlavə ödənişlər tələb edə bilər. Batareya istifadəsini artıra bilər. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> cihazınızdan istifadə etməyə hazırsınız.</translation>
 <translation id="4415245286584082850">Cihaz tapılmadı. Yeni paneldə yardım mərkəzi məqaləsi açın.</translation>
 <translation id="4415276339145661267">Google Hesabını idarə edin</translation>
@@ -6868,7 +6867,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6833479554815567477">Tab bu qrupdan silindi: <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Ağıllı və təhlükəsiz brauzerə keçin</translation>
 <translation id="6833996806551876956">Privacy Sandbox sınağı</translation>
-<translation id="6835712061486505758">Digər cihazlara internet təmin etmək üçün Wi-Fi hotspot yaradın. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Yeniləmə İnternetə qoşulmaq edin sizin <ph name="DEVICE_TYPE" /> .</translation>
 <translation id="6839225236531462745">Sertifikatın Silinməsi Xətası</translation>
 <translation id="6839916869147598086">Giriş dəyişdirilib</translation>
@@ -7039,6 +7037,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6978717888677691380">Blokladığınız saytlar</translation>
 <translation id="6979041727349121225">Enerjiyə Qənaət</translation>
 <translation id="6979044105893951891">İdarə edilən qonaq sessiyalarını başladın və sonlandırın</translation>
+<translation id="6979158407327259162">Google Disk</translation>
 <translation id="6979440798594660689">Səssiz edin (defolt)</translation>
 <translation id="6979737339423435258">Hər zaman</translation>
 <translation id="6981553172137913845">Məxfi axtarış etmək üçün menyudakı nöqtələr işarəsinə toxunun və Anonim pəncərəni açın</translation>
@@ -8028,6 +8027,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7807711621188256451">Kameranıza daxil olmaq üçün həmişə <ph name="HOST" /> hostuna icazə verin</translation>
 <translation id="7810202088502699111">Bu səhifədə popaplar bloklanıb.</translation>
 <translation id="7814458197256864873">&amp;Kopyalayın</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> üçün <ph name="SHORTCUT" /> qısayolunu redaktə edin</translation>
 <translation id="7815680994978050279">Təhlükəli endirmə blok edildi</translation>
 <translation id="7817361223956157679">Ekran klaviaturası Linux tətbiqlərində hələ dəstəklənmir</translation>
@@ -8107,7 +8107,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7881483672146086348">Hesaba Baxın</translation>
 <translation id="7883792253546618164">İstədiyiniz vaxt abunəlikdən çıxın.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Çox sayda bildiriş göndərən 1 saytı nəzərdən keçirin}other{Çox sayda bildiriş göndərən {NUM_SITES} saytı nəzərdən keçirin}}</translation>
-<translation id="7884446017008693258">Hotspot Ayarları</translation>
 <translation id="788453346724465748">Hesab məlumatı yüklənir...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{element}other{# element}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8635,6 +8634,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8322814362483282060">Bu səhifəyə mikrofonunuza giriş qadağan edilib.</translation>
 <translation id="8323167517179506834">Linki yazın</translation>
 <translation id="8323317289166663449">Kompüterinizdə və bütün veb saytlarda bütün datanızı oxumaq və dəyişdirmək</translation>
+<translation id="8324158725704657629">Daha soruşma</translation>
 <translation id="8324784016256120271">Saytlar müxtəlif saytlarda baxış fəaliyyətinizi (məsələn, reklamları fərdiləşdirmək üçün) görmək üçün kukilərdən istifadə edə bilər</translation>
 <translation id="8325413836429495820">Mübadilə buferinizə baxmaq icazəsi verilməyib</translation>
 <translation id="8326478304147373412">PKCS # 7, sertifikat zənciri</translation>

@@ -446,7 +446,6 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="3421726884497337397">Scegli quando bloccare i cookie di terze parti</translation>
 <translation id="3428747202529429621">Ti protegge su Chrome e potrebbe essere utilizzata per migliorare la sicurezza su altre app Google se esegui l'accesso</translation>
 <translation id="3429160811076349561">Le funzionalità di prova non sono attive</translation>
-<translation id="3432973700170747422">Elimina ultimi 15 minuti</translation>
 <translation id="3435465986463792564">Hai tante finestre? Puoi gestirle da qui</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3443221991560634068">Ricarica la pagina corrente</translation>
@@ -480,7 +479,6 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="3587596251841506391">Aumenta la sicurezza sul Web</translation>
 <translation id="3597179440835065298">Ricevi suggerimenti migliori</translation>
 <translation id="3602290021589620013">Anteprima</translation>
-<translation id="360901359071773787">Eliminare gli ultimi 15 minuti?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Gestisci finestre</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 sito}other{+ # siti}}</translation>
@@ -752,6 +750,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5010886807652684893">Visualizzazione grafica</translation>
 <translation id="5011311129201317034">Il sito <ph name="SITE" /> desidera collegarsi</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Ultimi 15 minuti</translation>
 <translation id="5032430150487044192">Impossibile creare codice QR</translation>
 <translation id="5039804452771397117">Consenti</translation>
 <translation id="5040262127954254034">Privacy</translation>
@@ -930,7 +929,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="6011308810877101166">Migliora i suggerimenti di ricerca</translation>
 <translation id="6026538407078977628">Espandi a schermo intero</translation>
 <translation id="6030719887161080597">Gestisci le informazioni utilizzate dai siti per misurare il rendimento dell'annuncio</translation>
-<translation id="6034146297924778597">La cronologia degli ultimi 15 minuti verrà eliminata:</translation>
 <translation id="6039379616847168523">Vai alla scheda successiva</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="604124094241169006">Automatico</translation>

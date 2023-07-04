@@ -4091,7 +4091,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4413087696295876280">Lukea ChromeOS Flexiä käyttävän laitteen tietoja ja dataa</translation>
 <translation id="44141919652824029">Haluatko, että <ph name="APP_NAME" /> voi noutaa yhdistettyjen USB-laitteiden luettelon?</translation>
 <translation id="4414232939543644979">Uusi &amp;incognito-ikkuna</translation>
-<translation id="4414648713167199100">Käyttää Chromebookin mobiilidataa, ja operaattorisi voi veloittaa lisämaksuja. Voi lisätä akun käyttöä. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> on käyttövalmis.</translation>
 <translation id="4415245286584082850">Laitteita ei löytynyt. Avaa ohjekeskuksen artikkeli uudella välilehdellä.</translation>
 <translation id="4415276339145661267">Ylläpidä Google-tiliäsi</translation>
@@ -6885,7 +6884,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6833479554815567477">Välilehti poistettu ryhmästä <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Siirry käyttämään älykästä ja turvallista selainta.</translation>
 <translation id="6833996806551876956">Privacy Sandbox ‑kokeilu</translation>
-<translation id="6835712061486505758">Luo Wi-Fi-hotspot, jolla voit jakaa internetyhteyden muille laitteille. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Muodosta internetyhteys, niin voit päivittää laitteen <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Varmenteen poistovirhe</translation>
 <translation id="6839916869147598086">Kirjautuminen on muuttunut</translation>
@@ -7056,6 +7054,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6978717888677691380">Estämäsi sivustot</translation>
 <translation id="6979041727349121225">Virransäästö</translation>
 <translation id="6979044105893951891">käynnistää ylläpidettyjä Vierailija-käyttökertoja ja poistua niistä</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Mykistä (oletus)</translation>
 <translation id="6979737339423435258">Kaikki</translation>
 <translation id="6981553172137913845">Jos haluat selata verkkoa yksityisesti, avaa valikko klikkaamalla pistekuvaketta ja siirry incognito-ikkunaan.</translation>
@@ -8044,6 +8043,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7807711621188256451">Anna aina sivuston <ph name="HOST" /> käyttää kameraasi</translation>
 <translation id="7810202088502699111">Ponnahdusikkunat estettiin tällä sivulla.</translation>
 <translation id="7814458197256864873">K&amp;opioi</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Muokkaa pikanäppäintä <ph name="SHORTCUT" />, jota <ph name="EXTENSION_NAME" /> käyttää</translation>
 <translation id="7815680994978050279">Vaarallinen lataus estettiin</translation>
 <translation id="7817361223956157679">Näyttönäppäimistö ei vielä toimi Linux-sovelluksissa</translation>
@@ -8123,7 +8123,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7881483672146086348">Näytä tili</translation>
 <translation id="7883792253546618164">Voit peruuttaa tilauksen milloin tahansa.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Tarkista 1 sivusto, jolta on lähetetty paljon ilmoituksia viime aikoina}other{Tarkista {NUM_SITES} sivustoa, joilta on lähetetty paljon ilmoituksia viime aikoina}}</translation>
-<translation id="7884446017008693258">Hotspot-asetukset</translation>
 <translation id="788453346724465748">Ladataan tilitietoja…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{kohde}other{# kohdetta}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8652,6 +8651,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8322814362483282060">Tältä sivulta on estetty mikrofonin käyttö.</translation>
 <translation id="8323167517179506834">Kirjoita URL-osoite</translation>
 <translation id="8323317289166663449">Lukea ja muokata kaikkea dataasi tietokoneellasi ja kaikilla sivustoilla</translation>
+<translation id="8324158725704657629">Älä kysy uudestaan</translation>
 <translation id="8324784016256120271">Sivustot voivat nähdä evästeiden kautta selaustoimintasi eri sivustoilla esim. personoidakseen mainoksia</translation>
 <translation id="8325413836429495820">Leikepöydän tarkastelu kielletty</translation>
 <translation id="8326478304147373412">PKCS #7, varmenneketju</translation>

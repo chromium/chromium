@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">O arquivo ou o diretório não é utilizável.</translation>
 <translation id="1363028406613469049">Rastrear</translation>
 <translation id="1378727793141957596">Bem-vindo ao Google Drive!</translation>
-<translation id="1379156577998569384">Seus arquivos do Meu Drive estão disponíveis off-line</translation>
 <translation id="1379911846207762492">É possível disponibilizar arquivos off-line para permitir o acesso quando não houver uma conexão de Internet.</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1388045380422025115">Todos os tipos</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">Configurações do dispositivo</translation>
 <translation id="2084809735218147718">"Obrigado" na língua de sinais</translation>
 <translation id="2088690981887365033">Rede VPN</translation>
-<translation id="2089751716171649322">Acesse seus arquivos do Google Drive de forma simples quando estiver off-line</translation>
 <translation id="2111134541987263231">Ative a opção <ph name="BEGIN_BOLD" />Permitir na navegação anônima<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> itens vão ser excluídos e não poderão ser restaurados.</translation>
 <translation id="2122305276694332719">A conexão automática a uma rede oculta não é recomendada porque permite que outras pessoas vejam seu dispositivo e algumas configurações de rede.</translation>
@@ -578,12 +576,10 @@
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5500122897333236901">Islandês</translation>
 <translation id="5508696409934741614">Pontos</translation>
-<translation id="5519161320735100193">Configurações do Google Drive</translation>
 <translation id="5522908512596376669">A lista de arquivos foi alterada para a visualização em lista.</translation>
 <translation id="5524517123096967210">Não foi possível ler o arquivo.</translation>
 <translation id="5533102081734025921">Imagem <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Calculando tamanho...</translation>
-<translation id="5536122250858122375">Não é possível sincronizar este tipo de arquivo</translation>
 <translation id="554153475311314364">Grego (transliteração)</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> pastas selecionadas</translation>
 <translation id="5580591966435005537">máquina virtual</translation>
@@ -744,7 +740,6 @@
 <translation id="6874758081814639712">Pessoa fazendo tai chi</translation>
 <translation id="6876155724392614295">Bicicleta</translation>
 <translation id="6878261347041253038">Teclado devanágari (fonético)</translation>
-<translation id="6882444584974399416">O dispositivo não tem espaço de armazenamento suficiente para manter arquivos disponíveis off-line. Arquivos novos não serão mais sincronizados automaticamente.</translation>
 <translation id="6885780034956018177">Caracol</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6898028766943174120">Mais subpastas…</translation>
@@ -981,7 +976,6 @@
 <translation id="8560515948038859357">Cantonês</translation>
 <translation id="8561206103590473338">Elefante</translation>
 <translation id="8566466896628108558">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, bloqueada pelo administrador, detalhes</translation>
-<translation id="8567555211227790801">No momento, você está off-line. A sincronização será retomada quando houver uma conexão à Internet.</translation>
 <translation id="8568374623837201676">Excluir esse arquivo permanentemente?</translation>
 <translation id="8569764466147087991">Selecionar um arquivo para ser aberto</translation>
 <translation id="8577897833047451336">Croata</translation>

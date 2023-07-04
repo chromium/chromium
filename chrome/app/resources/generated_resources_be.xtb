@@ -4081,7 +4081,6 @@
 <translation id="4413087696295876280">Прагляд звестак і даных пра прыладу з ChromeOS Flex</translation>
 <translation id="44141919652824029">Дазволіць праграме "<ph name="APP_NAME" />" атрымліваць спіс падключаных USB-прылад?</translation>
 <translation id="4414232939543644979">Новае &amp;акно ў рэжыме інкогніта</translation>
-<translation id="4414648713167199100">Выкарыстоўваецца мабільная перадача даных на Chromebook. Ваш аператар можа спаганяць дадатковую плату. Можа павялічыцца выкарыстанне зараду. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Цяпер вы можаце выкарыстоўваць <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Прылады не знойдзены. Адкрыць артыкул даведачнага цэнтра ў новай укладцы.</translation>
 <translation id="4415276339145661267">Кіраванне Уліковым запісам Google</translation>
@@ -6880,7 +6879,6 @@
 <translation id="6833479554815567477">Укладка выдалена з групы "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Пераходзьце на разумны і бяспечны браўзер</translation>
 <translation id="6833996806551876956">Пробны перыяд Privacy Sandbox</translation>
-<translation id="6835712061486505758">Стварыце хот-спот Wi-Fi, каб іншыя прылады атрымалі доступ да інтэрнэту. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Каб абнавіць <ph name="DEVICE_TYPE" />, падключыцеся да інтэрнэту.</translation>
 <translation id="6839225236531462745">Памылка пры выдаленні сертыфіката</translation>
 <translation id="6839916869147598086">Працэдура ўваходу змянілася</translation>
@@ -7051,6 +7049,7 @@
 <translation id="6978717888677691380">Заблакіраваныя вамі сайты</translation>
 <translation id="6979041727349121225">Эканомія энергіі</translation>
 <translation id="6979044105893951891">Запуск і завяршэнне гасцявых сеансаў пад кіраваннем</translation>
+<translation id="6979158407327259162">Google Дыск</translation>
 <translation id="6979440798594660689">Выключыць (стандартна)</translation>
 <translation id="6979737339423435258">За ўвесь час</translation>
 <translation id="6981553172137913845">Для прыватнага прагляду вэб-старонак націсніце на значок меню з кропкамі і адкрыйце акно ў рэжыме інкогніта</translation>
@@ -8040,6 +8039,7 @@
 <translation id="7807711621188256451">Заўсёды даваць хосту <ph name="HOST" /> доступ да камеры</translation>
 <translation id="7810202088502699111">Усплывальныя вокны на гэтай старонцы заблакіраваны.</translation>
 <translation id="7814458197256864873">&amp;Капіраваць</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Змяніць спалучэнне клавіш <ph name="SHORTCUT" /> для пашырэння "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7815680994978050279">Небяспечная спампоўка заблакіравана</translation>
 <translation id="7817361223956157679">Экранная клавіятура ў праграмах Linux пакуль што не працуе</translation>
@@ -8119,7 +8119,6 @@
 <translation id="7881483672146086348">Праглядзець уліковы запіс</translation>
 <translation id="7883792253546618164">Адпісацца можна ў любы час.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Праглядзіце 1 сайт, які адпраўляў шмат апавяшчэнняў}one{Праглядзіце {NUM_SITES} сайт, якія адпраўлялі шмат апавяшчэнняў}few{Праглядзіце {NUM_SITES} сайты, якія адпраўлялі шмат апавяшчэнняў}many{Праглядзіце {NUM_SITES} сайтаў, якія адпраўлялі шмат апавяшчэнняў}other{Праглядзіце {NUM_SITES} сайта, якія адпраўлялі шмат апавяшчэнняў}}</translation>
-<translation id="7884446017008693258">Налады хот-спота</translation>
 <translation id="788453346724465748">Ідзе загрузка інфармацыі пра ўліковы запіс...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{элемент}one{# элемент}few{# элементы}many{# элементаў}other{# элемента}}</translation>
 <translation id="7886605625338676841">eSIM-карта</translation>
@@ -8647,6 +8646,7 @@
 <translation id="8322814362483282060">Гэтай старонцы быў заблакіраваны доступ да вашага мікрафона.</translation>
 <translation id="8323167517179506834">Увесці URL-адрас</translation>
 <translation id="8323317289166663449">Праглядаць і змяняць усе вашы даныя на вашым камп'ютары і ўсіх вэб-сайтах</translation>
+<translation id="8324158725704657629">Больш не пытацца</translation>
 <translation id="8324784016256120271">Сайты могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах, напрыклад, каб персаналізаваць рэкламу</translation>
 <translation id="8325413836429495820">Не дазволена праглядаць буфер абмену</translation>
 <translation id="8326478304147373412">PKCS #7, ланцужок сертыфікатаў</translation>

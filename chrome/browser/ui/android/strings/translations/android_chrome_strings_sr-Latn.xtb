@@ -446,7 +446,6 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="3421726884497337397">Izaberite kada ćete blokirati kolačiće trećih strana</translation>
 <translation id="3428747202529429621">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni</translation>
 <translation id="3429160811076349561">Probne funkcije su isključene</translation>
-<translation id="3432973700170747422">Izbriši poslednjih 15 minuta</translation>
 <translation id="3435465986463792564">Imate mnogo prozora? Njima možete da upravljate odavde.</translation>
 <translation id="3435738964857648380">Bezbednost</translation>
 <translation id="3443221991560634068">Ponovno učitavanje aktuelne stranice</translation>
@@ -480,7 +479,6 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="3587596251841506391">Poboljšajte bezbednost na vebu</translation>
 <translation id="3597179440835065298">Dobijajte bolje predloge</translation>
 <translation id="3602290021589620013">Pregled</translation>
-<translation id="360901359071773787">Želite da izbrišete poslednjih 15 minuta?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Upravljajte prozorima</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{i još 1 sajt}one{i još # sajt}few{i još # sajta}other{i još # sajtova}}</translation>
@@ -752,6 +750,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5010886807652684893">Vizuelni prikaz</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> želi da se poveže</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Poslednjih 15 minuta</translation>
 <translation id="5032430150487044192">Pravljenje QR koda nije uspelo</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
 <translation id="5040262127954254034">Privatnost</translation>
@@ -930,7 +929,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="6011308810877101166">Poboljšajte predloge za pretragu</translation>
 <translation id="6026538407078977628">Proširite na prikaz preko celog ekrana</translation>
 <translation id="6030719887161080597">Upravljajte informacijama koje sajtovi koriste za merenje učinka oglasa</translation>
-<translation id="6034146297924778597">Istorija iz poslednjih 15 minuta će se izbrisati:</translation>
 <translation id="6039379616847168523">Prelazak na sledeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604124094241169006">Automatski</translation>

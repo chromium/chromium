@@ -446,7 +446,6 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3421726884497337397">Tria quan vols bloquejar galetes de tercers</translation>
 <translation id="3428747202529429621">Et protegeix a Chrome i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada</translation>
 <translation id="3429160811076349561">Les funcions de prova estan desactivades</translation>
-<translation id="3432973700170747422">Suprimeix 15 darrers min</translation>
 <translation id="3435465986463792564">Tens moltes finestres obertes? Pots gestionar-les aquí.</translation>
 <translation id="3435738964857648380">Seguretat</translation>
 <translation id="3443221991560634068">Torna a carregar la pàgina actual</translation>
@@ -480,7 +479,6 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3587596251841506391">Millora la seguretat al web</translation>
 <translation id="3597179440835065298">Obtén suggeriments millors</translation>
 <translation id="3602290021589620013">Previsualitza</translation>
-<translation id="360901359071773787">Vols suprimir els 15 darrers minuts?</translation>
 <translation id="3616113530831147358">Àudio</translation>
 <translation id="3622349720008044802">Gestiona les finestres</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 lloc web}other{+ # llocs web}}</translation>
@@ -752,6 +750,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5010886807652684893">Visualització visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> es vol connectar</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Últims 15 minuts</translation>
 <translation id="5032430150487044192">No es pot crear el codi QR</translation>
 <translation id="5039804452771397117">Permet</translation>
 <translation id="5040262127954254034">Privadesa</translation>
@@ -930,7 +929,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="6011308810877101166">Millora els suggeriments de cerca</translation>
 <translation id="6026538407078977628">Desplega en pantalla completa</translation>
 <translation id="6030719887161080597">Gestiona la informació que utilitzen els llocs web per mesurar el rendiment dels anuncis</translation>
-<translation id="6034146297924778597">Se suprimirà l'historial dels 15 darrers minuts:</translation>
 <translation id="6039379616847168523">Ves a la pestanya següent</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="604124094241169006">Automàtic</translation>

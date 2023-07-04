@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">Kosongkan data &amp; tetapkan semula kebenaran</translation>
 <translation id="6527303717912515753">Kongsi</translation>
 <translation id="6545864417968258051">Pengimbasan Bluetooth</translation>
-<translation id="6552691050538553146">Lagi pilihan <ph name="BANNER_TITLE" /></translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi disekat}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi disekat}}</translation>
 <translation id="6554732001434021288">Terakhir dilawati <ph name="NUM_DAYS" /> hari yang lalu</translation>
 <translation id="6561560012278703671">Gunakan pemesejan yang lebih senyap (menyekat gesaan pemberitahuan daripada mengganggu anda)</translation>

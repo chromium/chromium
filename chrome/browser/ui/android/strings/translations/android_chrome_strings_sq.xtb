@@ -446,7 +446,6 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="3421726884497337397">Zgjidh se kur do t'i bllokosh kukit e palëve të treta</translation>
 <translation id="3428747202529429621">Të mban të sigurt në Chrome dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je i identifikuar</translation>
 <translation id="3429160811076349561">Veçoritë e provës janë joaktive</translation>
-<translation id="3432973700170747422">Fshi 15 minutat e fundit</translation>
 <translation id="3435465986463792564">Ke shumë dritare? Mund t'i menaxhosh ato nga këtu</translation>
 <translation id="3435738964857648380">Siguria</translation>
 <translation id="3443221991560634068">Ringarko faqen aktuale</translation>
@@ -480,7 +479,6 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="3587596251841506391">Ndihmo në përmirësimin e sigurisë në ueb</translation>
 <translation id="3597179440835065298">Merr sugjerime më të mira</translation>
 <translation id="3602290021589620013">Pamje paraprake</translation>
-<translation id="360901359071773787">Të fshihen 15 minutat e fundit?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Menaxho dritaret</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 sajt}other{+ # sajte}}</translation>
@@ -752,6 +750,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5010886807652684893">Pamja vizuale</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> dëshiron që të lidhet</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">15 minutat e fundit</translation>
 <translation id="5032430150487044192">Kodi QR nuk mund të krijohet</translation>
 <translation id="5039804452771397117">Lejo</translation>
 <translation id="5040262127954254034">Privatësia</translation>
@@ -930,7 +929,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="6011308810877101166">Përmirëso sugjerimet për kërkimin</translation>
 <translation id="6026538407078977628">Zgjero në ekranin e plotë</translation>
 <translation id="6030719887161080597">Menaxho informacionet e përdorura nga sajtet për të matur performancën e reklamave</translation>
-<translation id="6034146297924778597">Historiku nga 15 minutat e fundit do të fshihet:</translation>
 <translation id="6039379616847168523">Kalo te skeda tjetër</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="604124094241169006">Automatike</translation>

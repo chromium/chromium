@@ -4082,7 +4082,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4413087696295876280">Lasīt ChromeOS Flex ierīces informāciju un datus</translation>
 <translation id="44141919652824029">Vai atļaut lietotnei “<ph name="APP_NAME" />” iegūt pievienoto USB ierīču sarakstu?</translation>
 <translation id="4414232939543644979">Jauns &amp;inkognito režīma logs</translation>
-<translation id="4414648713167199100">Izmanto Chromebook datora mobilos datus, un mobilo sakaru operators var iekasēt papildu maksu. Var palielināt akumulatora lietojumu. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="4415213869328311284">Jūsu <ph name="DEVICE_TYPE" /> ir gatavs lietošanai.</translation>
 <translation id="4415245286584082850">Netika atrasta neviena ierīce. Atveriet palīdzības centra rakstu jaunā cilnē.</translation>
 <translation id="4415276339145661267">Google konta pārvaldība</translation>
@@ -6876,7 +6875,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6833479554815567477">Cilne tika noņemta no grupas “<ph name="GROUP_NAME" />” — <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Pāreja uz viedu un drošu pārlūku</translation>
 <translation id="6833996806551876956">Privacy Sandbox izmēģinājuma periods</translation>
-<translation id="6835712061486505758">Izveidojiet Wi-Fi tīklāju, lai nodrošinātu interneta savienojumu citām ierīcēm. <ph name="BEGIN_LINK_LEARN_MORE" />Uzzināt vairāk<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Lai atjauninātu savu <ph name="DEVICE_TYPE" /> ierīci, lūdzu, izveidojiet savienojumu ar internetu.</translation>
 <translation id="6839225236531462745">Sertifikāta dzēšanas kļūda</translation>
 <translation id="6839916869147598086">Pierakstīšanās ir mainīta</translation>
@@ -7047,6 +7045,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6978717888677691380">Jūsu bloķētās vietnes</translation>
 <translation id="6979041727349121225">Enerģijas taupīšana</translation>
 <translation id="6979044105893951891">Palaist un iziet no pārvaldītajām viesu sesijām</translation>
+<translation id="6979158407327259162">Google disks</translation>
 <translation id="6979440798594660689">Izslēgt skaņu (noklusējums)</translation>
 <translation id="6979737339423435258">Visā periodā</translation>
 <translation id="6981553172137913845">Lai pārlūkotu tīmekli privāti, atveriet inkognito režīma logu, noklikšķinot uz punktu ikonas izvēlnes.</translation>
@@ -8035,6 +8034,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7807711621188256451">Vienmēr ļaut vietnei <ph name="HOST" /> piekļūt kamerai</translation>
 <translation id="7810202088502699111">Uznirstošie logi šajā lapā tika bloķēti.</translation>
 <translation id="7814458197256864873">Ko&amp;pēt</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Rediģēt paplašinājuma <ph name="EXTENSION_NAME" /> saīsni <ph name="SHORTCUT" /></translation>
 <translation id="7815680994978050279">Tika bloķēta bīstama lejupielāde</translation>
 <translation id="7817361223956157679">Ekrāna tastatūra vēl nedarbojas Linux lietotnēs.</translation>
@@ -8114,7 +8114,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7881483672146086348">Skatīt kontu</translation>
 <translation id="7883792253546618164">Varat jebkurā brīdī anulēt abonementu.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Pārskatiet vienu vietni, no kuras tika nosūtīts daudz paziņojumu}zero{Pārskatiet {NUM_SITES} vietnes, no kurām tika nosūtīts daudz paziņojumu}one{Pārskatiet {NUM_SITES} vietni, no kurām tika nosūtīts daudz paziņojumu}other{Pārskatiet {NUM_SITES} vietnes, no kurām tika nosūtīts daudz paziņojumu}}</translation>
-<translation id="7884446017008693258">Tīklāja iestatījumi</translation>
 <translation id="788453346724465748">Notiek konta informācijas ielāde…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{vienums}zero{# vienumu}one{# vienums}other{# vienumi}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8643,6 +8642,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8322814362483282060">Šīs lapas piekļuve jūsu mikrofonam ir bloķēta.</translation>
 <translation id="8323167517179506834">Ierakstiet URL</translation>
 <translation id="8323317289166663449">Lasīt un mainīt visus jūsu datus jūsu datorā un visās vietnēs</translation>
+<translation id="8324158725704657629">Nejautāt atkārtoti</translation>
 <translation id="8324784016256120271">Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, lai personalizētu reklāmas.</translation>
 <translation id="8325413836429495820">Nedrīkst skatīt starpliktuvi</translation>
 <translation id="8326478304147373412">PKCS #7, sertificēšanas ķēde</translation>

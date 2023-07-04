@@ -303,7 +303,6 @@
 <translation id="6467852467360539617">محو البيانات وإعادة ضبط الأذونات</translation>
 <translation id="6527303717912515753">مشاركة</translation>
 <translation id="6545864417968258051">البحث عن بلوتوث</translation>
-<translation id="6552691050538553146">خيارات إضافية في <ph name="BANNER_TITLE" /></translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر.}zero{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}two{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنَين (<ph name="NUM_MORE" />) آخرَين.}few{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى.}many{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر.}other{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}}</translation>
 <translation id="6554732001434021288">تمّت زيارة الموقع الإلكتروني آخر مرّة قبل <ph name="NUM_DAYS" /> يوم.</translation>
 <translation id="6561560012278703671">استخدام طريقة أقل بروزًا لإرسال الإشعارات (منع رسائل الإشعارات من إزعاجك)</translation>

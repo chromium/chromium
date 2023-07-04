@@ -4078,7 +4078,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4413087696295876280">ChromeOS Flex cihaz bilgilerini ve verilerini okuma</translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" uygulamasının, takılı USB cihazlarınızın listesini almasına izin verilsin mi?</translation>
 <translation id="4414232939543644979">Yeni &amp;Gizli Pencere</translation>
-<translation id="4414648713167199100">Chromebook'unuzdaki mobil veriyi kullanır ve operatörünüz ek ücret alabilir. Pil kullanımını artırabilir. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> cihazınızı kullanmaya hazırsınız.</translation>
 <translation id="4415245286584082850">Hiç cihaz bulunamadı. Yardım merkezi makalesini yeni sekmede açın.</translation>
 <translation id="4415276339145661267">Google Hesabınızı yönetin</translation>
@@ -6872,7 +6871,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="6833479554815567477">Sekme, <ph name="GROUP_NAME" /> adlı gruptan kaldırıldı - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Akıllı ve güvenli bir tarayıcıya geç</translation>
 <translation id="6833996806551876956">Privacy Sandbox denemesi</translation>
-<translation id="6835712061486505758">Diğer cihazlara internet bağlantısı sağlamak için kablosuz hotspot oluşturun. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> cihazınızı güncellemek için lütfen İnternet'e bağlanın.</translation>
 <translation id="6839225236531462745">Sertifika Silme Hatası</translation>
 <translation id="6839916869147598086">Oturum açma değişti</translation>
@@ -7043,6 +7041,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="6978717888677691380">Engellediğiniz siteler</translation>
 <translation id="6979041727349121225">Enerji Tasarrufu</translation>
 <translation id="6979044105893951891">Yönetilen misafir oturumunlarını başlatma ve oturumlardan çıkma</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Sesi kapat (varsayılan)</translation>
 <translation id="6979737339423435258">Tüm zamanlar</translation>
 <translation id="6981553172137913845">İnternette gizli olarak dolaşmak için nokta simgeli menüyü tıklayarak Gizli pencere açın</translation>
@@ -8031,6 +8030,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7807711621188256451">Kameranıza <ph name="HOST" /> tarafından erişilmesine her zaman izin verin</translation>
 <translation id="7810202088502699111">Bu sayfadaki pop-up'lar engellendi.</translation>
 <translation id="7814458197256864873">K&amp;opyala</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> için <ph name="SHORTCUT" /> kısayolunu düzenle</translation>
 <translation id="7815680994978050279">Tehlikeli indirme işlemi engellendi</translation>
 <translation id="7817361223956157679">Dokunmatik klavye henüz Linux uygulamalarında çalışmıyor</translation>
@@ -8110,7 +8110,6 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7881483672146086348">Hesabı Görüntüle</translation>
 <translation id="7883792253546618164">İstediğiniz zaman aboneliğinizi iptal edebilirsiniz.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Son zamanlarda çok fazla bildirim gönderen 1 siteyi inceleyin}other{Son zamanlarda çok fazla bildirim gönderen {NUM_SITES} siteyi inceleyin}}</translation>
-<translation id="7884446017008693258">Hotspot Ayarları</translation>
 <translation id="788453346724465748">Hesap bilgileri yükleniyor...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{bir öğe}other{# öğe}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8639,6 +8638,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8322814362483282060">Bu sayfanın mikrofonunuza erişimi engellenmiştir.</translation>
 <translation id="8323167517179506834">URL yaz</translation>
 <translation id="8323317289166663449">Bilgisayarınızda ve web sitelerinde tüm verilerinizi okuma ve değiştirme</translation>
+<translation id="8324158725704657629">Tekrar sorma</translation>
 <translation id="8324784016256120271">Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde tarama etkinliğinizi görmek için çerez kullanabilir</translation>
 <translation id="8325413836429495820">Panonuzu görmesine izin verilmeyen siteler</translation>
 <translation id="8326478304147373412">PKCS #7, sertifika zinciri</translation>

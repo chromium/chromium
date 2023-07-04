@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">Файл або папка непрыдатныя да выкарыстання.</translation>
 <translation id="1363028406613469049">Трэк</translation>
 <translation id="1378727793141957596">Вітаем у Google Дыску!</translation>
-<translation id="1379156577998569384">Файлы ў раздзеле "Мой Дыск" даступныя па-за сеткай</translation>
 <translation id="1379911846207762492">Вы можаце зрабіць файлы даступнымі ў пазасеткавым рэжыме, каб мець магчымасць працаваць з імі, калі не будзе падключэння да інтэрнэту.</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1388045380422025115">Усе тыпы</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">Налады прылады</translation>
 <translation id="2084809735218147718">Спеўная падзяка</translation>
 <translation id="2088690981887365033">Сетка VPN</translation>
-<translation id="2089751716171649322">Лёгка атрымлівайце доступ да файлаў Google Дыска па-за сеткай</translation>
 <translation id="2111134541987263231">Уключыце параметр <ph name="BEGIN_BOLD" />Дазволіць у рэжыме інкогніта<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Некалькі (<ph name="NUMBER_OF_ITEMS" />) элементаў будуць выдалены, і вы не зможаце іх аднавіць.</translation>
 <translation id="2122305276694332719">Аўтаматычнае падключэнне да схаванай сеткі дазваляе іншым бачыць вашу прыладу і некаторыя налады сеткі, а таму не рэкамендуецца.</translation>
@@ -577,12 +575,10 @@
 <translation id="5494920125229734069">Выбраць усё</translation>
 <translation id="5500122897333236901">Ісландская</translation>
 <translation id="5508696409934741614">Кропкі</translation>
-<translation id="5519161320735100193">Налады Google Дыска</translation>
 <translation id="5522908512596376669">Спіс файлаў перайшоў у рэжым спіса.</translation>
 <translation id="5524517123096967210">Не ўдалося прачытаць файл.</translation>
 <translation id="5533102081734025921">Відарыс <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Разлічваецца памер</translation>
-<translation id="5536122250858122375">Гэты тып файла не ўдалося сінхранізаваць</translation>
 <translation id="554153475311314364">Грэчаская (транслітарацыя)</translation>
 <translation id="5554171655917412781">Выбрана папак: <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">віртуальная машына</translation>
@@ -743,7 +739,6 @@
 <translation id="6874758081814639712">Чалавек займаецца тай-чы</translation>
 <translation id="6876155724392614295">Веласіпед</translation>
 <translation id="6878261347041253038">Клавіятура дэванагары (фанетычная)</translation>
-<translation id="6882444584974399416">У сховішчы вашай прылады не хапае месца, каб зрабіць файлы даступнымі па-за сеткай. Новыя файлы больш не будуць сінхранізавацца аўтаматычна.</translation>
 <translation id="6885780034956018177">Слімак</translation>
 <translation id="6896758677409633944">Капіраваць</translation>
 <translation id="6898028766943174120">Іншыя ўкладзеныя папкі...</translation>
@@ -980,7 +975,6 @@
 <translation id="8560515948038859357">Кантонскі дыялект</translation>
 <translation id="8561206103590473338">Слон</translation>
 <translation id="8566466896628108558">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, заблакіравана адміністратарам, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
-<translation id="8567555211227790801">Вы зараз па-за сеткай. Сінхранізацыя ўзновіцца, калі вы падключыцеся да інтэрнэту.</translation>
 <translation id="8568374623837201676">Выдаліць гэты файл назаўсёды?</translation>
 <translation id="8569764466147087991">Выберыце файл, які трэба адкрыць</translation>
 <translation id="8577897833047451336">Харвацкая</translation>

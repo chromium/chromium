@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">ໄຟລ໌ ຫຼືບັນຊີລາຍຊື່ບໍ່ຄົງທີ່.</translation>
 <translation id="1363028406613469049">ແທຣັກ</translation>
 <translation id="1378727793141957596">ຍິນ​ດີ​ຕ້ອນ​ຮັບສູ່ Google Drive!</translation>
-<translation id="1379156577998569384">ໄຟລ໌ໃນໂຟນເດີໄດຣຟ໌ຂອງຂ້ອຍຂອງທ່ານພ້ອມໃຫ້ນຳໃຊ້ແບບອອບລາຍ</translation>
 <translation id="1379911846207762492">ທ່ານສາມາດເຮັດໃຫ້ໄຟລ໌ນຳໃຊ້ແບບອອບລາຍໄດ້ເພື່ອເຂົ້າເຖິງເມື່ອທ່ານບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
 <translation id="1388045380422025115">ທຸກປະເພດ</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">ການຕັ້ງຄ່າອຸປະກອນ</translation>
 <translation id="2084809735218147718">ຄົນຂຽນຄຳວ່າຂອບໃຈ</translation>
 <translation id="2088690981887365033">ເຄືອຂ່າຍ VPN</translation>
-<translation id="2089751716171649322">ເຂົ້າເຖິງໄຟລ໌ Google Drive ຂອງທ່ານໄດ້ຢ່າງງ່າຍດາຍເມື່ອທ່ານອອບລາຍ</translation>
 <translation id="2111134541987263231">ເປີດ <ph name="BEGIN_BOLD" />ອະນຸຍາດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ລາຍການຈະຖືກລຶບອອກ ແລະ ທ່ານຈະບໍ່ສາມາດກູ້ຄືນພວກມັນໄດ້.</translation>
 <translation id="2122305276694332719">ການເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍທີ່ເຊື່ອງໄວ້ໂດຍອັດຕະໂນມັດອະນຸຍາດໃຫ້ຄົນອື່ນເຫັນອຸປະກອນຂອງທ່ານ ແລະ ບາງການຕັ້ງຄ່າເຄືອຂ່າຍ ແລະ ບໍ່ແນະນຳໃຫ້ເຊື່ອມຕໍ່.</translation>
@@ -577,12 +575,10 @@
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
 <translation id="5500122897333236901">ພາສາ​ໄອ​ແລນ​ດິກ</translation>
 <translation id="5508696409934741614">ຈຸດ</translation>
-<translation id="5519161320735100193">ການຕັ້ງຄ່າ Google Drive</translation>
 <translation id="5522908512596376669">ລາຍການໄຟລ໌ໄດ້ປ່ຽນເປັນມຸມມອງລາຍການແລ້ວ.</translation>
 <translation id="5524517123096967210">ບໍ່​ສາ​ມາດ​ອ່ານໄຟລ​໌​ນີ້ໄດ້​.</translation>
 <translation id="5533102081734025921">ຮູບ <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">ກໍາລັງຄິດໄລ່ຂະໜາດ</translation>
-<translation id="5536122250858122375">ຊິ້ງປະເພດໄຟລ໌ນີ້ບໍ່ໄດ້</translation>
 <translation id="554153475311314364">ການແປທັບສັບພາສາກຣີກ</translation>
 <translation id="5554171655917412781">ເລືອກ <ph name="SELECTED_FOLDERS_COUNT" /> ໂຟນເດີແລ້ວ</translation>
 <translation id="5580591966435005537">ເຄື່ອງສະເໝືອນ</translation>
@@ -743,7 +739,6 @@
 <translation id="6874758081814639712">ຄົນລຳໄທຊິ</translation>
 <translation id="6876155724392614295">ຖີບລົດ</translation>
 <translation id="6878261347041253038">ຄີບອດພາສາເດວັນນາກາຣີ (ການອອກສຽງ)</translation>
-<translation id="6882444584974399416">ອຸປະກອນຂອງທ່ານບໍ່ມີພື້ນທີ່ຈັດເກັບຂໍ້ມູນພຽງພໍທີ່ຈະເຮັດໃຫ້ໄຟລ໌ຂອງທ່ານນຳໃຊ້ແບບອອບລາຍໄດ້. ໄຟລ໌ໃໝ່ຈະບໍ່ຊິ້ງໂດຍອັດຕະໂນມັດອີກ.</translation>
 <translation id="6885780034956018177">ຫອຍທາດ</translation>
 <translation id="6896758677409633944">ກັອບປີ້</translation>
 <translation id="6898028766943174120">ໂຟນເດີຍ່ອຍເພີ່ມເຕີມ...</translation>
@@ -980,7 +975,6 @@
 <translation id="8560515948038859357">ພາສາຈີນກວາງຕຸ້ງ</translation>
 <translation id="8561206103590473338">ຊ້າງ</translation>
 <translation id="8566466896628108558">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ຖືກບລັອກໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>
-<translation id="8567555211227790801">ປະຈຸບັນທ່ານອອບລາຍຢູ່. ການຊິ້ງຈະສືບຕໍ່ເມື່ອທ່ານເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
 <translation id="8568374623837201676">ລຶບໄຟລ໌ນີ້ອອກຢ່າງຖາວອນບໍ?</translation>
 <translation id="8569764466147087991">ເລືອກ​ໄຟລ​໌​ທີ່​ຈະ​ເປີດ</translation>
 <translation id="8577897833047451336">ພາສາໂຄຣເອຊຽນ</translation>

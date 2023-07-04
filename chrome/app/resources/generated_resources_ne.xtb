@@ -4077,7 +4077,6 @@
 <translation id="4413087696295876280">ChromeOS Flex चल्ने डिभाइससम्बन्धी जानकारी र डिभाइसमा भएको डेटा रिड गर्ने</translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" लाई तपाईंको संलग्न USB डिभाइसहरूको सूची प्राप्त गर्न अनुमति दिने हो?</translation>
 <translation id="4414232939543644979">नयाँ &amp;इन्कग्निटो सन्झ्याल</translation>
-<translation id="4414648713167199100">तपाईंको Chromebook को मोबाइल डेटा प्रयोग गर्नुहोस् तर यसो गर्दा तपाईंको सेवा प्रदायकले थप शुल्क लिन सक्छ। मोबाइल डेटा प्रयोग गर्दा ब्याट्रीको खपत बढ्न सक्छ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">तपाईं आफ्नो <ph name="DEVICE_TYPE" /> प्रयोग गर्न तयार हुनुहुन्छ।</translation>
 <translation id="4415245286584082850">कुनै पनि यन्त्र फेला परेन। एउटा नयाँ ट्याबमा मद्दत केन्द्रको लेख खोल्नुहोस्।</translation>
 <translation id="4415276339145661267">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>
@@ -6869,7 +6868,6 @@
 <translation id="6833479554815567477">यो ट्याब <ph name="GROUP_NAME" /> समूहबाट हटाइयो - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">कुनै स्मार्ट तथा सुरक्षित ब्राउजरमा बदल्नुहोस्</translation>
 <translation id="6833996806551876956">गोपनीयता स्यान्डबक्सको ट्रायल अवधि</translation>
-<translation id="6835712061486505758">अन्य डिभाइसमा इन्टरनेट उपलब्ध गराउन Wi-Fi हटस्पट बनाउनुहोस्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">कृपया तपाईँको <ph name="DEVICE_TYPE" /> अद्यावधिक गर्न इन्टरनेटमा कनेक्ट गर्नुहोस्।</translation>
 <translation id="6839225236531462745">प्रमाणपत्र मेटाइमा त्रुटी</translation>
 <translation id="6839916869147598086">साइन इन परिवर्तन गरिएको छ</translation>
@@ -7040,6 +7038,7 @@
 <translation id="6978717888677691380">तपाईंले ब्लक गरेका साइटहरू</translation>
 <translation id="6979041727349121225">इनर्जी सेभर</translation>
 <translation id="6979044105893951891">अतिथिका व्यवस्थित सत्रहरू सुरु गर्ने तथा सोबाट बाहिर निस्कने</translation>
+<translation id="6979158407327259162">Google ड्राइभ</translation>
 <translation id="6979440798594660689">म्युट गरियोस् (डिफल्ट)</translation>
 <translation id="6979737339423435258">सुरूबाट नै</translation>
 <translation id="6981553172137913845">गोप्य रूपमा ब्राउज गर्नका निम्ति इन्कोग्निटो विन्डो खोल्न डटहरूको आइकन मेनुमा क्लिक गर्नुहोस्</translation>
@@ -8029,6 +8028,7 @@
 <translation id="7807711621188256451"><ph name="HOST" /> लाई तपाईंको क्यामेराको पहुँच गर्ने अनुमति सँधै दिनुहोस्</translation>
 <translation id="7810202088502699111">पप-अप यो पेजमा अवरुद्ध भएको थियो ।</translation>
 <translation id="7814458197256864873">&amp;प्रतिलिपि बनाउनुहोस्</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> का लागि सर्टकट <ph name="SHORTCUT" /> बदल्नुहोस्</translation>
 <translation id="7815680994978050279">खतरनाक डाउनलोडमाथि रोक लगाइयो</translation>
 <translation id="7817361223956157679">अनस्क्रिन किबोर्डले Linux का एपहरूमा अझै काम गर्दैन</translation>
@@ -8108,7 +8108,6 @@
 <translation id="7881483672146086348">खाता हेर्नुहोस्</translation>
 <translation id="7883792253546618164">जुनसुकै बेला सदस्यता रद्द गर्नुहोस्।</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{थुप्रै सूचनाहरू पठाएको एउटा साइटको समीक्षा गर्नुहोस्}other{थुप्रै सूचनाहरू पठाएका {NUM_SITES} वटा साइटको समीक्षा गर्नुहोस्}}</translation>
-<translation id="7884446017008693258">हटस्पटसम्बन्धी सेटिङ</translation>
 <translation id="788453346724465748">खातासम्बन्धी जानकारी लोड गरिँदै छ...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{एउटा वस्तु}other{# वटा वस्तु}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8636,6 +8635,7 @@
 <translation id="8322814362483282060">यो पृष्ठलाई तपाईंको माइक्रोफोनको पहुँच गर्नबाट ब्लक गरिएको छ।</translation>
 <translation id="8323167517179506834">युआरएल टाइप गर्नुहोस्</translation>
 <translation id="8323317289166663449">तपाईंको कम्प्युटर र सबै वेबसाइटमा भएका तपाईंका सबै डेटा पढ्न तथा बदल्न</translation>
+<translation id="8324158725704657629">फेरि नसोधियोस्</translation>
 <translation id="8324784016256120271">साइटहरूले तपाईंका गतिविधिअनुसार विज्ञापन देखाउने जस्ता प्रयोजनहरूका लागि विभिन्न साइटहरूमा तपाईंको ब्राउजिङसम्बन्धी गतिविधि हेर्न कुकीहरूको प्रयोग गर्न सक्छन्</translation>
 <translation id="8325413836429495820">तपाईंको क्लिपबोर्ड हेर्न अनुमति नदिइएका साइटहरू</translation>
 <translation id="8326478304147373412">PKCS # 7, प्रमाणपत्र चेन</translation>

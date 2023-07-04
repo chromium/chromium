@@ -4077,7 +4077,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4413087696295876280">ChromeOS Flex-Geräteinformationen und -daten lesen</translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" erlauben, die Liste der angeschlossenen USB-Geräte abzurufen?</translation>
 <translation id="4414232939543644979">Neues &amp;Inkognito-Fenster</translation>
-<translation id="4414648713167199100">Hierfür wird die mobile Datenverbindung deines Chromebooks verwendet und dein Mobilfunkanbieter berechnet möglicherweise zusätzliche Gebühren. Kann auch den Akkuverbrauch erhöhen. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Du kannst dein Gerät (<ph name="DEVICE_TYPE" />) jetzt nutzen.</translation>
 <translation id="4415245286584082850">Keine Geräte gefunden. Durch Klicken wird ein Hilfe-Artikel in einem neuen Tab geöffnet.</translation>
 <translation id="4415276339145661267">Google-Konto verwalten</translation>
@@ -6867,7 +6866,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6833479554815567477">Tab wurde aus folgender Gruppe entfernt: <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Steige auf einen intelligenten und sicheren Browser um</translation>
 <translation id="6833996806551876956">Privacy Sandbox-Testmodus</translation>
-<translation id="6835712061486505758">Du kannst einen WLAN-Hotspot erstellen, um anderen Geräten eine Internetverbindung zur Verfügung zu stellen. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Stelle eine Internetverbindung her, um dein Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren.</translation>
 <translation id="6839225236531462745">Fehler beim Löschen des Zertifikats</translation>
 <translation id="6839916869147598086">Anmeldung hat sich geändert</translation>
@@ -7038,6 +7036,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6978717888677691380">Von dir blockierte Websites</translation>
 <translation id="6979041727349121225">Energiesparmodus</translation>
 <translation id="6979044105893951891">Verwaltete Gastsitzungen starten und beenden</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Stummschalten (Standard)</translation>
 <translation id="6979737339423435258">Gesamte Zeit</translation>
 <translation id="6981553172137913845">Wenn du privat surfen möchtest, klicke auf das Dreipunkt-Menü, um ein Inkognitofenster zu öffnen</translation>
@@ -8027,6 +8026,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7807711621188256451"><ph name="HOST" /> immer Zugriff auf deine Kamera gestatten</translation>
 <translation id="7810202088502699111">Pop-ups wurden auf dieser Seite blockiert.</translation>
 <translation id="7814458197256864873">&amp;Kopieren</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Tastenkombination <ph name="SHORTCUT" /> für <ph name="EXTENSION_NAME" /> bearbeiten</translation>
 <translation id="7815680994978050279">Gefährlicher Download blockiert</translation>
 <translation id="7817361223956157679">Die Bildschirmtastatur funktioniert noch nicht in Linux-Apps</translation>
@@ -8106,7 +8106,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7881483672146086348">Konto anzeigen</translation>
 <translation id="7883792253546618164">Du kannst dich jederzeit wieder abmelden.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{1 Website ansehen, die in letzter Zeit viele Benachrichtigungen gesendet hat}other{{NUM_SITES} Websites ansehen, die in letzter Zeit viele Benachrichtigungen gesendet haben}}</translation>
-<translation id="7884446017008693258">Hotspot-Einstellungen</translation>
 <translation id="788453346724465748">Kontoinformationen werden geladen…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{einen Artikel}other{# Artikel}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8635,6 +8634,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8322814362483282060">Diese Seite darf nicht auf dein Mikrofon zugreifen.</translation>
 <translation id="8323167517179506834">URL eingeben</translation>
 <translation id="8323317289166663449">Alle deine Daten auf deinem Computer und allen Websites lesen und ändern</translation>
+<translation id="8324158725704657629">Nicht mehr fragen</translation>
 <translation id="8324784016256120271">Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Websites aufzuzeichnen und damit zum Beispiel Werbung zu personalisieren</translation>
 <translation id="8325413836429495820">Dürfen nicht auf meine Zwischenablage zugreifen</translation>
 <translation id="8326478304147373412">PKCS #7, Zertifikatkette</translation>

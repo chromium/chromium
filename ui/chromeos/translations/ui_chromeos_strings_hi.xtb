@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">फा़इल या निर्देशिका उपयोग करने योग्य नहीं है.</translation>
 <translation id="1363028406613469049">ट्रैक</translation>
 <translation id="1378727793141957596">Google डिस्क में आपका स्वागत है!</translation>
-<translation id="1379156577998569384">मेरी ड्राइव पर मौजूद आपकी फ़ाइलें ऑफ़लाइन उपलब्ध हैं</translation>
 <translation id="1379911846207762492">आप ऑफ़लाइन मोड में ऐक्सेस करने के लिए फ़ाइलें डाउनलोड कर सकते हैं.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1388045380422025115">सभी तरह की फ़ाइलें</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">डिवाइस की सेटिंग</translation>
 <translation id="2084809735218147718">जेस्चर से धन्यवाद बोलता हुआ व्यक्ति</translation>
 <translation id="2088690981887365033">वीपीएन नेटवर्क</translation>
-<translation id="2089751716171649322">ऑफ़लाइन रहने पर भी, Google Drive में मौजूद फ़ाइलों को आसानी से ऐक्सेस करें</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />गुप्त मोड में एक्सटेंशन इस्तेमाल करने की अनुमति दें<ph name="END_BOLD" /> को चालू करें</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> आइटम मिटा दिए जाएंगे और इन्हें वापस नहीं लाया जा सकेगा.</translation>
 <translation id="2122305276694332719">दिखाई न देने वाले नेटवर्क से अपने आप जुड़ने से दूसरे लोग आपके डिवाइस और कुछ नेटवर्क सेटिंग को देख सकते हैं. ऐसा करने का सुझाव नहीं दिया जाता.</translation>
@@ -577,12 +575,10 @@
 <translation id="5494920125229734069">सभी को चुनें</translation>
 <translation id="5500122897333236901">आइसलैंडिक</translation>
 <translation id="5508696409934741614">बिंदु</translation>
-<translation id="5519161320735100193">Google Drive की सेटिंग</translation>
 <translation id="5522908512596376669">फ़ाइल की सूची को अब सूची की तरह दिखाया जा रहा है.</translation>
 <translation id="5524517123096967210">फ़ाइल को पढ़ा नहीं जा सका.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> इमेज</translation>
 <translation id="5534520101572674276">आकार की गणना कर रहा है</translation>
-<translation id="5536122250858122375">इस फ़ाइल टाइप को सिंक नहीं किया जा सकता</translation>
 <translation id="554153475311314364">ग्रीक ट्रांसलिट्रेशन</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> फ़ोल्डर चुने गए</translation>
 <translation id="5580591966435005537">वर्चुअल मशीन</translation>
@@ -742,7 +738,6 @@
 <translation id="6874758081814639712">ताई ची करता हुआ व्यक्ति</translation>
 <translation id="6876155724392614295">बाइक</translation>
 <translation id="6878261347041253038">देवनागरी कीबोर्ड (फ़ोनेटिक)</translation>
-<translation id="6882444584974399416">आपकी फ़ाइलों को ऑफ़लाइन उपलब्ध कराने के लिए, आपके डिवाइस में स्टोरेज के लिए बची जगह काफ़ी नहीं है. अब नई फ़ाइलें अपने-आप सिंक नहीं होंगी.</translation>
 <translation id="6885780034956018177">घोंघा</translation>
 <translation id="6896758677409633944">कॉपी बनाएं</translation>
 <translation id="6898028766943174120">और सब-फ़़ोल्डर...</translation>
@@ -978,7 +973,6 @@
 <translation id="8560515948038859357">कैंटोनीज़</translation>
 <translation id="8561206103590473338">हाथी</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल का स्तर <ph name="SIGNAL_STRENGTH" />%, आपके एडमिन ने ब्लॉक किया है, ब्यौरा</translation>
-<translation id="8567555211227790801">आप फ़िलहाल ऑफ़लाइन हैं. डिवाइस को इंटरनेट से कनेक्ट करने पर, सिंक की सुविधा फिर से शुरू हो जाएगी.</translation>
 <translation id="8568374623837201676">क्या आपको यह फ़ाइल हमेशा के लिए मिटानी है?</translation>
 <translation id="8569764466147087991">खोलने के लिए फ़ाइल को चुनें</translation>
 <translation id="8577897833047451336">क्रोएशियन</translation>

@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">Fail atau direktori tidak boleh digunakan.</translation>
 <translation id="1363028406613469049">Penjejakan</translation>
 <translation id="1378727793141957596">Selamat datang ke Google Drive!</translation>
-<translation id="1379156577998569384">Fail Drive Saya anda tersedia di luar talian</translation>
 <translation id="1379911846207762492">Anda boleh menjadikan fail tersedia di luar talian untuk diakses semasa anda tidak mempunyai sambungan Internet.</translation>
 <translation id="1383876407941801731">Carian</translation>
 <translation id="1388045380422025115">Semua jenis</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">Tetapan peranti</translation>
 <translation id="2084809735218147718">Mengucapkan terima kasih menggunakan bahasa isyarat</translation>
 <translation id="2088690981887365033">Rangkaian VPN</translation>
-<translation id="2089751716171649322">Akses fail Google Drive anda dengan mudah apabila anda berada di luar talian</translation>
 <translation id="2111134541987263231">Hidupkan <ph name="BEGIN_BOLD" />Benarkan dalam mod Inkognito<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> item akan dipadam dan anda tidak akan dapat memulihkan item itu.</translation>
 <translation id="2122305276694332719">Tindakan menyambung secara automatik ke rangkaian tersembunyi akan membolehkan orang lain melihat peranti anda dan sesetengah tetapan rangkaian, maka tindakan ini tidak disyorkan.</translation>
@@ -578,12 +576,10 @@
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5500122897333236901">Bahasa Iceland</translation>
 <translation id="5508696409934741614">Titik</translation>
-<translation id="5519161320735100193">Tetapan Google Drive</translation>
 <translation id="5522908512596376669">Senarai fail telah berubah kepada paparan senarai.</translation>
 <translation id="5524517123096967210">Fail tidak boleh dibaca.</translation>
 <translation id="5533102081734025921">Imej <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Mengira saiz</translation>
-<translation id="5536122250858122375">Jenis fail ini tidak dapat disegerakkan</translation>
 <translation id="554153475311314364">Alih Huruf Greek</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> folder dipilih</translation>
 <translation id="5580591966435005537">mesin maya</translation>
@@ -744,7 +740,6 @@
 <translation id="6874758081814639712">Orang sedang melakukan tai chi</translation>
 <translation id="6876155724392614295">Basikal</translation>
 <translation id="6878261347041253038">Papan kekunci Devanagari (Fonetik)</translation>
-<translation id="6882444584974399416">Peranti anda tiada ruang storan yang mencukupi untuk memastikan fail anda tersedia di luar talian. Fail baharu tidak akan disegerakkan secara automatik lagi.</translation>
 <translation id="6885780034956018177">Siput</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6898028766943174120">Lagi subfolder...</translation>
@@ -981,7 +976,6 @@
 <translation id="8560515948038859357">Kantonis</translation>
 <translation id="8561206103590473338">Gajah</translation>
 <translation id="8566466896628108558">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Disekat oleh Pentadbir anda, Butiran</translation>
-<translation id="8567555211227790801">Kini anda di luar talian. Penyegerakan akan disambung semula apabila anda disambungkan kepada Internet.</translation>
 <translation id="8568374623837201676">Padam fail ini secara kekal?</translation>
 <translation id="8569764466147087991">Pilih fail untuk dibuka</translation>
 <translation id="8577897833047451336">Croatia</translation>

@@ -4093,7 +4093,6 @@
 <translation id="4413087696295876280">ChromeOS Flex పరికర సమాచారం అలాగే డేటాను చదవండి</translation>
 <translation id="44141919652824029">మీ జోడించబడిన USB పరికరాల లిస్ట్‌ను పొందడానికి "<ph name="APP_NAME" />"ని అనుమతించాలా?</translation>
 <translation id="4414232939543644979">కొత్త &amp;అజ్ఞాత విండో</translation>
-<translation id="4414648713167199100">మీ Chromebook మొబైల్ డేటాను వినియోగిస్తుంది, ఫలితంగా మీ క్యారియర్ అదనపు ఫీజును ఛార్జ్ చేయవచ్చు. బ్యాటరీ వినియోగం పెరగవచ్చు. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">మీ <ph name="DEVICE_TYPE" />ను ఉపయోగించడం ప్రారంభించడానికి మీరు సిద్ధంగా ఉన్నారు.</translation>
 <translation id="4415245286584082850">పరికరాలు కనుగొనబడలేదు. సహాయ కేంద్రం కథనాన్ని కొత్త ట్యాబ్‌లో తెరవండి.</translation>
 <translation id="4415276339145661267">మీ Google ఖాతాను మేనేజ్ చేయండి</translation>
@@ -6887,7 +6886,6 @@
 <translation id="6833479554815567477">గ్రూప్ నుండి ట్యాబ్ తొలగించబడింది <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">స్మార్ట్ మరియు సురక్షిత బ్రౌజర్‌కు మారండి</translation>
 <translation id="6833996806551876956">గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్ ట్రయల్</translation>
-<translation id="6835712061486505758">ఇతర పరికరాలకు ఇంటర్నెట్‌ను అందించడానికి Wi-Fi హాట్‌స్పాట్‌ను క్రియేట్ చేయండి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">దయచేసి మీ <ph name="DEVICE_TYPE" />ని అప్‌డేట్ చేయడానికి ఇంటర్నెట్‌కి కనెక్ట్ చేయండి.</translation>
 <translation id="6839225236531462745">ప్రమాణపత్రం తొలగింపు ఎర్రర్</translation>
 <translation id="6839916869147598086">సైన్-ఇన్ మార్చబడింది</translation>
@@ -7058,6 +7056,7 @@
 <translation id="6978717888677691380">మీరు బ్లాక్ చేసిన సైట్‌లు</translation>
 <translation id="6979041727349121225">ఎనర్జీ సేవర్</translation>
 <translation id="6979044105893951891">నిర్వాహిత అతిథి సెషన్‌లను ప్రారంభించడం మరియు విడిచిపెట్టడం</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">మ్యూట్ (డిఫాల్ట్)</translation>
 <translation id="6979737339423435258">మొత్తం సమయం</translation>
 <translation id="6981553172137913845">ప్రైవేట్‌గా బ్రౌజ్ చేయడానికి, అజ్ఞాత విండోను తెరవడాని చుక్కల చిహ్నం మెనూను క్లిక్ చేయండి</translation>
@@ -8046,6 +8045,7 @@
 <translation id="7807711621188256451">మీ కెమెరాను యాక్సెస్ చేయడానికి <ph name="HOST" />ని ఎల్లప్పుడూ అనుమతించండి</translation>
 <translation id="7810202088502699111">ఈ పేజీపై పాప్-అప్‌లు నిరోధించబడ్డాయి.</translation>
 <translation id="7814458197256864873">&amp;కాపీ</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> కోసం <ph name="SHORTCUT" /> షార్ట్‌కట్‌ను ఎడిట్ చేయండి</translation>
 <translation id="7815680994978050279">ప్రమాదకరమైన డౌన్‌లోడ్ బ్లాక్ చేయబడింది</translation>
 <translation id="7817361223956157679">స్క్రీన్‌పై కీబోర్డ్ ఇంకా Linux యాప్‌లలో పనిచేయడం లేదు</translation>
@@ -8125,7 +8125,6 @@
 <translation id="7881483672146086348">ఖాతాను చూడండి</translation>
 <translation id="7883792253546618164">ఏ సమయంలో అయినా సబ్‌స్క్రిప్షన్‌ను తీసివేయండి.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{చాలా నోటిఫికేషన్‌లను పంపిన 1 సైట్‌ను రివ్యూ చేయండి}other{చాలా నోటిఫికేషన్‌లను పంపిన {NUM_SITES} సైట్‌లను రివ్యూ చేయండి}}</translation>
-<translation id="7884446017008693258">హాట్‌స్పాట్ సెట్టింగ్‌లు</translation>
 <translation id="788453346724465748">ఖాతా సమాచారం లోడ్ అవుతోంది...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ఐటెమ్}other{# ఐటెమ్‌లు}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8651,6 +8650,7 @@
 <translation id="8322814362483282060">మీ మైక్రోఫోన్‌ను యాక్సెస్‌ చేయనీయకుండా ఈ పేజీ బ్లాక్ చేయబడింది.</translation>
 <translation id="8323167517179506834">URLను టైప్ చేయండి</translation>
 <translation id="8323317289166663449">మీ కంప్యూటర్‌లో, అన్ని వెబ్‌సైట్‌లలో మీ మొత్తం డేటాను చదవడం, మార్చడం</translation>
+<translation id="8324158725704657629">మళ్లీ అడగవద్దు</translation>
 <translation id="8324784016256120271">వివిధ సైట్‌లలో మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి, ఉదాహరణకు, యాడ్‌లను వ్యక్తిగతీకరించడానికి, సైట్‌లు కుక్కీలను ఉపయోగించవచ్చు</translation>
 <translation id="8325413836429495820">మీ క్లిప్‌బోర్డ్‌ను చూడటానికి అనుమతించబడలేదు</translation>
 <translation id="8326478304147373412">PKCS #7, సర్టిఫికెట్ చైన్</translation>

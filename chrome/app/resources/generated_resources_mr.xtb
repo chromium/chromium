@@ -4092,7 +4092,6 @@
 <translation id="4413087696295876280">ChromeOS Flex डिव्हाइसची माहिती आणि डेटा रीड करा</translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" ला संलग्न केलेल्या USB डिव्हाइसची सूची मिळवण्याची अनुमती द्यायची?</translation>
 <translation id="4414232939543644979">नवीन &amp;गुप्त विंडो</translation>
-<translation id="4414648713167199100">तुमच्या Chromebook चा मोबाइल डेटा वापरते आणि तुमचा वाहक अतिरिक्त शुल्के आकारू शकतो. बॅटरी वापर वाढू शकतो. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">तुम्ही तुमचे <ph name="DEVICE_TYPE" /> वापरणे सुरू करण्यासाठी तयार आहात.</translation>
 <translation id="4415245286584082850">कोणतीही डिव्हाइस सापडली नाहीत. नवीन टॅबमध्ये मदत केंद्र लेख उघडा.</translation>
 <translation id="4415276339145661267">तुमचे Google खाते व्यवस्थापित करा</translation>
@@ -6887,7 +6886,6 @@
 <translation id="6833479554815567477">टॅब गट <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> यामधून काढून टाकला आहे</translation>
 <translation id="683373380308365518">स्मार्ट आणि सुरक्षित ब्राउझरवर बदला</translation>
 <translation id="6833996806551876956">गोपनीयता सॅंडबॉक्स याची चाचणी</translation>
-<translation id="6835712061486505758">इतर डिव्हाइसना इंटरनेट पुरवण्यासाठी वाय-फाय हॉटस्पॉट तयार करा. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">कृपया तुमचे <ph name="DEVICE_TYPE" /> अपडेट करण्‍यासाठी इंटरनेटशी कनेक्ट करा.</translation>
 <translation id="6839225236531462745">सर्टिफिकेट हटविणे एरर</translation>
 <translation id="6839916869147598086">साइन इन बदलले आहे</translation>
@@ -7058,6 +7056,7 @@
 <translation id="6978717888677691380">तुम्ही ब्लॉक केलेल्या साइट</translation>
 <translation id="6979041727349121225">एनर्जी सेव्हर</translation>
 <translation id="6979044105893951891">लाँच करा आणि व्यवस्थापित केलेल्या अतिथी सत्रांमधून बाहेर पडा</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">निःशब्द करा (डीफॉल्ट)</translation>
 <translation id="6979737339423435258">पूर्णवेळ</translation>
 <translation id="6981553172137913845">खाजगीरीत्या ब्राउझ करण्यासाठी, गुप्त विंडो उघडण्याकरिता डॉट आयकन मेनूवर क्लिक करा</translation>
@@ -8045,6 +8044,7 @@
 <translation id="7807711621188256451">तुमचा कॅमेरा ॲक्सेस करण्यासाठी <ph name="HOST" /> ला नेहमी परवानगी द्या</translation>
 <translation id="7810202088502699111">या पेजवर पॉप-अप ब्लॉक केलेले होते.</translation>
 <translation id="7814458197256864873">&amp;कॉपी करा</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> साठी शॉर्टकट <ph name="SHORTCUT" /> संपादित करा</translation>
 <translation id="7815680994978050279">धोकादायक डाउनलोड ब्लॉक केले</translation>
 <translation id="7817361223956157679">ऑन-स्क्रीन कीबोर्ड सध्या Linux ॲप्समध्ये काम करत नाही</translation>
@@ -8124,7 +8124,6 @@
 <translation id="7881483672146086348">खाते पहा</translation>
 <translation id="7883792253546618164">सदस्यत्व कधीही रद्द करा.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{खूप सूचना पाठवलेल्या एका साइटचे पुनरावलोकन करा}other{खूप सूचना पाठवलेल्या {NUM_SITES} साइटचे पुनरावलोकन करा}}</translation>
-<translation id="7884446017008693258">हॉटस्पॉट सेटिंग्ज</translation>
 <translation id="788453346724465748">खाते माहिती लोड करत आहे...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{आयटम}other{# आयटम}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8653,6 +8652,7 @@
 <translation id="8322814362483282060">तुमच्या मायक्रोफोनचा अ‍ॅक्सेस या पेजसाठी ब्लॉक केला आहे.</translation>
 <translation id="8323167517179506834">URL टाइप करा</translation>
 <translation id="8323317289166663449">तुमच्या कॉंप्युटरवरील आणि सर्व वेबसाइटवरील तुमचा सर्व डेटा वाचू व बदलू शकते</translation>
+<translation id="8324158725704657629">पुन्हा विचारू नका</translation>
 <translation id="8324784016256120271">वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकतात, उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी</translation>
 <translation id="8325413836429495820">तुमचा क्लिपबोर्ड पाहण्याची अनुमती नाही</translation>
 <translation id="8326478304147373412">PKCS #7, सर्टिफिकेट श्रृंखला</translation>

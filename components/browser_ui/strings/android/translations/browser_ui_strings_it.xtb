@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">Cancella i dati e reimposta le autorizzazioni</translation>
 <translation id="6527303717912515753">Condividi</translation>
 <translation id="6545864417968258051">Scansione Bluetooth</translation>
-<translation id="6552691050538553146">Altre opzioni in <ph name="BANNER_TITLE" /></translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Ultima visita: <ph name="NUM_DAYS" /> giorni fa</translation>
 <translation id="6561560012278703671">Usa messaggi più discreti (impedisce alle notifiche di disturbarti)</translation>

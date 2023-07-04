@@ -1096,6 +1096,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3435738964857648380">Säkerhet</translation>
 <translation id="3438829137925142401">Använd lösenord som har sparats i Google-kontot</translation>
 <translation id="3440783957068352691">kvadrat</translation>
+<translation id="3441653493275994384">Skärm</translation>
 <translation id="3447661539832366887">Enhetens ägare har stängt av dinosauriespelet.</translation>
 <translation id="3447884698081792621">Visa certifikat (utfärdat av <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Hämta intervall:</translation>
@@ -2264,6 +2265,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6034514109191629503">Dragspelsfalsning</translation>
 <translation id="6039846035001940113">Kontakta webbplatsens ägare om problemet kvarstår.</translation>
 <translation id="6040143037577758943">Stäng</translation>
+<translation id="604124094241169006">Automatisk</translation>
 <translation id="6041777658117377052">Kammartemperatur</translation>
 <translation id="6042308850641462728">Mer</translation>
 <translation id="6042688167654081154">Bilden har konverterats till text</translation>
@@ -2757,6 +2759,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7135130955892390533">Visa status</translation>
 <translation id="7136009930065337683">Läs mer om inkognitoläget</translation>
 <translation id="7138472120740807366">Leveranssätt</translation>
+<translation id="7138678301420049075">Övrigt</translation>
 <translation id="7139892792842608322">Primär bricka</translation>
 <translation id="7140087718106278457">Listan över betalningsmetoder är stängd.</translation>
 <translation id="714064300541049402">Sida 2 bild X – byte</translation>

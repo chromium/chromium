@@ -4098,7 +4098,6 @@
 <translation id="4413087696295876280">Переглядати інформацію про пристрій із ChromeOS Flex і дані на ньому</translation>
 <translation id="44141919652824029">Дозволити додатку <ph name="APP_NAME" /> отримувати список підключених пристроїв USB?</translation>
 <translation id="4414232939543644979">Нове &amp;анонімне вікно</translation>
-<translation id="4414648713167199100">Використовує мобільний трафік пристрою Chromebook. Ваш оператор може стягувати додаткову плату. Також може збільшитися використання заряду акумулятора. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Тепер ви можете користуватися пристроєм <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Пристроїв не знайдено. Відкрийте довідкову статтю в новій вкладці.</translation>
 <translation id="4415276339145661267">Керувати обліковим записом Google</translation>
@@ -6895,7 +6894,6 @@
 <translation id="6833479554815567477">Вкладку видалено з групи "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Виберіть розумний і безпечний веб-переглядач</translation>
 <translation id="6833996806551876956">Пробна версія Privacy Sandbox</translation>
-<translation id="6835712061486505758">Створіть точку доступу Wi-Fi, щоб надати іншим пристроям доступ до Інтернету. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Щоб оновити свій <ph name="DEVICE_TYPE" />, під’єднайтеся до Інтернету.</translation>
 <translation id="6839225236531462745">Помилка видалення сертифіката</translation>
 <translation id="6839916869147598086">Спосіб входу в обліковий запис змінено</translation>
@@ -7066,6 +7064,7 @@
 <translation id="6978717888677691380">Сайти, які ви заблокували</translation>
 <translation id="6979041727349121225">Режим енергозбереження</translation>
 <translation id="6979044105893951891">Запустити сеанси в режимі "Гість", якими керує адміністратор, і вийти з них</translation>
+<translation id="6979158407327259162">Диск Google</translation>
 <translation id="6979440798594660689">Без звуку (за умовчанням)</translation>
 <translation id="6979737339423435258">Увесь час</translation>
 <translation id="6981553172137913845">Щоб переглядати веб-сторінки конфіденційно, натисніть значок меню з трьома крапками й відкрийте вікно в режимі анонімного перегляду</translation>
@@ -8054,6 +8053,7 @@
 <translation id="7807711621188256451">Завжди дозволяти хосту <ph name="HOST" /> доступ до вашої камери</translation>
 <translation id="7810202088502699111">На цій сторінці спливаючі вікна заблоковано.</translation>
 <translation id="7814458197256864873">&amp;Копіювати</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Змінити комбінацію клавіш <ph name="SHORTCUT" /> для розширення <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Заблоковано небезпечне завантаження</translation>
 <translation id="7817361223956157679">Додатки Linux ще не підтримують екранну клавіатуру</translation>
@@ -8133,7 +8133,6 @@
 <translation id="7881483672146086348">Переглянути обліковий запис</translation>
 <translation id="7883792253546618164">Ви можете будь-коли скасувати підписку.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Перегляньте 1 сайт, який надсилав багато сповіщень}one{Перегляньте {NUM_SITES} сайт, який надсилав багато сповіщень}few{Перегляньте {NUM_SITES} сайти, які надсилали багато сповіщень}many{Перегляньте {NUM_SITES} сайтів, які надсилали багато сповіщень}other{Перегляньте {NUM_SITES} сайту, які надсилали багато сповіщень}}</translation>
-<translation id="7884446017008693258">Налаштування точки доступу</translation>
 <translation id="788453346724465748">Завантаження даних облікового запису…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{елемент}one{# елемент}few{# елементи}many{# елементів}other{# елемента}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8662,6 +8661,7 @@
 <translation id="8322814362483282060">Доступ цієї сторінки до вашого мікрофона заблоковано.</translation>
 <translation id="8323167517179506834">Введіть URL-адресу</translation>
 <translation id="8323317289166663449">Читати та змінювати всі ваші дані на комп’ютері та всіх веб-сайтах</translation>
+<translation id="8324158725704657629">Не запитувати знову</translation>
 <translation id="8324784016256120271">Сайти можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу</translation>
 <translation id="8325413836429495820">Заборонено переглядати буфер обміну</translation>
 <translation id="8326478304147373412">PKCS #7, ланцюжок сертифікатів</translation>

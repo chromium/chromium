@@ -446,7 +446,6 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="3421726884497337397">Kies wanneer jy derdeparty-webkoekies wil blokkeer</translation>
 <translation id="3428747202529429621">Hou jou veilig op Chrome en kan gebruik word om jou sekuriteit in ander Google-programme te verbeter wanneer jy aangemeld is</translation>
 <translation id="3429160811076349561">Proeflopiekenmerke is af</translation>
-<translation id="3432973700170747422">Vee afgelope 15 minute uit</translation>
 <translation id="3435465986463792564">Het jy baie vensters? Jy kan hulle van hier af bestuur</translation>
 <translation id="3435738964857648380">Sekuriteit</translation>
 <translation id="3443221991560634068">Herlaai die huidige bladsy</translation>
@@ -480,7 +479,6 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="3587596251841506391">Help websekuriteit verbeter</translation>
 <translation id="3597179440835065298">Kry beter voorstelle</translation>
 <translation id="3602290021589620013">Voorskou</translation>
-<translation id="360901359071773787">Vee afgelope 15 minute uit?</translation>
 <translation id="3616113530831147358">Oudio</translation>
 <translation id="3622349720008044802">Bestuur vensters</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 werf}other{+ # werwe}}</translation>
@@ -752,6 +750,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5010886807652684893">Visuele aansig</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> wil koppel</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Afgelope 15 minute</translation>
 <translation id="5032430150487044192">Kan nie QR-kode skep nie</translation>
 <translation id="5039804452771397117">Laat toe</translation>
 <translation id="5040262127954254034">Privaatheid</translation>
@@ -930,7 +929,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="6011308810877101166">Verbeter soekvoorstelle</translation>
 <translation id="6026538407078977628">Vou uit na volskerm</translation>
 <translation id="6030719887161080597">Bestuur inligting wat deur werwe gebruik word om advertensieprestasie te meet</translation>
-<translation id="6034146297924778597">Geskiedenis van die afgelope 15 minute sal uitgevee word:</translation>
 <translation id="6039379616847168523">Spring na die volgende oortjie</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="604124094241169006">Outomaties</translation>

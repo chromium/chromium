@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">Borrar datos e restablecer permisos</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6545864417968258051">Busca de dispositivos Bluetooth</translation>
-<translation id="6552691050538553146">Máis opcións para <ph name="BANNER_TITLE" /></translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis (bloqueados)}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis (bloqueados)}}</translation>
 <translation id="6554732001434021288">Visitouse hai <ph name="NUM_DAYS" /> días por última vez</translation>
 <translation id="6561560012278703671">Utilizar mensaxaría máis silenciosa (impide que as notificacións te interrompan)</translation>

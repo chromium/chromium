@@ -4092,7 +4092,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4413087696295876280">Четене на информация за устройството с ChromeOS Flex и данните от него</translation>
 <translation id="44141919652824029">Да се разреши ли на <ph name="APP_NAME" /> да получи списъка със свързани USB устройства?</translation>
 <translation id="4414232939543644979">Нов &amp;прозорец в режим „инкогнито“</translation>
-<translation id="4414648713167199100">Използва мобилните данни на вашия Chromebook. Операторът ви може да начисли допълнителни такси. Възможно е да увеличи използването на батерията. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Вече можете да използвате <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Няма намерени устройства. Отваряне на статия в Помощния център в нов раздел.</translation>
 <translation id="4415276339145661267">Управление на профила ви в Google</translation>
@@ -6887,7 +6886,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6833479554815567477">Разделът бе премахнат от групата „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Преминете към интелигентен и сигурен браузър</translation>
 <translation id="6833996806551876956">Пробен период за Privacy Sandbox</translation>
-<translation id="6835712061486505758">Създайте точка за достъп до Wi-Fi, за да предоставите достъп до интернет на други устройства. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Моля, свържете се с интернет, за да актуализирате устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Грешка при изтриване на сертификат</translation>
 <translation id="6839916869147598086">Функцията за влизане в профил е променена</translation>
@@ -7058,6 +7056,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6978717888677691380">Блокирани от вас сайтове</translation>
 <translation id="6979041727349121225">Икономия на енергия</translation>
 <translation id="6979044105893951891">Стартиране и прекратяване на управлявани сесии като гост</translation>
+<translation id="6979158407327259162">Google Диск</translation>
 <translation id="6979440798594660689">Заглушаване (стандартно)</translation>
 <translation id="6979737339423435258">За цялото време</translation>
 <translation id="6981553172137913845">За да сърфирате частно, кликнете върху иконата с точки и отворете прозорец в режим „инкогнито“</translation>
@@ -8047,6 +8046,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7807711621188256451">Достъпът на <ph name="HOST" /> до камерата ви винаги да е разрешен</translation>
 <translation id="7810202088502699111">Изскачащите прозорци са блокирани на тази страница.</translation>
 <translation id="7814458197256864873">&amp;Копиране</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Редактиране на прекия път <ph name="SHORTCUT" /> за <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Блокирано е опасно изтегляне</translation>
 <translation id="7817361223956157679">Екранната клавиатура още не работи в приложения за Linux</translation>
@@ -8126,7 +8126,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7881483672146086348">Преглед на профила</translation>
 <translation id="7883792253546618164">Можете да се отпишете по всяко време.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Преглед на 1 сайт, който е изпратил много известия}other{Преглед на {NUM_SITES} сайта, които са изпратили много известия}}</translation>
-<translation id="7884446017008693258">Настройки за точката за достъп</translation>
 <translation id="788453346724465748">Информацията за профила се зарежда...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{елемент}other{# елемента}}</translation>
 <translation id="7886605625338676841">Електронна SIM карта</translation>
@@ -8655,6 +8654,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8322814362483282060">Достъпът на тази страница до микрофона ви е блокиран.</translation>
 <translation id="8323167517179506834">Въведете URL адрес</translation>
 <translation id="8323317289166663449">да чете и променя всичките ви данни на компютъра и в уебсайтовете</translation>
+<translation id="8324158725704657629">Без повторно питане</translation>
 <translation id="8324784016256120271">Сайтовете могат да използват „бисквитки“, за да следят активността ви при сърфиране в различни сайтове, например за да персонализират реклами</translation>
 <translation id="8325413836429495820">Сайтове без разрешение за преглед на буферната памет</translation>
 <translation id="8326478304147373412">PKCS 7, верига сертификати</translation>

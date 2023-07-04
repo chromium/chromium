@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">ત્રીજા પક્ષની કુકી ક્યારે બ્લૉક કરવી તે પસંદ કરો</translation>
 <translation id="3428747202529429621">તમને Chrome પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષા બહેતર બનાવવામાં ઉપયોગમાં લેવાઈ શકે છે</translation>
 <translation id="3429160811076349561">અજમાયશની સુવિધાઓ બંધ છે</translation>
-<translation id="3432973700170747422">છેલ્લી 15 મિનિટનો ડિલીટ કરો</translation>
 <translation id="3435465986463792564">શું ઘણી વિન્ડો ખોલી છે? તમે તેમને અહીંથી મેનેજ કરી શકો છો</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
 <translation id="3443221991560634068">હાલનું પેજ ફરીથી લોડ કરો</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">વેબ પર સુરક્ષા સુધારવા સહાય કરો</translation>
 <translation id="3597179440835065298">બહેતર સૂચનો મેળવો</translation>
 <translation id="3602290021589620013">પ્રીવ્યૂ કરો</translation>
-<translation id="360901359071773787">છેલ્લી 15 મિનિટનો ડેટા ડિલીટ કરીએ?</translation>
 <translation id="3616113530831147358">ઑડિઓ</translation>
 <translation id="3622349720008044802">વિન્ડો મેનેજ કરો</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 સાઇટ}one{+ # સાઇટ}other{+ # સાઇટ}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">વિઝ્યુઅલ વ્યૂ</translation>
 <translation id="5011311129201317034"><ph name="SITE" />, કનેક્ટ કરવા માગે છે</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">છેલ્લી 15 મિનિટ</translation>
 <translation id="5032430150487044192">QR કોડ બનાવી શકતા નથી</translation>
 <translation id="5039804452771397117">મંજૂરી આપો</translation>
 <translation id="5040262127954254034">પ્રાઇવસી</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">શોધ સંબંધિત સૂચનો બહેતર બનાવો</translation>
 <translation id="6026538407078977628">પૂર્ણ સ્ક્રીન જેટલું મોટું કરો</translation>
 <translation id="6030719887161080597">જાહેરાતના પર્ફોર્મન્સની માપણી કરવા માટે સાઇટ દ્વારા ઉપયોગમાં લેવાતી માહિતીને મેનેજ કરો</translation>
-<translation id="6034146297924778597">નીચેનો છેલ્લી 15 મિનિટનો ઇતિહાસ ડિલીટ કરવામાં આવશે:</translation>
 <translation id="6039379616847168523">આગલા ટૅબ પર જાઓ</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="604124094241169006">સ્વચલિત</translation>

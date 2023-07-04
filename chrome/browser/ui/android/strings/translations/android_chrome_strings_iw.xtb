@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">‏אפשר לקבוע מתי קובצי cookie של צד שלישי ייחסמו</translation>
 <translation id="3428747202529429621">‏מגן עליך ב-Chrome וייתכן שייעשה בו שימוש לשיפור האבטחה באפליקציות אחרות של Google שבהן נכנסת לחשבון</translation>
 <translation id="3429160811076349561">התכונות הניסיוניות מושבתות</translation>
-<translation id="3432973700170747422">מחיקה של 15 הדקות האחרונות</translation>
 <translation id="3435465986463792564">פתוחים אצלך הרבה חלונות? יש לך אפשרות לנהל את כולם מכאן.</translation>
 <translation id="3435738964857648380">אבטחה</translation>
 <translation id="3443221991560634068">טעינה מחדש של הדף הנוכחי</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">סיוע לשיפור האבטחה באינטרנט</translation>
 <translation id="3597179440835065298">קבלת הצעות טובות יותר</translation>
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
-<translation id="360901359071773787">למחוק את 15 הדקות האחרונות?</translation>
 <translation id="3616113530831147358">אודיו</translation>
 <translation id="3622349720008044802">ניהול החלונות</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{ועוד אתר אחד}one{ועוד # אתרים}two{ועוד # אתרים}other{ועוד # אתרים}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">תצוגה מורחבת</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> מבקש להתחבר אל</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">15 הדקות האחרונות</translation>
 <translation id="5032430150487044192">‏לא ניתן ליצור קוד QR</translation>
 <translation id="5039804452771397117">זה בסדר</translation>
 <translation id="5040262127954254034">פרטיות</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">שיפור של ההצעות לחיפוש</translation>
 <translation id="6026538407078977628">הרחבה למסך מלא</translation>
 <translation id="6030719887161080597">ניהול המידע שמשמש אתרים למדידת ביצועי מודעות</translation>
-<translation id="6034146297924778597">ההיסטוריה מ-15 הדקות האחרונות תימחק:</translation>
 <translation id="6039379616847168523">מעבר לכרטיסייה הבאה</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="604124094241169006">אוטומטי</translation>

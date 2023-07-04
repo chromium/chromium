@@ -4092,7 +4092,6 @@
 <translation id="4413087696295876280">‏خواندن داده‌ها و اطلاعات دستگاه ChromeOS Flex</translation>
 <translation id="44141919652824029">‏به <ph name="APP_NAME" /> اجازه داده شود تا فهرست دستگاه‌های USB متصل را دریافت کند؟</translation>
 <translation id="4414232939543644979">پنجرهٔ جدید حالت &amp;ناشناس</translation>
-<translation id="4414648713167199100">‏از داده تلفن همراه Chromebook استفاده می‌کند و ممکن است شرکت مخابراتی شما هزینه اضافی از شما دریافت کند. ممکن است مصرف باتری را افزایش دهد. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">آماده‌اید استفاده از <ph name="DEVICE_TYPE" /> را شروع کنید.</translation>
 <translation id="4415245286584082850">دستگاهی پیدا نشد. در برگه جدیدی، یک مقاله مرکز راهنمایی باز کنید.</translation>
 <translation id="4415276339145661267">‏مدیریت «حساب Google»</translation>
@@ -6888,7 +6887,6 @@
 <translation id="6833479554815567477">برگه از گروه <ph name="GROUP_NAME" /> برداشته شد - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">به مرورگری هوشمند و ایمن جابه‌جا شوید</translation>
 <translation id="6833996806551876956">دوره آزمایشی «جعبه شنی حریم خصوصی»</translation>
-<translation id="6835712061486505758">‏برای ارائه اینترنت به دیگر دستگاه‌ها، نقطه اتصال Wi-Fi ایجاد کنید. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">برای به‌روزرسانی <ph name="DEVICE_TYPE" />، لطفاً به اینترنت وصل شوید.</translation>
 <translation id="6839225236531462745">خطای حذف مجوز</translation>
 <translation id="6839916869147598086">ورود به سیستم تغییر کرده است</translation>
@@ -7059,6 +7057,7 @@
 <translation id="6978717888677691380">سایت‌هایی که مسدود کرده‌اید</translation>
 <translation id="6979041727349121225">بهینه‌سازی انرژی</translation>
 <translation id="6979044105893951891">راه‌اندازی و خروج از جلسه‌های مهمان مدیریت‌شده</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">بی‌صدا (پیش‌فرض)</translation>
 <translation id="6979737339423435258">از ابتدا تا الآن</translation>
 <translation id="6981553172137913845">برای مرور خصوصی، روی منوی نماد نقطه‌ها کلیک کنید تا «پنجره ناشناسی» باز شود</translation>
@@ -8047,6 +8046,7 @@
 <translation id="7807711621188256451">دسترسی <ph name="HOST" /> به دوربین شما همیشه مجاز باشد</translation>
 <translation id="7810202088502699111">پنجره‌های بازشو در این صفحه مسدود شده‌اند.</translation>
 <translation id="7814458197256864873">&amp;کپی</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">ویرایش <ph name="SHORTCUT" /> برای <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">بارگیری خطرناک مسدود شد</translation>
 <translation id="7817361223956157679">‏صفحه‌کلید مجازی، هنوز در برنامه‌های Linux کار نمی‌کند</translation>
@@ -8126,7 +8126,6 @@
 <translation id="7881483672146086348">مشاهده حساب</translation>
 <translation id="7883792253546618164">هرزمان خواستید اشتراک را لغو کنید.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{مرور سایتی که تعداد زیادی اعلان ارسال کرده است}one{مرور {NUM_SITES} سایت که تعداد زیادی اعلان ارسال کرده‌اند}other{مرور {NUM_SITES} سایت که تعداد زیادی اعلان ارسال کرده‌اند}}</translation>
-<translation id="7884446017008693258">تنظیمات نقطه اتصال</translation>
 <translation id="788453346724465748">درحال بار کردن اطلاعات حساب…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{یک مورد}one{# مورد}other{# مورد}}</translation>
 <translation id="7886605625338676841">سیم‌کارت داخلی</translation>
@@ -8655,6 +8654,7 @@
 <translation id="8322814362483282060">این صفحه از دسترسی به میکروفون شما بازداشته شده است.</translation>
 <translation id="8323167517179506834">تایپ کردن نشانی وب</translation>
 <translation id="8323317289166663449">همه داده‌های شما را در رایانه و همه وب‌سایت‌ها بخواند و تغییر دهد</translation>
+<translation id="8324158725704657629">دوباره سؤال نشود</translation>
 <translation id="8324784016256120271">سایت‌ها می‌توانند بااستفاده از کوکی‌ها فعالیت مرور شما را (مثلاً برای شخصی‌سازی آگهی‌ها) در سایت‌های مختلف ببینند</translation>
 <translation id="8325413836429495820">اجازه ندارد بریده‌دان را ببیند</translation>
 <translation id="8326478304147373412">‏PKCS #7، زنجیره گواهی</translation>

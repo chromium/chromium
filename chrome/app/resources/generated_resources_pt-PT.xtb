@@ -4087,7 +4087,6 @@ Pretende pará-lo?</translation>
 <translation id="4413087696295876280">Ler dados e informações de dispositivos com ChromeOS Flex</translation>
 <translation id="44141919652824029">Permitir que o "<ph name="APP_NAME" />" obtenha a lista dos seus dispositivos USB associados?</translation>
 <translation id="4414232939543644979">Nova Janela de Navegação Anón&amp;ima</translation>
-<translation id="4414648713167199100">Usa os dados móveis do seu Chromebook, sendo que o seu operador pode cobrar taxas adicionais. Pode aumentar a utilização da bateria. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Tem tudo pronto para começar a utilizar o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Não foram encontrados dispositivos. Abra um artigo do Centro de Ajuda num novo separador.</translation>
 <translation id="4415276339145661267">Gerir a sua Conta Google</translation>
@@ -6885,7 +6884,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6833479554815567477">Separador removido do grupo <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Mude para um navegador inteligente e seguro</translation>
 <translation id="6833996806551876956">Avaliação do Privacy Sandbox</translation>
-<translation id="6835712061486505758">Crie uma zona Wi-Fi para fornecer Internet a outros dispositivos. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Ligue-se à Internet para atualizar o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Erro ao eliminar o certificado</translation>
 <translation id="6839916869147598086">O início de sessão foi alterado</translation>
@@ -7056,6 +7054,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6978717888677691380">Sites que bloqueou</translation>
 <translation id="6979041727349121225">Poupança de energia</translation>
 <translation id="6979044105893951891">Inicie e saia das sessões de convidado geridas</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Desativar som (predefinição)</translation>
 <translation id="6979737339423435258">Sempre</translation>
 <translation id="6981553172137913845">Para navegar em privado, clique no menu dos três pontos de forma a abrir uma janela de navegação anónima</translation>
@@ -8046,6 +8045,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7807711621188256451">Permitir sempre que <ph name="HOST" /> aceda à sua câmara</translation>
 <translation id="7810202088502699111">Os pop-ups foram bloqueados nesta página.</translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editar atalho <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Transferência perigosa bloqueada</translation>
 <translation id="7817361223956157679">O teclado no ecrã ainda não funciona em aplicações Linux.</translation>
@@ -8125,7 +8125,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7881483672146086348">Ver Conta</translation>
 <translation id="7883792253546618164">Anule a subscrição em qualquer altura.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Reveja 1 site que enviou muitas notificações}other{Reveja {NUM_SITES} sites que enviaram muitas notificações}}</translation>
-<translation id="7884446017008693258">Definições da zona Wi-Fi</translation>
 <translation id="788453346724465748">A carregar informações da conta…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{um item}other{# itens}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8654,6 +8653,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8322814362483282060">Esta página foi impedida de aceder ao seu microfone.</translation>
 <translation id="8323167517179506834">Escrever o URL</translation>
 <translation id="8323317289166663449">Ler e alterar todos os seus dados no seu computador e em todos os Websites</translation>
+<translation id="8324158725704657629">Não perguntar novamente</translation>
 <translation id="8324784016256120271">Os sites podem usar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios</translation>
 <translation id="8325413836429495820">Sem autorização para ver a sua área de transferência</translation>
 <translation id="8326478304147373412">PKCS #7, cadeia de certificados</translation>

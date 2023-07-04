@@ -4086,7 +4086,6 @@
 <translation id="4413087696295876280">ChromeOS Flex მოწყობილობის ინფორმაციისა და მონაცემების წაკითხვა</translation>
 <translation id="44141919652824029">გსურთ, „<ph name="APP_NAME" />“-მა შეძლოს დაკავშირებული USB მოწყობილობების სიაზე წვდომა?</translation>
 <translation id="4414232939543644979">ახალი &amp;ინკოგნიტო ფანჯარა</translation>
-<translation id="4414648713167199100">იყენებს თქვენს Chromebook-ის მობილურ ინტერნეტს და შესაძლოა ოპერატორმა დამატებითი გადასახადი დაგაკისროთ. შეიძლება გაზარდოს ბატარეის მოხმარება. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">ყველაფერი მზადაა იმისთვის, რომ <ph name="DEVICE_TYPE" /> გამოიყენოთ.</translation>
 <translation id="4415245286584082850">მოწყობილობები ვერ მოიძებნა. გახსენით დახმარების ცენტრის სტატია ახალ ჩანართში.</translation>
 <translation id="4415276339145661267">თქვენი Google ანგარიშის მართვა</translation>
@@ -6883,7 +6882,6 @@
 <translation id="6833479554815567477">ჩანართი ამოიშალა ჯგუფიდან <ph name="GROUP_NAME" /> — <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">გადადით გონიერ და უსაფრთხო ბრაუზერზე</translation>
 <translation id="6833996806551876956">კონფიდენციალურობის დაცული გარემოს საცდელი ვერსია</translation>
-<translation id="6835712061486505758">შექმენით Wi‑Fi უსადენო ქსელი, ინტერნეტის სხვა მოწყობილობებისთვის გასაზიარებლად. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />-ის განსაახლებლად, გთხოვთ, დაუკავშირდეთ ინტერნეტს.</translation>
 <translation id="6839225236531462745">სერტიფიკატის წაშლის შეცდომა</translation>
 <translation id="6839916869147598086">სისტემაში შესვლა შეიცვალა</translation>
@@ -7054,6 +7052,7 @@
 <translation id="6978717888677691380">თქვენ მიერ დაბლოკილი საიტები</translation>
 <translation id="6979041727349121225">ენერგიის დამზოგი</translation>
 <translation id="6979044105893951891">სტუმრების მართული სესიების გაშვება და სესიებიდან გასვლა</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">დადუმება (ნაგულისხმევი)</translation>
 <translation id="6979737339423435258">ყველა დროის</translation>
 <translation id="6981553172137913845">ვების კონფიდენციალურად დასათვალიერებლად დააწკაპუნეთ მენიუს წერტილებიანი ხატულით და გახსენით ინკოგნიტო ფანჯარა</translation>
@@ -8043,6 +8042,7 @@
 <translation id="7807711621188256451">ყოველთვის მიეცით <ph name="HOST" />-ს თქვენს კამერაზე წვდომის ნება</translation>
 <translation id="7810202088502699111">კონტექსტური ფანჯრები დაბლოკილია ამ გვერდზე.</translation>
 <translation id="7814458197256864873">&amp;კოპირება</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">მალსახმობი <ph name="SHORTCUT" />-ის რედაქტირება გაფართოებისთვის <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">სახიფათო ჩამოტვირთვა დაიბლოკა</translation>
 <translation id="7817361223956157679">ეკრანული კლავიატურა ჯერ არ მუშაობს Linux აპებში</translation>
@@ -8122,7 +8122,6 @@
 <translation id="7881483672146086348">ანგარიშის ნახვა</translation>
 <translation id="7883792253546618164">გამოწერის გაუქმება ნებისმიერ დროს შეგიძლიათ.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{შეამოწმეთ 1 საიტი, რომელმაც ზედმეტად ბევრი შეტყობინება გამოგზავნა}other{შეამოწმეთ {NUM_SITES} საიტი, რომლებმაც ზედმეტად ბევრი შეტყობინება გამოგზავნა}}</translation>
-<translation id="7884446017008693258">უსადენო ქსელის პარამეტრები</translation>
 <translation id="788453346724465748">მიმდინარეობს ანგარიშის ინფორმაციის ჩატვირთვა...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ერთეული}other{# ერთეული}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8650,6 +8649,7 @@
 <translation id="8322814362483282060">წვდომა თქვენს მიკროფონზე ამ გვერდიდან დაიბლოკა.</translation>
 <translation id="8323167517179506834">აკრიფეთ URL</translation>
 <translation id="8323317289166663449">თქვენი ყველა მონაცემის წაკითხვა და შეცვლა თქვენს კომპიუტერზე და ყველა ვებსაიტზე</translation>
+<translation id="8324158725704657629">აღარ მკითხო</translation>
 <translation id="8324784016256120271">საიტები გამოიყენებს ქუქი-ჩანაწერებს სხვადასხვა საიტის თქვენ მიერ დათვალიერების აქტივობის სანახავად, მაგალითად, რეკლამის პერსონალიზების მიზნით</translation>
 <translation id="8325413836429495820">თქვენი გაცვლის ბუფერის ნახვა დაუშვებელია</translation>
 <translation id="8326478304147373412">PKCS #7, სერთიფიკატის ჯაჭვი</translation>

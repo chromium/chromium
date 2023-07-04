@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">Maʼlumotlarni tozalash va ruxsatlarni tiklash</translation>
 <translation id="6527303717912515753">Ulashish</translation>
 <translation id="6545864417968258051">Bluetooth qurilmalarni qidirish</translation>
-<translation id="6552691050538553146"><ph name="BANNER_TITLE" />: boshqa amallar</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloklandi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{Bloklandi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>
 <translation id="6554732001434021288">Oxirgi tashrif: <ph name="NUM_DAYS" /> kun oldin</translation>
 <translation id="6561560012278703671">Xabarlar tinchroq kelsin (bezovta qiluvchi bildirishnomalar bloklanadi)</translation>

@@ -4087,7 +4087,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4413087696295876280">Citește informațiile de pe dispozitivul ChromeOS Flex și datele dispozitivului</translation>
 <translation id="44141919652824029">Permiți ca „<ph name="APP_NAME" />” să obțină lista dispozitivelor USB atașate?</translation>
 <translation id="4414232939543644979">Fereastră nouă &amp;incognito</translation>
-<translation id="4414648713167199100">Folosește datele mobile ale Chromebookului și operatorul poate percepe taxe suplimentare. Poate crește utilizarea bateriei. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> este gata de utilizare.</translation>
 <translation id="4415245286584082850">Nu s-au găsit dispozitive. Deschide într-o nouă filă un articol din centrul de ajutor.</translation>
 <translation id="4415276339145661267">Gestionează-ți Contul Google</translation>
@@ -6886,7 +6885,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6833479554815567477">Fila a fost eliminată din grupul <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Comută la un browser inteligent și securizat</translation>
 <translation id="6833996806551876956">Perioada de încercare a Mediului de testare securizat pentru confidențialitate</translation>
-<translation id="6835712061486505758">Creează un hotspot Wi-Fi pentru a oferi acces la internet altor dispozitive. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Accesează internetul pentru a actualiza dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Eroare de ștergere a certificatului</translation>
 <translation id="6839916869147598086">Conectarea a fost schimbată</translation>
@@ -7057,6 +7055,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6978717888677691380">Site-uri pe care le-ai blocat</translation>
 <translation id="6979041727349121225">Economisirea energiei</translation>
 <translation id="6979044105893951891">Lansează și închide sesiunile pentru invitați gestionate</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Dezactivează sunetul (prestabilit)</translation>
 <translation id="6979737339423435258">Dintotdeauna</translation>
 <translation id="6981553172137913845">Pentru a naviga privat, dă clic pe meniul pictogramei cu puncte pentru a deschide o fereastră incognito</translation>
@@ -8047,6 +8046,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7807711621188256451">Permiteți întotdeauna accesul <ph name="HOST" /> la camera dvs.</translation>
 <translation id="7810202088502699111">Ferestrele pop-up au fost blocate pe această pagină.</translation>
 <translation id="7814458197256864873">&amp;Copiază</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editează comanda rapidă <ph name="SHORTCUT" /> pentru <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">A fost blocată o descărcare periculoasă</translation>
 <translation id="7817361223956157679">Tastatura de pe ecran nu funcționează încă în aplicațiile Linux</translation>
@@ -8126,7 +8126,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7881483672146086348">Afișați contul</translation>
 <translation id="7883792253546618164">Te poți dezabona în orice moment.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Examinează un site care a trimis multe notificări}few{Examinează {NUM_SITES} site-uri care au trimis multe notificări}other{Examinează {NUM_SITES} de site-uri care au trimis multe notificări}}</translation>
-<translation id="7884446017008693258">Setări pentru hotspot</translation>
 <translation id="788453346724465748">Se încarcă informațiile despre cont…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{un element}few{# elemente}other{# de elemente}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8655,6 +8654,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8322814362483282060">Accesul acestei pagini la microfonul dvs. a fost blocat.</translation>
 <translation id="8323167517179506834">Introduceți adresa URL</translation>
 <translation id="8323317289166663449">să citească și să modifice toate datele de pe computer și de pe toate site-urile</translation>
+<translation id="8324158725704657629">Nu mai întreba</translation>
 <translation id="8324784016256120271">Site-urile pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile</translation>
 <translation id="8325413836429495820">Nu au permisiunea de a vedea clipboardul</translation>
 <translation id="8326478304147373412">PKCS #7, lanț de certificate</translation>

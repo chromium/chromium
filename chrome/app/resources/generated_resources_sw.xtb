@@ -4090,7 +4090,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4413087696295876280">Soma maelezo na data ya kifaa cha ChromeOS Flex</translation>
 <translation id="44141919652824029">Ungependa kuiruhusu "<ph name="APP_NAME" />" ipate orodha ya vifaa vyako vya USB vilivyounganishwa?</translation>
 <translation id="4414232939543644979">Dirisha &amp;Fiche Jipya</translation>
-<translation id="4414648713167199100">Hutumia data ya mtandao wa simu ya Chromebook yako na mtoa huduma wako anaweza kukutoza ada za ziada. Inaweza kuongeza matumizi ya betri. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Uko tayari kuanza kutumia <ph name="DEVICE_TYPE" /> yako.</translation>
 <translation id="4415245286584082850">Haikupata kifaa chochote. Fungua makala kutoka kituo cha usaidizi katika kichupo kipya.</translation>
 <translation id="4415276339145661267">Dhibiti Akaunti yako ya Google</translation>
@@ -6884,7 +6883,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6833479554815567477">Kichupo kimeondolewa kwenye kikundi kiitwacho <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Badilisha ili utumie kivinjari mahiri na salama</translation>
 <translation id="6833996806551876956">Jaribio la kipengele cha Utaratibu wa Kuwekea Vikwazo vya Faragha</translation>
-<translation id="6835712061486505758">Unda mtandao pepe wa Wi-Fi ili usambaze intaneti kwenye vifaa vingine. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Tafadhali unganisha kwenye Intaneti ili usasishe <ph name="DEVICE_TYPE" /> yako.</translation>
 <translation id="6839225236531462745">Hitilafu ya Ufutaji wa Cheti</translation>
 <translation id="6839916869147598086">Kipengele cha kuingia katika akaunti kimebadilika</translation>
@@ -7055,6 +7053,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6978717888677691380">Tovuti ulizozuia</translation>
 <translation id="6979041727349121225">Kiokoa Nishati</translation>
 <translation id="6979044105893951891">Kuanzisha na kufunga vipindi vya mgeni vinavyodhibitiwa</translation>
+<translation id="6979158407327259162">Hifadhi ya Google</translation>
 <translation id="6979440798594660689">Zima (chaguomsingi)</translation>
 <translation id="6979737339423435258">Wakati wote</translation>
 <translation id="6981553172137913845">Ili uvinjari kwa faragha, bofya menyu ya aikoni ya vitone ili ufungue dirisha fiche</translation>
@@ -8045,6 +8044,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7807711621188256451">Ruhusu <ph name="HOST" /> kufikia kamera yako kila wakati</translation>
 <translation id="7810202088502699111">Madirisha ibukizi yalizuiwa kwenye ukurasa huu.</translation>
 <translation id="7814458197256864873">&amp;Nakili</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Badilisha njia ya mkato ya <ph name="SHORTCUT" /> ya <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Upakuaji hatari umezuiwa</translation>
 <translation id="7817361223956157679">Kibodi ya skrini bado haifanyi kazi kwenye programu za Linux</translation>
@@ -8124,7 +8124,6 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7881483672146086348">Angalia Akaunti</translation>
 <translation id="7883792253546618164">Jiondoe wakati wowote.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Kagua tovuti 1 ambayo ilituma arifa nyingi}other{Kagua tovuti {NUM_SITES} ambazo zilituma arifa nyingi}}</translation>
-<translation id="7884446017008693258">Mipangilio ya Mtandao Pepe</translation>
 <translation id="788453346724465748">Inapakia maelezo ya akaunti...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{kipengee}other{Vipengee #}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8653,6 +8652,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8322814362483282060">Ukurasa huu umezuiwa usifikie maikrofoni yako.</translation>
 <translation id="8323167517179506834">Charaza URL</translation>
 <translation id="8323317289166663449">Kusoma na kurekebisha data yako yote kwenye kompyuta yako na kwenye tovuti zote</translation>
+<translation id="8324158725704657629">Usiniulize tena</translation>
 <translation id="8324784016256120271">Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti mbalimbali, kwa mfano, ili kukuonyesha matangazo yanayokufaa zaidi</translation>
 <translation id="8325413836429495820">Zisizoruhusiwa kuona ubao wako wa kunakili</translation>
 <translation id="8326478304147373412">PKCS #7, msururu wa vyeti</translation>

@@ -446,7 +446,6 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="3421726884497337397">Odaberite kad blokirati kolačiće trećih strana</translation>
 <translation id="3428747202529429621">Štiti vas na Chromeu i može se upotrebljavati za poboljšanje vaše sigurnosti u drugim Googleovim aplikacijama kada ste prijavljeni</translation>
 <translation id="3429160811076349561">Probne značajke su isključene</translation>
-<translation id="3432973700170747422">Izbriši zadnjih 15 minuta</translation>
 <translation id="3435465986463792564">Imate mnogo prozora? Možete upravljati njima odavde</translation>
 <translation id="3435738964857648380">Sigurnost</translation>
 <translation id="3443221991560634068">Ponovno učitavanje trenutačne stranice</translation>
@@ -480,7 +479,6 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="3587596251841506391">Za bolju sigurnost na webu</translation>
 <translation id="3597179440835065298">Bolji prijedlozi</translation>
 <translation id="3602290021589620013">Pregled</translation>
-<translation id="360901359071773787">Želite li izbrisati zadnjih 15 min?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Upravljanje prozorima</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{i još jedna web-lokacija}one{i još # web-lokacija}few{i još # web-lokacije}other{i još # web-lokacija}}</translation>
@@ -752,6 +750,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5010886807652684893">Vizualni prikaz</translation>
 <translation id="5011311129201317034">Web-lokacija <ph name="SITE" /> želi se povezati</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Posljednjih 15 minuta</translation>
 <translation id="5032430150487044192">Izrada QR koda nije uspjela</translation>
 <translation id="5039804452771397117">Dopusti</translation>
 <translation id="5040262127954254034">Privatnost</translation>
@@ -930,7 +929,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="6011308810877101166">Poboljšaj prijedloge za pretraživanje</translation>
 <translation id="6026538407078977628">Proširi na cijeli zaslon</translation>
 <translation id="6030719887161080597">Upravljanje podacima koje web-lokacije koriste za mjerenje izvedbe oglasa</translation>
-<translation id="6034146297924778597">Izbrisat će se povijest za posljednjih 15 minuta:</translation>
 <translation id="6039379616847168523">Preskakanje na sljedeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604124094241169006">Automatski</translation>

@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ କେତେବେଳେ ବ୍ଲକ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
 <translation id="3428747202529429621">ଯେତେବେଳେ ଆପଣ ସାଇନ୍ ଇନ୍ କରନ୍ତି ଏହା ଆପଣଙ୍କୁ Chromeରେ ସୁରକ୍ଷିତ ରଖେ ଏବଂ ଅନ୍ୟ Google ଆପଗୁଡ଼ିକରେ ଆପଣଙ୍କ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଇପାରେ</translation>
 <translation id="3429160811076349561">ଟ୍ରାଏଲ୍ ଫିଚରଗୁଡ଼ିକ ବନ୍ଦ ଅଛି</translation>
-<translation id="3432973700170747422">ଗତ 15 ମିନିଟର ଡାଟା ଡିଲିଟ କର</translation>
 <translation id="3435465986463792564">ଅନେକ ୱିଣ୍ଡୋ ଖୋଲା ଅଛି କି? ଆପଣ ସେଗୁଡ଼ିକୁ ଏଠାରୁ ପରିଚାଳନା କରିପାରିବେ</translation>
 <translation id="3435738964857648380">ସୁରକ୍ଷା</translation>
 <translation id="3443221991560634068">ବର୍ତ୍ତମାନର ପୃଷ୍ଠାକୁ ରିଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">ୱେବରେ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="3597179440835065298">ଉନ୍ନତ ପରାମର୍ଶ ପାଆନ୍ତୁ</translation>
 <translation id="3602290021589620013">ପ୍ରିଭ୍ୟୁ</translation>
-<translation id="360901359071773787">ଗତ 15 ମିନିଟର ଡାଟାକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="3616113530831147358">ଅଡିଓ</translation>
 <translation id="3622349720008044802">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1ଟି ସାଇଟ}other{+ #ଟି ସାଇଟ}}</translation>
@@ -752,6 +750,7 @@
 <translation id="5010886807652684893">ଭିଜୁଆଲ ଭ୍ୟୁ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ସଂଯୋଗ ହେବାକୁ ଚାହୁଁଛି</translation>
 <translation id="5016205925109358554">ସେରିଫ୍‌</translation>
+<translation id="5017529052065664584">ଗତ 15 ମିନିଟ</translation>
 <translation id="5032430150487044192">QR କୋଡ୍ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5039804452771397117">ଅନୁମତି</translation>
 <translation id="5040262127954254034">ଗୋପନୀୟତା</translation>
@@ -930,7 +929,6 @@
 <translation id="6011308810877101166">ସର୍ଚ୍ଚ ପରାମର୍ଶଗୁଡ଼ିକୁ ଉନ୍ନତ କରନ୍ତୁ</translation>
 <translation id="6026538407078977628">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନକୁ ବିସ୍ତାର କରନ୍ତୁ</translation>
 <translation id="6030719887161080597">ବିଜ୍ଞାପନ ପରଫରମାନ୍ସ ମାପିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକ ଦ୍ୱାରା ବ୍ୟବହୃତ ସୂଚନାକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
-<translation id="6034146297924778597">ଗତ 15 ମିନିଟର ଇତିହାସ ଡିଲିଟ ହୋଇଯିବ:</translation>
 <translation id="6039379616847168523">ପରବର୍ତ୍ତୀ ଟାବ୍‌କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="604124094241169006">ସ୍ୱଚାଳିତ</translation>

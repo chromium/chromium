@@ -4094,7 +4094,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4413087696295876280">lese ChromeOS Flex-enhetsinformasjon og -data</translation>
 <translation id="44141919652824029">Vil du gi «<ph name="APP_NAME" />» tilgang til listen over tilkoblede USB-enheter?</translation>
 <translation id="4414232939543644979">Nytt &amp;inkognitovindu</translation>
-<translation id="4414648713167199100">Bruker mobildata på Chromebooken din. Det kan hende at operatøren din krever ekstragebyrer. Dette kan øke batteribruken. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Du er klar til å begynne å bruke <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Fant ingen enheter. Åpne en brukerstøtteartikkel i en ny fane.</translation>
 <translation id="4415276339145661267">Administrer Google-kontoen din</translation>
@@ -6890,7 +6889,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6833479554815567477">Fanen er fjernet fra gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Bytt til en smart og sikker nettleser</translation>
 <translation id="6833996806551876956">Prøveperiode på Prosessisolering for personvern</translation>
-<translation id="6835712061486505758">Opprett en wifi-sone for å gi internett til andre enheter. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Koble til Internett for å oppdatere <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Feil ved sletting av sertifikat</translation>
 <translation id="6839916869147598086">Påloggingen er endret</translation>
@@ -7061,6 +7059,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6978717888677691380">Nettsteder du har blokkert</translation>
 <translation id="6979041727349121225">Strømsparing</translation>
 <translation id="6979044105893951891">starte og avslutte administrerte gjesteøkter</translation>
+<translation id="6979158407327259162">Google Disk</translation>
 <translation id="6979440798594660689">Kutt lyden (standard)</translation>
 <translation id="6979737339423435258">Alle datoer</translation>
 <translation id="6981553172137913845">For å surfe privat på nettet, klikk på menyikonet med prikkene for å åpne et inkognitovindu</translation>
@@ -8051,6 +8050,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7807711621188256451">Tillat alltid at <ph name="HOST" /> bruker kameraet ditt</translation>
 <translation id="7810202088502699111">Forgrunnsvinduer er blokkert på siden.</translation>
 <translation id="7814458197256864873">&amp;Kopier</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Endre snarveien <ph name="SHORTCUT" /> for <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">En farlig nedlasting er blokkert</translation>
 <translation id="7817361223956157679">Skjermtastaturet virker ikke i Linux-apper ennå</translation>
@@ -8130,7 +8130,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7881483672146086348">Se konto</translation>
 <translation id="7883792253546618164">Du kan avslutte abonnementet når som helst.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Gjennomgå 1 nettsted som har sendt mange varsler}other{Gjennomgå {NUM_SITES} nettsteder som har sendt mange varsler}}</translation>
-<translation id="7884446017008693258">Innstillinger for wifi-sone</translation>
 <translation id="788453346724465748">Laster inn kontoinformasjon …</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{et element}other{# elementer}}</translation>
 <translation id="7886605625338676841">eSIM-kort</translation>
@@ -8659,6 +8658,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8322814362483282060">Mikrofonen er blokkert for denne siden.</translation>
 <translation id="8323167517179506834">Skriv inn nettadresse</translation>
 <translation id="8323317289166663449">lese og endre alle dataene på datamaskinen din og alle nettsteder</translation>
+<translation id="8324158725704657629">Ikke spør igjen</translation>
 <translation id="8324784016256120271">Nettsteder kan bruke informasjonskapsler for å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser</translation>
 <translation id="8325413836429495820">Nettsteder som ikke har lov til å se utklippstavlen din</translation>
 <translation id="8326478304147373412">PKCS #7, sertifikat-kjede</translation>

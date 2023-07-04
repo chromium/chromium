@@ -204,7 +204,6 @@
 <translation id="2491955442992294626">គ្រាប់ចុចមិនត្រូវបានធ្វើតេស្ត នៅពេលអ្នកកំពុងប្រើវិនដូផ្សេងទៀតទេ</translation>
 <translation id="2493126929778606526">រូបថតល្អបំផុត​របស់អ្នក ដែលបាន​ជ្រើសរើស​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2498950423397131220">អណ្ដែត</translation>
 <translation id="2505327257735685095">ផ្ទុក​ផ្ទាំងរូបភាព​បច្ចុប្បន្ន​ឡើងវិញ</translation>
 <translation id="2512979179176933762">បង្ហាញ​វិនដូ</translation>
 <translation id="2513396635448525189">រូបភាពចូលគណនី</translation>
@@ -328,7 +327,6 @@
 <translation id="3607216139080387279">បង្ហាញ​ធាតុរក្សាអេក្រង់</translation>
 <translation id="361575905210396100">សូមអរគុណ​ចំពោះ​មតិកែលម្អ​របស់អ្នក</translation>
 <translation id="3632579075709132555">ប៊ូតុងបិទ/បើក​របាំងឯកជនភាព</translation>
-<translation id="3639846061339007994">លើ</translation>
 <translation id="3651050199673793219">ជ្រើសរើស​ឯកតា​សីតុណ្ហភាព</translation>
 <translation id="3663574643422533538">ជ្រើសរើស​ស្នាដៃសិល្បៈ​ផ្ដាច់មុខ​របស់ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">ផ្ទាំង​រូបភាពចលនាពពក</translation>
@@ -411,7 +409,6 @@
 <translation id="4289849978083912975">បញ្ចាំងស្លាយ</translation>
 <translation id="4297501883039923494">បានឈប់ - មានបញ្ហា​ដែលមិនស្គាល់</translation>
 <translation id="4300073214558989">រូបភាព <ph name="IMAGE_COUNT" /></translation>
-<translation id="4311195029067684288">ពេញ</translation>
 <translation id="4333390807948134856">បានចុច​គ្រាប់ចុច <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">គ្រប់គ្រង​ការ​កំណត់ APN បណ្ដាញ។ APN បង្កើត​ការ​តភ្ជាប់​រវាង​បណ្ដាញ​ចល័ត និង​អ៊ីនធឺណិត។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">កំណត់​ផ្លូវ​កាត់​ទាំងអស់​ឡើងវិញ</translation>
@@ -501,7 +498,6 @@
 <translation id="4930320165497208503">ដើម្បីរៀបចំ ឬធ្វើបច្ចុប្បន្នភាពការតភ្ជាប់ សូមចូលទៅកាន់<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />។</translation>
 <translation id="4932733599132424254">កាលបរិច្ឆេទ</translation>
 <translation id="4950314376641394653">កម្មវិធី​បង្កប់ <ph name="DEVICE_NAME" /> ត្រូវបាន​ដំឡើងកំណែ​ទៅកំណែ <ph name="VERSION" /></translation>
-<translation id="4971925105143343452">ផ្នែកខ្លះ</translation>
 <translation id="4972592110715526173">ការប្ដូរ​មុខងារ</translation>
 <translation id="498186245079027698">ពិនិត្យមើល​កម្មវិធីស្កេន រួចព្យាយាមម្ដងទៀត។ ត្រូវប្រាកដថា មានទំហំផ្ទុក​ក្នុងឧបករណ៍​គ្រប់គ្រាន់ ដើម្បីរក្សាទុក​ឯកសារដែលបានស្កេន។</translation>
 <translation id="4985509611418653372">ដំណើរការ</translation>
@@ -655,7 +651,6 @@
 <translation id="6191293864534840972">DNS មានទម្រង់មិនត្រឹមត្រូវ</translation>
 <translation id="6205145102504628069">លំហូរ​ពពក</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
-<translation id="6223066887782788441">ចេញពី​អេក្រង់​ពេញ</translation>
 <translation id="6223752125779001553">មិនមាន​ម៉ាស៊ីនស្កេន​ទេ</translation>
 <translation id="6232017090690406397">ថ្ម</translation>
 <translation id="6235460611964961764">កំណត់ការប្រើទិន្នន័យដោយផ្ទាល់ដៃ</translation>
@@ -814,7 +809,6 @@
 <translation id="7481312909269577407">ទៅមុខ</translation>
 <translation id="7487067081878637334">បច្ចេកវិទ្យា</translation>
 <translation id="7490813197707563893">អាសយដ្ឋាន MAC</translation>
-<translation id="7491478667760509108">ចេញពី​ការ​អណ្ដែត</translation>
 <translation id="7497215489070763236">វិញ្ញាបនបត្រ CA ម៉ាស៊ីនមេ</translation>
 <translation id="7501957181231305652">ឬ</translation>
 <translation id="7502658306369382406">អាសយដ្ឋាន IPv6</translation>
@@ -834,7 +828,6 @@
 <translation id="763165478673169849">ពេលវេលាកំណត់ឡើងវិញចុងក្រោយ</translation>
 <translation id="7633068090678117093">រូបភាព​ផ្ទៃ​ខាង​ក្រោយ</translation>
 <translation id="7648838807254605802">ការពន្យារ HTTPS ខ្ពស់</translation>
-<translation id="765159867434478292">បំបែក</translation>
 <translation id="7656388927906093505">ឧបករណ៍គឺជាកណ្ដុរ។</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
 <translation id="7665800271478495366">ប្ដូររូបតំណាង</translation>
@@ -865,7 +858,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ប្រភេទអ្នកផ្តល់សេវាកម្ម</translation>
 <translation id="7882501334836096755">សោ​សាធារណៈ</translation>
-<translation id="78957024357676568">ឆ្វេង</translation>
 <translation id="7915220255123750251">គ្រប់គ្រង​ការ​កំណត់ APN បណ្ដាញ។ APN បង្កើត​ការ​តភ្ជាប់​រវាង​បណ្ដាញ​ចល័ត និង​អ៊ីនធឺណិត។</translation>
 <translation id="7936303884198020182">រកមិនឃើញ DNS ទេ</translation>
 <translation id="7942349550061667556">ក្រហម</translation>
@@ -903,7 +895,6 @@
 <translation id="8183974620058026102">ភ្ជាប់</translation>
 <translation id="8206859287963243715">ប្រព័ន្ធទូរស័ព្ទ</translation>
 <translation id="8208861521865154048">អត្ថប្រយោជន៍</translation>
-<translation id="8210733748736414123">ក្រោម</translation>
 <translation id="8226628635270268143">ជ្រើសរើស​រូបថត និងអាល់ប៊ុមដែលអ្នកចូលចិត្ត</translation>
 <translation id="8227119283605456246">ភ្ជាប់ឯកសារ</translation>
 <translation id="8230672074305416752">មិនអាចភីងច្រកបណ្ដាញលំនាំដើមបានទេ</translation>
@@ -1004,7 +995,6 @@
 <translation id="8936793075252196307">អាសយដ្ឋាន IP របស់​កម្មវិធីភ្ញៀវ</translation>
 <translation id="8944651180182756621">ពណ៌​កម្មវិធី​ចាប់ផ្ដើម</translation>
 <translation id="894617464444543719">ឧបករណ៍គឺជាទូរសព្ទ។</translation>
-<translation id="8957423540740801332">ស្តាំ</translation>
 <translation id="8968751544471797276">អត្រាសាកថ្ម</translation>
 <translation id="8970109610781093811">ដំណើរការម្ដងទៀត</translation>
 <translation id="8983038754672563810">HSPA</translation>

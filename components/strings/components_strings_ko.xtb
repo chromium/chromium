@@ -1096,6 +1096,7 @@
 <translation id="3435738964857648380">보안</translation>
 <translation id="3438829137925142401">Google 계정에 저장된 비밀번호 사용</translation>
 <translation id="3440783957068352691">정사각형</translation>
+<translation id="3441653493275994384">화면</translation>
 <translation id="3447661539832366887">이 기기의 소유자가 공룡 게임을 사용 중지했습니다.</translation>
 <translation id="3447884698081792621">인증서 표시(발급 기관: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">가져오기 간격:</translation>
@@ -2264,6 +2265,7 @@
 <translation id="6034514109191629503">아코디언 폴드</translation>
 <translation id="6039846035001940113">문제가 계속되면 사이트 소유자에게 문의하세요.</translation>
 <translation id="6040143037577758943">닫기</translation>
+<translation id="604124094241169006">자동</translation>
 <translation id="6041777658117377052">챔버 온도</translation>
 <translation id="6042308850641462728">자세히</translation>
 <translation id="6042688167654081154">이미지가 텍스트로 변환됨</translation>
@@ -2757,6 +2759,7 @@
 <translation id="7135130955892390533">상태 보기</translation>
 <translation id="7136009930065337683">시크릿 모드 자세히 알아보기</translation>
 <translation id="7138472120740807366">배달 방법</translation>
+<translation id="7138678301420049075">기타</translation>
 <translation id="7139892792842608322">기본 트레이</translation>
 <translation id="7140087718106278457">결제 수단 목록이 닫혔습니다.</translation>
 <translation id="714064300541049402">두 번째 면 이미지 X 시프트</translation>

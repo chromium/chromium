@@ -4096,7 +4096,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4413087696295876280">Lesa upplýsingar og gögn ChromeOS Flex-tækis</translation>
 <translation id="44141919652824029">Leyfa „<ph name="APP_NAME" />“ að sækja lista yfir tengd USB-tæki?</translation>
 <translation id="4414232939543644979">Nýr hul&amp;iðsgluggi</translation>
-<translation id="4414648713167199100">Notar farsímagögn Chromebook og símafyrirtækið þitt kann að innheimta viðbótargjöld. Gæti aukið rafhlöðunotkun. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Þú getur byrjað að nota <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Engin tæki fundust. Opnaðu grein hjálparmiðstöðvarinnar í nýjum flipa.</translation>
 <translation id="4415276339145661267">Stjórna Google reikningnum</translation>
@@ -6892,7 +6891,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6833479554815567477">Flipi fjarlægður úr hópnum <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Skipta yfir í öruggan og snjallan vafra</translation>
 <translation id="6833996806551876956">Prufuútgáfa persónuverndarafmörkunar</translation>
-<translation id="6835712061486505758">Búðu til heitan WiFi-reit til að sjá öðrum tækjum fyrir nettengingu <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Tengstu internetinu til að uppfæra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Villa við að eyða vottorði</translation>
 <translation id="6839916869147598086">Innskráning hefur breyst</translation>
@@ -7063,6 +7061,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6978717888677691380">Vefsvæði á bannlista</translation>
 <translation id="6979041727349121225">Orkusparnaður</translation>
 <translation id="6979044105893951891">Ræsa og loka stýrðum gestalotum</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Slökkva á hljóði (sjálfgefið)</translation>
 <translation id="6979737339423435258">Frá upphafi</translation>
 <translation id="6981553172137913845">Til að vafra í leyni skaltu opna huliðsglugga með því að smella á punktavalmyndina</translation>
@@ -8052,6 +8051,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7807711621188256451">Veita <ph name="HOST" /> alltaf aðgang að myndavélinni</translation>
 <translation id="7810202088502699111">Sprettigluggar voru útilokaðir á þessari síðu.</translation>
 <translation id="7814458197256864873">Afrita</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Breyta flýtileiðinni <ph name="SHORTCUT" /> fyrir <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Lokað á hættulegt niðurhal</translation>
 <translation id="7817361223956157679">Skjályklaborðið virkar ekki í Linux-forritum enn sem komið er</translation>
@@ -8131,7 +8131,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7881483672146086348">Skoða reikning</translation>
 <translation id="7883792253546618164">Þú getur hætt áskrift hvenær sem er.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Yfirfara 1 vefsvæði sem sendi margar tilkynningar}one{Yfirfara {NUM_SITES} vefsvæði sem sendi margar tilkynningar}other{Yfirfara {NUM_SITES} vefsvæði sem sendu margar tilkynningar}}</translation>
-<translation id="7884446017008693258">Stillingar fyrir heitan reit</translation>
 <translation id="788453346724465748">Sækir reikningsupplýsingar...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{atriði}one{# atriði}other{# atriði}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8659,6 +8658,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8322814362483282060">Þessari síðu var bannað að fá aðgang að hljóðnemanum þínum.</translation>
 <translation id="8323167517179506834">Sláðu inn vefslóð</translation>
 <translation id="8323317289166663449">Lesa og breyta öllum gögnum í tölvunni þinni og á öllum vefsvæðum</translation>
+<translation id="8324158725704657629">Ekki spyrja aftur</translation>
 <translation id="8324784016256120271">Vefsvæði geta notað fótspor til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar</translation>
 <translation id="8325413836429495820">Mega ekki sjá klippiborðið</translation>
 <translation id="8326478304147373412">PKCS #7, vottorðakeðja</translation>

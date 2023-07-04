@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">Ifayela noma umkhombandlela awusebenziseki.</translation>
 <translation id="1363028406613469049">Ithrekhi</translation>
 <translation id="1378727793141957596">Siyakwamukela ku-Google Drayivu!</translation>
-<translation id="1379156577998569384">Amafayela Edrayivu Yami ayatholakala ungaxhunyiwe ku-inthanethi</translation>
 <translation id="1379911846207762492">Ungenza amafayela atholakale ngokungaxhunyiwe kwi-inthanethi ukuze uwafinyelele lapho ungenakho ukuxhumeka kwi-inthanethi.</translation>
 <translation id="1383876407941801731">Sesha</translation>
 <translation id="1388045380422025115">Zonke izinhlobo</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">Izilungiselelo zedivayisi</translation>
 <translation id="2084809735218147718">Ukusayinda ukuthi ngiyabonga</translation>
 <translation id="2088690981887365033">Inethiwekhi ye-VPN</translation>
-<translation id="2089751716171649322">Finyelela kalula amafayela akho e-Google Drive uma ungaxhunyiwe ku-inthanethi</translation>
 <translation id="2111134541987263231">Vula okuthi <ph name="BEGIN_BOLD" />Vumela ku-Incognito<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Izinto ezingu-<ph name="NUMBER_OF_ITEMS" /> zizosuswa futhi ngeke ukwazi ukuzibuyisela.</translation>
 <translation id="2122305276694332719">Ukuxhumeka ngokuzenzakalela kunethiwekhi efihliwe kuvumela abanye ukuthi babone idivayisi yakho nezinye izilungiselelo zenethiwekhi futhi akunconyiwe.</translation>
@@ -577,12 +575,10 @@
 <translation id="5494920125229734069">Khetha konke</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">Amachashazi</translation>
-<translation id="5519161320735100193">Amasethingi we-Google Drive</translation>
 <translation id="5522908512596376669">Uhlu lwefayela lushintshele kuhlu lokubuka.</translation>
 <translation id="5524517123096967210">Ifayela alikwazanga ukufundwa.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> isithombe</translation>
 <translation id="5534520101572674276">Ibala usayizi</translation>
-<translation id="5536122250858122375">Lolu hlobo lwefayela alukwazi ukuvumelaniswa</translation>
 <translation id="554153475311314364">Ukuguqulwa kwamaletha kwesi-Greek</translation>
 <translation id="5554171655917412781">Kukhethwe amafolda angu-<ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">umshini we-virtual</translation>
@@ -743,7 +739,6 @@
 <translation id="6874758081814639712">Umuntu owenza i-tai chi</translation>
 <translation id="6876155724392614295">Ibhayisikili</translation>
 <translation id="6878261347041253038">Ikhibhodi ye-Devanagari (Ifonetiki)</translation>
-<translation id="6882444584974399416">Idivayisi yakho ayinaso isikhala esanele sokugcina amafayela akho etholakala ungaxhunyiwe ku-inthanethi. Amafayela amasha ngeke esavunyelaniswa ngokuzenzakalelayo.</translation>
 <translation id="6885780034956018177">Umnenke</translation>
 <translation id="6896758677409633944">Kopisha</translation>
 <translation id="6898028766943174120">Amafolda aphakathi engeziwe...</translation>
@@ -980,7 +975,6 @@
 <translation id="8560515948038859357">Isi-Cantonese</translation>
 <translation id="8561206103590473338">Indlovu</translation>
 <translation id="8566466896628108558">Inethiwekhi engu-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Amandla Wesinglai<ph name="SIGNAL_STRENGTH" />%, Kuvinjelwe Umphathi wakho, Imininingwane</translation>
-<translation id="8567555211227790801">Okwamanje awuxhunyiwe ku-inthanethi. Ukuvumelanisa kuzoqala kabusha uma uxhumeke ku-inthanethi.</translation>
 <translation id="8568374623837201676">Susa unomphela leli fayela?</translation>
 <translation id="8569764466147087991">Khetha ifayela okumele ulivule</translation>
 <translation id="8577897833047451336">Croatian</translation>

@@ -446,7 +446,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="3421726884497337397">Kies wanneer je cookies van derden wilt blokkeren</translation>
 <translation id="3428747202529429621">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd</translation>
 <translation id="3429160811076349561">Proeffuncties staan uit</translation>
-<translation id="3432973700170747422">Laatste 15 minuten verwijderen</translation>
 <translation id="3435465986463792564">Heb je veel vensters open? Beheer ze hier.</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="3443221991560634068">De huidige pagina opnieuw laden</translation>
@@ -480,7 +479,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="3587596251841506391">Bijdragen aan veiliger internet</translation>
 <translation id="3597179440835065298">Krijg betere suggesties</translation>
 <translation id="3602290021589620013">Voorbeeld</translation>
-<translation id="360901359071773787">Laatste 15 minuten verwijderen?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Vensters beheren</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}other{+ # sites}}</translation>
@@ -752,6 +750,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5010886807652684893">Visuele weergave</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> wil verbinding maken</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Afgelopen 15 minuten</translation>
 <translation id="5032430150487044192">Kan geen QR-code maken</translation>
 <translation id="5039804452771397117">Toestaan</translation>
 <translation id="5040262127954254034">Privacy</translation>
@@ -930,7 +929,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6011308810877101166">Zoeksuggesties verbeteren</translation>
 <translation id="6026538407078977628">Uitvouwen naar volledig scherm</translation>
 <translation id="6030719887161080597">Informatie beheren die sites gebruiken om advertentieprestaties te meten</translation>
-<translation id="6034146297924778597">De geschiedenis van de afgelopen 15 minuten wordt verwijderd:</translation>
 <translation id="6039379616847168523">Naar het volgende tabblad gaan</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="604124094241169006">Automatisch</translation>

@@ -446,7 +446,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="3421726884497337397">Chọn thời điểm chặn cookie của bên thứ ba</translation>
 <translation id="3428747202529429621">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập</translation>
 <translation id="3429160811076349561">Các tính năng dùng thử đang tắt</translation>
-<translation id="3432973700170747422">Xoá nhật ký 15 phút qua</translation>
 <translation id="3435465986463792564">Có nhiều cửa sổ? Bạn có thể quản lý các trang web đó tại đây</translation>
 <translation id="3435738964857648380">Bảo mật</translation>
 <translation id="3443221991560634068">Tải lại trang hiện tại</translation>
@@ -480,7 +479,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="3587596251841506391">Giúp tăng cường an ninh trên web</translation>
 <translation id="3597179440835065298">Nhận đề xuất tốt hơn</translation>
 <translation id="3602290021589620013">Xem trước</translation>
-<translation id="360901359071773787">Xoá dữ liệu duyệt web trong 15 phút vừa qua?</translation>
 <translation id="3616113530831147358">Âm thanh</translation>
 <translation id="3622349720008044802">Quản lý cửa sổ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 trang web}other{+ # trang web}}</translation>
@@ -752,6 +750,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5010886807652684893">Chế độ xem hình ảnh</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> muốn kết nối</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">15 phút qua</translation>
 <translation id="5032430150487044192">Không thể tạo mã QR</translation>
 <translation id="5039804452771397117">Cho phép</translation>
 <translation id="5040262127954254034">Quyền riêng tư</translation>
@@ -930,7 +929,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6011308810877101166">Cải thiện cụm từ tìm kiếm được đề xuất</translation>
 <translation id="6026538407078977628">Mở chế độ toàn màn hình</translation>
 <translation id="6030719887161080597">Quản lý thông tin mà các trang web sử dụng để đo lường hiệu suất quảng cáo</translation>
-<translation id="6034146297924778597">Chúng tôi sẽ xoá nhật ký trong 15 phút vừa qua:</translation>
 <translation id="6039379616847168523">Chuyển sang thẻ tiếp theo</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="604124094241169006">Tự động</translation>

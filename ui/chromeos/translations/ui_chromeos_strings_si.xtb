@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">ගොනුව හෝ නාමාවලිය භාවිතා කළ නොහැක.</translation>
 <translation id="1363028406613469049">ඛණ්ඩය</translation>
 <translation id="1378727793141957596">Google ධාවකයට සාදරයෙන් පිලිගැනීම !</translation>
-<translation id="1379156577998569384">ඔබේ මාගේ Drive ගොනු නොබැඳිව ඇත</translation>
 <translation id="1379911846207762492">ඔබට අන්තර්ජාල සම්බන්ධතාවක් නොමැති විට ප්‍රවේශය සඳහා ඔබට ගොනු නොබැඳි ලෙස ලබා ගත හැකි බවට පත් කළ හැකිය.</translation>
 <translation id="1383876407941801731">සොයන්න</translation>
 <translation id="1388045380422025115">සියලු වර්ග</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">උපාංග සැකසීම්</translation>
 <translation id="2084809735218147718">ඔබට ස්තුතියි යැයි සංඥා කරමින්</translation>
 <translation id="2088690981887365033">VPN ජාලය</translation>
-<translation id="2089751716171649322">ඔබ නොබැඳිව සිටින විට ඔබේ Google Drive ගොනු වෙත පහසුවෙන් ප්‍රවේශ වන්න</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />අප්‍රකට තුළ ඉඩ දීම<ph name="END_BOLD" /> ක්‍රියාත්මක කරන්න</translation>
 <translation id="2114191879048183086">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් මකනු ඇති අතර ඔබට ඒවා ප්‍රතිසාධනය කිරීමට නොහැකි වනු ඇත.</translation>
 <translation id="2122305276694332719">සැඟවුණු ජාලයකට ස්වයංක්‍රීයව සම්බන්ධ කිරීම අන් අයට ඔබේ උපාංගය සහ යම් ජාල සැකසීම් බැලීමට ඉඩ සලසන අතර, එය නිර්දේශ නොකෙරේ.</translation>
@@ -577,12 +575,10 @@
 <translation id="5494920125229734069">සියල්ල තෝරන්න</translation>
 <translation id="5500122897333236901">අයිස්ලාන්තික</translation>
 <translation id="5508696409934741614">තිත්</translation>
-<translation id="5519161320735100193">Google Drive සැකසීම්</translation>
 <translation id="5522908512596376669">ගොනු ලැයිස්තුව ලැයිස්තු දසුනට වෙනස් විය.</translation>
 <translation id="5524517123096967210">ගොනුව කියවිය නොහැක.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> රූපය</translation>
 <translation id="5534520101572674276">විශාලත්වය ගණනය කෙරෙමින්</translation>
-<translation id="5536122250858122375">මෙම ගොනු වර්ගය සමමුහූර්ත කළ නොහැක</translation>
 <translation id="554153475311314364">ග්‍රීක අක්ෂර පරිවර්තනය</translation>
 <translation id="5554171655917412781">ෆෝල්ඩර <ph name="SELECTED_FOLDERS_COUNT" />ක් තෝරා ඇත</translation>
 <translation id="5580591966435005537">අතථ්‍ය යන්ත්‍රය</translation>
@@ -743,7 +739,6 @@
 <translation id="6874758081814639712">තායි චි කරන පුද්ගලයා</translation>
 <translation id="6876155724392614295">පාපැදිය</translation>
 <translation id="6878261347041253038">දේවනාගරි යතුරු පුවරුව (ශබ්දිම)</translation>
-<translation id="6882444584974399416">ඔබේ ගොනු නොබැඳිව තබා ගැනීමට ඔබේ උපාංගයට ප්‍රමාණවත් ගබඩා ඉඩක් නැත. නව ගොනු තවදුරටත් ස්වයංක්‍රීයව සමමුහූර්ත නොවේ.</translation>
 <translation id="6885780034956018177">ගොළුබෙල්ලා</translation>
 <translation id="6896758677409633944">පිටපත්</translation>
 <translation id="6898028766943174120">තවත් උප ෆෝල්ඩර...</translation>
@@ -980,7 +975,6 @@
 <translation id="8560515948038859357">කැන්ටොනීස්</translation>
 <translation id="8561206103590473338">අලියා</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />වන ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" /> සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබගේ පරිපාලක විසින් අවහිර කර ඇත, විස්තර</translation>
-<translation id="8567555211227790801">ඔබ දැනට නොබැඳියි. ඔබ අන්තර්ජාලයට සම්බන්ධ වූ විට සමමුහූර්ත කිරීම නැවත ආරම්භ වේ.</translation>
 <translation id="8568374623837201676">මෙම ගොනුව ස්ථිරවම මකන්න ද?</translation>
 <translation id="8569764466147087991">විවෘත කිරීමට ගොනුවක් තෝරන්න</translation>
 <translation id="8577897833047451336">ක්‍රොඒෂියානු</translation>

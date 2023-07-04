@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">Fișierul sau directorul nu este utilizabil.</translation>
 <translation id="1363028406613469049">Melodia</translation>
 <translation id="1378727793141957596">Bun venit la Disc Google!</translation>
-<translation id="1379156577998569384">Fișierele din Contul meu Drive sunt disponibile offline</translation>
 <translation id="1379911846207762492">Poți face fișiere disponibile offline pentru a le accesa când nu ai conexiune la internet.</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1388045380422025115">Toate tipurile</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">Setările dispozitivului</translation>
 <translation id="2084809735218147718">Gesticulează „Mulțumesc” în limbajul semnelor</translation>
 <translation id="2088690981887365033">Rețea VPN</translation>
-<translation id="2089751716171649322">Accesează cu ușurință fișierele din Google Drive când ești offline</translation>
 <translation id="2111134541987263231">activează <ph name="BEGIN_BOLD" />Permite în modul incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> articole vor fi șterse și nu vei putea să le restabilești.</translation>
 <translation id="2122305276694332719">Conectarea automată la o rețea ascunsă permite altora să îți vadă dispozitivul și unele setări pentru rețea, așadar nu este recomandată.</translation>
@@ -578,12 +576,10 @@
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="5500122897333236901">Islandeză</translation>
 <translation id="5508696409934741614">Puncte</translation>
-<translation id="5519161320735100193">Setări Google Drive</translation>
 <translation id="5522908512596376669">Lista de fișiere s-a modificat la afișare listă.</translation>
 <translation id="5524517123096967210">Fișierul nu a putut fi citit.</translation>
 <translation id="5533102081734025921">Imagine <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Se calculează dimensiunea</translation>
-<translation id="5536122250858122375">Acest tip de fișier nu poate fi sincronizat</translation>
 <translation id="554153475311314364">Greacă, transliterație</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> dosare selectate</translation>
 <translation id="5580591966435005537">mașina virtuală</translation>
@@ -744,7 +740,6 @@
 <translation id="6874758081814639712">Persoană care practică tai chi</translation>
 <translation id="6876155724392614295">Bicicletă</translation>
 <translation id="6878261347041253038">Tastatură devanagari (Fonetică)</translation>
-<translation id="6882444584974399416">Dispozitivul nu are suficient spațiu de stocare pentru ca fișierele să fie disponibile offline. Fișierele noi nu vor mai fi sincronizate automat.</translation>
 <translation id="6885780034956018177">Melc</translation>
 <translation id="6896758677409633944">Copiază</translation>
 <translation id="6898028766943174120">Mai multe subdosare...</translation>
@@ -981,7 +976,6 @@
 <translation id="8560515948038859357">Cantoneză</translation>
 <translation id="8561206103590473338">Elefant</translation>
 <translation id="8566466896628108558">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, Blocată de administrator, Detalii</translation>
-<translation id="8567555211227790801">Ești în modul offline. Sincronizarea va fi reluată când te conectezi la internet.</translation>
 <translation id="8568374623837201676">Ștergi definitiv fișierul?</translation>
 <translation id="8569764466147087991">Selectează un fișier pentru a-l deschide</translation>
 <translation id="8577897833047451336">Croată</translation>

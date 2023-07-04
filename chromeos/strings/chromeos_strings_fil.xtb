@@ -204,7 +204,6 @@
 <translation id="2491955442992294626">Hindi sinusubukan ang mga key kapag gumagamit ka ng ibang window</translation>
 <translation id="2493126929778606526">Ang iyong mga pinakamagandang larawang awtomatikong napili</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2498950423397131220">Float</translation>
 <translation id="2505327257735685095">I-refresh ang kasalukuyang larawan sa wallpaper</translation>
 <translation id="2512979179176933762">ipakita ang mga window</translation>
 <translation id="2513396635448525189">Larawan sa pag-log in</translation>
@@ -328,7 +327,6 @@
 <translation id="3607216139080387279">Ipakita ang screen saver</translation>
 <translation id="361575905210396100">Salamat sa iyong feedback</translation>
 <translation id="3632579075709132555">Toggle ng Privacy screen</translation>
-<translation id="3639846061339007994">itaas</translation>
 <translation id="3651050199673793219">Pumili ng unit ng temperatura</translation>
 <translation id="3663574643422533538">Pumili ng eksklusibong artwork sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">Wallpaper na paggalaw ng ulap</translation>
@@ -411,7 +409,6 @@
 <translation id="4289849978083912975">Slide show</translation>
 <translation id="4297501883039923494">Huminto - Hindi kilalang error</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Larawan</translation>
-<translation id="4311195029067684288">Buo</translation>
 <translation id="4333390807948134856">Napindot ang key na <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Pamahalaan ang mga setting ng APN ng network. Nagtatatag ang mga APN ng koneksyon sa pagitan ng isang cellular network at internet. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">I-reset ang lahat ng shortcut</translation>
@@ -501,7 +498,6 @@
 <translation id="4930320165497208503">Para mag-set up o mag-update ng koneksyon, pumunta sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Petsa</translation>
 <translation id="4950314376641394653">Na-update ang firmware na <ph name="DEVICE_NAME" /> sa bersyong <ph name="VERSION" /></translation>
-<translation id="4971925105143343452">Hindi Buo</translation>
 <translation id="4972592110715526173">pagbabago ng mode</translation>
 <translation id="498186245079027698">Suriin ang scanner at subukan ulit. Tiyaking may sapat na lokal na space para mag-save ng mga na-scan na file.</translation>
 <translation id="4985509611418653372">Patakbuhin</translation>
@@ -655,7 +651,6 @@
 <translation id="6191293864534840972">Mali ang format ng mga name server</translation>
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
-<translation id="6223066887782788441">Lumabas sa full</translation>
 <translation id="6223752125779001553">Walang available na scanner</translation>
 <translation id="6232017090690406397">Baterya</translation>
 <translation id="6235460611964961764">Manual na i-reset ang paggamit ng data</translation>
@@ -814,7 +809,6 @@
 <translation id="7481312909269577407">Sumulong</translation>
 <translation id="7487067081878637334">Teknolohiya</translation>
 <translation id="7490813197707563893">MAC address</translation>
-<translation id="7491478667760509108">Lumabas sa float</translation>
 <translation id="7497215489070763236">CA certificate ng server</translation>
 <translation id="7501957181231305652">o</translation>
 <translation id="7502658306369382406">IPv6 address</translation>
@@ -834,7 +828,6 @@
 <translation id="763165478673169849">Oras ng Huling Pag-reset</translation>
 <translation id="7633068090678117093">Imahe sa background</translation>
 <translation id="7648838807254605802">Mataas na latency ng HTTPS</translation>
-<translation id="765159867434478292">Hatiin</translation>
 <translation id="7656388927906093505">Mouse ang device.</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7665800271478495366">Palitan ang avatar</translation>
@@ -865,7 +858,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Uri ng provider</translation>
 <translation id="7882501334836096755">Pampublikong key</translation>
-<translation id="78957024357676568">pakaliwa</translation>
 <translation id="7915220255123750251">Pamahalaan ang mga setting ng APN ng network. Nagtatatag ang mga APN ng koneksyon sa pagitan ng isang cellular network at internet.</translation>
 <translation id="7936303884198020182">Walang nakitang name server</translation>
 <translation id="7942349550061667556">Pula</translation>
@@ -903,7 +895,6 @@
 <translation id="8183974620058026102">I-attach</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8208861521865154048">Mga Perk</translation>
-<translation id="8210733748736414123">ibaba</translation>
 <translation id="8226628635270268143">Piliin ang iyong mga paboritong larawan at album</translation>
 <translation id="8227119283605456246">Mag-attach ng file</translation>
 <translation id="8230672074305416752">Hindi na-ping ang default na network gateway</translation>
@@ -1004,7 +995,6 @@
 <translation id="8936793075252196307">IP address ng client</translation>
 <translation id="8944651180182756621">Kulay ng Launcher</translation>
 <translation id="894617464444543719">Telepono ang device.</translation>
-<translation id="8957423540740801332">pakanan</translation>
 <translation id="8968751544471797276">Rate ng Pag-charge</translation>
 <translation id="8970109610781093811">Patakbuhing muli</translation>
 <translation id="8983038754672563810">HSPA</translation>

@@ -446,7 +446,6 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="3421726884497337397">Chagua wakati ambapo ungependa kuzuia vidakuzi vya wengine</translation>
 <translation id="3428747202529429621">Hulinda usalama wako kwenye Chrome na inaweza kutumiwa kuboresha usalama wako kwenye programu nyingine za Google ukiwa umeingia katika akaunti</translation>
 <translation id="3429160811076349561">Vipengele vya jaribio vimezimwa</translation>
-<translation id="3432973700170747422">Futa mambo uliyovinjari dakika 15 zilizopita</translation>
 <translation id="3435465986463792564">Je, una madirisha mengi? Unaweza kuyadhibiti hapa</translation>
 <translation id="3435738964857648380">Usalama</translation>
 <translation id="3443221991560634068">Pakia upya ukurasa wa sasa</translation>
@@ -480,7 +479,6 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="3587596251841506391">Tusaidie kuboresha usalama kwenye wavuti</translation>
 <translation id="3597179440835065298">Pata mapendekezo bora</translation>
 <translation id="3602290021589620013">Hakiki</translation>
-<translation id="360901359071773787">Ungependa kufuta mambo uliyovinjari dakika 15 zilizopita?</translation>
 <translation id="3616113530831147358">Sauti</translation>
 <translation id="3622349720008044802">Dhibiti madirisha</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{Tovuti zaidi ya 1}other{Tovuti zaidi ya #}}</translation>
@@ -752,6 +750,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5010886807652684893">Mwonekano wa picha</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> inataka kuunganisha</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Dakika 15 zilizopita</translation>
 <translation id="5032430150487044192">Imeshindwa kutunga Msimbo wa QR</translation>
 <translation id="5039804452771397117">Ruhusu</translation>
 <translation id="5040262127954254034">Faragha</translation>
@@ -930,7 +929,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="6011308810877101166">Boresha mapendekezo ya utafutaji</translation>
 <translation id="6026538407078977628">Panua ili ionyeshe skrini nzima</translation>
 <translation id="6030719887161080597">Dhibiti maelezo yanayotumiwa na tovuti kupima utendaji wa matangazo</translation>
-<translation id="6034146297924778597">Historia ya dakika 15 zilizopita itafutwa:</translation>
 <translation id="6039379616847168523">Nenda kwenye kichupo kinachofuata</translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="604124094241169006">Otomatiki</translation>

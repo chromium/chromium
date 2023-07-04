@@ -204,7 +204,6 @@
 <translation id="2491955442992294626">Các phím không được kiểm tra khi bạn đang dùng một cửa sổ khác</translation>
 <translation id="2493126929778606526">Những ảnh đẹp nhất của bạn được chọn tự động</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2498950423397131220">Nổi</translation>
 <translation id="2505327257735685095">Làm mới hình nền hiện tại</translation>
 <translation id="2512979179176933762">hiện cửa sổ</translation>
 <translation id="2513396635448525189">Hình ảnh đăng nhập</translation>
@@ -328,7 +327,6 @@
 <translation id="3607216139080387279">Hiển thị trình bảo vệ màn hình</translation>
 <translation id="361575905210396100">Cảm ơn bạn đã phản hồi</translation>
 <translation id="3632579075709132555">Bật/tắt Màn hình bảo vệ quyền riêng tư</translation>
-<translation id="3639846061339007994">trên cùng</translation>
 <translation id="3651050199673793219">Chọn đơn vị nhiệt độ</translation>
 <translation id="3663574643422533538">Chọn hình minh hoạ dành riêng cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="3668449597372804501">Hình nền Luồng đám mây</translation>
@@ -411,7 +409,6 @@
 <translation id="4289849978083912975">Bản trình chiếu</translation>
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> hình ảnh</translation>
-<translation id="4311195029067684288">Toàn màn hình</translation>
 <translation id="4333390807948134856">Đã nhấn phím <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Quản lý chế độ cài đặt APN của mạng. APN thiết lập kết nối giữa mạng di động và Internet. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Đặt lại tất cả phím tắt</translation>
@@ -501,7 +498,6 @@
 <translation id="4930320165497208503">Để thiết lập hoặc cập nhật kết nối, hãy chuyển đến phần <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Ngày Tháng</translation>
 <translation id="4950314376641394653">Chương trình cơ sở của <ph name="DEVICE_NAME" /> đã được cập nhật lên phiên bản <ph name="VERSION" /></translation>
-<translation id="4971925105143343452">Một phần</translation>
 <translation id="4972592110715526173">thay đổi chế độ</translation>
 <translation id="498186245079027698">Hãy kiểm tra trình quét rồi thử lại. Đảm bảo máy có đủ dung lượng để lưu các tệp đã quét.</translation>
 <translation id="4985509611418653372">Chạy</translation>
@@ -655,7 +651,6 @@
 <translation id="6191293864534840972">Máy chủ định danh không hợp lệ</translation>
 <translation id="6205145102504628069">Luồng đám mây</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
-<translation id="6223066887782788441">Thoát khỏi trạng thái toàn màn hình</translation>
 <translation id="6223752125779001553">Không có máy quét nào</translation>
 <translation id="6232017090690406397">Pin</translation>
 <translation id="6235460611964961764">Đặt lại mức sử dụng dữ liệu theo cách thủ công</translation>
@@ -814,7 +809,6 @@
 <translation id="7481312909269577407">Chuyển tiếp</translation>
 <translation id="7487067081878637334">Công nghệ</translation>
 <translation id="7490813197707563893">Địa chỉ MAC</translation>
-<translation id="7491478667760509108">Thoát khỏi trạng thái nổi</translation>
 <translation id="7497215489070763236">Chứng chỉ CA máy chủ</translation>
 <translation id="7501957181231305652">hoặc</translation>
 <translation id="7502658306369382406">Địa chỉ IPv6</translation>
@@ -834,7 +828,6 @@
 <translation id="763165478673169849">Lần đặt lại cuối</translation>
 <translation id="7633068090678117093">Hình nền</translation>
 <translation id="7648838807254605802">Yêu cầu HTTPS có độ trễ cao</translation>
-<translation id="765159867434478292">Phân tách</translation>
 <translation id="7656388927906093505">Thiết bị là chuột.</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7665800271478495366">Thay đổi hình đại diện</translation>
@@ -865,7 +858,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Loại nhà mạng</translation>
 <translation id="7882501334836096755">Khóa công khai</translation>
-<translation id="78957024357676568">trái</translation>
 <translation id="7915220255123750251">Quản lý chế độ cài đặt APN của mạng. APN thiết lập kết nối giữa mạng di động và Internet.</translation>
 <translation id="7936303884198020182">Không tìm thấy máy chủ định danh</translation>
 <translation id="7942349550061667556">Đỏ</translation>
@@ -903,7 +895,6 @@
 <translation id="8183974620058026102">Đính kèm</translation>
 <translation id="8206859287963243715">Di động</translation>
 <translation id="8208861521865154048">Đặc quyền</translation>
-<translation id="8210733748736414123">dưới cùng</translation>
 <translation id="8226628635270268143">Chọn ảnh và album bạn yêu thích</translation>
 <translation id="8227119283605456246">Đính kèm tệp</translation>
 <translation id="8230672074305416752">Không ping được cổng của mạng mặc định</translation>
@@ -1004,7 +995,6 @@
 <translation id="8936793075252196307">Địa chỉ IP khách hàng</translation>
 <translation id="8944651180182756621">Màu trình chạy</translation>
 <translation id="894617464444543719">Thiết bị là điện thoại.</translation>
-<translation id="8957423540740801332">phải</translation>
 <translation id="8968751544471797276">Tốc độ sạc</translation>
 <translation id="8970109610781093811">Chạy lại</translation>
 <translation id="8983038754672563810">HSPA</translation>

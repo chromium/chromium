@@ -4087,7 +4087,6 @@
 <translation id="4413087696295876280">የChromeOS Flex የመሣሪያ መረጃ እና ውሂብን ያንብቡ</translation>
 <translation id="44141919652824029">«<ph name="APP_NAME" />» የተያያዙ ዩኤስቢ መሣሪያዎችዎን ዝርዝር እንዲያገኝ ይፈቀድለት?</translation>
 <translation id="4414232939543644979">አዲስ ማን&amp;ነትን የማያሳውቅ መስኮት</translation>
-<translation id="4414648713167199100">የእርስዎን የChromebook የተንቀሳቃሽ ስልክ ውሂብ ይጠቀማል እና አገልግሎት አቅራቢዎ ተጨማሪ ክፍያዎችን ሊያስከፍል ይችላል። የባትሪ አጠቃቀምን ሊጨምር ይችላል። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">የእርስዎን <ph name="DEVICE_TYPE" /> መጠቀም ለመጀመር ዝግጁ ነዎት።</translation>
 <translation id="4415245286584082850">ምንም መሣሪያዎች አልተገኙም። የእገዛ ማዕከል ጽሁፍ በአዲስ ትር ላይ ይክፈቱ።</translation>
 <translation id="4415276339145661267">የGoogle መለያዎን ያቀናብሩ</translation>
@@ -6882,7 +6881,6 @@
 <translation id="6833479554815567477">ትር ከቡድን <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ተወግዷል</translation>
 <translation id="683373380308365518">ወደ ዘመናዊ እና ደህንነቱ የተጠበቀ አሳሽ ይቀይሩ</translation>
 <translation id="6833996806551876956">የግላዊነት Sandbox ሙከራ</translation>
-<translation id="6835712061486505758">በይነመረብን ለሌሎች መሣሪያዎች ለማቅረብ የWi-Fi መገናኛ ነጥብ ይፍጠሩ። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">የእርስዎን <ph name="DEVICE_TYPE" /> ለማዘመን እባክዎ ከበይነመረብ ጋር ይገናኙ።</translation>
 <translation id="6839225236531462745">የእውቅና ማረጋገጫ ስረዛ ስህተት</translation>
 <translation id="6839916869147598086">በመለያ መግቢያ ተለውጧል</translation>
@@ -7053,6 +7051,7 @@
 <translation id="6978717888677691380">እርስዎ ያገዷቸው ጣቢያዎች</translation>
 <translation id="6979041727349121225">ኃይል ቆጣቢ</translation>
 <translation id="6979044105893951891">አስጀምር እና የሚተዳደሩ የእንግዳ ክፍለ ጊዜያትን ትተህ ውጣ</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">ድምጸ-ከል አድርግ (ነባሪ)</translation>
 <translation id="6979737339423435258">የምንጊዜም</translation>
 <translation id="6981553172137913845">በግል ለማሰስ የነጥቦች አዶ ምናሌውን ጠቅ አድርገው ማንነት የማያሳውቅ መስኮትን ይክፈቱ</translation>
@@ -8042,6 +8041,7 @@
 <translation id="7807711621188256451"><ph name="HOST" /> ሁልጊዜ የእርስዎ ካሜራ መዳረሻ ይፈቀድለት</translation>
 <translation id="7810202088502699111">በዚህ ገፅ ብቅ-ባዮች ታግደዋል።</translation>
 <translation id="7814458197256864873">&amp;ቅዳ</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">ለ<ph name="EXTENSION_NAME" /> <ph name="SHORTCUT" /> አቋራጭን አርትዕ</translation>
 <translation id="7815680994978050279">አደገኛ ውርድ ታግዷል</translation>
 <translation id="7817361223956157679">ታይታ የቁልፍ ሰሌዳ በ Linux መተግበሪያዎች ላይ እስካሁን አይሠራም</translation>
@@ -8121,7 +8121,6 @@
 <translation id="7881483672146086348">መለያን ይመልከቱ</translation>
 <translation id="7883792253546618164">በማንኛውም ጊዜ ከደንበኝነት ምዝገባ ይውጡ።</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{ብዙ ማሳወቂያዎችን የላከ 1 ጣቢያን ይገምግሙ}one{ብዙ ማሳወቂያዎችን የላከ {NUM_SITES} ጣቢያን ይገምግሙ}other{ብዙ ማሳወቂያዎችን የላኩ {NUM_SITES} ጣቢያዎችን ይገምግሙ}}</translation>
-<translation id="7884446017008693258">የመገናኛ ነጥብ ቅንብሮች</translation>
 <translation id="788453346724465748">የመለያ መረጃን በመጫን ላይ...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{አንድ ንጥል}one{# ንጥሎች}other{# ንጥሎች}}</translation>
 <translation id="7886605625338676841">ኢሲም</translation>
@@ -8655,6 +8654,7 @@ nil</translation>
 <translation id="8322814362483282060">ይህ ገፅ ማይክሮፎንዎን እንዳይደርስበት ታግዷል።</translation>
 <translation id="8323167517179506834">ዩአርኤል ይተይቡ</translation>
 <translation id="8323317289166663449">በኮምፒተርዎ እና በሁሉም ድር ጣቢያዎች ላይ ሁሉንም ውሂብዎን ያንብቡ እና ይቀይሩ</translation>
+<translation id="8324158725704657629">ዳግም አትጠይቅ</translation>
 <translation id="8324784016256120271">ጣቢያዎች በተለያዩ ጣቢያዎች ላይ ለምሳሌ ማስታወቂያዎችን ግላዊነት ለማላበስ የእርስዎን የአሰሳ እንቅስቃሴ ለመመልከት ኩኪዎችን መጠቀም ይችላሉ</translation>
 <translation id="8325413836429495820">ቅንጥብ ሰሌዳዎን ለማየት አልተፈቀደም</translation>
 <translation id="8326478304147373412">PKCS #7፣ የሰርቲፊኬት ሰንሰለት</translation>

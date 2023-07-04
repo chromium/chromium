@@ -1093,6 +1093,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3438829137925142401">Usa le password salvate nel tuo Account Google</translation>
 <translation id="3440783957068352691">Quadrata</translation>
+<translation id="3441653493275994384">Schermo</translation>
 <translation id="3447661539832366887">Il proprietario del dispositivo ha disattivato il gioco dei dinosauri.</translation>
 <translation id="3447884698081792621">Mostra certificato (rilasciato da <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Intervallo recupero:</translation>
@@ -2261,6 +2262,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6034514109191629503">Piegatura a fisarmonica</translation>
 <translation id="6039846035001940113">Se il problema persiste, contatta il proprietario del sito.</translation>
 <translation id="6040143037577758943">Chiudi</translation>
+<translation id="604124094241169006">Automatico</translation>
 <translation id="6041777658117377052">Temperatura della camera</translation>
 <translation id="6042308850641462728">Altro</translation>
 <translation id="6042688167654081154">Immagine convertita in testo</translation>
@@ -2753,6 +2755,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7135130955892390533">Mostra stato</translation>
 <translation id="7136009930065337683">Scopri di più sulla modalità di navigazione in incognito</translation>
 <translation id="7138472120740807366">Metodo di consegna</translation>
+<translation id="7138678301420049075">Altro</translation>
 <translation id="7139892792842608322">Vassoio principale</translation>
 <translation id="7140087718106278457">L'elenco dei metodi di pagamento è chiuso.</translation>
 <translation id="714064300541049402">Spostamento X lato 2 immagine</translation>

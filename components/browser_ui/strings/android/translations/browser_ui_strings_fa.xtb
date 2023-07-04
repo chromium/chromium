@@ -302,7 +302,6 @@
 <translation id="6467852467360539617">پاک کردن داده‌ها و بازنشانی اجازه‌ها</translation>
 <translation id="6527303717912515753">اشتراک‌گذاری</translation>
 <translation id="6545864417968258051">اسکن کردن بلوتوث</translation>
-<translation id="6552691050538553146">گزینه‌های بیشتر <ph name="BANNER_TITLE" /></translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}}</translation>
 <translation id="6554732001434021288">آخرین بازدید: <ph name="NUM_DAYS" /> روز پیش</translation>
 <translation id="6561560012278703671">استفاده از پیام‌رسانی کم‌صداتر (درخواست‌های اعلان را مسدود می‌کند تا مزاحمتان نشود)</translation>

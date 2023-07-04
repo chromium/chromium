@@ -442,7 +442,6 @@
 <translation id="3421726884497337397">Үчүнчү тараптын cookie файлдары качан бөгөттөлсүн?</translation>
 <translation id="3428747202529429621">Аккаунтуңузга киргенде Chrome'до жана башка Google колдонмолорунда коопсуздугуңузду коргоп турат</translation>
 <translation id="3429160811076349561">Сыноонун функциялары өчүк</translation>
-<translation id="3432973700170747422">Акыркы 15 мүнөттү өчүрүү</translation>
 <translation id="3435465986463792564">Көп терезе ачылып турабы? Аларды бул жерден башкарыңыз</translation>
 <translation id="3435738964857648380">Коопсуздук</translation>
 <translation id="3443221991560634068">Учурдагы баракты кайра жүктөө</translation>
@@ -476,7 +475,6 @@
 <translation id="3587596251841506391">Интернеттеги коопсуздукту жакшыртууга жардам бериңиз</translation>
 <translation id="3597179440835065298">Жакшыраак сунуштарды алыңыз</translation>
 <translation id="3602290021589620013">Алдн-ала көз жүгртүү</translation>
-<translation id="360901359071773787">Акыркы 15 мүнөт өчүрүлсүнбү?</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3622349720008044802">Терезелерди башкаруу</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайт}}</translation>
@@ -744,6 +742,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5010886807652684893">Визуалдык көрүнүш</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> сайты туташканы жатат</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Акыркы 15 мүнөттө</translation>
 <translation id="5032430150487044192">QR код түзүлгөн жок</translation>
 <translation id="5039804452771397117">Уруксат берүү</translation>
 <translation id="5040262127954254034">Купуялык</translation>
@@ -922,7 +921,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6011308810877101166">Издөө сунуштарын жакшыртуу</translation>
 <translation id="6026538407078977628">Толук экранга жайып көрсөтүү</translation>
 <translation id="6030719887161080597">Сайттар жарнаманын майнаптуулугун өлчөө үчүн колдонгон маалыматтарды тескеңиз</translation>
-<translation id="6034146297924778597">Акыркы 15 мүнөттө каралган таржымал өчүрүлөт:</translation>
 <translation id="6039379616847168523">Кийинки өтмөккө секирүү</translation>
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="604124094241169006">Автоматтык</translation>

@@ -41,7 +41,6 @@
 <translation id="1358735829858566124">फाइलवा डाइरेक्टरी प्रयोगयोग्य छैन।</translation>
 <translation id="1363028406613469049">ट्रयाक</translation>
 <translation id="1378727793141957596">Google ड्राइभ मा स्वागत छ!</translation>
-<translation id="1379156577998569384">तपाईंको My Drive मा रहेका फाइलहरू अफलाइन उपलब्ध भएका छन्</translation>
 <translation id="1379911846207762492">तपाईं इन्टरनेट नभएका बेला प्रयोग गर्ने प्रयोजनका लागि फाइलहरू अफलाइन उपलब्ध गराउन सक्नुहुन्छ।</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1388045380422025115">सबै प्रकारका फाइलहरू</translation>
@@ -131,7 +130,6 @@
 <translation id="2084108471225856927">डिभाइसका सेटिङहरू</translation>
 <translation id="2084809735218147718">साङ्केतिक भाषामा धन्यवाद भनिरहेका व्यक्ति</translation>
 <translation id="2088690981887365033">VPN नेटवर्क</translation>
-<translation id="2089751716171649322">Google Drive मा भएका फाइलहरू इन्टरनेटविनै सजिलैसँग प्रयोग गर्नुहोस्</translation>
 <translation id="2111134541987263231">"<ph name="BEGIN_BOLD" />इन्कोग्निटो मोडमा अनुमति दिनुहोस्<ph name="END_BOLD" />" अन गर्नुहोस्</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> वटा सामग्री मेटाइने छन् र तपाईं ती सामग्री रिस्टोर गर्न सक्नु हुने छैन।</translation>
 <translation id="2122305276694332719">कुनै लुकाइएको नेटवर्कमा स्वतः जोड्नुले तपाईंको यन्त्र र नेटवर्कसम्बन्धी केही सेटिङ अरूले देख्न सक्ने हुनाले यसो गर्न सिफारिस गरिँदैन।</translation>
@@ -577,12 +575,10 @@
 <translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
 <translation id="5500122897333236901">आइसलैंडको</translation>
 <translation id="5508696409934741614">डटहरू</translation>
-<translation id="5519161320735100193">Google Drive का सेटिङ</translation>
 <translation id="5522908512596376669">फाइलको सूचीको दृश्य परिवर्तन गरी सूची दृश्य बनाइयो।</translation>
 <translation id="5524517123096967210">फाइल पढ्न सकिएन।</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> छवि</translation>
 <translation id="5534520101572674276">परिमाण हिसाब गर्दै</translation>
-<translation id="5536122250858122375">यस प्रकारको फाइल सिंक गर्न मिल्दैन</translation>
 <translation id="554153475311314364">ग्रिक लिपि रूपान्तरण</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> वटा फोल्डर चयन गरिएका छन्</translation>
 <translation id="5580591966435005537">भर्चुअल मेसिन</translation>
@@ -743,7 +739,6 @@
 <translation id="6874758081814639712">ताइ ची गरिरहेका व्यक्ति</translation>
 <translation id="6876155724392614295">साइकल</translation>
 <translation id="6878261347041253038">देवनागरी किबोर्ड (ध्वन्यात्मक)</translation>
-<translation id="6882444584974399416">फाइलहरू अफलाइन उपलब्ध गराइराख्नका निम्ति तपाईंको डिभाइसमा पर्याप्त खाली ठाउँ छैन। अबदेखि नयाँ फाइलहरू स्वतः सिंक गरिने छैनन्।</translation>
 <translation id="6885780034956018177">चिप्लेकिरो</translation>
 <translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6898028766943174120">थप उप फोल्डरहरू...</translation>
@@ -980,7 +975,6 @@
 <translation id="8560515948038859357">क्यान्टोनिज</translation>
 <translation id="8561206103590473338">हात्ती</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नलको क्षमता: <ph name="SIGNAL_STRENGTH" />%, तपाईंका एड्मिनले ब्लक गरेको, विवरणहरू</translation>
-<translation id="8567555211227790801">तपाईं अहिले अफलाइन हुनुहुन्छ। तपाईंको डिभाइस इन्टरनेटमा कनेक्ट भएपछि सिंक गर्ने कार्य सुचारु गरिने छ।</translation>
 <translation id="8568374623837201676">यो फाइल सदाका लागि मेटाउने हो?</translation>
 <translation id="8569764466147087991">खोल्नको लागि फाइल चयन गर्नुहोस्</translation>
 <translation id="8577897833047451336">क्रोएसियाली</translation>

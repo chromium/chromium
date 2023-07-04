@@ -4077,7 +4077,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4413087696295876280">Leer la información y los datos del dispositivo ChromeOS Flex</translation>
 <translation id="44141919652824029">¿Deseas permitir que "<ph name="APP_NAME" />" obtenga la lista de los dispositivos USB conectados?</translation>
 <translation id="4414232939543644979">Nueva ventana de &amp;incógnito</translation>
-<translation id="4414648713167199100">Usa los datos móviles de la Chromebook y tu operador puede cobrar tarifas adicionales. Puede aumentar el uso de la batería. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Ya puedes comenzar a usar tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">No se encontraron dispositivos. Abre un artículo del Centro de ayuda en una pestaña nueva.</translation>
 <translation id="4415276339145661267">Administrar tu Cuenta de Google</translation>
@@ -6870,7 +6869,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6833479554815567477">Se quitó la pestaña del grupo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Cambia a un navegador inteligente y seguro</translation>
 <translation id="6833996806551876956">Prueba de Privacy Sandbox</translation>
-<translation id="6835712061486505758">Crea un hotspot de Wi-Fi para brindar Internet a otros dispositivos. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Error en la eliminación del certificado</translation>
 <translation id="6839916869147598086">Se modificó el acceso</translation>
@@ -7041,6 +7039,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6978717888677691380">Sitios que bloqueaste</translation>
 <translation id="6979041727349121225">Ahorro de energía</translation>
 <translation id="6979044105893951891">Inicia las sesiones de invitado administradas y sal de ellas</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Silenciar (predeterminado)</translation>
 <translation id="6979737339423435258">Todos</translation>
 <translation id="6981553172137913845">Haz clic en el menú con el ícono de puntos para abrir una ventana de incógnito y navegar de forma privada</translation>
@@ -8030,6 +8029,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7807711621188256451">Permitir siempre que <ph name="HOST" /> acceda a la cámara</translation>
 <translation id="7810202088502699111">Se bloquearon las ventanas emergentes en esta página.</translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editar el acceso directo <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Se bloqueó una descarga peligrosa</translation>
 <translation id="7817361223956157679">El teclado en pantalla todavía no es compatible con apps de Linux</translation>
@@ -8109,7 +8109,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7881483672146086348">Ver cuenta</translation>
 <translation id="7883792253546618164">Puedes anular la suscripción en cualquier momento.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Revisa 1 sitio que envió muchas notificaciones}other{Revisa {NUM_SITES} sitios que enviaron muchas notificaciones}}</translation>
-<translation id="7884446017008693258">Configuración del hotspot</translation>
 <translation id="788453346724465748">Cargando información de la cuenta…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{un elemento}other{# elementos}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8638,6 +8637,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8322814362483282060">Esta página no tiene permiso para acceder al micrófono.</translation>
 <translation id="8323167517179506834">Ingresar URL</translation>
 <translation id="8323317289166663449">Leer y cambiar todos tus datos de tu computadora y todos los sitios web</translation>
+<translation id="8324158725704657629">No volver a preguntar</translation>
 <translation id="8324784016256120271">Los sitios pueden usar cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
 <translation id="8325413836429495820">No puede ver el contenido del portapapeles</translation>
 <translation id="8326478304147373412">PKCS N. º 7, cadena de certificados</translation>

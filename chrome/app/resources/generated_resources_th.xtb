@@ -4086,7 +4086,6 @@
 <translation id="4413087696295876280">อ่านข้อมูลอุปกรณ์ ChromeOS Flex และข้อมูล</translation>
 <translation id="44141919652824029">อนุญาตให้ "<ph name="APP_NAME" />" เรียกรายการอุปกรณ์ USB ที่เชื่อมต่ออยู่ใช่ไหม</translation>
 <translation id="4414232939543644979">หน้าต่างใหม่&amp;ที่ไม่ระบุตัวตน</translation>
-<translation id="4414648713167199100">ใช้อินเทอร์เน็ตมือถือของ Chromebook และผู้ให้บริการของคุณอาจเรียกเก็บค่าธรรมเนียมเพิ่มเติม อาจมีการใช้งานแบตเตอรี่เพิ่มขึ้น <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">คุณพร้อมเริ่มใช้งาน <ph name="DEVICE_TYPE" /> แล้ว</translation>
 <translation id="4415245286584082850">ไม่พบอุปกรณ์ โปรดเปิดบทความในศูนย์ช่วยเหลือในแท็บใหม่</translation>
 <translation id="4415276339145661267">จัดการบัญชี Google</translation>
@@ -6880,7 +6879,6 @@
 <translation id="6833479554815567477">แท็บถูกนำออกจากกลุ่ม <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">เปลี่ยนเป็นเบราว์เซอร์ที่มีประสิทธิภาพและปลอดภัย</translation>
 <translation id="6833996806551876956">ช่วงทดลองใช้ Privacy Sandbox</translation>
-<translation id="6835712061486505758">สร้างฮอตสปอต Wi-Fi เพื่อแชร์อินเทอร์เน็ตให้อุปกรณ์อื่น <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่ออัปเดต <ph name="DEVICE_TYPE" /></translation>
 <translation id="6839225236531462745">ข้อผิดพลาดในการนำออกใบรับรอง</translation>
 <translation id="6839916869147598086">มีการเปลี่ยนแปลงการลงชื่อเข้าใช้</translation>
@@ -7051,6 +7049,7 @@
 <translation id="6978717888677691380">เว็บไซต์ที่คุณบล็อก</translation>
 <translation id="6979041727349121225">โหมดประหยัดพลังงาน</translation>
 <translation id="6979044105893951891">เปิดและออกจากเซสชันผู้เยี่ยมชมที่มีการจัดการ</translation>
+<translation id="6979158407327259162">Google ไดรฟ์</translation>
 <translation id="6979440798594660689">ปิดเสียง (ค่าเริ่มต้น)</translation>
 <translation id="6979737339423435258">ตั้งแต่ต้น</translation>
 <translation id="6981553172137913845">หากต้องการท่องเว็บแบบส่วนตัว ให้คลิกเมนูไอคอนรูปจุดเพื่อเปิดหน้าต่างที่ไม่ระบุตัวตน</translation>
@@ -8040,6 +8039,7 @@
 <translation id="7807711621188256451">อนุญาตให้ <ph name="HOST" /> เข้าถึงกล้องของคุณเสมอ</translation>
 <translation id="7810202088502699111">หน้าเว็บนี้บล็อกป๊อปอัป</translation>
 <translation id="7814458197256864873">&amp;คัดลอก</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">แก้ไขทางลัด <ph name="SHORTCUT" /> สำหรับ <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">บล็อกการดาวน์โหลดที่เป็นอันตรายแล้ว</translation>
 <translation id="7817361223956157679">แป้นพิมพ์บนหน้าจอยังใช้ไม่ได้ในแอป Linux</translation>
@@ -8119,7 +8119,6 @@
 <translation id="7881483672146086348">ดูบัญชี</translation>
 <translation id="7883792253546618164">ยกเลิกการรับข่าวสารได้ทุกเมื่อ</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{ตรวจสอบ 1 เว็บไซต์ที่ส่งการแจ้งเตือนจำนวนมาก}other{ตรวจสอบ {NUM_SITES} เว็บไซต์ที่ส่งการแจ้งเตือนจำนวนมาก}}</translation>
-<translation id="7884446017008693258">การตั้งค่าฮอตสปอต</translation>
 <translation id="788453346724465748">กำลังโหลดข้อมูลบัญชี...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{1 รายการ}other{# รายการ}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8648,6 +8647,7 @@
 <translation id="8322814362483282060">หน้านี้ถูกบล็อกไม่ให้เข้าถึงไมโครโฟนของคุณ</translation>
 <translation id="8323167517179506834">พิมพ์ URL</translation>
 <translation id="8323317289166663449">อ่านและเปลี่ยนแปลงข้อมูลทั้งหมดของคุณในคอมพิวเตอร์และทุกเว็บไซต์</translation>
+<translation id="8324158725704657629">ไม่ต้องถามอีก</translation>
 <translation id="8324784016256120271">เว็บไซต์สามารถใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์ต่างๆ สำหรับวัตถุประสงค์อย่างเช่นการปรับโฆษณาตามโปรไฟล์ของคุณ</translation>
 <translation id="8325413836429495820">ไม่ได้รับอนุญาตให้ดูคลิปบอร์ด</translation>
 <translation id="8326478304147373412">PKCS #7, กลุ่มใบรับรอง (Certificate Chain)</translation>

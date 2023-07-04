@@ -4101,7 +4101,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4413087696295876280">Baca maklumat dan data peranti ChromeOS Flex</translation>
 <translation id="44141919652824029">Benarkan "<ph name="APP_NAME" />" mendapatkan senarai peranti anda yang ada USB?</translation>
 <translation id="4414232939543644979">Tetingkap &amp;Inkognito Baharu</translation>
-<translation id="4414648713167199100">Menggunakan data mudah alih Chromebook anda dan pembawa anda mungkin mengenakan bayaran tambahan. Mungkin meningkatkan penggunaan bateri. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4415213869328311284">Anda sudah bersedia untuk menggunakan <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="4415245286584082850">Tiada peranti ditemui. Buka artikel pusat bantuan dalam tab baharu.</translation>
 <translation id="4415276339145661267">Urus Google Account anda</translation>
@@ -6899,7 +6898,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6833479554815567477">Tab dialih keluar daripada kumpulan <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Tukar kepada penyemak imbas yang pintar dan selamat</translation>
 <translation id="6833996806551876956">Percubaan Kotak Pasir Privasi</translation>
-<translation id="6835712061486505758">Buat tempat liputan Wi-Fi untuk menyediakan Internet kepada peranti lain. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Sila sambung ke Internet untuk mengemaskinikan <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="6839225236531462745">Ralat Pemadaman Sijil</translation>
 <translation id="6839916869147598086">Log masuk telah berubah</translation>
@@ -7070,6 +7068,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6978717888677691380">Laman yang anda sekat</translation>
 <translation id="6979041727349121225">Penjimat Tenaga</translation>
 <translation id="6979044105893951891">Lancarkan dan keluar daripada sesi tetamu yang diurus</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Redam (lalai)</translation>
 <translation id="6979737339423435258">Sepanjang masa</translation>
 <translation id="6981553172137913845">Untuk menyemak imbas secara tertutup, klik menu ikon titik untuk membuka tetingkap Inkognito</translation>
@@ -8060,6 +8059,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7807711621188256451">Sentiasa benarkan <ph name="HOST" /> mengakses kamera anda</translation>
 <translation id="7810202088502699111">Pop muncul disekat pada halaman ini.</translation>
 <translation id="7814458197256864873">&amp;Salin</translation>
+<translation id="7814857791038398352">Microsoft® OneDrive</translation>
 <translation id="7815583197273433531">Edit pintasan <ph name="SHORTCUT" /> untuk <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Muat turun berbahaya disekat</translation>
 <translation id="7817361223956157679">Papan kekunci pada skrin belum dapat berfungsi dalam apl Linux</translation>
@@ -8139,7 +8139,6 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7881483672146086348">Paparkan Akaun</translation>
 <translation id="7883792253546618164">Hentikan langganan pada bila-bila masa.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Semak 1 laman yang menghantar banyak pemberitahuan}other{Semak {NUM_SITES} laman yang menghantar banyak pemberitahuan}}</translation>
-<translation id="7884446017008693258">Tetapan Tempat Liputan</translation>
 <translation id="788453346724465748">Memuatkan maklumat akaun...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{satu item}other{# item}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8668,6 +8667,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8322814362483282060">Halaman ini telah disekat daripada mengakses mikrofon anda.</translation>
 <translation id="8323167517179506834">Taip URL</translation>
 <translation id="8323317289166663449">Baca dan ubah semua data anda pada komputer anda dan semua laman web</translation>
+<translation id="8324158725704657629">Jangan tanya lagi</translation>
 <translation id="8324784016256120271">Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda pada beberapa tapak yang berlainan, contohnya, untuk memperibadikan iklan</translation>
 <translation id="8325413836429495820">Tidak dibenarkan untuk melihat papan keratan anda</translation>
 <translation id="8326478304147373412">PKCS #7, rantaian sijil</translation>

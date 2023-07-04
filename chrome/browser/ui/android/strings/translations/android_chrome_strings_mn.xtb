@@ -446,7 +446,6 @@
 <translation id="3421726884497337397">Гуравдагч талын күүкиг хэзээ блоклохыг сонгох</translation>
 <translation id="3428747202529429621">Таныг нэвтэрсэн үед Chrome дээр таны аюулгүй байдлыг хангадаг бөгөөд Google-н бусад апп дахь таны аюулгүй байдлыг сайжруулахын тулд ашиглагдах боломжтой</translation>
 <translation id="3429160811076349561">Туршилтын онцлог унтраалттай байна</translation>
-<translation id="3432973700170747422">Сүүлийн 15 минутыг устгах</translation>
 <translation id="3435465986463792564">Олон цонхтой юу? Та тэдгээрийг эндээс удирдах боломжтой</translation>
 <translation id="3435738964857648380">Нууцлал</translation>
 <translation id="3443221991560634068">Одоогийн хуудсыг дахин ачаалах</translation>
@@ -480,7 +479,6 @@
 <translation id="3587596251841506391">Веб дэх аюулгүй байдлыг сайжруулахад туслах</translation>
 <translation id="3597179440835065298">Илүү сайн зөвлөмжүүд аваарай</translation>
 <translation id="3602290021589620013">Мэдээллийг урьдчилж харах</translation>
-<translation id="360901359071773787">Сүүлийн 15 минутыг устгах уу?</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3622349720008044802">Цонхнуудыг удирдах</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайт}}</translation>
@@ -751,6 +749,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5010886807652684893">Визуал харагдах байдал</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> холбогдох хүсэлтэй байна</translation>
 <translation id="5016205925109358554">Сериф</translation>
+<translation id="5017529052065664584">Сүүлийн 15 минут</translation>
 <translation id="5032430150487044192">QR код үүсгэх боломжгүй байна</translation>
 <translation id="5039804452771397117">Зөвшөөрөх</translation>
 <translation id="5040262127954254034">Нууцлал</translation>
@@ -929,7 +928,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6011308810877101166">Хайлтын зөвлөмжийг сайжруулах</translation>
 <translation id="6026538407078977628">Бүтэн дэлгэц рүү дэлгэх</translation>
 <translation id="6030719887161080597">Сайтуудын зарын гүйцэтгэлийг хэмжихдээ ашигладаг мэдээллийг удирдах</translation>
-<translation id="6034146297924778597">Сүүлийн 15 минутын түүхийг устгана:</translation>
 <translation id="6039379616847168523">Дараагийн табад очих</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="604124094241169006">Автомат</translation>

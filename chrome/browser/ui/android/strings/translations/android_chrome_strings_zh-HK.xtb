@@ -446,7 +446,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3421726884497337397">選擇何時封鎖第三方 Cookie</translation>
 <translation id="3428747202529429621">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性</translation>
 <translation id="3429160811076349561">試用功能已關閉</translation>
-<translation id="3432973700170747422">刪除過去 15 分鐘的瀏覽資料</translation>
 <translation id="3435465986463792564">開啟了很多視窗嗎？您可在此管理視窗</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
@@ -480,7 +479,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3587596251841506391">協助改善網絡安全</translation>
 <translation id="3597179440835065298">取得更貼近需要的建議</translation>
 <translation id="3602290021589620013">預覽</translation>
-<translation id="360901359071773787">要刪除過去 15 分鐘的瀏覽資料嗎？</translation>
 <translation id="3616113530831147358">音效檔案</translation>
 <translation id="3622349720008044802">管理視窗</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 個網站}other{+ # 個網站}}</translation>
@@ -752,6 +750,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5010886807652684893">視覺化檢視</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> 要求連接至</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">過去 15 分鐘</translation>
 <translation id="5032430150487044192">無法建立 QR 碼</translation>
 <translation id="5039804452771397117">允許</translation>
 <translation id="5040262127954254034">私隱權</translation>
@@ -930,7 +929,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="6011308810877101166">改善搜尋建議</translation>
 <translation id="6026538407078977628">展開去全螢幕</translation>
 <translation id="6030719887161080597">管理網站用來評估廣告成效的資料</translation>
-<translation id="6034146297924778597">系統將刪除過去 15 分鐘的記錄：</translation>
 <translation id="6039379616847168523">跳至下一個分頁</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="604124094241169006">自動</translation>

@@ -204,7 +204,6 @@
 <translation id="2491955442992294626">Tombol tidak diuji saat Anda sedang menggunakan jendela lain</translation>
 <translation id="2493126929778606526">Foto terbaik Anda, dipilih otomatis</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2498950423397131220">Float</translation>
 <translation id="2505327257735685095">Muat ulang gambar wallpaper saat ini</translation>
 <translation id="2512979179176933762">tampilkan jendela</translation>
 <translation id="2513396635448525189">Gambar login</translation>
@@ -327,7 +326,6 @@
 <translation id="3607216139080387279">Tampilkan screensaver</translation>
 <translation id="361575905210396100">Terima kasih atas masukan Anda</translation>
 <translation id="3632579075709132555">Beralih layar privasi</translation>
-<translation id="3639846061339007994">atas</translation>
 <translation id="3651050199673793219">Pilih satuan suhu</translation>
 <translation id="3663574643422533538">Pilih karya seni <ph name="PRODUCT_NAME" /> eksklusif</translation>
 <translation id="3668449597372804501">Wallpaper Aliran awan</translation>
@@ -410,7 +408,6 @@
 <translation id="4289849978083912975">Slideshow</translation>
 <translation id="4297501883039923494">Dihentikan - Error tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Gambar</translation>
-<translation id="4311195029067684288">Penuh</translation>
 <translation id="4333390807948134856">Tombol <ph name="KEY_NAME" /> ditekan</translation>
 <translation id="435692326371619097">Kelola setelan APN jaringan. APN membuat koneksi antara jaringan seluler dan internet. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Reset semua pintasan</translation>
@@ -500,7 +497,6 @@
 <translation id="4930320165497208503">Untuk menyiapkan atau memperbarui koneksi, buka <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tanggal</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" /> telah diupdate ke versi <ph name="VERSION" /></translation>
-<translation id="4971925105143343452">Sebagian</translation>
 <translation id="4972592110715526173">pengubahan mode</translation>
 <translation id="498186245079027698">Periksa pemindai, lalu coba lagi. Pastikan terdapat cukup ruang penyimpanan lokal untuk menyimpan file hasil pemindaian.</translation>
 <translation id="4985509611418653372">Jalankan</translation>
@@ -654,7 +650,6 @@
 <translation id="6191293864534840972">Format server nama salah</translation>
 <translation id="6205145102504628069">Aliran Awan</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
-<translation id="6223066887782788441">Keluar dari layar penuh</translation>
 <translation id="6223752125779001553">Tidak ada pemindai yang tersedia</translation>
 <translation id="6232017090690406397">Baterai</translation>
 <translation id="6235460611964961764">Reset penggunaan data secara manual</translation>
@@ -813,7 +808,6 @@
 <translation id="7481312909269577407">Maju</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">Alamat MAC</translation>
-<translation id="7491478667760509108">Keluar dari status mengambang</translation>
 <translation id="7497215489070763236">Sertifikat CA server</translation>
 <translation id="7501957181231305652">atau</translation>
 <translation id="7502658306369382406">Alamat IPv6</translation>
@@ -833,7 +827,6 @@
 <translation id="763165478673169849">Waktu Reset Terakhir</translation>
 <translation id="7633068090678117093">Gambar latar</translation>
 <translation id="7648838807254605802">Latensi HTTPS tinggi</translation>
-<translation id="765159867434478292">Pisahkan</translation>
 <translation id="7656388927906093505">Perangkat adalah mouse.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7665800271478495366">Ubah avatar</translation>
@@ -864,7 +857,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Jenis penyedia</translation>
 <translation id="7882501334836096755">Kunci publik</translation>
-<translation id="78957024357676568">ke kiri</translation>
 <translation id="7915220255123750251">Kelola setelan APN jaringan. APN membuat koneksi antara jaringan seluler dan internet.</translation>
 <translation id="7936303884198020182">Tidak ada server nama yang ditemukan</translation>
 <translation id="7942349550061667556">Merah</translation>
@@ -902,7 +894,6 @@
 <translation id="8183974620058026102">Lampirkan</translation>
 <translation id="8206859287963243715">Seluler</translation>
 <translation id="8208861521865154048">Keuntungan</translation>
-<translation id="8210733748736414123">bawah</translation>
 <translation id="8226628635270268143">Pilih foto dan album favorit</translation>
 <translation id="8227119283605456246">Lampirkan file</translation>
 <translation id="8230672074305416752">Gagal melakukan ping ke gateway jaringan default</translation>
@@ -1003,7 +994,6 @@
 <translation id="8936793075252196307">Alamat IP klien</translation>
 <translation id="8944651180182756621">Warna peluncur</translation>
 <translation id="894617464444543719">Perangkat adalah ponsel.</translation>
-<translation id="8957423540740801332">ke kanan</translation>
 <translation id="8968751544471797276">Kecepatan pengisian daya</translation>
 <translation id="8970109610781093811">Jalankan lagi</translation>
 <translation id="8983038754672563810">HSPA</translation>
