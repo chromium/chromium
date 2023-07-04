@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_INVITATIONS_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_INVITATIONS_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_SHARING_INVITATIONS_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_SHARING_INVITATIONS_H_
 
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
@@ -57,4 +57,4 @@ std::ostream& operator<<(std::ostream& os,
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_INVITATIONS_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_SHARING_INVITATIONS_H_
