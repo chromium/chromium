@@ -2629,7 +2629,7 @@ void CrostiniManager::OnContainerStarted(
         container_id,
         base::BindOnce(
             &CrostiniManager::DeallocateForwardedPortsCallback,
-            weak_ptr_factory_.GetWeakPtr(), profile_,
+            weak_ptr_factory_.GetWeakPtr(),
             guest_os::GuestId(kCrostiniDefaultVmType, signal.vm_name(),
                               signal.container_name())));
   }
@@ -3798,9 +3798,8 @@ void CrostiniManager::RemoveUncleanSshfsMounts() {
 }
 
 void CrostiniManager::DeallocateForwardedPortsCallback(
-    Profile* profile,
     const guest_os::GuestId& container_id) {
-  crostini::CrostiniPortForwarder::GetForProfile(profile)
+  crostini::CrostiniPortForwarder::GetForProfile(profile_)
       ->DeactivateAllActivePorts(container_id);
 }
 
