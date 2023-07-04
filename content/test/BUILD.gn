@@ -1541,6 +1541,7 @@ test("content_browsertests") {
     "../browser/tracing/memory_tracing_browsertest.cc",
     "../browser/tracing/startup_tracing_browsertest.cc",
     "../browser/tracing/tracing_controller_browsertest.cc",
+    "../browser/tracing/tracing_end_to_end_browsertest.cc",
     "../browser/usb/usb_browsertest.cc",
     "../browser/utility_process_host_browsertest.cc",
     "../browser/vibration_browsertest.cc",
