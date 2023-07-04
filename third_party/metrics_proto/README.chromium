@@ -4,7 +4,9 @@ URL: This is the canonical public repository
 Version: 537929221
 Date: 2023/06/05 UTC
 License: BSD
+License File: LICENSE
 Security Critical: Yes
+Shipped: yes
 
 Description:
 This package contains the protos that are used to upload metrics data to Google.
