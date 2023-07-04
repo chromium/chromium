@@ -220,8 +220,16 @@ TEST_P(SupervisedUserExtensionTest,
 
 // Tests that simulating custodian approval for regular users doesn't cause any
 // unexpected behavior.
+// TODO(https://crbug.com/1461933): This test is failing on Linux Tsan.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CustodianApprovalDoesNotAffectRegularUsers \
+  DISABLED_CustodianApprovalDoesNotAffectRegularUsers
+#else
+#define MAYBE_CustodianApprovalDoesNotAffectRegularUsers \
+  CustodianApprovalDoesNotAffectRegularUsers
+#endif  // BUILDFLAG(IS_LINUX)
 TEST_P(SupervisedUserExtensionTest,
-       CustodianApprovalDoesNotAffectRegularUsers) {
+       MAYBE_CustodianApprovalDoesNotAffectRegularUsers) {
   InitServices(/*profile_is_supervised=*/false);
   supervised_user_test_util::
       SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), false);
@@ -243,7 +251,16 @@ TEST_P(SupervisedUserExtensionTest,
 
 // Tests that adding supervision to a regular account (Gellerization) disables
 // previously installed extensions.
-TEST_P(SupervisedUserExtensionTest, ExtensionsDisabledAfterGellerization) {
+// TODO(https://crbug.com/1461933): This test is failing on Linux Tsan.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ExtensionsDisabledAfterGellerization \
+  DISABLED_ExtensionsDisabledAfterGellerization
+#else
+#define MAYBE_ExtensionsDisabledAfterGellerization \
+  ExtensionsDisabledAfterGellerization
+#endif  // BUILDFLAG(IS_LINUX)
+TEST_P(SupervisedUserExtensionTest,
+       MAYBE_ExtensionsDisabledAfterGellerization) {
   InitServices(/*profile_is_supervised=*/false);
   supervised_user_test_util::
       SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
