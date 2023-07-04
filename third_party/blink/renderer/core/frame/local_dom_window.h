@@ -535,6 +535,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   bool HadActivationlessPaymentRequest() const;
   void SetHadActivationlessPaymentRequest();
 
+  void maximize();
   void minimize();
 
  protected:

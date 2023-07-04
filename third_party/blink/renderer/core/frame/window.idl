@@ -54,6 +54,7 @@
     void stop();
     [CrossOrigin, CallWith=Isolate] void focus();
     [CrossOrigin] void blur();
+    [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls] void maximize();
     [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls] void minimize();
 
     // other browsing contexts

@@ -12476,6 +12476,7 @@ namespace console
     method getScreenDetails
     method getSelection
     method matchMedia
+    method maximize
     method minimize
     method moveBy
     method moveTo

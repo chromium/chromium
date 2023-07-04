@@ -2505,6 +2505,11 @@ void LocalDOMWindow::SetHadActivationlessPaymentRequest() {
   had_activationless_payment_request_ = true;
 }
 
+void LocalDOMWindow::maximize() {
+  // TODO(isandrk): API is WIP. Explainer link:
+  // https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
+}
+
 void LocalDOMWindow::minimize() {
   if (!GetFrame() || !GetFrame()->IsOutermostMainFrame() ||
       GetFrame()->GetPage()->IsPrerendering()) {
