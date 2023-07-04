@@ -10,7 +10,9 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cros_components/lottie_renderer/lottie-renderer.js';
 import './oobe_icons.html.js';
 
+import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
 import {traceOobeLottieExecution} from '../../oobe_trace.js';
 
@@ -59,6 +61,15 @@ export class OobeCrLottie extends OobeCrLottieBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Whether or not the illustration should render using a dynamic palette.
+       * nuke this property when all animation migrated.
+       */
+      dynamic: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -89,8 +100,26 @@ export class OobeCrLottie extends OobeCrLottieBase {
     this.animationPlayer = document.createElement('cros-lottie-renderer');
     this.animationPlayer.id = 'animation';
     this.animationPlayer.setAttribute('asset-url', this.animationUrl);
+    this.animationPlayer.setAttribute('dynamic', this.dynamic);
     this.animationPlayer.autoplay = autoplay;
     this.$.container.insertBefore(this.animationPlayer, this.$.playPauseIcon);
+    if (loadTimeData.getBoolean('isOobeJellyEnabled')) {
+      ColorChangeUpdater.forDocument().eventTarget.addEventListener(
+          COLOR_PROVIDER_CHANGED, () => this.onColorChange());
+    } else {
+      // When jelly is disabled we don't get colorChange events for light/dark
+      // mode changes.
+      const lightDarkMQL = window.matchMedia('(prefers-color-scheme: light)');
+      lightDarkMQL.addEventListener('change', async () => {
+        await ColorChangeUpdater.forDocument().onColorProviderChanged();
+        this.onColorChange();
+      });
+    }
+  }
+
+  async onColorChange() {
+    await this.animationPlayer.refreshAnimationColors();
+    this.onPlayingChanged_();
   }
 
   // Update the URL on the player if one exists, otherwise it will be updated
