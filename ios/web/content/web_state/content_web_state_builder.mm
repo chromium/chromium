@@ -94,7 +94,7 @@ void ExtractContentSessionStorage(ContentWebState* web_state,
 }
 
 CRWSessionStorage* BuildContentSessionStorage(
-    ContentWebState* web_state,
+    const ContentWebState* web_state,
     ContentNavigationManager* navigation_manager) {
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
   session_storage.lastActiveTime = web_state->GetLastActiveTime();
