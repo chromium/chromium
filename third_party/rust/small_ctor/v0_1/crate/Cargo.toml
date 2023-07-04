@@ -12,10 +12,15 @@
 [package]
 edition = "2018"
 name = "small_ctor"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Armin Ronacher <armin.ronacher@active-4.com>"]
 description = "A minimal, dependency free version of the ctor crate"
-keywords = ["ctor", "attribute", "constructor"]
+readme = "README.md"
+keywords = [
+    "ctor",
+    "attribute",
+    "constructor",
+]
 license = "Apache-2.0"
 repository = "https://github.com/mitsuhiko/small-ctor"
 

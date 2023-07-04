@@ -1,6 +1,6 @@
 [package]
 name = "small_ctor"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2018"
 authors = ["Armin Ronacher <armin.ronacher@active-4.com>"]
 license = "Apache-2.0"

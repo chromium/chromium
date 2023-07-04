@@ -18,7 +18,7 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
-  cargo_pkg_version = "0.1.0"
+  cargo_pkg_version = "0.1.1"
   cargo_pkg_authors = "Armin Ronacher <armin.ronacher@active-4.com>"
   cargo_pkg_name = "small_ctor"
   cargo_pkg_description = "A minimal, dependency free version of the ctor crate"
