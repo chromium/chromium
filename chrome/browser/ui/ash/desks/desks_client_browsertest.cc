@@ -2738,7 +2738,8 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, DeleteSavedDesk) {
 }
 
 // Tests recall a saved desk from library.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, RecallSavedDesk) {
+// TODO(crbug.com/1461959): Flaky on linux-chromeos-chrome.
+IN_PROC_BROWSER_TEST_P(DesksClientTest, DISABLED_RecallSavedDesk) {
   auto* desk_model = DesksClient::Get()->GetDeskModel();
   EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 1);
 
