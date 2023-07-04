@@ -194,6 +194,12 @@ class WebState : public base::SupportsUserData {
   virtual WebStateDelegate* GetDelegate() = 0;
   virtual void SetDelegate(WebStateDelegate* delegate) = 0;
 
+  // Clones the current WebState. The newly returned WebState is realized and
+  // is a copy to the current instance but will have distinct identifiers. It
+  // is used to implement prerendering or preview as this allow to have a new
+  // WebState that shares the same navigation history.
+  virtual std::unique_ptr<WebState> Clone() const = 0;
+
   // Returns whether the WebState is realized.
   //
   // What does "realized" mean? When creating a WebState from session storage
@@ -307,7 +313,7 @@ class WebState : public base::SupportsUserData {
 
   // Creates a serializable representation of the session. The returned value
   // is autoreleased.
-  virtual CRWSessionStorage* BuildSessionStorage() = 0;
+  virtual CRWSessionStorage* BuildSessionStorage() const = 0;
 
   // Loads `data` of type `mime_type` and replaces last committed URL with the
   // given `url`.

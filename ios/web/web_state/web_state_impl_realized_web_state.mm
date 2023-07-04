@@ -4,10 +4,6 @@
 
 #import "ios/web/web_state/web_state_impl_realized_web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "base/check.h"
 #import "base/compiler_specific.h"
 #import "base/functional/bind.h"
@@ -47,6 +43,10 @@
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 #import "url/url_constants.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace web {
 namespace {
@@ -604,7 +604,7 @@ void WebStateImpl::RealizedWebState::Stop() {
   [web_controller_ stopLoading];
 }
 
-CRWSessionStorage* WebStateImpl::RealizedWebState::BuildSessionStorage() {
+CRWSessionStorage* WebStateImpl::RealizedWebState::BuildSessionStorage() const {
   [web_controller_ recordStateInHistory];
   if (restored_session_storage_) {
     // UserData can be updated in an uncommitted WebState. Even if a WebState

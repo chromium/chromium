@@ -681,20 +681,10 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
     return;
   }
 
-  // Use web::WebState::CreateWithStorageSession to clone the
-  // webStateToReplace navigation history. This may create an
-  // unrealized WebState, however, PreloadController needs a realized
-  // one, so force the realization.
-  // TODO(crbug.com/1291626): remove when there is a way to
-  // clone a WebState navigation history.
-  web::WebState::CreateParams createParams(self.browserState);
-  createParams.last_active_time = base::Time::Now();
-  _webState = web::WebState::CreateWithStorageSession(
-      createParams, webStateToReplace->BuildSessionStorage());
-  // Do not trigger a CheckForOverRealization here, as it's expected
-  // that typing fast may trigger multiple prerenders.
-  web::IgnoreOverRealizationCheck();
-  _webState->ForceRealized();
+  // To avoid losing the navigation history when the user navigates to the
+  // pre-rendered tab, clone the tab that will be replaced, and start the
+  // pre-rendered navigation in the new tab.
+  _webState = webStateToReplace->Clone();
 
   // Add the preload controller as a policyDecider before other tab helpers, so
   // that it can block the navigation if needed before other policy deciders

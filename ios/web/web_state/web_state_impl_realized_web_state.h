@@ -166,7 +166,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   SessionID GetUniqueIdentifier() const;
   void OpenURL(const WebState::OpenURLParams& params);
   void Stop();
-  CRWSessionStorage* BuildSessionStorage();
+  CRWSessionStorage* BuildSessionStorage() const;
   void LoadData(NSData* data, NSString* mime_type, const GURL& url);
   void ExecuteUserJavaScript(NSString* javaScript);
   const std::string& GetContentsMimeType() const;

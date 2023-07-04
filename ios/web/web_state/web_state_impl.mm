@@ -348,6 +348,22 @@ void WebStateImpl::SetDelegate(WebStateDelegate* delegate) {
   RealizedState()->SetDelegate(delegate);
 }
 
+std::unique_ptr<WebState> WebStateImpl::Clone() const {
+  CreateParams params(GetBrowserState());
+  params.last_active_time = base::Time::Now();
+
+  CRWSessionStorage* session_storage = BuildSessionStorage();
+  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
+  session_storage.uniqueIdentifier = SessionID::NewUnique();
+  auto clone = std::make_unique<WebStateImpl>(params, session_storage);
+
+  // It is okay to clone a WebState.
+  IgnoreOverRealizationCheck();
+  clone->ForceRealized();
+
+  return clone;
+}
+
 bool WebStateImpl::IsRealized() const {
   return !!pimpl_;
 }
@@ -494,7 +510,7 @@ WebStateImpl::GetSessionCertificatePolicyCache() {
   return &RealizedState()->GetSessionCertificatePolicyCache();
 }
 
-CRWSessionStorage* WebStateImpl::BuildSessionStorage() {
+CRWSessionStorage* WebStateImpl::BuildSessionStorage() const {
   return LIKELY(pimpl_) ? pimpl_->BuildSessionStorage()
                         : saved_->GetSessionStorage();
 }

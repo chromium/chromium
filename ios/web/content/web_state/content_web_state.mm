@@ -147,6 +147,18 @@ WebStateDelegate* ContentWebState::GetDelegate() {
   return nullptr;
 }
 
+std::unique_ptr<WebState> ContentWebState::Clone() const {
+  CreateParams params(GetBrowserState());
+  params.last_active_time = base::Time::Now();
+  CRWSessionStorage* session_storage = BuildSessionStorage();
+  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
+  session_storage.uniqueIdentifier = SessionID::NewUnique();
+  auto clone = std::make_unique<ContentWebState>(params, session_storage);
+  IgnoreOverRealizationCheck();
+  clone->ForceRealized();
+  return clone;
+}
+
 void ContentWebState::SetDelegate(WebStateDelegate* delegate) {
   if (delegate == delegate_) {
     return;
@@ -255,7 +267,7 @@ ContentWebState::GetSessionCertificatePolicyCache() {
   return certificate_policy_cache_.get();
 }
 
-CRWSessionStorage* ContentWebState::BuildSessionStorage() {
+CRWSessionStorage* ContentWebState::BuildSessionStorage() const {
   if (session_storage_) {
     return session_storage_;
   }
