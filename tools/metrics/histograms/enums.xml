@@ -56965,11 +56965,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="Device is idle"/>
 </enum>
 
-<enum name="KmsVncMethodEnum">
-  <int value="1" label="EGL"/>
-  <int value="2" label="BO"/>
-</enum>
-
 <enum name="KoreanAction">
   <summary>Actions that are available on the Korean IME.</summary>
   <int value="0" label="Unknown"/>

@@ -912,16 +912,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.KmsVncMethod" enum="KmsVncMethodEnum"
-    expires_after="2022-02-02">
-  <owner>uekawa@chromium.org</owner>
-  <owner>shaochuan@chromium.org</owner>
-  <summary>
-    KmsVnc graphics method in use, depending on command line flags and
-    auto-detected kernel graphics features. Recorded at start up of VNC server.
-  </summary>
-</histogram>
-
 <histogram name="Platform.Libhwsec.RetryAction{Category}"
     enum="HwsecRetryActionEnum" expires_after="2023-12-19">
   <owner>yich@google.com</owner>
