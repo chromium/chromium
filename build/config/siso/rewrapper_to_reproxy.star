@@ -10,6 +10,7 @@ load("@builtin//struct.star", "module")
 load("./config.star", "config")
 load("./mojo.star", "mojo")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
+load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 
 __filegroups = {}
 
@@ -63,16 +64,12 @@ def __rewrite_clang_code_coverage_wrapper(ctx, cmd):
     #   -exec_root: Siso already knows this.
     rewrapper_pos = -1
     wrapped_command_pos = -1
-    coverage_wrapper_inputs = []
     cfg_file = None
     for i, arg in enumerate(cmd.args):
         if i < 2:
             continue
         if rewrapper_pos == -1 and not arg.startswith("-"):
             rewrapper_pos = i
-            continue
-        if rewrapper_pos == -1 and arg.startswith("--files-to-instrument="):
-            coverage_wrapper_inputs.append(ctx.fs.canonpath(arg.removeprefix("--files-to-instrument=")))
             continue
         if rewrapper_pos > 0 and arg.startswith("-cfg="):
             cfg_file = ctx.fs.canonpath(arg.removeprefix("-cfg="))
@@ -86,9 +83,11 @@ def __rewrite_clang_code_coverage_wrapper(ctx, cmd):
         fail("couldn't find first non-arg passed to rewrapper for %s" % str(cmd.args))
     if not cfg_file:
         fail("couldn't find rewrapper cfg file in %s" % str(cmd.args))
+    coverage_wrapper_command = cmd.args[:rewrapper_pos] + cmd.args[wrapped_command_pos:]
+    clang_command = clang_code_coverage_wrapper.run(ctx, list(coverage_wrapper_command))
+
     ctx.actions.fix(
-        args = cmd.args[:rewrapper_pos] + cmd.args[wrapped_command_pos:],
-        tool_inputs = cmd.tool_inputs + coverage_wrapper_inputs,
+        args = clang_command,
         reproxy_config = json.encode(rewrapper_cfg.parse(ctx, cfg_file)),
     )
 
@@ -156,8 +155,7 @@ def __step_config(ctx, step_config):
             # TODO(b/278225415): change gn so this wrapper (and by extension this rule) becomes unnecessary.
             "name": "clang-coverage/cxx",
             "command_prefix": "\"python3\" ../../build/toolchain/clang_code_coverage_wrapper.py",
-            # Fall back to rewrapper for now until reclient can recognize clang_code_coverage_wrapper during input processing.
-            "use_remote_exec_wrapper": True,
+            "handler": "rewrite_clang_code_coverage_wrapper",
         },
         {
             # TODO(b/278225415): change gn so this wrapper (and by extension this rule) becomes unnecessary.
