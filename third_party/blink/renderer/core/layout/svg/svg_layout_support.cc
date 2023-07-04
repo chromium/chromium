@@ -203,9 +203,8 @@ void SVGLayoutSupport::MapLocalToAncestor(const LayoutObject* object,
   // localToBorderBoxTransform to map an element from SVG viewport coordinates
   // to CSS box coordinates.
   // LayoutSVGRoot's mapLocalToAncestor method expects CSS box coordinates.
-  if (parent->IsSVGRoot()) {
-    transform_state.ApplyTransform(
-        To<LayoutSVGRoot>(parent)->LocalToBorderBoxTransform());
+  if (auto* svg_root = DynamicTo<LayoutSVGRoot>(*parent)) {
+    transform_state.ApplyTransform(svg_root->LocalToBorderBoxTransform());
   }
 
   parent->MapLocalToAncestor(ancestor, transform_state, flags);
@@ -234,10 +233,12 @@ void SVGLayoutSupport::MapAncestorToLocal(const LayoutObject& object,
 bool SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(
     const LayoutObject* start) {
   for (; start; start = start->Parent()) {
-    if (start->IsSVGRoot())
-      return To<LayoutSVGRoot>(start)->IsLayoutSizeChanged();
-    if (start->IsSVGViewportContainer())
-      return To<LayoutSVGViewportContainer>(start)->IsLayoutSizeChanged();
+    if (auto* svg_root = DynamicTo<LayoutSVGRoot>(*start)) {
+      return svg_root->IsLayoutSizeChanged();
+    }
+    if (auto* svg_viewport = DynamicTo<LayoutSVGViewportContainer>(*start)) {
+      return svg_viewport->IsLayoutSizeChanged();
+    }
   }
   NOTREACHED();
   return false;
@@ -245,14 +246,16 @@ bool SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(
 
 bool SVGLayoutSupport::ScreenScaleFactorChanged(const LayoutObject* ancestor) {
   for (; ancestor; ancestor = ancestor->Parent()) {
-    if (ancestor->IsSVGRoot())
-      return To<LayoutSVGRoot>(ancestor)->DidScreenScaleFactorChange();
-    if (ancestor->IsSVGTransformableContainer())
-      return To<LayoutSVGTransformableContainer>(ancestor)
-          ->DidScreenScaleFactorChange();
-    if (ancestor->IsSVGViewportContainer())
-      return To<LayoutSVGViewportContainer>(ancestor)
-          ->DidScreenScaleFactorChange();
+    if (auto* svg_root = DynamicTo<LayoutSVGRoot>(*ancestor)) {
+      return svg_root->DidScreenScaleFactorChange();
+    }
+    if (auto* svg_transformable =
+            DynamicTo<LayoutSVGTransformableContainer>(*ancestor)) {
+      return svg_transformable->DidScreenScaleFactorChange();
+    }
+    if (auto* svg_viewport = DynamicTo<LayoutSVGViewportContainer>(*ancestor)) {
+      return svg_viewport->DidScreenScaleFactorChange();
+    }
   }
   NOTREACHED();
   return false;
@@ -318,13 +321,13 @@ bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
                                           const gfx::RectF& reference_box,
                                           const HitTestLocation& location) {
   ClipPathOperation* clip_path_operation = object.StyleRef().ClipPath();
-  if (!clip_path_operation)
+  if (!clip_path_operation) {
     return true;
-  if (clip_path_operation->GetType() == ClipPathOperation::kShape) {
-    ShapeClipPathOperation& clip_path =
-        To<ShapeClipPathOperation>(*clip_path_operation);
+  }
+  if (auto* shape_clip =
+          DynamicTo<ShapeClipPathOperation>(*clip_path_operation)) {
     float zoom = object.StyleRef().EffectiveZoom();
-    return clip_path.GetPath(gfx::ScaleRect(reference_box, zoom), zoom)
+    return shape_clip->GetPath(gfx::ScaleRect(reference_box, zoom), zoom)
         .Transform(AffineTransform::MakeScale(1.f / zoom))
         .Contains(location.TransformedPoint());
   }
@@ -375,8 +378,8 @@ void SVGLayoutSupport::ApplyStrokeStyleToStrokeData(StrokeData& stroke_data,
 bool SVGLayoutSupport::IsLayoutableTextNode(const LayoutObject* object) {
   DCHECK(object->IsText());
   // <br> is marked as text, but is not handled by the SVG layout code-path.
-  return object->IsSVGInlineText() &&
-         !To<LayoutSVGInlineText>(object)->HasEmptyText();
+  const auto* svg_inline_text = DynamicTo<LayoutSVGInlineText>(object);
+  return svg_inline_text && !svg_inline_text->HasEmptyText();
 }
 
 bool SVGLayoutSupport::WillIsolateBlendingDescendantsForStyle(
