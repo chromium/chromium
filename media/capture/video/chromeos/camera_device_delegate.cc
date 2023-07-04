@@ -1012,8 +1012,8 @@ void CameraDeviceDelegate::ConfigureStreams(
     }
     stream_config->streams.push_back(std::move(still_capture_stream));
 
-    if (camera_app_device->GetCaptureIntent() ==
-        cros::mojom::CaptureIntent::PORTRAIT_CAPTURE) {
+    if (camera_app_device && camera_app_device->GetCaptureIntent() ==
+                                 cros::mojom::CaptureIntent::PORTRAIT_CAPTURE) {
       auto portrait_mode_stream = cros::mojom::Camera3Stream::New();
       portrait_mode_stream->id =
           static_cast<uint64_t>(StreamType::kPortraitJpegOutput);
