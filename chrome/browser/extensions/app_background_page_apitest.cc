@@ -513,7 +513,13 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, OpenPopupFromBGPage) {
 
 // Partly a regression test for crbug.com/756465. Namely, that window.open
 // correctly matches an app URL with a path component.
-IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, OpenThenClose) {
+// Flaky on Chrome OS https://crbug.com/1462141.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OpenThenClose DISABLED_OpenThenClose
+#else
+#define MAYBE_OpenThenClose OpenThenClose
+#endif
+IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_OpenThenClose) {
   std::string app_manifest = base::StringPrintf(
       "{"
       "  \"name\": \"App\","
