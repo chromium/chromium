@@ -218,7 +218,6 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 crbug.com/1311760 [ Mac ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-paths-in-worker.html [ Failure ]
 
 # These tests are tentatively disabled.
-crbug.com/1302831 external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Skip Timeout ]
 crbug.com/1302831 wpt_internal/prerender/restriction-web-auth.https.html [ Crash Failure Pass Timeout ]
 crbug.com/1302831 [ Win10.20h2 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Pass Timeout ]
 
