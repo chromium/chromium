@@ -8,10 +8,11 @@
 
 #include <memory>
 
-@interface BridgedNativeWindowTracker : NSObject {
- @private
-  NSWindow* _window;
-}
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+@interface BridgedNativeWindowTracker : NSObject
 
 - (instancetype)initWithNSWindow:(NSWindow*)window;
 - (bool)wasNSWindowClosed;
@@ -19,21 +20,21 @@
 
 @end
 
-@implementation BridgedNativeWindowTracker
+@implementation BridgedNativeWindowTracker {
+  NSWindow* __weak _window;
+}
 
 - (instancetype)initWithNSWindow:(NSWindow*)window {
   _window = window;
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self
-             selector:@selector(onWindowWillClose:)
-                 name:NSWindowWillCloseNotification
-               object:_window];
+  [NSNotificationCenter.defaultCenter addObserver:self
+                                         selector:@selector(onWindowWillClose:)
+                                             name:NSWindowWillCloseNotification
+                                           object:_window];
   return self;
 }
 
 - (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [super dealloc];
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (bool)wasNSWindowClosed {
@@ -41,7 +42,7 @@
 }
 
 - (void)onWindowWillClose:(NSNotification*)notification {
-  [[NSNotificationCenter defaultCenter]
+  [NSNotificationCenter.defaultCenter
       removeObserver:self
                 name:NSWindowWillCloseNotification
               object:_window];
@@ -52,16 +53,21 @@
 
 namespace views {
 
+struct NativeWindowTrackerCocoa::ObjCStorage {
+  BridgedNativeWindowTracker* __strong tracker;
+};
+
 NativeWindowTrackerCocoa::NativeWindowTrackerCocoa(
-    gfx::NativeWindow native_window) {
-  NSWindow* window = native_window.GetNativeNSWindow();
-  bridge_.reset([[BridgedNativeWindowTracker alloc] initWithNSWindow:window]);
+    gfx::NativeWindow native_window)
+    : objc_storage_(std::make_unique<ObjCStorage>()) {
+  objc_storage_->tracker = [[BridgedNativeWindowTracker alloc]
+      initWithNSWindow:native_window.GetNativeNSWindow()];
 }
 
-NativeWindowTrackerCocoa::~NativeWindowTrackerCocoa() {}
+NativeWindowTrackerCocoa::~NativeWindowTrackerCocoa() = default;
 
 bool NativeWindowTrackerCocoa::WasNativeWindowDestroyed() const {
-  return [bridge_ wasNSWindowClosed];
+  return [objc_storage_->tracker wasNSWindowClosed];
 }
 
 // static

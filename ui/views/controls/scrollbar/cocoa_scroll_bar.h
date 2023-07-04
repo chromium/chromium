@@ -5,13 +5,16 @@
 #ifndef UI_VIEWS_CONTROLS_SCROLLBAR_COCOA_SCROLL_BAR_H_
 #define UI_VIEWS_CONTROLS_SCROLLBAR_COCOA_SCROLL_BAR_H_
 
-#import "base/mac/scoped_nsobject.h"
 #include "base/timer/timer.h"
 #import "components/remote_cocoa/app_shim/views_scrollbar_bridge.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/views_export.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace views {
 
@@ -129,7 +132,7 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
   bool did_start_dragging_ = false;
 
   // The bridge for NSScroller.
-  base::scoped_nsobject<ViewsScrollbarBridge> bridge_;
+  ViewsScrollbarBridge* __strong bridge_;
 };
 
 }  // namespace views

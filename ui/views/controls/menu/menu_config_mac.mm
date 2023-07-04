@@ -10,6 +10,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/platform_font_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 void InitMaterialMenuConfig(views::MenuConfig* config) {

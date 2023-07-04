@@ -83,7 +83,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
       gfx::NativeWindow window);
 
   // Create an NSWindow for the specified parameters.
-  static base::scoped_nsobject<NativeWidgetMacNSWindow> CreateNSWindow(
+  static NativeWidgetMacNSWindow* CreateNSWindow(
       const remote_cocoa::mojom::CreateWindowParams* params);
 
   // Creates one side of the bridge. |host| and |parent| must not be NULL.
@@ -106,11 +106,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
                         remote_cocoa::mojom::NativeWidgetNSWindow> receiver,
                     base::OnceClosure connection_closed_callback);
 
-  // Initialize the NSWindow by taking ownership of the specified object.
-  // TODO(ccameron): When a NativeWidgetNSWindowBridge is allocated across a
-  // process boundary, it will not be possible to explicitly set an NSWindow in
-  // this way.
-  void SetWindow(base::scoped_nsobject<NativeWidgetMacNSWindow> window);
+  // Initialize the NSWindow. TODO(ccameron): When a NativeWidgetNSWindowBridge
+  // is allocated across a process boundary, it will not be possible to
+  // explicitly set an NSWindow in this way.
+  void SetWindow(NativeWidgetMacNSWindow* window);
 
   // Set the command dispatcher delegate for the window. This will retain
   // |delegate| for the lifetime of |this|.

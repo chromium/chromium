@@ -4,6 +4,8 @@
 
 #include "ui/views/style/platform_style.h"
 
+#import <Cocoa/Cocoa.h>
+
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/buildflags.h"
@@ -11,7 +13,9 @@
 #include "ui/views/controls/button/label_button.h"
 #import "ui/views/controls/scrollbar/cocoa_scroll_bar.h"
 
-#import <Cocoa/Cocoa.h>
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 extern "C" {
 // From CFString private headers.

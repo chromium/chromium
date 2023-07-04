@@ -4,9 +4,9 @@
 
 #import "ui/views/controls/menu/menu_controller_cocoa_delegate_impl.h"
 
+#include "base/apple/bridging.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#import "base/mac/scoped_nsobject.h"
 #import "base/message_loop/message_pump_mac.h"
 #import "skia/ext/skia_utils_mac.h"
 #import "ui/base/cocoa/cocoa_base_utils.h"
@@ -21,6 +21,10 @@
 #include "ui/views/badge_painter.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/layout/layout_provider.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -47,7 +51,7 @@ NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
       color_provider->GetColor(ui::kColorBadgeInCocoaMenuForeground));
 
   NSDictionary* badge_attrs = @{
-    NSFontAttributeName : base::mac::CFToNSCast(badge_font.GetCTFont()),
+    NSFontAttributeName : base::apple::CFToNSPtrCast(badge_font.GetCTFont()),
     NSForegroundColorAttributeName : badge_text_color,
   };
 
@@ -137,23 +141,21 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
 // --- Private API end ---
 
 @implementation MenuControllerCocoaDelegateImpl {
-  base::scoped_nsobject<NSMutableArray> _menuObservers;
+  NSMutableArray* __strong _menuObservers;
   gfx::Rect _anchorRect;
 }
 
 - (instancetype)init {
   if (self = [super init]) {
-    _menuObservers.reset([[NSMutableArray alloc] init]);
+    _menuObservers = [[NSMutableArray alloc] init];
   }
   return self;
 }
 
 - (void)dealloc {
-  for (NSObject* obj in _menuObservers.get()) {
+  for (NSObject* obj in _menuObservers) {
     [NSNotificationCenter.defaultCenter removeObserver:obj];
   }
-
-  [super dealloc];
 }
 
 - (void)setAnchorRect:(gfx::Rect)rect {
@@ -165,8 +167,8 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
                       atIndex:(size_t)index
             withColorProvider:(const ui::ColorProvider*)colorProvider {
   if (model->IsNewFeatureAt(index)) {
-    NSTextAttachment* attachment =
-        [[[NSTextAttachment alloc] initWithData:nil ofType:nil] autorelease];
+    NSTextAttachment* attachment = [[NSTextAttachment alloc] initWithData:nil
+                                                                   ofType:nil];
     attachment.image = NewTagImage(colorProvider);
     NSSize newTagSize = attachment.image.size;
 
@@ -175,8 +177,8 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
     attachment.bounds = NSMakeRect(0, kBadgeBaselineOffset, newTagSize.width,
                                    newTagSize.height);
 
-    NSMutableAttributedString* attrTitle = [[[NSMutableAttributedString alloc]
-        initWithString:menuItem.title] autorelease];
+    NSMutableAttributedString* attrTitle =
+        [[NSMutableAttributedString alloc] initWithString:menuItem.title];
     [attrTitle
         appendAttributedString:[NSAttributedString
                                    attributedStringWithAttachment:attachment]];
@@ -250,7 +252,7 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
             // guess whether the menu should appear to the left or right of the
             // anchor, if the anchor is near one side of the screen the menu
             // could end up on the other side.
-            gfx::Rect screen_rect = _anchorRect;
+            gfx::Rect screen_rect = self->_anchorRect;
             CGSize menu_size = [menu_obj size];
             screen_rect.Inset(gfx::Insets::TLBR(
                 0, -menu_size.width, -menu_size.height, -menu_size.width));
@@ -278,7 +280,7 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
     };
 
     [_menuObservers
-        addObject:[[NSNotificationCenter defaultCenter]
+        addObject:[NSNotificationCenter.defaultCenter
                       addObserverForName:NSMenuDidBeginTrackingNotification
                                   object:menu
                                    queue:nil
@@ -307,7 +309,7 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
     };
 
     [_menuObservers
-        addObject:[[NSNotificationCenter defaultCenter]
+        addObject:[NSNotificationCenter.defaultCenter
                       addObserverForName:NSMenuDidEndTrackingNotification
                                   object:menu
                                    queue:nil

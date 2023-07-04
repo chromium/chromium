@@ -17,6 +17,10 @@
 #include "ui/events/event_observer.h"
 #include "ui/events/event_utils.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace views {
 
 // static
@@ -38,7 +42,7 @@ std::unique_ptr<EventMonitor> EventMonitor::CreateWindowMonitor(
 }
 
 struct EventMonitorMac::ObjCStorage {
-  id monitor = nil;
+  id __strong monitor = nil;
 };
 
 EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,

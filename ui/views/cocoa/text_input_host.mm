@@ -10,6 +10,10 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 // Returns the boundary rectangle for composition characters in the

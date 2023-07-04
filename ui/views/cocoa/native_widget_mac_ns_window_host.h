@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
@@ -29,6 +28,10 @@
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_observer.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class NativeWidgetMacNSWindow;
 @class NSAccessibilityRemoteUIElement;
@@ -453,9 +456,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   // Remote accessibility objects corresponding to the NSWindow and its root
   // NSView.
-  base::scoped_nsobject<NSAccessibilityRemoteUIElement>
-      remote_window_accessible_;
-  base::scoped_nsobject<NSAccessibilityRemoteUIElement> remote_view_accessible_;
+  NSAccessibilityRemoteUIElement* __strong remote_window_accessible_;
+  NSAccessibilityRemoteUIElement* __strong remote_view_accessible_;
 
   // Used to force the NSApplication's focused accessibility element to be the
   // views::Views accessibility tree when the NSView for this is focused.
@@ -469,7 +471,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   // Window that is guaranteed to exist in this process (see
   // GetInProcessNSWindow).
-  base::scoped_nsobject<NativeWidgetMacNSWindow> in_process_ns_window_;
+  NativeWidgetMacNSWindow* __strong in_process_ns_window_;
 
   // Id mapping for |in_process_ns_window_|'s content NSView.
   std::unique_ptr<remote_cocoa::ScopedNSViewIdMapping>

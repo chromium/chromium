@@ -671,6 +671,7 @@ component("views") {
       "windows_stationarity_monitor_mac.mm",
     ]
     public_deps += [ "//components/remote_cocoa/common:mojo" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
     deps += [
       "//components/crash/core/common",
       "//components/remote_cocoa/app_shim",

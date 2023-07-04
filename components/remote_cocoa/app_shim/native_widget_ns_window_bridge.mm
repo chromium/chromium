@@ -263,40 +263,42 @@ NativeWidgetNSWindowBridge* NativeWidgetNSWindowBridge::GetFromNativeWindow(
 }
 
 // static
-base::scoped_nsobject<NativeWidgetMacNSWindow>
-NativeWidgetNSWindowBridge::CreateNSWindow(
+NativeWidgetMacNSWindow* NativeWidgetNSWindowBridge::CreateNSWindow(
     const mojom::CreateWindowParams* params) {
-  base::scoped_nsobject<NativeWidgetMacNSWindow> ns_window;
+  NativeWidgetMacNSWindow* ns_window;
   switch (params->window_class) {
     case mojom::WindowClass::kDefault:
-      ns_window.reset([[NativeWidgetMacNSWindow alloc]
+      ns_window = [[[NativeWidgetMacNSWindow alloc]
           initWithContentRect:ui::kWindowSizeDeterminedLater
                     styleMask:params->style_mask
                       backing:NSBackingStoreBuffered
-                        defer:NO]);
+                        defer:NO] autorelease];
       break;
     case mojom::WindowClass::kBrowser:
-      ns_window.reset([[BrowserNativeWidgetWindow alloc]
+      ns_window = [[[BrowserNativeWidgetWindow alloc]
           initWithContentRect:ui::kWindowSizeDeterminedLater
                     styleMask:params->style_mask
                       backing:NSBackingStoreBuffered
-                        defer:NO]);
+                        defer:NO] autorelease];
       break;
     case mojom::WindowClass::kFrameless:
-      ns_window.reset([[NativeWidgetMacFramelessNSWindow alloc]
+      ns_window = [[[NativeWidgetMacFramelessNSWindow alloc]
           initWithContentRect:ui::kWindowSizeDeterminedLater
                     styleMask:params->style_mask
                       backing:NSBackingStoreBuffered
-                        defer:NO]);
+                        defer:NO] autorelease];
       break;
   }
 
-  if (params->titlebar_appears_transparent)
-    [ns_window setTitlebarAppearsTransparent:YES];
-  if (params->window_title_hidden)
-    [ns_window setTitleVisibility:NSWindowTitleHidden];
-  if (params->animation_enabled)
-    [ns_window setAnimationBehavior:NSWindowAnimationBehaviorDocumentWindow];
+  if (params->titlebar_appears_transparent) {
+    ns_window.titlebarAppearsTransparent = YES;
+  }
+  if (params->window_title_hidden) {
+    ns_window.titleVisibility = NSWindowTitleHidden;
+  }
+  if (params->animation_enabled) {
+    ns_window.animationBehavior = NSWindowAnimationBehaviorDocumentWindow;
+  }
 
   return ns_window;
 }
@@ -335,15 +337,14 @@ void NativeWidgetNSWindowBridge::BindReceiver(
       std::move(connection_closed_callback));
 }
 
-void NativeWidgetNSWindowBridge::SetWindow(
-    base::scoped_nsobject<NativeWidgetMacNSWindow> window) {
+void NativeWidgetNSWindowBridge::SetWindow(NativeWidgetMacNSWindow* window) {
   DCHECK(!window_);
   window_delegate_.reset(
       [[ViewsNSWindowDelegate alloc] initWithBridgedNativeWidget:this]);
-  window_ = std::move(window);
+  window_.reset([window retain]);
   [window_ setBridge:this];
   [window_ setBridgedNativeWidgetId:id_];
-  [window_ setReleasedWhenClosed:NO];  // Owned by scoped_nsobject.
+  [window_ setReleasedWhenClosed:NO];
   [window_ setDelegate:window_delegate_];
   ui::CATransactionCoordinator::Get().AddPreCommitObserver(this);
 }
