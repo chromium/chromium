@@ -6598,8 +6598,5 @@ crbug.com/1459560 [ Linux ] http/tests/devtools/profiler/heap-snapshot-location.
 # Remove when crbug.com/1453780 is fixed
 crbug.com/1453780 external/wpt/infrastructure/testdriver/test_win_open_with_interaction.html [ Failure Pass ]
 
-# Temporary disabled to change error message in V8.
-crbug.com/1459948 fast/js/JSON-parse.html [ Failure Pass ]
-
 # Sheriff 2023-07-04
 crbug.com/391068 http/tests/websocket/close-code-and-reason.html [ Failure Pass ]
