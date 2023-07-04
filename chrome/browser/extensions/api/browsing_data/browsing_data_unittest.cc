@@ -367,7 +367,8 @@ TEST_F(BrowsingDataApiTest, RemoveBrowsingDataAll) {
       content::BrowsingDataRemover::DATA_TYPE_COOKIES |
           (content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE &
            ~content::BrowsingDataRemover::DATA_TYPE_BACKGROUND_FETCH &
-           ~content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE) |
+           ~content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE &
+           ~content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS) |
           content::BrowsingDataRemover::DATA_TYPE_CACHE |
           content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
           chrome_browsing_data_remover::DATA_TYPE_FORM_DATA |
@@ -552,7 +553,8 @@ TEST_F(BrowsingDataApiTest, SettingsFunctionSiteData) {
       (content::BrowsingDataRemover::DATA_TYPE_COOKIES |
        content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE) &
       ~content::BrowsingDataRemover::DATA_TYPE_BACKGROUND_FETCH &
-      ~content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE;
+      ~content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE &
+      ~content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS;
   SetPrefsAndVerifySettings(content::BrowsingDataRemover::DATA_TYPE_COOKIES,
                             UNPROTECTED_WEB, supported_site_data);
   SetPrefsAndVerifySettings(
@@ -573,7 +575,8 @@ TEST_F(BrowsingDataApiTest, SettingsFunctionAssorted) {
       (content::BrowsingDataRemover::DATA_TYPE_COOKIES |
        content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE) &
       ~content::BrowsingDataRemover::DATA_TYPE_BACKGROUND_FETCH &
-      ~content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE;
+      ~content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE &
+      ~content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS;
 
   SetPrefsAndVerifySettings(
       content::BrowsingDataRemover::DATA_TYPE_COOKIES |

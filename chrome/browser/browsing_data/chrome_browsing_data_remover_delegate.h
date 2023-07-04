@@ -146,11 +146,12 @@ class ChromeBrowsingDataRemoverDelegate
     kWebAppHistory = 42,
     kWebAuthnCredentials = 43,
     kWebrtcVideoPerfHistory = 44,
+    kMediaDeviceSalts = 45,
 
     // Please update ChromeBrowsingDataRemoverTasks in enums.xml and
     // History.ClearBrowsingData.Duration.ChromeTask.{Task}
     // in histograms/metadata/history/histograms.xml when adding entries!
-    kMaxValue = kWebrtcVideoPerfHistory,
+    kMaxValue = kMediaDeviceSalts,
   };
 
   // Returns the suffix for the

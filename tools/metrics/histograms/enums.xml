@@ -15963,6 +15963,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="42" label="kWebAppHistory"/>
   <int value="43" label="kWebAuthnCredentials"/>
   <int value="44" label="kWebrtcVideoPerfHistory"/>
+  <int value="45" label="kMediaDeviceSalts"/>
 </enum>
 
 <enum name="ChromeChannelForHistogram">

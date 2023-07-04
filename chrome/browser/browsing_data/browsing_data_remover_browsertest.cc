@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, MediaDeviceIdSalt) {
       frame_host, site_for_cookies, storage_key, future.GetCallback());
   std::string original_salt = future.Get<1>();
 
-  RemoveAndWait(content::BrowsingDataRemover::DATA_TYPE_COOKIES);
+  RemoveAndWait(content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS);
 
   future.Clear();
   content::GetContentClientForTesting()->browser()->GetMediaDeviceIDSalt(
