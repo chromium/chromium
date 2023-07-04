@@ -162,6 +162,9 @@ bool SyncPrefs::HasKeepEverythingSynced() const {
 
 UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
     const signin::GaiaIdHash& gaia_id_hash) const {
+  CHECK(base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos))
+      << "Call GetSelectedTypes instead";
+
   UserSelectableTypeSet selected_types;
 
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
@@ -197,10 +200,6 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypes(
     SyncAccountState account_state) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1447020, crbug.com/1451509): When the migration logic is
-  // updated add a check here verifying this method never gets called when
-  // kReplaceSyncPromosWithSignInPromos is enabled and the account_state is
-  // kSignedInNotSyncing. Otherwise it will be reading from the wrong pref.
   UserSelectableTypeSet selected_types;
 
   switch (account_state) {
@@ -211,6 +210,9 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypes(
       for (UserSelectableType type : UserSelectableTypeSet::All()) {
         const char* pref_name = GetPrefNameForType(type);
         DCHECK(pref_name);
+        CHECK(!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos))
+            << "Call GetSelectedTypesForAccount instead";
+
         // TODO(crbug.com/1455963): Find a better solution than manually
         // overriding the prefs' default values.
         // TODO(crbug.com/1455963): This should return true by default only if
@@ -224,9 +226,7 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypes(
           // additional opt-in.
           // TODO(crbug.com/1440628): Cleanup the temporary behaviour of an
           // additional opt in for Bookmarks and Reading Lists.
-          if (!base::FeatureList::IsEnabled(
-                  kReplaceSyncPromosWithSignInPromos) &&
-              (type == UserSelectableType::kBookmarks ||
+          if ((type == UserSelectableType::kBookmarks ||
                type == UserSelectableType::kReadingList) &&
               !pref_service_->GetBoolean(
                   prefs::internal::
