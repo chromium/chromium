@@ -166,23 +166,13 @@ const CGFloat kSymbolToolbarPointSize = 24;
 }
 
 - (ToolbarButton*)openNewTabButton {
-  ToolbarButton* newTabButton;
-  if (@available(iOS 15, *)) {
-    NSString* symbolName = base::FeatureList::IsEnabled(kSFSymbolsFollowUp)
-                               ? kPlusCircleFillSymbol
-                               : kLegacyPlusCircleFillSymbol;
-    UIImage* image = SymbolWithPalette(
-        CustomSymbolWithPointSize(symbolName, kSymbolToolbarPointSize), @[
-          [UIColor colorNamed:kGrey600Color],
-          [self.toolbarConfiguration locationBarBackgroundColorWithVisibility:1]
-        ]);
-    newTabButton = [ToolbarButton toolbarButtonWithImage:image];
-  } else {
-    newTabButton = [ToolbarButton
-        toolbarButtonWithImage:
-            [[UIImage imageNamed:@"plus_circle_fill_ios14"]
-                imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
-  }
+  UIImage* image = SymbolWithPalette(
+      CustomSymbolWithPointSize(kPlusCircleFillSymbol, kSymbolToolbarPointSize),
+      @[
+        [UIColor colorNamed:kGrey600Color],
+        [self.toolbarConfiguration locationBarBackgroundColorWithVisibility:1]
+      ]);
+  ToolbarButton* newTabButton = [ToolbarButton toolbarButtonWithImage:image];
 
   [newTabButton addTarget:self.actionHandler
                    action:@selector(newTabAction:)

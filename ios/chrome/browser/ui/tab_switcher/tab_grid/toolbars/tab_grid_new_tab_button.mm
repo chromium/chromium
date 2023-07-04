@@ -40,12 +40,7 @@ const CGFloat kLargeSymbolSize = 37;
   self = [super initWithFrame:CGRectZero];
   if (self) {
     CGFloat symbolSize = largeSize ? kLargeSymbolSize : kSmallSymbolSize;
-    if (base::FeatureList::IsEnabled(kSFSymbolsFollowUp)) {
-      _symbol = CustomSymbolWithPointSize(kPlusCircleFillSymbol, symbolSize);
-    } else {
-      _symbol =
-          CustomSymbolWithPointSize(kLegacyPlusCircleFillSymbol, symbolSize);
-    }
+    _symbol = CustomSymbolWithPointSize(kPlusCircleFillSymbol, symbolSize);
     [self setImage:_symbol forState:UIControlStateNormal];
     self.pointerInteractionEnabled = YES;
     self.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();

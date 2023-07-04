@@ -7476,21 +7476,6 @@
             ]
         }
     ],
-    "IOSSFSymbolsFollowUp": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SFSymbolsFollowUp"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSetUpList": [
         {
             "platforms": [

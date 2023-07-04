@@ -56,7 +56,6 @@ extern NSString* const kMoveFolderSymbol;
 // only.
 extern NSString* const kIncognitoCircleFillSymbol;
 extern NSString* const kPlusCircleFillSymbol;
-extern NSString* const kLegacyPlusCircleFillSymbol;
 
 // Custom symbol to replace "palette" symbols on iOS 14. Cannot be used with a
 // palette.

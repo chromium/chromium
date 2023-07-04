@@ -120,9 +120,6 @@ BASE_DECLARE_FEATURE(kRemoveExcessNTPs);
 // Chrome.
 BASE_DECLARE_FEATURE(kEnableShortenedPasswordAutoFillInstruction);
 
-// Feature flag for the follow up of the SF Symbols.
-BASE_DECLARE_FEATURE(kSFSymbolsFollowUp);
-
 // Feature flag to enable Apple Calendar event in experience kit.
 BASE_DECLARE_FEATURE(kEnableExpKitAppleCalendar);
 

@@ -126,23 +126,6 @@ symbolset("plus_circle_fill") {
   ]
 }
 
-symbolset("legacy_plus_circle_fill") {
-  sources = [
-    "legacy_plus_circle_fill.symbolset/Contents.json",
-    "legacy_plus_circle_fill.symbolset/legacy.plus.circle.fill.cr.svg",
-  ]
-}
-
-imageset("plus_circle_fill_ios14") {
-  sources = [
-    "plus_circle_fill_ios14.imageset/Contents.json",
-    "plus_circle_fill_ios14.imageset/plus_circle_fill_ios14@2x.png",
-    "plus_circle_fill_ios14.imageset/plus_circle_fill_ios14@3x.png",
-    "plus_circle_fill_ios14.imageset/plus_circle_fill_ios14_dark@2x.png",
-    "plus_circle_fill_ios14.imageset/plus_circle_fill_ios14_dark@3x.png",
-  ]
-}
-
 symbolset("arrow_triangle_slash_circlepath") {
   sources = [
     "arrow_triangle_slash_circlepath.symbolset/Contents.json",

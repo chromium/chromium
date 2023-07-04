@@ -1062,9 +1062,6 @@ const char kEnableSessionSerializationOptimizationsDescription[] =
     "and the ability to load only the minimum amount of data when restoring "
     "the session from disk.";
 
-const char kSFSymbolsFollowUpName[] = "SF Symbol follow up";
-const char kSFSymbolsFollowUpDescription[] = "Change the + button.";
-
 const char kTabGridRecencySortName[] = "Change TabGrid sorting";
 const char kTabGridRecencySortDescription[] =
     "When enabled, the tabs in the Tab Grid are sorted differently.";

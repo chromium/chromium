@@ -328,13 +328,7 @@
   // When a11y font size is used, long press on UIBarButtonItem will show a
   // built-in a11y modal panel with image and title if set. The size is not
   // taken into account.
-  if (base::FeatureList::IsEnabled(kSFSymbolsFollowUp)) {
-    _newTabButtonItem.image =
-        CustomSymbolWithPointSize(kPlusCircleFillSymbol, 0);
-  } else {
-    _newTabButtonItem.image =
-        CustomSymbolWithPointSize(kLegacyPlusCircleFillSymbol, 0);
-  }
+  _newTabButtonItem.image = CustomSymbolWithPointSize(kPlusCircleFillSymbol, 0);
   _largeNewTabButton.translatesAutoresizingMaskIntoConstraints = NO;
   _largeNewTabButton.page = self.page;
 

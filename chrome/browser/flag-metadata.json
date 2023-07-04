@@ -6954,11 +6954,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "sf-symbols-follow-up",
-    "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "share-sheet-custom-actions-polish",
     "owners": [ "wenyufu" ],
     "expiry_milestone": 121
