@@ -44,7 +44,7 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   base::TimeTicks time_origin_;
   bool cross_origin_isolated_capability_;
   Member<AnimationFrameTimingInfo> info_;
-  PerformanceScriptVector scripts_;
+  mutable PerformanceScriptVector scripts_;
 };
 
 }  // namespace blink

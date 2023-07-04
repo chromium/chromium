@@ -1454,10 +1454,15 @@ WebFrameWidgetImpl::AllocateNewLayerTreeFrameSink() {
 
 void WebFrameWidgetImpl::ReportLongAnimationFrameTiming(
     AnimationFrameTimingInfo* timing_info) {
+  WebSecurityOrigin root_origin = local_root_->GetSecurityOrigin();
   ForEachLocalFrameControlledByWidget(
       local_root_->GetFrame(), [&](WebLocalFrameImpl* local_frame) {
-        DOMWindowPerformance::performance(*local_frame->GetFrame()->DomWindow())
-            ->ReportLongAnimationFrameTiming(timing_info);
+        if (local_frame == local_root_ ||
+            !local_frame->GetSecurityOrigin().IsSameOriginWith(root_origin)) {
+          DOMWindowPerformance::performance(
+              *local_frame->GetFrame()->DomWindow())
+              ->ReportLongAnimationFrameTiming(timing_info);
+        }
       });
 }
 

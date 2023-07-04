@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -76,6 +77,9 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
     property_like_name_ = name;
   }
   LocalDOMWindow* Window() const { return window_; }
+  const SecurityOrigin* GetSecurityOrigin() const {
+    return security_origin_.get();
+  }
 
  private:
   Type type_;
@@ -90,6 +94,7 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   base::TimeDelta pause_duration_;
   ScriptSourceLocation source_location_;
   WeakMember<LocalDOMWindow> window_;
+  scoped_refptr<const SecurityOrigin> security_origin_;
 };
 
 class AnimationFrameTimingInfo
