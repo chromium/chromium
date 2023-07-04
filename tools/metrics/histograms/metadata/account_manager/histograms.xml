@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccountManager.AccountAdditionSource"
-    enum="AccountManagerAccountAdditionSource" expires_after="2023-10-31">
+    enum="AccountManagerAccountAdditionSource" expires_after="2023-12-31">
   <owner>sinhak@chromium.org</owner>
   <owner>anastasiian@chromium.org</owner>
   <summary>
@@ -85,7 +85,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccountManager.FacadeGetAccountsMojoStatus"
-    enum="AccountManagerFacadeMojoStatus" expires_after="2023-10-31">
+    enum="AccountManagerFacadeMojoStatus" expires_after="2023-12-31">
   <owner>anastasiian@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -160,7 +160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccountManager.NumAccounts" units="count"
-    expires_after="2023-10-31">
+    expires_after="2023-12-31">
   <owner>sinhak@chromium.org</owner>
   <owner>anastasiian@chromium.org</owner>
   <summary>

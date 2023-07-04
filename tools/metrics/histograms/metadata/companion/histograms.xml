@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.HasNavigatedToExpsSuccessPagePref.Status"
-    enum="Boolean" expires_after="2023-10-20">
+    enum="Boolean" expires_after="2023-12-31">
   <owner>tbansal@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>

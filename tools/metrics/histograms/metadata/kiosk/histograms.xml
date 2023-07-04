@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.ChromeApp.ExternalUpdateSuccess" enum="BooleanYesNo"
-    expires_after="2023-11-01">
+    expires_after="2023-12-31">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.ChromeApp.PrimaryAppInstallError"
-    enum="KioskPrimaryAppDownloadResult" expires_after="2023-11-01">
+    enum="KioskPrimaryAppDownloadResult" expires_after="2023-12-31">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.ChromeApp.PrimaryAppUpdateResult"
-    enum="KioskPrimaryAppDownloadResult" expires_after="2023-11-01">
+    enum="KioskPrimaryAppDownloadResult" expires_after="2023-12-31">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>

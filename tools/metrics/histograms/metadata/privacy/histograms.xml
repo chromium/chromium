@@ -288,7 +288,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DeletionLatency" units="ms"
-    expires_after="2023-11-01">
+    expires_after="2023-12-31">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>

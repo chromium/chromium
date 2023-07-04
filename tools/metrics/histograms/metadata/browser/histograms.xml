@@ -684,7 +684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.SelectionToVisibilityRequestTime"
-    units="microseconds" expires_after="2023-09-10">
+    units="microseconds" expires_after="2023-12-31">
   <owner>jonross@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>

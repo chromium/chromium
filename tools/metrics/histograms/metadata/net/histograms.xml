@@ -2624,7 +2624,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicNetworkDegradingDurationTillDisconnected" units="ms"
-    expires_after="2023-09-17">
+    expires_after="2023-12-31">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4691,7 +4691,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.RestrictedCookieManager.GetCookiesString.Count30Seconds"
-    units="IPCs" expires_after="2023-10-31">
+    units="IPCs" expires_after="2023-12-31">
   <owner>carlscab@google.com</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
