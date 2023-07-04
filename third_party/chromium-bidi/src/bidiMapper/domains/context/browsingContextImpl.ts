@@ -353,7 +353,6 @@ export class BrowsingContextImpl {
         this.#url = params.url;
         this.#deferreds.Page.navigatedWithinDocument.resolve(params);
 
-        // TODO: Remove this once History event for BiDi are added
         this.#eventManager.registerEvent(
           {
             method: BrowsingContext.EventNames.FragmentNavigated,
@@ -827,5 +826,9 @@ export class BrowsingContextImpl {
         data: result.data,
       },
     };
+  }
+
+  async close(): Promise<void> {
+    await this.#cdpTarget.cdpClient.sendCommand('Page.close');
   }
 }

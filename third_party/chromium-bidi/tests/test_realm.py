@@ -120,14 +120,12 @@ async def test_realm_realmDestroyed_sandbox(websocket, context_id):
             }
         })
 
-    await send_JSON_command(
-        websocket, {
-            "id": 22,
-            "method": "browsingContext.close",
-            "params": {
-                "context": context_id,
-            }
-        })
+    await send_JSON_command(websocket, {
+        "method": "browsingContext.close",
+        "params": {
+            "context": context_id,
+        }
+    })
 
     response = await read_JSON_message(websocket)
 

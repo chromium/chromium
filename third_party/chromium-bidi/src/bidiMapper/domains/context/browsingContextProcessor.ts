@@ -510,37 +510,51 @@ export class BrowsingContextProcessor {
   async process_browsingContext_close(
     commandParams: BrowsingContext.CloseParameters
   ): Promise<Message.EmptyResult> {
-    const browserCdpClient = this.#cdpConnection.browserClient();
-
     const context = this.#browsingContextStorage.getContext(
       commandParams.context
     );
+
     if (!context.isTopLevelContext()) {
       throw new Message.InvalidArgumentException(
         `Non top-level browsing context ${context.id} cannot be closed.`
       );
     }
 
-    const detachedFromTargetPromise = new Promise<void>((resolve) => {
-      const onContextDestroyed = (
-        eventParams: Protocol.Target.DetachedFromTargetEvent
-      ) => {
-        if (eventParams.targetId === commandParams.context) {
-          browserCdpClient.off('Target.detachedFromTarget', onContextDestroyed);
-          resolve();
-        }
-      };
-      browserCdpClient.on('Target.detachedFromTarget', onContextDestroyed);
-    });
+    const browserCdpClient = this.#cdpConnection.browserClient();
 
-    await browserCdpClient.sendCommand('Target.closeTarget', {
-      targetId: commandParams.context,
-    });
+    try {
+      await context.close();
 
-    // Sometimes CDP command finishes before `detachedFromTarget` event,
-    // sometimes after. Wait for the CDP command to be finished, and then wait
-    // for `detachedFromTarget` if it hasn't emitted.
-    await detachedFromTargetPromise;
+      const detachedFromTargetPromise = new Promise<void>((resolve) => {
+        const onContextDestroyed = (
+          event: Protocol.Target.DetachedFromTargetEvent
+        ) => {
+          if (event.targetId === commandParams.context) {
+            browserCdpClient.off(
+              'Target.detachedFromTarget',
+              onContextDestroyed
+            );
+            resolve();
+          }
+        };
+        browserCdpClient.on('Target.detachedFromTarget', onContextDestroyed);
+      });
+      // Sometimes CDP command finishes before `detachedFromTarget` event,
+      // sometimes after. Wait for the CDP command to be finished, and then wait
+      // for `detachedFromTarget` if it hasn't emitted.
+      await detachedFromTargetPromise;
+    } catch (error: any) {
+      // Swallow error that arise from the page being destroyed
+      // Example is navigating to faulty SSL certificate
+      if (
+        !(
+          error.code === -32000 &&
+          error.message === 'Not attached to an active page'
+        )
+      ) {
+        throw error;
+      }
+    }
 
     return {result: {}};
   }

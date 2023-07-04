@@ -429,14 +429,12 @@ async def test_browsingContext_close_browsingContext_closed(
         websocket, context_id):
     await subscribe(websocket, ["browsingContext.contextDestroyed"])
 
-    await send_JSON_command(
-        websocket, {
-            "id": 12,
-            "method": "browsingContext.close",
-            "params": {
-                "context": context_id
-            }
-        })
+    command_id = await send_JSON_command(websocket, {
+        "method": "browsingContext.close",
+        "params": {
+            "context": context_id
+        }
+    })
 
     # Assert "browsingContext.contextCreated" event emitted.
     resp = await read_JSON_message(websocket)
@@ -450,9 +448,8 @@ async def test_browsingContext_close_browsingContext_closed(
         }
     }
 
-    # Assert command done.
     resp = await read_JSON_message(websocket)
-    assert resp == {"id": 12, "result": {}}
+    assert resp == {"id": command_id, "result": {}}
 
     result = await get_tree(websocket)
 
