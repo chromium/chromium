@@ -46,8 +46,8 @@ const DrivePinningStep = {
  * @enum {string}
  */
 const UserAction = {
-  ACCEPT: 'driveAccept',
-  DECLINE: 'driveDecline',
+  ACCEPT: 'driveNext',
+  RETURN: 'return',
 };
 
 /**
@@ -79,6 +79,20 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
       requiredSpace_: {
         type: String,
       },
+
+      enableDrivePinning_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * Whether the button to return to CHOOBE screen should be shown.
+       * @private
+       */
+      shouldShowReturn_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -104,11 +118,15 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
     return OOBE_UI_STATE.ONBOARDING;
   }
 
+  onBeforeShow(data) {
+    this.shouldShowReturn_ = data['shouldShowReturn'];
+  }
+
 
   getSpaceDescription_(locale, requiredSpace, freeSpace) {
     if (requiredSpace && freeSpace) {
       return this.i18nDynamic(
-          locale, 'DevicePinningScreenSpaceDescription', requiredSpace,
+          locale, 'DevicePinningScreenToggleSubtitle', requiredSpace,
           freeSpace);
     }
     return '';
@@ -122,12 +140,12 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
     this.freeSpace_ = freeSpace;
   }
 
-  onAcceptButtonClicked_() {
-    this.userActed(UserAction.ACCEPT);
+  onNextButtonClicked_() {
+    this.userActed([UserAction.ACCEPT, this.enableDrivePinning_]);
   }
 
-  onDeclineButtonClicked_() {
-    this.userActed(UserAction.DECLINE);
+  onReturnClicked_() {
+    this.userActed([UserAction.RETURN, this.enableDrivePinning_]);
   }
 }
 

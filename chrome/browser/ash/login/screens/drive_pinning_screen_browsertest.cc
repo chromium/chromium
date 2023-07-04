@@ -36,8 +36,8 @@ const test::UIPath kDrivePinningDialoguePath = {kDrivePinningId,
                                                 "drivePinningDialogue"};
 const test::UIPath kSpaceInformationPath = {kDrivePinningId,
                                             "spaceInformation"};
-const test::UIPath kAcceptButtonPath = {kDrivePinningId, "acceptButton"};
-const test::UIPath kDeclineButtonPath = {kDrivePinningId, "declineButton"};
+const test::UIPath kToggleButtonPath = {kDrivePinningId, "drivePinningToggle"};
+const test::UIPath kNextButtonPath = {kDrivePinningId, "nextButton"};
 
 }  // namespace
 
@@ -123,17 +123,17 @@ IN_PROC_BROWSER_TEST_F(DrivePinningScreenTest, Accept) {
   test::OobeJS().ExpectVisiblePath(kDrivePinningDialoguePath);
   test::OobeJS().ExpectElementText(
       l10n_util::GetStringFUTF8(
-          IDS_OOBE_DRIVE_PINNING_ADDITIONAL_SUBTITLE,
+          IDS_OOBE_DRIVE_PINNING_TOGGLE_SUBTITLE,
           ui::FormatBytes(current_progress.required_space),
           ui::FormatBytes(current_progress.free_space)),
       kSpaceInformationPath);
-  test::OobeJS().TapOnPath(kAcceptButtonPath);
+  test::OobeJS().TapOnPath(kNextButtonPath);
 
   WaitForScreenExit();
 
   EXPECT_TRUE(ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(
       prefs::kOobeDrivePinningEnabledDeferred));
-  EXPECT_EQ(result_.value(), DrivePinningScreen::Result::ACCEPT);
+  EXPECT_EQ(result_.value(), DrivePinningScreen::Result::NEXT);
 }
 
 IN_PROC_BROWSER_TEST_F(DrivePinningScreenTest, Decline) {
@@ -148,13 +148,14 @@ IN_PROC_BROWSER_TEST_F(DrivePinningScreenTest, Decline) {
   ShowDrivePinningScreen();
 
   test::OobeJS().ExpectVisiblePath(kDrivePinningDialoguePath);
-  test::OobeJS().TapOnPath(kDeclineButtonPath);
+  test::OobeJS().TapOnPath(kToggleButtonPath);
+  test::OobeJS().TapOnPath(kNextButtonPath);
 
   WaitForScreenExit();
 
   EXPECT_FALSE(ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(
       prefs::kOobeDrivePinningEnabledDeferred));
-  EXPECT_EQ(result_.value(), DrivePinningScreen::Result::DECLINE);
+  EXPECT_EQ(result_.value(), DrivePinningScreen::Result::NEXT);
 }
 
 IN_PROC_BROWSER_TEST_P(DrivePinningScreenTest, ScreenSkippedOnError) {

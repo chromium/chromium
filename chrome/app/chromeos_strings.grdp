@@ -6708,16 +6708,13 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Keep your files available when you're offline
   </message>
   <message name="IDS_OOBE_DRIVE_PINNING_SUBTITLE" desc="Description of the drive pinning screen." translateable="false">
-    Automatically download files in your My Drive so you can access and edit them without an internet connection.
+    Everything in your My Drive will be synced automatically so you can access your files without an internet connection.
   </message>
-  <message name="IDS_OOBE_DRIVE_PINNING_ADDITIONAL_SUBTITLE" desc="Additional description of the drive pinning screen." translateable="false">
+  <message name="IDS_OOBE_DRIVE_PINNING_TOGGLE_TITLE" desc="titile of the toggle button of the drive pinning screen." translateable="false">
+    Keep Google Drive files available offline
+  </message>
+  <message name="IDS_OOBE_DRIVE_PINNING_TOGGLE_SUBTITLE" desc="SUbtitle of the toggle button of the drive pinning screen." translateable="false">
     This will use about <ph name="REQUIRED_SPACE">$1<ex>12.2 GB</ex></ph> leaving <ph name="FREE_SPACE">$2<ex>96.8 GB</ex></ph> available
-  </message>
-  <message name="IDS_OOBE_DRIVE_PINNING_ACCEPT_BUTTON" desc="Label for button to accept sync drive files pinning." translateable="false">
-    Turn on sync
-  </message>
-  <message name="IDS_OOBE_DRIVE_PINNING_DECLINE_BUTTON" desc="Label for button to decline sync drive files pinning." translateable="false">
-    Skip
   </message>
 
   <!-- Strings for the locale switch notification inside the OOBE. -->
@@ -6752,6 +6749,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OOBE_CHOOBE_TOUCHPAD_SCROLL_TILE_TITLE" desc="Title of the touchpad scroll tile in the CHOOBE screen.">
     Change touchpad scrolling direction
   </message>
+  <message name="IDS_OOBE_CHOOBE_DRIVE_PINNING_TILE_TITLE" desc="Title of the drive pinning tile in the CHOOBE screen." translateable="false">
+    Keep you Google Drive Files available when your're offline
+  </message>
   <message name="IDS_OOBE_CHOOBE_DISPLAY_SIZE_TILE_TITLE" desc="Title of the display size tile in the CHOOBE screen.">
     Change display and text size
   </message>
@@ -6763,6 +6763,12 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
   <message name="IDS_OOBE_CHOOBE_TOUCHPAD_SCROLL_SUBTITLE_DISABLED" desc="Subtitle of the touchpad scroll tile in the CHOOBE screen if reverse scroll disabled.">
     Reverse scrolling disabled
+  </message>
+  <message name="IDS_OOBE_CHOOBE_DRIVE_PINNING_SUBTITLE_ENABLED" desc="Subtitle of the drive pinning tile in the CHOOBE screen if drive offline is enabled." translateable="false">
+    Drive pinning enabled
+  </message>
+  <message name="IDS_OOBE_CHOOBE_DRIVE_PINNING_SUBTITLE_DISABLED" desc="Subtitle of the drive pinning tile in the CHOOBE screen if drive offline is disabled." translateable="false">
+    Drive pinning disabled
   </message>
 
   <!-- CHOOBE Tiles Accessibility -->

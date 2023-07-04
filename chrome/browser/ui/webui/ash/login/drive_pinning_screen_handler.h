@@ -27,7 +27,7 @@ class DrivePinningScreenView
                                     std::u16string free_space) = 0;
 
   // Shows the contents of the screen.
-  virtual void Show() = 0;
+  virtual void Show(base::Value::Dict data) = 0;
 };
 
 class DrivePinningScreenHandler : public BaseScreenHandler,
@@ -49,7 +49,7 @@ class DrivePinningScreenHandler : public BaseScreenHandler,
 
   void SetRequiredSpaceInfo(std::u16string required_space,
                             std::u16string free_space) override;
-  void Show() override;
+  void Show(base::Value::Dict data) override;
 };
 
 }  // namespace ash

@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
+class Profile;
+
 namespace ash {
 class DrivePinningScreenView;
 
@@ -22,9 +24,12 @@ class DrivePinningScreen : public BaseScreen,
  public:
   using TView = DrivePinningScreenView;
 
-  enum class Result { ACCEPT, DECLINE, NOT_APPLICABLE };
+  enum class Result { NEXT, NOT_APPLICABLE };
 
   static std::string GetResultString(Result result);
+
+  // Apply the deffered perf `kOobeDrivePinningEnabledDeferred`.
+  static void ApplyDrivePinningPerf(Profile* profile);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
@@ -46,6 +51,8 @@ class DrivePinningScreen : public BaseScreen,
 
   void CalculateRequiredSpace();
 
+  std::string RetrieveChoobeSubtitle();
+
   void OnProgressForTest(const drivefs::pinning::Progress& progress);
 
  private:
@@ -55,15 +62,12 @@ class DrivePinningScreen : public BaseScreen,
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
+  ScreenSummary GetScreenSummary() override;
 
   // drivefs::pinning::PinManager::Observer
   void OnProgress(const drivefs::pinning::Progress& progress) override;
 
-  // Called when the user turn on drive pinning on the screen.
-  void OnAccept();
-
-  // Called when the user decline drive pinning on the screen.
-  void OnDecline();
+  void OnNext(bool drive_pinning);
 
   base::WeakPtr<DrivePinningScreenView> view_;
   ScreenExitCallback exit_callback_;
