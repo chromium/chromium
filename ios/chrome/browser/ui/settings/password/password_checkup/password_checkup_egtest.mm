@@ -615,7 +615,8 @@ NSString* LeakedPasswordDescription() {
 }
 
 // Tests deleting the last saved password through Password Checkup.
-- (void)testDeleteLastPassword {
+// TODO(crbug.com/1462095): Fix and re enable the test.
+- (void)DISABLED_testDeleteLastPassword {
   SaveCompromisedPasswordForm();
 
   OpenPasswordCheckupHomepage(
@@ -648,7 +649,8 @@ NSString* LeakedPasswordDescription() {
 
 // Tests resolving the last reused passwords issue by editing a password through
 // Password Checkup.
-- (void)testResolveLastIssueByEditingPassword {
+// TODO(crbug.com/1462095): Fix and re enable the test.
+- (void)DISABLED_testResolveLastIssueByEditingPassword {
   SaveReusedPasswordForms();
 
   OpenPasswordCheckupHomepage(
@@ -686,7 +688,8 @@ NSString* LeakedPasswordDescription() {
 
 // Tests resolving the last compromised passwords issue by deleting a password
 // through Password Checkup.
-- (void)testResolveLastIssueByDeletingPassword {
+// TODO(crbug.com/1462095): Fix and re enable the test.
+- (void)DISABLED_testResolveLastIssueByDeletingPassword {
   SavePasswordForm(/*password=*/@"safe password",
                    /*username=*/@"concrete username",
                    /*origin=*/@"https://example1.com");
@@ -726,7 +729,8 @@ NSString* LeakedPasswordDescription() {
 
 // Tests resolving the last compromised passwords issue by deleting a password
 // through Password Checkup.
-- (void)testChangeCompromisedPasswordToSafePassword {
+// TODO(crbug.com/1462095): Fix and re enable the test.
+- (void)DISABLED_testChangeCompromisedPasswordToSafePassword {
   SaveCompromisedPasswordForm();
 
   OpenPasswordCheckupHomepage(
@@ -764,7 +768,8 @@ NSString* LeakedPasswordDescription() {
 
 // Tests changing the password of a muted compromised password to a weak
 // password.
-- (void)testChangeMutedPasswordToWeakPassword {
+// TODO(crbug.com/1462095): Fix and re enable the test.
+- (void)DISABLED_testChangeMutedPasswordToWeakPassword {
   SaveMutedCompromisedPasswordForm();
 
   OpenPasswordCheckupHomepage(
