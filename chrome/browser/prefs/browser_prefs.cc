@@ -906,6 +906,11 @@ const char kSAMLLastGAIASignInTime[] = "saml.last_gaia_sign_in_time";
 const char kVideoPreviewsType[] = "ntp_snippets.video_previews_type";
 #endif  // BUILDFLAG(ENABLE_FEED_V2)
 
+// Deprecated 07/2023.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+const char kUnifiedConsentMigrationState[] = "unified_consent.migration_state";
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1299,6 +1304,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterTimePref(kGaiaLastOnlineSignInTime, base::Time());
   registry->RegisterTimePref(kSAMLLastGAIASignInTime, base::Time());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 07/2023.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kUnifiedConsentMigrationState, 0);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -2432,6 +2442,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kGaiaLastOnlineSignInTime);
   profile_prefs->ClearPref(kSAMLLastGAIASignInTime);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 07/2023.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kUnifiedConsentMigrationState);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

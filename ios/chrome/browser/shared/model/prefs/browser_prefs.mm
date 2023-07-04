@@ -134,6 +134,9 @@ const char* kTrialGroupMICeAndDefaultBrowserVersionPrefName =
 
 // Deprecated 04/2023.
 const char kTrialPrefName[] = "trending_queries.trial_version";
+
+// Deprecated 07/2023.
+const char kUnifiedConsentMigrationState[] = "unified_consent.migration_state";
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -423,6 +426,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   ntp_snippets::prefs::RegisterProfilePrefsForMigrationApril2023(registry);
 
   registry->RegisterBooleanPref(kDeprecatedReadingListHasUnseenEntries, false);
+
+  // Deprecated 07/2023.
+  registry->RegisterIntegerPref(kUnifiedConsentMigrationState, 0);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -497,4 +503,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 04/2023.
   ntp_snippets::prefs::MigrateObsoleteProfilePrefsApril2023(prefs);
+
+  // Added 07/2023.
+  prefs->ClearPref(kUnifiedConsentMigrationState);
 }

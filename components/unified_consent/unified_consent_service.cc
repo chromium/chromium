@@ -30,8 +30,10 @@ UnifiedConsentService::UnifiedConsentService(
   DCHECK(identity_manager_);
   DCHECK(sync_service_);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (GetMigrationState() == MigrationState::kNotInitialized)
     MigrateProfileToUnifiedConsent();
+#endif
 
   pref_service_->AddObserver(this);
   identity_manager_->AddObserver(this);
@@ -45,15 +47,19 @@ void UnifiedConsentService::RegisterPrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
                                 false);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(
       prefs::kUnifiedConsentMigrationState,
       static_cast<int>(MigrationState::kNotInitialized));
+#endif
 }
 
 void UnifiedConsentService::SetUrlKeyedAnonymizedDataCollectionEnabled(
     bool enabled) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (GetMigrationState() != MigrationState::kCompleted)
     SetMigrationState(MigrationState::kCompleted);
+#endif
 
   pref_service_->SetBoolean(prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
                             enabled);
@@ -95,9 +101,10 @@ void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {
       !sync_service_->IsEngineInitialized()) {
     return;
   }
-
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (GetMigrationState() == MigrationState::kInProgressWaitForSyncInit)
     UpdateSettingsForMigration();
+#endif
 }
 
 void UnifiedConsentService::OnIsSyncingChanged() {
@@ -136,6 +143,7 @@ void UnifiedConsentService::ServicePrefChanged(const std::string& name) {
   service_pref_changes_[name] = value.Clone();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 MigrationState UnifiedConsentService::GetMigrationState() {
   int migration_state_int =
       pref_service_->GetInteger(prefs::kUnifiedConsentMigrationState);
@@ -176,5 +184,6 @@ void UnifiedConsentService::UpdateSettingsForMigration() {
       !sync_service_->GetUserSettings()->IsUsingExplicitPassphrase();
   SetUrlKeyedAnonymizedDataCollectionEnabled(url_keyed_metrics_enabled);
 }
+#endif
 
 }  //  namespace unified_consent

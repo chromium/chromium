@@ -72,12 +72,13 @@ class UnifiedConsentServiceTest : public testing::Test {
     // Run until idle so the migration can finish.
     base::RunLoop().RunUntilIdle();
   }
-
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   unified_consent::MigrationState GetMigrationState() {
     int migration_state_int =
         pref_service_.GetInteger(prefs::kUnifiedConsentMigrationState);
     return static_cast<unified_consent::MigrationState>(migration_state_int);
   }
+#endif
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -106,6 +107,7 @@ TEST_F(UnifiedConsentServiceTest, EnableUrlKeyedAnonymizedDataCollection) {
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(UnifiedConsentServiceTest, Migration_UpdateSettings) {
   // Create user that syncs history and has no custom passphrase.
   identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
@@ -124,7 +126,15 @@ TEST_F(UnifiedConsentServiceTest, Migration_UpdateSettings) {
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(UnifiedConsentServiceTest, Migration_NotSignedIn) {
+  base::HistogramTester histogram_tester;
+
+  CreateConsentService();
+  // The user is signed out, so the migration is completed after the
+  // creation of the consent service.
+  EXPECT_EQ(GetMigrationState(), unified_consent::MigrationState::kCompleted);
+}
+#else
 TEST_F(UnifiedConsentServiceTest, ClearPrimaryAccountDisablesSomeServices) {
   base::HistogramTester histogram_tester;
 
@@ -143,15 +153,6 @@ TEST_F(UnifiedConsentServiceTest, ClearPrimaryAccountDisablesSomeServices) {
   EXPECT_FALSE(pref_service_.GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
-
-TEST_F(UnifiedConsentServiceTest, Migration_NotSignedIn) {
-  base::HistogramTester histogram_tester;
-
-  CreateConsentService();
-  // The user is signed out, so the migration is completed after the
-  // creation of the consent service.
-  EXPECT_EQ(GetMigrationState(), unified_consent::MigrationState::kCompleted);
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace unified_consent
