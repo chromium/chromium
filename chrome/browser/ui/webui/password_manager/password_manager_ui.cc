@@ -269,6 +269,12 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"passwordLabel", IDS_PASSWORD_MANAGER_UI_PASSWORD_LABEL},
     {"passwordManager",
      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT},
+    // Header for the page, always "Password Manager".
+    {"passwordManagerString", IDS_PASSWORD_MANAGER_UI_TITLE},
+    // Page title, branded. "Google Password Manager" or "Password Manager"
+    // depending on the build.
+    {"passwordManagerTitle",
+     IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE},
     {"passwordNoteCharacterCount",
      IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT},
     {"passwordNoteCharacterCountWarning",
@@ -297,7 +303,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"showPasswordA11yLabel", IDS_PASSWORD_MANAGER_UI_SHOW_PASSWORD_A11Y},
     {"sitesAndAppsLabel", IDS_PASSWORD_MANAGER_UI_SITES_AND_APPS_LABEL},
     {"sitesLabel", IDS_PASSWORD_MANAGER_UI_SITES_LABEL},
-    {"title", IDS_PASSWORD_MANAGER_UI_TITLE},
     {"trustedVaultBannerLabelOfferOptIn",
      IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPT_IN_TITLE},
     {"trustedVaultBannerSubLabelOfferOptIn",
