@@ -84,6 +84,11 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
     AccountCapabilitiesTestMutator mutator(&account.capabilities);
     mutator.set_is_subject_to_parental_controls(
         is_subject_to_parental_controls);
+    // Update child status preference, which is backed by capability state.
+    // This action will not be performed by the fake account capability fetcher.
+    account.is_child_account = is_subject_to_parental_controls
+                                   ? signin::Tribool::kTrue
+                                   : signin::Tribool::kFalse;
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForBrowserState(chrome_browser_state_.get()),
         account);

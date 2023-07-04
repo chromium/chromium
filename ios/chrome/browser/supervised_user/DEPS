@@ -3,3 +3,9 @@ include_rules = [
   "+ios/chrome/browser/sync",
   "+ios/chrome/browser/first_run",
 ]
+
+specific_include_rules = {
+ "supervised_user_with_parental_controls_egtest.mm": [
+   "+components/signin/internal/identity_manager/account_capabilities_constants.h",
+  ],
+}
