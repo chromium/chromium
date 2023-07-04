@@ -90,6 +90,7 @@ void DlpScopedFileAccessDelegate::RequestFilesAccess(
     const std::vector<base::FilePath>& files,
     const GURL& destination_url,
     base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
+  CHECK(destination_url.is_valid());
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!client_->IsAlive()) {
     std::move(callback).Run(file_access::ScopedFileAccess::Allowed());
