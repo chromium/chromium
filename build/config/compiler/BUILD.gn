@@ -1985,9 +1985,8 @@ config("no_chromium_code") {
 config("noshadowing") {
   # This flag has to be disabled for nacl because the nacl compiler is too
   # strict about shadowing.
-  if (is_clang && (!is_nacl || is_nacl_saigo)) {
-    # TODO(crbug.com/1448912): Clean up and re-enable.
-    #cflags = [ "-Wshadow" ]
+  if (is_clang && (!is_nacl || is_nacl_saigo) && !llvm_force_head_revision) {
+    cflags = [ "-Wshadow" ]
   }
 }
 

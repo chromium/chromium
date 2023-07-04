@@ -280,10 +280,6 @@ config("asan_flags") {
   cflags = []
   if (is_asan) {
     cflags += [ "-fsanitize=address" ]
-    if (is_linux) {
-      # TODO(crbug.com/1459233): This causes odr-violation errors.
-      cflags += ["-fno-sanitize-address-globals-dead-stripping"]
-    }
     if (is_win) {
       if (!defined(asan_win_blocklist_path)) {
         asan_win_blocklist_path =
