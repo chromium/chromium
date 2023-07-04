@@ -588,6 +588,7 @@ class PreflightController::PreflightLoader final {
                 &PreflightLoader::HandlePrivateNetworkAccessPermissionResult,
                 base::Unretained(this), net_error,
                 std::move(detected_error_status), std::move(result)));
+    permission_state_ = PermissionState::kRequested;
   }
 
   void HandlePrivateNetworkAccessPermissionResult(
@@ -623,12 +624,23 @@ class PreflightController::PreflightLoader final {
     std::move(completion_callback_)
         .Run(net_error, detected_error_status,
              has_authorization_covered_by_wildcard);
+
+    if (permission_state_ ==
+        PermissionState::kRequestedAndFinishedLoadingBody) {
+      RemoveFromController();
+      // `this` is deleted here.
+    }
   }
 
   void HandleResponseBody(std::unique_ptr<std::string> response_body) {
     const int error = loader_->NetError();
     const absl::optional<URLLoaderCompletionStatus>& status =
         loader_->CompletionStatus();
+
+    if (permission_state_ == PermissionState::kRequested) {
+      permission_state_ = PermissionState::kRequestedAndFinishedLoadingBody;
+      return;
+    }
 
     if (!completion_callback_.is_null()) {
       // As HandleResponseHeader() isn't called due to a request failure, such
@@ -676,6 +688,20 @@ class PreflightController::PreflightLoader final {
   const bool acam_preflight_spec_conformant_;
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_service_observer_;
+
+  enum class PermissionState {
+    // Private Network Device permission haven't been requested.
+    kNotRequired,
+    // Private Network Device permission requested but no response yet.
+    kRequested,
+    // Private Network Device permission requested and finished loading body.
+    // Able to complete handling the response after permission callback.
+    kRequestedAndFinishedLoadingBody,
+  };
+
+  // permission_state_ is always `kNotRequired` if
+  // network::feature::kPrivateNetworkAccessPermissionPrompt is disabled.
+  PermissionState permission_state_ = PermissionState::kNotRequired;
 };
 
 // static
