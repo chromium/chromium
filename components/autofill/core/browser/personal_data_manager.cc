@@ -894,6 +894,16 @@ bool PersonalDataManager::IsCountryEligibleForAccountStorage(
   return !base::Contains(kUnsupportedCountries, country_code);
 }
 
+void PersonalDataManager::MigrateProfileToAccount(
+    const AutofillProfile& profile) {
+  CHECK_EQ(profile.source(), AutofillProfile::Source::kLocalOrSyncable);
+  AutofillProfile account_profile = profile.ConvertToAccountProfile();
+  DCHECK_NE(profile.guid(), account_profile.guid());
+  // Update the database (and this way indirectly Sync).
+  RemoveByGUID(profile.guid());
+  AddProfile(account_profile);
+}
+
 std::string PersonalDataManager::AddIBAN(const IBAN& iban) {
   if (!IsAutofillIBANEnabled())
     return std::string();

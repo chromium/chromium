@@ -943,6 +943,28 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveProfiles) {
   ExpectSameElements(profiles, personal_data_->GetProfiles());
 }
 
+TEST_F(PersonalDataManagerTest, MigrateProfileToAccount) {
+  const AutofillProfile kLocalProfile = test::GetFullProfile();
+  ASSERT_EQ(kLocalProfile.source(), AutofillProfile::Source::kLocalOrSyncable);
+  AddProfileToPersonalDataManager(kLocalProfile);
+
+  personal_data_->MigrateProfileToAccount(kLocalProfile);
+  WaitForOnPersonalDataChanged();
+  const std::vector<AutofillProfile*> profiles = personal_data_->GetProfiles();
+
+  // `kLocalProfile` should be gone and only the migrated account profile should
+  // exist.
+  ASSERT_EQ(profiles.size(), 1u);
+  const AutofillProfile kAccountProfile = *profiles[0];
+  EXPECT_EQ(kAccountProfile.source(), AutofillProfile::Source::kAccount);
+  EXPECT_EQ(kAccountProfile.initial_creator_id(),
+            AutofillProfile::kInitialCreatorOrModifierChrome);
+  EXPECT_EQ(kAccountProfile.last_modifier_id(),
+            AutofillProfile::kInitialCreatorOrModifierChrome);
+  EXPECT_NE(kLocalProfile.guid(), kAccountProfile.guid());
+  EXPECT_EQ(kLocalProfile.Compare(kAccountProfile), 0);
+}
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 // Test that setting the `kAutofillEnablePaymentsMandatoryReauth` pref works
 // correctly.
