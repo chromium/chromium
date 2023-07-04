@@ -12,6 +12,10 @@
 // initiated edit of the profile.
 - (void)didEditAutofillProfileFromSettings;
 
+// Returns true if the profile satisfies minimum requirements to be migrated to
+// the account.
+- (BOOL)isMinimumAddress;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_SETTINGS_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_DELEGATE_H_

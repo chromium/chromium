@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/geo/autofill_country.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/profile_requirement_utils.h"
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -116,6 +117,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Push the saved profile data to the consumer.
   [self sendAutofillProfileDataToConsumer];
+}
+
+- (BOOL)isMinimumAddress {
+  return autofill::IsMinimumAddress(*_autofillProfile,
+                                    _personalDataManager->app_locale());
 }
 
 #pragma mark - AutofillProfileEditTableViewControllerDelegate

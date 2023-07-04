@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/profile_requirement_utils.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -113,6 +114,17 @@ bool IsMinimumAddress(const AutofillProfile& profile,
         return address_import_requirements.contains(
             address_requirement_violation);
       });
+}
+
+bool IsMinimumAddress(const AutofillProfile& profile,
+                      const std::string& app_locale) {
+  std::string country_code = base::UTF16ToUTF8(
+      profile.GetRawInfo(autofill::ServerFieldType::ADDRESS_HOME_COUNTRY));
+  const std::vector<std::string>& country_codes =
+      autofill::CountryDataMap::GetInstance()->country_codes();
+  return base::Contains(country_codes, country_code)
+             ? IsMinimumAddress(profile, country_code, app_locale)
+             : false;
 }
 
 bool IsEligibleForMigrationToAccount(

@@ -117,6 +117,18 @@ const CGFloat kSymbolSize = 22;
   if (!self.tableView.editing) {
     [self.handler updateProfileData];
     [self.delegate didEditAutofillProfileFromSettings];
+    // It can happen that the profile does not satisfy minimum requirements for
+    // the migration so we don't show the migration button.
+    if (self.showMigrateToAccountSection && ![self.delegate isMinimumAddress]) {
+      [self
+          performBatchTableViewUpdates:^{
+            [self removeSectionWithIdentifier:
+                      AutofillProfileDetailsSectionIdentifierMigrationToAccount
+                             withRowAnimation:UITableViewRowAnimationTop];
+          }
+                            completion:nil];
+      self.showMigrateToAccountSection = NO;
+    }
   }
 
   [self loadModel];
@@ -221,6 +233,20 @@ const CGFloat kSymbolSize = 22;
                        : [UIColor colorNamed:kBlueColor];
   item.enabled = !self.tableView.editing;
   return item;
+}
+
+#pragma mark - Private
+
+// Removes the given section if it exists.
+- (void)removeSectionWithIdentifier:(NSInteger)sectionIdentifier
+                   withRowAnimation:(UITableViewRowAnimation)animation {
+  TableViewModel* model = self.tableViewModel;
+  if ([model hasSectionForSectionIdentifier:sectionIdentifier]) {
+    NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
+    [model removeSectionWithIdentifier:sectionIdentifier];
+    [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:section]
+                  withRowAnimation:animation];
+  }
 }
 
 @end

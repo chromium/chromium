@@ -53,6 +53,13 @@ bool IsMinimumAddress(const AutofillProfile& profile,
                       const std::string& predicted_country_code,
                       const std::string& app_locale);
 
+// Returns true if minimum requirements for import of a given `profile` have
+// been met.
+// Uses the country_code from `profile` to fetch the requirements and the run
+// the validations.
+bool IsMinimumAddress(const AutofillProfile& profile,
+                      const std::string& app_locale);
+
 // Returns true if the profile can be migrated to the Account. Only sufficiently
 // complete profiles are migrated and this method does not check for the
 // completeness of the `profile`.

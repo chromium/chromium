@@ -11,7 +11,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/autofill/core/browser/geo/country_data.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/profile_requirement_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -768,18 +767,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // icon.
 - (BOOL)shouldShowCloudOffIconForProfile:
     (const autofill::AutofillProfile&)profile {
-  std::string country_code = base::UTF16ToUTF8(
-      profile.GetRawInfo(autofill::ServerFieldType::ADDRESS_HOME_COUNTRY));
-  const std::vector<std::string>& country_codes =
-      autofill::CountryDataMap::GetInstance()->country_codes();
-  return base::Contains(country_codes, country_code) &&
-         IsEligibleForMigrationToAccount(*_personalDataManager, profile) &&
+  return IsEligibleForMigrationToAccount(*_personalDataManager, profile) &&
          base::FeatureList::IsEnabled(
              syncer::kSyncEnableContactInfoDataTypeInTransportMode) &&
-         // Denotes that the user is signed-in.
          self.userEmail != nil &&
-         IsMinimumAddress(profile, country_code,
-                          _personalDataManager->app_locale());
+         IsMinimumAddress(profile, _personalDataManager->app_locale());
 }
 
 @end
