@@ -163,8 +163,8 @@ IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
   // Web App 3 has two install sources out if which one is a user install source
   // (kSync).
   const WebApp* web_app3 = registrar_unsafe().GetAppById(app_id3);
-  EXPECT_TRUE(web_app3->GetSources().test(WebAppManagement::kSync));
-  EXPECT_TRUE(web_app3->GetSources().test(WebAppManagement::kPolicy));
+  EXPECT_TRUE(web_app3->GetSources().Has(WebAppManagement::kSync));
+  EXPECT_TRUE(web_app3->GetSources().Has(WebAppManagement::kPolicy));
 
   base::test::TestFuture<const absl::optional<std::string>&> future;
   web_app_cleanup_handler_.Cleanup(future.GetCallback());
@@ -177,8 +177,8 @@ IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
 
   // Web App 3 is still installed but the user install source (kSync) is
   // removed.
-  EXPECT_FALSE(web_app3->GetSources().test(WebAppManagement::kSync));
-  EXPECT_TRUE(web_app3->GetSources().test(WebAppManagement::kPolicy));
+  EXPECT_FALSE(web_app3->GetSources().Has(WebAppManagement::kSync));
+  EXPECT_TRUE(web_app3->GetSources().Has(WebAppManagement::kPolicy));
 }
 
 }  // namespace web_app

@@ -120,16 +120,14 @@ TEST(WebAppTest, HasAnySources) {
                            GURL("https://example.com"))};
 
   EXPECT_FALSE(app.HasAnySources());
-  for (int i = WebAppManagement::kMinValue; i <= WebAppManagement::kMaxValue;
-       ++i) {
-    app.AddSource(static_cast<WebAppManagement::Type>(i));
+  for (WebAppManagement::Type source : WebAppManagementTypes::All()) {
+    app.AddSource(source);
     EXPECT_TRUE(app.HasAnySources());
   }
 
-  for (int i = WebAppManagement::kMinValue; i <= WebAppManagement::kMaxValue;
-       ++i) {
+  for (WebAppManagement::Type source : WebAppManagementTypes::All()) {
     EXPECT_TRUE(app.HasAnySources());
-    app.RemoveSource(static_cast<WebAppManagement::Type>(i));
+    app.RemoveSource(source);
   }
   EXPECT_FALSE(app.HasAnySources());
 }
@@ -138,10 +136,7 @@ TEST(WebAppTest, HasOnlySource) {
   WebApp app{GenerateAppId(/*manifest_id_path=*/absl::nullopt,
                            GURL("https://example.com"))};
 
-  for (int i = WebAppManagement::kMinValue; i <= WebAppManagement::kMaxValue;
-       ++i) {
-    auto source = static_cast<WebAppManagement::Type>(i);
-
+  for (WebAppManagement::Type source : WebAppManagementTypes::All()) {
     app.AddSource(source);
     EXPECT_TRUE(app.HasOnlySource(source));
 
@@ -152,17 +147,19 @@ TEST(WebAppTest, HasOnlySource) {
   app.AddSource(WebAppManagement::kMinValue);
   EXPECT_TRUE(app.HasOnlySource(WebAppManagement::kMinValue));
 
-  for (int i = WebAppManagement::kMinValue + 1;
-       i <= WebAppManagement::kMaxValue; ++i) {
-    auto source = static_cast<WebAppManagement::Type>(i);
+  for (WebAppManagement::Type source : WebAppManagementTypes::All()) {
+    if (source == WebAppManagement::kMinValue) {
+      continue;
+    }
     app.AddSource(source);
     EXPECT_FALSE(app.HasOnlySource(source));
     EXPECT_FALSE(app.HasOnlySource(WebAppManagement::kMinValue));
   }
 
-  for (int i = WebAppManagement::kMinValue + 1;
-       i <= WebAppManagement::kMaxValue; ++i) {
-    auto source = static_cast<WebAppManagement::Type>(i);
+  for (WebAppManagement::Type source : WebAppManagementTypes::All()) {
+    if (source == WebAppManagement::kMinValue) {
+      continue;
+    }
     EXPECT_FALSE(app.HasOnlySource(WebAppManagement::kMinValue));
     app.RemoveSource(source);
     EXPECT_FALSE(app.HasOnlySource(source));

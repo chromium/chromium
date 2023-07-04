@@ -33,7 +33,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sources.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -463,27 +462,27 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   local_data->set_name(web_app.untranslated_name());
 
-  DCHECK(web_app.sources_.any() || web_app.is_uninstalling());
+  DCHECK(!web_app.sources_.Empty() || web_app.is_uninstalling());
   local_data->mutable_sources()->set_system(
-      web_app.sources_[WebAppManagement::kSystem]);
+      web_app.sources_.Has(WebAppManagement::kSystem));
   local_data->mutable_sources()->set_policy(
-      web_app.sources_[WebAppManagement::kPolicy]);
+      web_app.sources_.Has(WebAppManagement::kPolicy));
   local_data->mutable_sources()->set_web_app_store(
-      web_app.sources_[WebAppManagement::kWebAppStore]);
+      web_app.sources_.Has(WebAppManagement::kWebAppStore));
   local_data->mutable_sources()->set_sync(
-      web_app.sources_[WebAppManagement::kSync]);
+      web_app.sources_.Has(WebAppManagement::kSync));
   local_data->mutable_sources()->set_default_(
-      web_app.sources_[WebAppManagement::kDefault]);
+      web_app.sources_.Has(WebAppManagement::kDefault));
   local_data->mutable_sources()->set_sub_app(
-      web_app.sources_[WebAppManagement::kSubApp]);
+      web_app.sources_.Has(WebAppManagement::kSubApp));
   local_data->mutable_sources()->set_kiosk(
-      web_app.sources_[WebAppManagement::kKiosk]);
+      web_app.sources_.Has(WebAppManagement::kKiosk));
   local_data->mutable_sources()->set_command_line(
-      web_app.sources_[WebAppManagement::kCommandLine]);
+      web_app.sources_.Has(WebAppManagement::kCommandLine));
   local_data->mutable_sources()->set_oem(
-      web_app.sources_[WebAppManagement::kOem]);
+      web_app.sources_.Has(WebAppManagement::kOem));
   local_data->mutable_sources()->set_one_drive_integration(
-      web_app.sources_[WebAppManagement::kOneDriveIntegration]);
+      web_app.sources_.Has(WebAppManagement::kOneDriveIntegration));
 
   local_data->set_is_locally_installed(web_app.is_locally_installed());
 
@@ -937,30 +936,32 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     return nullptr;
   }
 
-  WebAppSources sources;
-  sources[WebAppManagement::kSystem] = local_data.sources().system();
-  sources[WebAppManagement::kPolicy] = local_data.sources().policy();
-  sources[WebAppManagement::kWebAppStore] =
-      local_data.sources().web_app_store();
-  sources[WebAppManagement::kSync] = local_data.sources().sync();
-  sources[WebAppManagement::kDefault] = local_data.sources().default_();
-  sources[WebAppManagement::kOem] = local_data.sources().oem();
+  WebAppManagementTypes sources;
+  sources.PutOrRemove(WebAppManagement::kSystem, local_data.sources().system());
+  sources.PutOrRemove(WebAppManagement::kPolicy, local_data.sources().policy());
+  sources.PutOrRemove(WebAppManagement::kWebAppStore,
+                      local_data.sources().web_app_store());
+  sources.PutOrRemove(WebAppManagement::kSync, local_data.sources().sync());
+  sources.PutOrRemove(WebAppManagement::kDefault,
+                      local_data.sources().default_());
+  sources.PutOrRemove(WebAppManagement::kOem, local_data.sources().oem());
   if (local_data.sources().has_sub_app()) {
-    sources[WebAppManagement::kSubApp] = local_data.sources().sub_app();
+    sources.PutOrRemove(WebAppManagement::kSubApp,
+                        local_data.sources().sub_app());
   }
   if (local_data.sources().has_kiosk()) {
-    sources[WebAppManagement::kKiosk] = local_data.sources().kiosk();
+    sources.PutOrRemove(WebAppManagement::kKiosk, local_data.sources().kiosk());
   }
   if (local_data.sources().has_command_line()) {
-    sources[WebAppManagement::kCommandLine] =
-        local_data.sources().command_line();
+    sources.PutOrRemove(WebAppManagement::kCommandLine,
+                        local_data.sources().command_line());
   }
   if (local_data.sources().has_one_drive_integration()) {
-    sources[WebAppManagement::kOneDriveIntegration] =
-        local_data.sources().one_drive_integration();
+    sources.PutOrRemove(WebAppManagement::kOneDriveIntegration,
+                        local_data.sources().one_drive_integration());
   }
-  if (!sources.any() && !local_data.is_uninstalling()) {
-    DLOG(ERROR) << "WebApp proto parse error: no any source in sources field, "
+  if (sources.Empty() && !local_data.is_uninstalling()) {
+    DLOG(ERROR) << "WebApp proto parse error: no source in sources field, "
                    "and is_uninstalling isn't true.";
     return nullptr;
   }

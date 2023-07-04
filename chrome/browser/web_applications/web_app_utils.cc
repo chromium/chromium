@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
 #include "base/files/file_path.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_sources.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -567,20 +567,18 @@ ExperimentalWebAppIsolationMode ResolveExperimentalWebAppIsolationFeature() {
 }
 #endif
 
-bool HasAnySpecifiedSourcesAndNoOtherSources(WebAppSources sources,
-                                             WebAppSources specified_sources) {
-  bool has_any_specified_sources = (sources & specified_sources).any();
-  bool has_no_other_sources = (sources & ~specified_sources).none();
+bool HasAnySpecifiedSourcesAndNoOtherSources(
+    WebAppManagementTypes sources,
+    WebAppManagementTypes specified_sources) {
+  bool has_any_specified_sources = sources.HasAny(specified_sources);
+  bool has_no_other_sources =
+      base::Difference(sources, specified_sources).Empty();
   return has_any_specified_sources && has_no_other_sources;
 }
 
-bool CanUserUninstallWebApp(WebAppSources sources) {
-  WebAppSources specified_sources;
-  for (WebAppManagement::Type type : kUserUninstallableSources) {
-    specified_sources.set(type);
-  }
-
-  return HasAnySpecifiedSourcesAndNoOtherSources(sources, specified_sources);
+bool CanUserUninstallWebApp(WebAppManagementTypes sources) {
+  return HasAnySpecifiedSourcesAndNoOtherSources(sources,
+                                                 kUserUninstallableSources);
 }
 
 AppId GetAppIdFromAppSettingsUrl(const GURL& url) {

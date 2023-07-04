@@ -474,8 +474,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
   const WebApp* web_app = web_app_registrar().GetAppById(url_info.app_id());
   ASSERT_THAT(web_app, NotNull());
 
-  EXPECT_THAT(web_app->GetSources().test(WebAppManagement::kCommandLine),
-              IsTrue());
+  EXPECT_TRUE(web_app->GetSources().Has(WebAppManagement::kCommandLine));
 
   EXPECT_THAT(web_app->latest_install_source(),
               Optional(Eq(InstallSource::ISOLATED_APP_DEV_INSTALL)));

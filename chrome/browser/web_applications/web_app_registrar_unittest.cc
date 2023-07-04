@@ -962,11 +962,10 @@ TEST_F(WebAppRegistrarTest, CountUserInstalledApps) {
 
   const std::string base_url{"https://example.com/path"};
 
-  for (int i = WebAppManagement::kMinValue + 1;
-       i <= WebAppManagement::kMaxValue; ++i) {
-    auto source = static_cast<WebAppManagement::Type>(i);
+  for (WebAppManagement::Type type : WebAppManagementTypes::All()) {
+    int i = static_cast<int>(type);
     auto web_app =
-        test::CreateWebApp(GURL(base_url + base::NumberToString(i)), source);
+        test::CreateWebApp(GURL(base_url + base::NumberToString(i)), type);
     RegisterApp(std::move(web_app));
   }
 

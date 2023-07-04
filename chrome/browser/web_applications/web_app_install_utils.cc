@@ -47,7 +47,6 @@
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
-#include "chrome/browser/web_applications/web_app_sources.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -1113,10 +1112,10 @@ void MaybeRegisterOsUninstall(const WebApp* web_app,
   // |web_app| object will remove target |source_uninstalling| type.
   // If the remaining source types and they happen to be user
   // uninstallable, then it should register OsSettings.
-  WebAppSources sources = web_app->GetSources();
-  DCHECK(sources.test(source_uninstalling));
+  WebAppManagementTypes sources = web_app->GetSources();
+  DCHECK(sources.Has(source_uninstalling));
   bool user_installable_before_uninstall = CanUserUninstallWebApp(sources);
-  sources[source_uninstalling] = false;
+  sources.Remove(source_uninstalling);
   bool user_installable_after_uninstall = CanUserUninstallWebApp(sources);
 
   if (!user_installable_before_uninstall && user_installable_after_uninstall) {
@@ -1143,9 +1142,9 @@ void MaybeUnregisterOsUninstall(const WebApp* web_app,
   // |web_app| object will add target |source_installing| type.
   // If the old source types are user installable, but new type is not, then
   // it should unregister OsSettings.
-  WebAppSources sources = web_app->GetSources();
+  WebAppManagementTypes sources = web_app->GetSources();
   bool user_installable_before_install = CanUserUninstallWebApp(sources);
-  sources[source_installing] = true;
+  sources.Put(source_installing);
   bool user_installable_after_install = CanUserUninstallWebApp(sources);
 
   if (user_installable_before_install && !user_installable_after_install) {
@@ -1284,7 +1283,7 @@ bool CanWebAppUpdateIdentity(const WebApp* web_app) {
   // WebAppChromeOsData::oem_installed will be migrated to
   // WebAppManagement::kOem eventually.
   return web_app->IsPreinstalledApp() || web_app->IsKioskInstalledApp() ||
-         web_app->GetSources().test(WebAppManagement::kOem);
+         web_app->GetSources().Has(WebAppManagement::kOem);
 }
 
 void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,

@@ -25,7 +25,6 @@
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_sources.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/sync/base/time.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -269,54 +268,54 @@ ManifestId WebApp::manifest_id() const {
 }
 
 void WebApp::AddSource(WebAppManagement::Type source) {
-  sources_[source] = true;
+  sources_.Put(source);
 }
 
 void WebApp::RemoveSource(WebAppManagement::Type source) {
-  sources_[source] = false;
+  sources_.Remove(source);
   management_to_external_config_map_.erase(source);
 }
 
 bool WebApp::HasAnySources() const {
-  return sources_.any();
+  return !sources_.Empty();
 }
 
 bool WebApp::HasOnlySource(WebAppManagement::Type source) const {
-  WebAppSources specified_sources;
-  specified_sources[source] = true;
+  WebAppManagementTypes specified_sources;
+  specified_sources.Put(source);
   return HasAnySpecifiedSourcesAndNoOtherSources(sources_, specified_sources);
 }
 
-WebAppSources WebApp::GetSources() const {
+WebAppManagementTypes WebApp::GetSources() const {
   return sources_;
 }
 
 bool WebApp::IsSynced() const {
-  return sources_[WebAppManagement::kSync];
+  return sources_.Has(WebAppManagement::kSync);
 }
 
 bool WebApp::IsPreinstalledApp() const {
-  return sources_[WebAppManagement::kDefault];
+  return sources_.Has(WebAppManagement::kDefault);
 }
 
 bool WebApp::IsPolicyInstalledApp() const {
-  return sources_[WebAppManagement::kPolicy];
+  return sources_.Has(WebAppManagement::kPolicy);
 }
 
 bool WebApp::IsSystemApp() const {
-  return sources_[WebAppManagement::kSystem];
+  return sources_.Has(WebAppManagement::kSystem);
 }
 
 bool WebApp::IsWebAppStoreInstalledApp() const {
-  return sources_[WebAppManagement::kWebAppStore];
+  return sources_.Has(WebAppManagement::kWebAppStore);
 }
 
 bool WebApp::IsSubAppInstalledApp() const {
-  return sources_[WebAppManagement::kSubApp];
+  return sources_.Has(WebAppManagement::kSubApp);
 }
 
 bool WebApp::IsKioskInstalledApp() const {
-  return sources_[WebAppManagement::kKiosk];
+  return sources_.Has(WebAppManagement::kKiosk);
 }
 
 bool WebApp::CanUserUninstallWebApp() const {
@@ -324,19 +323,18 @@ bool WebApp::CanUserUninstallWebApp() const {
 }
 
 bool WebApp::WasInstalledByUser() const {
-  return sources_[WebAppManagement::kSync] ||
-         sources_[WebAppManagement::kWebAppStore] ||
-         sources_[WebAppManagement::kOneDriveIntegration];
+  return sources_.Has(WebAppManagement::kSync) ||
+         sources_.Has(WebAppManagement::kWebAppStore) ||
+         sources_.Has(WebAppManagement::kOneDriveIntegration);
 }
 
 WebAppManagement::Type WebApp::GetHighestPrioritySource() const {
-  // Enumerators in Source enum are declaretd in the order of priority.
-  // Top priority sources are declared first.
-  for (int i = WebAppManagement::kMinValue; i <= WebAppManagement::kMaxValue;
-       ++i) {
-    auto source = static_cast<WebAppManagement::Type>(i);
-    if (sources_[source])
+  // `WebAppManagementTypes` is iterated in order of priority.
+  // Top priority sources are iterated first.
+  for (WebAppManagement::Type source : WebAppManagementTypes::All()) {
+    if (sources_.Has(source)) {
       return source;
+    }
   }
 
   NOTREACHED();
@@ -1085,10 +1083,9 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
            ConvertDebugValueList(shortcuts_menu_item_infos_));
 
   base::Value::List sources;
-  for (int i = WebAppManagement::Type::kMinValue;
-       i <= WebAppManagement::Type::kMaxValue; ++i) {
-    if (sources_[i]) {
-      sources.Append(base::ToString(static_cast<WebAppManagement::Type>(i)));
+  for (WebAppManagement::Type source : WebAppManagementTypes::All()) {
+    if (sources_.Has(source)) {
+      sources.Append(base::ToString(source));
     }
   }
   root.Set("sources", std::move(sources));

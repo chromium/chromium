@@ -628,7 +628,7 @@ TEST_F(WebAppSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdateDelete) {
               // Sync expects that the apps are deleted by the delegate.
               EXPECT_TRUE(app);
               EXPECT_TRUE(app->is_uninstalling());
-              EXPECT_TRUE(app->GetSources().none());
+              EXPECT_TRUE(app->GetSources().Empty());
               registry.erase(app_to_uninstall);
               {
                 ScopedRegistryUpdate update(&sync_bridge());
@@ -698,7 +698,7 @@ TEST_F(WebAppSyncBridgeTest,
     const WebApp* app = registrar().GetAppById(app_to_uninstall);
     EXPECT_TRUE(app);
     EXPECT_TRUE(app->is_uninstalling());
-    EXPECT_TRUE(app->GetSources().none());
+    EXPECT_TRUE(app->GetSources().Empty());
   }
 }
 

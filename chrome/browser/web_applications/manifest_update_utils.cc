@@ -185,7 +185,7 @@ bool CanWebAppSilentlyUpdateIdentity(const WebApp& web_app) {
   // WebAppChromeOsData::oem_installed will be migrated to
   // WebAppManagement::kOem eventually.
   return web_app.IsPreinstalledApp() || web_app.IsKioskInstalledApp() ||
-         web_app.GetSources().test(WebAppManagement::kOem);
+         web_app.GetSources().Has(WebAppManagement::kOem);
 }
 
 bool CanShowIdentityUpdateConfirmationDialog(const WebAppRegistrar& registrar,

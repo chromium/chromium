@@ -6,14 +6,19 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CONSTANTS_H_
 
 #include <stddef.h>
-
+#include <stdint.h>
 #include <iosfwd>
 #include <string>
 
+#include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
-#include "components/webapps/browser/installable/installable_metrics.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
+
+namespace webapps {
+enum class WebappUninstallSource;
+}
 
 namespace web_app {
 
@@ -50,7 +55,7 @@ enum Type {
   // AndroidSmsAppSetupControllerImpl, which is a potential conflict in the
   // future.
   // TODO(dmurph): Add a new source here so that the
-  // AndroidSmsAppSetupControllerImpl has it's own source, and migrate those
+  // AndroidSmsAppSetupControllerImpl has its own source, and migrate those
   // installations to have the new source.
   // https://crbug.com/1314055
   kDefault,
@@ -59,6 +64,10 @@ enum Type {
 
 std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type);
 }  // namespace WebAppManagement
+
+using WebAppManagementTypes = base::EnumSet<WebAppManagement::Type,
+                                            WebAppManagement::kMinValue,
+                                            WebAppManagement::kMaxValue>;
 
 // Type of OS hook.
 //
@@ -295,8 +304,8 @@ using ResultCallback = base::OnceCallback<void(Result)>;
 std::string ConvertUninstallSourceToStringType(
     const webapps::WebappUninstallSource& uninstall_source);
 
-// Install sources that can be uninstalled by the user.
-const WebAppManagement::Type kUserUninstallableSources[] = {
+// Management types that can be uninstalled by the user.
+constexpr WebAppManagementTypes kUserUninstallableSources = {
     WebAppManagement::kDefault,
     WebAppManagement::kSync,
     WebAppManagement::kWebAppStore,
@@ -306,8 +315,8 @@ const WebAppManagement::Type kUserUninstallableSources[] = {
     WebAppManagement::kOneDriveIntegration,
 };
 
-// Install sources that resulted from a user web app install.
-const WebAppManagement::Type kUserDrivenInstallSources[] = {
+// Management types that resulted from a user web app install.
+constexpr WebAppManagementTypes kUserDrivenInstallSources = {
     WebAppManagement::kSync,
     WebAppManagement::kWebAppStore,
     WebAppManagement::kOneDriveIntegration,

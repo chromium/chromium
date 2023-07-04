@@ -24,24 +24,24 @@ enum class Action {
   kRemoveApp,
 };
 
-Action GetAction(const WebAppSources& sources,
+Action GetAction(const WebAppManagementTypes& sources,
                  WebAppManagement::Type install_source) {
-  if (sources.none()) {
+  if (sources.Empty()) {
     // TODO(crbug.com/1427340): Return a different UninstallResultCode
     // for this case and log it in metrics.
     return Action::kRemoveApp;
   }
 
-  if (!sources[install_source]) {
+  if (!sources.Has(install_source)) {
     return Action::kNone;
   }
 
-  if (sources.count() > 1) {
+  if (sources.Size() > 1) {
     return Action::kRemoveInstallSource;
   }
 
-  CHECK_EQ(sources.count(), 1u);
-  CHECK(sources[install_source]);
+  CHECK_EQ(sources.Size(), 1u);
+  CHECK(sources.Has(install_source));
   return Action::kRemoveApp;
 }
 

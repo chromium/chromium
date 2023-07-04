@@ -36,7 +36,6 @@
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
-#include "chrome/browser/web_applications/web_app_sources.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -745,10 +744,10 @@ bool WebAppRegistrar::IsInstalled(const AppId& app_id) const {
   // `is_from_sync_and_pending_installation()` should be treated as 'not
   // installed' only if there are no other sources that have installed the web
   // app.
-  WebAppSources sources_except_sync = web_app->GetSources();
-  sources_except_sync.set(WebAppManagement::kSync, false);
+  WebAppManagementTypes sources_except_sync = web_app->GetSources();
+  sources_except_sync.Remove(WebAppManagement::kSync);
   return !(web_app->is_from_sync_and_pending_installation() &&
-           sources_except_sync.none());
+           sources_except_sync.Empty());
 }
 
 bool WebAppRegistrar::IsUninstalling(const AppId& app_id) const {
@@ -785,7 +784,7 @@ bool WebAppRegistrar::IsInstalledByDefaultManagement(
 
   const WebApp* web_app = GetAppById(app_id);
   DCHECK(web_app);
-  return web_app->GetSources().test(WebAppManagement::kDefault);
+  return web_app->GetSources().Has(WebAppManagement::kDefault);
 }
 
 bool WebAppRegistrar::WasInstalledByDefaultOnly(const AppId& app_id) const {

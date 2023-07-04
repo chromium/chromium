@@ -22,7 +22,6 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_sources.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
@@ -403,7 +402,7 @@ class WebApp {
   void RemoveSource(WebAppManagement::Type source);
   bool HasAnySources() const;
   bool HasOnlySource(WebAppManagement::Type source) const;
-  WebAppSources GetSources() const;
+  WebAppManagementTypes GetSources() const;
 
   bool IsSynced() const;
   bool IsPreinstalledApp() const;
@@ -531,7 +530,7 @@ class WebApp {
   AppId app_id_;
 
   // This set always contains at least one source.
-  WebAppSources sources_;
+  WebAppManagementTypes sources_{};
 
   std::string name_;
   std::string description_;

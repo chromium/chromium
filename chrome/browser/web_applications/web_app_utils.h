@@ -17,8 +17,8 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_sources.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
@@ -127,11 +127,12 @@ std::vector<std::u16string> TransformFileExtensionsForDisplay(
     const std::set<std::string>& extensions);
 
 // Check if only |specified_sources| exist in the |sources|
-bool HasAnySpecifiedSourcesAndNoOtherSources(WebAppSources sources,
-                                             WebAppSources specified_sources);
+bool HasAnySpecifiedSourcesAndNoOtherSources(
+    WebAppManagementTypes sources,
+    WebAppManagementTypes specified_sources);
 
 // Check if all types of |sources| are uninstallable by the user.
-bool CanUserUninstallWebApp(WebAppSources sources);
+bool CanUserUninstallWebApp(WebAppManagementTypes sources);
 
 // Extracts app_id from chrome://app-settings/<app-id> URL path.
 AppId GetAppIdFromAppSettingsUrl(const GURL& url);

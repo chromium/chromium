@@ -87,8 +87,8 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest, RemovesUserInstallSources) {
   EXPECT_EQ(app_id, sync_app_id);
 
   const WebApp* web_app = registrar_unsafe().GetAppById(app_id);
-  EXPECT_TRUE(web_app->GetSources().test(WebAppManagement::kPolicy));
-  EXPECT_TRUE(web_app->GetSources().test(WebAppManagement::kSync));
+  EXPECT_TRUE(web_app->GetSources().Has(WebAppManagement::kPolicy));
+  EXPECT_TRUE(web_app->GetSources().Has(WebAppManagement::kSync));
 
   base::test::TestFuture<const absl::optional<std::string>&> future;
   provider()->command_manager().ScheduleCommand(
@@ -98,8 +98,8 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest, RemovesUserInstallSources) {
   EXPECT_EQ(future.Get(), absl::nullopt);
 
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
-  EXPECT_TRUE(web_app->GetSources().test(WebAppManagement::kPolicy));
-  EXPECT_FALSE(web_app->GetSources().test(WebAppManagement::kSync));
+  EXPECT_TRUE(web_app->GetSources().Has(WebAppManagement::kPolicy));
+  EXPECT_FALSE(web_app->GetSources().Has(WebAppManagement::kSync));
 }
 
 TEST_F(UninstallAllUserInstalledWebAppsCommandTest,

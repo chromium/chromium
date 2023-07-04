@@ -23,15 +23,6 @@
 
 namespace web_app {
 
-WebAppSources LiteralSources(
-    std::initializer_list<WebAppManagement::Type> install_sources) {
-  WebAppSources result;
-  for (WebAppManagement::Type install_source : install_sources) {
-    result.set(install_source);
-  }
-  return result;
-}
-
 class DedupeInstallUrlsCommandTest : public WebAppTest {
  public:
   DedupeInstallUrlsCommandTest()
@@ -530,18 +521,19 @@ TEST_F(DedupeInstallUrlsCommandTest, MoreThanTwoDuplicates) {
   const WebApp* app_a = registrar.GetAppById(app_id_a3);
   ASSERT_TRUE(app_a);
   EXPECT_EQ(app_a->GetSources(),
-            LiteralSources({WebAppManagement::Type::kDefault,
-                            WebAppManagement::Type::kKiosk,
-                            WebAppManagement::Type::kPolicy}));
+            WebAppManagementTypes({WebAppManagement::Type::kDefault,
+                                   WebAppManagement::Type::kKiosk,
+                                   WebAppManagement::Type::kPolicy}));
 
   EXPECT_FALSE(registrar.IsInstalled(app_id_b1));
   EXPECT_FALSE(registrar.IsInstalled(app_id_b2));
   const WebApp* app_b = registrar.GetAppById(app_id_b3);
   ASSERT_TRUE(app_b);
-  EXPECT_EQ(app_b->GetSources(),
-            LiteralSources({WebAppManagement::Type::kWebAppStore,
-                            WebAppManagement::Type::kOem,
-                            WebAppManagement::Type::kOneDriveIntegration}));
+  EXPECT_EQ(
+      app_b->GetSources(),
+      WebAppManagementTypes({WebAppManagement::Type::kWebAppStore,
+                             WebAppManagement::Type::kOem,
+                             WebAppManagement::Type::kOneDriveIntegration}));
 
   histogram_tester.ExpectUniqueSample(
       "WebApp.DedupeInstallUrls.SessionRunCount", /*runs=*/1, /*count=*/1);
