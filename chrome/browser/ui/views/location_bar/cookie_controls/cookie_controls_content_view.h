@@ -22,10 +22,21 @@ class CookieControlsContentView : public views::View {
   void UpdateContentLabels(const std::u16string& title,
                            const std::u16string& description);
 
+  void SetFeedbackSectionVisibility(bool visible);
+
+  base::CallbackListSubscription RegisterFeedbackButtonPressedCallback(
+      base::RepeatingClosureList::CallbackType callback);
+
  private:
+  void NotifyFeedbackButtonPressedCallback();
+
   void AddContentLabels();
+  void AddFeedbackSection();
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Label> description_ = nullptr;
+  raw_ptr<views::View> feedback_section_ = nullptr;
+
+  base::RepeatingClosureList restart_callback_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_CONTENT_VIEW_H_

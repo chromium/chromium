@@ -3706,6 +3706,26 @@ You can send it to Google Safe Browsing to check if it's unsafe. Scans usually t
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" translateable="false"  desc="">
         Try temporarily allowing third-party cookies, which means less protection but site features are more likely to work
       </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE" translateable="false"  desc="">
+        {COUNT, plural,
+              =1 {1 day until Chrome starts blocking cookies again}
+              other {# days until Chrome starts blocking cookies again}}
+      </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY" translateable="false"  desc="">
+        You allowed this site to use third-party cookies. This means that most site features should work, but you have less protection.
+      </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE" translateable="false"  desc="">
+        You allowed third-party cookies for this site
+      </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION" translateable="false"  desc="">
+        This means that most site features should work, but you have less protection
+      </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE" translateable="false"  desc="">
+        Send feedback
+      </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_DESCRIPTION" translateable="false"  desc="">
+        Help us improve Chrome by telling us why you allowed third-party cookies
+      </message>
 
       <!-- Win certificate selector dialog strings.  -->
       <if expr="toolkit_views">

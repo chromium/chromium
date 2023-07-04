@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_VIEW_CONTROLLER_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view.h"
@@ -37,8 +38,12 @@ class CookieControlsBubbleViewController
       CookieControlsBreakageConfidenceLevel level) override;
 
  private:
+  void SetFeedbackButtonPressedCallback();
+  void OnFeedbackButtonPressed();
+
   raw_ptr<CookieControlsBubbleView> bubble_view_ = nullptr;
   raw_ptr<CookieControlsContentView> content_view_ = nullptr;
+  base::CallbackListSubscription feedback_button_callback_;
   base::WeakPtr<content_settings::CookieControlsController> controller_;
 
   std::u16string GetSubjectUrlName(content::WebContents* web_contents);

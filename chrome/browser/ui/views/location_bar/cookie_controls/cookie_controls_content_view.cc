@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
 
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/label.h"
@@ -15,6 +18,8 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
+
+constexpr int kDefaultIconSize = 16;
 
 std::unique_ptr<views::View> CreateSeparator() {
   const int separator_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -41,6 +46,8 @@ CookieControlsContentView::CookieControlsContentView() {
   AddChildView(CreateSeparator());
 
   AddContentLabels();
+
+  AddFeedbackSection();
 }
 
 void CookieControlsContentView::AddContentLabels() {
@@ -59,12 +66,45 @@ void CookieControlsContentView::AddContentLabels() {
   title_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   title_->SetTextStyle(views::style::STYLE_PRIMARY);
   title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  title_->SetMultiLine(true);
 
   description_ = label_wrapper->AddChildView(std::make_unique<views::Label>());
   description_->SetTextContext(views::style::CONTEXT_LABEL);
   description_->SetTextStyle(views::style::STYLE_SECONDARY);
   description_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   description_->SetMultiLine(true);
+}
+
+void CookieControlsContentView::SetFeedbackSectionVisibility(bool visible) {
+  feedback_section_->SetVisible(visible);
+  PreferredSizeChanged();
+}
+
+void CookieControlsContentView::AddFeedbackSection() {
+  feedback_section_ = AddChildView(std::make_unique<views::View>());
+  feedback_section_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+
+  const ui::ImageModel feedback_icon = ui::ImageModel::FromVectorIcon(
+      kSubmitFeedbackIcon, ui::kColorMenuIcon, kDefaultIconSize);
+  const ui::ImageModel launch_icon = ui::ImageModel::FromVectorIcon(
+      vector_icons::kLaunchIcon, ui::kColorMenuIcon, kDefaultIconSize);
+
+  feedback_section_->AddChildView(CreateSeparator());
+
+  feedback_section_->AddChildView(std::make_unique<RichHoverButton>(
+      base::BindRepeating(
+          &CookieControlsContentView::NotifyFeedbackButtonPressedCallback,
+          base::Unretained(this)),
+      feedback_icon,
+      l10n_util::GetStringUTF16(
+          IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE),
+      std::u16string(),
+      // TODO(crbug.com/1446230): Add a proper tooltip string.
+      std::u16string(),
+      l10n_util::GetStringUTF16(
+          IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_DESCRIPTION),
+      launch_icon));
 }
 
 void CookieControlsContentView::UpdateContentLabels(
@@ -76,3 +116,13 @@ void CookieControlsContentView::UpdateContentLabels(
 }
 
 CookieControlsContentView::~CookieControlsContentView() = default;
+
+base::CallbackListSubscription
+CookieControlsContentView::RegisterFeedbackButtonPressedCallback(
+    base::RepeatingClosureList::CallbackType callback) {
+  return restart_callback_list_.Add(std::move(callback));
+}
+
+void CookieControlsContentView::NotifyFeedbackButtonPressedCallback() {
+  restart_callback_list_.Notify();
+}

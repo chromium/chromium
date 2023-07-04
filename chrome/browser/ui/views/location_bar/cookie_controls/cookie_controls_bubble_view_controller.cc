@@ -11,6 +11,17 @@
 #include "content/public/browser/navigation_entry.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace {
+
+int getDaysToExpiration(base::Time expiration) {
+  // TODO(crbug.com/1446230): Apply DST corrections.
+  const base::Time midnight_today = base::Time::Now().LocalMidnight();
+  const base::Time midnight_expiration = expiration.LocalMidnight();
+  return (midnight_expiration - midnight_today).InDays();
+}
+
+}  // namespace
+
 // Expected URL types for `UrlIdentity::CreateFromUrl()`.
 constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
     UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
@@ -30,6 +41,8 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
 
   content_view_ =
       bubble_view_->AddChildView(std::make_unique<CookieControlsContentView>());
+
+  SetFeedbackButtonPressedCallback();
 }
 
 CookieControlsBubbleViewController::~CookieControlsBubbleViewController() =
@@ -48,11 +61,26 @@ void CookieControlsBubbleViewController::OnStatusChanged(
               IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
           l10n_util::GetStringUTF16(
               IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY));
+      content_view_->SetFeedbackSectionVisibility(false);
       break;
-    case CookieControlsStatus::kDisabledForSite:
+    case CookieControlsStatus::kDisabledForSite: {
+      bool is_permanent_exception =
+          getDaysToExpiration(expiration) == 0 || expiration == base::Time();
       bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
           IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE));
-      break;
+      content_view_->UpdateContentLabels(
+          is_permanent_exception
+              ? l10n_util::GetStringUTF16(
+                    IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE)
+              : l10n_util::GetPluralStringFUTF16(
+                    IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE,
+                    getDaysToExpiration(expiration)),
+          l10n_util::GetStringUTF16(
+              is_permanent_exception
+                  ? IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION
+                  : IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY));
+      content_view_->SetFeedbackSectionVisibility(true);
+    } break;
     case CookieControlsStatus::kDisabled:
     case CookieControlsStatus::kUninitialized:
       NOTREACHED();
@@ -72,6 +100,17 @@ void CookieControlsBubbleViewController::OnSitesCountChanged(
 void CookieControlsBubbleViewController::OnBreakageConfidenceLevelChanged(
     CookieControlsBreakageConfidenceLevel level) {
   // TODO(1446230): Implement OnBreakageConfidenceLevelChanged.
+}
+
+void CookieControlsBubbleViewController::SetFeedbackButtonPressedCallback() {
+  feedback_button_callback_ =
+      content_view_->RegisterFeedbackButtonPressedCallback(base::BindRepeating(
+          &CookieControlsBubbleViewController::OnFeedbackButtonPressed,
+          base::Unretained(this)));
+}
+
+void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
+  // TODO(crbug.com/1446230): Handle Feedback button press.
 }
 
 std::u16string CookieControlsBubbleViewController::GetSubjectUrlName(
