@@ -106,6 +106,22 @@ class FakeWebAppProvider : public WebAppProvider {
   // by default for unit tests, and can be enabled by setting this flag to true.
   void SetSynchronizePreinstalledAppsOnStartup(bool synchronize_on_startup);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  enum class AutomaticIwaUpdateStrategy {
+    kDefault,
+    kForceDisabled,
+    kForceEnabled,
+  };
+
+  // The `IsolatedWebAppUpdateManager` will check for updates of all installed
+  // Isolated Web Apps on startup and in regular time intervals. This is
+  // disabled (`kForceDisabled`) by default for unit tests, and can be enabled
+  // by setting this flag to `kForceEnabled`. Setting this flag to `kDefault`
+  // will retain the default behavior of the `IsolatedWebAppUpdateManager`.
+  void SetEnableAutomaticIwaUpdates(
+      AutomaticIwaUpdateStrategy automatic_iwa_update_strategy);
+#endif
+
   // NB: If you replace the Registrar, you also have to replace the SyncBridge
   // accordingly.
   void SetRegistrar(std::unique_ptr<WebAppRegistrarMutable> registrar);
@@ -131,6 +147,8 @@ class FakeWebAppProvider : public WebAppProvider {
       std::unique_ptr<IsolatedWebAppCommandLineInstallManager>
           iwa_command_line_install_manager);
 #if BUILDFLAG(IS_CHROMEOS)
+  void SetIsolatedWebAppUpdateManager(
+      std::unique_ptr<IsolatedWebAppUpdateManager> iwa_update_manager);
   void SetWebAppRunOnOsLoginManager(std::unique_ptr<WebAppRunOnOsLoginManager>
                                         web_app_run_on_os_login_manager);
 #endif
@@ -195,6 +213,15 @@ class FakeWebAppProvider : public WebAppProvider {
   // If true, preinstalled apps will be processed & installed (or uninstalled)
   // after the system starts.
   bool synchronize_preinstalled_app_on_startup_ = false;
+#if BUILDFLAG(IS_CHROMEOS)
+  // If `kForceEnabled`, the `IsolatedWebAppUpdateManager` will automatically
+  // search for updates of installed Isolated Web Apps on startup and in regular
+  // time intervals. If `kForceDisabled`, then it will not automatically search
+  // for updates. If `kDefault`, then it will use its default behavior to
+  // determine whether to search for updates (e.g., based feature flags).
+  AutomaticIwaUpdateStrategy automatic_iwa_update_strategy_ =
+      AutomaticIwaUpdateStrategy::kForceDisabled;
+#endif
 
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
 };

@@ -37,6 +37,9 @@ namespace web_app {
 class AbstractWebAppDatabaseFactory;
 class ExtensionsManager;
 class IsolatedWebAppCommandLineInstallManager;
+#if (BUILDFLAG(IS_CHROMEOS))
+class IsolatedWebAppUpdateManager;
+#endif
 class ManifestUpdateManager;
 class OsIntegrationManager;
 class PreinstalledWebAppManager;
@@ -152,6 +155,13 @@ class WebAppProvider : public KeyedService {
   // Clients can use `IsolatedWebAppCommandLineInstallManager` to request the
   // installation of IWAs based on command line switches.
   IsolatedWebAppCommandLineInstallManager& iwa_command_line_install_manager();
+#if (BUILDFLAG(IS_CHROMEOS))
+  // Keeps Isolated Web Apps up to date by regularly checking for updates,
+  // downloading them, and applying them.
+  // TODO(crbug.com/1458725): We currently only support automatic updates on
+  // ChromeOS.
+  IsolatedWebAppUpdateManager& iwa_update_manager();
+#endif
 
   WebAppUiManager& ui_manager();
 
@@ -235,6 +245,7 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<IsolatedWebAppCommandLineInstallManager>
       iwa_command_line_install_manager_;
 #if (BUILDFLAG(IS_CHROMEOS))
+  std::unique_ptr<IsolatedWebAppUpdateManager> iwa_update_manager_;
   std::unique_ptr<WebAppRunOnOsLoginManager> web_app_run_on_os_login_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WebAppUiManager> ui_manager_;

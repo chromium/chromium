@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -59,6 +60,9 @@ constexpr char kInstallationProcessErrorLog[] = "InstallationProcessErrorLog";
 constexpr char kAppShimRegistryLocalStorage[] = "AppShimRegistryLocalStorage";
 #endif
 constexpr char kWebAppDirectoryDiskState[] = "WebAppDirectoryDiskState";
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr char kIsolatedWebAppUpdateManager[] = "IsolatedWebAppUpdateManager";
+#endif
 
 constexpr char kNeedsRecordWebAppDebugInfo[] =
     "No debugging info available! Please enable: "
@@ -87,6 +91,9 @@ base::Value::Dict BuildIndexJson() {
   index.Append(kInstallationProcessErrorLog);
 #if BUILDFLAG(IS_MAC)
   index.Append(kAppShimRegistryLocalStorage);
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  index.Append(kIsolatedWebAppUpdateManager);
 #endif
   index.Append(kWebAppDirectoryDiskState);
 
@@ -260,6 +267,15 @@ base::Value::Dict BuildAppShimRegistryLocalStorageJson() {
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+base::Value BuildIsolatedWebAppUpdaterManagerJson(
+    web_app::WebAppProvider& provider) {
+  return base::Value(
+      base::Value::Dict().Set(kIsolatedWebAppUpdateManager,
+                              provider.iwa_update_manager().AsDebugValue()));
+}
+#endif
+
 void BuildDirectoryState(base::FilePath file_or_folder,
                          base::Value::Dict* folder) {
   base::File::Info info;
@@ -350,6 +366,9 @@ void WebAppInternalsHandler::BuildDebugInfo(
   root.Append(BuildInstallProcessErrorLogJson(*provider));
 #if BUILDFLAG(IS_MAC)
   root.Append(BuildAppShimRegistryLocalStorageJson());
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  root.Append(BuildIsolatedWebAppUpdaterManagerJson(*provider));
 #endif
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},

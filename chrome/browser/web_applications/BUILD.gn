@@ -292,6 +292,8 @@ source_set("web_applications") {
       "commands/install_preloaded_verified_app_command.h",
       "isolated_web_apps/isolated_web_app_downloader.cc",
       "isolated_web_apps/isolated_web_app_downloader.h",
+      "isolated_web_apps/isolated_web_app_update_manager.cc",
+      "isolated_web_apps/isolated_web_app_update_manager.h",
       "isolated_web_apps/policy/isolated_web_app_external_install_options.cc",
       "isolated_web_apps/policy/isolated_web_app_external_install_options.h",
       "isolated_web_apps/policy/isolated_web_app_policy_constants.cc",

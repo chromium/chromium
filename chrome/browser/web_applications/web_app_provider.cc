@@ -50,6 +50,10 @@
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 
+#if (BUILDFLAG(IS_CHROMEOS))
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -206,6 +210,13 @@ WebAppProvider::iwa_command_line_install_manager() {
   return *iwa_command_line_install_manager_;
 }
 
+#if (BUILDFLAG(IS_CHROMEOS))
+IsolatedWebAppUpdateManager& WebAppProvider::iwa_update_manager() {
+  CheckIsConnected();
+  return *iwa_update_manager_;
+}
+#endif
+
 WebAppUiManager& WebAppProvider::ui_manager() {
   CheckIsConnected();
   return *ui_manager_;
@@ -267,6 +278,9 @@ void WebAppProvider::Shutdown() {
   ui_manager_->Shutdown();
   externally_managed_app_manager_->Shutdown();
   manifest_update_manager_->Shutdown();
+#if (BUILDFLAG(IS_CHROMEOS))
+  iwa_update_manager_->Shutdown();
+#endif
   install_manager_->Shutdown();
   icon_manager_->Shutdown();
   install_finalizer_->Shutdown();
@@ -290,6 +304,9 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile);
   iwa_command_line_install_manager_ =
       std::make_unique<IsolatedWebAppCommandLineInstallManager>(*profile);
+#if (BUILDFLAG(IS_CHROMEOS))
+  iwa_update_manager_ = std::make_unique<IsolatedWebAppUpdateManager>(*profile);
+#endif
   extensions_manager_ = std::make_unique<ExtensionsManager>(profile);
 
   database_factory_ = std::make_unique<WebAppDatabaseFactory>(profile);
@@ -355,6 +372,9 @@ void WebAppProvider::ConnectSubsystems() {
   command_manager_->SetProvider(pass_key, *this);
   command_scheduler_->SetProvider(pass_key, *this);
   iwa_command_line_install_manager_->SetProvider(pass_key, *this);
+#if (BUILDFLAG(IS_CHROMEOS))
+  iwa_update_manager_->SetProvider(pass_key, *this);
+#endif
   icon_manager_->SetProvider(pass_key, *this);
   translation_manager_->SetProvider(pass_key, *this);
 
@@ -394,6 +414,8 @@ void WebAppProvider::OnSyncBridgeReady() {
   iwa_command_line_install_manager_->Start();
 
 #if (BUILDFLAG(IS_CHROMEOS))
+  iwa_update_manager_->Start();
+
   on_external_managers_synchronized_.Post(
       FROM_HERE,
       base::BindOnce(&WebAppRunOnOsLoginManager::Start,
