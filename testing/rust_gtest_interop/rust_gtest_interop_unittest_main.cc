@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
@@ -30,18 +31,18 @@ int main(int argc, char** argv) {
   // test suites/names.
   std::string filter = "--gtest_filter=Test.*:ExactSuite.ExactTest";
 
-  int my_argc = argc + 2;
-  char** my_argv = new char*[argc];
+  auto my_argv = std::vector<char*>();
   for (int i = 0; i < argc; ++i) {
-    my_argv = argv;
+    my_argv.push_back(argv[i]);
   }
-  my_argv[argc] = single_process.data();
-  my_argv[argc + 1] = filter.data();
+  my_argv.push_back(single_process.data());
+  my_argv.push_back(filter.data());
+  my_argv.push_back(nullptr);  // GTest reads past argc until null.
 
-  base::TestSuite test_suite(my_argc, my_argv);
+  base::TestSuite test_suite(my_argv.size() - 1u, my_argv.data());
 
   int result = base::LaunchUnitTests(
-      my_argc, my_argv,
+      my_argv.size() - 1u, my_argv.data(),
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 
   if (is_subprocess()) {
