@@ -4,13 +4,11 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
 
-#include <pointer-gestures-unstable-v1-client-protocol.h>
 #include <wayland-util.h>
 
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
@@ -22,6 +20,7 @@ namespace ui {
 
 namespace {
 constexpr uint32_t kMinVersion = 1;
+constexpr uint32_t kMaxVersion = 3;
 }
 
 // static
@@ -41,8 +40,8 @@ void WaylandZwpPointerGestures::Instantiate(WaylandConnection* connection,
     return;
   }
 
-  auto zwp_pointer_gestures_v1 =
-      wl::Bind<struct zwp_pointer_gestures_v1>(registry, name, kMinVersion);
+  auto zwp_pointer_gestures_v1 = wl::Bind<struct zwp_pointer_gestures_v1>(
+      registry, name, std::min(version, kMaxVersion));
   if (!zwp_pointer_gestures_v1) {
     LOG(ERROR) << "Failed to bind wp_pointer_gestures_v1";
     return;
@@ -79,6 +78,23 @@ void WaylandZwpPointerGestures::Init() {
       };
   zwp_pointer_gesture_pinch_v1_add_listener(
       pinch_.get(), &zwp_pointer_gesture_pinch_v1_listener, this);
+
+#if defined(ZWP_POINTER_GESTURES_V1_GET_HOLD_GESTURE_SINCE_VERSION)
+  if (zwp_pointer_gestures_v1_get_version(obj_.get()) <
+      ZWP_POINTER_GESTURES_V1_GET_HOLD_GESTURE_SINCE_VERSION) {
+    return;
+  }
+
+  hold_.reset(zwp_pointer_gestures_v1_get_hold_gesture(
+      obj_.get(), connection_->seat()->pointer()->wl_object()));
+
+  static constexpr zwp_pointer_gesture_hold_v1_listener
+      zwp_pointer_gesture_hold_v1_listener = {
+          &WaylandZwpPointerGestures::OnHoldBegin,
+          &WaylandZwpPointerGestures::OnHoldEnd};
+  zwp_pointer_gesture_hold_v1_add_listener(
+      hold_.get(), &zwp_pointer_gesture_hold_v1_listener, this);
+#endif
 }
 
 // static
@@ -150,5 +166,42 @@ void WaylandZwpPointerGestures::OnPinchEnd(
                                 gfx::Vector2dF() /*delta*/, timestamp,
                                 self->obj_.id());
 }
+
+#if defined(ZWP_POINTER_GESTURE_HOLD_V1_BEGIN_SINCE_VERSION)
+// static
+void WaylandZwpPointerGestures::OnHoldBegin(
+    void* data,
+    struct zwp_pointer_gesture_hold_v1* zwp_pointer_gesture_hold_v1,
+    uint32_t serial,
+    uint32_t time,
+    struct wl_surface* surface,
+    uint32_t fingers) {
+  auto* self = static_cast<WaylandZwpPointerGestures*>(data);
+
+  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
+
+  self->delegate_->OnHoldEvent(ET_TOUCH_PRESSED, fingers, timestamp,
+                               self->obj_.id(),
+                               wl::EventDispatchPolicy::kImmediate);
+}
+#endif
+
+#if defined(ZWP_POINTER_GESTURE_HOLD_V1_END_SINCE_VERSION)
+// static
+void WaylandZwpPointerGestures::OnHoldEnd(
+    void* data,
+    struct zwp_pointer_gesture_hold_v1* zwp_pointer_gesture_hold_v1,
+    uint32_t serial,
+    uint32_t time,
+    int32_t cancelled) {
+  auto* self = static_cast<WaylandZwpPointerGestures*>(data);
+
+  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
+
+  self->delegate_->OnHoldEvent(
+      cancelled ? ET_TOUCH_CANCELLED : ET_TOUCH_RELEASED, 0, timestamp,
+      self->obj_.id(), wl::EventDispatchPolicy::kImmediate);
+}
+#endif
 
 }  // namespace ui
