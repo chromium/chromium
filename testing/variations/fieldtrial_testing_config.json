@@ -6653,6 +6653,29 @@
             ]
         }
     ],
+    "HatsGeneralCamera": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithHistogram_20230704",
+                    "params": {
+                        "enabled_for_googlers": "true",
+                        "histogram_name": "ChromeOS.HaTS.GeneralCamera",
+                        "prob": "0.01",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1688472000000",
+                        "trigger_id": "7V7wMHHeK0jBnuKU19R0YYaGnV7M"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingGeneralCamera"
+                    ]
+                }
+            ]
+        }
+    ],
     "HatsOnboardingExperience": [
         {
             "platforms": [
