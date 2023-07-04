@@ -133,15 +133,6 @@ class SyncServiceImpl : public SyncService,
   void TriggerRefresh(const ModelTypeSet& types) override;
   void DataTypePreconditionChanged(ModelType type) override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
-  void AddTrustedVaultDecryptionKeysFromWeb(
-      const std::string& gaia_id,
-      const std::vector<std::vector<uint8_t>>& keys,
-      int last_key_version) override;
-  void AddTrustedVaultRecoveryMethodFromWeb(
-      const std::string& gaia_id,
-      const std::vector<uint8_t>& public_key,
-      int method_type_hint,
-      base::OnceClosure callback) override;
   void AddObserver(SyncServiceObserver* observer) override;
   void RemoveObserver(SyncServiceObserver* observer) override;
   bool HasObserver(const SyncServiceObserver* observer) const override;

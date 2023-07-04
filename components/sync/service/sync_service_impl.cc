@@ -2053,23 +2053,6 @@ void SyncServiceImpl::SetInvalidationsForSessionsEnabled(bool enabled) {
   UpdateDataTypesForInvalidations();
 }
 
-void SyncServiceImpl::AddTrustedVaultDecryptionKeysFromWeb(
-    const std::string& gaia_id,
-    const std::vector<std::vector<uint8_t>>& keys,
-    int last_key_version) {
-  sync_client_->GetTrustedVaultClient()->StoreKeys(gaia_id, keys,
-                                                   last_key_version);
-}
-
-void SyncServiceImpl::AddTrustedVaultRecoveryMethodFromWeb(
-    const std::string& gaia_id,
-    const std::vector<uint8_t>& public_key,
-    int method_type_hint,
-    base::OnceClosure callback) {
-  sync_client_->GetTrustedVaultClient()->AddTrustedRecoveryMethod(
-      gaia_id, public_key, method_type_hint, std::move(callback));
-}
-
 void SyncServiceImpl::StopAndClear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

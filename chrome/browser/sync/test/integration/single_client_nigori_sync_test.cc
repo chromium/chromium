@@ -29,6 +29,7 @@
 #include "chrome/browser/sync/test/integration/sync_engine_stopped_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/grit/generated_resources.h"
@@ -48,8 +49,10 @@
 #include "components/trusted_vault/command_line_switches.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/test/fake_security_domains_server.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "components/trusted_vault/trusted_vault_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "crypto/ec_private_key.h"
@@ -934,6 +937,11 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
     return security_domains_server_.get();
   }
 
+  trusted_vault::TrustedVaultClient* GetTrustedVaultClient() {
+    return TrustedVaultServiceFactory::GetForProfile(GetProfile(0))
+        ->GetTrustedVaultClient();
+  }
+
  protected:
   // Arbitrary encryption key that the Gaia retrieval page returns via
   // Javascript API if the retrieval page is visited.
@@ -1080,7 +1088,7 @@ IN_PROC_BROWSER_TEST_F(
                             /*trusted_vault_keys=*/{trusted_vault_key}),
                         GetFakeServer());
   ASSERT_TRUE(SetupClients());
-  GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
+  GetTrustedVaultClient()->StoreKeys(
       kGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
 
@@ -1530,7 +1538,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
           /*trusted_vault_keys=*/{trusted_vault_key}, migration_time),
       GetFakeServer());
   ASSERT_TRUE(SetupClients());
-  GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
+  GetTrustedVaultClient()->StoreKeys(
       kGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
   ASSERT_TRUE(SetupSync());
@@ -1626,14 +1634,14 @@ IN_PROC_BROWSER_TEST_F(
   // Mimic the key being available upon startup but recoverability degraded.
   GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
       kTestRecoveryMethodPublicKey);
-  GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
+  GetTrustedVaultClient()->StoreKeys(
       kGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
 
   // Mimic a recovery method being added before or during sign-in, which should
   // be deferred until sign-in completes.
   base::RunLoop run_loop;
-  GetSyncService(0)->AddTrustedVaultRecoveryMethodFromWeb(
+  GetTrustedVaultClient()->AddTrustedRecoveryMethod(
       kGaiaId, kTestRecoveryMethodPublicKey, kTestMethodTypeHint,
       run_loop.QuitClosure());
 
@@ -1642,7 +1650,7 @@ IN_PROC_BROWSER_TEST_F(
   // Sign in now and wait until sync initializes.
   ASSERT_TRUE(SetupSync());
 
-  // Wait until AddTrustedVaultRecoveryMethodFromWeb() completes.
+  // Wait until AddTrustedRecoveryMethod() completes.
   run_loop.Run();
 
   EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
@@ -1669,7 +1677,7 @@ IN_PROC_BROWSER_TEST_F(
   // Mimic the key being available upon startup but recoverability degraded.
   GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
       kTestRecoveryMethodPublicKey);
-  GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
+  GetTrustedVaultClient()->StoreKeys(
       kGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
   ASSERT_TRUE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
@@ -1684,7 +1692,7 @@ IN_PROC_BROWSER_TEST_F(
   // Mimic a recovery method being added during a persistent auth error, which
   // should be deferred until the auth error is resolved.
   base::RunLoop run_loop;
-  GetSyncService(0)->AddTrustedVaultRecoveryMethodFromWeb(
+  GetTrustedVaultClient()->AddTrustedRecoveryMethod(
       kGaiaId, kTestRecoveryMethodPublicKey, kTestMethodTypeHint,
       run_loop.QuitClosure());
 
@@ -1692,7 +1700,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
   GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
 
-  // Wait until AddTrustedVaultRecoveryMethodFromWeb() completes.
+  // Wait until AddTrustedRecoveryMethod() completes.
   run_loop.Run();
 
   EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
@@ -1714,7 +1722,7 @@ IN_PROC_BROWSER_TEST_F(
                             /*trusted_vault_keys=*/{trusted_vault_key}),
                         GetFakeServer());
   ASSERT_TRUE(SetupClients());
-  GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
+  GetTrustedVaultClient()->StoreKeys(
       kGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
   ASSERT_TRUE(SetupSync());
@@ -1844,7 +1852,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
   // Mimic a recovery method being added.
   base::RunLoop run_loop;
-  GetSyncService(0)->AddTrustedVaultRecoveryMethodFromWeb(
+  GetTrustedVaultClient()->AddTrustedRecoveryMethod(
       kGaiaId, kTestRecoveryMethodPublicKey, kTestMethodTypeHint,
       run_loop.QuitClosure());
   run_loop.Run();
@@ -2016,7 +2024,7 @@ IN_PROC_BROWSER_TEST_F(
                             /*trusted_vault_keys=*/{trusted_vault_key}),
                         GetFakeServer());
   ASSERT_TRUE(SetupClients());
-  GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
+  GetTrustedVaultClient()->StoreKeys(
       kGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
 

@@ -334,17 +334,6 @@ SyncService::ModelTypeDownloadStatus TestSyncService::GetDownloadStatusFor(
 
 void TestSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
-void TestSyncService::AddTrustedVaultDecryptionKeysFromWeb(
-    const std::string& gaia_id,
-    const std::vector<std::vector<uint8_t>>& keys,
-    int last_key_version) {}
-
-void TestSyncService::AddTrustedVaultRecoveryMethodFromWeb(
-    const std::string& gaia_id,
-    const std::vector<uint8_t>& public_key,
-    int method_type_hint,
-    base::OnceClosure callback) {}
-
 bool TestSyncService::IsSyncFeatureConsideredRequested() const {
   return HasSyncConsent();
 }

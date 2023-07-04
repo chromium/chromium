@@ -86,19 +86,6 @@ class MockSyncService : public SyncService {
               SetInvalidationsForSessionsEnabled,
               (bool enabled),
               (override));
-  MOCK_METHOD(void,
-              AddTrustedVaultDecryptionKeysFromWeb,
-              (const std::string& gaia_id,
-               const std::vector<std::vector<uint8_t>>& keys,
-               int last_key_version),
-              (override));
-  MOCK_METHOD(void,
-              AddTrustedVaultRecoveryMethodFromWeb,
-              (const std::string& gaia_id,
-               const std::vector<uint8_t>& public_key,
-               int method_type_hint,
-               base::OnceClosure callback),
-              (override));
   MOCK_METHOD(void, AddObserver, (SyncServiceObserver * observer), (override));
   MOCK_METHOD(void,
               RemoveObserver,

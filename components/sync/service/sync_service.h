@@ -443,27 +443,6 @@ class SyncService : public KeyedService {
   // page is opened.
   virtual void SetInvalidationsForSessionsEnabled(bool enabled) = 0;
 
-  // Processes trusted vault encryption keys retrieved from the web. Unused and
-  // ignored on platforms where keys are retrieved by other means.
-  // |last_key_version| represents the key version of the last element in
-  // |keys| (unused if empty).
-  // TODO(crbug.com/1434661): avoid remaining usages and delete this method.
-  // Callers can use TrustedVaultService directly.
-  virtual void AddTrustedVaultDecryptionKeysFromWeb(
-      const std::string& gaia_id,
-      const std::vector<std::vector<uint8_t>>& keys,
-      int last_key_version) = 0;
-
-  // Registers a new trusted recovery method that can be used to retrieve
-  // trusted vault encryption keys.
-  // TODO(crbug.com/1434661): avoid remaining usages and delete this method.
-  // Callers can use TrustedVaultService directly.
-  virtual void AddTrustedVaultRecoveryMethodFromWeb(
-      const std::string& gaia_id,
-      const std::vector<uint8_t>& public_key,
-      int method_type_hint,
-      base::OnceClosure callback) = 0;
-
   //////////////////////////////////////////////////////////////////////////////
   // OBSERVERS
   //////////////////////////////////////////////////////////////////////////////
