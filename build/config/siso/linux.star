@@ -30,6 +30,23 @@ __handlers.update(nasm.handlers)
 __handlers.update(remote_exec_wrapper.handlers)
 __handlers.update(rewrapper_to_reproxy.handlers)
 
+def __disable_remote_b281663988(step_config):
+    step_config["rules"].extend([
+        {
+            # TODO(b/281663988): remote compiles fail for missing headers.
+            "name": "b/281663988",
+            "action_outs": [
+                "./obj/ui/qt/qt5_shim/qt_shim.o",
+                "./obj/ui/qt/qt6_shim/qt_shim.o",
+                "./obj/ui/qt/qt5_shim/qt5_shim_moc.o",
+                "./obj/ui/qt/qt6_shim/qt6_shim_moc.o",
+                "./obj/ui/qt/qt_interface/qt_interface.o",
+            ],
+            "remote": False,
+        },
+    ])
+    return step_config
+
 def __step_config(ctx, step_config):
     config.check(ctx)
     step_config["platforms"] = {
@@ -53,8 +70,10 @@ def __step_config(ctx, step_config):
 
     # rewrapper_to_reproxy takes precedence over remote exec wrapper handler if enabled.
     if rewrapper_to_reproxy.enabled(ctx):
+        __disable_remote_b281663988(step_config)
         step_config = rewrapper_to_reproxy.step_config(ctx, step_config)
     elif remote_exec_wrapper.enabled(ctx):
+        __disable_remote_b281663988(step_config)
         step_config = remote_exec_wrapper.step_config(ctx, step_config)
     else:
         if android.enabled(ctx):
