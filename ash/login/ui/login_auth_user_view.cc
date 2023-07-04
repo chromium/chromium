@@ -15,6 +15,7 @@
 #include "ash/login/ui/fingerprint_auth_factor_model.h"
 #include "ash/login/ui/horizontal_image_sequence_animation_decoder.h"
 #include "ash/login/ui/lock_screen.h"
+#include "ash/login/ui/locked_tpm_message_view.h"
 #include "ash/login/ui/login_auth_factors_view.h"
 #include "ash/login/ui/login_constants.h"
 #include "ash/login/ui/login_display_style.h"
@@ -119,15 +120,6 @@ constexpr int kSpacingBetweenChallengeResponseArrowAndIconDp = 100;
 constexpr int kSpacingBetweenChallengeResponseIconAndLabelDp = 15;
 constexpr int kChallengeResponseIconSizeDp = 28;
 constexpr int kDistanceBetweenPwdFieldAndChallengeResponseViewDp = 0;
-
-constexpr int kLockedTpmMessageVerticalBorderDp = 16;
-constexpr int kLockedTpmMessageHorizontalBorderDp = 16;
-constexpr int kLockedTpmMessageChildrenSpacingDp = 4;
-constexpr int kLockedTpmMessageWidthDp = 360;
-constexpr int kLockedTpmMessageHeightDp = 108;
-constexpr int kLockedTpmMessageIconSizeDp = 24;
-constexpr int kLockedTpmMessageDeltaDp = 0;
-constexpr int kLockedTpmMessageRoundedCornerRadiusDp = 8;
 
 constexpr int kAuthFactorHidingPasswordFieldSlideUpDistanceDp = 42;
 constexpr base::TimeDelta kAuthFactorHidingPasswordFieldSlideUpDuration =
@@ -319,95 +311,6 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
   raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
   base::OneShotTimer reset_state_timer_;
-};
-
-// The message shown to user when TPM is locked.
-class LoginAuthUserView::LockedTpmMessageView : public views::View {
- public:
-  LockedTpmMessageView() {
-    SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical,
-        gfx::Insets::VH(kLockedTpmMessageVerticalBorderDp,
-                        kLockedTpmMessageHorizontalBorderDp),
-        kLockedTpmMessageChildrenSpacingDp));
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    SetPreferredSize(
-        gfx::Size(kLockedTpmMessageWidthDp, kLockedTpmMessageHeightDp));
-    SetFocusBehavior(FocusBehavior::ALWAYS);
-
-    message_icon_ = AddChildView(std::make_unique<views::ImageView>());
-    message_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        kLockScreenAlertIcon, kColorAshIconColorPrimary,
-        kLockedTpmMessageIconSizeDp));
-
-    message_warning_ = CreateLabel();
-    message_warning_->SetEnabledColorId(kColorAshTextColorPrimary);
-
-    message_description_ = CreateLabel();
-
-    // Set content.
-    std::u16string message_description = l10n_util::GetStringUTF16(
-        IDS_ASH_LOGIN_POD_TPM_LOCKED_ISSUE_DESCRIPTION);
-    message_description_->SetText(message_description);
-    message_description_->SetEnabledColorId(kColorAshTextColorPrimary);
-  }
-
-  LockedTpmMessageView(const LockedTpmMessageView&) = delete;
-  LockedTpmMessageView& operator=(const LockedTpmMessageView&) = delete;
-  ~LockedTpmMessageView() override = default;
-
-  // Set the parameters needed to render the message.
-  void SetRemainingTime(base::TimeDelta time_left) {
-    std::u16string time_left_message;
-    if (base::TimeDurationFormatWithSeconds(
-            time_left, base::DurationFormatWidth::DURATION_WIDTH_WIDE,
-            &time_left_message)) {
-      std::u16string message_warning = l10n_util::GetStringFUTF16(
-          IDS_ASH_LOGIN_POD_TPM_LOCKED_ISSUE_WARNING, time_left_message);
-      message_warning_->SetText(message_warning);
-
-      if (time_left.InMinutes() != prev_time_left_.InMinutes()) {
-        message_warning_->SetAccessibleName(message_warning);
-      }
-      prev_time_left_ = time_left;
-    }
-  }
-
-  // views::View:
-  void OnPaint(gfx::Canvas* canvas) override {
-    views::View::OnPaint(canvas);
-
-    cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(
-        PinRequestView::GetChildUserDialogColor(false /*using blur*/));
-    canvas->DrawRoundRect(GetContentsBounds(),
-                          kLockedTpmMessageRoundedCornerRadiusDp, flags);
-  }
-
-  // views::View:
-  void RequestFocus() override { message_warning_->RequestFocus(); }
-
- private:
-  views::Label* CreateLabel() {
-    auto label = std::make_unique<views::Label>(std::u16string(),
-                                                views::style::CONTEXT_LABEL,
-                                                views::style::STYLE_PRIMARY);
-    label->SetFontList(gfx::FontList().Derive(kLockedTpmMessageDeltaDp,
-                                              gfx::Font::NORMAL,
-                                              gfx::Font::Weight::NORMAL));
-    label->SetSubpixelRenderingEnabled(false);
-    label->SetAutoColorReadabilityEnabled(false);
-    label->SetFocusBehavior(FocusBehavior::ALWAYS);
-    label->SetMultiLine(true);
-    return AddChildView(std::move(label));
-  }
-
-  base::TimeDelta prev_time_left_;
-  raw_ptr<views::Label, ExperimentalAsh> message_warning_;
-  raw_ptr<views::Label, ExperimentalAsh> message_description_;
-  raw_ptr<views::ImageView, ExperimentalAsh> message_icon_;
 };
 
 LoginAuthUserView::AuthMethodsMetadata::AuthMethodsMetadata() = default;

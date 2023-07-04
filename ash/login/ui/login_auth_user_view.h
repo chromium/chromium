@@ -32,6 +32,7 @@ class LabelButton;
 namespace ash {
 
 class DisabledAuthMessageView;
+class LockedTpmMessageView;
 class LoginAuthFactorsView;
 class FingerprintAuthFactorModel;
 class SmartLockAuthFactorModel;
@@ -213,7 +214,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
  private:
   struct UiState;
   class ChallengeResponseView;
-  class LockedTpmMessageView;
 
   // Called when the user submits an auth method. Runs mojo call.
   void OnAuthSubmit(const std::u16string& password);

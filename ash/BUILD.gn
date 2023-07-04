@@ -762,6 +762,8 @@ component("ash") {
     "login/ui/lock_screen.h",
     "login/ui/lock_screen_media_controls_view.cc",
     "login/ui/lock_screen_media_controls_view.h",
+    "login/ui/locked_tpm_message_view.cc",
+    "login/ui/locked_tpm_message_view.h",
     "login/ui/login_auth_factors_view.cc",
     "login/ui/login_auth_factors_view.h",
     "login/ui/login_auth_user_view.cc",
