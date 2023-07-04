@@ -59,11 +59,23 @@ class WebFramesManagerImpl;
 //    writing them out for session saves.
 class WebStateImpl final : public WebState {
  public:
+  // Empty structure used to mark the constructor used to implement Clone.
+  struct CloneFrom {};
+
+  // Forward-declaration of the two internal classes used to implement
+  // the "unrealized" state of the WebState. See the documentation at
+  // //docs/ios/unrealized_web_state.md for more details.
+  class RealizedWebState;
+  class SerializedData;
+
   // Constructor for WebStateImpls created for new sessions.
   explicit WebStateImpl(const CreateParams& params);
 
   // Constructor for WebStateImpls created for deserialized sessions
   WebStateImpl(const CreateParams& params, CRWSessionStorage* session_storage);
+
+  // Constructor for cloned WebStateImpl.
+  WebStateImpl(CloneFrom, const RealizedWebState& pimpl);
 
   WebStateImpl(const WebStateImpl&) = delete;
   WebStateImpl& operator=(const WebStateImpl&) = delete;
@@ -353,12 +365,6 @@ class WebStateImpl final : public WebState {
   void RemovePolicyDecider(WebStatePolicyDecider* decider) final;
 
  private:
-  // Forward-declaration of the two internal classes used to implement
-  // the "unrealized" state of the WebState. See the documentation at
-  // //docs/ios/unrealized_web_state.md for more details.
-  class RealizedWebState;
-  class SerializedData;
-
   // Type aliases for the various ObserverList map used by WebStateImpl (reused
   // by the RealizedWebState class).
   using WebStateObserverList = base::ObserverList<WebStateObserver, true>;
@@ -370,6 +376,14 @@ class WebStateImpl final : public WebState {
   // then return a pointer to the RealizedWebState. Safe to call if the
   // WebState is already realized.
   RealizedWebState* RealizedState();
+
+  // Add a marker used to ensure casting a WebState to WebStateImpl is a
+  // safe operation (if this marker is not present, the cast is invalid).
+  void AddWebStateImplMarker();
+
+  // Send global creation event. Needs to be the last method called in
+  // the constructor.
+  void SendGlobalCreationEvent();
 
   // Stores whether the web state is currently being destroyed. This is not
   // stored in RealizedWebState/SerializedData as a WebState can be destroyed

@@ -70,28 +70,35 @@ void IgnoreOverRealizationCheck() {
 
 #pragma mark - WebStateImpl public methods
 
-WebStateImpl::WebStateImpl(const CreateParams& params)
-    : WebStateImpl(params, nil) {}
+WebStateImpl::WebStateImpl(const CreateParams& params) {
+  AddWebStateImplMarker();
+
+  pimpl_ = std::make_unique<RealizedWebState>(this, [[NSUUID UUID] UUIDString],
+                                              SessionID::NewUnique());
+  pimpl_->Init(params.browser_state, params.last_active_time,
+               params.created_with_opener);
+
+  SendGlobalCreationEvent();
+}
 
 WebStateImpl::WebStateImpl(const CreateParams& params,
                            CRWSessionStorage* session_storage) {
-  // Store an empty base::SupportsUserData::Data that mark the current instance
-  // as a WebStateImpl. Need to be done before anything else, so that casting
-  // can safely be performed even before the end of the constructor.
-  SetUserData(kWebStateIsWebStateImpl,
-              std::make_unique<base::SupportsUserData::Data>());
+  AddWebStateImplMarker();
 
-  if (session_storage) {
-    saved_ = std::make_unique<SerializedData>(this, params, session_storage);
-  } else {
-    pimpl_ = std::make_unique<RealizedWebState>(
-        this, [[NSUUID UUID] UUIDString], SessionID::NewUnique());
-    pimpl_->Init(params.browser_state, params.last_active_time,
-                 params.created_with_opener);
-  }
+  saved_ = std::make_unique<SerializedData>(this, params, session_storage);
 
-  // Send creation event.
-  GlobalWebStateEventTracker::GetInstance()->OnWebStateCreated(this);
+  SendGlobalCreationEvent();
+}
+
+WebStateImpl::WebStateImpl(CloneFrom, const RealizedWebState& pimpl) {
+  AddWebStateImplMarker();
+
+  pimpl_ = std::make_unique<RealizedWebState>(this, [[NSUUID UUID] UUIDString],
+                                              SessionID::NewUnique());
+  pimpl_->InitWithStorage(pimpl.GetBrowserState(), pimpl.BuildSessionStorage(),
+                          pimpl.GetFaviconStatus(), base::Time::Now());
+
+  SendGlobalCreationEvent();
 }
 
 WebStateImpl::~WebStateImpl() {
@@ -349,19 +356,10 @@ void WebStateImpl::SetDelegate(WebStateDelegate* delegate) {
 }
 
 std::unique_ptr<WebState> WebStateImpl::Clone() const {
-  CreateParams params(GetBrowserState());
-  params.last_active_time = base::Time::Now();
+  CHECK(IsRealized());
+  CHECK(!is_being_destroyed_);
 
-  CRWSessionStorage* session_storage = BuildSessionStorage();
-  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = SessionID::NewUnique();
-  auto clone = std::make_unique<WebStateImpl>(params, session_storage);
-
-  // It is okay to clone a WebState.
-  IgnoreOverRealizationCheck();
-  clone->ForceRealized();
-
-  return clone;
+  return std::make_unique<WebStateImpl>(CloneFrom{}, *pimpl_);
 }
 
 bool WebStateImpl::IsRealized() const {
@@ -747,6 +745,21 @@ WebStateImpl::RealizedWebState* WebStateImpl::RealizedState() {
 
   DCHECK(pimpl_);
   return pimpl_.get();
+}
+
+void WebStateImpl::AddWebStateImplMarker() {
+  // Store an empty base::SupportsUserData::Data that mark the current instance
+  // as a WebStateImpl. Need to be done before anything else, so that casting
+  // can safely be performed even before the end of the constructor.
+  SetUserData(kWebStateIsWebStateImpl,
+              std::make_unique<base::SupportsUserData::Data>());
+}
+
+void WebStateImpl::SendGlobalCreationEvent() {
+  CHECK(saved_ || pimpl_);
+
+  // Send creation event.
+  GlobalWebStateEventTracker::GetInstance()->OnWebStateCreated(this);
 }
 
 }  // namespace web
