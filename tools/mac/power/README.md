@@ -121,7 +121,7 @@ A tool that converts the DTrace results created by benchmark.py into a format
 suitable for FlameGraph generation and analysis.
 
 ```
-./export_dtrace.py --stack_dir ./output/idle_on_wiki_chromium_dtraces_cpu_time --output ./output/idle_on_wiki_cpu_profile.pb
+./export_dtrace.py --data_dir ./output/idle_on_wiki_chromium_dtraces_cpu_time --output ./output/idle_on_wiki_cpu_profile.pb
 ```
 
 This command will produce a file at `./output/idle_on_wiki_cpu_profile.pb`.
