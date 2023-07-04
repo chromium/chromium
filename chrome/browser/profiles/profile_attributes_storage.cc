@@ -575,14 +575,15 @@ bool ProfileAttributesStorage::IsDefaultProfileName(
     const std::u16string& name,
     bool include_check_for_legacy_profile_name) const {
   // Check whether it's one of the "Person %d" style names.
-  std::string default_name_format =
-      l10n_util::GetStringFUTF8(IDS_NEW_NUMBERED_PROFILE_NAME, u"%d");
-  int generic_profile_number;  // Unused. Just a placeholder for sscanf.
-  int assignments =
-      sscanf(base::UTF16ToUTF8(name).c_str(), default_name_format.c_str(),
-             &generic_profile_number);
-  if (assignments == 1)
-    return true;
+  std::u16string default_name_prefix =
+      l10n_util::GetStringFUTF16(IDS_NEW_NUMBERED_PROFILE_NAME, u"");
+  if (base::StartsWith(name, default_name_prefix)) {
+    int generic_profile_number;  // Unused. Just a placeholder for StringToInt.
+    if (base::StringToInt(name.substr(default_name_prefix.length()),
+                          &generic_profile_number)) {
+      return true;
+    }
+  }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   if (!include_check_for_legacy_profile_name)
