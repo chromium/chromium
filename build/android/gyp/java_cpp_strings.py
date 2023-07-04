@@ -17,7 +17,7 @@ import zip_helpers
 
 
 class StringParserDelegate(java_cpp_utils.CppConstantParser.Delegate):
-  STRING_RE = re.compile(r'\s*const char k(.*)\[\]\s*=')
+  STRING_RE = re.compile(r'\s*(?:inline )?const(?:expr)? char k(.*)\[\]\s*=')
   VALUE_RE = re.compile(r'\s*("(?:\"|[^"])*")\s*;')
 
   def ExtractConstantName(self, line):
