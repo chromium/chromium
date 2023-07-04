@@ -14,7 +14,6 @@
 ../../build/scripts/blinkbuild/__init__.py
 ../../build/scripts/blinkbuild/name_style_converter.py
 collect_idl_files.py
-utilities.py
 web_idl/__init__.py
 web_idl/argument.py
 web_idl/ast_group.py

@@ -10,8 +10,8 @@ a label of Blink component.
 """
 
 import optparse
+import shlex
 
-import utilities
 import web_idl
 
 from idl_parser import idl_parser
@@ -53,7 +53,8 @@ def parse_options():
 def main():
     options, _ = parse_options()
 
-    filepaths = utilities.read_idl_files_list_from_file(options.idl_list_file)
+    with open(options.idl_list_file, encoding='utf-8') as idl_list_file:
+        filepaths = shlex.split(idl_list_file)
     lexer = idl_lexer.IDLLexer()
     parser = idl_parser.IDLParser(lexer)
     ast_group = web_idl.AstGroup(
