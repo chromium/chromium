@@ -1315,7 +1315,7 @@
       'linux-arm64-rel-cft': {
         'mixins': [
           'isolate_profile_data',
-          'linux-jammy',
+          'linux-focal',
           'arm64',
         ],
         'additional_compile_targets': [
