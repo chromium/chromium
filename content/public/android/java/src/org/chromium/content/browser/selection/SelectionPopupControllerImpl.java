@@ -710,14 +710,23 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             final int id = delegate.getItemId(item);
             logSelectionAction(delegate.getGroupId(item), id);
 
+            final Runnable dismissRunnable = () -> {
+                if (id != R.id.select_action_menu_select_all) {
+                    // We will clear the selection for all actions other
+                    // than select all.
+                    clearSelection();
+                }
+                destroyDropdownMenu();
+            };
+
             // Use the click listener for the item if it has one.
             @Nullable
             View.OnClickListener clickListener = delegate.getClickListener(item);
             if (clickListener != null) {
                 clickListener.onClick(null);
-                destroyDropdownMenu();
+                dismissRunnable.run();
             } else {
-                handleMenuItemClick(id, this::destroyDropdownMenu);
+                handleMenuItemClick(id, dismissRunnable);
             }
         };
     }
