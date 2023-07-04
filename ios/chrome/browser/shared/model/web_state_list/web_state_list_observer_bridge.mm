@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 
-#import "base/notreached.h"
-
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -20,31 +18,14 @@ void WebStateListObserverBridge::WebStateListWillChange(
     WebStateList* web_state_list,
     const WebStateListChangeDetach& detach_change,
     const WebStateSelection& selection) {
-  // TODO(crbug.com/1442546): Replace
-  // webStateList:willDetachWebState:atIndex: and
-  // webStateList:willCloseWebState:atIndex:userAction: with
-  // willChangeWebStateList:change:selection:.
-  if (detach_change.is_closing()) {
-    const SEL selector = @selector(webStateList:
-                              willCloseWebState:atIndex:userAction:);
-    if (![observer_ respondsToSelector:selector]) {
-      return;
-    }
-
-    [observer_ webStateList:web_state_list
-          willCloseWebState:detach_change.detached_web_state()
-                    atIndex:selection.index
-                 userAction:(detach_change.is_user_action() ? YES : NO)];
-  } else {
-    const SEL selector = @selector(webStateList:willDetachWebState:atIndex:);
-    if (![observer_ respondsToSelector:selector]) {
-      return;
-    }
-
-    [observer_ webStateList:web_state_list
-         willDetachWebState:detach_change.detached_web_state()
-                    atIndex:selection.index];
+  const SEL selector = @selector(willChangeWebStateList:change:selection:);
+  if (![observer_ respondsToSelector:selector]) {
+    return;
   }
+
+  [observer_ willChangeWebStateList:web_state_list
+                             change:detach_change
+                          selection:selection];
 }
 
 void WebStateListObserverBridge::WebStateListDidChange(

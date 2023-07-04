@@ -15,24 +15,16 @@
 
 @optional
 
+// Invoked before the specified WebState is updated. Currently, this is called
+// only before a WebState is detached from WebStateList.
+- (void)willChangeWebStateList:(WebStateList*)webStateList
+                        change:(const WebStateListChangeDetach&)change
+                     selection:(const WebStateSelection&)selection;
+
 // Invoked after the WebStateList is updated.
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                     selection:(const WebStateSelection&)selection;
-
-// Invoked before the specified WebState is detached from the WebStateList.
-// The WebState is still valid and still in the WebStateList.
-- (void)webStateList:(WebStateList*)webStateList
-    willDetachWebState:(web::WebState*)webState
-               atIndex:(int)atIndex;
-
-// Invoked before the specified WebState is destroyed via the WebStateList.
-// The WebState is still valid but is no longer in the WebStateList. If the
-// WebState is closed due to user action, `userAction` will be true.
-- (void)webStateList:(WebStateList*)webStateList
-    willCloseWebState:(web::WebState*)webState
-              atIndex:(int)atIndex
-           userAction:(BOOL)userAction;
 
 // Invoked after `newWebState` was activated at the specified index. Both
 // WebState are either valid or null (if there was no selection or there is

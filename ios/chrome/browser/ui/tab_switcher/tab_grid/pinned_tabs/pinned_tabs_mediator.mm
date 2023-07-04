@@ -125,6 +125,45 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 
 #pragma mark - WebStateListObserving
 
+- (void)willChangeWebStateList:(WebStateList*)webStateList
+                        change:(const WebStateListChangeDetach&)detachChange
+                     selection:(const WebStateSelection&)selection {
+  DCHECK_EQ(_webStateList, webStateList);
+  if (webStateList->IsBatchInProgress()) {
+    return;
+  }
+
+  if (!webStateList) {
+    return;
+  }
+
+  // TODO(crbug.com/1442546): Remove this check after removing the second call
+  // of WebStateListWillChange(). Closed WebStates are always detached first.
+  if (detachChange.is_closing()) {
+    return;
+  }
+
+  if (!webStateList->IsWebStatePinnedAt(selection.index)) {
+    [self.consumer
+        selectItemWithID:GetActiveWebStateIdentifier(
+                             webStateList,
+                             WebStateSearchCriteria{
+                                 .pinned_state = PinnedState::kPinned,
+                             })];
+    return;
+  }
+
+  web::WebState* detachedWebState = detachChange.detached_web_state();
+  [self.consumer removeItemWithID:detachedWebState->GetStableIdentifier()
+                   selectedItemID:GetActiveWebStateIdentifier(
+                                      webStateList,
+                                      WebStateSearchCriteria{
+                                          .pinned_state = PinnedState::kPinned,
+                                      })];
+
+  _scopedWebStateObservation->RemoveObservation(detachedWebState);
+}
+
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                     selection:(const WebStateSelection&)selection {
@@ -202,39 +241,6 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
       break;
     }
   }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    willDetachWebState:(web::WebState*)webState
-               atIndex:(int)index {
-  DCHECK_EQ(_webStateList, webStateList);
-
-  if (webStateList->IsBatchInProgress()) {
-    return;
-  }
-
-  if (!webStateList) {
-    return;
-  }
-
-  if (!webStateList->IsWebStatePinnedAt(index)) {
-    [self.consumer
-        selectItemWithID:GetActiveWebStateIdentifier(
-                             webStateList,
-                             WebStateSearchCriteria{
-                                 .pinned_state = PinnedState::kPinned,
-                             })];
-    return;
-  }
-
-  [self.consumer removeItemWithID:webState->GetStableIdentifier()
-                   selectedItemID:GetActiveWebStateIdentifier(
-                                      webStateList,
-                                      WebStateSearchCriteria{
-                                          .pinned_state = PinnedState::kPinned,
-                                      })];
-
-  _scopedWebStateObservation->RemoveObservation(webState);
 }
 
 - (void)webStateList:(WebStateList*)webStateList

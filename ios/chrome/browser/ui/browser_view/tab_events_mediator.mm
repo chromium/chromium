@@ -128,6 +128,30 @@
 
 #pragma mark - WebStateListObserving methods
 
+- (void)willChangeWebStateList:(WebStateList*)webStateList
+                        change:(const WebStateListChangeDetach&)detachChange
+                     selection:(const WebStateSelection&)selection {
+  web::WebState* detachedWebState = detachChange.detached_web_state();
+  // TODO(crbug.com/1442546): Refactor this `if` block and always execute
+  // the part for `is_closing=false` because
+  // willChangeWebStateList:change:selection: will be called only once.
+  if (detachChange.is_closing()) {
+    // When an NTP web state is closed, check if the coordinator should be
+    // stopped.
+    NewTabPageTabHelper* NTPTabHelper =
+        NewTabPageTabHelper::FromWebState(detachedWebState);
+    if (NTPTabHelper->IsActive()) {
+      [self stopNTPIfNeeded];
+    }
+  } else {
+    // When the active webState is detached, the view should be reset.
+    web::WebState* currentWebState = _webStateList->GetActiveWebState();
+    if (detachedWebState == currentWebState) {
+      [self.consumer resetTab];
+    }
+  }
+}
+
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                     selection:(const WebStateSelection&)selection {
@@ -173,29 +197,6 @@
       }
       break;
     }
-  }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    willDetachWebState:(web::WebState*)webState
-               atIndex:(int)atIndex {
-  // When the active webState is detached, the view should be reset.
-  web::WebState* currentWebState = _webStateList->GetActiveWebState();
-  if (webState == currentWebState) {
-    [self.consumer resetTab];
-  }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    willCloseWebState:(web::WebState*)webState
-              atIndex:(int)atIndex
-           userAction:(BOOL)userAction {
-  // When an NTP web state is closed, check if the coordinator should be
-  // stopped.
-  NewTabPageTabHelper* NTPTabHelper =
-      NewTabPageTabHelper::FromWebState(webState);
-  if (NTPTabHelper->IsActive()) {
-    [self stopNTPIfNeeded];
   }
 }
 

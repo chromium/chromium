@@ -101,6 +101,13 @@ using ScopedWebStateListObservation =
 
 #pragma mark - WebStateListObserving
 
+- (void)willChangeWebStateList:(WebStateList*)webStateList
+                        change:(const WebStateListChangeDetach&)detachChange
+                     selection:(const WebStateSelection&)selection {
+  // Do nothing. Updating the consumer with the new count will be handled in
+  // didChangeWebStateList:change:selection: with kDetach.
+}
+
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                     selection:(const WebStateSelection&)selection {
@@ -126,21 +133,6 @@ using ScopedWebStateListObservation =
     case WebStateListChange::Type::kInsert:
       NOTREACHED_NORETURN();
   }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    willDetachWebState:(web::WebState*)webState
-               atIndex:(int)index {
-  // No-op. `-didChangeWebStateList:change:selection:` with kDetach will soon be
-  // called and will update the consumer with the new count.
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    willCloseWebState:(web::WebState*)webState
-              atIndex:(int)atIndex
-           userAction:(BOOL)userAction {
-  // No-op. Closed tabs have previously been detached, which means the count has
-  // already been updated.
 }
 
 - (void)webStateList:(WebStateList*)webStateList

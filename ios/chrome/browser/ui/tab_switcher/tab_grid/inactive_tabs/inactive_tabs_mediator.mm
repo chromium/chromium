@@ -270,6 +270,28 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 #pragma mark - WebStateListObserving
 
+- (void)willChangeWebStateList:(WebStateList*)webStateList
+                        change:(const WebStateListChangeDetach&)detachChange
+                     selection:(const WebStateSelection&)selection {
+  DCHECK_EQ(_webStateList, webStateList);
+  if (_webStateList->IsBatchInProgress()) {
+    // Updates are handled in the batch operation observer methods.
+    return;
+  }
+
+  // TODO(crbug.com/1442546): Remove this check after removing the second call
+  // of WebStateListWillChange(). Closed WebStates are always detached first.
+  if (detachChange.is_closing()) {
+    return;
+  }
+
+  web::WebState* detachedWebState = detachChange.detached_web_state();
+  [_consumer removeItemWithID:detachedWebState->GetStableIdentifier()
+               selectedItemID:nil];
+
+  _scopedWebStateObservation->RemoveObservation(detachedWebState);
+}
+
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                     selection:(const WebStateSelection&)selection {
@@ -310,28 +332,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
       break;
     }
   }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    willDetachWebState:(web::WebState*)webState
-               atIndex:(int)index {
-  DCHECK_EQ(_webStateList, webStateList);
-  if (_webStateList->IsBatchInProgress()) {
-    // Updates are handled in the batch operation observer methods.
-    return;
-  }
-
-  [_consumer removeItemWithID:webState->GetStableIdentifier()
-               selectedItemID:nil];
-
-  _scopedWebStateObservation->RemoveObservation(webState);
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    willCloseWebState:(web::WebState*)webState
-              atIndex:(int)atIndex
-           userAction:(BOOL)userAction {
-  // No-op.
 }
 
 - (void)webStateList:(WebStateList*)webStateList

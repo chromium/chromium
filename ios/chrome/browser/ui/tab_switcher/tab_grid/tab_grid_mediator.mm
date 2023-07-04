@@ -250,6 +250,44 @@ void RecordTabGridCloseTabsCount(int count) {
 
 #pragma mark - WebStateListObserving
 
+- (void)willChangeWebStateList:(WebStateList*)webStateList
+                        change:(const WebStateListChangeDetach&)detachChange
+                     selection:(const WebStateSelection&)selection {
+  DCHECK_EQ(_webStateList, webStateList);
+  if (webStateList->IsBatchInProgress()) {
+    return;
+  }
+
+  // TODO(crbug.com/1442546): Remove this check after removing the second call
+  // of WebStateListWillChange(). Closed WebStates are always detached first.
+  if (detachChange.is_closing()) {
+    return;
+  }
+
+  web::WebState* detachedWebState = detachChange.detached_web_state();
+  // If the WebState is pinned and it is not in the consumer's items list,
+  // consumer will filter it out in the method's implementation.
+  [self.consumer
+      removeItemWithID:detachedWebState->GetStableIdentifier()
+        selectedItemID:GetActiveWebStateIdentifier(
+                           webStateList,
+                           WebStateSearchCriteria{
+                               .pinned_state = PinnedState::kNonPinned,
+                           })];
+
+  const bool isPinnedWebState =
+      IsPinnedTabsEnabled() &&
+      webStateList->IsWebStatePinnedAt(selection.index);
+
+  // The pinned WebState could be detached only in case it was displayed in
+  // the Tab Search and was closed from the context menu. In such a case
+  // there were no observation added for it. Therefore, there is no need to
+  // remove one.
+  if (!isPinnedWebState) {
+    _scopedWebStateObservation->RemoveObservation(detachedWebState);
+  }
+}
+
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                     selection:(const WebStateSelection&)selection {
@@ -333,35 +371,6 @@ void RecordTabGridCloseTabsCount(int count) {
       _scopedWebStateObservation->AddObservation(insertedWebState);
       break;
     }
-  }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    willDetachWebState:(web::WebState*)webState
-               atIndex:(int)index {
-  DCHECK_EQ(_webStateList, webStateList);
-  if (webStateList->IsBatchInProgress()) {
-    return;
-  }
-
-  // If the WebState is pinned and it is not in the consumer's items list,
-  // consumer will filter it out in the method's implementation.
-  [self.consumer
-      removeItemWithID:webState->GetStableIdentifier()
-        selectedItemID:GetActiveWebStateIdentifier(
-                           webStateList,
-                           WebStateSearchCriteria{
-                               .pinned_state = PinnedState::kNonPinned,
-                           })];
-
-  const bool isPinnedWebState =
-      IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(index);
-
-  // The pinned WebState could be detached only in case it was displayed in the
-  // Tab Search and was closed from the context menu. In such a case there were
-  // no observation added for it. Therefore, there is no need to remove one.
-  if (!isPinnedWebState) {
-    _scopedWebStateObservation->RemoveObservation(webState);
   }
 }
 
