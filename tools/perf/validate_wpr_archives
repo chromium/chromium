@@ -33,7 +33,6 @@ def GetAllStorySets():
       'v8.loading_runtime_stats.cluster_telemetry',
       'memory.cluster_telemetry',
       'skpicture_printer',
-      'cros_tab_switching.typical_24',
       'multipage_skpicture_printer',
       'leak_detection.cluster_telemetry',
       'generic_trace_ct',
