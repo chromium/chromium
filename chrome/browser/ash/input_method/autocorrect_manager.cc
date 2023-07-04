@@ -768,7 +768,7 @@ void AutocorrectManager::OnActivate(const std::string& engine_id) {
   auto autocorrect_pref =
       GetPhysicalKeyboardAutocorrectPref(*pref_service, engine_id);
 
-  if (!base::FeatureList::IsEnabled(features::kLacrosSupport) &&
+  if (!crosapi::browser_util::IsLacrosEnabled() &&
       base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
       autocorrect_pref == AutocorrectPreference::kDefault &&
       IsUsEnglishId(engine_id) &&
@@ -1052,7 +1052,7 @@ void AutocorrectManager::UndoAutocorrect() {
 
     if (base::FeatureList::IsEnabled(
             features::kAutocorrectUseReplaceSurroundingText) &&
-        !base::FeatureList::IsEnabled(features::kLacrosSupport)) {
+        !crosapi::browser_util::IsLacrosEnabled()) {
       input_context->ReplaceSurroundingText(
           before, after, pending_autocorrect_->original_text);
     } else {
