@@ -2198,17 +2198,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Enterprise.ManagementAuthorityTrustworthiness.Cache.ValueChange"
-    enum="BooleanChanged" expires_after="2023-07-15">
-  <owner>ydago@chromium.org</owner>
-  <owner>zmin@chromium.org</owner>
-  <summary>
-    Recorded after the ManagementStatus cache is updated. Reports whether the
-    Management authority trustworthiness changed after the cache update.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.OnBulkDataEntry.DataSize" units="bytes"
     expires_after="2023-11-12">
   <owner>domfc@chromium.org</owner>

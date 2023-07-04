@@ -107,9 +107,6 @@ void ManagementService::RefreshCache(CacheRefreshCallback callback) {
 
     ManagementAuthorityTrustworthiness next =
         GetManagementAuthorityTrustworthiness();
-    base::UmaHistogramBoolean(
-        "Enterprise.ManagementAuthorityTrustworthiness.Cache.ValueChange",
-        previous != next);
     if (callback)
       std::move(callback).Run(previous, next);
   }

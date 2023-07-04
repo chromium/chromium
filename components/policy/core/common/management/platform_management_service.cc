@@ -5,7 +5,6 @@
 #include "components/policy/core/common/management/platform_management_service.h"
 
 #include "base/memory/singleton.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -94,9 +93,6 @@ void PlatformManagementService::UpdateCache(
   }
   ManagementAuthorityTrustworthiness next =
       GetManagementAuthorityTrustworthiness();
-  base::UmaHistogramBoolean(
-      "Enterprise.ManagementAuthorityTrustworthiness.Cache.ValueChange",
-      previous != next);
   if (callback)
     std::move(callback).Run(previous, next);
 }
