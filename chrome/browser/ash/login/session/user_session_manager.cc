@@ -112,7 +112,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/channel_info.h"
@@ -160,7 +160,8 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
-#include "components/sync/service/sync_service.h"
+#include "components/trusted_vault/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_service.h"
 #include "components/user_manager/common_types.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -431,21 +432,21 @@ void SaveSyncTrustedVaultKeysToProfile(
     const std::string& gaia_id,
     const SyncTrustedVaultKeys& trusted_vault_keys,
     Profile* profile) {
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-  if (!sync_service) {
+  trusted_vault::TrustedVaultService* trusted_vault_service =
+      TrustedVaultServiceFactory::GetForProfile(profile);
+  if (!trusted_vault_service) {
     return;
   }
 
   if (!trusted_vault_keys.encryption_keys().empty()) {
-    sync_service->AddTrustedVaultDecryptionKeysFromWeb(
+    trusted_vault_service->GetTrustedVaultClient()->StoreKeys(
         gaia_id, trusted_vault_keys.encryption_keys(),
         trusted_vault_keys.last_encryption_key_version());
   }
 
   for (const SyncTrustedVaultKeys::TrustedRecoveryMethod& method :
        trusted_vault_keys.trusted_recovery_methods()) {
-    sync_service->AddTrustedVaultRecoveryMethodFromWeb(
+    trusted_vault_service->GetTrustedVaultClient()->AddTrustedRecoveryMethod(
         gaia_id, method.public_key, method.type_hint, base::DoNothing());
   }
 }
