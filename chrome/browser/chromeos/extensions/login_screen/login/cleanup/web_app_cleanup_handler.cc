@@ -4,10 +4,12 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/web_app_cleanup_handler.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 
 namespace chromeos {
 
@@ -24,6 +26,13 @@ void WebAppCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   if (!provider) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // WebAppProvider is intentionally nullptr.
+    if (web_app::IsWebAppsCrosapiEnabled()) {
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+#endif
     std::move(callback).Run("There is no WebAppProvider");
     return;
   }
