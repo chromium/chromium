@@ -14,7 +14,6 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/language_code.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
@@ -23,15 +22,12 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/sync/service/sync_service.h"
 #include "net/cert/cert_status_flags.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 
 class PrefService;
 

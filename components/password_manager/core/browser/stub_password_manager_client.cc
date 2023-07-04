@@ -10,6 +10,7 @@
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/version_info/channel.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace password_manager {
