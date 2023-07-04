@@ -410,9 +410,9 @@ const CSSValue* HTMLFontSizeEquivalent::AttributeValueAsCSSValue(
   return CSSIdentifierValue::Create(size);
 }
 
-EditingStyle::EditingStyle(ContainerNode* node,
+EditingStyle::EditingStyle(Element* element,
                            PropertiesToInclude properties_to_include) {
-  Init(node, properties_to_include);
+  Init(element, properties_to_include);
 }
 
 EditingStyle::EditingStyle(const Position& position,
@@ -1617,7 +1617,7 @@ static void RemovePropertiesInStyle(
 }
 
 void EditingStyle::RemoveStyleFromRulesAndContext(Element* element,
-                                                  ContainerNode* context) {
+                                                  Element* context) {
   DCHECK(element);
   if (!mutable_style_)
     return;

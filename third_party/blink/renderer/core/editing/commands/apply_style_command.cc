@@ -587,7 +587,7 @@ HTMLElement* ApplyStyleCommand::SplitAncestorsWithUnicodeBidi(
           mojo_base::mojom::blink::TextDirection::UNKNOWN_DIRECTION &&
       highest_ancestor_unicode_bidi != CSSValueID::kBidiOverride &&
       highest_ancestor_html_element &&
-      MakeGarbageCollected<EditingStyle>(highest_ancestor_with_unicode_bidi,
+      MakeGarbageCollected<EditingStyle>(highest_ancestor_html_element,
                                          EditingStyle::kAllProperties)
           ->GetTextDirection(highest_ancestor_direction) &&
       highest_ancestor_direction == allowed_direction) {

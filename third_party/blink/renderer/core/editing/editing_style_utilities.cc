@@ -85,8 +85,8 @@ bool EditingStyleUtilities::HasAncestorVerticalAlignStyle(Node& node,
 
 EditingStyle*
 EditingStyleUtilities::CreateWrappingStyleForAnnotatedSerialization(
-    ContainerNode* context) {
-  // TODO(editing-dev): Change this function to take |const ContainerNode&|.
+    Element* context) {
+  // TODO(editing-dev): Change this function to take |const Element&|.
   // Tracking bug for this is crbug.com/766448.
   DCHECK(context);
   EditingStyle* wrapping_style = MakeGarbageCollected<EditingStyle>(
@@ -109,7 +109,7 @@ EditingStyleUtilities::CreateWrappingStyleForAnnotatedSerialization(
 }
 
 EditingStyle* EditingStyleUtilities::CreateWrappingStyleForSerialization(
-    ContainerNode* context) {
+    Element* context) {
   DCHECK(context);
   EditingStyle* wrapping_style = MakeGarbageCollected<EditingStyle>();
 

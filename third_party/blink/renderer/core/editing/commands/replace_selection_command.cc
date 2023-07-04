@@ -591,7 +591,7 @@ void ReplaceSelectionCommand::RemoveRedundantStylesAndKeepStyleSpanInline(
         }
       }
 
-      ContainerNode* context = element->parentNode();
+      Element* context = element->parentElement();
 
       // If Mail wraps the fragment with a Paste as Quotation blockquote, or if
       // you're pasting into a quoted region, styles from blockquoteNode are
