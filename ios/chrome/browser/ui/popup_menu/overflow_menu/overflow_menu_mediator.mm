@@ -1439,6 +1439,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 // Dismisses the menu and pins the tab.
 - (void)pinTab {
+  if (!self.webState) {
+    [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+    return;
+  }
+
   RecordAction(UserMetricsAction("MobileMenuPinTab"));
   [[self class] setTabPinned:YES
                     webState:self.webState
@@ -1457,6 +1462,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 // Dismisses the menu and unpins the tab.
 - (void)unpinTab {
+  if (!self.webState) {
+    [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+    return;
+  }
+
   RecordAction(UserMetricsAction("MobileMenuUnpinTab"));
   [[self class] setTabPinned:NO
                     webState:self.webState
