@@ -4,16 +4,14 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
+import org.chromium.components.autofill.ServerFieldType;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,29 +25,6 @@ import java.util.Locale;
  */
 @JNINamespace("autofill")
 public final class AutofillProfileBridge {
-    /**
-     * Address field types.
-     * This list must be kept in-sync with the corresponding enum in
-     * third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h
-     */
-    @IntDef({AddressField.COUNTRY, AddressField.ADMIN_AREA, AddressField.LOCALITY,
-            AddressField.DEPENDENT_LOCALITY, AddressField.SORTING_CODE, AddressField.POSTAL_CODE,
-            AddressField.STREET_ADDRESS, AddressField.ORGANIZATION, AddressField.RECIPIENT})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface AddressField {
-        int COUNTRY = 0;
-        int ADMIN_AREA = 1;
-        int LOCALITY = 2;
-        int DEPENDENT_LOCALITY = 3;
-        int SORTING_CODE = 4;
-        int POSTAL_CODE = 5;
-        int STREET_ADDRESS = 6;
-        int ORGANIZATION = 7;
-        int RECIPIENT = 8;
-
-        int NUM_ENTRIES = 9;
-    }
-
     private String mCurrentBestLanguageCode;
 
     /**
@@ -116,9 +91,9 @@ public final class AutofillProfileBridge {
     /**
      * Description of an address editor input field.
      */
-    public static class AddressUiComponent {
-        /** The type of the field, e.g., AddressField.LOCALITY. */
-        public final int id;
+    public static class AutofillAddressUiComponent {
+        /** The type of the field, e.g., ServerFieldType.NAME_FULL. */
+        public final @ServerFieldType int id;
 
         /** The localized display label for the field, e.g., "City." */
         public final String label;
@@ -132,12 +107,13 @@ public final class AutofillProfileBridge {
         /**
          * Builds a description of an address editor input field.
          *
-         * @param id         The type of the field, .e.g., AddressField.LOCALITY.
+         * @param id         The type of the field, .e.g., ServerFieldType.ADDRESS_HOME_CITY.
          * @param label      The localized display label for the field, .e.g., "City."
          * @param isRequired Whether the field is required.
          * @param isFullLine Whether the field takes up the full line.
          */
-        public AddressUiComponent(int id, String label, boolean isRequired, boolean isFullLine) {
+        public AutofillAddressUiComponent(
+                int id, String label, boolean isRequired, boolean isFullLine) {
             this.id = id;
             this.label = label;
             this.isRequired = isRequired;
@@ -159,21 +135,22 @@ public final class AutofillProfileBridge {
      * @return A list of address UI components. The ordering in the list specifies the order these
      *         components should appear in the UI.
      */
-    public List<AddressUiComponent> getAddressUiComponents(
+    public List<AutofillAddressUiComponent> getAddressUiComponents(
             String countryCode, String languageCode, @AddressValidationType int validationType) {
         List<Integer> componentIds = new ArrayList<>();
         List<String> componentNames = new ArrayList<>();
         List<Integer> componentRequired = new ArrayList<>();
         List<Integer> componentLengths = new ArrayList<>();
-        List<AddressUiComponent> uiComponents = new ArrayList<>();
+        List<AutofillAddressUiComponent> uiComponents = new ArrayList<>();
 
         mCurrentBestLanguageCode = AutofillProfileBridgeJni.get().getAddressUiComponents(
                 countryCode, languageCode, validationType, componentIds, componentNames,
                 componentRequired, componentLengths);
 
         for (int i = 0; i < componentIds.size(); i++) {
-            uiComponents.add(new AddressUiComponent(componentIds.get(i), componentNames.get(i),
-                    componentRequired.get(i) == 1, componentLengths.get(i) == 1));
+            uiComponents.add(
+                    new AutofillAddressUiComponent(componentIds.get(i), componentNames.get(i),
+                            componentRequired.get(i) == 1, componentLengths.get(i) == 1));
         }
 
         return uiComponents;

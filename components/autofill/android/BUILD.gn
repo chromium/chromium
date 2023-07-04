@@ -131,6 +131,7 @@ android_resources("autofill_java_resources") {
 java_cpp_enum("autofill_core_browser_java_enums") {
   sources = [
     "../core/browser/data_model/credit_card.h",
+    "../core/browser/field_types.h",
     "../core/browser/metrics/payments/virtual_card_enrollment_metrics.h",
     "../core/browser/payments/card_unmask_challenge_option.h",
     "../core/browser/ui/accessory_sheet_enums.h",

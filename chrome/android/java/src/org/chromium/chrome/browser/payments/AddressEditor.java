@@ -45,8 +45,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AddressValidationType;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
-import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AddressField;
-import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AddressUiComponent;
+import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AutofillAddressUiComponent;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.GetSubKeysRequestDelegate;
@@ -56,6 +55,7 @@ import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType;
+import org.chromium.components.autofill.ServerFieldType;
 import org.chromium.payments.mojom.AddressErrors;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -94,7 +94,7 @@ public class AddressEditor
     private PropertyModel mAdminAreaField;
     private @ItemType int mAdminAreaFieldType;
     @Nullable
-    private List<AddressUiComponent> mAddressUiComponents;
+    private List<AutofillAddressUiComponent> mAddressUiComponents;
     private boolean mAdminAreasLoaded;
     private String mRecentlySelectedCountry;
     private Callback<AutofillAddress> mDoneCallback;
@@ -140,27 +140,28 @@ public class AddressEditor
         if (mAddressErrors == null) return null;
 
         switch (field) {
-            case AddressField.COUNTRY:
+            case ServerFieldType.ADDRESS_HOME_COUNTRY:
                 return mAddressErrors.country;
-            case AddressField.ADMIN_AREA:
+            case ServerFieldType.ADDRESS_HOME_STATE:
                 return mAddressErrors.region;
-            case AddressField.LOCALITY:
+            case ServerFieldType.ADDRESS_HOME_CITY:
                 return mAddressErrors.city;
-            case AddressField.DEPENDENT_LOCALITY:
+            case ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY:
                 return mAddressErrors.dependentLocality;
-            case AddressField.SORTING_CODE:
+            case ServerFieldType.ADDRESS_HOME_SORTING_CODE:
                 return mAddressErrors.sortingCode;
-            case AddressField.POSTAL_CODE:
+            case ServerFieldType.ADDRESS_HOME_ZIP:
                 return mAddressErrors.postalCode;
-            case AddressField.STREET_ADDRESS:
+            case ServerFieldType.ADDRESS_HOME_STREET_ADDRESS:
                 return mAddressErrors.addressLine;
-            case AddressField.ORGANIZATION:
+            case ServerFieldType.COMPANY_NAME:
                 return mAddressErrors.organization;
-            case AddressField.RECIPIENT:
+            case ServerFieldType.NAME_FULL:
                 return mAddressErrors.recipient;
+            default:
+                assert false : "Unrecognized server field type: " + field;
+                return null;
         }
-        assert false : "Unrecognized address field code";
-        return null;
     }
 
     /**
@@ -249,38 +250,38 @@ public class AddressEditor
         // and relabel the fields. The meaning of each field remains the same.
         if (mAddressFields.isEmpty()) {
             // City, dependent locality, and organization don't have any special formatting hints.
-            mAddressFields.put(AddressField.LOCALITY,
+            mAddressFields.put(ServerFieldType.ADDRESS_HOME_CITY,
                     new PropertyModel.Builder(TEXT_ALL_KEYS)
                             .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
                             .build());
-            mAddressFields.put(AddressField.DEPENDENT_LOCALITY,
+            mAddressFields.put(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
                     new PropertyModel.Builder(TEXT_ALL_KEYS)
                             .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
                             .build());
-            mAddressFields.put(AddressField.ORGANIZATION,
+            mAddressFields.put(ServerFieldType.COMPANY_NAME,
                     new PropertyModel.Builder(TEXT_ALL_KEYS)
                             .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
                             .build());
 
             // Sorting code and postal code (a.k.a. ZIP code) should show both letters and digits on
             // the keyboard, if possible.
-            mAddressFields.put(AddressField.SORTING_CODE,
+            mAddressFields.put(ServerFieldType.ADDRESS_HOME_SORTING_CODE,
                     new PropertyModel.Builder(TEXT_ALL_KEYS)
                             .with(TEXT_INPUT_TYPE, ALPHA_NUMERIC_INPUT)
                             .build());
-            mAddressFields.put(AddressField.POSTAL_CODE,
+            mAddressFields.put(ServerFieldType.ADDRESS_HOME_ZIP,
                     new PropertyModel.Builder(TEXT_ALL_KEYS)
                             .with(TEXT_INPUT_TYPE, ALPHA_NUMERIC_INPUT)
                             .build());
 
             // Street line field can contain \n to indicate line breaks.
-            mAddressFields.put(AddressField.STREET_ADDRESS,
+            mAddressFields.put(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
                     new PropertyModel.Builder(TEXT_ALL_KEYS)
                             .with(TEXT_INPUT_TYPE, STREET_ADDRESS_INPUT)
                             .build());
 
             // Android has special formatting rules for names.
-            mAddressFields.put(AddressField.RECIPIENT,
+            mAddressFields.put(ServerFieldType.NAME_FULL,
                     new PropertyModel.Builder(TEXT_ALL_KEYS)
                             .with(TEXT_INPUT_TYPE, PERSON_NAME_INPUT)
                             .build());
@@ -385,12 +386,12 @@ public class AddressEditor
         // Collect data from all visible fields and store it in the autofill profile.
         Set<Integer> visibleFields = new HashSet<>();
         for (int i = 0; i < mAddressUiComponents.size(); i++) {
-            AddressUiComponent component = mAddressUiComponents.get(i);
+            AutofillAddressUiComponent component = mAddressUiComponents.get(i);
             visibleFields.add(component.id);
-            PropertyModel fieldModel = component.id == AddressField.ADMIN_AREA
+            PropertyModel fieldModel = component.id == ServerFieldType.ADDRESS_HOME_STATE
                     ? mAdminAreaField
                     : mAddressFields.get(component.id);
-            if (component.id != AddressField.COUNTRY) {
+            if (component.id != ServerFieldType.ADDRESS_HOME_COUNTRY) {
                 setProfileField(profile, component.id, fieldModel.get(VALUE));
             }
         }
@@ -424,33 +425,35 @@ public class AddressEditor
             AutofillProfile profile, int field, @Nullable String value) {
         assert profile != null;
         switch (field) {
-            case AddressField.COUNTRY:
+            case ServerFieldType.ADDRESS_HOME_COUNTRY:
                 profile.setCountryCode(ensureNotNull(value));
                 return;
-            case AddressField.ADMIN_AREA:
+            case ServerFieldType.ADDRESS_HOME_STATE:
                 profile.setRegion(ensureNotNull(value));
                 return;
-            case AddressField.LOCALITY:
+            case ServerFieldType.ADDRESS_HOME_CITY:
                 profile.setLocality(ensureNotNull(value));
                 return;
-            case AddressField.DEPENDENT_LOCALITY:
+            case ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY:
                 profile.setDependentLocality(ensureNotNull(value));
                 return;
-            case AddressField.SORTING_CODE:
+            case ServerFieldType.ADDRESS_HOME_SORTING_CODE:
                 profile.setSortingCode(ensureNotNull(value));
                 return;
-            case AddressField.POSTAL_CODE:
+            case ServerFieldType.ADDRESS_HOME_ZIP:
                 profile.setPostalCode(ensureNotNull(value));
                 return;
-            case AddressField.STREET_ADDRESS:
+            case ServerFieldType.ADDRESS_HOME_STREET_ADDRESS:
                 profile.setStreetAddress(ensureNotNull(value));
                 return;
-            case AddressField.ORGANIZATION:
+            case ServerFieldType.COMPANY_NAME:
                 profile.setCompanyName(ensureNotNull(value));
                 return;
-            case AddressField.RECIPIENT:
+            case ServerFieldType.NAME_FULL:
                 profile.setFullName(ensureNotNull(value));
                 return;
+            default:
+                assert false : "Unrecognized server field type: " + field;
         }
 
         assert false;
@@ -466,8 +469,8 @@ public class AddressEditor
         for (Map.Entry<Integer, PropertyModel> entry : mAddressFields.entrySet()) {
             entry.getValue().set(VALUE, AutofillAddress.getProfileField(mProfile, entry.getKey()));
         }
-        mAdminAreaField.set(
-                VALUE, AutofillAddress.getProfileField(mProfile, AddressField.ADMIN_AREA));
+        mAdminAreaField.set(VALUE,
+                AutofillAddress.getProfileField(mProfile, ServerFieldType.ADDRESS_HOME_STATE));
     }
 
     @Override
@@ -553,14 +556,17 @@ public class AddressEditor
         // In terms of order, country must be the first field.
         editorFields.add(new FieldItem(DROPDOWN, mCountryField, /*isFullLine=*/true));
         for (int i = 0; i < mAddressUiComponents.size(); i++) {
-            AddressUiComponent component = mAddressUiComponents.get(i);
+            AutofillAddressUiComponent component = mAddressUiComponents.get(i);
 
             final PropertyModel field;
             final @ItemType int fieldType;
-            if (component.id == AddressField.ADMIN_AREA) {
+            if (component.id == ServerFieldType.ADDRESS_HOME_STATE) {
                 field = mAdminAreaField;
                 fieldType = mAdminAreaFieldType;
             } else {
+                assert mAddressFields.containsKey(component.id)
+                    : "Unrecognized server field type: "
+                        + component.id;
                 field = mAddressFields.get(component.id);
                 fieldType = TEXT_INPUT;
             }
@@ -575,7 +581,7 @@ public class AddressEditor
                             .build());
             // Libaddressinput formats do not always require the full name (RECIPIENT), but
             // PaymentRequest does.
-            if (component.isRequired || component.id == AddressField.RECIPIENT) {
+            if (component.isRequired || component.id == ServerFieldType.NAME_FULL) {
                 field.set(IS_REQUIRED, true);
                 field.get(VALIDATOR).setRequiredErrorMessage(mContext.getString(
                         R.string.pref_edit_dialog_field_required_validation_message));
@@ -583,8 +589,9 @@ public class AddressEditor
                 field.set(IS_REQUIRED, false);
             }
 
-            boolean isFullLine = component.isFullLine || component.id == AddressField.LOCALITY
-                    || component.id == AddressField.DEPENDENT_LOCALITY;
+            boolean isFullLine = component.isFullLine
+                    || component.id == ServerFieldType.ADDRESS_HOME_CITY
+                    || component.id == ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY;
             editorFields.add(new FieldItem(fieldType, field, isFullLine));
         }
         // Phone number (and email if applicable) are the last fields of the address.

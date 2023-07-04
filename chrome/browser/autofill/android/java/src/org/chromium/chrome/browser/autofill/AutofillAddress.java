@@ -13,9 +13,9 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.StrictModeContext;
-import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AddressField;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.components.autofill.EditableOption;
+import org.chromium.components.autofill.ServerFieldType;
 import org.chromium.payments.mojom.PaymentAddress;
 
 import java.lang.annotation.Retention;
@@ -252,7 +252,10 @@ public class AutofillAddress extends EditableOption {
         List<Integer> requiredFields = AutofillProfileBridge.getRequiredAddressFields(
                 AutofillAddress.getCountryCode(profile));
         for (int fieldId : requiredFields) {
-            if (fieldId == AddressField.RECIPIENT || fieldId == AddressField.COUNTRY) continue;
+            if (fieldId == ServerFieldType.NAME_FULL
+                    || fieldId == ServerFieldType.ADDRESS_HOME_COUNTRY) {
+                continue;
+            }
             if (!TextUtils.isEmpty(getProfileField(profile, fieldId))) continue;
             completionStatus |= CompletionStatus.INVALID_ADDRESS;
             break;
@@ -262,31 +265,31 @@ public class AutofillAddress extends EditableOption {
     }
 
     /** @return The given autofill profile field. */
-    public static String getProfileField(AutofillProfile profile, int field) {
+    public static String getProfileField(AutofillProfile profile, @ServerFieldType int field) {
         assert profile != null;
         switch (field) {
-            case AddressField.COUNTRY:
+            case ServerFieldType.ADDRESS_HOME_COUNTRY:
                 return profile.getCountryCode();
-            case AddressField.ADMIN_AREA:
+            case ServerFieldType.ADDRESS_HOME_STATE:
                 return profile.getRegion();
-            case AddressField.LOCALITY:
+            case ServerFieldType.ADDRESS_HOME_CITY:
                 return profile.getLocality();
-            case AddressField.DEPENDENT_LOCALITY:
+            case ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY:
                 return profile.getDependentLocality();
-            case AddressField.SORTING_CODE:
+            case ServerFieldType.ADDRESS_HOME_SORTING_CODE:
                 return profile.getSortingCode();
-            case AddressField.POSTAL_CODE:
+            case ServerFieldType.ADDRESS_HOME_ZIP:
                 return profile.getPostalCode();
-            case AddressField.STREET_ADDRESS:
+            case ServerFieldType.ADDRESS_HOME_STREET_ADDRESS:
                 return profile.getStreetAddress();
-            case AddressField.ORGANIZATION:
+            case ServerFieldType.COMPANY_NAME:
                 return profile.getCompanyName();
-            case AddressField.RECIPIENT:
+            case ServerFieldType.NAME_FULL:
                 return profile.getFullName();
+            default:
+                assert false : "Unrecognized server field type: " + field;
+                return null;
         }
-
-        assert false;
-        return null;
     }
 
     /** @return The country code to use, e.g., when constructing an editor for this address. */

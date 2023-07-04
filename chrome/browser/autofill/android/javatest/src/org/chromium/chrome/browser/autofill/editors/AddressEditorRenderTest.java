@@ -40,8 +40,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
-import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AddressField;
-import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AddressUiComponent;
+import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AutofillAddressUiComponent;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridgeJni;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -56,6 +55,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.autofill.ServerFieldType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
@@ -78,13 +78,15 @@ import java.util.List;
 @Restriction({RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
     private static final String USER_EMAIL = "example@gmail.com";
-    private static final List<AddressUiComponent> SUPPORTED_ADDRESS_FIELDS = List.of(
-            new AddressUiComponent(AddressField.RECIPIENT, "Name", true, true),
-            new AddressUiComponent(AddressField.ORGANIZATION, "Company", false, true),
-            new AddressUiComponent(AddressField.STREET_ADDRESS, "Street address", true, true),
-            new AddressUiComponent(AddressField.LOCALITY, "City", true, true),
-            new AddressUiComponent(AddressField.ADMIN_AREA, "State", true, false),
-            new AddressUiComponent(AddressField.POSTAL_CODE, "ZIP", true, false));
+    private static final List<AutofillAddressUiComponent> SUPPORTED_ADDRESS_FIELDS = List.of(
+            new AutofillAddressUiComponent(ServerFieldType.NAME_FULL, "Name", true, true),
+            new AutofillAddressUiComponent(ServerFieldType.COMPANY_NAME, "Company", false, true),
+            new AutofillAddressUiComponent(
+                    ServerFieldType.ADDRESS_HOME_STREET_ADDRESS, "Street address", true, true),
+            new AutofillAddressUiComponent(ServerFieldType.ADDRESS_HOME_CITY, "City", true, true),
+            new AutofillAddressUiComponent(
+                    ServerFieldType.ADDRESS_HOME_STATE, "State", true, false),
+            new AutofillAddressUiComponent(ServerFieldType.ADDRESS_HOME_ZIP, "ZIP", true, false));
 
     private static final AutofillProfile sLocalProfile = AutofillProfile.builder()
                                                                  .setFullName("Seb Doe")
@@ -167,8 +169,10 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
         mJniMocker.mock(PhoneNumberUtilJni.TEST_HOOKS, mPhoneNumberUtilJni);
         doAnswer(invocation -> {
             List<Integer> requiredFields = (List<Integer>) invocation.getArguments()[1];
-            requiredFields.addAll(List.of(AddressField.RECIPIENT, AddressField.LOCALITY,
-                    AddressField.DEPENDENT_LOCALITY, AddressField.POSTAL_CODE));
+            requiredFields.addAll(
+                    List.of(ServerFieldType.NAME_FULL, ServerFieldType.ADDRESS_HOME_CITY,
+                            ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
+                            ServerFieldType.ADDRESS_HOME_ZIP));
             return null;
         })
                 .when(mAutofillProfileBridgeJni)
@@ -214,14 +218,14 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
         runOnUiThreadBlocking(NightModeTestUtils::tearDownNightModeForBlankUiTestActivity);
     }
 
-    private void setUpAddressUiComponents(List<AddressUiComponent> addressUiComponents) {
+    private void setUpAddressUiComponents(List<AutofillAddressUiComponent> addressUiComponents) {
         doAnswer(invocation -> {
             List<Integer> componentIds = (List<Integer>) invocation.getArguments()[3];
             List<String> componentNames = (List<String>) invocation.getArguments()[4];
             List<Integer> componentRequired = (List<Integer>) invocation.getArguments()[5];
             List<Integer> componentLength = (List<Integer>) invocation.getArguments()[6];
 
-            for (AddressUiComponent component : addressUiComponents) {
+            for (AutofillAddressUiComponent component : addressUiComponents) {
                 componentIds.add(component.id);
                 componentNames.add(component.label);
                 componentRequired.add(component.isRequired ? 1 : 0);

@@ -34,7 +34,6 @@ using ::i18n::addressinput::AddressUiComponent;
 using ::i18n::addressinput::BuildComponents;
 using ::i18n::addressinput::COUNTRY;
 using ::i18n::addressinput::GetRegionCodes;
-using ::i18n::addressinput::IsFieldRequired;
 using ::i18n::addressinput::Localization;
 using ::i18n::addressinput::RECIPIENT;
 
@@ -77,12 +76,13 @@ static void JNI_AutofillProfileBridge_GetRequiredFields(
   std::string country_code = ConvertJavaStringToUTF8(env, j_country_code);
   std::vector<int> required;
 
-  // Should iterate over all fields in:
+  // Iterating over fields in AddressField to ensure that only fields from
+  // libaddressinput can be required. Should iterate over all fields in:
   // third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h
   for (int i = COUNTRY; i <= RECIPIENT; ++i) {
     AddressField field = static_cast<AddressField>(i);
     if (IsFieldRequired(field, country_code)) {
-      required.push_back(field);
+      required.push_back(i18n::TypeForField(field));
     }
   }
 
@@ -129,18 +129,15 @@ JNI_AutofillProfileBridge_GetAddressUiComponents(
   AddressValidationType validation_type =
       static_cast<AddressValidationType>(j_validation_type);
   for (const auto& ui_component : ui_components) {
-    // TODO(crbug.com/1441904): Remove conversion once Android is adapted to
-    // using ServerFieldType.
-    ::i18n::addressinput::AddressField type;
-    CHECK(autofill::i18n::FieldForType(ui_component.field, &type));
-    component_ids.push_back(type);
+    component_ids.push_back(ui_component.field);
     component_labels.push_back(ui_component.name);
     component_length.push_back(ui_component.length_hint ==
                                autofill::AutofillAddressUIComponent::HINT_LONG);
 
     switch (validation_type) {
       case AddressValidationType::kPaymentRequest:
-        component_required.push_back(IsFieldRequired(type, country_code));
+        component_required.push_back(
+            i18n::IsFieldRequired(ui_component.field, country_code));
         break;
       case AddressValidationType::kAccount:
         component_required.push_back(

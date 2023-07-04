@@ -122,6 +122,9 @@ namespace autofill {
 // GetInfo() returns an unformatted number (digits only). It is used for
 // filling!
 //
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
+//
 enum ServerFieldType {
   // Server indication that it has no data for the requested field.
   NO_SERVER_DATA = 0,

@@ -61,8 +61,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
-import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AddressField;
-import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AddressUiComponent;
+import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AutofillAddressUiComponent;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridgeJni;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -81,6 +80,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.autofill.ServerFieldType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
@@ -107,17 +107,23 @@ import java.util.stream.StreamSupport;
 public class AddressEditorTest {
     private static final String USER_EMAIL = "example@gmail.com";
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
-    private static final List<AddressUiComponent> SUPPORTED_ADDRESS_FIELDS = List.of(
-            new AddressUiComponent(AddressField.RECIPIENT, "full name label", true, true),
-            new AddressUiComponent(AddressField.ADMIN_AREA, "admin area label", false, true),
-            new AddressUiComponent(AddressField.LOCALITY, "locality label", true, false),
-            new AddressUiComponent(
-                    AddressField.DEPENDENT_LOCALITY, "dependent locality label", true, false),
-            new AddressUiComponent(AddressField.ORGANIZATION, "organization label", false, true),
-            new AddressUiComponent(AddressField.SORTING_CODE, "sorting code label", false, false),
-            new AddressUiComponent(AddressField.POSTAL_CODE, "postal code label", true, false),
-            new AddressUiComponent(
-                    AddressField.STREET_ADDRESS, "street address label", true, true));
+    private static final List<AutofillAddressUiComponent> SUPPORTED_ADDRESS_FIELDS =
+            List.of(new AutofillAddressUiComponent(
+                            ServerFieldType.NAME_FULL, "full name label", true, true),
+                    new AutofillAddressUiComponent(
+                            ServerFieldType.ADDRESS_HOME_STATE, "admin area label", false, true),
+                    new AutofillAddressUiComponent(
+                            ServerFieldType.ADDRESS_HOME_CITY, "locality label", true, false),
+                    new AutofillAddressUiComponent(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
+                            "dependent locality label", true, false),
+                    new AutofillAddressUiComponent(
+                            ServerFieldType.COMPANY_NAME, "organization label", false, true),
+                    new AutofillAddressUiComponent(ServerFieldType.ADDRESS_HOME_SORTING_CODE,
+                            "sorting code label", false, false),
+                    new AutofillAddressUiComponent(
+                            ServerFieldType.ADDRESS_HOME_ZIP, "postal code label", true, false),
+                    new AutofillAddressUiComponent(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
+                            "street address label", true, true));
 
     private static final AutofillProfile sLocalProfile = AutofillProfile.builder()
                                                                  .setFullName("Seb Doe")
@@ -202,8 +208,10 @@ public class AddressEditorTest {
         mJniMocker.mock(AutofillProfileBridgeJni.TEST_HOOKS, mAutofillProfileBridgeJni);
         doAnswer(invocation -> {
             List<Integer> requiredFields = (List<Integer>) invocation.getArguments()[1];
-            requiredFields.addAll(List.of(AddressField.RECIPIENT, AddressField.LOCALITY,
-                    AddressField.DEPENDENT_LOCALITY, AddressField.POSTAL_CODE));
+            requiredFields.addAll(
+                    List.of(ServerFieldType.NAME_FULL, ServerFieldType.ADDRESS_HOME_CITY,
+                            ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
+                            ServerFieldType.ADDRESS_HOME_ZIP));
             return null;
         })
                 .when(mAutofillProfileBridgeJni)
@@ -251,14 +259,14 @@ public class AddressEditorTest {
     }
 
     private void setUpAddressUiComponents(
-            List<AddressUiComponent> addressUiComponents, String countryCode) {
+            List<AutofillAddressUiComponent> addressUiComponents, String countryCode) {
         doAnswer(invocation -> {
             List<Integer> componentIds = (List<Integer>) invocation.getArguments()[3];
             List<String> componentNames = (List<String>) invocation.getArguments()[4];
             List<Integer> componentRequired = (List<Integer>) invocation.getArguments()[5];
             List<Integer> componentLength = (List<Integer>) invocation.getArguments()[6];
 
-            for (AddressUiComponent component : addressUiComponents) {
+            for (AutofillAddressUiComponent component : addressUiComponents) {
                 componentIds.add(component.id);
                 componentNames.add(component.label);
                 componentRequired.add(component.isRequired ? 1 : 0);
@@ -271,7 +279,7 @@ public class AddressEditorTest {
                         anyList(), anyList(), anyList());
     }
 
-    private void setUpAddressUiComponents(List<AddressUiComponent> addressUiComponents) {
+    private void setUpAddressUiComponents(List<AutofillAddressUiComponent> addressUiComponents) {
         setUpAddressUiComponents(addressUiComponents, "US");
     }
 
@@ -781,11 +789,13 @@ public class AddressEditorTest {
     @Test
     @SmallTest
     public void edit_ChangeCountry_FieldsSetChanges() {
-        setUpAddressUiComponents(List.of(new AddressUiComponent(AddressField.SORTING_CODE,
-                                         "sorting code label", false, true)),
+        setUpAddressUiComponents(
+                List.of(new AutofillAddressUiComponent(ServerFieldType.ADDRESS_HOME_SORTING_CODE,
+                        "sorting code label", false, true)),
                 "US");
-        setUpAddressUiComponents(List.of(new AddressUiComponent(AddressField.STREET_ADDRESS,
-                                         "street address label", true, true)),
+        setUpAddressUiComponents(
+                List.of(new AutofillAddressUiComponent(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
+                        "street address label", true, true)),
                 "DE");
         mAddressEditor = new AddressEditorCoordinator(mActivity, mHelpLauncher, mDelegate, mProfile,
                 new AutofillAddress(mActivity, sLocalProfile), SAVE_NEW_ADDRESS_PROFILE,
