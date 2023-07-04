@@ -310,6 +310,21 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
           ->SharedMainThreadContextProvider();
   gpu::Capabilities caps = context_provider->ContextCapabilities();
 
+  // Intel CCS modifiers leak memory on gbm to gl buffer import. Block these
+  // modifiers for now. See crbug.com/1445252, crbug.com/1458575
+  // Also blocking |DRM_FORMAT_YVU420| for a specific modifier based a test
+  // failing in minigbm. See b/289714323
+  const base::flat_set<std::pair<uint64_t, uint64_t>> modifier_block_list = {
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_CCS},
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Yf_TILED_CCS},
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_GEN12_RC_CCS},
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS},
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_GEN12_RC_CCS_CC},
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_4_TILED_DG2_RC_CCS},
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_4_TILED_DG2_MC_CCS},
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_4_TILED_DG2_RC_CCS_CC},
+      {DRM_FORMAT_YVU420, DRM_FORMAT_MOD_QCOM_COMPRESSED}};
+
   size_t format_table_index = 0;
   for (const auto& [drm_format, modifiers] : caps.drm_formats_and_modifiers) {
     if (!ui::IsValidBufferFormat(drm_format))
@@ -323,22 +338,11 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
     base::flat_map<size_t, uint64_t> modifier_entries;
     modifier_entries.emplace(format_table_index++, DRM_FORMAT_MOD_INVALID);
 
-    // Intel CCS modifiers leak memory on gbm to gl buffer import. Block these
-    // modifiers for now. See crbug.com/1445252, crbug.com/1458575
-    const base::flat_set<uint64_t> modifier_block_list = {
-        I915_FORMAT_MOD_Y_TILED_CCS,
-        I915_FORMAT_MOD_Yf_TILED_CCS,
-        I915_FORMAT_MOD_Y_TILED_GEN12_RC_CCS,
-        I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS,
-        I915_FORMAT_MOD_Y_TILED_GEN12_RC_CCS_CC,
-        I915_FORMAT_MOD_4_TILED_DG2_RC_CCS,
-        I915_FORMAT_MOD_4_TILED_DG2_MC_CCS,
-        I915_FORMAT_MOD_4_TILED_DG2_RC_CCS_CC,
-    };
-
     if (base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufModifiers)) {
       for (uint64_t modifier : modifiers) {
-        if (!modifier_block_list.contains(modifier)) {
+        // Check for generic blocking first then format specific blocking.
+        if (!modifier_block_list.contains({DRM_FORMAT_INVALID, modifier}) &&
+            !modifier_block_list.contains({drm_format, modifier})) {
           modifier_entries.emplace(format_table_index++, modifier);
         }
       }
