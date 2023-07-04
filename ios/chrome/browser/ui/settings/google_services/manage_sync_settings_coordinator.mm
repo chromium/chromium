@@ -147,6 +147,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     title = self.delegate.manageSyncSettingsCoordinatorTitle;
   }
   self.viewController.title = title;
+  self.viewController.useHeaderFooterCustomSpacing =
+      _accountState == SyncSettingsAccountState::kSignedIn;
   self.viewController.serviceDelegate = self.mediator;
   self.viewController.presentationDelegate = self;
   self.viewController.modelDelegate = self.mediator;

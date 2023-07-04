@@ -28,9 +28,9 @@ TEST_F(CentralAccountControlTableViewItemTest, ImageViewAndTextLabels) {
   TableViewCentralAccountItem* item =
       [[TableViewCentralAccountItem alloc] initWithType:0];
   UIImage* image = ios::provider::GetSigninDefaultAvatar();
-  image = ResizeImage(
-      image, GetSizeForIdentityAvatarSize(IdentityAvatarSize::ExtraLarge),
-      ProjectionMode::kAspectFit);
+  image = ResizeImage(image,
+                      GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large),
+                      ProjectionMode::kAspectFit);
   NSString* mainText = @"Main text";
   NSString* detailText = @"Detail text";
 
@@ -59,9 +59,9 @@ TEST_F(CentralAccountControlTableViewItemTest,
   TableViewCentralAccountItem* item =
       [[TableViewCentralAccountItem alloc] initWithType:0];
   UIImage* image = ios::provider::GetSigninDefaultAvatar();
-  image = ResizeImage(
-      image, GetSizeForIdentityAvatarSize(IdentityAvatarSize::ExtraLarge),
-      ProjectionMode::kAspectFit);
+  image = ResizeImage(image,
+                      GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large),
+                      ProjectionMode::kAspectFit);
   NSString* mainlText = @"Detail text";
 
   item.avatarImage = image;

@@ -45,7 +45,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 CGFloat kSectionHeaderHeight = 8.;
 CGFloat kSectionFooterHeight = 8.;
 
-}  // naemspace
+}  // namespace
 
 @interface ConsistencyAccountChooserTableViewController () <
     TableViewLinkHeaderFooterItemDelegate>

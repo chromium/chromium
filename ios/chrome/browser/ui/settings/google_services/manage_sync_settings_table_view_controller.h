@@ -40,6 +40,10 @@
 @property(nonatomic, weak) id<ManageSyncSettingsServiceDelegate>
     serviceDelegate;
 
+// Tells the controller to use customized heights for the sections' headers and
+// footers.
+@property(nonatomic, assign) BOOL useHeaderFooterCustomSpacing;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_TABLE_VIEW_CONTROLLER_H_

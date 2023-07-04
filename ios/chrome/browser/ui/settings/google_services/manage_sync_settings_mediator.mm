@@ -213,7 +213,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
               initWithType:IdentityAccountItemType];
       identityAccountItem.avatarImage =
           _chromeAccountManagerService->GetIdentityAvatarWithIdentity(
-              _signedInIdentity, IdentityAvatarSize::ExtraLarge);
+              _signedInIdentity, IdentityAvatarSize::Large);
       identityAccountItem.name = _signedInIdentity.userFullName;
       identityAccountItem.email = _signedInIdentity.userEmail;
       [model addItem:identityAccountItem
@@ -366,7 +366,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   CHECK(_signedInIdentity);
   identityAccountItem.avatarImage =
       _chromeAccountManagerService->GetIdentityAvatarWithIdentity(
-          _signedInIdentity, IdentityAvatarSize::ExtraLarge);
+          _signedInIdentity, IdentityAvatarSize::Large);
   identityAccountItem.name = _signedInIdentity.userFullName;
   identityAccountItem.email = _signedInIdentity.userEmail;
   [self.consumer reloadItem:identityAccountItem];

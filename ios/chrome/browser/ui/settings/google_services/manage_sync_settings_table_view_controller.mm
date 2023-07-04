@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
@@ -21,6 +22,20 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Table view customized header heights.
+CGFloat kAccountSectionHeaderHeightPointSize = 22.17;
+CGFloat kSyncDataTypeSectionHeaderHeightPointSize = 60.;
+CGFloat kAdvancedSettingsSectionHeaderHeightPointSize = 26.;
+
+// Table view customized footer heights.
+CGFloat kAccountSectionFooterHeightPointSize = 16.;
+CGFloat kSyncDataTypeSectionFooterHeightPointSize = 50.;
+CGFloat kDefaultSectionFooterHeightPointSize = 10.;
+
+}  // namespace
 
 @interface ManageSyncSettingsTableViewController () <
     PopoverLabelViewControllerDelegate>
@@ -162,6 +177,45 @@
   CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
   [self.serviceDelegate didSelectItem:item cellRect:cellRect];
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  if (self.useHeaderFooterCustomSpacing) {
+    NSInteger sectionIdentifier =
+        [self.tableViewModel sectionIdentifierForSectionIndex:section];
+    switch (sectionIdentifier) {
+      case AccountSectionIdentifier:
+        return kAccountSectionHeaderHeightPointSize;
+      case SyncDataTypeSectionIdentifier:
+        return kSyncDataTypeSectionHeaderHeightPointSize;
+      case AdvancedSettingsSectionIdentifier:
+        return kAdvancedSettingsSectionHeaderHeightPointSize;
+      case SyncErrorsSectionIdentifier:
+      case SignOutSectionIdentifier:
+        break;
+    }
+  }
+  return ChromeTableViewHeightForHeaderInSection(section);
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  if (self.useHeaderFooterCustomSpacing) {
+    NSInteger sectionIdentifier =
+        [self.tableViewModel sectionIdentifierForSectionIndex:section];
+    switch (sectionIdentifier) {
+      case AccountSectionIdentifier:
+        return kAccountSectionFooterHeightPointSize;
+      case SyncDataTypeSectionIdentifier:
+        return kSyncDataTypeSectionFooterHeightPointSize;
+      case AdvancedSettingsSectionIdentifier:
+      case SyncErrorsSectionIdentifier:
+      case SignOutSectionIdentifier:
+        break;
+    }
+  }
+  return kDefaultSectionFooterHeightPointSize;
 }
 
 #pragma mark - Sync helpers
