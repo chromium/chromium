@@ -31,14 +31,14 @@ message CrossUserSharingPrivateKey {
   // The key version, used for key rotation.
   optional int32 version = 1;
   // Private key on Curve25519 (32 bytes).
-  optional bytes X25519_private_key = 2;
+  optional bytes x25519_private_key = 2;
 }
 
 message CrossUserSharingPublicKey {
   // The key version, used for key rotation and consensus.
   optional int32 version = 1;
   // Public key on Curve25519 (32 bytes).
-  optional bytes X25519_public_key = 2;
+  optional bytes x25519_public_key = 2;
 }
 
 message NigoriKeyBag {
