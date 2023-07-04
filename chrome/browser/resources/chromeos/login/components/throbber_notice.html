@@ -20,8 +20,16 @@ found in the LICENSE file.
     width: 38px;
   }
 
+  :host-context(.jelly-enabled) paper-spinner-lite {
+    --paper-spinner-color: var(--cros-sys-primary);
+  }
+
   #comment {
     color: var(--cros-text-color-secondary);
+  }
+
+  :host-context(.jelly-enabled) #comment {
+    color: var(--cros-sys-on_surface);
   }
 </style>
 <paper-spinner-lite dir="ltr" active></paper-spinner-lite>
@@ -31,4 +39,3 @@ found in the LICENSE file.
     [[i18nDynamic(locale, textKey)]]
   </template>
 </div>
-
