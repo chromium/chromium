@@ -852,6 +852,7 @@ void BluetoothAdapterFloss::AdapterDevicePropertyChanged(
 
   switch (prop_type) {
     case FlossAdapterClient::BtPropertyType::kBdName:
+    case FlossAdapterClient::BtPropertyType::kUuids:
       if (device.name.size() != 0) {
         device_ptr->SetName(device.name);
         device_ptr->InitializeDeviceProperties(
