@@ -140,6 +140,15 @@ function addManifestLinkTag(optionalCustomUrl) {
   document.head.append(linkTag);
 }
 
+function addFavicon(favicon_url) {
+  var linkTag = document.createElement("link");
+  linkTag.id = "new-icon";
+  linkTag.rel = "icon";
+  linkTag.type = "image/x-icon";
+  linkTag.href = favicon_url;
+  document.head.append(linkTag);
+}
+
 function removeAllManifestTags() {
   for (let i = 0; i < document.head.children.length; ++i) {
     let child = document.head.children[i];

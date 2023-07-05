@@ -75,8 +75,8 @@ static void JNI_ContentCaptureTestSupport_SimulateDidUpdateFaviconURL(
     const std::string* type = icon.FindString("type");
     CHECK(url);
     CHECK(type);
-    favicon_urls.push_back(
-        blink::mojom::FaviconURL::New(GURL(*url), ToType(*type), sizes));
+    favicon_urls.push_back(blink::mojom::FaviconURL::New(
+        GURL(*url), ToType(*type), sizes, /*is_default_icon=*/false));
   }
   CHECK(!favicon_urls.empty());
   provider->NotifyFaviconURLUpdatedForTesting(

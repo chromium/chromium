@@ -8,13 +8,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/installable/ml_promotion_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
@@ -46,7 +44,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/test/dialog_test.h"
@@ -161,6 +158,8 @@ class WebContentsObserverAdapter : public content::WebContentsObserver {
     return manifest_url_updated_;
   }
 
+  void AwaitFaviconUrlsChanged() { favicon_run_loop_.Run(); }
+
  private:
   void DidUpdateWebManifestURL(content::RenderFrameHost* rfh,
                                const GURL& manifest_url) override {
@@ -170,10 +169,16 @@ class WebContentsObserverAdapter : public content::WebContentsObserver {
     }
   }
 
-  bool manifest_url_updated_ = true;
+  void DidUpdateFaviconURL(
+      content::RenderFrameHost* render_frame_host,
+      const std::vector<blink::mojom::FaviconURLPtr>& candidates) override {
+    favicon_run_loop_.Quit();
+  }
 
+  bool manifest_url_updated_ = false;
   GURL expected_manifest_url_;
   base::RunLoop manifest_run_loop_;
+  base::RunLoop favicon_run_loop_;
 };
 
 class MLPromotionBrowsertest : public MLPromotionBrowserTestBase {
@@ -255,6 +260,17 @@ class MLPromotionBrowsertest : public MLPromotionBrowserTestBase {
     WebContentsObserverAdapter web_contents_observer(web_contents());
     EXPECT_TRUE(
         web_contents_observer.AwaitManifestUrlChanged(new_manifest_url));
+    EXPECT_TRUE(timeout_task_future.Wait());
+  }
+
+  void UpdateFaviconAndRunPipelinePendingDelayedTask(const GURL& url) {
+    base::test::TestFuture<void> timeout_task_future;
+    ml_promoter()->SetAwaitTimeoutTaskPendingCallbackForTesting(
+        timeout_task_future.GetCallback());
+    WebContentsObserverAdapter web_contents_observer(web_contents());
+    NavigateAndAwaitInstallabilityCheck(url);
+    EXPECT_TRUE(content::ExecJs(web_contents(), "addFavicon('favicon_1.ico')"));
+    web_contents_observer.AwaitFaviconUrlsChanged();
     EXPECT_TRUE(timeout_task_future.Wait());
   }
 
@@ -604,8 +620,11 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   EXPECT_GT(entry.metrics[QualityUkmEntry::kServiceWorkerScriptSizeName], 0);
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, PageLoadsWithOnly1Favicon) {
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
+                       PageLoadsWithDefaultFaviconName) {
+  GURL url_with_default_favicon_name = https_server()->GetURL(
+      "/banners/test_page_with_default_favicon_name.html");
+  NavigateAndAwaitMetricsCollectionPending(url_with_default_favicon_name);
   task_runner_->RunPendingTasks();
 
   auto entries = test_ukm_recorder().GetEntries(
@@ -614,13 +633,59 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, PageLoadsWithOnly1Favicon) {
 
   auto entry = entries[0];
   EXPECT_EQ(test_ukm_recorder().GetSourceForSourceId(entry.source_id)->url(),
-            GetInstallableAppURL());
+            url_with_default_favicon_name);
   EXPECT_EQ(entry.metrics[QualityUkmEntry::kHasFaviconsName], 1);
 }
 
-// TODO(b/285361272): Add tests for:
-// 1. Favicon URL updates.
-// 2. Cache storage sizes.
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, PageLoadsWithExistingFavicon) {
+  auto url_with_preloaded_favicons =
+      https_server()->GetURL("/banners/test_page_with_favicon.html");
+  NavigateAndAwaitMetricsCollectionPending(url_with_preloaded_favicons);
+  task_runner_->RunPendingTasks();
+
+  auto entries = test_ukm_recorder().GetEntries(
+      QualityUkmEntry::kEntryName, {QualityUkmEntry::kHasFaviconsName});
+  ASSERT_EQ(entries.size(), 1u);
+
+  auto entry = entries[0];
+  EXPECT_EQ(test_ukm_recorder().GetSourceForSourceId(entry.source_id)->url(),
+            url_with_preloaded_favicons);
+  EXPECT_EQ(entry.metrics[QualityUkmEntry::kHasFaviconsName], 1);
+}
+
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, PageLoadVerifyFaviconUpdate) {
+  NavigateAndAwaitMetricsCollectionPending(GetUrlWithNoManifest());
+  task_runner_->RunPendingTasks();
+
+  auto entries = test_ukm_recorder().GetEntries(
+      QualityUkmEntry::kEntryName, {QualityUkmEntry::kHasFaviconsName});
+  ASSERT_EQ(entries.size(), 1u);
+
+  auto entry = entries[0];
+  EXPECT_EQ(test_ukm_recorder().GetSourceForSourceId(entry.source_id)->url(),
+            GetUrlWithNoManifest());
+  EXPECT_EQ(entry.metrics[QualityUkmEntry::kHasFaviconsName], 0);
+
+  // Navigate to a different page to reset the site URL the pipeline needs to be
+  // triggered from.
+  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+
+  // Add favicons to page after loading and trigger pipeline for testing.
+  UpdateFaviconAndRunPipelinePendingDelayedTask(GetUrlWithNoManifest());
+
+  task_runner_->RunPendingTasks();
+
+  auto updated_entries = test_ukm_recorder().GetEntries(
+      QualityUkmEntry::kEntryName, {QualityUkmEntry::kHasFaviconsName});
+  EXPECT_EQ(updated_entries.size(), 2u);
+
+  auto updated_entry = updated_entries[1];
+  EXPECT_EQ(test_ukm_recorder().GetSourceForSourceId(entry.source_id)->url(),
+            GetUrlWithNoManifest());
+  EXPECT_EQ(updated_entry.metrics[QualityUkmEntry::kHasFaviconsName], 1);
+}
+
+// TODO(b/285361272): Add tests for cache storage sizes.
 
 // TODO(b/287255120) : Implement ways of measuring ML outputs on Android.
 class MLPromotionInstallDialogBrowserTest

@@ -27,4 +27,9 @@ struct FaviconURL {
 
   // Icon's bitmaps' size
   array<gfx.mojom.Size> icon_sizes;
+
+  // Whether the favicon URL is a default one generated
+  // by Chrome in the absence of any provided icons,
+  // using the document URL.
+  bool is_default_icon;
 };

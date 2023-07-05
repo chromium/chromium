@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/time/time.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
@@ -20,6 +19,7 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -120,11 +120,18 @@ void SiteQualityMetricsTask::OnDidCheckHasServiceWorker(
 }
 
 void SiteQualityMetricsTask::ReportResultAndSelfDestruct() {
-  favicon_count_ = web_contents_->GetFaviconURLs().size();
+  // Only count favicon URLs that are not the default one set by the renderer in
+  // the absence of icons in the html. Default URLs follow the
+  // <document_origin>/favicon.ico format.
+  for (const auto& favicon_urls : web_contents_->GetFaviconURLs()) {
+    if (!favicon_urls->is_default_icon) {
+      non_default_favicon_count_++;
+    }
+  }
 
   std::move(on_complete_and_self_destruct_)
       .Run(SiteQualityMetrics(service_worker_script_size_, cache_storage_size_,
-                              favicon_count_, has_service_worker_,
+                              non_default_favicon_count_, has_service_worker_,
                               has_fetch_handler_));
 }
 

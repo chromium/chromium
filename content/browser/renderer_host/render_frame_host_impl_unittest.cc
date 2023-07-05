@@ -362,9 +362,9 @@ TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
 
 TEST_F(RenderFrameHostImplTest, FaviconURLsSet) {
   TestRenderFrameHost* main_rfh = contents()->GetPrimaryMainFrame();
-  const auto kFavicon =
-      blink::mojom::FaviconURL(GURL("https://example.com/favicon.ico"),
-                               blink::mojom::FaviconIconType::kFavicon, {});
+  const auto kFavicon = blink::mojom::FaviconURL(
+      GURL("https://example.com/favicon.ico"),
+      blink::mojom::FaviconIconType::kFavicon, {}, /*is_default_icon=*/false);
   std::unique_ptr<NavigationSimulator> navigation =
       NavigationSimulator::CreateBrowserInitiated(GURL("https://example.com"),
                                                   contents());
@@ -395,7 +395,8 @@ TEST_F(RenderFrameHostImplTest, FaviconURLsResetWithNavigation) {
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
   favicon_urls.push_back(blink::mojom::FaviconURL::New(
       GURL("https://example.com/favicon.ico"),
-      blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>()));
+      blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>(),
+      /*is_default_icon=*/false));
 
   std::unique_ptr<NavigationSimulator> navigation =
       NavigationSimulator::CreateBrowserInitiated(GURL("https://example.com"),

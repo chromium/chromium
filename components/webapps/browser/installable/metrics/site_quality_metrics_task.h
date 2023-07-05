@@ -44,12 +44,12 @@ namespace webapps {
 struct SiteQualityMetrics {
   SiteQualityMetrics(int64_t service_worker_script_size,
                      int64_t cache_storage_size,
-                     size_t favicons_count,
+                     size_t non_default_favicons_count,
                      bool has_service_worker,
                      bool has_fetch_handler)
       : service_worker_script_size(service_worker_script_size),
         cache_storage_size(cache_storage_size),
-        favicons_count(favicons_count),
+        non_default_favicons_count(non_default_favicons_count),
         has_service_worker(has_service_worker),
         has_fetch_handler(has_fetch_handler) {}
   SiteQualityMetrics() = default;
@@ -57,10 +57,14 @@ struct SiteQualityMetrics {
 
   int64_t service_worker_script_size = 0;
   int64_t cache_storage_size = 0;
-  size_t favicons_count = 0ul;
+  size_t non_default_favicons_count = 0ul;
   bool has_service_worker = false;
   bool has_fetch_handler = false;
 };
+
+// Returns the default favicon URL for the document, mimics behavior of
+// blink::IconURL::DefaultFavicon().
+GURL GetDefaultFaviconUrl(const GURL& site_url);
 
 class SiteQualityMetricsTask {
  public:
@@ -108,7 +112,7 @@ class SiteQualityMetricsTask {
   // Metrics accumulation.
   int64_t service_worker_script_size_ = 0;
   int64_t cache_storage_size_ = 0;
-  size_t favicon_count_ = 0ul;
+  size_t non_default_favicon_count_ = 0ul;
   bool has_service_worker_ = false;
   bool has_fetch_handler_ = false;
 

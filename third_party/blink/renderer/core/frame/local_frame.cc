@@ -2955,7 +2955,8 @@ void LocalFrame::UpdateFaviconURL() {
   urls.reserve(icon_urls.size());
   for (const auto& icon_url : icon_urls) {
     urls.push_back(mojom::blink::FaviconURL::New(
-        icon_url.icon_url_, icon_url.icon_type_, icon_url.sizes_));
+        icon_url.icon_url_, icon_url.icon_type_, icon_url.sizes_,
+        icon_url.is_default_icon_));
   }
   DCHECK_EQ(icon_urls.size(), urls.size());
 

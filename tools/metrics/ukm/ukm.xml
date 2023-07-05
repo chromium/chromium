@@ -22890,7 +22890,11 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="HasFavicons" enum="Boolean">
     <summary>
-      Records whether the site has favicons or not.
+      Records whether the site has non-default favicons or not. Non-default
+      favicons are those which are either explicitly set in the client side, or
+      are icons obtained from the manifest. The default favicon set by chrome,
+      that follows document_url/favicon.ico is not counted as part of this
+      metric.
     </summary>
     <aggregation>
       <history>

@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
@@ -40,6 +39,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -224,7 +224,7 @@ void MLInstallabilityPromoter::EmitUKMs() {
   ukm::builders::Site_Quality(source_id)
       .SetCacheStorageSize(ukm::GetExponentialBucketMinForBytes(
           site_quality_metrics_.cache_storage_size))
-      .SetHasFavicons(site_quality_metrics_.favicons_count > 0)
+      .SetHasFavicons(site_quality_metrics_.non_default_favicons_count > 0)
       .SetHasFetchHandler(site_quality_metrics_.has_fetch_handler)
       .SetServiceWorkerScriptSize(ukm::GetExponentialBucketMinForBytes(
           site_quality_metrics_.service_worker_script_size))
@@ -351,8 +351,8 @@ void MLInstallabilityPromoter::OnClassificationResult(
     return;
   }
   GURL manifest_id = GetProjectedManifestIdAfterMetricsCollection();
-  bool has_icons =
-      site_quality_metrics_.favicons_count > 0 || !manifest_->icons.empty();
+  bool has_icons = site_quality_metrics_.non_default_favicons_count > 0 ||
+                   !manifest_->icons.empty();
   bool blocked_by_history_guardrails =
       app_banner_manager_->IsMlPromotionBlockedByHistoryGuardrail(manifest_id);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -454,7 +454,14 @@ void MLInstallabilityPromoter::DidUpdateFaviconURL(
     return;
   }
 
-  site_quality_metrics_.favicons_count = candidates.size();
+  // Only count favicon URLs that are not the default one set by the renderer in
+  // the absence of icons in the html. Default URLs follow the
+  // <document_origin>/favicon.ico format.
+  for (const auto& favicon_urls : candidates) {
+    if (!favicon_urls->is_default_icon) {
+      ++site_quality_metrics_.non_default_favicons_count;
+    }
+  }
 }
 
 void MLInstallabilityPromoter::OnRegistrationStored(int64_t registration_id,

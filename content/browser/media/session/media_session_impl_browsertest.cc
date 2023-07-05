@@ -2667,24 +2667,31 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest, UpdateFaviconURL) {
   std::vector<blink::mojom::FaviconURLPtr> favicons;
   favicons.push_back(blink::mojom::FaviconURL::New(
       GURL("https://www.example.org/favicon1.png"),
-      blink::mojom::FaviconIconType::kInvalid, valid_sizes));
+      blink::mojom::FaviconIconType::kInvalid, valid_sizes,
+      /*is_default_icon=*/false));
   favicons.push_back(blink::mojom::FaviconURL::New(
-      GURL(), blink::mojom::FaviconIconType::kFavicon, valid_sizes));
+      GURL(), blink::mojom::FaviconIconType::kFavicon, valid_sizes,
+      /*is_default_icon=*/false));
   favicons.push_back(blink::mojom::FaviconURL::New(
       GURL("https://www.example.org/favicon2.png"),
-      blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>()));
+      blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>(),
+      /*is_default_icon=*/false));
   favicons.push_back(blink::mojom::FaviconURL::New(
       GURL("https://www.example.org/favicon3.png"),
-      blink::mojom::FaviconIconType::kFavicon, valid_sizes));
+      blink::mojom::FaviconIconType::kFavicon, valid_sizes,
+      /*is_default_icon=*/false));
   favicons.push_back(blink::mojom::FaviconURL::New(
       GURL("https://www.example.org/favicon4.png"),
-      blink::mojom::FaviconIconType::kTouchIcon, valid_sizes));
+      blink::mojom::FaviconIconType::kTouchIcon, valid_sizes,
+      /*is_default_icon=*/false));
   favicons.push_back(blink::mojom::FaviconURL::New(
       GURL("https://www.example.org/favicon5.png"),
-      blink::mojom::FaviconIconType::kTouchPrecomposedIcon, valid_sizes));
+      blink::mojom::FaviconIconType::kTouchPrecomposedIcon, valid_sizes,
+      /*is_default_icon=*/false));
   favicons.push_back(blink::mojom::FaviconURL::New(
       GURL("https://www.example.org/favicon6.png"),
-      blink::mojom::FaviconIconType::kTouchIcon, std::vector<gfx::Size>()));
+      blink::mojom::FaviconIconType::kTouchIcon, std::vector<gfx::Size>(),
+      /*is_default_icon=*/false));
 
   media_session_->DidUpdateFaviconURL(
       shell()->web_contents()->GetPrimaryMainFrame(), favicons);
@@ -2728,7 +2735,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
   std::vector<blink::mojom::FaviconURLPtr> favicons;
   favicons.push_back(blink::mojom::FaviconURL::New(
       GURL("https://www.example.org/favicon1.png"),
-      blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>()));
+      blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>(),
+      /*is_default_icon=*/false));
 
   media_session_->DidUpdateFaviconURL(
       shell()->web_contents()->GetPrimaryMainFrame(), favicons);
@@ -3119,9 +3127,10 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest, CacheFaviconImages) {
   valid_sizes.push_back(gfx::Size(200, 200));
 
   std::vector<blink::mojom::FaviconURLPtr> favicons;
-  favicons.push_back(blink::mojom::FaviconURL::New(
-      favicon_server().GetURL("/favicon.ico"),
-      blink::mojom::FaviconIconType::kFavicon, valid_sizes));
+  favicons.push_back(
+      blink::mojom::FaviconURL::New(favicon_server().GetURL("/favicon.ico"),
+                                    blink::mojom::FaviconIconType::kFavicon,
+                                    valid_sizes, /*is_default_icon=*/false));
 
   media_session_->DidUpdateFaviconURL(
       shell()->web_contents()->GetPrimaryMainFrame(), favicons);
@@ -3258,7 +3267,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplPrerenderingBrowserTest,
 
   std::vector<blink::mojom::FaviconURLPtr> favicons;
   favicons.emplace_back(blink::mojom::FaviconURL::New(
-      test_image_src, blink::mojom::FaviconIconType::kFavicon, valid_sizes));
+      test_image_src, blink::mojom::FaviconIconType::kFavicon, valid_sizes,
+      /*is_default_icon=*/false));
 
   media_session_->DidUpdateFaviconURL(
       shell()->web_contents()->GetPrimaryMainFrame(), favicons);
