@@ -398,6 +398,9 @@ TEST_F(AnimationTest, AttachTwoAnimationsToOneLayer) {
       element_id_, ElementListType::PENDING, end_opacity);
   client_impl_.ExpectTransformPropertyMutated(
       element_id_, ElementListType::PENDING, transform_x, transform_y);
+
+  animation1->set_animation_delegate(nullptr);
+  animation2->set_animation_delegate(nullptr);
 }
 
 TEST_F(AnimationTest, AddRemoveAnimationToNonAttachedAnimation) {
