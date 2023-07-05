@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest, HoverCardFooterUpdates) {
 
   auto* const hover_card = SimulateHoverTab(browser(), 1);
   FadeAlertFooterRow* alert_row =
-      hover_card->footer_view_->GetAlertRow()->primary_view_;
+      hover_card->footer_view_->GetAlertRowForTesting()->primary_view_;
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_PLAYING),
       alert_row->footer_label_->GetText());
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 
   auto* const hover_card = SimulateHoverTab(browser(), 1);
   FadePerformanceFooterRow* performance_row =
-      hover_card->footer_view_->GetPerformanceRow()->primary_view_;
+      hover_card->footer_view_->GetPerformanceRowForTesting()->primary_view_;
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_HOVERCARD_INACTIVE_TAB),
             performance_row->footer_label_->GetText());
   EXPECT_FALSE(performance_row->icon_->GetImageModel().IsEmpty());
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
   // Show memory usage without savings
   auto* const hover_card = SimulateHoverTab(browser(), 1);
   FadePerformanceFooterRow* performance_row =
-      hover_card->footer_view_->GetPerformanceRow()->primary_view_;
+      hover_card->footer_view_->GetPerformanceRowForTesting()->primary_view_;
   EXPECT_EQ(l10n_util::FormatString(
                 l10n_util::GetStringUTF16(IDS_HOVERCARD_TAB_MEMORY_USAGE),
                 {ui::FormatBytes(bytes_used)}, nullptr),

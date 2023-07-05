@@ -85,6 +85,12 @@ class FadePerformanceFooterRow : public FooterRow<PerformanceRowData> {
 
 class FooterView : public views::View {
  public:
+  using AlertFadeView =
+      FadeView<FadeAlertFooterRow, FadeAlertFooterRow, AlertFooterRowData>;
+  using PerformanceFadeView = FadeView<FadePerformanceFooterRow,
+                                       FadePerformanceFooterRow,
+                                       PerformanceRowData>;
+
   FooterView() {
     flex_layout_ =
         views::View::SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -93,44 +99,34 @@ class FooterView : public views::View {
         .SetInteriorMargin(kFooterMargins)
         .SetDefault(views::kMarginsKey,
                     gfx::Insets::VH(kFooterVerticalMargins, 0));
-    alert_row_ = AddChildView(
-        std::make_unique<FadeView<FadeAlertFooterRow, FadeAlertFooterRow,
-                                  AlertFooterRowData>>(
-            std::make_unique<FadeAlertFooterRow>(),
-            std::make_unique<FadeAlertFooterRow>()));
+    alert_row_ = AddChildView(std::make_unique<AlertFadeView>(
+        std::make_unique<FadeAlertFooterRow>(),
+        std::make_unique<FadeAlertFooterRow>()));
 
-    performance_row_ =
-        AddChildView(std::make_unique<
-                     FadeView<FadePerformanceFooterRow,
-                              FadePerformanceFooterRow, PerformanceRowData>>(
-            std::make_unique<FadePerformanceFooterRow>(),
-            std::make_unique<FadePerformanceFooterRow>()));
+    performance_row_ = AddChildView(std::make_unique<PerformanceFadeView>(
+        std::make_unique<FadePerformanceFooterRow>(),
+        std::make_unique<FadePerformanceFooterRow>()));
   }
 
-  FadeView<FadeAlertFooterRow, FadeAlertFooterRow, AlertFooterRowData>*
-  GetAlertRow() {
-    return alert_row_;
-  }
+  void SetAlertData(const AlertFooterRowData& data);
+  void SetPerformanceData(const PerformanceRowData& data);
+  void SetFade(double percent);
 
-  FadeView<FadePerformanceFooterRow,
-           FadePerformanceFooterRow,
-           PerformanceRowData>*
-  GetPerformanceRow() {
+  AlertFadeView* GetAlertRowForTesting() { return alert_row_; }
+
+  PerformanceFadeView* GetPerformanceRowForTesting() {
     return performance_row_;
   }
 
   // views::View
   void OnThemeChanged() override;
-  gfx::Size CalculatePreferredSize() const override;
 
  private:
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
-  raw_ptr<FadeView<FadeAlertFooterRow, FadeAlertFooterRow, AlertFooterRowData>>
-      alert_row_ = nullptr;
-  raw_ptr<FadeView<FadePerformanceFooterRow,
-                   FadePerformanceFooterRow,
-                   PerformanceRowData>>
-      performance_row_ = nullptr;
+  raw_ptr<AlertFadeView> alert_row_ = nullptr;
+  raw_ptr<PerformanceFadeView> performance_row_ = nullptr;
+
+  void UpdateVisibility();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_FADE_FOOTER_VIEW_H_

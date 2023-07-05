@@ -154,6 +154,21 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
 // FooterView
 // -----------------------------------------------------------------------
 
+void FooterView::SetAlertData(const AlertFooterRowData& data) {
+  alert_row_->SetData(data);
+  UpdateVisibility();
+}
+
+void FooterView::SetPerformanceData(const PerformanceRowData& data) {
+  performance_row_->SetData(data);
+  UpdateVisibility();
+}
+
+void FooterView::SetFade(double percent) {
+  alert_row_->SetFade(percent);
+  performance_row_->SetFade(percent);
+}
+
 void FooterView::OnThemeChanged() {
   views::View::OnThemeChanged();
   auto* const color_provider = GetColorProvider();
@@ -164,19 +179,7 @@ void FooterView::OnThemeChanged() {
       color_provider->GetColor(ui::kColorBubbleFooterBorder)));
 }
 
-gfx::Size FooterView::CalculatePreferredSize() const {
-  const gfx::Size alert_size = alert_row_->CalculatePreferredSize();
-  const gfx::Size performance_size = performance_row_->CalculatePreferredSize();
-  gfx::Size preferred_size = alert_size + performance_size;
-
-  // Add additional margin space when the footer has content to show
-  if (preferred_size.width() > 0 && preferred_size.height() > 0) {
-    // When two footers are showing, add space between them.
-    if (alert_size.height() > 0 && performance_size.height() > 0) {
-      preferred_size.Enlarge(0, kFooterVerticalMargins);
-    }
-    const gfx::Insets margins = flex_layout_->interior_margin();
-    preferred_size.Enlarge(margins.width(), margins.height());
-  }
-  return preferred_size;
+void FooterView::UpdateVisibility() {
+  SetVisible(performance_row_->CalculatePreferredSize().height() > 0 ||
+             alert_row_->CalculatePreferredSize().height() > 0);
 }

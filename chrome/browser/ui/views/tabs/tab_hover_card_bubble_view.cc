@@ -533,8 +533,8 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
     show_footer =
         show_footer || show_discard_status || tab_memory_usage_in_bytes > 0;
     const int hover_card_width = views::View::GetContentsBounds().width();
-    footer_view_->GetAlertRow()->SetData({alert_state_, hover_card_width});
-    footer_view_->GetPerformanceRow()->SetData(
+    footer_view_->SetAlertData({alert_state_, hover_card_width});
+    footer_view_->SetPerformanceData(
         {show_discard_status, tab_data.discarded_memory_savings_in_bytes,
          tab_memory_usage_in_bytes, hover_card_width});
   } else {
@@ -554,8 +554,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
 void TabHoverCardBubbleView::SetTextFade(double percent) {
   title_label_->SetFade(percent);
   domain_label_->SetFade(percent);
-  footer_view_->GetAlertRow()->SetFade(percent);
-  footer_view_->GetPerformanceRow()->SetFade(percent);
+  footer_view_->SetFade(percent);
 }
 
 void TabHoverCardBubbleView::SetTargetTabImage(gfx::ImageSkia preview_image) {
