@@ -4,6 +4,7 @@
 
 #include "net/disk_cache/blockfile/stats.h"
 
+#include "base/bits.h"
 #include "base/check.h"
 #include "base/format_macros.h"
 #include "base/metrics/bucket_ranges.h"
@@ -26,22 +27,6 @@ struct OnDiskStats {
   int64_t counters[disk_cache::Stats::MAX_COUNTER];
 };
 static_assert(sizeof(OnDiskStats) < 512, "needs more than 2 blocks");
-
-// Returns the "floor" (as opposed to "ceiling") of log base 2 of number.
-int LogBase2(int32_t number) {
-  unsigned int value = static_cast<unsigned int>(number);
-  const unsigned int mask[] = {0x2, 0xC, 0xF0, 0xFF00, 0xFFFF0000};
-  const unsigned int s[] = {1, 2, 4, 8, 16};
-
-  unsigned int result = 0;
-  for (int i = 4; i >= 0; i--) {
-    if (value & mask[i]) {
-      value >>= s[i];
-      result |= s[i];
-    }
-  }
-  return static_cast<int>(result);
-}
 
 // WARNING: Add new stats only at the end, or change LoadStats().
 const char* const kCounterNames[] = {
@@ -293,7 +278,7 @@ int Stats::GetStatsBucket(int32_t size) {
     return (size - 20 * 1024) / 4096 + 11;
 
   // From this point on, use a logarithmic scale.
-  int result =  LogBase2(size) + 1;
+  int result = base::bits::Log2Floor(size) + 1;
 
   static_assert(kDataSizesLength > 16, "update the scale");
   if (result >= kDataSizesLength)
