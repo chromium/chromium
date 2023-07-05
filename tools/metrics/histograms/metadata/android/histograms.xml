@@ -2731,12 +2731,112 @@ chromium-metrics-reviews@google.com.
   <owner>wenyufu@chromium.org</owner>
   <summary>
     Records the amount of extra time that would be needed for the initial tab to
-    be created before the delegate completes. Note that this metric slightly
-    undercounts in the case where two ChromeTabbedActity initial tabs are being
-    created before the async customization completes (only the first is
-    recorded). Recorded when the delegate completes customization successfully
+    be created before the delegate completes. Note that this metric undercounts
+    the rare case where two ChromeTabbedActity initial tabs are being created
+    before the async customization completes (only the first is recorded).
+    Recorded when the delegate completes customization successfully during
+    startup, but too late to determine what kind of initial Tab to create.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.PartnerCustomization.DurationNeededForAsyncCompletion.{CustomizationDelegate}"
+    units="ms" expires_after="2023-12-12">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the amount of extra time that would be needed for the initial tab to
+    be created before the delegate completes for the delegate
+    &quot;{CustomizationDelegate}&quot;. Note that this metric undercounts the
+    rare case where two ChromeTabbedActity initial tabs are being created before
+    the async customization completes (only the first is recorded). Recorded
+    when the delegate &quot;{CustomizationDelegate}&quot; completes
+    customization successfully during startup, but too late to determine what
+    kind of initial Tab to create.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.PartnerCustomization.DurationNeededForAsyncCompletionNotCached"
+    units="ms" expires_after="2023-12-12">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the amount of extra time that would be needed for the initial tab to
+    be created before the delegate completes. Note that this metric undercounts
+    the rare case where two ChromeTabbedActity initial tabs are being created
+    before the async customization completes (only the first is recorded).
+    Recorded when there is no cached Partner Homepage and the delegate completes
+    customization successfully during startup, but too late to determine what
+    kind of initial Tab to create.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.PartnerCustomization.DurationNeededForAsyncCompletionNotCached.{CustomizationDelegate}"
+    units="ms" expires_after="2023-12-12">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the amount of extra time that would be needed for the initial tab to
+    be created before the delegate completes. Note that this metric undercounts
+    the rare case where two ChromeTabbedActity initial tabs are being created
+    before the async customization completes (only the first is recorded).
+    Recorded when there is no cached Partner Homepage and the delegate
+    &quot;{CustomizationDelegate}&quot; completes customization successfully
     during startup, but too late to determine what kind of initial Tab to
     create.
+  </summary>
+</histogram>
+
+<histogram name="Android.PartnerCustomization.HomepageCustomizationOutcome"
+    enum="PartnerCustomizationsHomepage" expires_after="2023-12-12">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the outcome of initial Tab creation relative to Homepage
+    customization. The outcome characterizes the initial Tab focusing on an NTP
+    and whether it was created correctly. When a custom Homepage was created we
+    only record whether it was a Partner Homepage or some other Homepage. At
+    this time we don't differentiate between User and Policy Homepages or record
+    whether any Homepage was correctly created when customization changes.
+    Recorded at the end of customization or initial Tab creation, whichever is
+    last.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.PartnerCustomization.HomepageCustomizationOutcome.{CustomizationDelegate}"
+    enum="PartnerCustomizationsHomepage" expires_after="2023-12-12">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the outcome of initial Tab creation relative to Homepage
+    customization using delegate &quot;{CustomizationDelegate}&quot;. The
+    outcome characterizes the initial Tab focusing on an NTP and whether it was
+    created correctly. When a custom Homepage was created we only record whether
+    it was a Partner Homepage or some other Homepage. At this time we don't
+    differentiate between User and Policy Homepages or record whether any
+    Homepage was correctly created when customization changes. Recorded at the
+    end of customization or initial Tab creation, whichever is last.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.PartnerCustomization.HomepageCustomizationOutcomeNotCached.{CustomizationDelegate}"
+    enum="PartnerCustomizationsHomepage" expires_after="2023-12-12">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the outcome of initial Tab creation relative to Homepage
+    customization using delegate &quot;{CustomizationDelegate}&quot; when the
+    Homepage was not previously cached. The outcome characterizes the initial
+    Tab focusing on an NTP and whether it was created correctly. When a custom
+    Homepage was created we only record whether it was a Partner Homepage or
+    some other Homepage. At this time we don't differentiate between User and
+    Policy Homepages or record whether any Homepage was correctly created when
+    customization changes. Recorded at the end of customization or initial Tab
+    creation, whichever is last.
   </summary>
 </histogram>
 
@@ -2761,10 +2861,50 @@ chromium-metrics-reviews@google.com.
     customization. This tells us how often the delegate is able to provide
     correct data, is canceled due to timeout, and whether exceptions were
     thrown, etc. Note that the correct data may actually arrive too late to be
-    used because Chrome waits only 1/2 second before creating an initial tab.
-    This logging of Completed too late is only done by the Chrome App, but all
-    other values are logged for CCT as well. Recorded when the async task is
-    completed or canceled during Chrome's start up.
+    used because Chrome waits only 1/2 second before creating an initial tab,
+    but it will be recorded here regardless. This logging of Completed-too-late
+    is only done by the Chrome App, but all other values are logged for CCT as
+    well. Recorded when the async task is completed or canceled during Chrome's
+    start up.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.PartnerCustomization.TaskCompletion.{CustomizationDelegate}"
+    enum="PartnerTaskCompletion" expires_after="2023-12-12">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the outcome of the async initialization task for the partner browser
+    customization. This tells us how often the delegate
+    &quot;{CustomizationDelegate}&quot; is able to provide correct data, is
+    canceled due to timeout, and whether exceptions were thrown, for this
+    delegate. Note that the correct data may actually arrive too late to be used
+    because Chrome waits only 1/2 second before creating an initial tab, but it
+    will be recorded here regardless. This logging of Completed-too-late is only
+    done by the Chrome App, but all other values are logged for CCT as well.
+    Recorded when the async task is completed or canceled during Chrome's start
+    up.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.PartnerCustomization.TaskCompletionNotCached.{CustomizationDelegate}"
+    enum="PartnerTaskCompletion" expires_after="2023-12-12">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the outcome of the async initialization task for the partner browser
+    customization, when there is not yet any cached Homepage (likely Chrome's
+    first launch). This tells us how often the delegate
+    &quot;{CustomizationDelegate}&quot; is able to provide correct data, is
+    canceled due to timeout, and whether exceptions were thrown, for this
+    delegate. Note that the correct data may actually arrive too late to be used
+    because Chrome waits only 1/2 second before creating an initial tab, but it
+    will be recorded here regardless. This logging of Completed-too-late is only
+    done by the Chrome App, but all other values are logged for CCT as well.
+    Recorded when the async task is completed or canceled during Chrome's start
+    up when no homepage is already cached.
   </summary>
 </histogram>
 
@@ -2774,12 +2914,12 @@ chromium-metrics-reviews@google.com.
   <owner>donnd@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
-    Records the amount of time it took for the {CustomizationDelegate} delegate
-    to run in the async task that does partner customization. Recorded when the
-    task completes but was unable to use the delegate for some reason - see
-    DelegateUnusedReason histogram for some possible reasons. Trying to use the
-    PreloadApk delegate is only done when actually needed so these numbers
-    should reflect actual usage attempts.
+    Records the amount of time it took for the delegate
+    &quot;{CustomizationDelegate}&quot; to run in the async task that does
+    partner customization. Recorded when the task completes but was unable to
+    use the delegate for some reason - see DelegateUnusedReason histogram for
+    some possible reasons. Trying to use the PreloadApk delegate is only done
+    when actually needed so these numbers should reflect actual usage attempts.
   </summary>
 </histogram>
 
@@ -2789,11 +2929,12 @@ chromium-metrics-reviews@google.com.
   <owner>donnd@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
-    Records the amount of time it took for the {CustomizationDelegate} delegate
-    to run in the async task that does partner customization. Recorded when the
-    task completes successfully and a delegate providing customizations is
-    found. Trying to use the PreloadApk delegate is only done when actually
-    needed so these numbers should reflect actual usage attempts.
+    Records the amount of time it took for the delegate
+    &quot;{CustomizationDelegate}&quot; to run in the async task that does
+    partner customization. Recorded when the task completes successfully and a
+    delegate providing customizations is found. Trying to use the PreloadApk
+    delegate is only done when actually needed so these numbers should reflect
+    actual usage attempts.
   </summary>
 </histogram>
 

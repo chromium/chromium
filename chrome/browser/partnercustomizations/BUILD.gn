@@ -34,9 +34,19 @@ generate_jni("jni_headers") {
 android_library("uma_java") {
   sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerCustomizationsUma.java" ]
   deps = [
+    ":helper_java",
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+android_library("helper_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/HomepageCharacterizationHelper.java" ]
+  deps = [
+    "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
@@ -45,9 +55,11 @@ android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerBrowserCustomizations.java" ]
   deps = [
     ":delegate_java",
+    ":helper_java",
     ":uma_java",
     "//base:base_java",
     "//base:jni_java",
+    "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//components/embedder_support/android:util_java",
@@ -106,6 +118,7 @@ robolectric_library("junit") {
 
   deps = [
     ":delegate_public_impl_java",
+    ":helper_java",
     ":java",
     ":test_support_java",
     ":uma_java",
@@ -116,6 +129,7 @@ robolectric_library("junit") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",

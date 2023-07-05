@@ -81026,10 +81026,18 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PartnerCustomizationProviderDelegate">
-  <int value="0" label="None valid"/>
+  <int value="0" label="None: default delegate inValid"/>
   <int value="1" label="Phenotype config"/>
   <int value="2" label="GService flag"/>
   <int value="3" label="Preload APK"/>
+</enum>
+
+<enum name="PartnerCustomizationsHomepage">
+  <int value="0" label="NTP but unknown if correct"/>
+  <int value="1" label="NTP but should have been Partner Homepage"/>
+  <int value="2" label="NTP correctly"/>
+  <int value="3" label="Partner custom"/>
+  <int value="4" label="Other custom"/>
 </enum>
 
 <enum name="PartnerCustomizationUsage">
@@ -81075,10 +81083,11 @@ Called by update_net_trust_anchors.py.-->
 
 <enum name="PartnerTaskCompletion">
   <int value="0" label="None valid"/>
-  <int value="1" label="Completed in time"/>
-  <int value="2" label="Completed too late"/>
+  <int value="1" label="Completed in time for tab creation"/>
+  <int value="2" label="Completed too late for tab creation"/>
   <int value="3" label="Cancelled - timeout"/>
   <int value="4" label="Exception thrown"/>
+  <int value="5" label="Task skipped"/>
 </enum>
 
 <enum name="PartnerTypeMetric">
