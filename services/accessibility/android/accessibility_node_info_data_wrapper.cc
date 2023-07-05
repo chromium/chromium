@@ -69,8 +69,22 @@ bool AccessibilityNodeInfoDataWrapper::IsVisibleToUser() const {
   return GetProperty(AXBooleanProperty::VISIBLE_TO_USER);
 }
 
-bool AccessibilityNodeInfoDataWrapper::IsVirtualNode() const {
-  return node_ptr_->is_virtual_node;
+bool AccessibilityNodeInfoDataWrapper::IsWebNode() const {
+  if (is_web_node_.has_value()) {
+    return is_web_node_.value();
+  }
+
+  bool result = false;
+  ax::mojom::Role chrome_role = GetChromeRole();
+  if (chrome_role == ax::mojom::Role::kWebView ||
+      chrome_role == ax::mojom::Role::kRootWebArea) {
+    result = true;
+  } else if (AccessibilityInfoDataWrapper* parent = tree_source_->GetParent(
+                 const_cast<AccessibilityNodeInfoDataWrapper*>(this))) {
+    result = parent->IsWebNode();
+  }
+  is_web_node_ = result;
+  return result;
 }
 
 bool AccessibilityNodeInfoDataWrapper::IsIgnored() const {
@@ -94,7 +108,10 @@ bool AccessibilityNodeInfoDataWrapper::IsIgnored() const {
 }
 
 bool AccessibilityNodeInfoDataWrapper::IsImportantInAndroid() const {
-  return IsVirtualNode() || GetProperty(AXBooleanProperty::IMPORTANCE);
+  // Virtual nodes are not enforced to be set importance. Here, they're always
+  // treated as important.
+  return node_ptr_->is_virtual_node ||
+         GetProperty(AXBooleanProperty::IMPORTANCE);
 }
 
 bool AccessibilityNodeInfoDataWrapper::IsFocusableInFullFocusMode() const {
@@ -110,7 +127,7 @@ bool AccessibilityNodeInfoDataWrapper::IsFocusableInFullFocusMode() const {
 
 bool AccessibilityNodeInfoDataWrapper::IsAccessibilityFocusableContainer()
     const {
-  if (IsVirtualNode()) {
+  if (IsWebNode()) {
     return GetProperty(AXBooleanProperty::SCREEN_READER_FOCUSABLE) ||
            IsFocusable();
   }
@@ -759,7 +776,7 @@ bool AccessibilityNodeInfoDataWrapper::HasText() const {
 }
 
 bool AccessibilityNodeInfoDataWrapper::HasAccessibilityFocusableText() const {
-  if (IsVirtualNode()) {
+  if (IsWebNode()) {
     return HasText();
   }
 
@@ -792,7 +809,7 @@ void AccessibilityNodeInfoDataWrapper::ComputeNameFromContents(
 
 void AccessibilityNodeInfoDataWrapper::ComputeNameFromContentsInternal(
     std::vector<std::string>* names) const {
-  if (IsVirtualNode() || IsAccessibilityFocusableContainer()) {
+  if (IsWebNode() || IsAccessibilityFocusableContainer()) {
     return;
   }
 

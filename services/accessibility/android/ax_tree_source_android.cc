@@ -671,13 +671,13 @@ void AXTreeSourceAndroid::ComputeAndCacheChildren(
   }
 
   // We sort output nodes only in full focus mode.
-  if (!UseFullFocusMode() || info_data->IsVirtualNode()) {
+  if (!UseFullFocusMode() || info_data->IsWebNode()) {
     return;
   }
 
   // Also don't sort for virtual nodes (e.g. WebView).
   for (const AccessibilityInfoDataWrapper* child : children) {
-    if (child->IsVirtualNode()) {
+    if (child->IsWebNode()) {
       return;
     }
   }

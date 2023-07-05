@@ -248,19 +248,6 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
 
   SetProperty(root, AXBooleanProperty::SCROLLABLE, false);
 
-  // Don't compute name from descendants for virtual views, e.g. WebView.
-  root.is_virtual_node = true;
-  child1.is_virtual_node = true;
-  child2.is_virtual_node = true;
-
-  data = CallSerialize(root_wrapper);
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
-
-  root.is_virtual_node = false;
-  child1.is_virtual_node = false;
-  child2.is_virtual_node = false;
-
   // If one child is clickable, do not use clickable child.
   SetProperty(child1, AXBooleanProperty::CLICKABLE, true);
 
@@ -300,6 +287,49 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
   root.boolean_properties->clear();
   root.string_properties->clear();
   data = CallSerialize(root_wrapper);
+  ASSERT_FALSE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+}
+
+TEST_F(AccessibilityNodeInfoDataWrapperTest,
+       NameFromDescendants_ignoreWebView) {
+  AXNodeInfoData root;
+  root.id = 10;
+  AccessibilityNodeInfoDataWrapper root_wrapper(tree_source(), &root);
+  SetIdToWrapper(&root_wrapper);
+  SetProperty(root, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(root, AXIntListProperty::CHILD_NODE_IDS,
+              std::vector<int>({1, 2}));
+  SetProperty(root, AXStringProperty::CHROME_ROLE, "webView");
+
+  AXNodeInfoData child1;
+  child1.id = 1;
+  AccessibilityNodeInfoDataWrapper child1_wrapper(tree_source(), &child1);
+  SetIdToWrapper(&child1_wrapper);
+  SetProperty(child1, AXBooleanProperty::IMPORTANCE, true);
+  child1.is_virtual_node = true;
+
+  AXNodeInfoData child2;
+  child2.id = 2;
+  AccessibilityNodeInfoDataWrapper child2_wrapper(tree_source(), &child2);
+  SetIdToWrapper(&child2_wrapper);
+  SetProperty(child2, AXBooleanProperty::IMPORTANCE, true);
+  child2.is_virtual_node = true;
+
+  SetParentId(child1.id, root.id);
+  SetParentId(child2.id, root.id);
+
+  // Root node has no name, but has descendants with name.
+  // Name from contents can happen if a node is focusable.
+  SetProperty(root, AXBooleanProperty::FOCUSABLE, true);
+  SetProperty(child1, AXStringProperty::TEXT, "child1 label text");
+  SetProperty(child2, AXStringProperty::TEXT, "child2 label text");
+
+  set_full_focus_mode(true);
+
+  ui::AXNodeData data = CallSerialize(root_wrapper);
+  data = CallSerialize(root_wrapper);
+  std::string name;
   ASSERT_FALSE(
       data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
 }

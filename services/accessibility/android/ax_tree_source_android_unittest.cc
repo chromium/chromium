@@ -1149,7 +1149,6 @@ TEST_F(AXTreeSourceAndroidTest, SerializeVirtualNode) {
   SetProperty(webview, AXBooleanProperty::VISIBLE_TO_USER, true);
   SetProperty(webview, AXIntListProperty::CHILD_NODE_IDS,
               std::vector<int>({2, 3}));
-  SetProperty(webview, AXStringProperty::CHROME_ROLE, "rootWebArea");
 
   event->node_data.push_back(AXNodeInfoData::New());
   AXNodeInfoData* button1 = event->node_data.back().get();

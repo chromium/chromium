@@ -38,7 +38,7 @@ class TestAccessibilityInfoDataWrapper
   int32_t GetId() const override { return id_; }
   const gfx::Rect GetBounds() const override { return bounds_; }
   bool IsVisibleToUser() const override { return true; }
-  bool IsVirtualNode() const override { return false; }
+  bool IsWebNode() const override { return false; }
   bool IsIgnored() const override { return false; }
   bool IsImportantInAndroid() const override { return true; }
   bool IsFocusableInFullFocusMode() const override { return true; }

@@ -35,7 +35,7 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
   int32_t GetId() const override;
   const gfx::Rect GetBounds() const override;
   bool IsVisibleToUser() const override;
-  bool IsVirtualNode() const override;
+  bool IsWebNode() const override;
   bool IsIgnored() const override;
   bool IsImportantInAndroid() const override;
   bool IsFocusableInFullFocusMode() const override;

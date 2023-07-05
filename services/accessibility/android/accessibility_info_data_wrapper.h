@@ -41,7 +41,7 @@ class AccessibilityInfoDataWrapper {
   virtual int32_t GetId() const = 0;
   virtual const gfx::Rect GetBounds() const = 0;
   virtual bool IsVisibleToUser() const = 0;
-  virtual bool IsVirtualNode() const = 0;
+  virtual bool IsWebNode() const = 0;
   virtual bool IsIgnored() const = 0;
   virtual bool IsImportantInAndroid() const = 0;
   virtual bool IsFocusableInFullFocusMode() const = 0;
