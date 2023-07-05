@@ -207,6 +207,27 @@ void AppendParamsFromStartParams(
           start_params);
 }
 
+int GetDefaultVmMemoryMiB(ArcVmClientAdapterDelegate* delegate) {
+  base::SystemMemoryInfoKB info;
+  if (!delegate->GetSystemMemoryInfo(&info)) {
+    return 0;
+  }
+  const int sys_memory_mb = info.total / 1024;
+  int vm_memory_mb;
+  if (sys_memory_mb >= 4096) {
+    // On devices with >=4GB RAM, reserve 1GB for other processes.
+    vm_memory_mb = sys_memory_mb - 1024;
+  } else {
+    vm_memory_mb = sys_memory_mb / 4 * 3;
+  }
+
+  if (delegate->IsCrosvm32bit()) {
+    vm_memory_mb = std::min(vm_memory_mb, static_cast<int>(k32bitVmRamMaxMib));
+  }
+
+  return vm_memory_mb;
+}
+
 vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     const std::string& user_id_hash,
     uint32_t cpus,
@@ -376,7 +397,17 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
   if (base::FeatureList::IsEnabled(kGuestZram)) {
     request.set_guest_swappiness(kGuestZramSwappiness.Get());
-    request.set_guest_zram_size(kGuestZramSize.Get());
+    if (kGuestZramSizePercentage.Get() != 0) {
+      // If there's no custom memory_mib set, try to get the default value to
+      // determine the ZRAM size.
+      if (request.memory_mib() == 0) {
+        request.set_memory_mib(GetDefaultVmMemoryMiB(delegate));
+      }
+      request.set_guest_zram_mib(request.memory_mib() *
+                                 kGuestZramSizePercentage.Get() / 100);
+    } else {
+      request.set_guest_zram_mib(kGuestZramSize.Get() / (1024 * 1024));
+    }
   }
 
   if (base::FeatureList::IsEnabled(kMglruReclaim)) {

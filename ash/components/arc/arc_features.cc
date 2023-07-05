@@ -143,8 +143,13 @@ BASE_FEATURE(kGameModeFeature,
 // Controls whether the guest zram is enabled. This is only for ARCVM.
 BASE_FEATURE(kGuestZram, "ArcGuestZram", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls the size of the guest zram.
+// Controls the size of the guest zram by an absolute value. Ignored if
+// "size_percentage" is set.
 const base::FeatureParam<int> kGuestZramSize{&kGuestZram, "size", 0};
+
+// Controls the size of the guest zram by a percentage of the VM memory size.
+const base::FeatureParam<int> kGuestZramSizePercentage{&kGuestZram,
+                                                       "size_percentage", 0};
 
 // Controls swappiness for the ARCVM guest.
 const base::FeatureParam<int> kGuestZramSwappiness{&kGuestZram, "swappiness",

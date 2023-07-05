@@ -37,6 +37,7 @@ BASE_DECLARE_FEATURE(kGameModeFeature);
 BASE_DECLARE_FEATURE(kGmsCoreLowMemoryKillerProtection);
 BASE_DECLARE_FEATURE(kGuestZram);
 extern const base::FeatureParam<int> kGuestZramSize;
+extern const base::FeatureParam<int> kGuestZramSizePercentage;
 extern const base::FeatureParam<int> kGuestZramSwappiness;
 extern const base::FeatureParam<bool> kGuestReclaimEnabled;
 extern const base::FeatureParam<bool> kGuestReclaimOnlyAnonymous;

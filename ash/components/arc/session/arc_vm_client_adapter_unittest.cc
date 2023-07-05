@@ -2402,7 +2402,8 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSwappinessValid) {
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params;
   params["swappiness"] = "90";
-  params["size"] = "2000";
+  params["size"] = base::NumberToString(256 * 1024 * 1024);
+  params["size_percentage"] = "0";
   feature_list.InitAndEnableFeatureWithParameters(kGuestZram, params);
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
@@ -2410,7 +2411,84 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSwappinessValid) {
   EXPECT_FALSE(is_system_shutdown().has_value());
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
   EXPECT_EQ(90, request.guest_swappiness());
-  EXPECT_EQ(2000, request.guest_zram_size());
+  EXPECT_EQ(0, request.guest_zram_size());
+  EXPECT_EQ(256u, request.guest_zram_mib());
+}
+
+TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_5GbSystem) {
+  class TestDelegate : public ArcVmClientAdapterDelegate {
+    bool GetSystemMemoryInfo(base::SystemMemoryInfoKB* info) override {
+      info->total = 5 * 1024 * 1024;
+      return true;
+    }
+    bool IsCrosvm32bit() override { return false; }
+  };
+  SetArcVmClientAdapterDelegateForTesting(adapter(),
+                                          std::make_unique<TestDelegate>());
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["size"] = "2000";  // Should be ignored
+  params["size_percentage"] = "50";
+
+  feature_list.InitAndEnableFeatureWithParameters(kGuestZram, params);
+  StartParams start_params(GetPopulatedStartParams());
+  StartMiniArcWithParams(true, std::move(start_params));
+
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_EQ(0, request.guest_zram_size());
+  // 5GB system should result in 4GB VM size => 2GB ZRAM.
+  EXPECT_EQ(2048u, request.guest_zram_mib());
+}
+
+TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_4GbSystem) {
+  class TestDelegate : public ArcVmClientAdapterDelegate {
+    bool GetSystemMemoryInfo(base::SystemMemoryInfoKB* info) override {
+      info->total = 4 * 1024 * 1024;
+      return true;
+    }
+    bool IsCrosvm32bit() override { return false; }
+  };
+  SetArcVmClientAdapterDelegateForTesting(adapter(),
+                                          std::make_unique<TestDelegate>());
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["size"] = "2000";  // Should be ignored
+  params["size_percentage"] = "50";
+
+  feature_list.InitAndEnableFeatureWithParameters(kGuestZram, params);
+  StartParams start_params(GetPopulatedStartParams());
+  StartMiniArcWithParams(true, std::move(start_params));
+
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_EQ(0, request.guest_zram_size());
+  // 4GB system should result in 3GB VM size => 1.5GB ZRAM.
+  EXPECT_EQ(1536u, request.guest_zram_mib());
+}
+
+TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_CustomMem) {
+  class TestDelegate : public ArcVmClientAdapterDelegate {
+    bool GetSystemMemoryInfo(base::SystemMemoryInfoKB* info) override {
+      info->total = 6 * 1024 * 1024;
+      return true;
+    }
+    bool IsCrosvm32bit() override { return false; }
+  };
+  SetArcVmClientAdapterDelegateForTesting(adapter(),
+                                          std::make_unique<TestDelegate>());
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+
+  feature_list.InitWithFeaturesAndParameters(
+      {{kGuestZram, {{"size_percentage", "50"}}},
+       {kVmMemorySize, {{"shift_mib", "-2048"}}}},
+      {});
+  StartParams start_params(GetPopulatedStartParams());
+  StartMiniArcWithParams(true, std::move(start_params));
+
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_EQ(0, request.guest_zram_size());
+  // 6GB system with -2GB shift results in 4GB VM size => 2GB ZRAM.
+  EXPECT_EQ(2048u, request.guest_zram_mib());
 }
 
 // Test that StartArcVmRequest has no matching command line flag
