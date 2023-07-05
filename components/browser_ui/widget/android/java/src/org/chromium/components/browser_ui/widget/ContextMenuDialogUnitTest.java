@@ -22,6 +22,7 @@ import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -93,6 +94,12 @@ public class ContextMenuDialogUnitTest {
         Mockito.when(mockContentView.getMeasuredHeight()).thenReturn(DIALOG_SIZE_DIP);
         Mockito.when(mockContentView.getMeasuredWidth()).thenReturn(DIALOG_SIZE_DIP);
         Mockito.doReturn(mockContentView).when(mSpyPopupWindow).getContentView();
+    }
+
+    @After
+    public void tearDown() {
+        UiWidgetFactory.setInstance(null);
+        mActivity.finish();
     }
 
     @Test
