@@ -309,25 +309,18 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
     // NOTE: All references to the returned SkSurface(s) must be destroyed
     // before ScopedWriteAccess is destroyed.
     SkSurface* surface() const {
-      DCHECK(representation()->format().is_single_plane());
+      // Writes do not support external sampler.
+      CHECK(representation()->format().is_single_plane());
       return surface(0);
     }
     SkSurface* surface(int plane_index) const {
       return surfaces_[plane_index].get();
     }
 
-    GrPromiseImageTexture* promise_image_texture() const {
-      DCHECK(representation()->format().is_single_plane());
-      return promise_image_texture(0);
-    }
     GrPromiseImageTexture* promise_image_texture(int plane_index) const {
       return promise_image_textures_[plane_index].get();
     }
 
-    skgpu::graphite::BackendTexture graphite_texture() const {
-      DCHECK(representation()->format().is_single_plane());
-      return graphite_texture(0);
-    }
     skgpu::graphite::BackendTexture graphite_texture(int plane_index) const {
       return graphite_textures_[plane_index];
     }
@@ -362,7 +355,7 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
     virtual ~ScopedReadAccess();
 
     GrPromiseImageTexture* promise_image_texture() const {
-      DCHECK(representation()->format().is_single_plane());
+      CHECK_EQ(representation()->NumPlanesExpected(), 1u);
       return promise_image_texture(0);
     }
     GrPromiseImageTexture* promise_image_texture(int plane_index) const {
@@ -370,7 +363,7 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
     }
 
     skgpu::graphite::BackendTexture graphite_texture() const {
-      DCHECK(representation()->format().is_single_plane());
+      CHECK_EQ(representation()->NumPlanesExpected(), 1u);
       return graphite_texture(0);
     }
     skgpu::graphite::BackendTexture graphite_texture(int plane_index) const {

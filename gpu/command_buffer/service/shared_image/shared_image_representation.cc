@@ -92,7 +92,7 @@ GLTextureImageRepresentationBase::BeginScopedAccess(
 }
 
 gpu::TextureBase* GLTextureImageRepresentationBase::GetTextureBase() {
-  DCHECK(format().is_single_plane());
+  CHECK_EQ(NumPlanesExpected(), 1u);
   return GetTextureBase(0);
 }
 
@@ -109,7 +109,7 @@ gpu::TextureBase* GLTextureImageRepresentation::GetTextureBase(
 }
 
 gles2::Texture* GLTextureImageRepresentation::GetTexture() {
-  DCHECK(format().is_single_plane());
+  CHECK_EQ(NumPlanesExpected(), 1u);
   return GetTexture(0);
 }
 
@@ -141,7 +141,7 @@ gpu::TextureBase* GLTexturePassthroughImageRepresentation::GetTextureBase(
 
 const scoped_refptr<gles2::TexturePassthrough>&
 GLTexturePassthroughImageRepresentation::GetTexturePassthrough() {
-  DCHECK(format().is_single_plane());
+  CHECK_EQ(NumPlanesExpected(), 1u);
   return GetTexturePassthrough(0);
 }
 
