@@ -122,7 +122,7 @@ void DeviceCloudPolicyInitializer::TryToStartConnection() {
     return;
   }
 
-  // Currently reven devices don't support sever-backed state keys, but they
+  // Currently reven devices don't support server-backed state keys, but they
   // also don't support FRE/AutoRE so don't block initialization of device
   // policy on state keys being available on reven.
   // TODO(b/208705225): Remove this special case when reven supports state keys.
