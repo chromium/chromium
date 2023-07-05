@@ -37,9 +37,11 @@ proto_library("fresnel_service_proto") {
 
 source_set("utils") {
   deps = [
+    ":fresnel_prefs",
     "//base",
     "//chromeos/ash/components/dbus/private_computing:private_computing_proto",
     "//chromeos/ash/components/policy",
+    "//components/prefs:prefs",
     "//crypto:crypto",
     "//google_apis:google_apis",
     "//services/network/public/cpp",
@@ -51,6 +53,8 @@ source_set("utils") {
   sources = [
     "//chromeos/ash/components/report/utils/network_utils.cc",
     "//chromeos/ash/components/report/utils/network_utils.h",
+    "//chromeos/ash/components/report/utils/pref_utils.cc",
+    "//chromeos/ash/components/report/utils/pref_utils.h",
     "//chromeos/ash/components/report/utils/psm_utils.cc",
     "//chromeos/ash/components/report/utils/psm_utils.h",
     "//chromeos/ash/components/report/utils/test_utils.cc",
@@ -65,16 +69,19 @@ source_set("unit_tests") {
 
   sources = [
     "//chromeos/ash/components/report/utils/network_utils_unittest.cc",
+    "//chromeos/ash/components/report/utils/pref_utils_unittest.cc",
     "//chromeos/ash/components/report/utils/psm_utils_unittest.cc",
     "//chromeos/ash/components/report/utils/test_utils_unittest.cc",
     "//chromeos/ash/components/report/utils/time_utils_unittest.cc",
   ]
 
   deps = [
+    ":fresnel_prefs",
     ":utils",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/private_computing:private_computing",
+    "//components/prefs:test_support",
     "//services/network:test_support",
     "//testing/gtest",
     "//third_party/icu",
