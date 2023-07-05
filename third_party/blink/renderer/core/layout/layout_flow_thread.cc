@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 
 #include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 
 namespace blink {
@@ -244,25 +245,21 @@ PhysicalRect LayoutFlowThread::FragmentsBoundingBox(
   return result;
 }
 
-void LayoutFlowThread::FlowThreadToContainingCoordinateSpace(
-    LayoutUnit& block_position,
-    LayoutUnit& inline_position) const {
+LogicalOffset LayoutFlowThread::FlowThreadToContainingCoordinateSpace(
+    LayoutUnit block_position,
+    LayoutUnit inline_position) const {
   NOT_DESTROYED();
-  LayoutPoint position(inline_position, block_position);
+  LogicalOffset position(inline_position, block_position);
   // First we have to make |position| physical, because that's what offsetLeft()
   // expects and returns.
-  if (!IsHorizontalWritingMode())
-    position = position.TransposedPoint();
-  position = DeprecatedFlipForWritingMode(position);
+  WritingModeConverter converter(
+      {Style()->GetWritingMode(), TextDirection::kLtr}, Size());
+  PhysicalOffset physical_position = converter.ToPhysical(position, {});
 
-  position.Move(ColumnOffset(PhysicalOffset(position)).ToLayoutSize());
+  physical_position += ColumnOffset(physical_position);
 
-  // Make |position| logical again, and read out the values.
-  position = DeprecatedFlipForWritingMode(position);
-  if (!IsHorizontalWritingMode())
-    position = position.TransposedPoint();
-  block_position = position.Y();
-  inline_position = position.X();
+  // Make |physical_position| logical again, and return the value.
+  return converter.ToLogical(physical_position, {});
 }
 
 void LayoutFlowThread::MultiColumnSetSearchAdapter::CollectIfNeeded(

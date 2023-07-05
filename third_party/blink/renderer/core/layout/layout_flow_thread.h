@@ -168,8 +168,9 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
 
   // Convert a logical position in the flow thread coordinate space to a logical
   // position in the containing coordinate space.
-  void FlowThreadToContainingCoordinateSpace(LayoutUnit& block_position,
-                                             LayoutUnit& inline_position) const;
+  LogicalOffset FlowThreadToContainingCoordinateSpace(
+      LayoutUnit block_position,
+      LayoutUnit inline_position) const;
 
   virtual PhysicalOffset VisualPointToFlowThreadPoint(
       const PhysicalOffset& visual_point) const = 0;

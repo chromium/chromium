@@ -4113,9 +4113,10 @@ void LayoutBox::ComputeBlockStaticDistance(
     // coordinate space of this flowthread to the containing coordinate space.
     // The inline position cannot affect the block position, so we don't bother
     // calculating it.
-    LayoutUnit dummy_inline_position;
-    To<LayoutFlowThread>(box).FlowThreadToContainingCoordinateSpace(
-        static_logical_top, dummy_inline_position);
+    static_logical_top = To<LayoutFlowThread>(box)
+                             .FlowThreadToContainingCoordinateSpace(
+                                 static_logical_top, LayoutUnit())
+                             .block_offset;
   }
 
   // Now static_logical_top is relative to container_block's logical top.
