@@ -396,6 +396,9 @@ interface BidderWorklet {
   //  if this worklet is running as part of a component (nested) Auction.
   //  Null, otherwise.
   //
+  //  `browser_signal_recency` The duration of time from when this device
+  //  joined this interest group until now, rounded to the nearest 100ms.
+  //
   // `bidding_browser_signals` See BiddingBrowserSignals.
   //
   // `auction_start_time` The time the auction started, used to ensure the
@@ -417,6 +420,7 @@ interface BidderWorklet {
       url.mojom.Url? direct_from_seller_auction_signals,
       url.mojom.Origin browser_signal_seller_origin,
       url.mojom.Origin? browser_signal_top_level_seller_origin,
+      mojo_base.mojom.TimeDelta browser_signal_recency,
       BiddingBrowserSignals bidding_browser_signals,
       mojo_base.mojom.Time auction_start_time,
       uint64 trace_id,

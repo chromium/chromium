@@ -14743,7 +14743,7 @@ TEST_F(AuctionRunnerTest, JoinCountPassedToReportWin) {
   EXPECT_GE(num_correct, kNumCorrectAtLeast);
 }
 
-TEST_F(AuctionRunnerTest, RecencyPassed) {
+TEST_F(AuctionRunnerTest, RecencyPassedReportWin) {
   // Due to noising, recency is only correctly passed 99% of the time.
   //
   // Since the noising pseudorandom number generator is uniform, in 30 runs, the
@@ -14817,6 +14817,102 @@ TEST_F(AuctionRunnerTest, RecencyPassed) {
     }
   }
   EXPECT_GE(num_correct, kNumCorrectAtLeast);
+}
+
+TEST_F(AuctionRunnerTest, RecencyPassedGenerateBid) {
+  // Add on some number of milliseconds that aren't a multiple of 100ms to test
+  // coarsening to 100ms.
+  constexpr base::TimeDelta kRecency = base::Hours(1) + base::Milliseconds(105);
+
+  const char kBidScript[] = R"(
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      // RunStandardAuction adds an additional 1 second for each previous win,
+      // so we expect to see 6 seconds more than kRecency (2 interest groups
+      // with 3 previous wins each), truncated to the next multiple of 100
+      // milliseconds. Hence, the delay is 3606100 and not 3600100 or 3600105.
+      if (browserSignals.recency !== 3606100) {
+        throw "Wrong recency " + browserSignals.recency;
+      }
+      return {bid: 1,
+              render: interestGroup.ads[0].renderURL};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  between_join_run_auction_delay_ = kRecency;
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_FALSE(result_.manually_aborted);
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+}
+
+class AuctionRunnerPassRecencyToGenerateBidDisabledTest
+    : public AuctionRunnerTest {
+ public:
+  AuctionRunnerPassRecencyToGenerateBidDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kFledgePassRecencyToGenerateBid);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AuctionRunnerPassRecencyToGenerateBidDisabledTest, NotPassed) {
+  const char kBidScript[] = R"(
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      // PassRecencyToGenerateBid is disabled, so recency shouldn't be set.
+      if (typeof browserSignals.recency !== "undefined") {
+        throw "Wrong recency " + browserSignals.recency;
+      }
+      return {bid: 1,
+              render: interestGroup.ads[0].renderURL};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_FALSE(result_.manually_aborted);
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 }
 
 TEST_P(BidRoundingTest, BidRounded) {

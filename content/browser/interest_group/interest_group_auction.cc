@@ -1145,6 +1145,8 @@ class InterestGroupAuction::BuyerHelper
         auction_->config_->seller,
         auction_->parent_ ? auction_->parent_->config_->seller
                           : absl::optional<url::Origin>(),
+        (base::Time::Now() - bid_state->bidder->join_time)
+            .RoundToMultiple(base::Milliseconds(100)),
         bid_state->bidder->bidding_browser_signals.Clone(),
         auction_->auction_start_time_, *bid_state->trace_id,
         std::move(pending_remote),
