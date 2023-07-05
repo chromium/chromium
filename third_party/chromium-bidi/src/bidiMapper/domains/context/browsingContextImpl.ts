@@ -320,26 +320,12 @@ export class BrowsingContextImpl {
         if (this.id !== params.frame.id) {
           return;
         }
-        const timestamp = BrowsingContextImpl.getTimestamp();
         this.#url = params.frame.url + (params.frame.urlFragment ?? '');
 
         // At the point the page is initialized, all the nested iframes from the
         // previous page are detached and realms are destroyed.
         // Remove children from context.
         this.#deleteAllChildren();
-
-        this.#eventManager.registerEvent(
-          {
-            method: BrowsingContext.EventNames.FragmentNavigated,
-            params: {
-              context: this.id,
-              navigation: this.#loaderId ?? null,
-              timestamp,
-              url: this.#url,
-            },
-          },
-          this.id
-        );
       }
     );
 
