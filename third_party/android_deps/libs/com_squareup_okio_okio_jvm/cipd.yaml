@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@3.0.0.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@3.3.0.cr1
 package: chromium/third_party/android_deps/libs/com_squareup_okio_okio_jvm
 description: "okio"
 data:
-- file: okio-jvm-3.0.0.jar
+- file: okio-jvm-3.3.0.jar
