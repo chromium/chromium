@@ -23,6 +23,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents.h"
@@ -30,6 +31,7 @@
 #include "net/cookies/site_for_cookies.h"
 
 using base::UserMetricsAction;
+using site_engagement::SiteEngagementService;
 
 namespace {
 
@@ -160,7 +162,12 @@ CookieControlsController::GetConfidenceLevel(CookieControlsStatus status,
     return CookieControlsBreakageConfidenceLevel::kHigh;
   }
 
-  // TODO(crbug.com/1446230): Check if the site has high site engagement index.
+  auto score = SiteEngagementService::Get(GetWebContents()->GetBrowserContext())
+                   ->GetScore(GetWebContents()->GetVisibleURL());
+  if (SiteEngagementService::IsEngagementAtLeast(
+          score, blink::mojom::EngagementLevel::HIGH)) {
+    return CookieControlsBreakageConfidenceLevel::kHigh;
+  }
 
   // TODO(crbug.com/1446230): Record if the entry point was already animated for
   // the site. Only animate it once per site.

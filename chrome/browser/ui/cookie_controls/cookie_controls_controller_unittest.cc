@@ -17,6 +17,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -858,6 +859,62 @@ TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
   page_specific_content_settings()->OnStorageAccessed(
       StorageType::DATABASE,
       CreateFirstPartyStorageKey(GURL("https://example.com")),
+      /*blocked_by_policy=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
+  // An engagement score above HIGH.
+  const int kHighEngagement = 60;
+  // An engagement score below MEDIUM.
+  const int kLowEngagement = 1;
+
+  site_engagement::SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
+      GURL("https://highengagement.com"), kHighEngagement);
+  site_engagement::SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
+      GURL("https://somethingelse.com"), kLowEngagement);
+
+  NavigateAndCommit(GURL("https://highengagement.com"));
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(CookieControlsStatus::kEnabled,
+                              CookieControlsEnforcement::kNoEnforcement,
+                              zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kLow));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Without site data access the confidence level cannot be higher than low.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kHigh));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE,
+      CreateFirstPartyStorageKey(GURL("https://highengagement.com")),
+      /*blocked_by_policy=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Visiting some other site resets the confidence level.
+  NavigateAndCommit(GURL("https://somethingelse.com"));
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(CookieControlsStatus::kEnabled,
+                              CookieControlsEnforcement::kNoEnforcement,
+                              zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kLow));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Site with medium or low engagement index that has accessed site data has
+  // medium confidence level.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE,
+      CreateFirstPartyStorageKey(GURL("https://somethingelse.com")),
       /*blocked_by_policy=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 }

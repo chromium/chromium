@@ -15,6 +15,7 @@ source_set("ui") {
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/prefs",
+    "//components/site_engagement/content",
     "//content/public/browser",
     "//content/public/common",
   ]
