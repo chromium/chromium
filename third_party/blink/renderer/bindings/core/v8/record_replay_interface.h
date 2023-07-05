@@ -12,12 +12,12 @@
 
 namespace blink {
 
+// Initialize everything that needs to be initialized with every new global window.
+void OnNewWindow(v8::Isolate* isolate, LocalFrame* localFrame);
+
 // Initialize command state after the first context is created, but before the
 // first checkpoint in the recording is created.
 void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame);
-
-// Initialize everything that needs to be initialized with every new global window.
-void OnNewWindow(v8::Isolate* isolate, LocalFrame* localFrame);
 
 // Initialize everything that needs to be initialized with every root frame.
 void OnNewRootFrame(v8::Isolate* isolate, LocalFrame* localFrame);

@@ -4852,26 +4852,24 @@ static bool TestEnv(const char* env) {
   return v && v[0] && v[0] != '0';
 }
 
-void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
-  V8RecordReplaySetAPIObjectIdCallback(GetAPIObjectIdCallback);
-  V8RecordReplayRegisterBrowserEventCallback(HandleBrowserEvent);
-
-  gLocalFrame = localFrame;
-
-  gActiveNetworkRequests =
-      new std::unordered_map<std::string, NetworkRequestStatus>();
-  gCurrentNetworkStreamData = new std::vector<uint8_t>();
-
+void OnNewWindow(v8::Isolate* isolate, LocalFrame* localFrame) {
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
+  // Add __RECORD_REPLAY_ANNOTATION_HOOK__ as a global.
+  SetFunctionProperty(isolate, context->Global(), AnnotationHookJSName,
+                      InvokeOnAnnotation);
+
   v8::Local<v8::Object> args = v8::Object::New(isolate);
-  DefineProperty(isolate, context->Global(), "__RECORD_REPLAY_ARGUMENTS__", args);
+  DefineProperty(isolate, context->Global(), "__RECORD_REPLAY_ARGUMENTS__",
+                 args);
 
   DefineProperty(isolate, args, "REPLAY_CDT_PAUSE_OBJECT_GROUP",
                  ToV8String(isolate, REPLAY_CDT_PAUSE_OBJECT_GROUP));
 
-  DefineProperty(isolate, args, "RECORD_REPLAY_DISABLE_SOURCEMAP_CACHE",
-                 v8::Boolean::New(isolate, TestEnv("RECORD_REPLAY_DISABLE_SOURCEMAP_CACHE")));
+  DefineProperty(
+      isolate, args, "RECORD_REPLAY_DISABLE_SOURCEMAP_CACHE",
+      v8::Boolean::New(isolate,
+                       TestEnv("RECORD_REPLAY_DISABLE_SOURCEMAP_CACHE")));
 
   SetFunctionProperty(isolate, args, "log", LogCallback);
   SetFunctionProperty(isolate, args, "logTrace", LogTraceCallback);
@@ -4880,8 +4878,7 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
   // CDP debugger functionality
   SetFunctionProperty(isolate, args, "setCDPMessageCallback",
                       SetCDPMessageCallback);
-  SetFunctionProperty(isolate, args, "sendCDPMessage",
-                      SendCDPMessage);
+  SetFunctionProperty(isolate, args, "sendCDPMessage", SendCDPMessage);
   SetFunctionProperty(isolate, args, "setCommandCallback",
                       v8::FunctionCallbackRecordReplaySetCommandCallback);
 
@@ -4921,31 +4918,38 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
   SetFunctionProperty(
       isolate, args, "setClearPauseDataCallback",
       v8::FunctionCallbackRecordReplaySetClearPauseDataCallback);
-  SetFunctionProperty(isolate, args, "getCurrentError",
-                      GetCurrentError);
-  SetFunctionProperty(isolate, args, "getRecordingId",
-                      GetRecordingId);
-  SetFunctionProperty(isolate, args, "sha256DigestHex",
-                      SHA256DigestHex);
+  SetFunctionProperty(isolate, args, "getCurrentError", GetCurrentError);
+  SetFunctionProperty(isolate, args, "getRecordingId", GetRecordingId);
+  SetFunctionProperty(isolate, args, "sha256DigestHex", SHA256DigestHex);
   SetFunctionProperty(isolate, args, "writeToRecordingDirectory",
                       WriteToRecordingDirectory);
-  SetFunctionProperty(isolate, args, "addRecordingEvent",
-                      AddRecordingEvent);
+  SetFunctionProperty(isolate, args, "addRecordingEvent", AddRecordingEvent);
   SetFunctionProperty(isolate, args, "addNewScriptHandler",
                       v8::FunctionCallbackRecordReplayAddNewScriptHandler);
   SetFunctionProperty(isolate, args, "getScriptSource",
                       v8::FunctionCallbackRecordReplayGetScriptSource);
-  
+
   SetFunctionProperty(isolate, args, "recordingDirectoryFileExists",
                       RecordingDirectoryFileExists);
   SetFunctionProperty(isolate, args, "readFromRecordingDirectory",
                       ReadFromRecordingDirectory);
   SetFunctionProperty(isolate, args, "getRecordingFilePath",
                       GetRecordingFilePath);
-  SetFunctionProperty(isolate, args, "getPersistentId",
-                      GetPersistentId);
-  SetFunctionProperty(isolate, args, "checkPersistentId",
-                      CheckPersistentId);
+  SetFunctionProperty(isolate, args, "getPersistentId", GetPersistentId);
+  SetFunctionProperty(isolate, args, "checkPersistentId", CheckPersistentId);
+}
+
+void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
+  V8RecordReplaySetAPIObjectIdCallback(GetAPIObjectIdCallback);
+  V8RecordReplayRegisterBrowserEventCallback(HandleBrowserEvent);
+
+  gLocalFrame = localFrame;
+
+  gActiveNetworkRequests =
+      new std::unordered_map<std::string, NetworkRequestStatus>();
+  gCurrentNetworkStreamData = new std::vector<uint8_t>();
+
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
   // This URL will prevent the script from being reported to the recorder.
   const char* InternalScriptURL = "record-replay-internal";
@@ -4965,14 +4969,6 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
     recordreplay::AutoDisallowEvents disallow("SetupRecordReplayCommands");
     RunScript(isolate, context, gReplayScript, InternalScriptURL);
   }
-}
-
-void OnNewWindow(v8::Isolate* isolate, LocalFrame* localFrame) {
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-
-  // Add __RECORD_REPLAY_ANNOTATION_HOOK__ as a global.
-  SetFunctionProperty(isolate, context->Global(), AnnotationHookJSName,
-                      InvokeOnAnnotation);
 }
 
 void OnNewRootFrame(v8::Isolate* isolate, LocalFrame* localFrame) {
