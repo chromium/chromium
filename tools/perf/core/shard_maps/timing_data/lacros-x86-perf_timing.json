@@ -3536,10 +3536,6 @@
         "name": "system_health.memory_desktop/play:media:soundcloud:2018"
     },
     {
-        "duration": "130.0",
-        "name": "tab_switching.typical_25/multitab:misc:typical24"
-    },
-    {
         "duration": "107.0",
         "name": "v8.browsing_desktop-future/browse:media:googleplaystore:2021"
     },

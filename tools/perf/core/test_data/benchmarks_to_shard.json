@@ -1841,13 +1841,6 @@
   {
     "repeat": 1,
     "stories": [
-      "multitab:misc:typical24"
-    ],
-    "name": "tab_switching.typical_25"
-  },
-  {
-    "repeat": 1,
-    "stories": [
       "Facebook",
       "Wikipedia",
       "http://www.amazon.com",

@@ -4940,10 +4940,6 @@
         "name": "system_health.memory_desktop/play:media:soundcloud"
     },
     {
-        "duration": "5.44995069375E-4",
-        "name": "tab_switching.typical_25/multitab:misc:typical24"
-    },
-    {
         "duration": "23.67065018181818",
         "name": "thread_times.tough_compositor_cases/http://jsbin.com/beqojupo/1/quiet?JS_FULL_SCREEN_INVALIDATION"
     },
