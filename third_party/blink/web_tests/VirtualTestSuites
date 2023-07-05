@@ -1505,11 +1505,24 @@
     "prefix": "private-aggregation",
     "platforms": ["Linux"],
     "bases": [
-      "external/wpt/private-aggregation",
+      "external/wpt/private-aggregation"
+    ],
+    "exclusive_tests": [
+      "external/wpt/private-aggregation"
+    ],
+    "args": [
+      "--enable-privacy-sandbox-ads-apis",
+      "--enable-features=FencedFramesDefaultMode,PrivacySandboxAggregationService:trusted_server_url/https%3A%2F%2Fweb-platform.test%3A8444%2Fwpt_internal%2Fattribution-reporting%2Fresources%2FpublicKeys"
+    ],
+    "expires": "Jan 1, 2024"
+  },
+  {
+    "prefix": "private-aggregation-developer-mode",
+    "platforms": ["Linux"],
+    "bases": [
       "wpt_internal/private-aggregation"
     ],
     "exclusive_tests": [
-      "external/wpt/private-aggregation",
       "wpt_internal/private-aggregation"
     ],
     "args": [

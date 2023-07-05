@@ -9,7 +9,7 @@ const MULTIPLE_CONTRIBUTIONS_EXAMPLE_PAYLOAD =
 const private_aggregation_promise_test = (f, name) =>
   promise_test(async t => {
     await resetWptServer();
-    f(t);
+    await f(t);
   }, name);
 
 const resetWptServer = () =>
@@ -44,15 +44,22 @@ const delay = ms => new Promise(resolve => step_timeout(resolve, ms));
  * received, returns the list of reports. Returns null if the timeout is reached
  * before a report is available.
  */
-const pollReports = async (url, origin = location.origin, timeout = 1000 /*ms*/) => {
+const pollReports = async (url, wait_for = 1, timeout = 1000 /*ms*/) => {
   let startTime = performance.now();
+  let payloads = []
   while (performance.now() - startTime < timeout) {
-    const resp = await fetch(new URL(url, origin));
+    const resp = await fetch(new URL(url, location.origin));
     const payload = await resp.json();
     if (payload.length > 0) {
-      return payload;
+      payloads = payloads.concat(payload);
+    }
+    if (payloads.length >= wait_for) {
+      return payloads;
     }
     await delay(/*ms=*/ 100);
+  }
+  if (payloads.length > 0) {
+    return payloads;
   }
   return null;
 };
@@ -62,9 +69,9 @@ const pollReports = async (url, origin = location.origin, timeout = 1000 /*ms*/)
  * expected fields. `is_debug_enabled` should be a boolean corresponding to
  * whether debug mode is expected to be enabled for this report.
  */
-const verifySharedInfo = (shared_info_str, is_debug_enabled) => {
+const verifySharedInfo = (shared_info_str, api, is_debug_enabled) => {
   shared_info = JSON.parse(shared_info_str);
-  assert_equals(shared_info.api, 'shared-storage');
+  assert_equals(shared_info.api, api);
   if (is_debug_enabled) {
     assert_equals(shared_info.debug_mode, 'enabled');
   } else {
@@ -123,7 +130,7 @@ const verifyAggregationServicePayloads = (aggregation_service_payloads, expected
  * undefined. The `expected_cleartext_payload` should be the expected value of
  * debug_cleartext_payload if debug mode is enabled; otherwise, undefined.
  */
-const verifyReport = (report, is_debug_enabled, debug_key, expected_cleartext_payload, context_id = undefined) => {
+const verifyReport = (report, api, is_debug_enabled, debug_key, expected_cleartext_payload, context_id = undefined) => {
   if (debug_key || expected_cleartext_payload) {
     // A debug key cannot be set without debug mode being enabled and the
     // `expected_cleartext_payload` should be undefined if debug mode is not
@@ -132,7 +139,7 @@ const verifyReport = (report, is_debug_enabled, debug_key, expected_cleartext_pa
   }
 
   assert_own_property(report, 'shared_info');
-  verifySharedInfo(report.shared_info, is_debug_enabled);
+  verifySharedInfo(report.shared_info, api, is_debug_enabled);
 
   if (debug_key) {
     assert_own_property(report, 'debug_key');
