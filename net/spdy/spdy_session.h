@@ -1048,9 +1048,9 @@ class NET_EXPORT SpdySession
 
   // Map from stream id to all active streams.  Streams are active in the sense
   // that they have a consumer (typically SpdyNetworkTransaction and regardless
-  // of whether or not there is currently any ongoing IO [might be waiting for
-  // the server to start pushing the stream]) or there are still network events
-  // incoming even though the consumer has already gone away (cancellation).
+  // of whether or not there is currently any ongoing IO) or there are still
+  // network events incoming even though the consumer has already gone away
+  // (cancellation).
   //
   // |active_streams_| owns all its SpdyStream objects.
   //

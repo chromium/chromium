@@ -1712,10 +1712,6 @@ HttpNetworkTransaction::GetRetryReasonForIOError(int error) {
       return RetryReason::kHttp2PingFailed;
     case ERR_HTTP2_SERVER_REFUSED_STREAM:
       return RetryReason::kHttp2ServerRefusedStream;
-    case ERR_HTTP2_CLAIMED_PUSHED_STREAM_RESET_BY_SERVER:
-      return RetryReason::kHttp2ClaimedPushedStreamResetByServer;
-    case ERR_HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH:
-      return RetryReason::kHttp2PushedResponseDoesNotMatch;
     case ERR_QUIC_HANDSHAKE_FAILED:
       return RetryReason::kQuicHandshakeFailed;
     case ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED:
@@ -1783,8 +1779,6 @@ int HttpNetworkTransaction::HandleIOError(int error) {
       break;
     case RetryReason::kHttp2PingFailed:
     case RetryReason::kHttp2ServerRefusedStream:
-    case RetryReason::kHttp2ClaimedPushedStreamResetByServer:
-    case RetryReason::kHttp2PushedResponseDoesNotMatch:
     case RetryReason::kQuicHandshakeFailed:
     case RetryReason::kQuicGoawayRequestCanBeRetried:
       if (HasExceededMaxRetries())

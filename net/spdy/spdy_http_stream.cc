@@ -31,58 +31,6 @@
 
 namespace net {
 
-namespace {
-
-// TODO(https://crbug.com/1426477): Remove.
-bool ValidatePushedHeaders(
-    const HttpRequestInfo& request_info,
-    const spdy::Http2HeaderBlock& pushed_request_headers,
-    const spdy::Http2HeaderBlock& pushed_response_headers,
-    const HttpResponseInfo& pushed_response_info) {
-  spdy::Http2HeaderBlock::const_iterator status_it =
-      pushed_response_headers.find(spdy::kHttp2StatusHeader);
-  DCHECK(status_it != pushed_response_headers.end());
-  // 206 Partial Content and 416 Requested Range Not Satisfiable are range
-  // responses.
-  if (status_it->second == "206" || status_it->second == "416") {
-    std::string client_request_range;
-    if (!request_info.extra_headers.GetHeader(HttpRequestHeaders::kRange,
-                                              &client_request_range)) {
-      // Client initiated request is not a range request.
-      return false;
-    }
-    spdy::Http2HeaderBlock::const_iterator pushed_request_range_it =
-        pushed_request_headers.find("range");
-    if (pushed_request_range_it == pushed_request_headers.end()) {
-      // Pushed request is not a range request.
-      return false;
-    }
-    if (client_request_range != pushed_request_range_it->second) {
-      // Client and pushed request ranges do not match.
-      return false;
-    }
-  }
-
-  HttpRequestInfo pushed_request_info;
-  ConvertHeaderBlockToHttpRequestHeaders(pushed_request_headers,
-                                         &pushed_request_info.extra_headers);
-  HttpVaryData vary_data;
-  if (!vary_data.Init(pushed_request_info,
-                      *pushed_response_info.headers.get())) {
-    // Pushed response did not contain non-empty Vary header.
-    return true;
-  }
-
-  if (vary_data.MatchesRequest(request_info,
-                               *pushed_response_info.headers.get())) {
-    return true;
-  }
-
-  return false;
-}
-
-}  // anonymous namespace
-
 // Align our request body with |kMaxSpdyFrameChunkSize| to prevent unexpected
 // buffer chunking. This is 16KB - frame header size.
 const size_t SpdyHttpStream::kRequestBodyBufferSize = kMaxSpdyFrameChunkSize;
@@ -380,16 +328,6 @@ void SpdyHttpStream::OnHeadersReceived(
     // Cancel will call OnClose, which might call callbacks and might destroy
     // `this`.
     stream_->Cancel(rv);
-    return;
-  }
-
-  if (pushed_request_headers &&
-      !ValidatePushedHeaders(*request_info_, *pushed_request_headers,
-                             response_headers, *response_info_)) {
-    // Cancel will call OnClose, which might call callbacks and might destroy
-    // `this`.
-    stream_->Cancel(ERR_HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH);
-
     return;
   }
 

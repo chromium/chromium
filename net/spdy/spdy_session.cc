@@ -1800,13 +1800,11 @@ void SpdySession::ResetStreamIterator(ActiveStreamMap::iterator it,
   spdy::SpdyErrorCode error_code = spdy::ERROR_CODE_PROTOCOL_ERROR;
   if (error == ERR_FAILED) {
     error_code = spdy::ERROR_CODE_INTERNAL_ERROR;
-  } else if (error == ERR_ABORTED ||
-             error == ERR_HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH) {
+  } else if (error == ERR_ABORTED) {
     error_code = spdy::ERROR_CODE_CANCEL;
   } else if (error == ERR_HTTP2_FLOW_CONTROL_ERROR) {
     error_code = spdy::ERROR_CODE_FLOW_CONTROL_ERROR;
-  } else if (error == ERR_TIMED_OUT ||
-             error == ERR_HTTP2_CLIENT_REFUSED_STREAM) {
+  } else if (error == ERR_TIMED_OUT) {
     error_code = spdy::ERROR_CODE_REFUSED_STREAM;
   } else if (error == ERR_HTTP2_STREAM_CLOSED) {
     error_code = spdy::ERROR_CODE_STREAM_CLOSED;
@@ -2559,8 +2557,6 @@ void SpdySession::DeleteStream(std::unique_ptr<SpdyStream> stream, int status) {
 }
 
 void SpdySession::RecordHistograms() {
-  // TODO(https://crbug.com/1426477): Deprecate push-related histograms.
-
   UMA_HISTOGRAM_CUSTOM_COUNTS("Net.SpdyStreamsPerSession",
                               streams_initiated_count_, 1, 300, 50);
   UMA_HISTOGRAM_CUSTOM_COUNTS("Net.SpdyStreamsAbandonedPerSession",
@@ -2763,10 +2759,7 @@ void SpdySession::OnRstStream(spdy::SpdyStreamId stream_id,
   DCHECK(it->second);
   CHECK_EQ(it->second->stream_id(), stream_id);
 
-  if (it->second->ShouldRetryRSTPushStream()) {
-    CloseActiveStreamIterator(it,
-                              ERR_HTTP2_CLAIMED_PUSHED_STREAM_RESET_BY_SERVER);
-  } else if (error_code == spdy::ERROR_CODE_NO_ERROR) {
+  if (error_code == spdy::ERROR_CODE_NO_ERROR) {
     CloseActiveStreamIterator(it, ERR_HTTP2_RST_STREAM_NO_ERROR_RECEIVED);
   } else if (error_code == spdy::ERROR_CODE_REFUSED_STREAM) {
     CloseActiveStreamIterator(it, ERR_HTTP2_SERVER_REFUSED_STREAM);
@@ -3031,13 +3024,6 @@ void SpdySession::OnHeaders(spdy::SpdyStreamId stream_id,
 
   stream->AddRawReceivedBytes(last_compressed_frame_len_);
   last_compressed_frame_len_ = 0;
-
-  if (it->second->IsReservedRemote()) {
-    DCHECK_EQ(SPDY_PUSH_STREAM, stream->type());
-    ResetStream(stream_id, ERR_HTTP2_CLIENT_REFUSED_STREAM,
-                "Server push not supported.");
-    return;
-  }
 
   base::Time response_time = base::Time::Now();
   // May invalidate |stream|.

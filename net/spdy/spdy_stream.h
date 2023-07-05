@@ -396,8 +396,6 @@ class NET_EXPORT_PRIVATE SpdyStream {
   int64_t raw_received_bytes() const { return raw_received_bytes_; }
   int64_t raw_sent_bytes() const { return raw_sent_bytes_; }
   int recv_bytes() const { return recv_bytes_; }
-  // TODO(https://crbug.com/1426477): Remove.
-  bool ShouldRetryRSTPushStream() const;
 
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const;
 

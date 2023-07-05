@@ -770,10 +770,8 @@ NET_ERROR(HTTP2_RST_STREAM_NO_ERROR_RECEIVED, -372)
 // Obsolete. HTTP/2 push is removed.
 // NET_ERROR(HTTP2_PUSHED_STREAM_NOT_AVAILABLE, -373)
 
-// A pushed stream was claimed and later reset by the server. When this happens,
-// the request should be retried.
-// TODO(https://crbug.com/1426477): Remove.
-NET_ERROR(HTTP2_CLAIMED_PUSHED_STREAM_RESET_BY_SERVER, -374)
+// Obsolete. HTTP/2 push is removed.
+// NET_ERROR(HTTP2_CLAIMED_PUSHED_STREAM_RESET_BY_SERVER, -374)
 
 // An HTTP transaction was retried too many times due for authentication or
 // invalid certificates. This may be due to a bug in the net stack that would
@@ -784,13 +782,11 @@ NET_ERROR(TOO_MANY_RETRIES, -375)
 // Received an HTTP/2 frame on a closed stream.
 NET_ERROR(HTTP2_STREAM_CLOSED, -376)
 
-// Client is refusing an HTTP/2 stream.
-NET_ERROR(HTTP2_CLIENT_REFUSED_STREAM, -377)
+// Obsolete. HTTP/2 push is removed.
+// NET_ERROR(HTTP2_CLIENT_REFUSED_STREAM, -377)
 
-// A pushed HTTP/2 stream was claimed by a request based on matching URL and
-// request headers, but the pushed response headers do not match the request.
-// TODO(https://crbug.com/1426477): Remove.
-NET_ERROR(HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH, -378)
+// Obsolete. HTTP/2 push is removed.
+// NET_ERROR(HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH, -378)
 
 // The server returned a non-2xx HTTP response code.
 //

@@ -491,12 +491,6 @@ void SpdyStream::OnHeadersReceived(
   }
 }
 
-bool SpdyStream::ShouldRetryRSTPushStream() const {
-  // Retry if the stream is a pushed stream, has been claimed, but did not yet
-  // receive response headers
-  return (response_headers_.empty() && type_ == SPDY_PUSH_STREAM && delegate_);
-}
-
 void SpdyStream::OnPushPromiseHeadersReceived(spdy::Http2HeaderBlock headers,
                                               GURL url) {
   CHECK(!request_headers_valid_);
@@ -938,17 +932,6 @@ void SpdyStream::SaveResponseHeaders(
   for (spdy::Http2HeaderBlock::const_iterator it = response_headers.begin();
        it != response_headers.end(); ++it) {
     response_headers_.insert(*it);
-  }
-
-  // Reject pushed stream with unsupported status code regardless of whether
-  // delegate is already attached or not.
-  // TODO(https://crbug.com/1426477): Remove this code, since pushed streams are
-  // already rejected.
-  if (type_ == SPDY_PUSH_STREAM &&
-      (status / 100 != 2 && status / 100 != 3 && status != 416)) {
-    session_->ResetStream(stream_id_, ERR_HTTP2_CLIENT_REFUSED_STREAM,
-                          "Unsupported status code for pushed stream.");
-    return;
   }
 
   // If delegate is not yet attached, OnHeadersReceived() will be called after
