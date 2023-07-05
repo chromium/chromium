@@ -45,6 +45,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.webauthn.CredManMetricsHelper;
+import org.chromium.components.webauthn.CredManMetricsHelper.CredManCreateRequestEnum;
 import org.chromium.components.webauthn.CredManMetricsHelper.CredManGetRequestEnum;
 import org.chromium.components.webauthn.CredManMetricsHelper.CredManPrepareRequestEnum;
 import org.chromium.components.webauthn.Fido2ApiCallHelper;
@@ -174,6 +175,8 @@ public class Fido2CredentialRequestRobolectricTest {
         assertThat(credManRequest.getCandidateQueryData().containsKey("com.android.chrome.CHANNEL"))
                 .isTrue();
         assertThat(mCallback.getStatus()).isEqualTo(Integer.valueOf(AuthenticatorStatus.SUCCESS));
+        verify(mMetricsHelper, times(1))
+                .recordCredManCreateRequestHistogram(CredManCreateRequestEnum.SUCCESS);
     }
 
     @Test
@@ -245,6 +248,7 @@ public class Fido2CredentialRequestRobolectricTest {
                         -> mCallback.onRegisterResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
+        verify(mMetricsHelper, times(0)).recordCredManCreateRequestHistogram(anyInt());
     }
 
     @Test
@@ -262,6 +266,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 errorStatus -> mCallback.onError(errorStatus));
         assertThat(mCallback.getStatus())
                 .isEqualTo(Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
+        verify(mMetricsHelper, times(1))
+                .recordCredManCreateRequestHistogram(CredManCreateRequestEnum.CANCELLED);
     }
 
     @Test
@@ -279,6 +285,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 errorStatus -> mCallback.onError(errorStatus));
         assertThat(mCallback.getStatus())
                 .isEqualTo(Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR));
+        verify(mMetricsHelper, times(1))
+                .recordCredManCreateRequestHistogram(CredManCreateRequestEnum.FAILURE);
     }
 
     @Test

@@ -32,6 +32,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Android.CredManCreateRequest"
+    enum="CredManCreateRequestEnum" expires_after="2024-01-01">
+  <owner>derinel@google.com</owner>
+  <owner>kenrb@chromium.org</owner>
+  <summary>
+    Records events for Android Credential Management createCredential API for
+    modal requests.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Android.CredManModalRequests"
     enum="CredManGetRequestEnum" expires_after="2024-01-01">
   <owner>derinel@google.com</owner>

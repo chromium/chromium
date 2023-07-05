@@ -43,6 +43,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.version_info.VersionInfo;
+import org.chromium.components.webauthn.CredManMetricsHelper.CredManCreateRequestEnum;
 import org.chromium.components.webauthn.CredManMetricsHelper.CredManGetRequestEnum;
 import org.chromium.components.webauthn.CredManMetricsHelper.CredManPrepareRequestEnum;
 import org.chromium.content_public.browser.ClientDataJson;
@@ -900,6 +901,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                         /*topOrigin=*/null);
         if (clientDataHash == null) {
             returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+            mMetricsHelper.recordCredManCreateRequestHistogram(
+                    CredManCreateRequestEnum.COULD_NOT_SEND_REQUEST);
             return;
         }
 
@@ -930,12 +933,16 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                         errorType + " (" + e.getMessage() + ")");
                 if (errorType.equals(CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_USER_CANCEL)) {
                     returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                    mMetricsHelper.recordCredManCreateRequestHistogram(
+                            CredManCreateRequestEnum.CANCELLED);
                 } else {
                     // Includes:
                     //  * CreateCredentialException.TYPE_UNKNOWN
                     //  * CreateCredentialException.TYPE_NO_CREATE_OPTIONS
                     //  * CreateCredentialException.TYPE_INTERRUPTED
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    mMetricsHelper.recordCredManCreateRequestHistogram(
+                            CredManCreateRequestEnum.FAILURE);
                 }
             }
 
@@ -948,6 +955,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 } catch (ReflectiveOperationException e) {
                     Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    mMetricsHelper.recordCredManCreateRequestHistogram(
+                            CredManCreateRequestEnum.FAILURE);
                     return;
                 }
 
@@ -958,6 +967,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 if (responseSerialized == null) {
                     Log.e(TAG, "Failed to convert response from CredMan to Mojo object: %s", json);
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    mMetricsHelper.recordCredManCreateRequestHistogram(
+                            CredManCreateRequestEnum.FAILURE);
                     return;
                 }
                 MakeCredentialAuthenticatorResponse response =
@@ -966,6 +977,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 if (response == null) {
                     Log.e(TAG, "Failed to parse Mojo object");
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    mMetricsHelper.recordCredManCreateRequestHistogram(
+                            CredManCreateRequestEnum.FAILURE);
                     return;
                 }
                 response.info.clientDataJson = mClientDataJson;
@@ -973,6 +986,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                     response.echoCredProps = true;
                 }
                 mMakeCredentialCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS, response);
+                mMetricsHelper.recordCredManCreateRequestHistogram(
+                        CredManCreateRequestEnum.SUCCESS);
                 mMakeCredentialCallback = null;
             }
         };
@@ -994,10 +1009,13 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                             android.os.CancellationSignal.class,
                             java.util.concurrent.Executor.class, OutcomeReceiver.class)
                     .invoke(manager, mContext, request, null, mContext.getMainExecutor(), receiver);
+            mMetricsHelper.recordCredManCreateRequestHistogram(
+                    CredManCreateRequestEnum.SENT_REQUEST);
         } catch (ReflectiveOperationException e) {
             Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-            return;
+            mMetricsHelper.recordCredManCreateRequestHistogram(
+                    CredManCreateRequestEnum.COULD_NOT_SEND_REQUEST);
         }
     }
 

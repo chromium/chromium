@@ -22420,6 +22420,15 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="1" label="JCB card"/>
 </enum>
 
+<enum name="CredManCreateRequestEnum">
+  <int value="0" label="A createCredential request was sent to the platform."/>
+  <int value="1"
+      label="Unable to sent a createCredential request to the platform."/>
+  <int value="2" label="Passkey creation is successful."/>
+  <int value="3" label="createCredential request failed."/>
+  <int value="4" label="createCredential request cancelled by the user."/>
+</enum>
+
 <enum name="CredManGetRequestEnum">
   <int value="0" label="A getCredential request was sent to the platform."/>
   <int value="1"
