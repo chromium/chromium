@@ -10,6 +10,7 @@
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/display/display_configuration_controller.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
@@ -2006,6 +2007,38 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ClipboardCopySpeech) {
   // but triggered through ChromeVox via synthesized keys.
   sm_.Call([this]() { SendKeyPressWithSearchAndControl(ui::VKEY_C); });
   sm_.ExpectSpeech("copy Foo.");
+
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OrientationChanged) {
+  EnableChromeVox();
+
+  sm_.Call([]() {
+    Shell::Get()->display_configuration_controller()->SetDisplayRotation(
+        ash::Shell::Get()->display_manager()->GetDisplayAt(0).id(),
+        display::Display::ROTATE_90, display::Display::RotationSource::USER);
+  });
+
+  sm_.ExpectSpeech("portrait");
+
+  sm_.Call([]() {
+    Shell::Get()->display_configuration_controller()->SetDisplayRotation(
+        ash::Shell::Get()->display_manager()->GetDisplayAt(0).id(),
+        display::Display::ROTATE_180, display::Display::RotationSource::USER);
+  });
+
+  sm_.ExpectSpeech("landscape");
+
+  sm_.Call([]() {
+    Shell::Get()->display_configuration_controller()->SetDisplayRotation(
+        ash::Shell::Get()->display_manager()->GetDisplayAt(0).id(),
+        display::Display::ROTATE_270, display::Display::RotationSource::USER);
+  });
+
+  sm_.ExpectSpeech("portrait");
+
+  sm_.ExpectHadNoRepeatedSpeech();
 
   sm_.Replay();
 }

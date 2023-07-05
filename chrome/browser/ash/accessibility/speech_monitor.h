@@ -59,6 +59,7 @@ class SpeechMonitor : public content::TtsPlatform {
                              const base::Location& location = FROM_HERE);
   void ExpectNextSpeechIsNotPattern(const std::string& pattern,
                                     const base::Location& location = FROM_HERE);
+  void ExpectHadNoRepeatedSpeech(const base::Location& location = FROM_HERE);
 
   // TTS parameters are harder to match against the entire spoken text, so the
   // expectations here work a bit more loosely:
@@ -148,6 +149,10 @@ class SpeechMonitor : public content::TtsPlatform {
 
   // The number of times StopSpeaking() has been called.
   int stop_count_ = 0;
+
+  // Indicates if there were two consecutive utterances that match (i.e.
+  // repeated speech).
+  std::vector<std::string> repeated_speech_;
 
   base::WeakPtrFactory<SpeechMonitor> weak_factory_{this};
 };

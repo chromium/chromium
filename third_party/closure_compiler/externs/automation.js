@@ -98,6 +98,7 @@ chrome.automation.EventType = {
   MULTISELECTABLE_STATE_CHANGED: 'multiselectableStateChanged',
   NAME_CHANGED: 'nameChanged',
   OBJECT_ATTRIBUTE_CHANGED: 'objectAttributeChanged',
+  ORIENTATION_CHANGED: 'orientationChanged',
   OTHER_ATTRIBUTE_CHANGED: 'otherAttributeChanged',
   PARENT_CHANGED: 'parentChanged',
   PLACEHOLDER_CHANGED: 'placeholderChanged',

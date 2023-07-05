@@ -141,6 +141,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     this.addListener_(
         EventType.AUTOFILL_AVAILABILITY_CHANGED,
         this.onAutofillAvailabilityChanged);
+    this.addListener_(EventType.ORIENTATION_CHANGED, this.onOrientationChanged);
 
     await AutomationObjectConstructorInstaller.init(node);
     const focus = await AsyncUtil.getFocus();
@@ -405,15 +406,6 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
    * @param {!ChromeVoxEvent} evt
    */
   onLoadComplete(evt) {
-    // A load complete gets fired on the desktop node when display metrics
-    // change.
-    if (evt.target.role === RoleType.DESKTOP) {
-      const msg = evt.target.state[StateType.HORIZONTAL] ? 'device_landscape' :
-                                                           'device_portrait';
-      new Output().format('@' + msg).go();
-      return;
-    }
-
     // We are only interested in load completes on valid top level roots.
     const top = AutomationUtil.getTopLevelRoot(evt.target);
     if (!top || top !== evt.target.root || !top.docUrl) {
@@ -829,6 +821,20 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
           .withLocation(currentRange, null, evt.type)
           .withQueueMode(QueueMode.QUEUE)
           .go();
+    }
+  }
+
+  /**
+   * Handles orientation changes on the desktop node.
+   * @param {!ChromeVoxEvent} evt
+   */
+  onOrientationChanged(evt) {
+    // Changes on display metrics result in the desktop node's
+    // vertical/horizontal states changing.
+    if (evt.target.role === RoleType.DESKTOP) {
+      const msg = evt.target.state[StateType.HORIZONTAL] ? 'device_landscape' :
+                                                           'device_portrait';
+      new Output().format('@' + msg).go();
     }
   }
 

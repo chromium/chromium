@@ -89,6 +89,7 @@
     multiselectableStateChanged,
     nameChanged,
     objectAttributeChanged,
+    orientationChanged,
     otherAttributeChanged,
     parentChanged,
     placeholderChanged,

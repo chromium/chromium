@@ -146,6 +146,7 @@ bool ShouldIgnoreGeneratedEventForAutomation(
     case AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
     case AXEventGenerator::Event::NAME_CHANGED:
     case AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
+    case AXEventGenerator::Event::ORIENTATION_CHANGED:
     case AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
     case AXEventGenerator::Event::PARENT_CHANGED:
     case AXEventGenerator::Event::PLACEHOLDER_CHANGED:
