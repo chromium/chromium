@@ -13,7 +13,7 @@
 #include "ash/system/bluetooth/bluetooth_detailed_view_legacy.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/bluetooth/bluetooth_disabled_detailed_view.h"
-#include "ash/system/tray/detailed_view_delegate.h"
+#include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -80,24 +80,6 @@ class FakeBluetoothDetailedViewDelegate
   bool last_bluetooth_toggle_state_ = false;
   size_t on_pair_new_device_requested_call_count_ = 0;
   PairedBluetoothDevicePropertiesPtr last_device_list_item_selected_;
-};
-
-// This class removes the need to rely on multiple additional classes solely to
-// propagate the CloseBubble() call up to eventually result in the top-level
-// Widget being closed, resulting in simpler tests with less setup.
-class FakeDetailedViewDelegate : public DetailedViewDelegate {
- public:
-  FakeDetailedViewDelegate()
-      : DetailedViewDelegate(/*tray_controller=*/nullptr) {}
-  ~FakeDetailedViewDelegate() override = default;
-
-  size_t close_bubble_call_count() const { return close_bubble_call_count_; }
-
- private:
-  // DetailedViewDelegate:
-  void CloseBubble() override { close_bubble_call_count_++; }
-
-  size_t close_bubble_call_count_ = 0;
 };
 
 }  // namespace

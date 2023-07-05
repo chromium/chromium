@@ -10,7 +10,7 @@
 #include "ash/style/rounded_container.h"
 #include "ash/style/switch.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
-#include "ash/system/tray/detailed_view_delegate.h"
+#include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
@@ -52,21 +52,6 @@ class FakeBluetoothDetailedViewDelegate
   bool last_toggle_state_ = false;
   int pair_new_device_requested_count_ = 0;
   PairedBluetoothDevicePropertiesPtr last_device_list_item_selected_;
-};
-
-// This class exists to stub out the CloseBubble() call. This allows tests to
-// directly construct the detailed view, without depending on the entire quick
-// settings bubble and view hierarchy.
-class FakeDetailedViewDelegate : public DetailedViewDelegate {
- public:
-  FakeDetailedViewDelegate()
-      : DetailedViewDelegate(/*tray_controller=*/nullptr) {}
-  ~FakeDetailedViewDelegate() override = default;
-
-  // DetailedViewDelegate:
-  void CloseBubble() override { ++close_bubble_count_; }
-
-  int close_bubble_count_ = 0;
 };
 
 }  // namespace
@@ -124,14 +109,14 @@ TEST_F(BluetoothDetailedViewImplTest, PressingSettingsButtonOpensSettings) {
       session_manager::SessionState::LOCKED);
   LeftClickOn(settings_button);
   EXPECT_EQ(0, GetSystemTrayClient()->show_bluetooth_settings_count());
-  EXPECT_EQ(0, detailed_view_delegate_.close_bubble_count_);
+  EXPECT_EQ(0u, detailed_view_delegate_.close_bubble_call_count());
 
   // Clicking the button in an active user session opens OS settings.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
   LeftClickOn(settings_button);
   EXPECT_EQ(1, GetSystemTrayClient()->show_bluetooth_settings_count());
-  EXPECT_EQ(1, detailed_view_delegate_.close_bubble_count_);
+  EXPECT_EQ(1u, detailed_view_delegate_.close_bubble_call_count());
 }
 
 TEST_F(BluetoothDetailedViewImplTest,

@@ -9,7 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
-#include "ash/system/tray/detailed_view_delegate.h"
+#include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,25 +23,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
-namespace {
-
-// This class exists to stub out the CloseBubble() call. This allows tests to
-// directly construct the detailed view, without depending on the entire quick
-// settings bubble and view hierarchy.
-class FakeDetailedViewDelegate : public DetailedViewDelegate {
- public:
-  FakeDetailedViewDelegate()
-      : DetailedViewDelegate(/*tray_controller=*/nullptr) {}
-  ~FakeDetailedViewDelegate() override = default;
-
-  // DetailedViewDelegate:
-  void CloseBubble() override { ++close_bubble_count_; }
-
-  int close_bubble_count_ = 0;
-};
-
-}  // namespace
 
 class AudioDetailedViewTest : public AshTestBase {
  public:
@@ -81,14 +62,14 @@ TEST_F(AudioDetailedViewTest, PressingSettingsButtonOpensSettings) {
       session_manager::SessionState::LOCKED);
   LeftClickOn(settings_button);
   EXPECT_EQ(0, GetSystemTrayClient()->show_audio_settings_count());
-  EXPECT_EQ(0, detailed_view_delegate_.close_bubble_count_);
+  EXPECT_EQ(0u, detailed_view_delegate_.close_bubble_call_count());
 
   // Clicking the button in an active user session opens OS settings.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
   LeftClickOn(settings_button);
   EXPECT_EQ(1, GetSystemTrayClient()->show_audio_settings_count());
-  EXPECT_EQ(1, detailed_view_delegate_.close_bubble_count_);
+  EXPECT_EQ(1u, detailed_view_delegate_.close_bubble_call_count());
 }
 
 class AudioDetailedViewAgcInfoTest
