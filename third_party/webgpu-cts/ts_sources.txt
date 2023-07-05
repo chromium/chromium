@@ -505,8 +505,16 @@ src/webgpu/shader/validation/shader_validation_test.ts
 src/webgpu/shader/validation/const_assert/const_assert.spec.ts
 src/webgpu/shader/validation/expression/access/vector.spec.ts
 src/webgpu/shader/validation/expression/binary/bitwise_shift.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/const_override_validation.ts
+src/webgpu/shader/validation/expression/call/builtin/acos.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/acosh.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/asin.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/atan.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/atanh.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/atomics.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/bitcast.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/exp.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/exp2.spec.ts
 src/webgpu/shader/validation/parse/align.spec.ts
 src/webgpu/shader/validation/parse/attribute.spec.ts
 src/webgpu/shader/validation/parse/binary_ops.spec.ts
