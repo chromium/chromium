@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.auxiliary_search;
 import android.util.Pair;
 
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchTabGroup;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
@@ -57,10 +60,44 @@ public class AuxiliarySearchProvider {
         List<Pair<String, String>> bookmarksList = new ArrayList<>();
         if (group != null) {
             for (int i = 0; i < group.getBookmarkCount(); i++) {
-                AuxiliarySearchBookmarkGroup.Bookmark bookmark = group.getBookmark(i);
+                AuxiliarySearchEntry bookmark = group.getBookmark(i);
                 bookmarksList.add(new Pair<>(bookmark.getTitle(), bookmark.getUrl()));
             }
         }
         return bookmarksList;
+    }
+
+    /**
+     * @return AuxiliarySearchGroup for bookmarks.
+     */
+    public AuxiliarySearchBookmarkGroup getBookmarksSearchableDataProto() {
+        return mAuxiliarySearchBridge.getBookmarksSearchableData();
+    }
+
+    /**
+     * @return AuxiliarySearchGroup for tabs.
+     */
+    public AuxiliarySearchTabGroup getTabsSearchableDataProto() {
+        var tabGroupBuilder = AuxiliarySearchTabGroup.newBuilder();
+        TabList tabList = mTabModelSelector.getModel(false).getComprehensiveModel();
+
+        // Find the the bottom of tabs in the tab switcher view if the number of the tabs more than
+        // 'kNumTabsToSend'. In the multiwindow mode, the order of the 'tabList' is one window's
+        // tabs, and then another's.
+        int firstTabIndex = Math.max(tabList.getCount() - kNumTabsToSend, 0);
+        int end = tabList.getCount() - 1;
+        for (int i = firstTabIndex; i <= end; i++) {
+            Tab tab = tabList.getTabAt(i);
+            var tabBuilder = AuxiliarySearchEntry.newBuilder()
+                                     .setTitle(tab.getTitle())
+                                     .setUrl(tab.getUrl().getSpec());
+            final long lastAccessTime = CriticalPersistedTabData.from(tab).getTimestampMillis();
+            if (lastAccessTime != CriticalPersistedTabData.INVALID_TIMESTAMP) {
+                tabBuilder.setLastAccessTimestamp(lastAccessTime);
+            }
+
+            tabGroupBuilder.addTab(tabBuilder.build());
+        }
+        return tabGroupBuilder.build();
     }
 }

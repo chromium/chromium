@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
@@ -25,9 +26,12 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchTabGroup;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -89,8 +93,32 @@ public class AuxiliarySearchProviderTest {
 
     @Test
     @SmallTest
+    public void testgetTabsSearchableDataProto() throws InterruptedException {
+        MockTabModel mockTabModel = new MockTabModel(false, null);
+        for (int i = 0; i < 200; i++) {
+            MockTab tab = (MockTab) mockTabModel.addTab(i);
+            tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(i)));
+            CriticalPersistedTabData.from(tab).setTimestampMillis(System.currentTimeMillis());
+        }
+
+        doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
+        AuxiliarySearchTabGroup tabGroup = mAuxiliarySearchProvider.getTabsSearchableDataProto();
+
+        assertEquals(tabGroup.getTabCount(), 100);
+        for (int i = 0; i < tabGroup.getTabCount(); i++) {
+            AuxiliarySearchEntry tab = tabGroup.getTab(i);
+            assertTrue(tab.hasTitle());
+            assertTrue(tab.hasUrl());
+            assertTrue(tab.hasLastAccessTimestamp());
+            assertFalse(tab.hasCreationTimestamp());
+            assertFalse(tab.hasLastModificationTimestamp());
+        }
+    }
+
+    @Test
+    @SmallTest
     public void testgetBookmarksSearchableData() {
-        var bookmark = AuxiliarySearchBookmarkGroup.Bookmark.newBuilder()
+        var bookmark = AuxiliarySearchEntry.newBuilder()
                                .setTitle(BOOKMARK_TITLE)
                                .setUrl(BOOKMARK_URL)
                                .build();

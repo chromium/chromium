@@ -23,6 +23,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
@@ -71,7 +72,7 @@ public final class AuxiliarySearchBridgeTest {
     public void getSearchableDataTest() {
         doReturn(false).when(mProfile).isOffTheRecord();
 
-        var bookmark = AuxiliarySearchBookmarkGroup.Bookmark.newBuilder()
+        var bookmark = AuxiliarySearchEntry.newBuilder()
                                .setTitle(BOOKMARK_TITLE)
                                .setUrl(BOOKMARK_URL)
                                .build();

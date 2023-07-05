@@ -84,10 +84,15 @@ void AuxiliarySearchProvider::GetBookmarks(
   std::vector<const BookmarkNode*> nodes;
   bookmarks::GetMostRecentlyUsedEntries(model, kMaxBookmarksCount, &nodes);
   for (const BookmarkNode* node : nodes) {
-    auxiliary_search::AuxiliarySearchBookmarkGroup_Bookmark* bookmark =
-        group->add_bookmark();
+    auxiliary_search::AuxiliarySearchEntry* bookmark = group->add_bookmark();
     bookmark->set_title(base::UTF16ToUTF8(node->GetTitle()));
     bookmark->set_url(node->url().spec());
+    if (!node->date_added().is_null()) {
+      bookmark->set_creation_timestamp(node->date_added().ToJavaTime());
+    }
+    if (!node->date_last_used().is_null()) {
+      bookmark->set_last_access_timestamp(node->date_last_used().ToJavaTime());
+    }
   }
 }
 
