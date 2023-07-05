@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
 
 #import "base/feature_list.h"
-#import "components/variations/service/google_groups_updater_service.h"
 #import "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
 #import "ios/chrome/browser/autocomplete/shortcuts_backend_factory.h"
@@ -147,9 +146,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   DomainDiversityReporterFactory::GetInstance();
   BackgroundDownloadServiceFactory::GetInstance();
   FollowServiceFactory::GetInstance();
-  if (base::FeatureList::IsEnabled(kVariationsGoogleGroupFiltering)) {
-    GoogleGroupsUpdaterServiceFactory::GetInstance();
-  }
+  GoogleGroupsUpdaterServiceFactory::GetInstance();
   GoogleLogoServiceFactory::GetInstance();
   IdentityManagerFactory::GetInstance();
   IOSChromeAccountPasswordStoreFactory::GetInstance();

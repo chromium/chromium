@@ -214,7 +214,6 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
-#include "components/variations/service/google_groups_updater_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -693,9 +692,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   GalleryWatchManager::EnsureFactoryBuilt();
   GlobalErrorServiceFactory::GetInstance();
 #endif
-  if (base::FeatureList::IsEnabled(kVariationsGoogleGroupFiltering)) {
-    GoogleGroupsUpdaterServiceFactory::GetInstance();
-  }
+  GoogleGroupsUpdaterServiceFactory::GetInstance();
   HeavyAdServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   HidChooserContextFactory::GetInstance();
