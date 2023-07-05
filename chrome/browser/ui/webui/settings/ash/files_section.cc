@@ -105,19 +105,25 @@ FilesSection::~FilesSection() = default;
 void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"disconnectGoogleDriveAccount", IDS_SETTINGS_DISCONNECT_GOOGLE_DRIVE},
-      {"disconnectGoogleDriveAccountDescription",
-       IDS_SETTINGS_DISCONNECT_GOOGLE_DRIVE_DESC},
       {"googleDriveLabel", IDS_SETTINGS_GOOGLE_DRIVE},
       {"googleDriveDisabledLabel", IDS_SETTINGS_GOOGLE_DRIVE_DISABLED},
       {"googleDriveDisconnectLabel", IDS_SETTINGS_GOOGLE_DRIVE_DISCONNECT},
       {"googleDriveConnectLabel", IDS_SETTINGS_GOOGLE_DRIVE_CONNECT},
-      {"googleDriveOfflineTitle", IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_TITLE},
-      {"googleDriveOfflineSubtitle",
-       IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_SUBTITLE},
+      {"googleDriveRemoveAccessDialogTitle",
+       IDS_SETTINGS_GOOGLE_DRIVE_REMOVE_ACCESS_DIALOG_TITLE},
+      {"googleDriveRemoveAccessDialogBody",
+       IDS_SETTINGS_GOOGLE_DRIVE_REMOVE_ACCESS_DIALOG_BODY},
+      {"googleDriveRemoveButtonText",
+       IDS_SETTINGS_GOOGLE_DRIVE_REMOVE_BUTTON_TEXT},
+      {"googleDriveFileSyncTitle", IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_TITLE},
+      {"googleDriveFileSyncSubtitleWithStorage",
+       IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_SUBTITLE_WITH_STORAGE},
+      {"googleDriveFileSyncSubtitleWithoutStorage",
+       IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_SUBTITLE_WITHOUT_STORAGE},
       {"googleDriveOfflineStorageTitle",
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_STORAGE_TITLE},
-      {"googleDriveOfflineSpaceSubtitle",
-       IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_STORAGE_REQUIRED_SUBTITLE},
+      {"googleDriveOfflineStorageSpaceTaken",
+       IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_STORAGE_SPACE_TAKEN},
       {"googleDriveOfflineClearCalculatingSubtitle",
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_CALCULATING_SUBTITLE},
       {"googleDriveOfflineClearErrorSubtitle",
@@ -132,17 +138,25 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_DISABLED_TOOLTIP},
       {"googleDriveTurnOffLabel",
        IDS_SETTINGS_GOOGLE_DRIVE_TURN_OFF_BUTTON_LABEL},
-      {"googleDriveTurnOffTitle",
-       IDS_SETTINGS_GOOGLE_DRIVE_TURN_OFF_TITLE_TEXT},
+      {"googleDriveFileSyncTurnOffTitle",
+       IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_TURN_OFF_TITLE_TEXT},
+      {"googleDriveFileSyncTurnOffBody",
+       IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_TURN_OFF_BODY_TEXT},
       {"googleDriveNotEnoughSpaceTitle",
        IDS_SETTINGS_GOOGLE_DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE_TITLE_TEXT},
       {"googleDriveNotEnoughSpaceBody",
        IDS_SETTINGS_GOOGLE_DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE_BODY_TEXT},
-      {"googleDriveUnexpectedErrorTitle",
-       IDS_SETTINGS_GOOGLE_DRIVE_BULK_PINNING_UNEXPECTED_ERROR_TITLE_TEXT},
-      {"googleDriveUnexpectedErrorBody",
-       IDS_SETTINGS_GOOGLE_DRIVE_BULK_PINNING_UNEXPECTED_ERROR_BODY_TEXT},
-      {"googleDriveTurnOffBody", IDS_SETTINGS_GOOGLE_DRIVE_TURN_OFF_BODY_TEXT},
+      {"googleDriveFileSyncUnexpectedErrorTitle",
+       IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_UNEXPECTED_ERROR_TITLE_TEXT},
+      {"googleDriveFileSyncUnexpectedErrorBody",
+       IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_UNEXPECTED_ERROR_BODY_TEXT},
+      {"googleDriveFileSyncOfflineErrorTitle",
+       IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_OFFLINE_ERROR_TITLE_TEXT},
+      {"googleDriveFileSyncOfflineErrorBody",
+       IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_OFFLINE_ERROR_BODY_TEXT},
+      {"googleDriveDismissButtonText",
+       IDS_SETTINGS_GOOGLE_DRIVE_DISMISS_BUTTON_TEXT},
+      {"googleDriveOkButtonText", IDS_SETTINGS_GOOGLE_DRIVE_OK_BUTTON_TEXT},
       {"filesPageTitle", IDS_OS_SETTINGS_FILES},
       {"smbSharesTitle", IDS_SETTINGS_DOWNLOADS_SMB_SHARES},
       {"smbSharesLearnMoreLabel",
@@ -189,6 +203,12 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString(
       "googleDriveCleanUpStorageLearnMoreLink",
+      GetHelpUrlWithBoard(chrome::kGoogleDriveOfflineLearnMoreURL));
+
+  // TODO(b/289450495): Replace this link with the new help article link once it
+  // has a live p link.
+  html_source->AddString(
+      "googleDriveFileSyncLearnMoreLink",
       GetHelpUrlWithBoard(chrome::kGoogleDriveOfflineLearnMoreURL));
 
   html_source->AddBoolean(

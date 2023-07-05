@@ -24,9 +24,9 @@
     <settings-drive-confirmation-dialog
         id="driveDisconnectDialog"
         cancel-button-text="$i18n{cancel}"
-        action-button-text="$i18n{googleDriveDisconnectLabel}"
-        title-text="$i18n{disconnectGoogleDriveAccount}"
-        body-text="$i18n{disconnectGoogleDriveAccountDescription}"
+        action-button-text="$i18n{googleDriveRemoveButtonText}"
+        title-text="$i18n{googleDriveRemoveAccessDialogTitle}"
+        body-text="$i18n{googleDriveRemoveAccessDialogBody}"
         on-close="onDriveConfirmationDialogClose_">
     </settings-drive-confirmation-dialog>
   </template>
@@ -38,8 +38,9 @@
   <settings-toggle-button
       id="driveBulkPinning"
       pref="{{prefs.drivefs.bulk_pinning_enabled}}"
-      label="$i18n{googleDriveOfflineTitle}"
+      label="$i18n{googleDriveFileSyncTitle}"
       sub-label="[[getBulkPinningSubLabel_(bulkPinningStatus_)]]"
+      learn-more-url="$i18n{googleDriveFileSyncLearnMoreLink}"
       on-settings-boolean-control-change="onToggleBulkPinning_"
       no-set-pref>
   </settings-toggle-button>
@@ -51,8 +52,8 @@
         id="driveBulkPinningDisableDialog"
         cancel-button-text="$i18n{cancel}"
         action-button-text="$i18n{googleDriveTurnOffLabel}"
-        title-text="$i18n{googleDriveTurnOffTitle}"
-        body-text="$i18n{googleDriveTurnOffBody}"
+        title-text="$i18n{googleDriveFileSyncTurnOffTitle}"
+        body-text="$i18n{googleDriveFileSyncTurnOffBody}"
         on-close="onDriveConfirmationDialogClose_">
     </settings-drive-confirmation-dialog>
   </template>
@@ -62,7 +63,7 @@
       restamp>
     <settings-drive-confirmation-dialog
         id="driveBulkPinningNotEnoughSpaceDialog"
-        cancel-button-text="$i18n{cancel}"
+        cancel-button-text="$i18n{googleDriveOkButtonText}"
         title-text="$i18n{googleDriveNotEnoughSpaceTitle}"
         body-text="$i18n{googleDriveNotEnoughSpaceBody}"
         on-close="onDriveConfirmationDialogClose_">
@@ -74,9 +75,21 @@
       restamp>
     <settings-drive-confirmation-dialog
         id="driveBulkPinningUnexpectedErrorDialog"
-        cancel-button-text="$i18n{cancel}"
-        title-text="$i18n{googleDriveUnexpectedErrorTitle}"
-        body-text="$i18n{googleDriveUnexpectedErrorBody}"
+        cancel-button-text="$i18n{googleDriveDismissButtonText}"
+        title-text="$i18n{googleDriveFileSyncUnexpectedErrorTitle}"
+        body-text="$i18n{googleDriveFileSyncUnexpectedErrorBody}"
+        on-close="onDriveConfirmationDialogClose_">
+    </settings-drive-confirmation-dialog>
+  </template>
+
+  <template is="dom-if"
+      if="[[shouldShowConfirmationDialog_(dialogType_, 'bulk-pinning-offline')]]"
+      restamp>
+    <settings-drive-confirmation-dialog
+        id="driveBulkPinningOfflineDialog"
+        cancel-button-text="$i18n{googleDriveOkButtonText}"
+        title-text="$i18n{googleDriveFileSyncOfflineErrorTitle}"
+        body-text="$i18n{googleDriveFileSyncOfflineErrorBody}"
         on-close="onDriveConfirmationDialogClose_">
     </settings-drive-confirmation-dialog>
   </template>
@@ -85,7 +98,7 @@
     <div class="start">
       $i18n{googleDriveOfflineStorageTitle}
       <div class="secondary">
-        [[totalPinnedSize_]]
+        [[i18n('googleDriveOfflineStorageSpaceTaken', totalPinnedSize_)]]
       </div>
     </div>
     <div id="cleanUpStorageButtonWrapper">

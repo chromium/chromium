@@ -791,14 +791,14 @@ export class GoogleDriveSettings implements GoogleDriveSettingsInterface {
     assertTrue(this.googleDriveSubpage_?.requiredSpace === requiredSpace);
   }
 
-  assertRemainingSpace(remainingSpace: string) {
-    assertTrue(this.googleDriveSubpage_?.remainingSpace === remainingSpace);
+  assertRemainingSpace(freeSpace: string) {
+    assertTrue(this.googleDriveSubpage_?.freeSpace === freeSpace);
   }
 
-  async assertBulkPinningSpace(requiredSpace: string, remainingSpace: string):
+  async assertBulkPinningSpace(requiredSpace: string, freeSpace: string):
       Promise<void> {
     this.assertRequiredSpace(requiredSpace);
-    this.assertRemainingSpace(remainingSpace);
+    this.assertRemainingSpace(freeSpace);
   }
 
   async assertBulkPinningPinnedSize(expectedPinnedSize: string): Promise<void> {

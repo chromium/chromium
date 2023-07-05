@@ -47,6 +47,7 @@ export enum ConfirmationDialogType {
   BULK_PINNING_NOT_ENOUGH_SPACE = 'bulk-pinning-not-enough-space',
   BULK_PINNING_UNEXPECTED_ERROR = 'bulk-pinning-unexpected-error',
   BULK_PINNING_CLEAN_UP_STORAGE = 'bulk-pinning-clean-up-storage',
+  BULK_PINNING_OFFLINE = 'bulk-pinning-offline',
   NONE = 'none',
 }
 
@@ -164,11 +165,11 @@ export class SettingsGoogleDriveSubpageElement extends
   }
 
   /**
-   * Returns the remaining space that is currently stored or -1 of no value.
+   * Returns the free space that is currently stored or -1 of no value.
    * Used for testing.
    */
-  get remainingSpace() {
-    return this.bulkPinningStatus_?.remainingSpace || '-1';
+  get freeSpace() {
+    return this.bulkPinningStatus_?.freeSpace || '-1';
   }
 
   /**
@@ -210,7 +211,7 @@ export class SettingsGoogleDriveSubpageElement extends
    */
   private onProgress_(status: Status) {
     if (status.stage !== this.bulkPinningStatus_?.stage ||
-        status.remainingSpace !== this.bulkPinningStatus_?.remainingSpace ||
+        status.freeSpace !== this.bulkPinningStatus_?.freeSpace ||
         status.requiredSpace !== this.bulkPinningStatus_?.requiredSpace) {
       this.bulkPinningStatus_ = status;
     }
@@ -334,13 +335,15 @@ export class SettingsGoogleDriveSubpageElement extends
     if (!this.bulkPinningStatus_ ||
         this.bulkPinningStatus_?.stage !== Stage.kSuccess ||
         this.bulkPinningServiceUnavailable_) {
-      return this.i18n('googleDriveOfflineSubtitle');
+      return this.i18n('googleDriveFileSyncSubtitleWithoutStorage');
     }
 
-    const {requiredSpace, remainingSpace} = this.bulkPinningStatus_;
-    return this.i18n('googleDriveOfflineSubtitle') + ' ' +
-        this.i18n(
-            'googleDriveOfflineSpaceSubtitle', requiredSpace!, remainingSpace!);
+    const {requiredSpace, freeSpace} = this.bulkPinningStatus_;
+    return this.i18n(
+        'googleDriveFileSyncSubtitleWithStorage',
+        requiredSpace!,
+        freeSpace!,
+    );
   }
 
   /**
@@ -368,6 +371,12 @@ export class SettingsGoogleDriveSubpageElement extends
       // pinning, spawn a dialog.
       if (this.bulkPinningStatus_?.stage === Stage.kNotEnoughSpace) {
         this.dialogType_ = ConfirmationDialogType.BULK_PINNING_NOT_ENOUGH_SPACE;
+        return;
+      }
+
+      // When the device is offline, don't allow the user to enable the toggle.
+      if (this.bulkPinningStatus_?.stage === Stage.kPausedOffline) {
+        this.dialogType_ = ConfirmationDialogType.BULK_PINNING_OFFLINE;
         return;
       }
 

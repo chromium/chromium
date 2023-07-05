@@ -14,8 +14,8 @@ struct Status {
   // pinned.
   string required_space;
 
-  // The remaining space is the free disk space minus the `required_space`.
-  string remaining_space;
+  // The free space available on the disk.
+  string free_space;
 
   // The current stage the pin manager is going through.
   drivefs.pin_manager_types.mojom.Stage stage;

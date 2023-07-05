@@ -37,9 +37,9 @@ class GoogleDriveTestBrowserProxy extends TestBrowserProxy implements
  * Generate the expected text for space available.
  */
 function generateRequiredSpaceText(
-    requiredSpace: string, remainingSpace: string): string {
-  return `This will use about ${requiredSpace} leaving ${
-      remainingSpace} available.`;
+    requiredSpace: string, freeSpace: string): string {
+  return `This will use about ${requiredSpace}. You currently have ${
+      freeSpace} available.`;
 }
 
 suite('<settings-google-drive-subpage>', function() {
@@ -200,7 +200,7 @@ suite('<settings-google-drive-subpage>', function() {
 
         // Mock space values and the `kSuccess` stage via the browser proxy.
         testBrowserProxy.observerRemote.onProgress({
-          remainingSpace: '1,024 KB',
+          freeSpace: '1,024 KB',
           requiredSpace: '512 MB',
           stage: Stage.kSuccess,
           isError: false,
@@ -214,7 +214,7 @@ suite('<settings-google-drive-subpage>', function() {
 
         // Mock a failure case via the browser proxy.
         testBrowserProxy.observerRemote.onProgress({
-          remainingSpace: '1,024 KB',
+          freeSpace: '1,024 KB',
           requiredSpace: '512 MB',
           stage: Stage.kCannotGetFreeSpace,
           isError: true,
@@ -267,7 +267,7 @@ suite('<settings-google-drive-subpage>', function() {
         // Mock space values and the `kNotEnoughSpace` stage via the browser
         // proxy.
         testBrowserProxy.observerRemote.onProgress({
-          remainingSpace: '512 MB',
+          freeSpace: '512 MB',
           requiredSpace: '1,024 MB',
           stage: Stage.kNotEnoughSpace,
           isError: true,
@@ -276,7 +276,7 @@ suite('<settings-google-drive-subpage>', function() {
         flush();
 
         // Wait for the page to update the progress information.
-        await assertAsync(() => page.remainingSpace === '512 MB');
+        await assertAsync(() => page.freeSpace === '512 MB');
 
         // Click the bulk pinning toggle.
         bulkPinningToggle.click();
@@ -310,7 +310,7 @@ suite('<settings-google-drive-subpage>', function() {
         // Mock space values and the `kNotEnoughSpace` stage via the browser
         // proxy.
         testBrowserProxy.observerRemote.onProgress({
-          remainingSpace: 'x',
+          freeSpace: 'x',
           requiredSpace: 'y',
           stage: Stage.kCannotGetFreeSpace,
           isError: true,
@@ -319,7 +319,7 @@ suite('<settings-google-drive-subpage>', function() {
         flush();
 
         // Wait for the page to update the progress information.
-        await assertAsync(() => page.remainingSpace === 'x');
+        await assertAsync(() => page.freeSpace === 'x');
 
         // Click the bulk pinning toggle.
         bulkPinningToggle.click();
@@ -350,13 +350,14 @@ suite('<settings-google-drive-subpage>', function() {
     testBrowserProxy.handler.setResultFor(
         'getTotalPinnedSize', {size: '100 MB'});
     page.onNavigated();
-    await assertAsync(() => offlineStorageSubtitle.innerText === '100 MB');
+    await assertAsync(
+        () => offlineStorageSubtitle.innerText === 'Using 100 MB');
 
     // Mock an empty pinned size (size is there but an empty string).
     testBrowserProxy.handler.setResultFor('getTotalPinnedSize', {size: ''});
     page.onNavigated();
-
-    await assertAsync(() => offlineStorageSubtitle.innerText === 'Unknown');
+    await assertAsync(
+        () => offlineStorageSubtitle.innerText === 'Using Unknown');
   });
 
   test(
@@ -364,7 +365,7 @@ suite('<settings-google-drive-subpage>', function() {
       async function() {
         page.setPrefValue('drivefs.bulk_pinning_enabled', false);
         testBrowserProxy.observerRemote.onProgress({
-          remainingSpace: 'x',
+          freeSpace: 'x',
           requiredSpace: 'y',
           stage: Stage.kStopped,
           isError: false,
@@ -374,7 +375,7 @@ suite('<settings-google-drive-subpage>', function() {
 
         page.setPrefValue('drivefs.bulk_pinning_enabled', true);
         testBrowserProxy.observerRemote.onProgress({
-          remainingSpace: 'x',
+          freeSpace: 'x',
           requiredSpace: 'y',
           stage: Stage.kSyncing,
           isError: false,

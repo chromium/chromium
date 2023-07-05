@@ -25,11 +25,9 @@ google_drive::mojom::StatusPtr CreateStatusPtr(const Progress& progress) {
       (progress.required_space >= 0)
           ? base::UTF16ToUTF8(ui::FormatBytes(progress.required_space))
           : "";
-  int64_t remaining_space = progress.free_space - progress.required_space;
-  status->remaining_space =
-      (remaining_space >= 0)
-          ? base::UTF16ToUTF8(
-                ui::FormatBytes(progress.free_space - progress.required_space))
+  status->free_space =
+      (progress.free_space >= 0)
+          ? base::UTF16ToUTF8(ui::FormatBytes(progress.free_space))
           : "";
   status->stage = progress.stage;
   status->is_error = progress.IsError();
