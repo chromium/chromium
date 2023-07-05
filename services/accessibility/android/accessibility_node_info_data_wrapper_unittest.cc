@@ -334,6 +334,45 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest,
       data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
 }
 
+TEST_F(AccessibilityNodeInfoDataWrapperTest,
+       NameFromDescendants_fromRoleDescription) {
+  AXNodeInfoData root;
+  root.id = 10;
+  AccessibilityNodeInfoDataWrapper root_wrapper(tree_source(), &root);
+  SetIdToWrapper(&root_wrapper);
+  SetProperty(root, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(root, AXIntListProperty::CHILD_NODE_IDS,
+              std::vector<int>({1, 2}));
+  SetProperty(root, AXBooleanProperty::FOCUSABLE, true);
+  SetProperty(root, AXStringProperty::ROLE_DESCRIPTION, "rootRole");
+
+  AXNodeInfoData child1;
+  child1.id = 1;
+  AccessibilityNodeInfoDataWrapper child1_wrapper(tree_source(), &child1);
+  SetIdToWrapper(&child1_wrapper);
+  SetProperty(child1, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(child1, AXStringProperty::TEXT, "child1");
+
+  AXNodeInfoData child2;
+  child2.id = 2;
+  AccessibilityNodeInfoDataWrapper child2_wrapper(tree_source(), &child2);
+  SetIdToWrapper(&child2_wrapper);
+  SetProperty(child2, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(child2, AXStringProperty::ROLE_DESCRIPTION, "child2Role");
+
+  SetParentId(child1.id, root.id);
+  SetParentId(child2.id, root.id);
+
+  set_full_focus_mode(true);
+
+  ui::AXNodeData data = CallSerialize(root_wrapper);
+  data = CallSerialize(root_wrapper);
+  std::string name;
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_EQ("child1 child2Role", name);  // rootRole is not used.
+}
+
 TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromTextProperties) {
   AXNodeInfoData root;
   root.id = 10;

@@ -822,6 +822,18 @@ void AccessibilityNodeInfoDataWrapper::ComputeNameFromContentsInternal(
         return;
       }
     }
+
+    // TalkBack reads role description by default even when reading properties
+    // of descendant nodes. Let's append them here to fill the gap.
+    // This is not in |text_properties_| because when focusing on the node that
+    // has role_description, then ChromeVox selectively reads the role
+    // description if needed.
+    std::string role_description;
+    if (GetProperty(AXStringProperty::ROLE_DESCRIPTION, &role_description) &&
+        !role_description.empty()) {
+      names->push_back(role_description);
+      // don't early return here. subtree may contain more text.
+    }
   }
 
   // Otherwise, continue looking for a name in this subtree.
