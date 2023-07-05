@@ -43,7 +43,6 @@ import java.io.IOException;
 /** Integration test for CCT Branding. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@Features.EnableFeatures({ChromeFeatureList.CCT_BRAND_TRANSPARENCY})
 @Batch(Batch.PER_CLASS)
 public class CustomTabBrandingTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";

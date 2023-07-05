@@ -1328,17 +1328,8 @@ public class CustomTabsConnection {
     @VisibleForTesting
     boolean areExperimentsSupported(
             List<String> enabledExperiments, List<String> disabledExperiments) {
-        boolean enableEngagement = enabledExperiments != null
+        return enabledExperiments != null
                 && enabledExperiments.contains(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS);
-        boolean enableBranding = enabledExperiments != null
-                && enabledExperiments.contains(ChromeFeatureList.CCT_BRAND_TRANSPARENCY);
-        boolean disableEngagement = disabledExperiments != null
-                && disabledExperiments.contains(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS);
-        boolean disableBranding = disabledExperiments != null
-                && disabledExperiments.contains(ChromeFeatureList.CCT_BRAND_TRANSPARENCY);
-        // We currently only support having a set of two features: the Engagement Signals Feature
-        // and the Branding Feature.
-        return (enableBranding && enableEngagement) || (disableBranding && disableEngagement);
     }
 
     // TODO(https://crbug.com/1458640): Remove this and other dynamic feature related methods.
@@ -1351,7 +1342,6 @@ public class CustomTabsConnection {
     public boolean isDynamicFeatureEnabled(String featureName) {
         if (mIsDynamicIntentFeatureOverridesEnabled) {
             assert featureName.equals(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)
-                    || featureName.equals(ChromeFeatureList.CCT_BRAND_TRANSPARENCY)
                 : "Unsupported Feature";
             if (mDynamicEnabledFeatures != null && mDynamicEnabledFeatures.contains(featureName)) {
                 return true;
@@ -1360,9 +1350,6 @@ public class CustomTabsConnection {
                     && mDynamicDisabledFeatures.contains(featureName)) {
                 return false;
             }
-        }
-        if (featureName.equals(ChromeFeatureList.CCT_BRAND_TRANSPARENCY)) {
-            return ChromeFeatureList.sCctBrandTransparency.isEnabled();
         }
         if (featureName.equals(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)) {
             return sRealTimeEngagementFlag.isEnabled();

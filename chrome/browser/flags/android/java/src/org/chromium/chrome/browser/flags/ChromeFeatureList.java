@@ -510,8 +510,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctAutoTranslate = new CachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCctBottomBarSwipeUpGesture =
             new CachedFlag(CCT_BOTTOM_BAR_SWIPE_UP_GESTURE, true);
-    public static final CachedFlag sCctBrandTransparency =
-            new CachedFlag(CCT_BRAND_TRANSPARENCY, true);
     public static final CachedFlag sCctBrandTransparencyMemoryImprovement =
             new CachedFlag(CCT_BRAND_TRANSPARENCY_MEMORY_IMPROVEMENT, true);
     public static final CachedFlag sCctFeatureUsage = new CachedFlag(CCT_FEATURE_USAGE, false);
@@ -630,7 +628,6 @@ public abstract class ChromeFeatureList {
         sBaselineGm3SurfaceColors,
         sCctAutoTranslate,
         sCctBottomBarSwipeUpGesture,
-        sCctBrandTransparency,
         sCctBrandTransparencyMemoryImprovement,
         sCctFeatureUsage,
         sCctIncognito,

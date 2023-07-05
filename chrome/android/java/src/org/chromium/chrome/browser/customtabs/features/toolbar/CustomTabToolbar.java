@@ -59,7 +59,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -451,11 +450,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     public void setHandleStrategy(HandleStrategy strategy) {
-        if (!CustomTabsConnection.getInstance().isDynamicFeatureEnabled(
-                    ChromeFeatureList.CCT_BRAND_TRANSPARENCY)) {
-            mLocationBar.showBranding();
-        }
-
         mHandleStrategy = strategy;
         if (mCloseClickListener != null) setHandleStrategyCloseClickHandler(mCloseClickListener);
     }
@@ -823,7 +817,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             implements LocationBar, UrlBar.UrlBarDelegate, LocationBarDataProvider.Observer,
                        View.OnLongClickListener, ToolbarBrandingDelegate {
         private static final int TITLE_ANIM_DELAY_MS = 800;
-        private static final int BRANDING_DELAY_MS = 1800;
         private static final int MIN_URL_BAR_VISIBLE_TIME_POST_BRANDING_MS = 3000;
 
         private static final int STATE_DOMAIN_ONLY = 0;
@@ -875,30 +868,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         public boolean isShowingTitleOnly() {
             return mState == STATE_TITLE_ONLY;
-        }
-
-        // TODO(https://crbug.com/1343056): Remove this method after CCT Brand default enabled.
-        public void showBranding() {
-            mBrandingStarted = true;
-            mCurrentlyShowingBranding = true;
-
-            // Store the title and domain setting.
-            final boolean wasShowingTitle = mState != STATE_DOMAIN_ONLY;
-            final boolean wasShowingUrl = mState != STATE_TITLE_ONLY;
-
-            // We use url bar to show the branding text and hide the title bar so the text will
-            // align with the security icon.
-            if (wasShowingTitle) setShowTitleIgnoreBranding(false);
-            if (!wasShowingUrl) setUrlBarHiddenIgnoreBranding(false);
-            showBrandingIconAndText();
-
-            Runnable hideBranding = mCallbackController.makeCancelable(() -> {
-                mCurrentlyShowingBranding = false;
-                if (wasShowingTitle) setShowTitle(true);
-                if (!wasShowingUrl) setUrlBarHidden(true);
-                runAfterBrandingRunnables();
-            });
-            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, hideBranding, BRANDING_DELAY_MS);
         }
 
         @Override
@@ -962,6 +931,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void recoverFromRegularState() {
+            assert !mCurrentlyShowingBranding;
             assert mPreBandingState != null;
 
             boolean showTitle = mPreBandingState == STATE_TITLE_ONLY
@@ -969,8 +939,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             boolean hideUrl = mPreBandingState == STATE_TITLE_ONLY;
             mPreBandingState = null;
 
-            setUrlBarHidden(hideUrl);
-            setShowTitle(showTitle);
+            setUrlBarHiddenIgnoreBranding(hideUrl);
+            setShowTitleIgnoreBranding(showTitle);
         }
 
         public void onFinishInflate(View container) {
@@ -1047,33 +1017,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 // Refresh the status icon and url bar.
                 updateUrlBar();
                 mLocationBarModel.notifySecurityStateChanged();
-            } else {
-                if (CustomTabsConnection.getInstance().isDynamicFeatureEnabled(
-                            ChromeFeatureList.CCT_BRAND_TRANSPARENCY)) {
-                    if (mState == STATE_EMPTY) {
-                        // If state is empty, that means Location bar is recovering from empty
-                        // location bar to what ever new state it is. We skip the state assertion
-                        // and the end.
-                        if (!hideUrlBar) {
-                            mState = STATE_DOMAIN_ONLY;
-                            mUrlBar.setVisibility(View.VISIBLE);
-                        }
-                        return;
-                    } else if (mState == STATE_TITLE_ONLY && hideUrlBar) {
-                        // Used for empty location bar -> show branding location bar.
-                        // TODO(https://crbug.com/1343056): Remove duplicate code added for the sake
-                        // of fp++ process.
-                        mAnimDelegate.setTitleAnimationEnabled(false);
-                        mUrlBar.setVisibility(View.GONE);
-                        mTitleBar.setVisibility(View.VISIBLE);
-                        LayoutParams lp = (LayoutParams) mTitleBar.getLayoutParams();
-                        lp.bottomMargin = 0;
-                        mTitleBar.setLayoutParams(lp);
-                        mTitleBar.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                                getResources().getDimension(R.dimen.location_bar_url_text_size));
-                        return;
-                    }
+            } else if (mState == STATE_EMPTY) {
+                // If state is empty, that means Location bar is recovering from empty location bar
+                // to whatever new state it is. We skip the state assertion and the end.
+                if (!hideUrlBar) {
+                    mState = STATE_DOMAIN_ONLY;
+                    mUrlBar.setVisibility(View.VISIBLE);
                 }
+            } else {
                 assert false : "Unreached state";
             }
         }
@@ -1333,7 +1284,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private void setShowTitleIgnoreBranding(boolean showTitle) {
             if (showTitle) {
                 if (mState == STATE_EMPTY) {
-                    // Only happened when CCT_BRAND_TRANSPARENCY enabled.
                     mState = STATE_TITLE_ONLY;
                 } else {
                     mState = STATE_DOMAIN_AND_TITLE;
