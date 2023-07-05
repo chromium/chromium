@@ -315,6 +315,14 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
     const base::android::JavaParamRef<jstring>& jsearch_url,
     const base::android::JavaParamRef<jstring>& jsuggest_url,
     const base::android::JavaParamRef<jstring>& jfavicon_url,
+    const base::android::JavaParamRef<jstring>& jnew_tab_url,
+    const base::android::JavaParamRef<jstring>& jimage_url,
+    const base::android::JavaParamRef<jstring>& jimage_url_post_params,
+    const base::android::JavaParamRef<jstring>& jimage_translate_url,
+    const base::android::JavaParamRef<jstring>&
+        jimage_translate_source_language_param_key,
+    const base::android::JavaParamRef<jstring>&
+        jimage_translate_target_language_param_key,
     jboolean set_as_default) {
   // Check if there is already a search engine created from Play API.
   TemplateURLService::TemplateURLVector template_urls =
@@ -344,9 +352,42 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
   if (jfavicon_url) {
     favicon_url = base::android::ConvertJavaStringToUTF8(jfavicon_url);
   }
+  std::string new_tab_url;
+  if (jnew_tab_url) {
+    new_tab_url = base::android::ConvertJavaStringToUTF8(jnew_tab_url);
+  }
+  std::string image_url;
+  if (jimage_url) {
+    image_url = base::android::ConvertJavaStringToUTF8(jimage_url);
+  }
+  std::string image_url_post_params;
+  if (jimage_url_post_params) {
+    image_url_post_params =
+        base::android::ConvertJavaStringToUTF8(jimage_url_post_params);
+  }
+  std::string image_translate_url;
+  if (jimage_translate_url) {
+    image_translate_url =
+        base::android::ConvertJavaStringToUTF8(jimage_translate_url);
+  }
+  std::string image_translate_source_language_param_key;
+  if (jimage_translate_source_language_param_key) {
+    image_translate_source_language_param_key =
+        base::android::ConvertJavaStringToUTF8(
+            jimage_translate_source_language_param_key);
+  }
+  std::string image_translate_target_language_param_key;
+  if (jimage_translate_target_language_param_key) {
+    image_translate_target_language_param_key =
+        base::android::ConvertJavaStringToUTF8(
+            jimage_translate_target_language_param_key);
+  }
 
   TemplateURL* t_url = template_url_service_->CreatePlayAPISearchEngine(
-      name, keyword, search_url, suggest_url, favicon_url);
+      name, keyword, search_url, suggest_url, favicon_url, new_tab_url,
+      image_url, image_url_post_params, image_translate_url,
+      image_translate_source_language_param_key,
+      image_translate_target_language_param_key);
 
   // CanMakeDefault() will prevent us from taking over a policy or extension
   // defined default search engine.

@@ -643,7 +643,13 @@ TemplateURL* TemplateURLService::CreatePlayAPISearchEngine(
     const std::u16string& keyword,
     const std::string& search_url,
     const std::string& suggestions_url,
-    const std::string& favicon_url) {
+    const std::string& favicon_url,
+    const std::string& new_tab_url,
+    const std::string& image_url,
+    const std::string& image_url_post_params,
+    const std::string& image_translate_url,
+    const std::string& image_translate_source_language_param_key,
+    const std::string& image_translate_target_language_param_key) {
   // It's the caller's responsibility to check that there are no existing
   // Play API for engine, but still CHECK this to avoid polluting the database.
   // Currently, we never update Play API engine data. If we ever want to do
@@ -659,6 +665,14 @@ TemplateURL* TemplateURLService::CreatePlayAPISearchEngine(
   data.SetURL(search_url);
   data.suggestions_url = suggestions_url;
   data.favicon_url = GURL(favicon_url);
+  data.new_tab_url = new_tab_url;
+  data.image_url = image_url;
+  data.image_url_post_params = image_url_post_params;
+  data.image_translate_url = image_translate_url;
+  data.image_translate_source_language_param_key =
+      image_translate_source_language_param_key;
+  data.image_translate_target_language_param_key =
+      image_translate_target_language_param_key;
   data.created_from_play_api = true;
   // Play API engines are created by explicit user gesture, and should not be
   // auto-replaceable by an auto-generated engine as the user browses.

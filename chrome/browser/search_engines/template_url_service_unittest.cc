@@ -751,14 +751,32 @@ TEST_F(TemplateURLServiceTest, CreateFromPlayAPI) {
   const std::string search_url = "http://www.google.com/foo/bar";
   const std::string suggest_url = "http://www.google.com/suggest";
   const std::string favicon_url = "http://favicon.url";
+  const std::string new_tab_url = "https://site.com/newtab";
+  const std::string image_url = "https://site.com/img";
+  const std::string image_url_post_params = "param";
+  const std::string image_translate_url = "https://site.com/transl";
+  const std::string image_translate_source_language_param_key = "s";
+  const std::string image_translate_target_language_param_key = "t";
   TemplateURL* t_url = model()->CreatePlayAPISearchEngine(
-      short_name, keyword, search_url, suggest_url, favicon_url);
+      short_name, keyword, search_url, suggest_url, favicon_url, new_tab_url,
+      image_url, image_url_post_params, image_translate_url,
+      image_translate_source_language_param_key,
+      image_translate_target_language_param_key);
   ASSERT_TRUE(t_url);
   ASSERT_EQ(short_name, t_url->short_name());
   ASSERT_EQ(keyword, t_url->keyword());
   ASSERT_EQ(search_url, t_url->url());
   ASSERT_EQ(suggest_url, t_url->suggestions_url());
   ASSERT_EQ(GURL(favicon_url), t_url->favicon_url());
+  ASSERT_EQ(new_tab_url, t_url->new_tab_url());
+  ASSERT_EQ(image_url, t_url->image_url());
+  ASSERT_EQ(image_url_post_params, t_url->image_url_post_params());
+  ASSERT_EQ(image_translate_url, t_url->image_translate_url());
+  ASSERT_EQ(image_translate_source_language_param_key,
+            t_url->image_translate_source_language_param_key());
+  ASSERT_EQ(image_translate_target_language_param_key,
+            t_url->image_translate_target_language_param_key());
+
   ASSERT_TRUE(t_url->created_from_play_api());
   ASSERT_EQ(t_url, model()->GetTemplateURLForKeyword(keyword));
 
@@ -802,18 +820,26 @@ TEST_F(TemplateURLServiceTest, UpdateFromPlayAPI) {
   const std::string new_search_url = "new_url";
   const std::string new_suggest_url = "new_suggest_url";
   const std::string new_favicon_url = "new_favicon_url";
+  const std::string new_other_data = "other_data";
 
   // The update creates a new Play API engine and deletes the old replaceable
   // one.
-  t_url = model()->CreatePlayAPISearchEngine(new_short_name, keyword,
-                                             new_search_url, new_suggest_url,
-                                             new_favicon_url);
+  t_url = model()->CreatePlayAPISearchEngine(
+      new_short_name, keyword, new_search_url, new_suggest_url, new_favicon_url,
+      new_other_data, new_other_data, new_other_data, new_other_data,
+      new_other_data, new_other_data);
   ASSERT_TRUE(t_url);
   ASSERT_EQ(new_short_name, t_url->short_name());
   ASSERT_EQ(keyword, t_url->keyword());
   ASSERT_EQ(new_search_url, t_url->url());
   ASSERT_EQ(new_suggest_url, t_url->suggestions_url());
   ASSERT_EQ(GURL(new_favicon_url), t_url->favicon_url());
+  ASSERT_EQ(new_other_data, t_url->new_tab_url());
+  ASSERT_EQ(new_other_data, t_url->image_url());
+  ASSERT_EQ(new_other_data, t_url->image_url_post_params());
+  ASSERT_EQ(new_other_data, t_url->image_translate_url());
+  ASSERT_EQ(new_other_data, t_url->image_translate_source_language_param_key());
+  ASSERT_EQ(new_other_data, t_url->image_translate_target_language_param_key());
   ASSERT_TRUE(t_url->created_from_play_api());
 
   // Make sure the mappings in the model were updated.
