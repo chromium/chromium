@@ -10,7 +10,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/password_manager/core/browser/login_database.h"
-#include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
@@ -78,10 +77,6 @@ bool LoginDatabaseAsyncHelper::Initialize(
           syncer::PASSWORDS, base::DoNothing()),
       static_cast<PasswordStoreSync*>(this),
       std::move(sync_enabled_or_disabled_cb));
-  incoming_sharing_invitation_sync_bridge_ =
-      std::make_unique<IncomingPasswordSharingInvitationSyncBridge>(
-          std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-              syncer::INCOMING_PASSWORD_SHARING_INVITATION, base::DoNothing()));
   outgoing_sharing_invitation_sync_bridge_ =
       std::make_unique<OutgoingPasswordSharingInvitationSyncBridge>(
           std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(

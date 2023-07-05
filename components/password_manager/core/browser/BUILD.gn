@@ -234,6 +234,8 @@ static_library("browser") {
     "sharing/incoming_password_sharing_invitation_sync_bridge.h",
     "sharing/outgoing_password_sharing_invitation_sync_bridge.cc",
     "sharing/outgoing_password_sharing_invitation_sync_bridge.h",
+    "sharing/password_receiver_service.cc",
+    "sharing/password_receiver_service.h",
     "sharing/password_sender_service.h",
     "sharing/password_sender_service_impl.cc",
     "sharing/password_sender_service_impl.h",
