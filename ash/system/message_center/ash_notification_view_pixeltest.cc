@@ -150,23 +150,27 @@ class AshNotificationViewTitlePixelTest
     : public AshNotificationViewPixelTestBase,
       public testing::WithParamInterface<
           std::tuple<bool /*IsQsRevampEnabled()*/,
+                     bool /*IsJellyEnabled()*/,
                      std::pair<const char* /*notification title string*/,
                                const char* /*screenshot name*/>>> {
  public:
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(features::kQsRevamp,
-                                               /*enabled=*/IsQsRevampEnabled());
+    scoped_feature_list_->InitWithFeatureStates(
+        {{features::kQsRevamp, /*enabled=*/IsQsRevampEnabled()},
+         {chromeos::features::kJelly, /*enabled=*/IsJellyEnabled()}});
     AshNotificationViewPixelTestBase::SetUp();
   }
 
   bool IsQsRevampEnabled() { return std::get<0>(GetParam()); }
 
-  const std::string GetTitle() { return std::get<1>(GetParam()).first; }
+  bool IsJellyEnabled() { return std::get<1>(GetParam()); }
+
+  const std::string GetTitle() { return std::get<2>(GetParam()).first; }
 
   const std::string GetScreenshotName() {
-    return std::get<1>(GetParam()).second;
+    return std::get<2>(GetParam()).second;
   }
 
  private:
@@ -177,7 +181,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     AshNotificationViewTitlePixelTest,
     testing::Combine(
-        testing::Bool(),
+        /*QsRevamp*/ testing::Bool(),
+        /*Jelly*/ testing::Bool(),
         testing::ValuesIn({
             std::make_pair(kShortTitleString, kShortTitleScreenshot),
             std::make_pair(kMediumTitleString, kMediumTitleScreenshot),
@@ -207,7 +212,7 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
   // Compare pixels.
   const std::string screenshot_name = GetScreenshotName();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      screenshot_name, /*revision_number=*/0, notification_view));
+      screenshot_name, /*revision_number=*/1, notification_view));
 }
 
 class ScreenCaptureNotificationPixelTest
