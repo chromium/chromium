@@ -24,7 +24,7 @@
 
 namespace {
 
-const std::string kTestDictionaryString = "A dictionary";
+constexpr char kTestDictionaryString[] = "A dictionary";
 
 class SharedDictionaryAccessObserver : public content::WebContentsObserver {
  public:
