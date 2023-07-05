@@ -1305,7 +1305,8 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
       BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
-  EXPECT_EQ(0, notification_manager_->drive_settings_open_count_);
+  EXPECT_EQ(1, notification_manager_->drive_settings_open_count_);
+  notification_manager_->drive_settings_open_count_ = 0;
 
   // Not enough space without going through syncing phase.
   progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
