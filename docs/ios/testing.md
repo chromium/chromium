@@ -144,11 +144,14 @@ EarlGrey tests are based on Apple's [XCUITest].
 
 1. If you added a new test file / suite, run `gclient runhooks` to sync for the
 list of tests in Xcode.
-2. Change the scheme to "ios_chrome_eg2test". Create and select the simulator
-you wish to use.
-3. You may run a test suite(module), TestCase or testMethod in test navigator.
+2. Run a test suite(module), TestCase or testMethod in test navigator.
 Xcode will build the targets and run the test(s) you choose. Alternatively, 
 use ⌘+U to run all the tests. See Apple's [Running Tests and Viewing Results].
+3. You can pass extra arguments to the app process with `--extra-app-args`, e.g.
+`--extra-app-args='--enable-features=Foo'`.
+    * This might not work consistently as tests can re-launch the app with
+    arbitrary command-line arguments.
+
 
 #### Running from the command-line
 
