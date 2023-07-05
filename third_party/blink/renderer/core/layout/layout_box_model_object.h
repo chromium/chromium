@@ -173,6 +173,10 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // filters that paint outside of the box, in physical coordinates.
   PhysicalRect PhysicalVisualOverflowRectIncludingFilters() const;
 
+  // Returns a physical rect that is a result of apply this object's filters to
+  // it. If there are no filters, it returns its argument.
+  PhysicalRect ApplyFiltersToRect(const PhysicalRect&) const;
+
   bool UsesCompositedScrolling() const;
 
   // These return the CSS computed padding values.

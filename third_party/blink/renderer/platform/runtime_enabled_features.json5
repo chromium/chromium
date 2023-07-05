@@ -3693,6 +3693,10 @@
       implied_by: ["ViewTransitionOnNavigation"],
     },
     {
+      name: "ViewTransitionLayoutObjectVisualOverflow",
+      status: "stable",
+    },
+    {
       // If enabled, ViewTransition API is supported for navigations including
       // cross-document transitions.
       // See https://drafts.csswg.org/css-view-transitions-1/.
