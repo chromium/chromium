@@ -65,8 +65,8 @@ class InsertingDatabaseFactory : public safe_browsing::TestV4DatabaseFactory {
         const base::FilePath store_path =
             base_store_path.InsertBeforeExtensionASCII(base::StringPrintf(
                 " (%d)", base::GetUniquePathNumber(base_store_path)));
-        (*store_map)[id] =
-            store_factory_->CreateV4Store(db_task_runner, store_path);
+        store_map->insert(
+            {id, store_factory_->CreateV4Store(db_task_runner, store_path)});
       }
     }
 

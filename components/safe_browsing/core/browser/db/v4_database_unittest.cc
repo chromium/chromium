@@ -53,11 +53,12 @@ class FakeV4StoreFactory : public V4StoreFactory {
   explicit FakeV4StoreFactory(bool hash_prefix_matches)
       : hash_prefix_should_match_(hash_prefix_matches) {}
 
-  std::unique_ptr<V4Store> CreateV4Store(
+  V4StorePtr CreateV4Store(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       const base::FilePath& store_path) override {
-    return std::make_unique<FakeV4Store>(task_runner, store_path,
-                                         hash_prefix_should_match_);
+    return V4StorePtr(
+        new FakeV4Store(task_runner, store_path, hash_prefix_should_match_),
+        V4StoreDeleter(task_runner));
   }
 
  private:
@@ -135,7 +136,7 @@ class V4DatabaseTest : public PlatformTest {
     ASSERT_EQ(expected_identifiers_.size(), v4_database->store_map_->size());
     for (size_t i = 0; i < expected_identifiers_.size(); i++) {
       const auto& expected_identifier = expected_identifiers_[i];
-      const auto& store = (*v4_database->store_map_)[expected_identifier];
+      const auto& store = v4_database->store_map_->at(expected_identifier);
       ASSERT_TRUE(store);
       const auto& expected_store_path = expected_store_paths_[i];
       EXPECT_EQ(expected_store_path, store->store_path());

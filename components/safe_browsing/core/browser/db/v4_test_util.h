@@ -50,7 +50,7 @@ class TestV4StoreFactory : public V4StoreFactory {
   TestV4StoreFactory();
   ~TestV4StoreFactory() override;
 
-  std::unique_ptr<V4Store> CreateV4Store(
+  V4StorePtr CreateV4Store(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       const base::FilePath& store_path) override;
 };
