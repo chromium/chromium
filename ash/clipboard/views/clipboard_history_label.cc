@@ -21,7 +21,11 @@ ClipboardHistoryLabel::ClipboardHistoryLabel(const std::u16string& text)
                     ClipboardHistoryViews::kContentsInsets.width(),
                 ClipboardHistoryViews::kLabelPreferredHeight));
   if (chromeos::features::IsJellyEnabled()) {
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody1, *this);
+    TypographyProvider::Get()->StyleLabel(
+        chromeos::features::IsClipboardHistoryRefreshEnabled()
+            ? TypographyToken::kCrosButton2
+            : TypographyToken::kCrosBody1,
+        *this);
   } else {
     SetFontList(views::style::GetFont(views::style::CONTEXT_TOUCH_MENU,
                                       views::style::STYLE_PRIMARY));
