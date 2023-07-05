@@ -73,12 +73,16 @@ class CORE_EXPORT SVGElement : public Element {
   }
   static bool IsAnimatableCSSProperty(const QualifiedName&);
 
-  enum ApplyMotionTransform {
+  bool HasMotionTransform() const { return HasSVGRareData(); }
+  // Apply any "motion transform" contribution (if existing.)
+  void ApplyMotionTransform(AffineTransform&) const;
+
+  enum ApplyMotionTransformTag {
     kExcludeMotionTransform,
     kIncludeMotionTransform
   };
-  bool HasTransform(ApplyMotionTransform) const;
-  AffineTransform CalculateTransform(ApplyMotionTransform) const;
+  bool HasTransform(ApplyMotionTransformTag) const;
+  AffineTransform CalculateTransform(ApplyMotionTransformTag) const;
 
   enum CTMScope {
     kNearestViewportScope,  // Used by SVGGraphicsElement::getCTM()

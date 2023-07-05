@@ -60,7 +60,7 @@ void LayoutSVGContainer::UpdateLayout() {
   // components to be correct, this should be fine. We update the transform
   // again, if needed, after computing the bounding box below.
   if (needs_transform_update_) {
-    transform_change = UpdateLocalTransform();
+    transform_change = UpdateLocalTransform(gfx::RectF());
   }
   did_screen_scale_factor_change_ =
       transform_change == SVGTransformChange::kFull ||
@@ -90,7 +90,10 @@ void LayoutSVGContainer::UpdateLayout() {
   }
 
   if (needs_transform_update_) {
-    transform_change = std::max(UpdateLocalTransform(), transform_change);
+    const gfx::RectF reference_box =
+        TransformHelper::ComputeReferenceBox(*this);
+    transform_change =
+        std::max(UpdateLocalTransform(reference_box), transform_change);
     needs_transform_update_ = false;
   }
 
@@ -270,7 +273,8 @@ void LayoutSVGContainer::SetNeedsTransformUpdate() {
   needs_transform_update_ = true;
 }
 
-SVGTransformChange LayoutSVGContainer::UpdateLocalTransform() {
+SVGTransformChange LayoutSVGContainer::UpdateLocalTransform(
+    const gfx::RectF& reference_box) {
   NOT_DESTROYED();
   return SVGTransformChange::kNone;
 }

@@ -43,10 +43,25 @@ class TransformHelper {
 
   // Compute the transform for the LayoutObject based on the various
   // 'transform*' properties.
-  static AffineTransform ComputeTransform(const LayoutObject&,
+  static AffineTransform ComputeTransform(UseCounter&,
+                                          const ComputedStyle&,
+                                          const gfx::RectF& reference_box,
                                           ComputedStyle::ApplyTransformOrigin);
 
-  static gfx::PointF ComputeTransformOrigin(const LayoutObject&);
+  // Compute the transform for the SVGElement (which is assumed to have an
+  // associated LayoutObject) based on the various 'transform*' properties,
+  // using the specified reference box. Will also include a motion transform
+  // (from <animateMotion>) if one has been specified.
+  static AffineTransform ComputeTransformIncludingMotion(
+      const SVGElement& element,
+      const gfx::RectF& reference_box);
+
+  // Like the above, but also computes the reference box.
+  static AffineTransform ComputeTransformIncludingMotion(
+      const SVGElement& element);
+
+  static gfx::PointF ComputeTransformOrigin(const ComputedStyle&,
+                                            const gfx::RectF& reference_box);
 };
 
 // The following enumeration is used to optimize cases where the scale is known

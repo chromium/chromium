@@ -217,11 +217,7 @@ void LayoutNGSVGText::UpdateLayout() {
     // should be fine. We update the transform again after computing
     // the bounding box below, and after that we clear the
     // |needs_transform_update_| flag.
-    if (needs_transform_update_) {
-      local_transform_ =
-          GetElement()->CalculateTransform(SVGElement::kIncludeMotionTransform);
-    }
-
+    UpdateTransformBeforeLayout();
     UpdateFont();
     SetNeedsCollectInlines(true);
     needs_text_metrics_update_ = false;

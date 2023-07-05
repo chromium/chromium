@@ -146,7 +146,8 @@ void LayoutSVGResourceMarker::SetNeedsTransformUpdate() {
   LayoutSVGContainer::SetNeedsTransformUpdate();
 }
 
-SVGTransformChange LayoutSVGResourceMarker::UpdateLocalTransform() {
+SVGTransformChange LayoutSVGResourceMarker::UpdateLocalTransform(
+    const gfx::RectF& reference_box) {
   NOT_DESTROYED();
   auto* marker = To<SVGMarkerElement>(GetElement());
   DCHECK(marker);

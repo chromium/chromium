@@ -57,7 +57,8 @@ void LayoutSVGViewportContainer::UpdateLayout() {
   LayoutSVGContainer::UpdateLayout();
 }
 
-SVGTransformChange LayoutSVGViewportContainer::UpdateLocalTransform() {
+SVGTransformChange LayoutSVGViewportContainer::UpdateLocalTransform(
+    const gfx::RectF& reference_box) {
   NOT_DESTROYED();
   const auto* svg = To<SVGSVGElement>(GetElement());
   SVGTransformChangeDetector change_detector(local_to_parent_transform_);

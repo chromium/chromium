@@ -63,7 +63,8 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
 
   void UpdateLayout() override;
 
-  SVGTransformChange UpdateLocalTransform() override;
+  SVGTransformChange UpdateLocalTransform(
+      const gfx::RectF& reference_box) override;
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,

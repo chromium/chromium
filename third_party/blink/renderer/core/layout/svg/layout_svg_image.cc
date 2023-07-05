@@ -182,7 +182,8 @@ void LayoutSVGImage::UpdateLayout() {
 
   bool update_parent_boundaries = bbox_changed;
   if (needs_transform_update_) {
-    local_transform_ = CalculateLocalTransform();
+    local_transform_ =
+        TransformHelper::ComputeTransformIncludingMotion(*GetElement());
     needs_transform_update_ = false;
     update_parent_boundaries = true;
   }

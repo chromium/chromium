@@ -307,27 +307,36 @@ AffineTransform SVGElement::LocalCoordinateSpaceTransform(CTMScope) const {
 }
 
 bool SVGElement::HasTransform(
-    ApplyMotionTransform apply_motion_transform) const {
+    ApplyMotionTransformTag apply_motion_transform) const {
   return (GetLayoutObject() && GetLayoutObject()->HasTransform()) ||
          (apply_motion_transform == kIncludeMotionTransform &&
-          HasSVGRareData());
+          HasMotionTransform());
 }
 
 AffineTransform SVGElement::CalculateTransform(
-    ApplyMotionTransform apply_motion_transform) const {
+    ApplyMotionTransformTag apply_motion_transform) const {
   const LayoutObject* layout_object = GetLayoutObject();
 
   AffineTransform matrix;
   if (layout_object && layout_object->HasTransform()) {
+    const gfx::RectF reference_box =
+        TransformHelper::ComputeReferenceBox(*layout_object);
     matrix = TransformHelper::ComputeTransform(
-        *layout_object, ComputedStyle::kIncludeTransformOrigin);
+        GetDocument(), layout_object->StyleRef(), reference_box,
+        ComputedStyle::kIncludeTransformOrigin);
   }
 
   // Apply any "motion transform" contribution if requested (and existing.)
-  if (apply_motion_transform == kIncludeMotionTransform && HasSVGRareData())
-    matrix.PostConcat(*SvgRareData()->AnimateMotionTransform());
-
+  if (apply_motion_transform == kIncludeMotionTransform) {
+    ApplyMotionTransform(matrix);
+  }
   return matrix;
+}
+
+void SVGElement::ApplyMotionTransform(AffineTransform& matrix) const {
+  if (HasSVGRareData()) {
+    matrix.PostConcat(*SvgRareData()->AnimateMotionTransform());
+  }
 }
 
 Node::InsertionNotificationRequest SVGElement::InsertedInto(

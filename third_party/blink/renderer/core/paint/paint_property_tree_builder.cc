@@ -932,19 +932,24 @@ FragmentPaintPropertyTreeBuilder::TransformAndOriginForSVGChild() const {
       CompositingReason::kActiveTransformAnimation) {
     if (CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG(
             *To<SVGElement>(object_.GetNode()))) {
+      const gfx::RectF reference_box =
+          TransformHelper::ComputeReferenceBox(object_);
       // Composited transform animation works only if
       // LocalToSVGParentTransform() reflects the CSS transform properties.
       // If this fails, we need to exclude the case in
       // CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG().
       DCHECK_EQ(TransformHelper::ComputeTransform(
-                    object_, ComputedStyle::kIncludeTransformOrigin),
+                    object_.GetDocument(), object_.StyleRef(), reference_box,
+                    ComputedStyle::kIncludeTransformOrigin),
                 object_.LocalToSVGParentTransform());
       // For composited transform animation to work, we need to store transform
       // origin separately. It's baked in object_.LocalToSVGParentTransform().
       return {TransformHelper::ComputeTransform(
-                  object_, ComputedStyle::kExcludeTransformOrigin)
+                  object_.GetDocument(), object_.StyleRef(), reference_box,
+                  ComputedStyle::kExcludeTransformOrigin)
                   .ToTransform(),
-              gfx::Point3F(TransformHelper::ComputeTransformOrigin(object_))};
+              gfx::Point3F(TransformHelper::ComputeTransformOrigin(
+                  object_.StyleRef(), reference_box))};
     }
   }
   return {object_.LocalToSVGParentTransform().ToTransform()};

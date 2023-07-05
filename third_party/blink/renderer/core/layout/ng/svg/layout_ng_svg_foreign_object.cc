@@ -105,10 +105,7 @@ void LayoutNGSVGForeignObject::UpdateLayout() {
   // TODO(fs): Remove this. AFAICS in all cases where descendants compute some
   // form of CTM, they stop at their nearest ancestor LayoutSVGRoot, and thus
   // will not care about (reach) this value.
-  if (needs_transform_update_) {
-    local_transform_ =
-        foreign->CalculateTransform(SVGElement::kIncludeMotionTransform);
-  }
+  UpdateTransformBeforeLayout();
 
   PhysicalRect old_frame_rect(PhysicalLocation(), Size());
 

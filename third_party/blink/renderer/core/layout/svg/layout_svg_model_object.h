@@ -83,7 +83,6 @@ class LayoutSVGModelObject : public LayoutObject {
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
 
-  AffineTransform CalculateLocalTransform() const;
   bool CheckForImplicitTransformChange(bool bbox_changed) const;
 
  private:

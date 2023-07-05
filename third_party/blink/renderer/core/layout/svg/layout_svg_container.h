@@ -123,7 +123,8 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
                    HitTestPhase) override;
 
   // Called during layout to update the local transform.
-  virtual SVGTransformChange UpdateLocalTransform();
+  virtual SVGTransformChange UpdateLocalTransform(
+      const gfx::RectF& reference_box);
 
   bool UpdateCachedBoundaries();
 

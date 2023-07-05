@@ -108,14 +108,6 @@ void LayoutSVGModelObject::WillBeDestroyed() {
   LayoutObject::WillBeDestroyed();
 }
 
-AffineTransform LayoutSVGModelObject::CalculateLocalTransform() const {
-  NOT_DESTROYED();
-  auto* element = GetElement();
-  if (element->HasTransform(SVGElement::kIncludeMotionTransform))
-    return element->CalculateTransform(SVGElement::kIncludeMotionTransform);
-  return AffineTransform();
-}
-
 bool LayoutSVGModelObject::CheckForImplicitTransformChange(
     bool bbox_changed) const {
   NOT_DESTROYED();
