@@ -358,8 +358,8 @@ void GetIconChromeRefresh(ContentSettingsType type,
                       : &vector_icons::kSensorsChromeRefreshIcon;
       return;
     case ContentSettingsType::POPUPS:
-      *icon = blocked ? &kOpenInNewOffChromeRefreshIcon
-                      : &kOpenInNewChromeRefreshIcon;
+      *icon =
+          blocked ? &vector_icons::kIframeOffIcon : &vector_icons::kIframeIcon;
       return;
     default:
       NOTREACHED();
@@ -615,9 +615,13 @@ void ContentSettingImageModel::SetIcon(ContentSettingsType type, bool blocked) {
 }
 
 void ContentSettingImageModel::SetFramebustBlockedIcon() {
-  // TODO(https://crbug.com/1447073): Set a cr23 icon for blocked redirect.
-  icon_ = &kBlockedRedirectIcon;
-  icon_badge_ = &vector_icons::kBlockedBadgeIcon;
+  if (features::IsChromeRefresh2023()) {
+    icon_ = &kOpenInNewOffChromeRefreshIcon;
+    icon_badge_ = &gfx::kNoneIcon;
+  } else {
+    icon_ = &kBlockedRedirectIcon;
+    icon_badge_ = &vector_icons::kBlockedBadgeIcon;
+  }
 }
 
 // Generic blocked content settings --------------------------------------------

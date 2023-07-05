@@ -88,7 +88,7 @@ bool IntentChipButton::GetChipExpanded() const {
 ui::ImageModel IntentChipButton::GetAppIcon() const {
   if (features::IsChromeRefresh2023()) {
     // The color and size are configured in OmniboxChipButton.
-    return ui::ImageModel::FromVectorIcon(kOpenInNewChromeRefreshIcon);
+    return ui::ImageModel::FromVectorIcon(kInstallDesktopChromeRefreshIcon);
   }
   if (auto* tab_helper = GetTabHelper())
     return tab_helper->app_icon();

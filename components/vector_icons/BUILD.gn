@@ -110,6 +110,8 @@ aggregate_vector_icons("components_vector_icons") {
     "https_valid.icon",
     "https_valid_arrow.icon",
     "https_valid_chrome_refresh.icon",
+    "iframe.icon",
+    "iframe_off.icon",
     "image_search.icon",
     "info_outline.icon",
     "info_refresh.icon",
