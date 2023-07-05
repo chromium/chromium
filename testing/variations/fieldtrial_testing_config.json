@@ -5886,7 +5886,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230221",
+                    "name": "EnabledWithWait_20230705",
+                    "enable_features": [
+                        "FirstPartySets",
+                        "PrivacySandboxFirstPartySetsUI"
+                    ]
+                },
+                {
+                    "name": "EnabledWithoutWait_20230705",
                     "params": {
                         "FirstPartySetsNavigationThrottleTimeout": "0s"
                     },
