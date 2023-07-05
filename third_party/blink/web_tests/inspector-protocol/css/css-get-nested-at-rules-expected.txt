@@ -20,4 +20,10 @@ Verify that nested at-rules are reported with the correct order.
     [3] : MediaRule
     [4] : SupportsRule
 ]
+[
+    [0] : StyleRule
+]
+[
+    [0] : html
+]
 

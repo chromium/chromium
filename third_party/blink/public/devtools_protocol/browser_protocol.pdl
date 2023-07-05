@@ -1562,6 +1562,7 @@ experimental domain CSS
       ContainerRule
       LayerRule
       ScopeRule
+      StyleRule
 
   # CSS coverage information.
   type RuleUsage extends object

@@ -1,6 +1,12 @@
 (async function(testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
 <style>
+html {
+  & body {
+    margin: 10px;
+  }
+}
+
 @media (min-width: 10px) {
   body {
       padding: 10px;
@@ -57,6 +63,9 @@
   for (const ruleMatch of matchedStyles.result.matchedCSSRules) {
     if (ruleMatch.rule.ruleTypes.length > 0) {
       testRunner.log(ruleMatch.rule.ruleTypes);
+    }
+    if (ruleMatch.rule.nestingSelectors) {
+      testRunner.log(ruleMatch.rule.nestingSelectors);
     }
   }
 

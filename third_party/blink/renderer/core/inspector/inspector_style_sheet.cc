@@ -1949,18 +1949,6 @@ InspectorStyleSheet::BuildObjectForRuleWithoutAncestorData(CSSStyleRule* rule) {
           .setStyle(BuildObjectForStyle(rule->style()))
           .build();
 
-  auto nesting_selectors = std::make_unique<protocol::Array<String>>();
-  CSSRule* ancestor_rule = rule->parentRule();
-  while (ancestor_rule) {
-    if (auto* style_rule = DynamicTo<CSSStyleRule>(ancestor_rule)) {
-      nesting_selectors->emplace_back(style_rule->selectorText());
-    }
-    ancestor_rule = ancestor_rule->parentRule();
-  }
-  if (nesting_selectors->size() > 0) {
-    result->setNestingSelectors(std::move(nesting_selectors));
-  }
-
   if (CanBind(origin_)) {
     if (!Id().empty())
       result->setStyleSheetId(Id());
