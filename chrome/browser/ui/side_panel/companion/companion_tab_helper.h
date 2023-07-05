@@ -46,11 +46,23 @@ class CompanionTabHelper
     virtual void OnCompanionSidePanelClosed() = 0;
     // Retrieves the web contents for testing purposes.
     virtual content::WebContents* GetCompanionWebContentsForTesting() = 0;
+    // Add a callback to be called when Companion is fully loaded in the side
+    // panel, i.e. the spinner of the tab would stop spinning, Javascript is
+    // loaded and the onload event was dispatched.
+    virtual void AddCompanionFinishedLoadingCallback(
+        base::OnceCallback<void()> callback) = 0;
   };
+
+  using CompanionLoadedCallback = base::OnceCallback<void()>;
 
   CompanionTabHelper(const CompanionTabHelper&) = delete;
   CompanionTabHelper& operator=(const CompanionTabHelper&) = delete;
   ~CompanionTabHelper() override;
+
+  // Add a callback to be called when Companion is fully loaded in the side
+  // panel, i.e. the spinner of the tab would stop spinning, Javascript is
+  // loaded and the onload event was dispatched.
+  void AddCompanionFinishedLoadingCallback(CompanionLoadedCallback callback);
 
   // Shows the companion side panel with query provided by the |search_url|.
   void ShowCompanionSidePanelForSearchURL(const GURL& search_url);

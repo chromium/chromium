@@ -280,13 +280,13 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   // Mimics a user clicking a link to `url` in search companion and waits for
   // the page to load.
   void ClickUrlInCompanion(const GURL& url, bool wait_for_navigation = true) {
-    content::TestNavigationObserver nav_observer(web_contents());
     std::string script =
         "const link = document.createElement('a');link.target = "
         "\"blank_\";link.href=\"" +
         url.spec() + "\";document.body.appendChild(link);link.click();";
     ExecJs(script);
     if (wait_for_navigation) {
+      content::TestNavigationObserver nav_observer(web_contents());
       nav_observer.Wait();
     }
   }
@@ -802,6 +802,31 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, LinkClickOnCompanionPage) {
   ExpectUkmEntryAt(
       &ukm_recorder, 0, ukm::builders::Companion_PageView::kOpenTriggerName,
       static_cast<int>(SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CompanionPageBrowserTest,
+    LinkClickOnCompanionPageNotifiesNewTabSidePanelViaPostMessage) {
+  const GURL clicked_url = CreateUrl(kHost, "/clicked.html");
+  // EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  ClickUrlInCompanion(clicked_url);
+
+  // Ensure browser sent post message
+  EXPECT_EQ(clicked_url, GetLastLinkOpenedUrlFromPostMessage());
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnMsbb) {
