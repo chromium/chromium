@@ -12,11 +12,6 @@ namespace password_manager::features {
 // NOTE: It is strongly recommended to use UpperCamelCase style for feature
 //       names, e.g. "MyGreatFeature".
 
-// Enables Biometrics for the Touch To Fill feature. This only effects Android.
-BASE_FEATURE(kBiometricTouchToFill,
-             "BiometricTouchToFill",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Disables fallback filling if the server or the autocomplete attribute says it
 // is a credit card field.
 BASE_FEATURE(kDisablePasswordsDropdownForCvcFields,

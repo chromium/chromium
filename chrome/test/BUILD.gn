@@ -6376,6 +6376,7 @@ test("unit_tests") {
     "//components/password_manager/content/browser",
     "//components/password_manager/core/browser:import_results",
     "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/import:csv",
     "//components/payments/content",
     "//components/payments/content:test_support",

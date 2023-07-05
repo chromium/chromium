@@ -21,6 +21,8 @@ BASE_DECLARE_FEATURE(kBiometricAuthenticationForFilling);
 BASE_DECLARE_FEATURE(kBiometricAuthenticationInSettings);
 #endif
 
+BASE_DECLARE_FEATURE(kBiometricTouchToFill);
+
 }  // namespace password_manager::features
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FEATURES_PASSWORD_FEATURES_H_

@@ -18,4 +18,10 @@ BASE_FEATURE(kBiometricAuthenticationInSettings,
              "BiometricAuthenticationInSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+// Enables Biometrics for the Touch To Fill feature. This only effects Android.
+BASE_FEATURE(kBiometricTouchToFill,
+             "BiometricTouchToFill",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace password_manager::features
