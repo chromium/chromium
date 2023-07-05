@@ -55,7 +55,7 @@ namespace reporting {
 
 BASE_FEATURE(kEnableEncryptedReportingClientForUpload,
              "EnableEncryptedReportingClientForUpload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(b/281905099): remove after rolling out reporting managed user events
 // from unmanaged devices
