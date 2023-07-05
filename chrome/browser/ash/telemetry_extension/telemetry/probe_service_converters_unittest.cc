@@ -49,7 +49,8 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
       crosapi::mojom::ProbeCategoryEnum::kSystem,
       crosapi::mojom::ProbeCategoryEnum::kNetwork,
       crosapi::mojom::ProbeCategoryEnum::kTpm,
-      crosapi::mojom::ProbeCategoryEnum::kAudio};
+      crosapi::mojom::ProbeCategoryEnum::kAudio,
+      crosapi::mojom::ProbeCategoryEnum::kBus};
   EXPECT_THAT(
       ConvertCategoryVector(kInput),
       ElementsAre(
@@ -67,7 +68,8 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
           cros_healthd::mojom::ProbeCategoryEnum::kSystem,
           cros_healthd::mojom::ProbeCategoryEnum::kNetwork,
           cros_healthd::mojom::ProbeCategoryEnum::kTpm,
-          cros_healthd::mojom::ProbeCategoryEnum::kAudio));
+          cros_healthd::mojom::ProbeCategoryEnum::kAudio,
+          cros_healthd::mojom::ProbeCategoryEnum::kBus));
 }
 
 TEST(ProbeServiceConverters, ErrorType) {
