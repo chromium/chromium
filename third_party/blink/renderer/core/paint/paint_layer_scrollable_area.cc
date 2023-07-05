@@ -1467,9 +1467,14 @@ static inline const LayoutObject& ScrollbarStyleSource(
     // propagated to the viewport.
     Element* doc_element = doc.documentElement();
     if (doc_element && doc_element->GetLayoutObject() &&
-        doc_element->GetLayoutObject()->StyleRef().ScrollbarWidth() !=
-            EScrollbarWidth::kAuto)
+        (doc_element->GetLayoutObject()->StyleRef().ScrollbarWidth() !=
+             EScrollbarWidth::kAuto ||
+         doc_element->GetLayoutObject()
+             ->StyleRef()
+             .ScrollbarColor()
+             .has_value())) {
       return *doc_element->GetLayoutObject();
+    }
 
     if (Settings* settings = doc.GetSettings()) {
       LocalFrame* frame = layout_box.GetFrame();

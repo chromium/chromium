@@ -6550,9 +6550,6 @@ crbug.com/1455984 external/wpt/longtask-timing/longtask-attributes.html [ Failur
 # Sheriff 2023-06-21
 crbug.com/1456821 [ Linux ] fast/forms/accent-color/range-accent-color-hover-dark-appearance.html [ Failure Pass ]
 
-# Temporarily disabled while scrollbar-color is partially implemented
-crbug.com/891944 [ Mac ] external/wpt/css/css-scrollbars/viewport-scrollbar.html [ Failure ]
-
 crbug.com/1456514 [ Linux ] fast/forms/number/number-appearance-spinbutton-disabled-readonly.html [ Failure Pass ]
 
 
