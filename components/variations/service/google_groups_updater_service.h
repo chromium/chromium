@@ -43,9 +43,8 @@ class GoogleGroupsUpdaterService : public KeyedService {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Clears state that should only exist for a signed in syncing user.
-  // This should be called when the user signs out or disables sync, as this
-  // state is server-mastered state that is a property of the account rather
-  // than local state that is a property of the client.
+  // This should be called when the user signs out or disables sync, as the
+  // server is the source-of-truth for this state, not the client.
   void ClearSigninScopedState();
 
  private:
