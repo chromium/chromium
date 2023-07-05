@@ -490,8 +490,110 @@ async def test_serialization_deserialization_date(websocket, context_id):
     }
 
 
+@pytest.mark.parametrize("serialization_options, expected_node_value", [
+    ({
+        "maxDomDepth": 0
+    }, {
+        "type": "node",
+        "sharedId": ANY_SHARED_ID,
+        "value": {
+            "nodeType": 1,
+            "childNodeCount": 2,
+            "shadowRoot": None,
+            "localName": "div",
+            "namespaceURI": "http://www.w3.org/1999/xhtml",
+            "attributes": {
+                "some_attr_name": "some_attr_value"
+            }
+        }
+    }),
+    ({
+        "maxDomDepth": 1
+    }, {
+        "type": "node",
+        "sharedId": ANY_SHARED_ID,
+        "value": {
+            "nodeType": 1,
+            "childNodeCount": 2,
+            "shadowRoot": None,
+            "localName": "div",
+            "namespaceURI": "http://www.w3.org/1999/xhtml",
+            "attributes": {
+                "some_attr_name": "some_attr_value"
+            },
+            "children": [{
+                "type": "node",
+                "sharedId": ANY_SHARED_ID,
+                "value": {
+                    "childNodeCount": 0,
+                    "nodeType": 3,
+                    "nodeValue": "some text",
+                }
+            }, {
+                "type": "node",
+                "sharedId": ANY_SHARED_ID,
+                "value": {
+                    "attributes": {},
+                    "childNodeCount": 1,
+                    "localName": 'h2',
+                    "namespaceURI": 'http://www.w3.org/1999/xhtml',
+                    "nodeType": 1,
+                    "shadowRoot": None,
+                }
+            }]
+        }
+    }),
+    ({
+        "maxDomDepth": 99
+    }, {
+        "type": "node",
+        "sharedId": ANY_SHARED_ID,
+        "value": {
+            "nodeType": 1,
+            "childNodeCount": 2,
+            "shadowRoot": None,
+            "localName": "div",
+            "namespaceURI": "http://www.w3.org/1999/xhtml",
+            "attributes": {
+                "some_attr_name": "some_attr_value"
+            },
+            "children": [{
+                "type": "node",
+                "sharedId": ANY_SHARED_ID,
+                "value": {
+                    "childNodeCount": 0,
+                    "nodeType": 3,
+                    "nodeValue": "some text",
+                    'children': []
+                }
+            }, {
+                "type": "node",
+                "sharedId": ANY_SHARED_ID,
+                "value": {
+                    "attributes": {},
+                    "childNodeCount": 1,
+                    "localName": 'h2',
+                    "namespaceURI": 'http://www.w3.org/1999/xhtml',
+                    "nodeType": 1,
+                    "shadowRoot": None,
+                    'children': [{
+                        'type': 'node',
+                        "sharedId": ANY_SHARED_ID,
+                        'value': {
+                            'childNodeCount': 0,
+                            'children': [],
+                            'nodeType': 3,
+                            'nodeValue': 'some another text',
+                        }
+                    }]
+                },
+            }]
+        }
+    }),
+])
 @pytest.mark.asyncio
-async def test_serialization_node(websocket, context_id, html):
+async def test_serialization_node(websocket, context_id, html,
+                                  serialization_options, expected_node_value):
     await goto_url(
         websocket, context_id,
         html(
@@ -506,23 +608,112 @@ async def test_serialization_node(websocket, context_id, html):
                 "target": {
                     "context": context_id
                 },
-                "awaitPromise": True
+                "awaitPromise": True,
+                "serializationOptions": serialization_options
+            }
+        })
+
+    assert expected_node_value == result["result"]
+
+
+@pytest.mark.asyncio
+async def test_serialization_shadow_dom(websocket, context_id):
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": """(()=>{
+                    const createShadow = (mode)=>{
+                        // Create container element.
+                        const shadowContainer = document.createElement('div');
+                        document.body.appendChild(shadowContainer);
+                        // Create a closed shadow DOM.
+                        const shadowRoot = shadowContainer.attachShadow({ mode });
+                        // Create another element.
+                        const shadowElement = document.createElement('div');
+                        shadowElement.innerHTML = `element in ${mode} shadow DOM`;
+                        // Attach shadow element to the shadow DOM.
+                        shadowRoot.appendChild(shadowElement);
+                        return shadowContainer;
+                    }
+                    return [createShadow('open'),createShadow('closed')];
+                    })()""",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True,
+                "serializationOptions": {
+                    "maxDomDepth": 99,
+                    "includeShadowTree": "open"
+                }
             }
         })
 
     assert {
-        "type": "node",
-        "sharedId": ANY_SHARED_ID,
-        "value": {
-            "nodeType": 1,
-            "localName": "div",
-            "namespaceURI": "http://www.w3.org/1999/xhtml",
-            "childNodeCount": 2,
-            "attributes": {
-                "some_attr_name": "some_attr_value"
-            },
-            'shadowRoot': None,
-        }
+        "type": "array",
+        "value": [{
+            "type": "node",
+            "sharedId": ANY_SHARED_ID,
+            "value": {
+                "nodeType": 1,
+                "childNodeCount": 0,
+                "localName": "div",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "attributes": {},
+                "children": [],
+                "shadowRoot": {
+                    "type": "node",
+                    "sharedId": ANY_SHARED_ID,
+                    "value": {
+                        "nodeType": 11,
+                        "childNodeCount": 1,
+                        "mode": "open",
+                        "children": [{
+                            "type": "node",
+                            "sharedId": ANY_SHARED_ID,
+                            "value": {
+                                "nodeType": 1,
+                                "childNodeCount": 1,
+                                "shadowRoot": None,
+                                "localName": "div",
+                                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                                "attributes": {},
+                                "children": [{
+                                    "type": "node",
+                                    "sharedId": ANY_SHARED_ID,
+                                    "value": {
+                                        "nodeType": 3,
+                                        "nodeValue": "element in open shadow DOM",
+                                        "childNodeCount": 0,
+                                        "children": []
+                                    }
+                                }]
+                            }
+                        }]
+                    }
+                }
+            }
+        }, {
+            "type": "node",
+            "sharedId": ANY_SHARED_ID,
+            "value": {
+                "nodeType": 1,
+                "childNodeCount": 0,
+                "localName": "div",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "attributes": {},
+                "children": [],
+                "shadowRoot": {
+                    "type": "node",
+                    "value": {
+                        "nodeType": 11,
+                        "childNodeCount": 1,
+                        "mode": "closed"
+                    },
+                    "sharedId": ANY_SHARED_ID,
+                }
+            }
+        }]
     } == result["result"]
 
 
@@ -565,6 +756,7 @@ async def test_serialization_nested_node(websocket, context_id, html,
             "localName": "div",
             "namespaceURI": "http://www.w3.org/1999/xhtml",
             "childNodeCount": 2,
+            'shadowRoot': None,
             "attributes": {
                 "some_attr_name": "some_attr_value"
             },

@@ -174,10 +174,20 @@ export class Realm {
           );
         }
       }
+      if (
+        Object.hasOwn(bidiValue, 'shadowRoot') &&
+        bidiValue.shadowRoot !== null
+      ) {
+        bidiValue.shadowRoot = this.deepSerializedToBiDi(bidiValue.shadowRoot);
+      }
     }
 
     // Recursively update the nested values.
-    if (['array', 'set'].includes(webDriverValue.type)) {
+    if (
+      ['array', 'set', 'htmlcollection', 'nodelist'].includes(
+        webDriverValue.type
+      )
+    ) {
       for (const i in bidiValue) {
         bidiValue[i] = this.deepSerializedToBiDi(bidiValue[i]);
       }
