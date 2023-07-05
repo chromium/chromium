@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
@@ -151,6 +152,11 @@ public class TabDragSource {
                     // Check if anyone handled the dropped ClipData meaning that drop was beyond
                     // acceptable drop area.
                     if (mTabBeingDragged != null && mLastAction == DragEvent.ACTION_DRAG_EXITED) {
+                        // Following call is device specific and is intended for specific platform
+                        // SysUI.
+                        sendPositionInfoToSysUI(view, mStartXPosition / mPxToDp,
+                                mStartYPosition / mPxToDp, dragEvent.getX(), dragEvent.getY());
+
                         // Hence move the tab to a new Chrome window.
                         openTabInNewWindow();
                     }
@@ -393,5 +399,57 @@ public class TabDragSource {
     int getTabIdFromClipData(ClipData.Item item) {
         String[] itemTexts = item.getText().toString().split(";");
         return Integer.parseInt(itemTexts[0].replaceAll("[^0-9]", ""));
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void sendPositionInfoToSysUI(View view, float startXInView, float startYInView,
+            float endXInScreen, float endYInScreen) {
+        // The start position is in the view coordinate system and related to the top left position
+        // of the toolbar container view. Convert it to the screen coordinate system for comparison
+        // with the drop position which is in screen coordinates.
+        int[] topLeftLocation = new int[2];
+        view.getLocationOnScreen(topLeftLocation);
+        float startXInScreen = topLeftLocation[0] + startXInView;
+        float startYInScreen = topLeftLocation[1] + startYInView;
+
+        Activity activity = (Activity) view.getContext();
+        View decorView = activity.getWindow().getDecorView();
+
+        // Compute relative offsets based on screen coords of the source window dimensions.
+        // Tabet screen is:
+        //          -------------------------------------
+        //          |    Source                         |  Relative X Offset =
+        //          |    window                         |    (x2 - x1) / width
+        //          |   (x1, y1)                        |
+        //       |->|   ---------                       |  Relative Y Offset =
+        // height|  |   |   *   |                       |    (y2 - y1) / height
+        //       |  |   |       |                       |
+        //       |->|   ---------                       |
+        //          |               ---------           |
+        //          |               |   *   |           |
+        //          |               |       |           |
+        //          |               ---------           |
+        //          |                (x2, y2)           |
+        //          |              Destination          |
+        //          -------------------------------------
+        //              <------->
+        //               width
+        // * is touch point and the anchor of drag shadow of the window for the tab drag and drop.
+        float xOffsetRelative2WindowWidth = (endXInScreen - startXInScreen) / decorView.getWidth();
+        float yOffsetRelative2WindowHeight =
+                (endYInScreen - startYInScreen) / decorView.getHeight();
+
+        // Prepare the positioning intent for SysUI to place the next Chrome window.
+        // The intent is ignored when not handled with no impact on existing Android platforms.
+        Intent intent = new Intent();
+        intent.setPackage("com.android.systemui");
+        intent.setAction("com.android.systemui.CHROME_TAB_DRAG_DROP");
+        intent.putExtra("CHROME_TAB_DRAG_DROP_ANCHOR_TASK_ID", activity.getTaskId());
+        intent.putExtra("CHROME_TAB_DRAG_DROP_ANCHOR_OFFSET_X", xOffsetRelative2WindowWidth);
+        intent.putExtra("CHROME_TAB_DRAG_DROP_ANCHOR_OFFSET_Y", yOffsetRelative2WindowHeight);
+        activity.sendBroadcast(intent);
+        Log.d(TAG,
+                "DnD Position info for SysUI: tId=" + activity.getTaskId() + ", xOff="
+                        + xOffsetRelative2WindowWidth + ", yOff=" + yOffsetRelative2WindowHeight);
     }
 }
