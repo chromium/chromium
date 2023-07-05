@@ -58,10 +58,11 @@ class RoundedScrollBarTest : public views::ViewsTestBase,
   // testing::Test:
   void SetUp() override {
     if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJellyroll);
+      scoped_feature_list_.InitWithFeatures(
+          {chromeos::features::kJelly, chromeos::features::kJellyroll}, {});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          chromeos::features::kJellyroll);
+      scoped_feature_list_.InitWithFeatures(
+          {}, {chromeos::features::kJelly, chromeos::features::kJellyroll});
     }
 
     ViewsTestBase::SetUp();
