@@ -29,7 +29,6 @@ struct DidOverscrollParams;
 
 namespace content {
 
-class NavigationHandle;
 class WebContentsImpl;
 
 // Native class for GestureListenerManagerImpl.
@@ -86,7 +85,7 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
       RenderWidgetHostViewAndroid* old_rwhva,
       RenderWidgetHostViewAndroid* new_rhwva) override;
 
-  void OnNavigationFinished(NavigationHandle* navigation_handle);
+  void OnPrimaryPageChanged();
   void OnRenderProcessGone();
 
   bool IsScrollInProgressForTesting();
