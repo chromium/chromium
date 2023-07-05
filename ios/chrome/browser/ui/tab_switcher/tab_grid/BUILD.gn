@@ -17,6 +17,7 @@ source_set("tab_grid") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    ":tab_grid_metrics",
     ":tab_grid_paging",
     ":tab_grid_ui",
     "grid:grid_ui",
@@ -152,6 +153,7 @@ source_set("tab_grid_ui") {
     "disabled_tab_view_controller.mm",
     "tab_grid_empty_state_view.h",
     "tab_grid_empty_state_view.mm",
+    "tab_grid_mutator.h",
     "tab_grid_view_controller.h",
     "tab_grid_view_controller.mm",
   ]

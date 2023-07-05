@@ -31,6 +31,7 @@ class GURL;
 @protocol TabCollectionConsumer;
 @protocol TabCollectionDragDropHandler;
 @protocol TabContextMenuProvider;
+@protocol TabGridMutator;
 @protocol TabGridToolbarsCommandsWrangler;
 @class TabGridTopToolbar;
 @class TabGridViewController;
@@ -101,6 +102,9 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
 
 @property(nonatomic, weak) id<TabGridViewControllerDelegate> delegate;
+
+// Mutator to apply all user change in the model.
+@property(nonatomic, strong) id<TabGridMutator> mutator;
 
 // Consumers send updates from the model layer to the UI layer.
 @property(nonatomic, readonly)

@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_serialization.h"
@@ -1173,6 +1174,13 @@ void RecordTabGridCloseTabsCount(int count) {
   }
 
   return [nonPinnedWebStates copy];
+}
+
+#pragma mark - TabGridMutator
+
+- (void)pageChanged:(TabGridPage)currentPage
+        interaction:(TabSwitcherPageChangeInteraction)interaction {
+  // TODO(crbug.com/1462133): Implement.
 }
 
 @end

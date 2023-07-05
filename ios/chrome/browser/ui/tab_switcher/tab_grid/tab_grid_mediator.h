@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mutator.h"
 
 class Browser;
 @protocol TabCollectionConsumer;
@@ -48,7 +49,8 @@ class TabRestoreService;
 // Mediates between model layer and tab grid UI layer.
 @interface TabGridMediator : NSObject <GridCommands,
                                        GridShareableItemsProvider,
-                                       TabCollectionDragDropHandler>
+                                       TabCollectionDragDropHandler,
+                                       TabGridMutator>
 
 // The source browser.
 @property(nonatomic, assign) Browser* browser;
