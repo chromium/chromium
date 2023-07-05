@@ -127,6 +127,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">組織が管理していないサイトでパスワードを入力しました。アカウントを保護するには、他のアプリやサイトでパスワードを再使用しないでください。</translation>
 <translation id="1257553931232494454">ズームレベル</translation>
+<translation id="1259843033850529027">ポリシーのレベルを選択</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定を管理します</translation>
 <translation id="1264309058268477500">代替</translation>
 <translation id="1264974993859112054">スポーツ</translation>
@@ -304,6 +305,7 @@
 <translation id="1593359183944365958">270°</translation>
 <translation id="1594030484168838125">選択</translation>
 <translation id="1596296697375291157">スリラー、犯罪、ミステリー映画</translation>
+<translation id="1597473228022844713">この商品をトラッキングします。このページは <ph name="LAST_BOOKMARKS_FOLDER" /> に保存されます</translation>
 <translation id="1599199147673445968">カード情報を更新する場合は、<ph name="BEGIN_LINK" />こちらで入力してください<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome で Dino Run ゲームをプレイします</translation>
 <translation id="161042844686301425">シアン</translation>
@@ -949,6 +951,7 @@
 <translation id="3140646734028448730">企業向けサービス</translation>
 <translation id="3141093262818886744">開く</translation>
 <translation id="3141641372357166056">同意に関する判断なし</translation>
+<translation id="3144458715650412431">テストポリシーが適用されています。chrome://policy/test で確認してリセットしてください。管理者ポリシーは適用されません。</translation>
 <translation id="3145945101586104090">応答をデコードできませんでした</translation>
 <translation id="3150653042067488994">一時的なサーバー エラーです</translation>
 <translation id="3150889484970506196">[スプレッドシートを作成] ボタンです。実行すると、新しい Google スプレッドシートをすばやく作成できます</translation>
@@ -1344,6 +1347,7 @@
 <translation id="3987940399970879459">1 MB 未満</translation>
 <translation id="3990250421422698716">ジョグ オフセット</translation>
 <translation id="3992684624889376114">このページについて</translation>
+<translation id="3995639283717357522">ポリシーを適用</translation>
 <translation id="399952081411886534">広告のプライバシーを強化するその他の機能</translation>
 <translation id="4000598935132966791">管理対象ブラウザのサイト制限の詳細</translation>
 <translation id="4006465311664329701">Google Pay を使用したお支払方法、クーポン、住所</translation>
@@ -1524,6 +1528,7 @@
 <translation id="4333561522337981382">全ディスプレイのウィンドウを管理する</translation>
 <translation id="4338709847516294988">コンテキスト メニューで検索+M キーを押して画像をテキストに変換する</translation>
 <translation id="4340575312453649552">この広告は、デバイスのリソース消費が多すぎるため、Chrome によって削除されました。</translation>
+<translation id="4340810192899866471">JSON からインポート</translation>
 <translation id="4340982228985273705">このパソコンは企業の管理対象として検出されていないため、ポリシーで自動的にインストールできるのは Chrome ウェブストアでホストされている拡張機能のみとなります。Chrome ウェブストアの更新 URL は「<ph name="CWS_UPDATE_URL" />」です。</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> への接続は安全ではありません</translation>
 <translation id="4349365535725594680">機密コンテンツは共有できません</translation>
@@ -1772,6 +1777,7 @@
 <translation id="4901778704868714008">保存...</translation>
 <translation id="4901952598169637881">カジュアル シューズ</translation>
 <translation id="4905659621780993806">デバイスは <ph name="DATE" /> <ph name="TIME" /> に管理者によって自動的に再起動されます。デバイスが再起動される前に、開いているすべてのアイテムを保存してください。</translation>
+<translation id="4907289208610706508">対象</translation>
 <translation id="4913987521957242411">パンチ（左上）</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> をインストール（ダウンロードは不要です）</translation>
 <translation id="4920457992177678649">貸し別荘、短期賃貸物件</translation>
@@ -1881,6 +1887,7 @@
 <translation id="5145883236150621069">ポリシー応答内にエラー コードがあります</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> の通知をブロックしました</translation>
 <translation id="514704532284964975"><ph name="URL" /> が、スマートフォンでタップした NFC デバイスの情報を参照および変更しようとしています</translation>
+<translation id="5147633291963801297">サイドパネルに値下げ情報が表示されます</translation>
 <translation id="5148809049217731050">上向き</translation>
 <translation id="5153314898060540200">ハードロック、プログレッシブ</translation>
 <translation id="5157504274688344097">量販店、デパート</translation>
@@ -2457,6 +2464,7 @@
 <translation id="6450212216969386944">長形 40 号封筒</translation>
 <translation id="6451458296329894277">フォーム再送信の確認</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">ポリシーの対象を選択</translation>
 <translation id="6456955391422100996">広告を削除しました。</translation>
 <translation id="6457206614190510200">中綴じ</translation>
 <translation id="6457455098507772300">値下げアラートがデスクトップにポップアップ通知として表示されます</translation>
@@ -2740,6 +2748,7 @@
 <translation id="7108819624672055576">拡張機能によって許可</translation>
 <translation id="7109510814665441393">ドライビング ゲーム、レース ゲーム</translation>
 <translation id="7110116949943042888">短期アルバイト、季節的な求人情報</translation>
+<translation id="7110553203952632623">値下げしたサイトがある場合、メールで通知します</translation>
 <translation id="7111012039238467737">（有効）</translation>
 <translation id="7111507312244504964">不動産調査、査定</translation>
 <translation id="7112327784801341716">最新の情報が表示されていない場合は、カード発行会社に連絡して更新してください。</translation>
@@ -3232,6 +3241,7 @@
 <translation id="8127301229239896662">「<ph name="SOFTWARE_NAME" />」がパソコンまたはネットワークに正しくインストールされていません。管理者にこの問題を解決するよう依頼してください。</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8134058435519644366">採用、人事</translation>
+<translation id="8144303576836498784">エラーが発生しました。変更が保存されませんでした</translation>
 <translation id="8148608574971654810">PDF バージョン:</translation>
 <translation id="8149426793427495338">パソコンがスリープ状態です。</translation>
 <translation id="8150722005171944719"><ph name="URL" /> のファイルを読むことができません。削除されたか移動された可能性があります。ファイルに対するアクセス権がない場合もあります。</translation>
@@ -3245,6 +3255,7 @@
 <translation id="8184538546369750125">グローバルのデフォルト値（[許可]）を使用</translation>
 <translation id="8186706823560132848">ソフトウェア</translation>
 <translation id="8190193880870196235">拡張機能によって管理されています</translation>
+<translation id="8194412401381329820">管理対象外のデバイスで、管理対象のアカウントのページを使用することはできません。このページを使用すると、このデバイスと同じエンティティが管理するアカウント（関連アカウント）を除く、すべての管理対象アカウントがロックされます。</translation>
 <translation id="8194797478851900357">移動の取り消し（&amp;U）</translation>
 <translation id="8194956568907463262">シューティング ゲーム</translation>
 <translation id="8200772114523450471">再開</translation>
@@ -3252,6 +3263,7 @@
 <translation id="8202370299023114387">競合</translation>
 <translation id="8207625368992715508">モーター スポーツ</translation>
 <translation id="8208363704094329105">300x400 mm</translation>
+<translation id="8210490490377416373">ポリシー名を選択</translation>
 <translation id="8210604850413485128">ウェブ ホスティング</translation>
 <translation id="8211406090763984747">この接続は保護されています</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3367,6 +3379,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定で Cookie の設定を管理します</translation>
 <translation id="8433057134996913067">ほとんどのウェブサイトからログアウトします。</translation>
 <translation id="8434840396568290395">ペット</translation>
+<translation id="8436623588884785770">ポリシーを追加</translation>
 <translation id="8437238597147034694">移動の取り消し（&amp;U）</translation>
 <translation id="8438786541497918448">カメラとマイクを使用しますか？</translation>
 <translation id="8438923942245957911">このサイトは、組織によってフラグが付けられています</translation>
@@ -3389,6 +3402,7 @@
 <translation id="8483229036294884935">この住所は Google アカウント（<ph name="ACCOUNT" />）から削除されます</translation>
 <translation id="8488350697529856933">適用先</translation>
 <translation id="8490137692873530638">スタッカー 10</translation>
+<translation id="8493829133024050711">ポリシーのソースを選択</translation>
 <translation id="8493948351860045254">容量を空ける</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> からの応答時間が長すぎます。</translation>
 <translation id="8503559462189395349">Chrome パスワード</translation>

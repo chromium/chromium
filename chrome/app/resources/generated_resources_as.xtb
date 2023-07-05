@@ -312,6 +312,7 @@
 <translation id="1244265436519979884">বর্তমান Linuxক পুনঃস্থাপন কৰা প্ৰক্ৰিয়া চলি আছে</translation>
 <translation id="1244303850296295656">এক্সটেনশ্বনৰ আসোঁৱাহ</translation>
 <translation id="1244917379075403655">“ছেটিঙ”ত ক্লিক কৰক</translation>
+<translation id="1245331638296910488">ফাইলসমূহ Microsoft 365ত খুলিলে সেইবোৰ OneDriveলৈ স্থানান্তৰ হ’ব</translation>
 <translation id="1245628370644070008">স্থানীয় ডেটাৰ পুনৰুদ্ধাৰ</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ইনষ্টল কৰিব পৰা নগ'ল: প্ৰতিচ্ছবিৰ URL <ph name="HTTP_ERROR" /> আসোঁৱাহ ক'ডটোৰ বাবে ডাউনল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="1247372569136754018">মাইক্ৰফ’ন (আভ্যন্তৰীণ)</translation>
@@ -670,6 +671,7 @@
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" এক্সটেনশ্বনটোৱে <ph name="SEARCH_PROVIDER_DOMAIN" /> ব্যৱহাৰ কৰিবলৈ সন্ধানৰ সুবিধাটো সলনি কৰিছে</translation>
 <translation id="1552752544932680961">এক্সটেনশ্বন পৰিচালনা কৰক</translation>
 <translation id="1553538517812678578">সীমাহীন</translation>
+<translation id="1553947773881524342">আপোনাৰ Chromebookত Microsoft 365ৰ বিষয়ে <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" />।</translation>
 <translation id="1555130319947370107">নীলা</translation>
 <translation id="1556127816860282890">মসৃণভাৱে স্ক্ৰ’ল কৰাৰ সুবিধাটোৰ দৰে কিছুমান নেপথ্যৰ কাৰ্যকলাপ আৰু কিছুমান ভিজুৱেল ইফেক্ট সীমিত হ’ব পাৰে</translation>
 <translation id="1556537182262721003">এক্সটেনশ্বন ডাইৰেক্টৰী প্ৰ’ফাইললৈ আঁতৰাব পৰা নগ’ল।</translation>
@@ -1127,6 +1129,7 @@
 <translation id="1904580727789512086">আপুনি চোৱা URLসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰা হৈছে</translation>
 <translation id="1905375423839394163">Chromebook ডিভাইচৰ নাম</translation>
 <translation id="1906181697255754968">ছাইটসমূহে সচৰাচৰ আপোনাৰ কাম স্বয়ংক্ৰিয়ভাৱে ছেভ কৰাৰ দৰে সুবিধাসমূহৰ বাবে আপোনাৰ ডিভাইচৰ ফাইল আৰু ফ'ল্ডাৰসমূহ এক্সেছ কৰে</translation>
+<translation id="1906488504371069394"><ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />ত অধিক এক্সটেনশ্বন আৰু থীম বিচাৰি পাওক</translation>
 <translation id="1907044622262489040">আপোনাৰ কণ্ঠধ্বনিৰ জৰিয়তে টাইপ কৰক। Search + D ব্যৱহাৰ কৰক, তাৰ পাছত ক’বলৈ আৰম্ভ কৰক।</translation>
 <translation id="1908591798274282246">বন্ধ কৰা গোট পুনৰ খোলক</translation>
 <translation id="1909880997794698664">আপুনি এই ডিভাইচটো স্থায়ীভাৱে কিঅ’স্ক ম’ডত ৰাখিব খোজে বুলি নিশ্চিতনে?</translation>
@@ -1941,6 +1944,7 @@
 <translation id="2561211427862644160">আপোনাৰ আটাইবোৰ বুকমাৰ্ক ইয়াত চাওক</translation>
 <translation id="2564520396658920462">AppleScriptৰ জৰিয়তে JavaScript কার্যকৰী কৰা সুবিধাটো অফ কৰা হৈছে। এই সুবিধা অন কৰিবলৈ Apple Eventsৰ মেনু বাৰৰ পৰা চাওক &gt; বিকাশকর্তা &gt; JavaScriptৰ অনুমতি দিয়ক-লৈ যাওক। অধিক তথ্যৰ বাবে ইয়াত চাওক: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">বানান পৰীক্ষা কৰা সুবিধাটো উন্নত কৰা হৈছে</translation>
+<translation id="2565214867520763227">স্ক্ৰীন ৰীডাৰ অন কৰক</translation>
 <translation id="2568694057933302218">ইনক’গনিট’ ম’ডত থাকিলে, বিভিন্ন ছাইটত আপোনাৰ ব্ৰাউজিঙৰ কাৰ্যকলাপ চাবলৈ ছাইটসমূহে আপোনাৰ কুকি ব্যৱহাৰ কৰিব নোৱাৰে। আপোনাৰ ব্ৰাউজিঙৰ কাৰ্যকলাপ বিজ্ঞাপন ব্যক্তিগতকৰণ কৰাৰ দৰে কাৰ্যৰ বাবে ব্যৱহাৰ কৰা নহয়। কিছুমান ছাইটত সুবিধাসমূহে কাম নকৰিবও পাৰে।</translation>
 <translation id="2568774940984945469">ইনফ’বাৰ কণ্টেইনাৰ</translation>
 <translation id="2569972178052279830">খুচুৰা বিক্ৰেতাৰ নাম</translation>
@@ -2573,6 +2577,7 @@
 <translation id="3089948625237571254">ভিডিঅ’ ফ্ৰে’ম প্ৰতিলিপি কৰক</translation>
 <translation id="3090227230165225418">ডাউনল'ড সম্পর্কীয় জাননী ঘোষণা কৰক</translation>
 <translation id="3090589793601454425">নিনিব</translation>
+<translation id="309079592386854321">আপোনাৰ প্ৰিণ্টাৰটো আপোনাৰ Chromebookৰ সৈতে একেটা ৱাই-ফাই নেটৱৰ্কতে সংযুক্ত হৈ থকাটো নিশ্চিত কৰক অথবা এডাল ইউএছবি কে’বল ব্যৱহাৰ কৰক। <ph name="LINK_BEGIN" />সুসংগতাৰ বিষয়ে অধিক জানক<ph name="LINK_END" />।</translation>
 <translation id="3090819949319990166">বাহ্যিক crx ফাইল <ph name="TEMP_CRX_FILE" />লৈ প্ৰতিলিপি কৰিব নোৱাৰি।</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" যোৰা লগোৱা হ’ল</translation>
 <translation id="3093714882666365141">ছাইটক পৰিশোধ নিয়ন্ত্ৰক ইনষ্টল কৰাৰ অনুমতি নিদিব</translation>
@@ -4086,6 +4091,7 @@
 <translation id="4410545552906060960">আপোনাৰ ডিভাইচটো আনলক কৰিবলৈ পাছৱৰ্ডৰ সলনি এটা নম্বৰ (পিন) ব্যৱহাৰ কৰক। আপোনাৰ পিনটো পাছত ছেট কৰিবলৈ ছেটিংসমূহ-লৈ যাওক।</translation>
 <translation id="4411578466613447185">ক’ড ছাইন কৰোঁতা</translation>
 <translation id="4411719918614785832">এই পাছকীসমূহ এই কম্পিউটাৰটোৰ Windows Helloত ছেভ কৰা হয়। সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰা নহয়।</translation>
+<translation id="4412275763838812196">ঘাইকৈ দৃষ্টিহীন আৰু কম দৃষ্টিশক্তি থকা লোকসকলে ChromeOS, ChromeVoxৰ স্ক্ৰীন ৰীডাৰ ব্যৱহাৰ কৰে। ChromeVox অন কৰিবলৈ স্পেচ বাৰডালত টিপক। ChromeVox সক্ৰিয় হোৱাৰ পাছত, আপোনাক ইয়াৰ সুবিধাসমূহ দেখুৱাই দ্ৰুত আভাস দিয়া হ’ব।</translation>
 <translation id="4412632005703201014">Chromeৰ এপ্‌সমূহ প্ৰগতিশীল ৱেব এপলৈ স্থানান্তৰ কৰি থকা হৈছে। এই Chromeৰ এপ্‌টো আপোনাৰ প্ৰতিষ্ঠানে আপোনাৰ ব্ৰাউজাৰত ইনষ্টল কৰিছিল। এপ্‌সমূহৰ সূচীৰ পৰা প্ৰগতিশীল ৱেব এপ্‌টো খুলিবলৈ, প্ৰথমে আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক আৰু তেওঁক Chromeৰ এপ্‌টো আনইনষ্টল কৰিবলৈ কওক। তেতিয়ালৈকে, ৱেবত <ph name="EXTENSION_NAME" /> খুলিবলৈ আপুনি <ph name="EXTENSION_LAUNCH_URL" />লৈ যাব পাৰে।</translation>
 <translation id="4412698727486357573">সহায় কেন্দ্ৰ</translation>
 <translation id="4412992751769744546">তৃতীয় পক্ষৰ কুকিৰ অনুমতি দিয়ক</translation>
@@ -4297,6 +4303,7 @@
 <translation id="4585793705637313973">পৃষ্ঠা সম্পাদনা কৰক</translation>
 <translation id="4586275095964870617"><ph name="URL" /> কোনো বিকল্প ব্ৰাউজাৰত খুলিব নোৱাৰি। অনুগ্ৰহ কৰি আপোনাৰ ছিষ্টেমৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="4587589328781138893">Sites</translation>
+<translation id="4588882777927162244">ঘাইকৈ দৃষ্টিহীন আৰু কম দৃষ্টিশক্তি থকা লোকসকলে ChromeOS Flex, ChromeVoxৰ স্ক্ৰীন ৰীডাৰ ব্যৱহাৰ কৰে। ChromeVox অন কৰিবলৈ স্পেচ বাৰডালত টিপক। ChromeVox সক্ৰিয় হোৱাৰ পাছত, আপোনাক ইয়াৰ সুবিধাসমূহ দেখুৱাই দ্ৰুত আভাস দিয়া হ’ব।</translation>
 <translation id="4589713469967853491">লগসমূহ ডাউনল’ডৰ ডাইৰেক্টৰীত সফলভাৱে লিখা হ’ল।</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />ত কোনো ডিভাইচ ছেভ কৰি থোৱা নাই।</translation>
 <translation id="4592525994536856567">ব্ৰাউজিং আৰু সন্ধান কৰাটো অধিক ক্ষিপ্ৰ।</translation>
@@ -5080,6 +5087,7 @@
 <translation id="5284445933715251131">ডাউনল’ড কৰি থকাটো অব্যাহত ৰাখক</translation>
 <translation id="5285635972691565180"><ph name="DISPLAY_ID" /> প্ৰদৰ্শন কৰক</translation>
 <translation id="5286194356314741248">স্কেন কৰি থকা হৈছে</translation>
+<translation id="5287073652040102781">ঘাইকৈ দৃষ্টিহীন আৰু কম দৃষ্টিশক্তি থকা লোকসকলে ChromeOS Flex, ChromeVoxৰ স্ক্ৰীন ৰীডাৰ ব্যৱহাৰ কৰে। ChromeVox অন কৰিবলৈ দুয়োটা ভলিউম কী পাঁচ ছেকেণ্ডৰ বাবে টিপি হেঁচি ৰাখক। ChromeVox সক্ৰিয় হোৱাৰ পাছত, আপোনাক ইয়াৰ সুবিধাসমূহ দেখুৱাই দ্ৰুত আভাস দিয়া হ’ব।</translation>
 <translation id="5287425679749926365">আপোনাৰ একাউণ্ট</translation>
 <translation id="5288106344236929384"><ph name="DOMAIN" />ত <ph name="USERNAME" />ৰ বাবে অধিক কাৰ্য, পাছকীৰ বিকল্প</translation>
 <translation id="5288678174502918605">বন্ধ কৰা টেব পু&amp;নৰ খোলক</translation>
@@ -5628,6 +5636,7 @@
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" />এ আপোনাৰ Chromebookত Windows® এপ্‌সমূহ চলাবলৈ দিয়ে। ইনষ্টল কৰিবলৈ <ph name="MINIMUM_SPACE" /> খালী ঠাই থকাটো চুপাৰিছ কৰা হয়।</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{আপুনি পৃষ্ঠাটোৱে সঁহাৰি জনোৱালৈ অপেক্ষা কৰিব পাৰে বা ইয়াক বন্ধ কৰিব পাৰে।}one{আপুনি পৃষ্ঠাবোৰে সঁহাৰি জনোৱালৈ অপেক্ষা কৰিব পাৰে বা এইবোৰ বন্ধ কৰিব পাৰে।}other{আপুনি পৃষ্ঠাবোৰে সঁহাৰি জনোৱালৈ অপেক্ষা কৰিব পাৰে বা এইবোৰ বন্ধ কৰিব পাৰে।}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" /> অধিক সবিশেষ</translation>
+<translation id="577313026359983030">মোৰ এক্সটেনশ্বন</translation>
 <translation id="5774295353725270860">Files এপ্‌টো খোলক</translation>
 <translation id="5776450228446082914">কোনোবা এটা ব্ৰাউজাৰত খুলিব পৰা ৱেবছাইটসমূহৰ সূচীখন।</translation>
 <translation id="5776571780337000608">আপুনি আপোনাৰ ফাইল ব্ৰাউজাৰৰ পৰা অথবা অন্য এপৰ জৰিয়তে সমৰ্থিত ফাইল এই এপ্‌টোত খুলিব আৰু সম্পাদনা কৰিব পাৰে। ডিফ’ল্ট হিচাপে কোনবোৰ ফাইলে এই এপ্‌টো খুলিব সেয়া নিয়ন্ত্ৰণ কৰিবলৈ <ph name="BEGIN_LINK" />আপোনাৰ ডিভাইচত ডিফ’ল্ট এপ্‌ কেনেকৈ ছেট কৰিব লাগে জানক<ph name="END_LINK" />।</translation>
@@ -6832,6 +6841,7 @@
 <translation id="6798780071646309401">কেপছ লক অন আছে</translation>
 <translation id="6798954102094737107">প্লাগ ইন: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">সাধাৰণ ছেটিংসমূহ</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশ্বনটোৱে এইটো ছাইট পঢ়িব অথবা সলনি কৰিব পাৰেনে নোৱাৰে সেয়া বাছনি কৰক}one{এইবোৰ এক্সটেনশ্বনে এইটো ছাইট পঢ়িব অথবা সলনি কৰিব পাৰেনে নোৱাৰে সেয়া বাছনি কৰক}other{এইবোৰ এক্সটেনশ্বনে এইটো ছাইট পঢ়িব অথবা সলনি কৰিব পাৰেনে নোৱাৰে সেয়া বাছনি কৰক}}</translation>
 <translation id="6801435275744557998">টাচ্‌স্ক্ৰীন কেলিব্ৰেট কৰক</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">VM "<ph name="DEFAULT_VM_NAME" />" আছে</translation>
@@ -8038,6 +8048,7 @@
 <translation id="7800518121066352902">ঘড়ীৰ কাঁটাৰ বি&amp;পৰীত দিশত ঘূৰাওক</translation>
 <translation id="7801679634091975683">আপুনি ইয়াত কৰা সালসলনিসমূহ কেৱল Lacros Chrome ব্ৰাউজাৰত প্ৰযোজ্য হয়। আপোনাৰ Chrome ব্ৰাউজাৰৰ ছেটিঙত সালসলনিসমূহ কৰিবলৈ, Chrome ব্ৰাউজাৰ খোলক আৰু ছেটিঙলৈ যাওক।</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
+<translation id="7803267169006795990">ঘাইকৈ দৃষ্টিহীন আৰু কম দৃষ্টিশক্তি থকা লোকসকলে ChromeOS, ChromeVoxৰ স্ক্ৰীন ৰীডাৰ ব্যৱহাৰ কৰে। ChromeVox অন কৰিবলৈ দুয়োটা ভলিউম কী পাঁচ ছেকেণ্ডৰ বাবে টিপি হেঁচি ৰাখক। ChromeVox সক্ৰিয় হোৱাৰ পাছত, আপোনাক ইয়াৰ সুবিধাসমূহ দেখুৱাই দ্ৰুত আভাস দিয়া হ’ব।</translation>
 <translation id="7803657407897251194">আপোনাৰ Android ডিভাইচৰ জৰিয়তে ছেট আপ কৰাটো অব্যাহত ৰাখিবলৈ, আপোনাৰ <ph name="DEVICE_TYPE" />ক এটা নেটৱৰ্কৰ সৈতে সংযোগ কৰক</translation>
 <translation id="7804072833593604762">টেবটো বন্ধ কৰা হ'ল</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
@@ -9588,6 +9599,7 @@
 <translation id="9108808586816295166">সকলো সময়তে সুৰক্ষিত DNS উপলব্ধ নহ'ব পাৰে</translation>
 <translation id="9109122242323516435">ঠাই খালী কৰিবলৈ ডিভাইচৰ ষ্ট’ৰেজৰ পৰা ফাইল মচক।</translation>
 <translation id="9109283579179481106">ম’বাইল নেটৱৰ্কৰ সৈতে সংযোগ কৰক</translation>
+<translation id="9110739391922513676">ফাইল খুলিবলৈ Microsoft 365 ছেট আপ কৰক</translation>
 <translation id="9111102763498581341">আনলক</translation>
 <translation id="9111305600911828693">অনুজ্ঞাপত্ৰ ছেট আপ কৰা হোৱা নাই</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9710,6 +9722,7 @@
 <translation id="9220820413868316583">আঙুলিটো উঠাই আকৌ চেষ্টা কৰক।</translation>
 <translation id="922152298093051471">Chrome কাষ্টমাইজ কৰক</translation>
 <translation id="923467487918828349">সকলো দেখুৱাওক</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{এইটো পৰিচালনা কৰিবলৈ, এক্সটেনশ্বন খোলক}one{এইবোৰ পৰিচালনা কৰিবলৈ, এক্সটেনশ্বন খোলক}other{এইবোৰ পৰিচালনা কৰিবলৈ, এক্সটেনশ্বন খোলক}}</translation>
 <translation id="924818813611903184">ChromeOSৰ ছেটিঙত ভাষা পৰিচালনা কৰক</translation>
 <translation id="925270020047573546">এই ডিভাইচটোত ডেস্কটপ অডিঅ’ কাষ্ট কৰাটো সমৰ্থিত নহয়।</translation>
 <translation id="930268624053534560">টাইমষ্টাম্পৰ বিশদ বিৱৰণ</translation>

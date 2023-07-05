@@ -127,6 +127,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Anda memasukkan sandi di situs yang tidak dikelola oleh organisasi. Untuk melindungi akun, jangan gunakan sandi yang sama di aplikasi dan situs lain.</translation>
 <translation id="1257553931232494454">tingkat zoom</translation>
+<translation id="1259843033850529027">Pilih level kebijakan</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab lalu Enter untuk mengelola setelan Chrome Anda</translation>
 <translation id="1264309058268477500">Alternatif</translation>
 <translation id="1264974993859112054">Olahraga</translation>
@@ -304,6 +305,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1593359183944365958">270 derajat</translation>
 <translation id="1594030484168838125">Pilih</translation>
 <translation id="1596296697375291157">Film thriller, kriminal &amp; misteri</translation>
+<translation id="1597473228022844713">Anda memantau produk ini. Halaman ini disimpan di <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1599199147673445968">Kartu baru? <ph name="BEGIN_LINK" />Masukkan Detail Kartu<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Mainkan game Dino Run di Chrome</translation>
 <translation id="161042844686301425">Sian</translation>
@@ -949,6 +951,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3140646734028448730">Layanan Bisnis</translation>
 <translation id="3141093262818886744">Tetap buka</translation>
 <translation id="3141641372357166056">Tidak ada keputusan izin</translation>
+<translation id="3144458715650412431">Kebijakan pengujian telah diterapkan. Tinjau dan reset kebijakan di chrome://policy/test. Kebijakan admin tidak akan diterapkan.</translation>
 <translation id="3145945101586104090">Gagal mendekodekan tanggapan</translation>
 <translation id="3150653042067488994">Kesalahan server sementara</translation>
 <translation id="3150889484970506196">Tombol Buat sheet, aktifkan untuk membuat Spreadsheet Google baru dengan cepat</translation>
@@ -1343,6 +1346,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3987940399970879459">Kurang dari 1 MB</translation>
 <translation id="3990250421422698716">Jog offset</translation>
 <translation id="3992684624889376114">Tentang halaman ini</translation>
+<translation id="3995639283717357522">Terapkan kebijakan</translation>
 <translation id="399952081411886534">Fitur lain yang membuat iklan bersifat lebih pribadi</translation>
 <translation id="4000598935132966791">Pelajari lebih lanjut batasan situs di browser terkelola</translation>
 <translation id="4006465311664329701">Metode Pembayaran, Penawaran, dan Alamat yang Menggunakan Google Pay</translation>
@@ -1523,6 +1527,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4333561522337981382">Mengelola jendela di semua layar Anda</translation>
 <translation id="4338709847516294988">Tekan tombol penelusuran dan m, lalu konversikan gambar ke teks pada menu konteks</translation>
 <translation id="4340575312453649552">Iklan ini menggunakan terlalu banyak resource untuk perangkat Anda, sehingga Chrome menghapusnya.</translation>
+<translation id="4340810192899866471">Impor dari JSON</translation>
 <translation id="4340982228985273705">Komputer ini tidak terdeteksi sebagai dikelola perusahaan sehingga kebijakan hanya dapat secara otomatis menginstal ekstensi yang dihosting di Chrome Webstore. URL update Chrome Webstore-nya adalah "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206">Koneksi ke <ph name="SITE" /> tidak aman</translation>
 <translation id="4349365535725594680">Tidak dapat membagikan konten rahasia</translation>
@@ -1771,6 +1776,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4901778704868714008">Simpan...</translation>
 <translation id="4901952598169637881">Sepatu Santai</translation>
 <translation id="4905659621780993806">Administrator akan memulai ulang perangkat Anda secara otomatis pada <ph name="DATE" /> pukul <ph name="TIME" />. Simpan item yang terbuka sebelum perangkat dimulai ulang.</translation>
+<translation id="4907289208610706508">Target</translation>
 <translation id="4913987521957242411">Lubang di kiri atas</translation>
 <translation id="4918221908152712722">Instal <ph name="APP_NAME" /> (tidak perlu didownload)</translation>
 <translation id="4920457992177678649">Rental Akomodasi &amp; Tempat Tinggal Jangka Pendek</translation>
@@ -1880,6 +1886,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5145883236150621069">Ada kode kesalahan dalam tanggapan kebijakan</translation>
 <translation id="5146995429444047494">Notifikasi untuk <ph name="ORIGIN" /> diblokir</translation>
 <translation id="514704532284964975"><ph name="URL" /> ingin melihat dan mengubah informasi di perangkat NFC yang Anda tempelkan ke ponsel</translation>
+<translation id="5147633291963801297">Lihat diskon di panel samping</translation>
 <translation id="5148809049217731050">Menghadap ke atas</translation>
 <translation id="5153314898060540200">Musik hard rock &amp; rock progresif</translation>
 <translation id="5157504274688344097">Pedagang Grosir &amp; Pusat Perbelanjaan</translation>
@@ -2456,6 +2463,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6450212216969386944">Envelope Chou 40</translation>
 <translation id="6451458296329894277">Konfirmasikan Pengiriman Ulang Formulir</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">Pilih target kebijakan</translation>
 <translation id="6456955391422100996">Iklan dihapus.</translation>
 <translation id="6457206614190510200">Jahitan kawat</translation>
 <translation id="6457455098507772300">Notifikasi diskon muncul sebagai notifikasi pop-up di desktop</translation>
@@ -2739,6 +2747,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7108819624672055576">Diizinkan oleh ekstensi</translation>
 <translation id="7109510814665441393">Game Mengemudi &amp; Balapan</translation>
 <translation id="7110116949943042888">Pekerjaan Sementara &amp; Musiman</translation>
+<translation id="7110553203952632623">Anda akan mendapatkan peringatan email jika ada diskon di situs mana pun</translation>
 <translation id="7111012039238467737">(Valid)</translation>
 <translation id="7111507312244504964">Inspeksi &amp; Penilaian Properti</translation>
 <translation id="7112327784801341716">Info Anda yang ditampilkan bukan yang terbaru? Hubungi bank untuk memperbaruinya.</translation>
@@ -3229,6 +3238,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" tidak diinstal dengan benar di komputer atau jaringan Anda. Mintalah administrator IT untuk menyelesaikan masalah ini.</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8134058435519644366">Perekrutan &amp; Ketenagakerjaan</translation>
+<translation id="8144303576836498784">Terjadi error. Perubahan Anda tidak tersimpan</translation>
 <translation id="8148608574971654810">Versi PDF:</translation>
 <translation id="8149426793427495338">Komputer Anda sedang dalam mode tidur.</translation>
 <translation id="8150722005171944719">File pada <ph name="URL" /> tidak dapat dibaca.  File mungkin telah dihapus, dipindahkan, atau izin file mungkin mencegah akses.</translation>
@@ -3242,6 +3252,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8184538546369750125">Gunakan default global (Izinkan)</translation>
 <translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Dikelola oleh ekstensi</translation>
+<translation id="8194412401381329820">Anda tidak dapat menggunakan halaman ini dari akun terkelola di perangkat yang tidak dikelola ini. Semua akun terkelola akan dikunci jika Anda menggunakan halaman ini, kecuali akun yang dikelola oleh entitas yang sama dengan perangkat ini (akun terafiliasi).</translation>
 <translation id="8194797478851900357">&amp;Urungkan Pemindahan</translation>
 <translation id="8194956568907463262">Game Menembak</translation>
 <translation id="8200772114523450471">Lanjutkan</translation>
@@ -3249,6 +3260,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8202370299023114387">Konflik</translation>
 <translation id="8207625368992715508">Olahraga Motor</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
+<translation id="8210490490377416373">Pilih nama kebijakan</translation>
 <translation id="8210604850413485128">Hosting web</translation>
 <translation id="8211406090763984747">Koneksi aman</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3362,6 +3374,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola preferensi cookie di setelan Chrome</translation>
 <translation id="8433057134996913067">Tindakan ini akan mengeluarkan Anda dari sebagian besar situs web.</translation>
 <translation id="8434840396568290395">Hewan peliharaan</translation>
+<translation id="8436623588884785770">Tambahkan kebijakan</translation>
 <translation id="8437238597147034694">&amp;Urungkan pemindahan</translation>
 <translation id="8438786541497918448">Gunakan kamera &amp; mikrofon?</translation>
 <translation id="8438923942245957911">Situs ini ditandai oleh organisasi Anda</translation>
@@ -3384,6 +3397,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8483229036294884935">Alamat ini akan dihapus dari Akun Google Anda, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Berlaku untuk</translation>
 <translation id="8490137692873530638">Tempat kertas 10</translation>
+<translation id="8493829133024050711">Pilih sumber kebijakan</translation>
 <translation id="8493948351860045254">Kosongkan ruang</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> membutuhkan terlalu banyak waktu untuk merespons.</translation>
 <translation id="8503559462189395349">Sandi Chrome</translation>

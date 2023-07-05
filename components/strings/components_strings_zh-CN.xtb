@@ -127,6 +127,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">您在一个不受贵单位管理的网站上输入了您的密码。为了保护您的帐号，请不要在其他应用和网站上重复使用您的密码。</translation>
 <translation id="1257553931232494454">缩放级别</translation>
+<translation id="1259843033850529027">选择政策级别</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可管理您的 Chrome 设置</translation>
 <translation id="1264309058268477500">备用</translation>
 <translation id="1264974993859112054">体育</translation>
@@ -304,6 +305,7 @@
 <translation id="1593359183944365958">270 度</translation>
 <translation id="1594030484168838125">选择</translation>
 <translation id="1596296697375291157">惊悚片、犯罪片与悬疑片</translation>
+<translation id="1597473228022844713">您正在跟踪此商品。该网页保存在“<ph name="LAST_BOOKMARKS_FOLDER" />”中</translation>
 <translation id="1599199147673445968">想使用新卡？<ph name="BEGIN_LINK" />输入信用卡详情<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">在 Chrome 中玩《Dino Run》游戏</translation>
 <translation id="161042844686301425">青色</translation>
@@ -946,6 +948,7 @@
 <translation id="3140646734028448730">商业服务</translation>
 <translation id="3141093262818886744">仍然打开</translation>
 <translation id="3141641372357166056">尚无决定意见</translation>
+<translation id="3144458715650412431">测试政策已被应用。如需查看和重置这些政策，请访问 chrome://policy/test。管理员政策不会被应用。</translation>
 <translation id="3145945101586104090">无法对响应解码</translation>
 <translation id="3150653042067488994">服务器临时错误</translation>
 <translation id="3150889484970506196">“创建表格”按钮，激活它即可快速创建新的 Google 表格</translation>
@@ -1337,6 +1340,7 @@
 <translation id="3987940399970879459">小于 1 MB</translation>
 <translation id="3990250421422698716">撞页偏移</translation>
 <translation id="3992684624889376114">关于此页面</translation>
+<translation id="3995639283717357522">应用政策</translation>
 <translation id="399952081411886534">其他可让广告更私密的功能</translation>
 <translation id="4000598935132966791">详细了解受管理的浏览器中的网站限制</translation>
 <translation id="4006465311664329701">Google Pay 中存储的付款方式、优惠和地址信息</translation>
@@ -1517,6 +1521,7 @@
 <translation id="4333561522337981382">管理您的所有显示屏上的窗口</translation>
 <translation id="4338709847516294988">按搜索键 + M，然后在随即显示的上下文菜单中选择将图片转换成文字</translation>
 <translation id="4340575312453649552">对于您的设备来说，此广告占用了太多资源，因此 Chrome 已将其移除。</translation>
+<translation id="4340810192899866471">从 JSON 文件导入</translation>
 <translation id="4340982228985273705">系统检测到，此计算机不是由企业管理，因此政策只能自动安装 Chrome 应用商店中的扩展程序。对应的 Chrome 应用商店更新网址为“<ph name="CWS_UPDATE_URL" />”。</translation>
 <translation id="4348834659292907206">与 <ph name="SITE" /> 的连接不安全</translation>
 <translation id="4349365535725594680">无法共享机密内容</translation>
@@ -1765,6 +1770,7 @@
 <translation id="4901778704868714008">保存…</translation>
 <translation id="4901952598169637881">休闲鞋</translation>
 <translation id="4905659621780993806">您的管理员将于 <ph name="DATE" /><ph name="TIME" /> 自动重启您的设备。请在设备重启前保存所有已打开的内容。</translation>
+<translation id="4907289208610706508">目标</translation>
 <translation id="4913987521957242411">打孔（左上角）</translation>
 <translation id="4918221908152712722">安装<ph name="APP_NAME" />（不需要下载）</translation>
 <translation id="4920457992177678649">民宿与短期住宿</translation>
@@ -1874,6 +1880,7 @@
 <translation id="5145883236150621069">策略响应中存在错误代码</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> 网站上的通知已被屏蔽</translation>
 <translation id="514704532284964975"><ph name="URL" /> 想在您点按手机时查看和更改 NFC 设备上的信息</translation>
+<translation id="5147633291963801297">在侧边栏中查看降价信息</translation>
 <translation id="5148809049217731050">正面朝上</translation>
 <translation id="5153314898060540200">硬摇滚与前卫摇滚</translation>
 <translation id="5157504274688344097">大卖场与百货公司</translation>
@@ -2448,6 +2455,7 @@
 <translation id="6450212216969386944">Chou 40 信封</translation>
 <translation id="6451458296329894277">确认重新提交表单</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">选择政策目标</translation>
 <translation id="6456955391422100996">已移除广告。</translation>
 <translation id="6457206614190510200">鞍式装订</translation>
 <translation id="6457455098507772300">降价提醒在桌面设备上显示为弹出式通知</translation>
@@ -2731,6 +2739,7 @@
 <translation id="7108819624672055576">某款扩展程序允许</translation>
 <translation id="7109510814665441393">驾驶与竞速游戏</translation>
 <translation id="7110116949943042888">临时和季节性职位</translation>
+<translation id="7110553203952632623">当任一网站上的商品降价时，您会收到电子邮件提醒</translation>
 <translation id="7111012039238467737">（有效）</translation>
 <translation id="7111507312244504964">不动产检测与评估</translation>
 <translation id="7112327784801341716">看到的不是您的最新信息？请让银行更新您的信息。</translation>
@@ -3223,6 +3232,7 @@
 <translation id="8127301229239896662">“<ph name="SOFTWARE_NAME" />”没有正确地安装到您的计算机或网络上。请让您的 IT 管理员解决此问题。</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8134058435519644366">招聘与人事</translation>
+<translation id="8144303576836498784">出了点问题。未能保存您的更改</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
 <translation id="8149426793427495338">您的计算机已进入休眠模式。</translation>
 <translation id="8150722005171944719">无法读取 <ph name="URL" /> 上的文件。该文件可能已遭到删除、移动，或者文件权限不允许进行访问。</translation>
@@ -3236,6 +3246,7 @@
 <translation id="8184538546369750125">使用全局默认设置（允许）</translation>
 <translation id="8186706823560132848">软件</translation>
 <translation id="8190193880870196235">由一款扩展程序管理</translation>
+<translation id="8194412401381329820">您无法在这部非受管设备上通过受管帐号使用该网页。如果您使用该网页，除了由这部设备所属的实体管理的帐号（即关联帐号）之外的所有受管帐号都将被锁定。</translation>
 <translation id="8194797478851900357">撤消移动(&amp;U)</translation>
 <translation id="8194956568907463262">射击游戏</translation>
 <translation id="8200772114523450471">继续</translation>
@@ -3243,6 +3254,7 @@
 <translation id="8202370299023114387">冲突</translation>
 <translation id="8207625368992715508">赛车运动</translation>
 <translation id="8208363704094329105">300 x 400 毫米</translation>
+<translation id="8210490490377416373">选择政策名称</translation>
 <translation id="8210604850413485128">网站托管</translation>
 <translation id="8211406090763984747">连接是安全的</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3358,6 +3370,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理您的 Cookie 偏好设置</translation>
 <translation id="8433057134996913067">这将使您退出大多数网站。</translation>
 <translation id="8434840396568290395">宠物</translation>
+<translation id="8436623588884785770">添加政策</translation>
 <translation id="8437238597147034694">撤消移动(&amp;U)</translation>
 <translation id="8438786541497918448">使用摄像头和麦克风？</translation>
 <translation id="8438923942245957911">贵组织已标记此网站</translation>
@@ -3380,6 +3393,7 @@
 <translation id="8483229036294884935">系统将从您的 Google 帐号 (<ph name="ACCOUNT" />) 中删除此地址</translation>
 <translation id="8488350697529856933">适用对象</translation>
 <translation id="8490137692873530638">堆叠出纸器 10</translation>
+<translation id="8493829133024050711">选择政策来源</translation>
 <translation id="8493948351860045254">释放空间</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> 的响应时间过长。</translation>
 <translation id="8503559462189395349">Chrome 密码</translation>

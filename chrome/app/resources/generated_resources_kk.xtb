@@ -309,6 +309,7 @@
 <translation id="1244265436519979884">Linux жүйесі қалпына келтірілуде.</translation>
 <translation id="1244303850296295656">Кеңейтім қатесі</translation>
 <translation id="1244917379075403655">"Параметрлер" түймесін басыңыз.</translation>
+<translation id="1245331638296910488">Microsoft 365 бағдарламасында ашылған файлдар OneDrive-қа барады</translation>
 <translation id="1245628370644070008">Жергілікті деректерді қалпына келтіру</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> орнатылмады: суреттің URL мекенжайы <ph name="HTTP_ERROR" /> қате кодын қайтарды. Әкімшіге хабарласыңыз.</translation>
 <translation id="1247372569136754018">Микрофон (ішкі)</translation>
@@ -666,6 +667,7 @@
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" кеңейтімі іздеуді <ph name="SEARCH_PROVIDER_DOMAIN" /> пайдалануға ауыстырды.</translation>
 <translation id="1552752544932680961">Кеңейтімді басқару</translation>
 <translation id="1553538517812678578">шектелмеген</translation>
+<translation id="1553947773881524342">Chromebook-тағы Microsoft 365 туралы <ph name="LINK_BEGIN" />толық ақпарат<ph name="LINK_END" /> алыңыз.</translation>
 <translation id="1555130319947370107">Көк</translation>
 <translation id="1556127816860282890">Фондық режимдегі әрекеттер және кейбір визуалдық әсерлер (біркелкі айналдыру сияқты) шектелуі мүмкін.</translation>
 <translation id="1556537182262721003">Кеңейтім каталогін профиль ішіне жылжыту мүмкін емес.</translation>
@@ -1114,6 +1116,7 @@
 <translation id="1904580727789512086">Кірген URL мекенжайларыңыз Google аккаунтыңызға сақталады.</translation>
 <translation id="1905375423839394163">Chromebook құрылғысының атауы</translation>
 <translation id="1906181697255754968">Жұмысыңызды автоматты түрде сақтау сияқты функциялар үшін сайттар құрылғыңыздағы файлдар мен қалталарға кіреді.</translation>
+<translation id="1906488504371069394"><ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> дүкенінен қосымша кеңейтімдер мен тақырыптарды табыңыз</translation>
 <translation id="1907044622262489040">Дауысыңызбен мәтін теріңіз. "Іздеу" + D перне тіркесімін басып, сөйлей бастаңыз.</translation>
 <translation id="1908591798274282246">Жабылған топты қайта ашу</translation>
 <translation id="1909880997794698664">Бұл құрылғыны толық экран режимінде біржола сақтау керек пе?</translation>
@@ -1925,6 +1928,7 @@
 <translation id="2561211427862644160">Барлық бетбелгіні осы жерден көре аласыз.</translation>
 <translation id="2564520396658920462">JavaScript сценарийін AppleScript арқылы орындау мүмкіндігі өшірулі. Оны қосу үшін мәзір жолағында "Көрініс &gt; Әзірлеуші &gt; JavaScript сценарийін Apple Events қызметінен рұқсат ету" тармағына өтіңіз. Толығырақ ақпарат мына бетте берілген: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Жақсартылған емле тексеру</translation>
+<translation id="2565214867520763227">Экран оқу құралын қосу</translation>
 <translation id="2568694057933302218">Инкогнито режимінде сайттар сіздің сайттардағы браузерді пайдалану тарихыңызды көру үшін cookie файлдарыңызды пайдалана алмайды. Браузерді пайдалану тарихыңыз жарнамаларды жекелендіру сияқты нәрселер үшін пайдаланылмайды. Кейбір сайттың функциялары жұмыс істемеуі мүмкін.</translation>
 <translation id="2568774940984945469">Ақпараттық жолақ контейнері</translation>
 <translation id="2569972178052279830">Бөлшек сатушы аты</translation>
@@ -2557,6 +2561,7 @@
 <translation id="3089948625237571254">Бейне кадрын к&amp;өшіру</translation>
 <translation id="3090227230165225418">Жүктеп алу хабарландыруларын жариялау</translation>
 <translation id="3090589793601454425">Көшірмеу</translation>
+<translation id="309079592386854321">Принтер Chromebook құрылғыңызбен бірдей Wi-Fi желісіне қосылғанына көз жеткізіңіз немесе USB кабелін пайдаланыңыз. <ph name="LINK_BEGIN" />Үйлесімділік туралы толық ақпарат<ph name="LINK_END" /> алыңыз.</translation>
 <translation id="3090819949319990166">Сыртқы CRX файлын <ph name="TEMP_CRX_FILE" /> файлына көшіру мүмкін емес.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" жұптастырылған</translation>
 <translation id="3093714882666365141">Сайттардың төлем өңдегіштерін орнатуына рұқсат бермеу</translation>
@@ -4071,6 +4076,7 @@
 <translation id="4410545552906060960">Құрылғының құлпын ашу үшін құпия сөздің орнына PIN кодын пайдаланыңыз. PIN кодын кейін орнату үшін "Параметрлер" бөліміне өтіңіз.</translation>
 <translation id="4411578466613447185">Код сертификаты</translation>
 <translation id="4411719918614785832">Бұл кіру кілттері осы компьютердегі Windows Hello қызметінде сақталады. Олар Google аккаунтыңызға сақталмайды.</translation>
+<translation id="4412275763838812196">ChromeOS жүйесіндегі ChromeVox экран оқу құралын негізінен көзі көрмейтін және нашар көретін адамдар пайдаланады. ChromeVox-ты қосу үшін бос орын түймесін басыңыз. ChromeVox іске қосылған кезде, сіз жылдам бейнесаяхаттан өтесіз.</translation>
 <translation id="4412632005703201014">Chrome Apps қолданбалары прогрессивті веб-қолданбаларға көшірілуде. Ұйымыңыз осы Chrome қолданбасын браузеріңізге орнатқан. Қолданбалар тізімінен прогрессивті веб-қолданбаны ашу үшін, алдымен әкімшіңізге хабарласып, Chrome қолданбасын жоюын сұраңыз. Әзірше интернетте <ph name="EXTENSION_NAME" /> кеңейтімін ашу үшін <ph name="EXTENSION_LAUNCH_URL" /> сайтына кіре аласыз.</translation>
 <translation id="4412698727486357573">Анықтама орталығы</translation>
 <translation id="4412992751769744546">Үшінші тарап cookie файлдарына рұқсат беру</translation>
@@ -4281,6 +4287,7 @@
 <translation id="4585793705637313973">Бет мәліметтерін өзгерту</translation>
 <translation id="4586275095964870617"><ph name="URL" /> сілтемесін балама браузерде ашу мүмкін болмады. Жүйе әкімшісіне хабарласыңыз.</translation>
 <translation id="4587589328781138893">Сайттар</translation>
+<translation id="4588882777927162244">ChromeOS Flex жүйесіндегі ChromeVox экран оқу құралын негізінен көзі көрмейтін және нашар көретін адамдар пайдаланады. ChromeVox-ты қосу үшін бос орын түймесін басыңыз. ChromeVox іске қосылған кезде, сіз жылдам бейнесаяхаттан өтесіз.</translation>
 <translation id="4589713469967853491">Журналдар "Жүктеп алынғандар" каталогіне жазылды.</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> электрондық поштасына ешбір құрылғы сақталмаған.</translation>
 <translation id="4592525994536856567">Шолу және іздеу жылдамырақ.</translation>
@@ -5064,6 +5071,7 @@
 <translation id="5284445933715251131">Жүктеп алуды жалғастыру</translation>
 <translation id="5285635972691565180"><ph name="DISPLAY_ID" /> көрсету</translation>
 <translation id="5286194356314741248">Ізделіп жатыр</translation>
+<translation id="5287073652040102781">ChromeOS Flex жүйесіндегі ChromeVox экран оқу құралын негізінен көзі көрмейтін және нашар көретін адамдар пайдаланады. ChromeVox-ты қосу үшін екі дыбыс деңгейі пернесін бес секунд басып тұрыңыз. ChromeVox іске қосылған кезде, сіз жылдам бейнесаяхаттан өтесіз.</translation>
 <translation id="5287425679749926365">Аккаунттарыңыз</translation>
 <translation id="5288106344236929384"><ph name="DOMAIN" /> доменіндегі <ph name="USERNAME" /> үшін қосымша әрекеттер және кіру кілті опциялары</translation>
 <translation id="5288678174502918605">Жабық қойындыны қ&amp;айта ашу</translation>
@@ -5610,6 +5618,7 @@
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> Chromebook құрылғысында Windows® қолданбаларын пайдалануға мүмкіндік береді. Орнату үшін <ph name="MINIMUM_SPACE" /> бос орын қажет.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Ол жауап бергенше күтіңіз немесе беттен шығыңыз.}other{Олар жауап бергенше күтіңіз немесе беттерден шығыңыз.}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" /> қосымша мәліметтері</translation>
+<translation id="577313026359983030">Кеңейтімдерім</translation>
 <translation id="5774295353725270860">Файлдар қолданбасын ашу</translation>
 <translation id="5776450228446082914">Кез келген браузерде ашуға болатын веб-сайттар тізімі.</translation>
 <translation id="5776571780337000608">Қолдау көрсетілетін файлдарды осы қолданба арқылы файл браузерінен не басқа қолданбалар арқылы ашып, өңдей аласыз. Осы қолданбада қандай файлдардың әдепкісінше ашылатынын басқару үшін <ph name="BEGIN_LINK" />құрылғыңызда әдепкі қолданбалар орнату туралы толығырақ біліңіз<ph name="END_LINK" />.</translation>
@@ -6811,6 +6820,7 @@
 <translation id="6798780071646309401">Caps Lock қосулы</translation>
 <translation id="6798954102094737107">Плагин: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">Жалпы параметрлер</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Бұл кеңейтім осы сайтты оқи немесе өзгерте алатынын таңдаңыз}other{Бұл кеңейтімдер осы сайтты оқи немесе өзгерте алатынын таңдаңыз}}</translation>
 <translation id="6801435275744557998">Сенсорлық экранды калибрлеу</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">"<ph name="DEFAULT_VM_NAME" />" виртуалдық машинасы бар.</translation>
@@ -8016,6 +8026,7 @@
 <translation id="7800518121066352902">С&amp;ағат тіліне қарсы айналдыру</translation>
 <translation id="7801679634091975683">Осында енгізген өзгерістеріңіз тек Lacros Chrome браузеріне қолданылады. Chrome браузерінің параметрлеріне өзгерістер енгізу үшін Chrome браузерін ашып, параметрлерге өтіңіз.</translation>
 <translation id="780301667611848630">Жоқ, рақмет</translation>
+<translation id="7803267169006795990">ChromeOS жүйесіндегі ChromeVox экран оқу құралын негізінен көзі көрмейтін және нашар көретін адамдар пайдаланады. ChromeVox-ты қосу үшін екі дыбыс деңгейі пернесін бес секунд басып тұрыңыз. ChromeVox іске қосылған кезде, сіз жылдам бейнесаяхаттан өтесіз.</translation>
 <translation id="7803657407897251194">Android құрылғыңызбен орнатуды жалғастыру үшін <ph name="DEVICE_TYPE" /> құрылғыңызды желіге қосыңыз</translation>
 <translation id="7804072833593604762">Қойынды жабық</translation>
 <translation id="7805768142964895445">Күйі</translation>
@@ -9565,6 +9576,7 @@
 <translation id="9108808586816295166">Қауіпсіз DNS барлық уақытта қолжетімді болмауы мүмкін.</translation>
 <translation id="9109122242323516435">Орынды босату үшін құрылғы жадынан файлдарды жойыңыз.</translation>
 <translation id="9109283579179481106">Мобильдік желіге қосылу</translation>
+<translation id="9110739391922513676">Файлдарды ашу үшін Microsoft 365 бағдарламасын реттеңіз</translation>
 <translation id="9111102763498581341">Құлпын ашу</translation>
 <translation id="9111305600911828693">Лицензия орнатылмаған.</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9687,6 +9699,7 @@
 <translation id="9220820413868316583">Саусағыңызды көтеріп, қайта басып көріңіз.</translation>
 <translation id="922152298093051471">Chrome-ды реттеу</translation>
 <translation id="923467487918828349">Барлығын көрсету</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Оны басқару үшін "Кеңейтімдер" бөлімін ашыңыз}other{Оларды басқару үшін "Кеңейтімдер" бөлімін ашыңыз}}</translation>
 <translation id="924818813611903184">ChromeOS параметрлерінен тілдерді басқару</translation>
 <translation id="925270020047573546">Бұл құрылғыда жұмыс үстелі аудиосының дыбысы шықпайды.</translation>
 <translation id="930268624053534560">Толық уақыт белгілері</translation>

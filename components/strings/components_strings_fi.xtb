@@ -127,6 +127,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Kirjoitit salasanan sivustolle, joka ei ole organisaatiosi hallinnoima. Älä käytä samaa salasanaa muissa sovelluksissa tai muilla sivustoilla tilisi turvallisuuden vuoksi.</translation>
 <translation id="1257553931232494454">zoomaustasot</translation>
+<translation id="1259843033850529027">Valitse käytäntötaso</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, muuta Chromen asetuksia painamalla sarkainta ja sitten Enter</translation>
 <translation id="1264309058268477500">Vaihtoehtoinen</translation>
 <translation id="1264974993859112054">Urheilu</translation>
@@ -304,6 +305,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1593359183944365958">270 astetta</translation>
 <translation id="1594030484168838125">Valitse</translation>
 <translation id="1596296697375291157">Trillerit, rikos- ja jännityselokuvat</translation>
+<translation id="1597473228022844713">Seuraat tätä tuotetta. Sivu on tallennettu tänne: <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1599199147673445968">Uusi kortti? <ph name="BEGIN_LINK" />Lisää kortin tiedot<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Pelaa Dino Run ‑peliä Chromessa</translation>
 <translation id="161042844686301425">Turkoosi</translation>
@@ -949,6 +951,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3140646734028448730">Liiketoimintapalvelut</translation>
 <translation id="3141093262818886744">Avaa silti</translation>
 <translation id="3141641372357166056">Ei suostumuspäätöstä</translation>
+<translation id="3144458715650412431">Testikäytännöt on otettu käyttöön. Tarkista ja nollaa ne osoitteessa chrome://policy/test. Järjestelmänvalvojakäytäntöjä ei sovelleta.</translation>
 <translation id="3145945101586104090">Vastauksen purkaminen epäonnistui</translation>
 <translation id="3150653042067488994">Tilapäinen palvelinvirhe</translation>
 <translation id="3150889484970506196">Luo taulukko ‑painike, aktivoi luodaksesi uusi Google-taulukko nopeasti</translation>
@@ -1345,6 +1348,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3987940399970879459">Alle 1 Mt</translation>
 <translation id="3990250421422698716">Jog offset</translation>
 <translation id="3992684624889376114">Tietoja sivusta</translation>
+<translation id="3995639283717357522">Ota käytäntöjä käyttöön</translation>
 <translation id="399952081411886534">Muut mainosten yksityisyyttä parantavat ominaisuudet</translation>
 <translation id="4000598935132966791">Lue lisää hallinnoitujen selainten sivustorajoituksista</translation>
 <translation id="4006465311664329701">Maksutavat, tarjoukset ja osoitteet Google Playta käyttäen</translation>
@@ -1525,6 +1529,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4333561522337981382">hallinnoida ikkunoita kaikilla näytöillä</translation>
 <translation id="4338709847516294988">Voit muuntaa kuvan tekstiksi kontekstivalikosta Haku + m</translation>
 <translation id="4340575312453649552">Chrome poisti tämän mainoksen, koska se käytti liian paljon laitteen resursseja.</translation>
+<translation id="4340810192899866471">Tuo JSON-tiedostosta</translation>
 <translation id="4340982228985273705">Havaintojen mukaan tämä tietokone ei ole yrityksen hallinnoima, joten käytäntö voi asentaa automaattisesti vain Chrome Web Storessa hostattuja laajennuksia. Chrome Web Storen päivitys-URL-osoite on <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4348834659292907206">Yhteys sivustoon (<ph name="SITE" />) ei ole turvallinen</translation>
 <translation id="4349365535725594680">Luottamuksellista sisältöä ei voida jakaa</translation>
@@ -1773,6 +1778,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4901778704868714008">Tallenna…</translation>
 <translation id="4901952598169637881">Vapaa-ajan kengät</translation>
 <translation id="4905659621780993806">Järjestelmänvalvojasi käynnistää laitteen uudelleen automaattisesti <ph name="DATE" /> kello <ph name="TIME" />. Tallenna avoimet kohteet, ennen kuin laite käynnistyy uudelleen.</translation>
+<translation id="4907289208610706508">Kohde</translation>
 <translation id="4913987521957242411">Reikä vasemmassa yläkulmassa</translation>
 <translation id="4918221908152712722">Asenna <ph name="APP_NAME" /> (ei vaadi lataamista)</translation>
 <translation id="4920457992177678649">Loma-asunnot ja lyhytaikainen majoitus</translation>
@@ -1882,6 +1888,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5145883236150621069">Käytäntövastaus sisältää virhekoodin</translation>
 <translation id="5146995429444047494">Ilmoitukset on estetty: <ph name="ORIGIN" /></translation>
 <translation id="514704532284964975"><ph name="URL" /> pyytää lupaa nähdä ja muuttaa puhelimella napauttamiesi NFC-laitteiden tietoja</translation>
+<translation id="5147633291963801297">Katso hinnanalennukset sivupaneelista</translation>
 <translation id="5148809049217731050">Tulostuspuoli ylöspäin</translation>
 <translation id="5153314898060540200">Hard rock ja progressiivinen rock</translation>
 <translation id="5157504274688344097">Suurkauppiaat ja tavaratalot</translation>
@@ -2458,6 +2465,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6450212216969386944">Kirjekuori Chou 40</translation>
 <translation id="6451458296329894277">Vahvista lomakkeen uudelleenlähetys</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">Valitse käytännön kohde</translation>
 <translation id="6456955391422100996">Mainos poistettu</translation>
 <translation id="6457206614190510200">Satulasidonta</translation>
 <translation id="6457455098507772300">Ilmoitukset hinnan laskusta näkyvät ponnahdusikkunailmoituksina tietokoneella</translation>
@@ -2741,6 +2749,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7108819624672055576">Laajennuksen sallima</translation>
 <translation id="7109510814665441393">Ajo- ja rallipelit</translation>
 <translation id="7110116949943042888">Tilapäis- ja kausityöpaikat</translation>
+<translation id="7110553203952632623">Saat sähköposti-ilmoituksen, jos hinta laskee jollakin sivustolla</translation>
 <translation id="7111012039238467737">(Voimassa)</translation>
 <translation id="7111507312244504964">Kuntotarkastukset ja kiinteistöarviot</translation>
 <translation id="7112327784801341716">Eivätkö tietosi ole ajan tasalla? Ota yhteyttä pankkiin ja päivitä ne.</translation>
@@ -3233,6 +3242,7 @@ Lisätietoja:
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> on asennettu virheellisesti tietokoneellesi tai verkkoon. Pyydä järjestelmänvalvojaasi ratkaisemaan ongelma.</translation>
 <translation id="8131740175452115882">Vahvista</translation>
 <translation id="8134058435519644366">Rekrytointi ja henkilöstön hankinta</translation>
+<translation id="8144303576836498784">Jotain meni pieleen. Muutosta ei tallennettu</translation>
 <translation id="8148608574971654810">PDF-versio:</translation>
 <translation id="8149426793427495338">Tietokoneesi siirtyi virransäästötilaan.</translation>
 <translation id="8150722005171944719">Tiedosto osoitteessa <ph name="URL" /> ei ole luettavissa. Se on voitu poistaa tai siirtää, tai tiedoston käyttöluvat voivat estää sen käytön.</translation>
@@ -3246,6 +3256,7 @@ Lisätietoja:
 <translation id="8184538546369750125">Käytä yleistä oletusasetusta (salli)</translation>
 <translation id="8186706823560132848">Ohjelmisto</translation>
 <translation id="8190193880870196235">Laajennuksen hallinnoima</translation>
+<translation id="8194412401381329820">Et voi käyttää tätä sivua hallinnoidun tilin kautta tällä hallinnoimattomalla laitteella. Kaikki hallinnoidut tilit lukitaan, jos käytät tätä sivua. Poikkeuksena ovat tilit, joita hallinnoi sama taho kuin tätä laitetta (kumppanitilit).</translation>
 <translation id="8194797478851900357">K&amp;umoa siirto</translation>
 <translation id="8194956568907463262">Ammuntapelit</translation>
 <translation id="8200772114523450471">Jatka</translation>
@@ -3253,6 +3264,7 @@ Lisätietoja:
 <translation id="8202370299023114387">Ristiriita</translation>
 <translation id="8207625368992715508">Moottoriurheilulajit</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
+<translation id="8210490490377416373">Valitse käytännön nimi</translation>
 <translation id="8210604850413485128">Webhotellit</translation>
 <translation id="8211406090763984747">Yhteys on turvallinen</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3368,6 +3380,7 @@ Lisätietoja:
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina sarkainta ja Enter, niin voit muuttaa evästevalintoja Chromen asetuksista</translation>
 <translation id="8433057134996913067">Sinut kirjataan ulos useimmilta verkkosivustoilta.</translation>
 <translation id="8434840396568290395">Lemmikit</translation>
+<translation id="8436623588884785770">Lisää käytäntö</translation>
 <translation id="8437238597147034694">K&amp;umoa siirto</translation>
 <translation id="8438786541497918448">Käytetäänkö kameraa ja mikrofonia?</translation>
 <translation id="8438923942245957911">Organisaatiosi on merkinnyt sivuston</translation>
@@ -3390,6 +3403,7 @@ Lisätietoja:
 <translation id="8483229036294884935">Osoite poistetaan Google-tililtäsi (<ph name="ACCOUNT" />)</translation>
 <translation id="8488350697529856933">Käyttöalue</translation>
 <translation id="8490137692873530638">Pinoaja 10</translation>
+<translation id="8493829133024050711">Valitse käytännön lähde</translation>
 <translation id="8493948351860045254">Vapauta tilaa</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ei vastannut riittävän nopeasti.</translation>
 <translation id="8503559462189395349">Chrome-salasanat</translation>

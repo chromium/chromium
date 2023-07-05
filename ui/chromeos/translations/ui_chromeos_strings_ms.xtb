@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive tidak tersedia pada masa ini. Memuat naik akan dimulakan semula secara automatik sebaik sahaja Google Drive kembali.</translation>
 <translation id="1307931752636661898">Tidak dapat melihat fail Linux</translation>
 <translation id="1313405956111467313">Konfigurasi proksi automatik</translation>
+<translation id="134645005685694099">Peranti anda tidak memiliki ruang storan yang mencukupi untuk terus menghidupkan penyegerakan fail. Fail baharu tidak akan disegerakkan secara automatik lagi.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Fail atau direktori tidak boleh digunakan.</translation>
 <translation id="1363028406613469049">Penjejakan</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">Proksi HTTP</translation>
 <translation id="2467267713099745100">Rangkaian <ph name="NETWORK_TYPE" />, dimatikan</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">Akses fail Google Drive anda luar talian dengan penyegerakan fail</translation>
 <translation id="2470939964922472929">PIN yang salah telah dimasukkan terlalu banyak kali. Untuk menyediakan PIN baharu, masukkan Kunci Penyahsekat Peribadi (PUK) 8 digit yang diberikan oleh pembawa anda.</translation>
 <translation id="2500392669976258912">Fonetik Gujerat</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -603,6 +605,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> dialihkan ke folder sampah</translation>
 <translation id="5724172041621205163">Thai dengan papan kekunci Pattachote</translation>
 <translation id="57383366388012121">Bulan lalu</translation>
+<translation id="575175778971367197">Tidak dapat menyegerakkan fail ini sekarang</translation>
 <translation id="5756666464756035725">QWERTY Hungary</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> item dipilih</translation>
 <translation id="5763377084591234761">Jerman (Switzerland)</translation>
@@ -705,6 +708,7 @@
 <translation id="6558280019477628686">Ralat berlaku. Sesetengah item mungkin tidak dipadamkan.</translation>
 <translation id="656398493051028875">Memadamkan "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Pautan Google Drive</translation>
+<translation id="6588648400954570689">Tetapan penyegerakan fail</translation>
 <translation id="6594855146910089723">Folder ini dikongsi dengan Linux dan Parallels Desktop</translation>
 <translation id="6607272825297743757">Maklumat fail</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> folder dikongsi dengan Parallels Desktop</translation>
@@ -829,6 +833,7 @@
 <translation id="7547811415869834682">Bahasa Belanda</translation>
 <translation id="7551643184018910560">Sematkan pada rak</translation>
 <translation id="7553492409867692754">Beri Linux kebenaran apl untuk mengakses fail dalam folder <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">Kini anda berstatus luar talian. Penyegerakan fail akan disambung semula apabila anda disambungkan kepada Internet</translation>
 <translation id="7589661784326793847">Sila tunggu sebentar</translation>
 <translation id="7592775719802218421">Menjadikan <ph name="FILE_NAME" /> tersedia di luar talian</translation>
 <translation id="7600126690270271294">Serbia</translation>
@@ -871,6 +876,7 @@
 <translation id="7814857791038398352">Microsoft® OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Ralat mengkonfigurasi rangkaian</translation>
+<translation id="7832093238954689746">Penyegerakan fail selesai. Fail Drive Saya tersedia luar talian.</translation>
 <translation id="7839804798877833423">Pengambilan fail ini akan menggunakan kira-kira <ph name="FILE_SIZE" /> data mudah alih.</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
 <translation id="7853966320808728790">BEPO Perancis</translation>
@@ -919,6 +925,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model peranti</translation>
 <translation id="8223479393428528563">Bagi menyimpan fail-fail ini untuk kegunaan diluar talian, sila kembali ke dalam talian, klik kanan fail dan pilih pilihan <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Lihat storan</translation>
 <translation id="8249296373107784235">Henti paksa</translation>
 <translation id="8250690786522693009">Bahasa Latin</translation>
 <translation id="8250920743982581267">Dokumen</translation>

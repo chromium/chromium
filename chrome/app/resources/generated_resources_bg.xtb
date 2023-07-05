@@ -311,6 +311,7 @@
 <translation id="1244265436519979884">В момента се извършва възстановяване на Linux</translation>
 <translation id="1244303850296295656">Грешка в разширението</translation>
 <translation id="1244917379075403655">Кликнете върху „Настройки“</translation>
+<translation id="1245331638296910488">Файловете, които отворите в Microsoft 365, ще бъдат преместени в OneDrive</translation>
 <translation id="1245628370644070008">Възстановяване на локални данни</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> не се инсталира: URL адресът на изображението изведе код на грешка <ph name="HTTP_ERROR" />. Моля, обърнете се към администратора си.</translation>
 <translation id="1247372569136754018">Микрофон (вътрешен)</translation>
@@ -669,6 +670,7 @@
 <translation id="1552301827267621511">Разширението <ph name="EXTENSION_NAME" /> промени търсещата машина на <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Управление на разширението</translation>
 <translation id="1553538517812678578">неограничено</translation>
+<translation id="1553947773881524342"><ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /> за Microsoft 365 на вашия Chromebook.</translation>
 <translation id="1555130319947370107">синьо</translation>
 <translation id="1556127816860282890">Активността на заден план и някои визуални ефекти, като гладкото превъртане, може да са ограничени</translation>
 <translation id="1556537182262721003">Не можа да се премести директорията на разширението в потребителския профил.</translation>
@@ -1125,6 +1127,7 @@
 <translation id="1904580727789512086">URL адресите, които посещавате, се запазват в профила ви в Google</translation>
 <translation id="1905375423839394163">Име на устройството Chromebook</translation>
 <translation id="1906181697255754968">Сайтовете обикновено осъществяват достъп до файловете и папките на устройството ви, за да осигуряват функции като автоматично запазване на работата ви</translation>
+<translation id="1906488504371069394">Открийте още разширения и теми в <ph name="BEGIN_LINK" />уеб магазина на Chrome<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Въвеждайте текст с гласа си. Натиснете клавиша „търсене“ + D, след което започнете да говорите.</translation>
 <translation id="1908591798274282246">Повторно отваряне на затворената група</translation>
 <translation id="1909880997794698664">Наистина ли искате това устройство да е постоянно в павилионен режим?</translation>
@@ -1939,6 +1942,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2561211427862644160">Вижте всичките си отметки тук</translation>
 <translation id="2564520396658920462">Функцията за изпълнение на JavaScript чрез AppleScript е изключена. За да я включите, от лентата с менюта отворете View &gt; Developer &gt; Allow JavaScript from Apple Events. За повече информация: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Подобрена проверка на правописа</translation>
+<translation id="2565214867520763227">Включете екранния четец</translation>
 <translation id="2568694057933302218">Докато сте в режим „инкогнито“, сайтовете не могат да използват „бисквитките“ ви, за да виждат активността ви при сърфиране в други сайтове. Активността ви при сърфиране не се използва за неща като персонализиране на рекламите. Функциите в някои сайтове може да не работят.</translation>
 <translation id="2568774940984945469">Контейнер на инфолента</translation>
 <translation id="2569972178052279830">Име на търговеца</translation>
@@ -2571,6 +2575,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3089948625237571254">К&amp;опиране на кадъра от видеоклипа</translation>
 <translation id="3090227230165225418">Съобщаване на известия за изтегляне</translation>
 <translation id="3090589793601454425">Без преместване</translation>
+<translation id="309079592386854321">Уверете се, че принтерът ви е свързан със същата Wi-Fi мрежа като вашия Chromebook, или използвайте USB кабел. <ph name="LINK_BEGIN" />Научете повече за съвместимостта<ph name="LINK_END" />.</translation>
 <translation id="3090819949319990166">Външният crx файл не може да се копира в/ъв „<ph name="TEMP_CRX_FILE" />“.</translation>
 <translation id="3090871774332213558">Успешно сдвояване на <ph name="DEVICE_NAME" /></translation>
 <translation id="3093714882666365141">Да не се разрешава на сайтовете да инсталират приложения за обработване на плащания</translation>
@@ -4086,6 +4091,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4410545552906060960">Отключвайте устройството си с число (ПИН код) вместо с парола. За да зададете ПИН код по-късно, отворете настройките.</translation>
 <translation id="4411578466613447185">Подписване на код</translation>
 <translation id="4411719918614785832">Тези кодове за достъп се запазват в Windows Hello на този компютър. Те не се запазват в профила ви в Google.</translation>
+<translation id="4412275763838812196">ChromeVox, екранният четец в ChromeOS, се използва основно от незрящи хора и лица със слабо зрение. Натиснете клавиша за интервал, за да включите ChromeVox. Когато екранният четец е активиран, ще преминете през кратка обиколка.</translation>
 <translation id="4412632005703201014">Приложенията за Chrome са в процес на мигриране към прогресивни уеб приложения. Това приложение за Chrome бе инсталирано в браузъра от организацията ви. За да отворите прогресивното уеб приложение от съответния списък, първо се свържете с администратора си и го помолете да деинсталира приложението за Chrome. Междувременно можете да посетите <ph name="EXTENSION_LAUNCH_URL" />, за да отворите <ph name="EXTENSION_NAME" /> в мрежата.</translation>
 <translation id="4412698727486357573">Помощен център</translation>
 <translation id="4412992751769744546">Разрешаване на „бисквитките“ на трети страни</translation>
@@ -4297,6 +4303,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4585793705637313973">Редактиране на страницата</translation>
 <translation id="4586275095964870617"><ph name="URL" /> не можа да се отвори в алтернативен браузър. Моля, свържете се със системния си администратор.</translation>
 <translation id="4587589328781138893">Сайтове</translation>
+<translation id="4588882777927162244">ChromeVox, екранният четец в ChromeOS Flex, се използва основно от незрящи хора и лица със слабо зрение. Натиснете клавиша за интервал, за да включите ChromeVox. Когато екранният четец е активиран, ще преминете през кратка обиколка.</translation>
 <translation id="4589713469967853491">Регистрационните файлове бяха записани успешно в директорията „Изтегляния“.</translation>
 <translation id="459204634473266369">Няма запазени устройства в(ъв) <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">Можете да сърфирате и търсите по-бързо.</translation>
@@ -5080,6 +5087,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5284445933715251131">Продължаване на изтеглянето</translation>
 <translation id="5285635972691565180">Екран <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Сканира се</translation>
+<translation id="5287073652040102781">ChromeVox, екранният четец в ChromeOS Flex, се използва основно от незрящи хора и лица със слабо зрение. Натиснете и двата бутона за силата на звука и ги задръжте за пет секунди, за да включите ChromeVox. Когато екранният четец е активиран, ще преминете през кратка обиколка.</translation>
 <translation id="5287425679749926365">Вашите профили</translation>
 <translation id="5288106344236929384">Още действия, опции за кода за достъп на <ph name="USERNAME" /> за <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">По&amp;вторно отваряне на затворения раздел</translation>
@@ -5629,6 +5637,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> ви дава възможност да изпълнявате приложения за Windows® на своя Chromebook. За инсталирането е препоръчително да разполагате с поне <ph name="MINIMUM_SPACE" /> свободно място.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Можете да изчакате, докато страницата започне да реагира, или да излезете от нея.}other{Можете да изчакате, докато страниците започнат да реагират, или да излезете от тях.}}</translation>
 <translation id="5772737134857645901">Още подробности за <ph name="FILE_NAME" /> <ph name="STATUS" /></translation>
+<translation id="577313026359983030">Моите разширения</translation>
 <translation id="5774295353725270860">Отваряне на приложението за файлове</translation>
 <translation id="5776450228446082914">Списъкът с уебсайтове, които могат да се отварят във всеки от двата браузъра.</translation>
 <translation id="5776571780337000608">От файловия мениджър или други приложения можете да отваряте и редактирате поддържани файлове с това приложение. За да контролирате кои файлове да се отварят с него по подразбиране, <ph name="BEGIN_LINK" />научете как да зададете стандартни приложения на устройството си<ph name="END_LINK" />.</translation>
@@ -6831,6 +6840,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6798780071646309401">caps lock е включен</translation>
 <translation id="6798954102094737107">Приставка: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">Общи настройки</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Изберете дали това разширение да може да чете или променя този сайт}other{Изберете дали тези разширения да могат да четат или променят този сайт}}</translation>
 <translation id="6801435275744557998">Калибриране на сензорния екран</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">Виртуалната машина <ph name="DEFAULT_VM_NAME" /> съществува</translation>
@@ -8037,6 +8047,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7800518121066352902">Завъртане о&amp;братно на часовниковата стрелка</translation>
 <translation id="7801679634091975683">Промените тук важат само за браузъра Lacros Chrome. За да промените настройките на браузъра Chrome, отворете ги в този браузър.</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
+<translation id="7803267169006795990">ChromeVox, екранният четец в ChromeOS, се използва основно от незрящи хора и лица със слабо зрение. Натиснете и двата бутона за силата на звука и ги задръжте за пет секунди, за да включите ChromeVox. Когато екранният четец е активиран, ще преминете през кратка обиколка.</translation>
 <translation id="7803657407897251194">За да продължите настройването с устройството си с Android, свържете своя <ph name="DEVICE_TYPE" /> с мрежа</translation>
 <translation id="7804072833593604762">Затворихте раздела</translation>
 <translation id="7805768142964895445">Състояние</translation>
@@ -9587,6 +9598,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9108808586816295166">Сигурният DNS може да не е налице по всяко време</translation>
 <translation id="9109122242323516435">За да освободите място, изтрийте файлове от хранилището на устройството.</translation>
 <translation id="9109283579179481106">Свързване с мобилна мрежа</translation>
+<translation id="9110739391922513676">Настройване на Microsoft 365 така, че да отваря файлове</translation>
 <translation id="9111102763498581341">Отключване</translation>
 <translation id="9111305600911828693">Лицензът не е настроен</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9709,6 +9721,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9220820413868316583">Вдигнете пръст и след това опитайте отново.</translation>
 <translation id="922152298093051471">Персонализиране на Chrome</translation>
 <translation id="923467487918828349">Показване на всички</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{За да го управлявате, отворете „Разширения“}other{За да ги управлявате, отворете „Разширения“}}</translation>
 <translation id="924818813611903184">Управление на езиците в настройките на Chrome OS</translation>
 <translation id="925270020047573546">Предаването на звук от работен плот не се поддържа на това устройство.</translation>
 <translation id="930268624053534560">Подробни клейма за време</translation>

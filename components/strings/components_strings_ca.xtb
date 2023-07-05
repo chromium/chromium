@@ -127,6 +127,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Has introduït la contrasenya en un lloc web que no està gestionat per la teva organització. Per protegir el teu compte, no facis servir la mateixa contrasenya en altres aplicacions ni llocs web.</translation>
 <translation id="1257553931232494454">nivells de zoom</translation>
+<translation id="1259843033850529027">Selecciona el nivell de la política</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per gestionar la configuració de Chrome</translation>
 <translation id="1264309058268477500">Alternatiu</translation>
 <translation id="1264974993859112054">Esports</translation>
@@ -304,6 +305,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1593359183944365958">270 graus</translation>
 <translation id="1594030484168838125">Tria</translation>
 <translation id="1596296697375291157">Pel·lícules de crims, de misteri i thrillers</translation>
+<translation id="1597473228022844713">Estàs fent el seguiment d'aquest producte. Aquesta pàgina s'ha desat a <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1599199147673445968">És una targeta nova? <ph name="BEGIN_LINK" />Introdueix els detalls de la targeta<ph name="END_LINK" />.</translation>
 <translation id="160851722280695521">Juga al joc del dinosaure de Chrome</translation>
 <translation id="161042844686301425">Cian</translation>
@@ -949,6 +951,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3140646734028448730">Serveis empresarials</translation>
 <translation id="3141093262818886744">Obre igualment</translation>
 <translation id="3141641372357166056">cap decisió sobre el consentiment</translation>
+<translation id="3144458715650412431">S'han aplicat polítiques de prova. Revisa-les i restableix-les a chrome://policy/test. Les polítiques d'administració no s'aplicaran.</translation>
 <translation id="3145945101586104090">No s'ha pogut descodificar la resposta</translation>
 <translation id="3150653042067488994">Error temporal del servidor</translation>
 <translation id="3150889484970506196">Botó Crea un full de càlcul: activa'l per crear ràpidament un full de càlcul nou de Google</translation>
@@ -1344,6 +1347,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3987940399970879459">Menys d'1 MB</translation>
 <translation id="3990250421422698716">Jog offset</translation>
 <translation id="3992684624889376114">Sobre aquesta pàgina</translation>
+<translation id="3995639283717357522">Aplica polítiques</translation>
 <translation id="399952081411886534">Altres funcions que augmenten la privadesa dels anuncis</translation>
 <translation id="4000598935132966791">Més informació sobre les restriccions aplicades als llocs web en navegadors gestionats</translation>
 <translation id="4006465311664329701">Formes de pagament, ofertes i adreces que fan servir Google Pay</translation>
@@ -1524,6 +1528,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4333561522337981382">Gestionar finestres en totes les pantalles</translation>
 <translation id="4338709847516294988">Prem Cerca+M i converteix la imatge a text al menú contextual</translation>
 <translation id="4340575312453649552">Com que aquest anunci feia servir massa recursos per al dispositiu, Chrome l'ha suprimit.</translation>
+<translation id="4340810192899866471">Importa des de JSON</translation>
 <translation id="4340982228985273705">No ens consta que aquest ordinador estigui gestionat per una empresa. Per tant, la política només pot instal·lar automàticament extensions allotjades a Chrome Web Store. L'URL d'actualització de Chrome Web Store és <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4348834659292907206">La connexió a <ph name="SITE" /> no és segura</translation>
 <translation id="4349365535725594680">No es pot compartir el contingut confidencial</translation>
@@ -1772,6 +1777,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4901778704868714008">Desa...</translation>
 <translation id="4901952598169637881">Sabates de carrer</translation>
 <translation id="4905659621780993806">L'administrador reiniciarà automàticament el dispositiu el dia <ph name="DATE" /> a les <ph name="TIME" />. Abans no es reiniciï, desa tots els elements oberts.</translation>
+<translation id="4907289208610706508">Objectiu</translation>
 <translation id="4913987521957242411">Encunyació a la part superior esquerra</translation>
 <translation id="4918221908152712722">Instal·la l'aplicació <ph name="APP_NAME" /> (no cal que la baixis)</translation>
 <translation id="4920457992177678649">Lloguers vacacionals i estades curtes</translation>
@@ -1881,6 +1887,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5145883236150621069">Hi ha un codi d'error en la resposta a la política</translation>
 <translation id="5146995429444047494">Les notificacions per a <ph name="ORIGIN" /> estan bloquejades</translation>
 <translation id="514704532284964975"><ph name="URL" /> vol veure i canviar la informació que hi ha als dispositius amb NFC que toquis amb el teu telèfon</translation>
+<translation id="5147633291963801297">Consulta les baixades de preu al tauler lateral</translation>
 <translation id="5148809049217731050">Cara amunt</translation>
 <translation id="5153314898060540200">Música heavy i progressiva</translation>
 <translation id="5157504274688344097">Grans distribuïdors i centres comercials</translation>
@@ -2457,6 +2464,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6450212216969386944">Sobre Chou 40</translation>
 <translation id="6451458296329894277">Confirma el reenviament del formulari</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">Selecciona l'objectiu de la política</translation>
 <translation id="6456955391422100996">L'anunci s'ha suprimit.</translation>
 <translation id="6457206614190510200">Cosit al llom</translation>
 <translation id="6457455098507772300">Les alertes de baixada de preu es mostren com a notificacions emergents a l'ordinador</translation>
@@ -2740,6 +2748,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7108819624672055576">Permès per una extensió</translation>
 <translation id="7109510814665441393">Jocs de conducció i de curses</translation>
 <translation id="7110116949943042888">Feines temporals i de temporada</translation>
+<translation id="7110553203952632623">Si baixa el preu en qualsevol lloc web, rebràs una alerta</translation>
 <translation id="7111012039238467737">(Vàlid)</translation>
 <translation id="7111507312244504964">Inspeccions i peritatges de propietats</translation>
 <translation id="7112327784801341716">No es mostren les teves dades actuals? Contacta amb el teu banc per actualitzar-les.</translation>
@@ -3232,6 +3241,7 @@ Detalls addicionals:
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> no s'ha instal·lat correctament a l'ordinador o a la xarxa. Demana a l'administrador de TI que resolgui aquest problema.</translation>
 <translation id="8131740175452115882">Confirma</translation>
 <translation id="8134058435519644366">Contractació de personal</translation>
+<translation id="8144303576836498784">S'ha produït un error. El canvi no s'ha desat.</translation>
 <translation id="8148608574971654810">Versió de PDF:</translation>
 <translation id="8149426793427495338">L'ordinador ha entrat en mode de repòs.</translation>
 <translation id="8150722005171944719">El fitxer de <ph name="URL" /> no es pot llegir. Pot ser que s'hagi eliminat, que s'hagi traslladat o que els permisos del fitxer n'impedeixin l'accés.</translation>
@@ -3245,6 +3255,7 @@ Detalls addicionals:
 <translation id="8184538546369750125">Utilitza l'opció predeterminada global (Permet)</translation>
 <translation id="8186706823560132848">Programari</translation>
 <translation id="8190193880870196235">Gestionat per una extensió</translation>
+<translation id="8194412401381329820">No pots utilitzar aquesta pàgina des d'un compte gestionat en aquest dispositiu no gestionat. Si utilitzes aquesta pàgina, tots els comptes gestionats es bloquejaran, excepte els gestionats per la mateixa entitat que aquest dispositiu (comptes afiliats).</translation>
 <translation id="8194797478851900357">&amp;Desfés el moviment</translation>
 <translation id="8194956568907463262">Jocs de trets</translation>
 <translation id="8200772114523450471">Reprèn</translation>
@@ -3252,6 +3263,7 @@ Detalls addicionals:
 <translation id="8202370299023114387">Conflicte</translation>
 <translation id="8207625368992715508">Esports de motor</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
+<translation id="8210490490377416373">Selecciona el nom de la política</translation>
 <translation id="8210604850413485128">Allotjament web</translation>
 <translation id="8211406090763984747">La connexió és segura</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3367,6 +3379,7 @@ Detalls addicionals:
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, prem Tab i després Retorn per gestionar les preferències de galetes a la configuració de Chrome</translation>
 <translation id="8433057134996913067">Amb aquesta acció es tancarà la sessió a la majoria de llocs web.</translation>
 <translation id="8434840396568290395">Animals de companyia</translation>
+<translation id="8436623588884785770">Afegeix la política</translation>
 <translation id="8437238597147034694">&amp;Desfés el moviment</translation>
 <translation id="8438786541497918448">Vols utilitzar la càmera i el micròfon?</translation>
 <translation id="8438923942245957911">La teva organització ha marcat aquest lloc web</translation>
@@ -3389,6 +3402,7 @@ Detalls addicionals:
 <translation id="8483229036294884935">Aquesta adreça se suprimirà del teu Compte de Google, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Objectiu d'aplicació</translation>
 <translation id="8490137692873530638">Apiladora 10</translation>
+<translation id="8493829133024050711">Selecciona la font de la política</translation>
 <translation id="8493948351860045254">Allibera espai</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ha tardat massa a respondre.</translation>
 <translation id="8503559462189395349">Contrasenyes de Chrome</translation>

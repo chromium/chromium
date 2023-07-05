@@ -311,6 +311,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1244265436519979884">Återställning av Linux pågår</translation>
 <translation id="1244303850296295656">Fel i tillägg</translation>
 <translation id="1244917379075403655">Klicka på Inställningar</translation>
+<translation id="1245331638296910488">Filerna flyttas till OneDrive när de öppnas i Microsoft 365</translation>
 <translation id="1245628370644070008">Återställning av lokal data</translation>
 <translation id="1246863218384630739">Det gick inte att installera <ph name="VM_NAME" />: Avbildningens webbadress returnerade felkoden <ph name="HTTP_ERROR" />. Kontakta administratören.</translation>
 <translation id="1247372569136754018">Mikrofon (inbyggd)</translation>
@@ -672,6 +673,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1552301827267621511">Tillägget <ph name="EXTENSION_NAME" /> ändrade sökleverantören till <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Hantera tillägg</translation>
 <translation id="1553538517812678578">obegränsad</translation>
+<translation id="1553947773881524342"><ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /> om Microsoft 365 på Chromebook.</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1556127816860282890">Bakgrundsaktivitet och vissa visuella effekter, till exempel jämn scrollning, kan begränsas</translation>
 <translation id="1556537182262721003">Det gick inte att flytta tilläggskatalogen till profilen.</translation>
@@ -1129,6 +1131,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1904580727789512086">Webbadresserna du besöker sparas i Google-kontot</translation>
 <translation id="1905375423839394163">Chromebook-enhetens namn</translation>
 <translation id="1906181697255754968">Åtkomst till filer och mappar på enheten brukar kunna behövas t.ex. för att spara det du gör på webbplatsen automatiskt</translation>
+<translation id="1906488504371069394">Upptäck fler tillägg och teman i <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Skriv med rösten. Använd Sök + D och börja sedan tala.</translation>
 <translation id="1908591798274282246">Öppna stängd grupp igen</translation>
 <translation id="1909880997794698664">Är du säker på att du vill använda kioskläge på enheten permanent?</translation>
@@ -1943,6 +1946,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2561211427862644160">Se alla dina bokmärken här</translation>
 <translation id="2564520396658920462">Funktionen att köra JavaScript via AppleScript är inaktiverad. Om du vill aktivera funktionen väljer du Visa &gt; Utvecklare &gt; Tillåt JavaScript från Apple Events. Läs mer på: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Förbättrad stavningskontroll</translation>
+<translation id="2565214867520763227">Aktivera skärmläsaren</translation>
 <translation id="2568694057933302218">I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplatser med hjälp av cookies. Din webbaktivitet används inte för sådant som annonsanpassning. Vissa webbplatsers funktioner kanske inte fungerar.</translation>
 <translation id="2568774940984945469">Infobar-behållare</translation>
 <translation id="2569972178052279830">Återförsäljarens namn</translation>
@@ -2575,6 +2579,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3089948625237571254">Kopiera videoram</translation>
 <translation id="3090227230165225418">Visa nedladdningsaviseringar</translation>
 <translation id="3090589793601454425">Flytta inte</translation>
+<translation id="309079592386854321">Kontrollera att skrivaren är ansluten till samma wifi-nätverk som din Chromebook eller använd en USB-kabel. <ph name="LINK_BEGIN" />Läs mer om kompatibilitet<ph name="LINK_END" />.</translation>
 <translation id="3090819949319990166">Det går inte att kopiera den externa CRX-filen till <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558"><ph name="DEVICE_NAME" /> har kopplats</translation>
 <translation id="3093714882666365141">Tillåt inte att webbplatser installerar betalningshanterare</translation>
@@ -4089,6 +4094,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4410545552906060960">Lås upp enheten med en sifferkod (pinkod) i stället för ett lösenord. Du kan ange en pinkod senare i inställningarna.</translation>
 <translation id="4411578466613447185">Kodsigneringscertifikat</translation>
 <translation id="4411719918614785832">De här nycklarna sparas i Windows Hello på den här datorn. De sparas inte i Google-kontot.</translation>
+<translation id="4412275763838812196">Skärmläsaren på ChromeOS, ChromeVox, används i första hand av personer som är blinda eller har nedsatt syn. Tryck på blanksteg för att aktivera ChromeVox. När ChromeVox har aktiverats får du ta en snabbtitt.</translation>
 <translation id="4412632005703201014">Chrome-appar migreras till progressiva webbappar. Den här Chrome-appen har installerats i webbläsaren av din organisation. Om du vill öppna den progressiva webbappen från applistan måste du först kontakta administratören och be hen avinstallera Chrome-appen. Under tiden kan du besöka <ph name="EXTENSION_LAUNCH_URL" /> för att öppna <ph name="EXTENSION_NAME" /> på webben.</translation>
 <translation id="4412698727486357573">Hjälpcenter</translation>
 <translation id="4412992751769744546">Tillåt cookies från tredje part</translation>
@@ -4300,6 +4306,7 @@ Enhetssignaler kan innehålla information om webbläsaren, operativsystemet, enh
 <translation id="4585793705637313973">Redigera sida</translation>
 <translation id="4586275095964870617">Det gick inte att öppna <ph name="URL" /> i den andra webbläsaren. Kontakta systemadministratören.</translation>
 <translation id="4587589328781138893">Webbplatser</translation>
+<translation id="4588882777927162244">Skärmläsaren på ChromeOS Flex, ChromeVox, används i första hand av personer som är blinda eller har nedsatt syn. Tryck på blanksteg för att aktivera ChromeVox. När ChromeVox har aktiverats får du ta en snabbtitt.</translation>
 <translation id="4589713469967853491">Loggarna har sparats i katalogen Nedladdningar.</translation>
 <translation id="459204634473266369">Inga enheter har sparats i <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">Det går snabbare att surfa och söka.</translation>
@@ -5083,6 +5090,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5284445933715251131">Fortsätt nedladdning</translation>
 <translation id="5285635972691565180">Skärm <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Skannar</translation>
+<translation id="5287073652040102781">Skärmläsaren på ChromeOS Flex, ChromeVox, används i första hand av personer som är blinda eller har nedsatt syn. Aktivera ChromeVox genom att hålla båda volymknapparna nedtryckta i fem sekunder. När ChromeVox har aktiverats får du ta en snabbtitt.</translation>
 <translation id="5287425679749926365">Dina konton</translation>
 <translation id="5288106344236929384">Fler åtgärder, nyckelalternativ för <ph name="USERNAME" /> på <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Ö&amp;ppna en stängd flik igen</translation>
@@ -5631,6 +5639,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5772114492540073460">Med <ph name="PARALLELS_NAME" /> kan du köra Windows®-appar på Chromebook. Minst <ph name="MINIMUM_SPACE" /> ledigt utrymme rekommenderas för installationen.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Du kan vänta och se om sidan svarar eller lämna den.}other{Du kan vänta och se om sidorna svarar eller lämna dem.}}</translation>
 <translation id="5772737134857645901">Mer information om <ph name="FILE_NAME" /> <ph name="STATUS" /></translation>
+<translation id="577313026359983030">Mina tillägg</translation>
 <translation id="5774295353725270860">Öppna appen Filer</translation>
 <translation id="5776450228446082914">Webbplatslistan kan öppnas i vilken som helst av webbläsarna.</translation>
 <translation id="5776571780337000608">Du kan öppna och redigera filer som stöds i den här appen via filsökaren eller andra appar. <ph name="BEGIN_LINK" />Läs mer om hur du ställer in standardappar på enheten<ph name="END_LINK" /> om du vill styra vilka filer som öppnas i den här appen som standard.</translation>
@@ -6833,6 +6842,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6798780071646309401">caps lock på</translation>
 <translation id="6798954102094737107">Pluginprogram: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">Allmänna inställningar</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Välj om tillägget ska kunna läsa eller ändra webbplatsen}other{Välj om tilläggen ska kunna läsa eller ändra webbplatsen}}</translation>
 <translation id="6801435275744557998">Kalibrera pekskärmen</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">Det finns en virtuell maskin med namnet <ph name="DEFAULT_VM_NAME" /></translation>
@@ -8039,6 +8049,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7800518121066352902">Rotera m&amp;oturs</translation>
 <translation id="7801679634091975683">Ändringar du gör här gäller endast webbläsaren Lacros Chrome. Om du vill göra ändringar i inställningarna för webbläsaren Chrome öppnar du Chrome och väljer inställningarna.</translation>
 <translation id="780301667611848630">Nej tack</translation>
+<translation id="7803267169006795990">Skärmläsaren på ChromeOS, ChromeVox, används i första hand av personer som är blinda eller har nedsatt syn. Aktivera ChromeVox genom att hålla båda volymknapparna nedtryckta i fem sekunder. När ChromeVox har aktiverats får du ta en snabbtitt.</translation>
 <translation id="7803657407897251194">Om du vill fortsätta med Android-enheten ansluter du <ph name="DEVICE_TYPE" /> till ett nätverk</translation>
 <translation id="7804072833593604762">Fliken har stängts</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -9589,6 +9600,7 @@ Du kan skicka den till Google Säker webbsökning för att kontrollera om den ä
 <translation id="9108808586816295166">Säker DNS kanske inte alltid är tillgänglig</translation>
 <translation id="9109122242323516435">Frigör utrymme genom att ta bort filer från lagringsutrymmet på enheten.</translation>
 <translation id="9109283579179481106">Anslut till ett mobilnätverk</translation>
+<translation id="9110739391922513676">Ställ in Microsoft 365 till att öppna filer</translation>
 <translation id="9111102763498581341">Lås upp</translation>
 <translation id="9111305600911828693">Ingen licens har konfigurerats</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9711,6 +9723,7 @@ Du kan skicka den till Google Säker webbsökning för att kontrollera om den ä
 <translation id="9220820413868316583">Lyft fingret och testa igen.</translation>
 <translation id="922152298093051471">Anpassa Chrome</translation>
 <translation id="923467487918828349">Visa alla</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Öppna Tillägg för att hantera den}other{Öppna Tillägg för att hantera dem}}</translation>
 <translation id="924818813611903184">Hantera språk i inställningarna för Chrome OS</translation>
 <translation id="925270020047573546">Den här enheten har inte stöd för att casta ljud från skrivbordet.</translation>
 <translation id="930268624053534560">Detaljerade tidsstämplar</translation>

@@ -127,6 +127,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Təşkilatınızın idarə etmədiyi saytda parolunuzu daxil etdiniz. Hesabınızı qorumaq üçün digər tətbiq və saytlarda parolunuzdan təkrar istifadə etməyin.</translation>
 <translation id="1257553931232494454">zoom səviyyələri</translation>
+<translation id="1259843033850529027">Siyasət səviyyəsi seçin</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarınızı idarə edin</translation>
 <translation id="1264309058268477500">Alternativ</translation>
 <translation id="1264974993859112054">İdman</translation>
@@ -304,6 +305,7 @@
 <translation id="1593359183944365958">270 dərəcə</translation>
 <translation id="1594030484168838125">Seçin</translation>
 <translation id="1596296697375291157">Triller, cinayət və sirr filmləri</translation>
+<translation id="1597473228022844713">Bu məhsulu izləyirsiniz. Bu səhifə <ph name="LAST_BOOKMARKS_FOLDER" /> qovluğunda saxlanıb</translation>
 <translation id="1599199147673445968">Yeni kart? <ph name="BEGIN_LINK" />Kart Detallarını daxil edin<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome'da Dinozavr Qaçış oyununu oynayın</translation>
 <translation id="161042844686301425">Firuzəyi</translation>
@@ -949,6 +951,7 @@
 <translation id="3140646734028448730">Biznes xidmətləri</translation>
 <translation id="3141093262818886744">Hər halda açın</translation>
 <translation id="3141641372357166056">Razılıq qərarı yoxdur</translation>
+<translation id="3144458715650412431">Test siyasətləri tətbiq edilib. chrome://policy/test ünvanında nəzər salıb, sıfırlayın. Admin siyasətləri tətbiq edilməyəcək.</translation>
 <translation id="3145945101586104090">Cavabı dekodlaşdırmaq olmadı</translation>
 <translation id="3150653042067488994">Müvəqqəti server xətası</translation>
 <translation id="3150889484970506196">"Cədvəl yaradın" düyməsi, aktivləşdirərək cəld yeni Google Cədvəl yaradın</translation>
@@ -1340,6 +1343,7 @@
 <translation id="3987940399970879459">1 MB-dan az</translation>
 <translation id="3990250421422698716">Kənarını bükün</translation>
 <translation id="3992684624889376114">Bu səhifə haqqında</translation>
+<translation id="3995639283717357522">Siyasətlərin tətbiq edilməsi</translation>
 <translation id="399952081411886534">Reklamları daha məxfi edən digər funksiyalar</translation>
 <translation id="4000598935132966791">İdarə edilən brauzerlərdə sayt məhdudiyyətləri haqqında ətraflı məlumat</translation>
 <translation id="4006465311664329701">Google Pay istifadə edən Ödəniş Metodları, Təkliflər və Ünvanlar</translation>
@@ -1520,6 +1524,7 @@
 <translation id="4333561522337981382">Bütün displeylərinizdə pəncərələri idarə edin</translation>
 <translation id="4338709847516294988">Axtarış və m üzərinə basıb, kontekst menyusunda şəkli mətnə çevirin</translation>
 <translation id="4340575312453649552">Bu reklam cihazınız üçün həddindən çox mənbədən istifadə etdiyinə görə Chrome onu sildi.</translation>
+<translation id="4340810192899866471">JSON-dan import edin</translation>
 <translation id="4340982228985273705">Bu kompüter korporativ idarə edilmir, ona görə də siyasət yalnız Chrome Veb Mağazasında saxlanılan artırmaları quraşdıra bilər. Chrome Veb Mağaza güncəlləmə linki: "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> saytına bağlantı güvənli deyil</translation>
 <translation id="4349365535725594680">Məxfi kontenti paylaşmaq olmur</translation>
@@ -1768,6 +1773,7 @@
 <translation id="4901778704868714008">Yadda saxlayın...</translation>
 <translation id="4901952598169637881">Gündəlik ayaqqabılar</translation>
 <translation id="4905659621780993806">Administrator cihazınızı bu vaxt avtomatik olaraq yenidən başladacaq: <ph name="TIME" />, <ph name="DATE" /> Cihazınız yenidən başlamazdan əvvəl hər hansı açıq elementləri yadda saxlayın.</translation>
+<translation id="4907289208610706508">Hədəf</translation>
 <translation id="4913987521957242411">Yuxarı soldan deşik açın</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> tətbiqini quraşdırın (endirmək tələb edilmir)</translation>
 <translation id="4920457992177678649">Tətil icarəsi və qısamüddətli qonaqlamalar</translation>
@@ -1877,6 +1883,7 @@
 <translation id="5145883236150621069">Xəta kodu siyasət cavabında mövcuddur</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> üçün bildirişlər blok edilib</translation>
 <translation id="514704532284964975"><ph name="URL" /> telefonunuzla toxunduğunuz NFC cihazlarında məlumatları görmək və dəyişmək istəyir</translation>
+<translation id="5147633291963801297">Yan paneldə qiymət endirimlərinə baxın</translation>
 <translation id="5148809049217731050">Üzü yuxarı</translation>
 <translation id="5153314898060540200">Hard rok &amp; proqressiv</translation>
 <translation id="5157504274688344097">Kütləvi satış yeri və univermaqlar</translation>
@@ -2453,6 +2460,7 @@
 <translation id="6450212216969386944">Zərf Çou 40</translation>
 <translation id="6451458296329894277">Formanın yenidən təqdim edilməsini təsdiq edin</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">Siyasət hədəfi seçin</translation>
 <translation id="6456955391422100996">Reklam silindi.</translation>
 <translation id="6457206614190510200">Yəhər tikişi vurun</translation>
 <translation id="6457455098507772300">Qiymət endirimi xəbərdarlıqları masaüstündə popap bildirişləri kimi görünür</translation>
@@ -2736,6 +2744,7 @@
 <translation id="7108819624672055576">Artırma tərəfindən icazə verildi</translation>
 <translation id="7109510814665441393">Sürücülük və yarış oyunları</translation>
 <translation id="7110116949943042888">Müvəqqəti və mövsümi işlər</translation>
+<translation id="7110553203952632623">Hansısa saytda qiymət enərsə, e-poçt xəbərdarlığı alacaqsınız</translation>
 <translation id="7111012039238467737">(Düzgün)</translation>
 <translation id="7111507312244504964">Mülk yoxlama və qiymətləndirmə</translation>
 <translation id="7112327784801341716">Cari məlumatlarınızı görmürsünüz? Yeniləmək üçün bankınızla əlaqə saxlayın.</translation>
@@ -3228,6 +3237,7 @@
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" kompüter və ya şəbəkənizdə düzgün quraşdırılmayıb. IT administratorunuzdan bu problemi həll etməyi tələb edin.</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
 <translation id="8134058435519644366">İşə qəbul və iş heyəti</translation>
+<translation id="8144303576836498784">Xəta oldu. Dəyişiklik yadda saxlanmadı</translation>
 <translation id="8148608574971654810">PDF versiyası:</translation>
 <translation id="8149426793427495338">Kompüteriniz yatmağa getdi.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> linkində olan fayl oxunmur. O, silinmiş, köçürülmüş ola bilər və ya fayl icazələri girişin qarşısını alıb.</translation>
@@ -3241,6 +3251,7 @@
 <translation id="8184538546369750125">Qlobal defoltdan istifadə edin (İcazə verin)</translation>
 <translation id="8186706823560132848">Proqram</translation>
 <translation id="8190193880870196235">Artırma tərəfindən idarə edilir</translation>
+<translation id="8194412401381329820">Bu səhifəni idarə olunmayan cihazda idarə olunan hesabdan istifadə etmək olmaz. Bu səhifədən istifadə etsəniz, bu cihazla eyni müəssisə tərəfindən idarə olunan hesablar (əlaqəli hesablar) istisna olmaqla bütün idarə olunan hesablar kilidlənəcək.</translation>
 <translation id="8194797478851900357">&amp;Ləğv edin</translation>
 <translation id="8194956568907463262">Atıcılıq oyunları</translation>
 <translation id="8200772114523450471">Davam edin</translation>
@@ -3248,6 +3259,7 @@
 <translation id="8202370299023114387">Ziddiyət</translation>
 <translation id="8207625368992715508">Motor idmanları</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
+<translation id="8210490490377416373">Siyasət adı seçin</translation>
 <translation id="8210604850413485128">Veb hostinq</translation>
 <translation id="8211406090763984747">Bağlantı təhlükəsizdir</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3363,6 +3375,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında kuki tərcihlərinizi idarə etmək üçün Tab, sonra Enter düyməsinə basın</translation>
 <translation id="8433057134996913067">Bu Sizi bir çox veb saytdan çıxaracaq.</translation>
 <translation id="8434840396568290395">Ev heyvanları</translation>
+<translation id="8436623588884785770">Siyasət əlavə edin</translation>
 <translation id="8437238597147034694">&amp;Daşınmanı ləğv edin</translation>
 <translation id="8438786541497918448">Kamera və mikrofon istifadə edilsin?</translation>
 <translation id="8438923942245957911">Bu sayt təşkilatınız tərəfindən işarələnib</translation>
@@ -3385,6 +3398,7 @@
 <translation id="8483229036294884935">Bu ünvan Google Hesabınızdan (<ph name="ACCOUNT" />) silinəcək</translation>
 <translation id="8488350697529856933">Tətbiq olunur</translation>
 <translation id="8490137692873530638">Yığıcı 10</translation>
+<translation id="8493829133024050711">Siyasət mənbəyi seçin</translation>
 <translation id="8493948351860045254">Yaddaşı boşaldın</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> hostuna cavab çox uzun çəkdi.</translation>
 <translation id="8503559462189395349">Chrome Parolları</translation>

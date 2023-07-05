@@ -311,6 +311,7 @@
 <translation id="1244265436519979884">Linux-г одоогоор сэргээж байна</translation>
 <translation id="1244303850296295656">Өргөтгөлийн алдаа</translation>
 <translation id="1244917379075403655">“Тохиргоо”-г товшино уу</translation>
+<translation id="1245331638296910488">Microsoft 365-ыг нээх үед файлуудыг OneDrive руу зөөнө</translation>
 <translation id="1245628370644070008">Орон нутгийн өгөгдлийг сэргээх</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" />-г суулгаж чадсангүй: Зургийн URL <ph name="HTTP_ERROR" /> алдааны кодыг буцаасан. Админтайгаа холбогдоно уу.</translation>
 <translation id="1247372569136754018">Микрофон (дотоод)</translation>
@@ -669,6 +670,7 @@
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" өргөтгөл хайлтыг <ph name="SEARCH_PROVIDER_DOMAIN" />-г ашиглах болгож өөрчилсөн байна</translation>
 <translation id="1552752544932680961">Өргөтгөлийг удирдах</translation>
 <translation id="1553538517812678578">хязгааргүй</translation>
+<translation id="1553947773881524342">Chromebook-ийнхээ Microsoft 365-ын талаар <ph name="LINK_BEGIN" />нэмэлт мэдээлэл авна уу<ph name="LINK_END" />.</translation>
 <translation id="1555130319947370107">Цэнхэр</translation>
 <translation id="1556127816860282890">Арын үйл ажиллагаа болон төвөггүйгээр гүйлгэх гэх мэт зарим визуал эффектийг ашиглахад хязгаарлагдмал байж болно</translation>
 <translation id="1556537182262721003">Өргөтгөлийн директорыг профайл руу зөөж чадсангүй.</translation>
@@ -1125,6 +1127,7 @@
 <translation id="1904580727789512086">Таны зочилсон URL-уудыг Google Бүртгэлд тань хадгалсан.</translation>
 <translation id="1905375423839394163">Chromebook төхөөрөмжийн нэр</translation>
 <translation id="1906181697255754968">Сайтууд ихэвчлэн таны ажлыг автоматаар хадгалах зэрэг онцлогуудад зориулж таны төхөөрөмж дээрх файл болон фолдерт ханддаг</translation>
+<translation id="1906488504371069394"><ph name="BEGIN_LINK" />Chrome Веб Дэлгүүрээс<ph name="END_LINK" /> бусад өргөтгөл болон загвартай танилцаарай</translation>
 <translation id="1907044622262489040">Дуу хоолойгоороо бичнэ үү. Search + D-г ашиглаад, дараа нь ярьж эхэлнэ үү.</translation>
 <translation id="1908591798274282246">Хаасан бүлгийг дахин нээх</translation>
 <translation id="1909880997794698664">Та энэ төхөөрөмжийг байнгын киоск горимд хадгалахыг хүсч байна уу?</translation>
@@ -1939,6 +1942,7 @@
 <translation id="2561211427862644160">Бүх хавчуургаа эндээс харна уу</translation>
 <translation id="2564520396658920462">AppleScript-р гүйцэтгэж байгаа JavaScript-г унтраалттай байна. Үүнийг асаахын тулд цэсийн талбарын Apple-н арга хэмжээнээс Харах &gt; Хөгжүүлэгч &gt; JavaScript-г зөвшөөрөх хэсэгт очно уу. Дэлгэрэнгүй мэдээллийг: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Зөв бичгийн алдаа шалгах сайжруулсан онцлог</translation>
+<translation id="2565214867520763227">Дэлгэц уншигчийг асаах</translation>
 <translation id="2568694057933302218">Нууцлалтай горимд байх үед сайтууд таны күүкиг сайтууд дээрх хөтчийн үйл ажиллагааг тань харахад ашиглах боломжгүй. Таны хөтчийн үйл ажиллагааг зар хувийн болгох зэрэг зүйлсэд ашигладаггүй. Зарим сайтын онцлогууд ажиллахгүй байж магадгүй.</translation>
 <translation id="2568774940984945469">Мэдээллийн цонх агуулагч</translation>
 <translation id="2569972178052279830">Жижиглэн борлуулагчийн нэр</translation>
@@ -2571,6 +2575,7 @@
 <translation id="3089948625237571254">Видеоны фрэймийг хуулах</translation>
 <translation id="3090227230165225418">Таталтын мэдэгдлийг зарлах</translation>
 <translation id="3090589793601454425">Бүү зөө</translation>
+<translation id="309079592386854321">Таны хэвлэгч Chromebook-тэй тань ижил Wi-Fi сүлжээнд холбогдсон эсэхийг шалгах эсвэл USB кабель ашиглана уу. <ph name="LINK_BEGIN" />Тохирох эсэх талаар нэмэлт мэдээлэл авна уу<ph name="LINK_END" />.</translation>
 <translation id="3090819949319990166">Гадаад crx файлыг <ph name="TEMP_CRX_FILE" />-д хуулах боломжгүй байна.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" хосолсон</translation>
 <translation id="3093714882666365141">Сайтуудад төлбөр хариуцагч суулгахыг бүү зөвшөөр</translation>
@@ -4084,6 +4089,7 @@
 <translation id="4410545552906060960">Төхөөрөмжийнхөө түгжээг тайлахын тулд нууц үг ашиглахын оронд дугаар (ПИН) ашиглана уу. ПИН-ээ дараа тохируулахын тулд тохиргоо хэсэгт очно уу.</translation>
 <translation id="4411578466613447185">Кодын гарын үсэг зурагч</translation>
 <translation id="4411719918614785832">Эдгээр passkey-г энэ компьютер дээр Windows Hello-д хадгалсан. Тэдгээрийг таны Google Бүртгэлд хадгалаагүй.</translation>
+<translation id="4412275763838812196">ChromeOS, ChromeVox-н дэлгэц уншигчийг гол төлөв хараагүй болон хараа муутай хүмүүс ашигладаг. ChromeVox-г асаахын тулд зай авах товчийг дарна уу. ChromeVox-г идэвхжүүлсэн үед та шуурхай аялал хийнэ.</translation>
 <translation id="4412632005703201014">Chrome Аппыг Дэвшилтэт веб апп (PWA) руу шилжүүлж байна. Энэ Chrome Аппыг танай байгууллагаас хөтчид тань суулгасан. Аппуудын жагсаалтаас Дэвшилтэт веб аппыг (PWA) нээхийн тулд эхлээд администратортайгаа холбогдож, Chrome Аппыг устгахыг хүснэ үү. Энэ хооронд та вебэд <ph name="EXTENSION_NAME" />-г нээхийн тулд <ph name="EXTENSION_LAUNCH_URL" />-д зочлох боломжтой.</translation>
 <translation id="4412698727486357573">Тусламжийн төв</translation>
 <translation id="4412992751769744546">Гуравдагч этгээдийн cookies-г зөвшөөрөх</translation>
@@ -4295,6 +4301,7 @@
 <translation id="4585793705637313973">Хуудас засах</translation>
 <translation id="4586275095964870617"><ph name="URL" />-г өөр хөтчид нээж чадсангүй. Системийнхээ админтай холбогдоно уу.</translation>
 <translation id="4587589328781138893">Сайт</translation>
+<translation id="4588882777927162244">ChromeOS Flex, ChromeVox-н дэлгэц уншигчийг гол төлөв хараагүй болон хараа муутай хүмүүс ашигладаг. ChromeVox-г асаахын тулд зай авах товчийг дарна уу. ChromeVox-г идэвхжүүлсэн үед та шуурхай аялал хийнэ.</translation>
 <translation id="4589713469967853491">Логуудыг Татаж авсан файлын лавлахад амжилттай бичлээ.</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />-д хадгалсан төхөөрөмж байхгүй</translation>
 <translation id="4592525994536856567">Үзэх болон хайх нь илүү хурдан байдаг.</translation>
@@ -5078,6 +5085,7 @@
 <translation id="5284445933715251131">Үргэлжлүүлэн татах</translation>
 <translation id="5285635972691565180">Дэлгэц <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Скан хийж байна</translation>
+<translation id="5287073652040102781">ChromeOS Flex, ChromeVox-н дэлгэц уншигчийг гол төлөв хараагүй болон хараа муутай хүмүүс ашигладаг. ChromeVox-г асаахын туд хоёр дууны түвшний товчийг хоёуланг нь таван секундийн турш удаан дарна уу. ChromeVox-г идэвхжүүлсэн үед та шуурхай аялал хийнэ.</translation>
 <translation id="5287425679749926365">Таны бүртгэл</translation>
 <translation id="5288106344236929384">Бусад үйлдэл, <ph name="DOMAIN" /> дээрх <ph name="USERNAME" />-н passkey-н сонголт</translation>
 <translation id="5288678174502918605">Хаагдсан цонхнуудыг дахин нээх</translation>
@@ -5627,6 +5635,7 @@
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> нь танд Chromebook дээрээ Windows® аппуудыг ажиллуулах боломж олгодог. Суулгахад <ph name="MINIMUM_SPACE" />-н сул зайтай байхыг зөвлөдөг.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Та үүнийг хариу өгөх хүртэл хүлээх эсвэл хуудаснаас гарах боломжтой.}other{Та тэднээс хариу өгөх хүртэл хүлээх эсвэл хуудаснаас гарах боломжтой.}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" /> дэлгэрэнгүй мэдээлэл</translation>
+<translation id="577313026359983030">Миний өргөтгөлүүд</translation>
 <translation id="5774295353725270860">Файлууд аппликейшнийг нээх</translation>
 <translation id="5776450228446082914">Аль ч хөтчид нээгдэх боломжтой вебсайтын жагсаалт.</translation>
 <translation id="5776571780337000608">Та дэмжигдсэн файлуудыг файлын хөтчөөсөө энэ аппаар эсвэл бусад аппаар нээх болон засах боломжтой. Энэ аппад өгөгдмөлөөр аль файлуудыг нээхийг хянахын тулд <ph name="BEGIN_LINK" />төхөөрөмж дээрээ өгөгдмөл аппуудыг хэрхэн тохируулах талаар мэдэж авна уу<ph name="END_LINK" />.</translation>
@@ -6828,6 +6837,7 @@
 <translation id="6798780071646309401">томоор бичих горим асаалттай</translation>
 <translation id="6798954102094737107">Нэмэлт өргөтгөл: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">Ерөнхий тохиргоо</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Энэ өргөтгөл уг сайтыг уншиж эсвэл өөрчилж болох эсэхийг сонгоно уу}other{Эдгээр өргөтгөл уг сайтыг уншиж эсвэл өөрчилж болох эсэхийг сонгоно уу}}</translation>
 <translation id="6801435275744557998">Мэдрэмтгий дэлгэцийг тохируулах</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> ( <ph name="OID" /> )</translation>
 <translation id="680488281839478944">VM "<ph name="DEFAULT_VM_NAME" />" ашиглалтад байна</translation>
@@ -8033,6 +8043,7 @@
 <translation id="7800518121066352902">Цагийн зүүний эсрэг эргүүлэх</translation>
 <translation id="7801679634091975683">Таны энд хийсэн өөрчлөлтүүд зөвхөн Lacros Chrome хөтчид хэрэгжинэ. Chrome хөтчийн тохиргоондоо өөрчлөлтүүд хийхийн тулд Chrome хөтчийг нээж, тохиргоо руу очно уу.</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
+<translation id="7803267169006795990">ChromeOS, ChromeVox-н дэлгэц уншигчийг гол төлөв хараагүй болон хараа муутай хүмүүс ашигладаг. ChromeVox-г асаахын туд хоёр дууны түвшний товчийг хоёуланг нь таван секундийн турш удаан дарна уу. ChromeVox-г идэвхжүүлсэн үед та шуурхай аялал хийнэ.</translation>
 <translation id="7803657407897251194">Android төхөөрөмжөөрөө үргэлжлүүлэн тохируулахын тулд өөрийн <ph name="DEVICE_TYPE" />-г сүлжээнд холбоорой</translation>
 <translation id="7804072833593604762">Таб хаагдсан</translation>
 <translation id="7805768142964895445">Байр байдал</translation>
@@ -9579,6 +9590,7 @@
 <translation id="9108808586816295166">Аюулгүй DNS нь үргэлж боломжтой биш байж болзошгүй</translation>
 <translation id="9109122242323516435">Багтаамж нэмэгдүүлэхийн тулд төхөөрөмжийн сангаас файл устгана уу.</translation>
 <translation id="9109283579179481106">Мобайл сүлжээнд холбогдох</translation>
+<translation id="9110739391922513676">Файлуудыг нээхийн тулд Microsoft 365-ыг тохируулна уу</translation>
 <translation id="9111102763498581341">Нээх</translation>
 <translation id="9111305600911828693">Лицензийг тохируулаагүй байна</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" /> : <ph name="STATUS" /></translation>
@@ -9701,6 +9713,7 @@
 <translation id="9220820413868316583">Дээшлүүлээд дахин оролдоно уу.</translation>
 <translation id="922152298093051471">Chrome-г өөрчлөх</translation>
 <translation id="923467487918828349">Бүгдийг харуул</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Үүнийг удирдахын тулд Өргөтгөлүүдийг нээнэ үү}other{Эдгээрийг удирдахын тулд Өргөтгөлүүдийг нээнэ үү}}</translation>
 <translation id="924818813611903184">Хэлнүүдийг ChromeOS-н тохиргоонд удирдах</translation>
 <translation id="925270020047573546">Энэ төхөөрөмж дээр дэлгэцийн аудио дамжуулахыг дэмждэггүй.</translation>
 <translation id="930268624053534560">Дэлгэрэнгүй Timestamps</translation>

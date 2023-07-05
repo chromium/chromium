@@ -127,6 +127,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">আপনার প্রতিষ্ঠানের নয় এমন একটি সাইটে আপনার পাসওয়ার্ড লিখেছেন। আপনার অ্যাকাউন্টের সুরক্ষার জন্য অন্যান্য অ্যাপ এবং সাইটগুলিতে আপনার এই পাসওয়ার্ডটি ব্যবহার করবেন না।</translation>
 <translation id="1257553931232494454">জুম লেভেল</translation>
+<translation id="1259843033850529027">নীতির লেভেল বেছে নিন</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Chrome সেটিংস ম্যানেজ করতে Tab প্রেস করে Enter প্রেস করুন</translation>
 <translation id="1264309058268477500">বিকল্প</translation>
 <translation id="1264974993859112054">খেলাধূলা</translation>
@@ -304,6 +305,7 @@
 <translation id="1593359183944365958">২৭০ ডিগ্রী</translation>
 <translation id="1594030484168838125">বেছে নিন</translation>
 <translation id="1596296697375291157">থ্রিলার, ক্রাইম ও রহস্যমূলক সিনেমা</translation>
+<translation id="1597473228022844713">আপনি এই প্রোডাক্টটি ট্র্যাক করছেন। এই পৃষ্ঠাটি <ph name="LAST_BOOKMARKS_FOLDER" />-এ সেভ করা আছে</translation>
 <translation id="1599199147673445968">নতুন কার্ড? <ph name="BEGIN_LINK" />কার্ডের বিবরণ লিখুন<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome-এ ডাইনো রান গেম খেলুন</translation>
 <translation id="161042844686301425">নীলাভ</translation>
@@ -950,6 +952,7 @@
 <translation id="3140646734028448730">ব্যবসায়িক পরিষেবা</translation>
 <translation id="3141093262818886744">যাই হোক, খুলতে চাই</translation>
 <translation id="3141641372357166056">সম্মতি সংক্রান্ত কোনও সিদ্ধান্ত নেই</translation>
+<translation id="3144458715650412431">পরীক্ষা সম্পর্কিত নীতি প্রয়োগ করা হয়েছে। সেগুলি chrome://policy/test থেকে পর্যালোচনা ও রিসেট করুন। অ্যাডমিন সম্পর্কিত নীতি প্রয়োগ করা হবে না।</translation>
 <translation id="3145945101586104090">প্রতিক্রিয়া ডিকোড করতে ব্যর্থ হয়েছে</translation>
 <translation id="3150653042067488994">সাময়িক সার্ভার ত্রুটি</translation>
 <translation id="3150889484970506196">'শিট তৈরি করুন' বোতাম, চটপট নতুন Google Sheet তৈরি করতে এটি চালু করুন</translation>
@@ -1345,6 +1348,7 @@
 <translation id="3987940399970879459">১ এমবির কম</translation>
 <translation id="3990250421422698716">জগ অফসেট</translation>
 <translation id="3992684624889376114">এই পৃষ্ঠা সম্পর্কে</translation>
+<translation id="3995639283717357522">নীতি প্রয়োগ করুন</translation>
 <translation id="399952081411886534">অন্যান্য ফিচার যা বিজ্ঞাপনগুলিকে আরও ব্যক্তিগত করে তোলে</translation>
 <translation id="4000598935132966791">ম্যানেজ করা ব্রাউজারে সাইট সীমাবদ্ধতা সম্পর্কে আরও জানুন</translation>
 <translation id="4006465311664329701">Google Pay-এর সাথে যুক্ত 'পেমেন্ট পদ্ধতি', 'অফার' ও 'ঠিকানা'</translation>
@@ -1525,6 +1529,7 @@
 <translation id="4333561522337981382">আপনার সব ডিসপ্লেতে উইন্ডো ম্যানেজ করুন</translation>
 <translation id="4338709847516294988">Search ও M বোতাম একসাথে প্রেস করে সংশ্লিষ্ট মেনুতে ইমেজ, টেক্সটে কনভার্ট করুন</translation>
 <translation id="4340575312453649552">এই বিজ্ঞাপন আপনার ডিভাইসের অনেক রিসোর্স ব্যবহার করেছে, তাই Chrome সেটি মুছে দিয়েছে।</translation>
+<translation id="4340810192899866471">JSON থেকে ইমপোর্ট করুন</translation>
 <translation id="4340982228985273705">এই কম্পিউটারটি এন্টারপ্রাইজ স্তরে পরিচালনা করা হচ্ছে হিসেবে শনাক্ত করা যায়নি, তাই নীতিটি শুধুমাত্র Chrome ওয়েব স্টোরে হোস্ট করা এক্সটেনশন নিজে থেকে ইনস্টল করতে পারবে। Chrome ওয়েব স্টোর আপডেটের ইউআরএল হল "<ph name="CWS_UPDATE_URL" />"।</translation>
 <translation id="4348834659292907206"><ph name="SITE" />-এর কানেকশনটি সুরক্ষিত নয়</translation>
 <translation id="4349365535725594680">গোপনীয় কন্টেন্ট শেয়ার করা যাচ্ছে না</translation>
@@ -1773,6 +1778,7 @@
 <translation id="4901778704868714008">সেভ করুন...</translation>
 <translation id="4901952598169637881">ক্যাজুয়াল জুতো</translation>
 <translation id="4905659621780993806"><ph name="DATE" />-এ <ph name="TIME" />-এ অ্যাডমিনিস্ট্রেটর অটোমেটিক আপনার ডিভাইস রিস্টার্ট করবে। ডিভাইস রিস্টার্ট হওয়ার আগে খোলা আছে এমন যেকোনও আইটেম সেভ করুন।</translation>
+<translation id="4907289208610706508">লক্ষ্য</translation>
 <translation id="4913987521957242411">উপরের বাঁদিকে পাঞ্চ</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ইনস্টল করুন (ডাউনলোডের প্রয়োজন নেই)</translation>
 <translation id="4920457992177678649">হলিডে হোম ও কম দিনের জন্য থাকা</translation>
@@ -1882,6 +1888,7 @@
 <translation id="5145883236150621069">নীতি প্রতিক্রিয়ার মধ্যে ত্রুটি কোড উপস্থিত</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" />-এর বিজ্ঞপ্তি ব্লক করা হয়েছে</translation>
 <translation id="514704532284964975"><ph name="URL" /> আপনার ফোনে ট্যাপ করেন এমন NFC ডিভাইসে তথ্য দেখতে এবং পরিবর্তন করতে চায়</translation>
+<translation id="5147633291963801297">সাইড প্যানেলে দাম কমার তথ্য দেখুন</translation>
 <translation id="5148809049217731050">সামনের দিক উপরে</translation>
 <translation id="5153314898060540200">হার্ড রক ও প্রগ্রেসিভ</translation>
 <translation id="5157504274688344097">মাস মার্চেন্ট ও ডিপার্টমেন্ট স্টোর্স</translation>
@@ -2457,6 +2464,7 @@
 <translation id="6450212216969386944">এনভেলপ চৌ ৪০</translation>
 <translation id="6451458296329894277">ফর্ম পুনঃজমা নিশ্চিত করুন</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">নীতির লক্ষ্য বেছে নিন</translation>
 <translation id="6456955391422100996">বিজ্ঞাপন সরানো হয়েছে।</translation>
 <translation id="6457206614190510200">স্যাডল স্টিচ</translation>
 <translation id="6457455098507772300">দাম কমে যাওয়া সংক্রান্ত বিজ্ঞপ্তি আপনার ডেস্কটপে পপ-আপ বিজ্ঞপ্তি হিসেবে দেখানো হয়</translation>
@@ -2740,6 +2748,7 @@
 <translation id="7108819624672055576">একটি এক্সটেনশন দ্বারা অনুমোদিত</translation>
 <translation id="7109510814665441393">ড্রাইভিং এবং রেসিং গেম</translation>
 <translation id="7110116949943042888">অস্থায়ী ও সিজনাল চাকরি</translation>
+<translation id="7110553203952632623">কোনও সাইটে দাম কমলে আপনি সেই বিষয়ে ইমেলের মাধ্যমে সতর্কতা পাবেন</translation>
 <translation id="7111012039238467737">(সঠিক)</translation>
 <translation id="7111507312244504964">প্রপার্টি পরিদর্শন ও মূল্যায়ন</translation>
 <translation id="7112327784801341716">আপনার অ্যাকাউন্টের বর্তমান তথ্য দেখতে পাচ্ছেন না? এটি আপডেট করতে আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।</translation>
@@ -3232,6 +3241,7 @@
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" আপনার কম্পিউটার বা নেটওয়ার্কে সঠিক ভাবে ইনস্টল করা হয়নি। আপনার IT প্রশাসককে এই সমস্যাটি সমাধান করতে বলুন।</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>
 <translation id="8134058435519644366">রিক্রুটমেন্ট ও স্টাফিং</translation>
+<translation id="8144303576836498784">কোনও সমস্যা হয়েছে। আপনার করা পরিবর্তন সেভ হয়নি</translation>
 <translation id="8148608574971654810">PDF ভার্সন:</translation>
 <translation id="8149426793427495338">আপনার কম্পিউটারটি নিদ্রা মোডে গিয়েছে।</translation>
 <translation id="8150722005171944719"><ph name="URL" />এ ফাইলটি পাঠযোগ্য নয়৷ এটা মুছে ফেলা হয়েছে পারে, সরিয়ে দেওয়া হয়েছে, অথবা ফাইল অনুমতি প্রবেশাধিকার প্রতিরোধ করতে পারে৷</translation>
@@ -3245,6 +3255,7 @@
 <translation id="8184538546369750125">বিশ্বব্যাপী ডিফল্ট ব্যবহার করুন (অনুমতি দিন)</translation>
 <translation id="8186706823560132848">সফটওয়ার</translation>
 <translation id="8190193880870196235">এক্সটেনশনের মাধ্যমে ম্যানেজ করা হয়েছে</translation>
+<translation id="8194412401381329820">ম্যানেজ না করা এই ডিভাইসে ম্যানেজ করা কোনও অ্যাকাউন্ট থেকে এই পৃষ্ঠা ব্যবহার করতে পারবেন না। আপনি এই পৃষ্ঠা ব্যবহার করলে সব ম্যানেজ করা অ্যাকাউন্ট লক করা হবে, শুধুমাত্র এই ডিভাইসের মতো একই এন্টিটির মাধ্যমে ম্যানেজ করা অ্যাকাউন্ট (অ্যাফিলিয়েট করা কোম্পানি)।</translation>
 <translation id="8194797478851900357">&amp;সরানোকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="8194956568907463262">শুটার গেম</translation>
 <translation id="8200772114523450471">আবার চালু করা</translation>
@@ -3252,6 +3263,7 @@
 <translation id="8202370299023114387">দ্বন্দ্ব</translation>
 <translation id="8207625368992715508">মোটর স্পোর্টস</translation>
 <translation id="8208363704094329105">৩০০ x ৪০০ মিমি</translation>
+<translation id="8210490490377416373">নীতির নাম বেছে নিন</translation>
 <translation id="8210604850413485128">ওয়েব হোস্টিং</translation>
 <translation id="8211406090763984747">কানেকশনটি নিরাপদ</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3367,6 +3379,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে আপনার কুকির অগ্রাধিকার ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="8433057134996913067">এটি বেশিরভাগ ওয়েবসাইট থেকে আপনাকে প্রস্থান করুন করবে।</translation>
 <translation id="8434840396568290395">পোষ্য</translation>
+<translation id="8436623588884785770">নীতি যোগ করুন</translation>
 <translation id="8437238597147034694">&amp;সরানোকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="8438786541497918448">ক্যামেরা ও মাইক্রোফোন ব্যবহার করবেন?</translation>
 <translation id="8438923942245957911">এই সাইটটি আপনার সংস্থা দ্বারা ফ্ল্যাগ করা হয়েছে</translation>
@@ -3389,6 +3402,7 @@
 <translation id="8483229036294884935">এই ঠিকানাটি আপনার Google অ্যাকাউন্ট থেকে মুছে ফেলা হবে, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">এতে প্রয়োগ হয়</translation>
 <translation id="8490137692873530638">স্ট্যাকার ১০</translation>
+<translation id="8493829133024050711">নীতির সোর্স বেছে নিন</translation>
 <translation id="8493948351860045254">জায়গা ফাঁকা করুন</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> সাড়া দিতে খুবে বেশি সময় নিয়েছে।</translation>
 <translation id="8503559462189395349">Chrome পাসওয়ার্ডগুলি</translation>

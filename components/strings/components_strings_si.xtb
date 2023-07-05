@@ -127,6 +127,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">ඔබ ඔබේ සංවිධානය විසින් කළමනාකරණය නොකරන ලද වෙබ් අඩවියක ඔබේ මුරපදය ඇතුළු කර ඇත. ඔබේ ගිණුම ආරක්ෂා කිරීම සඳහා වෙනත් යෙදුම් සහ අඩවි මත ඔබේ මුරපදය නැවත භාවිත නොකරන්න.</translation>
 <translation id="1257553931232494454">විශාලන මට්ටම්</translation>
+<translation id="1259843033850529027">ප්‍රතිපත්ති මට්ටම තෝරන්න</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඔබගේ Chrome සැකසීම් කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="1264309058268477500">Alternate</translation>
 <translation id="1264974993859112054">ක්‍රීඩා</translation>
@@ -304,6 +305,7 @@
 <translation id="1593359183944365958">අංශක 270</translation>
 <translation id="1594030484168838125">තෝරන්න</translation>
 <translation id="1596296697375291157">ත්‍රාසජනක, අපරාධ සහ අභිරහස් චිත්‍රපට</translation>
+<translation id="1597473228022844713">ඔබ මෙම නිෂ්පාදනය නිරීක්ෂණය කරයි. මෙම පිටුව <ph name="LAST_BOOKMARKS_FOLDER" /> හි සුරකින ලදි</translation>
 <translation id="1599199147673445968">නව කාඩ්පත ද? <ph name="BEGIN_LINK" />කාඩ්පත් විස්තර ඇතුළු කරන්න<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome තුළ Dino Run ක්‍රීඩා කරන්න</translation>
 <translation id="161042844686301425">සියන්</translation>
@@ -949,6 +951,7 @@
 <translation id="3140646734028448730">ව්‍යාපාරික සේවා</translation>
 <translation id="3141093262818886744">කෙසේ වුවත් විවෘත කරන්න</translation>
 <translation id="3141641372357166056">කැමැත්ත තීරණයක් නැත</translation>
+<translation id="3144458715650412431">පරීක්ෂණ ප්‍රතිපත්ති යොදවා ඇත. chrome://policy/test හි දී ඒවා සමාලෝචනය කර යළි සකසන්න. පරිපාලක ප්‍රතිපත්ති යොදනු නොලැබේ.</translation>
 <translation id="3145945101586104090">ප්‍රතිචාර විකේතනය කිරීම අසාර්ථකයි</translation>
 <translation id="3150653042067488994">තාවකාලික සේවාදායක දෝශය</translation>
 <translation id="3150889484970506196">පත්‍ර බොත්තම තනන්න, නව Google පත්‍රයක් ඉක්මනින් තැනීමට සක්‍රිය කරන්න</translation>
@@ -1344,6 +1347,7 @@
 <translation id="3987940399970879459">1 MBට වඩා අඩු</translation>
 <translation id="3990250421422698716">අනුලම්බයේ සෙමින් දුවන්න</translation>
 <translation id="3992684624889376114">මෙම පිටුව පිළිබඳ</translation>
+<translation id="3995639283717357522">ප්‍රතිපත්ති යොදන්න</translation>
 <translation id="399952081411886534">දැන්වීම් වඩාත් පෞද්ගලික කරන වෙනත් විශේෂාංග</translation>
 <translation id="4000598935132966791">කළමනාකරණය කළ බ්‍රව්සරවල අඩවි සීමා කිරීම් පිළිබඳව තව දැන ගන්න</translation>
 <translation id="4006465311664329701">Google Pay භාවිතයෙන් ගෙවීමේ ක්‍රම, දීමනා සහ ලිපින</translation>
@@ -1524,6 +1528,7 @@
 <translation id="4333561522337981382">ඔබේ සියලු සංදර්ශකවල කවුළු කළමනාකරණය කරන්න</translation>
 <translation id="4338709847516294988">සන්දර්භය මෙනුවේ සෙවීම ධන m ඔබා රූපය පෙළට පරිවර්තනය කරන්න</translation>
 <translation id="4340575312453649552">මෙම දැන්වීම ඔබේ උපාංගය සඳහා භාවිත කළ සම්පත් ඉතා වැඩි බැවින්, Chrome මෙය ඉවත් කළා.</translation>
+<translation id="4340810192899866471">JSON වෙතින් ආයාත කරන්න</translation>
 <translation id="4340982228985273705">මෙම පරිගණකය ව්‍යවසාය කළමනාකරණය කරනු ලබන ලෙස හදුනා නොගැනේ. එම නිසා ප්‍රතිපත්තියට Chrome Webstore හි පමණක් ස්වයංක්‍රියව දිගු ස්ථාපනය කළ හැකිය. Chrome Webstore යාවත්කාලීන කිරීමේ URL "<ph name="CWS_UPDATE_URL" />" වේ.</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> වෙත සම්බන්ධතාව ආරක්ෂිත නැත</translation>
 <translation id="4349365535725594680">රහසිගත අන්තර්ගතය බෙදා ගත නොහැකිය</translation>
@@ -1772,6 +1777,7 @@
 <translation id="4901778704868714008">සුරකින්න...</translation>
 <translation id="4901952598169637881">සාමාන්‍ය සපත්තු</translation>
 <translation id="4905659621780993806">ඔබගේ පරිපාලක ඔබගේ උපාංගය <ph name="DATE" /> <ph name="TIME" />ට ස්වයංක්‍රියව යළි ආරම්භ කරනු ඇත ඔබගේ උපාංගය යළි ආරම්භ කිරීමට පෙර කිනම් හෝ විවෘත අයිතම සුරකින්න.</translation>
+<translation id="4907289208610706508">ඉලක්කය</translation>
 <translation id="4913987521957242411">ඉහළ වමට අනින්න</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ස්ථාපනය කරන්න (බාගැනීමක් අවශ්‍ය නොවේ)</translation>
 <translation id="4920457992177678649">නිවාඩු කුලියට දීම සහ කෙටි කාලීන නවාතැන්</translation>
@@ -1881,6 +1887,7 @@
 <translation id="5145883236150621069">ප්‍රති්පත්ති ප්‍රතිචාරය තුළ දෝෂ කේතය ඉදිරිපත් කරයි</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> සඳහා දැනුම්දීම් අවහිරයි</translation>
 <translation id="514704532284964975"><ph name="URL" /> හට ඔබ ඔබගේ දුරකථනය සමඟ තට්ටු කරන NFC උපාංගවල තොරතුරු බැලීමට සහ වෙනස් කිරීමට අවශ්‍යයි</translation>
+<translation id="5147633291963801297">පැති පැනලයේ මිල පහත වැටීම් බලන්න</translation>
 <translation id="5148809049217731050">මුහුණ ඉහළට</translation>
 <translation id="5153314898060540200">හාඩ් රොක් සහ ප්‍රෝග්‍රෙසිව්</translation>
 <translation id="5157504274688344097">වෙළඳුන් පිරිස සහ දෙපාර්තමේන්තු ගබඩා</translation>
@@ -2457,6 +2464,7 @@
 <translation id="6450212216969386944">ලියුම් කවරය චෞ 40</translation>
 <translation id="6451458296329894277">පෝරමය යළි ඉදිරිපත් කිරීම තහවුරු කරන්න</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">ප්‍රතිපත්ති ඉලක්කය තෝරන්න</translation>
 <translation id="6456955391422100996">දැන්වීම ඉවත් කළා.</translation>
 <translation id="6457206614190510200">සෑදල මැසීම</translation>
 <translation id="6457455098507772300">මිල පහත වැටීමේ ඇඟවීම් ඔබේ ඩෙස්ක්ටොපයේ උත්පතන දැනුම්දීම් ලෙස පෙනෙයි</translation>
@@ -2740,6 +2748,7 @@
 <translation id="7108819624672055576">දිගුවකින් ඉඩ දෙයි</translation>
 <translation id="7109510814665441393">රිය පැදවීමේ සහ ධාවන ක්‍රීඩා</translation>
 <translation id="7110116949943042888">තාවකාලික සහ කාලීන රැකියා</translation>
+<translation id="7110553203952632623">ඕනෑම අඩවියක මිල අඩු වුවහොත් ඔබට ඉ-තැපැල් ඇඟවීම් ලැබෙනු ඇත</translation>
 <translation id="7111012039238467737">(වලංගුයි)</translation>
 <translation id="7111507312244504964">දේපළ නිරීක්ෂණය සහ තක්සේරුව</translation>
 <translation id="7112327784801341716">ඔබ දකින්නේ ඔබේ වත්මන් තතු නොවේ ද? එය යාවත්කාලීන කිරීමට ඔබේ බැංකුව සම්බන්ධ කර ගන්න.</translation>
@@ -3232,6 +3241,7 @@
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ඔබේ පරිගණකයේ හෝ ජාලයේ නිසියාකාරව ස්ථාපිත කර නැත. මෙම ගැටලුව විසඳීමට ඔබේ තොරතුරු තාක්ෂණ පරිපාලකයාගෙන් විමසන්න.</translation>
 <translation id="8131740175452115882">තහවුරු කරන්න</translation>
 <translation id="8134058435519644366">බඳවා ගැනීම් සහ මණ්ඩලීකරණය</translation>
+<translation id="8144303576836498784">යමක් වැරදී ඇත. ඔබේ වෙනස් කිරීම සුරැකුවේ නැත</translation>
 <translation id="8148608574971654810">PDF අනුවාදය:</translation>
 <translation id="8149426793427495338">ඔබේ පරිගණකය නින්දට ගියේය.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> හි ඇති ගොනුව කියවිය නොහැක. එය ඉවත්කර, ස්ථාන මාරු කර හෝ ගොනු බලතල මගින් පිවිසිම වලකා තිබිය හැක.</translation>
@@ -3245,6 +3255,7 @@
 <translation id="8184538546369750125">ගෝලීය පෙරනිමිය භාවිතා කරන්න (අවසර)</translation>
 <translation id="8186706823560132848">මෘදුකාංගය</translation>
 <translation id="8190193880870196235">දිගුවක් මගින් කළමනාකරණය කෙරේ</translation>
+<translation id="8194412401381329820">ඔබට මෙම කළමනාකරණය නොකළ උපාංගයේ කළමනාකරණය කළ ගිණුමකින් මෙම පිටුව භාවිත කළ නොහැක. ඔබ මෙම පිටුව භාවිතා කරන්නේ නම්, මෙම උපාංගයේ (අනුබද්ධ ගිණුම්) එකම ආයතනය විසින් කළමනාකරණය කරන ගිණුම් හැර, කළමනාකරණය කළ සියලු ම ගිණුම් අගුළු දමනු ඇත.</translation>
 <translation id="8194797478851900357">ගෙන යාම &amp;පසුගමනය කරන්න</translation>
 <translation id="8194956568907463262">වෙඩි තැබීමේ ක්‍රීඩා</translation>
 <translation id="8200772114523450471">කරගෙන යන්න</translation>
@@ -3252,6 +3263,7 @@
 <translation id="8202370299023114387">ගැටුම</translation>
 <translation id="8207625368992715508">මෝටර් වාහන ක්‍රීඩා</translation>
 <translation id="8208363704094329105">මිමි 300 x 400</translation>
+<translation id="8210490490377416373">ප්‍රතිපත්ති නම තෝරන්න</translation>
 <translation id="8210604850413485128">වෙබ් හොස්ටින්</translation>
 <translation id="8211406090763984747">සම්බන්ධතාවය ආරක්ෂිත වේ</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3367,6 +3379,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ ඔබගේ කුකි මනාප කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="8433057134996913067">මෙය ඔබව බොහෝ අඩවිවලින් වරනු ඇත.</translation>
 <translation id="8434840396568290395">සුරතලුන්</translation>
+<translation id="8436623588884785770">ප්‍රතිපත්තිය එක් කරන්න</translation>
 <translation id="8437238597147034694">ගෙන යාම &amp;පසුගමනය කරන්න</translation>
 <translation id="8438786541497918448">කැමරාව සහ මයික්‍රෆෝනය භාවිත කරන්නද?</translation>
 <translation id="8438923942245957911">මෙම අඩවිය ඔබේ සංවිධානය විසින් සලකුණු කර ඇත</translation>
@@ -3389,6 +3402,7 @@
 <translation id="8483229036294884935">මෙම ලිපිනය ඔබේ Google ගිණුමෙන්, <ph name="ACCOUNT" /> මකනු ඇත</translation>
 <translation id="8488350697529856933">අදාළ වනුයේ</translation>
 <translation id="8490137692873530638">අට්ටිය 10</translation>
+<translation id="8493829133024050711">ප්‍රතිපත්ති මූලාශ්‍රය තෝරන්න</translation>
 <translation id="8493948351860045254">ඉඩ හිස් කරන්න</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ප්‍රතිචාර දැක්වීමට දිගු කාලයක් ගත්තේය.</translation>
 <translation id="8503559462189395349">Chrome මුරපද</translation>

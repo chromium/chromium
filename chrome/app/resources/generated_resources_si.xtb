@@ -312,6 +312,7 @@
 <translation id="1244265436519979884">ලිනක්ස් ප්‍රතිසාධනය දැන් සිදු වෙමින් පවතියි</translation>
 <translation id="1244303850296295656">දිගු දෝෂය</translation>
 <translation id="1244917379075403655">සැකසුම් ක්ලික් කරන්න.</translation>
+<translation id="1245331638296910488">Microsoft 365 හි විවෘත කරන විට ගොනු OneDrive වෙත ගෙන යනු ඇත</translation>
 <translation id="1245628370644070008">දේශීය දත්ත ප්‍රතිසාධනය</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ස්ථාපනය කළ නොහැකි විය: රූප URL <ph name="HTTP_ERROR" /> දෝෂ කේතයක් ලබා දුණි. කරුණාකර ඔබගේ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
 <translation id="1247372569136754018">මයික්‍රෆෝනය (අභ්‍යන්තර)</translation>
@@ -669,6 +670,7 @@
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" දිගුව <ph name="SEARCH_PROVIDER_DOMAIN" /> භාවිතයට ඇති සෙවීම වෙනස් කළා</translation>
 <translation id="1552752544932680961">දිගු කළමනාකරණය කරන්න</translation>
 <translation id="1553538517812678578">අසීමිත</translation>
+<translation id="1553947773881524342">ඔබේ Chromebook හි Microsoft 365 පිළිබඳව <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" />.</translation>
 <translation id="1555130319947370107">නිල්</translation>
 <translation id="1556127816860282890">පසුබිම් ක්‍රියාකාරකම් සහ සුමට අනුචලනය වැනි, සමහර දෘශ්‍ය ප්‍රයෝග, සීමා විය හැක</translation>
 <translation id="1556537182262721003">දිගු නාමාවලිය පැතිකඩ තුළට ගෙනයා නොහැකි විය.</translation>
@@ -1118,6 +1120,7 @@
 <translation id="1904580727789512086">ඔබ පිවිසෙන URL ඔබගේ Google ගිණුමට සුරැකේ</translation>
 <translation id="1905375423839394163">Chromebook උපාංග නාමය</translation>
 <translation id="1906181697255754968">අඩවි සාමාන්‍යයෙන් ඔබේ වැඩ ස්වයංක්‍රියව සුරැකීම වැනි විශේෂාංග සඳහා ඔබගේ උපාංගයේ ගොනු සහ ෆෝල්ඩරවලට ප්‍රවේශ වේ</translation>
+<translation id="1906488504371069394"><ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> මත තවත් දිගු සහ තේමා සොයා ගන්න</translation>
 <translation id="1907044622262489040">ඔබේ කටහඬ සමග ටයිප් කරන්න. සෙවීම + D භාවිතා කර, ඉන්පසු කථා කිරීම අරඹන්න.</translation>
 <translation id="1908591798274282246">සංවෘත සමූහය යළි විවෘත කරන්න</translation>
 <translation id="1909880997794698664">ඔබට මෙම උපාංගය ස්ථිරව කියෝස්ක් ප්‍රකාරය තුළ තබාගැනීමට අවශ්‍ය බව විශ්වාසද?</translation>
@@ -1932,6 +1935,7 @@
 <translation id="2561211427862644160">ඔබේ සියලුම පිටුසන් මෙතැනින් බලන්න</translation>
 <translation id="2564520396658920462">AppleScript හරහා ජාවාස්ක්‍රිප්ට ක්‍රියාත්මක කිරීම ක්‍රියාවිරහිතයි. එය ක්‍රියාත්මක කිරීමට, මෙනු තීරුවෙන්, දසුන &gt; සංවර්ධක &gt; Apple සිදුවීම්වලින් ජාවාස්ක්‍රිප්ටවලට ඉඩ දෙන්න වෙත යන්න. වැඩිදුර තොරතුරු සඳහා: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">වැඩි දියුණු කරන ලද අක්ෂර වින්‍යාස පරික්ෂාව</translation>
+<translation id="2565214867520763227">තිර කියවනය ක්‍රියාත්මක කරන්න</translation>
 <translation id="2568694057933302218">අප්‍රසිද්ධව සිටින අතරේ, අඩවි හරහා, ඔබේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් බැලීමට අඩවිවලට ඔබේ කුකීස් භාවිතා කළ නොහැක. ඔබේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් දැන්වීම් පෞද්ගලීකරණය කිරීම වැනි දේවල් සඳහා භාවිතා නොවේ. සමහර අඩවිවල විශේෂාංග ක්‍රියා නොකළ හැක.</translation>
 <translation id="2568774940984945469">තොරතුරු තීරු බහාලුම</translation>
 <translation id="2569972178052279830">සිල්ලර වෙළෙන්දාගේ නම</translation>
@@ -2564,6 +2568,7 @@
 <translation id="3089948625237571254">වී&amp;ඩියෝ රාමුව පිටපත් කරන්න</translation>
 <translation id="3090227230165225418">බාගැනීම් දැනුම්දීම් නිවේදන කරන්න</translation>
 <translation id="3090589793601454425">ගෙන නොයන්න</translation>
+<translation id="309079592386854321">ඔබේ මුද්‍රකය ඔබේ Chromebook මෙන් එකම Wi-Fi ජාලයට සම්බන්ධ වී ඇති බවට වග බලා ගන්න හෝ USB කේබලයක් භාවිතා කරන්න. <ph name="LINK_BEGIN" />ගැළපෙන බව පිළිබඳව තව දැන ගන්න<ph name="LINK_END" />.</translation>
 <translation id="3090819949319990166"><ph name="TEMP_CRX_FILE" /> වෙත බාහිර crx ගොනුව පිටපත් කළ නොහැක.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" යුගල විය</translation>
 <translation id="3093714882666365141">ගෙවීම් හසුරු ස්ථාපනය කිරීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
@@ -4079,6 +4084,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4410545552906060960">ඔබගේ උපාංගය අගුලු හැරීමට මුරපදය වෙනුවට අංකයක් (PIN) භාවිතා කරන්න. ඔබගේ PIN පසුව සැකසීමට සැකසීම් වෙත යන්න.</translation>
 <translation id="4411578466613447185">කේත සන්කරණය</translation>
 <translation id="4411719918614785832">මෙම මුරයතුරු මෙම පරිගණකයේ Windows Hello වෙත සුරැකේ. ඒවා ඔබේ Google ගිණුමට සුරැකෙන්නේ නැත.</translation>
+<translation id="4412275763838812196">ChromeOS හි තිර කියවනය, ChromeVox, මූලික වශයෙන් භාවිතා කරනු ලබන්නේ අන්ධභාවය සහ අඩු පෙනීම ඇති පුද්ගලයින් විසිනි. ChromeVox ක්‍රියාත්මක කිරීමට ඉඩ තීරුව ඔබන්න. ChromeVox සක්‍රිය වූ විට, ඔබ ඉක්මන් සංචාරයක් හරහා යනු ඇත.</translation>
 <translation id="4412632005703201014">Chrome යෙදුම් ප්‍රගතිශීලී වෙබ් යෙදුම් වෙත සංක්‍රමණය වේ. මෙම Chrome යෙදුම ඔබේ බ්‍රව්සරයේ ඔබේ සංවිධානය විසින් ස්ථාපනය කර ඇත. යෙදුම් ලැයිස්තුවෙන් ප්‍රගතිශීලී වෙබ් යෙදුම විවෘත කිරීමට, පළමුව ඔබේ පරිපාලකයා අමතා Chrome යෙදුම අස්ථාපනය කිරීමට ඔවුන්ගෙන් විමසා සිටින්න. මේ අතරතුර, ඔබට වෙබයෙහි <ph name="EXTENSION_NAME" /> විවෘත කිරීමට <ph name="EXTENSION_LAUNCH_URL" /> වෙත පිවිසිය හැක.</translation>
 <translation id="4412698727486357573">උදවු මධ්‍යස්ථානය</translation>
 <translation id="4412992751769744546">තෙවන පාර්ශව කුකී වලට ඉඩ දෙන්න</translation>
@@ -4289,6 +4295,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4585793705637313973">පිටුව සංස්කරණය කරන්න</translation>
 <translation id="4586275095964870617"><ph name="URL" /> වෛකල්පික බ්‍රවුසරයක් තුළ විවෘත කළ නොහැකි විය. ඔබේ පද්ධති පරිපාලකයා සම්බන්ධ කර ගන්න.</translation>
 <translation id="4587589328781138893">අඩවි</translation>
+<translation id="4588882777927162244">ChromeOS Flex හි තිර කියවනය, ChromeVox, මූලික වශයෙන් භාවිතා කරනු ලබන්නේ අන්ධභාවය සහ අඩු පෙනීම ඇති පුද්ගලයින් විසිනි. ChromeVox ක්‍රියාත්මක කිරීමට ඉඩ තීරුව ඔබන්න. ChromeVox සක්‍රිය වූ විට, ඔබ ඉක්මන් සංචාරයක් හරහා යනු ඇත.</translation>
 <translation id="4589713469967853491">ලොග බාගැනීම් නාමාවලියට සාර්ථකව ලියන ලදි</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> වෙත උපාංග කිසිවක් සුරැක නැත</translation>
 <translation id="4592525994536856567">බ්‍රවුස් කිරීම සහ සෙවීම වේගවත් වේ.</translation>
@@ -5072,6 +5079,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5284445933715251131">බාගැනීම දිගටම කරන්න</translation>
 <translation id="5285635972691565180">සංදර්ශකය <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">ස්කෑන් කිරීම</translation>
+<translation id="5287073652040102781">ChromeOS Flex හි තිර කියවනය, ChromeVox, මූලික වශයෙන් භාවිතා කරනු ලබන්නේ අන්ධභාවය සහ අඩු පෙනීම ඇති පුද්ගලයින් විසිනි. ChromeVox ක්‍රියාත්මක කිරීමට හඬ පරිමා යතුරු දෙකම තත්පර පහක් ඔබාගෙන සිටින්න. ChromeVox සක්‍රිය වූ විට, ඔබ ඉක්මන් සංචාරයක් හරහා යනු ඇත.</translation>
 <translation id="5287425679749926365">ඔබේ ගිණුම්</translation>
 <translation id="5288106344236929384">තවත් ක්‍රියා, <ph name="DOMAIN" /> මත <ph name="USERNAME" /> සඳහා මුරයතුරු විකල්ප</translation>
 <translation id="5288678174502918605">වැසූ ටැබ නැවත විවෘත කරන්න (&amp;e)</translation>
@@ -5621,6 +5629,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> ඔබට ඔබගේ Chromebook හි Windows® යෙදුම් ධාවනය කිරීමට ඉඩ සලසයි. නිදහස් ඉඩෙන් <ph name="MINIMUM_SPACE" /> ස්ථාපනය සඳහා නිර්දේශ කෙරේ.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{ඔබට එය ප්‍රතිචාර දක්වන තෙක් රැඳී සිටීමට හෝ පිටුවෙන් පිටවීමට හැකිය.}one{ඔබට ඒවා ප්‍රතිචාර දක්වන තෙක් රැඳී සිටීමට හෝ පිටුවලින් පිටවීමට හැකිය.}other{ඔබට ඒවා ප්‍රතිචාර දක්වන තෙක් රැඳී සිටීමට හෝ පිටුවලින් පිටවීමට හැකිය.}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" /> වැඩි විස්තර</translation>
+<translation id="577313026359983030">මගේ දිගු</translation>
 <translation id="5774295353725270860">ගොනු යෙදුම විවෘත කරන්න</translation>
 <translation id="5776450228446082914">ඕනෑම බ්‍රව්සරයකින් විවෘත කළ හැකි වෙබ් අඩවි ලැයිස්තුව.</translation>
 <translation id="5776571780337000608">ඔබට ඔබගේ ගොනු බ්‍රවුසරයෙන් හෝ වෙනත් යෙදුම්වලින් මෙම යෙදුම සමග සහාය දක්වන ගොනු විවෘත කිරීමට සහ සංස්කරණය කිරීමට හැකිය. පෙරනිමියෙන් මෙම යෙදුම විවෘත කරන්නේ කුමන ගොනුද යන්න පාලනය කිරීමට, <ph name="BEGIN_LINK" />ඔබගේ උපාංගයේ පෙරනිමි යෙදුම් සකසන ආකාරය දැන ගන්න<ph name="END_LINK" />.</translation>
@@ -6823,6 +6832,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6798780071646309401">කැප්ස් ලොක් ක්‍රියාත්මකයි</translation>
 <translation id="6798954102094737107">ප්ලගින: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">සාමාන්‍ය සැකසීම්</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{මෙම දිගුවට මෙම අඩවිය කියවීමට හෝ වෙනස් කිරීමට හැකි ද යන්න තෝරා ගන්න}one{මෙම දිගුවලට මෙම වෙබ් අඩවිය කියවීමට හෝ වෙනස් කිරීමට හැකි ද යන්න තෝරා ගන්න}other{මෙම දිගුවලට මෙම වෙබ් අඩවිය කියවීමට හෝ වෙනස් කිරීමට හැකි ද යන්න තෝරා ගන්න}}</translation>
 <translation id="6801435275744557998">ස්පර්ශ තිරය ක්‍රමාංකනය කරන්න</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">VM "<ph name="DEFAULT_VM_NAME" />" පවතී</translation>
@@ -8028,6 +8038,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7800518121066352902">වාමාවර්ථව කරකරවන්න (&amp;o)</translation>
 <translation id="7801679634091975683">ඔබ මෙහි සිදු කරන වෙනස් කිරීම් Lacros Chrome බ්‍රව්සරයට පමණක් අදාළ වේ. ඔබගේ Chrome බ්‍රවුසර සැකසීම්වලට වෙනස් කිරීම් සිදු කිරීමට, Chrome බ්‍රවුසරය විවෘත කර සැකසීම් වෙත යන්න.</translation>
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>
+<translation id="7803267169006795990">ChromeOS හි තිර කියවනය, ChromeVox, මූලික වශයෙන් භාවිතා කරනු ලබන්නේ අන්ධභාවය සහ අඩු පෙනීම ඇති පුද්ගලයින් විසිනි. ChromeVox ක්‍රියාත්මක කිරීමට හඬ පරිමා යතුරු දෙකම තත්පර පහක් ඔබාගෙන සිටින්න. ChromeVox සක්‍රිය වූ විට, ඔබ ඉක්මන් සංචාරයක් හරහා යනු ඇත.</translation>
 <translation id="7803657407897251194">ඔබේ Android උපාංගය සැකසීම දිගටම කරගෙන යාමට, ඔබේ <ph name="DEVICE_TYPE" /> ජාලයකට සම්බන්ධ කරන්න</translation>
 <translation id="7804072833593604762">ටැබය වසන ලදි</translation>
 <translation id="7805768142964895445">තත්වය</translation>
@@ -9578,6 +9589,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9108808586816295166">සුරක්‍ෂිත DNS සැම විටම ලද නොහැකි වීමට ඉඩ ඇත</translation>
 <translation id="9109122242323516435">ඉඩ හිස් කිරීමට, උපාංග ගබඩාවෙන් ගොනු මකන්න.</translation>
 <translation id="9109283579179481106">ජංගම ජාලයට සම්බන්ධ වන්න</translation>
+<translation id="9110739391922513676">ගොනු විවෘත කිරීමට Microsoft 365 පිහිටුවන්න</translation>
 <translation id="9111102763498581341">අගුලු හරන්න</translation>
 <translation id="9111305600911828693">බලපත්‍රය පිහිටුවා නැත</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9700,6 +9712,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9220820413868316583">ඔසවා යළි උත්සාහ කරන්න.</translation>
 <translation id="922152298093051471">Chrome අභිරුචිකරණය කරන්න</translation>
 <translation id="923467487918828349">සියල්ල පෙන්වන්න</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{එය කළමනාකරණය සඳහා, දිගු විවෘත කරන්න}one{ඒවා කළමනාකරණය සඳහා, දිගු විවෘත කරන්න}other{ඒවා කළමනාකරණය සඳහා, දිගු විවෘත කරන්න}}</translation>
 <translation id="924818813611903184">ChromeOS සැකසීම් තුළ භාෂා කළමනාකරණය කරන්න</translation>
 <translation id="925270020047573546">ඩෙස්ක්ටොප් ශ්‍රව්‍ය විකාශය මෙම උපාංගයෙහි සහාය නොදක්වයි.</translation>
 <translation id="930268624053534560">විස්තරාත්මක කාල මුද්‍රා</translation>

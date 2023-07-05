@@ -127,6 +127,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">మీ సంస్థ నిర్వహించని ఒక సైట్‌లో మీరు మీ పాస్‌వర్డ్‌ను నమోదు చేశారు. మీ ఖాతాను రక్షించడం కోసం, ఇతర యాప్‌లు మరియు సైట్‌లలో మీ పాస్‌వర్డ్‌ను తిరిగి ఉపయోగించవద్దు.</translation>
 <translation id="1257553931232494454">జూమ్ స్థాయిలు</translation>
+<translation id="1259843033850529027">పాలసీ స్థాయిని ఎంచుకోండి</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Chrome సెట్టింగ్‌లను మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="1264309058268477500">ఆల్టర్నేట్</translation>
 <translation id="1264974993859112054">క్రీడలు</translation>
@@ -306,6 +307,7 @@
 <translation id="1593359183944365958">270 డిగ్రీలు</translation>
 <translation id="1594030484168838125">ఎంచుకోండి</translation>
 <translation id="1596296697375291157">థ్రిల్లర్, క్రైమ్ &amp; మిస్టరీ సినిమాలు</translation>
+<translation id="1597473228022844713">మీరు ఈ ప్రోడక్ట్‌ను ట్రాక్ చేస్తున్నారు. ఈ పేజీ <ph name="LAST_BOOKMARKS_FOLDER" />లో సేవ్ చేయబడింది</translation>
 <translation id="1599199147673445968">కొత్త కార్డా? <ph name="BEGIN_LINK" />కార్డ్ వివరాలను ఎంటర్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chromeలో Dino Run గేమ్‌ను ఆడండి</translation>
 <translation id="161042844686301425">నీలి ఆకుపచ్చ</translation>
@@ -951,6 +953,7 @@
 <translation id="3140646734028448730">బిజినెస్ సర్వీస్‌లు</translation>
 <translation id="3141093262818886744">ఏదేమైనా తెరవండి</translation>
 <translation id="3141641372357166056">సమ్మతి నిర్ణయం ఏదీ లేదు</translation>
+<translation id="3144458715650412431">టెస్ట్ పాలసీలు వర్తింపజేయబడ్డాయి. chrome://policy/testలో వాటిని రివ్యూ చేసి, రీసెట్ చేయండి. అడ్మిన్ పాలసీలు వర్తించవు.</translation>
 <translation id="3145945101586104090">ప్రతిస్పందనను డీకోడ్ చేయడంలో విఫలమైంది</translation>
 <translation id="3150653042067488994">తాత్కాలిక సర్వర్ ఎర్రర్</translation>
 <translation id="3150889484970506196">'షీట్‌ను క్రియేట్ చేయండి' బటన్, కొత్త Google షీట్‌ను క్విక్‌గా క్రియేట్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
@@ -1346,6 +1349,7 @@
 <translation id="3987940399970879459">1 MB కంటే తక్కువ</translation>
 <translation id="3990250421422698716">జోగ్ ఆఫ్‌సెట్</translation>
 <translation id="3992684624889376114">ఈ పేజీ గురించి</translation>
+<translation id="3995639283717357522">పాలసీలను వర్తింపజేయండి</translation>
 <translation id="399952081411886534">యాడ్‌లను మరింత ప్రైవేట్ చేసే ఇతర ఫీచర్‌లు</translation>
 <translation id="4000598935132966791">మేనేజ్ అవుతోన్న బ్రౌజర్‌లలోని సైట్ పరిమితుల గురించి మరింత తెలుసుకోండి</translation>
 <translation id="4006465311664329701">Google Payను ఉపయోగిస్తున్న పేమెంట్ ఆప్షన్‌లు, ఆఫర్‌లు, అడ్రస్‌లు</translation>
@@ -1526,6 +1530,7 @@
 <translation id="4333561522337981382">మీ అన్ని డిస్‌ప్లేలలో విండోలను మేనేజ్ చేయండి</translation>
 <translation id="4338709847516294988">సంబంధిత మెనూలో సెర్చ్ ప్లస్ m నొక్కండి, ఇమేజ్‌ను టెక్స్ట్‌గా మార్చండి</translation>
 <translation id="4340575312453649552">ఈ యాడ్, మీ పరికరంలోని చాలా రిసోర్స్‌లను వినియోగించింది. కనుక, Chrome దీనిని తీసివేసింది.</translation>
+<translation id="4340810192899866471">JSON నుండి దిగుమతి చేయండి</translation>
 <translation id="4340982228985273705">ఈ కంప్యూటర్‌ను ఎంటర్‌ప్రైజ్ నిర్వహిస్తున్నట్లు గుర్తించబడలేదు, కనుక Chrome వెబ్‌స్టోర్‌లో హోస్ట్ చేసిన ఎక్స్‌టెన్షన్‌లను మాత్రమే విధానం ఆటోమేటిక్‌గా ఇన్‌స్టాల్ చేస్తుంది. Chrome వెబ్‌స్టోర్ అప్‌డేట్ URL "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206"><ph name="SITE" />కు కనెక్షన్ సురక్షితం కాదు</translation>
 <translation id="4349365535725594680">గోప్యమైన కంటెంట్‌ను షేర్ చేయడం సాధ్యం కాదు</translation>
@@ -1774,6 +1779,7 @@
 <translation id="4901778704868714008">సేవ్ చేయండి...</translation>
 <translation id="4901952598169637881">సాధారణ షూస్</translation>
 <translation id="4905659621780993806">మీ అడ్మినిస్ట్రేటర్ మీ పరికరాన్ని <ph name="DATE" />న <ph name="TIME" />కు ఆటోమేటిక్‌గా రీస్టార్ట్ చేస్తారు. మీ పరికరం రీస్టార్ట్ కావడానికి ముందే, తెరిచి ఉన్న ఐటెమ్‌లు ఏవైనా ఉంటే, వాటిని సేవ్ చేయండి.</translation>
+<translation id="4907289208610706508">టార్గెట్</translation>
 <translation id="4913987521957242411">ఎడమవైపు ఎగువ భాగంలో రంధ్రాలు</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" />ను ఇన్‌స్టాల్ చేయండి (డౌన్‌లోడ్ చేయాల్సిన అవసరం లేదు)</translation>
 <translation id="4920457992177678649">వెకేషన్ రెంట‌ల్స్ &amp; తక్కువ రోజులు బస చేయడానికి స్థలాలు</translation>
@@ -1883,6 +1889,7 @@
 <translation id="5145883236150621069">విధాన ప్రతిస్పందనలో ఎర్రర్ కోడ్ ఉంది</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> కోసం నోటిఫికేషన్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="514704532284964975">మీరు మీ ఫోన్‌తో ట్యాప్ చేసే NFC పరికరాలలోని సమాచారాన్ని <ph name="URL" /> చూడాలని, మార్చాలనుకుంటోంది</translation>
+<translation id="5147633291963801297">సైడ్ ప్యానెల్‌లో ధర తగ్గింపులను చూడండి</translation>
 <translation id="5148809049217731050">ఫేస్ అప్</translation>
 <translation id="5153314898060540200">హార్డ్ రాక్ &amp; ప్రోగ్రెసివ్</translation>
 <translation id="5157504274688344097">అంతర్జాతీయ వ్యాపార సంస్థలు &amp; కిరాణా దుకాణాలు</translation>
@@ -2459,6 +2466,7 @@
 <translation id="6450212216969386944">ఎన్వలప్ చౌ 40</translation>
 <translation id="6451458296329894277">ఫారమ్ పునఃసమర్పణను నిర్థారించండి</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">పాలసీ టార్గెట్‌ను ఎంచుకోండి</translation>
 <translation id="6456955391422100996">ప్రకటన తీసివేయబడింది.</translation>
 <translation id="6457206614190510200">సాడిల్ స్టిచ్</translation>
 <translation id="6457455098507772300">ధర తగ్గుదల అలర్ట్‌లు మీ డెస్క్‌టాప్‌లో పాప్అప్ నోటిఫికేషన్‌లుగా చూపబడతాయి</translation>
@@ -2742,6 +2750,7 @@
 <translation id="7108819624672055576">ఎక్స్‌టెన్షన్‌ ద్వారా అనుమతించబడింది</translation>
 <translation id="7109510814665441393">డ్రైవింగ్ &amp; రేసింగ్ గేమ్‌లు</translation>
 <translation id="7110116949943042888">తాత్కాలిక &amp; సీజనల్ ఉద్యోగాలు</translation>
+<translation id="7110553203952632623">ఏదైనా సైట్‌లో ధర తగ్గితే, మీరు ఈమెయిల్ అలర్ట్‌లను పొందుతారు</translation>
 <translation id="7111012039238467737">(చెల్లుతుంది)</translation>
 <translation id="7111507312244504964">ఆస్తి తనిఖీలు &amp; అంచనాలు</translation>
 <translation id="7112327784801341716">మీ ప్రస్తుత సమాచారం కనిపించడం లేదా? దాన్ని అప్‌డేట్ చేయడం కోసం మీ బ్యాంక్‌ను సంప్రదించండి.</translation>
@@ -3234,6 +3243,7 @@
 <translation id="8127301229239896662">మీ కంప్యూటర్ లేదా నెట్‌వర్క్‌లో "<ph name="SOFTWARE_NAME" />" సరిగ్గా ఇన్‌స్టాల్ కాలేదు. ఈ సమస్యను పరిష్కరించమని మీ IT నిర్వాహకులను కోరండి.</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>
 <translation id="8134058435519644366">నియామకాలు &amp; స్టాఫింగ్</translation>
+<translation id="8144303576836498784">ఏదో పొరపాటు జరిగింది. మీ మార్పు సేవ్ చేయబడలేదు</translation>
 <translation id="8148608574971654810">PDF వెర్షన్:</translation>
 <translation id="8149426793427495338">మీ కంప్యూటర్ నిద్రావస్థకి వెళ్లింది.</translation>
 <translation id="8150722005171944719"><ph name="URL" />లో ఫైల్ చదవగలిగేది కాదు. దీన్ని తీసివేసి ఉండవచ్చు, తరలించి ఉండవచ్చు లేదా ఫైల్ అనుమతులు యాక్సెస్‌ను నిరోధిస్తుండవచ్చు.</translation>
@@ -3247,6 +3257,7 @@
 <translation id="8184538546369750125">సార్వజనీన డిఫాల్ట్‌ను ఉపయోగించండి (అనుమతించండి)</translation>
 <translation id="8186706823560132848">సాఫ్ట్‌వేర్</translation>
 <translation id="8190193880870196235">ఎక్స్‌టెన్షన్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
+<translation id="8194412401381329820">మీరు మేనేజ్ చేయని ఈ పరికరంలో మేనేజ్ చేసే ఖాతా నుండి ఈ పేజీని ఉపయోగించలేరు. ఈ పేజీని ఉపయోగించినట్లయితే, మేనేజ్ చేయబడే ఖాతాలన్నీ లాక్ చేయబడతాయి. అయితే, ఈ పరికరాన్ని నిర్వహించే ఎంటిటీ ద్వారా మేనేజ్ చేయబడే ఖాతాలు (అనుబంధ ఖాతాలు) లాక్ చేయబడవు.</translation>
 <translation id="8194797478851900357">&amp;తరలించడాన్ని రద్దు చేయండి</translation>
 <translation id="8194956568907463262">షూటర్ గేమ్‌లు</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
@@ -3254,6 +3265,7 @@
 <translation id="8202370299023114387">వైరుధ్యం</translation>
 <translation id="8207625368992715508">మోటార్ క్రీడలు</translation>
 <translation id="8208363704094329105">300 x 400 మి.మీ.</translation>
+<translation id="8210490490377416373">పాలసీ పేరును ఎంచుకోండి</translation>
 <translation id="8210604850413485128">వెబ్ హోస్టింగ్</translation>
 <translation id="8211406090763984747">కనెక్షన్ సురక్షితంగా ఉంది</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3369,6 +3381,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ కుక్కీ ప్రాధాన్యతలను మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="8433057134996913067">దీని వలన మీరు చాలా వెబ్‌సైట్‌ల నుండి సైన్ అవుట్ చేయబడతారు.</translation>
 <translation id="8434840396568290395">పెంపుడు జంతువులు</translation>
+<translation id="8436623588884785770">పాలసీని జోడించండి</translation>
 <translation id="8437238597147034694">&amp;తరలించడాన్ని రద్దు చేయండి</translation>
 <translation id="8438786541497918448">కెమెరా, మైక్రోఫోన్‌ను ఉపయోగించాలా?</translation>
 <translation id="8438923942245957911">ఈ సైట్‌ను మీ సంస్థ ఫ్లాగ్ చేసింది</translation>
@@ -3391,6 +3404,7 @@
 <translation id="8483229036294884935">ఈ అడ్రస్ మీ Google ఖాతా, <ph name="ACCOUNT" /> నుండి తొలగించబడుతుంది</translation>
 <translation id="8488350697529856933">వీటికి వర్తిస్తుంది</translation>
 <translation id="8490137692873530638">స్టాకర్ 10</translation>
+<translation id="8493829133024050711">పాలసీ సోర్స్‌ను ఎంచుకోండి</translation>
 <translation id="8493948351860045254">స్థలాన్ని ఖాళీ చేయి</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ప్రతిస్పందించడానికి చాలా ఎక్కువ సమయం పట్టింది.</translation>
 <translation id="8503559462189395349">Chrome పాస్‌వర్డ్‌లు</translation>

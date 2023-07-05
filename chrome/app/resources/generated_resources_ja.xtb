@@ -309,6 +309,7 @@
 <translation id="1244265436519979884">現在、Linux の復元が進行中です</translation>
 <translation id="1244303850296295656">拡張機能のエラー</translation>
 <translation id="1244917379075403655">[設定] をクリックします</translation>
+<translation id="1245331638296910488">Microsoft 365 で開いたファイルは OneDrive に移動します</translation>
 <translation id="1245628370644070008">ローカルデータの復元</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> をインストールできませんでした: 画像 URL から <ph name="HTTP_ERROR" /> エラーが返されました。管理者にお問い合わせください。</translation>
 <translation id="1247372569136754018">マイク（内蔵）</translation>
@@ -669,6 +670,7 @@
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」拡張機能により <ph name="SEARCH_PROVIDER_DOMAIN" /> を使用して検索するよう変更されました</translation>
 <translation id="1552752544932680961">拡張機能を管理</translation>
 <translation id="1553538517812678578">無制限</translation>
+<translation id="1553947773881524342">Chromebook での Microsoft 365 の使用に関する<ph name="LINK_BEGIN" />説明<ph name="LINK_END" />をご覧ください。</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="1556127816860282890">バックグラウンド アクティビティや一部の視覚効果（スムーズ スクロールなど）が制限されることがあります</translation>
 <translation id="1556537182262721003">拡張機能ディレクトリをプロフィールに移動できませんでした。</translation>
@@ -1114,6 +1116,7 @@
 <translation id="1904580727789512086">アクセスした URL は Google アカウントに保存されます</translation>
 <translation id="1905375423839394163">Chromebook デバイス名</translation>
 <translation id="1906181697255754968">多くのサイトは、作業内容を自動的に保存するためにデバイスのファイルやフォルダにアクセスします。</translation>
+<translation id="1906488504371069394"><ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />では他にもさまざまな拡張機能やテーマを入手できます</translation>
 <translation id="1907044622262489040">音声で入力できます。音声入力を開始するには、検索+D キーを使用します。</translation>
 <translation id="1908591798274282246">閉じたグループを開く</translation>
 <translation id="1909880997794698664">このデバイスをキオスク モードに固定してもよろしいですか？</translation>
@@ -1922,6 +1925,7 @@
 <translation id="2561211427862644160">すべてのブックマークをこちらで確認できます</translation>
 <translation id="2564520396658920462">AppleScript からの JavaScript の実行がオフになっています。オンにするには、メニューバーから [表示] &gt; [デベロッパー] &gt; [Apple Events からの JavaScript を許可] を選択してください。詳しくは、https://support.google.com/chrome/?p=applescript をご覧ください。</translation>
 <translation id="2564653188463346023">拡張スペルチェック</translation>
+<translation id="2565214867520763227">スクリーン リーダーをオンにする</translation>
 <translation id="2568694057933302218">シークレット モードのとき、サイトは Cookie を使用して他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のパーソナライズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="2568774940984945469">情報バー コンテナ</translation>
 <translation id="2569972178052279830">販売店の名前</translation>
@@ -2554,6 +2558,7 @@
 <translation id="3089948625237571254">動画フレームをコピー(&amp;O)</translation>
 <translation id="3090227230165225418">ダウンロード通知を読み上げる</translation>
 <translation id="3090589793601454425">移動しない</translation>
+<translation id="309079592386854321">プリンタが Chromebook と同じ Wi-Fi ネットワークに接続されていることを確認するか、USB ケーブルを使用します。<ph name="LINK_BEGIN" />互換性について<ph name="LINK_END" /></translation>
 <translation id="3090819949319990166">外部の crx ファイルは <ph name="TEMP_CRX_FILE" /> にコピーできません。</translation>
 <translation id="3090871774332213558">「<ph name="DEVICE_NAME" />」がペア設定されました</translation>
 <translation id="3093714882666365141">サイトに支払いハンドラのインストールを許可しない</translation>
@@ -4067,6 +4072,7 @@
 <translation id="4410545552906060960">パスワードではなく数字（PIN）を使用してデバイスのロックを解除することができます。後で PIN を設定する場合は、[設定] に移動してください。</translation>
 <translation id="4411578466613447185">コードの署名者</translation>
 <translation id="4411719918614785832">これらのパスキーは、このパソコンの Windows Hello に保存されます。Google アカウントには保存されません。</translation>
+<translation id="4412275763838812196">ChromeVox は ChromeOS のスクリーン リーダーで、主に目の不自由な方やロービジョンの方の使用を想定しています。ChromeVox をオンにするには、Space キーを押します。ChromeVox がオンになると、クイックツアーが表示されます。</translation>
 <translation id="4412632005703201014">Chrome アプリはプログレッシブ ウェブアプリに移行しています。この Chrome アプリは組織によりブラウザにインストールされたものです。アプリのリストからプログレッシブ ウェブアプリを開くには、まず Chrome アプリをアンインストールするよう管理者に依頼します。その間は、<ph name="EXTENSION_LAUNCH_URL" /> にアクセスして、ウェブで <ph name="EXTENSION_NAME" /> を開いてください。</translation>
 <translation id="4412698727486357573">ヘルプセンター</translation>
 <translation id="4412992751769744546">サードパーティの Cookie を許可</translation>
@@ -4276,6 +4282,7 @@
 <translation id="4585793705637313973">ページの編集</translation>
 <translation id="4586275095964870617">「<ph name="URL" />」を代替ブラウザで開けませんでした。システム管理者にお問い合わせください。</translation>
 <translation id="4587589328781138893">ウェブサイト</translation>
+<translation id="4588882777927162244">ChromeVox は ChromeOS Flex のスクリーン リーダーで、主に目の不自由な方やロービジョンの方の使用を想定しています。ChromeVox をオンにするには、Space キーを押します。ChromeVox がオンになると、クイックツアーが表示されます。</translation>
 <translation id="4589713469967853491">ダウンロード ディレクトリにログを書き込みました。</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> に保存されたデバイスはありません</translation>
 <translation id="4592525994536856567">ブラウジングと検索が高速になります。</translation>
@@ -5058,6 +5065,7 @@
 <translation id="5284445933715251131">ダウンロードを続行</translation>
 <translation id="5285635972691565180">ディスプレイ <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">スキャン中</translation>
+<translation id="5287073652040102781">ChromeVox は ChromeOS Flex のスクリーン リーダーで、主に目の不自由な方やロービジョンの方の使用を想定しています。ChromeVox をオンにするには、両方の音量キーを 5 秒間長押しします。ChromeVox がオンになると、クイックツアーが表示されます。</translation>
 <translation id="5287425679749926365">お使いのアカウント</translation>
 <translation id="5288106344236929384">その他の操作、<ph name="DOMAIN" /> の <ph name="USERNAME" /> 用のパスキー オプション</translation>
 <translation id="5288678174502918605">閉じたタブを開く(&amp;E)</translation>
@@ -5605,6 +5613,7 @@
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> を使用すると、Chromebook で Windows® アプリを実行できます。インストール用に推奨される空き容量は <ph name="MINIMUM_SPACE" /> です。</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{応答があるまで待つか、このページを離れるか、いずれかの対応方法をおとりください。}other{応答があるまで待つか、このページを離れるか、いずれかの対応方法をおとりください。}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" /> 詳細</translation>
+<translation id="577313026359983030">使用している拡張機能</translation>
 <translation id="5774295353725270860">ファイルのアプリを開く</translation>
 <translation id="5776450228446082914">どちらのブラウザでも開くことができるウェブサイトのリストです。</translation>
 <translation id="5776571780337000608">ファイル ブラウザからこのアプリまたは他のアプリで、サポートされているファイルを開いて編集できます。デフォルトでこのアプリを使用して開くファイルを管理するには、<ph name="BEGIN_LINK" />デバイスでデフォルトのアプリを設定する方法<ph name="END_LINK" />をご確認ください。</translation>
@@ -6805,6 +6814,7 @@
 <translation id="6798780071646309401">CapsLock オン</translation>
 <translation id="6798954102094737107">プラグイン: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">全般設定</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{この拡張機能にこのサイトの読み取りや変更を許可するかどうかを選択します}other{これらの拡張機能にこのサイトの読み取りや変更を許可するかどうかを選択します}}</translation>
 <translation id="6801435275744557998">タッチスクリーンのキャリブレーション</translation>
 <translation id="6802031077390104172"><ph name="USAGE" />（<ph name="OID" />）</translation>
 <translation id="680488281839478944">VM「<ph name="DEFAULT_VM_NAME" />」は存在しません</translation>
@@ -8009,6 +8019,7 @@
 <translation id="7800518121066352902">反時計回りに回転(&amp;O)</translation>
 <translation id="7801679634091975683">ここで加えた変更は、Lacros Chrome ブラウザにのみ反映されます。Chrome ブラウザの設定に変更を加えるには、Chrome ブラウザを開いて [設定] に移動してください。</translation>
 <translation id="780301667611848630">同意しない</translation>
+<translation id="7803267169006795990">ChromeVox は ChromeOS のスクリーン リーダーで、主に目の不自由な方やロービジョンの方の使用を想定しています。ChromeVox をオンにするには、両方の音量キーを 5 秒間長押しします。ChromeVox がオンになると、クイックツアーが表示されます。</translation>
 <translation id="7803657407897251194">Android デバイスで設定を続けるには、<ph name="DEVICE_TYPE" /> をネットワークに接続してください</translation>
 <translation id="7804072833593604762">タブが閉じられました</translation>
 <translation id="7805768142964895445">ステータス</translation>
@@ -9559,6 +9570,7 @@ Google セーフ ブラウジングに送信して、安全でないかどうか
 <translation id="9108808586816295166">セキュア DNS は使用できない場合があります</translation>
 <translation id="9109122242323516435">空き領域を確保するために、デバイスのストレージからファイルを削除してください。</translation>
 <translation id="9109283579179481106">モバイル ネットワークへの接続</translation>
+<translation id="9110739391922513676">Microsoft 365 でファイルを開くように設定する</translation>
 <translation id="9111102763498581341">ロック解除</translation>
 <translation id="9111305600911828693">ライセンスが設定されていません</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9681,6 +9693,7 @@ Google セーフ ブラウジングに送信して、安全でないかどうか
 <translation id="9220820413868316583">いったん指を放してもう一度お試しください。</translation>
 <translation id="922152298093051471">Chrome をカスタマイズ</translation>
 <translation id="923467487918828349">すべて表示</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{管理するには、拡張機能を開きます}other{管理するには、拡張機能を開きます}}</translation>
 <translation id="924818813611903184">Chrome OS の設定で言語を管理する</translation>
 <translation id="925270020047573546">このデバイスのデスクトップの音声をキャストすることはできません。</translation>
 <translation id="930268624053534560">詳細なタイムスタンプ</translation>

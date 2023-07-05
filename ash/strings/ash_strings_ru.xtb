@@ -139,6 +139,7 @@
 <translation id="1550406609415860283">Доступные устройства</translation>
 <translation id="1550523713251050646">Чтобы изменить источник питания, нажмите здесь.</translation>
 <translation id="1555130319947370107">Синий</translation>
+<translation id="1557622599341396706">Показать название рабочего стола</translation>
 <translation id="1576623706766186887">Уменьшить, когда включена лупа</translation>
 <translation id="1586324912145647027">Перейти к рабочим столам (от 1 до 8)</translation>
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
@@ -992,6 +993,7 @@
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5319712128756744240">Подключить новое устройство</translation>
 <translation id="5322611492012084517">Не удается найти телефон</translation>
+<translation id="5323994101633366939">Скрыть название рабочего стола</translation>
 <translation id="5327248766486351172">Имя</translation>
 <translation id="5329548388331921293">Подключение…</translation>
 <translation id="5331975486040154427">Устройство USB-C (дальний порт слева)</translation>
@@ -1175,6 +1177,7 @@
 <translation id="6103838137565245112">система</translation>
 <translation id="6114505516289286752">Скачаны файлы распознавания речи для языка: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
+<translation id="6119972796024789243">Коррекция цвета</translation>
 <translation id="6121838516699723042">Подтвердите скачивание файла <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">В рамках гостевого сеанса Google Ассистент недоступен.</translation>
 <translation id="6129953537138746214">Пробел</translation>
@@ -1648,6 +1651,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />, приложение</translation>
 <translation id="8255234195843591763">Сбросить настройки и обновить ОС</translation>
 <translation id="8261506727792406068">Удалить</translation>
+<translation id="8262312463845990408">Воспроизвести/приостановить</translation>
 <translation id="8265826854528868575">Показано задач: <ph name="NUM_SHOWN_TASKS" /> из <ph name="NUM_TOTAL_TASKS" /></translation>
 <translation id="8270450402312105425">{0,plural, =1{Вернитесь к предыдущей версии ОС в течение 1 часа}one{Вернитесь к предыдущей версии ОС в течение # часа}few{Вернитесь к предыдущей версии ОС в течение # часов}many{Вернитесь к предыдущей версии ОС в течение # часов}other{Вернитесь к предыдущей версии ОС в течение # часа}}</translation>
 <translation id="8277261673056602147">Выделите текст на экране</translation>
@@ -1756,6 +1760,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" />.</translation>
 <translation id="8790998409862094015">Сильное</translation>
 <translation id="8792626944327216835">микрофон</translation>
+<translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Папка <ph name="FOLDER_NAME" />.</translation>
 <translation id="880709030178078220">"Справка"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

@@ -127,6 +127,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Унели сте лозинку на сајту којим не управља ваша организација. Да бисте заштитили налог, не користите лозинку поново у другим апликацијама ни на другим сајтовима.</translation>
 <translation id="1257553931232494454">нивои зумирања</translation>
+<translation id="1259843033850529027">Изаберите ниво смерница</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали подешавањима Chrome-а</translation>
 <translation id="1264309058268477500">Алтернативно</translation>
 <translation id="1264974993859112054">Спорт</translation>
@@ -304,6 +305,7 @@
 <translation id="1593359183944365958">270 степени</translation>
 <translation id="1594030484168838125">Одабери</translation>
 <translation id="1596296697375291157">Трилери, криминалистички филмови и филмови мистерије</translation>
+<translation id="1597473228022844713">Пратите овај производ. Ова страница је сачувана у: <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1599199147673445968">Нова картица? <ph name="BEGIN_LINK" />Унесите податке о картици<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Играјте игру Диносаурус у Chrome-у</translation>
 <translation id="161042844686301425">Плавозелена</translation>
@@ -949,6 +951,7 @@
 <translation id="3140646734028448730">Пословне услуге</translation>
 <translation id="3141093262818886744">Ипак отвори</translation>
 <translation id="3141641372357166056">Нема одлуке о сагласности</translation>
+<translation id="3144458715650412431">Смернице за тестирање су примењене. Прегледајте их и ресетујте на chrome://policy/test. Смернице администратора се неће примењивати.</translation>
 <translation id="3145945101586104090">Декодирање одговора није успело</translation>
 <translation id="3150653042067488994">Привремена грешка на серверу</translation>
 <translation id="3150889484970506196">Дугме Направи табелу, активирајте га да бисте брзо направили нову Google табелу</translation>
@@ -1344,6 +1347,7 @@
 <translation id="3987940399970879459">Мање од 1 MB</translation>
 <translation id="3990250421422698716">Протресање ради поравнања</translation>
 <translation id="3992684624889376114">О овој страници</translation>
+<translation id="3995639283717357522">Примени смернице</translation>
 <translation id="399952081411886534">Остале функције које доприносе приватности огласа</translation>
 <translation id="4000598935132966791">Сазнајте више о ограничењима за сајтове у прегледачима којима се управља</translation>
 <translation id="4006465311664329701">Начини плаћања, понуде и адресе који користе Google Pay</translation>
@@ -1524,6 +1528,7 @@
 <translation id="4333561522337981382">Управљајте прозорима на свим екранима</translation>
 <translation id="4338709847516294988">Притисните тастер за претрагу и m да бисте конвертовали слику у текст у контекстуалном менију</translation>
 <translation id="4340575312453649552">Овај оглас је користио превише ресурса за уређај, па га је Chrome уклонио.</translation>
+<translation id="4340810192899866471">Увези из JSON-а</translation>
 <translation id="4340982228985273705">Откривено је да овим рачунаром не управља предузеће, па смернице могу аутоматски да инсталирају само додатке који се хостују у Chrome веб-продавници. URL ажурирања у Chrome веб-продавници је „<ph name="CWS_UPDATE_URL" />“.</translation>
 <translation id="4348834659292907206">Веза са сајтом <ph name="SITE" /> није безбедна</translation>
 <translation id="4349365535725594680">Дељење поверљивог садржаја није успело</translation>
@@ -1772,6 +1777,7 @@
 <translation id="4901778704868714008">Сачувај...</translation>
 <translation id="4901952598169637881">Свакодневна обућа</translation>
 <translation id="4905659621780993806">Администратор ће аутоматски рестартовати уређај у <ph name="TIME" />, <ph name="DATE" />. Сачувајте отворене ставке пре него што се уређај рестартује.</translation>
+<translation id="4907289208610706508">Циљ</translation>
 <translation id="4913987521957242411">Бушење у горњем левом углу</translation>
 <translation id="4918221908152712722">Инсталирајте апликацију <ph name="APP_NAME" /> (не треба да је преузимате)</translation>
 <translation id="4920457992177678649">Изнајмљивање смештаја за одмор и краткотрајни боравци</translation>
@@ -1881,6 +1887,7 @@
 <translation id="5145883236150621069">Кôд грешке је присутан у одговору на смернице</translation>
 <translation id="5146995429444047494">Обавештења за <ph name="ORIGIN" /> су блокирана</translation>
 <translation id="514704532284964975"><ph name="URL" /> жели да види и мења информације на NFC уређајима које додирујете телефоном</translation>
+<translation id="5147633291963801297">Погледајте снижења на бочној табли</translation>
 <translation id="5148809049217731050">Са одштампаном страном нагоре</translation>
 <translation id="5153314898060540200">Хард рок и прогресивни рок</translation>
 <translation id="5157504274688344097">Велетрговине и робне куће</translation>
@@ -2456,6 +2463,7 @@
 <translation id="6450212216969386944">Коверта Chou 40</translation>
 <translation id="6451458296329894277">Потврђивање поновног слања обрасца</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">Изаберите циљ смерница</translation>
 <translation id="6456955391422100996">Оглас је уклоњен.</translation>
 <translation id="6457206614190510200">Спајање по средини</translation>
 <translation id="6457455098507772300">Обавештења о снижењима се приказују као искачућа обавештења на рачунару</translation>
@@ -2739,6 +2747,7 @@
 <translation id="7108819624672055576">Дозвољава додатак</translation>
 <translation id="7109510814665441393">Возачке и тркачке игре</translation>
 <translation id="7110116949943042888">Привремени и сезонски послови</translation>
+<translation id="7110553203952632623">Добијаћете обавештења имејлом ако се цена снизи на било ком сајту.</translation>
 <translation id="7111012039238467737">(Важећи)</translation>
 <translation id="7111507312244504964">Преглед и процена вредности имовине</translation>
 <translation id="7112327784801341716">Не видите актуелне податке? Обратите се банци да бисте их ажурирали.</translation>
@@ -3231,6 +3240,7 @@
 <translation id="8127301229239896662">Софтвер „<ph name="SOFTWARE_NAME" />“ није правилно инсталиран на рачунару или мрежи. Затражите од ИТ администратора да реши овај проблем.</translation>
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8134058435519644366">Запошљавање и избор кадрова</translation>
+<translation id="8144303576836498784">Дошло је до грешке. Промена није сачувана</translation>
 <translation id="8148608574971654810">PDF верзија:</translation>
 <translation id="8149426793427495338">Рачунар је прешао у режим спавања.</translation>
 <translation id="8150722005171944719">Датотека на адреси <ph name="URL" /> не може да се чита. Можда је уклоњена или премештена или дозволе за датотеке спречавају приступ.</translation>
@@ -3244,6 +3254,7 @@
 <translation id="8184538546369750125">Користи глобалну подразумевану вредност (Дозволи)</translation>
 <translation id="8186706823560132848">Софтвер</translation>
 <translation id="8190193880870196235">Управља додатак</translation>
+<translation id="8194412401381329820">Не можете да користите ову страницу са налога којим се управља на овом уређају којим се не управља. Сви налози којима се управља ће бити закључани ако користите ову страницу, осим налога којима управља исти ентитет као овај уређај (повезани налози).</translation>
 <translation id="8194797478851900357">&amp;Опозови премештање</translation>
 <translation id="8194956568907463262">Пуцачке игре</translation>
 <translation id="8200772114523450471">Настави</translation>
@@ -3251,6 +3262,7 @@
 <translation id="8202370299023114387">Неусаглашеност</translation>
 <translation id="8207625368992715508">Мото-спортови</translation>
 <translation id="8208363704094329105">300×400 mm</translation>
+<translation id="8210490490377416373">Изаберите назив смерница</translation>
 <translation id="8210604850413485128">Веб-хостовање</translation>
 <translation id="8211406090763984747">Веза је безбедна</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3366,6 +3378,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали подешавањима колачића у подешавањима Chrome-а</translation>
 <translation id="8433057134996913067">Овако ћете се одјавити са већине веб-сајтова.</translation>
 <translation id="8434840396568290395">Кућни љубимци</translation>
+<translation id="8436623588884785770">Додај смернице</translation>
 <translation id="8437238597147034694">&amp;Опозови премештање</translation>
 <translation id="8438786541497918448">Дозволићете коришћење камере и микрофона?</translation>
 <translation id="8438923942245957911">Ваша организација је обележила овај сајт</translation>
@@ -3388,6 +3401,7 @@
 <translation id="8483229036294884935">Ова адреса ће бити избрисана са Google налога, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Односе се на</translation>
 <translation id="8490137692873530638">10. преграда за слагање</translation>
+<translation id="8493829133024050711">Изаберите извор смерница</translation>
 <translation id="8493948351860045254">Ослободите простор</translation>
 <translation id="8498891568109133222">Одговор хоста <ph name="HOST_NAME" /> је трајао предуго.</translation>
 <translation id="8503559462189395349">Лозинке за Chrome</translation>

@@ -1377,6 +1377,11 @@
       如果未设置此政策，那么与“DisabledPlugins”中的格式匹配的所有插件都会被锁定为停用状态，而且用户将无法启用这些插件。</translation>
 <translation id="2236488539271255289">不允许任何网站设置本地数据</translation>
 <translation id="2236593201136596376">允许从 Google 服务收集 WebRTC 文本日志</translation>
+<translation id="2237705286848619561">如果此政策已启用，由管理员启动的企业远程支持会话将允许在客户端和主机之间传输文件。
+
+此政策不会影响远程访问场景。
+
+如果此政策未设置或已停用，则会禁止传输文件。</translation>
 <translation id="2241498944622759244">该功能从未被发布，所以此政策已被弃用。如果此政策设为 true 或未设置，<ph name="PRODUCT_NAME" /> 将会根据当前网页来建议相关网页。
       这些建议是系统从 Google 服务器远程获取的。
 
@@ -3900,6 +3905,7 @@
 <translation id="4561560385824323005">允许用户选择要加载的预配置桌面布局</translation>
 <translation id="4561940244682063697">不允许网站提示用户分享录屏</translation>
 <translation id="4562165737444703281">允许用户 [启用/配置] Crostini 端口转发</translation>
+<translation id="456450545863578630">允许在由企业管理员建立的远程支持连接中传输文件</translation>
 <translation id="456686782928669977">此政策旨在控制是否从 <ph name="IE_PRODUCT_NAME" /> 的 SiteList 政策中加载规则。
 
       如果此政策设为 true，<ph name="PRODUCT_NAME" /> 将会读取 <ph name="IE_PRODUCT_NAME" /> 的 <ph name="IEEM_SITELIST_POLICY" /> 政策来获取网站列表的网址。然后，<ph name="PRODUCT_NAME" /> 会从该网址下载网站列表，并参照 <ph name="BROWSER_SWITCHER_URL_LIST_POLICY_NAME" /> 政策的配置应用相应规则。
@@ -5394,6 +5400,7 @@
 
       如果此政策已停用，用户将无法兑换这类优惠。</translation>
 <translation id="6042407236638640864">允许具有“<ph name="CACHE_CONTROL_NO_STORE_NAME" />”标头的网页进入往返缓存</translation>
+<translation id="604243460476563291">禁止在由企业管理员建立的远程支持连接中传输文件</translation>
 <translation id="6042629184389251062">禁止进行以网址为键的指标收集</translation>
 <translation id="6046615715547751255">不允许使用精细报告控件</translation>
 <translation id="6048199181629830227">启用用电高峰转移电源管理</translation>
@@ -7430,6 +7437,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7827127381981620448">平台应用</translation>
 <translation id="7829436838673974723">允许页面在关闭期间发送同步 XHR 请求</translation>
 <translation id="782978857350824974">允许在 TLS 证书已损坏的网站上发出网络身份验证请求。</translation>
+<translation id="7830775338190021763">允许在企业远程支持会话中传输文件</translation>
 <translation id="7832225468415136704">禁止 Chrome 清理功能定期扫描系统并停用人工扫描</translation>
 <translation id="7833148823006528332">Android 应用标识符，例如“com.google.android.gm”是 Gmail 的标识符</translation>
 <translation id="7835218570504220753">禁止自动点击</translation>

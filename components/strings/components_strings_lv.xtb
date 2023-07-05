@@ -127,6 +127,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Jūs ievadījāt paroli vietnē, kuru nepārvalda jūsu organizācija. Lai aizsargātu savu kontu, neizmantojiet šo paroli citās lietotnēs un vietnēs.</translation>
 <translation id="1257553931232494454">tālummaiņas līmeņi</translation>
+<translation id="1259843033850529027">Atlasīt politikas līmeni</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, lai pārvaldītu Chrome iestatījumus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter</translation>
 <translation id="1264309058268477500">Alternatīva</translation>
 <translation id="1264974993859112054">Sports</translation>
@@ -304,6 +305,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1593359183944365958">Par 270 grādiem</translation>
 <translation id="1594030484168838125">Izvēlēties</translation>
 <translation id="1596296697375291157">Trilleri, noziegumu un šausmu filmas</translation>
+<translation id="1597473228022844713">Jūs izsekojat šo produktu. Šī lapa ir saglabāta sarakstā “<ph name="LAST_BOOKMARKS_FOLDER" />”.</translation>
 <translation id="1599199147673445968">Vai jums ir jauna karte? <ph name="BEGIN_LINK" />Ievadīt kartes datus<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Spēlēt dinozaura skriešanas spēli pārlūkā Chrome</translation>
 <translation id="161042844686301425">Ciānzila</translation>
@@ -949,6 +951,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3140646734028448730">Pakalpojumi uzņēmumiem</translation>
 <translation id="3141093262818886744">Tomēr atvērt</translation>
 <translation id="3141641372357166056">nav lēmuma par piekrišanu</translation>
+<translation id="3144458715650412431">Tika piemērotas testēšanas politikas. Pārskatiet un atiestatiet tās vietnē chrome://policy/test. Administratoru politikas netiks piemērotas.</translation>
 <translation id="3145945101586104090">Neizdevās atšifrēt atbildi.</translation>
 <translation id="3150653042067488994">Īslaicīga servera kļūda</translation>
 <translation id="3150889484970506196">Poga “Izveidot izklājlapu”. Aktivizējiet, lai ātri izveidotu jaunu Google izklājlapu.</translation>
@@ -1343,6 +1346,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3987940399970879459">Mazāk nekā 1 MB</translation>
 <translation id="3990250421422698716">Ofseta izlīdzināšana</translation>
 <translation id="3992684624889376114">Par šo lapu</translation>
+<translation id="3995639283717357522">Piemērot politikas</translation>
 <translation id="399952081411886534">Citas funkcijas, kas nodrošina lielāku reklāmu konfidencialitāti</translation>
 <translation id="4000598935132966791">Uzzināt vairāk par vietņu ierobežojumiem pārvaldītos pārlūkos</translation>
 <translation id="4006465311664329701">Maksājumu veidi, piedāvājumi un adreses no pakalpojuma Google Pay</translation>
@@ -1523,6 +1527,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4333561522337981382">Pārvaldīt logus visos jūsu displejos</translation>
 <translation id="4338709847516294988">Vienlaikus nospiediet meklēšanas taustiņu un taustiņu “m” un pārveidojiet attēlu par tekstu, izmantojot kontekstizvēlni</translation>
 <translation id="4340575312453649552">Šī reklāma izmantoja pārāk daudz resursu jūsu ierīcē, tādēļ Chrome to noņēma.</translation>
+<translation id="4340810192899866471">Importēt no JSON formāta</translation>
 <translation id="4340982228985273705">Šo datoru nepārvalda uzņēmums, tāpēc politika var automātiski instalēt tikai tos paplašinājumus, kas tiek mitināti Chrome interneta veikalā. Chrome interneta veikala atjauninājumu URL: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4348834659292907206">Savienojums ar vietni <ph name="SITE" /> nav drošs</translation>
 <translation id="4349365535725594680">Nevar kopīgot konfidenciālu saturu</translation>
@@ -1771,6 +1776,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4901778704868714008">Saglabāt...</translation>
 <translation id="4901952598169637881">Ikdienas apavi</translation>
 <translation id="4905659621780993806">Jūsu administrators automātiski restartēs jūsu ierīci plkst. <ph name="TIME" /> šādā datumā: <ph name="DATE" />. Saglabājiet visus atvērtos failus, pirms ierīce tiek restartēta.</translation>
+<translation id="4907289208610706508">Mērķis</translation>
 <translation id="4913987521957242411">Caurums augšējā kreisajā malā</translation>
 <translation id="4918221908152712722">Instalējiet lietotni <ph name="APP_NAME" /> (nav nepieciešama lejupielāde)</translation>
 <translation id="4920457992177678649">Nekustamo īpašumu īre brīvdienām un neilgam laikam</translation>
@@ -1880,6 +1886,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5145883236150621069">Politikas atbildē ir kļūdas kods.</translation>
 <translation id="5146995429444047494">Vietnes <ph name="ORIGIN" /> paziņojumi ir bloķēti</translation>
 <translation id="514704532284964975"><ph name="URL" /> pieprasa atļauju piekļūt informācijai un to mainīt NFC ierīcēs, kuru nosaukumiem tālrunī pieskaraties</translation>
+<translation id="5147633291963801297">Skatiet cenu kritumus sānu panelī.</translation>
 <translation id="5148809049217731050">Ar virspusi uz augšu</translation>
 <translation id="5153314898060540200">Smagais roks un progresīvā mūzika</translation>
 <translation id="5157504274688344097">Vairumtirgotāji un universālveikali</translation>
@@ -2456,6 +2463,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6450212216969386944">Aploksne Chou 40</translation>
 <translation id="6451458296329894277">Apstiprināt veidlapas atkārtotu iesniegšanu</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">Atlasīt politikas mērķi</translation>
 <translation id="6456955391422100996">Reklāma ir noņemta.</translation>
 <translation id="6457206614190510200">Sašuvums iekšlocījumā</translation>
 <translation id="6457455098507772300">Paziņojumi par cenu kritumu tiek rādīti kā uznirstoši darbvirsmas paziņojumi.</translation>
@@ -2739,6 +2747,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7108819624672055576">Atļāva paplašinājums</translation>
 <translation id="7109510814665441393">Braukšanas un sacīkšu spēles</translation>
 <translation id="7110116949943042888">Īslaicīgi un sezonas darbi</translation>
+<translation id="7110553203952632623">Jūs saņemsiet e-pasta brīdinājumus, ja kādā vietnē tiks konstatēts cenas kritums.</translation>
 <translation id="7111012039238467737">(derīgs)</translation>
 <translation id="7111507312244504964">Īpašumu pārbaude un novērtēšana</translation>
 <translation id="7112327784801341716">Vai neredzat pašreizējo informāciju? Sazinieties ar banku, lai to atjauninātu.</translation>
@@ -3231,6 +3240,7 @@ Papildu informācija:
 <translation id="8127301229239896662">Programmatūra <ph name="SOFTWARE_NAME" /> netika pareizi instalēta datorā vai tīklā. Lūdziet IT administratoram atrisināt šo problēmu.</translation>
 <translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8134058435519644366">Pieņemšana darbā un personāla komplektēšana</translation>
+<translation id="8144303576836498784">Radās problēma. Jūsu izmaiņas netika saglabātas.</translation>
 <translation id="8148608574971654810">PDF versija:</translation>
 <translation id="8149426793427495338">Dators tika pārslēgts miega režīmā.</translation>
 <translation id="8150722005171944719">Vietnē <ph name="URL" /> esošo failu nevar nolasīt. Iespējams, tas ir noņemts vai pārvietots vai piekļuvei nepieciešamas atļaujas.</translation>
@@ -3244,6 +3254,7 @@ Papildu informācija:
 <translation id="8184538546369750125">Izmantot globālo noklusējumu (Atļaut)</translation>
 <translation id="8186706823560132848">Programmatūra</translation>
 <translation id="8190193880870196235">Pārvalda paplašinājums</translation>
+<translation id="8194412401381329820">Šajā nepārvaldītajā ierīcē nevar izmantot šo lapu no pārvaldīta konta. Ja izmantosiet šo lapu, visi pārvaldītie konti tiks bloķēti, izņemot kontus, kurus pārvalda tā pati juridiskā persona, kas pārvalda šo ierīci (saistītie konti).</translation>
 <translation id="8194797478851900357">&amp;Pārvietošanas atsaukšana</translation>
 <translation id="8194956568907463262">Šaušanas spēles</translation>
 <translation id="8200772114523450471">Kopsavilkums</translation>
@@ -3251,6 +3262,7 @@ Papildu informācija:
 <translation id="8202370299023114387">Konflikts</translation>
 <translation id="8207625368992715508">Automoto sports</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
+<translation id="8210490490377416373">Atlasīt politikas nosaukumu</translation>
 <translation id="8210604850413485128">Tīmekļa mitināšana</translation>
 <translation id="8211406090763984747">Savienojums ir drošs</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3366,6 +3378,7 @@ Papildu informācija:
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />: nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu, lai Chrome iestatījumos pārvaldītu savas sīkfailu preferences.</translation>
 <translation id="8433057134996913067">Šādi tiksiet izrakstīts no lielākās daļas vietņu.</translation>
 <translation id="8434840396568290395">Mājdzīvnieki</translation>
+<translation id="8436623588884785770">Pievienot politiku</translation>
 <translation id="8437238597147034694">&amp;Atsaukt pārvietošanu</translation>
 <translation id="8438786541497918448">Vai lietot kameru un mikrofonu?</translation>
 <translation id="8438923942245957911">Jūsu organizācija atzīmēja šo vietni kā nepiemērotu</translation>
@@ -3388,6 +3401,7 @@ Papildu informācija:
 <translation id="8483229036294884935">Šī adrese tiks dzēsta no jūsu Google konta (<ph name="ACCOUNT" />).</translation>
 <translation id="8488350697529856933">Attiecas uz</translation>
 <translation id="8490137692873530638">10. izvades vieta</translation>
+<translation id="8493829133024050711">Atlasīt politikas avotu</translation>
 <translation id="8493948351860045254">Atbrīvot vietu</translation>
 <translation id="8498891568109133222">Vietne <ph name="HOST_NAME" /> pārāk ilgi nereaģēja.</translation>
 <translation id="8503559462189395349">Chrome paroles</translation>

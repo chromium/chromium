@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">Suggested searches based on your last tab</translation>
 <translation id="2241634353105152135">Just once</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Remove</translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 site blocked}other{# sites blocked}}</translation>
 <translation id="228293613124499805">Most sites that you visit probably save data to your device, often to improve your experience by saving your preferences or information that you share with the site. We recommend keeping this setting on.</translation>
 <translation id="2289270750774289114">Ask when a site wants to discover nearby Bluetooth devices (recommended)</translation>
 <translation id="2315043854645842844">Client side certificate selection is not supported by the operating system.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">Unable to select certificate.</translation>
 <translation id="8077120325605624147">Any site that you visit can show any ad to you</translation>
 <translation id="8087000398470557479">This content is from <ph name="DOMAIN_NAME" />, delivered by Google.</translation>
+<translation id="8088603949666785339">More options in the <ph name="BANNER_TITLE" /></translation>
 <translation id="8116925261070264013">Muted</translation>
 <translation id="813082847718468539">View site information</translation>
 <translation id="8131740175452115882">Confirm</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129">Turn on permission for <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8730621377337864115">Done</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 site allowed}other{# sites allowed}}</translation>
 <translation id="8737217482364735741">This will clear all data and cookies stored by <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Select an image</translation>
 <translation id="8801436777607969138">Block JavaScript for a specific site.</translation>

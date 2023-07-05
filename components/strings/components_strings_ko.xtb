@@ -127,6 +127,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">조직에서 관리하지 않는 사이트에 내 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 다른 앱과 사이트에서 동일한 비밀번호를 재사용하지 마세요.</translation>
 <translation id="1257553931232494454">확대/축소 수준</translation>
+<translation id="1259843033850529027">정책 수준 선택</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 설정 관리</translation>
 <translation id="1264309058268477500">대체</translation>
 <translation id="1264974993859112054">스포츠</translation>
@@ -304,6 +305,7 @@
 <translation id="1593359183944365958">270도</translation>
 <translation id="1594030484168838125">선택</translation>
 <translation id="1596296697375291157">스릴러, 범죄 및 미스터리 영화</translation>
+<translation id="1597473228022844713">추적 중인 제품입니다. 이 페이지는 <ph name="LAST_BOOKMARKS_FOLDER" />에 저장되어 있습니다</translation>
 <translation id="1599199147673445968">새 카드인가요? <ph name="BEGIN_LINK" />카드 세부정보 입력<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome 공룡 달리기 게임 플레이</translation>
 <translation id="161042844686301425">청록색</translation>
@@ -949,6 +951,7 @@
 <translation id="3140646734028448730">비즈니스 서비스</translation>
 <translation id="3141093262818886744">무시하고 열기</translation>
 <translation id="3141641372357166056">동의 결정 없음</translation>
+<translation id="3144458715650412431">테스트 정책이 적용되었습니다. chrome://policy/test에서 정책을 검토하고 재설정하세요. 관리자 정책은 적용되지 않습니다.</translation>
 <translation id="3145945101586104090">응답 디코딩 실패</translation>
 <translation id="3150653042067488994">일시적인 서버 오류</translation>
 <translation id="3150889484970506196">시트 만들기 버튼, 새 Google 시트를 빠르게 만들려면 활성화하세요.</translation>
@@ -1344,6 +1347,7 @@
 <translation id="3987940399970879459">1MB 미만</translation>
 <translation id="3990250421422698716">조그 오프셋</translation>
 <translation id="3992684624889376114">이 페이지에 관한 정보</translation>
+<translation id="3995639283717357522">정책 적용</translation>
 <translation id="399952081411886534">광고 개인 정보 보호를 위한 기타 기능</translation>
 <translation id="4000598935132966791">관리 브라우저의 사이트 제한에 관해 자세히 알아보기</translation>
 <translation id="4006465311664329701">Google Pay에 사용되는 결제 수단, 쿠폰, 주소</translation>
@@ -1524,6 +1528,7 @@
 <translation id="4333561522337981382">모든 디스플레이의 창 관리</translation>
 <translation id="4338709847516294988">검색 메뉴에서 m을 누르고 컨텍스트 메뉴에서 이미지를 텍스트로 변환</translation>
 <translation id="4340575312453649552">이 광고는 기기에서 너무 많은 리소스를 사용했기 때문에 Chrome에서 삭제했습니다.</translation>
+<translation id="4340810192899866471">JSON에서 가져오기</translation>
 <translation id="4340982228985273705">이 컴퓨터는 기업에서 관리하는 기기가 아닌 것으로 파악되므로, Chrome 웹 스토어에 호스팅된 확장 프로그램만 정책을 통해 자동으로 설치할 수 있습니다. Chrome 웹 스토어의 업데이트 URL은 '<ph name="CWS_UPDATE_URL" />'입니다.</translation>
 <translation id="4348834659292907206"><ph name="SITE" />에 대한 연결이 안전하지 않음</translation>
 <translation id="4349365535725594680">기밀 콘텐츠를 공유할 수 없음</translation>
@@ -1772,6 +1777,7 @@
 <translation id="4901778704868714008">저장...</translation>
 <translation id="4901952598169637881">캐주얼 신발</translation>
 <translation id="4905659621780993806">관리자가 <ph name="DATE" /> <ph name="TIME" />에 기기를 자동으로 다시 시작합니다. 기기가 다시 시작되기 전에 실행 중인 항목을 저장하세요.</translation>
+<translation id="4907289208610706508">대상</translation>
 <translation id="4913987521957242411">왼쪽 상단 펀칭</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> 설치(다운로드 필요 없음)</translation>
 <translation id="4920457992177678649">휴가철 임대 및 단기 체류</translation>
@@ -1881,6 +1887,7 @@
 <translation id="5145883236150621069">정책 응답에 오류 코드가 포함되어 있음</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> 알림이 차단됨</translation>
 <translation id="514704532284964975"><ph name="URL" />에서 휴대전화로 탭하는 NFC 기기의 정보를 보고 변경하려고 합니다.</translation>
+<translation id="5147633291963801297">측면 패널에서 가격 인하 보기</translation>
 <translation id="5148809049217731050">인쇄면이 위로</translation>
 <translation id="5153314898060540200">하드록 및 프로그레시브록</translation>
 <translation id="5157504274688344097">대형 할인점 및 백화점</translation>
@@ -2457,6 +2464,7 @@
 <translation id="6450212216969386944">봉투 Chou 40</translation>
 <translation id="6451458296329894277">양식 다시 제출 확인</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">정책 대상 선택</translation>
 <translation id="6456955391422100996">광고가 삭제되었습니다.</translation>
 <translation id="6457206614190510200">새들 스티치</translation>
 <translation id="6457455098507772300">가격 인하 알림이 바탕화면에 팝업 알림으로 표시됩니다.</translation>
@@ -2740,6 +2748,7 @@
 <translation id="7108819624672055576">확장 프로그램에서 허용</translation>
 <translation id="7109510814665441393">레이싱 게임</translation>
 <translation id="7110116949943042888">임시 및 계약직</translation>
+<translation id="7110553203952632623">사이트에서 가격이 인하되면 이메일 알림을 받게 됩니다</translation>
 <translation id="7111012039238467737">(유효)</translation>
 <translation id="7111507312244504964">부동산 감정</translation>
 <translation id="7112327784801341716">최신 정보가 표시되지 않나요? 은행에 문의하여 업데이트하세요.</translation>
@@ -3231,6 +3240,7 @@
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />'이(가) 컴퓨터 또는 네트워크에 제대로 설치되지 않았습니다. IT 관리자에게 문제 해결을 요청해 보세요.</translation>
 <translation id="8131740175452115882">확인</translation>
 <translation id="8134058435519644366">신규모집 및 채용</translation>
+<translation id="8144303576836498784">문제가 발생했습니다. 변경사항이 저장되지 않았습니다</translation>
 <translation id="8148608574971654810">PDF 버전:</translation>
 <translation id="8149426793427495338">컴퓨터가 절전 모드 상태입니다.</translation>
 <translation id="8150722005171944719"><ph name="URL" />의 파일을 읽을 수 없습니다. 삭제 또는 이동되었거나 파일 사용 권한이 액세스를 차단할 수도 있습니다.</translation>
@@ -3244,6 +3254,7 @@
 <translation id="8184538546369750125">전체 기본값 사용(허용)</translation>
 <translation id="8186706823560132848">소프트웨어</translation>
 <translation id="8190193880870196235">확장 프로그램에서 관리</translation>
+<translation id="8194412401381329820">이 관리되지 않는 기기의 관리 계정에서는 이 페이지를 사용할 수 없습니다. 이 페이지를 사용하는 경우 이 기기와 동일한 법인에서 관리하는 계정(연결 계정)을 제외한 모든 관리 계정이 잠깁니다.</translation>
 <translation id="8194797478851900357">이동 실행 취소(&amp;U)</translation>
 <translation id="8194956568907463262">슈팅 게임</translation>
 <translation id="8200772114523450471">다시 시작</translation>
@@ -3251,6 +3262,7 @@
 <translation id="8202370299023114387">충돌</translation>
 <translation id="8207625368992715508">모터스포츠</translation>
 <translation id="8208363704094329105">300x400mm</translation>
+<translation id="8210490490377416373">정책 이름 선택</translation>
 <translation id="8210604850413485128">웹 호스팅</translation>
 <translation id="8211406090763984747">이 연결은 안전합니다.</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3366,6 +3378,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 설정에서 쿠키 환경설정 관리</translation>
 <translation id="8433057134996913067">이 작업을 수행하면 대부분의 웹사이트에서 로그아웃됩니다.</translation>
 <translation id="8434840396568290395">반려동물</translation>
+<translation id="8436623588884785770">정책 추가</translation>
 <translation id="8437238597147034694">이동 실행 취소(&amp;U)</translation>
 <translation id="8438786541497918448">카메라 및 마이크를 사용하시겠습니까?</translation>
 <translation id="8438923942245957911">조직에서 신고한 사이트입니다.</translation>
@@ -3388,6 +3401,7 @@
 <translation id="8483229036294884935">이 주소가 Google 계정(<ph name="ACCOUNT" />)에서 삭제됩니다.</translation>
 <translation id="8488350697529856933">적용 대상</translation>
 <translation id="8490137692873530638">스태커 10</translation>
+<translation id="8493829133024050711">정책 소스 선택</translation>
 <translation id="8493948351860045254">저장 공간 확보하기</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" />에서 응답하는 데 시간이 너무 오래 걸립니다.</translation>
 <translation id="8503559462189395349">Chrome 비밀번호</translation>
