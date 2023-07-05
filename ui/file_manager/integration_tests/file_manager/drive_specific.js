@@ -1709,11 +1709,9 @@ testcase.driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin =
       appId, '#file-list [file-name="text.txt"]:not(.cant-pin)');
 };
 
-
 /**
- * Tests that files that can't be pinned should have the correct CSS class
- * applied to them. When they go back to being able to be pinned (e.g. from Docs
- * offline coming back online) then ensure the inline icon is updated.
+ * Tests that items that are cached outside of their virtual list get their
+ * inline sync status updated when they get attached back to the DOM.
  */
 testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
   const entries = [];
