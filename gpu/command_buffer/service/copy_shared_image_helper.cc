@@ -588,6 +588,14 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
         GLError(GL_INVALID_VALUE, "glCopySubTexture", "unknown mailbox"));
   }
 
+  auto dest_format = dest_shared_image->format();
+  // Destination shared image cannot prefer external sampler.
+  if (dest_format.IsLegacyMultiplanar() ||
+      dest_format.PrefersExternalSampler()) {
+    return base::unexpected(
+        GLError(GL_INVALID_VALUE, "glCopySubTexture", "unexpected format"));
+  }
+
   gfx::Size dest_size = dest_shared_image->size();
   gfx::Rect dest_rect(xoffset, yoffset, width, height);
   if (!gfx::Rect(dest_size).Contains(dest_rect)) {
@@ -695,11 +703,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
     // Skia will flip the image if the surface origins do not match.
     DCHECK_EQ(unpack_flip_y, source_shared_image->surface_origin() !=
                                  dest_shared_image->surface_origin());
-    auto dest_format = dest_shared_image->format();
     if (dest_format.is_single_plane()) {
-      // Destination shared image cannot prefer external sampler.
-      DCHECK(!dest_format.IsLegacyMultiplanar());
-
       auto* canvas = dest_scoped_access->surface()->getCanvas();
       SkPaint paint;
       paint.setBlendMode(SkBlendMode::kSrc);
@@ -928,7 +932,8 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
   }
 
   sk_sp<SkImage> sk_image;
-  if (source_shared_image->format().is_single_plane()) {
+  if (source_shared_image->format().is_single_plane() ||
+      source_shared_image->format().PrefersExternalSampler()) {
     // Create SkImage without plane index for single planar formats or legacy
     // multiplanar formats with external sampler.
     sk_image = source_scoped_access->CreateSkImage(shared_context_state_);
