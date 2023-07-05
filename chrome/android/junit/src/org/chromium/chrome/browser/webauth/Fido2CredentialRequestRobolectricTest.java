@@ -9,6 +9,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -556,6 +557,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 .recordCredmanPrepareRequestHistogram(eq(CredManPrepareRequestEnum.SENT_REQUEST));
         verify(mMetricsHelper, times(1))
                 .recordCredmanPrepareRequestHistogram(eq(CredManPrepareRequestEnum.FAILURE));
+        verify(mMetricsHelper, times(0)).recordCredmanPrepareRequestDuration(anyLong());
     }
 
     @Test
@@ -593,6 +595,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
+        verify(mMetricsHelper, times(1)).recordCredmanPrepareRequestDuration(anyLong());
 
         mCredentialManager.setErrorResponse(new FakeAndroidCredManException(
                 "android.credentials.GetCredentialException.TYPE_USER_CANCELED", "Message"));
@@ -622,6 +625,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
+        verify(mMetricsHelper, times(1)).recordCredmanPrepareRequestDuration(anyLong());
 
         FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
         assertThat(credManRequest).isNotNull();

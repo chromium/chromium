@@ -53,6 +53,11 @@ public class CredManMetricsHelper {
                 value, CredManPrepareRequestEnum.NUM_ENTRIES);
     }
 
+    public void recordCredmanPrepareRequestDuration(long durationMs) {
+        RecordHistogram.recordTimesHistogram(
+                "WebAuthentication.Android.CredManPrepareRequestDuration", durationMs);
+    }
+
     public void reportGetCredentialMetrics(
             @CredManGetRequestEnum int value, ConditionalUiState conditionalUiState) {
         assert !(conditionalUiState == ConditionalUiState.NONE)

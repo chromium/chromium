@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.OutcomeReceiver;
 import android.os.Parcel;
+import android.os.SystemClock;
 import android.util.Base64;
 import android.util.Pair;
 
@@ -1185,6 +1186,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private void prefetchCredentialsViaCredMan(
             PublicKeyCredentialRequestOptions options, Origin origin, byte[] maybeClientDataHash) {
+        long startTimeMs = SystemClock.elapsedRealtime();
         // The Android 14 APIs have to be called via reflection until Chromium
         // builds with the Android 14 SDK by default.
         OutcomeReceiver<Object, Throwable> receiver = new OutcomeReceiver<>() {
@@ -1240,6 +1242,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 mMetricsHelper.recordCredmanPrepareRequestHistogram(hasPublicKeyCredentials
                                 ? CredManPrepareRequestEnum.SUCCESS_HAS_RESULTS
                                 : CredManPrepareRequestEnum.SUCCESS_NO_RESULTS);
+                mMetricsHelper.recordCredmanPrepareRequestDuration(
+                        SystemClock.elapsedRealtime() - startTimeMs);
             }
         };
 

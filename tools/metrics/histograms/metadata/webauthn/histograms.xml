@@ -51,6 +51,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Android.CredManPrepareRequestDuration"
+    units="ms" expires_after="2024-01-01">
+  <owner>derinel@google.com</owner>
+  <owner>kenrb@chromium.org</owner>
+  <summary>
+    Records the duration of Android Credential Management prepareGetCredential
+    API.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.CableV2.AOADiscoveryEvent"
     enum="WebAuthenticationAOADiscoveryEvent" expires_after="2023-12-10">
   <owner>agl@chromium.org</owner>
