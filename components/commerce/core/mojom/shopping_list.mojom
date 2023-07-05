@@ -4,6 +4,7 @@
 module shopping_list.mojom;
 
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 
 // This is a specialized version of shopping_specifics proto. The
 // struct here has most of the same information with the proto but
@@ -130,6 +131,14 @@ interface ShoppingListHandler {
 
   // Sets the price tracking status of the current URL.
   SetPriceTrackingStatusForCurrentUrl(bool track);
+
+  // Returns the name of the parent bookmark folder of the current URL. This
+  // will only be called when the current page is bookmarked.
+  GetParentBookmarkFolderNameForCurrentUrl() => (mojo_base.mojom.String16 name);
+
+  // Show the bookmark editor dialog for the current URL. This will only be
+  // called when the current page is bookmarked.
+  ShowBookmarkEditorForCurrentUrl();
 };
 
 // WebUI-side handler for requests from the browser.

@@ -46,6 +46,8 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
       'isShoppingListEligible',
       'getPriceTrackingStatusForCurrentUrl',
       'setPriceTrackingStatusForCurrentUrl',
+      'getParentBookmarkFolderNameForCurrentUrl',
+      'showBookmarkEditorForCurrentUrl',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -100,6 +102,14 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
 
   setPriceTrackingStatusForCurrentUrl(track: boolean) {
     this.methodCalled('setPriceTrackingStatusForCurrentUrl', track);
+  }
+
+  getParentBookmarkFolderNameForCurrentUrl() {
+    return this.methodCalled('getParentBookmarkFolderNameForCurrentUrl');
+  }
+
+  showBookmarkEditorForCurrentUrl() {
+    this.methodCalled('showBookmarkEditorForCurrentUrl');
   }
 
   getCallbackRouter() {

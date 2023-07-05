@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/commerce/core/price_tracking_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/styled_label.h"
@@ -20,20 +21,6 @@
 #include "ui/views/view_utils.h"
 
 namespace {
-
-const std::u16string& GetBookmarkParentNameOrDefault(Profile* profile,
-                                                     const GURL& url) {
-  bookmarks::BookmarkModel* const model =
-      BookmarkModelFactory::GetForBrowserContext(profile);
-
-  if (bookmarks::IsBookmarkedByUser(model, url)) {
-    const bookmarks::BookmarkNode* existing_node =
-        model->GetMostRecentlyAddedUserNodeForURL(url);
-    return existing_node->parent()->GetTitle();
-  }
-  const bookmarks::BookmarkNode* node = model->other_node();
-  return node->GetTitle();
-}
 
 std::unique_ptr<views::StyledLabel> CreateBodyLabel(std::u16string& body_text) {
   return views::Builder<views::StyledLabel>()
@@ -64,7 +51,8 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
-  auto folder_name = GetBookmarkParentNameOrDefault(profile_, url);
+  auto folder_name = commerce::GetBookmarkParentNameOrDefault(
+      BookmarkModelFactory::GetForBrowserContext(profile_), url);
 
   if (type == PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE) {
     SetTitle(l10n_util::GetStringUTF16(

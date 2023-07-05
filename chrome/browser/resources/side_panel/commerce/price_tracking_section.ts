@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
 import {BookmarkProductInfo, ProductInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './price_tracking_section.html.js';
@@ -19,6 +20,10 @@ export interface PriceTrackingSection {
     toggleAnnotation: HTMLElement,
     toggle: HTMLElement,
   };
+}
+
+function decodeString16(arr: String16) {
+  return arr.data.map(ch => String.fromCodePoint(ch)).join('');
 }
 
 export class PriceTrackingSection extends PolymerElement {
@@ -44,6 +49,8 @@ export class PriceTrackingSection extends PolymerElement {
   productInfo: ProductInfo;
   private isProductTracked_: boolean;
   private listenerIds_: number[] = [];
+  private toggleAnnotationText_: string;
+  private folderName_: string;
 
   private shoppingApi_: ShoppingListApiProxy =
       ShoppingListApiProxyImpl.getInstance();
@@ -63,8 +70,24 @@ export class PriceTrackingSection extends PolymerElement {
 
 
     this.shoppingApi_.getPriceTrackingStatusForCurrentUrl().then(res => {
-      this.isProductTracked_ = res.tracked;
+      this.updatePriceTrackingSection_(res.tracked);
     });
+  }
+
+  private async updatePriceTrackingSection_(tracked: boolean) {
+    if (!tracked) {
+      this.folderName_ = '';
+      // TODO(crbug.com/1456420): Update the string to include the period.
+      this.toggleAnnotationText_ =
+          loadTimeData.getString('trackPriceDescription');
+    } else {
+      const {name} =
+          await this.shoppingApi_.getParentBookmarkFolderNameForCurrentUrl();
+      this.folderName_ = decodeString16(name);
+      this.toggleAnnotationText_ =
+          loadTimeData.getStringF('trackPriceDone', '');
+    }
+    this.isProductTracked_ = tracked;
   }
 
   override disconnectedCallback() {
@@ -83,22 +106,18 @@ export class PriceTrackingSection extends PolymerElement {
     if (product.info.clusterId !== this.productInfo.clusterId) {
       return;
     }
-    this.isProductTracked_ = true;
+    this.updatePriceTrackingSection_(true);
   }
 
   private onBookmarkPriceUntracked(product: BookmarkProductInfo) {
     if (product.info.clusterId !== this.productInfo.clusterId) {
       return;
     }
-    this.isProductTracked_ = false;
+    this.updatePriceTrackingSection_(false);
   }
 
-  private getToggleAnnotationText_(isProductTracked: boolean) {
-    if (!isProductTracked) {
-      return loadTimeData.getString('trackPriceDescription');
-    } else {
-      return loadTimeData.getStringF('trackPriceDone', '');
-    }
+  private onFolderClicked_() {
+    this.shoppingApi_.showBookmarkEditorForCurrentUrl();
   }
 }
 

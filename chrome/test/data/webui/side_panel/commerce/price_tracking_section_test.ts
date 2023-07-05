@@ -6,6 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://shopping-insights-side-panel.top-chrome/app.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PriceTrackingSection} from 'chrome://shopping-insights-side-panel.top-chrome/price_tracking_section.js';
 import {ShoppingListApiProxyImpl} from 'chrome://shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
 import {BookmarkProductInfo, PageCallbackRouter, PageRemote, ProductInfo} from 'chrome://shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
@@ -39,13 +40,22 @@ suite('PriceTrackingSectionTest', () => {
     assertEquals(
         priceTrackingSection.$.toggleTitle!.textContent,
         loadTimeData.getString('trackPriceTitle'));
+    const expectedAnnotation = tracked ?
+        (loadTimeData.getStringF('trackPriceDone', 'Parent folder') + '.') :
+        (loadTimeData.getString('trackPriceDescription') + '.');
     assertEquals(
         priceTrackingSection.$.toggleAnnotation!.textContent,
-        tracked ? loadTimeData.getStringF('trackPriceDone', '') :
-                  loadTimeData.getString('trackPriceDescription'));
+        expectedAnnotation);
     assertEquals(
         priceTrackingSection.$.toggle!.getAttribute('aria-pressed')!,
         tracked ? 'true' : 'false');
+  }
+
+  /**
+   * Converts a string to an instance of mojo_base.mojom.String16.
+   */
+  function stringToMojoString16(s: string): String16 {
+    return {data: Array.from(s, c => c.charCodeAt(0))};
   }
 
   setup(async () => {
@@ -54,6 +64,10 @@ suite('PriceTrackingSectionTest', () => {
     shoppingListApi.reset();
     callbackRouter = new PageCallbackRouter();
     shoppingListApi.setResultFor('getCallbackRouter', callbackRouter);
+    shoppingListApi.setResultFor(
+        'getParentBookmarkFolderNameForCurrentUrl',
+        Promise.resolve({name: stringToMojoString16('Parent folder')}));
+
     callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
 
     ShoppingListApiProxyImpl.setInstance(shoppingListApi);
@@ -126,7 +140,7 @@ suite('PriceTrackingSectionTest', () => {
       } else {
         callbackRouterRemote.priceTrackedForBookmark(otherBookmarkProductInfo);
       }
-
+      await flushTasks();
       checkPriceTrackingSectionRendering(tracked);
     });
   });
@@ -147,5 +161,22 @@ suite('PriceTrackingSectionTest', () => {
     callbackRouterRemote.priceUntrackedForBookmark(bookmarkProductInfo);
     await flushTasks();
     checkPriceTrackingSectionRendering(false);
+  });
+
+  test(`Trigger bookmark editor`, async () => {
+    shoppingListApi.setResultFor(
+        'getPriceTrackingStatusForCurrentUrl',
+        Promise.resolve({tracked: true}));
+
+    document.body.appendChild(priceTrackingSection);
+    await shoppingListApi.whenCalled('getPriceTrackingStatusForCurrentUrl');
+    await flushTasks();
+    checkPriceTrackingSectionRendering(true);
+
+    const folder = priceTrackingSection.shadowRoot!.querySelector(
+                       '#toggleAnnotationButton')! as HTMLElement;
+    folder.click();
+
+    await shoppingListApi.whenCalled('showBookmarkEditorForCurrentUrl');
   });
 });

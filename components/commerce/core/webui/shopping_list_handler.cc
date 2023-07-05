@@ -420,6 +420,17 @@ void ShoppingListHandler::SetPriceTrackingStatusForCurrentUrl(bool track) {
   }
 }
 
+void ShoppingListHandler::GetParentBookmarkFolderNameForCurrentUrl(
+    GetParentBookmarkFolderNameForCurrentUrlCallback callback) {
+  const GURL current_url = delegate_->GetCurrentTabUrl().value();
+  std::move(callback).Run(
+      commerce::GetBookmarkParentNameOrDefault(bookmark_model_, current_url));
+}
+
+void ShoppingListHandler::ShowBookmarkEditorForCurrentUrl() {
+  delegate_->ShowBookmarkEditorForCurrentUrl();
+}
+
 void ShoppingListHandler::OnFetchProductInfoForCurrentUrl(
     GetProductInfoForCurrentUrlCallback callback,
     const GURL& url,

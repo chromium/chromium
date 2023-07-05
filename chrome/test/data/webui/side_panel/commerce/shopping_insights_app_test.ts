@@ -6,6 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://shopping-insights-side-panel.top-chrome/app.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {ShoppingInsightsAppElement} from 'chrome://shopping-insights-side-panel.top-chrome/app.js';
 import {ShoppingListApiProxyImpl} from 'chrome://shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
 import {PageCallbackRouter, PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from 'chrome://shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
@@ -184,6 +185,13 @@ suite('ShoppingInsightsAppTest', () => {
         'shopping-insights-history-graph')));
   });
 
+  /**
+   * Converts a string to an instance of mojo_base.mojom.String16.
+   */
+  function stringToMojoString16(s: string): String16 {
+    return {data: Array.from(s, c => c.charCodeAt(0))};
+  }
+
   [true, false].forEach((eligible) => {
     test('PriceTrackingSectionVisibility', async () => {
       shoppingListApi.setResultFor(
@@ -194,6 +202,10 @@ suite('ShoppingInsightsAppTest', () => {
       shoppingListApi.setResultFor(
           'getPriceTrackingStatusForCurrentUrl',
           Promise.resolve({tracked: true}));
+      shoppingListApi.setResultFor(
+          'getParentBookmarkFolderNameForCurrentUrl',
+          Promise.resolve({name: stringToMojoString16('Parent folder')}));
+
       const callbackRouter = new PageCallbackRouter();
       shoppingListApi.setResultFor('getCallbackRouter', callbackRouter);
 
