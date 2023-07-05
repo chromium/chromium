@@ -85,6 +85,8 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
   bool HasImportantProperty() const;
   bool HasImportantPropertyInternal() const;
 
+  ax::mojom::Role GetChromeRole() const;
+
   raw_ptr<mojom::AccessibilityNodeInfoData, ExperimentalAsh> node_ptr_ =
       nullptr;
 

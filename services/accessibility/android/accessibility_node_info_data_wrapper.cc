@@ -219,19 +219,16 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
     return;
   }
 
-  std::string chrome_role;
-  if (GetProperty(AXStringProperty::CHROME_ROLE, &chrome_role)) {
-    auto role_value = ui::ParseAXEnum<ax::mojom::Role>(chrome_role.c_str());
-    if (role_value != ax::mojom::Role::kNone) {
-      // The webView and rootWebArea roles differ between Android and Chrome. In
-      // particular, Android includes far fewer attributes which leads to
-      // undesirable behavior. Exclude their direct mapping.
-      out_data->role = (role_value != ax::mojom::Role::kWebView &&
-                        role_value != ax::mojom::Role::kRootWebArea)
-                           ? role_value
-                           : ax::mojom::Role::kGenericContainer;
-      return;
-    }
+  if (ax::mojom::Role chrome_role = GetChromeRole();
+      chrome_role != ax::mojom::Role::kNone) {
+    // The webView and rootWebArea roles differ between Android and Chrome. In
+    // particular, Android includes far fewer attributes which leads to
+    // undesirable behavior. Exclude their direct mapping.
+    out_data->role = (chrome_role != ax::mojom::Role::kWebView &&
+                      chrome_role != ax::mojom::Role::kRootWebArea)
+                         ? chrome_role
+                         : ax::mojom::Role::kGenericContainer;
+    return;
   }
 
 #define MAP_ROLE(android_class_name, chrome_role) \
@@ -909,6 +906,17 @@ bool AccessibilityNodeInfoDataWrapper::HasImportantPropertyInternal() const {
   }
 
   return false;
+}
+
+ax::mojom::Role AccessibilityNodeInfoDataWrapper::GetChromeRole() const {
+  std::string chrome_role;
+  if (GetProperty(AXStringProperty::CHROME_ROLE, &chrome_role)) {
+    ax::mojom::Role result;
+    if (ui::MaybeParseAXEnum<ax::mojom::Role>(chrome_role.c_str(), &result)) {
+      return result;
+    }
+  }
+  return ax::mojom::Role::kNone;
 }
 
 }  // namespace ax::android

@@ -906,4 +906,15 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, ActionLabel) {
       ax::mojom::StringAttribute::kLongClickLabel, &val));
   EXPECT_EQ("long click label", val);
 }
+
+TEST_F(AccessibilityNodeInfoDataWrapperTest, InvalidChromeRole) {
+  AXNodeInfoData root;
+  root.id = 1;
+  AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &root);
+
+  SetProperty(root, AXStringProperty::CHROME_ROLE, "ThisRoleDoesNotExist");
+
+  ui::AXNodeData data = CallSerialize(wrapper);
+  // This test makes sure that an invalid role name won't make Chrome crash.
+}
 }  // namespace ax::android
