@@ -19,8 +19,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/kcer_nss/cert_cache_nss.h"
-#include "chrome/browser/chromeos/platform_keys/chaps_util.h"
 #include "chromeos/components/kcer/kcer_token.h"
 #include "chromeos/components/kcer/key_permissions.pb.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -34,6 +34,10 @@
 #include "net/cert/x509_util_nss.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/platform_keys/chaps_util.h"
+#endif
 
 // General pattern for implementing KcerToken methods:
 // * The received callbacks for the results must already be bound to correct
@@ -122,9 +126,13 @@ void GenerateRsaKeyOnWorkerThread(Token token,
         slot.get(), modulus_length_bits, /*permanent=*/true, &public_key,
         &private_key);
   } else {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     auto chaps_util = chromeos::platform_keys::ChapsUtil::Create();
     key_gen_success = chaps_util->GenerateSoftwareBackedRSAKey(
         slot.get(), modulus_length_bits, &public_key, &private_key);
+#else
+    return std::move(callback).Run(base::unexpected(Error::kNotImplemented));
+#endif
   }
 
   if (!key_gen_success) {

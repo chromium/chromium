@@ -275,6 +275,9 @@ class COMPONENT_EXPORT(KCER) Kcer {
   // the key pair will not be hardware protected (by the TPM). Software keys are
   // usually faster, but less secure. Returns a public key on success, an error
   // otherwise.
+  // TODO(miersh): Software keys are currently only implemented in Ash because
+  // they are only used there. When Kcer-without-NSS is implemented, they should
+  // work everywhere.
   virtual void GenerateRsaKey(Token token,
                               uint32_t modulus_length_bits,
                               bool hardware_backed,
