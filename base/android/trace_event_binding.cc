@@ -70,7 +70,6 @@ static void JNI_TraceEvent_InitViewHierarchyDump(
     JNIEnv* env,
     jlong id,
     const JavaParamRef<jobject>& obj) {
-  SCOPED_UMA_HISTOGRAM_TIMER("Tracing.ViewHierarchyDump.DumpDuration");
   TRACE_EVENT(
       kAndroidViewHierarchyTraceCategory, kAndroidViewHierarchyEventName,
       perfetto::TerminatingFlow::ProcessScoped(static_cast<uint64_t>(id)),
