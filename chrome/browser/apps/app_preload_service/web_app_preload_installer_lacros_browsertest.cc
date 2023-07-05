@@ -125,7 +125,8 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerLacrosBrowserTest, InstallOemApp) {
 
   // Install the app.
   WebAppPreloadInstaller installer(profile());
-  installer.InstallAllApps({PreloadAppDefinition(app)}, result.GetCallback());
+
+  installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
   ASSERT_TRUE(result.Get());
 
   // Check the app is installed in app_registry_cache.

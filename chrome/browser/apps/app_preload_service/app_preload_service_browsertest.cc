@@ -408,15 +408,6 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, RetryFailedApps) {
   histograms.ExpectTotalCount(kFirstLoginFlowHistogramFailureName, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, InstallNoApp) {
-  proto::AppPreloadListResponse response;
-  SetAppProvisioningResponse(response);
-  base::test::TestFuture<bool> result;
-  auto* service = AppPreloadService::Get(profile());
-  service->StartFirstLoginFlowForTesting(result.GetCallback());
-  ASSERT_TRUE(result.Get());
-}
-
 class AppPreloadServiceWithTestAppsBrowserTest
     : public AppPreloadServiceBrowserTest {
  private:
