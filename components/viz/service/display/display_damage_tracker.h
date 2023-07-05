@@ -19,7 +19,6 @@
 namespace viz {
 
 class SurfaceAggregator;
-class SurfaceInfo;
 class SurfaceManager;
 
 // DisplayDamageTracker is used to track Surfaces damage that belong to current
@@ -76,8 +75,6 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   }
 
   // SurfaceObserver implementation.
-  void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override {}
-  void OnSurfaceActivated(const SurfaceId& surface_id) override {}
   void OnSurfaceMarkedForDestruction(const SurfaceId& surface_id) override;
   bool OnSurfaceDamaged(const SurfaceId& surface_id,
                         const BeginFrameAck& ack) override;

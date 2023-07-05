@@ -34,14 +34,8 @@ class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
   ~HitTestManager() override;
 
   // SurfaceObserver:
-  void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override {}
   void OnSurfaceActivated(const SurfaceId& surface_id) override;
-  void OnSurfaceMarkedForDestruction(const SurfaceId& surface_id) override {}
-  bool OnSurfaceDamaged(const SurfaceId& surface_id,
-                        const BeginFrameAck& ack) override;
   void OnSurfaceDestroyed(const SurfaceId& surface_id) override;
-  void OnSurfaceDamageExpected(const SurfaceId& surface_id,
-                               const BeginFrameArgs& args) override {}
 
   // Called when HitTestRegionList is submitted along with every call
   // to SubmitCompositorFrame.
