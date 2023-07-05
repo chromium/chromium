@@ -1034,6 +1034,9 @@ void MetricsService::CloseCurrentLog(
       log_histogram_writer->histogram_snapshot_manager());
 
   MetricsLog::LogType log_type = current_log->log_type();
+  CHECK_EQ(log_type, MetricsLog::ONGOING_LOG);
+  ChromeUserMetricsExtension::RealLocalTime close_time =
+      current_log->GetCurrentClockTime(/*record_time_zone=*/true);
   std::string signing_key = log_store()->GetSigningKeyForLogType(log_type);
   std::string current_app_version = client_->GetVersionString();
   if (async) {
@@ -1058,8 +1061,8 @@ void MetricsService::CloseCurrentLog(
         FROM_HERE,
         base::BindOnce(&MetricsService::SnapshotUnloggedSamplesAndFinalizeLog,
                        log_histogram_writer_ptr, std::move(current_log),
-                       /*truncate_events=*/true, std::move(current_app_version),
-                       std::move(signing_key)),
+                       /*truncate_events=*/true, std::move(close_time),
+                       std::move(current_app_version), std::move(signing_key)),
         base::BindOnce(&MetricsService::MaybeCleanUpAndStoreFinalizedLog,
                        self_ptr_factory_.GetWeakPtr(),
                        std::move(log_histogram_writer), log_type, reason,
@@ -1068,8 +1071,8 @@ void MetricsService::CloseCurrentLog(
   } else {
     FinalizedLog finalized_log = SnapshotDeltasAndFinalizeLog(
         std::move(log_histogram_writer), std::move(current_log),
-        /*truncate_events=*/true, std::move(current_app_version),
-        std::move(signing_key));
+        /*truncate_events=*/true, std::move(close_time),
+        std::move(current_app_version), std::move(signing_key));
     StoreFinalizedLog(log_type, reason, std::move(log_stored_callback),
                       std::move(finalized_log));
   }
@@ -1274,8 +1277,8 @@ bool MetricsService::PrepareInitialStabilityLog(
     const std::string& prefs_previous_version) {
   DCHECK_EQ(CONSTRUCTED, state_);
 
-  std::unique_ptr<MetricsLog> initial_stability_log(
-      CreateLog(MetricsLog::INITIAL_STABILITY_LOG));
+  MetricsLog::LogType log_type = MetricsLog::INITIAL_STABILITY_LOG;
+  std::unique_ptr<MetricsLog> initial_stability_log(CreateLog(log_type));
 
   // Do not call OnDidCreateMetricsLog here because the stability log describes
   // stats from the _previous_ session.
@@ -1294,15 +1297,15 @@ bool MetricsService::PrepareInitialStabilityLog(
   delegating_provider_.RecordInitialHistogramSnapshots(
       log_histogram_writer->histogram_snapshot_manager());
 
-  MetricsLog::LogType log_type = initial_stability_log->log_type();
   std::string signing_key = log_store()->GetSigningKeyForLogType(log_type);
 
   // Synchronously create the initial stability log in order to ensure that the
-  // stability histograms are filled into this specific log.
+  // stability histograms are filled into this specific log. Note that the
+  // close_time param must not be set for initial stability logs.
   FinalizedLog finalized_log = SnapshotDeltasAndFinalizeLog(
       std::move(log_histogram_writer), std::move(initial_stability_log),
-      /*truncate_events=*/false, client_->GetVersionString(),
-      std::move(signing_key));
+      /*truncate_events=*/false, /*close_time=*/absl::nullopt,
+      client_->GetVersionString(), std::move(signing_key));
   StoreFinalizedLog(log_type, MetricsLogsEventManager::CreateReason::kStability,
                     base::DoNothing(), std::move(finalized_log));
 
@@ -1396,10 +1399,12 @@ void MetricsService::PrepareProviderMetricsLogDone(
     // provider.
     std::unique_ptr<MetricsLog> log = loader->ReleaseLog();
     MetricsLog::LogType log_type = log->log_type();
+    CHECK_EQ(log_type, MetricsLog::INDEPENDENT_LOG);
     std::string signing_key = log_store()->GetSigningKeyForLogType(log_type);
-    FinalizedLog finalized_log =
-        FinalizeLog(std::move(log), /*truncate_events=*/false,
-                    client_->GetVersionString(), signing_key);
+    // Note that the close_time param must not be set for independent logs.
+    FinalizedLog finalized_log = FinalizeLog(
+        std::move(log), /*truncate_events=*/false, /*close_time=*/absl::nullopt,
+        client_->GetVersionString(), signing_key);
     StoreFinalizedLog(log_type,
                       MetricsLogsEventManager::CreateReason::kIndependent,
                       base::DoNothing(), std::move(finalized_log));
@@ -1491,11 +1496,12 @@ MetricsService::FinalizedLog MetricsService::SnapshotDeltasAndFinalizeLog(
     std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
     std::unique_ptr<MetricsLog> log,
     bool truncate_events,
+    absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
     std::string&& current_app_version,
     std::string&& signing_key) {
   log_histogram_writer->SnapshotStatisticsRecorderDeltas();
-  return FinalizeLog(std::move(log), truncate_events, current_app_version,
-                     signing_key);
+  return FinalizeLog(std::move(log), truncate_events, std::move(close_time),
+                     current_app_version, signing_key);
 }
 
 // static
@@ -1504,22 +1510,25 @@ MetricsService::SnapshotUnloggedSamplesAndFinalizeLog(
     MetricsLogHistogramWriter* log_histogram_writer,
     std::unique_ptr<MetricsLog> log,
     bool truncate_events,
+    absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
     std::string&& current_app_version,
     std::string&& signing_key) {
   log_histogram_writer->SnapshotStatisticsRecorderUnloggedSamples();
-  return FinalizeLog(std::move(log), truncate_events, current_app_version,
-                     signing_key);
+  return FinalizeLog(std::move(log), truncate_events, std::move(close_time),
+                     current_app_version, signing_key);
 }
 
 // static
 MetricsService::FinalizedLog MetricsService::FinalizeLog(
     std::unique_ptr<MetricsLog> log,
     bool truncate_events,
+    absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
     const std::string& current_app_version,
     const std::string& signing_key) {
   DCHECK(log->uma_proto()->has_record_id());
   std::string log_data;
-  log->FinalizeLog(truncate_events, current_app_version, &log_data);
+  log->FinalizeLog(truncate_events, current_app_version, std::move(close_time),
+                   &log_data);
 
   FinalizedLog finalized_log;
   finalized_log.uncompressed_log_size = log_data.size();

@@ -536,12 +536,25 @@ bool MetricsLog::LoadSavedEnvironmentFromPrefs(PrefService* local_state) {
   return recorder.LoadEnvironmentFromPrefs(system_profile);
 }
 
-void MetricsLog::FinalizeLog(bool truncate_events,
-                             const std::string& current_app_version,
-                             std::string* encoded_log) {
+metrics::ChromeUserMetricsExtension::RealLocalTime
+MetricsLog::GetCurrentClockTime(bool record_time_zone) {
+  CHECK_EQ(log_type_, MetricsLog::ONGOING_LOG);
+  metrics::ChromeUserMetricsExtension::RealLocalTime time;
+  RecordCurrentTime(clock_, network_clock_, record_time_zone, &time);
+  return time;
+}
+
+void MetricsLog::FinalizeLog(
+    bool truncate_events,
+    const std::string& current_app_version,
+    absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
+    std::string* encoded_log) {
   if (truncate_events)
     TruncateEvents();
   RecordLogWrittenByAppVersionIfNeeded(current_app_version);
+  if (close_time.has_value()) {
+    *uma_proto_.mutable_time_log_closed() = std::move(close_time.value());
+  }
   CloseLog();
 
   uma_proto_.SerializeToString(encoded_log);
@@ -549,11 +562,15 @@ void MetricsLog::FinalizeLog(bool truncate_events,
 
 void MetricsLog::CloseLog() {
   DCHECK(!closed_);
-  if (log_type_ == MetricsLog::ONGOING_LOG) {
-    RecordCurrentTime(clock_, network_clock_,
-                      /*record_time_zone=*/true,
-                      uma_proto_.mutable_time_log_closed());
-  }
+
+  // Ongoing logs (and only ongoing logs) should have a closed timestamp. Other
+  // types of logs (initial stability and independent) contain metrics from
+  // previous sessions, so do not add timestamps as they would not accurately
+  // represent the time at which those metrics were emitted.
+  CHECK(log_type_ == MetricsLog::ONGOING_LOG
+            ? uma_proto_.has_time_log_closed()
+            : !uma_proto_.has_time_log_closed());
+
   closed_ = true;
 }
 

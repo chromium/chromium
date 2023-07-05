@@ -208,7 +208,7 @@ TEST_F(MetricsLogTest, BasicRecord) {
 
   std::string encoded;
   log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
-                  &encoded);
+                  log.GetCurrentClockTime(/*record_time_zone=*/true), &encoded);
 
   // A couple of fields are hard to mock, so these will be copied over directly
   // for the expected output.
@@ -319,13 +319,14 @@ TEST_F(MetricsLogTest, FinalizeLog) {
   // the one that was used when the log was created.
   std::string encoded;
   log.FinalizeLog(/*truncate_events=*/true, client_.GetVersionString(),
-                  &encoded);
+                  log.GetCurrentClockTime(/*record_time_zone=*/true), &encoded);
 
   // Finalize |log2|. We do not truncate events, and we pass a different version
   // string than the one that was used when the log was created.
   client_.set_version_string(kNewVersionString);
   std::string encoded2;
   log2.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
+                   log.GetCurrentClockTime(/*record_time_zone=*/true),
                    &encoded2);
 
   ChromeUserMetricsExtension parsed;
@@ -361,8 +362,9 @@ TEST_F(MetricsLogTest, Timestamps_InitialStabilityLog) {
                  clock.get(), nullptr, &client_);
   clock->SetNow(base::Time::FromTimeT(2));
   std::string encoded;
+  // Don't set the close_time param since this is an initial stability log.
   log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
-                  &encoded);
+                  /*close_time=*/absl::nullopt, &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
   EXPECT_FALSE(parsed.has_time_log_created());
@@ -379,8 +381,9 @@ TEST_F(MetricsLogTest, Timestamps_IndependentLog) {
                  clock.get(), nullptr, &client_);
   clock->SetNow(base::Time::FromTimeT(2));
   std::string encoded;
+  // Don't set the close_time param since this is an independent log.
   log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
-                  &encoded);
+                  /*close_time=*/absl::nullopt, &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
   EXPECT_FALSE(parsed.has_time_log_created());
@@ -398,7 +401,7 @@ TEST_F(MetricsLogTest, Timestamps_OngoingLog) {
   clock->SetNow(base::Time::FromTimeT(2));
   std::string encoded;
   log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
-                  &encoded);
+                  log.GetCurrentClockTime(/*record_time_zone=*/true), &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
   EXPECT_TRUE(parsed.has_time_log_created());
