@@ -28,7 +28,6 @@ source_set("browser_tests") {
     # TODO(crbug.com/1457360): List more '*_browsertest.cc' files below, as they
     # are migrated from old js2gtest '*_browsertest.js' files.
     "cr_components/cr_components_browsertest.cc",
-    "cr_components/cr_components_mojo_browsertest.cc",
     "cr_elements/cr_elements_browsertest.cc",
     "history/history_supervised_user_browsertest.cc",
     "history/history_ui_browsertest.cc",

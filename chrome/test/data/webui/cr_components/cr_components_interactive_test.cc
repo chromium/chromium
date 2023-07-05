@@ -6,9 +6,9 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
-typedef WebUIMochaFocusTest CrComponentsMostVisitedFocusTest;
+typedef WebUIMochaFocusTest CrComponentsFocusTest;
 
-IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedFocusTest, All) {
+IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, MostVisited) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
   RunTest("cr_components/most_visited_focus_test.js", "mocha.run()");
 }
