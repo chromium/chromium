@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content.browser.androidoverlay.DialogOverlayImplTestRule.Client;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -27,6 +28,7 @@ import org.chromium.ui.base.WindowAndroid;
  * Tests for DialogOverlayImpl.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@DisabledTest(message = "https://crbug.com/1462304")
 public class DialogOverlayImplTest {
     private static final String BLANK_URL = "about:blank";
 

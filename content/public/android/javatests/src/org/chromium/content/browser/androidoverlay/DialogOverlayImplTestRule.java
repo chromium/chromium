@@ -187,7 +187,7 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
     public Statement apply(final Statement base, Description desc) {
         return super.apply(new Statement() {
             @Override
-            public void evaluate() {
+            public void evaluate() throws Throwable {
                 launchContentShellWithUrl(getInitialUrl());
                 waitForActiveShellToBeDoneLoading(); // Do we need this?
 
@@ -224,6 +224,7 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
 
                 getActivity().getActiveShell().setOverayModeChangedCallbackForTesting(
                         overlayModeChanged);
+                base.evaluate();
             }
         }, desc);
     }

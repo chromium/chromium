@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.os.Build;
 import android.view.Surface;
 
 import androidx.test.InstrumentationRegistry;
@@ -19,8 +18,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.androidoverlay.DialogOverlayImplTestRule.Client;
@@ -32,7 +31,7 @@ import java.util.concurrent.Callable;
  * Pixel tests for DialogOverlayImpl.  These use UiAutomation, so they only run in JB or above.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@MinAndroidSdkLevel(Build.VERSION_CODES.JELLY_BEAN_MR2)
+@DisabledTest(message = "https://crbug.com/1462304")
 public class DialogOverlayImplPixelTest {
     // Color that we'll fill the overlay with.
 
