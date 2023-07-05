@@ -40,11 +40,16 @@ source_set("utils") {
     "//base",
     "//chromeos/ash/components/dbus/private_computing:private_computing_proto",
     "//chromeos/ash/components/policy",
+    "//google_apis:google_apis",
+    "//services/network/public/cpp",
     "//third_party/icu",
     "//third_party/private_membership:private_membership",
+    "//url",
   ]
 
   sources = [
+    "//chromeos/ash/components/report/utils/network_utils.cc",
+    "//chromeos/ash/components/report/utils/network_utils.h",
     "//chromeos/ash/components/report/utils/test_utils.cc",
     "//chromeos/ash/components/report/utils/test_utils.h",
     "//chromeos/ash/components/report/utils/time_utils.cc",
@@ -56,6 +61,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "//chromeos/ash/components/report/utils/network_utils_unittest.cc",
     "//chromeos/ash/components/report/utils/test_utils_unittest.cc",
     "//chromeos/ash/components/report/utils/time_utils_unittest.cc",
   ]
@@ -65,6 +71,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/private_computing:private_computing",
+    "//services/network:test_support",
     "//testing/gtest",
     "//third_party/icu",
   ]
