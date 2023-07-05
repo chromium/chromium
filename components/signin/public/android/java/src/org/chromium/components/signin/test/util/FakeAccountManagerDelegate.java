@@ -77,6 +77,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
             assert added : "Account already added";
         }
         ThreadUtils.runOnUiThreadBlocking(mObserver::onAccountsChanged);
+        ThreadUtils.runOnUiThreadBlocking(mObserver::onCoreAccountInfosChanged);
     }
 
     /**
@@ -88,6 +89,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
             assert removed : "Can't find account";
         }
         ThreadUtils.runOnUiThreadBlocking(mObserver::onAccountsChanged);
+        ThreadUtils.runOnUiThreadBlocking(mObserver::onCoreAccountInfosChanged);
     }
 
     @Override

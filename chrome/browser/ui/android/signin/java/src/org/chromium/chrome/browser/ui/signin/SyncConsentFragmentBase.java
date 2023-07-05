@@ -22,7 +22,6 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 
@@ -421,12 +420,6 @@ public abstract class SyncConsentFragmentBase extends Fragment
         });
     }
 
-    @VisibleForTesting
-    public Runnable getDeviceLockPageCallbackForTesting() {
-        return mDeviceLockPageCallback;
-    }
-
-    @VisibleForTesting
     public boolean getDeviceLockReadyForTesting() {
         return mDeviceLockReady;
     }
@@ -534,7 +527,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
      * Implements {@link AccountsChangeObserver}.
      */
     @Override
-    public void onAccountsChanged() {
+    public void onCoreAccountInfosChanged() {
         mAccountManagerFacade.getAccounts().then(this::updateAccounts);
     }
 

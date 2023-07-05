@@ -17,12 +17,13 @@ public interface AccountsChangeObserver {
      * TODO(crbug.com/1450614): Replace this method with onCoreAccountInfosChanged().
      */
     @MainThread
-    void onAccountsChanged();
+    @Deprecated
+    default void onAccountsChanged() {}
 
     /**
      * Called after updating {@link org.chromium.components.signin.base.CoreAccountInfo} on every
      * change to the accounts or to the error condition that occurred while getting accounts.
      */
     @MainThread
-    default void onCoreAccountInfosChanged() {}
+    void onCoreAccountInfosChanged();
 }

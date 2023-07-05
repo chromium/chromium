@@ -222,6 +222,14 @@ public class SigninFirstRunMediator
         mAccountManagerFacade.getAccounts().then(this::updateAccounts);
     }
 
+    /**
+     * Implements {@link AccountsChangeObserver}.
+     */
+    @Override
+    public void onCoreAccountInfosChanged() {
+        // TODO(crbug.com/1450614): Replace onAccountsChanged() with this method.
+    }
+
     @Override
     public void onAccountSelected(String accountName) {
         setSelectedAccountName(accountName);

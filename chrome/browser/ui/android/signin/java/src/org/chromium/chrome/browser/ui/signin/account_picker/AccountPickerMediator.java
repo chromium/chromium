@@ -60,6 +60,14 @@ class AccountPickerMediator implements AccountsChangeObserver, ProfileDataCache.
     }
 
     /**
+     * Implements {@link AccountsChangeObserver}.
+     */
+    @Override
+    public void onCoreAccountInfosChanged() {
+        // TODO(crbug.com/1450614): Replace onAccountsChanged() with this method.
+    }
+
+    /**
      * Implements {@link ProfileDataCache.Observer}.
      */
     @Override

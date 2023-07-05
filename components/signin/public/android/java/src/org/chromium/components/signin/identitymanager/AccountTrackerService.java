@@ -117,10 +117,6 @@ public class AccountTrackerService implements AccountsChangeObserver {
 
     /** Implements {@link AccountsChangeObserver}. */
     @Override
-    public void onAccountsChanged() {}
-
-    /** Implements {@link AccountsChangeObserver}. */
-    @Override
     public void onCoreAccountInfosChanged() {
         onAccountsChangedInternal();
     }

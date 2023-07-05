@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -229,7 +228,7 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
 
     // AccountsChangeObserver implementation.
     @Override
-    public void onAccountsChanged() {
+    public void onCoreAccountInfosChanged() {
         triggerPromoUpdate();
     }
 
@@ -242,7 +241,6 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
      * Forces the promo state to a particular value for testing purposes.
      * @param promoState The promo state to which the header will be set to.
      */
-    @VisibleForTesting
     public static void forcePromoStateForTesting(@Nullable @SyncPromoState Integer promoState) {
         sPromoStateForTests = promoState;
     }

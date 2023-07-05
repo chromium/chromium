@@ -209,7 +209,7 @@ public class FeedV2NewTabPageTest {
         when(mExternalAuthUtils.isGooglePlayServicesMissing(any())).thenReturn(false);
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(true);
 
-        SignInPromo.setDisablePromoForTests(mDisableSigninPromoCard);
+        SignInPromo.setDisablePromoForTesting(mDisableSigninPromoCard);
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
         testValuesOverride.addFeatureFlagOverride(ChromeFeatureList.INTEREST_FEED_V2, true);
         testValuesOverride.addFeatureFlagOverride(

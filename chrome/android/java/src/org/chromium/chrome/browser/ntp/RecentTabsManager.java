@@ -475,7 +475,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
 
     // AccountsChangeObserver implementation.
     @Override
-    public void onAccountsChanged() {
+    public void onCoreAccountInfosChanged() {
         update();
     }
 

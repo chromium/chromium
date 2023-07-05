@@ -164,7 +164,7 @@ public class FeedSurfaceMediatorTest {
         Profile.setLastUsedProfileForTesting(mProfileMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityService);
         TemplateUrlServiceFactory.setInstanceForTesting(mUrlService);
-        SignInPromo.setDisablePromoForTests(true);
+        SignInPromo.setDisablePromoForTesting(true);
     }
 
     @After
@@ -175,7 +175,7 @@ public class FeedSurfaceMediatorTest {
         Profile.setLastUsedProfileForTesting(null);
         IdentityServicesProvider.setInstanceForTests(null);
         TemplateUrlServiceFactory.setInstanceForTesting(null);
-        SignInPromo.setDisablePromoForTests(false);
+        SignInPromo.setDisablePromoForTesting(false);
     }
 
     @Test
