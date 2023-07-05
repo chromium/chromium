@@ -23,6 +23,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -99,8 +100,7 @@ class TestFileMetricsProvider : public FileMetricsProvider {
 
   // Sets the callback to run after RecordSourcesChecked() is called. Used to
   // individually verify the sources being merged.
-  void SetSourcesCheckedCallback(base::OnceClosure callback) {
-    DCHECK(callback_.is_null());
+  void SetSourcesCheckedCallback(base::RepeatingClosure callback) {
     callback_ = std::move(callback);
   }
 
@@ -108,16 +108,15 @@ class TestFileMetricsProvider : public FileMetricsProvider {
   // FileMetricsProvider:
   void RecordSourcesChecked(SourceInfoList* checked,
                             std::vector<size_t> samples_counts) override {
-    FileMetricsProvider::RecordSourcesChecked(checked, samples_counts);
-
     if (!callback_.is_null()) {
-      std::move(callback_).Run();
-      callback_ = base::OnceClosure();
+      callback_.Run();
     }
+
+    FileMetricsProvider::RecordSourcesChecked(checked, samples_counts);
   }
 
   // A callback to run after a call to RecordSourcesChecked().
-  base::OnceClosure callback_;
+  base::RepeatingClosure callback_;
 };
 
 class FileMetricsProviderTest : public testing::TestWithParam<bool> {
@@ -536,16 +535,17 @@ TEST_P(FileMetricsProviderTest, AccessDirectory) {
       FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR,
       FileMetricsProvider::ASSOCIATE_CURRENT_RUN, kMetricsName));
 
-  // Files could come out in the order: a1, c2, d4, b3. They are recognizeable
-  // by the number of histograms contained within each.
-  const uint32_t expect_order[] = {1, 2, 4, 3, 0};
-  for (size_t i = 0; i < std::size(expect_order); ++i) {
-    // Record embedded snapshots via snapshot-manager.
-    OnDidCreateMetricsLog();
-    provider()->SetSourcesCheckedCallback(task_environment()->QuitClosure());
-    task_environment()->RunUntilQuit();
-    EXPECT_EQ(expect_order[i], GetSnapshotHistogramCount()) << i;
-  }
+  // Record embedded snapshots via snapshot-manager.
+  std::vector<uint32_t> actual_order;
+  provider()->SetSourcesCheckedCallback(base::BindLambdaForTesting(
+      [&] { actual_order.push_back(GetSnapshotHistogramCount()); }));
+  OnDidCreateMetricsLog();
+  task_environment()->RunUntilIdle();
+
+  // Files could come out in the order: a1, c2, d4, b3. They are recognizable by
+  // the number of histograms contained within each. The "0" is the last merge
+  // done, which detects that there are no more files to merge.
+  EXPECT_THAT(actual_order, testing::ElementsAre(1, 2, 4, 3, 0));
 
   EXPECT_FALSE(base::PathExists(metrics_files.GetPath().AppendASCII("a1.pma")));
   EXPECT_FALSE(base::PathExists(metrics_files.GetPath().AppendASCII("c2.pma")));
@@ -837,16 +837,17 @@ TEST_P(FileMetricsProviderTest, AccessFilteredDirectory) {
   SetFilterActions(&params, actions, std::size(actions));
   provider()->RegisterSource(params);
 
-  // Files could come out in the order: a1, b3, c2. They are recognizeable
-  // by the number of histograms contained within each.
-  const uint32_t expect_order[] = {1, 3, 2, 0};
-  for (size_t i = 0; i < std::size(expect_order); ++i) {
-    // Record embedded snapshots via snapshot-manager.
-    OnDidCreateMetricsLog();
-    provider()->SetSourcesCheckedCallback(task_environment()->QuitClosure());
-    task_environment()->RunUntilQuit();
-    EXPECT_EQ(expect_order[i], GetSnapshotHistogramCount()) << i;
-  }
+  // Record embedded snapshots via snapshot-manager.
+  std::vector<uint32_t> actual_order;
+  provider()->SetSourcesCheckedCallback(base::BindLambdaForTesting(
+      [&] { actual_order.push_back(GetSnapshotHistogramCount()); }));
+  OnDidCreateMetricsLog();
+  task_environment()->RunUntilIdle();
+
+  // Files could come out in the order: a1, b3, c2. They are recognizable by the
+  // number of histograms contained within each. The "0" is the last merge done,
+  // which detects that there are no more files to merge.
+  EXPECT_THAT(actual_order, testing::ElementsAre(1, 3, 2, 0));
 
   EXPECT_FALSE(base::PathExists(metrics_files.GetPath().AppendASCII("a1.pma")));
   EXPECT_FALSE(base::PathExists(metrics_files.GetPath().AppendASCII("c2.pma")));
