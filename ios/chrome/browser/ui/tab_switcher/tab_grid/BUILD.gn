@@ -33,6 +33,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/bring_android_tabs",
     "//ios/chrome/browser/bring_android_tabs:features",
     "//ios/chrome/browser/commerce:commerce",
+    "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/find_in_page",

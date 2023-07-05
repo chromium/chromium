@@ -22,6 +22,7 @@
 #import "components/sessions/core/tab_restore_service.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
@@ -1176,11 +1177,40 @@ void RecordTabGridCloseTabsCount(int count) {
   return [nonPinnedWebStates copy];
 }
 
+// Records when the user switches between incognito, regular or remotes pages in
+// the tab grid.
+// TODO(crbug.com/1457146): Move the logic to incognito, regular and remote
+// mediators once it is created. Each grid will be responsible for their own
+// logs.
+- (void)recordActionSwitchingToPage:(TabGridPage)page {
+  switch (page) {
+    case TabGridPageIncognitoTabs:
+      base::RecordAction(
+          base::UserMetricsAction("MobileTabGridSelectIncognitoPanel"));
+      break;
+    case TabGridPageRegularTabs:
+      base::RecordAction(
+          base::UserMetricsAction("MobileTabGridSelectRegularPanel"));
+      break;
+    case TabGridPageRemoteTabs:
+      base::RecordAction(
+          base::UserMetricsAction("MobileTabGridSelectRemotePanel"));
+      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+      break;
+  }
+}
+
 #pragma mark - TabGridMutator
 
 - (void)pageChanged:(TabGridPage)currentPage
         interaction:(TabSwitcherPageChangeInteraction)interaction {
-  // TODO(crbug.com/1462133): Implement.
+  UMA_HISTOGRAM_ENUMERATION(kUMATabSwitcherPageChangeInteractionHistogram,
+                            interaction);
+  // TODO(crbug.com/1457146): Send notification to the displayed grid when each
+  // grid will have their own isolated objects.
+  [self recordActionSwitchingToPage:currentPage];
+  // TODO(crbug.com/1462133): Implement the incognito grid or content visible
+  // notification.
 }
 
 @end
