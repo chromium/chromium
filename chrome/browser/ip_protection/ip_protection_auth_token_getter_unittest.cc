@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ip_protection/ip_protection_auth_token_getter.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ip_protection/ip_protection_auth_token_getter_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -74,42 +77,62 @@ class IpProtectionAuthTokenGetterTest : public testing::Test {
  protected:
   using TokensResult =
       absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>;
+
   IpProtectionAuthTokenGetterTest()
       : absl_expiration_time_(absl::Now() + absl::Hours(1)),
         base_expiration_time_(
-            base::Time::FromTimeT(absl::ToTimeT(absl_expiration_time_))) {}
+            base::Time::FromTimeT(absl::ToTimeT(absl_expiration_time_))) {
+    feature_list_.InitAndEnableFeature(net::features::kEnableIpProtectionProxy);
+  }
+
+  void SetUp() override {
+    profile_ = IdentityTestEnvironmentProfileAdaptor::
+        CreateProfileForIdentityTestEnvironment();
+    adapter_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+  }
+
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return adapter_->identity_test_env();
+  }
+  TestingProfile* profile() { return profile_.get(); }
 
   // Get the IdentityManager for this test.
   signin::IdentityManager* IdentityManager() {
-    return identity_test_env_.identity_manager();
+    return identity_test_env()->identity_manager();
   }
 
   // Call `TryGetAuthTokens()` with `TokensCallback()` and run until it
   // completes.
-  void TryGetAuthTokens(int num_tokens, IpProtectionAuthTokenGetter& getter) {
+  void TryGetAuthTokens(int num_tokens, IpProtectionAuthTokenGetter* getter) {
     if (primary_account_behavior_ != PrimaryAccountBehavior::kNone) {
-      identity_test_env_.MakePrimaryAccountAvailable(
+      identity_test_env()->MakePrimaryAccountAvailable(
           "test@example.com", signin::ConsentLevel::kSignin);
     }
 
-    getter.TryGetAuthTokens(num_tokens, tokens_future_.GetCallback());
+    getter->TryGetAuthTokens(num_tokens, tokens_future_.GetCallback());
 
     switch (primary_account_behavior_) {
       case PrimaryAccountBehavior::kNone:
         break;
       case PrimaryAccountBehavior::kTokenFetchError:
-        identity_test_env_
-            .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+        identity_test_env()
+            ->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
                 GoogleServiceAuthError(
                     GoogleServiceAuthError::CONNECTION_FAILED));
         break;
       case PrimaryAccountBehavior::kExists:
-        identity_test_env_
-            .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+        identity_test_env()
+            ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
                 "access_token", base::Time::Now());
         break;
     }
     ASSERT_TRUE(tokens_future_.Wait()) << "TryGetAuthTokens did not call back";
+  }
+
+  void TearDown() override {
+    adapter_.reset();
+    profile_.reset();
   }
 
   // The behavior of the identity manager.
@@ -122,12 +145,15 @@ class IpProtectionAuthTokenGetterTest : public testing::Test {
 
   // Test environment for IdentityManager. This must come after the
   // TaskEnvironment.
-  signin::IdentityTestEnvironment identity_test_env_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adapter_;
+  std::unique_ptr<TestingProfile> profile_;
 
   // A convenient expiration time for fake tokens, in the future. These specify
   // the same time with two types.
   absl::Time absl_expiration_time_;
   base::Time base_expiration_time_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // The success case: a primary account is available, and BSA gets a token for
@@ -135,8 +161,9 @@ class IpProtectionAuthTokenGetterTest : public testing::Test {
 TEST_F(IpProtectionAuthTokenGetterTest, Success) {
   primary_account_behavior_ = PrimaryAccountBehavior::kExists;
   auto bsa = MockBlindSignAuth();
-  auto getter =
-      IpProtectionAuthTokenGetter::CreateForTesting(IdentityManager(), &bsa);
+  auto* getter = IpProtectionAuthTokenGetter::Get(profile());
+  ASSERT_NE(getter, nullptr);
+  getter->SetBlindSignAuthInterfaceForTesting(&bsa);
   bsa.tokens_ = {{"single-use-1", absl_expiration_time_},
                  {"single-use-2", absl_expiration_time_}};
 
@@ -157,8 +184,9 @@ TEST_F(IpProtectionAuthTokenGetterTest, Success) {
 TEST_F(IpProtectionAuthTokenGetterTest, NoTokens) {
   primary_account_behavior_ = PrimaryAccountBehavior::kExists;
   auto bsa = MockBlindSignAuth();
-  auto getter =
-      IpProtectionAuthTokenGetter::CreateForTesting(IdentityManager(), &bsa);
+  auto* getter = IpProtectionAuthTokenGetter::Get(profile());
+  ASSERT_NE(getter, nullptr);
+  getter->SetBlindSignAuthInterfaceForTesting(&bsa);
 
   TryGetAuthTokens(1, getter);
 
@@ -172,8 +200,9 @@ TEST_F(IpProtectionAuthTokenGetterTest, NoTokens) {
 TEST_F(IpProtectionAuthTokenGetterTest, BlindSignedTokenError) {
   primary_account_behavior_ = PrimaryAccountBehavior::kExists;
   auto bsa = MockBlindSignAuth();
-  auto getter =
-      IpProtectionAuthTokenGetter::CreateForTesting(IdentityManager(), &bsa);
+  auto* getter = IpProtectionAuthTokenGetter::Get(profile());
+  ASSERT_NE(getter, nullptr);
+  getter->SetBlindSignAuthInterfaceForTesting(&bsa);
   bsa.status_ = absl::NotFoundError("uhoh");
 
   TryGetAuthTokens(1, getter);
@@ -188,8 +217,9 @@ TEST_F(IpProtectionAuthTokenGetterTest, BlindSignedTokenError) {
 TEST_F(IpProtectionAuthTokenGetterTest, AuthTokenError) {
   primary_account_behavior_ = PrimaryAccountBehavior::kTokenFetchError;
   auto bsa = MockBlindSignAuth();
-  auto getter =
-      IpProtectionAuthTokenGetter::CreateForTesting(IdentityManager(), &bsa);
+  auto* getter = IpProtectionAuthTokenGetter::Get(profile());
+  ASSERT_NE(getter, nullptr);
+  getter->SetBlindSignAuthInterfaceForTesting(&bsa);
 
   TryGetAuthTokens(1, getter);
 
@@ -201,8 +231,9 @@ TEST_F(IpProtectionAuthTokenGetterTest, AuthTokenError) {
 TEST_F(IpProtectionAuthTokenGetterTest, NoPrimary) {
   primary_account_behavior_ = PrimaryAccountBehavior::kNone;
   auto bsa = MockBlindSignAuth();
-  auto getter =
-      IpProtectionAuthTokenGetter::CreateForTesting(IdentityManager(), &bsa);
+  auto* getter = IpProtectionAuthTokenGetter::Get(profile());
+  ASSERT_NE(getter, nullptr);
+  getter->SetBlindSignAuthInterfaceForTesting(&bsa);
 
   TryGetAuthTokens(1, getter);
 

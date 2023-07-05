@@ -6,26 +6,19 @@
 #include <functional>
 #include <optional>
 
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 IpProtectionAuthTokenGetter::IpProtectionAuthTokenGetter(
-    signin::IdentityManager* identity_manager,
-    quiche::BlindSignAuthInterface* bsa)
-    : identity_manager_(identity_manager), bsa_(bsa) {
+    signin::IdentityManager* identity_manager)
+    : identity_manager_(identity_manager) {
   CHECK(identity_manager);
 }
 
 IpProtectionAuthTokenGetter::~IpProtectionAuthTokenGetter() = default;
-
-// static
-IpProtectionAuthTokenGetter IpProtectionAuthTokenGetter::CreateForTesting(
-    signin::IdentityManager* identity_manager,
-    quiche::BlindSignAuthInterface* bsa) {
-  return IpProtectionAuthTokenGetter(identity_manager, bsa);
-}
 
 void IpProtectionAuthTokenGetter::TryGetAuthTokens(
     uint32_t batch_size,
@@ -48,7 +41,8 @@ void IpProtectionAuthTokenGetter::TryGetAuthTokens(
 }
 
 void IpProtectionAuthTokenGetter::RequestOAuthToken() {
-  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  if (!identity_manager_ ||
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     std::move(try_get_auth_token_callback_).Run(absl::nullopt);
     return;
   }
@@ -89,6 +83,7 @@ void IpProtectionAuthTokenGetter::OnRequestOAuthTokenCompleted(
 
 void IpProtectionAuthTokenGetter::FetchBlindSignedToken(
     signin::AccessTokenInfo access_token_info) {
+  DCHECK(bsa_);
   bsa_->GetTokens(
       access_token_info.token, batch_size_,
       [this](absl::StatusOr<absl::Span<quiche::BlindSignToken>> tokens) {
@@ -113,4 +108,14 @@ void IpProtectionAuthTokenGetter::OnFetchBlindSignedTokenCompleted(
                  });
 
   std::move(try_get_auth_token_callback_).Run(std::move(result));
+}
+
+void IpProtectionAuthTokenGetter::Shutdown() {
+  identity_manager_ = nullptr;
+}
+
+/*static*/
+IpProtectionAuthTokenGetter* IpProtectionAuthTokenGetter::Get(
+    Profile* profile) {
+  return IpProtectionAuthTokenGetterFactory::GetForProfile(profile);
 }

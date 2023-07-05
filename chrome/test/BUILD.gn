@@ -5740,6 +5740,7 @@ test("unit_tests") {
     "../browser/idle/idle_detection_permission_context_unittest.cc",
     "../browser/internal_auth_unittest.cc",
     "../browser/ip_protection/blind_sign_http_impl_unittest.cc",
+    "../browser/ip_protection/ip_protection_auth_token_getter_factory_unittest.cc",
     "../browser/ip_protection/ip_protection_auth_token_getter_unittest.cc",
     "../browser/k_anonymity_service/k_anonymity_service_client_unittest.cc",
     "../browser/k_anonymity_service/k_anonymity_service_storage_unittest.cc",

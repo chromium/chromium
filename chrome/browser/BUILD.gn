@@ -631,6 +631,8 @@ static_library("browser") {
     "ip_protection/blind_sign_http_impl.h",
     "ip_protection/ip_protection_auth_token_getter.cc",
     "ip_protection/ip_protection_auth_token_getter.h",
+    "ip_protection/ip_protection_auth_token_getter_factory.cc",
+    "ip_protection/ip_protection_auth_token_getter_factory.h",
     "k_anonymity_service/k_anonymity_service_client.cc",
     "k_anonymity_service/k_anonymity_service_client.h",
     "k_anonymity_service/k_anonymity_service_factory.cc",
