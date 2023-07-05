@@ -167,6 +167,12 @@ void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats) {
                   stats.total_url_bookmark_count;
   }
 
+  for (size_t num_days_since_used : stats.per_bookmark_num_days_since_used) {
+    base::UmaHistogramCounts1000(
+        "Bookmarks.UtilizationPerBookmark.OnProfileLoad.DaysSinceUsed",
+        base::saturated_cast<int>(num_days_since_used));
+  };
+
   base::UmaHistogramPercentage(
       "Bookmarks.Utilization.OnProfileLoad.PercentageUsed", utilization);
   base::UmaHistogramCounts1000("Bookmarks.Utilization.OnProfileLoad.TotalUsed",

@@ -751,6 +751,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.UtilizationPerBookmark.OnProfileLoad.DaysSinceUsed"
+    units="Days" expires_after="2024-01-31">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    For each bookmark, the number of days since the bookmark was last used.
+    Recorded on profile load.
+  </summary>
+</histogram>
+
 <histogram name="PowerBookmarks.BookmarkManager.PriceTrackingEnabled"
     enum="PriceTrackingState" expires_after="2023-10-24">
   <owner>wylieb@chromium.org</owner>
