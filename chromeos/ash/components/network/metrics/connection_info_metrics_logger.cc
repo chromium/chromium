@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "chromeos/ash/components/network/metrics/connection_results.h"
 #include "chromeos/ash/components/network/metrics/network_metrics_helper.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -168,7 +169,8 @@ void ConnectionInfoMetricsLogger::AttemptLogConnectionStateResult(
     const ConnectionInfo& curr_info) const {
   if (curr_info.status == ConnectionInfo::Status::kConnected) {
     NetworkMetricsHelper::LogConnectionStateResult(
-        curr_info.guid, NetworkMetricsHelper::ConnectionState::kConnected);
+        curr_info.guid, NetworkMetricsHelper::ConnectionState::kConnected,
+        /*shill_error=*/absl::nullopt);
     return;
   }
 
@@ -180,7 +182,8 @@ void ConnectionInfoMetricsLogger::AttemptLogConnectionStateResult(
       NetworkState::ErrorIsValid(curr_info.shill_error)) {
     NetworkMetricsHelper::LogConnectionStateResult(
         curr_info.guid,
-        NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction);
+        NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction,
+        ShillErrorToConnectResult(curr_info.shill_error));
     return;
   }
 }

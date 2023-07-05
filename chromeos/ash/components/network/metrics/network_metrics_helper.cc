@@ -24,6 +24,8 @@ const char kUserInitiatedConnectionResultSuffix[] =
     ".ConnectionResult.UserInitiated";
 const char kDisconnectionsWithoutUserActionSuffix[] =
     ".DisconnectionsWithoutUserAction";
+const char kDisconnectionsWithoutUserActionShillErrorSuffix[] =
+    ".DisconnectionsWithoutUserAction.ShillError";
 
 const char kEnableTechnologyResultSuffix[] = ".EnabledState.Enable.Result";
 const char kEnableTechnologyResultCodeSuffix[] =
@@ -214,18 +216,28 @@ void NetworkMetricsHelper::LogUserInitiatedConnectionResult(
 }
 
 // static
-void NetworkMetricsHelper::LogConnectionStateResult(const std::string& guid,
-                                                    ConnectionState status) {
+void NetworkMetricsHelper::LogConnectionStateResult(
+    const std::string& guid,
+    const ConnectionState connection_state,
+    const absl::optional<ShillConnectResult> shill_error) {
   DCHECK(GetNetworkStateHandler());
   const NetworkState* network_state =
       GetNetworkStateHandler()->GetNetworkStateFromGuid(guid);
-  if (!network_state)
+  if (!network_state) {
     return;
+  }
 
   for (const auto& network_type : GetNetworkTypeHistogramNames(network_state)) {
     base::UmaHistogramEnumeration(kNetworkMetricsPrefix + network_type +
                                       kDisconnectionsWithoutUserActionSuffix,
-                                  status);
+                                  connection_state);
+    if (connection_state == ConnectionState::kDisconnectedWithoutUserAction) {
+      DCHECK(shill_error.has_value());
+      base::UmaHistogramEnumeration(
+          kNetworkMetricsPrefix + network_type +
+              kDisconnectionsWithoutUserActionShillErrorSuffix,
+          *shill_error);
+    }
   }
 }
 

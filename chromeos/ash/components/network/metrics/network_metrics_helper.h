@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_NETWORK_METRICS_HELPER_H_
 
 #include "base/component_export.h"
+#include "chromeos/ash/components/network/metrics/connection_results.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -42,8 +43,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetricsHelper {
   // Logs to relevant connection states such as non-user initiated
   // disconnections from a connected state and successful connections. More may
   // be added if relevant.
-  static void LogConnectionStateResult(const std::string& guid,
-                                       ConnectionState status);
+  static void LogConnectionStateResult(
+      const std::string& guid,
+      const ConnectionState status,
+      const absl::optional<ShillConnectResult> shill_error);
 
   // Logs result of an attempt to enable a shill associated network technology
   // type.
