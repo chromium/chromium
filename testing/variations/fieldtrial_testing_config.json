@@ -9742,22 +9742,15 @@
                 {
                     "name": "EnableOOPNS_over_6656_Mb_20230410",
                     "disable_features": [
+                        "NetworkServiceEmptyOutOfProcess",
                         "NetworkServiceInProcess2"
                     ]
-                }
-            ]
-        }
-    ],
-    "OutOfProcessNetworkServiceEmptyService": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
+                },
                 {
-                    "name": "Over_6500_mb_20230427",
+                    "name": "EmptyOOPNS_20230705",
                     "enable_features": [
-                        "NetworkServiceEmptyOutOfProcess"
+                        "NetworkServiceEmptyOutOfProcess",
+                        "NetworkServiceInProcess2"
                     ]
                 }
             ]
