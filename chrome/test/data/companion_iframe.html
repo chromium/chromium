@@ -6,6 +6,8 @@
 
   // The proto received on last update postmessage. Reset on getLastReceivedCompanionProto().
   lastReceivedCompanionProto = null;
+  // The url received on last NotifyLinkOpen postmessage.
+  lastReceivedLinkOpenedUrl = null;
 
   // Promise to be returned to for browser tests when the test needs to wait
   // for a postmessage call from the browser to be received by the companion
@@ -23,6 +25,9 @@
       promiseResolve(event.data['companionUpdateParams']);
     } else if (event.data['type'] == 32) { // `MethodType.kOnCqFindTextResultsAvailable`
       promiseResolve(event.data['cqTextFindResults']);
+    } else if (event.data['type'] == 34) { // `MethodType.kNotifyLinkOpen`
+      window.lastReceivedLinkOpenedUrl = event.data['openedUrl'];
+      promiseResolve(event.data['openedUrl']);
     }
   }
 
@@ -30,6 +35,10 @@
     protoCopy = window.lastReceivedCompanionProto;
     window.lastReceivedCompanionProto = null;
     return protoCopy;
+  }
+
+  function getLastReceivedLinkOpenedUrl() {
+    return window.lastReceivedLinkOpenedUrl;
   }
 
   function waitForMessage() {

@@ -268,6 +268,10 @@ void CompanionPageHandler::NotifyURLChanged(bool is_full_reload) {
   }
 }
 
+void CompanionPageHandler::NotifyLinkOpened(GURL opened_url, bool was_handled) {
+  page_->NotifyLinkOpen(opened_url, was_handled);
+}
+
 void CompanionPageHandler::OnImageQuery(
     side_panel::mojom::ImageQuery image_query) {
   GURL modified_upload_url = url_builder_->AppendCompanionParamsToURL(

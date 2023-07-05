@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
@@ -195,6 +196,14 @@ void CompanionSidePanelController::DidOpenRequestedURL(
     SidePanelUI::GetSidePanelUIForBrowser(browser)->Show(
         SidePanelEntry::Id::kSearchCompanion,
         SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel);
+  }
+
+  // Notify server that a link was opened in browser.
+  auto* companion_helper =
+      companion::CompanionTabHelper::FromWebContents(tab_web_contents);
+  if (companion_helper && companion_helper->GetCompanionPageHandler()) {
+    companion_helper->GetCompanionPageHandler()->NotifyLinkOpened(
+        url, /**was_handled=*/true);
   }
 }
 

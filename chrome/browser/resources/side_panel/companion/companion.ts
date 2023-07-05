@@ -57,6 +57,11 @@ enum ParamType {
   URL_TO_OPEN = 'urlToOpen',
   USE_NEW_TAB = 'useNewTab',
 
+  // Arguments for MethodType.kNotifyLinkOpen for browser -> iframe
+  // communication.
+  LINK_OPEN_OPENED_URL = 'openedUrl',
+  LINK_OPEN_WAS_HANDLED = 'wasHandled',
+
   // Arguments for browser -> iframe communication.
   COMPANION_UPDATE_PARAMS = 'companionUpdateParams',
 
@@ -204,6 +209,23 @@ function initialize() {
               frame.contentWindow.postMessage(message, companionOrigin);
             });
           }
+        }
+      });
+
+  companionProxy.callbackRouter.notifyLinkOpen.addListener(
+      (openedUrl: Url, wasHandled: boolean) => {
+        const companionOrigin =
+            new URL(loadTimeData.getString('companion_origin')).origin;
+        const message = {
+          [ParamType.METHOD_TYPE]: MethodType.kNotifyLinkOpen,
+          [ParamType.LINK_OPEN_OPENED_URL]: openedUrl.url,
+          [ParamType.LINK_OPEN_WAS_HANDLED]: wasHandled,
+        };
+
+        const frame = document.body.querySelector('iframe');
+        assert(frame);
+        if (frame.contentWindow) {
+          frame.contentWindow.postMessage(message, companionOrigin);
         }
       });
 
