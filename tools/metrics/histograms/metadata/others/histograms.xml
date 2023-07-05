@@ -14094,17 +14094,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebController.BackForwardListOutOfSync" enum="BooleanHit"
-    expires_after="2021-12-25">
-  <owner>ajuma@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    [iOS] Counts the number of time the backForwardList of the WebView gets out
-    of sync with the URL exposed by the WebView. This should not happen and is
-    probably an issue in WebKit. This is only recorded when there is an error.
-  </summary>
-</histogram>
-
 <histogram name="WebController.BackForwardListOutOfSyncInProvisionalNavigation"
     enum="IOSOutOfSyncURLAction" expires_after="2021-12-25">
   <obsolete>
