@@ -1829,47 +1829,6 @@ TEST(SingleThreadTaskExecutorTest, NestingSupport2) {
 TEST(SingleThreadTaskExecutorTest, IOHandler) {
   RunTest_IOHandler();
 }
-
-TEST(SingleThreadTaskExecutorTest, HighResolutionTimer) {
-  SingleThreadTaskExecutor executor;
-  Time::EnableHighResolutionTimer(true);
-
-  constexpr TimeDelta kFastTimer = Milliseconds(5);
-  constexpr TimeDelta kSlowTimer = Milliseconds(100);
-
-  {
-    // Post a fast task to enable the high resolution timers.
-    RunLoop run_loop;
-    executor.task_runner()->PostDelayedTask(
-        FROM_HERE,
-        BindOnce(
-            [](RunLoop* run_loop) {
-              EXPECT_TRUE(Time::IsHighResolutionTimerInUse());
-              run_loop->QuitWhenIdle();
-            },
-            &run_loop),
-        kFastTimer);
-    run_loop.Run();
-  }
-  EXPECT_FALSE(Time::IsHighResolutionTimerInUse());
-  {
-    // Check that a slow task does not trigger the high resolution logic.
-    RunLoop run_loop;
-    executor.task_runner()->PostDelayedTask(
-        FROM_HERE,
-        BindOnce(
-            [](RunLoop* run_loop) {
-              EXPECT_FALSE(Time::IsHighResolutionTimerInUse());
-              run_loop->QuitWhenIdle();
-            },
-            &run_loop),
-        kSlowTimer);
-    run_loop.Run();
-  }
-  Time::EnableHighResolutionTimer(false);
-  Time::ResetHighResolutionTimerUsage();
-}
-
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {

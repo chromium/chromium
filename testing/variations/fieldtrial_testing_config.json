@@ -5583,26 +5583,6 @@
             ]
         }
     ],
-    "ExplicitHighResolutionTimerWin": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230405",
-                    "params": {
-                        "leeway": "16ms"
-                    },
-                    "enable_features": [
-                        "AddTaskLeeway",
-                        "ExplicitHighResolutionTimerWin",
-                        "UseLessHighResTimers"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExploreSitesDense": [
         {
             "platforms": [

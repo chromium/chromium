@@ -290,10 +290,13 @@ class FixtureWithMockMessagePump : public Fixture {
  public:
   explicit FixtureWithMockMessagePump(WakeUpType wake_up_type)
       : call_counting_clock_(&mock_clock_), wake_up_type_(wake_up_type) {
-    if (wake_up_type_ == WakeUpType::kAlign)
-      feature_list_.InitAndEnableFeature(kAlignWakeUps);
-    else
-      feature_list_.InitAndDisableFeature(kAlignWakeUps);
+    if (wake_up_type_ == WakeUpType::kAlign) {
+      feature_list_.InitWithFeatures(
+          {kAlignWakeUps, kExplicitHighResolutionTimerWin}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {kAlignWakeUps, kExplicitHighResolutionTimerWin});
+    }
     // A null clock triggers some assertions.
     mock_clock_.Advance(Milliseconds(1));
 
@@ -4569,8 +4572,10 @@ TEST_P(SequenceManagerTest, HasPendingHighResolutionTasks) {
   queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                         Milliseconds(100));
   EXPECT_FALSE(sequence_manager()->HasPendingHighResolutionTasks());
-  queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
-                                        Milliseconds(10));
+  queue->task_runner()->PostDelayedTaskAt(
+      subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE, BindOnce(&NopTask),
+      sequence_manager()->NowTicks() + Milliseconds(10),
+      subtle::DelayPolicy::kPrecise);
   EXPECT_EQ(sequence_manager()->HasPendingHighResolutionTasks(),
             supports_high_res);
 
@@ -4605,8 +4610,10 @@ TEST_P(SequenceManagerTest, HasPendingHighResolutionTasksLowPriority) {
   queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                         Milliseconds(100));
   EXPECT_FALSE(sequence_manager()->HasPendingHighResolutionTasks());
-  queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
-                                        Milliseconds(10));
+  queue->task_runner()->PostDelayedTaskAt(
+      subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE, BindOnce(&NopTask),
+      sequence_manager()->NowTicks() + Milliseconds(10),
+      subtle::DelayPolicy::kPrecise);
   EXPECT_FALSE(sequence_manager()->HasPendingHighResolutionTasks());
 
   // Increasing queue priority should enable high resolution timer.
@@ -4644,8 +4651,10 @@ TEST_P(SequenceManagerTest,
 
   // No task should be considered high resolution in a low priority queue.
   EXPECT_FALSE(sequence_manager()->HasPendingHighResolutionTasks());
-  queueLow->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
-                                           Milliseconds(10));
+  queueLow->task_runner()->PostDelayedTaskAt(
+      subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE, BindOnce(&NopTask),
+      sequence_manager()->NowTicks() + Milliseconds(10),
+      subtle::DelayPolicy::kPrecise);
   EXPECT_FALSE(sequence_manager()->HasPendingHighResolutionTasks());
   queueNormal->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                               Milliseconds(100));

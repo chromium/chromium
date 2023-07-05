@@ -56,8 +56,8 @@ BASE_FEATURE(kRunTasksByBatches,
 // instead of waiting for next DoIdleWork.
 BASE_FEATURE(kUseLessHighResTimers,
              "UseLessHighResTimers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-std::atomic_bool g_use_less_high_res_timers = false;
+             base::FEATURE_ENABLED_BY_DEFAULT);
+std::atomic_bool g_use_less_high_res_timers = true;
 
 // If enabled, high resolution timer will be used all the time on Windows. This
 // is for test only.
@@ -69,7 +69,7 @@ BASE_FEATURE(kAlwaysUseHighResTimers,
 std::atomic_bool g_align_wake_ups = false;
 std::atomic_bool g_run_tasks_by_batches = false;
 #if BUILDFLAG(IS_WIN)
-bool g_explicit_high_resolution_timer_win = false;
+bool g_explicit_high_resolution_timer_win = true;
 #endif  // BUILDFLAG(IS_WIN)
 
 TimeTicks WakeUpRunTime(const WakeUp& wake_up) {

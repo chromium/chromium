@@ -162,7 +162,7 @@ std::atomic_bool g_no_wake_ups_for_canceled_tasks{true};
 std::atomic_bool g_record_crash_keys = false;
 
 #if BUILDFLAG(IS_WIN)
-bool g_explicit_high_resolution_timer_win = false;
+bool g_explicit_high_resolution_timer_win = true;
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace

@@ -64,7 +64,7 @@ bool g_is_sweep_cancelled_tasks_enabled =
 #if BUILDFLAG(IS_WIN)
 // An atomic is used here because the flag is queried from other threads when
 // tasks are posted cross-thread, which can race with its initialization.
-std::atomic_bool g_explicit_high_resolution_timer_win{false};
+std::atomic_bool g_explicit_high_resolution_timer_win{true};
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
@@ -649,7 +649,7 @@ absl::optional<WakeUp> TaskQueueImpl::GetNextDesiredWakeUp() {
     delay_policy = subtle::DelayPolicy::kFlexibleNoSooner;
   }
   return WakeUp{top_task.delayed_run_time, top_task.leeway, resolution,
-                top_task.delay_policy};
+                delay_policy};
 }
 
 void TaskQueueImpl::OnWakeUp(LazyNow* lazy_now, EnqueueOrder enqueue_order) {
