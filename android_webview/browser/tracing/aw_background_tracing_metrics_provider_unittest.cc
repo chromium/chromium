@@ -30,6 +30,8 @@ class AwBackgroundTracingMetricsProviderTest : public testing::Test {
   AwBackgroundTracingMetricsProviderTest() {
     content::SetContentClient(&content_client_);
     content::SetBrowserClientForTesting(&browser_client_);
+    background_tracing_manager_ =
+        content::BackgroundTracingManager::CreateInstance();
   }
 
   ~AwBackgroundTracingMetricsProviderTest() override {
@@ -71,6 +73,8 @@ class AwBackgroundTracingMetricsProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::ContentClient content_client_;
   content::ContentBrowserClient browser_client_;
+  std::unique_ptr<content::BackgroundTracingManager>
+      background_tracing_manager_;
 };
 
 TEST_F(AwBackgroundTracingMetricsProviderTest, NoTraceData) {

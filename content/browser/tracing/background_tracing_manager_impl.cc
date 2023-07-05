@@ -47,6 +47,10 @@ namespace {
 
 const char kBackgroundTracingConfig[] = "config";
 
+// |g_background_tracing_manager| is intentionally leaked on shutdown.
+BackgroundTracingManager* g_background_tracing_manager = nullptr;
+BackgroundTracingManagerImpl* g_background_tracing_manager_impl = nullptr;
+
 }  // namespace
 
 // static
@@ -54,8 +58,38 @@ const char BackgroundTracingManager::kContentTriggerConfig[] =
     "content-trigger-config";
 
 // static
+BackgroundTracingManagerImpl&
+BackgroundTracingManagerImpl::CreateLeakedInstance() {
+  static base::NoDestructor<BackgroundTracingManagerImpl> manager;
+  return *g_background_tracing_manager_impl;
+}
+
+// static
+std::unique_ptr<BackgroundTracingManager>
+BackgroundTracingManager::CreateInstance() {
+  return std::make_unique<BackgroundTracingManagerImpl>();
+}
+
+// static
 BackgroundTracingManager& BackgroundTracingManager::GetInstance() {
-  return BackgroundTracingManagerImpl::GetInstance();
+  CHECK_NE(nullptr, g_background_tracing_manager);
+  return *g_background_tracing_manager;
+}
+
+// static
+void BackgroundTracingManager::SetInstance(
+    BackgroundTracingManager* tracing_manager) {
+  DCHECK(g_background_tracing_manager == nullptr || tracing_manager == nullptr);
+  g_background_tracing_manager = tracing_manager;
+}
+
+// static
+bool BackgroundTracingManager::EmitNamedTrigger(
+    const std::string& trigger_name) {
+  if (g_background_tracing_manager) {
+    return g_background_tracing_manager->DoEmitNamedTrigger(trigger_name);
+  }
+  return false;
 }
 
 // static
@@ -66,8 +100,8 @@ void BackgroundTracingManagerImpl::RecordMetric(Metrics metric) {
 
 // static
 BackgroundTracingManagerImpl& BackgroundTracingManagerImpl::GetInstance() {
-  static base::NoDestructor<BackgroundTracingManagerImpl> manager;
-  return *manager;
+  CHECK_NE(nullptr, g_background_tracing_manager_impl);
+  return *g_background_tracing_manager_impl;
 }
 
 // static
@@ -88,10 +122,19 @@ void BackgroundTracingManagerImpl::ActivateForProcess(
 
 BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
     : delegate_(GetContentClient()->browser()->GetTracingDelegate()) {
+  SetInstance(this);
+  g_background_tracing_manager_impl = this;
   BackgroundStartupTracingObserver::GetInstance();
 }
 
-BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() = default;
+BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {
+  DCHECK_EQ(this, g_background_tracing_manager_impl);
+  if (active_scenario_) {
+    active_scenario_->AbortScenario();
+  }
+  SetInstance(nullptr);
+  g_background_tracing_manager_impl = nullptr;
+}
 
 void BackgroundTracingManagerImpl::AddMetadataGeneratorFunction() {
   auto* metadata_source = tracing::TraceEventMetadataSource::GetInstance();
@@ -174,7 +217,7 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
 
   if (BackgroundStartupTracingObserver::GetInstance()
           .enabled_in_current_session()) {
-    EmitNamedTrigger(kStartupTracingTriggerName);
+    DoEmitNamedTrigger(kStartupTracingTriggerName);
   }
 
   active_scenario_->StartTracingIfConfigNeedsIt();
@@ -338,7 +381,7 @@ void BackgroundTracingManagerImpl::SetNamedTriggerCallback(
   }
 }
 
-bool BackgroundTracingManagerImpl::EmitNamedTrigger(
+bool BackgroundTracingManagerImpl::DoEmitNamedTrigger(
     const std::string& trigger_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

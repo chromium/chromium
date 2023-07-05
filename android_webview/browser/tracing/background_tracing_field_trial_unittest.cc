@@ -53,10 +53,12 @@ class BackgroundTracingTest : public testing::Test {
   BackgroundTracingTest() {
     content::SetContentClient(&content_client_);
     content::SetBrowserClientForTesting(&browser_client_);
+    background_tracing_manager_ =
+        content::BackgroundTracingManager::CreateInstance();
   }
 
   void TearDown() override {
-    content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
+    background_tracing_manager_.reset();
     content::SetBrowserClientForTesting(nullptr);
     content::SetContentClient(nullptr);
     base::FieldTrialParamAssociator::GetInstance()->ClearParamsForTesting(
@@ -67,6 +69,8 @@ class BackgroundTracingTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::ContentClient content_client_;
   content::ContentBrowserClient browser_client_;
+  std::unique_ptr<content::BackgroundTracingManager>
+      background_tracing_manager_;
 };
 
 }  // namespace

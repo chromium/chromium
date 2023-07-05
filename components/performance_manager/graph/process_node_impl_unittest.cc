@@ -309,13 +309,13 @@ namespace {
 class LenientFakeBackgroundTracingManager
     : public content::BackgroundTracingManager {
  public:
-  LenientFakeBackgroundTracingManager() = default;
-  ~LenientFakeBackgroundTracingManager() override = default;
+  LenientFakeBackgroundTracingManager() { SetInstance(this); }
+  ~LenientFakeBackgroundTracingManager() override { SetInstance(nullptr); }
 
   // Functions we want to intercept.
   MOCK_METHOD(bool, HasActiveScenario, (), (override));
   MOCK_METHOD(bool,
-              EmitNamedTrigger,
+              DoEmitNamedTrigger,
               (const std::string& trigger_name),
               (override));
 
@@ -355,27 +355,9 @@ TEST_F(ProcessNodeImplTest, FireBackgroundTracingTriggerOnUI) {
 
   FakeBackgroundTracingManager manager;
 
-  // Don't expect any other functions exception HasActiveScenario to be called
-  // it that function returns false.
-  EXPECT_CALL(manager, HasActiveScenario()).WillOnce(Return(false));
-  ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger1,
-                                                              manager);
-  testing::Mock::VerifyAndClear(&manager);
-
-  // If HasActiveScenario returns true, expect a new trigger to be registered
-  // and triggered.
-  EXPECT_CALL(manager, HasActiveScenario()).WillOnce(Return(true));
-  EXPECT_CALL(manager, EmitNamedTrigger(_));
-  ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger1,
-                                                              manager);
-  testing::Mock::VerifyAndClear(&manager);
-
-  // Now that a trigger is registered, expect the trigger to be validated, and
-  // triggered again.
-  EXPECT_CALL(manager, HasActiveScenario()).WillOnce(Return(true));
-  EXPECT_CALL(manager, EmitNamedTrigger(_));
-  ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger1,
-                                                              manager);
+  // Expect a new trigger to be registered and triggered.
+  EXPECT_CALL(manager, DoEmitNamedTrigger(_));
+  ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger1);
   testing::Mock::VerifyAndClear(&manager);
 }
 

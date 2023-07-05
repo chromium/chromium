@@ -66,7 +66,15 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   };
   static void RecordMetric(Metrics metric);
 
+  // Creates a self owned global BackgroundTracingManagerImpl instance that is
+  // never destroyed. BackgroundTracingManagerImpl is intentionally leaky during
+  // shutdown to avoid aborting an active trace session.
+  CONTENT_EXPORT static BackgroundTracingManagerImpl& CreateLeakedInstance();
+
   CONTENT_EXPORT static BackgroundTracingManagerImpl& GetInstance();
+
+  BackgroundTracingManagerImpl();
+  ~BackgroundTracingManagerImpl() override;
 
   BackgroundTracingManagerImpl(const BackgroundTracingManagerImpl&) = delete;
   BackgroundTracingManagerImpl& operator=(const BackgroundTracingManagerImpl&) =
@@ -83,9 +91,6 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
       ReceiveCallback receive_callback,
       DataFiltering data_filtering) override;
   bool HasActiveScenario() override;
-
-  // Named triggers
-  bool EmitNamedTrigger(const std::string& trigger_name) override;
 
   void SetNamedTriggerCallback(const std::string& trigger_name,
                                base::RepeatingCallback<bool()> callback);
@@ -126,10 +131,8 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
       ConfigTextFilterForTesting predicate) override;
 
  private:
-  friend class base::NoDestructor<BackgroundTracingManagerImpl>;
-
-  BackgroundTracingManagerImpl();
-  ~BackgroundTracingManagerImpl() override;
+  // Named triggers
+  bool DoEmitNamedTrigger(const std::string& trigger_name) override;
 
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata,

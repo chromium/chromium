@@ -38,7 +38,9 @@ const char kDummyTrace[] = "Trace bytes as serialized proto";
 class ChromeBackgroundTracingMetricsProviderTest : public testing::Test {
  public:
   ChromeBackgroundTracingMetricsProviderTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+      : background_tracing_manager_(
+            content::BackgroundTracingManager::CreateInstance()),
+        local_state_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
     base::Value::Dict dict;
@@ -68,6 +70,8 @@ class ChromeBackgroundTracingMetricsProviderTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<content::BackgroundTracingManager>
+      background_tracing_manager_;
   ScopedTestingLocalState local_state_;
 };
 

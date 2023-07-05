@@ -25,6 +25,8 @@ struct SetupModeParams {
 };
 
 TEST(BackgroundTracingUtilsTest, GetBackgroundTracingSetupMode) {
+  auto background_tracing_manager =
+      content::BackgroundTracingManager::CreateInstance();
   const std::vector<SetupModeParams> kParams = {
       // No config file param.
       {nullptr, nullptr, BackgroundTracingSetupMode::kFromFieldTrial},
@@ -69,6 +71,8 @@ TEST(BackgroundTracingUtilsTest, GetBackgroundTracingSetupMode) {
 }
 
 TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromConfigFileFailed) {
+  auto background_tracing_manager =
+      content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
@@ -87,6 +91,8 @@ TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromConfigFileFailed) {
 
 TEST(BackgroundTracingUtilTest,
      SetupBackgroundTracingFromConfigFileEmptyOutputFailed) {
+  auto background_tracing_manager =
+      content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
@@ -113,6 +119,8 @@ TEST(BackgroundTracingUtilTest,
 
 TEST(BackgroundTracingUtilTest,
      SetupBackgroundTracingFromConfigFileMissingOutputFailed) {
+  auto background_tracing_manager =
+      content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
@@ -138,6 +146,8 @@ TEST(BackgroundTracingUtilTest,
 
 TEST(BackgroundTracingUtilTest,
      SetupBackgroundTracingFromConfigFileInvalidConfig) {
+  auto background_tracing_manager =
+      content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
@@ -167,6 +177,8 @@ TEST(BackgroundTracingUtilTest,
 }
 
 TEST(BackgroundTracingUtilTest, SetupBackgroundTracingWithOutputFileFailed) {
+  auto background_tracing_manager =
+      content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
@@ -182,6 +194,8 @@ TEST(BackgroundTracingUtilTest, SetupBackgroundTracingWithOutputFileFailed) {
 }
 
 TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineInvalid) {
+  auto background_tracing_manager =
+      content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   base::test::ScopedCommandLine scoped_command_line;
@@ -196,6 +210,8 @@ TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineInvalid) {
 }
 
 TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineConfig) {
+  auto background_tracing_manager =
+      content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   base::test::ScopedCommandLine scoped_command_line;
@@ -214,6 +230,8 @@ TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineConfig) {
 
 TEST(BackgroundTracingUtilTest,
      SetupBackgroundTracingFromCommandLineFieldTrial) {
+  auto background_tracing_manager =
+      content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 

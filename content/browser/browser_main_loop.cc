@@ -955,6 +955,7 @@ int BrowserMainLoop::PostCreateThreads() {
   TRACE_EVENT0("startup", "BrowserMainLoop::PostCreateThreads");
 
   tracing_controller_ = std::make_unique<content::TracingControllerImpl>();
+  content::BackgroundTracingManagerImpl::CreateLeakedInstance();
   content::BackgroundTracingManagerImpl::GetInstance()
       .AddMetadataGeneratorFunction();
 

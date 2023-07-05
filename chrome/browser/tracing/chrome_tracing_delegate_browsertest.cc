@@ -124,8 +124,7 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
   }
 
   void TriggerPreemptiveScenario(const std::string& trigger_name = "test") {
-    content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-        trigger_name);
+    content::BackgroundTracingManager::EmitNamedTrigger(trigger_name);
   }
 
   void TriggerPreemptiveScenarioWithCrash() {
@@ -481,26 +480,7 @@ class ChromeTracingDelegateBrowserTestOnStartup
  protected:
   ChromeTracingDelegateBrowserTestOnStartup() {
     variations::testing::VariationParamsManager::SetVariationParams(
-        "BackgroundTracing", "TestGroup",
-        {{"config", "default_config_for_testing"}});
-  }
-
-  static std::string FieldTrialConfigTextFilter(
-      const std::string& config_text) {
-    // We need to replace the config JSON with the full one here, as we can't
-    // pass JSON through the fieldtrial switch parsing.
-    if (config_text == "default_config_for_testing") {
-      return kDefaultConfigText;
-    }
-    return config_text;
-  }
-
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
-    content::BackgroundTracingManager::GetInstance()
-        .SetConfigTextFilterForTesting(
-            base::BindRepeating(&FieldTrialConfigTextFilter));
+        "BackgroundTracing", "TestGroup", {{"config", kDefaultConfigText}});
   }
 };
 

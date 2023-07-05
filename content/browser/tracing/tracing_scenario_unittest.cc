@@ -175,9 +175,16 @@ perfetto::protos::gen::ScenarioConfig ParseScenarioConfigFromText(
 }
 
 class TracingScenarioTest : public testing::Test {
+ public:
+  TracingScenarioTest()
+      : background_tracing_manager_(
+            content::BackgroundTracingManager::CreateInstance()) {}
+
  protected:
   BrowserTaskEnvironment task_environment;
   TestTracingScenarioDelegate delegate;
+  std::unique_ptr<content::BackgroundTracingManager>
+      background_tracing_manager_;
 };
 
 }  // namespace

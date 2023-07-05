@@ -50,6 +50,7 @@
 #include "content/browser/startup_data_impl.h"
 #include "content/browser/startup_helper.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/browser/tracing/memory_instrumentation_util.h"
 #include "content/browser/tracing/startup_tracing_controller.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
@@ -657,6 +658,7 @@ void BrowserTestBase::SetUp() {
       StartBrowserThreadPool();
 
     BrowserTaskExecutor::PostFeatureListSetup();
+    content::BackgroundTracingManagerImpl::CreateLeakedInstance();
     tracing::InitTracingPostThreadPoolStartAndFeatureList(
         /* enable_consumer */ true);
     InitializeBrowserMemoryInstrumentationClient();

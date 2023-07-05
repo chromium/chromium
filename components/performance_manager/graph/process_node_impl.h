@@ -201,8 +201,7 @@ class ProcessNodeImpl
 
   void OnAllFramesInProcessFrozenForTesting() { OnAllFramesInProcessFrozen(); }
   static void FireBackgroundTracingTriggerOnUIForTesting(
-      const std::string& trigger_name,
-      content::BackgroundTracingManager& manager);
+      const std::string& trigger_name);
 
   base::WeakPtr<ProcessNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<ProcessNodeImpl> GetWeakPtr();

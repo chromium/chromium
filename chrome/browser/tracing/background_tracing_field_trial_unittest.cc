@@ -21,7 +21,10 @@
 
 class BackgroundTracingTest : public testing::Test {
  public:
-  BackgroundTracingTest() = default;
+  BackgroundTracingTest() {
+    background_tracing_manager_ =
+        content::BackgroundTracingManager::CreateInstance();
+  }
 
   void TearDown() override {
     content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
@@ -29,6 +32,8 @@ class BackgroundTracingTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<content::BackgroundTracingManager>
+      background_tracing_manager_;
 };
 
 namespace {

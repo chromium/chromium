@@ -21,7 +21,18 @@ class BackgroundTracingConfig;
 // called on the UI thread.
 class BackgroundTracingManager {
  public:
+  // Creates and return a global BackgroundTracingManager instance.
+  CONTENT_EXPORT static std::unique_ptr<BackgroundTracingManager>
+  CreateInstance();
+
+  // Returns the global instance created with CreateInstance().
   CONTENT_EXPORT static BackgroundTracingManager& GetInstance();
+
+  // Notifies that a manual trigger event has occurred. Returns true if the
+  // trigger caused a scenario to either begin recording or finalize the trace
+  // depending on the config, or false if the trigger had no effect. If the
+  // trigger specified isn't active in the config, this will do nothing.
+  CONTENT_EXPORT static bool EmitNamedTrigger(const std::string& trigger_name);
 
   CONTENT_EXPORT static const char kContentTriggerConfig[];
 
@@ -39,6 +50,8 @@ class BackgroundTracingManager {
    protected:
     ~EnabledStateTestObserver() = default;
   };
+
+  virtual ~BackgroundTracingManager() = default;
 
   // If a ReceiveCallback is set it will be called on the UI thread every time
   // the BackgroundTracingManager finalizes a trace. The first parameter of
@@ -98,12 +111,6 @@ class BackgroundTracingManager {
       ReceiveCallback receive_callback,
       DataFiltering data_filtering) = 0;
 
-  // Notifies that a manual trigger event has occurred. Returns true if the
-  // trigger caused a scenario to either begin recording or finalize the trace
-  // depending on the config, or false if the trigger had no effect. If the
-  // trigger specified isn't active in the config, this will do nothing.
-  virtual bool EmitNamedTrigger(const std::string& trigger_name) = 0;
-
   virtual bool HasActiveScenario() = 0;
 
   // Returns true whether a trace is ready to be uploaded.
@@ -132,7 +139,11 @@ class BackgroundTracingManager {
       ConfigTextFilterForTesting predicate) = 0;
 
  protected:
-  virtual ~BackgroundTracingManager() {}
+  // Sets the instance returns by GetInstance() globally to |tracing_manager|.
+  CONTENT_EXPORT static void SetInstance(
+      BackgroundTracingManager* tracing_manager);
+
+  virtual bool DoEmitNamedTrigger(const std::string& trigger_name) = 0;
 };
 
 }  // namespace content
