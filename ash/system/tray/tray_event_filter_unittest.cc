@@ -209,11 +209,15 @@ TEST_P(TrayEventFilterTest, ClickingOnPopupWhenBubbleOpen) {
 
   // Collapsing the popup should not close the bubble.
   LeftClickOn(ash_notification_popup->expand_button_for_test());
+  // Wait until the animation is complete.
+  AnimatePopupAnimationUntilIdle();
   EXPECT_FALSE(ash_notification_popup->IsExpanded());
   EXPECT_TRUE(IsBubbleShown());
 
   // Expanding the popup should not close the bubble.
   LeftClickOn(ash_notification_popup->expand_button_for_test());
+  // Wait until the animation is complete.
+  AnimatePopupAnimationUntilIdle();
   EXPECT_TRUE(ash_notification_popup->IsExpanded());
   EXPECT_TRUE(IsBubbleShown());
 }

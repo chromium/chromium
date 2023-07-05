@@ -38,7 +38,9 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -828,8 +830,14 @@ TEST_P(UnifiedSystemTrayTest, TrayBackgroundColorAfterSwitchToTabletMode) {
             ShelfConfig::Get()->GetShelfControlButtonColor(widget));
 
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_EQ(tray->layer()->background_color(),
-            ShelfConfig::Get()->GetShelfControlButtonColor(widget));
+  if (chromeos::features::IsJellyEnabled()) {
+    EXPECT_EQ(tray->layer()->background_color(),
+              widget->GetColorProvider()->GetColor(
+                  cros_tokens::kCrosSysSystemOnBase));
+  } else {
+    EXPECT_EQ(tray->layer()->background_color(),
+              ShelfConfig::Get()->GetShelfControlButtonColor(widget));
+  }
 
   tablet_mode_controller->SetEnabledForTest(false);
   EXPECT_EQ(tray->layer()->background_color(),

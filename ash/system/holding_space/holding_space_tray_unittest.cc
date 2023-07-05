@@ -54,6 +54,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -3749,8 +3750,14 @@ TEST_P(HoldingSpaceTrayRefreshTest, HasExpectedBubbleTreatment) {
     // Background.
     auto* background = bubble->GetBackground();
     ASSERT_TRUE(background);
-    EXPECT_EQ(background->get_color(),
-              bubble->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
+    if (chromeos::features::IsJellyEnabled()) {
+      EXPECT_EQ(background->get_color(),
+                bubble->GetColorProvider()->GetColor(
+                    cros_tokens::kCrosSysSystemBaseElevated));
+    } else {
+      EXPECT_EQ(background->get_color(),
+                bubble->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
+    }
     EXPECT_EQ(bubble->layer()->background_blur(),
               ColorProvider::kBackgroundBlurSigma);
 

@@ -33,6 +33,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -211,11 +212,21 @@ TEST_F(DictationButtonTrayTest, ImageIcons) {
   TestAccessibilityControllerClient client;
   controller->dictation().SetEnabled(true);
 
-  SkColor color =
-      GetTray()->GetColorProvider()->GetColor(kColorAshIconColorPrimary);
+  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
+  const auto* color_provider = GetTray()->GetColorProvider();
+  const auto off_icon_color = color_provider->GetColor(
+      is_jelly_enabled
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+          : kColorAshIconColorPrimary);
+  const auto on_icon_color = color_provider->GetColor(
+      is_jelly_enabled ? static_cast<ui::ColorId>(
+                             cros_tokens::kCrosSysSystemOnPrimaryContainer)
+                       : kColorAshIconColorPrimary);
+
   gfx::ImageSkia off_icon =
-      gfx::CreateVectorIcon(kDictationOffNewuiIcon, color);
-  gfx::ImageSkia on_icon = gfx::CreateVectorIcon(kDictationOnNewuiIcon, color);
+      gfx::CreateVectorIcon(kDictationOffNewuiIcon, off_icon_color);
+  gfx::ImageSkia on_icon =
+      gfx::CreateVectorIcon(kDictationOnNewuiIcon, on_icon_color);
 
   views::ImageView* view = GetImageView(GetTray());
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(*view->GetImage().bitmap(),
