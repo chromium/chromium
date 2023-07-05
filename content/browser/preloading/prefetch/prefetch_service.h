@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
@@ -124,6 +125,10 @@ class CONTENT_EXPORT PrefetchService {
   // this.
   void EvictPrefetch(const PrefetchContainer::Key& prefetch_container_key);
 
+  // Called by PrefetchDocumentManager when it finishes processing the latest
+  // update of speculation candidates.
+  void OnCandidatesUpdated();
+
   // Helper functions to control the behavior of the eligibility check when
   // testing.
   static void SetServiceWorkerContextForTesting(ServiceWorkerContext* context);
@@ -205,11 +210,13 @@ class CONTENT_EXPORT PrefetchService {
   // possible.
   void Prefetch();
 
-  // Pops the first valid prefetch from |prefetch_queue_|. If there are no
-  // valid prefetches in the queue, then nullptr is returned. In this context,
-  // for a prefetch to be valid, it must not be null and it must be on a visible
-  // web contents.
-  base::WeakPtr<PrefetchContainer> PopNextPrefetchContainer();
+  // Pops the first valid prefetch (determined by PrefetchDocumentManager) from
+  // |prefetch_queue_|. Returns a tuple containing the popped prefetch and
+  // (optionally) an already completed prefetch that needs to be evicted to make
+  // space for the new prefetch. If there are no valid prefetches in the queue,
+  // then (nullptr, nullptr) is returned.
+  std::tuple<base::WeakPtr<PrefetchContainer>, base::WeakPtr<PrefetchContainer>>
+  PopNextPrefetchContainer();
 
   // Once the network request for a prefetch starts, ownership is transferred
   // from the referring |PrefetchDocumentManager| to |this|. After
@@ -218,10 +225,13 @@ class CONTENT_EXPORT PrefetchService {
   // or less, then it is kept forever.
   void TakeOwnershipOfPrefetch(
       base::WeakPtr<PrefetchContainer> prefetch_container);
+  void OnPrefetchTimeout(base::WeakPtr<PrefetchContainer> prefetch);
   void ResetPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
 
-  // Starts the given |prefetch_container|.
-  void StartSinglePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
+  // Starts the given |prefetch_container|. If |prefetch_to_evict| is specified,
+  // it is evicted immediately before starting |prefetch_container|.
+  void StartSinglePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container,
+                           base::WeakPtr<PrefetchContainer> prefetch_to_evict);
 
   // Makes the network request for the given |prefetch_container| to the given
   // |url|. This is called when initially starting a prefetch and when a
@@ -339,6 +349,11 @@ class CONTENT_EXPORT PrefetchService {
   // from `PrefetchContainer::GetURL()` due to No-Vary-Search.
   std::map<PrefetchContainer::Key, base::WeakPtr<PrefetchContainer>>
       prefetches_ready_to_serve_;
+
+// Protects against Prefetch() being called recursively.
+#if DCHECK_IS_ON()
+  bool prefetch_reentrancy_guard_ = false;
+#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 

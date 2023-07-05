@@ -697,7 +697,7 @@ void PrefetchService::OnGotEligibilityResult(
   prefetch_queue_.push_back(prefetch_container);
 
   // Calling |Prefetch| could result in a prefetch being deleted, so
-  // |prefetch_cotnainer| should not be used after this call.
+  // |prefetch_container| should not be used after this call.
   Prefetch();
 }
 
@@ -786,6 +786,17 @@ void PrefetchService::OnGotEligibilityResultForRedirect(
 void PrefetchService::Prefetch() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+// Asserts that re-entrancy doesn't happen.
+#if DCHECK_IS_ON()
+  DCHECK(!prefetch_reentrancy_guard_);
+  prefetch_reentrancy_guard_ = true;
+  base::ScopedClosureRunner reset_guard(base::BindOnce(
+      [](PrefetchService* prefetch_service) {
+        prefetch_service->prefetch_reentrancy_guard_ = false;
+      },
+      base::Unretained(this)));
+#endif
+
   if (PrefetchCloseIdleSockets()) {
     for (const auto& iter : all_prefetches_) {
       if (iter.second) {
@@ -795,12 +806,16 @@ void PrefetchService::Prefetch() {
   }
 
   base::WeakPtr<PrefetchContainer> next_prefetch = nullptr;
-  while ((next_prefetch = PopNextPrefetchContainer()) != nullptr) {
-    StartSinglePrefetch(next_prefetch);
+  base::WeakPtr<PrefetchContainer> prefetch_to_evict = nullptr;
+  while ((std::tie(next_prefetch, prefetch_to_evict) =
+              PopNextPrefetchContainer()) !=
+         std::make_tuple(nullptr, nullptr)) {
+    StartSinglePrefetch(next_prefetch, prefetch_to_evict);
   }
 }
 
-base::WeakPtr<PrefetchContainer> PrefetchService::PopNextPrefetchContainer() {
+std::tuple<base::WeakPtr<PrefetchContainer>, base::WeakPtr<PrefetchContainer>>
+PrefetchService::PopNextPrefetchContainer() {
   auto new_end = std::remove_if(
       prefetch_queue_.begin(), prefetch_queue_.end(),
       [&](const base::WeakPtr<PrefetchContainer>& prefetch_container) {
@@ -814,27 +829,31 @@ base::WeakPtr<PrefetchContainer> PrefetchService::PopNextPrefetchContainer() {
   DCHECK(PrefetchServiceMaximumNumberOfConcurrentPrefetches() >= 0);
   if (active_prefetches_.size() >=
       PrefetchServiceMaximumNumberOfConcurrentPrefetches()) {
-    return nullptr;
+    return std::make_tuple(nullptr, nullptr);
   }
 
-  // Get the first prefetch that is from an active RenderFrameHost and in a
-  // visible WebContents.
+  base::WeakPtr<PrefetchContainer> prefetch_to_evict;
+  // Get the first prefetch can be prefetched currently. This depends on the
+  // state of the initiating document, and the number of completed prefetches
+  // (this can also result in previously completed prefetches being evicted).
   auto prefetch_iter = base::ranges::find_if(
       prefetch_queue_,
-      [](const base::WeakPtr<PrefetchContainer>& prefetch_container) {
-        RenderFrameHost* rfh = RenderFrameHost::FromID(
-            prefetch_container->GetReferringRenderFrameHostId());
-        return rfh->IsActive() && rfh->GetPage().IsPrimary() &&
-               WebContents::FromRenderFrameHost(rfh)->GetVisibility() ==
-                   Visibility::VISIBLE;
+      [&](const base::WeakPtr<PrefetchContainer>& prefetch_container) {
+        bool can_prefetch_now = false;
+        std::tie(can_prefetch_now, prefetch_to_evict) =
+            prefetch_container->GetPrefetchDocumentManager()->CanPrefetchNow(
+                prefetch_container.get());
+        // |prefetch_to_evict| should only be set if |can_prefetch_now| is true.
+        DCHECK(!prefetch_to_evict || can_prefetch_now);
+        return can_prefetch_now;
       });
   if (prefetch_iter == prefetch_queue_.end()) {
-    return nullptr;
+    return std::make_tuple(nullptr, nullptr);
   }
 
   base::WeakPtr<PrefetchContainer> next_prefetch_container = *prefetch_iter;
   prefetch_queue_.erase(prefetch_iter);
-  return next_prefetch_container;
+  return std::make_tuple(next_prefetch_container, prefetch_to_evict);
 }
 
 void PrefetchService::TakeOwnershipOfPrefetch(
@@ -859,14 +878,25 @@ void PrefetchService::TakeOwnershipOfPrefetch(
     reset_callback = std::make_unique<base::OneShotTimer>();
     reset_callback->Start(
         FROM_HERE, PrefetchContainerLifetimeInPrefetchService(),
-        base::BindOnce(&PrefetchService::ResetPrefetch, base::Unretained(this),
-                       prefetch_container));
+        base::BindOnce(&PrefetchService::OnPrefetchTimeout,
+                       base::Unretained(this), prefetch_container));
   }
 
   // Store prefetch and callback to delete prefetch.
   owned_prefetches_[prefetch_container->GetPrefetchContainerKey()] =
       std::make_pair(std::move(owned_prefetch_container),
                      std::move(reset_callback));
+}
+
+void PrefetchService::OnPrefetchTimeout(
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
+  ResetPrefetch(prefetch_container);
+
+  if (PrefetchNewLimitsEnabled() &&
+      active_prefetches_.size() <
+          PrefetchServiceMaximumNumberOfConcurrentPrefetches()) {
+    Prefetch();
+  }
 }
 
 void PrefetchService::ResetPrefetch(
@@ -906,12 +936,16 @@ void PrefetchService::RemovePrefetch(
 
 void PrefetchService::EvictPrefetch(
     const PrefetchContainer::Key& prefetch_container_key) {
+  DCHECK(PrefetchNewLimitsEnabled());
   DCHECK(base::Contains(owned_prefetches_, prefetch_container_key));
   base::WeakPtr<PrefetchContainer> prefetch_container =
       owned_prefetches_[prefetch_container_key].first->GetWeakPtr();
   DCHECK(prefetch_container);
   prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchEvicted);
   ResetPrefetch(prefetch_container);
+}
+
+void PrefetchService::OnCandidatesUpdated() {
   if (active_prefetches_.size() <
       PrefetchServiceMaximumNumberOfConcurrentPrefetches()) {
     Prefetch();
@@ -919,7 +953,8 @@ void PrefetchService::EvictPrefetch(
 }
 
 void PrefetchService::StartSinglePrefetch(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
+    base::WeakPtr<PrefetchContainer> prefetch_container,
+    base::WeakPtr<PrefetchContainer> prefetch_to_evict) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(prefetch_container);
 
@@ -934,28 +969,24 @@ void PrefetchService::StartSinglePrefetch(
 
   TakeOwnershipOfPrefetch(prefetch_container);
 
-  // Note: This must be called before CanPrefetchNow() below to prevent
-  // re-entrancy.
-  active_prefetches_.insert(prefetch_container->GetPrefetchContainerKey());
-
   const bool is_above_limit =
-      (PrefetchNewLimitsEnabled() &&
-       !prefetch_container->GetPrefetchDocumentManager()->CanPrefetchNow(
-           prefetch_container.get())) ||
-      (!PrefetchNewLimitsEnabled() &&
-       prefetch_container->GetPrefetchDocumentManager()
-               ->GetNumberOfPrefetchRequestAttempted() >=
-           PrefetchServiceMaximumNumberOfPrefetchesPerPage().value_or(
-               std::numeric_limits<int>::max()));
+      !PrefetchNewLimitsEnabled() &&
+      prefetch_container->GetPrefetchDocumentManager()
+              ->GetNumberOfPrefetchRequestAttempted() >=
+          PrefetchServiceMaximumNumberOfPrefetchesPerPage().value_or(
+              std::numeric_limits<int>::max());
   if (is_above_limit) {
-    // TODO(crbug.com/1445086): We shouldn't be cancelling this and should
-    // just keep it in the queue when PrefetchNewLimits is enabled (move this
-    // check to PopNextPrefetchContainer()).
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchFailedPerPageLimitExceeded);
     ResetPrefetch(prefetch_container);
     return;
   }
+
+  if (prefetch_to_evict) {
+    EvictPrefetch(prefetch_to_evict->GetPrefetchContainerKey());
+  }
+
+  active_prefetches_.insert(prefetch_container->GetPrefetchContainerKey());
 
   prefetch_container->GetPrefetchDocumentManager()
       ->OnPrefetchRequestAttempted();

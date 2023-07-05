@@ -110,12 +110,16 @@ class CONTENT_EXPORT PrefetchDocumentManager
   GetAllForUrlWithoutRefAndQueryForTesting(const GURL& url) const;
   void EnableNoVarySearchSupport();
 
-  // Returns true if we can prefetch |next_prefetch| based on the number of
-  // existing completed prefetches. This method will make room for
-  // another prefetch by evicting an existing prefetch if possible. The
-  // eagerness of |next_prefetch| is taken into account when making the
-  // decision.
-  bool CanPrefetchNow(PrefetchContainer* next_prefetch);
+  // Returns a tuple: (can_prefetch_now, prefetch_to_evict). 'can_prefetch_now'
+  // is true if we can prefetch |next_prefetch| based on the state of the
+  // document, and the number of existing completed prefetches (only if
+  // |kPrefetchNewLimits| is enabled). The eagerness of |next_prefetch| is taken
+  // into account when making the decision. 'prefetch_to_evict' is set to an
+  // existing prefetch if one needs to be evicted to make space for the prefetch
+  // of |next_prefetch|, or nullptr otherwise. 'prefetch_to_evict' will only be
+  // non-null if 'can_prefetch_now' is true.
+  std::tuple<bool, base::WeakPtr<PrefetchContainer>> CanPrefetchNow(
+      PrefetchContainer* next_prefetch);
 
   // See documentation for |prefetch_destruction_callback_|.
   void SetPrefetchDestructionCallback(PrefetchDestructionCallback callback);

@@ -6221,6 +6221,63 @@ TEST_F(PrefetchServiceNewLimitsTest, PrefetchReset) {
   VerifyCommonRequestState(url, /*use_prefetch_proxy=*/false);
 }
 
+TEST_F(PrefetchServiceNewLimitsTest, NextPrefetchQueuedImmediatelyAfterReset) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kPrefetchUseContentRefactor,
+        {{"ineligible_decoy_request_probability", "0"},
+         {"prefetch_container_lifetime_s", "1"}}},
+       {features::kPrefetchNewLimits, {{"max_eager_prefetches", "1"}}}},
+      {});
+
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/2));
+
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+  const auto url_1 = GURL("https://example.com/one");
+  const auto url_2 = GURL("https://example.com/two");
+
+  base::MockRepeatingCallback<void(const GURL& url)> mock_destruction_callback;
+  EXPECT_CALL(mock_destruction_callback, Run(url_1)).Times(1);
+  prefetch_document_manager->SetPrefetchDestructionCallback(
+      mock_destruction_callback.Get());
+
+  auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->url = url_1;
+  candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate_1->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  candidate_1->referrer = blink::mojom::Referrer::New();
+  auto candidate_2 = candidate_1->Clone();
+  candidate_2->url = url_2;
+
+  // Add |candidate_1| and |candidate_2|.
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(candidate_1.Clone());
+  candidates.push_back(candidate_2.Clone());
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
+  base::RunLoop().RunUntilIdle();
+
+  // Complete |prefetch| of |url_1|.
+  base::WeakPtr<PrefetchContainer> prefetch_1 = CompleteExistingPrefetch(url_1);
+  ASSERT_TRUE(prefetch_1);
+  EXPECT_EQ(prefetch_1->GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchSuccessful);
+
+  // Prefetch of |url_2| should not be queued because we are at the limit.
+  EXPECT_EQ(RequestCount(), 0);
+
+  // Fast forward by a second and expire |prefetch_1|.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(prefetch_1);
+
+  // Prefetch of |url_2| should now be queued.
+  VerifyCommonRequestState(url_2, /*use_prefetch_proxy=*/false);
+}
+
 TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
   const GURL url_1 = GURL("https://example.com/one");
   const GURL url_2 = GURL("https://example.com/two");
@@ -6230,14 +6287,14 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
-          /*num_on_prefetch_likely_calls=*/5));
+          /*num_on_prefetch_likely_calls=*/4));
 
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
   ASSERT_TRUE(prefetch_document_manager);
 
   base::MockRepeatingCallback<void(const GURL& url)> mock_destruction_callback;
-  EXPECT_CALL(mock_destruction_callback, Run(url_1)).Times(2);
+  EXPECT_CALL(mock_destruction_callback, Run(url_1)).Times(1);
   EXPECT_CALL(mock_destruction_callback, Run(url_2)).Times(1);
   prefetch_document_manager->SetPrefetchDestructionCallback(
       mock_destruction_callback.Get());
@@ -6322,7 +6379,7 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
     auto actual_attempts = test_ukm_recorder()->GetEntries(
         ukm::builders::Preloading_Attempt::kEntryName,
         test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(actual_attempts.size(), 5u);
+    EXPECT_EQ(actual_attempts.size(), 4u);
 
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> expected_attempts =
         // |url_1|, attempt #1 (evicted)
@@ -6357,16 +6414,7 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
              /*accurate=*/false,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime),
-         // |url_1|, attempt #2 (failed without starting)
-         attempt_entry_builder()->BuildEntry(
-             source_id, PreloadingType::kPrefetch,
-             PreloadingEligibility::kEligible,
-             PreloadingHoldbackStatus::kAllowed,
-             PreloadingTriggeringOutcome::kFailure,
-             ToPreloadingFailureReason(
-                 content::PrefetchStatus::kPrefetchFailedPerPageLimitExceeded),
-             /*accurate=*/false),
-         // |url_1|, attempt #3 (ready)
+         // |url_1|, attempt #2 (ready)
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
              PreloadingEligibility::kEligible,
