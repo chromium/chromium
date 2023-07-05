@@ -13,6 +13,7 @@ component("range") {
 
   if (is_apple) {
     sources += [ "range_mac.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   defines = [ "GFX_RANGE_IMPLEMENTATION" ]

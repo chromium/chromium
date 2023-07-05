@@ -8,10 +8,14 @@
 
 #include <cmath>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace ui {
 
 CGFloat AlignValueToUpperPixel(CGFloat value) {
-  CGFloat scale = [[UIScreen mainScreen] scale];
+  CGFloat scale = UIScreen.mainScreen.scale;
   return std::ceil(value * scale) / scale;
 }
 

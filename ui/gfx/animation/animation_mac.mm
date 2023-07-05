@@ -9,6 +9,10 @@
 #include "base/mac/mac_util.h"
 #include "base/task/current_thread.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace gfx {
 
 // static
@@ -24,7 +28,7 @@ bool Animation::ScrollAnimationsEnabledBySystem() {
 
   bool enabled = false;
   id value = nil;
-  value = [[NSUserDefaults standardUserDefaults]
+  value = [NSUserDefaults.standardUserDefaults
       objectForKey:@"NSScrollAnimationEnabled"];
   if (value)
     enabled = [value boolValue];
@@ -37,7 +41,7 @@ void Animation::UpdatePrefersReducedMotion() {
   // TODO(crbug.com/927163): DCHECK this assertion once tests are well-behaved.
 
   prefers_reduced_motion_ =
-      [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldReduceMotion];
+      NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceMotion;
 }
 
 } // namespace gfx

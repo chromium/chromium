@@ -528,6 +528,7 @@ source_set("native_widget_types_sources") {
   if (is_mac) {
     sources = [ "native_widget_types_mac.mm" ]
     frameworks = [ "AppKit.framework" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 }
 
