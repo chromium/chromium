@@ -7130,6 +7130,14 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+    {"system-voice-isolation-option",
+     flag_descriptions::kCrOSSystemVoiceIsolationOptionName,
+     flag_descriptions::kCrOSSystemVoiceIsolationOptionDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(media::kCrOSSystemVoiceIsolationOption)},
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
     {"ignore-ui-gains", flag_descriptions::kIgnoreUiGainsName,
      flag_descriptions::kIgnoreUiGainsDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kIgnoreUiGains)},

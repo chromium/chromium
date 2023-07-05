@@ -538,6 +538,10 @@ BASE_FEATURE(kIgnoreUiGains,
 BASE_FEATURE(kShowForceRespectUiGainsToggle,
              "ShowForceRespectUiGainsToggle",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCrOSSystemVoiceIsolationOption,
+             "CrOSSystemVoiceIsolationOption",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Make MSE garbage collection algorithm more aggressive when we are under

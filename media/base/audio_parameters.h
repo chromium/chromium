@@ -211,6 +211,17 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     FUCHSIA_RENDER_USAGE_COMMUNICATION = 1 << 16,
 
     IGNORE_UI_GAINS = 1 << 17,
+
+    VOICE_ISOLATION_SUPPORTED = 1 << 18,  // Set when system voice isolation is
+                                          // supported.
+    CLIENT_CONTROLLED_VOICE_ISOLATION =
+        1 << 19,                // Set when client forces to
+                                // enable/disable the platform voice
+                                // isolation effects. False indicates
+                                // to use platform default state.
+    VOICE_ISOLATION = 1 << 20,  // Enable/Disable platform voice isolation.
+                                // Only meaningful when
+                                // CLIENT_CONTROLLED_VOICE_ISOLATION is set.
   };
 
   struct HardwareCapabilities {

@@ -63,6 +63,10 @@ class MEDIA_EXPORT CrasUtil {
   // Virtual for testing.
   virtual int CrasGetNsSupported();
 
+  // Returns if system Voice Isolation is supported in CRAS.
+  // Virtual for testing.
+  virtual int CrasGetVoiceIsolationSupported();
+
   // Returns the system AEC group ID. If no group ID is specified, -1 is
   // returned.
   // Virtual for testing.
@@ -73,9 +77,13 @@ class MEDIA_EXPORT CrasUtil {
   virtual int CrasGetDefaultOutputBufferSize();
 
  private:
+  // These booleans are in int type since libcras functions take these members
+  // as pointers.
   int aec_supported_ = false;
   int agc_supported_ = false;
   int ns_supported_ = false;
+  int voice_isolation_supported_ = false;
+
   int aec_group_id_ = -1;
   int default_output_buffer_size_ = 0;
   bool cras_effects_cached_ = false;

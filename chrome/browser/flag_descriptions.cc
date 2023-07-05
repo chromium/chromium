@@ -6884,6 +6884,11 @@ const char kShowForceRespectUiGainsToggleName[] =
 const char kShowForceRespectUiGainsToggleDescription[] =
     "Enable a setting toggle to force respect UI gains.";
 
+const char kCrOSSystemVoiceIsolationOptionName[] =
+    "Enable the options of setting system voice isolation per stream";
+const char kCrOSSystemVoiceIsolationOptionDescription[] =
+    "Enable the options of setting system voice isolation per stream.";
+
 const char kCrosPrivacyHubName[] = "Enable ChromeOS Privacy Hub";
 const char kCrosPrivacyHubDescription[] = "Enables ChromeOS Privacy Hub.";
 

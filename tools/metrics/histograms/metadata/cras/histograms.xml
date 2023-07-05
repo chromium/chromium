@@ -742,6 +742,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cras.StreamEffectState{Effect}" enum="StreamEffectState"
+    expires_after="2024-06-20">
+  <owner>eddyhsu@google.com</owner>
+  <owner>chromeos-audio-sw@google.com</owner>
+  <summary>The state of system {Effect} set for a stream.</summary>
+  <token key="Effect">
+    <variant name=".VoiceIsolation"/>
+  </token>
+</histogram>
+
 <histogram name="Cras.StreamFlags" units="value" expires_after="2023-12-17">
 <!-- Name completed by histogram_suffixes
      name="Cras.Direction" and

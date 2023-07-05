@@ -96,6 +96,13 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream>,
   // Return true to use AGC in CRAS for this input stream.
   inline bool UseCrasAgc() const;
 
+  // Return true to use client controlled voice isolation in CRAS for this
+  // input stream.
+  inline bool UseClientControlledVoiceIsolation() const;
+
+  // Return true to use voice isolation in CRAS for this input stream.
+  inline bool UseCrasVoiceIsolation() const;
+
   // Return true to allow AEC on DSP for this input stream.
   inline bool DspBasedAecIsAllowed() const;
 
