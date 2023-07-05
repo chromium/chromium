@@ -683,6 +683,7 @@ void DownloadItemModel::OnDownloadOpened(DownloadItem* download) {
 
 void DownloadItemModel::OnDownloadDestroyed(DownloadItem* download) {
   ContentId id = GetContentId();
+  download_->RemoveObserver(this);
   download_ = nullptr;
   // The object could get deleted after this.
   if (delegate_)

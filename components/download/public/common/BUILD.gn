@@ -34,6 +34,7 @@ component("public") {
     "download_interrupt_reason_values.h",
     "download_interrupt_reasons.h",
     "download_interrupt_reasons_utils.h",
+    "download_item.cc",
     "download_item.h",
     "download_item_factory.cc",
     "download_item_factory.h",

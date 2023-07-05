@@ -25,6 +25,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_export.h"
@@ -124,7 +125,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
 
   // Interface that observers of a particular download must implement in order
   // to receive updates to the download's status.
-  class COMPONENTS_DOWNLOAD_EXPORT Observer {
+  class COMPONENTS_DOWNLOAD_EXPORT Observer : public base::CheckedObserver {
    public:
     virtual void OnDownloadUpdated(DownloadItem* download) {}
     virtual void OnDownloadOpened(DownloadItem* download) {}
@@ -135,7 +136,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
     // down.
     virtual void OnDownloadDestroyed(DownloadItem* download) {}
 
-    virtual ~Observer() {}
+    ~Observer() override;
   };
 
   // A slice of the target file that has been received so far, used when

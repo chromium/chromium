@@ -144,7 +144,7 @@ class MockDownloadItem : public DownloadItem {
   MOCK_METHOD1(OnAsyncScanningCompleted, void(DownloadDangerType));
 
  private:
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace download
