@@ -86,6 +86,19 @@ suite('CrComponentsActivationCodePageTest', function() {
     await enumerateDeviceResolvedPromise;
   }
 
+  test('Page description', async function () {
+    const description = activationCodePage.$$('#description');
+    assertTrue(!!description);
+    // Mock no profiles found
+    activationCodePage.showNoProfilesFound = true;
+    assertEquals(description.innerText.trim(),
+      loadTimeData.getString('scanQRCodeNoProfilesFound'));
+    // Mock profiles found
+    activationCodePage.showNoProfilesFound = false;
+    assertEquals(description.innerText.trim(),
+      loadTimeData.getString('scanQRCode'));
+  });
+
   test('UI states', async function() {
     let qrCodeDetectorContainer = activationCodePage.$$('#esimQrCodeDetection');
     const activationCodeContainer =

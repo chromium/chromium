@@ -683,4 +683,13 @@ Polymer({
 
     return '';
   },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  // TODO(b/278134240): To be updated with pendingProfileProperties when available
+  noProfilesFound_() {
+    return this.pendingProfiles_ && this.pendingProfiles_.length === 0;
+  },
 });

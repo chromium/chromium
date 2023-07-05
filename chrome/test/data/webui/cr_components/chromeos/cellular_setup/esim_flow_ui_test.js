@@ -296,7 +296,6 @@ suite('CrComponentsEsimFlowUiTest', function() {
           /*backButtonState*/ ButtonState.HIDDEN);
       // Insert an activation code.
       activationCodePage.$$('#activationCode').value = ACTIVATION_CODE_VALID;
-
       // Forward button should now be enabled.
       assertActivationCodePage(
           /*forwardButtonShouldBeEnabled*/ true,
