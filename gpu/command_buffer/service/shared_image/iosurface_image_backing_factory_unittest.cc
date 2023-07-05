@@ -779,7 +779,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
     EXPECT_EQ(usage, gl_representation->usage());
     gl_representation.reset();
   } else {
-#if BUILDFLAG(USE_DAWN)
+#if BUILDFLAG(SKIA_USE_DAWN)
     CHECK_EQ(get_gr_context_type(), GrContextType::kGraphiteDawn);
     // First, validate a DawnImageRepresentation.
     auto device = context_state_->dawn_context_provider()->GetDevice();
@@ -846,7 +846,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataImage) {
     EXPECT_EQ(usage, gl_representation->usage());
     gl_representation.reset();
   } else {
-#if BUILDFLAG(USE_DAWN)
+#if BUILDFLAG(SKIA_USE_DAWN)
     CHECK_EQ(get_gr_context_type(), GrContextType::kGraphiteDawn);
     // First, validate a DawnImageRepresentation.
     auto device = context_state_->dawn_context_provider()->GetDevice();
@@ -1104,7 +1104,7 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
     EXPECT_EQ(usage, gl_representation->usage());
     gl_representation.reset();
   } else {
-#if BUILDFLAG(USE_DAWN)
+#if BUILDFLAG(SKIA_USE_DAWN)
     CHECK_EQ(get_gr_context_type(), GrContextType::kGraphiteDawn);
     // First, validate a DawnImageRepresentation.
     auto device = context_state_->dawn_context_provider()->GetDevice();
