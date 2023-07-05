@@ -18,3 +18,13 @@ include_rules = [
   # TODO(crbug.com/1404234) Remove when async canned helper logic is removed.
   "+components/page_info/core",
 ]
+
+specific_include_rules = {
+  "page_specific_content_settings.cc": [
+    "+services/network/public/mojom/shared_dictionary_access_observer.mojom.h",
+  ],
+  "page_specific_content_settings_unittest.cc": [
+    "+net/extras/shared_dictionary/shared_dictionary_isolation_key.h",
+    "+services/network/public/mojom/shared_dictionary_access_observer.mojom.h",
+  ],
+}

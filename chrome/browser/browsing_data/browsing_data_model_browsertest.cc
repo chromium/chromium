@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -42,7 +43,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/cpp/features.h"
@@ -247,7 +250,9 @@ class BrowsingDataModelBrowserTest
         {blink::features::kFledge, {}},
         {blink::features::kFencedFrames, {}},
         {blink::features::kBrowsingTopics, {}},
-        {net::features::kThirdPartyStoragePartitioning, {}}};
+        {net::features::kThirdPartyStoragePartitioning, {}},
+        {blink::features::kCompressionDictionaryTransportBackend, {}},
+        {blink::features::kCompressionDictionaryTransport, {}}};
     std::vector<FeatureRef> disabled_features = {};
 
     if (GetParam()) {
@@ -1132,6 +1137,248 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
         storage_key_c,
         {{BrowsingDataModel::StorageType::kLocalStorage},
          test_entry_storage_size[2].Get(),
+         /*cookie_count=*/0}}});
+}
+
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+                       SharedDictionaryHandledCorrectly) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
+  // Ensure that there isn't any data fetched.
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+  ASSERT_EQ(browsing_data_model->size(), 0u);
+
+  SetDataForType("SharedDictionary", web_contents());
+
+  // Ensure that shared dictionary is fetched
+  browsing_data_model = BuildBrowsingDataModel();
+
+  // Validate that shared dictionary is fetched to browsing data model.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  auto isolation_key = net::SharedDictionaryIsolationKey(
+      testOrigin, net::SchemefulSite(testOrigin));
+  ValidateBrowsingDataEntriesIgnoreUsage(
+      browsing_data_model.get(),
+      {{kTestHost,
+        isolation_key,
+        {{BrowsingDataModel::StorageType::kSharedDictionary},
+         /*storage_size=*/0,
+         /*cookie_count=*/0}}});
+  ASSERT_EQ(browsing_data_model->size(), 1u);
+
+  // Remove shared dictionary entry.
+  {
+    base::RunLoop run_loop;
+    browsing_data_model.get()->RemoveBrowsingData(kTestHost,
+                                                  run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Shared dictionary must have been removed.
+  EXPECT_FALSE(HasDataForType("SharedDictionary", web_contents()));
+
+  // Rebuild Browsing Data Model and verify entries are empty.
+  browsing_data_model = BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+  ASSERT_EQ(browsing_data_model->size(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+                       SharedDictionaryAccessReportedCorrectly) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  // Validate that the allowed browsing data model is empty.
+  ValidateBrowsingDataEntries(content_settings->allowed_browsing_data_model(),
+                              {});
+  SetDataForType("SharedDictionary", web_contents());
+  // Calling SetDataForType("SharedDictionary") registers a shared dictionary.
+  // This must be reported to the data model.
+  WaitForModelUpdate(content_settings->allowed_browsing_data_model(), 1);
+
+  // Validate that the allowed browsing data model is populated with
+  // SharedDictionary entry for `kTestHost`.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  auto isolation_key = net::SharedDictionaryIsolationKey(
+      testOrigin, net::SchemefulSite(testOrigin));
+  ValidateBrowsingDataEntries(
+      content_settings->allowed_browsing_data_model(),
+      {{kTestHost,
+        isolation_key,
+        {{BrowsingDataModel::StorageType::kSharedDictionary},
+         /*storage_size=*/0,
+         /*cookie_count=*/0}}});
+
+  // Navigate to about:blank to clear the browsing data model state.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  // Validate that the allowed browsing data model is empty.
+  ValidateBrowsingDataEntries(
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame())
+          ->allowed_browsing_data_model(),
+      {});
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
+  // Validate that the allowed browsing data model is empty.
+  ValidateBrowsingDataEntries(
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame())
+          ->allowed_browsing_data_model(),
+      {});
+
+  // Need this polling because the shared dictionary is used only if the
+  // metadata database has been read when sending the HTTP request.
+  while (!HasDataForType("SharedDictionary", web_contents())) {
+    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  }
+
+  // Checking HasDataForType("SharedDictionary") accesses the registered
+  // shared dictionary. This must be reported to the data model.
+  content_settings = content_settings::PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  WaitForModelUpdate(content_settings->allowed_browsing_data_model(), 1);
+
+  // Validate that the allowed browsing data model is populated with
+  // SharedDictionary entry for `kTestHost`.
+  ValidateBrowsingDataEntries(
+      content_settings->allowed_browsing_data_model(),
+      {{kTestHost,
+        isolation_key,
+        {{BrowsingDataModel::StorageType::kSharedDictionary},
+         /*storage_size=*/0,
+         /*cookie_count=*/0}}});
+}
+
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+                       SharedDictionaryAccessForNavigationReportedCorrectly) {
+  // Registers a shared dictionary.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
+  SetDataForType("SharedDictionary", web_contents());
+
+  // Navigate to about:blank to clear the browsing data model state.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  // Validate that the allowed browsing data model is empty.
+  ValidateBrowsingDataEntries(
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame())
+          ->allowed_browsing_data_model(),
+      {});
+
+  // Need this polling because the shared dictionary is used only if the
+  // metadata database has been read when sending the HTTP request.
+  int retry = 0;
+  while (true) {
+    const std::string kExpectedResult =
+        "This is compressed test data using a test dictionary";
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        https_test_server()->GetURL(
+            kTestHost,
+            base::StringPrintf(
+                "/shared_dictionary/path/compressed.data?retry=%d", ++retry))));
+    const std::string innerText =
+        EvalJs(web_contents()->GetPrimaryMainFrame(), "document.body.innerText")
+            .ExtractString();
+    if (innerText == kExpectedResult) {
+      break;
+    }
+  }
+
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  WaitForModelUpdate(content_settings->allowed_browsing_data_model(), 1);
+
+  // Validate that the allowed browsing data model is populated with
+  // SharedDictionary entry for `kTestHost`.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  auto isolation_key = net::SharedDictionaryIsolationKey(
+      testOrigin, net::SchemefulSite(testOrigin));
+  ValidateBrowsingDataEntries(
+      content_settings->allowed_browsing_data_model(),
+      {{kTestHost,
+        isolation_key,
+        {{BrowsingDataModel::StorageType::kSharedDictionary},
+         /*storage_size=*/0,
+         /*cookie_count=*/0}}});
+}
+
+IN_PROC_BROWSER_TEST_P(
+    BrowsingDataModelBrowserTest,
+    SharedDictionaryAccessForIframeNavigationReportedCorrectly) {
+  // Registers a shared dictionary.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
+  SetDataForType("SharedDictionary", web_contents());
+
+  // Navigate to about:blank to clear the browsing data model state.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  // Validate that the allowed browsing data model is empty.
+  ValidateBrowsingDataEntries(
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame())
+          ->allowed_browsing_data_model(),
+      {});
+  // Return to the test page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
+  // Validate that the allowed browsing data model is empty.
+  ValidateBrowsingDataEntries(
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame())
+          ->allowed_browsing_data_model(),
+      {});
+
+  // Need this polling because the shared dictionary is used only if the
+  // metadata database has been read when sending the HTTP request.
+  while (true) {
+    const std::string kExpectedResult =
+        "This is compressed test data using a test dictionary";
+    const std::string iframeInnerText =
+        EvalJs(web_contents()->GetPrimaryMainFrame(), R"(
+    (async () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = '/shared_dictionary/path/compressed.data';
+      const promise =
+          new Promise(resolve => { iframe.addEventListener('load', resolve); });
+      document.body.appendChild(iframe);
+      await promise;
+      return iframe.contentDocument.body.innerText;
+    })())")
+            .ExtractString();
+    if (iframeInnerText == kExpectedResult) {
+      break;
+    }
+  }
+
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  WaitForModelUpdate(content_settings->allowed_browsing_data_model(), 1);
+
+  // Validate that the allowed browsing data model is populated with
+  // SharedDictionary entry for `kTestHost`.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  auto isolation_key = net::SharedDictionaryIsolationKey(
+      testOrigin, net::SchemefulSite(testOrigin));
+  ValidateBrowsingDataEntries(
+      content_settings->allowed_browsing_data_model(),
+      {{kTestHost,
+        isolation_key,
+        {{BrowsingDataModel::StorageType::kSharedDictionary},
+         /*storage_size=*/0,
          /*cookie_count=*/0}}});
 }
 

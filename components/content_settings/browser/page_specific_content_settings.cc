@@ -50,6 +50,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_constants.h"
 #include "net/base/schemeful_site.h"
+#include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -97,6 +98,8 @@ class InflightNavigationContentSettings
   std::vector<content::TrustTokenAccessDetails> trust_token_accesses;
   std::vector<std::pair<GURL, content::AllowServiceWorkerResult>>
       service_worker_accesses;
+  std::vector<network::mojom::SharedDictionaryAccessDetailsPtr>
+      shared_dictionary_accesses;
 
  private:
   explicit InflightNavigationContentSettings(
@@ -175,6 +178,12 @@ class WebContentsHandler
       content::RenderFrameHost* frame,
       const GURL& scope,
       content::AllowServiceWorkerResult allowed) override;
+  void OnSharedDictionaryAccessed(
+      content::NavigationHandle* navigation,
+      const network::mojom::SharedDictionaryAccessDetails& details) override;
+  void OnSharedDictionaryAccessed(
+      content::RenderFrameHost* rfh,
+      const network::mojom::SharedDictionaryAccessDetails& details) override;
   void WebContentsDestroyed() override;
 
   std::unique_ptr<Delegate> delegate_;
@@ -252,6 +261,10 @@ void WebContentsHandler::TransferNavigationContentSettingsToCommittedDocument(
        navigation_settings.service_worker_accesses) {
     OnServiceWorkerAccessed(rfh, service_worker_access.first,
                             service_worker_access.second);
+  }
+  for (const auto& shared_dictionary_access :
+       navigation_settings.shared_dictionary_accesses) {
+    OnSharedDictionaryAccessed(rfh, *shared_dictionary_access);
   }
 }
 
@@ -337,6 +350,32 @@ void WebContentsHandler::OnServiceWorkerAccessed(
     pscs->OnServiceWorkerAccessed(scope, allowed);
 }
 
+void WebContentsHandler::OnSharedDictionaryAccessed(
+    content::NavigationHandle* navigation,
+    const network::mojom::SharedDictionaryAccessDetails& details) {
+  if (WillNavigationCreateNewPageSpecificContentSettingsOnCommit(navigation)) {
+    auto* inflight_navigation_settings =
+        content::NavigationHandleUserData<InflightNavigationContentSettings>::
+            GetOrCreateForNavigationHandle(*navigation);
+    inflight_navigation_settings->shared_dictionary_accesses.emplace_back(
+        details.Clone());
+    return;
+  }
+  // All accesses during main frame navigations should enter the block above and
+  // not reach here. We also don't expect any accesses to be made during page
+  // activations or same-document navigations.
+  DCHECK(navigation->GetParentFrame());
+  OnSharedDictionaryAccessed(navigation->GetParentFrame()->GetMainFrame(),
+                             details);
+}
+
+void WebContentsHandler::OnSharedDictionaryAccessed(
+    content::RenderFrameHost* rfh,
+    const network::mojom::SharedDictionaryAccessDetails& details) {
+  PageSpecificContentSettings::BrowsingDataAccessed(
+      rfh, details.isolation_key,
+      BrowsingDataModel::StorageType::kSharedDictionary, details.is_blocked);
+}
 void WebContentsHandler::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   content::RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();

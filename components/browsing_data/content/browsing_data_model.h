@@ -16,6 +16,7 @@
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/private_aggregation_data_model.h"
+#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -50,9 +51,10 @@ class BrowsingDataModel {
     kAttributionReporting,
     kPrivateAggregation,
     kQuotaStorage,
+    kSharedDictionary,
 
     kFirstType = kTrustTokens,
-    kLastType = kQuotaStorage,
+    kLastType = kSharedDictionary,
     kExtendedDelegateRange =
         64,  // This is needed to include delegate values when adding delegate
              // browsing data to the model.
@@ -68,7 +70,8 @@ class BrowsingDataModel {
                         blink::StorageKey,  // Partitioned JS storage
                         content::InterestGroupManager::InterestGroupDataKey,
                         content::AttributionDataModel::DataKey,
-                        content::PrivateAggregationDataModel::DataKey
+                        content::PrivateAggregationDataModel::DataKey,
+                        net::SharedDictionaryIsolationKey
                         // TODO(crbug.com/1271155): Additional backend keys.
                         >
       DataKey;

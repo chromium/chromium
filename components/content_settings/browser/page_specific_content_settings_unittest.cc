@@ -26,6 +26,8 @@
 #include "content/public/test/web_contents_tester.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_options.h"
+#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -610,6 +612,165 @@ TEST_F(PageSpecificContentSettingsTest,
   EXPECT_EQ(
       1, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
                                            *allowed_browsing_data_model));
+}
+
+TEST_F(PageSpecificContentSettingsTest, BrowsingDataModelSharedDictionary) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  auto* allowed_browsing_data_model = pscs->allowed_browsing_data_model();
+  auto* blocked_browsing_data_model = pscs->blocked_browsing_data_model();
+
+  // Before Shared Dictionary accesses, there should be no objects here.
+  EXPECT_EQ(
+      0, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
+                                           *allowed_browsing_data_model));
+  EXPECT_EQ(
+      0, browsing_data::GetUniqueHostCount(pscs->blocked_local_shared_objects(),
+                                           *blocked_browsing_data_model));
+  const url::Origin origin = url::Origin::Create(GURL("http://google.com/"));
+  net::SharedDictionaryIsolationKey isolation_key(origin,
+                                                  net::SchemefulSite(origin));
+  // Access a Shared Dictionary.
+  network::mojom::SharedDictionaryAccessDetailsPtr details =
+      network::mojom::SharedDictionaryAccessDetails::New(
+          network::mojom::SharedDictionaryAccessDetails::Type::kRead,
+          GURL("http://test.example/target"), isolation_key,
+          /*is_blocked=*/false);
+  GetHandle()->OnSharedDictionaryAccessed(web_contents()->GetPrimaryMainFrame(),
+                                          *details);
+
+  EXPECT_EQ(
+      1, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
+                                           *allowed_browsing_data_model));
+  EXPECT_EQ(
+      0, browsing_data::GetUniqueHostCount(pscs->blocked_local_shared_objects(),
+                                           *blocked_browsing_data_model));
+  ASSERT_EQ(1u, allowed_browsing_data_model->size());
+  EXPECT_EQ("google.com",
+            *absl::get_if<std::string>(
+                &*(*allowed_browsing_data_model->begin()).data_owner));
+}
+
+TEST_F(PageSpecificContentSettingsTest,
+       BrowsingDataModelSharedDictionaryBlocked) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  auto* allowed_browsing_data_model = pscs->allowed_browsing_data_model();
+  auto* blocked_browsing_data_model = pscs->blocked_browsing_data_model();
+
+  // Before Shared Dictionary accesses, there should be no objects here.
+  EXPECT_EQ(
+      0, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
+                                           *allowed_browsing_data_model));
+  EXPECT_EQ(
+      0, browsing_data::GetUniqueHostCount(pscs->blocked_local_shared_objects(),
+                                           *blocked_browsing_data_model));
+  const url::Origin origin = url::Origin::Create(GURL("http://google.com/"));
+  net::SharedDictionaryIsolationKey isolation_key(origin,
+                                                  net::SchemefulSite(origin));
+  // Blocked a Shared Dictionary access.
+  network::mojom::SharedDictionaryAccessDetailsPtr details =
+      network::mojom::SharedDictionaryAccessDetails::New(
+          network::mojom::SharedDictionaryAccessDetails::Type::kRead,
+          GURL("http://test.example/target"), isolation_key,
+          /*is_blocked=*/true);
+  GetHandle()->OnSharedDictionaryAccessed(web_contents()->GetPrimaryMainFrame(),
+                                          *details);
+
+  EXPECT_EQ(
+      0, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
+                                           *allowed_browsing_data_model));
+  EXPECT_EQ(
+      1, browsing_data::GetUniqueHostCount(pscs->blocked_local_shared_objects(),
+                                           *blocked_browsing_data_model));
+  ASSERT_EQ(1u, blocked_browsing_data_model->size());
+  EXPECT_EQ("google.com",
+            *absl::get_if<std::string>(
+                &*(*blocked_browsing_data_model->begin()).data_owner));
+}
+
+TEST_F(PageSpecificContentSettingsTest,
+       BrowsingDataModelSharedDictionaryPendingNavigation) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("http://other.com"), web_contents());
+  simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
+  simulator->Start();
+
+  // Access a Shared Dictionary.
+  const url::Origin origin = url::Origin::Create(GURL("http://google.com/"));
+  net::SharedDictionaryIsolationKey isolation_key(origin,
+                                                  net::SchemefulSite(origin));
+  network::mojom::SharedDictionaryAccessDetailsPtr details =
+      network::mojom::SharedDictionaryAccessDetails::New(
+          network::mojom::SharedDictionaryAccessDetails::Type::kRead,
+          GURL("http://test.example/target"), isolation_key,
+          /*is_blocked=*/false);
+  GetHandle()->OnSharedDictionaryAccessed(simulator->GetNavigationHandle(),
+                                          *details);
+  simulator->Commit();
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      simulator->GetFinalRenderFrameHost());
+  auto* allowed_browsing_data_model = pscs->allowed_browsing_data_model();
+  auto* blocked_browsing_data_model = pscs->blocked_browsing_data_model();
+
+  EXPECT_EQ(
+      1, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
+                                           *allowed_browsing_data_model));
+  EXPECT_EQ(
+      0, browsing_data::GetUniqueHostCount(pscs->blocked_local_shared_objects(),
+                                           *blocked_browsing_data_model));
+  ASSERT_EQ(1u, allowed_browsing_data_model->size());
+  EXPECT_EQ("google.com",
+            *absl::get_if<std::string>(
+                &*(*allowed_browsing_data_model->begin()).data_owner));
+}
+
+TEST_F(PageSpecificContentSettingsTest,
+       BrowsingDataModelSharedDictionaryPendingNavigationBlocked) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("http://other.com"), web_contents());
+  simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
+  simulator->Start();
+
+  // Blocked a Shared Dictionary access.
+  const url::Origin origin = url::Origin::Create(GURL("http://google.com/"));
+  net::SharedDictionaryIsolationKey isolation_key(origin,
+                                                  net::SchemefulSite(origin));
+  network::mojom::SharedDictionaryAccessDetailsPtr details =
+      network::mojom::SharedDictionaryAccessDetails::New(
+          network::mojom::SharedDictionaryAccessDetails::Type::kRead,
+          GURL("http://test.example/target"), isolation_key,
+          /*is_blocked=*/true);
+  GetHandle()->OnSharedDictionaryAccessed(simulator->GetNavigationHandle(),
+                                          *details);
+  simulator->Commit();
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      simulator->GetFinalRenderFrameHost());
+  auto* allowed_browsing_data_model = pscs->allowed_browsing_data_model();
+  auto* blocked_browsing_data_model = pscs->blocked_browsing_data_model();
+
+  EXPECT_EQ(
+      0, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
+                                           *allowed_browsing_data_model));
+  EXPECT_EQ(
+      1, browsing_data::GetUniqueHostCount(pscs->blocked_local_shared_objects(),
+                                           *blocked_browsing_data_model));
+  ASSERT_EQ(1u, blocked_browsing_data_model->size());
+  EXPECT_EQ("google.com",
+            *absl::get_if<std::string>(
+                &*(*blocked_browsing_data_model->begin()).data_owner));
 }
 
 TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerHostsCount) {

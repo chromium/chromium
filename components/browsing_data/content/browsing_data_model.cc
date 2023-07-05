@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/network/network_context.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
@@ -124,6 +125,13 @@ GetDataOwner::GetOwningHost<content::PrivateAggregationDataModel::DataKey>(
     const content::PrivateAggregationDataModel::DataKey& data_key) const {
   CHECK_EQ(BrowsingDataModel::StorageType::kPrivateAggregation, storage_type_);
   return data_key.reporting_origin().host();
+}
+
+template <>
+std::string GetDataOwner::GetOwningHost<net::SharedDictionaryIsolationKey>(
+    const net::SharedDictionaryIsolationKey& isolation_key) const {
+  DCHECK_EQ(BrowsingDataModel::StorageType::kSharedDictionary, storage_type_);
+  return isolation_key.frame_origin().host();
 }
 
 // Helper which allows the lifetime management of a deletion action to occur
@@ -277,6 +285,19 @@ void StorageRemoverHelper::Visitor::operator()<
       ->RemovePendingDataKey(data_key, helper->GetCompleteCallback());
 }
 
+template <>
+void StorageRemoverHelper::Visitor::operator()<
+    net::SharedDictionaryIsolationKey>(
+    const net::SharedDictionaryIsolationKey& isolation_key) {
+  if (types.Has(BrowsingDataModel::StorageType::kSharedDictionary)) {
+    helper->storage_partition_->GetNetworkContext()
+        ->ClearSharedDictionaryCacheForIsolationKey(
+            isolation_key, helper->GetCompleteCallback());
+  } else {
+    NOTREACHED();
+  }
+}
+
 void RemoveBrowsingDataEntries(
     const BrowsingDataModel::DataKeyEntries& browsing_data_entries,
     std::unique_ptr<StorageRemoverHelper> storage_remover_helper,
@@ -292,6 +313,7 @@ void RemoveBrowsingDataEntries(
   helper_pointer->RemoveDataKeyEntries(browsing_data_entries,
                                        std::move(wrapped_completed));
 }
+
 base::OnceClosure StorageRemoverHelper::GetCompleteCallback() {
   callbacks_expected_++;
   return base::BindOnce(&StorageRemoverHelper::BackendFinished,
@@ -394,6 +416,18 @@ void OnLocalStorageLoaded(
   for (const auto& info : storage_usage_info) {
     model->AddBrowsingData(info.storage_key,
                            BrowsingDataModel::StorageType::kLocalStorage,
+                           info.total_size_bytes);
+  }
+  std::move(loaded_callback).Run();
+}
+
+void OnSharedDictionaryUsageLoaded(
+    BrowsingDataModel* model,
+    base::OnceClosure loaded_callback,
+    const std::vector<net::SharedDictionaryUsageInfo>& usage_info) {
+  for (const auto& info : usage_info) {
+    model->AddBrowsingData(info.isolation_key,
+                           BrowsingDataModel::StorageType::kSharedDictionary,
                            info.total_size_bytes);
   }
   std::move(loaded_callback).Run();
@@ -626,6 +660,8 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bool is_shared_storage_enabled =
       base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI);
+  bool is_shared_dictionary_enabled = base::FeatureList::IsEnabled(
+      blink::features::kCompressionDictionaryTransportBackend);
   bool is_interest_group_enabled =
       base::FeatureList::IsEnabled(blink::features::kAdInterestGroupAPI);
   bool is_attribution_reporting_enabled =
@@ -652,6 +688,12 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   if (is_shared_storage_enabled) {
     storage_partition_->GetSharedStorageManager()->FetchOrigins(
         base::BindOnce(&OnSharedStorageLoaded, this, completion));
+  }
+
+  // Shared Dictionaries.
+  if (is_shared_dictionary_enabled) {
+    storage_partition_->GetNetworkContext()->GetSharedDictionaryUsageInfo(
+        base::BindOnce(&OnSharedDictionaryUsageLoaded, this, completion));
   }
 
   // Interest Groups
