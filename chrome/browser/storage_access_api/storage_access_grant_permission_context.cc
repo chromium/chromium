@@ -48,9 +48,6 @@ using content_settings::URLToSchemefulSitePattern;
 
 namespace {
 
-constexpr base::TimeDelta kImplicitGrantDuration = base::Hours(24);
-constexpr base::TimeDelta kExplicitGrantDuration = base::Days(30);
-
 // Returns true if the request wasn't answered by the user explicitly.
 bool IsImplicitOutcome(RequestOutcome outcome) {
   switch (outcome) {
@@ -120,12 +117,14 @@ content_settings::ContentSettingConstraints ComputeConstraints(
   content_settings::ContentSettingConstraints constraints;
   switch (outcome) {
     case RequestOutcome::kGrantedByFirstPartySet:
-      constraints.set_lifetime(kImplicitGrantDuration);
+      constraints.set_lifetime(
+          blink::features::kStorageAccessAPIImplicitPermissionLifetime.Get());
       constraints.set_session_model(
           content_settings::SessionModel::NonRestorableUserSession);
       return constraints;
     case RequestOutcome::kGrantedByAllowance:
-      constraints.set_lifetime(kImplicitGrantDuration);
+      constraints.set_lifetime(
+          blink::features::kStorageAccessAPIImplicitPermissionLifetime.Get());
       constraints.set_session_model(
           content_settings::SessionModel::UserSession);
       return constraints;
@@ -140,7 +139,8 @@ content_settings::ContentSettingConstraints ComputeConstraints(
       NOTREACHED_NORETURN();
     case RequestOutcome::kGrantedByUser:
     case RequestOutcome::kDeniedByUser:
-      constraints.set_lifetime(kExplicitGrantDuration);
+      constraints.set_lifetime(
+          blink::features::kStorageAccessAPIExplicitPermissionLifetime.Get());
       constraints.set_session_model(content_settings::SessionModel::Durable);
       return constraints;
   }
