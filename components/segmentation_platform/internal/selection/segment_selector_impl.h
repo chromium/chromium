@@ -159,7 +159,8 @@ class SegmentSelectorImpl : public SegmentSelector {
   bool used_result_in_current_session_ = false;
 
   // Pointer to the training data collector.
-  raw_ptr<TrainingDataCollector, DanglingUntriaged> training_data_collector_{};
+  raw_ptr<TrainingDataCollector, DanglingUntriaged> training_data_collector_ =
+      nullptr;
 
   base::WeakPtrFactory<SegmentSelectorImpl> weak_ptr_factory_{this};
 };
