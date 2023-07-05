@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -49,8 +50,8 @@ import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -75,8 +76,6 @@ public class LocationBarLayoutTest {
 
     @Mock
     AndroidPermissionDelegate mAndroidPermissionDelegate;
-    @Mock
-    SearchEngineLogoUtils mSearchEngineLogoUtils;
 
     private OmniboxTestUtils mOmnibox;
 
@@ -281,7 +280,7 @@ public class LocationBarLayoutTest {
             urlContainer.setLayoutParams(urlLayoutParams);
 
             statusIcon.setVisibility(GONE);
-            locationBar.updateLayoutParams();
+            locationBar.updateLayoutParams(MeasureSpec.makeMeasureSpec(1000, MeasureSpec.EXACTLY));
             urlLayoutParams = (MarginLayoutParams) urlContainer.getLayoutParams();
             int endMarginNoIcon = MarginLayoutParamsCompat.getMarginEnd(urlLayoutParams);
 
@@ -290,7 +289,7 @@ public class LocationBarLayoutTest {
             urlContainer.setLayoutParams(urlLayoutParams);
 
             statusIcon.setVisibility(VISIBLE);
-            locationBar.updateLayoutParams();
+            locationBar.updateLayoutParams(MeasureSpec.makeMeasureSpec(1000, MeasureSpec.EXACTLY));
             urlLayoutParams = (MarginLayoutParams) urlContainer.getLayoutParams();
             int endMarginWithIcon = MarginLayoutParamsCompat.getMarginEnd(urlLayoutParams);
 
@@ -299,19 +298,39 @@ public class LocationBarLayoutTest {
         });
     }
 
-    /** Load a new URL and also update the location bar models. */
-    private Tab loadUrlInNewTabAndUpdateModels(String url, boolean incognito) {
-        Tab tab = mActivityTestRule.loadUrlInNewTab(url, incognito);
-        updateLocationBar();
-        return tab;
-    }
+    @Test
+    @MediumTest
+    public void testEnforceMinimumUrlBarWidth() {
+        setUrlBarTextAndFocus("");
 
-    private void updateLocationBar() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LocationBarMediator mediator = getLocationBarMediator();
-            mediator.onPrimaryColorChanged();
-            mediator.onSecurityStateChanged();
-            mediator.onUrlChanged();
+            View urlBar = getUrlBar();
+            View locationBar = getLocationBar();
+
+            int constrainedWidth = ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart()
+                    + locationBar.getResources().getDimensionPixelSize(
+                            R.dimen.location_bar_min_url_width);
+            int urlContainerMarginEnd =
+                    ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginEnd();
+
+            locationBar.measure(MeasureSpec.makeMeasureSpec(constrainedWidth, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
+            Assert.assertEquals(locationBar.findViewById(R.id.url_action_container).getVisibility(),
+                    View.INVISIBLE);
+
+            locationBar.measure(
+                    MeasureSpec.makeMeasureSpec(
+                            constrainedWidth + urlContainerMarginEnd, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
+            Assert.assertEquals(locationBar.findViewById(R.id.url_action_container).getVisibility(),
+                    View.VISIBLE);
+
+            locationBar.measure(
+                    MeasureSpec.makeMeasureSpec(
+                            constrainedWidth + urlContainerMarginEnd - 1, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
+            Assert.assertEquals(locationBar.findViewById(R.id.url_action_container).getVisibility(),
+                    View.INVISIBLE);
         });
     }
 }
