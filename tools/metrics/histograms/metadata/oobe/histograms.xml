@@ -599,31 +599,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OOBE.QuickStart.FastPair.AdvertisingStart.ErrorCode"
-    enum="QuickStartFastPairAdvertisingStartErrorCode"
-    expires_after="2023-11-01">
-  <owner>bhartmire@google.com</owner>
-  <owner>hansenmichael@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Reason a Fast Pair BLE advertisment failed to register. Recorded whenever a
-    Bluetooth Advertisement error occurs after attempting to register the
-    advertisement.
-  </summary>
-</histogram>
-
-<histogram name="OOBE.QuickStart.FastPair.AdvertisingStart.Result"
-    enum="BooleanSuccess" expires_after="2023-11-01">
-  <owner>bhartmire@google.com</owner>
-  <owner>hansenmichael@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Count of successful and failed attempts to start Fast Pair BLE
-    advertisement. Recorded when the FastPairAdvertiser attempts to register an
-    advertisement.
-  </summary>
-</histogram>
-
 <histogram name="OOBE.RecommendApps.Fetcher.AppCount" units="apps"
     expires_after="2023-12-01">
   <owner>dkuzmin@google.com</owner>

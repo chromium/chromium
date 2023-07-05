@@ -13,6 +13,18 @@ constexpr const char kWifiTransferResultHistogramName[] =
     "QuickStart.WifiTransferResult";
 constexpr const char kWifiTransferResultFailureReasonHistogramName[] =
     "QuickStart.WifiTransferResult.FailureReason";
+constexpr const char
+    kFastPairAdvertisementEndedAdvertisingMethodHistogramName[] =
+        "QuickStart.FastPairAdvertisementEnded.AdvertisingMethod";
+constexpr const char kFastPairAdvertisementEndedSucceededHistogramName[] =
+    "QuickStart.FastPairAdvertisementEnded.Succeeded";
+constexpr const char kFastPairAdvertisementEndedDurationHistogramName[] =
+    "QuickStart.FastPairAdvertisementEnded.Duration";
+constexpr const char kFastPairAdvertisementEndedErrorCodeHistogramName[] =
+    "QuickStart.FastPairAdvertisementEnded.ErrorCode";
+constexpr const char
+    kFastPairAdvertisementStartedAdvertisingMethodHistogramName[] =
+        "QuickStart.FastPairAdvertisementStarted.AdvertisingMethod";
 
 }  // namespace
 
@@ -30,18 +42,31 @@ void RecordScreenClosed(Screen screen,
   // TODO(280306867): Add metric for screen duration.
 }
 
-void RecordFastPairAdvertisementStarted(int32_t session_id,
-                                        AdvertisingMethod advertising_method) {
-  // TODO(279614071): Add advertising metrics.
+void RecordFastPairAdvertisementStarted(AdvertisingMethod advertising_method) {
+  base::UmaHistogramEnumeration(
+      kFastPairAdvertisementStartedAdvertisingMethodHistogramName,
+      advertising_method);
 }
 
 void RecordFastPairAdvertisementEnded(
-    int32_t session_id,
     AdvertisingMethod advertising_method,
     bool succeeded,
-    int duration,
+    base::TimeDelta duration,
     absl::optional<FastPairAdvertisingErrorCode> error_code) {
-  // TODO(279614071): Add advertising metrics.
+  if (succeeded) {
+    CHECK(!error_code.has_value());
+  } else {
+    CHECK(error_code.has_value());
+    base::UmaHistogramEnumeration(
+        kFastPairAdvertisementEndedErrorCodeHistogramName, error_code.value());
+  }
+  base::UmaHistogramBoolean(kFastPairAdvertisementEndedSucceededHistogramName,
+                            succeeded);
+  base::UmaHistogramTimes(kFastPairAdvertisementEndedDurationHistogramName,
+                          duration);
+  base::UmaHistogramEnumeration(
+      kFastPairAdvertisementEndedAdvertisingMethodHistogramName,
+      advertising_method);
 }
 
 void RecordNearbyConnectionsAdvertisementStarted(int32_t session_id) {

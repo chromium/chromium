@@ -235,7 +235,7 @@ void TargetDeviceConnectionBrokerImpl::StartFastPairAdvertising(
       base::BindOnce(
           &TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError,
           weak_ptr_factory_.GetWeakPtr(), std::move(failure_callback)),
-      session_context_->random_session_id());
+      session_context_->random_session_id(), use_pin_authentication_);
 }
 
 void TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingSuccess(

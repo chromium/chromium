@@ -90227,7 +90227,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="12" label="csv"/>
 </enum>
 
-<enum name="QuickStartFastPairAdvertisingStartErrorCode">
+<enum name="QuickStartAdvertisingMethod">
+  <int value="0" label="QR Code"/>
+  <int value="1" label="Pin"/>
+</enum>
+
+<enum name="QuickStartFastPairAdvertisingEndedErrorCode">
   <int value="0" label="Error: Unsupported platform"/>
   <int value="1" label="Error: Advertisement already exists"/>
   <int value="2" label="Error: Advertisement does not exist"/>

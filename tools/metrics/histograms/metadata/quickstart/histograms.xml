@@ -22,6 +22,66 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="QuickStart.FastPairAdvertisementEnded.AdvertisingMethod"
+    enum="QuickStartAdvertisingMethod" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The authentication method used for the Quick Start flow. Recorded when
+    unregistering the advertisement or when there's an error attempting to
+    register the advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.FastPairAdvertisementEnded.Duration" units="ms"
+    expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Time elapsed from attempting to start Fast Pair Advertising to it ending or
+    an error occurring. Recorded when unregistering the advertisement or when
+    there's an error attempting to register the advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.FastPairAdvertisementEnded.ErrorCode"
+    enum="QuickStartFastPairAdvertisingEndedErrorCode"
+    expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Reason a Fast Pair BLE advertisment failed to register. Recorded whenever a
+    Bluetooth Advertisement error occurs after attempting to register the
+    advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.FastPairAdvertisementEnded.Succeeded"
+    enum="BooleanSuccess" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether Fast Pair advertising was successful. Recorded when unregistering
+    the advertisement or when there's an error attempting to register the
+    advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.FastPairAdvertisementStarted.AdvertisingMethod"
+    enum="QuickStartAdvertisingMethod" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The authentication method used for the Quick Start flow. Recorded before
+    attempting to register advertisement.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.WifiTransferResult" enum="BooleanSuccess"
     expires_after="2023-12-01">
   <owner>bhartmire@google.com</owner>
