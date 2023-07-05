@@ -408,6 +408,7 @@ source_set("unit_tests") {
       "page_content_annotation_job_executor_unittest.cc",
       "page_visibility_model_handler_unittest.cc",
       "text_embedding_model_executor_unittest.cc",
+      "text_embedding_model_handler_unittest.cc",
       "tflite_model_executor_unittest.cc",
     ]
     if (build_with_internal_optimization_guide) {

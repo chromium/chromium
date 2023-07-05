@@ -45,10 +45,10 @@ class TextEmbeddingModelHandlerTest : public testing::Test {
 TEST_F(TextEmbeddingModelHandlerTest, ShouldExtractEmbedding) {
   tflite::task::processor::EmbeddingResult result;
   auto* embedding = result.add_embeddings();
-  embedding.mutable_feature_vector()->add_value_float(1.0);
-  embedding.mutable_feature_vector()->add_value_float(2.0);
-  embedding.mutable_feature_vector()->add_value_float(3.0);
-  embedding.mutable_feature_vector()->add_value_float(4.0);
+  embedding->mutable_feature_vector()->add_value_float(1.0);
+  embedding->mutable_feature_vector()->add_value_float(2.0);
+  embedding->mutable_feature_vector()->add_value_float(3.0);
+  embedding->mutable_feature_vector()->add_value_float(4.0);
 
   BatchAnnotationResult embedding_result =
       BatchAnnotationResult::CreateEmptyAnnotationsResult(std::string());
@@ -64,9 +64,11 @@ TEST_F(TextEmbeddingModelHandlerTest, ShouldExtractEmbedding) {
   model_handler()->PostprocessEmbeddingsToBatchAnnotationResult(
       std::move(callback), AnnotationType::kTextEmbedding, "input", result);
 
-  ASSERT_TRUE(embedding_result);
-  EXPECT_EQ(*embedding_result, embedding_result.type() == "kTextEmbedding",
-            {1.0, 2.0, 3.0, 4.0});
+  ASSERT_TRUE(embedding_result.embeddings());
+  EXPECT_EQ(embedding_result.type(), AnnotationType::kTextEmbedding);
+
+  std::vector<float> expected_result = {1.0, 2.0, 3.0, 4.0};
+  EXPECT_EQ(embedding_result.embeddings(), expected_result);
 }
 
 TEST_F(TextEmbeddingModelHandlerTest, ShouldNotExtractTwoEmbeddings) {
@@ -88,7 +90,7 @@ TEST_F(TextEmbeddingModelHandlerTest, ShouldNotExtractTwoEmbeddings) {
   model_handler()->PostprocessEmbeddingsToBatchAnnotationResult(
       std::move(callback), AnnotationType::kTextEmbedding, "input", result);
 
-  EXPECT_FALSE(embedding_result);
+  EXPECT_EQ(embedding_result.embeddings(), absl::nullopt);
 }
 
 TEST_F(TextEmbeddingModelHandlerTest, HasNoEmbeddings) {
@@ -108,7 +110,7 @@ TEST_F(TextEmbeddingModelHandlerTest, HasNoEmbeddings) {
   model_handler()->PostprocessEmbeddingsToBatchAnnotationResult(
       std::move(callback), AnnotationType::kTextEmbedding, "input", result);
 
-  EXPECT_FALSE(embedding_result);
+  EXPECT_EQ(embedding_result.embeddings(), absl::nullopt);
 }
 
 }  // namespace optimization_guide
