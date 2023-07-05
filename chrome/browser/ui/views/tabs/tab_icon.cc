@@ -306,14 +306,20 @@ void TabIcon::PaintDiscardRingAndIcon(gfx::Canvas* canvas,
   MaybePaintFavicon(canvas, icon, bounds);
 
   // Painting Discard Ring
+  const ui::ColorProvider* color_provider = GetColorProvider();
+  SkColor ring_color = color_provider->GetColor(ui::kColorSysStateDisabled);
+  float ring_color_opacity =
+      static_cast<float>(SkColorGetA(ring_color)) / SK_AlphaOPAQUE;
   cc::PaintFlags flags;
-  flags.setColor(SK_ColorGRAY);
+  flags.setColor(ring_color);
   flags.setStrokeCap(cc::PaintFlags::kRound_Cap);
   flags.setStrokeWidth(kDiscardRingStrokeWidthDp);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setAntiAlias(true);
-  flags.setAlphaf((float)gfx::Tween::CalculateValue(
-      gfx::Tween::EASE_IN, tab_discard_animation_.GetCurrentValue()));
+  flags.setAlphaf(static_cast<float>(
+      gfx::Tween::CalculateValue(gfx::Tween::EASE_IN,
+                                 tab_discard_animation_.GetCurrentValue()) *
+      ring_color_opacity));
 
   // Draw the large segment centered on the left side.
   const int large_segment_start_angle = 180 - kLargeSegmentSweepAngle / 2;

@@ -755,7 +755,7 @@ std::vector<FaviconScreenShotTestConfig> HighEfficiencyTestConfig() {
            "FadeFullSizedFaviconOnDiscard", "4492205"},
           {performance_manager::features::DiscardTabTreatmentOptions::
                kFadeSmallFaviconWithRing,
-           "FadeSmallFaviconOnDiscard", "4492205"}};
+           "FadeSmallFaviconOnDiscard", "4633624"}};
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
