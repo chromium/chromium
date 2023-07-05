@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_is_test.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -47,6 +48,7 @@
 namespace webapps {
 
 namespace {
+const char kDisableGuardrailsSwitch[] = "disable-ml-install-history-guardrails";
 
 enum class ManifestUrlInvalid {
   kEmpty = 0,
@@ -351,13 +353,18 @@ void MLInstallabilityPromoter::OnClassificationResult(
   GURL manifest_id = GetProjectedManifestIdAfterMetricsCollection();
   bool has_icons =
       site_quality_metrics_.favicons_count > 0 || !manifest_->icons.empty();
+  bool blocked_by_history_guardrails =
+      app_banner_manager_->IsMlPromotionBlockedByHistoryGuardrail(manifest_id);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kDisableGuardrailsSwitch)) {
+    blocked_by_history_guardrails = false;
+  }
   // Promotion from this Ml result is blocked by guardrails if it doesn't have
   // any icons, or if there has been a history of recent ignores. See the
   // implementation of IsMlPromotionBlockedByHistoryGuardrail per platform for
   // more details.
   bool is_ml_promotion_blocked_by_guardrails =
-      !has_icons ||
-      app_banner_manager_->IsMlPromotionBlockedByHistoryGuardrail(manifest_id);
+      !has_icons || blocked_by_history_guardrails;
   ml_result_reporter_ = std::make_unique<MlInstallResultReporter>(
       app_banner_manager_, result.request_id, result.ordered_labels[0],
       manifest_id, is_ml_promotion_blocked_by_guardrails);
