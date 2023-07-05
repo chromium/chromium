@@ -910,12 +910,6 @@ base::RepeatingCallback<bool(const GURL&)> CreateUrlFilterFromOriginFilter(
   });
 }
 
-}  // namespace
-
-ACTION(QuitMainMessageLoop) {
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
-}
-
 class PersonalDataLoadedObserverMock
     : public autofill::PersonalDataManagerObserver {
  public:
@@ -924,6 +918,12 @@ class PersonalDataLoadedObserverMock
   MOCK_METHOD0(OnPersonalDataChanged, void());
   MOCK_METHOD0(OnPersonalDataFinishedProfileTasks, void());
 };
+
+}  // namespace
+
+ACTION(QuitMainMessageLoop) {
+  base::RunLoop::QuitCurrentWhenIdleDeprecated();
+}
 
 // RemoveAutofillTester is not a part of the anonymous namespace above, as
 // PersonalDataManager declares it a friend in an empty namespace.
