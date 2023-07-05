@@ -1050,7 +1050,7 @@ void DriveIntegrationService::MaybeMountDrive(const base::FilePath& data_dir,
       file_manager::SystemNotificationManager snm(profile_);
       const std::unique_ptr<const message_center::Notification> notification =
           snm.CreateNotification("drive_data_dir_missing",
-                                 IDS_FILE_BROWSER_DRIVE_SYNC_ERROR_TITLE,
+                                 IDS_FILE_BROWSER_DRIVE_DATA_DIR_MISSING_TITLE,
                                  IDS_FILE_BROWSER_DRIVE_DATA_DIR_MISSING);
       DCHECK(notification);
       snm.GetNotificationDisplayService()->Display(

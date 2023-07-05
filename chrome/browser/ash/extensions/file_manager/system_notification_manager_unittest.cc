@@ -1292,12 +1292,9 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   // Get the strings for the displayed notification.
   const std::string notification_id = "drive-bulk-pinning-error";
   Strings strings = bridge_->GetStrings(notification_id);
-  EXPECT_EQ(strings.title, u"Sync error");
-  EXPECT_EQ(
-      strings.message,
-      u"We couldn't sync all of your My Drive files because you don't have "
-      u"enough storage available. Files that were already synced will stay "
-      u"available offline, but automatic syncing has been turned off.");
+  EXPECT_EQ(strings.title, u"Couldn’t finish setting up file sync");
+  EXPECT_EQ(strings.message,
+            u"There isn’t enough storage space to sync all of your files");
   EXPECT_THAT(strings.buttons, ElementsAre(u"Settings"));
 
   // Click the notification body.
