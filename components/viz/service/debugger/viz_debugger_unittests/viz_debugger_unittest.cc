@@ -206,15 +206,19 @@ TEST_F(VisualDebuggerTest, NonFilterActiveNoCost) {
   SetFilter({TestFilter(kStrA)});
   DBG_DRAW_TEXT(kStrA, gfx::Point(), get_a_string());
   DBG_DRAW_TEXT(kStrB, gfx::Point(), get_b_string());
-  EXPECT_EQ(1, count_a);
+  DBG_LOG(kStrA, "%s", get_a_string().c_str());
+  DBG_LOG(kStrB, "%s", get_b_string().c_str());
+  EXPECT_EQ(2, count_a);
   EXPECT_EQ(0, count_b);
 
   // Filter on "anno_B" which should call 'get_b_string'.
   SetFilter({TestFilter(kStrB)});
   DBG_DRAW_TEXT(kStrA, gfx::Point(), get_a_string());
   DBG_DRAW_TEXT(kStrB, gfx::Point(), get_b_string());
-  EXPECT_EQ(1, count_a);
-  EXPECT_EQ(1, count_b);
+  DBG_LOG(kStrA, "%s", get_a_string().c_str());
+  DBG_LOG(kStrB, "%s", get_b_string().c_str());
+  EXPECT_EQ(2, count_a);
+  EXPECT_EQ(2, count_b);
 }
 
 // This tests passing a single buffer synchronously into the visual debuggeer
