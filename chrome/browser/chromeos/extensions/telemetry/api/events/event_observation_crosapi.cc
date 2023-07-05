@@ -183,12 +183,28 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kStylusTouchEventInfo: {
-        NOTIMPLEMENTED();
+        base::Value::List args;
+        args.Append(
+            converters::ConvertStructPtr<api::os_events::StylusTouchEventInfo>(
+                std::move(info->get_stylus_touch_event_info()))
+                .ToValue());
+        event = std::make_unique<extensions::Event>(
+            extensions::events::OS_EVENTS_ON_STYLUS_TOUCH_EVENT,
+            api::os_events::OnStylusTouchEvent::kEventName, std::move(args),
+            browser_context_);
         break;
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kStylusConnectedEventInfo: {
-        NOTIMPLEMENTED();
+        base::Value::List args;
+        args.Append(converters::ConvertStructPtr<
+                        api::os_events::StylusConnectedEventInfo>(
+                        std::move(info->get_stylus_connected_event_info()))
+                        .ToValue());
+        event = std::make_unique<extensions::Event>(
+            extensions::events::OS_EVENTS_ON_STYLUS_CONNECTED_EVENT,
+            api::os_events::OnStylusConnectedEvent::kEventName, std::move(args),
+            browser_context_);
         break;
       }
     }

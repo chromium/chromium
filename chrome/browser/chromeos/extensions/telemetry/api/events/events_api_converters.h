@@ -61,6 +61,15 @@ api::os_events::TouchpadConnectedEventInfo UncheckedConvertPtr(
 api::os_events::TouchPointInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryTouchPointInfoPtr ptr);
 
+api::os_events::StylusTouchPointInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryStylusTouchPointInfoPtr ptr);
+
+api::os_events::StylusTouchEventInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryStylusTouchEventInfoPtr ptr);
+
+api::os_events::StylusConnectedEventInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryStylusConnectedEventInfoPtr ptr);
+
 }  // namespace unchecked
 
 api::os_events::AudioJackEvent Convert(

@@ -117,6 +117,34 @@
     "channel": "stable",
     "feature_flag": "TelemetryExtensionPendingApprovalApi"
   },
+  "os.events.onStylusTouchEvent": {
+    "dependencies": [
+      "permission:os.events"
+    ],
+    "contexts": [
+      "blessed_extension"
+    ],
+    "platforms": [
+      "chromeos",
+      "lacros"
+    ],
+    "channel": "stable",
+    "feature_flag": "TelemetryExtensionPendingApprovalApi"
+  },
+  "os.events.onStylusConnectedEvent": {
+    "dependencies": [
+      "permission:os.events"
+    ],
+    "contexts": [
+      "blessed_extension"
+    ],
+    "platforms": [
+      "chromeos",
+      "lacros"
+    ],
+    "channel": "stable",
+    "feature_flag": "TelemetryExtensionPendingApprovalApi"
+  },
   "os.telemetry": {
     "dependencies": [
       "permission:os.telemetry"

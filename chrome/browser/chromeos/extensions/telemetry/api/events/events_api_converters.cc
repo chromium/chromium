@@ -189,6 +189,35 @@ cx_events::TouchPointInfo UncheckedConvertPtr(
   return result;
 }
 
+cx_events::StylusTouchPointInfo UncheckedConvertPtr(
+    crosapi::TelemetryStylusTouchPointInfoPtr ptr) {
+  cx_events::StylusTouchPointInfo result;
+  if (ptr.is_null()) {
+    return result;
+  }
+  result.x = ptr->x;
+  result.y = ptr->y;
+  result.pressure = ptr->pressure;
+  return result;
+}
+
+cx_events::StylusTouchEventInfo UncheckedConvertPtr(
+    crosapi::TelemetryStylusTouchEventInfoPtr ptr) {
+  cx_events::StylusTouchEventInfo result;
+  result.touch_point = ConvertStructPtr<cx_events::StylusTouchPointInfo>(
+      std::move(ptr->touch_point));
+  return result;
+}
+
+cx_events::StylusConnectedEventInfo UncheckedConvertPtr(
+    crosapi::TelemetryStylusConnectedEventInfoPtr ptr) {
+  cx_events::StylusConnectedEventInfo result;
+  result.max_x = ptr->max_x;
+  result.max_y = ptr->max_y;
+  result.max_pressure = ptr->max_pressure;
+  return result;
+}
+
 }  // namespace unchecked
 
 cx_events::AudioJackEvent Convert(
@@ -468,6 +497,10 @@ crosapi::TelemetryEventCategoryEnum Convert(cx_events::EventCategory input) {
       return crosapi::TelemetryEventCategoryEnum::kTouchpadTouch;
     case cx_events::EventCategory::kTouchpadConnected:
       return crosapi::TelemetryEventCategoryEnum::kTouchpadConnected;
+    case cx_events::EventCategory::kStylusTouch:
+      return crosapi::TelemetryEventCategoryEnum::kStylusTouch;
+    case cx_events::EventCategory::kStylusConnected:
+      return crosapi::TelemetryEventCategoryEnum::kStylusConnected;
   }
   NOTREACHED();
 }

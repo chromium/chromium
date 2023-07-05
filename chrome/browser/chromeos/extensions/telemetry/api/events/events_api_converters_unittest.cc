@@ -294,6 +294,25 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertInputTouchButton) {
             cx_events::InputTouchButton::kRight);
 }
 
+TEST(TelemetryExtensionEventsApiConvertersUnitTest,
+     ConvertStylusTouchpointInfo) {
+  constexpr int kX = 1;
+  constexpr int kY = 1;
+  constexpr int kPressure = 1;
+  {
+    auto output = ConvertStructPtr<cx_events::StylusTouchPointInfo>(
+        crosapi::TelemetryStylusTouchPointInfo::New(kX, kY, kPressure));
+    EXPECT_EQ(output.x, kX);
+    EXPECT_EQ(output.y, kY);
+    EXPECT_EQ(output.pressure, kPressure);
+  }
+  {
+    auto output = ConvertStructPtr<cx_events::StylusTouchPointInfo>(
+        crosapi::TelemetryStylusTouchPointInfo::New(kX, kY, absl::nullopt));
+    EXPECT_EQ(output.pressure, absl::nullopt);
+  }
+}
+
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
   EXPECT_EQ(Convert(cx_events::EventCategory::kNone),
             crosapi::TelemetryEventCategoryEnum::kUnmappedEnumField);
@@ -330,6 +349,12 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kTouchpadConnected),
             crosapi::TelemetryEventCategoryEnum::kTouchpadConnected);
+
+  EXPECT_EQ(Convert(cx_events::EventCategory::kStylusTouch),
+            crosapi::TelemetryEventCategoryEnum::kStylusTouch);
+
+  EXPECT_EQ(Convert(cx_events::EventCategory::kStylusConnected),
+            crosapi::TelemetryEventCategoryEnum::kStylusConnected);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertKeyboardInfo) {
@@ -655,6 +680,40 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertTouchpointInfo) {
   EXPECT_EQ(output.pressure, kPressure);
   EXPECT_EQ(output.touch_major, kTouchMajor);
   EXPECT_EQ(output.touch_minor, absl::nullopt);
+}
+
+TEST(TelemetryExtensionEventsApiConvertersUnitTest,
+     ConvertStylusTouchEventInfo) {
+  constexpr int32_t kX = 1;
+  constexpr int32_t kY = 2;
+  constexpr int32_t kPressure = 3;
+
+  auto touch_event = crosapi::TelemetryStylusTouchEventInfo::New(
+      crosapi::TelemetryStylusTouchPointInfo::New(kX, kY, kPressure));
+
+  auto result =
+      ConvertStructPtr<cx_events::StylusTouchEventInfo>(std::move(touch_event));
+
+  EXPECT_EQ(result.touch_point->x, kX);
+  EXPECT_EQ(result.touch_point->y, kY);
+  EXPECT_EQ(result.touch_point->pressure, kPressure);
+}
+
+TEST(TelemetryExtensionEventsApiConvertersUnitTest,
+     ConvertStylusConnectedEventInfo) {
+  constexpr int32_t kMaxX = 1;
+  constexpr int32_t kMaxY = 2;
+  constexpr int32_t kMaxPressure = 3;
+
+  auto connected_event = crosapi::TelemetryStylusConnectedEventInfo::New(
+      kMaxX, kMaxY, kMaxPressure);
+
+  auto result = ConvertStructPtr<cx_events::StylusConnectedEventInfo>(
+      std::move(connected_event));
+
+  EXPECT_EQ(result.max_x, kMaxX);
+  EXPECT_EQ(result.max_y, kMaxY);
+  EXPECT_EQ(result.max_pressure, kMaxPressure);
 }
 
 }  // namespace chromeos::converters

@@ -537,6 +537,51 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
     ]);
   )");
 }
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       CheckStylusTouchApiWithoutFeatureFlagFail) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function stylusNotWorking() {
+        chrome.test.assertThrows(() => {
+          chrome.os.events.onStylusTouchEvent.addListener((event) => {
+            // unreachable.
+          });
+        }, [],
+          'Cannot read properties of undefined (reading \'addListener\')'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       CheckStylusConnectedApiWithoutFeatureFlagFail) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function stylusNotWorking() {
+        chrome.test.assertThrows(() => {
+          chrome.os.events.onStylusConnectedEvent.addListener((event) => {
+            // unreachable.
+          });
+        }, [],
+          'Cannot read properties of undefined (reading \'addListener\')'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
 class PendingApprovalTelemetryExtensionEventsApiBrowserTest
     : public TelemetryExtensionEventsApiBrowserTest {
  public:
@@ -836,6 +881,80 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
         });
 
         await chrome.os.events.startCapturingEvents("hdmi");
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+                       CheckStylusConnectedApiWithFeatureFlagWork) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto connected_event =
+            crosapi::TelemetryStylusConnectedEventInfo::New(1, 2, 3);
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kStylusConnected,
+            crosapi::TelemetryEventInfo::NewStylusConnectedEventInfo(
+                std::move(connected_event)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onStylusConnectedEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            max_x: 1,
+            max_y: 2,
+            max_pressure: 3
+          });
+
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("stylus_connected");
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+                       CheckStylusTouchApiWithFeatureFlagWork) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        crosapi::TelemetryStylusTouchPointInfoPtr touch_point =
+            crosapi::TelemetryStylusTouchPointInfo::New(1, 2, 3);
+
+        auto touch_event =
+            crosapi::TelemetryStylusTouchEventInfo::New(std::move(touch_point));
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kStylusTouch,
+            crosapi::TelemetryEventInfo::NewStylusTouchEventInfo(
+                std::move(touch_event)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onStylusTouchEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            "touch_point": {
+              x: 1,
+              y: 2,
+              pressure: 3
+            }
+          });
+
+          chrome.test.succeed();
+        });
+        await chrome.os.events.startCapturingEvents("stylus_touch");
       }
     ]);
   )");
