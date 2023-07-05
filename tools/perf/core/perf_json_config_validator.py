@@ -25,8 +25,6 @@ _DEFAULT_VALID_PERF_POOLS = {
 _VALID_PERF_POOLS = {
     'android-builder-perf': {'chrome.tests'},
     'android_arm64-builder-perf': {'chrome.tests'},
-    'android-pixel4a_power-perf': {'chrome.tests.pinpoint'},
-    'android-pixel4a_power-perf-pgo': {'chrome.tests.pinpoint'},
     'chromecast-linux-builder-perf': {'chrome.tests'},
     'chromeos-kevin-perf-fyi': {'chrome.tests'},
     'chromeos-amd64-generic-lacros-builder-perf': {'chrome.tests'},

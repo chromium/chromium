@@ -810,40 +810,6 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
-    'android-pixel4a_power-perf': {
-        'tests': [{
-            'isolate': 'performance_test_suite_android_clank_trichrome_bundle',
-            'extra_args': [
-                '--experimental-tbmv3-metrics',
-            ],
-        }],
-        'platform':
-        'android-chrome',
-        'dimension': {
-            'pool': 'chrome.tests.pinpoint',  # Sharing Pinpoint pool
-            'os': 'Android',
-            'device_type': 'sunfish',
-            'device_os': 'RQ1D.201205.012',
-            'device_os_flavor': 'google',
-        },
-    },
-    'android-pixel4a_power-perf-pgo': {
-        'tests': [{
-            'isolate': 'performance_test_suite_android_clank_trichrome_bundle',
-            'extra_args': [
-                '--experimental-tbmv3-metrics',
-            ],
-        }],
-        'platform':
-        'android-chrome',
-        'dimension': {
-            'pool': 'chrome.tests.pinpoint',  # Sharing Pinpoint pool
-            'os': 'Android',
-            'device_type': 'sunfish',
-            'device_os': 'RQ1D.201205.012',
-            'device_os_flavor': 'google',
-        },
-    },
     'android-pixel6-perf': {
         'tests': [{
             'isolate':

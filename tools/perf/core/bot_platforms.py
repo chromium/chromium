@@ -485,10 +485,11 @@ _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
         'jetstream2',
         'v8.browsing_mobile-future',
     ])
-_ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('system_health.scroll_jank_mobile')
-])
-_ANDROID_PIXEL6_BENCHMARK_CONFIGS = PerfSuite(_OFFICIAL_EXCEPT_DISPLAY_LOCKING)
+_ANDROID_PIXEL6_BENCHMARK_CONFIGS = PerfSuite(
+    _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Add([
+        _GetBenchmarkConfig('system_health.scroll_jank_mobile')
+    ]
+)
 _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
     _OFFICIAL_EXCEPT_DISPLAY_LOCKING)
 _ANDROID_PIXEL6_EXECUTABLE_CONFIGS = frozenset([
@@ -500,8 +501,6 @@ _ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS = frozenset([
 _ANDROID_GO_WEMBLEY_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('startup.mobile'),
      _GetBenchmarkConfig('speedometer2')])
-_ANDROID_NEXUS5X_FYI_BENCHMARK_CONFIGS = PerfSuite(
-    [_GetBenchmarkConfig('system_health.scroll_jank_mobile')])
 _ANDROID_PIXEL2_AAB_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('startup.mobile')])
 _ANDROID_PIXEL2_FYI_BENCHMARK_CONFIGS = PerfSuite([
@@ -739,13 +738,6 @@ ANDROID_PIXEL4_PGO = PerfPlatform(
 ANDROID_PIXEL4_WEBVIEW = PerfPlatform(
     'android-pixel4_webview-perf', 'Android R',
     _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 21, 'android')
-ANDROID_PIXEL4A_POWER = PerfPlatform('android-pixel4a_power-perf',
-                                     'Android QD4A.200102.001.A1',
-                                     _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS,
-                                     12, 'android')
-ANDROID_PIXEL4A_POWER_PGO = PerfPlatform(
-    'android-pixel4a_power-perf-pgo', 'Android QD4A.200102.001.A1',
-    _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS, 12, 'android')
 ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
                               'Android T',
                               _ANDROID_PIXEL6_BENCHMARK_CONFIGS,
