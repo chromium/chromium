@@ -116,7 +116,7 @@ TEST_F(PRegParserTest, TestParseFile) {
 
   // Run the parser.
   base::FilePath test_file(test_data_dir_.AppendASCII(kRegistryPolFile));
-  PolicyLoadStatusUmaReporter status;
+  PolicyLoadStatusSampler status;
   ASSERT_TRUE(preg_parser::ReadFile(test_file, kRegistryKey, &dict, &status));
 
   // Build the expected output dictionary.
@@ -143,7 +143,7 @@ TEST_F(PRegParserTest, SubstringRootInvalid) {
   // key like "Aa/Bb/C".
   base::FilePath test_file(test_data_dir_.AppendASCII(kRegistryPolFile));
   RegistryDict empty;
-  PolicyLoadStatusUmaReporter status;
+  PolicyLoadStatusSampler status;
 
   // No data should be loaded for partial roots ("Aa/Bb/C").
   RegistryDict dict1;
@@ -161,7 +161,7 @@ TEST_F(PRegParserTest, RejectInvalidStrings) {
   // Tests whether strings with invalid characters are rejected.
   base::FilePath test_file(
       test_data_dir_.AppendASCII(kInvalidEncodingRegistryPolFile));
-  PolicyLoadStatusUmaReporter status;
+  PolicyLoadStatusSampler status;
   RegistryDict dict;
   ASSERT_TRUE(preg_parser::ReadFile(test_file, kRegistryKey, &dict, &status));
 
@@ -171,7 +171,7 @@ TEST_F(PRegParserTest, RejectInvalidStrings) {
 
 TEST_F(PRegParserTest, LoadStatusSampling) {
   // Tests load status sampling.
-  PolicyLoadStatusUmaReporter status;
+  PolicyLoadStatusSampler status;
   RegistryDict dict;
   base::FilePath test_file(
       test_data_dir_.AppendASCII(kNonExistingRegistryPolFile));

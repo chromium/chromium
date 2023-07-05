@@ -59,18 +59,6 @@ class POLICY_EXPORT PolicyLoadStatusSampler {
   StatusSet status_bits_;
 };
 
-// A helper for generating policy load status UMA statistics. On destruction,
-// records histogram samples for the collected status codes.
-class POLICY_EXPORT PolicyLoadStatusUmaReporter
-    : public PolicyLoadStatusSampler {
- public:
-  PolicyLoadStatusUmaReporter();
-  PolicyLoadStatusUmaReporter(const PolicyLoadStatusUmaReporter&) = delete;
-  PolicyLoadStatusUmaReporter& operator=(const PolicyLoadStatusUmaReporter&) =
-      delete;
-  ~PolicyLoadStatusUmaReporter() override;
-};
-
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_POLICY_LOAD_STATUS_H_

@@ -112,8 +112,6 @@ PolicyBundle PolicyLoaderMac::Load() {
   PolicyMap& chrome_policy =
       bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
 
-  PolicyLoadStatusUmaReporter status;
-  bool policy_present = false;
   const Schema* schema =
       schema_map()->GetSchema(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
   for (Schema::Iterator it = schema->GetPropertiesIterator(); !it.IsAtEnd();
@@ -124,7 +122,6 @@ PolicyBundle PolicyLoaderMac::Load() {
         preferences_->CopyAppValue(name, application_id_));
     if (!value)
       continue;
-    policy_present = true;
     bool forced = preferences_->AppValueIsForced(name, application_id_);
     PolicyLevel level =
         forced ? POLICY_LEVEL_MANDATORY : POLICY_LEVEL_RECOMMENDED;
@@ -138,13 +135,8 @@ PolicyBundle PolicyLoaderMac::Load() {
     if (policy) {
       chrome_policy.Set(it.key(), level, scope, POLICY_SOURCE_PLATFORM,
                         std::move(*policy), nullptr);
-    } else {
-      status.Add(POLICY_LOAD_STATUS_PARSE_ERROR);
     }
   }
-
-  if (!policy_present)
-    status.Add(POLICY_LOAD_STATUS_NO_POLICY);
 
   // Load policy for the registered components.
   LoadPolicyForDomain(POLICY_DOMAIN_EXTENSIONS, "extensions", &bundle);

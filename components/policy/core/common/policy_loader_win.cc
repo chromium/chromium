@@ -300,7 +300,6 @@ PolicyBundle PolicyLoaderWin::Load() {
       &bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   for (size_t i = 0; i < std::size(kScopes); ++i) {
     PolicyScope scope = kScopes[i].scope;
-    PolicyLoadStatusUmaReporter status;
     RegistryDict gpo_dict;
 
     gpo_dict.ReadRegistry(kScopes[i].hive, chrome_policy_key_);
