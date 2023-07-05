@@ -487,7 +487,7 @@ TEST_F(LazyLoadImagesTest, AttributeChangedFromLazyToEager) {
                                       "image/png");
   GetDocument()
       .getElementById(AtomicString("my_image"))
-      ->setAttribute(html_names::kLoadingAttr, "eager");
+      ->setAttribute(html_names::kLoadingAttr, AtomicString("eager"));
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -512,7 +512,7 @@ TEST_F(LazyLoadImagesTest, AttributeChangedFromAutoToEager) {
                                       "image/png");
   GetDocument()
       .getElementById(AtomicString("my_image"))
-      ->setAttribute(html_names::kLoadingAttr, "eager");
+      ->setAttribute(html_names::kLoadingAttr, AtomicString("eager"));
 
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
   EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
@@ -529,7 +529,7 @@ TEST_F(LazyLoadImagesTest, AttributeChangedFromUnsetToEager) {
                                       "image/png");
   GetDocument()
       .getElementById(AtomicString("my_image"))
-      ->setAttribute(html_names::kLoadingAttr, "eager");
+      ->setAttribute(html_names::kLoadingAttr, AtomicString("eager"));
 
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
   EXPECT_TRUE(ConsoleMessages().Contains("image onload"));

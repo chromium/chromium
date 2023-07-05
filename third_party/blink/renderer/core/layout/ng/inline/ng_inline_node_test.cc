@@ -164,7 +164,7 @@ class NGInlineNodeTest : public RenderingTest {
   void LoadGoogleSans() {
     LoadFontFromFile(GetFrame(),
                      test::CoreTestDataPath("GoogleSans-Regular.ttf"),
-                     "Google Sans");
+                     AtomicString("Google Sans"));
   }
 
   Persistent<LayoutNGBlockFlow> layout_block_flow_;
@@ -746,8 +746,8 @@ TEST_P(StyleChangeTest, NeedsCollectInlinesOnStyle) {
   EXPECT_FALSE(parent->GetLayoutObject()->NeedsCollectInlines());
   EXPECT_FALSE(container->GetLayoutObject()->NeedsCollectInlines());
 
-  container->classList().Add("after");
-  parent->classList().Add("after");
+  container->classList().Add(AtomicString("after"));
+  parent->classList().Add(AtomicString("after"));
   GetDocument().UpdateStyleAndLayoutTree();
 
   // The text and ancestors up to the container should be marked.
@@ -798,12 +798,12 @@ static CreateNode node_creators[] = {
     },
     [](Document& document) -> Node* {
       Element* element = document.CreateRawElement(html_names::kSpanTag);
-      element->classList().Add("abspos");
+      element->classList().Add(AtomicString("abspos"));
       return element;
     },
     [](Document& document) -> Node* {
       Element* element = document.CreateRawElement(html_names::kSpanTag);
-      element->classList().Add("float");
+      element->classList().Add(AtomicString("float"));
       return element;
     }};
 
@@ -1067,7 +1067,7 @@ TEST_F(NGInlineNodeTest, InvalidateChangeToAbsolute) {
 
   Element* span = GetElementById("x");
   ASSERT_TRUE(span);
-  span->SetIdAttribute("y");
+  span->SetIdAttribute(AtomicString("y"));
 
   // NeedsCollectInlines() is marked during the layout.
   // By re-collecting inlines, an open/close items should be replaced with an
@@ -1085,7 +1085,7 @@ TEST_F(NGInlineNodeTest, InvalidateChangeFromAbsolute) {
 
   Element* span = GetElementById("x");
   ASSERT_TRUE(span);
-  span->SetIdAttribute("y");
+  span->SetIdAttribute(AtomicString("y"));
 
   // NeedsCollectInlines() is marked during the layout.
   // By re-collecting inlines, an OOF item should be replaced with open/close
@@ -1288,7 +1288,7 @@ TEST_F(NGInlineNodeTest, InsertedWBRWithLineBreakInRelayout) {
   EXPECT_EQ("foo bar", GetText());
 
   Element* div = GetElementById("container");
-  Element* wbr = GetDocument().CreateElementForBinding("wbr");
+  Element* wbr = GetDocument().CreateElementForBinding(AtomicString("wbr"));
   div->insertBefore(wbr, div->lastChild());
   UpdateAllLifecyclePhasesForTest();
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
@@ -408,7 +409,8 @@ TEST_F(LayoutNGSVGForeignObjectTest, SetNeedsCollectInlines) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = GetElementById("target");
-  target->setAttribute("unicode-bidi", "bidi-override");
+  target->setAttribute(svg_names::kUnicodeBidiAttr,
+                       AtomicString("bidi-override"));
   GetDocument().body()->innerText();
   // Pass if no crash.
 }
@@ -428,11 +430,15 @@ TEST_F(LayoutNGSVGForeignObjectTest, SubtreeLayoutCrash) {
 <svg><pattern id="pat"></pattern>
 </svg>)HTML");
   UpdateAllLifecyclePhasesForTest();
-  GetElementById("in-foreign")->setAttribute("style", "display: inline-block");
+  GetElementById("in-foreign")
+      ->setAttribute(svg_names::kStyleAttr,
+                     AtomicString("display: inline-block"));
   UpdateAllLifecyclePhasesForTest();
-  GetElementById("pat")->setAttribute("viewBox", "972 815 1088 675");
+  GetElementById("pat")->setAttribute(svg_names::kViewBoxAttr,
+                                      AtomicString("972 815 1088 675"));
   UpdateAllLifecyclePhasesForTest();
-  GetElementById("sibling-div")->setAttribute("style", "display: none");
+  GetElementById("sibling-div")
+      ->setAttribute(svg_names::kStyleAttr, AtomicString("display: none"));
   UpdateAllLifecyclePhasesForTest();
   // Pass if no crashes.
 }
@@ -459,7 +465,8 @@ TEST_F(LayoutNGSVGForeignObjectTest, ZoomChangesInvalidatePaintProperties) {
 
   // Update zoom and ensure the foreign object is marked as needing a paint
   // property update prior to updating paint properties.
-  GetDocument().documentElement()->setAttribute("style", "zoom: 2");
+  GetDocument().documentElement()->setAttribute(svg_names::kStyleAttr,
+                                                AtomicString("zoom: 2"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   EXPECT_TRUE(foreign->NeedsPaintPropertyUpdate());

@@ -43,7 +43,7 @@ class CSSToLengthConversionDataTest : public PageTestBase {
     root->SetInlineStyleProperty(CSSPropertyID::kLineHeight, "5");
     auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
     div->SetInlineStyleProperty(CSSPropertyID::kFontSize, "20px");
-    div->SetIdAttribute("div");
+    div->SetIdAttribute(AtomicString("div"));
     GetDocument().body()->AppendChild(div);
     GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kLineHeight,
                                                  "10");

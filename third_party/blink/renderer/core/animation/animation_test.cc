@@ -1167,7 +1167,8 @@ TEST_P(AnimationAnimationTestNoCompositing,
 
 TEST_P(AnimationAnimationTestNoCompositing, AttachedAnimations) {
   // Prevent |element| from being collected by |CollectAllGarbageForTesting|.
-  Persistent<Element> element = GetDocument().CreateElementForBinding("foo");
+  Persistent<Element> element =
+      GetDocument().CreateElementForBinding(AtomicString("foo"));
 
   Timing timing;
   auto* keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
@@ -2370,15 +2371,18 @@ TEST_P(AnimationAnimationTestCompositing, MAYBE_ContentVisibleDisplayLockTest) {
   ASSERT_TRUE(!!animation);
   EXPECT_FALSE(animation->IsInDisplayLockedSubtree());
 
-  inner->setAttribute(html_names::kStyleAttr, "content-visibility: hidden");
+  inner->setAttribute(html_names::kStyleAttr,
+                      AtomicString("content-visibility: hidden"));
   RunDocumentLifecycle();
   EXPECT_TRUE(animation->IsInDisplayLockedSubtree());
 
-  inner->setAttribute(html_names::kStyleAttr, "content-visibility: visible");
+  inner->setAttribute(html_names::kStyleAttr,
+                      AtomicString("content-visibility: visible"));
   RunDocumentLifecycle();
   EXPECT_FALSE(animation->IsInDisplayLockedSubtree());
 
-  outer->setAttribute(html_names::kStyleAttr, "content-visibility: hidden");
+  outer->setAttribute(html_names::kStyleAttr,
+                      AtomicString("content-visibility: hidden"));
   RunDocumentLifecycle();
   EXPECT_TRUE(animation->IsInDisplayLockedSubtree());
 
@@ -2477,7 +2481,8 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsTickWhenVisible) {
                    animation->TimeToEffectChange().value());
 
   Element* visibility = GetElementById("visibility");
-  visibility->setAttribute(html_names::kStyleAttr, "visibility: visible;");
+  visibility->setAttribute(html_names::kStyleAttr,
+                           AtomicString("visibility: visible;"));
   RunDocumentLifecycle();
 
   // The animation should run on the compositor after the properties are

@@ -204,7 +204,7 @@ TEST_F(ElementFragmentAnchorTest, IframeFragmentDirtyLayoutAfterLoad) {
 
   HTMLFrameOwnerElement* iframe = To<HTMLFrameOwnerElement>(
       GetDocument().getElementById(AtomicString("child")));
-  iframe->setAttribute(html_names::kStyleAttr, "width:100px");
+  iframe->setAttribute(html_names::kStyleAttr, AtomicString("width:100px"));
 
   Compositor().BeginFrame();
 

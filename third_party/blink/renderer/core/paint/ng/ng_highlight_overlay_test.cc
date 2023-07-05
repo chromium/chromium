@@ -81,8 +81,8 @@ TEST_F(NGHighlightOverlayTest, ComputeLayers) {
       *MakeGarbageCollected<HeapVector<Member<AbstractRange>>>());
   Highlight* bar = Highlight::Create(
       *MakeGarbageCollected<HeapVector<Member<AbstractRange>>>());
-  registry->SetForTesting("foo", foo);
-  registry->SetForTesting("bar", bar);
+  registry->SetForTesting(AtomicString("foo"), foo);
+  registry->SetForTesting(AtomicString("bar"), bar);
 
   auto* custom = MakeGarbageCollected<DocumentMarkerVector>();
   custom->push_back(
@@ -94,13 +94,14 @@ TEST_F(NGHighlightOverlayTest, ComputeLayers) {
   custom->push_back(
       MakeGarbageCollected<CustomHighlightMarker>(0, 1, "foo", nullptr));
 
-  EXPECT_EQ(NGHighlightOverlay::ComputeLayers(registry, nullptr, *custom, *none,
-                                              *none, *none),
-            (Vector<HighlightLayer>{
-                HighlightLayer{HighlightLayerType::kOriginating},
-                HighlightLayer{HighlightLayerType::kCustom, "foo"},
-                HighlightLayer{HighlightLayerType::kCustom, "bar"},
-            }))
+  EXPECT_EQ(
+      NGHighlightOverlay::ComputeLayers(registry, nullptr, *custom, *none,
+                                        *none, *none),
+      (Vector<HighlightLayer>{
+          HighlightLayer{HighlightLayerType::kOriginating},
+          HighlightLayer{HighlightLayerType::kCustom, AtomicString("foo")},
+          HighlightLayer{HighlightLayerType::kCustom, AtomicString("bar")},
+      }))
       << "should return kCustom layers no more than once each";
 }
 
@@ -212,12 +213,12 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
       *MakeGarbageCollected<HeapVector<Member<AbstractRange>>>());
   Highlight* bar_highlight = Highlight::Create(
       *MakeGarbageCollected<HeapVector<Member<AbstractRange>>>());
-  registry->SetForTesting("foo", foo_highlight);
-  registry->SetForTesting("bar", bar_highlight);
+  registry->SetForTesting(AtomicString("foo"), foo_highlight);
+  registry->SetForTesting(AtomicString("bar"), bar_highlight);
 
   HighlightLayer orig{HighlightLayerType::kOriginating};
-  HighlightLayer foo{HighlightLayerType::kCustom, "foo"};
-  HighlightLayer bar{HighlightLayerType::kCustom, "bar"};
+  HighlightLayer foo{HighlightLayerType::kCustom, AtomicString("foo")};
+  HighlightLayer bar{HighlightLayerType::kCustom, AtomicString("bar")};
   HighlightLayer spel{HighlightLayerType::kSpelling};
   HighlightLayer targ{HighlightLayerType::kTargetText};
   HighlightLayer sele{HighlightLayerType::kSelection};

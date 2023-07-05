@@ -27,8 +27,8 @@ class CustomElementUpgradeSorterTest : public PageTestBase {
   Element* CreateElementWithId(const char* local_name, const char* id) {
     NonThrowableExceptionState no_exceptions;
     Element* element = GetDocument().CreateElementForBinding(
-        local_name, nullptr, no_exceptions);
-    element->setAttribute(html_names::kIdAttr, id);
+        AtomicString(local_name), nullptr, no_exceptions);
+    element->setAttribute(html_names::kIdAttr, AtomicString(id));
     return element;
   }
 
@@ -39,8 +39,8 @@ class CustomElementUpgradeSorterTest : public PageTestBase {
 
 TEST_F(CustomElementUpgradeSorterTest, inOtherDocument_notInSet) {
   NonThrowableExceptionState no_exceptions;
-  Element* element =
-      GetDocument().CreateElementForBinding("a-a", nullptr, no_exceptions);
+  Element* element = GetDocument().CreateElementForBinding(
+      AtomicString("a-a"), nullptr, no_exceptions);
 
   ScopedNullExecutionContext execution_context;
   auto* other_document =
@@ -60,8 +60,8 @@ TEST_F(CustomElementUpgradeSorterTest, inOtherDocument_notInSet) {
 
 TEST_F(CustomElementUpgradeSorterTest, oneCandidate) {
   NonThrowableExceptionState no_exceptions;
-  Element* element =
-      GetDocument().CreateElementForBinding("a-a", nullptr, no_exceptions);
+  Element* element = GetDocument().CreateElementForBinding(
+      AtomicString("a-a"), nullptr, no_exceptions);
   GetDocument().documentElement()->AppendChild(element);
 
   CustomElementUpgradeSorter sorter;

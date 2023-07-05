@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
@@ -80,7 +81,8 @@ TEST_F(LayoutNGSVGTextTest, SubtreeLayout) {
   LayoutView& view = GetLayoutView();
   ASSERT_FALSE(view.NeedsLayout());
 
-  GetElementById("t")->setAttribute("transform", "scale(0.5)");
+  GetElementById("t")->setAttribute(svg_names::kTransformAttr,
+                                    AtomicString("scale(0.5)"));
   GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
   EXPECT_TRUE(frame_view->IsSubtreeLayout());
 
@@ -107,13 +109,15 @@ TEST_F(LayoutNGSVGTextTest, WillBeRemovedFromTree) {
   UpdateAllLifecyclePhasesForTest();
 
   // #d's containing block will be the LayoutView.
-  GetElementById("d")->setAttribute("style", "position:absolute;");
+  GetElementById("d")->setAttribute(html_names::kStyleAttr,
+                                    AtomicString("position:absolute;"));
   UpdateAllLifecyclePhasesForTest();
 
   // The <text> should be unregistered from all of ancestors.
   GetElementById("svg")->remove();
   GetElementById("to_be_skipped")
-      ->setAttribute("style", "transform:rotate(20deg)");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("transform:rotate(20deg)"));
   UpdateAllLifecyclePhasesForTest();
 }
 

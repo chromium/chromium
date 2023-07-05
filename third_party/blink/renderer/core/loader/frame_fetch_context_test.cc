@@ -620,7 +620,8 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest,
                                                  resource_request);
 
     String expected = is_present ? String(header_value) : String();
-    EXPECT_EQ(expected, resource_request.HttpHeaderField(header_name));
+    EXPECT_EQ(expected,
+              resource_request.HttpHeaderField(AtomicString(header_name)));
   }
 
   // Returns the expected value for a header containing an empty string. This
@@ -640,7 +641,7 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest,
     ResourceRequest resource_request(input_url);
     GetFetchContext()->AddClientHintsIfNecessary(
         absl::nullopt /* resource_width */, resource_request);
-    return resource_request.HttpHeaderField(header_name);
+    return resource_request.HttpHeaderField(AtomicString(header_name));
   }
 
  private:
@@ -1294,7 +1295,8 @@ TEST_F(FrameFetchContextTest, SubResourceCachePolicy) {
   // Conditional request
   document->Loader()->SetLoadType(WebFrameLoadType::kStandard);
   ResourceRequest conditional("http://www.example.com/mock");
-  conditional.SetHttpHeaderField(http_names::kIfModifiedSince, "foo");
+  conditional.SetHttpHeaderField(http_names::kIfModifiedSince,
+                                 AtomicString("foo"));
   EXPECT_EQ(mojom::FetchCacheMode::kValidateCache,
             GetFetchContext()->ResourceRequestCachePolicy(
                 conditional, ResourceType::kMock, FetchParameters::kNoDefer));
@@ -1426,7 +1428,7 @@ TEST_F(FrameFetchContextTest, AddAdditionalRequestHeadersWhenDetached) {
   const KURL document_url("https://www2.example.com/fuga/hoge.html");
   const String origin = "https://www2.example.com";
   ResourceRequest request(KURL("https://localhost/"));
-  request.SetHttpMethod("PUT");
+  request.SetHttpMethod(http_names::kPUT);
 
   GetNetworkStateNotifier().SetSaveDataEnabledOverride(true);
 
@@ -1434,7 +1436,7 @@ TEST_F(FrameFetchContextTest, AddAdditionalRequestHeadersWhenDetached) {
 
   GetFetchContext()->AddAdditionalRequestHeaders(request);
 
-  EXPECT_EQ(String(), request.HttpHeaderField("Save-Data"));
+  EXPECT_EQ(String(), request.HttpHeaderField(http_names::kSaveData));
 }
 
 TEST_F(FrameFetchContextTest, ResourceRequestCachePolicyWhenDetached) {
@@ -1486,7 +1488,7 @@ TEST_F(FrameFetchContextTest, AddResourceTimingWhenDetached) {
 
   dummy_page_holder = nullptr;
 
-  GetFetchContext()->AddResourceTiming(std::move(info), "type");
+  GetFetchContext()->AddResourceTiming(std::move(info), AtomicString("type"));
   // Should not crash.
 }
 
@@ -1643,7 +1645,7 @@ class FrameFetchContextDisableReduceAcceptLanguageTest
   void SetupForAcceptLanguageTest(bool is_detached, ResourceRequest& request) {
     ResourceLoaderOptions options(/*world=*/nullptr);
 
-    document->GetFrame()->SetReducedAcceptLanguage("en-GB");
+    document->GetFrame()->SetReducedAcceptLanguage(AtomicString("en-GB"));
 
     if (is_detached)
       dummy_page_holder = nullptr;
@@ -1667,7 +1669,7 @@ TEST_P(FrameFetchContextDisableReduceAcceptLanguageTest,
   ResourceRequest request(url);
   SetupForAcceptLanguageTest(/*is_detached=*/GetParam(), request);
   // Expect no Accept-Language header set when feature is disabled.
-  EXPECT_EQ(nullptr, request.HttpHeaderField("Accept-Language"));
+  EXPECT_EQ(nullptr, request.HttpHeaderField(http_names::kAcceptLanguage));
 }
 
 class FrameFetchContextReduceAcceptLanguageTest
@@ -1694,14 +1696,14 @@ TEST_P(FrameFetchContextReduceAcceptLanguageTest, VerifyReduceAcceptLanguage) {
   const KURL url("https://www.example.com/");
   ResourceRequest request(url);
   SetupForAcceptLanguageTest(/*is_detached=*/GetParam(), request);
-  EXPECT_EQ("en-GB", request.HttpHeaderField("Accept-Language"));
+  EXPECT_EQ("en-GB", request.HttpHeaderField(http_names::kAcceptLanguage));
 }
 
 TEST_P(FrameFetchContextReduceAcceptLanguageTest, NonHttpFamilyUrl) {
   const KURL url("ws://www.example.com/");
   ResourceRequest request(url);
   SetupForAcceptLanguageTest(/*is_detached=*/GetParam(), request);
-  EXPECT_EQ(nullptr, request.HttpHeaderField("Accept-Language"));
+  EXPECT_EQ(nullptr, request.HttpHeaderField(http_names::kAcceptLanguage));
 }
 
 }  // namespace blink

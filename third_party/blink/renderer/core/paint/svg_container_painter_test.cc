@@ -92,8 +92,9 @@ TEST_P(SVGContainerPainterTest, ScaleAnimationFrom0) {
 
   auto* rect1_element = GetDocument().getElementById(AtomicString("rect1"));
   auto* rect2_element = GetDocument().getElementById(AtomicString("rect2"));
-  rect1_element->setAttribute(html_names::kClassAttr, "scale");
-  rect2_element->setAttribute(html_names::kClassAttr, "transform-scale");
+  rect1_element->setAttribute(html_names::kClassAttr, AtomicString("scale"));
+  rect2_element->setAttribute(html_names::kClassAttr,
+                              AtomicString("transform-scale"));
   UpdateAllLifecyclePhasesForTest();
 
   // Start animations on the rects.

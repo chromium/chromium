@@ -32,14 +32,14 @@ TEST_F(LayoutProgressTest, AnimationScheduling) {
   EXPECT_FALSE(LayoutProgressTest::IsAnimationTimerActive(layout_progress));
   EXPECT_FALSE(LayoutProgressTest::IsAnimatiing(layout_progress));
 
-  progress_element->removeAttribute("value");
+  progress_element->removeAttribute(html_names::kValueAttr);
   UpdateAllLifecyclePhasesForTest();
 
   // Verify that we schedule a timer for an indeterminant progress element
   EXPECT_TRUE(LayoutProgressTest::IsAnimationTimerActive(layout_progress));
   EXPECT_TRUE(LayoutProgressTest::IsAnimatiing(layout_progress));
 
-  progress_element->setAttribute(html_names::kValueAttr, "0.7");
+  progress_element->setAttribute(html_names::kValueAttr, AtomicString("0.7"));
   UpdateAllLifecyclePhasesForTest();
 
   // Verify that we cancel the timer for a determinant progress element

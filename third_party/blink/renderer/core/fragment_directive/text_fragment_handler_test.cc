@@ -130,9 +130,9 @@ class TextFragmentHandlerTest : public SimTest {
     auto* buffer =
         MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
             DOMArrayBuffer::Create(shared_buffer));
-    FontFace* ahem =
-        FontFace::Create(GetDocument().GetExecutionContext(), "Ahem", buffer,
-                         FontFaceDescriptors::Create());
+    FontFace* ahem = FontFace::Create(GetDocument().GetExecutionContext(),
+                                      AtomicString("Ahem"), buffer,
+                                      FontFaceDescriptors::Create());
 
     ScriptState* script_state =
         ToScriptStateForMainWorld(GetDocument().GetFrame());

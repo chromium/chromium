@@ -894,8 +894,8 @@ TEST(CSSParserImplTest, FontFeatureValuesRuleParsing) {
   ASSERT_EQ(AtomicString("fontFam1"), families[0]);
   ASSERT_EQ(AtomicString("fontFam2"), families[1]);
   ASSERT_EQ(parsed->GetStyleset()->size(), 4u);
-  ASSERT_TRUE(parsed->GetStyleset()->Contains("cool"));
-  ASSERT_EQ(parsed->GetStyleset()->at("curly").indices,
+  ASSERT_TRUE(parsed->GetStyleset()->Contains(AtomicString("cool")));
+  ASSERT_EQ(parsed->GetStyleset()->at(AtomicString("curly")).indices,
             Vector<uint32_t>({4, 3, 2, 1}));
 }
 

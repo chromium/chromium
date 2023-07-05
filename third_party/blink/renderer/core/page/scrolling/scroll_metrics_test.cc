@@ -214,7 +214,8 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
   // Reset histogram tester.
   histogram_tester.emplace();
 
-  box->setAttribute("class", "composited transform box");
+  box->setAttribute(html_names::kClassAttr,
+                    AtomicString("composited transform box"));
   Compositor().BeginFrame();
   Scroll(box, WebGestureDevice::kTouchpad);
   if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
@@ -258,7 +259,8 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
   // Reset histogram tester.
   histogram_tester.emplace();
 
-  box->setAttribute("class", "hidden transform box");
+  box->setAttribute(html_names::kClassAttr,
+                    AtomicString("hidden transform box"));
   UpdateAllLifecyclePhases();
   Scroll(box, WebGestureDevice::kTouchpad);
 

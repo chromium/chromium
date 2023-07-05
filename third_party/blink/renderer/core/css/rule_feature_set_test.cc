@@ -97,19 +97,19 @@ class RuleFeatureSetTest : public testing::Test {
   void ClearFeatures() { rule_feature_set_.Clear(); }
 
   void CollectInvalidationSetsForClass(InvalidationLists& invalidation_lists,
-                                       const AtomicString& class_name) const {
+                                       const char* class_name) const {
     Element* element = Traversal<HTMLElement>::FirstChild(
         *Traversal<HTMLElement>::FirstChild(*document_->body()));
-    rule_feature_set_.CollectInvalidationSetsForClass(invalidation_lists,
-                                                      *element, class_name);
+    rule_feature_set_.CollectInvalidationSetsForClass(
+        invalidation_lists, *element, AtomicString(class_name));
   }
 
   void CollectInvalidationSetsForId(InvalidationLists& invalidation_lists,
-                                    const AtomicString& id) const {
+                                    const char* id) const {
     Element* element = Traversal<HTMLElement>::FirstChild(
         *Traversal<HTMLElement>::FirstChild(*document_->body()));
     rule_feature_set_.CollectInvalidationSetsForId(invalidation_lists, *element,
-                                                   id);
+                                                   AtomicString(id));
   }
 
   void CollectInvalidationSetsForAttribute(
@@ -318,7 +318,7 @@ class RuleFeatureSetTest : public testing::Test {
 
   AssertionResult HasSiblingClassInvalidation(
       unsigned max_direct_adjacent_selectors,
-      const AtomicString& sibling_name,
+      const char* sibling_name,
       InvalidationSetVector& invalidation_sets) {
     if (invalidation_sets.size() != 1u) {
       return AssertionFailure() << "has " << invalidation_sets.size()
@@ -330,7 +330,7 @@ class RuleFeatureSetTest : public testing::Test {
     if (classes.size() != 1u) {
       return AssertionFailure() << classes.size() << " should be 1";
     }
-    if (!classes.Contains(sibling_name)) {
+    if (!classes.Contains(AtomicString(sibling_name))) {
       return AssertionFailure()
              << "should invalidate sibling id " << sibling_name;
     }
@@ -345,7 +345,7 @@ class RuleFeatureSetTest : public testing::Test {
 
   AssertionResult HasSiblingIdInvalidation(
       unsigned max_direct_adjacent_selectors,
-      const AtomicString& sibling_name,
+      const char* sibling_name,
       InvalidationSetVector& invalidation_sets) {
     if (invalidation_sets.size() != 1u) {
       return AssertionFailure() << "has " << invalidation_sets.size()
@@ -357,7 +357,7 @@ class RuleFeatureSetTest : public testing::Test {
     if (ids.size() != 1u) {
       return AssertionFailure() << ids.size() << " should be 1";
     }
-    if (!ids.Contains(sibling_name)) {
+    if (!ids.Contains(AtomicString(sibling_name))) {
       return AssertionFailure()
              << "should invalidate sibling id " << sibling_name;
     }
@@ -410,7 +410,7 @@ class RuleFeatureSetTest : public testing::Test {
 
   AssertionResult HasSiblingDescendantInvalidation(
       unsigned max_direct_adjacent_selectors,
-      const AtomicString& descendant_name,
+      const char* descendant_name,
       InvalidationSetVector& invalidation_sets) {
     if (invalidation_sets.size() != 1u) {
       return AssertionFailure() << "has " << invalidation_sets.size()
@@ -435,7 +435,7 @@ class RuleFeatureSetTest : public testing::Test {
     if (descendant_classes.size() != 1u) {
       return AssertionFailure() << descendant_classes.size() << " should be 1";
     }
-    if (!descendant_classes.Contains(descendant_name)) {
+    if (!descendant_classes.Contains(AtomicString(descendant_name))) {
       return AssertionFailure()
              << "should descendant invalidate " << descendant_name;
     }

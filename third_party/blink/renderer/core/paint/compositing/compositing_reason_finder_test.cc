@@ -338,8 +338,8 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
                  DirectReasonsForPaintProperties(*iframe_layout_view));
 
   // Make the iframe contents scrollable.
-  iframe->contentDocument()->body()->setAttribute(html_names::kStyleAttr,
-                                                  "height: 2000px");
+  iframe->contentDocument()->body()->setAttribute(
+      html_names::kStyleAttr, AtomicString("height: 2000px"));
   UpdateAllLifecyclePhasesForTest();
   if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
     EXPECT_REASONS(CompositingReason::kIFrame,

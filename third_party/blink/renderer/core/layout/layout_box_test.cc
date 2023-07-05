@@ -1697,7 +1697,8 @@ TEST_F(LayoutBoxTest, HasNonCollapsedBorderDecoration) {
   EXPECT_FALSE(div->HasNonCollapsedBorderDecoration());
 
   To<Element>(div->GetNode())
-      ->setAttribute(html_names::kStyleAttr, "border: 1px solid black");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("border: 1px solid black"));
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason ::kTest);
   EXPECT_TRUE(div->HasNonCollapsedBorderDecoration());
@@ -1799,14 +1800,14 @@ TEST_F(LayoutBoxTest, SetNeedsOverflowRecalcLayoutBox) {
   LayoutObject* target = element->GetLayoutObject();
   EXPECT_FALSE(target->SelfNeedsLayoutOverflowRecalc());
 
-  element->classList().Add("transform");
+  element->classList().Add(AtomicString("transform"));
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(target->SelfNeedsLayoutOverflowRecalc());
 
-  element->classList().Remove("transform");
+  element->classList().Remove(AtomicString("transform"));
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
 }
@@ -1822,14 +1823,14 @@ TEST_F(LayoutBoxTest, SetNeedsOverflowRecalcFlexBox) {
   LayoutObject* target = element->GetLayoutObject();
   EXPECT_FALSE(target->SelfNeedsLayoutOverflowRecalc());
 
-  element->classList().Add("transform");
+  element->classList().Add(AtomicString("transform"));
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(target->SelfNeedsLayoutOverflowRecalc());
 
-  element->classList().Remove("transform");
+  element->classList().Remove(AtomicString("transform"));
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
 }
@@ -1926,8 +1927,8 @@ TEST_F(LayoutBoxTest, AnchorInFragmentedContainingBlock) {
 
   const LayoutBox* target = To<LayoutBox>(GetLayoutObjectByElementId("target"));
   EXPECT_EQ(GetLayoutObjectByElementId("anchor"),
-            target->FindTargetAnchor(
-                *MakeGarbageCollected<ScopedCSSName>("--a", &GetDocument())));
+            target->FindTargetAnchor(*MakeGarbageCollected<ScopedCSSName>(
+                AtomicString("--a"), &GetDocument())));
   EXPECT_EQ(GetLayoutObjectByElementId("anchor"),
             target->AcceptableImplicitAnchor());
 }
@@ -1949,8 +1950,8 @@ TEST_F(LayoutBoxTest, AnchorInInlineContainingBlock) {
 
   const LayoutBox* target = To<LayoutBox>(GetLayoutObjectByElementId("target"));
   EXPECT_EQ(GetLayoutObjectByElementId("anchor"),
-            target->FindTargetAnchor(
-                *MakeGarbageCollected<ScopedCSSName>("--a", &GetDocument())));
+            target->FindTargetAnchor(*MakeGarbageCollected<ScopedCSSName>(
+                AtomicString("--a"), &GetDocument())));
   EXPECT_FALSE(target->AcceptableImplicitAnchor());
 }
 
@@ -2008,15 +2009,15 @@ TEST_F(LayoutBoxTest, IsUserScrollable) {
   EXPECT_TRUE(target->ScrollsOverflow());
   EXPECT_TRUE(target->IsUserScrollable());
 
-  target_element->setAttribute(html_names::kStyleAttr, "overflow: hidden");
+  target_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString("overflow: hidden"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(target->ScrollsOverflow());
   EXPECT_FALSE(target->IsUserScrollable());
 
-  target_element->setAttribute(html_names::kStyleAttr, "");
-  GetDocument()
-      .getElementById(AtomicString("content"))
-      ->setAttribute(html_names::kStyleAttr, "height: 0");
+  target_element->setAttribute(html_names::kStyleAttr, g_empty_atom);
+  GetElementById("content")->setAttribute(html_names::kStyleAttr,
+                                          AtomicString("height: 0"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(target->ScrollsOverflow());
   EXPECT_FALSE(target->IsUserScrollable());
@@ -2031,15 +2032,14 @@ TEST_F(LayoutBoxTest, IsUserScrollableLayoutView) {
   EXPECT_TRUE(GetLayoutView().IsUserScrollable());
 
   GetDocument().body()->setAttribute(html_names::kStyleAttr,
-                                     "overflow: hidden");
+                                     AtomicString("overflow: hidden"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetLayoutView().ScrollsOverflow());
   EXPECT_FALSE(GetLayoutView().IsUserScrollable());
 
-  GetDocument().body()->setAttribute(html_names::kStyleAttr, "");
-  GetDocument()
-      .getElementById(AtomicString("content"))
-      ->setAttribute(html_names::kStyleAttr, "height: 0");
+  GetDocument().body()->setAttribute(html_names::kStyleAttr, g_empty_atom);
+  GetElementById("content")->setAttribute(html_names::kStyleAttr,
+                                          AtomicString("height: 0"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(GetLayoutView().ScrollsOverflow());
   EXPECT_FALSE(GetLayoutView().IsUserScrollable());

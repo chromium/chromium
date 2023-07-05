@@ -281,7 +281,7 @@ TEST_F(MAYBE_ScrollAnchorTest, FractionalOffsetsAreRoundedBeforeComparing) {
 
   GetDocument()
       .getElementById(AtomicString("block1"))
-      ->setAttribute(html_names::kStyleAttr, "height: 50.6px");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("height: 50.6px"));
   Update();
 
   EXPECT_EQ(101, viewport->ScrollOffsetInt().y());
@@ -300,7 +300,7 @@ TEST_F(MAYBE_ScrollAnchorTest, AvoidStickyAnchorWhichMovesWithScroll) {
 
   GetDocument()
       .getElementById(AtomicString("block1"))
-      ->setAttribute(html_names::kStyleAttr, "height: 100px");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("height: 100px"));
   Update();
 
   EXPECT_EQ(60, viewport->ScrollOffsetInt().y());
@@ -495,7 +495,7 @@ TEST_F(MAYBE_ScrollAnchorTest, FlexboxDelayedAdjustmentRespectsSANACLAP) {
 
   GetDocument()
       .getElementById(AtomicString("spacer"))
-      ->setAttribute(html_names::kStyleAttr, "margin-top: 50px");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("margin-top: 50px"));
   Update();
   EXPECT_EQ(100, ScrollerForElement(scroller)->ScrollOffsetInt().y());
 }
@@ -1015,7 +1015,7 @@ TEST_F(MAYBE_ScrollAnchorTest, ClampAdjustsAnchorAnimation) {
   Update();
   GetDocument()
       .getElementById(AtomicString("hidden"))
-      ->setAttribute(html_names::kStyleAttr, "display:block");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("display:block"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_EQ(gfx::Vector2d(0, 200),
             LayoutViewport()
@@ -1023,7 +1023,7 @@ TEST_F(MAYBE_ScrollAnchorTest, ClampAdjustsAnchorAnimation) {
                 .ImplOnlyAnimationAdjustmentForTesting());
   GetDocument()
       .getElementById(AtomicString("hidden"))
-      ->setAttribute(html_names::kStyleAttr, "");
+      ->setAttribute(html_names::kStyleAttr, g_empty_atom);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   // The clamping scroll after resizing layout overflow to be smaller
   // should adjust the animation back to 0.
@@ -1174,7 +1174,7 @@ TEST_F(MAYBE_ScrollAnchorFindInPageTest, FindInPageResultPrioritized) {
 
   GetDocument()
       .getElementById(AtomicString("growing"))
-      ->setAttribute(html_names::kStyleAttr, "height: 3000px");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("height: 3000px"));
   UpdateAllLifecyclePhasesForTest();
 
   auto* new_bounds = GetDocument()
@@ -1227,7 +1227,7 @@ TEST_F(MAYBE_ScrollAnchorFindInPageTest, FocusPrioritizedOverFindInPage) {
 
   GetDocument()
       .getElementById(AtomicString("growing"))
-      ->setAttribute(html_names::kStyleAttr, "height: 3000px");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("height: 3000px"));
   UpdateAllLifecyclePhasesForTest();
 
   auto* new_focus_bounds = GetDocument()
@@ -1281,7 +1281,7 @@ TEST_F(MAYBE_ScrollAnchorFindInPageTest, FocusedUnderStickyIsSkipped) {
 
   GetDocument()
       .getElementById(AtomicString("growing"))
-      ->setAttribute(html_names::kStyleAttr, "height: 3000px");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("height: 3000px"));
   UpdateAllLifecyclePhasesForTest();
 
   auto* new_bounds = GetDocument()
@@ -1316,7 +1316,7 @@ TEST_F(ScrollAnchorPageTest, SvgRelativeBoundsCrashAfterClearLayoutResults) {
   doc.getElementById(AtomicString("target"))->scrollIntoView();
   doc.getElementById(AtomicString("scrollbarSummoner"))
       ->setAttribute(html_names::kStyleAttr,
-                     "display:block; contain:size; height:0");
+                     AtomicString("display:block; contain:size; height:0"));
 
   // During the following layout, ClearLayoutResults() for the first <div> was
   // called, then ScrollAnchor::NotifyBeforeLayout() for <foreignObject> was

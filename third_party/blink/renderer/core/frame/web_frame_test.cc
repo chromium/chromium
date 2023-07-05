@@ -416,7 +416,8 @@ class WebFrameTest : public testing::Test {
     auto* frame =
         To<LocalFrame>(web_view_helper->GetWebView()->GetPage()->MainFrame());
     DCHECK(frame);
-    Element* element = frame->GetDocument()->getElementById(testcase.c_str());
+    Element* element =
+        frame->GetDocument()->getElementById(AtomicString(testcase.c_str()));
     return DataTransfer::NodeImage(*frame, *element);
   }
 
@@ -5415,7 +5416,7 @@ TEST_F(WebFrameTest, FindOnDetachedFrame) {
   auto* second_frame = To<WebLocalFrameImpl>(main_frame->TraverseNext());
 
   // Detach the frame before finding.
-  RemoveElementById(main_frame, "frame");
+  RemoveElementById(main_frame, AtomicString("frame"));
 
   EXPECT_TRUE(main_frame->GetFindInPage()->FindInternal(
       kFindIdentifier, search_text, *options, false));
@@ -5467,7 +5468,7 @@ TEST_F(WebFrameTest, FindDetachFrameBeforeScopeStrings) {
   EXPECT_FALSE(find_in_page_client.FindResultsAreReady());
 
   // Detach the frame between finding and scoping.
-  RemoveElementById(main_frame, "frame");
+  RemoveElementById(main_frame, AtomicString("frame"));
 
   main_frame->EnsureTextFinder().ResetMatchCount();
 
@@ -5520,7 +5521,7 @@ TEST_F(WebFrameTest, FindDetachFrameWhileScopingStrings) {
 
   // The first startScopingStringMatches will have reset the state. Detach
   // before it actually scopes.
-  RemoveElementById(main_frame, "frame");
+  RemoveElementById(main_frame, AtomicString("frame"));
 
   for (WebLocalFrameImpl* frame = main_frame; frame;
        frame = To<WebLocalFrameImpl>(frame->TraverseNext())) {
@@ -10132,16 +10133,17 @@ TEST_F(WebFrameSwapTest, WindowOpenOnRemoteFrame) {
   ScriptState::Scope entered_context_scope(script_state);
   v8::Context::BackupIncumbentScope incumbent_context_scope(
       script_state->GetContext());
-  main_window->open(script_state->GetIsolate(), destination, "frame1", "",
-                    exception_state);
+  main_window->open(script_state->GetIsolate(), destination,
+                    AtomicString("frame1"), "", exception_state);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(interceptor.GetInterceptedParams());
   EXPECT_EQ(KURL(interceptor.GetInterceptedParams()->url), KURL(destination));
 
   // Pointing a named frame to an empty URL should just return a reference to
   // the frame's window without navigating it.
-  DOMWindow* result = main_window->open(script_state->GetIsolate(), "",
-                                        "frame1", "", exception_state);
+  DOMWindow* result =
+      main_window->open(script_state->GetIsolate(), "", AtomicString("frame1"),
+                        "", exception_state);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(interceptor.GetInterceptedParams());
   EXPECT_EQ(KURL(interceptor.GetInterceptedParams()->url), KURL(destination));
@@ -11126,7 +11128,7 @@ TEST_F(WebFrameTest, MaxFrames) {
   }
   auto* iframe = MakeGarbageCollected<HTMLIFrameElement>(
       *frame->GetFrame()->GetDocument());
-  iframe->setAttribute(html_names::kSrcAttr, "");
+  iframe->setAttribute(html_names::kSrcAttr, g_empty_atom);
   frame->GetFrame()->GetDocument()->body()->appendChild(iframe);
   EXPECT_FALSE(iframe->ContentFrame());
 }
@@ -13195,7 +13197,7 @@ TEST_F(WebFrameSimTest, NamedLookupIgnoresEmptyNames) {
     <iframe name="" src="data:text/html,"></iframe>
     </body>)HTML");
 
-  EXPECT_EQ(nullptr, MainFrame().GetFrame()->Tree().ScopedChild(""));
+  EXPECT_EQ(nullptr, MainFrame().GetFrame()->Tree().ScopedChild(g_empty_atom));
   EXPECT_EQ(nullptr,
             MainFrame().GetFrame()->Tree().ScopedChild(AtomicString()));
   EXPECT_EQ(nullptr, MainFrame().GetFrame()->Tree().ScopedChild(g_empty_atom));
@@ -14420,7 +14422,7 @@ TEST_F(WebFrameTest, VerticalRLScrollOffset) {
   )HTML");
 
   frame->GetDocument()->documentElement()->setAttribute(
-      html_names::kStyleAttr, "writing-mode: vertical-rl");
+      html_names::kStyleAttr, AtomicString("writing-mode: vertical-rl"));
   frame->View()->UpdateAllLifecyclePhasesForTest();
 
   auto* web_main_frame = web_view_helper.LocalMainFrame();

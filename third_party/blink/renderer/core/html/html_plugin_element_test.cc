@@ -125,7 +125,7 @@ TEST_P(HTMLPlugInElementTest, RemovePlugin) {
   ASSERT_TRUE(GetFrameView().Plugins().Contains(owned_plugin));
 
   plugin->parentNode()->removeChild(plugin);
-  EXPECT_FALSE(GetDocument().HasElementWithId("test_plugin"));
+  EXPECT_FALSE(GetDocument().HasElementWithId(AtomicString("test_plugin")));
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(0u, GetFrameView().Plugins().size());

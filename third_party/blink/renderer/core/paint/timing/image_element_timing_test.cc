@@ -80,7 +80,7 @@ class ImageElementTimingTest : public testing::Test,
   }
 
   LayoutObject* GetLayoutObjectById(const char* id) {
-    return GetDoc()->getElementById(id)->GetLayoutObject();
+    return GetDoc()->getElementById(AtomicString(id))->GetLayoutObject();
   }
 
   void UpdateAllLifecyclePhases() {

@@ -20,7 +20,7 @@ TEST(HTMLLinkElementSizesAttributeTest,
       Document::CreateForTest(execution_context.GetExecutionContext());
   auto* element = MakeGarbageCollected<HTMLOutputElement>(*document);
   EXPECT_EQ(g_null_atom, element->FastGetAttribute(html_names::kForAttr));
-  element->htmlFor()->setValue("  strawberry ");
+  element->htmlFor()->setValue(AtomicString("  strawberry "));
   EXPECT_EQ("  strawberry ", element->FastGetAttribute(html_names::kForAttr));
 }
 
@@ -31,7 +31,7 @@ TEST(HTMLOutputElementTest, setForAttribute_updatesHTMLForPropertyValue) {
   auto* element = MakeGarbageCollected<HTMLOutputElement>(*document);
   DOMTokenList* for_tokens = element->htmlFor();
   EXPECT_EQ(g_null_atom, for_tokens->value());
-  element->setAttribute(html_names::kForAttr, "orange grape");
+  element->setAttribute(html_names::kForAttr, AtomicString("orange grape"));
   EXPECT_EQ("orange grape", for_tokens->value());
 }
 

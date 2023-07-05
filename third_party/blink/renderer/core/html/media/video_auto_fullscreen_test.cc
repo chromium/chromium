@@ -111,7 +111,7 @@ class VideoAutoFullscreen : public testing::Test,
 };
 
 TEST_F(VideoAutoFullscreen, PlayTriggersFullscreenWithoutPlaysInline) {
-  Video()->SetSrc("http://example.com/foo.mp4");
+  Video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
 
   LocalFrame::NotifyUserActivation(
       GetFrame(), mojom::UserActivationNotificationType::kTest);
@@ -125,7 +125,7 @@ TEST_F(VideoAutoFullscreen, PlayTriggersFullscreenWithoutPlaysInline) {
 
 TEST_F(VideoAutoFullscreen, PlayDoesNotTriggerFullscreenWithPlaysInline) {
   Video()->SetBooleanAttribute(html_names::kPlaysinlineAttr, true);
-  Video()->SetSrc("http://example.com/foo.mp4");
+  Video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
 
   LocalFrame::NotifyUserActivation(
       GetFrame(), mojom::UserActivationNotificationType::kTest);
@@ -138,7 +138,7 @@ TEST_F(VideoAutoFullscreen, PlayDoesNotTriggerFullscreenWithPlaysInline) {
 }
 
 TEST_F(VideoAutoFullscreen, ExitFullscreenPausesWithoutPlaysInline) {
-  Video()->SetSrc("http://example.com/foo.mp4");
+  Video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
 
   LocalFrame::NotifyUserActivation(
       GetFrame(), mojom::UserActivationNotificationType::kTest);
@@ -158,7 +158,7 @@ TEST_F(VideoAutoFullscreen, ExitFullscreenPausesWithoutPlaysInline) {
 
 TEST_F(VideoAutoFullscreen, ExitFullscreenDoesNotPauseWithPlaysInline) {
   Video()->SetBooleanAttribute(html_names::kPlaysinlineAttr, true);
-  Video()->SetSrc("http://example.com/foo.mp4");
+  Video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
 
   LocalFrame::NotifyUserActivation(
       GetFrame(), mojom::UserActivationNotificationType::kTest);
@@ -180,7 +180,7 @@ TEST_F(VideoAutoFullscreen, ExitFullscreenDoesNotPauseWithPlaysInline) {
 // This test is disabled because it requires adding a fake activation in
 // production code (crbug.com/1082258).
 TEST_F(VideoAutoFullscreen, DISABLED_OnPlayTriggersFullscreenWithoutGesture) {
-  Video()->SetSrc("http://example.com/foo.mp4");
+  Video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
 
   LocalFrame::NotifyUserActivation(
       GetFrame(), mojom::UserActivationNotificationType::kTest);

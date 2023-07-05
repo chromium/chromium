@@ -543,7 +543,8 @@ TEST_P(LazyLoadFramesParamsTest,
   Element* child_frame_element =
       GetDocument().getElementById(AtomicString("child_frame"));
   ASSERT_TRUE(child_frame_element);
-  child_frame_element->setAttribute(html_names::kLoadingAttr, "eager");
+  child_frame_element->setAttribute(html_names::kLoadingAttr,
+                                    AtomicString("eager"));
 
   child_frame_resource->Complete("");
 

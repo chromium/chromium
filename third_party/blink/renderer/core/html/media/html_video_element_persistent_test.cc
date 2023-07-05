@@ -194,17 +194,17 @@ TEST_F(HTMLVideoElementPersistentTest, internalPseudoClassOnlyUAStyleSheet) {
 
   DummyExceptionStateForTesting exception_state;
 
-  EXPECT_FALSE(DivElement()->matches(":fullscreen"));
-  EXPECT_FALSE(DivElement()->matches(":-internal-video-persistent-ancestor",
-                                     exception_state));
+  EXPECT_FALSE(DivElement()->matches(AtomicString(":fullscreen")));
+  EXPECT_FALSE(DivElement()->matches(
+      AtomicString(":-internal-video-persistent-ancestor"), exception_state));
   EXPECT_TRUE(exception_state.HadException());
   exception_state.ClearException();
-  EXPECT_FALSE(
-      VideoElement()->matches(":-internal-video-persistent", exception_state));
+  EXPECT_FALSE(VideoElement()->matches(
+      AtomicString(":-internal-video-persistent"), exception_state));
   EXPECT_TRUE(exception_state.HadException());
   exception_state.ClearException();
-  EXPECT_FALSE(VideoElement()->matches(":-internal-video-persistent-ancestor",
-                                       exception_state));
+  EXPECT_FALSE(VideoElement()->matches(
+      AtomicString(":-internal-video-persistent-ancestor"), exception_state));
   EXPECT_TRUE(exception_state.HadException());
   exception_state.ClearException();
 
@@ -220,17 +220,17 @@ TEST_F(HTMLVideoElementPersistentTest, internalPseudoClassOnlyUAStyleSheet) {
   EXPECT_TRUE(VideoElement()->ContainsPersistentVideo());
 
   // The :internal-* rules apply only from the UA stylesheet.
-  EXPECT_TRUE(DivElement()->matches(":fullscreen"));
-  EXPECT_FALSE(DivElement()->matches(":-internal-video-persistent-ancestor",
-                                     exception_state));
+  EXPECT_TRUE(DivElement()->matches(AtomicString(":fullscreen")));
+  EXPECT_FALSE(DivElement()->matches(
+      AtomicString(":-internal-video-persistent-ancestor"), exception_state));
   EXPECT_TRUE(exception_state.HadException());
   exception_state.ClearException();
-  EXPECT_FALSE(
-      VideoElement()->matches(":-internal-video-persistent", exception_state));
+  EXPECT_FALSE(VideoElement()->matches(
+      AtomicString(":-internal-video-persistent"), exception_state));
   EXPECT_TRUE(exception_state.HadException());
   exception_state.ClearException();
-  EXPECT_FALSE(VideoElement()->matches(":-internal-video-persistent-ancestor",
-                                       exception_state));
+  EXPECT_FALSE(VideoElement()->matches(
+      AtomicString(":-internal-video-persistent-ancestor"), exception_state));
   EXPECT_TRUE(exception_state.HadException());
   exception_state.ClearException();
 }

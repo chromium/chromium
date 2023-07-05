@@ -167,21 +167,21 @@ TEST_F(TextAutosizerTest, ParagraphWithChangingTextSizeAdjustment) {
   EXPECT_FLOAT_EQ(
       40.f, autosized_div->GetLayoutObject()->StyleRef().ComputedFontSize());
 
-  autosized_div->setAttribute(html_names::kClassAttr, "none");
+  autosized_div->setAttribute(html_names::kClassAttr, AtomicString("none"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(
       16.f, autosized_div->GetLayoutObject()->StyleRef().SpecifiedFontSize());
   EXPECT_FLOAT_EQ(
       16.f, autosized_div->GetLayoutObject()->StyleRef().ComputedFontSize());
 
-  autosized_div->setAttribute(html_names::kClassAttr, "small");
+  autosized_div->setAttribute(html_names::kClassAttr, AtomicString("small"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(
       16.f, autosized_div->GetLayoutObject()->StyleRef().SpecifiedFontSize());
   EXPECT_FLOAT_EQ(
       8.f, autosized_div->GetLayoutObject()->StyleRef().ComputedFontSize());
 
-  autosized_div->setAttribute(html_names::kClassAttr, "large");
+  autosized_div->setAttribute(html_names::kClassAttr, AtomicString("large"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(
       16.f, autosized_div->GetLayoutObject()->StyleRef().SpecifiedFontSize());

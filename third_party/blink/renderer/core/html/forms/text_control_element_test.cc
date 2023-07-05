@@ -91,8 +91,8 @@ TEST_F(TextControlElementTest, IndexForPosition) {
 }
 
 TEST_F(TextControlElementTest, ReadOnlyAttributeChangeEditability) {
-  Input().setAttribute(html_names::kStyleAttr, "all:initial");
-  Input().setAttribute(html_names::kReadonlyAttr, "");
+  Input().setAttribute(html_names::kStyleAttr, AtomicString("all:initial"));
+  Input().setAttribute(html_names::kReadonlyAttr, g_empty_atom);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(EUserModify::kReadOnly,
             Input().InnerEditorElement()->GetComputedStyle()->UsedUserModify());
@@ -104,8 +104,8 @@ TEST_F(TextControlElementTest, ReadOnlyAttributeChangeEditability) {
 }
 
 TEST_F(TextControlElementTest, DisabledAttributeChangeEditability) {
-  Input().setAttribute(html_names::kStyleAttr, "all:initial");
-  Input().setAttribute(html_names::kDisabledAttr, "");
+  Input().setAttribute(html_names::kStyleAttr, AtomicString("all:initial"));
+  Input().setAttribute(html_names::kDisabledAttr, g_empty_atom);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(EUserModify::kReadOnly,
             Input().InnerEditorElement()->GetComputedStyle()->UsedUserModify());

@@ -30,7 +30,7 @@ class BlockPainterTestMockEventListener final : public NativeEventListener {
 };
 
 void SetWheelEventListener(const Document& document, const char* element_id) {
-  auto* element = document.getElementById(element_id);
+  auto* element = document.getElementById(AtomicString(element_id));
   auto* listener = MakeGarbageCollected<BlockPainterTestMockEventListener>();
   auto* resolved_options =
       MakeGarbageCollected<AddEventListenerOptionsResolved>();
@@ -182,7 +182,8 @@ TEST_P(BlockPainterTest, WheelEventRectPaintCaching) {
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(2, &hit_test_data)));
 
-  sibling_element->setAttribute(html_names::kStyleAttr, "background: green;");
+  sibling_element->setAttribute(html_names::kStyleAttr,
+                                AtomicString("background: green;"));
   PaintController::CounterForTesting counter;
   UpdateAllLifecyclePhasesForTest();
   // Only the background display item of the sibling should be invalidated.
@@ -306,7 +307,8 @@ TEST_P(BlockPainterTest, TouchActionRectsWithoutPaint) {
   // Add a touch action to parent and ensure that hit test data are created
   // for both the parent and the visible child.
   auto* parent_element = GetElementById("parent");
-  parent_element->setAttribute(html_names::kClassAttr, "touchActionNone");
+  parent_element->setAttribute(html_names::kClassAttr,
+                               AtomicString("touchActionNone"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
@@ -417,7 +419,8 @@ TEST_P(BlockPainterTest, TouchActionRectPaintCaching) {
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(2, &hit_test_data)));
 
-  sibling_element->setAttribute(html_names::kStyleAttr, "background: green;");
+  sibling_element->setAttribute(html_names::kStyleAttr,
+                                AtomicString("background: green;"));
   PaintController::CounterForTesting counter;
   UpdateAllLifecyclePhasesForTest();
   // Only the background display item of the sibling should be invalidated.
@@ -496,7 +499,7 @@ TEST_P(BlockPainterTest, TouchActionRectPaintChunkChanges) {
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON));
 
   touchaction_element->setAttribute(html_names::kStyleAttr,
-                                    "touch-action: none;");
+                                    AtomicString("touch-action: none;"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
@@ -590,7 +593,8 @@ TEST_P(BlockPainterTest, TouchActionRectsAcrossPaintChanges) {
                   1, &hit_test_data, gfx::Rect(0, 0, 800, 600))));
 
   auto* child_element = GetElementById("child");
-  child_element->setAttribute("style", "background: blue;");
+  child_element->setAttribute(html_names::kStyleAttr,
+                              AtomicString("background: blue;"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,

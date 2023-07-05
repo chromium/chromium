@@ -578,7 +578,7 @@ TEST_F(RenderBlockingResourceManagerTest, ScriptInsertedBodyUnblocksRendering) {
     <link rel="stylesheet" href="sheet.css">
   )HTML");
 
-  Element* body = GetDocument().CreateElementForBinding("body");
+  Element* body = GetDocument().CreateElementForBinding(AtomicString("body"));
   GetDocument().setBody(To<HTMLElement>(body), ASSERT_NO_EXCEPTION);
 
   // Rendering should be blocked by the pending stylesheet.

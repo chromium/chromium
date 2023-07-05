@@ -30,7 +30,7 @@ TEST_F(EditingCommandsUtilitiesTest, AreaIdenticalElements) {
       "}</style><ul><li>first item</li><li>second item</li><li "
       "class=foo>third</li><li>fourth</li></ul>");
   StaticElementList* items =
-      GetDocument().QuerySelectorAll("li", ASSERT_NO_EXCEPTION);
+      GetDocument().QuerySelectorAll(AtomicString("li"), ASSERT_NO_EXCEPTION);
   DCHECK_EQ(items->length(), 4u);
 
   EXPECT_FALSE(AreIdenticalElements(*items->item(0)->firstChild(),

@@ -22,7 +22,8 @@ TEST_F(LayoutNGTextControlSingleLineTest, VisualOverflowCleared) {
   auto* input = To<LayoutBox>(GetLayoutObjectByElementId("input"));
   EXPECT_EQ(LayoutRect(-3, -3, 74, 72), input->SelfVisualOverflowRect());
   To<Element>(input->GetNode())
-      ->setAttribute(html_names::kStyleAttr, "box-shadow: initial");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("box-shadow: initial"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(LayoutRect(0, 0, 58, 56), input->SelfVisualOverflowRect());
 }

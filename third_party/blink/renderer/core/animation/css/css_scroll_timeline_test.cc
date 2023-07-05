@@ -210,10 +210,10 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
   ASSERT_TRUE(GetScrollSnapshotClientsForTesting().empty());
 
   Element* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  element->setAttribute(blink::html_names::kIdAttr, "element");
+  element->setAttribute(blink::html_names::kIdAttr, AtomicString("element"));
 
   Element* scroller = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  scroller->setAttribute(blink::html_names::kIdAttr, "scroller");
+  scroller->setAttribute(blink::html_names::kIdAttr, AtomicString("scroller"));
   scroller->AppendChild(MakeGarbageCollected<HTMLDivElement>(GetDocument()));
 
   Element* main = GetDocument().getElementById(AtomicString("main"));

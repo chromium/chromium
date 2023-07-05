@@ -131,7 +131,8 @@ TEST_F(LayoutBlockTest, ContainmentStyleChange) {
 
   // Remove layout containment. This should cause |contained| to now be
   // in the positioned objects set for the LayoutView, not |target|.
-  target_element->setAttribute(html_names::kStyleAttr, "contain:style");
+  target_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString("contain:style"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(target->GetSingleCachedLayoutResult()
                    ->PhysicalFragment()

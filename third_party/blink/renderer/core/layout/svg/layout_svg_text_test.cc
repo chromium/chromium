@@ -56,7 +56,8 @@ TEST_F(LayoutSVGTextTest, TransformAffectsVectorEffect) {
 
   GetDocument()
       .getElementById(AtomicString("tspan1"))
-      ->setAttribute(svg_names::kVectorEffectAttr, "non-scaling-stroke");
+      ->setAttribute(svg_names::kVectorEffectAttr,
+                     AtomicString("non-scaling-stroke"));
   GetDocument()
       .getElementById(AtomicString("text2"))
       ->removeAttribute(svg_names::kVectorEffectAttr);

@@ -140,7 +140,7 @@ TEST_F(CreateWindowTest, CreateWindowFromPausedPage) {
   WebWindowFeatures features;
   bool consumed_user_gesture = false;
   EXPECT_EQ(nullptr, chrome_client_impl_->CreateWindow(
-                         frame, request, "", features,
+                         frame, request, g_empty_atom, features,
                          network::mojom::blink::WebSandboxFlags::kNone, "",
                          consumed_user_gesture));
 }

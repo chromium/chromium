@@ -15,15 +15,19 @@ namespace blink {
 class Element;
 
 TEST(CustomElementDescriptorTest, equal) {
-  CustomElementDescriptor my_type_extension("my-button", "button");
-  CustomElementDescriptor again("my-button", "button");
+  CustomElementDescriptor my_type_extension(AtomicString("my-button"),
+                                            AtomicString("button"));
+  CustomElementDescriptor again(AtomicString("my-button"),
+                                AtomicString("button"));
   EXPECT_TRUE(my_type_extension == again)
       << "two descriptors with the same name and local name should be equal";
 }
 
 TEST(CustomElementDescriptorTest, notEqual) {
-  CustomElementDescriptor my_type_extension("my-button", "button");
-  CustomElementDescriptor colliding_new_type("my-button", "my-button");
+  CustomElementDescriptor my_type_extension(AtomicString("my-button"),
+                                            AtomicString("button"));
+  CustomElementDescriptor colliding_new_type(AtomicString("my-button"),
+                                             AtomicString("my-button"));
   EXPECT_FALSE(my_type_extension == colliding_new_type)
       << "type extension should not be equal to a non-type extension";
 }
@@ -40,14 +44,14 @@ TEST(CustomElementDescriptorTest, hashable) {
 }
 
 TEST(CustomElementDescriptorTest, matches_autonomous) {
-  CustomElementDescriptor descriptor("a-b", "a-b");
+  CustomElementDescriptor descriptor(AtomicString("a-b"), AtomicString("a-b"));
   Element* element = CreateElement("a-b");
   EXPECT_TRUE(descriptor.Matches(*element));
 }
 
 TEST(CustomElementDescriptorTest,
      matches_autonomous_shouldNotMatchCustomizedBuiltInElement) {
-  CustomElementDescriptor descriptor("a-b", "a-b");
+  CustomElementDescriptor descriptor(AtomicString("a-b"), AtomicString("a-b"));
   Element* element = CreateElement("futuretag").WithIsValue("a-b");
   EXPECT_FALSE(descriptor.Matches(*element));
 }
@@ -60,14 +64,15 @@ TEST(CustomElementDescriptorTest, matches_customizedBuiltIn) {
 
 TEST(CustomElementDescriptorTest,
      matches_customizedBuiltIn_shouldNotMatchAutonomousElement) {
-  CustomElementDescriptor descriptor("a-b", "button");
+  CustomElementDescriptor descriptor(AtomicString("a-b"),
+                                     AtomicString("button"));
   Element* element = CreateElement("a-b");
   EXPECT_FALSE(descriptor.Matches(*element));
 }
 
 TEST(CustomElementDescriptorTest,
      matches_elementNotInHTMLNamespaceDoesNotMatch) {
-  CustomElementDescriptor descriptor("a-b", "a-b");
+  CustomElementDescriptor descriptor(AtomicString("a-b"), AtomicString("a-b"));
   Element* element = CreateElement("a-b").InNamespace("data:text/plain,foo");
   EXPECT_FALSE(descriptor.Matches(*element));
 }

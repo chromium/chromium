@@ -303,7 +303,7 @@ TEST_F(HTMLElementTest, HasImplicitlyAnchoredElement) {
   EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
   EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
 
-  target->setAttribute(html_names::kAnchorAttr, "anchor2");
+  target->setAttribute(html_names::kAnchorAttr, AtomicString("anchor2"));
 
   EXPECT_EQ(target->anchorElement(), anchor2);
   EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
@@ -346,7 +346,7 @@ TEST_F(HTMLElementTest, HasImplicitlyAnchoredElementViaElementAttr) {
   EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
   EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
 
-  target->setAttribute(html_names::kAnchorAttr, "anchor1");
+  target->setAttribute(html_names::kAnchorAttr, AtomicString("anchor1"));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
   EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
@@ -371,8 +371,8 @@ TEST_F(HTMLElementTest, ImplicitAnchorIdChange) {
   EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
   EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
 
-  anchor1->setAttribute(html_names::kIdAttr, "anchor2");
-  anchor2->setAttribute(html_names::kIdAttr, "anchor1");
+  anchor1->setAttribute(html_names::kIdAttr, AtomicString("anchor2"));
+  anchor2->setAttribute(html_names::kIdAttr, AtomicString("anchor1"));
 
   EXPECT_EQ(target->anchorElement(), anchor2);
   EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
@@ -415,12 +415,12 @@ TEST_F(HTMLElementTest, ImplicitlyAnchorElementConnected) {
 
   Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
 
-  HTMLElement* target1 =
-      To<HTMLElement>(GetDocument().CreateElementForBinding("div"));
-  target1->setAttribute(html_names::kAnchorAttr, "anchor");
+  HTMLElement* target1 = To<HTMLElement>(
+      GetDocument().CreateElementForBinding(AtomicString("div")));
+  target1->setAttribute(html_names::kAnchorAttr, AtomicString("anchor"));
 
-  HTMLElement* target2 =
-      To<HTMLElement>(GetDocument().CreateElementForBinding("div"));
+  HTMLElement* target2 = To<HTMLElement>(
+      GetDocument().CreateElementForBinding(AtomicString("div")));
   target2->setAnchorElement(anchor);
 
   EXPECT_FALSE(target1->anchorElement());

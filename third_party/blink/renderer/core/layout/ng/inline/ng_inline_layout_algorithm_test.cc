@@ -438,12 +438,13 @@ TEST_F(NGInlineLayoutAlgorithmTest, TextFloatsAroundFloatsBefore) {
     </div>
   )HTML");
 
-  const auto& html_fragment = To<LayoutBox>(GetDocument()
-                                                .getElementsByTagName("html")
-                                                ->item(0)
-                                                ->GetLayoutObject())
-                                  ->GetSingleCachedLayoutResult()
-                                  ->PhysicalFragment();
+  const auto& html_fragment =
+      To<LayoutBox>(GetDocument()
+                        .getElementsByTagName(AtomicString("html"))
+                        ->item(0)
+                        ->GetLayoutObject())
+          ->GetSingleCachedLayoutResult()
+          ->PhysicalFragment();
 
   auto* body_fragment =
       To<NGPhysicalBoxFragment>(html_fragment.Children()[0].get());

@@ -831,7 +831,8 @@ TEST_F(NGLineBreakerTest, MinMaxWithHyphensDisabledWithTrailingSpaces) {
 
 TEST_F(NGLineBreakerTest, MinMaxWithHyphensAuto) {
   LoadAhem();
-  LayoutLocale::SetHyphenationForTesting("en-us", MockHyphenation::Create());
+  LayoutLocale::SetHyphenationForTesting(AtomicString("en-us"),
+                                         MockHyphenation::Create());
   NGInlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -846,7 +847,7 @@ TEST_F(NGLineBreakerTest, MinMaxWithHyphensAuto) {
   const auto sizes = ComputeMinMaxSizes(node);
   EXPECT_EQ(sizes.min_size, LayoutUnit(50));
   EXPECT_EQ(sizes.max_size, LayoutUnit(170));
-  LayoutLocale::SetHyphenationForTesting("en-us", nullptr);
+  LayoutLocale::SetHyphenationForTesting(AtomicString("en-us"), nullptr);
 }
 
 // For http://crbug.com/1104534

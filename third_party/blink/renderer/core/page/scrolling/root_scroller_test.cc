@@ -1058,7 +1058,8 @@ TEST_F(ImplicitRootScrollerSimTest, UsePaddingBoxForViewportFillingCondition) {
 
   // Setting a border should cause the element to no longer be valid as its
   // padding box doesn't fill the viewport exactly.
-  container->setAttribute(html_names::kStyleAttr, "border: 1px solid black");
+  container->setAttribute(html_names::kStyleAttr,
+                          AtomicString("border: 1px solid black"));
   Compositor().BeginFrame();
   EXPECT_EQ(&GetDocument(),
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
@@ -1352,12 +1353,12 @@ TEST_F(ImplicitRootScrollerSimTest, CandidateLosesLayoutBoxDontCrash) {
   Element* container = GetDocument().getElementById(AtomicString("container"));
 
   // An overflowing box will be added to the implicit candidates list.
-  container->setAttribute(html_names::kClassAttr, "box");
+  container->setAttribute(html_names::kClassAttr, AtomicString("box"));
   Compositor().BeginFrame();
 
   // This will make change from a box to an inline. Ensure we don't crash when
   // we reevaluate the candidates list.
-  container->setAttribute(html_names::kClassAttr, "nonbox");
+  container->setAttribute(html_names::kClassAttr, AtomicString("nonbox"));
   Compositor().BeginFrame();
 }
 
@@ -2441,7 +2442,8 @@ TEST_F(ImplicitRootScrollerSimTest, IframeUsesContentBox) {
 
   // Adding padding should cause the iframe to be demoted.
   {
-    iframe->setAttribute(html_names::kStyleAttr, "padding-left: 20%");
+    iframe->setAttribute(html_names::kStyleAttr,
+                         AtomicString("padding-left: 20%"));
     Compositor().BeginFrame();
 
     EXPECT_NE(iframe,
@@ -2452,7 +2454,8 @@ TEST_F(ImplicitRootScrollerSimTest, IframeUsesContentBox) {
   // Replacing padding with a border should also ensure the iframe remains
   // demoted.
   {
-    iframe->setAttribute(html_names::kStyleAttr, "border: 5px solid black");
+    iframe->setAttribute(html_names::kStyleAttr,
+                         AtomicString("border: 5px solid black"));
     Compositor().BeginFrame();
 
     EXPECT_NE(iframe,
@@ -2461,7 +2464,7 @@ TEST_F(ImplicitRootScrollerSimTest, IframeUsesContentBox) {
   }
 
   // Removing the border should now cause the iframe to be promoted once again.
-  iframe->setAttribute(html_names::kStyleAttr, "");
+  iframe->setAttribute(html_names::kStyleAttr, g_empty_atom);
   Compositor().BeginFrame();
 
   ASSERT_EQ(iframe,

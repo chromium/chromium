@@ -103,22 +103,24 @@ TEST_F(ObjectPaintInvalidatorTest, VisibilityHidden) {
   ValidateDisplayItemClient(target);
   EXPECT_TRUE(IsValidDisplayItemClient(target));
 
-  target_element->setAttribute(html_names::kStyleAttr, "width: 200px");
+  target_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString("width: 200px"));
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_TRUE(IsValidDisplayItemClient(target));
   UpdateAllLifecyclePhasesForTest();
 
-  target_element->setAttribute(html_names::kStyleAttr,
-                               "width: 200px; visibility: visible");
+  target_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("width: 200px; visibility: visible"));
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(IsValidDisplayItemClient(target));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsValidDisplayItemClient(target));
 
-  target_element->setAttribute(html_names::kStyleAttr,
-                               "width: 200px; visibility: hidden");
+  target_element->setAttribute(
+      html_names::kStyleAttr, AtomicString("width: 200px; visibility: hidden"));
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(IsValidDisplayItemClient(target));
@@ -140,7 +142,8 @@ TEST_F(ObjectPaintInvalidatorTest,
   EXPECT_TRUE(IsValidDisplayItemClient(object));
   EXPECT_FALSE(object->ShouldCheckForPaintInvalidation());
 
-  div->setAttribute(html_names::kStyleAttr, "color: rgb(80, 100, 175)");
+  div->setAttribute(html_names::kStyleAttr,
+                    AtomicString("color: rgb(80, 100, 175)"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(IsValidDisplayItemClient(object));

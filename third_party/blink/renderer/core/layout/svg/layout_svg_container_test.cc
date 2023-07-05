@@ -45,13 +45,13 @@ TEST_F(LayoutSVGContainerTest, TransformAffectsVectorEffect) {
   EXPECT_FALSE(text->TransformAffectsVectorEffect());
 
   rect_element->setAttribute(svg_names::kVectorEffectAttr,
-                             "non-scaling-stroke");
+                             AtomicString("non-scaling-stroke"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(g->TransformAffectsVectorEffect());
   EXPECT_TRUE(rect->TransformAffectsVectorEffect());
   EXPECT_FALSE(text->TransformAffectsVectorEffect());
 
-  text_element->setAttribute(svg_names::kXAttr, "20");
+  text_element->setAttribute(svg_names::kXAttr, AtomicString("20"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(g->TransformAffectsVectorEffect());
   EXPECT_TRUE(rect->TransformAffectsVectorEffect());
@@ -133,11 +133,13 @@ TEST_F(LayoutSVGContainerTest, PatternWithContentVisibility) {
   auto* pattern = GetDocument().getElementById(AtomicString("pattern"));
   auto* polygon = GetDocument().getElementById(AtomicString("polygon"));
 
-  pattern->setAttribute("style", "contain: strict; content-visibility: hidden");
+  pattern->setAttribute(
+      svg_names::kStyleAttr,
+      AtomicString("contain: strict; content-visibility: hidden"));
 
   UpdateAllLifecyclePhasesForTest();
 
-  polygon->setAttribute("points", "0,0 2,5 0,10");
+  polygon->setAttribute(svg_names::kPointsAttr, AtomicString("0,0 2,5 0,10"));
 
   // This shouldn't cause a DCHECK, even though the pattern needs layout because
   // it's under a content-visibility: hidden subtree.

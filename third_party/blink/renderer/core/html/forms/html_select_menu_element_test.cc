@@ -51,7 +51,7 @@ class HTMLSelectMenuElementTest : public PageTestBase {
   void SetUp() override {
     chrome_client_ = MakeGarbageCollected<OptionsChangedCounterChromeClient>();
     SetupPageWithClients(chrome_client_);
-    GetDocument().SetMimeType("text/html");
+    GetDocument().SetMimeType(AtomicString("text/html"));
     GetFrame().GetSettings()->SetScriptEnabled(true);
   }
 

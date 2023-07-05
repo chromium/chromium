@@ -217,7 +217,8 @@ TEST_F(VisiblePositionTest, NormalizationAroundLineBreak) {
       "<div>line1<span></span>line2</div>"
       "<div>line1<span></span><span></span>line2</div>");
 
-  StaticElementList* tests = GetDocument().QuerySelectorAll("div");
+  StaticElementList* tests =
+      GetDocument().QuerySelectorAll(AtomicString("div"));
   for (unsigned i = 0; i < tests->length(); ++i) {
     Element* test = tests->item(i);
     Node* node1 = test->firstChild();

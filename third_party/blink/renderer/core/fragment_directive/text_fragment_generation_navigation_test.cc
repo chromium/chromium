@@ -107,17 +107,17 @@ RangeInFlatTree* TextFragmentGenerationNavigationTest::GetSelectionRange(
     absl::optional<int> end_text_offset) {
   // Parent of start node will be the node with `start_parent_id` id
   // or the DOM body if no `start_parent_id`.
-  Node* start_parent_node =
-      start_parent_id == nullptr
-          ? GetDocument().body()
-          : GetDocument().getElementById(start_parent_id->c_str());
+  Node* start_parent_node = start_parent_id == nullptr
+                                ? GetDocument().body()
+                                : GetDocument().getElementById(
+                                      AtomicString(start_parent_id->c_str()));
 
   // Parent of end node will be the node with `end_parent_id` id
   // or the DOM body if no `end_parent_id`.
   Node* end_parent_node =
       end_parent_id == nullptr
           ? GetDocument().body()
-          : GetDocument().getElementById(end_parent_id->c_str());
+          : GetDocument().getElementById(AtomicString(end_parent_id->c_str()));
 
   const Node* start_node =
       start_parent_node->childNodes()->item(start_offset_in_parent);

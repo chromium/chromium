@@ -35,8 +35,11 @@ class NGBlockLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
   }
 
   const NGPhysicalBoxFragment* GetHtmlPhysicalFragment() const {
-    const auto* layout_box = To<LayoutBox>(
-        GetDocument().getElementsByTagName("html")->item(0)->GetLayoutObject());
+    const auto* layout_box =
+        To<LayoutBox>(GetDocument()
+                          .getElementsByTagName(AtomicString("html"))
+                          ->item(0)
+                          ->GetLayoutObject());
     return To<NGPhysicalBoxFragment>(
         &layout_box->GetSingleCachedLayoutResult()->PhysicalFragment());
   }
@@ -2443,7 +2446,7 @@ input::first-line {
 <input id="num" type="number" placeholder="foo">)HTML");
   UpdateAllLifecyclePhasesForTest();
   auto* input = GetDocument().getElementById(AtomicString("i1"));
-  input->setAttribute(html_names::kPlaceholderAttr, "z");
+  input->setAttribute(html_names::kPlaceholderAttr, AtomicString("z"));
   UpdateAllLifecyclePhasesForTest();
 }
 

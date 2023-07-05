@@ -497,12 +497,12 @@ static CreateNode node_creators[] = {
     },
     [](Document& document) -> Node* {
       Element* element = document.CreateRawElement(html_names::kSpanTag);
-      element->classList().Add("abspos");
+      element->classList().Add(AtomicString("abspos"));
       return element;
     },
     [](Document& document) -> Node* {
       Element* element = document.CreateRawElement(html_names::kSpanTag);
-      element->classList().Add("float");
+      element->classList().Add(AtomicString("float"));
       return element;
     }};
 

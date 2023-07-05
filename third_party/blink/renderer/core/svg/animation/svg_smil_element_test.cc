@@ -134,7 +134,8 @@ TEST(SVGSMILElementTest, RepeatNEventListenerUseCounted) {
   document.documentElement()->setInnerHTML("<svg><set/></svg>");
   Element* set = document.QuerySelector(AtomicString("set"));
   ASSERT_TRUE(set);
-  set->addEventListener("repeatn", MakeGarbageCollected<EmptyEventListener>());
+  set->addEventListener(AtomicString("repeatn"),
+                        MakeGarbageCollected<EmptyEventListener>());
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 

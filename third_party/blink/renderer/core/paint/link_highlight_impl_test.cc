@@ -369,7 +369,7 @@ TEST_P(LinkHighlightImplTest, MultiColumn) {
   Element* multicol = touch_node->parentElement();
   EXPECT_EQ(50, multicol->OffsetHeight());
   // Make multicol shorter to create 3 total columns for touch_node.
-  multicol->setAttribute(html_names::kStyleAttr, "height: 25px");
+  multicol->setAttribute(html_names::kStyleAttr, AtomicString("height: 25px"));
   UpdateAllLifecyclePhases();
   ASSERT_EQ(&first_fragment, &touch_node->GetLayoutObject()->FirstFragment());
   second_fragment = first_fragment.NextFragment();
@@ -385,7 +385,7 @@ TEST_P(LinkHighlightImplTest, MultiColumn) {
   check_layer(highlight->LayerForTesting(2));
 
   // Make multicol taller to create only 1 column for touch_node.
-  multicol->setAttribute(html_names::kStyleAttr, "height: 100px");
+  multicol->setAttribute(html_names::kStyleAttr, AtomicString("height: 100px"));
   UpdateAllLifecyclePhases();
   ASSERT_EQ(&first_fragment, &touch_node->GetLayoutObject()->FirstFragment());
   EXPECT_FALSE(first_fragment.NextFragment());

@@ -251,10 +251,10 @@ TEST_F(CascadeExpansionTest, Name) {
   {
     auto e = ExpansionAt(result, 0);
     ASSERT_EQ(2u, e.size());
-    EXPECT_EQ(CSSPropertyName("--x"),
+    EXPECT_EQ(CSSPropertyName(AtomicString("--x")),
               e[0]->ref.GetProperty().GetCSSPropertyName());
     EXPECT_EQ(CSSPropertyID::kVariable, e[0]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(CSSPropertyName("--y"),
+    EXPECT_EQ(CSSPropertyName(AtomicString("--y")),
               e[1]->ref.GetProperty().GetCSSPropertyName());
     EXPECT_EQ(CSSPropertyID::kVariable, e[1]->ref.GetProperty().PropertyID());
   }

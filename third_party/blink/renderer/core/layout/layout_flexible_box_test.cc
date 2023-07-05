@@ -454,7 +454,8 @@ TEST_F(LayoutFlexibleBoxTest, ResizedFlexChildRequiresVisualOverflowRecalc) {
   )HTML");
   auto* child1_element = GetElementById("child1");
   auto* child2_element = GetElementById("child2");
-  child2_element->setAttribute(html_names::kStyleAttr, "height: 100px;");
+  child2_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString("height: 100px;"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
 

@@ -136,7 +136,7 @@ TEST_P(CSSAnimationsTest, RetargetedTransition) {
     <div id='test'>TEST</div>
   )HTML");
   Element* element = GetDocument().getElementById(AtomicString("test"));
-  element->setAttribute(html_names::kClassAttr, "contrast1");
+  element->setAttribute(html_names::kClassAttr, AtomicString("contrast1"));
   UpdateAllLifecyclePhasesForTest();
   ElementAnimations* animations = element->GetElementAnimations();
   EXPECT_EQ(1u, animations->Animations().size());
@@ -147,7 +147,7 @@ TEST_P(CSSAnimationsTest, RetargetedTransition) {
   AdvanceClockSeconds(0.8);
 
   // Starting the second transition should retarget the active transition.
-  element->setAttribute(html_names::kClassAttr, "contrast2");
+  element->setAttribute(html_names::kClassAttr, AtomicString("contrast2"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_NEAR(0.6, GetContrastFilterAmount(element), kTolerance);
 
@@ -170,7 +170,7 @@ TEST_P(CSSAnimationsTest, IncompatibleRetargetedTransition) {
     <div id='test'>TEST</div>
   )HTML");
   Element* element = GetDocument().getElementById(AtomicString("test"));
-  element->setAttribute(html_names::kClassAttr, "saturate");
+  element->setAttribute(html_names::kClassAttr, AtomicString("saturate"));
   UpdateAllLifecyclePhasesForTest();
   ElementAnimations* animations = element->GetElementAnimations();
   EXPECT_EQ(1u, animations->Animations().size());
@@ -188,7 +188,7 @@ TEST_P(CSSAnimationsTest, IncompatibleRetargetedTransition) {
   // Now we start a contrast filter. Since it will try to combine with
   // the in progress saturate filter, and be incompatible, there will be a
   // discrete transition and it will apply halfway through the transition.
-  element->setAttribute(html_names::kClassAttr, "contrast");
+  element->setAttribute(html_names::kClassAttr, AtomicString("contrast"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(1.0 * (1 - 0.003) + 0.2 * 0.003,
                   GetSaturateFilterAmount(element));
@@ -293,13 +293,14 @@ TEST_P(CSSAnimationsTest, AnimationFlags_Animations) {
   EXPECT_FALSE(element->ComputedStyleRef().HasCurrentTransformAnimation());
 
   // Newly created animation:
-  element->setAttribute(html_names::kClassAttr, "animate");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animate"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentOpacityAnimation());
   EXPECT_FALSE(element->ComputedStyleRef().HasCurrentTransformAnimation());
 
   // Already running (and unmodified) animation:
-  element->setAttribute(html_names::kClassAttr, "animate unrelated");
+  element->setAttribute(html_names::kClassAttr,
+                        AtomicString("animate unrelated"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentOpacityAnimation());
   EXPECT_FALSE(element->ComputedStyleRef().HasCurrentTransformAnimation());
@@ -313,13 +314,14 @@ TEST_P(CSSAnimationsTest, AnimationFlags_Animations) {
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentTransformAnimation());
 
   // Update CSS animation:
-  element->setAttribute(html_names::kClassAttr, "animate newtiming");
+  element->setAttribute(html_names::kClassAttr,
+                        AtomicString("animate newtiming"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentOpacityAnimation());
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentTransformAnimation());
 
   // Cancel CSS animation:
-  element->setAttribute(html_names::kClassAttr, "cancel");
+  element->setAttribute(html_names::kClassAttr, AtomicString("cancel"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(element->ComputedStyleRef().HasCurrentOpacityAnimation());
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentTransformAnimation());
@@ -454,7 +456,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_Transitions) {
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
-    element->setAttribute(html_names::kClassAttr, "after");
+    element->setAttribute(html_names::kClassAttr, AtomicString("after"));
     UpdateAllLifecyclePhasesForTest();
     EXPECT_TRUE(data.get_flag(element->ComputedStyleRef()));
   }
@@ -471,7 +473,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_Transitions_Compositor) {
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
-    element->setAttribute(html_names::kClassAttr, "after");
+    element->setAttribute(html_names::kClassAttr, AtomicString("after"));
     UpdateAllLifecyclePhasesForTest();
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
@@ -496,7 +498,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_CSSAnimations) {
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
-    element->setAttribute(html_names::kClassAttr, "after");
+    element->setAttribute(html_names::kClassAttr, AtomicString("after"));
     UpdateAllLifecyclePhasesForTest();
     EXPECT_TRUE(data.get_flag(element->ComputedStyleRef()));
   }
@@ -513,7 +515,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_CSSAnimations_Compositor) {
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
-    element->setAttribute(html_names::kClassAttr, "after");
+    element->setAttribute(html_names::kClassAttr, AtomicString("after"));
     UpdateAllLifecyclePhasesForTest();
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
@@ -601,25 +603,25 @@ TEST_P(CSSAnimationsTest, AnimationFlags_CompositablePaintAnimationChanged) {
   EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
 
   // Newly created CSS animation:
-  element->classList().Add("animate");
+  element->classList().Add(AtomicString("animate"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
   EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
 
   // Do an unrelated change to clear the flag.
-  element->classList().toggle("unrelated", ASSERT_NO_EXCEPTION);
+  element->classList().toggle(AtomicString("unrelated"), ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
   EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
 
   // Updated CSS animation:
-  element->classList().Add("newtiming");
+  element->classList().Add(AtomicString("newtiming"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
   EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
 
   // Do an unrelated change to clear the flag.
-  element->classList().toggle("unrelated", ASSERT_NO_EXCEPTION);
+  element->classList().toggle(AtomicString("unrelated"), ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
   EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
@@ -737,7 +739,7 @@ TEST_P(CSSAnimationsTest, CSSTransitionBlockedByAnimationUseCounter) {
 
   // Attempt to trigger transition. This should not work, because there's a
   // current animation on the same property.
-  element->classList().Add("change");
+  element->classList().Add(AtomicString("change"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(15, element->ComputedStyleRef().ZIndex());
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSTransitionBlockedByAnimation));

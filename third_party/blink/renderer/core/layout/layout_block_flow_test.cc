@@ -26,7 +26,8 @@ var { column-count: 17179869184; }
   ASSERT_TRUE(kbd->Parent()->IsLayoutNGBlockFlow());
   ASSERT_TRUE(kbd->CreatesNewFormattingContext());
   UpdateAllLifecyclePhasesForTest();
-  GetElementById("text")->setAttribute("font-size", "100");
+  GetElementById("text")->setAttribute(AtomicString("font-size"),
+                                       AtomicString("100"));
   UpdateAllLifecyclePhasesForTest();
   // The test passes if no DCHECK failure in ng_ink_overflow.cc.
 }

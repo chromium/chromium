@@ -846,7 +846,7 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML) {
 
   // Change the opacity of documentElement, now the img should be a candidate.
   GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
-                                                "opacity: 1");
+                                                AtomicString("opacity: 1"));
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
   EXPECT_TRUE(TextRecordOfLargestTextPaint());
 }
@@ -864,11 +864,11 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML2) {
   CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
 
   GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
-                                                "opacity: 0");
+                                                AtomicString("opacity: 0"));
   CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
 
   GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
-                                                "opacity: 1");
+                                                AtomicString("opacity: 1"));
   CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
 }
 

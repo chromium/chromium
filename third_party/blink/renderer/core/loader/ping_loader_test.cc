@@ -92,7 +92,7 @@ class PingLoaderTest : public PageTestBase {
     const PartialResourceRequest& ping_request = client_->PingRequest();
     if (!ping_request.IsNull()) {
       EXPECT_EQ(destination_url.GetString(),
-                ping_request.HttpHeaderField("Ping-To"));
+                ping_request.HttpHeaderField(AtomicString("Ping-To")));
     }
     // Serve the ping request, since it will otherwise bleed in to the next
     // test, and once begun there is no way to cancel it directly.
@@ -110,7 +110,7 @@ TEST_F(PingLoaderTest, HTTPSToHTTPS) {
   const PartialResourceRequest& ping_request = PingAndGetRequest(ping_url);
   ASSERT_FALSE(ping_request.IsNull());
   EXPECT_EQ(ping_url, ping_request.Url());
-  EXPECT_EQ(String(), ping_request.HttpHeaderField("Ping-From"));
+  EXPECT_EQ(String(), ping_request.HttpHeaderField(AtomicString("Ping-From")));
 }
 
 TEST_F(PingLoaderTest, HTTPToHTTPS) {
@@ -121,7 +121,7 @@ TEST_F(PingLoaderTest, HTTPToHTTPS) {
   ASSERT_FALSE(ping_request.IsNull());
   EXPECT_EQ(ping_url, ping_request.Url());
   EXPECT_EQ(document_url.GetString(),
-            ping_request.HttpHeaderField("Ping-From"));
+            ping_request.HttpHeaderField(AtomicString("Ping-From")));
 }
 
 TEST_F(PingLoaderTest, NonHTTPPingTarget) {

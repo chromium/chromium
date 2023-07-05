@@ -186,7 +186,8 @@ TEST_P(CullRectUpdaterTest, OptimizeNonCompositedTransformUpdate) {
   // On subsequent paints, fall back to an infinite cull rect.
   GetDocument()
       .getElementById(AtomicString("target"))
-      ->setAttribute(html_names::kStyleAttr, "transform: rotate(10deg);");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("transform: rotate(10deg);"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(GetCullRect("target").IsInfinite());
 }

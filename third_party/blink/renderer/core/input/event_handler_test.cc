@@ -2975,7 +2975,7 @@ TEST_F(EventHandlerSimTest, GestureScrollUpdateModifiedScrollChain) {
   // by detecting a non-box LayoutObject in the scroll chain and not crash.
   Element* const scroller =
       GetDocument().getElementById(AtomicString("scroller"));
-  scroller->setAttribute("class", "inline");
+  scroller->setAttribute(html_names::kClassAttr, AtomicString("inline"));
 
   WebView().MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(scroll_update_event, ui::LatencyInfo()));

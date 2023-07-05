@@ -36,12 +36,12 @@ TEST_F(LayoutViewTest, UpdateCountersLayout) {
   UpdateAllLifecyclePhasesForTest();
   Element* inc = GetDocument().getElementById(AtomicString("inc"));
 
-  inc->setAttribute("class", "incX");
+  inc->setAttribute(html_names::kClassAttr, AtomicString("incX"));
   GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_FALSE(GetDocument().View()->NeedsLayout());
 
   UpdateAllLifecyclePhasesForTest();
-  inc->setAttribute("class", "incY");
+  inc->setAttribute(html_names::kClassAttr, AtomicString("incY"));
   GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_TRUE(GetDocument().View()->NeedsLayout());
 }

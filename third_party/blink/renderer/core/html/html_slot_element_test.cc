@@ -162,7 +162,8 @@ TEST_F(HTMLSlotElementInDocumentTest, RecalcAssignedNodeStyleForReattach) {
   auto* shadow_span = To<Element>(shadow_root.firstChild());
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-  shadow_span->setAttribute(html_names::kStyleAttr, "display:block");
+  shadow_span->setAttribute(html_names::kStyleAttr,
+                            AtomicString("display:block"));
 
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   GetDocument().GetStyleEngine().RecalcStyle();

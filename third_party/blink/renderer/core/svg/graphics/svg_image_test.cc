@@ -550,15 +550,16 @@ TEST_F(SVGImageSimTest, SpriteSheetCulling) {
   // Adjust the height so one green circle and three blue circles are visible,
   // and ensure four circles are recorded.
   Element* div = GetDocument().getElementById(AtomicString("div"));
-  div->setAttribute(html_names::kStyleAttr, "height: 200px;");
+  div->setAttribute(html_names::kStyleAttr, AtomicString("height: 200px;"));
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
   EXPECT_EQ(4U, CountPaintOpType(record, cc::PaintOpType::DrawOval));
 
   // Adjust the background position so only the three blue circles are visible,
   // and ensure three circles are recorded.
-  div->setAttribute(html_names::kStyleAttr,
-                    "height: 200px; background-position-y: -200px;");
+  div->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("height: 200px; background-position-y: -200px;"));
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
   EXPECT_EQ(3U, CountPaintOpType(record, cc::PaintOpType::DrawOval));
@@ -602,7 +603,7 @@ TEST_F(SVGImageSimTest, SpriteSheetCullingBorderRadius) {
   // Adjust the height so one green circle and three blue circles are visible,
   // and ensure four circles are recorded.
   Element* div = GetDocument().getElementById(AtomicString("div"));
-  div->setAttribute(html_names::kStyleAttr, "height: 200px;");
+  div->setAttribute(html_names::kStyleAttr, AtomicString("height: 200px;"));
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
   EXPECT_EQ(1U, CountPaintOpType(record, cc::PaintOpType::DrawRRect));
@@ -653,7 +654,8 @@ TEST_F(SVGImageSimTest, ClippedAbsoluteImageSpriteSheetCulling) {
   // Adjust the div's height so one green circle and three blue circles are
   // visible, and ensure four circles are recorded.
   Element* div_element = GetDocument().getElementById(AtomicString("div"));
-  div_element->setAttribute(html_names::kStyleAttr, "height: 200px;");
+  div_element->setAttribute(html_names::kStyleAttr,
+                            AtomicString("height: 200px;"));
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
   EXPECT_EQ(4U, CountPaintOpType(record, cc::PaintOpType::DrawOval));
@@ -661,7 +663,8 @@ TEST_F(SVGImageSimTest, ClippedAbsoluteImageSpriteSheetCulling) {
   // Adjust the image's position so only the three blue circles are visible,
   // and ensure three circles are recorded.
   Element* image_element = GetDocument().getElementById(AtomicString("image"));
-  image_element->setAttribute(html_names::kStyleAttr, "top: -200px;");
+  image_element->setAttribute(html_names::kStyleAttr,
+                              AtomicString("top: -200px;"));
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
   EXPECT_EQ(3U, CountPaintOpType(record, cc::PaintOpType::DrawOval));
@@ -710,7 +713,8 @@ TEST_F(SVGImageSimTest, ClippedStaticImageSpriteSheetCulling) {
   // Adjust the div's height so one green circle and three blue circles are
   // visible, and ensure four circles are recorded.
   Element* div_element = GetDocument().getElementById(AtomicString("div"));
-  div_element->setAttribute(html_names::kStyleAttr, "height: 200px;");
+  div_element->setAttribute(html_names::kStyleAttr,
+                            AtomicString("height: 200px;"));
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
   EXPECT_EQ(4U, CountPaintOpType(record, cc::PaintOpType::DrawOval));
@@ -718,7 +722,8 @@ TEST_F(SVGImageSimTest, ClippedStaticImageSpriteSheetCulling) {
   // Adjust the image's position so only the three blue circles are visible,
   // and ensure three circles are recorded.
   Element* image_element = GetDocument().getElementById(AtomicString("image"));
-  image_element->setAttribute(html_names::kStyleAttr, "margin-top: -200px;");
+  image_element->setAttribute(html_names::kStyleAttr,
+                              AtomicString("margin-top: -200px;"));
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
   EXPECT_EQ(3U, CountPaintOpType(record, cc::PaintOpType::DrawOval));
@@ -726,7 +731,7 @@ TEST_F(SVGImageSimTest, ClippedStaticImageSpriteSheetCulling) {
   // Adjust the div's position to be fractional and ensure only three blue
   // circles are still recorded.
   div_element->setAttribute(html_names::kStyleAttr,
-                            "margin-left: 0.5px; height: 200px;");
+                            AtomicString("margin-left: 0.5px; height: 200px;"));
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
   EXPECT_EQ(3U, CountPaintOpType(record, cc::PaintOpType::DrawOval));
@@ -779,7 +784,7 @@ TEST_F(SVGImageSimTest, InterestRectDoesNotCullImageSpriteSheet) {
   // to just a single circle, and ensure just one circle is recorded.
   Element* div_element = GetDocument().getElementById(AtomicString("div"));
   div_element->setAttribute(html_names::kStyleAttr,
-                            "width: 100px; height: 200px;");
+                            AtomicString("width: 100px; height: 200px;"));
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
   EXPECT_EQ(1U, CountPaintOpType(record, cc::PaintOpType::DrawOval));

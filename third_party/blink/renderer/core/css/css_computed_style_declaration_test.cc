@@ -27,9 +27,8 @@ TEST_F(CSSComputedStyleDeclarationTest, CleanAncestorsNoRecalc) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 
-  GetDocument()
-      .getElementById(AtomicString("dirty"))
-      ->setAttribute("style", "color:pink");
+  GetElementById("dirty")->setAttribute(html_names::kStyleAttr,
+                                        AtomicString("color:pink"));
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
@@ -59,9 +58,8 @@ TEST_F(CSSComputedStyleDeclarationTest, CleanShadowAncestorsNoRecalc) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 
-  GetDocument()
-      .getElementById(AtomicString("dirty"))
-      ->setAttribute("style", "color:pink");
+  GetElementById("dirty")->setAttribute(html_names::kStyleAttr,
+                                        AtomicString("color:pink"));
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
 
   Element* target = shadow_root.getElementById(AtomicString("target"));
@@ -103,7 +101,7 @@ TEST_F(CSSComputedStyleDeclarationTest, AdjacentInvalidation) {
   EXPECT_EQ("rgb(255, 0, 0)",
             computed->GetPropertyValue(CSSPropertyID::kColor));
 
-  a->classList().Add("test");
+  a->classList().Add(AtomicString("test"));
 
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdateForNode(*a));

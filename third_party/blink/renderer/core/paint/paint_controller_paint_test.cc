@@ -41,7 +41,8 @@ TEST_P(PaintControllerPaintTest, InlineRelayout) {
                           IsSameId(first_text_box->Id(), kForegroundType,
                                    first_text_box_fragment_id)));
 
-  div.setAttribute(html_names::kStyleAttr, "width: 10px; height: 200px");
+  div.setAttribute(html_names::kStyleAttr,
+                   AtomicString("width: 10px; height: 200px"));
   UpdateAllLifecyclePhasesForTest();
 
   cursor = NGInlineCursor();

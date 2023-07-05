@@ -41,12 +41,12 @@ static void TestIsPotentialCustomElementNameChar(UChar32 c, bool expected) {
   AtomicString str;
   if (c <= 0xFF) {
     str8[2] = c;
-    str = str8;
+    str = AtomicString(str8);
   } else {
     size_t i = 2;
     U16_APPEND_UNSAFE(str16, i, c);
     str16[i] = 0;
-    str = str16;
+    str = AtomicString(str16);
   }
   TestIsPotentialCustomElementName(str, expected);
 }
@@ -56,24 +56,24 @@ TEST(CustomElementTest, TestIsValidNamePotentialCustomElementName) {
     bool expected;
     AtomicString str;
   } tests[] = {
-      {false, ""},
-      {false, "a"},
-      {false, "A"},
+      {false, g_empty_atom},
+      {false, AtomicString("a")},
+      {false, AtomicString("A")},
 
-      {false, "A-"},
-      {false, "0-"},
+      {false, AtomicString("A-")},
+      {false, AtomicString("0-")},
 
-      {true, "a-"},
-      {true, "a-a"},
-      {true, "aa-"},
-      {true, "aa-a"},
-      {true, reinterpret_cast<const UChar*>(
-                 u"aa-\x6F22\x5B57")},  // Two CJK Unified Ideographs
-      {true, reinterpret_cast<const UChar*>(
-                 u"aa-\xD840\xDC0B")},  // Surrogate pair U+2000B
+      {true, AtomicString("a-")},
+      {true, AtomicString("a-a")},
+      {true, AtomicString("aa-")},
+      {true, AtomicString("aa-a")},
+      {true, AtomicString(reinterpret_cast<const UChar*>(
+                 u"aa-\x6F22\x5B57"))},  // Two CJK Unified Ideographs
+      {true, AtomicString(reinterpret_cast<const UChar*>(
+                 u"aa-\xD840\xDC0B"))},  // Surrogate pair U+2000B
 
-      {false, "a-A"},
-      {false, "a-Z"},
+      {false, AtomicString("a-A")},
+      {false, AtomicString("a-Z")},
   };
   for (auto test : tests)
     TestIsPotentialCustomElementName(test.str, test.expected);
