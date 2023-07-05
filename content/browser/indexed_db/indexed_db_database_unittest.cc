@@ -141,13 +141,13 @@ class IndexedDBDatabaseTest : public ::testing::Test {
 };
 
 TEST_F(IndexedDBDatabaseTest, ConnectionLifecycle) {
-  auto request1 = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  MockIndexedDBCallbacks request1;
   auto callbacks1 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id1 = 1;
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection1 = std::make_unique<IndexedDBPendingConnection>(
-      request1, callbacks1, transaction_id1,
+      std::make_unique<ThunkCallbacks>(request1), callbacks1, transaction_id1,
       IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
   db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
@@ -155,13 +155,13 @@ TEST_F(IndexedDBDatabaseTest, ConnectionLifecycle) {
                               CreateTestClientStateWrapper());
   RunPostedTasks();
 
-  auto request2 = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  MockIndexedDBCallbacks request2;
   auto callbacks2 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id2 = 2;
   auto create_transaction_callback2 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection2 = std::make_unique<IndexedDBPendingConnection>(
-      request2, callbacks2, transaction_id2,
+      std::make_unique<ThunkCallbacks>(request2), callbacks2, transaction_id2,
       IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback2));
   db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
@@ -169,13 +169,13 @@ TEST_F(IndexedDBDatabaseTest, ConnectionLifecycle) {
                               CreateTestClientStateWrapper());
   RunPostedTasks();
 
-  EXPECT_TRUE(request1->connection());
-  request1->connection()->CloseAndReportForceClose();
-  EXPECT_FALSE(request1->connection()->IsConnected());
+  EXPECT_TRUE(request1.connection());
+  request1.connection()->CloseAndReportForceClose();
+  EXPECT_FALSE(request1.connection()->IsConnected());
 
-  EXPECT_TRUE(request2->connection());
-  request2->connection()->CloseAndReportForceClose();
-  EXPECT_FALSE(request2->connection()->IsConnected());
+  EXPECT_TRUE(request2.connection());
+  request2.connection()->CloseAndReportForceClose();
+  EXPECT_FALSE(request2.connection()->IsConnected());
 
   RunPostedTasks();
 
@@ -184,24 +184,24 @@ TEST_F(IndexedDBDatabaseTest, ConnectionLifecycle) {
 
 TEST_F(IndexedDBDatabaseTest, ForcedClose) {
   auto callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
-  auto request = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  MockIndexedDBCallbacks request;
   const int64_t upgrade_transaction_id = 3;
   auto create_transaction_callback =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection = std::make_unique<IndexedDBPendingConnection>(
-      request, callbacks, upgrade_transaction_id,
-      IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      std::make_unique<ThunkCallbacks>(request), callbacks,
+      upgrade_transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback));
   db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
                               std::move(connection),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
 
-  EXPECT_EQ(db_.get(), request->connection()->database().get());
+  EXPECT_EQ(db_.get(), request.connection()->database().get());
 
   const int64_t transaction_id = 123;
   const std::vector<int64_t> scope;
-  IndexedDBTransaction* transaction = request->connection()->CreateTransaction(
+  IndexedDBTransaction* transaction = request.connection()->CreateTransaction(
       transaction_id, std::set<int64_t>(scope.begin(), scope.end()),
       blink::mojom::IDBTransactionMode::ReadOnly,
       new IndexedDBBackingStore::Transaction(
@@ -210,7 +210,7 @@ TEST_F(IndexedDBDatabaseTest, ForcedClose) {
           blink::mojom::IDBTransactionMode::ReadWrite));
   db_->RegisterAndScheduleTransaction(transaction);
 
-  request->connection()->CloseAndReportForceClose();
+  request.connection()->CloseAndReportForceClose();
 
   EXPECT_TRUE(callbacks->abort_called());
 }
@@ -224,6 +224,7 @@ class MockCallbacks : public IndexedDBCallbacks {
                            absl::nullopt,
                            mojo::NullAssociatedRemote(),
                            base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+  ~MockCallbacks() override = default;
 
   MockCallbacks(const MockCallbacks&) = delete;
   MockCallbacks& operator=(const MockCallbacks&) = delete;
@@ -239,8 +240,6 @@ class MockCallbacks : public IndexedDBCallbacks {
   bool error_called() const { return error_called_; }
 
  private:
-  ~MockCallbacks() override = default;
-
   bool blocked_called_ = false;
   bool success_called_ = false;
   bool error_called_ = false;
@@ -249,13 +248,13 @@ class MockCallbacks : public IndexedDBCallbacks {
 }  // namespace
 
 TEST_F(IndexedDBDatabaseTest, PendingDelete) {
-  auto request1 = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  MockIndexedDBCallbacks request1;
   auto callbacks1 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id1 = 1;
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection = std::make_unique<IndexedDBPendingConnection>(
-      request1, callbacks1, transaction_id1,
+      std::make_unique<ThunkCallbacks>(request1), callbacks1, transaction_id1,
       IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
   db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
@@ -268,18 +267,18 @@ TEST_F(IndexedDBDatabaseTest, PendingDelete) {
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
   bool deleted = false;
-  auto request2 = base::MakeRefCounted<MockCallbacks>();
+  MockCallbacks request2;
   db_->ScheduleDeleteDatabase(
-      IndexedDBBucketStateHandle(), request2,
+      IndexedDBBucketStateHandle(), std::make_unique<ThunkCallbacks>(request2),
       base::BindLambdaForTesting([&]() { deleted = true; }));
   RunPostedTasks();
   EXPECT_EQ(db_->ConnectionCount(), 1UL);
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 1UL);
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
-  EXPECT_FALSE(request2->blocked_called());
-  request1->connection()->VersionChangeIgnored();
-  EXPECT_TRUE(request2->blocked_called());
+  EXPECT_FALSE(request2.blocked_called());
+  request1.connection()->VersionChangeIgnored();
+  EXPECT_TRUE(request2.blocked_called());
   EXPECT_EQ(db_->ConnectionCount(), 1UL);
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 1UL);
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
@@ -290,21 +289,21 @@ TEST_F(IndexedDBDatabaseTest, PendingDelete) {
   EXPECT_FALSE(db_);
 
   EXPECT_TRUE(deleted);
-  EXPECT_TRUE(request2->success_called());
+  EXPECT_TRUE(request2.success_called());
 }
 
 TEST_F(IndexedDBDatabaseTest, OpenDeleteClear) {
   const int64_t kDatabaseVersion = 1;
 
-  auto request1 = base::MakeRefCounted<MockIndexedDBCallbacks>(
+  MockIndexedDBCallbacks request1(
       /*expect_connection=*/true);
   auto callbacks1 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id1 = 1;
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection1 = std::make_unique<IndexedDBPendingConnection>(
-      request1, callbacks1, transaction_id1, kDatabaseVersion,
-      std::move(create_transaction_callback1));
+      std::make_unique<ThunkCallbacks>(request1), callbacks1, transaction_id1,
+      kDatabaseVersion, std::move(create_transaction_callback1));
   db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
                               std::move(connection1),
                               CreateTestClientStateWrapper());
@@ -314,15 +313,15 @@ TEST_F(IndexedDBDatabaseTest, OpenDeleteClear) {
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 1UL);
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
-  auto request2 = base::MakeRefCounted<MockIndexedDBCallbacks>(
+  MockIndexedDBCallbacks request2(
       /*expect_connection=*/false);
   auto callbacks2 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id2 = 2;
   auto create_transaction_callback2 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection2 = std::make_unique<IndexedDBPendingConnection>(
-      request2, callbacks2, transaction_id2, kDatabaseVersion,
-      std::move(create_transaction_callback2));
+      std::make_unique<ThunkCallbacks>(request2), callbacks2, transaction_id2,
+      kDatabaseVersion, std::move(create_transaction_callback2));
   db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
                               std::move(connection2),
                               CreateTestClientStateWrapper());
@@ -332,21 +331,21 @@ TEST_F(IndexedDBDatabaseTest, OpenDeleteClear) {
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 1UL);
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 1UL);
 
-  auto request3 = base::MakeRefCounted<MockIndexedDBCallbacks>(
+  MockIndexedDBCallbacks request3(
       /*expect_connection=*/false);
   auto callbacks3 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id3 = 3;
   auto create_transaction_callback3 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection3 = std::make_unique<IndexedDBPendingConnection>(
-      request3, callbacks3, transaction_id3, kDatabaseVersion,
-      std::move(create_transaction_callback3));
+      std::make_unique<ThunkCallbacks>(request3), callbacks3, transaction_id3,
+      kDatabaseVersion, std::move(create_transaction_callback3));
   db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
                               std::move(connection3),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
 
-  EXPECT_TRUE(request1->upgrade_called());
+  EXPECT_TRUE(request1.upgrade_called());
 
   EXPECT_EQ(db_->ConnectionCount(), 1UL);
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 1UL);
@@ -357,21 +356,21 @@ TEST_F(IndexedDBDatabaseTest, OpenDeleteClear) {
   EXPECT_FALSE(db_);
 
   EXPECT_TRUE(callbacks1->forced_close_called());
-  EXPECT_TRUE(request1->error_called());
+  EXPECT_TRUE(request1.error_called());
   EXPECT_TRUE(callbacks2->forced_close_called());
-  EXPECT_TRUE(request2->error_called());
+  EXPECT_TRUE(request2.error_called());
   EXPECT_TRUE(callbacks3->forced_close_called());
-  EXPECT_TRUE(request3->error_called());
+  EXPECT_TRUE(request3.error_called());
 }
 
 TEST_F(IndexedDBDatabaseTest, ForceDelete) {
-  auto request1 = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  MockIndexedDBCallbacks request1;
   auto callbacks1 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id1 = 1;
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection = std::make_unique<IndexedDBPendingConnection>(
-      request1, callbacks1, transaction_id1,
+      std::make_unique<ThunkCallbacks>(request1), callbacks1, transaction_id1,
       IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
   db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
@@ -384,9 +383,9 @@ TEST_F(IndexedDBDatabaseTest, ForceDelete) {
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
   bool deleted = false;
-  auto request2 = base::MakeRefCounted<MockCallbacks>();
+  MockCallbacks request2;
   db_->ScheduleDeleteDatabase(
-      IndexedDBBucketStateHandle(), request2,
+      IndexedDBBucketStateHandle(), std::make_unique<ThunkCallbacks>(request2),
       base::BindLambdaForTesting([&]() { deleted = true; }));
   RunPostedTasks();
   EXPECT_FALSE(deleted);
@@ -394,20 +393,20 @@ TEST_F(IndexedDBDatabaseTest, ForceDelete) {
   RunPostedTasks();
   EXPECT_FALSE(db_);
   EXPECT_TRUE(deleted);
-  EXPECT_FALSE(request2->blocked_called());
-  EXPECT_TRUE(request2->success_called());
+  EXPECT_FALSE(request2.blocked_called());
+  EXPECT_TRUE(request2.success_called());
 }
 
 TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenPending) {
   // Verify that pending connection requests are handled correctly during a
   // ForceClose.
-  auto request1 = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  MockIndexedDBCallbacks request1;
   auto callbacks1 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id1 = 1;
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection1 = std::make_unique<IndexedDBPendingConnection>(
-      request1, callbacks1, transaction_id1,
+      std::make_unique<ThunkCallbacks>(request1), callbacks1, transaction_id1,
       IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
   db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
@@ -419,15 +418,15 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenPending) {
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 0UL);
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
-  auto request2 = base::MakeRefCounted<MockIndexedDBCallbacks>(
+  MockIndexedDBCallbacks request2(
       /*expect_connection=*/false);
   auto callbacks2 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id2 = 2;
   auto create_transaction_callback2 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection2 = std::make_unique<IndexedDBPendingConnection>(
-      request1, callbacks1, transaction_id2, 3,
-      std::move(create_transaction_callback2));
+      std::make_unique<ThunkCallbacks>(request1), callbacks1, transaction_id2,
+      3, std::move(create_transaction_callback2));
   db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
                               std::move(connection2),
                               CreateTestClientStateWrapper());
@@ -445,13 +444,13 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenPending) {
 TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenAndDeletePending) {
   // Verify that pending connection requests are handled correctly during a
   // ForceClose.
-  auto request1 = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  MockIndexedDBCallbacks request1;
   auto callbacks1 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id1 = 1;
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection1 = std::make_unique<IndexedDBPendingConnection>(
-      request1, callbacks1, transaction_id1,
+      std::make_unique<ThunkCallbacks>(request1), callbacks1, transaction_id1,
       IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
   db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
@@ -463,23 +462,23 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenAndDeletePending) {
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 0UL);
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
-  auto request2 = base::MakeRefCounted<MockIndexedDBCallbacks>(false);
+  MockIndexedDBCallbacks request2(false);
   auto callbacks2 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id2 = 2;
   auto create_transaction_callback2 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection2 = std::make_unique<IndexedDBPendingConnection>(
-      request1, callbacks1, transaction_id2, 3,
-      std::move(create_transaction_callback2));
+      std::make_unique<ThunkCallbacks>(request1), callbacks2, transaction_id2,
+      3, std::move(create_transaction_callback2));
   db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
                               std::move(connection2),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
 
   bool deleted = false;
-  auto request3 = base::MakeRefCounted<MockCallbacks>();
+  auto request3 = std::make_unique<MockCallbacks>();
   db_->ScheduleDeleteDatabase(
-      IndexedDBBucketStateHandle(), request3,
+      IndexedDBBucketStateHandle(), std::move(request3),
       base::BindLambdaForTesting([&]() { deleted = true; }));
   RunPostedTasks();
   EXPECT_FALSE(deleted);
@@ -534,14 +533,13 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         &lock_manager_);
     ASSERT_TRUE(s.ok());
 
-    request_ = base::MakeRefCounted<MockIndexedDBCallbacks>();
     callbacks_ = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
     const int64_t transaction_id = 1;
     auto create_transaction_callback1 =
         base::BindOnce(&CreateAndBindTransactionPlaceholder);
     auto connection = std::make_unique<IndexedDBPendingConnection>(
-        request_, callbacks_, transaction_id,
-        IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+        std::make_unique<ThunkCallbacks>(request_), std::move(callbacks_),
+        transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
         std::move(create_transaction_callback1));
     mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
         remote;
@@ -552,8 +550,8 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
     RunPostedTasks();
     EXPECT_EQ(IndexedDBDatabaseMetadata::NO_VERSION, db_->metadata().version);
 
-    EXPECT_TRUE(request_->connection());
-    transaction_ = request_->connection()->CreateTransaction(
+    EXPECT_TRUE(request_.connection());
+    transaction_ = request_.connection()->CreateTransaction(
         transaction_id, /*scope=*/std::set<int64_t>(),
         blink::mojom::IDBTransactionMode::VersionChange,
         new IndexedDBFakeBackingStore::FakeTransaction(commit_success_));
@@ -603,7 +601,7 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
   std::unique_ptr<IndexedDBFakeBackingStore> backing_store_;
   std::unique_ptr<IndexedDBDatabase> db_;
   raw_ptr<FakeIndexedDBMetadataCoding> metadata_coding_ = nullptr;
-  scoped_refptr<MockIndexedDBCallbacks> request_;
+  MockIndexedDBCallbacks request_;
   scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;

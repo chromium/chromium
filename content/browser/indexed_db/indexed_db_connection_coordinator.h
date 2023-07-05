@@ -49,7 +49,7 @@ class CONTENT_EXPORT IndexedDBConnectionCoordinator {
       scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
 
   void ScheduleDeleteDatabase(IndexedDBBucketStateHandle bucket_state_handle,
-                              scoped_refptr<IndexedDBCallbacks> callbacks,
+                              std::unique_ptr<IndexedDBCallbacks> callbacks,
                               base::OnceClosure on_deletion_complete);
 
   // Call this method to prune any tasks that don't want to be run during

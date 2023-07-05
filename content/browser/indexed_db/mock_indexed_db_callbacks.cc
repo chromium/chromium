@@ -68,4 +68,34 @@ void MockIndexedDBCallbacks::CallOnInfoSuccess(base::RepeatingClosure closure) {
   call_on_info_success_ = std::move(closure);
 }
 
+ThunkCallbacks::ThunkCallbacks(IndexedDBCallbacks& wrapped)
+    : MockIndexedDBCallbacks(false), wrapped_(wrapped) {}
+
+void ThunkCallbacks::OnError(const IndexedDBDatabaseError& error) {
+  wrapped_.OnError(error);
+}
+
+void ThunkCallbacks::OnBlocked(int64_t existing_version) {
+  wrapped_.OnBlocked(existing_version);
+}
+
+void ThunkCallbacks::OnUpgradeNeeded(
+    int64_t old_version,
+    std::unique_ptr<IndexedDBConnection> connection,
+    const blink::IndexedDBDatabaseMetadata& metadata,
+    const IndexedDBDataLossInfo& data_loss_info) {
+  wrapped_.OnUpgradeNeeded(old_version, std::move(connection), metadata,
+                           data_loss_info);
+}
+
+void ThunkCallbacks::OnSuccess(
+    std::unique_ptr<IndexedDBConnection> connection,
+    const blink::IndexedDBDatabaseMetadata& metadata) {
+  wrapped_.OnSuccess(std::move(connection), metadata);
+}
+
+void ThunkCallbacks::OnSuccess(int64_t value) {
+  wrapped_.OnSuccess(value);
+}
+
 }  // namespace content

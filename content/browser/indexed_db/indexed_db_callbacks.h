@@ -37,14 +37,14 @@ class IndexedDBConnection;
 class IndexedDBDatabase;
 struct IndexedDBDataLossInfo;
 
-class CONTENT_EXPORT IndexedDBCallbacks
-    : public base::RefCounted<IndexedDBCallbacks> {
+class CONTENT_EXPORT IndexedDBCallbacks {
  public:
   IndexedDBCallbacks(base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
                      const absl::optional<storage::BucketInfo>& bucket,
                      mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
                          pending_callbacks,
                      scoped_refptr<base::SequencedTaskRunner> idb_runner);
+  virtual ~IndexedDBCallbacks();
 
   IndexedDBCallbacks(const IndexedDBCallbacks&) = delete;
   IndexedDBCallbacks& operator=(const IndexedDBCallbacks&) = delete;
@@ -72,12 +72,7 @@ class CONTENT_EXPORT IndexedDBCallbacks
 
   bool is_complete() const { return complete_; }
 
- protected:
-  virtual ~IndexedDBCallbacks();
-
  private:
-  friend class base::RefCounted<IndexedDBCallbacks>;
-
   // Stores if this callbacks object is complete and should not be called again.
   bool complete_ = false;
 

@@ -298,7 +298,7 @@ void IndexedDBFactory::Open(
 
 void IndexedDBFactory::DeleteDatabase(
     const std::u16string& name,
-    scoped_refptr<IndexedDBCallbacks> callbacks,
+    std::unique_ptr<IndexedDBCallbacks> callbacks,
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& data_directory,
     bool force_close) {
@@ -326,7 +326,7 @@ void IndexedDBFactory::DeleteDatabase(
   if (it != factory->databases().end()) {
     base::WeakPtr<IndexedDBDatabase> database = it->second->AsWeakPtr();
     database->ScheduleDeleteDatabase(
-        std::move(bucket_state_handle), callbacks,
+        std::move(bucket_state_handle), std::move(callbacks),
         base::BindOnce(&IndexedDBFactory::OnDatabaseDeleted,
                        weak_factory_.GetWeakPtr(), bucket_locator));
     if (force_close) {

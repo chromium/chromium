@@ -435,6 +435,7 @@ class ForceCloseDBCallbacks : public IndexedDBCallbacks {
                            idb_context->IDBTaskRunner()),
         idb_context_(idb_context),
         bucket_locator_(bucket_info.ToBucketLocator()) {}
+  ~ForceCloseDBCallbacks() override = default;
 
   ForceCloseDBCallbacks(const ForceCloseDBCallbacks&) = delete;
   ForceCloseDBCallbacks& operator=(const ForceCloseDBCallbacks&) = delete;
@@ -446,9 +447,6 @@ class ForceCloseDBCallbacks : public IndexedDBCallbacks {
   }
 
   IndexedDBConnection* connection() { return connection_.get(); }
-
- protected:
-  ~ForceCloseDBCallbacks() override = default;
 
  private:
   scoped_refptr<IndexedDBContextImpl> idb_context_;
@@ -467,9 +465,9 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
   auto closed_db_callbacks =
       base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   auto open_callbacks =
-      base::MakeRefCounted<ForceCloseDBCallbacks>(context(), bucket_info);
+      std::make_unique<ForceCloseDBCallbacks>(context(), bucket_info);
   auto closed_callbacks =
-      base::MakeRefCounted<ForceCloseDBCallbacks>(context(), bucket_info);
+      std::make_unique<ForceCloseDBCallbacks>(context(), bucket_info);
   base::FilePath test_path = GetFilePathForTesting(bucket_locator);
 
   const int64_t host_transaction_id = 0;
@@ -481,8 +479,9 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   factory->Open(u"opendb",
                 std::make_unique<IndexedDBPendingConnection>(
-                    open_callbacks, open_db_callbacks, host_transaction_id,
-                    version, std::move(create_transaction_callback1)),
+                    std::make_unique<ThunkCallbacks>(*open_callbacks),
+                    open_db_callbacks, host_transaction_id, version,
+                    std::move(create_transaction_callback1)),
                 bucket_locator, context()->GetDataPath(bucket_locator),
                 CreateTestClientStateWrapper());
   EXPECT_TRUE(base::DirectoryExists(test_path));
@@ -491,8 +490,9 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   factory->Open(u"closeddb",
                 std::make_unique<IndexedDBPendingConnection>(
-                    closed_callbacks, closed_db_callbacks, host_transaction_id,
-                    version, std::move(create_transaction_callback2)),
+                    std::make_unique<ThunkCallbacks>(*closed_callbacks),
+                    closed_db_callbacks, host_transaction_id, version,
+                    std::move(create_transaction_callback2)),
                 bucket_locator, context()->GetDataPath(bucket_locator),
                 CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -531,9 +531,9 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
   auto closed_db_callbacks =
       base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   auto open_callbacks =
-      base::MakeRefCounted<ForceCloseDBCallbacks>(context(), bucket_info);
+      std::make_unique<ForceCloseDBCallbacks>(context(), bucket_info);
   auto closed_callbacks =
-      base::MakeRefCounted<ForceCloseDBCallbacks>(context(), bucket_info);
+      std::make_unique<ForceCloseDBCallbacks>(context(), bucket_info);
   base::FilePath test_path = GetFilePathForTesting(bucket_locator);
 
   const int64_t host_transaction_id = 0;
@@ -545,8 +545,9 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   factory->Open(u"opendb",
                 std::make_unique<IndexedDBPendingConnection>(
-                    open_callbacks, open_db_callbacks, host_transaction_id,
-                    version, std::move(create_transaction_callback1)),
+                    std::make_unique<ThunkCallbacks>(*open_callbacks),
+                    open_db_callbacks, host_transaction_id, version,
+                    std::move(create_transaction_callback1)),
                 bucket_locator, context()->GetDataPath(bucket_locator),
                 CreateTestClientStateWrapper());
   EXPECT_TRUE(base::DirectoryExists(test_path));
@@ -555,8 +556,9 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   factory->Open(u"closeddb",
                 std::make_unique<IndexedDBPendingConnection>(
-                    closed_callbacks, closed_db_callbacks, host_transaction_id,
-                    version, std::move(create_transaction_callback2)),
+                    std::make_unique<ThunkCallbacks>(*closed_callbacks),
+                    closed_db_callbacks, host_transaction_id, version,
+                    std::move(create_transaction_callback2)),
                 bucket_locator, context()->GetDataPath(bucket_locator),
                 CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -647,13 +649,13 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureFirstParty) {
 
   const int64_t transaction_id = 1;
 
-  auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  auto callbacks = std::make_unique<MockIndexedDBCallbacks>();
   auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection = std::make_unique<IndexedDBPendingConnection>(
-      callbacks, db_callbacks, transaction_id,
-      IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      std::make_unique<ThunkCallbacks>(*callbacks), db_callbacks,
+      transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
   factory->Open(u"db", std::move(connection), bucket_locator,
                 context()->GetDataPath(bucket_locator),
@@ -688,13 +690,13 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureThirdParty) {
 
   const int64_t transaction_id = 1;
 
-  auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  auto callbacks = std::make_unique<MockIndexedDBCallbacks>();
   auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection = std::make_unique<IndexedDBPendingConnection>(
-      callbacks, db_callbacks, transaction_id,
-      IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      std::make_unique<ThunkCallbacks>(*callbacks), db_callbacks,
+      transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
   factory->Open(u"db", std::move(connection), bucket_locator,
                 context()->GetDataPath(bucket_locator),

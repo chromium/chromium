@@ -410,7 +410,7 @@ void IndexedDBDatabase::ScheduleOpenConnection(
 
 void IndexedDBDatabase::ScheduleDeleteDatabase(
     IndexedDBBucketStateHandle bucket_state_handle,
-    scoped_refptr<IndexedDBCallbacks> callbacks,
+    std::unique_ptr<IndexedDBCallbacks> callbacks,
     base::OnceClosure on_deletion_complete) {
   connection_coordinator_.ScheduleDeleteDatabase(
       std::move(bucket_state_handle), std::move(callbacks),
@@ -606,7 +606,6 @@ void IndexedDBDatabase::RenameObjectStoreAbortOperation(
 
 Status IndexedDBDatabase::VersionChangeOperation(
     int64_t version,
-    scoped_refptr<IndexedDBCallbacks> callbacks,
     IndexedDBTransaction* transaction) {
   TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::VersionChangeOperation",
                "txn.id", transaction->id());
@@ -1637,7 +1636,7 @@ Status IndexedDBDatabase::DeleteRangeOperation(
 
 Status IndexedDBDatabase::GetKeyGeneratorCurrentNumberOperation(
     int64_t object_store_id,
-    scoped_refptr<IndexedDBCallbacks> callbacks,
+    std::unique_ptr<IndexedDBCallbacks> callbacks,
     IndexedDBTransaction* transaction) {
   if (!IsObjectStoreIdInMetadata(object_store_id)) {
     callbacks->OnError(CreateError(blink::mojom::IDBException::kDataError,

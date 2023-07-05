@@ -307,9 +307,9 @@ class IndexedDBConnectionCoordinator::OpenRequest
     // function to use later.
     pending_->transaction = transaction->AsWeakPtr();
 
-    transaction->ScheduleTask(BindWeakOperation(
-        &IndexedDBDatabase::VersionChangeOperation, db_->AsWeakPtr(),
-        pending_->version, pending_->callbacks));
+    transaction->ScheduleTask(
+        BindWeakOperation(&IndexedDBDatabase::VersionChangeOperation,
+                          db_->AsWeakPtr(), pending_->version));
     transaction->mutable_locks_receiver()->locks =
         std::move(lock_receiver_.locks);
     transaction->Start();
@@ -398,7 +398,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
  public:
   DeleteRequest(IndexedDBBucketStateHandle bucket_state_handle,
                 IndexedDBDatabase* db,
-                scoped_refptr<IndexedDBCallbacks> callbacks,
+                std::unique_ptr<IndexedDBCallbacks> callbacks,
                 base::OnceClosure on_database_deleted,
                 IndexedDBConnectionCoordinator* connection_coordinator,
                 TasksAvailableCallback tasks_available_callback)
@@ -406,7 +406,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
                           db,
                           connection_coordinator,
                           std::move(tasks_available_callback)),
-        callbacks_(callbacks),
+        callbacks_(std::move(callbacks)),
         on_database_deleted_(std::move(on_database_deleted)) {}
 
   DeleteRequest(const DeleteRequest&) = delete;
@@ -522,7 +522,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
 
  private:
   PartitionedLockHolder lock_receiver_;
-  scoped_refptr<IndexedDBCallbacks> callbacks_;
+  std::unique_ptr<IndexedDBCallbacks> callbacks_;
   base::OnceClosure on_database_deleted_;
 
   base::WeakPtrFactory<DeleteRequest> weak_factory_{this};
@@ -546,10 +546,10 @@ void IndexedDBConnectionCoordinator::ScheduleOpenConnection(
 
 void IndexedDBConnectionCoordinator::ScheduleDeleteDatabase(
     IndexedDBBucketStateHandle bucket_state_handle,
-    scoped_refptr<IndexedDBCallbacks> callbacks,
+    std::unique_ptr<IndexedDBCallbacks> callbacks,
     base::OnceClosure on_deletion_complete) {
   request_queue_.push(std::make_unique<DeleteRequest>(
-      std::move(bucket_state_handle), db_, callbacks,
+      std::move(bucket_state_handle), db_, std::move(callbacks),
       std::move(on_deletion_complete), this, tasks_available_callback_));
   tasks_available_callback_.Run();
 }

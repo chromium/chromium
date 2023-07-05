@@ -180,8 +180,6 @@ void IndexedDBCallbacks::OnSuccess(
 
   DCHECK_EQ(connection_created_, !connection);
 
-  scoped_refptr<IndexedDBCallbacks> self(this);
-
   // Only create a new connection if one was not previously sent in
   // OnUpgradeNeeded.
   std::unique_ptr<IndexedDBConnection> database_connection;

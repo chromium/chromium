@@ -560,7 +560,7 @@ void DatabaseImpl::GetKeyGeneratorCurrentNumber(
     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
         pending_callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
+  auto callbacks = std::make_unique<IndexedDBCallbacks>(
       dispatcher_host_->AsWeakPtr(), bucket_info_, std::move(pending_callbacks),
       idb_runner_);
   if (!connection_->IsConnected())
