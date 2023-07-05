@@ -16,8 +16,6 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome_os
 items:
 - caption: Enable charging sounds
   value: true
@@ -28,5 +26,7 @@ owners:
 - chromeos-wms@google.com
 schema:
   type: boolean
+supported_on:
+- chrome_os:117-
 tags: []
 type: main
