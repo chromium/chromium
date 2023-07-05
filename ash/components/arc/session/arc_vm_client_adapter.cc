@@ -61,7 +61,6 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
-#include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/components/sensors/buildflags.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/system/core_scheduling.h"
@@ -216,7 +215,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     const FileSystemStatus& file_system_status,
     bool use_per_vm_core_scheduling,
     const StartParams& start_params,
-    bool is_host_on_vm,
     ArcVmClientAdapterDelegate* delegate) {
   vm_tools::concierge::StartArcVmRequest request;
 
@@ -541,16 +539,11 @@ class ArcVmClientAdapter : public ArcClientAdapter,
                            public ash::ConciergeClient::Observer,
                            public ConnectionObserver<arc::mojom::AppInstance> {
  public:
-  // Initializing |is_host_on_vm_| is not always very fast.
-  // Try to initialize them in the constructor and in StartMiniArc respectively.
-  // They usually run when the system is not busy.
   ArcVmClientAdapter() : ArcVmClientAdapter(FileSystemStatusRewriter{}) {}
 
   // For testing purposes and the internal use (by the other ctor) only.
   explicit ArcVmClientAdapter(const FileSystemStatusRewriter& rewriter)
       : delegate_(std::make_unique<ArcVmClientAdapterDelegate>()),
-        is_host_on_vm_(
-            ash::system::StatisticsProvider::GetInstance()->IsRunningOnVm()),
         file_system_status_rewriter_for_testing_(rewriter) {
     auto* client = GetConciergeClient();
     client->AddVmObserver(this);
@@ -979,7 +972,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     auto start_request = CreateStartArcVmRequest(
         user_id_hash_, cpus, demo_session_apps_path, data_disk_path,
         file_system_status, use_per_vm_core_scheduling, start_params_,
-        is_host_on_vm_, delegate_.get());
+        delegate_.get());
 
     VLOG(1) << "Sending request to start ARCVM";
     GetConciergeClient()->StartArcVm(
@@ -1166,8 +1159,6 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   std::unique_ptr<ArcVmClientAdapterDelegate> delegate_;
 
-  // True when the *host* is running on a VM.
-  const bool is_host_on_vm_;
   // A cryptohome ID of the primary profile.
   cryptohome::Identification cryptohome_id_;
   // A hash of the primary profile user ID.
