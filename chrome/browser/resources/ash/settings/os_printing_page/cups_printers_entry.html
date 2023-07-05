@@ -32,13 +32,12 @@
     margin: auto;
   }
 
-  /* TODO(b/278621575): Replace with actual colors when available. */
   #printerSubtext {
-    color: orange;
+    color: var(--cros-sys-warning);
   }
 
   :host([has-high-severity-error_]) #printerSubtext {
-    color: red;
+    color: var(--cros-sys-error);
   }
 
   cr-button {
