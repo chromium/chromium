@@ -97,7 +97,8 @@ class NetworkFeaturePodControllerTest
   void SetUp() override {
     feature_list_.InitWithFeatureStates(
         {{features::kQsRevamp, IsQsRevampEnabled()},
-         {chromeos::features::kJellyroll, IsQsRevampEnabled()}});
+         {chromeos::features::kJellyroll, IsQsRevampEnabled()},
+         {chromeos::features::kJelly, IsQsRevampEnabled()}});
 
     AshTestBase::SetUp();
 
