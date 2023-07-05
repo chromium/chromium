@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -47,6 +48,11 @@ class WebAppDetailedInstallDialogDelegate
 
   void OnAccept();
   void OnCancel();
+  void OnClose();
+
+  base::WeakPtr<WebAppDetailedInstallDialogDelegate> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
@@ -56,6 +62,7 @@ class WebAppDetailedInstallDialogDelegate
 
  private:
   void CloseDialogAsIgnored();
+  void MeasureIphOnDialogClose();
 
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppInstallInfo> install_info_;
@@ -64,6 +71,9 @@ class WebAppDetailedInstallDialogDelegate
   chrome::PwaInProductHelpState iph_state_;
   raw_ptr<PrefService> prefs_;
   raw_ptr<feature_engagement::Tracker> tracker_;
+
+  base::WeakPtrFactory<WebAppDetailedInstallDialogDelegate> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace web_app

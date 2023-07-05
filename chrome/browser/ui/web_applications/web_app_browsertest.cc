@@ -1230,9 +1230,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DetailedInstallDialog,
   base::UserActionTester user_action_tester;
   NavigateToURLAndWait(
       browser(),
-      https_server()->GetURL(
-          "/banners/"
-          "manifest_test_page.html?manifest=manifest_with_screenshots.json"));
+      https_server()->GetURL("/banners/manifest_test_page_screenshots.html"));
 
   WebAppTestInstallObserver observer(profile());
   // The IDC_INSTALL_PWA is executed twice, but the dialog

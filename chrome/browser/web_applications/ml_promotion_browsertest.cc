@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -11,10 +12,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -31,7 +34,6 @@
 #include "components/segmentation_platform/public/types/processed_value.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/webapps/browser/features.h"
-#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/metrics/site_quality_metrics_task.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
@@ -84,6 +86,25 @@ segmentation_platform::ClassificationResult CreateClassificationResult(
   result.ordered_labels.emplace_back(label);
   result.request_id = request_id;
   return result;
+}
+
+enum class InstallDialogState {
+  kPWAConfirmationBubble = 0,
+  kDetailedInstallDialog = 1,
+  kCreateShortcutDialog = 2,
+  kMaxValue = kCreateShortcutDialog
+};
+
+std::string GetMLPromotionDialogTestName(
+    const ::testing::TestParamInfo<InstallDialogState>& info) {
+  switch (info.param) {
+    case InstallDialogState::kPWAConfirmationBubble:
+      return "PWA_Confirmation_Bubble";
+    case InstallDialogState::kDetailedInstallDialog:
+      return "Detailed_Install_Dialog";
+    case InstallDialogState::kCreateShortcutDialog:
+      return "Create_Shortcut_Dialog";
+  }
 }
 
 class ServiceWorkerLoadAwaiter : public content::ServiceWorkerContextObserver {
@@ -316,42 +337,6 @@ class MLPromotionBrowsertest : public WebAppControllerBrowserTest {
         app_id, /*is_locally_installed=*/install_locally);
     return success;
   }
-
-  bool InstallAppFromUserInitiation(bool accept_install) {
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(b/287255120) : Build functionalities for Android.
-    return false;
-#else
-    base::test::TestFuture<const web_app::AppId&, webapps::InstallResultCode>
-        install_future;
-    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                         "PWAConfirmationBubbleView");
-    web_app::CreateWebAppFromManifest(
-        web_contents(),
-        /*bypass_service_worker_check=*/true,
-        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-        install_future.GetCallback(), chrome::PwaInProductHelpState::kNotShown);
-    views::Widget* widget = waiter.WaitIfNeededAndGet();
-    views::test::WidgetDestroyedWaiter destroyed(widget);
-    if (accept_install) {
-      views::test::AcceptDialog(widget);
-    } else {
-      views::test::CancelDialog(widget);
-    }
-    destroyed.Wait();
-    if (!install_future.Wait()) {
-      return false;
-    }
-    if (accept_install) {
-      return install_future.Get<webapps::InstallResultCode>() ==
-             webapps::InstallResultCode::kSuccessNewInstall;
-    } else {
-      return install_future.Get<webapps::InstallResultCode>() ==
-             webapps::InstallResultCode::kUserInstallDeclined;
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
-  }
-
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
 
  private:
@@ -668,12 +653,131 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, PageLoadsWithOnly1Favicon) {
 // 1. Favicon URL updates.
 // 2. Cache storage sizes.
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallNotShown) {
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+// TODO(b/287255120) : Implement ways of measuring ML outputs on Android.
+class MLPromotionInstallDialogBrowserTest
+    : public MLPromotionBrowsertest,
+      public ::testing::WithParamInterface<InstallDialogState> {
+ public:
+  MLPromotionInstallDialogBrowserTest() = default;
+  ~MLPromotionInstallDialogBrowserTest() = default;
 
-  ExpectClasificationCallReturnResult(/*site_url=*/GetInstallableAppURL(),
-                                      /*manifest_id=*/GetInstallableAppURL(),
-                                      "DontShow", TrainingRequestId(1ll));
+ protected:
+  bool InstallAppForCurrentWebContents(bool install_locally) {
+    WebAppProvider* provider = WebAppProvider::GetForTest(browser()->profile());
+    base::test::TestFuture<const AppId&, webapps::InstallResultCode>
+        install_future;
+
+    provider->scheduler().FetchManifestAndInstall(
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+        web_contents()->GetWeakPtr(),
+        /*bypass_service_worker_check=*/true,
+        base::BindOnce(test::TestAcceptDialogCallback),
+        install_future.GetCallback(), /*use_fallback=*/false);
+
+    bool success = install_future.Wait();
+    if (!success) {
+      return success;
+    }
+
+    const AppId& app_id = install_future.Get<AppId>();
+    provider->sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
+        app_id, /*is_locally_installed=*/install_locally);
+    return success;
+  }
+
+  bool InstallAppFromUserInitiation(bool accept_install,
+                                    std::string dialog_name) {
+    base::test::TestFuture<const web_app::AppId&, webapps::InstallResultCode>
+        install_future;
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         dialog_name);
+    web_app::CreateWebAppFromManifest(
+        web_contents(),
+        /*bypass_service_worker_check=*/true,
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+        install_future.GetCallback(), chrome::PwaInProductHelpState::kNotShown);
+    views::Widget* widget = waiter.WaitIfNeededAndGet();
+    views::test::WidgetDestroyedWaiter destroyed(widget);
+    if (accept_install) {
+      views::test::AcceptDialog(widget);
+    } else {
+      views::test::CancelDialog(widget);
+    }
+    destroyed.Wait();
+    if (!install_future.Wait()) {
+      return false;
+    }
+    if (accept_install) {
+      return install_future.Get<webapps::InstallResultCode>() ==
+             webapps::InstallResultCode::kSuccessNewInstall;
+    } else {
+      return install_future.Get<webapps::InstallResultCode>() ==
+             webapps::InstallResultCode::kUserInstallDeclined;
+    }
+  }
+
+  const std::string GetDialogName() {
+    switch (GetParam()) {
+      case InstallDialogState::kPWAConfirmationBubble:
+        return "PWAConfirmationBubbleView";
+      case InstallDialogState::kDetailedInstallDialog:
+        return "WebAppDetailedInstallDialog";
+      case InstallDialogState::kCreateShortcutDialog:
+        return "WebAppConfirmationView";
+    }
+  }
+
+  const GURL GetUrlBasedOnDialogState() {
+    switch (GetParam()) {
+      case InstallDialogState::kPWAConfirmationBubble:
+        return GetInstallableAppURL();
+      case InstallDialogState::kDetailedInstallDialog:
+        return https_server()->GetURL(
+            "/banners/manifest_test_page_screenshots.html");
+      case InstallDialogState::kCreateShortcutDialog:
+        return GetUrlWithNoManifest();
+    }
+  }
+
+  // These names are obtained from the manifests in chrome/test/data/banners/
+  const std::string GetAppNameBasedOnDialogState() {
+    switch (GetParam()) {
+      case InstallDialogState::kPWAConfirmationBubble:
+        return "Manifest test app";
+      case InstallDialogState::kDetailedInstallDialog:
+        return "PWA Bottom Sheet";
+      case InstallDialogState::kCreateShortcutDialog:
+        NOTREACHED();
+        return std::string();
+    }
+  }
+
+  void InstallAppBasedOnDialogState() {
+    switch (GetParam()) {
+      case InstallDialogState::kPWAConfirmationBubble:
+      case InstallDialogState::kDetailedInstallDialog:
+        InstallAppForCurrentWebContents(/*install_locally=*/true);
+        break;
+      case InstallDialogState::kCreateShortcutDialog:
+        chrome::SetAutoAcceptWebAppDialogForTesting(
+            /*auto_accept=*/true, /*auto_open_in_window=*/false);
+        chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT);
+        break;
+    }
+  }
+
+  bool IsCurrentTestStateShortcutDialog() {
+    return GetParam() == InstallDialogState::kCreateShortcutDialog;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest, MlInstallNotShown) {
+  NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
+
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/GetUrlBasedOnDialogState(), "DontShow",
+      TrainingRequestId(1ll));
 
   // This calls unblocks the metrics tasks, allowing ML to be called.
   task_runner_->RunPendingTasks();
@@ -683,17 +787,22 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallNotShown) {
   EXPECT_TRUE(provider().registrar_unsafe().is_empty());
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallShownCancelled) {
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
+                       MlInstallShownCancelled) {
+  if (IsCurrentTestStateShortcutDialog()) {
+    GTEST_SKIP()
+        << "Skipping because ML cannot trigger the Create Shortcut Dialog.";
+  }
+  NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
 
   ExpectClasificationCallReturnResult(
-      /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(),
+      /*site_url=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/GetUrlBasedOnDialogState(),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "PWAConfirmationBubbleView");
+                                       GetDialogName());
   // This calls unblocks the metrics tasks, allowing ML to be called.
   task_runner_->RunPendingTasks();
   views::Widget* widget = waiter.WaitIfNeededAndGet();
@@ -707,18 +816,22 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallShownCancelled) {
   EXPECT_TRUE(provider().registrar_unsafe().is_empty());
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
+IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
                        MlInstallShownIgnoredNavigation) {
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+  if (IsCurrentTestStateShortcutDialog()) {
+    GTEST_SKIP()
+        << "Skipping because ML cannot trigger the Create Shortcut Dialog.";
+  }
+  NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
 
   ExpectClasificationCallReturnResult(
-      /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(),
+      /*site_url=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/GetUrlBasedOnDialogState(),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "PWAConfirmationBubbleView");
+                                       GetDialogName());
   // This calls unblocks the metrics tasks, allowing ML to be called.
   task_runner_->RunPendingTasks();
   views::Widget* widget = waiter.WaitIfNeededAndGet();
@@ -734,18 +847,22 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   EXPECT_TRUE(provider().registrar_unsafe().is_empty());
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
+IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
                        MlInstallShownIgnoredWidgetClosed) {
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+  if (IsCurrentTestStateShortcutDialog()) {
+    GTEST_SKIP()
+        << "Skipping because ML cannot trigger the Create Shortcut Dialog.";
+  }
+  NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
 
   ExpectClasificationCallReturnResult(
-      /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(),
+      /*site_url=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/GetUrlBasedOnDialogState(),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "PWAConfirmationBubbleView");
+                                       GetDialogName());
   // This calls unblocks the metrics tasks, allowing ML to be called.
   task_runner_->RunPendingTasks();
   views::Widget* widget = waiter.WaitIfNeededAndGet();
@@ -759,17 +876,22 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   EXPECT_TRUE(provider().registrar_unsafe().is_empty());
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallShownAccepted) {
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
+                       MlInstallShownAccepted) {
+  if (IsCurrentTestStateShortcutDialog()) {
+    GTEST_SKIP()
+        << "Skipping because ML cannot trigger the Create Shortcut Dialog.";
+  }
+  NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
 
   ExpectClasificationCallReturnResult(
-      /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(),
+      /*site_url=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/GetUrlBasedOnDialogState(),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "PWAConfirmationBubbleView");
+                                       GetDialogName());
   // This calls unblocks the metrics tasks, allowing ML to be called.
   task_runner_->RunPendingTasks();
   views::Widget* widget = waiter.WaitIfNeededAndGet();
@@ -781,18 +903,22 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallShownAccepted) {
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   EXPECT_FALSE(provider().registrar_unsafe().is_empty());
-  AppId app_id = provider().registrar_unsafe().GetAppIds()[0];
-  EXPECT_EQ("Manifest test app",
+  web_app::AppId app_id = provider().registrar_unsafe().GetAppIds()[0];
+  EXPECT_EQ(GetAppNameBasedOnDialogState(),
             provider().registrar_unsafe().GetAppShortName(app_id));
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlNotShownAlreadyInstalled) {
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
+                       MlNotShownAlreadyInstalled) {
+  NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
+  InstallAppBasedOnDialogState();
 
-  InstallApp();
-
+  int segmentation_trigger_time =
+      (GetParam() == InstallDialogState::kCreateShortcutDialog);
+  // ML Model is still triggered for shortcuts which are treated separately as
+  // PWAs.
   EXPECT_CALL(*GetMockSegmentation(), GetClassificationResult(_, _, _, _))
-      .Times(0);
+      .Times(segmentation_trigger_time);
 
   // This calls unblocks the metrics tasks, allowing ML to be called. It should
   // not, though, as the app is installed.
@@ -801,8 +927,13 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlNotShownAlreadyInstalled) {
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlHandlesInvisible) {
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
+                       MlHandlesInvisible) {
+  if (IsCurrentTestStateShortcutDialog()) {
+    GTEST_SKIP()
+        << "Skipping because ML cannot trigger the Create Shortcut Dialog.";
+  }
+  NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
 
   MLInstallabilityPromoter* original_tab_promoter = ml_promoter();
   content::WebContents* original_web_contents = web_contents();
@@ -811,8 +942,8 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlHandlesInvisible) {
   chrome::NewTab(browser());
 
   ExpectClasificationCallReturnResult(
-      /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(),
+      /*site_url=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/GetUrlBasedOnDialogState(),
       MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(1ll),
       original_web_contents);
 
@@ -826,7 +957,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlHandlesInvisible) {
   // Navigating to the previous tab will resume the installation UX reporting,
   // so handle installation request.
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "PWAConfirmationBubbleView");
+                                       GetDialogName());
   ExpectTrainingResult(TrainingRequestId(1ll), MlInstallResponse::kAccepted,
                        original_web_contents);
   chrome::SelectPreviousTab(browser());
@@ -839,17 +970,22 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlHandlesInvisible) {
   EXPECT_FALSE(provider().registrar_unsafe().is_empty());
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallGuardrailBlocked) {
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
+                       MlInstallGuardrailBlocked) {
+  if (IsCurrentTestStateShortcutDialog()) {
+    GTEST_SKIP()
+        << "Skipping because ML cannot trigger the Create Shortcut Dialog.";
+  }
+  NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
 
   ExpectClasificationCallReturnResult(
-      /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(),
+      /*site_url=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/GetUrlBasedOnDialogState(),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "PWAConfirmationBubbleView");
+                                       GetDialogName());
   // This calls unblocks the metrics tasks, allowing ML to be called.
   task_runner_->RunPendingTasks();
   views::Widget* widget = waiter.WaitIfNeededAndGet();
@@ -865,11 +1001,11 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallGuardrailBlocked) {
   NavigateToURLAndWait(browser(), GURL("about:blank"));
 
   // Test that guardrails now block the install.
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+  NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
 
   ExpectClasificationCallReturnResult(
-      /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(),
+      /*site_url=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/GetUrlBasedOnDialogState(),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
@@ -880,22 +1016,27 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallGuardrailBlocked) {
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
+IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
                        MlInstallGuardrailIgnoredUserInstallAccepted) {
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+  if (IsCurrentTestStateShortcutDialog()) {
+    GTEST_SKIP()
+        << "Skipping because ML cannot trigger the Create Shortcut Dialog.";
+  }
+  NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
 
   ExpectClasificationCallReturnResult(
-      /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(),
+      /*site_url=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/GetUrlBasedOnDialogState(),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
   // Cancelling the dialog will save that result in the guardrails, which
   // should cause the next immediate install call to trigger the guardrail
-  // response.
+  // response. This is not triggered for the create shortcut dialog since that
+  // flow is not shown here.
   {
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                         "PWAConfirmationBubbleView");
+                                         GetDialogName());
     // This calls unblocks the metrics tasks, allowing ML to be called.
     task_runner_->RunPendingTasks();
 
@@ -913,26 +1054,31 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
 
   // Navigate back to the app url to re-trigger the ml pipeline.
   ExpectClasificationCallReturnResult(
-      /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(),
+      /*site_url=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/GetUrlBasedOnDialogState(),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(2ll));
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+  NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
   task_runner_->RunPendingTasks();
 
   // Test that the guardrail isn't reported when the user completes the install,
   // and instead reports success.
   ExpectTrainingResult(TrainingRequestId(2ll), MlInstallResponse::kAccepted);
-  EXPECT_TRUE(InstallAppFromUserInitiation(/*accept_install=*/true));
+  EXPECT_TRUE(
+      InstallAppFromUserInitiation(/*accept_install=*/true, GetDialogName()));
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
+IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
                        MlInstallGuardrailIgnoredUserInstallCancelled) {
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+  if (IsCurrentTestStateShortcutDialog()) {
+    GTEST_SKIP()
+        << "Skipping because ML cannot trigger the Create Shortcut Dialog.";
+  }
+  NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
 
   ExpectClasificationCallReturnResult(
-      /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(),
+      /*site_url=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/GetUrlBasedOnDialogState(),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
@@ -941,7 +1087,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   // response.
   {
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                         "PWAConfirmationBubbleView");
+                                         GetDialogName());
     // This calls unblocks the metrics tasks, allowing ML to be called.
     task_runner_->RunPendingTasks();
 
@@ -959,18 +1105,27 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
 
   // Navigate back to the app url to re-trigger the ml pipeline.
   ExpectClasificationCallReturnResult(
-      /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(),
+      /*site_url=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/GetUrlBasedOnDialogState(),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(2ll));
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+  NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
   task_runner_->RunPendingTasks();
 
   // Test that the guardrail isn't reported when the user completes the install,
   // and instead reports success.
   ExpectTrainingResult(TrainingRequestId(2ll), MlInstallResponse::kCancelled);
-  EXPECT_TRUE(InstallAppFromUserInitiation(/*accept_install=*/false));
+  EXPECT_TRUE(
+      InstallAppFromUserInitiation(/*accept_install=*/false, GetDialogName()));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MLPromotionInstallDialogBrowserTest,
+    ::testing::Values(InstallDialogState::kPWAConfirmationBubble,
+                      InstallDialogState::kDetailedInstallDialog,
+                      InstallDialogState::kCreateShortcutDialog),
+    GetMLPromotionDialogTestName);
 
 }  // namespace
 }  // namespace web_app
