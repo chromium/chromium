@@ -4,6 +4,7 @@
 
 #include "chrome/browser/screen_ai/screen_ai_chromeos_installer.h"
 
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -83,6 +84,11 @@ void Uninstall() {
       kScreenAIDlcName, base::BindOnce(&OnUninstallCompleted));
 }
 
+// This function can be called only on a thread that can be blocked.
+bool CheckIfDlcExists() {
+  return !screen_ai::GetLatestComponentBinaryPath().empty();
+}
+
 }  // namespace
 
 namespace screen_ai::chrome_os_installer {
@@ -104,7 +110,14 @@ void ManageInstallation(PrefService* local_state) {
     return;
   }
 
-  Uninstall();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&CheckIfDlcExists), base::BindOnce([](bool dlc_exists) {
+        if (dlc_exists) {
+          Uninstall();
+        }
+      }));
 }
 
 }  // namespace screen_ai::chrome_os_installer
