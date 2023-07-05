@@ -2213,6 +2213,9 @@ extern const char kDefaultViewportIsDeviceWidthDescription[];
 extern const char kDeprecatedExternalPickerFunctionName[];
 extern const char kDeprecatedExternalPickerFunctionDescription[];
 
+extern const char kDragDropIntoOmniboxName[];
+extern const char kDragDropIntoOmniboxDescription[];
+
 extern const char kDrawEdgeToEdgeName[];
 extern const char kDrawEdgeToEdgeDescription[];
 

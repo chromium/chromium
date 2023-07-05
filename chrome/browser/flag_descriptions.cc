@@ -3824,6 +3824,11 @@ const char kDeprecatedExternalPickerFunctionName[] =
 const char kDeprecatedExternalPickerFunctionDescription[] =
     "Use the old-style opening of an External Picker when uploading files";
 
+const char kDragDropIntoOmniboxName[] =
+    "Enable drag and drop into omnibox on Android";
+const char kDragDropIntoOmniboxDescription[] =
+    "Drag urls, text, and images into omnibox to start a search";
+
 const char kDrawEdgeToEdgeName[] = "DrawEdgeToEdge";
 const char kDrawEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge to draw below the Nav Bar.";

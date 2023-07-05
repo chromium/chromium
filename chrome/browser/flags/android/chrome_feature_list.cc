@@ -229,6 +229,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDeferNotifyInMotion,
     &kDelayTempStripRemoval,
     &kDelayTransitionsForAnimation,
+    &kDragDropIntoOmnibox,
     &kDrawEdgeToEdge,
     &kEmptyStates,
     &kExperimentsForAgsa,
@@ -727,6 +728,10 @@ BASE_FEATURE(kDownloadAutoResumptionThrottling,
 BASE_FEATURE(kDownloadHomeForExternalApp,
              "DownloadHomeForExternalApp",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDragDropIntoOmnibox,
+             "DragDropIntoOmnibox",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDrawEdgeToEdge,
              "DrawEdgeToEdge",

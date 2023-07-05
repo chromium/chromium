@@ -1762,6 +1762,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "drag-drop-into-omnibox",
+    "owners": ["jtanaristy", "wenyufu"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "draw-edge-to-edge",
     "owners": ["donnd", "twellington", "edge-to-edge@chromium.org"],
     "expiry_milestone": 120

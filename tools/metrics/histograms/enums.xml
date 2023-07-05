@@ -60027,6 +60027,7 @@ from previous Chrome versions.
   <int value="-1939016096"
       label="OmniboxUIExperimentHideSuggestionUrlTrivialSubdomains:enabled"/>
   <int value="-1939003674" label="NetworkServiceInProcess:disabled"/>
+  <int value="-1938817275" label="DragDropIntoOmnibox:disabled"/>
   <int value="-1938263248" label="enable-extension-info-dialog"/>
   <int value="-1937756352" label="LensEnableImageTranslate:disabled"/>
   <int value="-1937288656" label="EnableBorderlessPrinting:enabled"/>
@@ -66764,6 +66765,7 @@ from previous Chrome versions.
   <int value="1559034872" label="AutofillPrefilledFields:enabled"/>
   <int value="1560188739" label="reader-mode-heuristics"/>
   <int value="1562855415" label="WebRtcUseMinMaxVEADimensions:disabled"/>
+  <int value="1562856564" label="DragDropIntoOmnibox:enabled"/>
   <int value="1563255033" label="memlog-stack-mode"/>
   <int value="1566945988" label="PdfOcr:disabled"/>
   <int value="1567695310" label="CrostiniBullseyeUpgrade:disabled"/>

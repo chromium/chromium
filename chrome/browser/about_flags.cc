@@ -9311,6 +9311,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAnimatedImageDragShadowName,
      flag_descriptions::kAnimatedImageDragShadowDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAnimatedImageDragShadow)},
+    {"drag-drop-into-omnibox", flag_descriptions::kDragDropIntoOmniboxName,
+     flag_descriptions::kDragDropIntoOmniboxDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDragDropIntoOmnibox)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-update-virtual-card-enrollment",
