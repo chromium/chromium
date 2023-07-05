@@ -27,7 +27,7 @@
 #include "skia/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
-
+#include "third_party/skia/include/gpu/graphite/Context.h"
 #include "ui/gfx/color_space.h"
 
 // We only include the functionality for gpu buffer capture iif the visual
@@ -83,8 +83,8 @@ namespace viz {
 void AttemptDebuggerBufferCapture(
     ImageContextImpl* context,
     gpu::SharedContextState* context_state,
-    gpu::SharedImageRepresentationFactory* shared_image_representation_factory,
-    GrDirectContext* gr_direct_context) {
+    gpu::SharedImageRepresentationFactory* representation_factory) {
+  CHECK(context_state);
   if (!context_state->IsCurrent(nullptr)) {
     // There should already be a current context from the caller of this
     // function. We don't make a context current to avoid needing to reset it
@@ -93,7 +93,7 @@ void AttemptDebuggerBufferCapture(
     return;
   }
 
-  auto representation = shared_image_representation_factory->ProduceSkia(
+  auto representation = representation_factory->ProduceSkia(
       context->mailbox_holder().mailbox, context_state);
 
   if (!representation) {
@@ -113,9 +113,9 @@ void AttemptDebuggerBufferCapture(
   }
 
   if (!begin_semaphores_readback.empty()) {
-    bool result = gr_direct_context->wait(begin_semaphores_readback.size(),
-                                          begin_semaphores_readback.data(),
-                                          /*deleteSemaphoresAfterWait=*/false);
+    bool result = context_state->gr_context()->wait(
+        begin_semaphores_readback.size(), begin_semaphores_readback.data(),
+        /*deleteSemaphoresAfterWait=*/false);
     DCHECK(result);
   }
 
@@ -143,10 +143,20 @@ void AttemptDebuggerBufferCapture(
   si_info->usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   si_info->mailbox = context->mailbox_holder().mailbox;
 
-  skimage->asyncRescaleAndReadPixels(
-      dst_info, SkIRect::MakeWH(texture_size.width(), texture_size.height()),
-      SkSurface::RescaleGamma::kSrc, SkSurface::RescaleMode::kRepeatedLinear,
-      &DebuggerCaptureBufferCallback, si_info.release());
+  if (auto* graphite_context = context_state->graphite_context()) {
+    // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be implemented
+    // for Graphite. Instead the equivalent methods will be on Graphite Context.
+    graphite_context->asyncRescaleAndReadPixels(
+        skimage.get(), dst_info,
+        SkIRect::MakeWH(texture_size.width(), texture_size.height()),
+        SkSurface::RescaleGamma::kSrc, SkSurface::RescaleMode::kRepeatedLinear,
+        &DebuggerCaptureBufferCallback, si_info.release());
+  } else {
+    skimage->asyncRescaleAndReadPixels(
+        dst_info, SkIRect::MakeWH(texture_size.width(), texture_size.height()),
+        SkSurface::RescaleGamma::kSrc, SkSurface::RescaleMode::kRepeatedLinear,
+        &DebuggerCaptureBufferCallback, si_info.release());
+  }
 }
 
 }  // namespace viz
@@ -155,7 +165,6 @@ namespace viz {
 void AttemptDebuggerBufferCapture(
     ImageContextImpl* context,
     gpu::SharedContextState* context_state,
-    gpu::SharedImageRepresentationFactory* shared_image_representation_factory,
-    GrDirectContext* gr_direct_context);
+    gpu::SharedImageRepresentationFactory* representation_factory);
 }  // namespace viz
 #endif  // VIZ_DEBUGGER_IS_ON()

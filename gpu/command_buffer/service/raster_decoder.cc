@@ -2726,6 +2726,8 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
   // ensures it completes synchronously.
   YUVReadbackResult yuv_result;
   if (graphite_context()) {
+    // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be implemented
+    // for Graphite. Instead the equivalent methods will be on Graphite Context.
     graphite_context()->asyncRescaleAndReadPixelsYUV420(
         sk_image.get(), kJPEG_Full_SkYUVColorSpace, SkColorSpace::MakeSRGB(),
         src_rect, dst_size, SkImage::RescaleGamma::kSrc,

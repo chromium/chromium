@@ -875,9 +875,18 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInMemory(
   // Skia readback could be synchronous. Incremement counter in case
   // ReadbackCompleted is called immediately.
   num_readbacks_pending_++;
-  surface->asyncRescaleAndReadPixels(
-      dst_info, src_rect, SkSurface::RescaleGamma::kSrc, rescale_mode,
-      &CopyOutputResultSkiaRGBA::OnReadbackDone, context.release());
+  if (auto* graphite_context = context_state_->graphite_context()) {
+    // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be implemented
+    // for Graphite. Instead the equivalent methods will be on Graphite Context.
+    graphite_context->asyncRescaleAndReadPixels(
+        surface, dst_info, src_rect, SkSurface::RescaleGamma::kSrc,
+        rescale_mode, &CopyOutputResultSkiaRGBA::OnReadbackDone,
+        context.release());
+  } else {
+    surface->asyncRescaleAndReadPixels(
+        dst_info, src_rect, SkSurface::RescaleGamma::kSrc, rescale_mode,
+        &CopyOutputResultSkiaRGBA::OnReadbackDone, context.release());
+  }
 }
 
 void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
@@ -1179,6 +1188,7 @@ void SkiaOutputSurfaceImplOnGpu::BlendBitmapOverlays(
   }
 }
 
+// TODO(crbug.com/1452092): Make this path work with Graphite.
 void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     SkSurface* surface,
     copy_output::RenderPassGeometry geometry,
@@ -1692,6 +1702,9 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
       // ReadbackCompleted is called immediately.
       num_readbacks_pending_++;
       if (auto* graphite_context = context_state_->graphite_context()) {
+        // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be
+        // implemented for Graphite. Instead the equivalent methods will be on
+        // Graphite Context.
         graphite_context->asyncRescaleAndReadPixelsYUV420(
             surface, kRec709_SkYUVColorSpace, SkColorSpace::MakeSRGB(),
             src_rect, dst_size, SkSurface::RescaleGamma::kSrc, rescale_mode,
@@ -1741,8 +1754,7 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
   for (auto* context : image_contexts) {
     if (buffer_capture()) {
       AttemptDebuggerBufferCapture(context, context_state_.get(),
-                                   shared_image_representation_factory_.get(),
-                                   gr_context());
+                                   shared_image_representation_factory_.get());
     }
 
     // Prepare for accessing render pass.
