@@ -40,7 +40,6 @@ extern const char kManagedDefaultWebHidGuardSetting[];
 extern const char kManagedDefaultWindowManagementSetting[];
 extern const char kManagedDefaultLocalFontsSetting[];
 extern const char kManagedDefaultThirdPartyStoragePartitioningSetting[];
-extern const char kManagedDefaultMidi[];
 
 extern const char kManagedClipboardAllowedForUrls[];
 extern const char kManagedClipboardBlockedForUrls[];
@@ -81,8 +80,6 @@ extern const char kManagedWindowManagementBlockedForUrls[];
 extern const char kManagedLocalFontsAllowedForUrls[];
 extern const char kManagedLocalFontsBlockedForUrls[];
 extern const char kManagedThirdPartyStoragePartitioningBlockedForOrigins[];
-extern const char kManagedMidiAllowedForUrls[];
-extern const char kManagedMidiBlockedForUrls[];
 
 extern const char kEnableQuietNotificationPermissionUi[];
 extern const char kQuietNotificationPermissionUiEnablingMethod[];

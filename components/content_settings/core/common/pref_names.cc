@@ -67,8 +67,6 @@ const char kManagedDefaultLocalFontsSetting[] =
     "profile.managed_default_content_settings.local_fonts";
 const char kManagedDefaultThirdPartyStoragePartitioningSetting[] =
     "profile.managed_default_content_settings.third_party_storage_partitioning";
-const char kManagedDefaultMidi[] =
-    "profile.managed_default_content_settings.midi";
 
 // Preferences that are exclusively used to store managed
 // content settings patterns.
@@ -148,10 +146,6 @@ const char kManagedLocalFontsBlockedForUrls[] =
     "profile.managed_local_fonts_blocked_for_urls";
 const char kManagedThirdPartyStoragePartitioningBlockedForOrigins[] =
     "profile.managed_third_party_storage_partitioning_blocked_for_origins";
-const char kManagedMidiAllowedForUrls[] =
-    "profile.managed_midi_allowed_for_urls";
-const char kManagedMidiBlockedForUrls[] =
-    "profile.managed_midi_blocked_for_urls";
 
 // Boolean indicating whether the quiet UI is enabled for notification
 // permission requests.

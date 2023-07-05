@@ -109,10 +109,6 @@ constexpr PrefsForManagedContentSettingsMapEntry
         {prefs::kManagedThirdPartyStoragePartitioningBlockedForOrigins,
          ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING,
          CONTENT_SETTING_BLOCK},
-        {prefs::kManagedMidiAllowedForUrls, ContentSettingsType::MIDI,
-         CONTENT_SETTING_ALLOW},
-        {prefs::kManagedMidiBlockedForUrls, ContentSettingsType::MIDI,
-         CONTENT_SETTING_BLOCK},
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -155,8 +151,6 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedLocalFontsAllowedForUrls,
     prefs::kManagedLocalFontsBlockedForUrls,
     prefs::kManagedThirdPartyStoragePartitioningBlockedForOrigins,
-    prefs::kManagedMidiAllowedForUrls,
-    prefs::kManagedMidiBlockedForUrls,
 };
 
 // The following preferences are only used to indicate if a default content
@@ -188,7 +182,6 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultWindowManagementSetting,
     prefs::kManagedDefaultLocalFontsSetting,
     prefs::kManagedDefaultThirdPartyStoragePartitioningSetting,
-    prefs::kManagedDefaultMidi,
 };
 
 }  // namespace
@@ -246,7 +239,6 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultLocalFontsSetting},
         {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING,
          prefs::kManagedDefaultThirdPartyStoragePartitioningSetting},
-        {ContentSettingsType::MIDI, prefs::kManagedDefaultMidi},
 };
 
 // static
