@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <cwctype>
 #include <memory>
 #include <string>
 #include <vector>
@@ -23,6 +24,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
@@ -550,8 +552,7 @@ std::string GetUACState() {
 
 std::wstring GetServiceName(bool is_internal_service) {
   std::wstring service_name = GetServiceDisplayName(is_internal_service);
-  service_name.erase(base::ranges::remove_if(service_name, isspace),
-                     service_name.end());
+  base::EraseIf(service_name, std::iswspace);
   return service_name;
 }
 

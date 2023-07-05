@@ -4,7 +4,7 @@
 
 #include "chrome/updater/util/util.h"
 
-#include <cctype>
+#include <cwctype>
 #include <string>
 #include <vector>
 
@@ -19,6 +19,7 @@
 #include "base/base_paths.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -295,7 +296,7 @@ GURL AppendQueryParameter(const GURL& url,
 
 std::wstring GetTaskNamePrefix(UpdaterScope scope) {
   std::wstring task_name = GetTaskDisplayName(scope);
-  task_name.erase(base::ranges::remove_if(task_name, isspace), task_name.end());
+  base::EraseIf(task_name, std::iswspace);
   return task_name;
 }
 
