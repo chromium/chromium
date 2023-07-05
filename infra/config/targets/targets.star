@@ -425,6 +425,14 @@ targets.generated_script(
     ],
 )
 
+targets.generated_script(
+    name = "chrome_disabled_tast_tests",
+    label = "//chromeos:chrome_disabled_tast_tests",
+    args = [
+        "--logs-dir=${ISOLATED_OUTDIR}",
+    ],
+)
+
 targets.console_test_launcher(
     name = "chrome_elf_unittests",
     label = "//chrome/chrome_elf:chrome_elf_unittests",

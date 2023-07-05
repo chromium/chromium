@@ -194,6 +194,10 @@ if (is_chromeos_ash && is_chromeos_device) {
     tast_disabled_tests = tast_disabled_tests_from_chrome_all
   }
 
+  tast_test("chrome_disabled_tast_tests") {
+    tast_tests = tast_disabled_tests_from_chrome_all
+  }
+
   tast_test("chrome_variations_tast_tests") {
     tast_tests = [ "ui.ChromeVariationsSmoke" ]
   }

@@ -659,6 +659,16 @@
       },
     },
 
+    # Test suite for running disabled Tast tests to collect data to re-enable
+    # them. The test suite should not be critical to builders.
+    'chromeos_chrome_disabled_tast_tests': {
+      'chrome_disabled_tast_tests': {
+        'test_level_retries': 1,
+        'timeout_sec': 7200,
+        'experiment_percentage': 100,
+      },
+    },
+
     # GTests to run on Chrome OS devices, but not Chrome OS VMs. Any differences
     # between this and chromeos_system_friendly_gtests below should only be due
     # to resource constraints (ie: not enough devices).
@@ -6922,6 +6932,11 @@
         ]
       },
       'chromeos_chrome_criticalstaging_tast_tests': {
+        'variants': [
+          'CROS_BRYA_RELEASE_ASH_LKGM',
+        ]
+      },
+      'chromeos_chrome_disabled_tast_tests': {
         'variants': [
           'CROS_BRYA_RELEASE_ASH_LKGM',
         ]
