@@ -36,7 +36,9 @@
 - (instancetype)initWithCreditCard:(const autofill::CreditCard*)creditCard
                               icon:(UIImage*)icon;
 
-@property(nonatomic, assign) const autofill::CreditCard* creditCard;
+@property(nonatomic, strong) NSString* cardNameAndLastFourDigits;
+@property(nonatomic, strong) NSString* expirationDate;
+@property(nonatomic, strong) NSString* backendIdentifier;
 @property(nonatomic, strong) UIImage* icon;
 
 @end
@@ -46,8 +48,12 @@
 - (instancetype)initWithCreditCard:(const autofill::CreditCard*)creditCard
                               icon:(UIImage*)icon {
   if (self = [super init]) {
-    _creditCard = creditCard;
-    _icon = icon;
+    self.cardNameAndLastFourDigits =
+        base::SysUTF16ToNSString(creditCard->CardNameAndLastFourDigits());
+    self.expirationDate =
+        base::SysUTF16ToNSString(creditCard->ExpirationDateForDisplay());
+    self.backendIdentifier = base::SysUTF8ToNSString(creditCard->guid());
+    self.icon = icon;
   }
   return self;
 }
@@ -125,13 +131,12 @@
 
 #pragma mark - PaymentsSuggestionBottomSheetDelegate
 
-- (void)didSelectCreditCard:(const autofill::CreditCard*)creditCard {
+- (void)didSelectCreditCard:(NSString*)backendIdentifier {
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
   if (!activeWebState) {
     return;
   }
 
-  CHECK(creditCard);
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
 
   FormSuggestionTabHelper* tabHelper =
@@ -149,7 +154,7 @@
               displayDescription:nil
                             icon:nil
                      popupItemId:autofill::PopupItemId::kCreditCardEntry
-               backendIdentifier:base::SysUTF8ToNSString(creditCard->guid())
+               backendIdentifier:backendIdentifier
                   requiresReauth:NO
       acceptanceA11yAnnouncement:
           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(

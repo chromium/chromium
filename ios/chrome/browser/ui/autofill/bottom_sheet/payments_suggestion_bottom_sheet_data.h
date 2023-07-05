@@ -13,8 +13,15 @@ class CreditCard;
 // Data source for each individual credit card suggestion.
 @protocol PaymentsSuggestionBottomSheetData
 
-// Returns a credit card.
-- (const autofill::CreditCard*)creditCard;
+// Returns the credit card's name and last four digits of the card.
+// Will return the credit card's nickname if it has one.
+- (NSString*)cardNameAndLastFourDigits;
+
+// Returns the credit card's expiration date.
+- (NSString*)expirationDate;
+
+// Returns the credit card's backend identifier.
+- (NSString*)backendIdentifier;
 
 // Returns the icon associated with the "creditCard" above.
 - (UIImage*)icon;

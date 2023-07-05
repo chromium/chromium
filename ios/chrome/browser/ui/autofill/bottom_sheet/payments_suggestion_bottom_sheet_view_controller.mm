@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 
-#import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/grit/components_scaled_resources.h"
@@ -222,16 +221,12 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 
 // Returns the string to display at a given row in the table view.
 - (NSString*)suggestionAtRow:(NSInteger)row {
-  const autofill::CreditCard* creditCard = [_creditCardData[row] creditCard];
-
-  return base::SysUTF16ToNSString(creditCard->CardNameAndLastFourDigits());
+  return [_creditCardData[row] cardNameAndLastFourDigits];
 }
 
 // Returns the display description at a given row in the table view.
 - (NSString*)descriptionAtRow:(NSInteger)row {
-  const autofill::CreditCard* creditCard = [_creditCardData[row] creditCard];
-
-  return base::SysUTF16ToNSString(creditCard->ExpirationDateForDisplay());
+  return [_creditCardData[row] expirationDate];
 }
 
 // Returns the credit card icon at a given row in the table view.
@@ -257,8 +252,8 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 
 // Notifies the delegate that a credit card was selected by the user.
 - (void)didSelectCreditCard {
-  [self.delegate
-      didSelectCreditCard:[_creditCardData[[self selectedRow]] creditCard]];
+  [self.delegate didSelectCreditCard:[_creditCardData[[self selectedRow]]
+                                         backendIdentifier]];
 }
 
 // Returns whether the provided index path points to the last row of the table

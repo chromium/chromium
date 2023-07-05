@@ -5,16 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_DELEGATE_H_
 
-namespace autofill {
-class CreditCard;
-}  // namespace autofill
+#import <Foundation/Foundation.h>
 
 // Delegate for the payments bottom sheet.
 @protocol PaymentsSuggestionBottomSheetDelegate
 
 // Sends the information about which credit card from the bottom sheet was
 // selected by the user, which is expected to fill the relevant fields.
-- (void)didSelectCreditCard:(const autofill::CreditCard*)creditCard;
+- (void)didSelectCreditCard:(NSString*)backendIdentifier;
 
 // Request to disable the bottom sheet, potentially refocusing the field which
 // originally triggered the bottom sheet after the bottom sheet has been
