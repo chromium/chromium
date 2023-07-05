@@ -192,16 +192,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.AppLocation" enum="ExtensionLocation"
-    expires_after="2022-06-30">
-  <owner>benwells@chromium.org</owner>
-  <owner>tapted@chromium.org</owner>
-  <summary>
-    The number of apps loaded on profile open time grouped by
-    Extension::Location.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.AppLocation2" enum="ExtensionLocation"
     expires_after="2024-01-01">
   <owner>benwells@chromium.org</owner>
@@ -209,16 +199,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of apps loaded on profile open time grouped by
     Extension::Location.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.AppsPromo" enum="AppPromoAction"
-    expires_after="2022-06-30">
-  <owner>benwells@chromium.org</owner>
-  <owner>tapted@chromium.org</owner>
-  <summary>
-    The actions taken in the NTP apps promo grouped by
-    extension_misc::AppsPromoBuckets.
   </summary>
 </histogram>
 

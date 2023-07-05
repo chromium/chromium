@@ -3997,14 +3997,6 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="x86_64"/>
 </enum>
 
-<enum name="AppPromoAction">
-  <int value="0" label="PROMO_LAUNCH_APP"/>
-  <int value="1" label="PROMO_LAUNCH_WEB_STORE"/>
-  <int value="2" label="PROMO_CLOSE"/>
-  <int value="3" label="PROMO_EXPIRE"/>
-  <int value="4" label="PROMO_SEEN"/>
-</enum>
-
 <enum name="AppReadiness">
   <int value="0" label="Unknown"/>
   <int value="1" label="Installed and launchable"/>
