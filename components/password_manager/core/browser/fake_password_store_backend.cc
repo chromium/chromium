@@ -95,6 +95,18 @@ void FakePasswordStoreBackend::FillMatchingLoginsAsync(
       std::move(callback));
 }
 
+void FakePasswordStoreBackend::GetGroupedMatchingLoginsAsync(
+    const PasswordFormDigest& form_digest,
+    LoginsOrErrorReply callback) {
+  GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FakePasswordStoreBackend::FillMatchingLoginsInternal,
+                     base::Unretained(this),
+                     std::vector<PasswordFormDigest>{form_digest},
+                     /*include_psl=*/true),
+      std::move(callback));
+}
+
 void FakePasswordStoreBackend::AddLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {

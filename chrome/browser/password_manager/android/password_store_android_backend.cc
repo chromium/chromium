@@ -653,6 +653,12 @@ void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
   std::move(callbacks_chain).Run();
 }
 
+void PasswordStoreAndroidBackend::GetGroupedMatchingLoginsAsync(
+    const PasswordFormDigest& form_digest,
+    LoginsOrErrorReply callback) {
+  NOTIMPLEMENTED();
+}
+
 void PasswordStoreAndroidBackend::AddLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {

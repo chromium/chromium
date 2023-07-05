@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_store_built_in_backend.h"
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -141,6 +142,12 @@ void PasswordStoreBuiltInBackend::FillMatchingLoginsAsync(
           MetricInfix("FillMatchingLoginsAsync"))
           .Then(base::BindOnce(&GetLoginsOrEmptyListOnFailure))
           .Then(std::move(callback)));
+}
+
+void PasswordStoreBuiltInBackend::GetGroupedMatchingLoginsAsync(
+    const PasswordFormDigest& form_digest,
+    LoginsOrErrorReply callback) {
+  NOTIMPLEMENTED();
 }
 
 void PasswordStoreBuiltInBackend::AddLoginAsync(

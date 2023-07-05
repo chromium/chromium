@@ -173,6 +173,28 @@ void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
                                           include_psl, forms);
 }
 
+void PasswordStoreProxyBackend::GetGroupedMatchingLoginsAsync(
+    const PasswordFormDigest& form_digest,
+    LoginsOrErrorReply callback) {
+  LoginsOrErrorReply result_callback;
+  if (UsesAndroidBackendAsMainBackend()) {
+    auto execute_on_built_in_backend =
+        base::BindOnce(&PasswordStoreBackend::GetGroupedMatchingLoginsAsync,
+                       base::Unretained(built_in_backend_), form_digest);
+
+    result_callback = base::BindOnce(
+        &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
+            LoginsResultOrError>,
+        weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
+        MethodName("GetGroupedMatchingLoginsAsync"), std::move(callback));
+  } else {
+    result_callback = std::move(callback);
+  }
+
+  main_backend()->GetGroupedMatchingLoginsAsync(form_digest,
+                                                std::move(result_callback));
+}
+
 void PasswordStoreProxyBackend::AddLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {

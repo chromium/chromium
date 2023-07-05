@@ -216,6 +216,13 @@ void PasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(
                                            forms);
 }
 
+void PasswordStoreBackendMigrationDecorator::GetGroupedMatchingLoginsAsync(
+    const PasswordFormDigest& form_digest,
+    LoginsOrErrorReply callback) {
+  active_backend_->GetGroupedMatchingLoginsAsync(std::move(form_digest),
+                                                 std::move(callback));
+}
+
 void PasswordStoreBackendMigrationDecorator::AddLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {

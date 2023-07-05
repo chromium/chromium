@@ -51,6 +51,10 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
                const std::vector<PasswordFormDigest>& forms),
               (override));
   MOCK_METHOD(void,
+              GetGroupedMatchingLoginsAsync,
+              (const PasswordFormDigest&, LoginsOrErrorReply),
+              (override));
+  MOCK_METHOD(void,
               AddLoginAsync,
               (const PasswordForm& form, PasswordChangesOrErrorReply callback),
               (override));

@@ -88,10 +88,27 @@ class PasswordStoreBackend {
   // If |include_psl|==true, the PSL-matched forms are also included.
   // If multiple forms are given, those will be concatenated.
   // Callback is called on the main sequence.
+  // TODO(crbug.com/1428539): Remove and replace with
+  // GetGroupedMatchingLoginsAsync().
   virtual void FillMatchingLoginsAsync(
       LoginsOrErrorReply callback,
       bool include_psl,
       const std::vector<PasswordFormDigest>& forms) = 0;
+
+  // Returns all PasswordForms related to |form_digest.signon_realm|.
+  // This includes:
+  // * PasswordForms exactly matching a given |signon_realm|,
+  // * PasswordForms matched through PSL,
+  // * PasswordForms with affiliated signon_realm (this might include android
+  // apps).
+  // * PasswordForms with signon_realm from the same group (this might include
+  // android apps).
+  // All the forms are unique meaning if PasswordForm was matched
+  // through multiple sources all the sources will be mentioned.
+  // Callback is called on the main sequence.
+  virtual void GetGroupedMatchingLoginsAsync(
+      const PasswordFormDigest& form_digest,
+      LoginsOrErrorReply callback) = 0;
 
   // For all methods below:
   // TODO(crbug.com/1217071): Make pure virtual.

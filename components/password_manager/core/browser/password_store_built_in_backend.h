@@ -60,6 +60,8 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       LoginsOrErrorReply callback,
       bool include_psl,
       const std::vector<PasswordFormDigest>& forms) override;
+  void GetGroupedMatchingLoginsAsync(const PasswordFormDigest& form_digest,
+                                     LoginsOrErrorReply callback) override;
   void AddLoginAsync(const PasswordForm& form,
                      PasswordChangesOrErrorReply callback) override;
   void UpdateLoginAsync(const PasswordForm& form,
