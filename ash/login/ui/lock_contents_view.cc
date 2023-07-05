@@ -1393,6 +1393,25 @@ void LockContentsView::ToggleForceOnlineSignInForUserForDebug(
   }
 }
 
+void LockContentsView::ToggleDisableTpmForUserForDebug(const AccountId& user) {
+  UserState* state = FindStateForUser(user);
+  if (!state) {
+    LOG(ERROR) << "Unable to find user to toggle TPM disabled message";
+    return;
+  }
+  if (state->time_until_tpm_unlock.has_value()) {
+    state->time_until_tpm_unlock = absl::nullopt;
+  } else {
+    state->time_until_tpm_unlock = base::Minutes(5);
+  }
+
+  LoginBigUserView* big_user =
+      TryToFindBigUser(user, true /*require_auth_active*/);
+  if (big_user && big_user->auth_user()) {
+    LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
+  }
+}
+
 void LockContentsView::UndoForceOnlineSignInForUserForDebug(
     const AccountId& user) {
   UserState* state = FindStateForUser(user);

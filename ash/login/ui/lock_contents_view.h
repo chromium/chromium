@@ -217,6 +217,9 @@ class ASH_EXPORT LockContentsView
   // Called for debugging to toggle forced online sign-in form |user|.
   void ToggleForceOnlineSignInForUserForDebug(const AccountId& user);
 
+  // Called for debugging to toggle TPM disabled message for |user|.
+  void ToggleDisableTpmForUserForDebug(const AccountId& user);
+
   // Called for debugging to remove forced online sign-in form |user|.
   void UndoForceOnlineSignInForUserForDebug(const AccountId& user);
 

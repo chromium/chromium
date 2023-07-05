@@ -411,6 +411,13 @@ class LockDebugView::DebugDataDispatcherTransformer
         debug_users_[user_index].account_id);
   }
 
+  // Toggles TPM disabled message for the user at |user_index|.
+  void ToggleDisableTpmForUserIndex(size_t user_index) {
+    DCHECK(user_index >= 0 && user_index < debug_users_.size());
+    lock_debug_view_->lock()->ToggleDisableTpmForUserForDebug(
+        debug_users_[user_index].account_id);
+  }
+
   // Cycles disabled auth message for the user at |user_index|.
   void CycleDisabledAuthMessageForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
@@ -1181,6 +1188,11 @@ void LockDebugView::UpdatePerUserActionContainer() {
     AddButton("Toggle user is managed",
               base::BindRepeating(
                   &DebugDataDispatcherTransformer::ToggleManagementForUserIndex,
+                  base::Unretained(debug_data_dispatcher_.get()), i),
+              row);
+    AddButton("Toggle disabled TPM",
+              base::BindRepeating(
+                  &DebugDataDispatcherTransformer::ToggleDisableTpmForUserIndex,
                   base::Unretained(debug_data_dispatcher_.get()), i),
               row);
     AddButton(
