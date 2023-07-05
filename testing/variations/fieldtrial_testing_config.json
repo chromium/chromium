@@ -5406,7 +5406,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_115plus_20230710",
+                    "enable_features": [
+                        "EnablePreferencesAccountStorage",
+                        "SyncAvoidReconfigurationIfAlreadyStopping"
+                    ]
+                },
+                {
+                    "name": "Enabled_114_20230710",
                     "enable_features": [
                         "EnablePreferencesAccountStorage"
                     ]
