@@ -981,6 +981,7 @@ var CrSettingsSiteSettingsPageTest = class extends CrSettingsBrowserTest {
         'privacy_sandbox::kPrivacySandboxSettings4',
         'content_settings::features::kSafetyCheckUnusedSitePermissions',
         'permissions::features::kPermissionStorageAccessAPI',
+        'features::kSafetyHub',
       ],
     };
   }
@@ -1037,6 +1038,10 @@ TEST_F(
     function() {
       runMochaSuite('PermissionStorageAccessApiDisabled');
     });
+
+TEST_F('CrSettingsSiteSettingsPageTest', 'SafetyHubDisabled', function() {
+  runMochaSuite('SafetyHubDisabled');
+});
 
 var CrSettingsMenuTest = class extends CrSettingsBrowserTest {
   /** @override */

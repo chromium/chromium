@@ -7,6 +7,10 @@
 
 #include "build/build_config.h"
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
+
 namespace permissions {
 namespace prefs {
 
@@ -20,7 +24,17 @@ extern const char kLocationSettingsNextShowDefault[];
 extern const char kOneTimePermissionPromptsDecidedCount[];
 #endif
 
+// The pref is used only when kSafetyHub flag is on.
+// Currently Safety Hub is available only on desktop.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+extern const char kUnusedSitePermissionsRevocationEnabled[];
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 }  // namespace prefs
+
+// Registers user preferences related to permissions.
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_PREF_NAMES_H_
