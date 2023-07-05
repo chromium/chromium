@@ -22,16 +22,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "components/account_id/account_id.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
-
-namespace {
-constexpr char kUserEmail[] = "test_user@gmail.com";
-}
 
 namespace ash {
 
@@ -63,7 +59,7 @@ class DateTrayTest
 
     AshTestBase::SetUp();
 
-    SimulateUserLogin(GetAccountId(kUserEmail));
+    SimulateUserLogin(account_id_);
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetContentsView(std::make_unique<views::View>());
@@ -80,7 +76,7 @@ class DateTrayTest
       fake_glanceables_tasks_client_ =
           std::make_unique<FakeGlanceablesTasksClient>();
       Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
-          GetAccountId(kUserEmail),
+          account_id_,
           GlanceablesV2Controller::ClientsRegistration{
               .tasks_client = fake_glanceables_tasks_client_.get()});
     }
@@ -152,16 +148,14 @@ class DateTrayTest
     GetUnifiedSystemTray()->CloseBubble();
   }
 
-  AccountId GetAccountId(base::StringPiece email) {
-    return AccountId::FromUserEmail(std::string(email));
-  }
-
   FakeGlanceablesTasksClient* fake_glanceables_tasks_client() {
     return fake_glanceables_tasks_client_.get();
   }
 
  private:
   std::unique_ptr<views::Widget> widget_;
+  AccountId account_id_ =
+      AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
   std::unique_ptr<FakeGlanceablesTasksClient> fake_glanceables_tasks_client_;
   bool observering_activation_changes_ = false;
 

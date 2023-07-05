@@ -167,6 +167,9 @@ void TestSessionControllerClient::AddUserSession(
   session.user_info.is_ephemeral = is_ephemeral;
   session.user_info.is_new_profile = is_new_profile;
   session.user_info.given_name = given_name;
+  session.user_info.has_gaia_account =
+      account_id.GetAccountType() == AccountType::GOOGLE &&
+      !account_id.GetGaiaId().empty();
   controller_->UpdateUserSession(std::move(session));
 
   if (provide_pref_service && prefs_provider_ &&

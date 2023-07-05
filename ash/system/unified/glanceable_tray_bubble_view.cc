@@ -4,7 +4,9 @@
 
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
 
+#include "ash/public/cpp/session/user_info.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/system/time/calendar_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/tray_bubble_view.h"
@@ -12,9 +14,10 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/classroom_bubble_view.h"
 #include "ash/system/unified/tasks_bubble_view.h"
+#include "base/check.h"
+#include "components/session_manager/session_manager_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace ash {
@@ -47,15 +50,23 @@ void GlanceableTrayBubbleView::UpdateBubble() {
   child_glanceable_container->SetOrientation(
       views::LayoutOrientation::kVertical);
 
+  const auto* const session_controller = Shell::Get()->session_controller();
+  CHECK(session_controller);
+  const bool should_show_non_calendar_glanceables =
+      session_controller->IsActiveUserSessionStarted() &&
+      session_controller->GetSessionState() ==
+          session_manager::SessionState::ACTIVE &&
+      session_controller->GetUserSession(0)->user_info.has_gaia_account;
+
   // TODO(b:277268122): set real contents for glanceables view.
-  if (!tasks_bubble_view_) {
+  if (should_show_non_calendar_glanceables && !tasks_bubble_view_) {
     tasks_bubble_view_ = child_glanceable_container->AddChildView(
         std::make_unique<TasksBubbleView>(detailed_view_delegate_.get()));
   }
 
   // TODO(b:283370562): only add teacher/student classroom glanceables when
   // the user is enrolled in courses.
-  if (!classroom_bubble_view_) {
+  if (should_show_non_calendar_glanceables && !classroom_bubble_view_) {
     classroom_bubble_view_ = child_glanceable_container->AddChildView(
         std::make_unique<ClassroomBubbleView>(detailed_view_delegate_.get()));
     // Add spacing between the classroom bubble and the previous bubble.
