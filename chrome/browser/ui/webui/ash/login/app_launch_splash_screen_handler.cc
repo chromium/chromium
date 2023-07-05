@@ -144,20 +144,16 @@ void AppLaunchSplashScreenHandler::ShowNetworkConfigureUI(
                                    network_name);
       break;
     }
-    case NetworkStateInformer::OFFLINE: {
-      error_screen_->SetErrorState(NetworkError::ERROR_STATE_OFFLINE,
-                                   network_name);
-      break;
-    }
     case NetworkStateInformer::ONLINE: {
       error_screen_->SetErrorState(NetworkError::ERROR_STATE_KIOSK_ONLINE,
                                    network_name);
       break;
     }
-    default:
+    case NetworkStateInformer::OFFLINE:
+    case NetworkStateInformer::CONNECTING:
+    case NetworkStateInformer::UNKNOWN:
       error_screen_->SetErrorState(NetworkError::ERROR_STATE_OFFLINE,
                                    network_name);
-      NOTREACHED();
       break;
   }
 
