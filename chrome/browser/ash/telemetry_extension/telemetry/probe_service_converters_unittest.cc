@@ -57,7 +57,8 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
       crosapi::mojom::ProbeCategoryEnum::kNetwork,
       crosapi::mojom::ProbeCategoryEnum::kTpm,
       crosapi::mojom::ProbeCategoryEnum::kAudio,
-      crosapi::mojom::ProbeCategoryEnum::kBus};
+      crosapi::mojom::ProbeCategoryEnum::kBus,
+      crosapi::mojom::ProbeCategoryEnum::kDisplay};
   EXPECT_THAT(
       ConvertCategoryVector(kInput),
       ElementsAre(
@@ -76,7 +77,8 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
           cros_healthd::mojom::ProbeCategoryEnum::kNetwork,
           cros_healthd::mojom::ProbeCategoryEnum::kTpm,
           cros_healthd::mojom::ProbeCategoryEnum::kAudio,
-          cros_healthd::mojom::ProbeCategoryEnum::kBus));
+          cros_healthd::mojom::ProbeCategoryEnum::kBus,
+          cros_healthd::mojom::ProbeCategoryEnum::kDisplay));
 }
 
 TEST(ProbeServiceConverters, ErrorType) {
@@ -122,6 +124,28 @@ TEST(ProbeServiceConverters, Int64Value) {
 TEST(ProbeServiceConverters, UInt64Value) {
   constexpr uint64_t kValue = (1ULL << 63) + 1000000000;
   EXPECT_EQ(Convert(kValue), crosapi::mojom::UInt64Value::New(kValue));
+}
+
+TEST(ProbeServiceConverters, OptionalDouble) {
+  constexpr double kValue = 100500111111.500100;
+  EXPECT_EQ(ConvertProbePtr(cros_healthd::mojom::NullableDouble::New(kValue)),
+            kValue);
+}
+
+TEST(ProbeServiceConverters, OptionalUint8) {
+  constexpr uint8_t kValue = 10;
+  EXPECT_EQ(ConvertProbePtr(cros_healthd::mojom::NullableUint8::New(kValue)),
+            kValue);
+}
+TEST(ProbeServiceConverters, OptionalUint16) {
+  constexpr uint16_t kValue = (1ULL << 15) + 1000;
+  EXPECT_EQ(ConvertProbePtr(cros_healthd::mojom::NullableUint16::New(kValue)),
+            kValue);
+}
+TEST(ProbeServiceConverters, OptionalUint32) {
+  constexpr uint32_t kValue = (1ULL << 31) + 1000;
+  EXPECT_EQ(ConvertProbePtr(cros_healthd::mojom::NullableUint32::New(kValue)),
+            kValue);
 }
 
 TEST(ProbeServiceConverters, AudioNodeInputInfoPtr) {
@@ -1490,6 +1514,139 @@ TEST(ProbeServiceConverters, PairCachedVpdResultPtrSystemResultPtrError) {
   ASSERT_TRUE(output.second->is_error());
 }
 
+TEST(ProbeServiceConverters, ProbeDisplayInputType) {
+  EXPECT_EQ(Convert(cros_healthd::mojom::DisplayInputType::kUnmappedEnumField),
+            crosapi::mojom::ProbeDisplayInputType::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::DisplayInputType::kDigital),
+            crosapi::mojom::ProbeDisplayInputType::kDigital);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::DisplayInputType::kAnalog),
+            crosapi::mojom::ProbeDisplayInputType::kAnalog);
+}
+
+TEST(ProbeServiceConverters, DisplayResultPtrError) {
+  const auto output =
+      ConvertProbePtr(cros_healthd::mojom::DisplayResult::NewError(nullptr));
+  ASSERT_TRUE(output);
+  EXPECT_TRUE(output->is_error());
+}
+
+TEST(ProbeServiceConverters, DisplayResultPtrInfo) {
+  // Constants for embedded display
+  constexpr bool kPrivacyScreenSupported = true;
+  constexpr bool kPrivacyScreenEnabled = false;
+  constexpr uint32_t kDisplayWidthEmbedded = 0;
+  constexpr uint32_t kDisplayHeightEmbedded = 1;
+  constexpr uint32_t kResolutionHorizontalEmbedded = 2;
+  constexpr uint32_t kResolutionVerticalEmbedded = 3;
+  constexpr double kRefreshRateEmbedded = 4.4;
+  constexpr char kManufacturerEmbedded[] = "manufacturer_1";
+  constexpr uint16_t kModelIdEmbedded = 5;
+  constexpr uint32_t kSerialNumberEmbedded = 6;
+  constexpr uint8_t kManufactureWeekEmbedded = 7;
+  constexpr uint16_t kManufactureYearEmbedded = 8;
+  constexpr char kEdidVersionEmbedded[] = "1.4";
+  constexpr cros_healthd::mojom::DisplayInputType kInputTypeEmbedded =
+      cros_healthd::mojom::DisplayInputType::kAnalog;
+  constexpr char kDisplayNameEmbedded[] = "embedded_display_1";
+
+  // constants for external display 1
+  constexpr uint32_t kDisplayWidthExternal = 10;
+  constexpr uint32_t kDisplayHeightExternal = 11;
+  constexpr uint32_t kResolutionHorizontalExternal = 12;
+  constexpr uint32_t kResolutionVerticalExternal = 13;
+  constexpr double kRefreshRateExternal = 14.4;
+  constexpr char kManufacturerExternal[] = "manufacturer_2";
+  constexpr uint16_t kModelIdExternal = 15;
+  constexpr uint32_t kSerialNumberExternal = 16;
+  constexpr uint8_t kManufactureWeekExternal = 17;
+  constexpr uint16_t kManufactureYearExternal = 18;
+  constexpr char kEdidVersionExternal[] = "1.4";
+  constexpr cros_healthd::mojom::DisplayInputType kInputTypeExternal =
+      cros_healthd::mojom::DisplayInputType::kDigital;
+  constexpr char kDisplayNameExternal[] = "external_display_1";
+
+  cros_healthd::mojom::DisplayResultPtr input;
+  {
+    auto embedded_display = cros_healthd::mojom::EmbeddedDisplayInfo::New(
+        kPrivacyScreenSupported, kPrivacyScreenEnabled,
+        cros_healthd::mojom::NullableUint32::New(kDisplayWidthEmbedded),
+        cros_healthd::mojom::NullableUint32::New(kDisplayHeightEmbedded),
+        cros_healthd::mojom::NullableUint32::New(kResolutionHorizontalEmbedded),
+        cros_healthd::mojom::NullableUint32::New(kResolutionVerticalEmbedded),
+        cros_healthd::mojom::NullableDouble::New(kRefreshRateEmbedded),
+        std::string(kManufacturerEmbedded),
+        cros_healthd::mojom::NullableUint16::New(kModelIdEmbedded),
+        cros_healthd::mojom::NullableUint32::New(kSerialNumberEmbedded),
+        cros_healthd::mojom::NullableUint8::New(kManufactureWeekEmbedded),
+        cros_healthd::mojom::NullableUint16::New(kManufactureYearEmbedded),
+        std::string(kEdidVersionEmbedded), kInputTypeEmbedded,
+        std::string(kDisplayNameEmbedded));
+
+    auto external_display_1 = cros_healthd::mojom::ExternalDisplayInfo::New(
+        cros_healthd::mojom::NullableUint32::New(kDisplayWidthExternal),
+        cros_healthd::mojom::NullableUint32::New(kDisplayHeightExternal),
+        cros_healthd::mojom::NullableUint32::New(kResolutionHorizontalExternal),
+        cros_healthd::mojom::NullableUint32::New(kResolutionVerticalExternal),
+        cros_healthd::mojom::NullableDouble::New(kRefreshRateExternal),
+        std::string(kManufacturerExternal),
+        cros_healthd::mojom::NullableUint16::New(kModelIdExternal),
+        cros_healthd::mojom::NullableUint32::New(kSerialNumberExternal),
+        cros_healthd::mojom::NullableUint8::New(kManufactureWeekExternal),
+        cros_healthd::mojom::NullableUint16::New(kManufactureYearExternal),
+        std::string(kEdidVersionExternal), kInputTypeExternal,
+        std::string(kDisplayNameExternal));
+
+    auto external_display_empty = cros_healthd::mojom::ExternalDisplayInfo::New(
+        nullptr, nullptr, nullptr, nullptr, nullptr, absl::nullopt, nullptr,
+        nullptr, nullptr, nullptr, absl::nullopt,
+        cros_healthd::mojom::DisplayInputType::kUnmappedEnumField,
+        absl::nullopt);
+
+    std::vector<cros_healthd::mojom::ExternalDisplayInfoPtr> external_displays;
+    external_displays.push_back(std::move(external_display_1));
+    external_displays.push_back(std::move(external_display_empty));
+
+    auto info = cros_healthd::mojom::DisplayInfo::New();
+    info->edp_info = std::move(embedded_display);
+    info->dp_infos = std::move(external_displays);
+
+    input = cros_healthd::mojom::DisplayResult::NewDisplayInfo(std::move(info));
+  }
+
+  const auto output = ConvertProbePtr(std::move(input));
+  ASSERT_TRUE(output);
+  ASSERT_TRUE(output->is_display_info());
+
+  const auto& edp_info = output->get_display_info()->edp_info;
+  EXPECT_EQ(edp_info,
+            crosapi::mojom::ProbeEmbeddedDisplayInfo::New(
+                kPrivacyScreenSupported, kPrivacyScreenEnabled,
+                kDisplayWidthEmbedded, kDisplayHeightEmbedded,
+                kResolutionHorizontalEmbedded, kResolutionVerticalEmbedded,
+                kRefreshRateEmbedded, kManufacturerEmbedded, kModelIdEmbedded,
+                kSerialNumberEmbedded, kManufactureWeekEmbedded,
+                kManufactureYearEmbedded, kEdidVersionEmbedded,
+                Convert(kInputTypeEmbedded), kDisplayNameEmbedded));
+
+  ASSERT_TRUE(output->get_display_info()->dp_infos.has_value());
+  const auto& dp_infos = output->get_display_info()->dp_infos.value();
+  ASSERT_EQ(dp_infos.size(), 2UL);
+  // Check equality for external display 1
+  EXPECT_EQ(dp_infos[0],
+            crosapi::mojom::ProbeExternalDisplayInfo::New(
+                kDisplayWidthExternal, kDisplayHeightExternal,
+                kResolutionHorizontalExternal, kResolutionVerticalExternal,
+                kRefreshRateExternal, kManufacturerExternal, kModelIdExternal,
+                kSerialNumberExternal, kManufactureWeekExternal,
+                kManufactureYearExternal, kEdidVersionExternal,
+                Convert(kInputTypeExternal), kDisplayNameExternal));
+
+  // Check equality for external display 2
+  EXPECT_EQ(dp_infos[1], crosapi::mojom::ProbeExternalDisplayInfo::New());
+}
+
 TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
   auto input = cros_healthd::mojom::TelemetryInfo::New();
   {
@@ -1527,6 +1684,8 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
         cros_healthd::mojom::AudioInfo::New());
     input->bus_result = cros_healthd::mojom::BusResult::NewBusDevices(
         std::vector<cros_healthd::mojom::BusDevicePtr>());
+    input->display_result = cros_healthd::mojom::DisplayResult::NewDisplayInfo(
+        cros_healthd::mojom::DisplayInfo::New());
   }
 
   EXPECT_EQ(
@@ -1581,7 +1740,9 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
                   crosapi::mojom::UInt32Value::New(0), absl::nullopt,
                   absl::nullopt)),
           crosapi::mojom::ProbeBusResult::NewBusDevicesInfo(
-              std::vector<crosapi::mojom::ProbeBusInfoPtr>())));
+              std::vector<crosapi::mojom::ProbeBusInfoPtr>()),
+          crosapi::mojom::ProbeDisplayResult::NewDisplayInfo(
+              crosapi::mojom::ProbeDisplayInfo::New())));
 }
 
 TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {
@@ -1601,7 +1762,8 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {
                 crosapi::mojom::ProbeNetworkResultPtr(nullptr),
                 crosapi::mojom::ProbeTpmResultPtr(nullptr),
                 crosapi::mojom::ProbeAudioResultPtr(nullptr),
-                crosapi::mojom::ProbeBusResultPtr(nullptr)));
+                crosapi::mojom::ProbeBusResultPtr(nullptr),
+                crosapi::mojom::ProbeDisplayResultPtr(nullptr)));
 }
 
 }  // namespace ash::converters

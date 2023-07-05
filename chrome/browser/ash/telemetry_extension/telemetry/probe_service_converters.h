@@ -14,6 +14,7 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom-forward.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom-forward.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::converters {
 
@@ -31,6 +32,18 @@ crosapi::mojom::UInt64ValuePtr LegacyUncheckedConvertPtr(
 
 crosapi::mojom::ProbeErrorPtr UncheckedConvertPtr(
     cros_healthd::mojom::ProbeErrorPtr input);
+
+absl::optional<double> UncheckedConvertPtr(
+    cros_healthd::mojom::NullableDoublePtr input);
+
+absl::optional<uint8_t> UncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint8Ptr input);
+
+absl::optional<uint16_t> UncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint16Ptr input);
+
+absl::optional<uint32_t> UncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint32Ptr input);
 
 crosapi::mojom::ProbeAudioInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::AudioInfoPtr input);
@@ -89,6 +102,18 @@ crosapi::mojom::ProbeCpuInfoPtr UncheckedConvertPtr(
 
 crosapi::mojom::ProbeCpuResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::CpuResultPtr input);
+
+crosapi::mojom::ProbeDisplayResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::DisplayResultPtr input);
+
+crosapi::mojom::ProbeDisplayInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::DisplayInfoPtr input);
+
+crosapi::mojom::ProbeEmbeddedDisplayInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::EmbeddedDisplayInfoPtr input);
+
+crosapi::mojom::ProbeExternalDisplayInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::ExternalDisplayInfoPtr input);
 
 crosapi::mojom::ProbeTimezoneInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TimezoneInfoPtr input);
@@ -179,6 +204,9 @@ crosapi::mojom::ProbeUsbSpecSpeed Convert(
 crosapi::mojom::ProbeFwupdVersionFormat Convert(
     cros_healthd::mojom::FwupdVersionFormat input);
 
+crosapi::mojom::ProbeDisplayInputType Convert(
+    cros_healthd::mojom::DisplayInputType input);
+
 crosapi::mojom::BoolValuePtr Convert(bool input);
 
 crosapi::mojom::DoubleValuePtr Convert(double input);
@@ -206,6 +234,15 @@ std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {
     }
   }
   return output;
+}
+
+template <class OutputT, class InputT>
+absl::optional<std::vector<OutputT>> ConvertOptionalPtrVector(
+    absl::optional<std::vector<InputT>> input) {
+  if (!input.has_value()) {
+    return absl::nullopt;
+  }
+  return ConvertPtrVector<OutputT, InputT>(std::move(input.value()));
 }
 
 template <class InputT>
