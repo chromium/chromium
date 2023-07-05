@@ -19,7 +19,6 @@ class ModelTypeControllerDelegate;
 namespace password_manager {
 
 class LoginDatabase;
-class OutgoingPasswordSharingInvitationSyncBridge;
 class PasswordSyncBridge;
 class UnsyncedCredentialsDeletionNotifier;
 
@@ -128,8 +127,6 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
 
   std::unique_ptr<PasswordSyncBridge> password_sync_bridge_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<OutgoingPasswordSharingInvitationSyncBridge>
-      outgoing_sharing_invitation_sync_bridge_;
 
   // Whenever 'password_sync_bridge_' receive remote changes this callback is
   // used to notify PasswordStore observers about them. Called on a main
