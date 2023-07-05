@@ -19,11 +19,9 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/geo/state_names.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -210,110 +208,6 @@ bool IsSSN(const std::u16string& text) {
   }
 
   return true;
-}
-
-bool IsValidForType(const std::u16string& value,
-                    ServerFieldType type,
-                    std::u16string* error_message) {
-  switch (type) {
-    case CREDIT_CARD_NAME_FULL:
-      if (!value.empty())
-        return true;
-
-      if (error_message) {
-        *error_message =
-            l10n_util::GetStringUTF16(IDS_PAYMENTS_VALIDATION_INVALID_NAME);
-      }
-      break;
-
-    case CREDIT_CARD_EXP_MONTH: {
-      CreditCard temp;
-      // Expiration month was in an invalid format.
-      temp.SetExpirationMonthFromString(value, /* app_locale= */ std::string());
-      if (temp.expiration_month() == 0) {
-        if (error_message) {
-          *error_message = l10n_util::GetStringUTF16(
-              IDS_PAYMENTS_VALIDATION_INVALID_CREDIT_CARD_EXPIRATION_MONTH);
-        }
-        break;
-      }
-      return true;
-    }
-
-    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
-    case CREDIT_CARD_EXP_4_DIGIT_YEAR: {
-      CreditCard temp;
-      temp.SetExpirationYearFromString(value);
-      // Expiration year was in an invalid format.
-      if ((temp.expiration_year() == 0) ||
-          (type == CREDIT_CARD_EXP_2_DIGIT_YEAR && value.size() != 2u) ||
-          (type == CREDIT_CARD_EXP_4_DIGIT_YEAR && value.size() != 4u)) {
-        if (error_message) {
-          *error_message = l10n_util::GetStringUTF16(
-              IDS_PAYMENTS_VALIDATION_INVALID_CREDIT_CARD_EXPIRATION_YEAR);
-        }
-        break;
-      }
-
-      base::Time::Exploded now_exploded;
-      AutofillClock::Now().LocalExplode(&now_exploded);
-      if (temp.expiration_year() >= now_exploded.year)
-        return true;
-
-      // If the year is before this year, it's expired.
-      if (error_message) {
-        *error_message = l10n_util::GetStringUTF16(
-            IDS_PAYMENTS_VALIDATION_INVALID_CREDIT_CARD_EXPIRED);
-      }
-      break;
-    }
-
-    case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
-    case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: {
-      static constexpr char16_t kDateYY[] = u"^[0-9]{1,2}[-/|]?[0-9]{2}$";
-      static constexpr char16_t kDateYYYY[] = u"^[0-9]{1,2}[-/|]?[0-9]{4}$";
-
-      CreditCard temp;
-      temp.SetExpirationDateFromString(value);
-
-      // Expiration date was in an invalid format.
-      if (temp.expiration_month() == 0 || temp.expiration_year() == 0 ||
-          (type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
-               ? !MatchesRegex<kDateYY>(value)
-               : !MatchesRegex<kDateYYYY>(value))) {
-        if (error_message) {
-          *error_message = l10n_util::GetStringUTF16(
-              IDS_PAYMENTS_CARD_EXPIRATION_INVALID_VALIDATION_MESSAGE);
-        }
-        break;
-      }
-
-      // Checking for card expiration.
-      if (IsValidCreditCardExpirationDate(temp.expiration_year(),
-                                          temp.expiration_month(),
-                                          AutofillClock::Now())) {
-        return true;
-      }
-
-      if (error_message) {
-        *error_message = l10n_util::GetStringUTF16(
-            IDS_PAYMENTS_VALIDATION_INVALID_CREDIT_CARD_EXPIRED);
-      }
-      break;
-    }
-
-    case CREDIT_CARD_NUMBER:
-      NOTREACHED() << "IsValidCreditCardNumberForBasicCardNetworks should be "
-                   << "used to validate credit card numbers";
-      break;
-
-    default:
-      // Other types such as CREDIT_CARD_TYPE and CREDIT_CARD_VERIFICATION_CODE
-      // are not validated for now.
-      NOTREACHED() << "Attempting to validate unsupported type " << type;
-      break;
-  }
-  return false;
 }
 
 size_t GetCvcLengthForCardNetwork(const base::StringPiece card_network,
