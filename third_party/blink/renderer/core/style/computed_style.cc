@@ -1701,24 +1701,26 @@ const CounterDirectives ComputedStyle::GetCounterDirectives(
 }
 
 AtomicString ComputedStyle::LocaleForLineBreakIterator() const {
-  LineBreakIteratorMode mode = LineBreakIteratorMode::kDefault;
   switch (GetLineBreak()) {
     case LineBreak::kAuto:
     case LineBreak::kAfterWhiteSpace:
     case LineBreak::kAnywhere:
       return Locale();
     case LineBreak::kNormal:
-      mode = LineBreakIteratorMode::kNormal;
-      break;
+      return LocaleForLineBreakIterator(LineBreakStrictness::kNormal);
     case LineBreak::kStrict:
-      mode = LineBreakIteratorMode::kStrict;
-      break;
+      return LocaleForLineBreakIterator(LineBreakStrictness::kStrict);
     case LineBreak::kLoose:
-      mode = LineBreakIteratorMode::kLoose;
-      break;
+      return LocaleForLineBreakIterator(LineBreakStrictness::kLoose);
   }
+  NOTREACHED();
+  return LocaleForLineBreakIterator(LineBreakStrictness::kDefault);
+}
+
+AtomicString ComputedStyle::LocaleForLineBreakIterator(
+    LineBreakStrictness strictness) const {
   if (const LayoutLocale* locale = GetFontDescription().Locale()) {
-    return locale->LocaleWithBreakKeyword(mode);
+    return locale->LocaleWithBreakKeyword(strictness);
   }
   return Locale();
 }

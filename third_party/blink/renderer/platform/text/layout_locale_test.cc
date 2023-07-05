@@ -160,23 +160,23 @@ TEST(LayoutLocaleTest, BreakKeyword) {
   struct {
     const char* expected;
     const char* locale;
-    LineBreakIteratorMode mode;
+    LineBreakStrictness strictness;
   } tests[] = {
-      {nullptr, nullptr, LineBreakIteratorMode::kDefault},
-      {"", "", LineBreakIteratorMode::kDefault},
-      {nullptr, nullptr, LineBreakIteratorMode::kStrict},
-      {"", "", LineBreakIteratorMode::kStrict},
-      {"ja", "ja", LineBreakIteratorMode::kDefault},
-      {"ja@lb=normal", "ja", LineBreakIteratorMode::kNormal},
-      {"ja@lb=strict", "ja", LineBreakIteratorMode::kStrict},
-      {"ja@lb=loose", "ja", LineBreakIteratorMode::kLoose},
+      {nullptr, nullptr, LineBreakStrictness::kDefault},
+      {"", "", LineBreakStrictness::kDefault},
+      {nullptr, nullptr, LineBreakStrictness::kStrict},
+      {"", "", LineBreakStrictness::kStrict},
+      {"ja", "ja", LineBreakStrictness::kDefault},
+      {"ja@lb=normal", "ja", LineBreakStrictness::kNormal},
+      {"ja@lb=strict", "ja", LineBreakStrictness::kStrict},
+      {"ja@lb=loose", "ja", LineBreakStrictness::kLoose},
   };
   for (const auto& test : tests) {
     scoped_refptr<LayoutLocale> locale =
         LayoutLocale::CreateForTesting(AtomicString(test.locale));
-    EXPECT_EQ(test.expected, locale->LocaleWithBreakKeyword(test.mode))
+    EXPECT_EQ(test.expected, locale->LocaleWithBreakKeyword(test.strictness))
         << String::Format("'%s' with line-break %d should be '%s'", test.locale,
-                          static_cast<int>(test.mode), test.expected);
+                          static_cast<int>(test.strictness), test.expected);
   }
 }
 
@@ -216,7 +216,7 @@ TEST(LayoutLocaleTest, ExistingKeywordName) {
     scoped_refptr<LayoutLocale> locale =
         LayoutLocale::CreateForTesting(AtomicString(test));
     EXPECT_EQ(test,
-              locale->LocaleWithBreakKeyword(LineBreakIteratorMode::kNormal));
+              locale->LocaleWithBreakKeyword(LineBreakStrictness::kNormal));
   }
 }
 
