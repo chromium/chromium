@@ -168,7 +168,10 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
       base::WeakPtr<AutofillExternalDelegate> external_delegate,
       content::WebContents* web_contents,
       const gfx::RectF& element_bounds,
-      base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>
+      base::RepeatingCallback<void(
+          gfx::NativeWindow,
+          Profile*,
+          password_manager::metrics_util::PasswordMigrationWarningTriggers)>
           show_pwd_migration_warning_callback)
       : AutofillPopupControllerImpl(
             external_delegate,
@@ -326,7 +329,10 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockCreditCardAccessoryController> mock_cc_controller_;
-  base::MockCallback<base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>>
+  base::MockCallback<base::RepeatingCallback<void(
+      gfx::NativeWindow,
+      Profile*,
+      password_manager::metrics_util::PasswordMigrationWarningTriggers)>>
       show_pwd_migration_warning_callback_;
 #endif
   raw_ptr<NiceMock<TestAutofillPopupController>, DanglingAcrossTasks>
@@ -632,7 +638,10 @@ TEST_F(AutofillPopupControllerUnitTest,
 
   // Calls are accepted immediately.
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(1);
-  EXPECT_CALL(show_pwd_migration_warning_callback_, Run);
+  EXPECT_CALL(show_pwd_migration_warning_callback_,
+              Run(_, _,
+                  password_manager::metrics_util::
+                      PasswordMigrationWarningTriggers::kKeyboardAcessoryBar));
   popup_controller().AcceptSuggestionWithoutThreshold(0);
 }
 

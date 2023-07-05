@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "content/public/browser/web_contents.h"
 
@@ -16,8 +17,10 @@
 class PasswordMigrationWarningStartupLauncher
     : public password_manager::PasswordStoreConsumer {
  public:
-  using ShowMigrationWarningCallback =
-      base::OnceCallback<void(gfx::NativeWindow, Profile*)>;
+  using ShowMigrationWarningCallback = base::OnceCallback<void(
+      gfx::NativeWindow,
+      Profile*,
+      password_manager::metrics_util::PasswordMigrationWarningTriggers)>;
   PasswordMigrationWarningStartupLauncher(
       content::WebContents* web_contents,
       Profile* profile,

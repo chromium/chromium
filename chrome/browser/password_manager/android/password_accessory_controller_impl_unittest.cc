@@ -1201,7 +1201,11 @@ TEST_F(PasswordAccessoryControllerTest,
       /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
       /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
       /*selectable=*/true);
-  EXPECT_CALL(show_migration_warning_callback_, Run);
+  EXPECT_CALL(
+      show_migration_warning_callback_,
+      Run(_, _,
+          password_manager::metrics_util::PasswordMigrationWarningTriggers::
+              kKeyboardAcessorySheet));
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 }
 

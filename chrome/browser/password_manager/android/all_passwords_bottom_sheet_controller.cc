@@ -143,7 +143,9 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
               kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
     show_migration_warning_callback_.Run(
         web_contents_->GetTopLevelNativeWindow(),
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+        password_manager::metrics_util::PasswordMigrationWarningTriggers::
+            kAllPasswords);
   }
 
   // Consumes the dismissal callback to destroy the native controller and java

@@ -20,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using password_manager::MockPasswordStoreInterface;
+using testing::_;
 
 namespace {
 password_manager::PasswordForm CreateTestPasswordForm() {
@@ -91,7 +92,11 @@ TEST_F(PasswordMigrationWarningStartupLauncherTest,
        TriggersWarningIfItHasPasswords) {
   store()->AddLogin(CreateTestPasswordForm());
   task_environment()->RunUntilIdle();
-  EXPECT_CALL(show_migration_warning_callback(), Run).Times(1);
+  EXPECT_CALL(show_migration_warning_callback(),
+              Run(_, _,
+                  password_manager::metrics_util::
+                      PasswordMigrationWarningTriggers::kChromeStartup))
+      .Times(1);
   warning_startup_launcher()->MaybeFetchPasswordsAndShowWarning(store());
   task_environment()->RunUntilIdle();
 }

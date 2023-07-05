@@ -21,6 +21,7 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -43,8 +44,10 @@ class PasswordAccessoryControllerImpl
   using PasswordDriverSupplierForFocusedFrame =
       base::RepeatingCallback<password_manager::PasswordManagerDriver*(
           content::WebContents*)>;
-  using ShowMigrationWarningCallback =
-      base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>;
+  using ShowMigrationWarningCallback = base::RepeatingCallback<void(
+      gfx::NativeWindow,
+      Profile*,
+      password_manager::metrics_util::PasswordMigrationWarningTriggers)>;
 
   PasswordAccessoryControllerImpl(const PasswordAccessoryControllerImpl&) =
       delete;

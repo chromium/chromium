@@ -111,7 +111,10 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
     gfx::NativeView container_view,
     const gfx::RectF& element_bounds,
     base::i18n::TextDirection text_direction,
-    base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>
+    base::RepeatingCallback<
+        void(gfx::NativeWindow,
+             Profile*,
+             password_manager::metrics_util::PasswordMigrationWarningTriggers)>
         show_pwd_migration_warning_callback)
     : controller_common_(element_bounds, text_direction, container_view),
       web_contents_(web_contents),
@@ -364,7 +367,9 @@ void AutofillPopupControllerImpl::AcceptSuggestionWithoutThreshold(int index) {
               kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
     show_pwd_migration_warning_callback_.Run(
         web_contents_->GetTopLevelNativeWindow(),
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+        password_manager::metrics_util::PasswordMigrationWarningTriggers::
+            kKeyboardAcessoryBar);
   }
 #endif
 }

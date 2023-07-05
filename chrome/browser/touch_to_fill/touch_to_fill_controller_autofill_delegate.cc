@@ -288,5 +288,7 @@ void TouchToFillControllerAutofillDelegate::
   }
   show_password_migration_warning_.Run(
       web_contents_->GetTopLevelNativeWindow(),
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+      password_manager::metrics_util::PasswordMigrationWarningTriggers::
+          kTouchToFill);
 }

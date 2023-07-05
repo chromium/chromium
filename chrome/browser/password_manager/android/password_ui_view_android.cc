@@ -284,7 +284,9 @@ void PasswordUIViewAndroid::ShowMigrationWarning(
     const base::android::JavaParamRef<jobject>& activity,
     const base::android::JavaParamRef<jobject>& bottom_sheet_controller) {
   local_password_migration::ShowWarningWithActivity(
-      activity, bottom_sheet_controller, ProfileManager::GetLastUsedProfile());
+      activity, bottom_sheet_controller, ProfileManager::GetLastUsedProfile(),
+      password_manager::metrics_util::PasswordMigrationWarningTriggers::
+          kPasswordSettings);
 }
 
 void PasswordUIViewAndroid::OnEditUIDismissed() {

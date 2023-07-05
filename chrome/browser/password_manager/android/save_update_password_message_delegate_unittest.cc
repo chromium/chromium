@@ -150,7 +150,10 @@ class SaveUpdatePasswordMessageDelegateTest
   // expectations.
   MockPasswordEditDialog* PreparePasswordEditDialog();
 
-  base::MockCallback<RepeatingCallback<void(gfx::NativeWindow, Profile*)>>&
+  base::MockCallback<RepeatingCallback<
+      void(gfx::NativeWindow,
+           Profile*,
+           password_manager::metrics_util::PasswordMigrationWarningTriggers)>>&
   GetMigrationWarningCallback();
 
   void TriggerDialogAcceptedCallback(const std::u16string& username,
@@ -198,7 +201,10 @@ class SaveUpdatePasswordMessageDelegateTest
   PasswordEditDialog::LegacyDialogAcceptedCallback
       legacy_dialog_accepted_callback_;
   PasswordEditDialog::DialogDismissedCallback dialog_dismissed_callback_;
-  base::MockCallback<RepeatingCallback<void(gfx::NativeWindow, Profile*)>>
+  base::MockCallback<RepeatingCallback<void(
+      gfx::NativeWindow,
+      Profile*,
+      password_manager::metrics_util::PasswordMigrationWarningTriggers)>>
       mock_password_migration_warning_callback_;
 };
 
@@ -380,7 +386,10 @@ SaveUpdatePasswordMessageDelegateTest::PreparePasswordEditDialog() {
   return mock_password_edit_dialog_.get();
 }
 
-base::MockCallback<RepeatingCallback<void(gfx::NativeWindow, Profile*)>>&
+base::MockCallback<RepeatingCallback<
+    void(gfx::NativeWindow,
+         Profile*,
+         password_manager::metrics_util::PasswordMigrationWarningTriggers)>>&
 SaveUpdatePasswordMessageDelegateTest::GetMigrationWarningCallback() {
   return mock_password_migration_warning_callback_;
 }
@@ -620,7 +629,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
                  /*update_password=*/false);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(GetMigrationWarningCallback(), Run);
+  EXPECT_CALL(
+      GetMigrationWarningCallback(),
+      Run(_, _,
+          password_manager::metrics_util::PasswordMigrationWarningTriggers::
+              kPasswordSaveUpdateMessage));
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }

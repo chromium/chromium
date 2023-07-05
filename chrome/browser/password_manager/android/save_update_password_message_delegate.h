@@ -80,7 +80,10 @@ class SaveUpdatePasswordMessageDelegate {
 
   SaveUpdatePasswordMessageDelegate(
       PasswordEditDialogFactory password_edit_dialog_factory,
-      base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>
+      base::RepeatingCallback<void(
+          gfx::NativeWindow,
+          Profile*,
+          password_manager::metrics_util::PasswordMigrationWarningTriggers)>
           password_migration_warning_bridge_callback);
 
   void DismissSaveUpdatePasswordMessage(messages::DismissReason dismiss_reason);
@@ -168,7 +171,10 @@ class SaveUpdatePasswordMessageDelegate {
 
   std::unique_ptr<messages::MessageWrapper> message_;
   std::unique_ptr<PasswordEditDialog> password_edit_dialog_;
-  base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>
+  base::RepeatingCallback<void(
+      gfx::NativeWindow,
+      Profile*,
+      password_manager::metrics_util::PasswordMigrationWarningTriggers)>
       create_migration_warning_callback_;
 };
 

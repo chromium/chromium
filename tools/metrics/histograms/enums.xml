@@ -82613,6 +82613,26 @@ Called by update_net_trust_anchors.py.-->
   <int value="12" label="Clicked the link passwords.google.com"/>
 </enum>
 
+<enum name="PasswordMigrationWarningTriggers">
+  <int value="0" label="Chrome started up"/>
+  <int value="1" label="A password was saved or updated"/>
+  <int value="2" label="Password settings UI was accessed"/>
+  <int value="3" label="A credential was filled via touch to fill sheet"/>
+  <int value="4" label="A credential was filled via keyboard accessory sheet"/>
+  <int value="5" label="A credential was filled via keyboard accessory bar"/>
+  <int value="6" label="A credential was filled via all passwords sheet"/>
+</enum>
+
+<enum name="PasswordMigrationWarningUserActions">
+  <int value="0" label="The warning was acknowledged"/>
+  <int value="1" label="The more options button was clicked"/>
+  <int value="2" label="The user chose to start syncing"/>
+  <int value="3" label="The user chose to export passwords"/>
+  <int value="4" label="The cancel button was clicked"/>
+  <int value="5" label="The sheet with the introduction was dismissed"/>
+  <int value="6" label="The sheet with more options was dismissed"/>
+</enum>
+
 <enum name="PasswordNoteAction">
   <int value="0"
       label="A new credential is added from settings, with the note field not

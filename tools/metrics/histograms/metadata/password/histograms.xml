@@ -2514,6 +2514,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordMigrationWarning.Trigger"
+    enum="PasswordMigrationWarningTriggers" expires_after="2024-01-29">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    This histogram logs the UI surface that led to showing the local passwords
+    migration warning. Recorded when the warning sheet is shown. Android only.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordMigrationWarning.UserAction"
+    enum="PasswordMigrationWarningUserActions" expires_after="2024-01-29">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    This histograms logs the action that the user performed in the local
+    password migration warning sheet. For the export and sync options, this is
+    recorded when the user taps &quot;Next&quot; after selecting the
+    corresponding radio button. All other actions are recorded when tapping on
+    the corresponding buttons/dismissing the sheet. Multiple buckets can be
+    recorded for the same sheet. Android only.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordNoteActionInSettings"
     enum="PasswordNoteAction" expires_after="M111">
   <obsolete>
