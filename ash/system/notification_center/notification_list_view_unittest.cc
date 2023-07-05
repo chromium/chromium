@@ -272,18 +272,10 @@ class ParameterizedNotificationListViewTest
 
   // AshTestBase:
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features;
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-
-    if (IsQsRevampEnabled()) {
-      enabled_features.push_back(features::kQsRevamp);
-    }
-    if (IsJellyEnabled()) {
-      enabled_features.push_back(chromeos::features::kJelly);
-    }
-    scoped_feature_list_->InitWithFeatures(enabled_features,
-                                           /*disabled_features=*/{});
-
+    scoped_feature_list_->InitWithFeatureStates(
+        {{features::kQsRevamp, /*enabled=*/IsQsRevampEnabled()},
+         {chromeos::features::kJelly, /*enabled=*/IsJellyEnabled()}});
     NotificationListViewTest::SetUp();
   }
 
