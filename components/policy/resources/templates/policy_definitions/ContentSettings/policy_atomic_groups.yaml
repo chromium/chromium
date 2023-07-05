@@ -81,3 +81,9 @@ WindowManagementSettings:
   - DefaultWindowPlacementSetting
   - WindowPlacementAllowedForUrls
   - WindowPlacementBlockedForUrls
+MidiSettings:
+  caption: MIDI settings
+  policies:
+  - DefaultMidiSetting
+  - MidiAllowedForUrls
+  - MidiBlockedForUrls
