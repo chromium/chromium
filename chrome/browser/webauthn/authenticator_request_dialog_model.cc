@@ -278,7 +278,6 @@ void AuthenticatorRequestDialogModel::StartOver() {
     observer.OnStartOver();
   }
 
-  current_mechanism_.reset();
   current_step_ = Step::kNotStarted;
   SetCurrentStep(Step::kMechanismSelection);
 }
@@ -821,11 +820,6 @@ AuthenticatorRequestDialogModel::mechanisms() const {
   return mechanisms_;
 }
 
-absl::optional<size_t> AuthenticatorRequestDialogModel::current_mechanism()
-    const {
-  return current_mechanism_;
-}
-
 void AuthenticatorRequestDialogModel::ContactPriorityPhone() {
   for (auto& mechanism : mechanisms_) {
     if (absl::holds_alternative<Mechanism::Phone>(mechanism.type)) {
@@ -841,12 +835,12 @@ void AuthenticatorRequestDialogModel::ContactPhoneForTesting(
   // Ensure BLE is powered so that `ContactPhone()` shows the "Check your phone"
   // screen right away.
   transport_availability_.is_ble_powered = true;
-  ContactPhone(name, /*mechanism_index=*/0);
+  ContactPhone(name);
 }
 
 void AuthenticatorRequestDialogModel::StartTransportFlowForTesting(
     AuthenticatorTransport transport) {
-  StartGuidedFlowForTransport(transport, /*mechanism_index=*/0);
+  StartGuidedFlowForTransport(transport);
 }
 
 void AuthenticatorRequestDialogModel::SetCurrentStepForTesting(Step step) {
@@ -999,10 +993,7 @@ void AuthenticatorRequestDialogModel::SetCurrentStep(Step step) {
 }
 
 void AuthenticatorRequestDialogModel::StartGuidedFlowForTransport(
-    AuthenticatorTransport transport,
-    size_t mechanism_index) {
-  current_mechanism_ = mechanism_index;
-
+    AuthenticatorTransport transport) {
   DCHECK(current_step() == Step::kMechanismSelection ||
          current_step() == Step::kUsbInsertAndActivate ||
          current_step() == Step::kCableActivate ||
@@ -1030,17 +1021,12 @@ void AuthenticatorRequestDialogModel::StartGuidedFlowForTransport(
   }
 }
 
-void AuthenticatorRequestDialogModel::StartGuidedFlowForAddPhone(
-    size_t mechanism_index) {
-  current_mechanism_ = mechanism_index;
+void AuthenticatorRequestDialogModel::StartGuidedFlowForAddPhone() {
   EnsureBleAdapterIsPoweredAndContinueWithStep(Step::kCableV2QRCode);
 }
 
-void AuthenticatorRequestDialogModel::StartWinNativeApi(
-    size_t mechanism_index) {
+void AuthenticatorRequestDialogModel::StartWinNativeApi() {
   DCHECK(transport_availability_.has_win_native_api_authenticator);
-  current_mechanism_ = mechanism_index;
-
   if (transport_availability_.request_is_internal_only &&
       !transport_availability_.win_is_uvpaa) {
     offer_try_again_in_ui_ = false;
@@ -1057,32 +1043,17 @@ void AuthenticatorRequestDialogModel::StartWinNativeApi(
   }
 }
 
-void AuthenticatorRequestDialogModel::StartICloudKeychain(
-    size_t mechanism_index) {
+void AuthenticatorRequestDialogModel::StartICloudKeychain() {
   DCHECK(transport_availability_.has_icloud_keychain);
-  current_mechanism_ = mechanism_index;
-
   HideDialogAndDispatchToPlatformAuthenticator(
       device::AuthenticatorType::kICloudKeychain);
 }
 
 void AuthenticatorRequestDialogModel::ContactPrioritySyncedPhone() {
-  PairedPhone phone = *GetPrioritySyncedPhone();
-  const auto phone_mechanism_it =
-      base::ranges::find_if(mechanisms_, [&phone](const auto& mechanism) {
-        return absl::holds_alternative<Mechanism::Phone>(mechanism.type) &&
-               absl::get<Mechanism::Phone>(mechanism.type).value() ==
-                   phone.name;
-      });
-  CHECK(phone_mechanism_it != mechanisms_.end());
-  ContactPhone(phone.name,
-               std::distance(mechanisms_.begin(), phone_mechanism_it));
+  ContactPhone(GetPrioritySyncedPhone()->name);
 }
 
-void AuthenticatorRequestDialogModel::ContactPhone(const std::string& name,
-                                                   size_t mechanism_index) {
-  current_mechanism_ = mechanism_index;
-
+void AuthenticatorRequestDialogModel::ContactPhone(const std::string& name) {
 #if BUILDFLAG(IS_MAC)
   if (transport_availability()->ble_access_denied) {
     // |step| is not saved because macOS asks the user to restart Chrome
@@ -1307,7 +1278,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
         Mechanism::ICloudKeychain(), name, name, kSmartphoneIcon,
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::StartICloudKeychain,
-            base::Unretained(this), mechanisms_.size()));
+            base::Unretained(this)));
   }
 
   // The Windows API option comes first so that it gets focus and people can
@@ -1324,7 +1295,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
         Mechanism::WindowsAPI(), desc, desc,
         GetTransportIcon(AuthenticatorTransport::kInternal),
         base::BindRepeating(&AuthenticatorRequestDialogModel::StartWinNativeApi,
-                            base::Unretained(this), mechanisms_.size()));
+                            base::Unretained(this)));
   }
 
   bool specific_phones_listed = false;
@@ -1341,8 +1312,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
           Mechanism::Phone(phone_name), std::move(long_name),
           std::move(short_name), kSmartphoneIcon,
           base::BindRepeating(&AuthenticatorRequestDialogModel::ContactPhone,
-                              base::Unretained(this), phone_name,
-                              mechanisms_.size()));
+                              base::Unretained(this), phone_name));
       specific_phones_listed = true;
     }
     bool skip_to_phone_confirmation =
@@ -1369,7 +1339,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
         Mechanism::AddPhone(), label, label, kQrcodeGeneratorIcon,
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::StartGuidedFlowForAddPhone,
-            base::Unretained(this), mechanisms_.size()));
+            base::Unretained(this)));
   }
 
   for (const auto transport : transports_to_list_if_active) {
@@ -1383,7 +1353,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
         GetTransportShortDescription(transport), GetTransportIcon(transport),
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::StartGuidedFlowForTransport,
-            base::Unretained(this), transport, mechanisms_.size()));
+            base::Unretained(this), transport));
   }
 }
 

@@ -539,10 +539,6 @@ class AuthenticatorRequestDialogModel {
 
   virtual base::span<const Mechanism> mechanisms() const;
 
-  // current_mechanism returns the index into |mechanisms| of the most recently
-  // activated mechanism, or nullopt if there isn't one.
-  absl::optional<size_t> current_mechanism() const;
-
   // Contacts the "priority" paired phone. This is only valid to call when there
   // is a single phone paired.
   void ContactPriorityPhone();
@@ -688,24 +684,23 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at step: kNotStarted. kMechanismSelection, and steps
   // where the other transports menu is shown, namely, kUsbInsertAndActivate,
   // kCableActivate.
-  void StartGuidedFlowForTransport(AuthenticatorTransport transport,
-                                   size_t mechanism_index);
+  void StartGuidedFlowForTransport(AuthenticatorTransport transport);
 
   // Starts the flow for adding an unlisted phone by showing a QR code.
-  void StartGuidedFlowForAddPhone(size_t mechanism_index);
+  void StartGuidedFlowForAddPhone();
 
   // Displays a resident-key warning if needed and then calls
   // |HideDialogAndDispatchToNativeWindowsApi|.
-  void StartWinNativeApi(size_t mechanism_index);
+  void StartWinNativeApi();
 
-  void StartICloudKeychain(size_t mechanism_index);
+  void StartICloudKeychain();
 
   // Contacts the "priority" paired phone from sync. At least one sync phone
   // must be available to call this.
   void ContactPrioritySyncedPhone();
 
   // Contacts a paired phone. The phone is specified by name.
-  void ContactPhone(const std::string& name, size_t mechanism_index);
+  void ContactPhone(const std::string& name);
   void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
   void ContactPhoneAfterBleIsPowered(std::string name);
 
@@ -808,10 +803,6 @@ class AuthenticatorRequestDialogModel {
   // priority_mechanism_index_ contains an index in `mechanisms_` for the
   // mechanism that should immediately be triggered, if any.
   absl::optional<size_t> priority_mechanism_index_;
-
-  // current_mechanism_ contains the index of the most recently activated
-  // mechanism.
-  absl::optional<size_t> current_mechanism_;
 
   // cable_ui_type_ contains the type of UI to display for a caBLE transaction.
   absl::optional<CableUIType> cable_ui_type_;
