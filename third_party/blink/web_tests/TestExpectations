@@ -6587,3 +6587,8 @@ crbug.com/1453780 external/wpt/infrastructure/testdriver/test_win_open_with_inte
 
 # Sheriff 2023-07-04
 crbug.com/391068 http/tests/websocket/close-code-and-reason.html [ Failure Pass ]
+
+# Fix importer 2023-07-05
+crbug.com/626703 external/wpt/css/css-highlight-api/highlight-priority.html [ Crash ]
+crbug.com/626703 virtual/css-highlight-inheritance/external/wpt/css/css-highlight-api/highlight-priority.html [ Crash ]
+crbug.com/626703 virtual/css-highlight-overlay-painting/external/wpt/css/css-highlight-api/highlight-priority.html [ Crash ]
