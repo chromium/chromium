@@ -691,6 +691,10 @@ extern const char kOmniboxReportAssistedQueryStatsDescription[];
 extern const char kOmniboxReportSearchboxStatsName[];
 extern const char kOmniboxReportSearchboxStatsDescription[];
 
+// Title and description for improved RTL layout of suggestions.
+extern const char kOmniboxSuggestionsRTLImprovementsName[];
+extern const char kOmniboxSuggestionsRTLImprovementsDescription[];
+
 // Title and description for tail suggestions in the omnibox.
 extern const char kOmniboxTailSuggestName[];
 extern const char kOmniboxTailSuggestDescription[];

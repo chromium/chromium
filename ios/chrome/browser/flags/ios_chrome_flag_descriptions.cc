@@ -801,6 +801,11 @@ const char kOmniboxReportSearchboxStatsDescription[] =
     "Enables reporting the serialized Searchbox Stats proto param in search "
     "destination URLs originated from the Omnibox.";
 
+extern const char kOmniboxSuggestionsRTLImprovementsName[] =
+    "Omnibox Improved RTL Suggestion Layout";
+extern const char kOmniboxSuggestionsRTLImprovementsDescription[] =
+    "Improved layout for suggestions in right-to-left contexts";
+
 const char kOmniboxTailSuggestName[] = "Omnibox Tail suggestions";
 const char kOmniboxTailSuggestDescription[] =
     "Enables tail search suggestions. Search suggestions only matching the end "

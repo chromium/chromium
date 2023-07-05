@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/elements/self_sizing_table_view.h"
 #import "ios/chrome/browser/shared/ui/util/keyboard_observer_helper.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
@@ -29,6 +30,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_cell.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell_experimental.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_match_preview_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -51,6 +53,9 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 const CGFloat kMinTileFaviconSize = 32.0f;
 /// Maximum size of the fetched favicon for tiles.
 const CGFloat kMaxTileFaviconSize = 48.0f;
+
+// Default offset to align the suggestions with the omnibox leading image.
+const CGFloat kDefaultSuggestionLeadingOffset = -10.0f;
 
 /// Bottom padding for table view headers.
 const CGFloat kHeaderPaddingBottom = 10.0f;
@@ -262,6 +267,14 @@ BOOL ShouldDismissKeyboardOnScroll() {
   }
   self.tableView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentAutomatic;
+  if (base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements) &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    /// The popup view in multitasking displays suggestion icons outside of the
+    /// safe area (too close to the leading edge). This is ok because the entire
+    /// rows act as touch targets.
+    self.viewRespectsSystemMinimumLayoutMargins = NO;
+  }
+
   [self.tableView setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
                                                   0, 0, kBottomPadding, 0)];
   self.tableView.contentInset = UIEdgeInsetsMake(kTopPadding, 0, 0, 0);
@@ -272,8 +285,13 @@ BOOL ShouldDismissKeyboardOnScroll() {
   self.tableView.rowHeight = UITableViewAutomaticDimension;
   self.tableView.estimatedRowHeight = kOmniboxPopupCellMinimumHeight;
 
-  [self.tableView registerClass:[OmniboxPopupRowCell class]
-         forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
+  if (base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements)) {
+    [self.tableView registerClass:[OmniboxPopupRowCellExperimental class]
+           forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
+  } else {
+    [self.tableView registerClass:[OmniboxPopupRowCell class]
+           forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
+  }
   [self.tableView registerClass:[UITableViewHeaderFooterView class]
       forHeaderFooterViewReuseIdentifier:NSStringFromClass(
                                              [UITableViewHeaderFooterView
@@ -347,6 +365,19 @@ BOOL ShouldDismissKeyboardOnScroll() {
     UITableViewHeaderFooterView* headerView =
         [self.tableView headerViewForSection:i];
     [headerView setNeedsUpdateConfiguration];
+  }
+
+  if (base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements) &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    CGFloat leadingPadding = kDefaultSuggestionLeadingOffset;
+    if (IsRegularXRegularSizeClass(self)) {
+      leadingPadding += CGRectGetMinX(omniboxFrame);
+    }
+
+    self.tableView.contentInset =
+        UIEdgeInsetsMakeDirected(0, leadingPadding, kBottomPadding, 0);
+    self.tableView.directionalLayoutMargins =
+        NSDirectionalEdgeInsetsMake(0, leadingPadding, kBottomPadding, 0);
   }
 }
 
@@ -603,9 +634,9 @@ BOOL ShouldDismissKeyboardOnScroll() {
 - (void)tableView:(UITableView*)tableView
       willDisplayCell:(UITableViewCell*)cell
     forRowAtIndexPath:(NSIndexPath*)indexPath {
-  if ([cell isKindOfClass:[OmniboxPopupRowCell class]]) {
-    OmniboxPopupRowCell* rowCell =
-        base::mac::ObjCCastStrict<OmniboxPopupRowCell>(cell);
+  if ([cell isKindOfClass:[OmniboxPopupRowCell class]] ||
+      [cell isKindOfClass:[OmniboxPopupRowCellExperimental class]]) {
+    OmniboxPopupRowCell* rowCell = id(cell);
     // This has to be set here because the cell's content view has its
     // semantic content attribute reset before the cell is displayed (and before
     // this method is called).
@@ -940,9 +971,9 @@ BOOL ShouldDismissKeyboardOnScroll() {
   _semanticContentAttribute = semanticContentAttribute;
   // If there are any visible cells, update them right away.
   for (UITableViewCell* cell in self.tableView.visibleCells) {
-    if ([cell isKindOfClass:[OmniboxPopupRowCell class]]) {
-      OmniboxPopupRowCell* rowCell =
-          base::mac::ObjCCastStrict<OmniboxPopupRowCell>(cell);
+    if ([cell isKindOfClass:[OmniboxPopupRowCell class]] ||
+        [cell isKindOfClass:[OmniboxPopupRowCellExperimental class]]) {
+      OmniboxPopupRowCell* rowCell = (id)cell;
       // This has to be set here because the cell's content view has its
       // semantic content attribute reset before the cell is displayed (and
       // before this method is called).

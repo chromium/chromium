@@ -5753,6 +5753,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "omnibox-improved-rtl-suggestions",
+    "owners": [ "stkhapugin", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "omnibox-inspire-me",
     "owners": ["ender", "pnoland", "gangwu"],
     "expiry_milestone": 120

@@ -25,4 +25,8 @@ BASE_DECLARE_FEATURE(kOmniboxTailSuggest);
 
 // Returns if kEnablePopoutOmniboxIpad feature is enabled.
 bool IsIpadPopoutOmniboxEnabled();
+
+// Feature flag to enable improved RTL layout of the suggestions.
+BASE_DECLARE_FEATURE(kOmniboxSuggestionsRTLImprovements);
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_
