@@ -317,6 +317,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.WrenchMenu.MenuButtonPressedToMenuShown" units="ms"
+    expires_after="2024-05-31">
+  <owner>temao@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records the latency from when the app menu button is pressed to when the
+    menu is shown. It's logged every time the button is pressed.
+  </summary>
+</histogram>
+
 <histogram name="ChromeColors.ColorOnLoad" enum="ChromeColorsInfo"
     expires_after="2023-10-22">
   <owner>gayane@chromium.org</owner>
