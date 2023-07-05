@@ -41,11 +41,9 @@
     </module>
     <module name="JavadocMethod">
       <property name="severity" value="info"/>
-      <property name="scope" value="public"/>
+      <property name="accessModifiers" value="public"/>
       <property name="allowMissingParamTags" value="true"/>
-      <property name="allowMissingPropertyJavadoc" value="true"/>
       <property name="allowMissingReturnTag" value="true"/>
-      <property name="allowMissingThrowsTags" value="true"/>
     </module>
     <module name="PackageName">
       <property name="severity" value="error"/>
