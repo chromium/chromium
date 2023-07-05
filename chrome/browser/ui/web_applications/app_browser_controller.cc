@@ -608,6 +608,13 @@ void AppBrowserController::SetOnUpdateDraggableRegionForTesting(
   on_draggable_region_set_for_testing_ = std::move(done);
 }
 
+void AppBrowserController::MaybeSetInitialUrlOnReparentTab() {
+  if (initial_url_.is_empty() || !IsUrlInAppScope(initial_url_)) {
+    initial_url_ = GURL();
+    SetInitialURL(GetAppStartUrl());
+  }
+}
+
 void AppBrowserController::UpdateThemePack() {
   absl::optional<SkColor> theme_color = GetThemeColor();
 

@@ -321,6 +321,11 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
     browser = Browser::Create(Browser::CreateParams::CreateForApp(
         GenerateApplicationNameFromAppId(app_id), true /* trusted_source */,
         gfx::Rect(), profile, true /* user_gesture */));
+
+    // If the current url isn't in scope, then set the initial url on the
+    // AppBrowserController so that the 'x' button still shows up.
+    CHECK(browser->app_controller());
+    browser->app_controller()->MaybeSetInitialUrlOnReparentTab();
   }
 
   bool as_pinned_home_tab =

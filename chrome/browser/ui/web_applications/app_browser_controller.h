@@ -262,6 +262,13 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
 
   void SetOnUpdateDraggableRegionForTesting(base::OnceClosure done);
 
+  // Called when this browser is going to receive a reparented web contents
+  // from an installation or intent action. If the initial url is not set or
+  // isn't within the app scope, set it to the app's start_url, allowing the 'x'
+  // button to appear in the toolbar & the user can use it to navigate back to
+  // that location.
+  void MaybeSetInitialUrlOnReparentTab();
+
  protected:
   AppBrowserController(Browser* browser,
                        AppId app_id,
