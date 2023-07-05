@@ -99,13 +99,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DirectWrite.Fonts.Proxy.GetSystemFontCollectionResult"
-    enum="Hresult" expires_after="2022-10-15">
-  <owner>drott@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>Records the error returned from GetSystemFontCollection.</summary>
-</histogram>
-
 <histogram name="DirectWrite.Fonts.Proxy.IndexingSpeed"
     units="font files per second" expires_after="2022-10-15">
   <owner>drott@chromium.org</owner>

@@ -591,8 +591,6 @@ void DWriteFontProxyImpl::InitializeDirectWrite() {
   DCHECK(SUCCEEDED(hr));
 
   if (!collection_) {
-    base::UmaHistogramSparse(
-        "DirectWrite.Fonts.Proxy.GetSystemFontCollectionResult", hr);
     LogMessageFilterError(MessageFilterError::ERROR_NO_COLLECTION);
     return;
   }
