@@ -35,6 +35,7 @@ function globalInterfaceListing(
     'Int32Array',
     'Int8Array',
     'Intl',
+    'Iterator',
     'JSON',
     'Map',
     'Math',
