@@ -9,10 +9,11 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "url/gurl.h"
+#include "services/network/public/mojom/cookie_access_observer.mojom.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -22,31 +23,60 @@ class SharedURLLoaderFactory;
 class SigninClient;
 
 class BoundSessionRefreshCookieFetcherImpl
-    : public BoundSessionRefreshCookieFetcher {
+    : public BoundSessionRefreshCookieFetcher,
+      public network::mojom::CookieAccessObserver {
  public:
-  explicit BoundSessionRefreshCookieFetcherImpl(SigninClient* client);
+  explicit BoundSessionRefreshCookieFetcherImpl(SigninClient* client,
+                                                const GURL& cookie_url,
+                                                const std::string& cookie_name);
   ~BoundSessionRefreshCookieFetcherImpl() override;
 
   // BoundSessionRefreshCookieFetcher:
   void Start(RefreshCookieCompleteCallback callback) override;
 
  private:
+  friend class BoundSessionRefreshCookieFetcherImplTest;
   FRIEND_TEST_ALL_PREFIXES(BoundSessionRefreshCookieFetcherImplTest,
                            GetResultFromNetErrorAndHttpStatusCode);
+  FRIEND_TEST_ALL_PREFIXES(BoundSessionRefreshCookieFetcherImplTest,
+                           OnCookiesAccessedRead);
+  FRIEND_TEST_ALL_PREFIXES(BoundSessionRefreshCookieFetcherImplTest,
+                           OnCookiesAccessedChange);
 
   void StartRefreshRequest();
   void OnURLLoaderComplete(scoped_refptr<net::HttpResponseHeaders> headers);
   Result GetResultFromNetErrorAndHttpStatusCode(
       net::Error net_error,
       absl::optional<int> response_code);
+  void ReportRefreshResult();
+
+  // network::mojom::CookieAccessObserver:
+  void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
+                             details_vector) override;
+  void Clone(mojo::PendingReceiver<network::mojom::CookieAccessObserver>
+                 observer) override;
 
   const raw_ptr<SigninClient> client_;
+
+  // Used to check whether the refresh request has set the required cookie.
+  // Otherwise, the request is considered a failure.
+  const GURL expected_cookie_domain_;
+  const std::string expected_cookie_name_;
+
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   RefreshCookieCompleteCallback callback_;
 
+  bool expected_cookie_set_ = false;
+  base::OneShotTimer reported_cookies_notified_timer_;
+  bool reported_cookies_notified_ = false;
+
+  // Refresh request result.
+  Result result_;
+  bool url_loader_completed_ = false;
+
   // Non-null after a fetch has started.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-
+  mojo::ReceiverSet<network::mojom::CookieAccessObserver> cookie_observers_;
   base::WeakPtrFactory<BoundSessionRefreshCookieFetcherImpl> weak_ptr_factory_{
       this};
 };

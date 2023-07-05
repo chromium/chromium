@@ -6,15 +6,16 @@
 
 #include <memory>
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h"
 #include "components/signin/public/base/signin_client.h"
-#include "net/base/net_errors.h"
-#include "net/http/http_status_code.h"
+
+namespace {
+using Result = BoundSessionRefreshCookieFetcher::Result;
+}
 
 BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     SigninClient* client,
@@ -74,7 +75,8 @@ void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
 std::unique_ptr<BoundSessionRefreshCookieFetcher>
 BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
   return refresh_cookie_fetcher_factory_for_testing_.is_null()
-             ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(client_)
+             ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
+                   client_, url_, cookie_name())
              : refresh_cookie_fetcher_factory_for_testing_.Run(client_, url_,
                                                                cookie_name());
 }
@@ -107,8 +109,9 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
 
   // Persistent errors result in session termination.
   // Transient errors have no impact on future requests.
-  if (result ==
-      BoundSessionRefreshCookieFetcher::Result::kServerPersistentError) {
+
+  if (result == Result::kServerPersistentError ||
+      result == Result::kServerUnexepectedResponse) {
     delegate_->TerminateSession();
     // `this` should be deleted.
   }

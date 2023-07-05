@@ -6,19 +6,39 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/time/time.h"
 #include "components/signin/public/base/signin_client.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace {
+
+bool IsExpectedCookie(const GURL& url,
+                      const std::string& cookie_name,
+                      const net::CanonicalCookie& cookie) {
+  return (cookie.Name() == cookie_name) && cookie.IsDomainMatch(url.host());
+}
+}  // namespace
+
 BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
-    SigninClient* client)
-    : client_(client), url_loader_factory_(client->GetURLLoaderFactory()) {}
+    SigninClient* client,
+    const GURL& cookie_url,
+    const std::string& cookie_name)
+    : client_(client),
+      expected_cookie_domain_(cookie_url),
+      expected_cookie_name_(cookie_name),
+      url_loader_factory_(client->GetURLLoaderFactory()) {}
 
 BoundSessionRefreshCookieFetcherImpl::~BoundSessionRefreshCookieFetcherImpl() =
     default;
@@ -86,6 +106,10 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest() {
   request->trusted_params->isolation_info =
       net::IsolationInfo::CreateForInternalRequest(origin);
 
+  mojo::PendingRemote<network::mojom::CookieAccessObserver> remote;
+  cookie_observers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+  request->trusted_params->cookie_observer = std::move(remote);
+
   // TODO(b/273920907): Figure out how to handle redirects. Currently
   // `network::SimpleURLLoader::SetOnRedirectCallback()` doesn't support
   // modifying the headers nor asynchronously resuming the reguest.
@@ -104,12 +128,29 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest() {
 
 void BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete(
     scoped_refptr<net::HttpResponseHeaders> headers) {
+  url_loader_completed_ = true;
   net::Error net_error = static_cast<net::Error>(url_loader_->NetError());
 
-  Result result = GetResultFromNetErrorAndHttpStatusCode(
+  result_ = GetResultFromNetErrorAndHttpStatusCode(
       net_error,
       headers ? absl::optional<int>(headers->response_code()) : absl::nullopt);
-  std::move(callback_).Run(result);
+
+  if (result_ == Result::kSuccess && !reported_cookies_notified_) {
+    // Normally, a cookie update notification should be sent before the request
+    // is complete. Add some leeway in the case mojo messages are delivered out
+    // of order.
+    const base::TimeDelta kResponseCookiesNotifiedMaxDelay =
+        base::Milliseconds(100);
+    // `base::Unretained` is safe as `this` owns
+    // `reported_cookies_notified_timer_`.
+    reported_cookies_notified_timer_.Start(
+        FROM_HERE, kResponseCookiesNotifiedMaxDelay,
+        base::BindOnce(
+            &BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult,
+            base::Unretained(this)));
+  } else {
+    ReportRefreshResult();
+  }
 }
 
 BoundSessionRefreshCookieFetcher::Result
@@ -119,23 +160,64 @@ BoundSessionRefreshCookieFetcherImpl::GetResultFromNetErrorAndHttpStatusCode(
   if ((net_error != net::OK &&
        net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) ||
       !response_code) {
-    return BoundSessionRefreshCookieFetcher::Result::kConnectionError;
+    return Result::kConnectionError;
   }
 
   if (response_code == net::HTTP_OK) {
-    return BoundSessionRefreshCookieFetcher::Result::kSuccess;
+    return Result::kSuccess;
   }
 
   if (response_code >= net::HTTP_INTERNAL_SERVER_ERROR) {
     // Server error 5xx.
-    return BoundSessionRefreshCookieFetcher::Result::kServerTransientError;
+    return Result::kServerTransientError;
   }
 
   if (response_code >= net::HTTP_BAD_REQUEST) {
     // Server error 4xx.
-    return BoundSessionRefreshCookieFetcher::Result::kServerPersistentError;
+    return Result::kServerPersistentError;
   }
 
   // Unexpected response code.
-  return BoundSessionRefreshCookieFetcher::Result::kServerPersistentError;
+  return Result::kServerPersistentError;
+}
+
+void BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult() {
+  reported_cookies_notified_timer_.Stop();
+  CHECK(url_loader_completed_);
+  if (result_ == Result::kSuccess && !expected_cookie_set_) {
+    result_ = Result::kServerUnexepectedResponse;
+  }
+
+  std::move(callback_).Run(result_);
+}
+
+void BoundSessionRefreshCookieFetcherImpl::OnCookiesAccessed(
+    std::vector<network::mojom::CookieAccessDetailsPtr> details_vector) {
+  for (const auto& cookie_details : details_vector) {
+    if (cookie_details->type !=
+        network::mojom::CookieAccessDetails::Type::kChange) {
+      continue;
+    }
+
+    reported_cookies_notified_ = true;
+    for (const network::mojom::CookieOrLineWithAccessResultPtr& cookie :
+         cookie_details->cookie_list) {
+      if (cookie->access_result.status.IsInclude()) {
+        CHECK(cookie->cookie_or_line->is_cookie());
+        expected_cookie_set_ =
+            expected_cookie_set_ ||
+            IsExpectedCookie(expected_cookie_domain_, expected_cookie_name_,
+                             cookie->cookie_or_line->get_cookie());
+      }
+    }
+  }
+
+  if (url_loader_completed_ && reported_cookies_notified_) {
+    ReportRefreshResult();
+  }
+}
+
+void BoundSessionRefreshCookieFetcherImpl::Clone(
+    mojo::PendingReceiver<network::mojom::CookieAccessObserver> observer) {
+  cookie_observers_.Add(this, std::move(observer));
 }

@@ -18,5 +18,7 @@ std::ostream& operator<<(
     case BoundSessionRefreshCookieFetcher::Result::kServerPersistentError:
       return os << "Cookie rotation request finished with Server Persistent "
                    "error.";
+    case BoundSessionRefreshCookieFetcher::Result::kServerUnexepectedResponse:
+      return os << "Cookie rotation request didn't set the expected cookies.";
   }
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h"
 
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -51,8 +52,8 @@ void FakeBoundSessionRefreshCookieFetcher::Start(
 void FakeBoundSessionRefreshCookieFetcher::SimulateCompleteRefreshRequest(
     BoundSessionRefreshCookieFetcher::Result result,
     absl::optional<base::Time> cookie_expiration) {
-  if (result == BoundSessionRefreshCookieFetcher::Result::kSuccess &&
-      cookie_expiration) {
+  if (result == BoundSessionRefreshCookieFetcher::Result::kSuccess) {
+    CHECK(cookie_expiration);
     // Synchronous since tests use `BoundSessionTestCookieManager`.
     OnRefreshCookieCompleted(CreateFakeCookie(cookie_expiration.value()));
   } else {
