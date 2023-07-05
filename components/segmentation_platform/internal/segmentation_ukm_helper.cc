@@ -27,6 +27,8 @@ using segmentation_platform::SegmentationUkmHelper;
 using segmentation_platform::proto::SegmentId;
 using ukm::builders::Segmentation_ModelExecution;
 
+namespace segmentation_platform {
+
 namespace {
 using UkmMemberFn =
     Segmentation_ModelExecution& (Segmentation_ModelExecution::*)(int64_t);
@@ -124,9 +126,24 @@ void AddPredictionResultToUkmModelExecution(
     (SegmentationUkmHelper::FloatToInt64(results[i]));
   }
 }
-}  // namespace
 
-namespace segmentation_platform {
+std::string GetDebugString(const ModelProvider::Request& input_tensor,
+                           const ModelProvider::Response& outputs) {
+  std::stringstream out;
+  out << "Inputs: ";
+  int j = 0;
+  for (const auto& i : input_tensor) {
+    out << j++ << ":" << i << " ";
+  }
+  out << " Outputs: ";
+  j = 0;
+  for (const auto& i : outputs) {
+    out << j++ << ":" << i << " ";
+  }
+  return out.str();
+}
+
+}  // namespace
 
 SegmentationUkmHelper::SegmentationUkmHelper() {
   Initialize();
@@ -220,6 +237,9 @@ ukm::SourceId SegmentationUkmHelper::RecordTrainingData(
     execution_result.SetOutputDelaySec(
         (base::Time::Now() - selected_segment->selection_time).InSeconds());
   }
+
+  VLOG(1) << "Recording training data " << proto::SegmentId_Name(segment_id)
+          << " " << GetDebugString(input_tensor, outputs);
 
   execution_result.Record(ukm::UkmRecorder::Get());
   return source_id;

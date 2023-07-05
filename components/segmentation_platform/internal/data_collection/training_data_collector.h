@@ -52,8 +52,10 @@ class TrainingDataCollector {
 
   // Parameters used for reporting immediate output collections.
   struct ImmediateCollectionParam {
+    // Optional name used for debugging.
+    std::string output_metric_name;
     // Hash of the output metric name given by
-    // |base::HashMetricName(histogram_name)| function.
+    // |base::HashMetricName(name)| function.
     uint64_t output_metric_hash;
     // Value of the output metric.
     // TODO(haileywang): Make this a vector and append all the values to the

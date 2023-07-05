@@ -75,6 +75,8 @@ struct AnnotatedNumericResult {
   // The request ID used for identifying a specific training data inputs. Can be
   // null if training data was not uploaded for that execution.
   TrainingRequestId request_id;
+
+  std::string ToDebugString() const;
 };
 
 using ClassificationResultCallback =

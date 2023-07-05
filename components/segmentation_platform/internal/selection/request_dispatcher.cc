@@ -140,6 +140,8 @@ void RequestDispatcher::CallbackWrapper(
       *config, base::Time::Now() - start_time);
   ResultType result(PredictionStatus::kFailed);
   PostProcess(std::move(raw_result), result);
+  VLOG(1) << "Computed result for " << segmentation_key << ": "
+          << result.ToDebugString();
   std::move(callback).Run(result);
 }
 

@@ -187,6 +187,8 @@ void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
       for (int i = 0; i < segment_info.training_data_size(); ++i) {
         const auto& training_data = segment_info.training_data(i);
         if (current_time > training_data.observation_trigger_timestamp()) {
+          VLOG(1) << "Periodic observation ended for "
+                  << proto::SegmentId_Name(segment_info.segment_id());
           // Observation is reached for the current training data.
           OnObservationTrigger(
               absl::nullopt,
@@ -235,6 +237,7 @@ void TrainingDataCollectorImpl::OnHistogramSignalUpdated(
   if (it != immediate_trigger_histograms_.end()) {
     auto segments = it->second;
     auto param = absl::make_optional<ImmediateCollectionParam>();
+    param->output_metric_name = histogram_name;
     param->output_metric_hash = hash;
     param->output_value = static_cast<float>(sample);
     for (auto segment : segments) {
@@ -285,6 +288,10 @@ void TrainingDataCollectorImpl::OnUmaUpdatedReportForSegmentInfo(
       RecordTrainingDataCollectionEvent(
           segment.value().segment_id(),
           stats::TrainingDataCollectionEvent::kHistogramTriggerHit);
+      VLOG(1) << "Observation ended for "
+              << proto::SegmentId_Name(segment.value().segment_id()) << " "
+              << (param ? param->output_metric_name : "");
+
       OnObservationTrigger(param, request_id.value(), segment.value(),
                            base::DoNothing());
     }
@@ -298,6 +305,8 @@ bool TrainingDataCollectorImpl::CanReportTrainingData(
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kModelInfoMissing);
+    VLOG(1) << "Upload skipped due to model version "
+            << proto::SegmentId_Name(segment_info.segment_id());
     return false;
   }
 
@@ -315,6 +324,8 @@ bool TrainingDataCollectorImpl::CanReportTrainingData(
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kPartialDataNotAllowed);
+    VLOG(1) << "Upload skipped due to consent "
+            << proto::SegmentId_Name(segment_info.segment_id());
     return false;
   }
 
@@ -335,6 +346,8 @@ bool TrainingDataCollectorImpl::CanReportTrainingData(
       RecordTrainingDataCollectionEvent(
           segment_info.segment_id(),
           stats::TrainingDataCollectionEvent::kNotEnoughCollectionTime);
+      VLOG(1) << "Upload skipped due to new model "
+              << proto::SegmentId_Name(segment_info.segment_id());
       return false;
     }
   }
@@ -345,6 +358,8 @@ bool TrainingDataCollectorImpl::CanReportTrainingData(
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kNotEnoughCollectionTime);
+    VLOG(1) << "Upload skipped due to missing signals "
+            << proto::SegmentId_Name(segment_info.segment_id());
     return false;
   }
 
@@ -460,6 +475,8 @@ void TrainingDataCollectorImpl::CollectTrainingData(
     immediate_param->output_value =
         static_cast<float>(param.output_metric.value().second);
   }
+  VLOG(1) << "Observation ended for " << proto::SegmentId_Name(segment_id)
+          << " " << (param.output_metric ? param.output_metric->first : "");
   OnObservationTrigger(immediate_param, request_id, segment_info.value(),
                        std::move(callback));
 }
@@ -583,6 +600,10 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
           stats::TrainingDataCollectionEvent::kDelayedTaskPosted);
     }
 
+    VLOG(1) << "Observation timeout set for "
+            << proto::SegmentId_Name(segment_info.segment_id()) << " "
+            << *training_request.observation_delayed_task;
+
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&TrainingDataCollectorImpl::OnObservationTrigger,
@@ -590,6 +611,8 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
                        request_id, segment_info, base::DoNothing()),
         *training_request.observation_delayed_task);
   } else {
+    VLOG(1) << "Observation without timeout "
+            << proto::SegmentId_Name(segment_info.segment_id());
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kWaitingForNonDelayedTrigger);
