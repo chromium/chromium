@@ -649,9 +649,22 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlBlankFilter) {
 
   // Can also use the document.cookie-style API to get the same info.
   std::string cookies_out;
+  base::ReadOnlySharedMemoryRegion mapped_region;
+
   EXPECT_TRUE(backend()->GetCookiesString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
-      /*has_storage_access=*/false, &cookies_out));
+      /*has_storage_access=*/false, /*get_version_shared_memory=*/false,
+      &mapped_region, &cookies_out));
+  EXPECT_FALSE(mapped_region.IsValid());
+  EXPECT_EQ("cookie-name=cookie-value; cookie-name-2=cookie-value-2",
+            cookies_out);
+
+  // One more time but also requesting some shared memory.
+  EXPECT_TRUE(backend()->GetCookiesString(
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      /*has_storage_access=*/false, /*get_version_shared_memory=*/true,
+      &mapped_region, &cookies_out));
+  EXPECT_TRUE(mapped_region.IsValid());
   EXPECT_EQ("cookie-name=cookie-value; cookie-name-2=cookie-value-2",
             cookies_out);
 }
@@ -799,9 +812,20 @@ TEST_P(RestrictedCookieManagerTest, GetCookieStringFromWrongOrigin) {
 
   ExpectBadMessage();
   std::string cookies_out;
+  base::ReadOnlySharedMemoryRegion mapped_region;
+
   EXPECT_TRUE(backend()->GetCookiesString(
       kOtherUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
-      /*has_storage_access=*/false, &cookies_out));
+      /*has_storage_access=*/false, /*get_version_shared_memory=*/false,
+      &mapped_region, &cookies_out));
+  EXPECT_TRUE(received_bad_message());
+  EXPECT_THAT(cookies_out, IsEmpty());
+
+  // One more time but also requesting some shared memory.
+  EXPECT_TRUE(backend()->GetCookiesString(
+      kOtherUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      /*has_storage_access=*/false, /*get_version_shared_memory=*/true,
+      &mapped_region, &cookies_out));
   EXPECT_TRUE(received_bad_message());
   EXPECT_THAT(cookies_out, IsEmpty());
 }

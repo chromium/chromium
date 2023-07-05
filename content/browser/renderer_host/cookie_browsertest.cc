@@ -361,10 +361,11 @@ class RestrictedCookieManagerInterceptor
                         const net::SiteForCookies& site_for_cookies,
                         const url::Origin& top_frame_origin,
                         bool has_storage_access,
+                        bool get_version_shared_memory,
                         GetCookiesStringCallback callback) override {
     GetForwardingInterface()->GetCookiesString(
         URLToUse(url), site_for_cookies, top_frame_origin, has_storage_access,
-        std::move(callback));
+        get_version_shared_memory, std::move(callback));
   }
 
  private:

@@ -5,9 +5,13 @@
 module network.mojom;
 
 import "services/network/public/mojom/cookie_manager.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
+
+const uint64 kInvalidCookieVersion = 0;
+const uint64 kInitialCookieVersion = 1;
 
 enum CookieMatchType {
   EQUALS,
@@ -120,11 +124,23 @@ interface RestrictedCookieManager {
   //
   // Passing in |url| that does not match the origin RestrictedCookieManager
   // is bounded to will be treated as the renderer violating security rules.
+  //
+  // This function also sets up shared memory communication with the requester
+  // when get_version_shared_memory is true. This allows the requester to get
+  // versioning information without suffering the overhead of a full IPC.
+  //
+  // |version_buffer| is a handle to a shared memory region that only
+  // contains a single 64 bit atomic integer used as a cookie version number.
+  // The number is read from renderers and incremented monotonically from the
+  // network process when cookie state changes. It can be null if
+  // |get_version_shared_memory| was false or if initialization of the region
+  // failed.
   [Sync]
   GetCookiesString(url.mojom.Url url,
                    SiteForCookies site_for_cookies,
                    url.mojom.Origin top_frame_origin,
-                   bool has_storage_access) => (
+                   bool has_storage_access, bool get_version_shared_memory) => (
+                   mojo_base.mojom.ReadOnlySharedMemoryRegion? version_buffer,
                    string cookies);
 
   // Used to check if cookies are enabled for the given URL in context of a

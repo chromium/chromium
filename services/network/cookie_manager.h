@@ -32,6 +32,8 @@ namespace network {
 class FirstPartySetsAccessDelegate;
 class SessionCleanupCookieStore;
 
+using SettingsChangeCallback = base::RepeatingClosure;
+
 // Wrap a cookie store in an implementation of the mojo cookie interface.
 class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
     : public mojom::CookieManager {
@@ -50,6 +52,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   CookieManager& operator=(const CookieManager&) = delete;
 
   ~CookieManager() override;
+
+  // Register a callback to be invoked just before settings change.
+  void AddSettingsWillChangeCallback(SettingsChangeCallback callback);
 
   const CookieSettings& cookie_settings() const { return cookie_settings_; }
 
@@ -120,6 +125,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   static void CrashOnGetCookieList();
 
  private:
+  // This is called right before settings are about to change. This is used to
+  // give a chance to adjust expectations for observers that rely on the
+  // previous known settings.
+  void OnSettingsWillChange();
+
   // State associated with a CookieChangeListener.
   struct ListenerRegistration {
     ListenerRegistration();
@@ -149,6 +159,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   // Note: RestrictedCookieManager and CookieAccessDelegate store pointers to
   // |cookie_settings_|.
   CookieSettings cookie_settings_;
+
+  SettingsChangeCallback settings_will_change_callback_;
 
   base::WeakPtrFactory<CookieManager> weak_factory_{this};
 };

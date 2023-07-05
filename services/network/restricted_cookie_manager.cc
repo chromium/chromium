@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"  // for [[fallthrough]];
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -379,6 +380,19 @@ RestrictedCookieManager::RestrictedCookieManager(
   if (role == mojom::RestrictedCookieManagerRole::SCRIPT) {
       CHECK(origin_.IsSameOriginWith(isolation_info_.frame_origin().value()));
   }
+
+  // Create a shared memory region and immediately populate it.
+  mapped_region_ =
+      base::ReadOnlySharedMemoryRegion::Create(sizeof(SharedVersionType));
+  CHECK(mapped_region_.IsValid());
+  new (mapped_region_.mapping.memory()) SharedVersionType;
+
+  // Clients will use 0 as special value to indicate the version in the absence
+  // of shared memory communication. Make sure the version starts at 1 to avoid
+  // any confusion. Relaxed memory ordering because this is the only memory
+  // shared.
+  mapped_region_.mapping.GetMemoryAs<SharedVersionType>()->store(
+      mojom::kInitialCookieVersion, std::memory_order_relaxed);
 }
 
 RestrictedCookieManager::~RestrictedCookieManager() {
@@ -391,6 +405,21 @@ RestrictedCookieManager::~RestrictedCookieManager() {
     // The entire list is going away, no need to remove nodes from it.
     delete listener_reference;
   }
+}
+
+void RestrictedCookieManager::IncrementSharedVersion() {
+  // Relaxed memory order since only the version is stored within the region
+  // and as such is the only data shared between processes. There is no
+  // re-ordering to worry about.
+  mapped_region_.mapping.GetMemoryAs<SharedVersionType>()->fetch_add(
+      1, std::memory_order_relaxed);
+}
+
+void RestrictedCookieManager::OnCookieSettingsChanged() {
+  // Cookie settings changes can change cookie values as seen by content.
+  // Increment the shared version to make sure it issues a full cookie string
+  // request next time around.
+  IncrementSharedVersion();
 }
 
 void RestrictedCookieManager::OverrideIsolationInfoForTesting(
@@ -684,6 +713,11 @@ void RestrictedCookieManager::SetCanonicalCookie(
     return;
   }
 
+  // The cookie is about to change, increment version. This is best effort
+  // change detection. Remove this line once proper change listening is set
+  // up as part of crbug.com/1393050.
+  IncrementSharedVersion();
+
   net::CanonicalCookie cookie_copy = *sanitized_cookie;
   net::CookieOptions options =
       MakeOptionsForSet(role_, url, site_for_cookies, isolation_info_,
@@ -813,6 +847,7 @@ void RestrictedCookieManager::GetCookiesString(
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
     bool has_storage_access,
+    bool get_version_shared_memory,
     GetCookiesStringCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Checks done by GetAllForUrl
@@ -820,6 +855,14 @@ void RestrictedCookieManager::GetCookiesString(
   if (metrics_updater_) {
     metrics_updater_->OnGetCookiesString();
   }
+
+  base::ReadOnlySharedMemoryRegion shared_memory_region;
+  if (get_version_shared_memory) {
+    shared_memory_region = mapped_region_.region.Duplicate();
+  }
+
+  auto bound_callback =
+      base::BindOnce(std::move(callback), std::move(shared_memory_region));
 
   // Match everything.
   auto match_options = mojom::CookieManagerGetOptions::New();
@@ -830,7 +873,7 @@ void RestrictedCookieManager::GetCookiesString(
                base::BindOnce([](const std::vector<net::CookieWithAccessResult>&
                                      cookies) {
                  return net::CanonicalCookie::BuildCookieLine(cookies);
-               }).Then(std::move(callback)));
+               }).Then(std::move(bound_callback)));
 }
 
 void RestrictedCookieManager::CookiesEnabledFor(

@@ -155,15 +155,21 @@ void AwProxyingRestrictedCookieManager::GetCookiesString(
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
     bool has_storage_access,
+    bool get_version_shared_memory,
     GetCookiesStringCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   if (AllowCookies(url, site_for_cookies)) {
+    // In Android Webview the access to cookies can change dynamically. For
+    // now never request a shared memory region so that a full IPC is issued
+    // every time. This prevents a client retaining access to the cookie value
+    // past the moment where it was denied. (crbug.com/1393050): Implement a
+    // strategy so that the shared memory access can be revoked from here.
     underlying_restricted_cookie_manager_->GetCookiesString(
         url, site_for_cookies, top_frame_origin, has_storage_access,
-        std::move(callback));
+        /*get_version_shared_memory=*/false, std::move(callback));
   } else {
-    std::move(callback).Run("");
+    std::move(callback).Run(base::ReadOnlySharedMemoryRegion(), "");
   }
 }
 

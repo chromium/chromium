@@ -653,6 +653,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   }
 
  private:
+  // To be called back from CookieManager on settings change.
+  void OnCookieManagerSettingsChanged();
+
   URLRequestContextOwner MakeURLRequestContext(
       mojo::PendingRemote<mojom::URLLoaderFactory>
           url_loader_factory_for_cert_net_fetcher,

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/cookie_jar.h"
+#include <cstdint>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
@@ -113,6 +114,12 @@ void CookieJar::SetCookie(const String& value) {
   }
 }
 
+void CookieJar::OnBackendDisconnect() {
+  shared_memory_initialized_ = false;
+  last_cookies_hash_.reset();
+  last_version_ = network::mojom::blink::kInvalidCookieVersion;
+}
+
 String CookieJar::Cookies() {
   KURL cookie_url = document_->CookieURL();
   if (cookie_url.IsEmpty())
@@ -120,12 +127,28 @@ String CookieJar::Cookies() {
 
   base::ElapsedTimer timer;
   bool requested = RequestRestrictedCookieManagerIfNeeded();
+
   String value;
+  base::ReadOnlySharedMemoryRegion new_mapped_region;
+  const bool get_version_shared_memory = !shared_memory_initialized_;
+
+  // Store the latest cookie version to update |last_version_| after getting the
+  // string.
+  const uint64_t new_version = GetSharedCookieVersion();
+
   backend_->GetCookiesString(
       cookie_url, document_->SiteForCookies(), document_->TopFrameOrigin(),
-      document_->GetExecutionContext()->HasStorageAccess(), &value);
+      document_->GetExecutionContext()->HasStorageAccess(),
+      get_version_shared_memory, &new_mapped_region, &value);
+
+  if (!shared_memory_initialized_ && new_mapped_region.IsValid()) {
+    mapped_region_ = std::move(new_mapped_region);
+    mapping_ = mapped_region_.Map();
+    shared_memory_initialized_ = true;
+  }
+
   LogCookieHistogram("Blink.CookiesTime.", requested, timer.Elapsed());
-  UpdateCacheAfterGetRequest(cookie_url, value);
+  UpdateCacheAfterGetRequest(cookie_url, value, new_version);
 
   last_operation_was_set_ = false;
   return value;
@@ -158,9 +181,25 @@ void CookieJar::InvalidateCache() {
   last_cookies_hash_.reset();
 }
 
+uint64_t CookieJar::GetSharedCookieVersion() {
+  if (shared_memory_initialized_) {
+    // Relaxed memory order since only the version is stored within the region
+    // and as such is the only data shared between processes. There is no
+    // re-ordering to worry about.
+    return mapping_.GetMemoryAs<const std::atomic<uint64_t>>()->load(
+        std::memory_order_relaxed);
+  }
+  return network::mojom::blink::kInvalidCookieVersion;
+}
+
 bool CookieJar::RequestRestrictedCookieManagerIfNeeded() {
   if (!backend_.is_bound() || !backend_.is_connected()) {
     backend_.reset();
+
+    // Either the backend was never bound or it became unbound. In case we're in
+    // the unbound case perform the appropriate cleanup.
+    OnBackendDisconnect();
+
     document_->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
         backend_.BindNewPipeAndPassReceiver(
             document_->GetTaskRunner(TaskType::kInternalDefault)));
@@ -170,7 +209,8 @@ bool CookieJar::RequestRestrictedCookieManagerIfNeeded() {
 }
 
 void CookieJar::UpdateCacheAfterGetRequest(const KURL& cookie_url,
-                                           const String& cookie_string) {
+                                           const String& cookie_string,
+                                           uint64_t new_version) {
   absl::optional<unsigned> new_hash =
       WTF::HashInts(WTF::GetHash(cookie_url),
                     cookie_string.IsNull() ? 0 : WTF::GetHash(cookie_string));
@@ -178,7 +218,13 @@ void CookieJar::UpdateCacheAfterGetRequest(const KURL& cookie_url,
   CookieCacheLookupResult result =
       CookieCacheLookupResult::kCacheMissFirstAccess;
 
-  if (last_cookies_hash_.has_value()) {
+  // An invalid version means no shared memory communication so assume changes
+  // happened.
+  const bool cookie_is_unchanged =
+      new_version != network::mojom::blink::kInvalidCookieVersion &&
+      last_version_ == new_version;
+
+  if (last_cookies_hash_.has_value() && cookie_is_unchanged) {
     if (last_cookies_hash_ == new_hash) {
       result = last_operation_was_set_
                    ? CookieCacheLookupResult::kCacheHitAfterSet
@@ -193,6 +239,11 @@ void CookieJar::UpdateCacheAfterGetRequest(const KURL& cookie_url,
   UMA_HISTOGRAM_ENUMERATION("Blink.Experimental.Cookies.CacheLookupResult2",
                             result);
 
+  // Update the version to what it was before getting the string, ignoring any
+  // changes that could have happened since then. This ensures as "stale" a
+  // version as possible is used. This is the desired effect to avoid inhibiting
+  // IPCs when not desired.
+  last_version_ = new_version;
   last_cookies_hash_ = new_hash;
 }
 

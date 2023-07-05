@@ -549,6 +549,10 @@ NetworkContext::NetworkContext(
       std::move(session_cleanup_cookie_store),
       std::move(params_->cookie_manager_params));
 
+  cookie_manager_->AddSettingsWillChangeCallback(
+      base::BindRepeating(&NetworkContext::OnCookieManagerSettingsChanged,
+                          weak_factory_.GetWeakPtr()));
+
   network_service_->RegisterNetworkContext(this);
 
   // Only register for destruction if |this| will be wholly lifetime-managed
@@ -703,6 +707,14 @@ NetworkContext::~NetworkContext() {
     }
   }
 #endif  // BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
+}
+
+void NetworkContext::OnCookieManagerSettingsChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const std::unique_ptr<network::RestrictedCookieManager>& rcm :
+       restricted_cookie_managers_) {
+    rcm->OnCookieSettingsChanged();
+  }
 }
 
 // static
