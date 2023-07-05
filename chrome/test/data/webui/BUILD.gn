@@ -21,6 +21,42 @@ import("//ui/webui/webui_features.gni")
 
 assert(!is_android)
 
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [
+    # TODO(crbug.com/1457360): List more '*_browsertest.cc' files below, as they
+    # are migrated from old js2gtest '*_browsertest.js' files.
+    "cr_components/cr_components_browsertest.cc",
+    "cr_components/cr_components_mojo_browsertest.cc",
+    "cr_elements/cr_elements_browsertest.cc",
+    "js/js_browsertest.cc",
+    "whats_new/whats_new_browsertest.cc",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//chrome/test:test_support",
+    "//components/history_clusters/core:core",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  sources = [
+    # TODO(crbug.com/1457360): List more '*test.cc' files below, as they
+    # are migrated from old js2gtest '*_focus_test.js' files.
+    "cr_components/cr_components_interactive_test.cc",
+    "cr_elements/cr_elements_focus_test.cc",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [ "//chrome/test:test_support" ]
+}
+
 if (include_js_tests) {
   js2gtest("interactive_ui_tests_js_webui") {
     test_type = "webui"
