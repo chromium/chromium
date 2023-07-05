@@ -230,12 +230,14 @@ absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
 absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
     const GURL& url) {
   auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile_);
-  if (!web_app_provider)
+  if (!web_app_provider) {
     return absl::nullopt;
+  }
   absl::optional<web_app::AppId> app_id =
       web_app_provider->registrar_unsafe().FindAppWithUrlInScope(url);
-  if (!app_id)
+  if (!app_id) {
     return absl::nullopt;
+  }
 
   return GetPackageNameForWebApp(app_id.value());
 }
@@ -264,15 +266,6 @@ absl::optional<std::string> ApkWebAppService::GetCertificateSha256Fingerprint(
     return absl::nullopt;
   }
   return package->web_app_info->certificate_sha256_fingerprint;
-}
-
-void ApkWebAppService::SetArcAppListPrefsForTesting(ArcAppListPrefs* prefs) {
-  DCHECK(prefs);
-  if (arc_app_list_prefs_)
-    arc_app_list_prefs_->RemoveObserver(this);
-
-  arc_app_list_prefs_ = prefs;
-  arc_app_list_prefs_->AddObserver(this);
 }
 
 void ApkWebAppService::SetWebAppInstalledCallbackForTesting(
@@ -357,8 +350,9 @@ void ApkWebAppService::UpdateShelfPin(
     DCHECK(arc_app_list_prefs_);
     std::unordered_set<std::string> apps =
         arc_app_list_prefs_->GetAppsForPackage(package_name);
-    if (!apps.empty())
+    if (!apps.empty()) {
       new_app_id = *apps.begin();
+    }
   }
 
   // Query for the old app id, which is cached in the package dict to ensure it
@@ -367,24 +361,27 @@ void ApkWebAppService::UpdateShelfPin(
       arc_app_list_prefs_->GetPackagePrefs(package_name, kLastAppId);
 
   std::string last_app_id;
-  if (last_app_id_value && last_app_id_value->is_string())
+  if (last_app_id_value && last_app_id_value->is_string()) {
     last_app_id = last_app_id_value->GetString();
+  }
 
   if (new_app_id != last_app_id && !new_app_id.empty()) {
     arc_app_list_prefs_->SetPackagePrefs(package_name, kLastAppId,
                                          base::Value(new_app_id));
     if (!last_app_id.empty()) {
       auto* shelf_controller = ChromeShelfController::instance();
-      if (!shelf_controller)
+      if (!shelf_controller) {
         return;
+      }
       int index = shelf_controller->PinnedItemIndexByAppID(last_app_id);
       // The previously installed app has been uninstalled or hidden, in this
       // instance get the saved pin index and pin at that place.
       if (index == ChromeShelfController::kInvalidIndex) {
         const base::Value* saved_index =
             arc_app_list_prefs_->GetPackagePrefs(package_name, kPinIndex);
-        if (!(saved_index && saved_index->is_int()))
+        if (!(saved_index && saved_index->is_int())) {
           return;
+        }
         shelf_controller->PinAppAtIndex(new_app_id, saved_index->GetInt());
         arc_app_list_prefs_->SetPackagePrefs(
             package_name, kPinIndex,
@@ -398,8 +395,9 @@ void ApkWebAppService::UpdateShelfPin(
 
 void ApkWebAppService::Shutdown() {
   // Can be null in tests.
-  if (arc_app_list_prefs_)
+  if (arc_app_list_prefs_) {
     arc_app_list_prefs_ = nullptr;
+  }
 }
 
 void ApkWebAppService::OnPackageInstalled(
@@ -532,8 +530,9 @@ void ApkWebAppService::OnDidFinishInstall(
   }
 
   // For testing.
-  if (web_app_installed_callback_)
+  if (web_app_installed_callback_) {
     std::move(web_app_installed_callback_).Run(package_name, web_app_id);
+  }
 }
 
 const base::Value::Dict& ApkWebAppService::WebAppToApks() const {

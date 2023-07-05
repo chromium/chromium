@@ -323,7 +323,6 @@ class ApkWebAppInstallerWithShelfControllerBrowserTest
 // Test the full installation and uninstallation flow.
 IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest, InstallAndUninstall) {
   ApkWebAppService* service = apk_web_app_service();
-  service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
 
   web_app::AppId app_id;
   {
@@ -376,7 +375,6 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest, InstallAndUninstall) {
 // Test installation via PackageListRefreshed.
 IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest, PackageListRefreshed) {
   ApkWebAppService* service = apk_web_app_service();
-  service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
 
   std::vector<arc::mojom::ArcPackageInfoPtr> packages;
   packages.push_back(GetWebAppPackage(kPackageName, kAppTitle));
@@ -464,7 +462,6 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
 
   // Trigger a package refresh, which should call to ARC to remove the packages.
   arc_app_list_prefs_->AddObserver(this);
-  service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
 
   std::vector<arc::mojom::ArcPackageInfoPtr> packages;
   packages.push_back(GetWebAppPackage(kPackageName, kAppTitle));
@@ -486,7 +483,6 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
 IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
                        UpgradeToWebAppAndToArcApp) {
   ApkWebAppService* service = apk_web_app_service();
-  service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
   app_instance_->SendPackageAdded(GetArcAppPackage(kPackageName, kAppTitle));
 
   EXPECT_TRUE(installed_web_app_ids_.empty());
@@ -547,7 +543,6 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
                        UninstallAndReinstallAsWebApp) {
   ApkWebAppService* service = apk_web_app_service();
-  service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
 
   // Install the Web App from ARC.
   web_app::AppId app_id;
@@ -592,7 +587,6 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerWithShelfControllerBrowserTest,
                        CheckPinStateAfterUpdate) {
   ApkWebAppService* service = apk_web_app_service();
-  service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
   app_instance_->SendPackageAdded(GetArcAppPackage(kPackageName, kAppTitle));
   const std::string arc_app_id =
       ArcAppListPrefs::GetAppId(kPackageName, kAppActivity);
@@ -674,7 +668,6 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerWithShelfControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
                        InstallRegularWebAppFirstThenInstallFromArc) {
   ApkWebAppService* service = apk_web_app_service();
-  service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
 
   // Install the Web App as if the user installs it.
   std::unique_ptr<web_app::WebAppInstallInfo> web_app_install_info =
@@ -734,7 +727,6 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
                        InstallFromArcFirstThenRegularWebApp) {
   ApkWebAppService* service = apk_web_app_service();
-  service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
 
   web_app::AppId app_id;
 
@@ -792,7 +784,6 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
   app_instance_->SendRefreshPackageList({});
 
   ApkWebAppService* service = apk_web_app_service();
-  service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
 
   // Install the Web App from ARC.
   base::test::TestFuture<const std::string&, const web_app::AppId&>

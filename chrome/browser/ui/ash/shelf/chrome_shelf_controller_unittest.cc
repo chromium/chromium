@@ -4729,7 +4729,6 @@ TEST_F(ChromeShelfControllerWithArcTest, ApkWebAppPinPolicy) {
 
   auto* service = ash::ApkWebAppService::Get(browser()->profile());
   ASSERT_TRUE(service);
-  service->SetArcAppListPrefsForTesting(arc_test_.arc_app_list_prefs());
 
   base::test::TestFuture<const std::string&, const web_app::AppId&> future;
   service->SetWebAppInstalledCallbackForTesting(future.GetCallback());
