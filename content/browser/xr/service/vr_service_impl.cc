@@ -458,7 +458,8 @@ void VRServiceImpl::RequestSession(
     return;
   }
 
-  if (runtime_manager_->IsOtherClientPresenting(this)) {
+  if (runtime_manager_->IsOtherClientPresenting(this) ||
+      runtime_manager_->HasPendingImmersiveRequest()) {
     DVLOG(2) << __func__
              << ": can't create sessions while an immersive session exists";
     // Can't create sessions while an immersive session exists.

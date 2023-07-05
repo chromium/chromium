@@ -335,6 +335,7 @@ void BrowserXRRuntimeImpl::RequestImmersiveSession(
   DVLOG(2) << __func__ << ": id=" << id_;
   // base::Unretained is safe because we won't be called back after runtime_ is
   // destroyed.
+  has_pending_immersive_session_request_ = true;
   runtime_->RequestSession(
       options->Clone(),
       base::BindOnce(&BrowserXRRuntimeImpl::OnRequestSessionResult,
@@ -347,6 +348,7 @@ void BrowserXRRuntimeImpl::OnRequestSessionResult(
     device::mojom::XRRuntimeSessionOptionsPtr options,
     RequestSessionCallback callback,
     device::mojom::XRRuntimeSessionResultPtr session_result) {
+  has_pending_immersive_session_request_ = false;
   if (session_result && service) {
     DVLOG(2) << __func__ << ": id=" << id_;
     if (device::XRSessionModeUtils::IsImmersive(options->mode)) {

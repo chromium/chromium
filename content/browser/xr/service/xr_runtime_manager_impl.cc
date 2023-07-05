@@ -277,17 +277,23 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveArRuntime() {
 
 BrowserXRRuntimeImpl*
 XRRuntimeManagerImpl::GetCurrentlyPresentingImmersiveRuntime() {
-  auto* vr_runtime = GetImmersiveVrRuntime();
-  if (vr_runtime && vr_runtime->GetServiceWithActiveImmersiveSession()) {
-    return vr_runtime;
-  }
+  auto it = base::ranges::find_if(
+      runtimes_, [](const DeviceRuntimeMap::value_type& val) {
+        return val.second->GetServiceWithActiveImmersiveSession() != nullptr;
+      });
 
-  auto* ar_runtime = GetImmersiveArRuntime();
-  if (ar_runtime && ar_runtime->GetServiceWithActiveImmersiveSession()) {
-    return ar_runtime;
+  if (it != runtimes_.end()) {
+    return it->second.get();
   }
 
   return nullptr;
+}
+
+bool XRRuntimeManagerImpl::HasPendingImmersiveRequest() {
+  return base::ranges::any_of(
+      runtimes_, [](const DeviceRuntimeMap::value_type& val) {
+        return val.second->HasPendingImmersiveSessionRequest();
+      });
 }
 
 bool XRRuntimeManagerImpl::IsOtherClientPresenting(VRServiceImpl* service) {
