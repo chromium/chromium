@@ -205,8 +205,6 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_CHROME},
       {"appManagementAppDetailsTypeWeb",
        IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_WEB},
-      {"appManagementAppDetailsTypeSystem",
-       IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_SYSTEM},
       {"appManagementAppDetailsTypeCrosSystem",
        IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_CROS_SYSTEM},
       {"appManagementAppDetailsInstallSourceWebStore",

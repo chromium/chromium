@@ -141,18 +141,7 @@ suite('<app-management-app-details-item>', () => {
     assertTrue(!!launchIcon);
   });
 
-  test('System type', async () => {
-    await addApp({
-      type: AppType.kSystemWeb,
-    });
-
-    const typeAndSource =
-        appDetailsItem.shadowRoot!.querySelector('#typeAndSource');
-    assertTrue(!!typeAndSource);
-    assertEquals('System App', typeAndSource.textContent!.trim());
-  });
-
-  test('System install reason', async function() {
+  test('System install source', async function() {
     await addApp({
       installReason: InstallReason.kSystem,
     });

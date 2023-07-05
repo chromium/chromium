@@ -121,9 +121,6 @@
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_WEB" desc="Text for Web app type">
     Web App
   </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_SYSTEM" desc="Text for System app type">
-    System App
-  </message>
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_CROS_SYSTEM" desc="Text for ChromeOS System app type">
     ChromeOS System App
   </message>

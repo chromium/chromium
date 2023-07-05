@@ -116,11 +116,8 @@ export class AppManagementAppDetailsItem extends
       case AppType.kExtension:
       case AppType.kStandaloneBrowserExtension:
         return this.i18n('appManagementAppDetailsTypeWeb');
-      case AppType.kBuiltIn:
-      case AppType.kSystemWeb:
-        return this.i18n('appManagementAppDetailsTypeSystem');
       default:
-        console.error('App type not recognised.');
+        console.error('App type not handled by app management.');
         return '';
     }
   }
