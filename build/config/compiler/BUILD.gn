@@ -2488,6 +2488,14 @@ config("afdo") {
       if (use_profi) {
         cflags += [ "-fsample-profile-use-profi" ]
       }
+
+      # crbug.com/1459429: ARM builds see failures due to -Wbackend-plugin.
+      # These seem to be false positives - the complaints are about functions
+      # marked with `__nodebug__` not having associated debuginfo. In the case
+      # where this was observed, the `__nodebug__` function was also marked
+      # `__always_inline__` and had no branches, so AFDO info is likely useless
+      # there.
+      cflags += [ "-Wno-backend-plugin" ]
       inputs = [ _clang_sample_profile ]
     }
   } else if (auto_profile_path != "" && is_a_target_toolchain) {
