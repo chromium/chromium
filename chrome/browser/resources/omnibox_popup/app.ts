@@ -6,7 +6,7 @@ import '//resources/cr_components/omnibox/realbox_dropdown.js';
 import './strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import {AutocompleteResult, PageCallbackRouter} from '//resources/cr_components/omnibox/omnibox.mojom-webui.js';
+import {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter} from '//resources/cr_components/omnibox/omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from '//resources/cr_components/omnibox/realbox_browser_proxy.js';
 import {RealboxDropdownElement} from '//resources/cr_components/omnibox/realbox_dropdown.js';
 import {assert} from '//resources/js/assert_ts.js';
@@ -65,7 +65,7 @@ export class OmniboxPopupAppElement extends PolymerElement {
 
   private callbackRouter_: PageCallbackRouter;
   private autocompleteResultChangedListenerId_: number|null = null;
-  private selectMatchAtLineListenerId_: number|null = null;
+  private selectionChangedListenerId_: number|null = null;
 
   constructor() {
     super();
@@ -78,9 +78,9 @@ export class OmniboxPopupAppElement extends PolymerElement {
     this.autocompleteResultChangedListenerId_ =
         this.callbackRouter_.autocompleteResultChanged.addListener(
             this.onAutocompleteResultChanged_.bind(this));
-    this.selectMatchAtLineListenerId_ =
-        this.callbackRouter_.selectMatchAtLine.addListener(
-            this.onSelectMatchAtLine_.bind(this));
+    this.selectionChangedListenerId_ =
+        this.callbackRouter_.updateSelection.addListener(
+            this.onUpdateSelection_.bind(this));
     canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
@@ -90,8 +90,8 @@ export class OmniboxPopupAppElement extends PolymerElement {
     assert(this.autocompleteResultChangedListenerId_);
     this.callbackRouter_.removeListener(
         this.autocompleteResultChangedListenerId_);
-    assert(this.selectMatchAtLineListenerId_);
-    this.callbackRouter_.removeListener(this.selectMatchAtLineListenerId_);
+    assert(this.selectionChangedListenerId_);
+    this.callbackRouter_.removeListener(this.selectionChangedListenerId_);
     canShowSecondarySideMediaQueryList.removeEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
@@ -121,8 +121,8 @@ export class OmniboxPopupAppElement extends PolymerElement {
         .catch(() => {});
   }
 
-  private onSelectMatchAtLine_(line: number) {
-    this.$.matches.selectIndex(line);
+  private onUpdateSelection_(selection: OmniboxPopupSelection) {
+    this.$.matches.updateSelection(selection);
   }
 }
 

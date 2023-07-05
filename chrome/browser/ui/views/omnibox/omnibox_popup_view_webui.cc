@@ -63,7 +63,7 @@ void OmniboxPopupViewWebUI::OnSelectionChanged(
     OmniboxPopupSelection old_selection,
     OmniboxPopupSelection new_selection) {
   if (presenter_) {
-    handler()->SelectMatchAtLine(old_selection.line, new_selection.line);
+    handler()->UpdateSelection(new_selection);
   }
 }
 

@@ -12,7 +12,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AutocompleteMatch, AutocompleteResult, PageHandlerInterface, SideType} from './omnibox.mojom-webui.js';
+import {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageHandlerInterface, SelectionLineState, SideType} from './omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {getTemplate} from './realbox_dropdown.html.js';
 import {RealboxMatchElement} from './realbox_match.js';
@@ -155,6 +155,18 @@ export class RealboxDropdownElement extends PolymerElement {
   /** Selects the match at the given index. */
   selectIndex(index: number) {
     this.selectedMatchIndex = index;
+  }
+
+  updateSelection(selection: OmniboxPopupSelection) {
+    if (selection.state === SelectionLineState.kFocusedButtonHeader) {
+      // TODO: Focus group header.
+      this.unselect();
+      return;
+    }
+
+    this.selectIndex(selection.line);
+    this.selectableMatchElements[this.selectedMatchIndex]?.updateSelection(
+        selection);
   }
 
   /**

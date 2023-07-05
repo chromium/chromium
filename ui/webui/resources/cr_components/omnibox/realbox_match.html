@@ -134,6 +134,11 @@
     opacity: 1;
   }
 
+  .selected {
+    box-shadow: inset 0 0 0 2px
+        var(--color-realbox-results-icon-focused-outline);
+  }
+
   :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image]) {
     border-radius: 16px;
   }

@@ -13,6 +13,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox.mojom.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -100,7 +101,7 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
 
-  void SelectMatchAtLine(size_t old_line, size_t new_line);
+  void UpdateSelection(OmniboxPopupSelection selection);
 
   // LocationBarModel:
   std::u16string GetFormattedFullURL() const override;

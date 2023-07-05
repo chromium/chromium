@@ -13,7 +13,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ACMatchClassification, Action, AutocompleteMatch, NavigationPredictor, PageHandlerInterface, SideType} from './omnibox.mojom-webui.js';
+import {ACMatchClassification, Action, AutocompleteMatch, NavigationPredictor, OmniboxPopupSelection, PageHandlerInterface, SelectionLineState, SideType} from './omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {RealboxIconElement} from './realbox_icon.js';
 import {getTemplate} from './realbox_match.html.js';
@@ -414,6 +414,21 @@ export class RealboxMatchElement extends PolymerElement {
           container.appendChild(currentElement);
           return container;
         }, document.createElement('span'));
+  }
+
+  updateSelection(selection: OmniboxPopupSelection) {
+    this.$.remove.classList.toggle(
+        'selected',
+        selection.state === SelectionLineState.kFocusedButtonRemoveSuggestion);
+
+    const actions =
+        Array.from(this.shadowRoot!.querySelectorAll('cr-realbox-action'));
+    actions.forEach((action, index) => {
+      action.classList.toggle(
+          'selected',
+          selection.state === SelectionLineState.kFocusedButtonAction &&
+              selection.actionIndex === index);
+    });
   }
 }
 
