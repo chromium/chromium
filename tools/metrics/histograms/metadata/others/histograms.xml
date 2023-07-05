@@ -4056,6 +4056,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.SentVerboseDebugReportType"
+    enum="ConversionVerboseDebugReportType" expires_after="2023-11-30">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often verbose debug reports are sent and the corresponding
+    report type. Recorded when the verbose debug report is created. As there may
+    be more than one report type per report, multiple entries may be logged for
+    a report.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.SourceRegistrationError3"
     enum="ConversionSourceRegistrationError" expires_after="M121">
   <owner>tquintanilla@chromium.org</owner>

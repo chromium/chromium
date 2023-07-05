@@ -20118,6 +20118,33 @@ Called by update_net_error_codes.py.-->
              formatted"/>
 </enum>
 
+<enum name="ConversionVerboseDebugReportType">
+  <int value="0" label="source-destination-limit"/>
+  <int value="1" label="source-noised"/>
+  <int value="2" label="source-storage-limit"/>
+  <int value="3" label="source-success"/>
+  <int value="4" label="source-unknown-error"/>
+  <int value="5" label="source-destination-rate-limit"/>
+  <int value="6" label="trigger-no-matching-source"/>
+  <int value="7" label="trigger-attributions-per-source-destination-limit"/>
+  <int value="8" label="trigger-no-matching-filter-data"/>
+  <int value="9" label="trigger-reporting-origin-limit"/>
+  <int value="10" label="trigger-event-deduplicated"/>
+  <int value="11" label="trigger-event-no-matching-configurations"/>
+  <int value="12" label="trigger-event-noise"/>
+  <int value="13" label="trigger-event-low-priority"/>
+  <int value="14" label="trigger-event-excessive-reports"/>
+  <int value="15" label="trigger-event-storage-limit"/>
+  <int value="16" label="trigger-event-report-window-passed"/>
+  <int value="17" label="trigger-aggregate-deduplicated"/>
+  <int value="18" label="trigger-aggregate-no-contributions"/>
+  <int value="19" label="trigger-aggregate-insufficient-budget"/>
+  <int value="20" label="trigger-aggregate-storage-limit"/>
+  <int value="21" label="trigger-aggregate-report-window-passed"/>
+  <int value="22" label="trigger-aggregate-excessive-reports"/>
+  <int value="23" label="trigger-unknown-error"/>
+</enum>
+
 <enum name="CookieAccessType">
   <int value="-1" label="Unknown cookie access"/>
   <int value="0" label="Did not read or write any cookies"/>
