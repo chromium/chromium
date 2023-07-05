@@ -26,7 +26,14 @@ bool ShouldNaClBeAllowed() {
 
 }  // namespace
 
-BASE_FEATURE(kNaclAllow, "NaclAllow", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNaclAllow,
+             "NaclAllow",
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 void ChromeBrowserMainExtraPartsNaclDeprecation::PostEarlyInitialization() {
   if (!ShouldNaClBeAllowed()) {
