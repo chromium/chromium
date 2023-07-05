@@ -34,6 +34,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleRegistry;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -1940,7 +1941,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             int assignedIndex = TabWindowManagerSingleton.getInstance().getIndexForWindow(this);
             // The given index and the one computed by TabWindowManager should be one and the same.
             assert !MultiWindowUtils.isMultiInstanceApi31Enabled() || assignedIndex == mWindowId;
-            mMultiInstanceManager.initialize(assignedIndex, getTaskId());
+            mMultiInstanceManager.initialize(assignedIndex, ApplicationStatus.getTaskId(this));
         }
 
         mTabModelSelector = mTabModelOrchestrator.getTabModelSelector();
@@ -2136,7 +2137,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // |allocInstanceId| doesn't do any disk I/O that would add a long-running task
             // to pre-inflation startup.
             boolean preferNew = getExtraPreferNewFromIntent(intent);
-            mWindowId = mMultiInstanceManager.allocInstanceId(windowId, getTaskId(), preferNew);
+            mWindowId = mMultiInstanceManager.allocInstanceId(
+                    windowId, ApplicationStatus.getTaskId(this), preferNew);
         }
         if (mWindowId == INVALID_WINDOW_ID) {
             Log.i(TAG, "Window ID not allocated. Finishing the activity");
@@ -2146,7 +2148,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         if (mMultiInstanceManager != null
-                && !mMultiInstanceManager.isStartedUpCorrectly(getTaskId())) {
+                && !mMultiInstanceManager.isStartedUpCorrectly(ApplicationStatus.getTaskId(this))) {
             return false;
         }
         recordMaxWindowLimitExceededHistogram(/*limitExceeded=*/false);

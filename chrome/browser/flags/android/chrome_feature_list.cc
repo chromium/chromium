@@ -172,6 +172,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBackGestureRefactorAndroid,
     &kBackgroundThreadPool,
     &kBaselineGM3SurfaceColors,
+    &kCacheActivityTaskID,
     &kCastDeviceFilter,
     &kClearOmniboxFocusAfterNavigation,
     &kCloseTabSuggestions,
@@ -481,6 +482,10 @@ BASE_FEATURE(kBackgroundThreadPool,
 
 BASE_FEATURE(kBaselineGM3SurfaceColors,
              "BaselineGM3SurfaceColors",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCacheActivityTaskID,
+             "CacheActivityTaskID",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Used in downstream code.

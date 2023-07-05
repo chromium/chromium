@@ -30,6 +30,7 @@ BASE_DECLARE_FEATURE(kBackGestureRefactorActivityAndroid);
 BASE_DECLARE_FEATURE(kBackGestureRefactorAndroid);
 BASE_DECLARE_FEATURE(kBackgroundThreadPool);
 BASE_DECLARE_FEATURE(kBaselineGM3SurfaceColors);
+BASE_DECLARE_FEATURE(kCacheActivityTaskID);
 BASE_DECLARE_FEATURE(kClearOmniboxFocusAfterNavigation);
 BASE_DECLARE_FEATURE(kCloseTabSuggestions);
 BASE_DECLARE_FEATURE(kCloseTabSaveTabList);

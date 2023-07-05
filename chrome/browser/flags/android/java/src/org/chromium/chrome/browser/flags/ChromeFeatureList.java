@@ -159,6 +159,7 @@ public abstract class ChromeFeatureList {
     public static final String BOOKMARKS_REFRESH = "BookmarksRefresh";
     public static final String CACHE_DEPRECATED_SYSTEM_LOCATION_SETTING =
             "CacheDeprecatedSystemLocationSetting";
+    public static final String CACHE_ACTIVITY_TASKID = "CacheActivityTaskID";
     public static final String CAF_MRP_DEFERRED_DISCOVERY = "CafMRPDeferredDiscovery";
     public static final String CAPTIVE_PORTAL_CERTIFICATE_LIST = "CaptivePortalCertificateList";
     public static final String CAST_ANOTHER_CONTENT_WHILE_CASTING =

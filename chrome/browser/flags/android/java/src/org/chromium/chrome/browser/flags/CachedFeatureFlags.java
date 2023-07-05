@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.flags;
 import androidx.annotation.AnyThread;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FieldTrialList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -96,6 +97,10 @@ public class CachedFeatureFlags {
         // Similarly, propagate the BACKGROUND_THREAD_POOL feature value to LibraryLoader.
         LibraryLoader.setBackgroundThreadPoolEnabledOnNextRuns(
                 ChromeFeatureList.isEnabled(ChromeFeatureList.BACKGROUND_THREAD_POOL));
+
+        // Propagate the CACHE_ACTIVITY_TASKID feature value to ApplicationStatus.
+        ApplicationStatus.setCachingEnabled(
+                ChromeFeatureList.isEnabled(ChromeFeatureList.CACHE_ACTIVITY_TASKID));
     }
 
     /**
