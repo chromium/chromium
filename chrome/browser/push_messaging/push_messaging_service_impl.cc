@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -439,9 +438,6 @@ void PushMessagingServiceImpl::OnCheckedOrigin(
     PermissionRevocationRequest::Outcome outcome) {
   origin_revocation_request_.reset();
 
-  base::UmaHistogramLongTimes("PushMessaging.CheckOriginForAbuseTime",
-                              base::Time::Now() - message.received_time);
-
   PushMessagingAppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByAppId(profile_, message.app_id);
 
@@ -532,9 +528,6 @@ void PushMessagingServiceImpl::
   absl::optional<std::string> payload;
   if (message.decrypted)
     payload = message.raw_data;
-
-  base::UmaHistogramLongTimes("PushMessaging.DeliverQueuedMessageTime",
-                              base::Time::Now() - next_message.received_time);
 
   // Inform tests observing message dispatching about the event.
   if (message_dispatched_callback_for_testing_) {
@@ -681,10 +674,6 @@ void PushMessagingServiceImpl::DidHandleEnqueuedMessage(
   // Remove the delivered message from the queue.
   std::queue<PendingMessage>& delivery_queue = iter->second;
   CHECK(!delivery_queue.empty());
-
-  base::UmaHistogramLongTimes(
-      "PushMessaging.MessageHandledTime",
-      base::Time::Now() - delivery_queue.front().received_time);
 
   delivery_queue.pop();
   if (delivery_queue.empty())

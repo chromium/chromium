@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -96,8 +95,6 @@ std::unique_ptr<KeyedService> BuildFakeGCMProfileService(
     content::BrowserContext* context) {
   return gcm::FakeGCMProfileService::Build(static_cast<Profile*>(context));
 }
-
-constexpr base::TimeDelta kPushEventHandleTime = base::Seconds(10);
 
 }  // namespace
 
@@ -389,105 +386,6 @@ TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
       PushMessagingAppIdentifier::FindByAppId(profile(),
                                               app_identifier.app_id());
   EXPECT_TRUE(deleted_identifier.is_null());
-}
-
-TEST_F(PushMessagingServiceTest, TestMultipleIncomingPushMessages) {
-  base::HistogramTester histograms;
-
-  const GURL origin(kTestOrigin);
-  SetPermission(origin, CONTENT_SETTING_ALLOW);
-
-  PushMessagingServiceImpl* push_service = profile()->GetPushMessagingService();
-  ASSERT_TRUE(push_service);
-
-  // Subscribe |origin| to push service.
-  Subscribe(push_service, origin);
-  PushMessagingAppIdentifier app_identifier =
-      PushMessagingAppIdentifier::FindByServiceWorker(profile(), origin,
-                                                      kTestServiceWorkerId);
-  ASSERT_FALSE(app_identifier.is_null());
-
-  // Setup decrypted test message.
-  gcm::IncomingMessage message;
-  message.sender_id = kTestSenderId;
-  message.raw_data = "testdata";
-  message.decrypted = true;
-
-  // Setup callbacks for dispatch and handled push events.
-  auto dispatched_run_loop = std::make_unique<base::RunLoop>();
-  auto handled_run_loop = std::make_unique<base::RunLoop>();
-  PushMessagingServiceImpl::PushEventCallback handle_push_event;
-
-  push_service->SetMessageDispatchedCallbackForTesting(
-      base::BindLambdaForTesting(
-          [&](const std::string& app_id, const GURL& origin,
-              int64_t service_worker_registration_id,
-              absl::optional<std::string> payload,
-              PushMessagingServiceImpl::PushEventCallback callback) {
-            handle_push_event = std::move(callback);
-            dispatched_run_loop->Quit();
-          }));
-
-  push_service->SetMessageCallbackForTesting(
-      base::BindLambdaForTesting([&]() { handled_run_loop->Quit(); }));
-
-  // Simulate two incoming push messages at the same time.
-  push_service->OnMessage(app_identifier.app_id(), message);
-  push_service->OnMessage(app_identifier.app_id(), message);
-
-  // First wait until we dispatched the first push message.
-  dispatched_run_loop->Run();
-  dispatched_run_loop = std::make_unique<base::RunLoop>();
-  auto handled_first = std::move(handle_push_event);
-  handle_push_event = PushMessagingServiceImpl::PushEventCallback();
-
-  histograms.ExpectUniqueTimeSample("PushMessaging.CheckOriginForAbuseTime",
-                                    base::Seconds(0),
-                                    /*expected_bucket_count=*/1);
-  histograms.ExpectUniqueTimeSample("PushMessaging.DeliverQueuedMessageTime",
-                                    base::Seconds(0),
-                                    /*expected_bucket_count=*/1);
-
-  // Run all tasks until idle so we can verify that we don't dispatch the second
-  // push message until the first one is handled.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(handle_push_event);
-
-  // Simulate handling the first push event takes some time.
-  task_environment().FastForwardBy(kPushEventHandleTime);
-
-  // Now signal that the first push event has been handled and wait until we
-  // checked for visibility requirements.
-  std::move(handled_first).Run(blink::mojom::PushEventStatus::SUCCESS);
-  handled_run_loop->Run();
-  handled_run_loop = std::make_unique<base::RunLoop>();
-
-  histograms.ExpectUniqueTimeSample("PushMessaging.MessageHandledTime",
-                                    kPushEventHandleTime,
-                                    /*expected_bucket_count=*/1);
-
-  // Simulate handling the second push event takes some time.
-  task_environment().FastForwardBy(kPushEventHandleTime);
-
-  // Now wait until we dispatched the second push message and handle it too.
-  dispatched_run_loop->Run();
-  std::move(handle_push_event).Run(blink::mojom::PushEventStatus::SUCCESS);
-  handled_run_loop->Run();
-
-  // Checking origins for abuse happens immediately on receiving a push message
-  // one at a time. Both messages do that instantly in this test.
-  histograms.ExpectTimeBucketCount("PushMessaging.CheckOriginForAbuseTime",
-                                   base::Seconds(0),
-                                   /*count=*/2);
-  // Delivering messages should be done in series so the second message should
-  // have waited for the first one to be handled.
-  histograms.ExpectTimeBucketCount("PushMessaging.DeliverQueuedMessageTime",
-                                   kPushEventHandleTime,
-                                   /*count=*/1);
-  // The total time from receiving until handling of the second message.
-  histograms.ExpectTimeBucketCount("PushMessaging.MessageHandledTime",
-                                   kPushEventHandleTime * 2,
-                                   /*count=*/1);
 }
 
 #if BUILDFLAG(IS_ANDROID)
