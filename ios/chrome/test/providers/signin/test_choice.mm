@@ -17,8 +17,14 @@ namespace provider {
 
 ChromeCoordinator* CreateChoiceCoordinatorWithViewController(
     UIViewController* view_controller,
+    Browser* browser) {
+  NOTREACHED_NORETURN();
+}
+
+ChromeCoordinator* CreateChoiceCoordinatorForFREWithNavigationController(
+    UINavigationController* navigation_controller,
     Browser* browser,
-    bool first_run) {
+    id<FirstRunScreenDelegate> first_run_delegate) {
   NOTREACHED_NORETURN();
 }
 

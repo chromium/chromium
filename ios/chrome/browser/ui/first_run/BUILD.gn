@@ -96,6 +96,7 @@ source_set("first_run") {
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
     "//ui/base",
     "//ui/gfx",
     "//url",
@@ -115,6 +116,7 @@ source_set("first_run_provider") {
     "//ios/chrome/browser/ui/screen:screen_provider",
     "//ios/chrome/browser/ui/screen:screen_provider_protected",
     "//ios/chrome/browser/ui/screen:screen_type",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
   ]
 }
 

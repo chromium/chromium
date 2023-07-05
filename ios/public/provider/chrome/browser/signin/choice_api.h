@@ -11,16 +11,24 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
 
 namespace ios {
 namespace provider {
 
 // Creates a new ChoiceCoordinator instance.
+// TODO(b/280753739): Rename this method to CreateCoordinator(...).
 ChromeCoordinator* CreateChoiceCoordinatorWithViewController(
     UIViewController* view_controller,
+    Browser* browser);
+
+// Creates a new ChoiceCoordinator instance for the FRE.
+// TODO(b/280753569): Rename this method to CreateCoordinatorForFRE(...).
+ChromeCoordinator* CreateChoiceCoordinatorForFREWithNavigationController(
+    UINavigationController* navigation_controller,
     Browser* browser,
-    bool first_run);
+    id<FirstRunScreenDelegate> first_run_delegate);
 
 // Creates a new ChoiceDisplayHandler instance.
 id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler();

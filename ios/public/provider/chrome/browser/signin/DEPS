@@ -13,6 +13,7 @@ include_rules = [
   "+ios/chrome/browser/signin/system_identity_manager.h",
   "+ios/chrome/browser/signin/trusted_vault_client_backend.h",
   "+ios/chrome/browser/signin/trusted_vault_configuration.h",
+  "+ios/chrome/browser/ui/first_run/first_run_screen_delegate.h",
   "+ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h",
 ]
 

@@ -1693,7 +1693,7 @@ enum class ToolbarKind {
   if (!self.choiceCoordinator) {
     self.choiceCoordinator =
         ios::provider::CreateChoiceCoordinatorWithViewController(
-            self.viewController, self.browser, /*first_run=*/false);
+            self.viewController, self.browser);
   }
   [self.choiceCoordinator start];
 }

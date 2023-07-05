@@ -158,6 +158,7 @@ using base::UserMetricsAction;
                                   firstRun:NO
                                   delegate:self];
     case kDefaultBrowserPromo:
+    case kChoice:
     case kStepsCompleted:
       break;
   }
