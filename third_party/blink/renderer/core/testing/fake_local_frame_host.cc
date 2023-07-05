@@ -36,6 +36,7 @@ void FakeLocalFrameHost::FullscreenStateChanged(
     mojom::blink::FullscreenOptionsPtr options) {}
 
 #if defined(USE_AURA)
+void FakeLocalFrameHost::Maximize() {}
 void FakeLocalFrameHost::Minimize() {}
 #endif
 

@@ -3761,6 +3761,13 @@ void WebContentsImpl::FullscreenStateChanged(
 }
 
 #if defined(USE_AURA)
+void WebContentsImpl::Maximize() {
+  aura::Window* window = GetTopLevelNativeWindow();
+  // TODO(isandrk, b/289028460): This API function currently works only on Aura
+  // platforms (Win/Lin/CrOS/Fuchsia), make it also work on Mac.
+  wm::SetWindowState(window, ui::SHOW_STATE_MAXIMIZED);
+}
+
 void WebContentsImpl::Minimize() {
   aura::Window* window = GetTopLevelNativeWindow();
   // TODO(isandrk, b/289028460): This API function currently works only on Aura

@@ -6497,6 +6497,25 @@ void RenderFrameHostImpl::FullscreenStateChanged(
 }
 
 #if defined(USE_AURA)
+void RenderFrameHostImpl::Maximize() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kDesktopPWAsAdditionalWindowingControls)) {
+    mojo::ReportBadMessage(
+        "window.maximize called without the feature enabled.");
+    return;
+  }
+  if (!IsInPrimaryMainFrame()) {
+    mojo::ReportBadMessage(
+        "window.maximize called from a non-primary-main frame.");
+    return;
+  }
+  if (!IsActive()) {
+    return;
+  }
+
+  delegate_->Maximize();
+}
+
 void RenderFrameHostImpl::Minimize() {
   if (!base::FeatureList::IsEnabled(
           blink::features::kDesktopPWAsAdditionalWindowingControls)) {
@@ -6507,10 +6526,6 @@ void RenderFrameHostImpl::Minimize() {
   if (!IsInPrimaryMainFrame()) {
     mojo::ReportBadMessage(
         "window.minimize called from a non-primary-main frame.");
-    return;
-  }
-  if (GetLifecycleState() == RenderFrameHost::LifecycleState::kPrerendering) {
-    mojo::ReportBadMessage("window.minimize called from a prerendered page.");
     return;
   }
   if (!IsActive()) {

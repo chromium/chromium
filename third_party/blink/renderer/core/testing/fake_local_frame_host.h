@@ -34,6 +34,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       bool is_fullscreen,
       mojom::blink::FullscreenOptionsPtr options) override;
 #if defined(USE_AURA)
+  void Maximize() override;
   void Minimize() override;
 #endif
   void RegisterProtocolHandler(const WTF::String& scheme,

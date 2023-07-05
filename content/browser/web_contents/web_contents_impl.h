@@ -675,6 +675,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       bool is_fullscreen,
       blink::mojom::FullscreenOptionsPtr options) override;
 #if defined(USE_AURA)
+  void Maximize() override;
   void Minimize() override;
 #endif
 #if BUILDFLAG(IS_ANDROID)
