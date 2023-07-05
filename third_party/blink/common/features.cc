@@ -1136,6 +1136,10 @@ BASE_FEATURE(kPaintHoldingCrossOrigin,
              "PaintHoldingCrossOrigin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kParkableImagesToDisk,
+             "ParkableImagesToDisk",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the use of the PaintCache for Path2D objects that are rasterized
 // out of process.  Has no effect when kCanvasOopRasterization is disabled.
 BASE_FEATURE(kPath2DPaintCache,
@@ -1951,6 +1955,10 @@ bool IsNewBaseUrlInheritanceBehaviorEnabled() {
 bool IsParkableStringsToDiskEnabled() {
   // Always enabled as soon as compression is enabled.
   return base::FeatureList::IsEnabled(kCompressParkableStrings);
+}
+
+bool IsParkableImagesToDiskEnabled() {
+  return base::FeatureList::IsEnabled(kParkableImagesToDisk);
 }
 
 bool IsSetTimeoutWithoutClampEnabled() {

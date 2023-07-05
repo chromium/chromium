@@ -616,6 +616,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPath2DPaintCache);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPaintHolding);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPaintHoldingCrossOrigin);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kParkableImagesToDisk);
+
 // Whether the pending beacon API is enabled or not.
 // https://github.com/WICG/pending-beacon/blob/main/README.md
 // - kPendingBeaconAPI = {true: {"requires_origin_trial": false}} to enable the
@@ -1204,6 +1206,8 @@ BLINK_COMMON_EXPORT bool IsMaxUnthrottledTimeoutNestingLevelEnabled();
 BLINK_COMMON_EXPORT bool IsNewBaseUrlInheritanceBehaviorEnabled();
 
 BLINK_COMMON_EXPORT bool IsParkableStringsToDiskEnabled();
+
+BLINK_COMMON_EXPORT bool IsParkableImagesToDiskEnabled();
 
 BLINK_COMMON_EXPORT bool IsPlzDedicatedWorkerEnabled();
 

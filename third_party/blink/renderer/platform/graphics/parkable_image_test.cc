@@ -174,7 +174,8 @@ class ParkableImageBaseTest : public ::testing::Test {
 class ParkableImageTest : public ParkableImageBaseTest {
  public:
   ParkableImageTest() {
-    fl_.InitWithFeatures({kParkableImagesToDisk}, {kDelayParkingImages});
+    fl_.InitWithFeatures({features::kParkableImagesToDisk},
+                         {kDelayParkingImages});
   }
 
  private:
@@ -185,7 +186,8 @@ class ParkableImageTest : public ParkableImageBaseTest {
 class ParkableImageDelayedTest : public ParkableImageBaseTest {
  public:
   ParkableImageDelayedTest() {
-    fl_.InitWithFeatures({kParkableImagesToDisk, kDelayParkingImages}, {});
+    fl_.InitWithFeatures({features::kParkableImagesToDisk, kDelayParkingImages},
+                         {});
   }
 
  private:
@@ -196,7 +198,7 @@ class ParkableImageDelayedTest : public ParkableImageBaseTest {
 class ParkableImageNoParkingTest : public ParkableImageBaseTest {
  public:
   ParkableImageNoParkingTest() {
-    fl_.InitAndDisableFeature(kParkableImagesToDisk);
+    fl_.InitAndDisableFeature(features::kParkableImagesToDisk);
   }
 
  private:

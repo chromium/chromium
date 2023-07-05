@@ -5673,8 +5673,10 @@ void RenderProcessHostImpl::ProvideStatusFileForRenderer() {
 #endif
 
 void RenderProcessHostImpl::ProvideSwapFileForRenderer() {
-  if (!blink::features::IsParkableStringsToDiskEnabled())
+  if (!blink::features::IsParkableStringsToDiskEnabled() &&
+      !blink::features::IsParkableImagesToDiskEnabled()) {
     return;
+  }
 
   // In Incognito, nothing should be written to disk. Don't provide a file..
   if (GetBrowserContext()->IsOffTheRecord())
