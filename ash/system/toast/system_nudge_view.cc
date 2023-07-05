@@ -127,6 +127,7 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
     title_label_ = text_container->AddChildView(
         views::Builder<views::Label>()
             .SetText(nudge_data.title_text)
+            .SetTooltipText(nudge_data.title_text)
             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
             .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
             .SetAutoColorReadabilityEnabled(false)
@@ -141,6 +142,7 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
   body_label_ = text_container->AddChildView(
       views::Builder<views::Label>()
           .SetText(nudge_data.body_text)
+          .SetTooltipText(nudge_data.body_text)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
           .SetAutoColorReadabilityEnabled(false)
@@ -194,6 +196,7 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
       views::Builder<PillButton>()
           .SetCallback(std::move(nudge_data.dismiss_callback))
           .SetText(nudge_data.dismiss_text)
+          .SetTooltipText(nudge_data.dismiss_text)
           .SetPillButtonType(
               use_toast_style     ? PillButton::Type::kAccentFloatingWithoutIcon
               : has_second_button ? PillButton::Type::kSecondaryWithoutIcon
@@ -209,6 +212,7 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
         views::Builder<PillButton>()
             .SetCallback(std::move(nudge_data.second_button_callback))
             .SetText(nudge_data.second_button_text)
+            .SetTooltipText(nudge_data.second_button_text)
             .SetPillButtonType(PillButton::Type::kPrimaryWithoutIcon)
             .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
             .Build());
