@@ -1,0 +1,31 @@
+Test that the Storage.attributionReportingSourceRegistered event is fired.
+{
+    registration : {
+        aggregationKeys : [
+            [0] : {
+                key : d
+                value : 0xef
+            }
+        ]
+        destinationSites : [
+            [0] : https://a.example
+        ]
+        eventId : 123
+        filterData : [
+            [0] : {
+                key : a
+                values : [
+                    [0] : b
+                    [1] : c
+                ]
+            }
+        ]
+        priority : 0
+        reportingOrigin : https://devtools.test:8443
+        sourceOrigin : <string>
+        time : <number>
+        type : event
+    }
+    result : success
+}
+

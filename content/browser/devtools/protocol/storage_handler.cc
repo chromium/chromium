@@ -4,7 +4,10 @@
 
 #include "content/browser/devtools/protocol/storage_handler.h"
 
+#include <stdint.h>
+
 #include <memory>
+#include <string>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -15,10 +18,22 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/parsing_utils.h"
+#include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/source_type.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_observer.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/store_source_result.mojom.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/devtools/protocol/network.h"
@@ -444,7 +459,7 @@ Response StorageHandler::Disable() {
   SetInterestGroupTracking(false);
   shared_storage_observer_.reset();
   quota_manager_observer_.reset();
-  ResetAttributionReportingLocalTestingMode();
+  ResetAttributionReporting();
   return Response::Success();
 }
 
@@ -1144,7 +1159,7 @@ Response StorageHandler::SetInterestGroupTracking(bool enable) {
     // Only add if we are not already registered as an observer. We only
     // observe the interest group manager, so if we're observing anything then
     // we are already registered.
-    if (!IsInObserverList()) {
+    if (!InterestGroupManagerImpl::InterestGroupObserver::IsInObserverList()) {
       manager->AddInterestGroupObserver(this);
     }
   } else {
@@ -1609,16 +1624,18 @@ void StorageHandler::NotifyDeleteBucket(
       base::NumberToString(bucket_locator.id.value()));
 }
 
+AttributionManager* StorageHandler::GetAttributionManager() {
+  if (!storage_partition_) {
+    return nullptr;
+  }
+  return static_cast<StoragePartitionImpl*>(storage_partition_)
+      ->GetAttributionManager();
+}
+
 void StorageHandler::SetAttributionReportingLocalTestingMode(
     bool enabled,
     std::unique_ptr<SetAttributionReportingLocalTestingModeCallback> callback) {
-  if (!storage_partition_) {
-    callback->sendFailure(Response::InternalError());
-    return;
-  }
-
-  auto* manager = static_cast<StoragePartitionImpl*>(storage_partition_)
-                      ->GetAttributionManager();
+  auto* manager = GetAttributionManager();
   if (!manager) {
     callback->sendFailure(Response::InternalError());
     return;
@@ -1631,18 +1648,152 @@ void StorageHandler::SetAttributionReportingLocalTestingMode(
           std::move(callback)));
 }
 
-void StorageHandler::ResetAttributionReportingLocalTestingMode() {
-  if (!storage_partition_) {
-    return;
-  }
+void StorageHandler::ResetAttributionReporting() {
+  attribution_observation_.Reset();
 
-  auto* manager = static_cast<StoragePartitionImpl*>(storage_partition_)
-                      ->GetAttributionManager();
+  auto* manager = GetAttributionManager();
   if (!manager) {
     return;
   }
 
   manager->SetDebugMode(/*enabled=*/absl::nullopt, base::DoNothing());
+}
+
+namespace {
+
+using ::attribution_reporting::mojom::StoreSourceResult;
+
+Storage::AttributionReportingSourceRegistrationResult
+ToSourceRegistrationResult(StoreSourceResult result) {
+  switch (result) {
+    case StoreSourceResult::kSuccess:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::Success;
+    case StoreSourceResult::kInternalError:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::
+          InternalError;
+    case StoreSourceResult::kInsufficientSourceCapacity:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::
+          InsufficientSourceCapacity;
+    case StoreSourceResult::kInsufficientUniqueDestinationCapacity:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::
+          InsufficientUniqueDestinationCapacity;
+    case StoreSourceResult::kExcessiveReportingOrigins:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::
+          ExcessiveReportingOrigins;
+    case StoreSourceResult::kProhibitedByBrowserPolicy:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::
+          ProhibitedByBrowserPolicy;
+    case StoreSourceResult::kSuccessNoised:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::
+          SuccessNoised;
+    case StoreSourceResult::kDestinationReportingLimitReached:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::
+          DestinationReportingLimitReached;
+    case StoreSourceResult::kDestinationGlobalLimitReached:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::
+          DestinationGlobalLimitReached;
+    case StoreSourceResult::kDestinationBothLimitsReached:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::
+          DestinationBothLimitsReached;
+  }
+}
+
+std::unique_ptr<Array<Storage::AttributionReportingFilterDataEntry>>
+ToFilterDataEntries(const attribution_reporting::FilterData& filter_data) {
+  auto out =
+      std::make_unique<Array<Storage::AttributionReportingFilterDataEntry>>();
+
+  for (const auto& [key, values] : filter_data.filter_values()) {
+    out->emplace_back(Storage::AttributionReportingFilterDataEntry::Create()
+                          .SetKey(key)
+                          .SetValues(std::make_unique<Array<String>>(values))
+                          .Build());
+  }
+
+  return out;
+}
+
+std::unique_ptr<Array<Storage::AttributionReportingAggregationKeysEntry>>
+ToAggregationKeysEntries(const attribution_reporting::AggregationKeys& keys) {
+  auto out = std::make_unique<
+      Array<Storage::AttributionReportingAggregationKeysEntry>>();
+
+  for (const auto& [key, value] : keys.keys()) {
+    out->emplace_back(
+        Storage::AttributionReportingAggregationKeysEntry::Create()
+            .SetKey(key)
+            .SetValue(attribution_reporting::HexEncodeAggregationKey(value))
+            .Build());
+  }
+
+  return out;
+}
+
+}  // namespace
+
+void StorageHandler::OnSourceHandled(
+    const StorableSource& source,
+    base::Time source_time,
+    absl::optional<uint64_t> cleared_debug_key,
+    attribution_reporting::mojom::StoreSourceResult result) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  const auto& registration = source.registration();
+
+  auto destination_sites = std::make_unique<Array<String>>();
+  for (const auto& site : registration.destination_set.destinations()) {
+    destination_sites->emplace_back(site.Serialize());
+  }
+
+  const auto& common_info = source.common_info();
+  auto out_source =
+      Storage::AttributionReportingSourceRegistration::Create()
+          .SetTime(source_time.ToDoubleT())
+          .SetType(
+              attribution_reporting::SourceTypeName(common_info.source_type()))
+          .SetSourceOrigin(common_info.source_origin()->Serialize())
+          .SetReportingOrigin(common_info.reporting_origin()->Serialize())
+          .SetDestinationSites(std::move(destination_sites))
+          .SetEventId(base::NumberToString(registration.source_event_id))
+          .SetPriority(base::NumberToString(registration.priority))
+          .SetFilterData(ToFilterDataEntries(registration.filter_data))
+          .SetAggregationKeys(
+              ToAggregationKeysEntries(registration.aggregation_keys))
+          .Build();
+
+  if (absl::optional<base::TimeDelta> delta = registration.expiry) {
+    out_source->SetExpiry(delta->InSeconds());
+  }
+
+  if (absl::optional<base::TimeDelta> delta =
+          registration.event_report_window) {
+    out_source->SetEventReportWindow(delta->InSeconds());
+  }
+
+  if (absl::optional<base::TimeDelta> delta =
+          registration.aggregatable_report_window) {
+    out_source->SetAggregatableReportWindow(delta->InSeconds());
+  }
+
+  if (registration.debug_key.has_value()) {
+    out_source->SetDebugKey(base::NumberToString(*registration.debug_key));
+  }
+
+  frontend_->AttributionReportingSourceRegistered(
+      std::move(out_source), ToSourceRegistrationResult(result));
+}
+
+Response StorageHandler::SetAttributionReportingTracking(bool enable) {
+  if (enable) {
+    auto* manager = GetAttributionManager();
+    if (!manager) {
+      return Response::ServerError("Attribution Reporting is disabled.");
+    }
+    attribution_observation_.Observe(manager);
+  } else {
+    attribution_observation_.Reset();
+  }
+  return Response::Success();
 }
 
 }  // namespace protocol

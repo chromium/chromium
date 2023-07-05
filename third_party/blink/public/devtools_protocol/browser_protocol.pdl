@@ -9656,6 +9656,69 @@ experimental domain Storage
       # If enabled, noise is suppressed and reports are sent immediately.
       boolean enabled
 
+  # Enables/disables issuing of Attribution Reporting events.
+  experimental command setAttributionReportingTracking
+    parameters
+      boolean enable
+
+  experimental type AttributionReportingSourceType extends string
+    enum
+      navigation
+      event
+
+  experimental type UnsignedInt64AsBase10 extends string
+  experimental type UnsignedInt128AsBase16 extends string
+  experimental type SignedInt64AsBase10 extends string
+
+  experimental type AttributionReportingFilterDataEntry extends object
+    properties
+      string key
+      array of string values
+
+  experimental type AttributionReportingAggregationKeysEntry extends object
+    properties
+      string key
+      UnsignedInt128AsBase16 value
+
+  experimental type AttributionReportingSourceRegistration extends object
+    properties
+      Network.TimeSinceEpoch time
+      # duration in seconds
+      optional integer expiry
+      # duration in seconds
+      optional integer eventReportWindow
+      # duration in seconds
+      optional integer aggregatableReportWindow
+      AttributionReportingSourceType type
+      string sourceOrigin
+      string reportingOrigin
+      array of string destinationSites
+      UnsignedInt64AsBase10 eventId
+      SignedInt64AsBase10 priority
+      array of AttributionReportingFilterDataEntry filterData
+      array of AttributionReportingAggregationKeysEntry aggregationKeys
+      optional UnsignedInt64AsBase10 debugKey
+
+  experimental type AttributionReportingSourceRegistrationResult extends string
+    enum
+      success
+      internalError
+      insufficientSourceCapacity
+      insufficientUniqueDestinationCapacity
+      excessiveReportingOrigins
+      prohibitedByBrowserPolicy
+      successNoised
+      destinationReportingLimitReached
+      destinationGlobalLimitReached
+      destinationBothLimitsReached
+
+  # TODO(crbug.com/1458532): Add other Attribution Reporting events, e.g.
+  # trigger registration.
+  experimental event attributionReportingSourceRegistered
+    parameters
+      AttributionReportingSourceRegistration registration
+      AttributionReportingSourceRegistrationResult result
+
 # The SystemInfo domain defines methods and events for querying low-level system information.
 experimental domain SystemInfo
 
