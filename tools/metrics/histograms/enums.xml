@@ -17670,13 +17670,30 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="6" label="Storage and Cache"/>
   <int value="7" label="Cookies, Storage, and Cache"/>
   <int value="8" label="Storage buckets"/>
-  <int value="9" label="Storage buckets, Cookies"/>
-  <int value="10" label="Storage buckets, Storage"/>
-  <int value="11" label="Storage buckets, Cookies and Storage"/>
-  <int value="12" label="Storage buckets, Cache"/>
-  <int value="13" label="Storage buckets, Cookies and Cache"/>
-  <int value="14" label="Storage buckets, Storage and Cache"/>
+  <int value="9" label="Storage buckets and Cookies"/>
+  <int value="10" label="Storage buckets and Storage"/>
+  <int value="11" label="Storage buckets, Cookies, and Storage"/>
+  <int value="12" label="Storage buckets and Cache"/>
+  <int value="13" label="Storage buckets, Cookies, and Cache"/>
+  <int value="14" label="Storage buckets, Storage, and Cache"/>
   <int value="15" label="Storage buckets, Cookies, Storage, and Cache"/>
+  <int value="16" label="Client Hints"/>
+  <int value="17" label="Client Hints and Cookies"/>
+  <int value="18" label="Client Hints and Storage"/>
+  <int value="19" label="Client Hints, Cookies, and Storage"/>
+  <int value="20" label="Client Hints and Cache"/>
+  <int value="21" label="Client Hints, Cookies, and Cache"/>
+  <int value="22" label="Client Hints, Storage, and Cache"/>
+  <int value="23" label="Client Hints, Cookies, Storage, and Cache"/>
+  <int value="24" label="Client Hints and Storage buckets"/>
+  <int value="25" label="Client Hints, Storage buckets, and Cookies"/>
+  <int value="26" label="Client Hints, Storage buckets, and Storage"/>
+  <int value="27" label="Client Hints, Storage buckets, Cookies, and Storage"/>
+  <int value="28" label="Client Hints, Storage buckets, and Cache"/>
+  <int value="29" label="Client Hints, Storage buckets, Cookies and Cache"/>
+  <int value="30" label="Client Hints, Storage buckets, Storage and Cache"/>
+  <int value="31"
+      label="Client Hints, Storage buckets, Cookies, Storage, and Cache"/>
 </enum>
 
 <enum name="ClickToCallDeviceState">

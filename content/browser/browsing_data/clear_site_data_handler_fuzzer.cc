@@ -24,12 +24,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   bool remove_cookies;
   bool remove_storage;
   bool remove_cache;
+  bool remove_client_hints;
   std::set<std::string> storage_buckets_to_remove;
   ClearSiteDataHandler::ConsoleMessagesDelegate delegate_;
 
   content::ClearSiteDataHandler::ParseHeaderForTesting(
       header, &remove_cookies, &remove_storage, &remove_cache,
-      &storage_buckets_to_remove, &delegate_, GURL());
+      &remove_client_hints, &storage_buckets_to_remove, &delegate_, GURL());
 
   return 0;
 }

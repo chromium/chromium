@@ -92,6 +92,7 @@ class CONTENT_EXPORT ClearSiteDataHandler {
       bool* clear_cookies,
       bool* clear_storage,
       bool* clear_cache,
+      bool* clear_client_hints,
       std::set<std::string>* storage_buckets_to_remove,
       ConsoleMessagesDelegate* delegate,
       const GURL& current_url);
@@ -122,10 +123,12 @@ class CONTENT_EXPORT ClearSiteDataHandler {
   // the header requests to |clear_cookies|, |clear_storage|, and |clear_cache|.
   // The |delegate| will be filled with messages to be output in the console,
   // prepended by the |current_url|. Returns true if parsing was successful.
+  // TODO(crbug.com/1458394): Convert bool*s to enum_set<ClearSiteDataType>.
   static bool ParseHeader(const std::string& header,
                           bool* clear_cookies,
                           bool* clear_storage,
                           bool* clear_cache,
+                          bool* clear_client_hints,
                           std::set<std::string>* storage_buckets_to_remove,
                           ConsoleMessagesDelegate* delegate,
                           const GURL& current_url);
@@ -136,6 +139,7 @@ class CONTENT_EXPORT ClearSiteDataHandler {
       bool clear_cookies,
       bool clear_storage,
       bool clear_cache,
+      bool clear_client_hints,
       const std::set<std::string>& storage_buckets_to_remove,
       base::OnceClosure callback);
 

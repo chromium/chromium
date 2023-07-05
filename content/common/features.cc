@@ -15,10 +15,6 @@ BASE_FEATURE(kBeforeUnloadBrowserResponseQueue,
              "BeforeUnloadBrowserResponseQueue",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClearSiteDataClientHintsSupport,
-             "ClearSiteDataClientHintsSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNavigationUpdatesChildViewsVisibility,
              "NavigationUpdatesChildViewsVisibility",
              base::FEATURE_DISABLED_BY_DEFAULT);

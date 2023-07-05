@@ -185,20 +185,20 @@ void WebAppUninstallDialogDelegateView::Uninstall() {
 }
 
 void WebAppUninstallDialogDelegateView::ClearWebAppSiteData() {
-  content::ClearSiteData(base::BindRepeating(
-                             [](content::BrowserContext* browser_context) {
-                               return browser_context;
-                             },
-                             base::Unretained(profile_)),
-                         url::Origin::Create(app_start_url_),
-                         /*clear_cookies=*/true,
-                         /*clear_storage=*/true, /*clear_cache=*/true,
-                         /*storage_buckets_to_remove=*/{},
-                         /*avoid_closing_connections=*/false,
-                         /*cookie_partition_key=*/absl::nullopt,
-                         /*storage_key=*/absl::nullopt,
-                         /*partitioned_state_allowed_only=*/false,
-                         base::DoNothing());
+  content::ClearSiteData(
+      base::BindRepeating(
+          [](content::BrowserContext* browser_context) {
+            return browser_context;
+          },
+          base::Unretained(profile_)),
+      url::Origin::Create(app_start_url_),
+      /*clear_cookies=*/true,
+      /*clear_storage=*/true, /*clear_cache=*/true, /*clear_client_hints=*/true,
+      /*storage_buckets_to_remove=*/{},
+      /*avoid_closing_connections=*/false,
+      /*cookie_partition_key=*/absl::nullopt,
+      /*storage_key=*/absl::nullopt,
+      /*partitioned_state_allowed_only=*/false, base::DoNothing());
 }
 
 void WebAppUninstallDialogDelegateView::ProcessAutoConfirmValue() {

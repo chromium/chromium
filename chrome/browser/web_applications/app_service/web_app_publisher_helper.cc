@@ -802,6 +802,7 @@ void WebAppPublisherHelper::UninstallWebApp(
   constexpr bool kClearCookies = true;
   constexpr bool kClearStorage = true;
   constexpr bool kClearCache = true;
+  constexpr bool kClearClientHints = true;
   constexpr bool kAvoidClosingConnections = false;
 
   content::ClearSiteData(
@@ -810,7 +811,7 @@ void WebAppPublisherHelper::UninstallWebApp(
             return browser_context;
           },
           base::Unretained(profile())),
-      origin, kClearCookies, kClearStorage, kClearCache,
+      origin, kClearCookies, kClearStorage, kClearCache, kClearClientHints,
       /*storage_buckets_to_remove=*/{}, kAvoidClosingConnections,
       /*cookie_partition_key=*/absl::nullopt,
       /*storage_key=*/absl::nullopt,

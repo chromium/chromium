@@ -1109,7 +1109,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, ClearSiteData) {
           base::Unretained(target_shell->web_contents()->GetBrowserContext())),
       /*origin=*/url::Origin::Create(embedded_test_server()->GetURL("/")),
       /*clear_cookies=*/true, /*clear_storage=*/false,
-      /*clear_cache=*/true,
+      /*clear_cache=*/true, /*clear_client_hints=*/true,
       /*storage_buckets_to_remove=*/{},
       /*avoid_closing_connections=*/true,
       /*cookie_partition_key=*/absl::nullopt,
