@@ -339,6 +339,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // Request to minimize window.
   virtual void Minimize() {}
+
+  // Request to restore window.
+  virtual void Restore() {}
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

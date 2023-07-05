@@ -2534,8 +2534,17 @@ void LocalDOMWindow::minimize() {
 }
 
 void LocalDOMWindow::restore() {
-  // TODO(isandrk): API is WIP. Explainer link:
-  // https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
+  if (!GetFrame() || !GetFrame()->IsOutermostMainFrame() ||
+      GetFrame()->GetPage()->IsPrerendering()) {
+    return;
+  }
+
+#if defined(USE_AURA)
+  GetFrame()->GetLocalFrameHostRemote().Restore();
+#else
+  // API works only on Aura platforms for now.
+  return;
+#endif
 }
 
 void LocalDOMWindow::GenerateNewNavigationId() {

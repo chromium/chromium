@@ -2287,6 +2287,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 #if defined(USE_AURA)
   void Maximize() override;
   void Minimize() override;
+  void Restore() override;
 #endif
   void RegisterProtocolHandler(const std::string& scheme,
                                const GURL& url,

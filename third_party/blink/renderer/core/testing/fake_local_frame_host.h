@@ -36,6 +36,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
 #if defined(USE_AURA)
   void Maximize() override;
   void Minimize() override;
+  void Restore() override;
 #endif
   void RegisterProtocolHandler(const WTF::String& scheme,
                                const ::blink::KURL& url,

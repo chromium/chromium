@@ -6534,6 +6534,25 @@ void RenderFrameHostImpl::Minimize() {
 
   delegate_->Minimize();
 }
+
+void RenderFrameHostImpl::Restore() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kDesktopPWAsAdditionalWindowingControls)) {
+    mojo::ReportBadMessage(
+        "window.restore called without the feature enabled.");
+    return;
+  }
+  if (!IsInPrimaryMainFrame()) {
+    mojo::ReportBadMessage(
+        "window.restore called from a non-primary-main frame.");
+    return;
+  }
+  if (!IsActive()) {
+    return;
+  }
+
+  delegate_->Restore();
+}
 #endif
 
 void RenderFrameHostImpl::RegisterProtocolHandler(const std::string& scheme,

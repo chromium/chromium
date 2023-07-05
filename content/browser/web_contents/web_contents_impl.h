@@ -677,6 +677,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 #if defined(USE_AURA)
   void Maximize() override;
   void Minimize() override;
+  void Restore() override;
 #endif
 #if BUILDFLAG(IS_ANDROID)
   void UpdateUserGestureCarryoverInfo() override;

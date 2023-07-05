@@ -3774,6 +3774,13 @@ void WebContentsImpl::Minimize() {
   // platforms (Win/Lin/CrOS/Fuchsia), make it also work on Mac.
   wm::SetWindowState(window, ui::SHOW_STATE_MINIMIZED);
 }
+
+void WebContentsImpl::Restore() {
+  aura::Window* window = GetTopLevelNativeWindow();
+  // TODO(isandrk, b/289028460): This API function currently works only on Aura
+  // platforms (Win/Lin/CrOS/Fuchsia), make it also work on Mac.
+  wm::SetWindowState(window, ui::SHOW_STATE_NORMAL);
+}
 #endif
 
 void WebContentsImpl::FullscreenFrameSetUpdated() {
