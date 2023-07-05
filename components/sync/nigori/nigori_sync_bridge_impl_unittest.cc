@@ -68,7 +68,19 @@ MATCHER(HasKeystoreNigori, "") {
          specifics.has_keystore_migration_time();
 }
 
-MATCHER_P(HasPublicKeyWithVersion, key_version, "") {
+MATCHER_P2(HasPublicKeyVersionAndValue, key_version, key_value, "") {
+  const std::unique_ptr<EntityData>& entity_data = arg;
+  if (!entity_data || !entity_data->specifics.has_nigori()) {
+    return false;
+  }
+  const sync_pb::NigoriSpecifics& specifics = entity_data->specifics.nigori();
+  return specifics.has_cross_user_sharing_public_key() &&
+         specifics.cross_user_sharing_public_key().version() == key_version &&
+         specifics.cross_user_sharing_public_key().x25519_public_key() ==
+             key_value;
+}
+
+MATCHER_P(HasPublicKeyVersion, key_version, "") {
   const std::unique_ptr<EntityData>& entity_data = arg;
   if (!entity_data || !entity_data->specifics.has_nigori()) {
     return false;
@@ -1821,15 +1833,25 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeystoreNigoriWithKeyPair) {
       sync_pb::NigoriSpecifics::default_instance();
   EXPECT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
 
-  EXPECT_CALL(*processor(), Put(HasPublicKeyWithVersion(0)));
+  std::string key_value;
+  EXPECT_CALL(*processor(), Put(HasPublicKeyVersion(0)))
+      .WillOnce([&key_value](auto committed_entity_data) {
+        key_value = committed_entity_data->specifics.nigori()
+                        .cross_user_sharing_public_key()
+                        .x25519_public_key();
+      });
+
   EXPECT_THAT(bridge()->MergeFullSyncData(std::move(default_entity_data)),
               Eq(absl::nullopt));
   EXPECT_THAT(bridge()->GetData(), HasKeystoreNigori());
-  EXPECT_THAT(bridge()->GetData(), HasPublicKeyWithVersion(0));
+  // Key version and material should be consistent across the processor and the
+  // bridge.
+  EXPECT_THAT(bridge()->GetData(), HasPublicKeyVersionAndValue(0, key_value));
   EXPECT_THAT(bridge()->ApplyIncrementalSyncChanges(absl::nullopt),
               Eq(absl::nullopt));
   EXPECT_THAT(bridge()->GetData(), HasKeystoreNigori());
-  EXPECT_THAT(bridge()->GetData(), HasPublicKeyWithVersion(0));
+  EXPECT_THAT(bridge()->GetData(), HasPublicKeyVersionAndValue(0, key_value));
+
   EXPECT_THAT(bridge()->GetKeystoreMigrationTime(), Not(NullTime()));
   histogram_tester.ExpectUniqueSample(
       "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", true, 1);
@@ -1849,11 +1871,19 @@ TEST_F(NigoriSyncBridgeImplTest,
       sync_pb::NigoriSpecifics::default_instance();
   EXPECT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
 
-  EXPECT_CALL(*processor(), Put(HasPublicKeyWithVersion(0)));
+  std::string key_value;
+  EXPECT_CALL(*processor(), Put(HasPublicKeyVersion(0)))
+      .WillOnce([&key_value](auto committed_entity_data) {
+        key_value = committed_entity_data->specifics.nigori()
+                        .cross_user_sharing_public_key()
+                        .x25519_public_key();
+      });
   EXPECT_THAT(bridge()->MergeFullSyncData(std::move(default_entity_data)),
               Eq(absl::nullopt));
   EXPECT_THAT(bridge()->GetData(), HasKeystoreNigori());
-  EXPECT_THAT(bridge()->GetData(), HasPublicKeyWithVersion(0));
+  // Key version and material should be consistent across the processor and the
+  // bridge.
+  EXPECT_THAT(bridge()->GetData(), HasPublicKeyVersionAndValue(0, key_value));
 
   EntityData new_entity_data;
   *new_entity_data.specifics.mutable_nigori() =
@@ -1862,7 +1892,7 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_THAT(bridge()->ApplyIncrementalSyncChanges(std::move(new_entity_data)),
               Eq(absl::nullopt));
   EXPECT_THAT(bridge()->GetData(), Not(HasKeystoreNigori()));
-  EXPECT_THAT(bridge()->GetData(), Not(HasPublicKeyWithVersion(0)));
+  EXPECT_THAT(bridge()->GetData(), Not(HasPublicKeyVersion(0)));
   histogram_tester.ExpectUniqueSample(
       "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", false, 1);
 }
@@ -1903,7 +1933,7 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeyPairForExistingNigori) {
   ASSERT_THAT(bridge1->MergeFullSyncData(std::move(entity_data)),
               Eq(absl::nullopt));
   EXPECT_THAT(bridge1->GetData(), HasKeystoreNigori());
-  ASSERT_THAT(bridge1->GetData(), Not(HasPublicKeyWithVersion(0)));
+  ASSERT_THAT(bridge1->GetData(), Not(HasPublicKeyVersion(0)));
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kSharingOfferKeyPairBootstrap);
@@ -1915,8 +1945,13 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeyPairForExistingNigori) {
   auto processor2 =
       std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
   ON_CALL(*processor2, IsTrackingMetadata()).WillByDefault(Return(true));
-  EXPECT_CALL(*processor2, Put(HasPublicKeyWithVersion(0)));
-
+  std::string key_value;
+  EXPECT_CALL(*processor2, Put(HasPublicKeyVersion(0)))
+      .WillOnce([&key_value](auto committed_entity_data) {
+        key_value = committed_entity_data->specifics.nigori()
+                        .cross_user_sharing_public_key()
+                        .x25519_public_key();
+      });
   auto bridge2 = std::make_unique<NigoriSyncBridgeImpl>(std::move(processor2),
                                                         std::move(storage2));
 
@@ -1924,7 +1959,9 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeyPairForExistingNigori) {
   EXPECT_THAT(bridge2->ApplyIncrementalSyncChanges(absl::nullopt),
               Eq(absl::nullopt));
   EXPECT_THAT(bridge2->GetData(), HasKeystoreNigori());
-  EXPECT_THAT(bridge2->GetData(), HasPublicKeyWithVersion(0));
+  // Key version and material should be consistent across the processor and the
+  // bridge.
+  EXPECT_THAT(bridge2->GetData(), HasPublicKeyVersionAndValue(0, key_value));
   histogram_tester.ExpectUniqueSample(
       "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", true, 1);
 }
@@ -1964,7 +2001,7 @@ TEST_F(NigoriSyncBridgeImplTest,
   ASSERT_THAT(bridge1->MergeFullSyncData(std::move(entity_data)),
               Eq(absl::nullopt));
   EXPECT_THAT(bridge1->GetData(), HasKeystoreNigori());
-  ASSERT_THAT(bridge1->GetData(), Not(HasPublicKeyWithVersion(0)));
+  ASSERT_THAT(bridge1->GetData(), Not(HasPublicKeyVersion(0)));
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kSharingOfferKeyPairBootstrap);
@@ -1976,7 +2013,7 @@ TEST_F(NigoriSyncBridgeImplTest,
   auto processor2 =
       std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
   ON_CALL(*processor2, IsTrackingMetadata()).WillByDefault(Return(true));
-  EXPECT_CALL(*processor2, Put(HasPublicKeyWithVersion(0)));
+  EXPECT_CALL(*processor2, Put(HasPublicKeyVersion(0)));
 
   auto bridge2 = std::make_unique<NigoriSyncBridgeImpl>(std::move(processor2),
                                                         std::move(storage2));
@@ -1985,11 +2022,15 @@ TEST_F(NigoriSyncBridgeImplTest,
   *new_entity_data.specifics.mutable_nigori() =
       BuildCustomPassphraseNigoriSpecifics(
           Pbkdf2PassphraseKeyParamsForTesting("passphrase"));
-  // Mimic commit completion.
+  // Mimic unsuccessful commit due to conflict.
   EXPECT_THAT(bridge2->ApplyIncrementalSyncChanges(std::move(new_entity_data)),
               Eq(absl::nullopt));
   EXPECT_THAT(bridge2->GetData(), Not(HasKeystoreNigori()));
-  EXPECT_THAT(bridge2->GetData(), Not(HasPublicKeyWithVersion(0)));
+
+  // Commit has failed due to conflict and bridge just received custom
+  // passphrase Nigori. Bridge should not attempt to commit cross user sharing
+  // key anymore, because it can't decrypt the custom passphrase Nigori yet.
+  EXPECT_THAT(bridge2->GetData(), Not(HasPublicKeyVersion(0)));
   histogram_tester.ExpectUniqueSample(
       "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", false, 1);
 }
