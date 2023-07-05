@@ -34,3 +34,33 @@ proto_library("fresnel_service_proto") {
 
   link_deps = [ "//third_party/private_membership:private_membership_proto" ]
 }
+
+source_set("utils") {
+  deps = [
+    "//base",
+    "//chromeos/ash/components/policy",
+    "//third_party/icu",
+  ]
+
+  sources = [
+    "//chromeos/ash/components/report/utils/time_utils.cc",
+    "//chromeos/ash/components/report/utils/time_utils.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "//chromeos/ash/components/report/utils/time_utils_unittest.cc",
+  ]
+
+  deps = [
+    ":utils",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/icu",
+  ]
+}
+
