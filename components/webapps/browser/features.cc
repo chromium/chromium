@@ -98,7 +98,7 @@ extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerIgnoredKey{
     &kAppBannerTriggering, "days_after_ignore", kMinimumDaysBetweenBannerShows};
 
 BASE_FEATURE(kWebAppsEnableMLModelForPromotion,
-             "kWebAppsEnableMLModelForPromotion",
+             "WebAppsEnableMLModelForPromotion",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
