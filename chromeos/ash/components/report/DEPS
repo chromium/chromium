@@ -1,3 +1,5 @@
 include_rules = [
+  "+chromeos/ash/components/dbus/private_computing",
   "+chromeos/ash/components/policy",
+  "+third_party/private_membership",
 ]

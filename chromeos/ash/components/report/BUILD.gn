@@ -38,11 +38,15 @@ proto_library("fresnel_service_proto") {
 source_set("utils") {
   deps = [
     "//base",
+    "//chromeos/ash/components/dbus/private_computing:private_computing_proto",
     "//chromeos/ash/components/policy",
     "//third_party/icu",
+    "//third_party/private_membership:private_membership",
   ]
 
   sources = [
+    "//chromeos/ash/components/report/utils/test_utils.cc",
+    "//chromeos/ash/components/report/utils/test_utils.h",
     "//chromeos/ash/components/report/utils/time_utils.cc",
     "//chromeos/ash/components/report/utils/time_utils.h",
   ]
@@ -52,6 +56,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "//chromeos/ash/components/report/utils/test_utils_unittest.cc",
     "//chromeos/ash/components/report/utils/time_utils_unittest.cc",
   ]
 
@@ -59,8 +64,8 @@ source_set("unit_tests") {
     ":utils",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/dbus/private_computing:private_computing",
     "//testing/gtest",
     "//third_party/icu",
   ]
 }
-
