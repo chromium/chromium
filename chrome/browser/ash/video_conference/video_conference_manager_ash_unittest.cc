@@ -61,6 +61,8 @@ class FakeVcManagerCppClient
       bool disabled,
       SetSystemMediaDeviceStatusCallback callback) override {}
 
+  void StopAllScreenShare() override {}
+
   // Public for testing.
   base::UnguessableToken id_;
   std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> apps_;

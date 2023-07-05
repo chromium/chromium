@@ -67,6 +67,7 @@ class VideoConferenceAppServiceClient
       crosapi::mojom::VideoConferenceMediaDevice device,
       bool disabled,
       SetSystemMediaDeviceStatusCallback callback) override;
+  void StopAllScreenShare() override;
 
   // apps::AppCapabilityAccessCache::Observer overrides.
   void OnCapabilityAccessUpdate(

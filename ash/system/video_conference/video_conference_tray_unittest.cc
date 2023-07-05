@@ -408,29 +408,13 @@ TEST_F(VideoConferenceTrayTest, ClickScreenshareButton) {
   base::HistogramTester histogram_tester;
   SetTrayAndButtonsVisible();
 
-  bool stop_callback_called = false;
-
-  auto stop_callback = base::BindRepeating(
-      [](bool* stop_callback_called) { *stop_callback_called = true; },
-      base::Unretained(&stop_callback_called));
-
-  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
-      stop_callback, base::RepeatingClosure(), std::u16string());
-
+  EXPECT_EQ(controller()->stop_all_screen_share_count(), 0);
   // Click the screen share button should trigger the screen access stop
   // callback.
   LeftClickOn(screen_share_icon());
-  EXPECT_TRUE(stop_callback_called);
   histogram_tester.ExpectBucketCount(kStopScreenShareHistogramName, true, 1);
 
-  stop_callback_called = false;
-  Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
-      stop_callback);
-
-  // Click the screen share button should not trigger the remoting share stop
-  // callback.
-  LeftClickOn(screen_share_icon());
-  EXPECT_FALSE(stop_callback_called);
+  EXPECT_EQ(controller()->stop_all_screen_share_count(), 1);
 }
 
 TEST_F(VideoConferenceTrayTest, PrivacyIndicator) {

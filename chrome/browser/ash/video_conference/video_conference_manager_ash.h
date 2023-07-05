@@ -50,6 +50,7 @@ class VideoConferenceManagerAsh
   void SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice device,
       bool disabled) override;
+  void StopAllScreenShare() override;
 
   // Registers an ash-browser client. Non-mojo clients need to manually call
   // |UnregisterClient|, e.g. inside their destructor.

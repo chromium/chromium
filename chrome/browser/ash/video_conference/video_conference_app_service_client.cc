@@ -155,6 +155,8 @@ void VideoConferenceAppServiceClient::SetSystemMediaDeviceStatus(
   }
 }
 
+void VideoConferenceAppServiceClient::StopAllScreenShare() {}
+
 void VideoConferenceAppServiceClient::OnCapabilityAccessUpdate(
     const apps::CapabilityAccessUpdate& update) {
   const AppIdString& app_id = update.AppId();

@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/test/bind.h"
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -267,6 +268,38 @@ TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, AddAndRemoveDevice) {
   // the observed property is now set to false.
   (observer()->*(param.observer_method))(source, false);
   ui.reset();
+  EXPECT_FALSE((indicator()->*(param.accessor_method))(web_contents()));
+  ::testing::Mock::VerifyAndClear(observer());
+}
+
+TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, StopMediaCapturing) {
+  const ObserverMethodTestParam& param = std::get<0>(GetParam());
+  const auto media_tpy =
+      MediaStreamCaptureIndicator::GetMediaType(param.stream_type);
+  bool is_portal = std::get<1>(GetParam());
+  content::WebContents* source = is_portal ? portal_contents() : web_contents();
+
+  // By default all accessors should return false as there's no stream device.
+  EXPECT_FALSE((indicator()->*(param.accessor_method))(web_contents()));
+  std::unique_ptr<content::MediaStreamUI> ui =
+      indicator()->RegisterMediaStream(source, CreateFakeDevice(param));
+  auto stop_callback = base::BindLambdaForTesting([&]() { ui.reset(); });
+
+  // Make sure that the observer gets called and that the corresponding accessor
+  // gets called when |OnStarted| is called.
+  (observer()->*(param.observer_method))(source, true);
+  ui->OnStarted(std::move(stop_callback),
+                content::MediaStreamUI::SourceCallback(),
+                /*label=*/std::string(), /*screen_capture_ids=*/{},
+                content::MediaStreamUI::StateChangeCallback());
+  EXPECT_TRUE((indicator()->*(param.accessor_method))(web_contents()));
+  ::testing::Mock::VerifyAndClear(observer());
+
+  // StopMediaCapturing calls the stop_callback which calls ui.reset; which will
+  // notify the observer_method that the capturing is stopped.
+  (observer()->*(param.observer_method))(source, false);
+  indicator()->StopMediaCapturing(source, media_tpy);
+
   EXPECT_FALSE((indicator()->*(param.accessor_method))(web_contents()));
   ::testing::Mock::VerifyAndClear(observer());
 }

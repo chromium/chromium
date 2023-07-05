@@ -60,6 +60,14 @@ bool FakeVideoConferenceTrayController::GetMicrophoneMuted() {
   return microphone_muted_;
 }
 
+void FakeVideoConferenceTrayController::StopAllScreenShare() {
+  // Call real `StopAllScreenShare` if initialized.
+  if (initialized()) {
+    VideoConferenceTrayController::StopAllScreenShare();
+  }
+  stop_all_screen_share_count_++;
+}
+
 void FakeVideoConferenceTrayController::GetMediaApps(
     base::OnceCallback<void(MediaApps)> ui_callback) {
   // If initialized, use real VideoConferenceTrayController for GetMediaApps.

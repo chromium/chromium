@@ -357,15 +357,20 @@ bool VideoConferenceTrayController::GetMicrophoneMuted() {
          !pref_service->GetBoolean(prefs::kUserMicrophoneAllowed);
 }
 
+void VideoConferenceTrayController::StopAllScreenShare() {
+  CHECK(video_conference_manager_);
+  video_conference_manager_->StopAllScreenShare();
+}
+
 void VideoConferenceTrayController::GetMediaApps(
     base::OnceCallback<void(MediaApps)> ui_callback) {
-  DCHECK(video_conference_manager_);
+  CHECK(video_conference_manager_);
   video_conference_manager_->GetMediaApps(std::move(ui_callback));
 }
 
 void VideoConferenceTrayController::ReturnToApp(
     const base::UnguessableToken& id) {
-  DCHECK(video_conference_manager_);
+  CHECK(video_conference_manager_);
   video_conference_manager_->ReturnToApp(id);
 }
 

@@ -438,12 +438,10 @@ void VideoConferenceTray::OnAudioButtonClicked(const ui::Event& event) {
 }
 
 void VideoConferenceTray::OnScreenShareButtonClicked(const ui::Event& event) {
-  Shell::Get()
-      ->system_notification_controller()
-      ->screen_security_controller()
-      ->StopAllSessions(/*is_screen_access=*/true);
-
-  base::UmaHistogramBoolean(kStopScreenShareHistogramName, true);
+  if (features::IsStopAllScreenShareEnabled()) {
+    VideoConferenceTrayController::Get()->StopAllScreenShare();
+    base::UmaHistogramBoolean(kStopScreenShareHistogramName, true);
+  }
 }
 
 BEGIN_METADATA(VideoConferenceTray, TrayBackgroundView)

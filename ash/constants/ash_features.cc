@@ -3749,6 +3749,11 @@ bool IsVideoConferenceEnabled() {
          switches::IsCameraEffectsSupportedByHardware();
 }
 
+bool IsStopAllScreenShareEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kVideoConference, "stop_all_screen_share_enabled", true);
+}
+
 bool IsVcBackgroundReplaceEnabled() {
   return base::FeatureList::IsEnabled(kVcBackgroundReplace) &&
          IsVideoConferenceEnabled();

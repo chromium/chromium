@@ -125,6 +125,9 @@ class ASH_EXPORT VideoConferenceTrayController
   // Gets the state for microphone mute. Virtual for testing/mocking.
   virtual bool GetMicrophoneMuted();
 
+  // Stops all screen sharing. Virtual for testing/mocking.
+  virtual void StopAllScreenShare();
+
   // Returns asynchronously a vector of media apps that will be displayed in the
   // "Return to app" panel of the bubble. Virtual for testing/mocking.
   virtual void GetMediaApps(base::OnceCallback<void(MediaApps)> ui_callback);

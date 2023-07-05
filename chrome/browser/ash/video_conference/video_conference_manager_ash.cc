@@ -108,6 +108,12 @@ void VideoConferenceManagerAsh::SetSystemMediaDeviceStatus(
   }
 }
 
+void VideoConferenceManagerAsh::StopAllScreenShare() {
+  for (auto& [_, client_wrapper] : client_id_to_wrapper_) {
+    client_wrapper.StopAllScreenShare();
+  }
+}
+
 void VideoConferenceManagerAsh::NotifyMediaUsageUpdate(
     crosapi::mojom::VideoConferenceMediaUsageStatusPtr status,
     NotifyMediaUsageUpdateCallback callback) {

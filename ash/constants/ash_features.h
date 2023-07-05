@@ -1034,6 +1034,7 @@ bool IsUnmanagedDeviceDeviceTrustConnectorFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUseLoginShelfWidgetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUserEducationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVideoConferenceEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsStopAllScreenShareEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVcBackgroundReplaceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVcPortraitRelightEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVcControlsUiFakeEffectsEnabled();

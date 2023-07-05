@@ -165,4 +165,8 @@ interface VideoConferenceManagerClient {
   // Informs client of system device's disable status
   SetSystemMediaDeviceStatus@2(VideoConferenceMediaDevice device,
                                bool disabled) => (bool success);
+
+  // Stops screen sharings from all media apps.
+  [MinVersion=1]
+  StopAllScreenShare@3();
 };

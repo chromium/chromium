@@ -17,6 +17,8 @@
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
@@ -296,6 +298,23 @@ void VideoConferenceManagerClientImpl::SetSystemMediaDeviceStatus(
     SetSystemMediaDeviceStatusCallback callback) {
   media_listener_->SetSystemMediaDeviceStatus(std::move(device), disabled);
   std::move(callback).Run(true);
+}
+
+void VideoConferenceManagerClientImpl::StopAllScreenShare() {
+  for (const auto& pair : id_to_webcontents_) {
+    auto* web_app =
+        content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
+            pair.second);
+    DCHECK(web_app)
+        << "WebContents with no corresponding VideoConferenceWebApp.";
+    if (web_app->state().is_capturing_screen) {
+      MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator()
+          ->StopMediaCapturing(
+              pair.second,
+              MediaStreamCaptureIndicator::MediaType::kDisplayMedia);
+    }
+  }
 }
 
 void VideoConferenceManagerClientImpl::NotifyManager(

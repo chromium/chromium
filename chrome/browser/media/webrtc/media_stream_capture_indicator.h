@@ -59,6 +59,16 @@ class MediaStreamCaptureIndicator
     : public base::RefCountedThreadSafe<MediaStreamCaptureIndicator>,
       public StatusIconMenuModel::Delegate {
  public:
+  enum MediaType {
+    kUnknown = 0,
+    kUserMedia = 1,
+    kDisplayMedia = 2,
+    kAllScreensMedia = 4,
+  };
+
+  // Maps blink::mojom::MediaStreamType to MediaType.
+  static MediaType GetMediaType(blink::mojom::MediaStreamType type);
+
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnIsCapturingVideoChanged(content::WebContents* web_contents,
@@ -114,8 +124,10 @@ class MediaStreamCaptureIndicator
   // Returns true if |web_contents| is capturing a display.
   bool IsCapturingDisplay(content::WebContents* web_contents) const;
 
-  // Called when STOP button in media capture notification is clicked.
-  void NotifyStopped(content::WebContents* web_contents) const;
+  // Called to stop media capturing of the |media_type|.
+  // |media_type| is underlying_type of MediaType.
+  void StopMediaCapturing(content::WebContents* web_contents,
+                          int media_type) const;
 
   // Adds/Removes observers. Observers needs to be removed during the lifetime
   // of this object.
