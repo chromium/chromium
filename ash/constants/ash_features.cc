@@ -1962,6 +1962,12 @@ BASE_FEATURE(kProjectorFoldShortGapIntoPreviousTranscript,
              "ProjectorFoldShortGapIntoPreviousTranscript",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Constrols whether fallback implementation is enabled when streaming
+// connection fails for server side speech recognition.
+BASE_FEATURE(kProjectorServerSideRecognitionFallbackImpl,
+             "ProjectorServerSideRecognititionFallbackImpl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether Projector's tutorial videos are displayed.
 BASE_FEATURE(kProjectorTutorialVideoView,
              "ProjectorTutorialVideoView",
@@ -3585,6 +3591,11 @@ bool IsProjectorAccountSwitchNotificationEnabled() {
 bool IsProjectorFoldShortGapIntoPreviousTranscriptEnabled() {
   return base::FeatureList::IsEnabled(
       kProjectorFoldShortGapIntoPreviousTranscript);
+}
+
+bool IsProjectorServerSideRecognitionFallbackImplEnabled() {
+  return base::FeatureList::IsEnabled(
+      kProjectorServerSideRecognitionFallbackImpl);
 }
 
 bool IsQuickDimEnabled() {
