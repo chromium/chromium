@@ -13,16 +13,6 @@
 namespace ash {
 
 // static
-void FaceMLPageHandler::Create(
-    FaceMLAppUI* face_ml_app_ui,
-    mojo::PendingReceiver<mojom::face_ml_app::PageHandler> pending_receiver,
-    mojo::PendingRemote<mojom::face_ml_app::Page> pending_page) {
-  auto page_handler = base::WrapUnique(new FaceMLPageHandler(
-      face_ml_app_ui, std::move(pending_receiver), std::move(pending_page)));
-  content::SaveWebUIManagedInterfaceInDocument(face_ml_app_ui,
-                                               std::move(page_handler));
-}
-
 FaceMLPageHandler::FaceMLPageHandler(
     FaceMLAppUI* face_ml_app_ui,
     mojo::PendingReceiver<mojom::face_ml_app::PageHandler> pending_receiver,
@@ -39,4 +29,5 @@ void FaceMLPageHandler::GetCurrentUserInformation(
       face_ml_app_ui_->GetUserProvider()->GetCurrentUserInformation();
   std::move(callback).Run(user_info.Clone());
 }
+
 }  // namespace ash

@@ -71,7 +71,8 @@ void FaceMLAppUI::BindInterface(
 void FaceMLAppUI::CreatePageHandler(
     mojo::PendingReceiver<mojom::face_ml_app::PageHandler> handler,
     mojo::PendingRemote<mojom::face_ml_app::Page> page) {
-  FaceMLPageHandler::Create(this, std::move(handler), std::move(page));
+  page_handler_ = std::make_unique<FaceMLPageHandler>(this, std::move(handler),
+                                                      std::move(page));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(FaceMLAppUI)
