@@ -95,35 +95,23 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
     quit_closure_ = std::move(closure);
   }
 
-  // Returns the id and formdata received via
-  // mojo interface method mojom::AutofillAgent::FillOrPreviewForm().
-  bool GetAutofillFillFormMessage(FormData* results) {
-    if (!fill_form_form_)
-      return false;
-    if (results)
-      *results = *fill_form_form_;
-    return true;
+  // Returns the `FormData` received via mojo interface method
+  // mojom::AutofillAgent::FillOrPreviewForm().
+  absl::optional<FormData> GetAutofillFillFormMessage() {
+    return fill_form_form_;
   }
 
-  // Returns the id and formdata received via
-  // mojo interface method mojom::AutofillAgent::PreviewForm().
-  bool GetAutofillPreviewFormMessage(FormData* results) {
-    if (!preview_form_form_)
-      return false;
-    if (results)
-      *results = *preview_form_form_;
-    return true;
+  // Returns the `FormData` received via mojo interface method
+  // mojom::AutofillAgent::PreviewForm().
+  absl::optional<FormData> GetAutofillPreviewFormMessage() {
+    return preview_form_form_;
   }
 
   // Returns data received via mojo interface method
   // mojom::AutofillAgent::FieldTypePredictionsAvailable().
-  bool GetFieldTypePredictionsAvailable(
-      std::vector<FormDataPredictions>* predictions) {
-    if (!predictions_)
-      return false;
-    if (predictions)
-      *predictions = *predictions_;
-    return true;
+  absl::optional<std::vector<FormDataPredictions>>
+  GetFieldTypePredictionsAvailable() {
+    return predictions_;
   }
 
   // Returns whether mojo interface method mojom::AutofillAgent::ClearForm() got
@@ -138,44 +126,40 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   // `mojom::AutofillAgent::TriggerSuggestions()`.
   absl::optional<AutofillSuggestionTriggerSource>
   GetCalledTriggerSuggestionsSource(const FieldGlobalId& field) {
-    if (!suggestion_trigger_source_ ||
-        value_renderer_id_ != field.renderer_id) {
+    if (value_renderer_id_ != field.renderer_id) {
       return absl::nullopt;
     }
-    return *suggestion_trigger_source_;
+    return suggestion_trigger_source_;
   }
 
   // Returns data received via mojo interface method
   // mojom::AutofillAgent::FillFieldWithValue().
-  bool GetString16FillFieldWithValue(const FieldGlobalId& field,
-                                     std::u16string* value) {
-    if (!value_fill_field_ || value_renderer_id_ != field.renderer_id)
-      return false;
-    if (value)
-      *value = *value_fill_field_;
-    return true;
+  absl::optional<std::u16string> GetString16FillFieldWithValue(
+      const FieldGlobalId& field) {
+    if (value_renderer_id_ != field.renderer_id) {
+      return absl::nullopt;
+    }
+    return value_fill_field_;
   }
 
   // Returns data received via mojo interface method
   // mojom::AutofillAgent::PreviewFieldWithValue().
-  bool GetString16PreviewFieldWithValue(const FieldGlobalId field,
-                                        std::u16string* value) {
-    if (!value_preview_field_ || value_renderer_id_ != field.renderer_id)
-      return false;
-    if (value)
-      *value = *value_preview_field_;
-    return true;
+  absl::optional<std::u16string> GetString16PreviewFieldWithValue(
+      const FieldGlobalId field) {
+    if (value_renderer_id_ != field.renderer_id) {
+      return absl::nullopt;
+    }
+    return value_preview_field_;
   }
 
   // Returns data received via mojo interface method
   // mojom::AutofillAgent::AcceptDataListSuggestion().
-  bool GetString16AcceptDataListSuggestion(FieldGlobalId field,
-                                           std::u16string* value) {
-    if (!value_accept_data_ || value_renderer_id_ != field.renderer_id)
-      return false;
-    if (value)
-      *value = *value_accept_data_;
-    return true;
+  absl::optional<std::u16string> GetString16AcceptDataListSuggestion(
+      FieldGlobalId field) {
+    if (value_renderer_id_ != field.renderer_id) {
+      return absl::nullopt;
+    }
+    return value_accept_data_;
   }
 
   // mojom::AutofillAgent:
@@ -616,11 +600,12 @@ TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
 
   run_loop.RunUntilIdle();
 
-  FormData output_form_data;
-  EXPECT_FALSE(fake_agent_.GetAutofillPreviewFormMessage(&output_form_data));
-  EXPECT_TRUE(fake_agent_.GetAutofillFillFormMessage(&output_form_data));
+  EXPECT_FALSE(fake_agent_.GetAutofillPreviewFormMessage());
+  absl::optional<FormData> output_form_data =
+      fake_agent_.GetAutofillFillFormMessage();
+  ASSERT_TRUE(output_form_data.has_value());
   EXPECT_TRUE(test::WithoutUnserializedData(input_form_data)
-                  .SameFormAs(output_form_data));
+                  .SameFormAs(*output_form_data));
 }
 
 TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
@@ -641,11 +626,12 @@ TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
 
   run_loop.RunUntilIdle();
 
-  FormData output_form_data;
-  EXPECT_FALSE(fake_agent_.GetAutofillFillFormMessage(&output_form_data));
-  EXPECT_TRUE(fake_agent_.GetAutofillPreviewFormMessage(&output_form_data));
+  EXPECT_FALSE(fake_agent_.GetAutofillFillFormMessage());
+  absl::optional<FormData> output_form_data =
+      fake_agent_.GetAutofillPreviewFormMessage();
+  ASSERT_TRUE(output_form_data);
   EXPECT_TRUE(test::WithoutUnserializedData(input_form_data)
-                  .SameFormAs(output_form_data));
+                  .SameFormAs(*output_form_data));
 }
 
 TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
@@ -676,16 +662,13 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
       form_structures);
   run_loop.RunUntilIdle();
 
-  std::vector<FormDataPredictions> output_type_predictions;
-  EXPECT_TRUE(
-      fake_agent_.GetFieldTypePredictionsAvailable(&output_type_predictions));
-  EXPECT_EQ(expected_type_predictions, output_type_predictions);
+  EXPECT_EQ(expected_type_predictions,
+            fake_agent_.GetFieldTypePredictionsAvailable());
 }
 
 TEST_F(ContentAutofillDriverTest, AcceptDataListSuggestion) {
   FieldGlobalId field = SeeAddressFormData().fields.front().global_id();
   std::u16string input_value(u"barfoo");
-  std::u16string output_value;
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
@@ -693,9 +676,8 @@ TEST_F(ContentAutofillDriverTest, AcceptDataListSuggestion) {
       field, input_value);
   run_loop.RunUntilIdle();
 
-  EXPECT_TRUE(
-      fake_agent_.GetString16AcceptDataListSuggestion(field, &output_value));
-  EXPECT_EQ(input_value, output_value);
+  EXPECT_EQ(input_value,
+            fake_agent_.GetString16AcceptDataListSuggestion(field));
 }
 
 TEST_F(ContentAutofillDriverTest, ClearFilledSectionSentToRenderer) {
@@ -737,7 +719,6 @@ TEST_F(ContentAutofillDriverTest, TriggerSuggestions) {
 TEST_F(ContentAutofillDriverTest, FillFieldWithValue) {
   FieldGlobalId field = SeeAddressFormData().fields.front().global_id();
   std::u16string input_value(u"barqux");
-  std::u16string output_value;
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
@@ -745,14 +726,12 @@ TEST_F(ContentAutofillDriverTest, FillFieldWithValue) {
                                                               input_value);
   run_loop.RunUntilIdle();
 
-  EXPECT_TRUE(fake_agent_.GetString16FillFieldWithValue(field, &output_value));
-  EXPECT_EQ(input_value, output_value);
+  EXPECT_EQ(input_value, fake_agent_.GetString16FillFieldWithValue(field));
 }
 
 TEST_F(ContentAutofillDriverTest, PreviewFieldWithValue) {
   FieldGlobalId field = SeeAddressFormData().fields.front().global_id();
   std::u16string input_value(u"barqux");
-  std::u16string output_value;
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
@@ -760,9 +739,7 @@ TEST_F(ContentAutofillDriverTest, PreviewFieldWithValue) {
                                                                  input_value);
   run_loop.RunUntilIdle();
 
-  EXPECT_TRUE(
-      fake_agent_.GetString16PreviewFieldWithValue(field, &output_value));
-  EXPECT_EQ(input_value, output_value);
+  EXPECT_EQ(input_value, fake_agent_.GetString16PreviewFieldWithValue(field));
 }
 
 TEST_F(ContentAutofillDriverTest, SetShouldSuppressKeyboard) {
