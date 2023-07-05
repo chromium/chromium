@@ -1086,7 +1086,7 @@ PendingScript* ScriptLoader::PrepareScript(
         ModuleScriptCreationParams params(
             source_url, base_url, ScriptSourceLocationType::kInline,
             ModuleType::kJavaScript, ParkableString(source_text.Impl()),
-            nullptr);
+            nullptr, network::mojom::ReferrerPolicy::kDefault);
         ModuleScript* module_script =
             JSModuleScript::Create(params, modulator, options, position);
 

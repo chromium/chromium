@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/script/pending_script.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -71,11 +72,26 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
   const KURL& url = script_resource->GetResponse().ResponseUrl();
   // Create an external module script where base_url == source_url.
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
+
+  network::mojom::ReferrerPolicy response_referrer_policy =
+      network::mojom::ReferrerPolicy::kDefault;
+
+  // <spec step="12.5">Let referrerPolicy be the result of parsing the
+  // `Referrer-Policy` header given response.</spec>
+  const String& response_referrer_policy_header =
+      script_resource->GetResponse().HttpHeaderField(
+          http_names::kReferrerPolicy);
+  if (!response_referrer_policy_header.IsNull()) {
+    SecurityPolicy::ReferrerPolicyFromHeaderValue(
+        response_referrer_policy_header,
+        kDoNotSupportReferrerPolicyLegacyKeywords, &response_referrer_policy);
+  }
+
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       /*source_url=*/url, /*base_url=*/url,
       ScriptSourceLocationType::kExternalFile, expected_module_type_,
-      script_resource->SourceText(), script_resource->CacheHandler(), streamer,
-      not_streamed_reason));
+      script_resource->SourceText(), script_resource->CacheHandler(),
+      response_referrer_policy, streamer, not_streamed_reason));
 }
 
 void DocumentModuleScriptFetcher::Trace(Visitor* visitor) const {

@@ -77,6 +77,12 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
     return render_blocking_behavior_;
   }
 
+  // See documentation above the `referrer_policy_` member.
+  void UpdateReferrerPolicyAfterResponseReceived(
+      network::mojom::ReferrerPolicy response_referrer_policy) const {
+    referrer_policy_ = response_referrer_policy;
+  }
+
   void SetAttributionReportingEligibility(
       AttributionReportingEligibility eligibility) {
     attribution_reporting_eligibility_ = eligibility;
@@ -107,7 +113,10 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
   const network::mojom::CredentialsMode credentials_mode_;
 
   // https://html.spec.whatwg.org/C/#concept-script-fetch-options-referrer-policy
-  const network::mojom::ReferrerPolicy referrer_policy_;
+  // "This policy can mutate after a module script's response is received, to be
+  // the referrer policy parsed from the response, and used when fetching any
+  // module dependencies." [spec text].
+  mutable network::mojom::ReferrerPolicy referrer_policy_;
 
   // https://wicg.github.io/priority-hints/#script
   const mojom::blink::FetchPriorityHint fetch_priority_hint_;

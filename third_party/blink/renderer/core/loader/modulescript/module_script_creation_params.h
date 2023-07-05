@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_MODULESCRIPT_MODULE_SCRIPT_CREATION_PARAMS_H_
 
 #include "base/check_op.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
@@ -33,6 +34,7 @@ class ModuleScriptCreationParams {
       const ModuleType module_type,
       const ParkableString& source_text,
       CachedMetadataHandler* cache_handler,
+      network::mojom::ReferrerPolicy response_referrer_policy,
       ScriptStreamer* script_streamer = nullptr,
       ScriptStreamer::NotStreamingReason not_streaming_reason =
           ScriptStreamer::NotStreamingReason::kStreamingDisabled)
@@ -44,6 +46,7 @@ class ModuleScriptCreationParams {
         source_text_(source_text),
         isolated_source_text_(),
         cache_handler_(cache_handler),
+        response_referrer_policy_(response_referrer_policy),
         script_streamer_(script_streamer),
         not_streaming_reason_(not_streaming_reason) {
     DCHECK(source_location_type == ScriptSourceLocationType::kExternalFile ||
@@ -63,9 +66,9 @@ class ModuleScriptCreationParams {
     String isolated_source_text = isolated_source_text_
                                       ? isolated_source_text_
                                       : GetSourceText().ToString();
-    return ModuleScriptCreationParams(SourceURL(), BaseURL(),
-                                      source_location_type_, GetModuleType(),
-                                      isolated_source_text);
+    return ModuleScriptCreationParams(
+        SourceURL(), BaseURL(), source_location_type_, GetModuleType(),
+        isolated_source_text, response_referrer_policy_);
   }
 
   ModuleType GetModuleType() const { return module_type_; }
@@ -89,7 +92,7 @@ class ModuleScriptCreationParams {
   ModuleScriptCreationParams CopyWithClearedSourceText() const {
     return ModuleScriptCreationParams(
         source_url_, base_url_, source_location_type_, module_type_,
-        ParkableString(), /*cache_handler=*/nullptr,
+        ParkableString(), /*cache_handler=*/nullptr, response_referrer_policy_,
         /*script_streamer=*/nullptr,
         ScriptStreamer::NotStreamingReason::kStreamingDisabled);
   }
@@ -105,13 +108,19 @@ class ModuleScriptCreationParams {
 
   static String ModuleTypeToString(const ModuleType module_type);
 
+  network::mojom::ReferrerPolicy ResponseReferrerPolicy() const {
+    return response_referrer_policy_;
+  }
+
  private:
   // Creates an isolated copy.
-  ModuleScriptCreationParams(const KURL& source_url,
-                             const KURL& base_url,
-                             ScriptSourceLocationType source_location_type,
-                             const ModuleType& module_type,
-                             const String& isolated_source_text)
+  ModuleScriptCreationParams(
+      const KURL& source_url,
+      const KURL& base_url,
+      ScriptSourceLocationType source_location_type,
+      const ModuleType& module_type,
+      const String& isolated_source_text,
+      network::mojom::ReferrerPolicy response_referrer_policy)
       : source_url_(source_url),
         base_url_(base_url),
         source_location_type_(source_location_type),
@@ -119,6 +128,7 @@ class ModuleScriptCreationParams {
         is_isolated_(true),
         source_text_(),
         isolated_source_text_(isolated_source_text),
+        response_referrer_policy_(response_referrer_policy),
         // The ScriptStreamer is intentionally cleared since it cannot be passed
         // across threads. This only disables script streaming on worklet
         // top-level scripts where the ModuleScriptCreationParams is
@@ -140,6 +150,12 @@ class ModuleScriptCreationParams {
 
   // |cache_handler_| is cleared when crossing thread boundaries.
   Persistent<CachedMetadataHandler> cache_handler_;
+
+  // This is the referrer policy specified in the `Referrer-Policy` header on
+  // the response associated with the module script that `this` represents. This
+  // will always be `kDefault` if there is no referrer policy sent in the
+  // response. Consumers of this policy are responsible for detecting this.
+  const network::mojom::ReferrerPolicy response_referrer_policy_;
 
   // |script_streamer_| is cleared when crossing thread boundaries.
   Persistent<ScriptStreamer> script_streamer_;

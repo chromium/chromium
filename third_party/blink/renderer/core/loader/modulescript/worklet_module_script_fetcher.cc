@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
 
@@ -53,12 +54,25 @@ void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
   if (WasModuleLoadSuccessful(script_resource, expected_module_type_,
                               &error_messages)) {
     const KURL& url = script_resource->GetResponse().ResponseUrl();
+
+    network::mojom::ReferrerPolicy response_referrer_policy =
+        network::mojom::ReferrerPolicy::kDefault;
+
+    const String& response_referrer_policy_header =
+        script_resource->GetResponse().HttpHeaderField(
+            http_names::kReferrerPolicy);
+    if (!response_referrer_policy_header.IsNull()) {
+      SecurityPolicy::ReferrerPolicyFromHeaderValue(
+          response_referrer_policy_header,
+          kDoNotSupportReferrerPolicyLegacyKeywords, &response_referrer_policy);
+    }
+
     // Create an external module script where base_url == source_url.
     // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
     params.emplace(/*source_url=*/url, /*base_url=*/url,
                    ScriptSourceLocationType::kExternalFile,
                    expected_module_type_, script_resource->SourceText(),
-                   script_resource->CacheHandler());
+                   script_resource->CacheHandler(), response_referrer_policy);
   }
 
   // This will eventually notify |client| passed to
