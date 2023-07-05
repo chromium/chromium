@@ -53,6 +53,7 @@
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class PaymentsSuggestionBottomSheetMediatorTest;
 class Profile;
 class PrefService;
 class RemoveAutofillTester;
@@ -701,6 +702,7 @@ class PersonalDataManager : public KeyedService,
   friend class autofill::PersonalDataManagerFactory;
   friend class AutofillMetricsTest;
   friend class FormDataImporterTestBase;
+  friend class ::PaymentsSuggestionBottomSheetMediatorTest;
   friend class PersonalDataManagerTest;
   friend class PersonalDataManagerTestBase;
   friend class PersonalDataManagerHelper;
