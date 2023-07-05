@@ -19,6 +19,7 @@ struct PartitionedLockHolder;
 
 namespace web_app {
 
+class ExtensionsManager;
 class WebAppLockManager;
 class WebContentsManager;
 
@@ -83,6 +84,7 @@ class Lock {
   ~Lock();
 
   // Resources that are available on all locks:
+  ExtensionsManager& extensions_manager();
   WebContentsManager& web_contents_manager();
 
  protected:

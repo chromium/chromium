@@ -66,6 +66,11 @@ WebContentsManager& Lock::web_contents_manager() {
   return lock_manager_->provider().web_contents_manager();
 }
 
+ExtensionsManager& Lock::extensions_manager() {
+  CHECK(lock_manager_);
+  return lock_manager_->provider().extensions_manager();
+}
+
 Lock::Lock(std::unique_ptr<content::PartitionedLockHolder> holder,
            base::WeakPtr<WebAppLockManager> lock_manager)
     : holder_(std::move(holder)), lock_manager_(std::move(lock_manager)) {}
