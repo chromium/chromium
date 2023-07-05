@@ -57,10 +57,20 @@ class SupervisedUserErrorContainer
   // Returns currently stored info associated with an error page.
   SupervisedUserErrorInfo& GetSupervisedUserErrorInfo();
 
+  // Creates an instance of the SupervisedUserInterstitial from the
+  // information stored in this container.
+  void CreateSupervisedUserInterstitial();
+
   // Dispatch a supervised user interstitial command to the bound intersitial
   // for execution.
   void HandleCommand(
       supervised_user::SupervisedUserInterstitial::Commands command);
+
+  // Return and move ownership of the SupervisedUserInterstitial instance.
+  std::unique_ptr<supervised_user::SupervisedUserInterstitial>
+  ReleaseSupervisedUserInterstitial() {
+    return std::move(interstitial_);
+  }
 
  private:
   friend class web::WebStateUserData<SupervisedUserErrorContainer>;
@@ -70,6 +80,8 @@ class SupervisedUserErrorContainer
   WEB_STATE_USER_DATA_KEY_DECL();
 
   std::unique_ptr<SupervisedUserErrorInfo> supervised_user_error_info_;
+  std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial_;
+  raw_ptr<web::WebState> web_state_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_ERROR_CONTAINER_H_

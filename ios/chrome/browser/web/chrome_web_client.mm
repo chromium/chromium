@@ -195,6 +195,10 @@ NSString* GetSupervisedUserErrorPageHTML(web::WebState* web_state,
   SupervisedUserErrorContainer::SupervisedUserErrorInfo& info =
       container->GetSupervisedUserErrorInfo();
 
+  container->CreateSupervisedUserInterstitial();
+  // TODO(b/264669960): Pass ownership of the intersitial to the appropriate
+  // handler of its lifecycle (tracking the navigation).
+
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
   std::string error_page_content =

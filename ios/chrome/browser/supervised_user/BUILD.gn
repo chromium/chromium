@@ -7,6 +7,8 @@ source_set("supervised_user") {
   sources = [
     "child_account_service_factory.h",
     "child_account_service_factory.mm",
+    "ios_web_content_handler_impl.h",
+    "ios_web_content_handler_impl.mm",
     "kids_chrome_management_client_factory.h",
     "kids_chrome_management_client_factory.mm",
     "list_family_members_service_factory.h",
