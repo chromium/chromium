@@ -46,6 +46,7 @@
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_helper_bridge_impl.h"
+#include "chrome/browser/password_manager/android/password_migration_warning_startup_launcher.h"
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 
@@ -371,6 +372,11 @@ class ChromePasswordManagerClient
 #if BUILDFLAG(IS_ANDROID)
   void ResetErrorMessageDelegate();
 
+  // Called only once on startup. If a migration warning should be shown
+  // it calls the launcher to do so. This results in passwords being fetched
+  // from the store as that is a prerequisite for showing the warning.
+  void TryToShowLocalPasswordMigrationWarning();
+
   password_manager::CredManController* GetOrCreateCredManController();
 #endif
 
@@ -446,6 +452,11 @@ class ChromePasswordManagerClient
   // metrics. TODO(crbug.com/1299394): Remove after the launch.
   absl::optional<std::pair<std::u16string, base::Time>>
       username_filled_by_touch_to_fill_ = absl::nullopt;
+
+  // Launcher used to trigger the password migration warning once passwords
+  // have been fetched. Only invoked once on startup.
+  std::unique_ptr<PasswordMigrationWarningStartupLauncher>
+      password_migration_warning_startup_launcher_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
