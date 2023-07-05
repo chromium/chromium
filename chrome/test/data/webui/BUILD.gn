@@ -30,6 +30,8 @@ source_set("browser_tests") {
     "cr_components/cr_components_browsertest.cc",
     "cr_components/cr_components_mojo_browsertest.cc",
     "cr_elements/cr_elements_browsertest.cc",
+    "history/history_supervised_user_browsertest.cc",
+    "history/history_ui_browsertest.cc",
     "js/js_browsertest.cc",
     "whats_new/whats_new_browsertest.cc",
   ]
@@ -38,6 +40,7 @@ source_set("browser_tests") {
 
   deps = [
     "//chrome/test:test_support",
+    "//components/history/core/common:common",
     "//components/history_clusters/core:core",
   ]
 }
@@ -50,6 +53,7 @@ source_set("interactive_ui_tests") {
     # are migrated from old js2gtest '*_focus_test.js' files.
     "cr_components/cr_components_interactive_test.cc",
     "cr_elements/cr_elements_focus_test.cc",
+    "history/history_focus_test.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -64,7 +68,6 @@ if (include_js_tests) {
     sources = [
       "bookmarks/bookmarks_focus_test.js",
       "extensions/cr_extensions_interactive_ui_tests.js",
-      "history/history_focus_test.js",
       "password_manager/password_manager_interactive_ui_tests.js",
       "settings/cr_settings_interactive_ui_tests.js",
       "support_tool/support_tool_interactive_ui_test.js",
@@ -127,7 +130,6 @@ if (include_js_tests) {
       "commander/commander_browsertest.js",
       "css/css_browsertest.js",
       "histograms/histograms_internals_ui_browsertest.js",
-      "history/history_browsertest.js",
       "invalidations/about_invalidations_browsertest.js",
       "js2gtest_browsertest.js",
       "management/a11y/management_a11y_test.js",

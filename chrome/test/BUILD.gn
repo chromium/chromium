@@ -2528,8 +2528,6 @@ if (!is_android) {
       "data/webui/certificate_viewer_ui_test-inl.h",
       "data/webui/chrome_send_browsertest.cc",
       "data/webui/chrome_send_browsertest.h",
-      "data/webui/history_ui_browsertest.cc",
-      "data/webui/history_ui_browsertest.h",
       "data/webui/metrics_internals/metrics_internals_ui_browsertest.cc",
       "data/webui/metrics_internals/metrics_internals_ui_browsertest.h",
       "data/webui/mojo/mojo_file_system_access_browsertest.cc",
