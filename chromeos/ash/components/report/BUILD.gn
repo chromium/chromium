@@ -93,4 +93,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/icu",
   ]
+
+  data = [
+    # TODO(crbug/1393862): Script should binarypb from textpb.
+    "//chromeos/ash/components/report/device_metrics/testing/preserved_file_test_data.binarypb",
+    "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb",
+  ]
 }
