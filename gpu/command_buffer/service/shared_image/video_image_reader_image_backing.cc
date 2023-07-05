@@ -569,8 +569,6 @@ class VideoImageReaderImageBacking::OverlayVideoImageRepresentation
  private:
   VideoImage* GetVideoImage() {
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-    DCHECK(stream_image()->HasTextureOwner())
-        << "The backing is already in a SurfaceView!";
     DCHECK(scoped_hardware_buffer_);
 
     if (!video_image_) {
