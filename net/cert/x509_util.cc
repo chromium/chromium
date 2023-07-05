@@ -80,7 +80,12 @@ const EVP_MD* ToEVP(DigestAlgorithm alg) {
 
 class BufferPoolSingleton {
  public:
-  BufferPoolSingleton() : pool_(CRYPTO_BUFFER_POOL_new()) {}
+  BufferPoolSingleton() {
+    crypto::EnsureOpenSSLInit();
+
+    pool_ = CRYPTO_BUFFER_POOL_new();
+  }
+
   CRYPTO_BUFFER_POOL* pool() { return pool_; }
 
  private:
