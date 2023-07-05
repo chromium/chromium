@@ -220,16 +220,8 @@ TEST_P(SupervisedUserExtensionTest,
 
 // Tests that simulating custodian approval for regular users doesn't cause any
 // unexpected behavior.
-// TODO(https://crbug.com/1461933): This test is failing on Linux Tsan.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_CustodianApprovalDoesNotAffectRegularUsers \
-  DISABLED_CustodianApprovalDoesNotAffectRegularUsers
-#else
-#define MAYBE_CustodianApprovalDoesNotAffectRegularUsers \
-  CustodianApprovalDoesNotAffectRegularUsers
-#endif  // BUILDFLAG(IS_LINUX)
 TEST_P(SupervisedUserExtensionTest,
-       MAYBE_CustodianApprovalDoesNotAffectRegularUsers) {
+       CustodianApprovalDoesNotAffectRegularUsers) {
   InitServices(/*profile_is_supervised=*/false);
   supervised_user_test_util::
       SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), false);
@@ -251,16 +243,7 @@ TEST_P(SupervisedUserExtensionTest,
 
 // Tests that adding supervision to a regular account (Gellerization) disables
 // previously installed extensions.
-// TODO(https://crbug.com/1461933): This test is failing on Linux Tsan.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ExtensionsDisabledAfterGellerization \
-  DISABLED_ExtensionsDisabledAfterGellerization
-#else
-#define MAYBE_ExtensionsDisabledAfterGellerization \
-  ExtensionsDisabledAfterGellerization
-#endif  // BUILDFLAG(IS_LINUX)
-TEST_P(SupervisedUserExtensionTest,
-       MAYBE_ExtensionsDisabledAfterGellerization) {
+TEST_P(SupervisedUserExtensionTest, ExtensionsDisabledAfterGellerization) {
   InitServices(/*profile_is_supervised=*/false);
   supervised_user_test_util::
       SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
@@ -295,16 +278,8 @@ TEST_P(SupervisedUserExtensionTest,
 // Tests that a child user is allowed to install extensions when pref
 // kSupervisedUserExtensionsMayRequestPermissions is set to true, but that
 // newly-installed extensions are disabled until approved by the parent.
-// TODO(https://crbug.com/1461933): This test is failing on Linux Tsan.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_InstallAllowedButDisabledForSupervisedUser \
-  DISABLED_InstallAllowedButDisabledForSupervisedUser
-#else
-#define MAYBE_InstallAllowedButDisabledForSupervisedUser \
-  InstallAllowedButDisabledForSupervisedUser
-#endif  // BUILDFLAG(IS_LINUX)
 TEST_P(SupervisedUserExtensionTest,
-       MAYBE_InstallAllowedButDisabledForSupervisedUser) {
+       InstallAllowedButDisabledForSupervisedUser) {
   InitServices(/*profile_is_supervised=*/true);
   supervised_user_test_util::
       SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
@@ -514,15 +489,7 @@ TEST_P(SupervisedUserExtensionTest, UpdateWithoutPermissionIncrease) {
 
 // Tests that the kApprovalGranted UMA metric only increments once without
 // duplication for the same extension id.
-// TODO(https://crbug.com/1461933): This test is failing on Linux Tsan.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DontTriggerMetricsIfAlreadyApproved \
-  DISABLED_DontTriggerMetricsIfAlreadyApproved
-#else
-#define MAYBE_DontTriggerMetricsIfAlreadyApproved \
-  DontTriggerMetricsIfAlreadyApproved
-#endif  // BUILDFLAG(IS_LINUX)
-TEST_P(SupervisedUserExtensionTest, MAYBE_DontTriggerMetricsIfAlreadyApproved) {
+TEST_P(SupervisedUserExtensionTest, DontTriggerMetricsIfAlreadyApproved) {
   InitServices(/*profile_is_supervised=*/true);
   supervised_user_test_util::
       SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
@@ -580,16 +547,7 @@ TEST_P(SupervisedUserExtensionTest, MAYBE_DontTriggerMetricsIfAlreadyApproved) {
 // disabled, resulting in the pref
 // kSupervisedUserExtensionsMayRequestPermissions set to false, then child users
 // cannot install new extensions.
-// TODO(https://crbug.com/1461933): This test is failing on Linux Tsan.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_SupervisedUserCannotInstallExtension \
-  DISABLED_SupervisedUserCannotInstallExtension
-#else
-#define MAYBE_SupervisedUserCannotInstallExtension \
-  SupervisedUserCannotInstallExtension
-#endif  // BUILDFLAG(IS_LINUX)
-TEST_P(SupervisedUserExtensionTest,
-       MAYBE_SupervisedUserCannotInstallExtension) {
+TEST_P(SupervisedUserExtensionTest, SupervisedUserCannotInstallExtension) {
   InitServices(/*profile_is_supervised=*/true);
   supervised_user_test_util::
       SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), false);
@@ -602,14 +560,7 @@ TEST_P(SupervisedUserExtensionTest,
 
 // Tests that disabling the "Permissions for sites, apps and extensions" toggle
 // has no effect on regular users.
-// TODO(https://crbug.com/1461933): This test is failing on Linux Tsan.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_RegularUserCanInstallExtension \
-  DISABLED_RegularUserCanInstallExtension
-#else
-#define MAYBE_RegularUserCanInstallExtension RegularUserCanInstallExtension
-#endif  // BUILDFLAG(IS_LINUX)
-TEST_P(SupervisedUserExtensionTest, MAYBE_RegularUserCanInstallExtension) {
+TEST_P(SupervisedUserExtensionTest, RegularUserCanInstallExtension) {
   InitServices(/*profile_is_supervised=*/false);
   supervised_user_test_util::
       SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), false);
