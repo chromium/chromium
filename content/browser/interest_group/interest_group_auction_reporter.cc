@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
@@ -40,6 +41,8 @@
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/privacy_sandbox_invoking_api.h"
+#include "content/public/common/content_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -182,12 +185,15 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
           !component_seller_winning_bid_info.has_value(),
           private_aggregation_manager_,
           main_frame_origin_,
-          winning_bid_info_.storage_interest_group->interest_group.owner)) {
+          winning_bid_info_.storage_interest_group->interest_group.owner)),
+      browser_context_(browser_context) {
   DCHECK(interest_group_manager_);
   DCHECK(auction_worklet_manager_);
   DCHECK(url_loader_factory_);
   DCHECK(client_security_state_);
   DCHECK(!interest_groups_that_bid_.empty());
+  EnforceAttestationsReportUrls(debug_win_report_urls_);
+  EnforceAttestationsReportUrls(debug_loss_report_urls_);
 }
 
 InterestGroupAuctionReporter ::~InterestGroupAuctionReporter() {
@@ -851,6 +857,9 @@ InterestGroupAuctionReporter::GetBidderAuction() {
 }
 
 void InterestGroupAuctionReporter::AddPendingReportUrl(const GURL& report_url) {
+  if (!CheckReportUrl(report_url)) {
+    return;
+  }
   pending_report_urls_.push_back(report_url);
 }
 
@@ -885,6 +894,26 @@ void InterestGroupAuctionReporter::MaybeSendPrivateAggregationReports() {
   // the feature flags are disabled. Then CHECK that
   // `private_aggregation_requests_non_reserved_` is empty here.
   private_aggregation_requests_non_reserved_.clear();
+}
+
+bool InterestGroupAuctionReporter::CheckReportUrl(const GURL& url) {
+  if (!GetContentClient()
+           ->browser()
+           ->IsPrivacySandboxReportingDestinationAttested(
+               browser_context_, url::Origin::Create(url),
+               PrivacySandboxInvokingAPI::kProtectedAudience)) {
+    errors_.push_back(base::StringPrintf(
+        "The reporting destination %s is not attested for Protected Audience.",
+        url.spec().c_str()));
+    return false;
+  }
+
+  return true;
+}
+
+void InterestGroupAuctionReporter::EnforceAttestationsReportUrls(
+    std::vector<GURL>& urls) {
+  base::EraseIf(urls, [this](const GURL& url) { return !CheckReportUrl(url); });
 }
 
 }  // namespace content

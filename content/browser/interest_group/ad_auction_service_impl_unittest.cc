@@ -12,6 +12,7 @@
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
@@ -44,6 +45,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/privacy_sandbox_invoking_api.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
@@ -75,10 +77,16 @@ namespace content {
 
 namespace {
 
+class BrowserContext;
+
 constexpr char kInterestGroupName[] = "interest-group-name";
 constexpr char kOriginStringA[] = "https://a.test";
 constexpr char kOriginStringB[] = "https://b.test";
 constexpr char kOriginStringC[] = "https://c.test";
+constexpr char kOriginStringD[] = "https://d.test";
+constexpr char kOriginStringE[] = "https://e.test";
+constexpr char kOriginStringF[] = "https://f.test";
+constexpr char kOriginStringG[] = "https://g.test";
 constexpr char kOriginStringNoUpdate[] = "https://no.update.test";
 constexpr char kBiddingUrlPath[] = "/interest_group/bidding_logic.js";
 constexpr char kNewBiddingUrlPath[] = "/interest_group/new_bidding_logic.js";
@@ -187,6 +195,25 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
            (top_frame_origin.host() == "no.update.test" &&
             api_origin.host() == "no.update.test");
   }
+
+  void SetAllowList(base::flat_set<url::Origin>&& allow_list) {
+    allow_list_ = allow_list;
+  }
+
+  bool IsPrivacySandboxReportingDestinationAttested(
+      content::BrowserContext* browser_context,
+      const url::Origin& destination_origin,
+      content::PrivacySandboxInvokingAPI invoking_api) override {
+    if (!allow_list_) {
+      return true;
+    }
+
+    return allow_list_->contains(destination_origin);
+  }
+
+ private:
+  // If not present, all origins are allowed.
+  absl::optional<base::flat_set<url::Origin>> allow_list_;
 };
 
 constexpr char kFledgeUpdateHeaders[] =
@@ -969,6 +996,14 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   const url::Origin kOriginB = url::Origin::Create(kUrlB);
   const GURL kUrlC = GURL(kOriginStringC);
   const url::Origin kOriginC = url::Origin::Create(kUrlC);
+  const GURL kUrlD = GURL(kOriginStringD);
+  const url::Origin kOriginD = url::Origin::Create(kUrlD);
+  const GURL kUrlE = GURL(kOriginStringE);
+  const url::Origin kOriginE = url::Origin::Create(kUrlE);
+  const GURL kUrlF = GURL(kOriginStringF);
+  const url::Origin kOriginF = url::Origin::Create(kUrlF);
+  const GURL kUrlG = GURL(kOriginStringG);
+  const url::Origin kOriginG = url::Origin::Create(kUrlG);
   const GURL kUrlNoUpdate = GURL(kOriginStringNoUpdate);
   const url::Origin kOriginNoUpdate = url::Origin::Create(kUrlNoUpdate);
   const GURL kBiddingLogicUrlA = kUrlA.Resolve(kBiddingUrlPath);
@@ -6496,6 +6531,152 @@ function reportResult(auctionConfig, browserSignals) {
   EXPECT_EQ(network_responder_->ReportCount(), 8u);
   EXPECT_TRUE(network_responder_->ReportSent("/bidder_debug_win_2"));
   EXPECT_TRUE(network_responder_->ReportSent("/seller_debug_win_2"));
+}
+
+class AdAuctionServiceImplEventReportingAttestationTest
+    : public AdAuctionServiceImplBiddingAndScoringDebugReportingAPIEnabledTest {
+ public:
+  // Run an auction with 2 interest groups, and send reports to different
+  // third-party (non seller or buyer) origins.
+  void RunAuctionAndWaitForReports() {
+    // Use interest group name as bid value.
+    const std::string kBiddingScript =
+        base::StringPrintf(R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  forDebuggingOnly.reportAdAuctionWin(
+      `%s/bidder_debug_win_` + interestGroup.name);
+  forDebuggingOnly.reportAdAuctionLoss(
+      `%s/bidder_debug_loss_` + interestGroup.name);
+  return {
+    'ad': 'example',
+    'bid': parseInt(interestGroup.name),
+    'render': 'https://example.com/render'
+  };
+}
+function reportWin(
+    auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+  sendReportTo('%s/report_bidder_' + browserSignals.bid);
+}
+  )",
+                           kOriginStringB, kOriginStringC, kOriginStringD);
+
+    const std::string kDecisionScript =
+        base::StringPrintf(R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  forDebuggingOnly.reportAdAuctionWin(`%s/seller_debug_win_` + bid);
+  forDebuggingOnly.reportAdAuctionLoss(`%s/seller_debug_loss_` + bid);
+  return bid;
+}
+function reportResult(auctionConfig, browserSignals) {
+  const reportUrl = '%s/report_seller_' + browserSignals.bid;
+  sendReportTo(reportUrl);
+  return {
+    'success': true,
+    'signalsForWinner': {'signalForWinner': 1},
+    'reportUrl': reportUrl,
+  };
+}
+)",
+                           kOriginStringE, kOriginStringF, kOriginStringG);
+
+    manager_->set_max_report_queue_length_for_testing(50);
+    manager_->set_max_active_report_requests_for_testing(3);
+    manager_->set_reporting_interval_for_testing(base::Seconds(5));
+    network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+    network_responder_->RegisterScriptResponse(kDecisionUrlPath,
+                                               kDecisionScript);
+
+    // Run an auction with 2 interest groups. Interest group 2 wins, and
+    // interest group 1 loses.
+    for (int i = 1; i < 3; i++) {
+      const std::string name = base::NumberToString(i);
+      network_responder_->RegisterReportResponse(
+          base::StringPrintf("/report_bidder_%s", name.c_str()),
+          /*response=*/"");
+      network_responder_->RegisterReportResponse(
+          base::StringPrintf("/report_seller_%s", name.c_str()),
+          /*response=*/"");
+      blink::InterestGroup interest_group = CreateInterestGroup();
+      interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+      interest_group.name = name;
+      interest_group.ads.emplace();
+      blink::InterestGroup::Ad ad(
+          /*render_url=*/GURL("https://example.com/render"),
+          /*metadata=*/absl::nullopt);
+      interest_group.ads->emplace_back(std::move(ad));
+      JoinInterestGroupAndFlush(interest_group);
+      EXPECT_EQ(1, GetJoinCount(kOriginA, name));
+    }
+
+    network_responder_->RegisterReportResponse("/seller_debug_loss_1",
+                                               /*response=*/"");
+    network_responder_->RegisterReportResponse("/bidder_debug_loss_1",
+                                               /*response=*/"");
+    network_responder_->RegisterReportResponse("/seller_debug_win_2",
+                                               /*response=*/"");
+    network_responder_->RegisterReportResponse("/bidder_debug_win_2",
+                                               /*response=*/"");
+
+    blink::AuctionConfig auction_config;
+    auction_config.seller = kOriginA;
+
+    auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+    auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+    absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+    ASSERT_NE(auction_result, absl::nullopt);
+    task_environment()->RunUntilIdle();
+    // This will cause the reports to be queued.
+    InvokeCallbackForURN(*auction_result);
+
+    // Fast forward enough for all reports to be sent.
+    task_environment()->FastForwardBy(base::Hours(1));
+  }
+};
+
+// Since all origins are attested in the allowlist, all reports are successfully
+// sent.
+TEST_F(AdAuctionServiceImplEventReportingAttestationTest, AllAllowed) {
+  // Allow the below origins to receive event level reports.
+  content_browser_client_.SetAllowList(
+      {kOriginB, kOriginC, kOriginD, kOriginE, kOriginF, kOriginG});
+
+  RunAuctionAndWaitForReports();
+
+  EXPECT_EQ(network_responder_->ReportCount(), 6u);
+  EXPECT_TRUE(network_responder_->ReportSent("/report_seller_2"));
+  EXPECT_TRUE(network_responder_->ReportSent("/report_bidder_2"));
+  EXPECT_TRUE(network_responder_->ReportSent("/bidder_debug_loss_1"));
+  EXPECT_TRUE(network_responder_->ReportSent("/seller_debug_loss_1"));
+  EXPECT_TRUE(network_responder_->ReportSent("/bidder_debug_win_2"));
+  EXPECT_TRUE(network_responder_->ReportSent("/seller_debug_win_2"));
+}
+
+// Like EventReportingAttestationAllAllowed, but only some of the report
+// destination origins are allowed to receive reports.
+TEST_F(AdAuctionServiceImplEventReportingAttestationTest, SomeAllowed) {
+  // Allow the below origins to receive event level reports.
+  content_browser_client_.SetAllowList({kOriginB, kOriginD, kOriginF});
+
+  RunAuctionAndWaitForReports();
+
+  EXPECT_EQ(network_responder_->ReportCount(), 3u);
+  EXPECT_TRUE(network_responder_->ReportSent("/report_bidder_2"));
+  EXPECT_TRUE(network_responder_->ReportSent("/seller_debug_loss_1"));
+  EXPECT_TRUE(network_responder_->ReportSent("/bidder_debug_win_2"));
+}
+
+// Like EventReportingAttestationAllAllowed, but none of the report destination
+// origins are allowed to receive reports.
+TEST_F(AdAuctionServiceImplEventReportingAttestationTest, NoneAllowed) {
+  // No origins are allowed to receive event level reports.
+  content_browser_client_.SetAllowList({});
+
+  RunAuctionAndWaitForReports();
+
+  EXPECT_EQ(network_responder_->ReportCount(), 0u);
 }
 
 // TODO(crbug.com/1422301): The auction must operate on the same fenced frame
