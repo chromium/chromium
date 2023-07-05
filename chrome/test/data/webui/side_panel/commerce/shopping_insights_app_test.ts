@@ -9,7 +9,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ShoppingInsightsAppElement} from 'chrome://shopping-insights-side-panel.top-chrome/app.js';
 import {ShoppingListApiProxyImpl} from 'chrome://shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
 import {PageCallbackRouter, PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from 'chrome://shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
-import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -36,6 +36,13 @@ suite('ShoppingInsightsAppTest', () => {
     jackpot: {url: 'https://foo.com/jackpot'},
     bucket: PriceInsightsInfo_PriceBucket.kLow,
     hasMultipleCatalogs: true,
+    history: [{
+      date: '2021-01-01',
+      price: 100,
+      formattedPrice: '$100',
+    }],
+    locale: 'en-us',
+    currencyCode: 'usd',
   };
   const priceInsights2: PriceInsightsInfo = {
     clusterId: BigInt(123),
@@ -45,6 +52,9 @@ suite('ShoppingInsightsAppTest', () => {
     jackpot: {url: 'https://foo.com/jackpot'},
     bucket: PriceInsightsInfo_PriceBucket.kLow,
     hasMultipleCatalogs: false,
+    history: [],
+    locale: 'en-us',
+    currencyCode: 'usd',
   };
   const priceInsights3: PriceInsightsInfo = {
     clusterId: BigInt(123),
@@ -52,8 +62,15 @@ suite('ShoppingInsightsAppTest', () => {
     typicalHighPrice: '',
     catalogAttributes: 'Unlocked, 4GB',
     jackpot: {url: 'https://foo.com/jackpot'},
-    bucket: PriceInsightsInfo_PriceBucket.kLow,
-    hasMultipleCatalogs: true,
+    bucket: PriceInsightsInfo_PriceBucket.kHigh,
+    hasMultipleCatalogs: false,
+    history: [{
+      date: '2021-01-01',
+      price: 100,
+      formattedPrice: '$100',
+    }],
+    locale: 'en-us',
+    currencyCode: 'usd',
   };
 
   setup(async () => {
@@ -70,7 +87,7 @@ suite('ShoppingInsightsAppTest', () => {
     shoppingInsightsApp = document.createElement('shopping-insights-app');
   });
 
-  test('TitleSectionWithRangeMultipleOptions', async () => {
+  test('HasBothRangeAndHistoryMultipleOptions', async () => {
     shoppingListApi.setResultFor(
         'getPriceInsightsInfoForCurrentUrl',
         Promise.resolve({priceInsightsInfo: priceInsights1}));
@@ -80,17 +97,37 @@ suite('ShoppingInsightsAppTest', () => {
     await shoppingListApi.whenCalled('getPriceInsightsInfoForCurrentUrl');
     await flushTasks();
 
-    assertEquals(
-        'Product Cluster Foo',
-        shoppingInsightsApp.shadowRoot!.querySelector(
-                                           '.panel-title')!.textContent);
+    const panelTitle =
+        shoppingInsightsApp.shadowRoot!.querySelector('.panel-title');
+    assertTrue(!!panelTitle);
+    assertEquals('Product Cluster Foo', panelTitle.textContent!.trim());
+
+    const range = shoppingInsightsApp.shadowRoot!.querySelector('#priceRange');
+    assertTrue(!!range);
     assertEquals(
         loadTimeData.getStringF('rangeMultipleOptions', '$100', '$200'),
-        shoppingInsightsApp.shadowRoot!.querySelector(
-                                           '.panel-subtitle')!.textContent);
+        range.textContent!.trim());
+
+    assertFalse(isVisible(
+        shoppingInsightsApp.shadowRoot!.querySelector('#attributes1')));
+    assertFalse(
+        isVisible(shoppingInsightsApp.shadowRoot!.querySelector('#desc1')));
+    assertTrue(isVisible(
+        shoppingInsightsApp.shadowRoot!.querySelector('#historySection')));
+
+
+    const historyTitle =
+        shoppingInsightsApp.shadowRoot!.querySelector('#historyTitle');
+    assertTrue(!!historyTitle);
+    assertEquals(
+        loadTimeData.getString('lowPriceMultipleOptions'),
+        historyTitle.textContent!.trim());
+
+    assertTrue(isVisible(shoppingInsightsApp.shadowRoot!.querySelector(
+        'shopping-insights-history-graph')));
   });
 
-  test('TitleSectionWithRangeSingleOptionOnePrice', async () => {
+  test('HasRangeOnlySingleOption', async () => {
     shoppingListApi.setResultFor(
         'getPriceInsightsInfoForCurrentUrl',
         Promise.resolve({priceInsightsInfo: priceInsights2}));
@@ -100,17 +137,22 @@ suite('ShoppingInsightsAppTest', () => {
     await shoppingListApi.whenCalled('getPriceInsightsInfoForCurrentUrl');
     await flushTasks();
 
-    assertEquals(
-        'Product Cluster Foo',
-        shoppingInsightsApp.shadowRoot!.querySelector(
-                                           '.panel-title')!.textContent);
+    const panelTitle =
+        shoppingInsightsApp.shadowRoot!.querySelector('.panel-title');
+    assertTrue(!!panelTitle);
+    assertEquals('Product Cluster Foo', panelTitle.textContent!.trim());
+
+    const range = shoppingInsightsApp.shadowRoot!.querySelector('#priceRange');
+    assertTrue(!!range);
     assertEquals(
         loadTimeData.getStringF('rangeSingleOptionOnePrice', '$100'),
-        shoppingInsightsApp.shadowRoot!.querySelector(
-                                           '.panel-subtitle')!.textContent);
+        range.textContent!.trim());
+
+    assertFalse(isVisible(
+        shoppingInsightsApp.shadowRoot!.querySelector('#historySection')));
   });
 
-  test('TitleSectionWithoutRange', async () => {
+  test('HasHistoryOnlySingleOption', async () => {
     shoppingListApi.setResultFor(
         'getPriceInsightsInfoForCurrentUrl',
         Promise.resolve({priceInsightsInfo: priceInsights3}));
@@ -120,12 +162,26 @@ suite('ShoppingInsightsAppTest', () => {
     await shoppingListApi.whenCalled('getPriceInsightsInfoForCurrentUrl');
     await flushTasks();
 
-    assertEquals(
-        'Product Cluster Foo',
-        shoppingInsightsApp.shadowRoot!.querySelector(
-                                           '.panel-title')!.textContent);
+    const panelTitle =
+        shoppingInsightsApp.shadowRoot!.querySelector('.panel-title');
+    assertTrue(!!panelTitle);
+    assertEquals('Product Cluster Foo', panelTitle.textContent!.trim());
+
     assertFalse(isVisible(
-        shoppingInsightsApp.shadowRoot!.querySelector('.panel-subtitle')));
+        shoppingInsightsApp.shadowRoot!.querySelector('#priceRange')));
+
+    assertTrue(isVisible(
+        shoppingInsightsApp.shadowRoot!.querySelector('#historySection')));
+
+    const historyTitle =
+        shoppingInsightsApp.shadowRoot!.querySelector('#historyTitle');
+    assertTrue(!!historyTitle);
+    assertEquals(
+        loadTimeData.getString('highPriceSingleOption'),
+        historyTitle.textContent!.trim());
+
+    assertTrue(isVisible(shoppingInsightsApp.shadowRoot!.querySelector(
+        'shopping-insights-history-graph')));
   });
 
   [true, false].forEach((eligible) => {

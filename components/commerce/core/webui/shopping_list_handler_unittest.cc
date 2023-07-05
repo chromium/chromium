@@ -418,6 +418,8 @@ TEST_F(ShoppingListHandlerTest, TestGetPriceInsightsInfoForCurrentUrl) {
   info->jackpot_url = GURL("http://example.com/jackpot");
   info->price_bucket = PriceBucket::kHighPrice;
   info->has_multiple_catalogs = true;
+  info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
+  info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
 
   shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(info);
 
@@ -432,6 +434,15 @@ TEST_F(ShoppingListHandlerTest, TestGetPriceInsightsInfoForCurrentUrl) {
         ASSERT_EQ(shopping_list::mojom::PriceInsightsInfo::PriceBucket::kHigh,
                   info->bucket);
         ASSERT_EQ(true, info->has_multiple_catalogs);
+        ASSERT_EQ(2, (int)info->history.size());
+        ASSERT_EQ("2021-01-01", info->history[0]->date);
+        ASSERT_EQ(3.33f, info->history[0]->price);
+        ASSERT_EQ("$3.33", info->history[0]->formatted_price);
+        ASSERT_EQ("2021-01-02", info->history[1]->date);
+        ASSERT_EQ(4.44f, info->history[1]->price);
+        ASSERT_EQ("$4.44", info->history[1]->formatted_price);
+        ASSERT_EQ("en-us", info->locale);
+        ASSERT_EQ("usd", info->currency_code);
         run_loop->Quit();
       },
       &run_loop));
