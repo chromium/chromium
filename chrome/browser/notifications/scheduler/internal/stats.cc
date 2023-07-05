@@ -41,18 +41,6 @@ std::string ToHistogramSuffix(SchedulerClientType client_type) {
   }
 }
 
-// Returns the string representing database type.
-std::string ToDbTypeString(DatabaseType type) {
-  switch (type) {
-    case DatabaseType::kImpressionDb:
-      return "ImpressionDb";
-    case DatabaseType::kNotificationDb:
-      return "NotificationDb";
-    case DatabaseType::kIconDb:
-      return "IconDb";
-  }
-}
-
 // Logs a histogram enumeration with client type suffix.
 template <typename T>
 void LogHistogramEnumWithSuffix(const std::string& name,
@@ -94,24 +82,6 @@ void LogBackgroundTaskNotificationShown(int shown_count) {
   UMA_HISTOGRAM_CUSTOM_COUNTS(
       "Notifications.Scheduler.BackgroundTask.NotificationShown", shown_count,
       0, 10, 11);
-}
-
-void LogDbInit(DatabaseType type, bool success, int entry_count) {
-  std::string prefix("Notifications.Scheduler.");
-  prefix.append(ToDbTypeString(type));
-  std::string init_histogram_name = prefix;
-  init_histogram_name.append(".InitResult");
-  base::UmaHistogramBoolean(init_histogram_name, success);
-
-  std::string record_count_name = prefix;
-  record_count_name.append(".RecordCount");
-  base::UmaHistogramCounts100(record_count_name, entry_count);
-}
-
-void LogDbOperation(DatabaseType type, bool success) {
-  std::string name("Notifications.Scheduler.");
-  name.append(ToDbTypeString(type)).append(".OperationResult");
-  base::UmaHistogramBoolean(name, success);
 }
 
 void LogNotificationShow(const NotificationData& notification_data,

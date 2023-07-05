@@ -801,36 +801,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Scheduler.IconDb.InitResult"
-    enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records the initialization result of icon database for the notification
-    scheduling system.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Scheduler.IconDb.OperationResult"
-    enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records the database operation result (except initialization) of icon
-    database for the notification scheduling system.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Scheduler.IconDb.RecordCount" units="records"
-    expires_after="2022-09-11">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records the number of records of icon database for the notification
-    scheduling system when the icon database is initialized.
-  </summary>
-</histogram>
-
 <histogram name="Notifications.Scheduler.IhnrActionButtonEvent"
     enum="NotificationSchedulerActionButtonEvent" expires_after="2022-12-31">
 <!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
@@ -840,66 +810,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records events for inline helpful/unhelpful action buttons on the
     notification when the buttons are shown or clicked.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Scheduler.ImpressionDb.InitResult"
-    enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records the initialization result of impression database for the
-    notification scheduling system.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Scheduler.ImpressionDb.OperationResult"
-    enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records the database operation result (except initialization) of impression
-    database for the notification scheduling system.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Scheduler.ImpressionDb.RecordCount"
-    units="records" expires_after="2022-12-31">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records the number of records of impression database for the notification
-    scheduling system when the impression database is initialized.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Scheduler.NotificationDb.InitResult"
-    enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records the initialization result of notification database for the
-    notification scheduling system.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Scheduler.NotificationDb.OperationResult"
-    enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records the database operation result (except initialization) of
-    notification database for the notification scheduling system.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Scheduler.NotificationDb.RecordCount"
-    units="records" expires_after="2022-12-31">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records the number of records of notification database for the notification
-    scheduling system when the notification database is initialized.
   </summary>
 </histogram>
 

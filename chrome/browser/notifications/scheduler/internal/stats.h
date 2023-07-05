@@ -56,13 +56,6 @@ void LogUserAction(const UserActionData& user_action_data);
 // Logs the number of notification shown in the current background task.
 void LogBackgroundTaskNotificationShown(int shown_count);
 
-// Logs database initialization result and the number of records in the
-// database.
-void LogDbInit(DatabaseType type, bool success, int entry_count);
-
-// Logs the database operation result.
-void LogDbOperation(DatabaseType type, bool success);
-
 // Logs metrics before showing the notification.
 void LogNotificationShow(const NotificationData& notification_data,
                          SchedulerClientType client_type);

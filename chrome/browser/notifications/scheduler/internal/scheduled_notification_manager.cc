@@ -185,9 +185,6 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
   void OnIconStoreInitialized(InitCallback callback,
                               bool success,
                               IconStore::LoadedIconKeys loaded_keys) {
-    stats::LogDbInit(stats::DatabaseType::kIconDb, success,
-                     loaded_keys ? loaded_keys->size() : 0);
-
     if (!success) {
       std::move(callback).Run(false);
       return;
@@ -204,9 +201,6 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
       std::unique_ptr<std::vector<std::string>> loaded_icon_keys,
       bool success,
       CollectionStore<NotificationEntry>::Entries entries) {
-    stats::LogDbInit(stats::DatabaseType::kNotificationDb, success,
-                     entries.size());
-
     if (!success) {
       std::move(callback).Run(false);
       return;
@@ -233,10 +227,7 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
         icons_to_delete.emplace_back(loaded_icon_key);
       }
     }
-    icon_store_->DeleteIcons(
-        icons_to_delete,
-        base::BindOnce(&ScheduledNotificationManagerImpl::OnIconDeleted,
-                       weak_ptr_factory_.GetWeakPtr()));
+    icon_store_->DeleteIcons(icons_to_delete, /*callback=*/base::DoNothing());
   }
 
   // Filters and loads notification into memory.
@@ -261,8 +252,6 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
                     ScheduleCallback schedule_callback,
                     IconStore::IconTypeUuidMap icons_uuid_map,
                     bool success) {
-    stats::LogDbOperation(stats::DatabaseType::kIconDb, success);
-
     if (!success) {
       std::move(schedule_callback).Run(false);
       return;
@@ -280,18 +269,14 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
   void OnNotificationAdded(std::unique_ptr<NotificationEntry> entry,
                            ScheduleCallback schedule_callback,
                            bool success) {
-    stats::LogDbOperation(stats::DatabaseType::kNotificationDb, success);
-
     // Delete the icons when failed to add to notification database.
     if (!success) {
       std::vector<std::string> icons_to_delete;
       for (const auto& uuid : entry->icons_uuid) {
         icons_to_delete.emplace_back(uuid.second);
       }
-      icon_store_->DeleteIcons(
-          std::move(icons_to_delete),
-          base::BindOnce(&ScheduledNotificationManagerImpl::OnIconDeleted,
-                         weak_ptr_factory_.GetWeakPtr()));
+      icon_store_->DeleteIcons(std::move(icons_to_delete),
+                               /*callback=*/base::DoNothing());
       std::move(schedule_callback).Run(false);
       return;
     }
@@ -305,21 +290,11 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
     std::move(schedule_callback).Run(true);
   }
 
-  void OnNotificationDeleted(bool success) {
-    stats::LogDbOperation(stats::DatabaseType::kNotificationDb, success);
-  }
-
-  void OnIconDeleted(bool success) {
-    stats::LogDbOperation(stats::DatabaseType::kIconDb, success);
-  }
-
   void OnIconsLoaded(SchedulerClientType client_type,
                      const std::string& guid,
                      DisplayCallback display_callback,
                      bool success,
                      IconStore::LoadedIconsMap loaded_icons_map) {
-    stats::LogDbOperation(stats::DatabaseType::kIconDb, success);
-
     auto* entry_ptr = FindNotificationEntry(client_type, guid);
     if (!entry_ptr) {
       std::move(display_callback).Run(nullptr);
@@ -363,19 +338,14 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
     for (const auto& icon_id : entry.icons_uuid) {
       icons_to_delete.emplace_back(icon_id.second);
     }
-    icon_store_->DeleteIcons(
-        std::move(icons_to_delete),
-        base::BindOnce(&ScheduledNotificationManagerImpl::OnIconDeleted,
-                       weak_ptr_factory_.GetWeakPtr()));
+    icon_store_->DeleteIcons(std::move(icons_to_delete),
+                             /*callback=*/base::DoNothing());
 
     auto guid = entry.guid;
     auto type = entry.type;
 
     // Deletes notification entry.
-    notification_store_->Delete(
-        guid,
-        base::BindOnce(&ScheduledNotificationManagerImpl::OnNotificationDeleted,
-                       weak_ptr_factory_.GetWeakPtr()));
+    notification_store_->Delete(guid, /*callback=*/base::DoNothing());
 
     if (should_delete_in_memory) {
       notifications_[type].erase(guid);
