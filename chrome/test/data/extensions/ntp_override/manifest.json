@@ -1,0 +1,12 @@
+{
+  "name": "New tab override test",
+  "version": "1",
+  "manifest_version": 3,
+  "description": "Test successfull uninstall of externally loaded extension which overrides ntp url.",
+  "chrome_url_overrides": {
+    "newtab": "override.html"
+ },
+  "permissions": [
+    "tabs"
+  ]
+}

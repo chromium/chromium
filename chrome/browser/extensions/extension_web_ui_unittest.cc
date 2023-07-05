@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/extensions/api/chrome_url_overrides.h"
@@ -24,8 +25,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/mock_external_provider.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -41,6 +45,8 @@ using extensions::mojom::ManifestLocation;
 namespace extensions {
 
 namespace {
+
+constexpr char kNtpOverrideExtensionId[] = "feclidjhghfjpipmbpajpkdeemmjhlei";
 
 std::unique_ptr<KeyedService> BuildOverrideRegistrar(
     content::BrowserContext* context) {
@@ -302,6 +308,63 @@ TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
                                        disable_reason::DISABLE_USER_ACTION);
   EXPECT_EQ(2u, ExtensionWebUI::GetNumberOfExtensionsOverridingURL(
                     ntp_url, profile_.get()));
+}
+
+class ExtensionWebUIOverrideURLTest : public ExtensionServiceTestWithInstall {
+ public:
+  ExtensionWebUIOverrideURLTest() = default;
+
+  ExtensionWebUIOverrideURLTest(const ExtensionWebUIOverrideURLTest&) = delete;
+  ExtensionWebUIOverrideURLTest& operator=(
+      const ExtensionWebUIOverrideURLTest&) = delete;
+
+  void SetUp() override;
+};
+
+void ExtensionWebUIOverrideURLTest::SetUp() {
+  ExtensionServiceTestWithInstall::SetUp();
+  InitializeEmptyExtensionService();
+}
+
+TEST_F(ExtensionWebUIOverrideURLTest,
+       TestUninstallOfURLOverridingExtensionWithoutLoad) {
+  FeatureSwitch::ScopedOverride external_prompt_override(
+      FeatureSwitch::prompt_for_external_extensions(), true);
+
+  base::FilePath crx_path =
+      temp_dir().GetPath().AppendASCII("ntp_override.crx");
+  PackCRX(data_dir().AppendASCII("ntp_override"),
+          data_dir().AppendASCII("ntp_override.pem"), crx_path);
+
+  auto external_provider = std::make_unique<MockExternalProvider>(
+      service(), ManifestLocation::kExternalPref);
+  external_provider->UpdateOrAddExtension(kNtpOverrideExtensionId, "1",
+                                          crx_path);
+  service()->AddProviderForTesting(std::move(external_provider));
+
+  TestExtensionRegistryObserver observer(registry(), kNtpOverrideExtensionId);
+  service()->CheckForExternalUpdates();
+  ASSERT_TRUE(observer.WaitForExtensionInstalled());
+
+  // Extension should be disabled by default with right reason.
+  EXPECT_TRUE(
+      registry()->disabled_extensions().Contains(kNtpOverrideExtensionId));
+  EXPECT_FALSE(
+      registry()->enabled_extensions().Contains(kNtpOverrideExtensionId));
+  EXPECT_EQ(disable_reason::DISABLE_EXTERNAL_EXTENSION,
+            ExtensionPrefs::Get(profile())->GetDisableReasons(
+                kNtpOverrideExtensionId));
+
+  // URLOverrides pref should not be updated for disabled by default extension.
+  PrefService* prefs = profile()->GetPrefs();
+  const base::Value::Dict& overrides =
+      prefs->GetDict(ExtensionWebUI::kExtensionURLOverrides);
+  const base::Value::List* newtab_overrides = overrides.FindList("newtab");
+  EXPECT_FALSE(newtab_overrides);
+
+  EXPECT_TRUE(service()->UninstallExtension(
+      kNtpOverrideExtensionId, UNINSTALL_REASON_FOR_TESTING, nullptr));
+  ASSERT_FALSE(registry()->GetInstalledExtension(kNtpOverrideExtensionId));
 }
 
 }  // namespace extensions
