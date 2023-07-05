@@ -312,9 +312,9 @@ bool Progress::HasEnoughFreeSpace() const {
 
 bool Progress::IsError() const {
   switch (stage) {
+    case Stage::kNotEnoughSpace:
     case Stage::kCannotGetFreeSpace:
     case Stage::kCannotListFiles:
-    case Stage::kNotEnoughSpace:
     case Stage::kCannotEnableDocsOffline:
       return true;
 
@@ -342,9 +342,9 @@ bool InProgress(const Stage stage) {
     case Stage::kPausedOffline:
     case Stage::kPausedBatterySaver:
     case Stage::kSuccess:
+    case Stage::kNotEnoughSpace:
     case Stage::kCannotGetFreeSpace:
     case Stage::kCannotListFiles:
-    case Stage::kNotEnoughSpace:
     case Stage::kCannotEnableDocsOffline:
       return false;
   }
@@ -363,9 +363,30 @@ bool IsPaused(const Stage stage) {
     case Stage::kSyncing:
     case Stage::kStopped:
     case Stage::kSuccess:
+    case Stage::kNotEnoughSpace:
     case Stage::kCannotGetFreeSpace:
     case Stage::kCannotListFiles:
+    case Stage::kCannotEnableDocsOffline:
+      return false;
+  }
+
+  NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+}
+
+bool IsPausedOrInProgress(const Stage stage) {
+  switch (stage) {
+    case Stage::kGettingFreeSpace:
+    case Stage::kListingFiles:
+    case Stage::kSyncing:
+    case Stage::kPausedOffline:
+    case Stage::kPausedBatterySaver:
+      return true;
+
+    case Stage::kStopped:
+    case Stage::kSuccess:
     case Stage::kNotEnoughSpace:
+    case Stage::kCannotGetFreeSpace:
+    case Stage::kCannotListFiles:
     case Stage::kCannotEnableDocsOffline:
       return false;
   }
@@ -693,8 +714,7 @@ void PinManager::Stop() {
 
 bool PinManager::CalculateRequiredSpace() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (progress_.stage != Stage::kStopped && !progress_.IsError() &&
-      should_pin_) {
+  if (IsPausedOrInProgress(progress_.stage) && should_pin_) {
     LOG(ERROR) << "Cannot calculate required space: "
                << "Pin manager is in stage " << progress_.stage;
     return false;

@@ -2361,17 +2361,6 @@ TEST_F(DriveFsPinManagerTest, CalculateRequiredSpace) {
   EXPECT_TRUE(manager.should_pin_);
   EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
 
-  // Pin manager is paused.
-  manager.progress_.stage = Stage::kPausedOffline;
-  EXPECT_FALSE(manager.CalculateRequiredSpace());
-  EXPECT_TRUE(manager.should_pin_);
-  EXPECT_EQ(manager.progress_.stage, Stage::kPausedOffline);
-
-  manager.progress_.stage = Stage::kPausedBatterySaver;
-  EXPECT_FALSE(manager.CalculateRequiredSpace());
-  EXPECT_TRUE(manager.should_pin_);
-  EXPECT_EQ(manager.progress_.stage, Stage::kPausedBatterySaver);
-
   // Pin manager already calculating required space.
   manager.should_pin_ = false;
   manager.progress_.stage = Stage::kGettingFreeSpace;
@@ -2398,6 +2387,13 @@ TEST_F(DriveFsPinManagerTest, CalculateRequiredSpace) {
   EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
 
   manager.should_pin_ = true;
+  manager.progress_.stage = Stage::kSuccess;
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
+  EXPECT_TRUE(manager.CalculateRequiredSpace());
+  EXPECT_FALSE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+
+  manager.should_pin_ = true;
   manager.progress_.stage = Stage::kCannotListFiles;
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
   EXPECT_TRUE(manager.CalculateRequiredSpace());
@@ -2406,6 +2402,13 @@ TEST_F(DriveFsPinManagerTest, CalculateRequiredSpace) {
 
   manager.should_pin_ = true;
   manager.progress_.stage = Stage::kCannotGetFreeSpace;
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
+  EXPECT_TRUE(manager.CalculateRequiredSpace());
+  EXPECT_FALSE(manager.should_pin_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+
+  manager.should_pin_ = true;
+  manager.progress_.stage = Stage::kCannotEnableDocsOffline;
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
   EXPECT_TRUE(manager.CalculateRequiredSpace());
   EXPECT_FALSE(manager.should_pin_);
