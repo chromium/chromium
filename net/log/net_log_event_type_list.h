@@ -2170,15 +2170,6 @@ EVENT_TYPE(QUIC_SESSION_WEBTRANSPORT_CLIENT_STATE_CHANGED)
 // QUIC with TLS gets 0-RTT rejected.
 EVENT_TYPE(QUIC_SESSION_ZERO_RTT_REJECTED)
 
-// A QUIC connection received a PUSH_PROMISE frame.  The following
-// parameters are attached:
-//   {
-//     "headers": <The list of header:value pairs>,
-//     "id": <The stream id>,
-//     "promised_stream_id": <The stream id>,
-//   }
-EVENT_TYPE(QUIC_SESSION_PUSH_PROMISE_RECEIVED)
-
 // Session was closed, either remotely or by the peer.
 //   {
 //     "quic_error": <quic::QuicErrorCode which caused the connection to be
@@ -2393,23 +2384,6 @@ EVENT_TYPE(QUIC_SESSION_KEY_UPDATE)
 // ------------------------------------------------------------------------
 // QuicHttpStream
 // ------------------------------------------------------------------------
-
-// A stream request's url matches a received push promise.  The
-// promised stream can be adopted for this request once vary header
-// validation is complete (as part of response header processing).
-//   {
-//     "stream_id":  <The stream id>,
-//     "url":        <The url of the pushed resource>,
-//   }
-EVENT_TYPE(QUIC_HTTP_STREAM_PUSH_PROMISE_RENDEZVOUS)
-
-// Vary validation has succeeded, a http stream is attached to
-// a pushed QUIC stream.
-//   {
-//     "stream_id":  <The stream id>,
-//     "url":        <The url of the pushed resource>,
-//   }
-EVENT_TYPE(QUIC_HTTP_STREAM_ADOPTED_PUSH_STREAM)
 
 // Identifies the NetLogSource() for the QuicSession that handled the stream.
 // The event parameters are:

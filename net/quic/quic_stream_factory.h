@@ -711,8 +711,6 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
 
   NetworkConnection network_connection_;
 
-  int num_push_streams_created_ = 0;
-
   QuicConnectivityMonitor connectivity_monitor_;
 
   raw_ptr<const base::TickClock, DanglingUntriaged> tick_clock_ = nullptr;

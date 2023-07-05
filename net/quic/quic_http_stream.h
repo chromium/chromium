@@ -26,7 +26,6 @@
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_chromium_client_stream.h"
 #include "net/spdy/multiplexed_http_stream.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_push_promise_index.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 
 namespace net {
@@ -106,6 +105,7 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   void DoCallback(int rv);
 
   int DoLoop(int rv);
+  // TODO(https://crbug.com/1426477): Remove DoHandlePromise*().
   int DoHandlePromise();
   int DoHandlePromiseComplete(int rv);
   int DoRequestStream();
@@ -227,8 +227,6 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
 
   int session_error_ =
       ERR_UNEXPECTED;  // Error code from the connection shutdown.
-
-  bool found_promise_ = false;
 
   // Set to true when DoLoop() is being executed, false otherwise.
   bool in_loop_ = false;

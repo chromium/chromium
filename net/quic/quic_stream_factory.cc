@@ -64,7 +64,6 @@
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_verifier.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_client_session_cache.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_random.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_promised_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_push_promise_index.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
@@ -1207,18 +1206,6 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
   DCHECK(HostPortPair(session_key.server_id().host(),
                       session_key.server_id().port())
              .Equals(HostPortPair::FromURL(url)));
-
-  // Search sessions for a matching promised stream.
-  for (auto session : active_sessions_) {
-    quic::QuicClientPromisedInfo* promised =
-        session.second->GetPromised(url, session_key);
-    if (!promised)
-      continue;
-    DCHECK_EQ(promised->session(), session.second);
-    request->SetSession(session.second->CreateHandle(std::move(destination)));
-    ++num_push_streams_created_;
-    return OK;
-  }
 
   // Use active session for |session_key| if such exists.
   auto active_session = active_sessions_.find(session_key);

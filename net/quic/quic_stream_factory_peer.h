@@ -106,8 +106,6 @@ class QuicStreamFactoryPeer {
       const quic::QuicServerId& quic_server_id,
       const NetworkAnonymizationKey& network_anonymization_key);
 
-  static int GetNumPushStreamsCreated(QuicStreamFactory* factory);
-
   static size_t GetNumDegradingSessions(QuicStreamFactory* factory);
 
   static void SetAlarmFactory(

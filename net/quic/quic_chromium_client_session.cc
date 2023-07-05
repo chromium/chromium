@@ -54,7 +54,6 @@
 #include "net/spdy/spdy_session.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_promised_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/spdy_server_push_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_stream_priority.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
@@ -341,18 +340,6 @@ base::Value::Dict NetLogQuicClientSessionParams(
   return dict;
 }
 
-base::Value::Dict NetLogQuicPushPromiseReceivedParams(
-    const spdy::Http2HeaderBlock* headers,
-    spdy::SpdyStreamId stream_id,
-    spdy::SpdyStreamId promised_stream_id,
-    NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
-  dict.Set("headers", ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
-  dict.Set("id", static_cast<int>(stream_id));
-  dict.Set("promised_stream_id", static_cast<int>(promised_stream_id));
-  return dict;
-}
-
 // TODO(fayang): Remove this when necessary data is collected.
 void LogProbeResultToHistogram(MigrationCause cause, bool success) {
   UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.PathValidationSuccess", success);
@@ -381,12 +368,6 @@ QuicChromiumClientSession::Handle::Handle(
 }
 
 QuicChromiumClientSession::Handle::~Handle() {
-  if (push_handle_) {
-    auto* push_handle = push_handle_;
-    push_handle_ = nullptr;
-    push_handle->Cancel();
-  }
-
   if (session_)
     session_->RemoveHandle(this);
 }
@@ -412,7 +393,6 @@ void QuicChromiumClientSession::Handle::OnSessionClosed(
   quic_error_ = quic_error;
   quic_version_ = quic_version;
   connect_timing_ = connect_timing;
-  push_handle_ = nullptr;
   was_ever_used_ = was_ever_used;
 }
 
@@ -454,13 +434,6 @@ quic::ParsedQuicVersion QuicChromiumClientSession::Handle::GetQuicVersion()
   return session_->GetQuicVersion();
 }
 
-void QuicChromiumClientSession::Handle::ResetPromised(
-    quic::QuicStreamId id,
-    quic::QuicRstStreamErrorCode error_code) {
-  if (session_)
-    session_->ResetPromised(id, error_code);
-}
-
 std::unique_ptr<quic::QuicConnection::ScopedPacketFlusher>
 QuicChromiumClientSession::Handle::CreatePacketBundler() {
   if (!session_)
@@ -473,28 +446,6 @@ QuicChromiumClientSession::Handle::CreatePacketBundler() {
 bool QuicChromiumClientSession::Handle::SharesSameSession(
     const Handle& other) const {
   return session_.get() == other.session_.get();
-}
-
-int QuicChromiumClientSession::Handle::RendezvousWithPromised(
-    const spdy::Http2HeaderBlock& headers,
-    CompletionOnceCallback callback) {
-  if (!session_)
-    return ERR_CONNECTION_CLOSED;
-
-  quic::QuicAsyncStatus push_status =
-      session_->push_promise_index()->Try(headers, this, &push_handle_);
-
-  switch (push_status) {
-    case quic::QUIC_FAILURE:
-      return ERR_FAILED;
-    case quic::QUIC_SUCCESS:
-      return OK;
-    case quic::QUIC_PENDING:
-      push_callback_ = std::move(callback);
-      return ERR_IO_PENDING;
-  }
-  NOTREACHED();
-  return ERR_UNEXPECTED;
 }
 
 int QuicChromiumClientSession::Handle::RequestStream(
@@ -524,12 +475,6 @@ QuicChromiumClientSession::Handle::ReleaseStream() {
   return handle;
 }
 
-std::unique_ptr<QuicChromiumClientStream::Handle>
-QuicChromiumClientSession::Handle::ReleasePromisedStream() {
-  DCHECK(push_stream_);
-  return std::move(push_stream_);
-}
-
 int QuicChromiumClientSession::Handle::WaitForHandshakeConfirmation(
     CompletionOnceCallback callback) {
   if (!session_)
@@ -548,14 +493,6 @@ int QuicChromiumClientSession::Handle::TryCreateStream(StreamRequest* request) {
     return ERR_CONNECTION_CLOSED;
 
   return session_->TryCreateStream(request);
-}
-
-quic::QuicClientPushPromiseIndex*
-QuicChromiumClientSession::Handle::GetPushPromiseIndex() {
-  if (!session_)
-    return push_promise_index_;
-
-  return session_->push_promise_index();
 }
 
 int QuicChromiumClientSession::Handle::GetPeerAddress(
@@ -589,52 +526,6 @@ QuicChromiumClientSession::Handle::GetDnsAliasesForSessionKey(
   static const base::NoDestructor<std::set<std::string>> emptyset_result;
   return session_ ? session_->GetDnsAliasesForSessionKey(key)
                   : *emptyset_result;
-}
-
-bool QuicChromiumClientSession::Handle::CheckVary(
-    const spdy::Http2HeaderBlock& client_request,
-    const spdy::Http2HeaderBlock& promise_request,
-    const spdy::Http2HeaderBlock& promise_response) {
-  HttpRequestInfo promise_request_info;
-  ConvertHeaderBlockToHttpRequestHeaders(promise_request,
-                                         &promise_request_info.extra_headers);
-  HttpRequestInfo client_request_info;
-  ConvertHeaderBlockToHttpRequestHeaders(client_request,
-                                         &client_request_info.extra_headers);
-
-  HttpResponseInfo promise_response_info;
-  if (SpdyHeadersToHttpResponse(promise_response, &promise_response_info) !=
-      OK) {
-    DLOG(WARNING) << "Invalid headers";
-    return false;
-  }
-
-  HttpVaryData vary_data;
-  if (!vary_data.Init(promise_request_info,
-                      *promise_response_info.headers.get())) {
-    // Promise didn't contain valid vary info, so URL match was sufficient.
-    return true;
-  }
-  // Now compare the client request for matching.
-  return vary_data.MatchesRequest(client_request_info,
-                                  *promise_response_info.headers.get());
-}
-
-void QuicChromiumClientSession::Handle::OnRendezvousResult(
-    quic::QuicSpdyStream* stream) {
-  DCHECK(!push_stream_);
-  int rv = ERR_FAILED;
-  if (stream) {
-    rv = OK;
-    push_stream_ =
-        static_cast<QuicChromiumClientStream*>(stream)->CreateHandle();
-  }
-
-  if (push_callback_) {
-    DCHECK(push_handle_);
-    push_handle_ = nullptr;
-    std::move(push_callback_).Run(rv);
-  }
 }
 
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
@@ -3854,20 +3745,6 @@ bool QuicChromiumClientSession::IsAuthorized(const std::string& hostname) {
   return CanPool(hostname, session_key_);
 }
 
-bool QuicChromiumClientSession::HandlePromised(
-    quic::QuicStreamId id,
-    quic::QuicStreamId promised_id,
-    const spdy::Http2HeaderBlock& headers) {
-  bool result =
-      quic::QuicSpdyClientSessionBase::HandlePromised(id, promised_id, headers);
-  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_PUSH_PROMISE_RECEIVED,
-                    [&](NetLogCaptureMode capture_mode) {
-                      return NetLogQuicPushPromiseReceivedParams(
-                          &headers, id, promised_id, capture_mode);
-                    });
-  return result;
-}
-
 void QuicChromiumClientSession::OnServerPreferredAddressAvailable(
     const quic::QuicSocketAddress& server_preferred_address) {
   current_migration_cause_ = ON_SERVER_PREFERRED_ADDRESS_AVAILABLE;
@@ -3885,20 +3762,6 @@ void QuicChromiumClientSession::OnServerPreferredAddressAvailable(
       NetLogEventType::QUIC_START_VALIDATING_SERVER_PREFERRED_ADDRESS);
 }
 
-void QuicChromiumClientSession::CancelPush(const GURL& url) {
-  quic::QuicClientPromisedInfo* promised_info =
-      quic::QuicSpdyClientSessionBase::GetPromisedByUrl(url.spec());
-  if (!promised_info || promised_info->is_validating()) {
-    // Push stream has already been claimed or is pending matched to a request.
-    return;
-  }
-
-  // Send the reset and remove the promised info from the promise index.
-  quic::QuicSpdyClientSessionBase::ResetPromised(promised_info->id(),
-                                                 quic::QUIC_STREAM_CANCELLED);
-  DeletePromised(promised_info);
-}
-
 const LoadTimingInfo::ConnectTiming&
 QuicChromiumClientSession::GetConnectTiming() {
   connect_timing_.ssl_start = connect_timing_.connect_start;
@@ -3908,15 +3771,6 @@ QuicChromiumClientSession::GetConnectTiming() {
 
 quic::ParsedQuicVersion QuicChromiumClientSession::GetQuicVersion() const {
   return connection()->version();
-}
-
-quic::QuicClientPromisedInfo* QuicChromiumClientSession::GetPromised(
-    const GURL& url,
-    const QuicSessionKey& session_key) {
-  if (!session_key_.CanUseForAliasing(session_key)) {
-    return nullptr;
-  }
-  return push_promise_index_->GetPromised(url.spec());
 }
 
 const std::set<std::string>&
