@@ -15,10 +15,14 @@ from cca import util
 
 def build_preload_images_js(outdir: str):
     with open("images/images.gni") as f:
-        match = re.search(r"in_app_images\s*=\s*(\[.*?\])", f.read(),
-                          re.DOTALL)
+        gn = f.read()
+        match = re.search(r"in_app_images\s*=\s*(\[.*?\])", gn, re.DOTALL)
         assert match is not None
         in_app_images = ast.literal_eval(match.group(1))
+
+        match = re.search(r"standalone_images\s*=\s*(\[.*?\])", gn, re.DOTALL)
+        assert match is not None
+        standalone_images = ast.literal_eval(match.group(1))
 
     preload_images_js_path = os.path.join(outdir, "preload_images.js")
     if os.path.exists(preload_images_js_path):
@@ -35,11 +39,12 @@ def build_preload_images_js(outdir: str):
         with tempfile.NamedTemporaryFile("r") as temp_file:
             cmd = [
                 "utils/gen_preload_images_js.py",
-                "--images_list_file",
+                "--in_app_images_file",
                 f.name,
                 "--output_file",
                 temp_file.name,
-            ]
+                "--standalone_images",
+            ] + standalone_images
             util.run(cmd)
 
             new_preload_images_js = temp_file.read()

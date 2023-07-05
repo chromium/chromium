@@ -14,13 +14,16 @@ import sys
 def main():
     argument_parser = argparse.ArgumentParser()
     argument_parser.add_argument(
-        '--output_file',
-        help='The output js file exporting preload images array')
+        '--output_file', help='The output js file exporting preload images')
     argument_parser.add_argument(
-        '--images_list_file',
+        '--in_app_images_file',
         help='File contains a list of images to be appended')
+    argument_parser.add_argument(
+        '--standalone_images',
+        help='File contains a list of standalone images to be appended',
+        nargs='*')
     args = argument_parser.parse_args()
-    with open(args.images_list_file) as f:
+    with open(args.in_app_images_file) as f:
         files = shlex.split(f.read())
 
     images = {}
@@ -29,7 +32,7 @@ def main():
             images[os.path.basename(image)] = f.read()
 
     with open(args.output_file, 'w', encoding='utf-8') as f:
-        filenames = [os.path.basename(f) for f in files]
+        filenames = [os.path.basename(f) for f in args.standalone_images]
         f.write('export const preloadImagesList = %s;' %
                 json.dumps(filenames, indent=2))
         f.write('export const preloadedImages = %s;' % json.dumps(images))

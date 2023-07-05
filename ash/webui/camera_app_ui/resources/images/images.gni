@@ -2,11 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# These are the images that is directly used in CSS, and will be available on
+# URL /images/.
+standalone_images = [
+  "barcode_scan_box_border_mask.svg",
+  "camera_mode_photo.svg",
+]
+
+# These are the images used by either <svg-wrapper> or data-svg, that will be
+# preprocessed and packed into a JavaScript file by gen_preload_images_js.py.
 in_app_images = [
   "barcode_chevron_down.svg",
   "barcode_chevron_up.svg",
   "barcode_copy.svg",
-  "barcode_scan_box_border_mask.svg",
   "barcode_url.svg",
   "camera_button_fps_30.svg",
   "camera_button_fps_60.svg",

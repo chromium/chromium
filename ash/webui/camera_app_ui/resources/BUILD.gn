@@ -12,18 +12,25 @@ assert(is_chromeos_ash)
 
 action("gen_preload_images_js") {
   script = "utils/gen_preload_images_js.py"
-  inputs = []
+
+  in_app_image_paths = []
   foreach(image, in_app_images) {
+    in_app_image_paths += [ "images/$image" ]
+  }
+
+  inputs = in_app_image_paths
+  foreach(image, standalone_images) {
     inputs += [ "images/$image" ]
   }
 
   outputs = [ "$target_gen_dir/js/preload_images.js" ]
-  response_file_contents = rebase_path(inputs)
+  response_file_contents = rebase_path(in_app_image_paths)
   args = [
-    "--output_file",
-    rebase_path(outputs[0], root_build_dir),
-    "--images_list_file={{response_file_name}}",
-  ]
+           "--output_file",
+           rebase_path(outputs[0], root_build_dir),
+           "--in_app_images_file={{response_file_name}}",
+           "--standalone_images",
+         ] + standalone_images
 }
 
 copy("copy_sources") {

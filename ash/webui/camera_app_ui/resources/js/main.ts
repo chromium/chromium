@@ -513,8 +513,6 @@ function parseSearchParams(): {
 
 /**
  * Preload images to avoid flickering.
- * TODO(pihsun): Remove this and stop including .svg file in CCA once all
- * images are migrated to use data-svg / loadSvgImages.
  */
 function preloadImages() {
   const imagesContainer = document.createElement('div');

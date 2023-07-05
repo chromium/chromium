@@ -136,7 +136,7 @@ generate_grd("build_grd") {
   }
 
   # Image Files.
-  foreach(image, in_app_images) {
+  foreach(image, standalone_images) {
     input_files += [ "images/$image" ]
   }
   foreach(image, icon_images) {
