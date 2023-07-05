@@ -364,7 +364,7 @@ class BottomSheet extends FrameLayout
                 if (isSheetOpen()) {
                     int decorHeight = window.getDecorView().getHeight();
                     heightMinusKeyboard = Math.min(decorHeight, mVisibleViewportRect.height());
-                    keyboardHeight = (int) (mContainerHeight - heightMinusKeyboard);
+                    keyboardHeight = Math.max(0, (int) (mContainerHeight - heightMinusKeyboard));
                 }
 
                 if (keyboardHeight != mPreviousKeyboardHeight) {
