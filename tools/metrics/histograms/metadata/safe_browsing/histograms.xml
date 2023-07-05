@@ -2505,16 +2505,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V4DatabaseOpen.Time" units="ms"
-    expires_after="M77">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The time it takes to parse and load the SafeBrowsing database from disk, in
-    milliseconds.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.V4GetHash.CacheFullyHit" enum="BooleanCacheHit"
     expires_after="2023-12-17">
   <owner>thefrog@chromium.org</owner>

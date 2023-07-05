@@ -169,17 +169,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.DownloadFileHasDmgSignature" enum="Boolean"
-    expires_after="M81">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    A Mac-only metric that records whether a given download file is a
-    cryptographically signed DMG archive. This metric is logged before Chrome
-    sends SafeBrowsing download pings.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.DownloadRequestDuration" units="ms"
     expires_after="2023-12-04">
   <owner>vakh@chromium.org</owner>
