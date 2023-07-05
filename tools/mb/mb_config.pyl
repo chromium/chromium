@@ -2557,11 +2557,11 @@
     ],
 
     'debug_bot_rust_android_arm64_reclient': [
-      'debug_bot_reclient', 'enable_rust', 'enable_all_rust_features', 'android', 'arm64',
+      'debug_bot_reclient', 'enable_all_rust_features', 'android', 'arm64',
     ],
 
     'debug_bot_rust_desktop_x64_reclient': [
-      'debug_bot_reclient', 'enable_rust', 'enable_all_rust_features', 'x64',
+      'debug_bot_reclient', 'enable_all_rust_features', 'x64',
     ],
 
     'debug_bot_x86_reclient': [
@@ -3530,15 +3530,15 @@
     ],
 
     'release_rust_android_arm32_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'enable_all_rust_features', 'android', 'arm',
+      'release_trybot_minimal_symbols_reclient', 'enable_all_rust_features', 'android', 'arm',
     ],
 
     'release_rust_android_arm64_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'enable_all_rust_features', 'android', 'arm64',
+      'release_trybot_minimal_symbols_reclient', 'enable_all_rust_features', 'android', 'arm64',
     ],
 
     'release_rust_desktop_x64_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'enable_all_rust_features', 'x64',
+      'release_trybot_minimal_symbols_reclient', 'enable_all_rust_features', 'x64',
     ],
 
     'release_trybot': [
@@ -4141,10 +4141,6 @@
     'enable_dangling_raw_ptr_feature_flag': {
       'gn_args': 'enable_dangling_raw_ptr_feature_flag=true',
       'mixins': ["enable_dangling_raw_ptr_checks"],
-    },
-
-    'enable_rust': {
-      'gn_args': 'enable_rust=true',
     },
 
     'enable_vulkan': {
