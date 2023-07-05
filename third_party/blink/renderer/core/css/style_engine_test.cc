@@ -2466,7 +2466,9 @@ TEST_F(StyleEngineTest, EnsureCustomComputedStyle) {
   // IsEnsuredInDisplayNone==true.
   for (Node* node = progress; node;
        node = FlatTreeTraversal::Next(*node, progress)) {
-    node->EnsureComputedStyle();
+    if (Element* element = DynamicTo<Element>(node)) {
+      element->EnsureComputedStyle();
+    }
   }
 
   // This triggers layout tree building.
