@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
@@ -44,6 +45,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -169,6 +171,8 @@ class ApkWebAppInstallerBrowserTest
     arc_app_list_prefs_->app_connection_holder()->SetInstance(
         app_instance_.get());
     WaitForInstanceReady(arc_app_list_prefs_->app_connection_holder());
+
+    arc_app_list_prefs_->AddObserver(this);
   }
 
   void DisableArc() {
@@ -203,7 +207,7 @@ class ApkWebAppInstallerBrowserTest
 
   arc::mojom::ArcPackageInfoPtr GetWebAppPackage(
       const std::string& package_name,
-      const std::string& app_title,
+      const std::string& app_title = kAppTitle,
       const std::string& app_url = kAppUrl,
       const std::string& app_scope = kAppScope) {
     auto package = GetArcAppPackage(package_name, app_title);
@@ -270,8 +274,9 @@ class ApkWebAppInstallerBrowserTest
   // ArcAppListPrefs::Observer:
   void OnPackageRemoved(const std::string& package_name,
                         bool uninstalled) override {
-    EXPECT_TRUE(uninstalled);
-    removed_packages_.push_back(package_name);
+    if (uninstalled) {
+      removed_packages_.push_back(package_name);
+    }
   }
 
   void Reset() {
@@ -461,8 +466,6 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
   EnableArc();
 
   // Trigger a package refresh, which should call to ARC to remove the packages.
-  arc_app_list_prefs_->AddObserver(this);
-
   std::vector<arc::mojom::ArcPackageInfoPtr> packages;
   packages.push_back(GetWebAppPackage(kPackageName, kAppTitle));
   packages.push_back(
@@ -803,8 +806,92 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
   arc::SetArcPlayStoreEnabledForProfile(browser()->profile(), false);
   DisableArc();
 
-  ASSERT_TRUE(installed_future.Wait());
   ASSERT_EQ(uninstalled_future.Get<1>(), installed_app_id);
+}
+
+IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
+                       MigrateFromDeprecatedToCanonical) {
+  constexpr char kCanonicalPackage[] = "com.google.android.apps.tachyon";
+  constexpr char kDeprecatedPackage[] = "com.google.android.apps.meetings";
+
+  ApkWebAppService* service = apk_web_app_service();
+
+  base::test::TestFuture<const std::string&, const web_app::AppId&>
+      installed_future;
+  service->SetWebAppInstalledCallbackForTesting(installed_future.GetCallback());
+  app_instance_->SendPackageAdded(GetWebAppPackage(kDeprecatedPackage));
+
+  web_app::AppId installed_app_id = installed_future.Get<1>();
+  ASSERT_EQ(service->GetPackageNameForWebApp(installed_app_id),
+            kDeprecatedPackage);
+
+  // Installing the canonical web app package should migrate away from the
+  // deprecated package.
+  app_instance_->SendPackageAdded(GetWebAppPackage(kCanonicalPackage));
+
+  ASSERT_EQ(service->GetPackageNameForWebApp(installed_app_id),
+            kCanonicalPackage);
+  ASSERT_THAT(removed_packages_, testing::Contains(kDeprecatedPackage));
+}
+
+IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
+                       MigrateAndInstallWebApp) {
+  constexpr char kCanonicalPackage[] = "com.google.android.apps.tachyon";
+  constexpr char kDeprecatedPackage[] = "com.google.android.apps.meetings";
+
+  ApkWebAppService* service = apk_web_app_service();
+
+  base::test::TestFuture<const std::string&, const web_app::AppId&>
+      installed_future;
+  service->SetWebAppInstalledCallbackForTesting(installed_future.GetCallback());
+
+  // Install both canonical and deprecated apps at once, without the web app
+  // being installed yet. The deprecated package should uninstall and the web
+  // app should install associated with the canonical app.
+  auto deprecated_package = GetWebAppPackage(kDeprecatedPackage);
+  auto canonical_package = GetWebAppPackage(kCanonicalPackage);
+  std::vector<arc::mojom::ArcPackageInfoPtr> packages;
+  packages.push_back(std::move(deprecated_package));
+  packages.push_back(std::move(canonical_package));
+
+  EnableArc();
+  app_instance_->SendRefreshPackageList(std::move(packages));
+
+  web_app::AppId installed_app_id = installed_future.Get<1>();
+  ASSERT_EQ(service->GetPackageNameForWebApp(installed_app_id),
+            kCanonicalPackage);
+  ASSERT_THAT(removed_packages_, testing::Contains(kDeprecatedPackage));
+}
+
+IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
+                       MigrateOnUpgradeToWebApp) {
+  constexpr char kCanonicalPackage[] = "com.google.android.apps.tachyon";
+  constexpr char kDeprecatedPackage[] = "com.google.android.apps.meetings";
+
+  ApkWebAppService* service = apk_web_app_service();
+
+  base::test::TestFuture<const std::string&, const web_app::AppId&>
+      installed_future;
+  service->SetWebAppInstalledCallbackForTesting(installed_future.GetCallback());
+
+  // Install the canonical app as an Android app, and the deprecated app as a
+  // web app. We should not migrate yet.
+  app_instance_->SendPackageAdded(
+      GetArcAppPackage(kCanonicalPackage, kAppTitle));
+  app_instance_->SendPackageAdded(GetWebAppPackage(kDeprecatedPackage));
+
+  web_app::AppId installed_app_id = installed_future.Get<1>();
+
+  ASSERT_EQ(service->GetPackageNameForWebApp(installed_app_id),
+            kDeprecatedPackage);
+
+  // When the canonical package updates to a web app, the migration should go
+  // ahead.
+  app_instance_->SendPackageAdded(GetWebAppPackage(kCanonicalPackage));
+
+  ASSERT_EQ(service->GetPackageNameForWebApp(installed_app_id),
+            kCanonicalPackage);
+  ASSERT_THAT(removed_packages_, testing::Contains(kDeprecatedPackage));
 }
 
 }  // namespace ash

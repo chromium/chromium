@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/session/connection_holder.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
@@ -32,6 +33,7 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -79,6 +81,18 @@ bool IsAppInstalled(apps::AppRegistryCache& app_registry_cache,
         installed = apps_util::IsInstalled(update.Readiness());
       });
   return installed;
+}
+
+absl::optional<web_app::AppId> GetWebAppIdForPackage(
+    ArcAppListPrefs::PackageInfo* package) {
+  if (!package || !package->web_app_info) {
+    return absl::nullopt;
+  }
+
+  // TWAs do not currently support manifest IDs, so the App ID is only based off
+  // the start URL.
+  return web_app::GenerateAppId(/*manifest_id_path=*/absl::nullopt,
+                                GURL(package->web_app_info->start_url));
 }
 
 // Delegate implementation that actually talks to ARC And Lacros.
@@ -589,6 +603,53 @@ void ApkWebAppService::SyncArcAndWebApps() {
       continue;
     }
     arc_packages[package_name] = arc_app_list_prefs_->GetPackage(package_name);
+  }
+
+  // Map of package names which have migrated a web app from one package to
+  // another. There should only be one package at a time on Play Store that
+  // installs a particular web app. However, when migrating between packages,
+  // some users might end up with two packages that are trying to install the
+  // same web app. In this case, the packages will conflict over which one is
+  // associated with the web app. We solve this by silently migrating installs
+  // from the "deprecated" package to the "canonical" package.
+  base::flat_map<std::string, std::string> migration_packages{
+      {"com.google.android.apps.tachyon",   // Canonical package.
+       "com.google.android.apps.meetings"}  // Deprecated package.
+  };
+
+  for (const auto& [canonical_package, deprecated_package] :
+       migration_packages) {
+    // We only perform a migration if both packages are installed and both
+    // trying to install the same web app.
+    if (!base::Contains(arc_packages, canonical_package) ||
+        !base::Contains(arc_packages, deprecated_package)) {
+      continue;
+    }
+
+    absl::optional<web_app::AppId> canonical_id =
+        GetWebAppIdForPackage(arc_packages.at(canonical_package).get());
+    absl::optional<web_app::AppId> deprecated_id =
+        GetWebAppIdForPackage(arc_packages.at(deprecated_package).get());
+
+    if (!canonical_id.has_value() || canonical_id != deprecated_id) {
+      continue;
+    }
+
+    // If the web app is currently installed but pointing to the deprecated
+    // package, switch to the canonical package. If the web app is not currently
+    // installed, it will be installed later in this Sync call.
+    if (GetPackageNameForWebApp(*canonical_id) == deprecated_package) {
+      ScopedDictPrefUpdate dict_update(profile_->GetPrefs(),
+                                       kWebAppToApkDictPref);
+      base::Value::Dict* app_id_dict = dict_update->EnsureDict(*canonical_id);
+      app_id_dict->Set(kPackageNameKey, canonical_package);
+    }
+
+    // Uninstalling the deprecated package is asynchronous, so we also need to
+    // remove the package from `arc_packages` to prevent it from being
+    // considered during the rest of this Sync call.
+    MaybeUninstallArcPackage(deprecated_package);
+    arc_packages.erase(deprecated_package);
   }
 
   // For each ARC package, decide if a matching web app needs to be installed or
