@@ -22,11 +22,11 @@ class FragmentainerIterator {
 
  public:
   // Initialize the iterator, and move to the first fragmentainer of interest.
-  // The clip rectangle is optional. If it's empty, it means that no clipping
-  // will be performed, and that the only thing that can limit the set of
-  // fragmentainers to visit is |physicalBoundingBox|.
-  FragmentainerIterator(const LayoutFlowThread&,
-                        const LayoutRect& physical_bounding_box_in_flow_thread);
+  // Only thing that can limit the set of fragmentainers to visit is
+  // |physical_bounding_box_in_flow_thread|.
+  FragmentainerIterator(
+      const LayoutFlowThread&,
+      const PhysicalRect& physical_bounding_box_in_flow_thread);
 
   // Advance to the next fragmentainer. Not allowed to call this if atEnd() is
   // true.

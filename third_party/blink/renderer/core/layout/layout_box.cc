@@ -5970,4 +5970,9 @@ const NGBoxStrut& LayoutBox::OutOfFlowInsetsForGetComputedStyle() const {
   return GetLayoutResults().front()->OutOfFlowInsetsForGetComputedStyle();
 }
 
+WritingModeConverter LayoutBox::CreateWritingModeConverter() const {
+  return WritingModeConverter({Style()->GetWritingMode(), TextDirection::kLtr},
+                              Size());
+}
+
 }  // namespace blink

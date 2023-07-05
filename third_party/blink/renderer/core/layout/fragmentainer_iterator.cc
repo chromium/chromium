@@ -4,27 +4,22 @@
 
 #include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
 
+#include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 
 namespace blink {
 
 FragmentainerIterator::FragmentainerIterator(
     const LayoutFlowThread& flow_thread,
-    const LayoutRect& physical_bounding_box_in_flow_thread)
+    const PhysicalRect& physical_bounding_box_in_flow_thread)
     : flow_thread_(flow_thread), current_fragmentainer_group_index_(0) {
-  // Put the bounds into flow thread-local coordinates by flipping it first.
-  // This is how rectangles typically are represented in layout, i.e. with the
-  // block direction coordinate flipped, if writing mode is vertical-rl.
-  LayoutRect bounds_in_flow_thread = physical_bounding_box_in_flow_thread;
-  flow_thread_.DeprecatedFlipForWritingMode(bounds_in_flow_thread);
+  LogicalRect bounds_in_flow_thread =
+      flow_thread.CreateWritingModeConverter().ToLogical(
+          physical_bounding_box_in_flow_thread);
 
-  if (flow_thread_.IsHorizontalWritingMode()) {
-    logical_top_in_flow_thread_ = bounds_in_flow_thread.Y();
-    logical_bottom_in_flow_thread_ = bounds_in_flow_thread.MaxY();
-  } else {
-    logical_top_in_flow_thread_ = bounds_in_flow_thread.X();
-    logical_bottom_in_flow_thread_ = bounds_in_flow_thread.MaxX();
-  }
+  logical_top_in_flow_thread_ = bounds_in_flow_thread.offset.block_offset;
+  logical_bottom_in_flow_thread_ = bounds_in_flow_thread.BlockEndOffset();
   bounding_box_is_empty_ = bounds_in_flow_thread.IsEmpty();
 
   // Jump to the first interesting column set.

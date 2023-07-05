@@ -54,6 +54,7 @@ class NGConstraintSpace;
 class NGEarlyBreak;
 class NGLayoutResult;
 class ShapeOutsideInfo;
+class WritingModeConverter;
 enum class NGLayoutCacheStatus;
 struct BoxLayoutExtraInput;
 struct NGFragmentGeometry;
@@ -1344,6 +1345,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   PhysicalOffset OffsetPoint(const Element* parent) const;
   LayoutUnit OffsetLeft(const Element*) const final;
   LayoutUnit OffsetTop(const Element*) const final;
+
+  // Create a new WritingModeConverter to handle offsets and rectangles inside
+  // this container. This ignores TextDirection.
+  WritingModeConverter CreateWritingModeConverter() const;
 
   [[nodiscard]] LayoutUnit FlipForWritingMode(
       LayoutUnit position,

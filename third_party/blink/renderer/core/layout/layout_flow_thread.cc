@@ -162,28 +162,26 @@ void LayoutFlowThread::AbsoluteQuadsForDescendant(const LayoutBox& descendant,
                                                   Vector<gfx::QuadF>& quads,
                                                   MapCoordinatesFlags mode) {
   NOT_DESTROYED();
-  LayoutPoint offset_from_flow_thread;
+  PhysicalOffset offset_from_flow_thread;
   for (const LayoutObject* object = &descendant; object != this;) {
     const LayoutObject* container = object->Container();
-    offset_from_flow_thread +=
-        object->OffsetFromContainer(container).ToLayoutSize();
+    offset_from_flow_thread += object->OffsetFromContainer(container);
     object = container;
   }
-  LayoutRect bounding_rect_in_flow_thread(offset_from_flow_thread,
-                                          descendant.Size().ToLayoutSize());
+  PhysicalRect bounding_rect_in_flow_thread(offset_from_flow_thread,
+                                            descendant.Size());
   // Set up a fragments relative to the descendant, in the flow thread
   // coordinate space, and convert each of them, individually, to absolute
   // coordinates.
   for (FragmentainerIterator iterator(*this, bounding_rect_in_flow_thread);
        !iterator.AtEnd(); iterator.Advance()) {
-    LayoutRect fragment = bounding_rect_in_flow_thread;
+    PhysicalRect fragment = bounding_rect_in_flow_thread;
     // We use inclusiveIntersect() because intersect() would reset the
     // coordinates for zero-height objects.
     LayoutRect clip_rect = iterator.ClipRectInFlowThread();
-    fragment.InclusiveIntersect(clip_rect);
-    fragment.MoveBy(-offset_from_flow_thread);
-    quads.push_back(descendant.LocalRectToAbsoluteQuad(
-        PhysicalRectToBeNoop(fragment), mode));
+    fragment.InclusiveIntersect(PhysicalRectToBeNoop(clip_rect));
+    fragment.offset -= offset_from_flow_thread;
+    quads.push_back(descendant.LocalRectToAbsoluteQuad(fragment, mode));
   }
 }
 
@@ -252,8 +250,7 @@ LogicalOffset LayoutFlowThread::FlowThreadToContainingCoordinateSpace(
   LogicalOffset position(inline_position, block_position);
   // First we have to make |position| physical, because that's what offsetLeft()
   // expects and returns.
-  WritingModeConverter converter(
-      {Style()->GetWritingMode(), TextDirection::kLtr}, Size());
+  WritingModeConverter converter = CreateWritingModeConverter();
   PhysicalOffset physical_position = converter.ToPhysical(position, {});
 
   physical_position += ColumnOffset(physical_position);
