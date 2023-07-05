@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/feed/android/feed_stream.h"
 #include "chrome/browser/feed/android/jni_headers/WebFeedBridge_jni.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/feed/web_feed_page_information_fetcher.h"

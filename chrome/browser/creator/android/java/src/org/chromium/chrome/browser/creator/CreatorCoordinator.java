@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.feed.FeedListContentManager;
 import org.chromium.chrome.browser.feed.FeedListContentManager.FeedContent;
 import org.chromium.chrome.browser.feed.FeedStream;
 import org.chromium.chrome.browser.feed.FeedStreamViewResizer;
+import org.chromium.chrome.browser.feed.FeedSurfaceRendererBridge;
 import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProviderImpl;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.NativeViewListRenderer;
@@ -252,7 +253,8 @@ public class CreatorCoordinator
                 /* FeedContentFirstLoadWatcher */ this,
                 /* streamsMediator */ new StreamsMediatorImpl(),
                 new SingleWebFeedParameters(
-                        mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY), mEntryPoint));
+                        mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY), mEntryPoint),
+                new FeedSurfaceRendererBridge.Factory() {});
 
         if (mEntryPoint == SingleWebFeedEntryPoint.MENU) {
             mStream.addOnContentChangedListener(new ContentChangedListener());

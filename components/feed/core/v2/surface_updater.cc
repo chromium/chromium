@@ -16,9 +16,9 @@
 #include "components/feed/core/proto/v2/xsurface.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/feed_stream_surface.h"
 #include "components/feed/core/v2/launch_reliability_logger.h"
 #include "components/feed/core/v2/metrics_reporter.h"
-#include "components/feed/core/v2/public/feed_stream_surface.h"
 #include "components/feed/core/v2/stream_surface_set.h"
 #include "components/feed/core/v2/types.h"
 
@@ -26,7 +26,6 @@ namespace feed {
 namespace {
 
 using DrawState = SurfaceUpdater::DrawState;
-using FeedStreamSurface = FeedStreamSurface;
 using StreamUpdateType = LaunchReliabilityLogger::StreamUpdateType;
 
 // Give each kind of zero state a unique name, so that the UI knows if it
@@ -274,9 +273,10 @@ void SurfaceUpdater::OnUiUpdate(const StreamModel::UiUpdate& update) {
 }
 
 void SurfaceUpdater::SurfaceAdded(
-    FeedStreamSurface* surface,
+    SurfaceId surface_id,
+    SurfaceRenderer* renderer,
     feedwire::DiscoverLaunchResult loading_not_allowed_reason) {
-  ReliabilityLoggingBridge& logger = surface->GetReliabilityLoggingBridge();
+  ReliabilityLoggingBridge& logger = renderer->GetReliabilityLoggingBridge();
   logger.LogFeedLaunchOtherStart(base::TimeTicks::Now());
 
   if (loading_not_allowed_reason !=
@@ -285,31 +285,30 @@ void SurfaceUpdater::SurfaceAdded(
   }
 
   StreamUpdateAndType update = GetUpdateForNewSurface(GetState(), model_);
-  launch_reliability_logger_.OnStreamUpdate(update.type, *surface);
-  SendUpdateToSurface(surface, update.stream_update);
+  launch_reliability_logger_.OnStreamUpdate(update.type, *renderer);
+  SendUpdateToSurface(surface_id, renderer, update.stream_update);
 
   for (std::pair<std::string, std::string> datastore_entry :
        aggregate_data_.GetAllEntries()) {
-    surface->ReplaceDataStoreEntry(datastore_entry.first,
-                                   datastore_entry.second);
+    renderer->ReplaceDataStoreEntry(datastore_entry.first,
+                                    datastore_entry.second);
   }
 }
 
-void SurfaceUpdater::SurfaceRemoved(FeedStreamSurface* surface) {
-}
+void SurfaceUpdater::SurfaceRemoved(SurfaceId surface_id) {}
 
 void SurfaceUpdater::DatastoreEntryUpdated(XsurfaceDatastoreDataReader*,
                                            const std::string& key) {
   const std::string* value = aggregate_data_.FindEntry(key);
   DCHECK(value);
   for (auto& entry : *surfaces_)
-    entry.surface->ReplaceDataStoreEntry(key, *value);
+    entry.renderer->ReplaceDataStoreEntry(key, *value);
 }
 
 void SurfaceUpdater::DatastoreEntryRemoved(XsurfaceDatastoreDataReader*,
                                            const std::string& key) {
   for (auto& entry : *surfaces_)
-    entry.surface->RemoveDataStoreEntry(key);
+    entry.renderer->RemoveDataStoreEntry(key);
 }
 
 void SurfaceUpdater::LoadStreamStarted(bool manual_refreshing) {
@@ -390,16 +389,18 @@ void SurfaceUpdater::SendStreamUpdate(
     launch_reliability_logger_.OnStreamUpdate(update.type);
   }
 
-  for (auto& entry : *surfaces_)
-    SendUpdateToSurface(entry.surface, update.stream_update);
+  for (auto& entry : *surfaces_) {
+    SendUpdateToSurface(entry.surface_id, entry.renderer, update.stream_update);
+  }
 
   sent_content_ = GetContentSet(model_);
   last_draw_state_ = state;
 }
 
-void SurfaceUpdater::SendUpdateToSurface(FeedStreamSurface* surface,
+void SurfaceUpdater::SendUpdateToSurface(SurfaceId surface_id,
+                                         SurfaceRenderer* renderer,
                                          const feedui::StreamUpdate& update) {
-  surface->StreamUpdate(update);
+  renderer->StreamUpdate(update);
 
   // Call |MetricsReporter::SurfaceReceivedContent()| if appropriate.
 
@@ -412,7 +413,7 @@ void SurfaceUpdater::SendUpdateToSurface(FeedStreamSurface* surface,
   }
   if (!update_has_content)
     return;
-  metrics_reporter_->SurfaceReceivedContent(surface->GetSurfaceId());
+  metrics_reporter_->SurfaceReceivedContent(surface_id);
 }
 
 void SurfaceUpdater::SetOfflinePageAvailability(const std::string& badge_id,

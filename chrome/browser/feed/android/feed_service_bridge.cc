@@ -64,14 +64,6 @@ static int JNI_FeedServiceBridge_GetLoadMoreTriggerScrollDistanceDp(
   return GetFeedConfig().load_more_trigger_scroll_distance_dp;
 }
 
-static void JNI_FeedServiceBridge_ReportOpenVisitComplete(JNIEnv* env,
-                                                          jlong visitTimeMs) {
-  FeedApi* api = GetFeedApi();
-  if (!api)
-    return;
-  api->ReportOpenVisitComplete(base::Milliseconds(visitTimeMs));
-}
-
 static jlong JNI_FeedServiceBridge_GetReliabilityLoggingId(JNIEnv* env) {
   return FeedServiceBridge::GetReliabilityLoggingId();
 }

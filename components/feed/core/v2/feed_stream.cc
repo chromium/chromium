@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
@@ -33,6 +34,7 @@
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_store.h"
+#include "components/feed/core/v2/feed_stream_surface.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/image_fetcher.h"
 #include "components/feed/core/v2/ios_shared_prefs.h"
@@ -42,7 +44,6 @@
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
-#include "components/feed/core/v2/public/feed_stream_surface.h"
 #include "components/feed/core/v2/public/logging_parameters.h"
 #include "components/feed/core/v2/public/refresh_task_scheduler.h"
 #include "components/feed/core/v2/public/reliability_logging_bridge.h"
@@ -206,6 +207,25 @@ const FeedStream::Stream* FeedStream::FindStream(
   return const_cast<FeedStream*>(this)->FindStream(stream_type);
 }
 
+FeedStream::Stream* FeedStream::FindStream(SurfaceId surface_id) {
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  if (surface) {
+    return FindStream(surface->GetStreamType());
+  }
+  return nullptr;
+}
+
+FeedStreamSurface* FeedStream::FindSurface(SurfaceId surface_id) {
+  // There should only ever be a handful of surfaces at once, so linear search
+  // is fine.
+  for (FeedStreamSurface& surface : all_surfaces_) {
+    if (surface.GetSurfaceId() == surface_id) {
+      return &surface;
+    }
+  }
+  return nullptr;
+}
+
 FeedStream::Stream& FeedStream::GetStream(const StreamType& stream_type) {
   CHECK(stream_type.IsValid());
   auto iter = streams_.find(stream_type);
@@ -221,6 +241,11 @@ FeedStream::Stream& FeedStream::GetStream(const StreamType& stream_type) {
 
 StreamModel* FeedStream::GetModel(const StreamType& stream_type) {
   Stream* stream = FindStream(stream_type);
+  return stream ? stream->model.get() : nullptr;
+}
+
+StreamModel* FeedStream::GetModel(SurfaceId surface_id) {
+  Stream* stream = FindStream(surface_id);
   return stream ? stream->model.get() : nullptr;
 }
 
@@ -450,33 +475,72 @@ void FeedStream::UpdateExperiments(Experiments experiments) {
   prefs::SetExperiments(experiments, *profile_prefs_);
 }
 
-void FeedStream::AttachSurface(FeedStreamSurface* surface) {
+SurfaceId FeedStream::CreateSurface(const StreamType& type,
+                                    SingleWebFeedEntryPoint entry_point) {
+  if (base::TimeTicks::Now() - surface_destroy_time_ > kSurfaceDestroyDelay) {
+    CleanupDestroyedSurfaces();
+  }
+
+  return all_surfaces_.emplace_back(type, entry_point).GetSurfaceId();
+}
+
+void FeedStream::DestroySurface(SurfaceId surface) {
+  destroyed_surfaces_.push_back(surface);
+  surface_destroy_time_ = base::TimeTicks::Now();
+}
+
+void FeedStream::CleanupDestroyedSurfaces() {
+  all_surfaces_.erase(base::ranges::remove_if(
+                          all_surfaces_,
+                          [&](const FeedStreamSurface& surface) {
+                            return base::ranges::find(destroyed_surfaces_,
+                                                      surface.GetSurfaceId()) !=
+                                   destroyed_surfaces_.end();
+                          }),
+                      all_surfaces_.end());
+  destroyed_surfaces_.clear();
+}
+
+void FeedStream::AttachSurface(SurfaceId surface_id,
+                               SurfaceRenderer* renderer) {
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  CHECK(surface);
   metrics_reporter_->SurfaceOpened(surface->GetStreamType(),
                                    surface->GetSurfaceId(),
                                    surface->GetSingleWebFeedEntryPoint());
   Stream& stream = GetStream(surface->GetStreamType());
   // Skip normal processing when overriding stream data from the internals page.
   if (forced_stream_update_for_debugging_.updated_slices_size() > 0) {
-    stream.surfaces.SurfaceAdded(surface,
-                                 /*loading_not_allowed_reason=*/feedwire::
-                                     DiscoverLaunchResult::CARDS_UNSPECIFIED);
-    surface->StreamUpdate(forced_stream_update_for_debugging_);
+    stream.surfaces.SurfaceAdded(
+        surface_id, renderer,
+        /*loading_not_allowed_reason=*/
+        feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED);
+    renderer->StreamUpdate(forced_stream_update_for_debugging_);
     return;
   }
 
   stream.surfaces.SurfaceAdded(
-      surface, TriggerStreamLoad(surface->GetStreamType(),
-                                 surface->GetSingleWebFeedEntryPoint()));
+      surface_id, renderer,
+      TriggerStreamLoad(surface->GetStreamType(),
+                        surface->GetSingleWebFeedEntryPoint()));
 
   // Cancel any scheduled model unload task.
   ++stream.unload_on_detach_sequence_number;
 }
 
-void FeedStream::DetachSurface(FeedStreamSurface* surface) {
-  Stream& stream = GetStream(surface->GetStreamType());
-  metrics_reporter_->SurfaceClosed(surface->GetSurfaceId());
-  stream.surfaces.SurfaceRemoved(surface);
-  ScheduleModelUnloadIfNoSurfacesAttached(surface->GetStreamType());
+void FeedStream::DetachSurface(SurfaceId surface_id) {
+  Stream* stream = FindStream(surface_id);
+  if (!stream) {
+    return;
+  }
+  // Ignore subsequent DetachSurface calls.
+  if (!stream->surfaces.SurfacePresent(surface_id)) {
+    return;
+  }
+
+  metrics_reporter_->SurfaceClosed(surface_id);
+  stream->surfaces.SurfaceRemoved(surface_id);
+  ScheduleModelUnloadIfNoSurfacesAttached(stream->type);
 }
 
 void FeedStream::AddUnreadContentObserver(const StreamType& stream_type,
@@ -562,10 +626,11 @@ void FeedStream::EnabledPreferencesChanged() {
     has_stored_data_.SetValue(true);
 }
 
-void FeedStream::LoadMore(const FeedStreamSurface& surface,
+void FeedStream::LoadMore(SurfaceId surface_id,
                           base::OnceCallback<void(bool)> callback) {
-  StreamType stream_type = surface.GetStreamType();
-  Stream& stream = GetStream(stream_type);
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  CHECK(surface);
+  Stream& stream = GetStream(surface->GetStreamType());
   if (!stream.model) {
     DLOG(ERROR) << "Ignoring LoadMore() before the model is loaded";
     return std::move(callback).Run(false);
@@ -573,7 +638,7 @@ void FeedStream::LoadMore(const FeedStreamSurface& surface,
 
   // We want to abort early to avoid showing a loading spinner if it's not
   // necessary.
-  if (ShouldMakeFeedQueryRequest(surface.GetStreamType(), LoadType::kLoadMore,
+  if (ShouldMakeFeedQueryRequest(surface->GetStreamType(), LoadType::kLoadMore,
                                  /*consume_quota=*/false)
           .load_stream_status != LoadStreamStatus::kNoStatus) {
     return std::move(callback).Run(false);
@@ -581,8 +646,7 @@ void FeedStream::LoadMore(const FeedStreamSurface& surface,
 
   stream.surface_updater->launch_reliability_logger().LogLoadMoreStarted();
 
-  metrics_reporter_->OnLoadMoreBegin(surface.GetStreamType(),
-                                     surface.GetSurfaceId());
+  metrics_reporter_->OnLoadMoreBegin(surface->GetStreamType(), surface_id);
   stream.surface_updater->SetLoadingMore(true);
 
   // Have at most one in-flight LoadMore() request per stream. Send the result
@@ -591,7 +655,7 @@ void FeedStream::LoadMore(const FeedStreamSurface& surface,
   if (stream.load_more_complete_callbacks.size() == 1) {
     task_queue_.AddTask(FROM_HERE,
                         std::make_unique<LoadMoreTask>(
-                            surface.GetStreamType(), this,
+                            surface->GetStreamType(), this,
                             base::BindOnce(&FeedStream::LoadMoreComplete,
                                            base::Unretained(this))));
   }
@@ -617,9 +681,13 @@ void FeedStream::LoadMoreComplete(LoadMoreTask::Result result) {
   }
 }
 
-void FeedStream::ManualRefresh(const StreamType& stream_type,
+void FeedStream::ManualRefresh(SurfaceId surface_id,
                                base::OnceCallback<void(bool)> callback) {
-  Stream& stream = GetStream(stream_type);
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  if (!surface) {
+    return;
+  }
+  Stream& stream = GetStream(surface->GetStreamType());
 
   // Bail out immediately if loading in progress, or if no surfaces are
   // attached.
@@ -640,7 +708,7 @@ void FeedStream::ManualRefresh(const StreamType& stream_type,
   stream.refresh_complete_callbacks.push_back(std::move(callback));
   if (stream.refresh_complete_callbacks.size() == 1) {
     LoadStreamTask::Options options;
-    options.stream_type = stream_type;
+    options.stream_type = surface->GetStreamType();
     options.load_type = LoadType::kManualRefresh;
     task_queue_.AddTask(FROM_HERE,
                         std::make_unique<LoadStreamTask>(
@@ -651,14 +719,19 @@ void FeedStream::ManualRefresh(const StreamType& stream_type,
 
   last_refresh_scheduled_on_interaction_time_ = base::TimeTicks();
 
-  metrics_reporter_->OnManualRefresh(stream_type, metadata_,
+  metrics_reporter_->OnManualRefresh(surface->GetStreamType(), metadata_,
                                      stream.content_ids);
 }
 
 void FeedStream::ExecuteOperations(
-    const StreamType& stream_type,
+    SurfaceId surface_id,
     std::vector<feedstore::DataOperation> operations) {
-  StreamModel* model = GetModel(stream_type);
+  Stream* stream = FindStream(surface_id);
+  if (!stream) {
+    return;
+  }
+
+  StreamModel* model = GetModel(stream->type);
   if (!model) {
     DLOG(ERROR) << "Calling ExecuteOperations before the model is loaded";
     return;
@@ -668,44 +741,48 @@ void FeedStream::ExecuteOperations(
 }
 
 EphemeralChangeId FeedStream::CreateEphemeralChange(
-    const StreamType& stream_type,
+    SurfaceId surface_id,
     std::vector<feedstore::DataOperation> operations) {
-  StreamModel* model = GetModel(stream_type);
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  if (!surface) {
+    return {};
+  }
+  StreamModel* model = GetModel(surface->GetStreamType());
   if (!model) {
     DLOG(ERROR) << "Calling CreateEphemeralChange before the model is loaded";
     return {};
   }
-  metrics_reporter_->OtherUserAction(stream_type,
+  metrics_reporter_->OtherUserAction(surface->GetStreamType(),
                                      FeedUserActionType::kEphemeralChange);
   return model->CreateEphemeralChange(std::move(operations));
 }
 
 EphemeralChangeId FeedStream::CreateEphemeralChangeFromPackedData(
-    const StreamType& stream_type,
+    SurfaceId surface_id,
     base::StringPiece data) {
   feedpacking::DismissData msg;
   msg.ParseFromArray(data.data(), data.size());
-  return CreateEphemeralChange(stream_type,
+  return CreateEphemeralChange(surface_id,
                                TranslateDismissData(base::Time::Now(), msg));
 }
 
-bool FeedStream::CommitEphemeralChange(const StreamType& stream_type,
+bool FeedStream::CommitEphemeralChange(SurfaceId surface_id,
                                        EphemeralChangeId id) {
-  StreamModel* model = GetModel(stream_type);
+  StreamModel* model = GetModel(surface_id);
   if (!model)
     return false;
   metrics_reporter_->OtherUserAction(
-      stream_type, FeedUserActionType::kEphemeralChangeCommited);
+      model->GetStreamType(), FeedUserActionType::kEphemeralChangeCommited);
   return model->CommitEphemeralChange(id);
 }
 
-bool FeedStream::RejectEphemeralChange(const StreamType& stream_type,
+bool FeedStream::RejectEphemeralChange(SurfaceId surface_id,
                                        EphemeralChangeId id) {
-  StreamModel* model = GetModel(stream_type);
+  StreamModel* model = GetModel(surface_id);
   if (!model)
     return false;
   metrics_reporter_->OtherUserAction(
-      stream_type, FeedUserActionType::kEphemeralChangeRejected);
+      model->GetStreamType(), FeedUserActionType::kEphemeralChangeRejected);
   return model->RejectEphemeralChange(id);
 }
 
@@ -750,7 +827,7 @@ void FeedStream::InvalidateContentCacheFor(StreamKind stream_kind) {
   if (stream_kind != StreamKind::kUnknown)
     SetStreamStale(StreamType(stream_kind), true);
 }
-void FeedStream::RecordContentViewed(uint64_t docid) {
+void FeedStream::RecordContentViewed(SurfaceId /*surface_id*/, uint64_t docid) {
   if (!store_) {
     return;
   }
@@ -827,13 +904,15 @@ void FeedStream::SetForcedStreamUpdateForDebugging(
   forced_stream_update_for_debugging_ = stream_update;
 }
 
-base::Time FeedStream::GetLastFetchTime(const StreamType& stream_type) {
+base::Time FeedStream::GetLastFetchTime(SurfaceId surface_id) {
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  if (!surface) {
+    return {};
+  }
   const base::Time fetch_time =
-      feedstore::GetLastFetchTime(metadata_, stream_type);
+      feedstore::GetLastFetchTime(metadata_, surface->GetStreamType());
   // Ignore impossible time values.
-  if (fetch_time > base::Time::Now())
-    return base::Time();
-  return fetch_time;
+  return (fetch_time > base::Time::Now()) ? base::Time() : fetch_time;
 }
 
 void FeedStream::LoadModelForTesting(const StreamType& stream_type,
@@ -1380,53 +1459,62 @@ void FeedStream::UpdateUserProfileOnLinkClick(
 }
 
 void FeedStream::ReportOpenAction(const GURL& url,
-                                  const StreamType& stream_type,
+                                  SurfaceId surface_id,
                                   const std::string& slice_id,
                                   OpenActionType action_type) {
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  if (!surface) {
+    return;
+  }
   recent_feed_navigations_.insert(recent_feed_navigations_.begin(), url);
   recent_feed_navigations_.resize(
       std::min(kMaxRecentFeedNavigations, recent_feed_navigations_.size()));
 
-  Stream& stream = GetStream(stream_type);
+  Stream& stream = GetStream(surface->GetStreamType());
 
   int index = stream.surface_updater->GetSliceIndexFromSliceId(slice_id);
   if (index < 0)
     index = MetricsReporter::kUnknownCardIndex;
-  metrics_reporter_->OpenAction(stream_type, index, action_type);
+  metrics_reporter_->OpenAction(surface->GetStreamType(), index, action_type);
 
   if (stream.model) {
     privacy_notice_card_tracker_.OnOpenAction(
         stream.model->FindContentId(ToContentRevision(slice_id)));
   }
-  ScheduleFeedCloseRefreshOnInteraction(stream_type);
+  ScheduleFeedCloseRefreshOnInteraction(surface->GetStreamType());
 }
 
-void FeedStream::ReportOpenVisitComplete(base::TimeDelta visit_time) {
+void FeedStream::ReportOpenVisitComplete(SurfaceId /*surface_id*/,
+                                         base::TimeDelta visit_time) {
   metrics_reporter_->OpenVisitComplete(visit_time);
 }
 
 void FeedStream::ReportSliceViewed(SurfaceId surface_id,
-                                   const StreamType& stream_type,
                                    const std::string& slice_id) {
-  Stream& stream = GetStream(stream_type);
-  int index = stream.surface_updater->GetSliceIndexFromSliceId(slice_id);
+  Stream* stream = FindStream(surface_id);
+  if (!stream) {
+    return;
+  }
+  int index = stream->surface_updater->GetSliceIndexFromSliceId(slice_id);
   if (index < 0)
     return;
 
-  if (!stream.model)
+  if (!stream->model) {
     return;
+  }
 
-  metrics_reporter_->ContentSliceViewed(stream_type, index,
-                                        stream.model->GetContentList().size());
+  metrics_reporter_->ContentSliceViewed(stream->type, index,
+                                        stream->model->GetContentList().size());
 
   ContentRevision content_revision = ToContentRevision(slice_id);
 
   privacy_notice_card_tracker_.OnCardViewed(
-      stream.model->signed_in(), stream.model->FindContentId(content_revision));
+      stream->model->signed_in(),
+      stream->model->FindContentId(content_revision));
 
-  if (stream_type.IsForYou()) {
+  if (stream->type.IsForYou()) {
     const feedstore::Content* content =
-        stream.model->FindContent(content_revision);
+        stream->model->FindContent(content_revision);
     if (content)
       AddViewedContentHashes(*content);
   }
@@ -1448,71 +1536,108 @@ void FeedStream::MaybeNotifyHasUnreadContent(const StreamType& stream_type) {
   }
 }
 
-void FeedStream::ReportFeedViewed(const StreamType& stream_type,
-                                  SurfaceId surface_id) {
+void FeedStream::ReportFeedViewed(SurfaceId surface_id) {
   metrics_reporter_->FeedViewed(surface_id);
-
-  Stream& stream = GetStream(stream_type);
+  Stream* stream = FindStream(surface_id);
+  if (!stream) {
+    return;
+  }
 
   // Skip feed-close refresh scheduling if this surface was already viewed.
   // entry should never be null, but if it is, we will skip rescheduling.
-  StreamSurfaceSet::Entry* entry = stream.surfaces.FindSurface(surface_id);
+  StreamSurfaceSet::Entry* entry = stream->surfaces.FindSurface(surface_id);
   if (entry && !entry->feed_viewed)
-    ScheduleFeedCloseRefreshOnFirstView(stream_type);
+    ScheduleFeedCloseRefreshOnFirstView(stream->type);
 
-  stream.surfaces.FeedViewed(surface_id);
-  MaybeNotifyHasUnreadContent(stream_type);
+  stream->surfaces.FeedViewed(surface_id);
+  MaybeNotifyHasUnreadContent(stream->type);
 }
 
-void FeedStream::ReportPageLoaded() {
+void FeedStream::ReportPageLoaded(SurfaceId /*surface_id*/) {
   metrics_reporter_->PageLoaded();
 }
-void FeedStream::ReportStreamScrolled(const StreamType& stream_type,
-                                      int distance_dp) {
-  metrics_reporter_->StreamScrolled(stream_type, distance_dp);
-  if (GetStream(stream_type).surfaces.HasSurfaceShowingContent())
-    ScheduleFeedCloseRefreshOnInteraction(stream_type);
+void FeedStream::ReportStreamScrolled(SurfaceId surface_id, int distance_dp) {
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  if (!surface) {
+    return;
+  }
+  metrics_reporter_->StreamScrolled(surface->GetStreamType(), distance_dp);
+  if (GetStream(surface->GetStreamType()).surfaces.HasSurfaceShowingContent()) {
+    ScheduleFeedCloseRefreshOnInteraction(surface->GetStreamType());
+  }
 }
-void FeedStream::ReportStreamScrollStart() {
+void FeedStream::ReportStreamScrollStart(SurfaceId /*surface_id*/) {
   metrics_reporter_->StreamScrollStart();
 }
+void FeedStream::ReportOtherUserAction(SurfaceId surface_id,
+                                       FeedUserActionType action_type) {
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  if (!surface) {
+    return;
+  }
+  metrics_reporter_->OtherUserAction(surface->GetStreamType(), action_type);
+}
+
 void FeedStream::ReportOtherUserAction(const StreamType& stream_type,
                                        FeedUserActionType action_type) {
   metrics_reporter_->OtherUserAction(stream_type, action_type);
 }
 
-void FeedStream::ReportInfoCardTrackViewStarted(const StreamType& stream_type,
+void FeedStream::ReportInfoCardTrackViewStarted(SurfaceId surface_id,
                                                 int info_card_type) {
-  metrics_reporter_->OnInfoCardTrackViewStarted(stream_type, info_card_type);
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  if (!surface) {
+    return;
+  }
+  metrics_reporter_->OnInfoCardTrackViewStarted(surface->GetStreamType(),
+                                                info_card_type);
 }
 
-void FeedStream::ReportInfoCardViewed(const StreamType& stream_type,
+void FeedStream::ReportInfoCardViewed(SurfaceId surface_id,
                                       int info_card_type,
                                       int minimum_view_interval_seconds) {
-  metrics_reporter_->OnInfoCardViewed(stream_type, info_card_type);
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  if (!surface) {
+    return;
+  }
+  metrics_reporter_->OnInfoCardViewed(surface->GetStreamType(), info_card_type);
   info_card_tracker_.OnViewed(info_card_type, minimum_view_interval_seconds);
 }
 
-void FeedStream::ReportInfoCardClicked(const StreamType& stream_type,
+void FeedStream::ReportInfoCardClicked(SurfaceId surface_id,
                                        int info_card_type) {
-  metrics_reporter_->OnInfoCardClicked(stream_type, info_card_type);
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  if (!surface) {
+    return;
+  }
+  metrics_reporter_->OnInfoCardClicked(surface->GetStreamType(),
+                                       info_card_type);
   info_card_tracker_.OnClicked(info_card_type);
 }
 
-void FeedStream::ReportInfoCardDismissedExplicitly(
-    const StreamType& stream_type,
-    int info_card_type) {
-  metrics_reporter_->OnInfoCardDismissedExplicitly(stream_type, info_card_type);
+void FeedStream::ReportInfoCardDismissedExplicitly(SurfaceId surface_id,
+                                                   int info_card_type) {
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  if (!surface) {
+    return;
+  }
+  metrics_reporter_->OnInfoCardDismissedExplicitly(surface->GetStreamType(),
+                                                   info_card_type);
   info_card_tracker_.OnDismissed(info_card_type);
 }
 
-void FeedStream::ResetInfoCardStates(const StreamType& stream_type,
-                                     int info_card_type) {
-  metrics_reporter_->OnInfoCardStateReset(stream_type, info_card_type);
+void FeedStream::ResetInfoCardStates(SurfaceId surface_id, int info_card_type) {
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  if (!surface) {
+    return;
+  }
+  metrics_reporter_->OnInfoCardStateReset(surface->GetStreamType(),
+                                          info_card_type);
   info_card_tracker_.ResetState(info_card_type);
 }
 
 void FeedStream::ReportContentSliceVisibleTimeForGoodVisits(
+    SurfaceId surface_id,
     base::TimeDelta elapsed) {
   metrics_reporter_->ReportStableContentSliceVisibilityTimeForGoodVisits(
       elapsed);

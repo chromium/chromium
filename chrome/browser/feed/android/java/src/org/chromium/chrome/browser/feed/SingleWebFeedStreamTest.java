@@ -91,7 +91,7 @@ public class SingleWebFeedStreamTest {
     private FeedListContentManager mContentManager;
 
     @Mock
-    private FeedStream.Natives mFeedStreamJniMock;
+    private FeedSurfaceRendererBridge mFeedSurfaceRendererBridgeMock;
     @Mock
     private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock
@@ -144,6 +144,18 @@ public class SingleWebFeedStreamTest {
     @Mock
     private Stream.StreamsMediator mStreamsMediator;
 
+    private FeedSurfaceRendererBridge.Renderer mBridgeRenderer;
+
+    class FeedSurfaceRendererBridgeFactory implements FeedSurfaceRendererBridge.Factory {
+        @Override
+        public FeedSurfaceRendererBridge create(FeedSurfaceRendererBridge.Renderer renderer,
+                FeedReliabilityLoggingBridge reliabilityLoggingBridge, @StreamKind int streamKind,
+                SingleWebFeedParameters webFeedParameters) {
+            mBridgeRenderer = renderer;
+            return mFeedSurfaceRendererBridgeMock;
+        }
+    }
+
     @Rule
     public JniMocker mocker = new JniMocker();
     // Enable the Features class, so we can call code which checks to see if features are enabled
@@ -162,7 +174,6 @@ public class SingleWebFeedStreamTest {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).get();
 
-        mocker.mock(FeedStreamJni.TEST_HOOKS, mFeedStreamJniMock);
         mocker.mock(FeedServiceBridge.getTestHooksForTesting(), mFeedServiceBridgeJniMock);
         mocker.mock(FeedReliabilityLoggingBridge.getTestHooksForTesting(),
                 mFeedReliabilityLoggingBridgeJniMock);
@@ -181,7 +192,8 @@ public class SingleWebFeedStreamTest {
                 /* helpAndFeedbackLauncher= */ null,
                 /* FeedContentFirstLoadWatcher= */ null,
                 /* streamsMediator= */ null,
-                new SingleWebFeedParameters("WebFeedId".getBytes(), SingleWebFeedEntryPoint.OTHER));
+                new SingleWebFeedParameters("WebFeedId".getBytes(), SingleWebFeedEntryPoint.OTHER),
+                new FeedSurfaceRendererBridgeFactory());
 
         mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
         mRecyclerView = new RecyclerView(mActivity);
@@ -201,7 +213,7 @@ public class SingleWebFeedStreamTest {
     public void testBind() {
         bindToView();
         // Called surfaceOpened.
-        verify(mFeedStreamJniMock).surfaceOpened(anyLong(), any(FeedStream.class));
+        verify(mFeedSurfaceRendererBridgeMock).surfaceOpened();
         // Set handlers in contentmanager.
         assertEquals(2, mContentManager.getContextValues(0).size());
     }
@@ -210,7 +222,7 @@ public class SingleWebFeedStreamTest {
     public void testUnbind() {
         bindToView();
         mFeedStream.unbind(false, false);
-        verify(mFeedStreamJniMock).surfaceClosed(anyLong(), any(FeedStream.class));
+        verify(mFeedSurfaceRendererBridgeMock).surfaceClosed();
         // Unset handlers in contentmanager.
         assertEquals(0, mContentManager.getContextValues(0).size());
     }
@@ -501,9 +513,8 @@ public class SingleWebFeedStreamTest {
             }
         });
 
-        verify(mFeedStreamJniMock)
-                .reportOtherUserAction(anyLong(), any(FeedStream.class),
-                        eq(FeedUserActionType.TAPPED_ADD_TO_READING_LIST));
+        verify(mFeedSurfaceRendererBridgeMock)
+                .reportOtherUserAction(eq(FeedUserActionType.TAPPED_ADD_TO_READING_LIST));
         verify(mActionDelegate).addToReadingList(eq(title), eq(TEST_URL));
     }
 

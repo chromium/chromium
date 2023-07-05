@@ -806,7 +806,7 @@ public class FeedSurfaceCoordinator
         return new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 mIsPlaceholderShownInitially, mWindowAndroid, mShareSupplier, kind, mActionDelegate,
                 mHelpAndFeedbackLauncher, this /* FeedContentFirstLoadWatcher */, streamsMediator,
-                null);
+                null, new FeedSurfaceRendererBridge.Factory() {});
     }
 
     private void setHeaders(List<View> headerViews) {

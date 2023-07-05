@@ -35,6 +35,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/FeedSurfaceDelegate.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSurfaceLifecycleManager.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSurfaceProvider.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedSurfaceRendererBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSurfaceScopeDependencyProviderImpl.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSurfaceScrollDelegate.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSurfaceTracker.java",
@@ -219,7 +220,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProvider.java",
     "java/src/org/chromium/chrome/browser/feed/FeedReliabilityLoggingBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedServiceBridge.java",
-    "java/src/org/chromium/chrome/browser/feed/FeedStream.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedSurfaceRendererBridge.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
   ]
 }

@@ -83,6 +83,10 @@ void StreamModel::SetStreamType(const StreamType& stream_type) {
   stream_type_ = stream_type;
 }
 
+const StreamType& StreamModel::GetStreamType() const {
+  return stream_type_;
+}
+
 void StreamModel::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

@@ -22,6 +22,7 @@
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/v2/enums.h"
+#include "components/feed/core/v2/feed_stream_surface.h"
 #include "components/feed/core/v2/launch_reliability_logger.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/persistent_key_value_store_impl.h"
@@ -29,6 +30,8 @@
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/logging_parameters.h"
 #include "components/feed/core/v2/public/stream_type.h"
+#include "components/feed/core/v2/public/surface_renderer.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/request_throttler.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/stream/info_card_tracker.h"
@@ -111,8 +114,12 @@ class FeedStream : public FeedApi,
 
   WebFeedSubscriptionCoordinator& subscriptions() override;
   std::string GetSessionId() const override;
-  void AttachSurface(FeedStreamSurface*) override;
-  void DetachSurface(FeedStreamSurface*) override;
+
+  SurfaceId CreateSurface(const StreamType& type,
+                          SingleWebFeedEntryPoint entry_point) override;
+  void DestroySurface(SurfaceId surface) override;
+  void AttachSurface(SurfaceId surface_id, SurfaceRenderer* renderer) override;
+  void DetachSurface(SurfaceId surface_id) override;
   void UpdateUserProfileOnLinkClick(
       const GURL& url,
       const std::vector<int64_t>& entity_mids) override;
@@ -127,22 +134,22 @@ class FeedStream : public FeedApi,
       base::OnceCallback<void(NetworkResponse)> callback) override;
   void CancelImageFetch(ImageFetchId id) override;
   PersistentKeyValueStoreImpl& GetPersistentKeyValueStore() override;
-  void LoadMore(const FeedStreamSurface& surface,
+  void LoadMore(SurfaceId surface_id,
                 base::OnceCallback<void(bool)> callback) override;
-  void ManualRefresh(const StreamType& stream_type,
+  void ManualRefresh(SurfaceId surface_id,
                      base::OnceCallback<void(bool)> callback) override;
   void ExecuteOperations(
-      const StreamType& stream_type,
+      SurfaceId surface_id,
       std::vector<feedstore::DataOperation> operations) override;
   EphemeralChangeId CreateEphemeralChange(
-      const StreamType& stream_type,
+      SurfaceId surface_id,
       std::vector<feedstore::DataOperation> operations) override;
   EphemeralChangeId CreateEphemeralChangeFromPackedData(
-      const StreamType& stream_type,
+      SurfaceId surface_id,
       base::StringPiece data) override;
-  bool CommitEphemeralChange(const StreamType& stream_type,
+  bool CommitEphemeralChange(SurfaceId surface_id,
                              EphemeralChangeId id) override;
-  bool RejectEphemeralChange(const StreamType& stream_type,
+  bool RejectEphemeralChange(SurfaceId surface_id,
                              EphemeralChangeId id) override;
   void ProcessThereAndBackAgain(
       base::StringPiece data,
@@ -151,7 +158,7 @@ class FeedStream : public FeedApi,
                          const LoggingParameters& logging_parameters) override;
   bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) override;
   void InvalidateContentCacheFor(StreamKind stream_kind) override;
-  void RecordContentViewed(uint64_t docid) override;
+  void RecordContentViewed(SurfaceId surface_id, uint64_t docid) override;
   DebugStreamData GetDebugStreamData() override;
   void ForceRefreshForDebugging(const StreamType& stream_type) override;
   std::string DumpStateForDebugging() override;
@@ -159,35 +166,34 @@ class FeedStream : public FeedApi,
       const feedui::StreamUpdate& stream_update) override;
 
   void ReportSliceViewed(SurfaceId surface_id,
-                         const StreamType& stream_type,
                          const std::string& slice_id) override;
-  void ReportFeedViewed(const StreamType& stream_type,
-                        SurfaceId surface_id) override;
-  void ReportPageLoaded() override;
+  void ReportFeedViewed(SurfaceId surface_id) override;
+  void ReportPageLoaded(SurfaceId surface_id) override;
   void ReportOpenAction(const GURL& url,
-                        const StreamType& stream_type,
+                        SurfaceId surface_id,
                         const std::string& slice_id,
                         OpenActionType action_type) override;
-  void ReportOpenVisitComplete(base::TimeDelta visit_time) override;
-  void ReportStreamScrolled(const StreamType& stream_type,
-                            int distance_dp) override;
-  void ReportStreamScrollStart() override;
+  void ReportOpenVisitComplete(SurfaceId surface_id,
+                               base::TimeDelta visit_time) override;
+  void ReportStreamScrolled(SurfaceId surface_id, int distance_dp) override;
+  void ReportStreamScrollStart(SurfaceId surface_id) override;
+  void ReportOtherUserAction(SurfaceId surface_id,
+                             FeedUserActionType action_type) override;
   void ReportOtherUserAction(const StreamType& stream_type,
                              FeedUserActionType action_type) override;
-  void ReportInfoCardTrackViewStarted(const StreamType& stream_type,
+  void ReportInfoCardTrackViewStarted(SurfaceId surface_id,
                                       int info_card_type) override;
-  void ReportInfoCardViewed(const StreamType& stream_type,
+  void ReportInfoCardViewed(SurfaceId surface_id,
                             int info_card_type,
                             int minimum_view_interval_seconds) override;
-  void ReportInfoCardClicked(const StreamType& stream_type,
-                             int info_card_type) override;
-  void ReportInfoCardDismissedExplicitly(const StreamType& stream_type,
+  void ReportInfoCardClicked(SurfaceId surface_id, int info_card_type) override;
+  void ReportInfoCardDismissedExplicitly(SurfaceId surface_id,
                                          int info_card_type) override;
-  void ResetInfoCardStates(const StreamType& stream_type,
-                           int info_card_type) override;
+  void ResetInfoCardStates(SurfaceId surface_id, int info_card_type) override;
   void ReportContentSliceVisibleTimeForGoodVisits(
+      SurfaceId surface_id,
       base::TimeDelta elapsed) override;
-  base::Time GetLastFetchTime(const StreamType& stream_type) override;
+  base::Time GetLastFetchTime(SurfaceId surface_id) override;
   void SetContentOrder(const StreamType& stream_type,
                        ContentOrder content_order) override;
   ContentOrder GetContentOrder(const StreamType& stream_type) const override;
@@ -294,8 +300,10 @@ class FeedStream : public FeedApi,
   // in memory.
   void FinishClearStream(const StreamType& stream_type);
 
-  // Returns the model if it is loaded, or null otherwise.
+  // Returns the model associated with the stream type or surface if it is
+  // loaded, or null otherwise.
   StreamModel* GetModel(const StreamType& stream_type);
+  StreamModel* GetModel(SurfaceId surface_id);
 
   // Gets request metadata assuming the account is signed-in. This is useful for
   // uploading actions where stream type is not known, but sign-in status is
@@ -381,7 +389,7 @@ class FeedStream : public FeedApi,
   };
 
   void InitializeComplete(WaitForStoreInitializeTask::Result result);
-
+  void CleanupDestroyedSurfaces();
   void SetRequestSchedule(const StreamType& stream_type,
                           RequestSchedule schedule);
 
@@ -415,6 +423,9 @@ class FeedStream : public FeedApi,
 
   Stream& GetStream(const StreamType& type);
   Stream* FindStream(const StreamType& type);
+  Stream* FindStream(SurfaceId surface_id);
+  FeedStreamSurface* FindSurface(SurfaceId surface_id);
+
   const Stream* FindStream(const StreamType& type) const;
   void UpdateExperiments(Experiments experiments);
 
@@ -458,6 +469,21 @@ class FeedStream : public FeedApi,
   offline_pages::TaskQueue task_queue_;
 
   std::map<StreamType, Stream> streams_;
+
+  // FeedStreamSurface handling:
+  // We want to keep FeedStreamSurface instances available even after the actual
+  // feed surface is no longer present, so that we can handle latent calls to
+  // reporting functions (e.g. web page load on navigate) or calls in response
+  // to command handlers (e.g. ephemeral operations) which do not have lifetime
+  // bound to the feed surface.
+  // Use deque so that references to surfaces are safer.
+  std::deque<FeedStreamSurface> all_surfaces_;
+  // Destroyed surfaces are kept at least this long.
+  static constexpr base::TimeDelta kSurfaceDestroyDelay = base::Minutes(10);
+  // The list of IDs for surfaces that were destroyed.
+  std::vector<SurfaceId> destroyed_surfaces_;
+  // Time of the last destroyed surface.
+  base::TimeTicks surface_destroy_time_;
 
   std::unique_ptr<WebFeedSubscriptionCoordinator>
       web_feed_subscription_coordinator_;

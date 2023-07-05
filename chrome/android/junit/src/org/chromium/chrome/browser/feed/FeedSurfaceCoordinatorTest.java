@@ -179,7 +179,7 @@ public class FeedSurfaceCoordinatorTest {
 
     // Mocked JNI.
     @Mock
-    private FeedStream.Natives mFeedStreamJniMock;
+    private FeedSurfaceRendererBridge.Natives mFeedSurfaceRendererBridgeJniMock;
     @Mock
     private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock
@@ -240,7 +240,7 @@ public class FeedSurfaceCoordinatorTest {
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mocker.mock(FeedStreamJni.TEST_HOOKS, mFeedStreamJniMock);
+        mocker.mock(FeedSurfaceRendererBridgeJni.TEST_HOOKS, mFeedSurfaceRendererBridgeJniMock);
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
         mocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
         mocker.mock(FeedProcessScopeDependencyProviderJni.TEST_HOOKS, mProcessScopeJniMock);

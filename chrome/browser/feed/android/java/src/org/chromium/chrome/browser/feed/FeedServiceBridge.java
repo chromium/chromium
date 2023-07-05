@@ -139,10 +139,6 @@ public final class FeedServiceBridge {
         return FeedServiceBridgeJni.get().getLoadMoreTriggerScrollDistanceDp();
     }
 
-    public static void reportOpenVisitComplete(long visitTimeMs) {
-        FeedServiceBridgeJni.get().reportOpenVisitComplete(visitTimeMs);
-    }
-
     public static long getReliabilityLoggingId() {
         return FeedServiceBridgeJni.get().getReliabilityLoggingId();
     }
@@ -205,7 +201,6 @@ public final class FeedServiceBridge {
         void startup();
         int getLoadMoreTriggerLookahead();
         int getLoadMoreTriggerScrollDistanceDp();
-        void reportOpenVisitComplete(long visitTimeMs);
         long getReliabilityLoggingId();
         void reportOtherUserAction(@StreamKind int streamKind, @FeedUserActionType int userAction);
         @ContentOrder

@@ -14,7 +14,6 @@
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
-#include "components/feed/core/v2/public/feed_stream_surface.h"
 #include "components/variations/variations_ids_provider.h"
 
 namespace feed {
