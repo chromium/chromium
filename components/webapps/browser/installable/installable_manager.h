@@ -126,8 +126,6 @@ class InstallableManager
 
   using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
 
-  enum class IconUsage { kPrimary, kSplash };
-
   struct EligiblityProperty {
     EligiblityProperty();
     ~EligiblityProperty();
@@ -181,17 +179,8 @@ class InstallableManager
     bool fetched = false;
   };
 
-  // Returns true if an icon for the given usage is fetched successfully, or
-  // doesn't need to fallback to another icon purpose (i.e. MASKABLE icon
-  // allback to ANY icon).
-  bool IsIconFetchComplete(IconUsage usage) const;
-
-  // Returns true if we have tried fetching maskable icon. Note that this also
-  // returns true if the fallback icon(IconPurpose::ANY) is fetched.
-  bool IsMaskableIconFetched(IconUsage usage) const;
-
-  // Sets the icon matching |usage| as fetched.
-  void SetIconFetched(IconUsage usage);
+  // Returns true if the primary icon is fetched.
+  bool IsPrimaryIconFetched() const;
 
   // Returns a vector with all errors encountered for the resources requested in
   // |params|, or an empty vector if there is no error.
@@ -203,9 +192,9 @@ class InstallableManager
   InstallableStatusCode valid_manifest_error() const;
   void set_valid_manifest_error(InstallableStatusCode error_code);
   InstallableStatusCode worker_error() const;
-  InstallableStatusCode icon_error(IconUsage usage);
-  GURL& icon_url(IconUsage usage);
-  const SkBitmap* icon(IconUsage usage);
+  InstallableStatusCode icon_error();
+  GURL& icon_url();
+  const SkBitmap* icon();
 
   // Returns the WebContents to which this object is attached, or nullptr if the
   // WebContents doesn't exist or is currently being destroyed.
@@ -249,11 +238,11 @@ class InstallableManager
       content::OfflineCapability capability,
       int64_t service_worker_registration_id);
 
-  void CheckAndFetchBestIcon(int ideal_icon_size_in_px,
-                             int minimum_icon_size_in_px,
-                             IconPurpose purpose,
-                             IconUsage usage);
-  void OnIconFetched(GURL icon_url, IconUsage usage, const SkBitmap& bitmap);
+  void CheckAndFetchBestPrimaryIcon(bool prefer_maskable);
+  void TryFetchingNextIcon();
+  void OnIconFetched(GURL icon_url,
+                     const IconPurpose purpose,
+                     const SkBitmap& bitmap);
 
   void CheckAndFetchScreenshots();
 
@@ -283,8 +272,10 @@ class InstallableManager
   std::unique_ptr<ManifestProperty> manifest_;
   std::unique_ptr<ValidManifestProperty> valid_manifest_;
   std::unique_ptr<ServiceWorkerProperty> worker_;
-  std::map<IconUsage, IconProperty> icons_;
+  std::unique_ptr<IconProperty> primary_icon_;
   std::vector<Screenshot> screenshots_;
+
+  std::vector<IconPurpose> downloading_icons_type_;
 
   // A map of screenshots downloaded. Used temporarily until images are moved to
   // the screenshots_ member.

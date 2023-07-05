@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
   EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
   EXPECT_TRUE(manager->manifest_url().is_empty());
-  EXPECT_TRUE(manager->icons_.empty());
+  EXPECT_FALSE(manager->primary_icon_->fetched);
   EXPECT_FALSE(manager->valid_manifest());
   EXPECT_FALSE(manager->has_worker());
 
@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, ManagerInIncognito) {
 
   EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
   EXPECT_TRUE(manager->manifest_url().is_empty());
-  EXPECT_TRUE(manager->icons_.empty());
+  EXPECT_FALSE(manager->primary_icon_->fetched);
   EXPECT_FALSE(manager->valid_manifest());
   EXPECT_FALSE(manager->has_worker());
 
@@ -792,15 +792,12 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
 
     EXPECT_FALSE(blink::IsEmptyManifest(manager->manifest()));
     EXPECT_FALSE(manager->manifest_url().is_empty());
-    EXPECT_EQ(1u, manager->icons_.size());
+    EXPECT_TRUE(manager->primary_icon_->fetched);
     EXPECT_FALSE(manager->valid_manifest());
-    EXPECT_FALSE((
-        manager->icon_url(InstallableManager::IconUsage::kPrimary).is_empty()));
-    EXPECT_NE(nullptr,
-              (manager->icon(InstallableManager::IconUsage::kPrimary)));
+    EXPECT_FALSE((manager->icon_url().is_empty()));
+    EXPECT_NE(nullptr, (manager->icon()));
     EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
-    EXPECT_EQ(NO_ERROR_DETECTED,
-              (manager->icon_error(InstallableManager::IconUsage::kPrimary)));
+    EXPECT_EQ(NO_ERROR_DETECTED, (manager->icon_error()));
     EXPECT_TRUE(!manager->task_queue_.HasCurrent());
     CheckServiceWorkerForInstallableManager(manager);
   }
@@ -828,15 +825,12 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
 
     EXPECT_FALSE(blink::IsEmptyManifest(manager->manifest()));
     EXPECT_FALSE(manager->manifest_url().is_empty());
-    EXPECT_EQ(1u, manager->icons_.size());
+    EXPECT_TRUE(manager->primary_icon_->fetched);
     EXPECT_FALSE(manager->valid_manifest());
-    EXPECT_FALSE((
-        manager->icon_url(InstallableManager::IconUsage::kPrimary).is_empty()));
-    EXPECT_NE(nullptr,
-              (manager->icon(InstallableManager::IconUsage::kPrimary)));
+    EXPECT_FALSE((manager->icon_url().is_empty()));
+    EXPECT_NE(nullptr, (manager->icon()));
     EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
-    EXPECT_EQ(NO_ERROR_DETECTED,
-              (manager->icon_error(InstallableManager::IconUsage::kPrimary)));
+    EXPECT_EQ(NO_ERROR_DETECTED, (manager->icon_error()));
     EXPECT_TRUE(!manager->task_queue_.HasCurrent());
     CheckServiceWorkerForInstallableManager(manager);
   }
@@ -850,7 +844,7 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
     EXPECT_TRUE(manager->manifest_url().is_empty());
     EXPECT_FALSE(manager->valid_manifest());
     EXPECT_FALSE(manager->has_worker());
-    EXPECT_TRUE(manager->icons_.empty());
+    EXPECT_FALSE(manager->primary_icon_->fetched);
     EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
     EXPECT_EQ(NO_ERROR_DETECTED, manager->worker_error());
     EXPECT_TRUE(!manager->task_queue_.HasCurrent());
@@ -1112,15 +1106,13 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
   EXPECT_FALSE(blink::IsEmptyManifest(manager->manifest()));
   EXPECT_FALSE(manager->manifest_url().is_empty());
   EXPECT_FALSE(manager->has_worker());
-  EXPECT_EQ(1u, manager->icons_.size());
+  EXPECT_TRUE(manager->primary_icon_->fetched);
   EXPECT_TRUE(manager->valid_manifest());
-  EXPECT_FALSE(
-      (manager->icon_url(InstallableManager::IconUsage::kPrimary).is_empty()));
-  EXPECT_NE(nullptr, (manager->icon(InstallableManager::IconUsage::kPrimary)));
+  EXPECT_FALSE((manager->icon_url().is_empty()));
+  EXPECT_NE(nullptr, (manager->icon()));
   EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
   EXPECT_EQ(NO_ERROR_DETECTED, manager->worker_error());
-  EXPECT_EQ(NO_ERROR_DETECTED,
-            (manager->icon_error(InstallableManager::IconUsage::kPrimary)));
+  EXPECT_EQ(NO_ERROR_DETECTED, (manager->icon_error()));
   EXPECT_TRUE(!manager->task_queue_.HasCurrent());
   EXPECT_TRUE(!manager->task_queue_.paused_tasks_.empty());
 
@@ -1170,13 +1162,11 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
   EXPECT_FALSE(blink::IsEmptyManifest(manager->manifest()));
   EXPECT_FALSE(manager->manifest_url().is_empty());
   EXPECT_FALSE(manager->valid_manifest());
-  EXPECT_EQ(1u, manager->icons_.size());
-  EXPECT_FALSE(
-      (manager->icon_url(InstallableManager::IconUsage::kPrimary).is_empty()));
-  EXPECT_NE(nullptr, (manager->icon(InstallableManager::IconUsage::kPrimary)));
+  EXPECT_TRUE(manager->primary_icon_->fetched);
+  EXPECT_FALSE((manager->icon_url().is_empty()));
+  EXPECT_NE(nullptr, (manager->icon()));
   EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
-  EXPECT_EQ(NO_ERROR_DETECTED,
-            (manager->icon_error(InstallableManager::IconUsage::kPrimary)));
+  EXPECT_EQ(NO_ERROR_DETECTED, (manager->icon_error()));
   EXPECT_TRUE(!manager->task_queue_.HasCurrent());
   EXPECT_FALSE(!manager->task_queue_.paused_tasks_.empty());
   CheckServiceWorkerForInstallableManager(manager.get());
@@ -1462,13 +1452,11 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
   EXPECT_FALSE(blink::IsEmptyManifest(manager->manifest()));
   EXPECT_FALSE(manager->manifest_url().is_empty());
   EXPECT_FALSE(manager->valid_manifest());
-  EXPECT_EQ(1u, manager->icons_.size());
-  EXPECT_FALSE(
-      (manager->icon_url(InstallableManager::IconUsage::kPrimary).is_empty()));
-  EXPECT_NE(nullptr, (manager->icon(InstallableManager::IconUsage::kPrimary)));
+  EXPECT_TRUE(manager->primary_icon_->fetched);
+  EXPECT_FALSE((manager->icon_url().is_empty()));
+  EXPECT_NE(nullptr, (manager->icon()));
   EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
-  EXPECT_EQ(NO_ERROR_DETECTED,
-            (manager->icon_error(InstallableManager::IconUsage::kPrimary)));
+  EXPECT_EQ(NO_ERROR_DETECTED, (manager->icon_error()));
   EXPECT_TRUE(!manager->task_queue_.HasCurrent());
   CheckServiceWorkerForInstallableManager(manager);
 }
@@ -1650,7 +1638,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
   EXPECT_FALSE(tester->valid_manifest());
   EXPECT_TRUE(tester->worker_check_passed());
-  EXPECT_EQ(std::vector<InstallableStatusCode>{NO_ACCEPTABLE_ICON},
+  EXPECT_EQ(std::vector<InstallableStatusCode>{NO_ICON_AVAILABLE},
             tester->errors());
 }
 
