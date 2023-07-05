@@ -27,7 +27,8 @@ bool InSameNGLineBox(const PositionWithAffinity&, const PositionWithAffinity&);
 // https://w3c.github.io/csswg-drafts/css-inline-3/#propdef-leading-trim
 FontHeight CalculateLeadingSpace(const LayoutUnit& line_height,
                                  const FontHeight& current_height,
-                                 const ETextBoxTrim& text_box_trim);
+                                 const ETextBoxTrim& text_box_trim,
+                                 WritingMode writing_mode);
 
 }  // namespace blink
 

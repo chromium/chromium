@@ -136,9 +136,9 @@ void NGInlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
 
   FontHeight emphasis_marks_outsets =
       ComputeEmphasisMarkOutsets(styleref, fontref);
-  FontHeight leading_space =
-      CalculateLeadingSpace(styleref.ComputedLineHeightAsFixed(fontref),
-                            text_metrics, styleref.TextBoxTrim());
+  FontHeight leading_space = CalculateLeadingSpace(
+      styleref.ComputedLineHeightAsFixed(fontref), text_metrics,
+      styleref.TextBoxTrim(), styleref.GetWritingMode());
   if (emphasis_marks_outsets.IsEmpty()) {
     text_metrics.AddLeading(leading_space);
   } else {
@@ -177,7 +177,7 @@ void NGInlineBoxState::AccumulateUsedFonts(
         fallback_font->GetFontMetrics().GetFontHeight(baseline_type);
     FontHeight leading_space = CalculateLeadingSpace(
         fallback_font->GetFontMetrics().FixedLineSpacing(), fallback_metrics,
-        style->TextBoxTrim());
+        style->TextBoxTrim(), style->GetWritingMode());
     fallback_metrics.AddLeading(leading_space);
     metrics.Unite(fallback_metrics);
   }
@@ -1154,8 +1154,9 @@ FontHeight NGInlineLayoutStateStack::MetricsForTopAndBottomAlign(
     box_metrics.descent -= box_data.padding.line_under;
     // Include the line-height property. The inline box has the height of the
     // font metrics without the line-height included.
-    FontHeight leading_space = CalculateLeadingSpace(
-        style.ComputedLineHeightAsFixed(), box_metrics, style.TextBoxTrim());
+    FontHeight leading_space =
+        CalculateLeadingSpace(style.ComputedLineHeightAsFixed(), box_metrics,
+                              style.TextBoxTrim(), style.GetWritingMode());
     box_metrics.AddLeading(leading_space);
     metrics.Unite(box_metrics);
   }
