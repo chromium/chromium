@@ -14,7 +14,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/win/atl.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_win.h"
@@ -43,7 +42,7 @@ class BrowserAccessibilityWin;
 //
 // Class implementing the windows accessible interface used by screen readers
 // and other assistive technology (AT). It typically is created and owned by
-// a BrowserAccessibilityWin |owner_|. When this owner goes away, the
+// a BrowserAccessibilityWin delegate. When this owner goes away, the
 // BrowserAccessibilityComWin objects may continue to exists being held onto by
 // MSCOM (due to reference counting). However, such objects are invalid and
 // should gracefully fail by returning E_FAIL from all MSCOM methods.
@@ -349,17 +348,8 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
   std::wstring description() const { return win_attributes_->description; }
   std::wstring value() const { return win_attributes_->value; }
 
-  // Setter and getter for the browser accessibility owner
-  BrowserAccessibilityWin* owner() const { return owner_; }
-  void SetOwner(BrowserAccessibilityWin* owner) { owner_ = owner; }
-
+  BrowserAccessibilityWin* GetOwner() const;
   BrowserAccessibilityManager* Manager() const;
-
-  //
-  // AXPlatformNode overrides
-  //
-  void Destroy() override;
-  void Init(ui::AXPlatformNodeDelegate* delegate) override;
 
   // Returns the IA2 text attributes for this object.
   ui::TextAttributeList ComputeTextAttributes() const;
@@ -427,8 +417,6 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
     // Maps each style span to its start offset in hypertext.
     ui::TextAttributeMap offset_to_text_attributes;
   };
-
-  raw_ptr<BrowserAccessibilityWin> owner_;
 
   std::unique_ptr<WinAttributes> win_attributes_;
 
