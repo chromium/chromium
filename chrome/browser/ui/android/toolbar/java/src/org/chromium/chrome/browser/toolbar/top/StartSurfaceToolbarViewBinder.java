@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ACCESSIBILITY_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ALPHA;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BUTTONS_CLICKABLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.GRID_TAB_SWITCHER_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_AT_START;
@@ -17,7 +18,6 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_SWITCHER_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_COUNT_PROVIDER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_MODEL_SELECTOR;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_NEW_TAB_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.MENU_IS_VISIBLE;
@@ -55,8 +55,6 @@ class StartSurfaceToolbarViewBinder {
             view.setIdentityDiscVisibility(model.get(IDENTITY_DISC_IS_VISIBLE));
         } else if (propertyKey == INCOGNITO_STATE_PROVIDER) {
             view.setIncognitoStateProvider(model.get(INCOGNITO_STATE_PROVIDER));
-        } else if (propertyKey == IS_INCOGNITO) {
-            view.updateIncognito(model.get(IS_INCOGNITO));
         } else if (propertyKey == IS_VISIBLE) {
             view.setToolbarVisibility(model.get(IS_VISIBLE));
         } else if (propertyKey == MENU_IS_VISIBLE) {
@@ -81,6 +79,8 @@ class StartSurfaceToolbarViewBinder {
             view.setTabCountProvider(model.get(INCOGNITO_TAB_COUNT_PROVIDER));
         } else if (propertyKey == INCOGNITO_TAB_MODEL_SELECTOR) {
             view.setTabModelSelector(model.get(INCOGNITO_TAB_MODEL_SELECTOR));
+        } else if (propertyKey == BACKGROUND_COLOR) {
+            view.setToolbarBackgroundColor(model.get(BACKGROUND_COLOR));
         }
     }
 }

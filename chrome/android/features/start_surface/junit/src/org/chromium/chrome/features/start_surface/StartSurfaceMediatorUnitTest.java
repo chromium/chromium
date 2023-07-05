@@ -8,6 +8,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -35,6 +36,7 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SECONDARY_SURFACE_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.BACKGROUND_COLOR;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_TEXT_WATCHER;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_FAKE_SEARCH_BOX_VISIBLE;
@@ -54,10 +56,14 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TAB_SWIT
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 import android.view.View.OnClickListener;
+
+import androidx.annotation.ColorInt;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -123,9 +129,11 @@ import org.chromium.chrome.features.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
@@ -243,8 +251,15 @@ public class StartSurfaceMediatorUnitTest {
             new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
 
+    private Activity mActivity;
+
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     @Before
     public void setUp() {
+        mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
         MockitoAnnotations.initMocks(this);
 
         doReturn(false).when(mProfile).isOffTheRecord();
@@ -1981,6 +1996,31 @@ public class StartSurfaceMediatorUnitTest {
         assertFalse(mediator.isHomepageShown());
     }
 
+    @Test
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    public void testUpdateStartSurfaceBackgroundColor() {
+        Assert.assertTrue(ChromeFeatureList.sSurfacePolish.isEnabled());
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        // Make sure the background color is not set.
+        assertEquals(0, mPropertyModel.get(BACKGROUND_COLOR));
+
+        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true,
+                /* isRefactorEnabled= */ false, /* hadWarmStart= */ false, false);
+        @ColorInt
+        int backgroundColor = ChromeColors.getSurfaceColor(
+                mActivity, R.dimen.home_surface_background_color_elevation);
+        assertNotEquals(backgroundColor, 0);
+        assertEquals(backgroundColor, mPropertyModel.get(BACKGROUND_COLOR));
+
+        mediator.setIsIncognitoForTesting(true);
+        mediator.updateBackgroundColor(mPropertyModel);
+        @ColorInt
+        int newBackgroundColor = ChromeColors.getPrimaryBackgroundColor(mActivity, true);
+        assertNotEquals(newBackgroundColor, backgroundColor);
+        assertEquals(newBackgroundColor, mPropertyModel.get(BACKGROUND_COLOR));
+    }
+
     private StartSurfaceMediator createStartSurfaceMediator(boolean isStartSurfaceEnabled) {
         return createStartSurfaceMediator(isStartSurfaceEnabled, /* isRefactorEnabled */ false,
                 /* hadWarmStart= */ false, /* isSurfacePolishEnabled= */ false);
@@ -2013,9 +2053,9 @@ public class StartSurfaceMediatorUnitTest {
                 null /* tabSwitcherContainer */, hasTabSwitcherModule ? mTabSwitcherModule : null,
                 mTabModelSelector, !isStartSurfaceEnabled ? null : mPropertyModel,
                 hasTasksView ? mSecondaryTasksSurfaceInitializer : null, isStartSurfaceEnabled,
-                ContextUtils.getApplicationContext(), mBrowserControlsStateProvider,
-                mActivityStateChecker, null /* TabCreatorManager */, true /* excludeQueryTiles */,
-                mStartSurfaceSupplier, hadWarmStart,
+                mActivity, mBrowserControlsStateProvider, mActivityStateChecker,
+                null /* TabCreatorManager */, true /* excludeQueryTiles */, mStartSurfaceSupplier,
+                hadWarmStart,
                 hasTasksView || hasTabSwitcherModule || isSurfacePolishEnabled
                         ? mInitializeMVTilesRunnable
                         : null,

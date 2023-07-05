@@ -11,6 +11,7 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.RESET_FEED_SURFACE_SCROLL_POSITION;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.BACKGROUND_COLOR;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_TEXT_WATCHER;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_FAKE_SEARCH_BOX_VISIBLE;
@@ -42,6 +43,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -96,6 +98,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.Controller;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.features.start_surface.StartSurface.TabSwitcherViewObserver;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
@@ -234,6 +237,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private OnClickListener mTabSwitcherClickHandler;
     private ObservableSupplier<Profile> mProfileSupplier;
 
+    private final boolean mIsSurfacePolished;
+
     // TODO(crbug.com/1315676): Clean up TabSwitcher#Controller once the start surface refactoring
     // is done.
     StartSurfaceMediator(@Nullable Controller controller, ViewGroup tabSwitcherContainer,
@@ -285,6 +290,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mTabSwitcherClickHandler = tabSwitcherClickHandler;
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(this::onProfileAvailable);
+        mIsSurfacePolished = mIsStartSurfaceEnabled && ChromeFeatureList.sSurfacePolish.isEnabled();
 
         if (mPropertyModel != null) {
             assert mIsStartSurfaceEnabled;
@@ -323,6 +329,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 }
             };
             mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
+            updateBackgroundColor(mPropertyModel);
 
             mPropertyModel.set(MORE_TABS_CLICK_LISTENER, this);
 
@@ -675,6 +682,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
         mIsIncognito = mTabModelSelector.isIncognitoSelected();
         mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
+        updateBackgroundColor(mPropertyModel);
         setMVTilesVisibility(!mIsIncognito);
         setLogoVisibility(!mIsIncognito);
         setTabCarouselVisibility(getNormalTabCount() > 0 && !mIsIncognito);
@@ -741,6 +749,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     void setSecondaryTasksSurfacePropertyModel(PropertyModel propertyModel) {
         mSecondaryTasksSurfacePropertyModel = propertyModel;
         mSecondaryTasksSurfacePropertyModel.set(IS_INCOGNITO, mIsIncognito);
+        updateBackgroundColor(mSecondaryTasksSurfacePropertyModel);
 
         // Secondary tasks surface is used for more Tabs or incognito mode single pane, where MV
         // tiles and voice recognition button should be invisible.
@@ -956,6 +965,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             // update incognito
             mIsIncognito = mTabModelSelector.isIncognitoSelected();
             mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
+            updateBackgroundColor(mPropertyModel);
 
             // if OverviewModeState is NOT_SHOWN, default to SHOWING_TABSWITCHER. This should only
             // happen when entering Start through SwipeDown gesture on URL bar.
@@ -1299,6 +1309,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mIsIncognito = isIncognito;
 
         mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
+        updateBackgroundColor(mPropertyModel);
         setOverviewStateInternal();
 
         // TODO(crbug.com/1021399): This looks not needed since there is no way to change incognito
@@ -1325,6 +1336,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             if (mSecondaryTasksSurfacePropertyModel != null) {
                 mSecondaryTasksSurfacePropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, false);
                 mSecondaryTasksSurfacePropertyModel.set(IS_INCOGNITO, mIsIncognito);
+                updateBackgroundColor(mSecondaryTasksSurfacePropertyModel);
             }
             if (mSecondaryTasksSurfaceController != null && !skipUpdateController) {
                 mSecondaryTasksSurfaceController.showTabSwitcherView(/* animate = */ true);
@@ -1746,5 +1758,26 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
     Runnable getInitializeMVTilesRunnableForTesting() {
         return mInitializeMVTilesRunnable;
+    }
+
+    /**
+     * Update the background color of the start surface based on whether it is polished or not ,
+     * in the incognito mode or non-incognito mode.
+     */
+    @VisibleForTesting
+    void updateBackgroundColor(PropertyModel propertyModel) {
+        @ColorInt
+        int surfaceBackgroundColor;
+        if (mIsSurfacePolished && !mIsIncognito) {
+            surfaceBackgroundColor = ChromeColors.getSurfaceColor(
+                    mContext, R.dimen.home_surface_background_color_elevation);
+        } else {
+            surfaceBackgroundColor = ChromeColors.getPrimaryBackgroundColor(mContext, mIsIncognito);
+        }
+        propertyModel.set(BACKGROUND_COLOR, surfaceBackgroundColor);
+    }
+
+    void setIsIncognitoForTesting(boolean isIncognito) {
+        mIsIncognito = isIncognito;
     }
 }

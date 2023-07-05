@@ -140,4 +140,8 @@ public class SearchBoxCoordinator {
     public void setLensButtonLeftMargin(int leftMargin) {
         mMediator.setLensButtonLeftMargin(leftMargin);
     }
+
+    public boolean getIncognitoModeForTesting() {
+        return mIsIncognito;
+    }
 }

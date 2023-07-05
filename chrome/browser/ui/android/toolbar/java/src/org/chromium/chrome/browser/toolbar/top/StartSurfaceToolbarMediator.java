@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ACCESSIBILITY_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ALPHA;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BUTTONS_CLICKABLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_CLICK_HANDLER;
@@ -16,7 +17,6 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_SWITCHER_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_COUNT_PROVIDER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_MODEL_SELECTOR;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_NEW_TAB_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_HIGHLIGHT;
@@ -31,6 +31,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarAlph
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.interpolators.Interpolators;
@@ -103,6 +105,9 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     private Callback<Boolean> mFinishedTransitionCallback;
     private @Nullable ToolbarAlphaInOverviewObserver mToolbarAlphaInOverviewObserver;
 
+    private final boolean mIsSurfacePolished;
+    private boolean mIsIncognito;
+
     StartSurfaceToolbarMediator(Context context, PropertyModel model,
             Callback<IPHCommandBuilder> showIdentityIPHCallback,
             boolean hideIncognitoSwitchWhenNoTabs, MenuButtonCoordinator menuButtonCoordinator,
@@ -133,11 +138,13 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         mFinishedTransitionCallback = finishedTransitionCallback;
         mToolbarAlphaInOverviewObserver = toolbarAlphaInOverviewObserver;
         mContext = context;
+        mIsSurfacePolished = ChromeFeatureList.sSurfacePolish.isEnabled();
 
         mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                mPropertyModel.set(IS_INCOGNITO, mTabModelSelector.isIncognitoSelected());
+                mIsIncognito = mTabModelSelector.isIncognitoSelected();
+                updateBackgroundColor();
                 updateIdentityDisc(mIdentityDiscButtonSupplier.get());
             }
 
@@ -186,6 +193,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         boolean wasOnGridTabSwitcher = isOnGridTabSwitcher();
         mStartSurfaceState = newState;
         mLayoutType = newLayoutType;
+        updateBackgroundColor();
         updateLogoVisibility();
         updateTabSwitcherButtonVisibility();
         updateIncognitoToggleTabVisibility();
@@ -275,7 +283,8 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         mTabModelSelector = selector;
 
         if (mTabModelSelector.isTabStateInitialized()) maybeInitializeIncognitoToggle();
-        mPropertyModel.set(IS_INCOGNITO, mTabModelSelector.isIncognitoSelected());
+        mIsIncognito = mTabModelSelector.isIncognitoSelected();
+        updateBackgroundColor();
         updateIdentityDisc(mIdentityDiscButtonSupplier.get());
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
@@ -478,7 +487,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     }
 
     private void updateTranslationY(float transY) {
-        if (isOnHomepage() && !mPropertyModel.get(IS_INCOGNITO)) {
+        if (isOnHomepage() && !mIsIncognito) {
             // If it's on the non-incognito homepage, document the homepage translationY.
             mNonIncognitoHomepageTranslationY = transY;
             // Update the translationY of the toolbarView.
@@ -516,5 +525,22 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         // If the identity disc wants to be hidden and is hidden, there's nothing we need to do.
         if (!canShowHint && !mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE)) return;
         updateIdentityDisc(mIdentityDiscButtonSupplier.get());
+    }
+
+    /**
+     * Update the background color of the toolbar based on whether it is in the Grid tab switcher
+     * or in the Start surface with either incognito mode or non-incognito mode.
+     */
+    private void updateBackgroundColor() {
+        @ColorInt
+        int backgroundColor;
+        if (mIsSurfacePolished && isOnHomepage() && !mIsIncognito) {
+            backgroundColor = ChromeColors.getSurfaceColor(mContext,
+                    org.chromium.chrome.start_surface.R.dimen
+                            .home_surface_background_color_elevation);
+        } else {
+            backgroundColor = ChromeColors.getPrimaryBackgroundColor(mContext, mIsIncognito);
+        }
+        mPropertyModel.set(BACKGROUND_COLOR, backgroundColor);
     }
 }

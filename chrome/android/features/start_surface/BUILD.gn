@@ -16,6 +16,7 @@ android_resources("java_resources") {
     "java/res/layout/single_tab_view_layout.xml",
     "java/res/layout/tasks_surface_search_box_layout.xml",
     "java/res/layout/tasks_view_layout.xml",
+    "java/res/values-night/dimens.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
   ]

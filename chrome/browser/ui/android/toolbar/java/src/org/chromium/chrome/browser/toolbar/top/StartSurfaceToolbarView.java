@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -23,7 +24,6 @@ import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -59,7 +59,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
         mIncognitoToggleTabLayout = (IncognitoToggleTabLayout) incognitoToggleTabsStub.inflate();
         mIdentityDiscButton = findViewById(R.id.identity_disc_button);
         mTabSwitcherButtonView = findViewById(R.id.start_tab_switcher_button);
-        updatePrimaryColorAndTint(false);
+        setIconTint();
         mNewTabButton.setStartSurfaceEnabled(true);
     }
 
@@ -143,11 +143,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
         } else {
             ViewHighlighter.turnOffHighlight(mNewTabButton);
         }
-    }
-
-    /** Called when incognito mode changes. */
-    void updateIncognito(boolean isIncognito) {
-        updatePrimaryColorAndTint(isIncognito);
     }
 
     /**
@@ -268,10 +263,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
         }
     }
 
-    private void updatePrimaryColorAndTint(boolean isIncognito) {
-        int primaryColor = ChromeColors.getPrimaryBackgroundColor(getContext(), isIncognito);
-        setBackgroundColor(primaryColor);
-
+    private void setIconTint() {
         if (mLightIconTint == null) {
             mLightIconTint = AppCompatResources.getColorStateList(
                     getContext(), R.color.default_icon_color_light_tint_list);
@@ -282,5 +274,14 @@ class StartSurfaceToolbarView extends RelativeLayout {
 
     private int getVisibility(boolean isVisible) {
         return isVisible ? View.VISIBLE : View.GONE;
+    }
+
+    /**
+     * Update the background color of the toolbar based on whether it is in the Grid tab switcher
+     * or in the Start surface with either non-incognito mode or incognito mode.
+     * @param backgroundColor The background color of the toolbar.
+     */
+    protected void setToolbarBackgroundColor(@ColorInt int backgroundColor) {
+        setBackgroundColor(backgroundColor);
     }
 }

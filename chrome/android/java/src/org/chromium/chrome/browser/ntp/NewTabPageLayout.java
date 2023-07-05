@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -145,6 +146,7 @@ public class NewTabPageLayout extends LinearLayout {
     private Integer mInitialTileNum;
     private Boolean mIsHalfMvtLandscape;
     private Boolean mIsHalfMvtPortrait;
+    private boolean mIsSurfacePolished;
 
     /**
      * Constructor for inflating from XML.
@@ -190,13 +192,14 @@ public class NewTabPageLayout extends LinearLayout {
      * @param windowAndroid An instance of a {@link WindowAndroid}
      * @param isNtpAsHomeSurfaceEnabled {@code true} if the NTP is showing as the home surface.
      * @param isMultiColumnFeedEnabled {@code true} if the number of feed columns is 2.
+     * @param isSurfacePolished {@code true} if the NTP surface is polished.
      */
     public void initialize(NewTabPageManager manager, Activity activity, Delegate tileGroupDelegate,
             boolean searchProviderHasLogo, boolean searchProviderIsGoogle,
             FeedSurfaceScrollDelegate scrollDelegate, TouchEnabledDelegate touchEnabledDelegate,
             UiConfig uiConfig, ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma,
             boolean isIncognito, WindowAndroid windowAndroid, boolean isNtpAsHomeSurfaceEnabled,
-            boolean isMultiColumnFeedEnabled) {
+            boolean isMultiColumnFeedEnabled, boolean isSurfacePolished) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
         mManager = manager;
@@ -207,6 +210,7 @@ public class NewTabPageLayout extends LinearLayout {
         mWindowAndroid = windowAndroid;
         mIsNtpAsHomeSurfaceEnabled = isNtpAsHomeSurfaceEnabled;
         mIsMultiColumnFeedEnabled = isMultiColumnFeedEnabled;
+        mIsSurfacePolished = isSurfacePolished;
         Profile profile = Profile.getLastUsedRegularProfile();
 
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
@@ -241,6 +245,11 @@ public class NewTabPageLayout extends LinearLayout {
         mInitialized = true;
 
         TraceEvent.end(TAG + ".initialize()");
+
+        if (mIsSurfacePolished) {
+            setBackground(
+                    AppCompatResources.getDrawable(mContext, R.drawable.home_surface_background));
+        }
     }
 
     /**

@@ -89,6 +89,9 @@ public class TasksSurfaceProperties {
     public static final PropertyModel
             .WritableObjectPropertyKey RESET_TASK_SURFACE_HEADER_SCROLL_POSITION =
             new PropertyModel.WritableObjectPropertyKey<>(true /* skipEquality */);
+    public static final PropertyModel.WritableIntPropertyKey BACKGROUND_COLOR =
+            new PropertyModel.WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {IS_FAKE_SEARCH_BOX_VISIBLE,
             IS_INCOGNITO, IS_INCOGNITO_DESCRIPTION_INITIALIZED, IS_INCOGNITO_DESCRIPTION_VISIBLE,
             IS_LENS_BUTTON_VISIBLE, IS_SURFACE_BODY_VISIBLE, IS_TAB_CAROUSEL_VISIBLE,
@@ -102,5 +105,5 @@ public class TasksSurfaceProperties {
             TASKS_SURFACE_BODY_TOP_MARGIN, MV_TILES_CONTAINER_TOP_MARGIN,
             MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN, TAB_SWITCHER_TITLE_TOP_MARGIN,
             SINGLE_TAB_TOP_MARGIN, RESET_TASK_SURFACE_HEADER_SCROLL_POSITION,
-            TOP_TOOLBAR_PLACEHOLDER_HEIGHT};
+            TOP_TOOLBAR_PLACEHOLDER_HEIGHT, BACKGROUND_COLOR};
 }

@@ -36,10 +36,12 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForStableView;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.test.filters.LargeTest;
@@ -98,6 +100,7 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -1100,5 +1103,44 @@ public class StartSurfaceTest {
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_SPARE_TAB_FINAL_STATUS,
                         WarmupManager.SpareTabFinalStatus.TAB_DESTROYED));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study"})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    public void testStartSurfaceBackgroundColorAfterPolish() {
+        if (!mImmediateReturn || mUseInstantStart) return;
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+
+        onViewWaiting(withId(R.id.primary_tasks_surface_view));
+        onViewWaiting(withId(R.id.tab_switcher_toolbar));
+        onViewWaiting(withId(R.id.search_box_text)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_switcher_title)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_switcher_module_container)).check(matches(isDisplayed()));
+        onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
+
+        View startSurfaceView =
+                cta.findViewById(org.chromium.chrome.test.R.id.primary_tasks_surface_view);
+        assertEquals("The background color for start surface is wrong.",
+                ChromeColors.getSurfaceColor(cta,
+                        org.chromium.chrome.test.R.dimen.home_surface_background_color_elevation),
+                ((ColorDrawable) startSurfaceView.getBackground()).getColor());
+        View startSurfaceViewHeader =
+                cta.findViewById(org.chromium.chrome.test.R.id.task_surface_header);
+        assertEquals("The background color for start surface is wrong.",
+                ChromeColors.getSurfaceColor(cta,
+                        org.chromium.chrome.test.R.dimen.home_surface_background_color_elevation),
+                ((ColorDrawable) startSurfaceViewHeader.getBackground()).getColor());
+        View startSurfaceToolbar =
+                cta.findViewById(org.chromium.chrome.test.R.id.tab_switcher_toolbar);
+        assertEquals("The background color for start surface toolbar is wrong.",
+                ChromeColors.getSurfaceColor(cta,
+                        org.chromium.chrome.test.R.dimen.home_surface_background_color_elevation),
+                ((ColorDrawable) startSurfaceToolbar.getBackground()).getColor());
     }
 }
