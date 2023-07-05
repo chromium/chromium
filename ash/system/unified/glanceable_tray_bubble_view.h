@@ -13,7 +13,8 @@ class Label;
 
 namespace ash {
 class CalendarView;
-class ClassroomBubbleView;
+class ClassroomBubbleStudentView;
+class ClassroomBubbleTeacherView;
 class DetailedViewDelegate;
 class TasksBubbleView;
 class Shelf;
@@ -48,9 +49,15 @@ class GlanceableTrayBubbleView : public TrayBubbleView {
   // Child bubble view for the tasks glanceable. Owned by bubble_view_.
   raw_ptr<TasksBubbleView, ExperimentalAsh> tasks_bubble_view_ = nullptr;
 
-  // Child bubble view for the classrooms glanceable. Owned by bubble_view_.
-  raw_ptr<ClassroomBubbleView, ExperimentalAsh> classroom_bubble_view_ =
-      nullptr;
+  // Child bubble view for the teacher classrooms glanceable. Owned by
+  // bubble_view_.
+  raw_ptr<ClassroomBubbleTeacherView, ExperimentalAsh>
+      classroom_bubble_teacher_view_ = nullptr;
+
+  // Child bubble view for the student classrooms glanceable. Owned by
+  // bubble_view_.
+  raw_ptr<ClassroomBubbleStudentView, ExperimentalAsh>
+      classroom_bubble_student_view_ = nullptr;
 
   // Child bubble view for the calendar glanceable. Owned by bubble_view_.
   raw_ptr<CalendarView, ExperimentalAsh> calendar_view_ = nullptr;

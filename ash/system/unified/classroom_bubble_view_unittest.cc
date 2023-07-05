@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/unified/classroom_bubble_view.h"
+// #include "ash/system/unified/classroom_bubble_base_view.h"
 
 #include <memory>
 #include <utility>
@@ -14,6 +14,8 @@
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
 #include "ash/system/tray/detailed_view_delegate.h"
+#include "ash/system/unified/classroom_bubble_student_view.h"
+#include "ash/system/unified/classroom_bubble_teacher_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -89,38 +91,63 @@ class ClassroomBubbleViewTest : public AshTestBase {
                          .classroom_client = &classroom_client_});
     ASSERT_TRUE(
         Shell::Get()->glanceables_v2_controller()->GetClassroomClient());
+  }
 
-    // `view_` gets assignments with approaching due date during initialization.
+  views::Combobox* GetComboBoxView() {
+    return views::AsViewClass<views::Combobox>(
+        view_->GetViewByID(ClassroomBubbleBaseView::kComboBoxViewId));
+  }
+
+  const views::View* GetListContainerView() const {
+    return views::AsViewClass<views::View>(
+        view_->GetViewByID(ClassroomBubbleBaseView::kListContainerViewId));
+  }
+
+ protected:
+  testing::StrictMock<TestClient> classroom_client_;
+  std::unique_ptr<ClassroomBubbleBaseView> view_;
+  DetailedViewDelegate detailed_view_delegate_{nullptr};
+
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kGlanceablesV2};
+  AccountId account_id_ = AccountId::FromUserEmail("test_user@gmail.com");
+};
+
+class ClassroomBubbleStudentViewTest : public ClassroomBubbleViewTest {
+ public:
+  void SetUp() override {
+    ClassroomBubbleViewTest::SetUp();
+    // `view_` gets student assignments with approaching due date during
+    // initialization.
     EXPECT_CALL(classroom_client_,
                 GetStudentAssignmentsWithApproachingDueDate(_))
         .WillOnce(
             [](GlanceablesClassroomClient::GetStudentAssignmentsCallback cb) {
               std::move(cb).Run({});
             });
-    view_ = std::make_unique<ClassroomBubbleView>(&detailed_view_delegate_);
+    view_ =
+        std::make_unique<ClassroomBubbleStudentView>(&detailed_view_delegate_);
   }
-
-  views::Combobox* GetComboBoxView() {
-    return views::AsViewClass<views::Combobox>(
-        view_->GetViewByID(ClassroomBubbleView::kComboBoxViewId));
-  }
-
-  const views::View* GetListContainerView() const {
-    return views::AsViewClass<views::View>(
-        view_->GetViewByID(ClassroomBubbleView::kListContainerViewId));
-  }
-
- protected:
-  testing::StrictMock<TestClient> classroom_client_;
-
- private:
-  base::test::ScopedFeatureList feature_list_{features::kGlanceablesV2};
-  AccountId account_id_ = AccountId::FromUserEmail("test_user@gmail.com");
-  DetailedViewDelegate detailed_view_delegate_{nullptr};
-  std::unique_ptr<ClassroomBubbleView> view_;
 };
 
-TEST_F(ClassroomBubbleViewTest, RendersComboBoxView) {
+class ClassroomBubbleTeacherViewTest : public ClassroomBubbleViewTest {
+ public:
+  void SetUp() override {
+    ClassroomBubbleViewTest::SetUp();
+    // `view_` gets teacher assignments with approaching due date during
+    // initialization.
+    EXPECT_CALL(classroom_client_,
+                GetTeacherAssignmentsWithApproachingDueDate(_))
+        .WillOnce(
+            [](GlanceablesClassroomClient::GetTeacherAssignmentsCallback cb) {
+              std::move(cb).Run({});
+            });
+    view_ =
+        std::make_unique<ClassroomBubbleTeacherView>(&detailed_view_delegate_);
+  }
+};
+
+TEST_F(ClassroomBubbleStudentViewTest, RendersComboBoxView) {
   ASSERT_TRUE(GetComboBoxView());
   ASSERT_EQ(GetComboBoxView()->GetModel()->GetItemCount(), 4u);
 
@@ -132,7 +159,20 @@ TEST_F(ClassroomBubbleViewTest, RendersComboBoxView) {
   EXPECT_EQ(GetComboBoxView()->GetSelectedIndex(), 0u);
 }
 
-TEST_F(ClassroomBubbleViewTest, CallsClassroomClientAfterChangingActiveList) {
+TEST_F(ClassroomBubbleTeacherViewTest, RendersComboBoxView) {
+  ASSERT_TRUE(GetComboBoxView());
+  ASSERT_EQ(GetComboBoxView()->GetModel()->GetItemCount(), 4u);
+
+  EXPECT_EQ(GetComboBoxView()->GetModel()->GetItemAt(0), u"Due Soon");
+  EXPECT_EQ(GetComboBoxView()->GetModel()->GetItemAt(1), u"Recently Due");
+  EXPECT_EQ(GetComboBoxView()->GetModel()->GetItemAt(2), u"No Due Date");
+  EXPECT_EQ(GetComboBoxView()->GetModel()->GetItemAt(3), u"Graded");
+
+  EXPECT_EQ(GetComboBoxView()->GetSelectedIndex(), 0u);
+}
+
+TEST_F(ClassroomBubbleStudentViewTest,
+       CallsClassroomClientAfterChangingActiveList) {
   ASSERT_TRUE(GetComboBoxView());
 
   EXPECT_CALL(classroom_client_, GetStudentAssignmentsWithoutDueDate(_))
@@ -157,7 +197,33 @@ TEST_F(ClassroomBubbleViewTest, CallsClassroomClientAfterChangingActiveList) {
   GetComboBoxView()->MenuSelectionAt(3);
 }
 
-TEST_F(ClassroomBubbleViewTest, RendersListItems) {
+TEST_F(ClassroomBubbleTeacherViewTest,
+       CallsClassroomClientAfterChangingActiveList) {
+  ASSERT_TRUE(GetComboBoxView());
+
+  EXPECT_CALL(classroom_client_, GetTeacherAssignmentsRecentlyDue(_))
+      .WillOnce(
+          [](GlanceablesClassroomClient::GetTeacherAssignmentsCallback cb) {
+            std::move(cb).Run({});
+          });
+  GetComboBoxView()->MenuSelectionAt(1);
+
+  EXPECT_CALL(classroom_client_, GetTeacherAssignmentsWithoutDueDate(_))
+      .WillOnce(
+          [](GlanceablesClassroomClient::GetTeacherAssignmentsCallback cb) {
+            std::move(cb).Run({});
+          });
+  GetComboBoxView()->MenuSelectionAt(2);
+
+  EXPECT_CALL(classroom_client_, GetGradedTeacherAssignments(_))
+      .WillOnce(
+          [](GlanceablesClassroomClient::GetTeacherAssignmentsCallback cb) {
+            std::move(cb).Run({});
+          });
+  GetComboBoxView()->MenuSelectionAt(3);
+}
+
+TEST_F(ClassroomBubbleStudentViewTest, RendersListItems) {
   EXPECT_CALL(classroom_client_, GetCompletedStudentAssignments(_))
       .WillOnce(
           [](GlanceablesClassroomClient::GetStudentAssignmentsCallback cb) {
@@ -171,6 +237,30 @@ TEST_F(ClassroomBubbleViewTest, RendersListItems) {
                       GURL(base::StringPrintf(
                           "https://classroom.google.com/test-link-%zu", i + 1)),
                       absl::nullopt));
+            }
+            std::move(cb).Run(std::move(assignments));
+          });
+  ASSERT_TRUE(GetComboBoxView());
+  ASSERT_TRUE(GetListContainerView());
+
+  GetComboBoxView()->MenuSelectionAt(3);
+  EXPECT_EQ(GetListContainerView()->children().size(), 3u);  // No more than 3.
+}
+
+TEST_F(ClassroomBubbleTeacherViewTest, RendersListItems) {
+  EXPECT_CALL(classroom_client_, GetGradedTeacherAssignments(_))
+      .WillOnce(
+          [](GlanceablesClassroomClient::GetTeacherAssignmentsCallback cb) {
+            std::vector<std::unique_ptr<GlanceablesClassroomTeacherAssignment>>
+                assignments;
+            for (size_t i = 0; i < 5; ++i) {
+              assignments.push_back(
+                  std::make_unique<GlanceablesClassroomTeacherAssignment>(
+                      "Course title",
+                      base::StringPrintf("Course work title %zu", i + 1),
+                      GURL(base::StringPrintf(
+                          "https://classroom.google.com/test-link-%zu", i + 1)),
+                      absl::nullopt, 0, 0, 0));
             }
             std::move(cb).Run(std::move(assignments));
           });

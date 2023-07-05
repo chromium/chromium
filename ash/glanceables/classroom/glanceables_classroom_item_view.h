@@ -6,6 +6,7 @@
 #define ASH_GLANCEABLES_CLASSROOM_GLANCEABLES_CLASSROOM_ITEM_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace ash {
@@ -31,6 +32,22 @@ class ASH_EXPORT GlanceablesClassroomItemView : public views::FlexLayoutView {
   GlanceablesClassroomItemView& operator=(const GlanceablesClassroomItemView&) =
       delete;
   ~GlanceablesClassroomItemView() override;
+};
+
+// A view which shows information about a single assignment in the classroom
+// glanceable.
+class ASH_EXPORT GlanceablesClassroomTeacherItemView
+    : public GlanceablesClassroomItemView {
+ public:
+  METADATA_HEADER(GlanceablesClassroomTeacherItemView);
+
+  explicit GlanceablesClassroomTeacherItemView(
+      const GlanceablesClassroomTeacherAssignment* assignment);
+  GlanceablesClassroomTeacherItemView(
+      const GlanceablesClassroomTeacherItemView&) = delete;
+  GlanceablesClassroomTeacherItemView& operator=(
+      const GlanceablesClassroomTeacherItemView&) = delete;
+  ~GlanceablesClassroomTeacherItemView() override;
 };
 
 }  // namespace ash

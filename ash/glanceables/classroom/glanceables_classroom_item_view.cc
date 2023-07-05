@@ -191,4 +191,23 @@ GlanceablesClassroomItemView::~GlanceablesClassroomItemView() = default;
 BEGIN_METADATA(GlanceablesClassroomItemView, views::View)
 END_METADATA
 
+GlanceablesClassroomTeacherItemView::GlanceablesClassroomTeacherItemView(
+    const GlanceablesClassroomTeacherAssignment* assignment)
+    : GlanceablesClassroomItemView(
+          std::make_unique<GlanceablesClassroomStudentAssignment>(
+              assignment->course_title,
+              assignment->course_work_title,
+              assignment->link,
+              assignment->due)
+              .get()) {
+  // TODO(b/283371064): Add grading/submission status for assignments in teacher
+  // glanceable UI
+}
+
+GlanceablesClassroomTeacherItemView::~GlanceablesClassroomTeacherItemView() =
+    default;
+
+BEGIN_METADATA(GlanceablesClassroomTeacherItemView, views::View)
+END_METADATA
+
 }  // namespace ash

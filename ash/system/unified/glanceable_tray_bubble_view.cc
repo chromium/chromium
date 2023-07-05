@@ -12,7 +12,8 @@
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
-#include "ash/system/unified/classroom_bubble_view.h"
+#include "ash/system/unified/classroom_bubble_student_view.h"
+#include "ash/system/unified/classroom_bubble_teacher_view.h"
 #include "ash/system/unified/tasks_bubble_view.h"
 #include "base/check.h"
 #include "components/session_manager/session_manager_types.h"
@@ -66,12 +67,22 @@ void GlanceableTrayBubbleView::UpdateBubble() {
 
   // TODO(b:283370562): only add teacher/student classroom glanceables when
   // the user is enrolled in courses.
-  if (should_show_non_calendar_glanceables && !classroom_bubble_view_) {
-    classroom_bubble_view_ = child_glanceable_container->AddChildView(
-        std::make_unique<ClassroomBubbleView>(detailed_view_delegate_.get()));
+  if (should_show_non_calendar_glanceables && !classroom_bubble_teacher_view_) {
+    classroom_bubble_teacher_view_ = child_glanceable_container->AddChildView(
+        std::make_unique<ClassroomBubbleTeacherView>(
+            detailed_view_delegate_.get()));
     // Add spacing between the classroom bubble and the previous bubble.
-    classroom_bubble_view_->SetProperty(views::kMarginsKey,
-                                        gfx::Insets::TLBR(8, 0, 0, 0));
+    classroom_bubble_teacher_view_->SetProperty(views::kMarginsKey,
+                                                gfx::Insets::TLBR(8, 0, 0, 0));
+  }
+
+  if (should_show_non_calendar_glanceables && !classroom_bubble_student_view_) {
+    classroom_bubble_student_view_ = child_glanceable_container->AddChildView(
+        std::make_unique<ClassroomBubbleStudentView>(
+            detailed_view_delegate_.get()));
+    // Add spacing between the classroom bubble and the previous bubble.
+    classroom_bubble_student_view_->SetProperty(views::kMarginsKey,
+                                                gfx::Insets::TLBR(8, 0, 0, 0));
   }
 
   if (!calendar_view_) {
