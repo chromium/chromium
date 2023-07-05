@@ -874,10 +874,14 @@ public class SiteSettingsTest {
     @Policies.Add({ @Policies.Item(key = "DefaultCookiesSetting", string = "2") })
     public void testDefaultCookiesSettingManagedBlock() {
         checkDefaultCookiesSettingManaged(true);
-        checkThirdPartyCookieBlockingManaged(false);
+        checkThirdPartyCookieBlockingManaged(true);
         // The ContentSetting is managed (and set to BLOCK) while ThirdPartyCookieBlocking is not
         // managed. This means cookies should always be blocked, so the user cannot choose any other
         // options and all buttons except the active one should be disabled.
+        // TODO(crbug.com/1378703): The logic this is testing is now somewhat superfluous, as the
+        // default content setting policy automatically sets the 3P cookie policy. This can be
+        // removed when the old cookies page is removed as part of the solidication of the Privacy
+        // Sandbox Settings 4 launch.
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
         checkFourStateCookieToggleButtonState(
