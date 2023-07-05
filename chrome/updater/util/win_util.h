@@ -11,6 +11,7 @@
 
 #include <cstdint>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -23,6 +24,7 @@
 #include "base/functional/function_ref.h"
 #include "base/hash/hash.h"
 #include "base/process/process_iterator.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_generic.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -36,14 +38,17 @@ namespace base {
 class FilePath;
 }
 
-// Specialization for std::hash so that IID values can be stored in an
-// associative container.
-template <>
-struct std::hash<IID> {
-  size_t operator()(const IID& iid) const {
-    static_assert(sizeof(iid) == 16, "IID storage must be contiguous.");
-    return base::FastHash(base::span<const uint8_t>(
-        reinterpret_cast<const uint8_t*>(&iid), sizeof(iid)));
+struct IidComparator {
+  constexpr bool operator()(const IID& lhs, const IID& rhs) const {
+    auto lhs_prefix = std::tie(lhs.Data1, lhs.Data2, lhs.Data3);
+    auto rhs_prefix = std::tie(rhs.Data1, rhs.Data2, rhs.Data3);
+    if (lhs_prefix < rhs_prefix) {
+      return true;
+    }
+    if (lhs_prefix == rhs_prefix) {
+      return base::ranges::lexicographical_compare(lhs.Data4, rhs.Data4);
+    }
+    return false;
   }
 };
 
