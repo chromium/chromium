@@ -78,14 +78,9 @@ constexpr SiteDataAccessType operator|(SiteDataAccessType lhs,
 }
 
 // DIPSCookieMode:
-enum class DIPSCookieMode {
-  kStandard,
-  kOffTheRecord,
-  kBlock3PC,  // block third-party cookies
-  kOffTheRecord_Block3PC
-};
+enum class DIPSCookieMode { kBlock3PC, kOffTheRecord_Block3PC };
 
-DIPSCookieMode GetDIPSCookieMode(bool is_otr, bool block_third_party_cookies);
+DIPSCookieMode GetDIPSCookieMode(bool is_otr);
 base::StringPiece GetHistogramSuffix(DIPSCookieMode mode);
 const char* DIPSCookieModeToString(DIPSCookieMode mode);
 std::ostream& operator<<(std::ostream& os, DIPSCookieMode mode);
@@ -270,11 +265,12 @@ enum class DIPSErrorCode {
 // numeric values should never be reused.
 enum class DIPSDeletionAction {
   kDisallowed = 0,
-  kExceptedAs1p = 1,
-  kExceptedAs3p = 2,
+  kExceptedAs1p = 1,  // No longer used - merged into 'kExcepted' below.
+  kExceptedAs3p = 2,  // No longer used - merged into 'kExcepted' below.
   kEnforced = 3,
   kIgnored = 4,
-  kMaxValue = kIgnored,
+  kExcepted = 5,
+  kMaxValue = kExcepted,
 };
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_UTILS_H_

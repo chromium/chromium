@@ -23,13 +23,8 @@ reviewer.
   <variant name=".Block3PC"
       summary="in a NON-off-the-record profile, with third-party cookies
                blocked"/>
-  <variant name=".OffTheRecord"
-      summary="in an off-the-record profile, with third-party cookies enabled"/>
   <variant name=".OffTheRecord_Block3PC"
       summary="in an off-the-record profile, with third-party cookies blocked"/>
-  <variant name=".Standard"
-      summary="in a NON-off-the-record profile, with third-party cookies
-               enabled"/>
 </variants>
 
 <variants name="DIPSRedirectType">

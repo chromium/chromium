@@ -855,9 +855,9 @@ TEST_F(DIPSStoragePrepopulateTest, ExistingStorageAndInteractionTimes) {
   // First record interaction and storage for the site, then call Prepopulate().
   storage_.AsyncCall(&DIPSStorage::RecordInteraction)
       .WithArgs(GURL("http://site"), interaction_time,
-                DIPSCookieMode::kStandard);
+                DIPSCookieMode::kBlock3PC);
   storage_.AsyncCall(&DIPSStorage::RecordStorage)
-      .WithArgs(GURL("http://site"), storage_time, DIPSCookieMode::kStandard);
+      .WithArgs(GURL("http://site"), storage_time, DIPSCookieMode::kBlock3PC);
   storage_.AsyncCall(&DIPSStorage::Prepopulate)
       .WithArgs(prepopulate_time, std::vector<std::string>{"site"},
                 base::DoNothing());
@@ -881,7 +881,7 @@ TEST_F(DIPSStoragePrepopulateTest, ExistingStorageTime) {
 
   // Record only storage for the site, then call Prepopulate().
   storage_.AsyncCall(&DIPSStorage::RecordStorage)
-      .WithArgs(GURL("http://site"), storage_time, DIPSCookieMode::kStandard);
+      .WithArgs(GURL("http://site"), storage_time, DIPSCookieMode::kBlock3PC);
   storage_.AsyncCall(&DIPSStorage::Prepopulate)
       .WithArgs(prepopulate_time, std::vector<std::string>{"site"},
                 base::DoNothing());
@@ -905,7 +905,7 @@ TEST_F(DIPSStoragePrepopulateTest, ExistingInteractionTime) {
   // Record only storage for the site, then call Prepopulate().
   storage_.AsyncCall(&DIPSStorage::RecordInteraction)
       .WithArgs(GURL("http://site"), interaction_time,
-                DIPSCookieMode::kStandard);
+                DIPSCookieMode::kBlock3PC);
   storage_.AsyncCall(&DIPSStorage::Prepopulate)
       .WithArgs(prepopulate_time, std::vector<std::string>{"site"},
                 base::DoNothing());

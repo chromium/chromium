@@ -86,29 +86,15 @@ std::ostream& operator<<(std::ostream& os, SiteDataAccessType access_type) {
 }
 
 // DIPSCookieMode:
-DIPSCookieMode GetDIPSCookieMode(bool is_otr, bool block_third_party_cookies) {
-  if (is_otr) {
-    if (block_third_party_cookies) {
-      return DIPSCookieMode::kOffTheRecord_Block3PC;
-    }
-    return DIPSCookieMode::kOffTheRecord;
-  }
-
-  if (block_third_party_cookies) {
-    return DIPSCookieMode::kBlock3PC;
-  }
-
-  return DIPSCookieMode::kStandard;
+DIPSCookieMode GetDIPSCookieMode(bool is_otr) {
+  return is_otr ? DIPSCookieMode::kOffTheRecord_Block3PC
+                : DIPSCookieMode::kBlock3PC;
 }
 
 base::StringPiece GetHistogramSuffix(DIPSCookieMode mode) {
   // Any changes here need to be reflected in DIPSCookieMode in
   // tools/metrics/histograms/metadata/others/histograms.xml
   switch (mode) {
-    case DIPSCookieMode::kStandard:
-      return ".Standard";
-    case DIPSCookieMode::kOffTheRecord:
-      return ".OffTheRecord";
     case DIPSCookieMode::kBlock3PC:
       return ".Block3PC";
     case DIPSCookieMode::kOffTheRecord_Block3PC:
@@ -120,10 +106,6 @@ base::StringPiece GetHistogramSuffix(DIPSCookieMode mode) {
 
 const char* DIPSCookieModeToString(DIPSCookieMode mode) {
   switch (mode) {
-    case DIPSCookieMode::kStandard:
-      return "Standard";
-    case DIPSCookieMode::kOffTheRecord:
-      return "OffTheRecord";
     case DIPSCookieMode::kBlock3PC:
       return "Block3PC";
     case DIPSCookieMode::kOffTheRecord_Block3PC:

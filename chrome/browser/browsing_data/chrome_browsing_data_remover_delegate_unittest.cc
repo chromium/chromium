@@ -393,8 +393,9 @@ class RemoveHistoryTester {
   [[nodiscard]] bool Init(Profile* profile) {
     history_service_ = HistoryServiceFactory::GetForProfile(
         profile, ServiceAccessType::EXPLICIT_ACCESS);
-    if (!history_service_)
+    if (!history_service_) {
       return false;
+    }
 
     return true;
   }
@@ -438,13 +439,15 @@ class RemoveFaviconTester {
     // Create the history service if it has not been created yet.
     history_service_ = HistoryServiceFactory::GetForProfile(
         profile, ServiceAccessType::EXPLICIT_ACCESS);
-    if (!history_service_)
+    if (!history_service_) {
       return false;
+    }
 
     favicon_service_ = FaviconServiceFactory::GetForProfile(
         profile, ServiceAccessType::EXPLICIT_ACCESS);
-    if (!favicon_service_)
+    if (!favicon_service_) {
       return false;
+    }
 
     return true;
   }
@@ -540,8 +543,9 @@ class RemoveUkmDataTester {
         profile);
     history_service_ = HistoryServiceFactory::GetForProfile(
         profile, ServiceAccessType::EXPLICIT_ACCESS);
-    if (!history_service_)
+    if (!history_service_) {
       return false;
+    }
     test_utils_.set_history_service(history_service_);
 
     // Run model overrides to start storing UKM metrics.
@@ -697,12 +701,14 @@ class RemoveDIPSEventsTester {
   void WriteEventTimes(GURL url,
                        absl::optional<base::Time> storage_time,
                        absl::optional<base::Time> interaction_time) {
-    if (storage_time.has_value())
+    if (storage_time.has_value()) {
       storage_->AsyncCall(&DIPSStorage::RecordStorage)
-          .WithArgs(url, storage_time.value(), DIPSCookieMode::kStandard);
-    if (interaction_time.has_value())
+          .WithArgs(url, storage_time.value(), DIPSCookieMode::kBlock3PC);
+    }
+    if (interaction_time.has_value()) {
       storage_->AsyncCall(&DIPSStorage::RecordInteraction)
-          .WithArgs(url, interaction_time.value(), DIPSCookieMode::kStandard);
+          .WithArgs(url, interaction_time.value(), DIPSCookieMode::kBlock3PC);
+    }
     storage_->FlushPostedTasksForTesting();
   }
 
@@ -830,8 +836,9 @@ class ProbablySameFilterMatcher
         GURL("http://host3.com:1"), GURL("invalid spec")};
     for (GURL url : urls_to_test_) {
       if (filter.Run(url) != to_match_.Run(url)) {
-        if (listener)
+        if (listener) {
           *listener << "The filters differ on the URL " << url;
+        }
         return false;
       }
     }
@@ -903,8 +910,9 @@ class RemoveDownloadsTester {
 
 base::RepeatingCallback<bool(const GURL&)> CreateUrlFilterFromOriginFilter(
     const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter) {
-  if (origin_filter.is_null())
+  if (origin_filter.is_null()) {
     return base::RepeatingCallback<bool(const GURL&)>();
+  }
   return base::BindLambdaForTesting([origin_filter](const GURL& url) {
     return origin_filter.Run(url::Origin::Create(url));
   });
@@ -954,8 +962,9 @@ class RemoveAutofillTester {
     const std::vector<autofill::CreditCard*>& credit_cards =
         personal_data_manager_->GetCreditCards();
     for (const autofill::CreditCard* credit_card : credit_cards) {
-      if (credit_card->origin() == origin)
+      if (credit_card->origin() == origin) {
         return true;
+      }
     }
 
     return false;
@@ -1342,8 +1351,9 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
         .WillOnce(
             testing::WithArgs<3, 4>([](auto callback, auto sync_callback) {
               std::move(callback).Run();
-              if (sync_callback)
+              if (sync_callback) {
                 std::move(sync_callback).Run(false);
+              }
             }));
   }
 
@@ -1355,8 +1365,9 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
         .WillOnce(
             testing::WithArgs<3, 4>([](auto callback, auto sync_callback) {
               std::move(callback).Run();
-              if (sync_callback)
+              if (sync_callback) {
                 std::move(sync_callback).Run(false);
+              }
             }));
   }
 
@@ -3518,8 +3529,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
 
   // Set a value for every WebsiteSetting.
   for (const content_settings::WebsiteSettingsInfo* info : *registry) {
-    if (base::Contains(non_deletable_types, info->type()))
+    if (base::Contains(non_deletable_types, info->type())) {
       continue;
+    }
     base::Value some_value;
     auto* content_setting = content_setting_registry->Get(info->type());
     if (content_setting) {
@@ -3560,8 +3572,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
 
   // All settings should be deleted now.
   for (const content_settings::WebsiteSettingsInfo* info : *registry) {
-    if (base::Contains(non_deletable_types, info->type()))
+    if (base::Contains(non_deletable_types, info->type())) {
       continue;
+    }
     base::Value value = map->GetWebsiteSetting(url, url, info->type(), nullptr);
 
     if (value.is_int()) {

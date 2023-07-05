@@ -37,6 +37,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
@@ -232,7 +233,6 @@ DIPSService* DIPSService::Get(content::BrowserContext* context) {
 }
 
 void DIPSService::Shutdown() {
-  cached_should_block_3pcs_ = cookie_settings_->ShouldBlockThirdPartyCookies();
   cookie_settings_.reset();
 }
 
@@ -242,33 +242,20 @@ scoped_refptr<base::SequencedTaskRunner> DIPSService::CreateTaskRunner() {
        base::ThreadPolicy::PREFER_BACKGROUND});
 }
 
-bool DIPSService::ShouldBlockThirdPartyCookies() const {
-  if (IsShuttingDown()) {
-    return cached_should_block_3pcs_.value();
-  }
-
-  return cookie_settings_->ShouldBlockThirdPartyCookies();
-}
-
-bool DIPSService::Has3PCExceptionAs3P(const std::string& site) const {
-  DCHECK(!IsShuttingDown());
-  GURL url("https://" + site);
-
-  return cookie_settings_->IsFullCookieAccessAllowed(
-      url, net::SiteForCookies(), absl::nullopt, net::CookieSettingOverrides());
-}
-
-bool DIPSService::Has3PCExceptionAs1P(const GURL& url) const {
+bool DIPSService::Are3PCAllowed(const GURL& first_party_url,
+                                const GURL& third_party_url) const {
   DCHECK(!IsShuttingDown());
 
   return cookie_settings_->IsFullCookieAccessAllowed(
-      GURL(), net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-      net::CookieSettingOverrides());
+      third_party_url, net::SiteForCookies::FromUrl(first_party_url),
+      url::Origin::Create(first_party_url),
+      net::CookieSettingOverrides(
+          {net::CookieSettingOverride::kStorageAccessGrantEligible,
+           net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible}));
 }
 
 DIPSCookieMode DIPSService::GetCookieMode() const {
-  return GetDIPSCookieMode(browser_context_->IsOffTheRecord(),
-                           ShouldBlockThirdPartyCookies());
+  return GetDIPSCookieMode(browser_context_->IsOffTheRecord());
 }
 
 void DIPSService::RemoveEvents(const base::Time& delete_begin,
@@ -377,14 +364,14 @@ void DIPSService::RecordBounce(
     base::Time time,
     bool stateful,
     base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
-  // If the initial or final URL has a 1P exception for all embedded 3PCs (e.g.
-  // Chrome Guard) then clear the tracking site from the DIPS DB, to avoid
-  // deleting its storage. The exemption overrides any bounces from non-exempted
-  // sites.
-  if (Has3PCExceptionAs1P(initial_url) || Has3PCExceptionAs1P(final_url)) {
+  // If the bounced URL has a 3PC exception when embedded under the initial or
+  // final URL in the redirect,then clear the tracking site from the DIPS DB, to
+  // avoid deleting its storage. The exception overrides any bounces from
+  // non-excepted sites.
+  if (Are3PCAllowed(initial_url, url) || Are3PCAllowed(final_url, url)) {
     // These records indicate sites that could've had their state deleted
     // provided their grace period expired. But are at the moment excepted
-    // following `Has3PCExceptionAs1P()` of either `initial_url` or `final_url`.
+    // following `Are3PCAllowed()` of either `initial_url` or `final_url`.
     if ((dips::kTriggeringAction.Get() == DIPSTriggeringAction::kStatefulBounce
              ? stateful
              : true)) {
@@ -394,8 +381,7 @@ void DIPSService::RecordBounce(
       if (url.is_empty()) {
         UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kIgnored);
       } else {
-        UmaHistogramDeletion(GetCookieMode(),
-                             DIPSDeletionAction::kExceptedAs1p);
+        UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kExcepted);
       }
     }
 
@@ -408,7 +394,7 @@ void DIPSService::RecordBounce(
     return;
   }
 
-  // If the bounce is stateful and not exempted by cookie settings, increment
+  // If the bounce is stateful and not excepted by cookie settings, increment
   // the bounce counter in PageSpecificContentSettings.
   if (stateful) {
     content_settings_callback.Run(final_url);
@@ -521,15 +507,18 @@ void DIPSService::DeleteDIPSEligibleState(
     const ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForDipsSite(
         base::PassKey<DIPSService>(), site);
     ukm::builders::DIPS_Deletion(source_id)
-        .SetShouldBlockThirdPartyCookies(ShouldBlockThirdPartyCookies())
-        .SetHasCookieException(Has3PCExceptionAs3P(site))
+        // These settings are checked at bounce time, before logging the bounce.
+        // At this time, we guarantee that 3PC are blocked and this site is not
+        // excepted (provided the user hasn't changed their settings in the
+        // meantime).
+        .SetShouldBlockThirdPartyCookies(true)
+        .SetHasCookieException(false)
         .SetIsDeletionEnabled(dips::kDeletionEnabled.Get())
         .Record(ukm::UkmRecorder::Get());
   }
 
-  if (ShouldBlockThirdPartyCookies() && dips::kDeletionEnabled.Get()) {
-    std::vector<std::string> excepted_sites;
-    std::vector<std::string> non_excepted_sites;
+  if (dips::kDeletionEnabled.Get()) {
+    std::vector<std::string> filtered_sites_to_clear;
 
     for (const auto& site : sites_to_clear) {
       // TODO(crbug.com/1447035): Investigate and fix the presence of empty
@@ -539,50 +528,20 @@ void DIPSService::DeleteDIPSEligibleState(
         UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kIgnored);
         continue;
       }
-      if (Has3PCExceptionAs3P(site)) {
-        UmaHistogramDeletion(GetCookieMode(),
-                             DIPSDeletionAction::kExceptedAs3p);
-        excepted_sites.push_back(site);
-      } else {
-        UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kEnforced);
-        non_excepted_sites.push_back(site);
-      }
+      UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kEnforced);
+      filtered_sites_to_clear.push_back(site);
     }
 
     base::OnceClosure finish_callback = base::BindOnce(
-        std::move(callback), std::vector<std::string>(non_excepted_sites));
-    if (non_excepted_sites.empty() && excepted_sites.empty()) {
+        std::move(callback), std::vector<std::string>(filtered_sites_to_clear));
+    if (filtered_sites_to_clear.empty()) {
       std::move(finish_callback).Run();
       return;
     }
 
-    // We have sites with exceptions, but no sites to delete state for. Just
-    // remove their entries from the database.
-    if (non_excepted_sites.empty()) {
-      storage_.AsyncCall(&DIPSStorage::RemoveRows)
-          .WithArgs(std::move(excepted_sites))
-          .Then(base::BindOnce(&OnDeletionFinished, std::move(finish_callback),
-                               deletion_start));
-      return;
-    }
-
-    // We have sites to delete state for, but no sites with exceptions. Just
-    // perform state deletion.
-    if (excepted_sites.empty()) {
-      PostDeletionTaskToUIThread(std::move(finish_callback), deletion_start,
-                                 std::move(non_excepted_sites));
-      return;
-    }
-
-    // We have both sites with exceptions to remove from the database and sites
-    // to actually delete state for. Do both operations in sequence.
-    storage_.AsyncCall(&DIPSStorage::RemoveRows)
-        .WithArgs(std::move(excepted_sites))
-        .Then(base::BindOnce(&DIPSService::PostDeletionTaskToUIThread,
-                             weak_factory_.GetWeakPtr(),
-                             std::move(finish_callback), deletion_start,
-                             std::move(non_excepted_sites)));
-
+    // Perform state deletion on the filtered list of sites.
+    PostDeletionTaskToUIThread(std::move(finish_callback), deletion_start,
+                               std::move(filtered_sites_to_clear));
   } else {
     for (auto it = sites_to_clear.begin(); it != sites_to_clear.end(); it++) {
       // TODO(crbug.com/1447035): Investigate and fix the presence of empty

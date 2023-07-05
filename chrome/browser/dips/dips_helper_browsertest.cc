@@ -62,9 +62,9 @@ namespace {
 
 // Histogram names
 constexpr char kTimeToInteraction[] =
-    "Privacy.DIPS.TimeFromStorageToInteraction.Standard";
+    "Privacy.DIPS.TimeFromStorageToInteraction.Block3PC";
 constexpr char kTimeToStorage[] =
-    "Privacy.DIPS.TimeFromInteractionToStorage.Standard";
+    "Privacy.DIPS.TimeFromInteractionToStorage.Block3PC";
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kTimeToInteraction_OTR_Block3PC[] =
     "Privacy.DIPS.TimeFromStorageToInteraction.OffTheRecord_Block3PC";
