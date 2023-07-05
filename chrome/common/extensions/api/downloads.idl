@@ -558,6 +558,7 @@ namespace downloads {
     // one other extension has disabled it will return an error through
     // $(ref:runtime.lastError). Requires the <code>"downloads.shelf"</code>
     // permission in addition to the <code>"downloads"</code> permission.
+    [deprecated="Use $(ref:setUiOptions) instead."]
     static void setShelfEnabled(boolean enabled);
 
     // Change the download UI of every window associated with the current
