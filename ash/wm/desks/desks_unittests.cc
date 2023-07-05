@@ -411,10 +411,12 @@ class DesksTest : public AshTestBase,
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kUseFirstDisplayAsInternal);
 
+    // Jelly and Jellyroll need to be enabled and disabled together.
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kDeskButton, true},
          {features::kFeatureManagement16Desks, GetParam().use_16_desks},
-         {chromeos::features::kJellyroll, GetParam().enable_jellyroll}});
+         {chromeos::features::kJellyroll, GetParam().enable_jellyroll},
+         {chromeos::features::kJelly, GetParam().enable_jellyroll}});
 
     AshTestBase::SetUp();
     SetVirtualKeyboardEnabled(true);
@@ -9135,7 +9137,8 @@ class DeskBarTest
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kDeskButton, true},
          {features::kFeatureManagement16Desks, use_16_desks_},
-         {chromeos::features::kJellyroll, enable_jellyroll_}});
+         {chromeos::features::kJellyroll, enable_jellyroll_},
+         {chromeos::features::kJelly, enable_jellyroll_}});
 
     AshTestBase::SetUp();
 
