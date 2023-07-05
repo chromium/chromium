@@ -12,6 +12,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchTabGroup;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 
@@ -51,10 +52,27 @@ public class AuxiliarySearchBridge {
         return null;
     }
 
+    /**
+     * @return AuxiliarySearchGroup for tabs, which is necessary for the auxiliary search.
+     */
+    public @Nullable AuxiliarySearchTabGroup getTabsSearchableData() {
+        if (mNativeBridge != 0) {
+            try {
+                return AuxiliarySearchTabGroup.parseFrom(
+                        AuxiliarySearchBridgeJni.get().getTabsSearchableData(mNativeBridge));
+
+            } catch (InvalidProtocolBufferException e) {
+            }
+        }
+
+        return null;
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         long getForProfile(Profile profile);
         byte[] getBookmarksSearchableData(long nativeAuxiliarySearchProvider);
+        byte[] getTabsSearchableData(long nativeAuxiliarySearchProvider);
     }
 }

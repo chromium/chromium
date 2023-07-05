@@ -13,6 +13,7 @@
 
 namespace auxiliary_search {
 class AuxiliarySearchBookmarkGroup;
+class AuxiliarySearchTabGroup;
 }
 namespace bookmarks {
 class BookmarkModel;
@@ -29,14 +30,19 @@ class AuxiliarySearchProvider : public KeyedService {
   base::android::ScopedJavaLocalRef<jbyteArray> GetBookmarksSearchableData(
       JNIEnv* env) const;
 
+  base::android::ScopedJavaLocalRef<jbyteArray> GetTabsSearchableData(
+      JNIEnv* env) const;
+
   static void EnsureFactoryBuilt();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderTest, QueryBookmarks);
+  FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderTest, QueryTabs);
 
-  void GetBookmarks(
-      bookmarks::BookmarkModel* model,
-      auxiliary_search::AuxiliarySearchBookmarkGroup* group) const;
+  auxiliary_search::AuxiliarySearchBookmarkGroup GetBookmarks(
+      bookmarks::BookmarkModel* model) const;
+
+  auxiliary_search::AuxiliarySearchTabGroup GetTabs() const;
 
   raw_ptr<Profile> profile_;
 };

@@ -9,6 +9,7 @@ import android.util.Pair;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchTabGroup;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
@@ -78,6 +79,10 @@ public class AuxiliarySearchProvider {
      * @return AuxiliarySearchGroup for tabs.
      */
     public AuxiliarySearchTabGroup getTabsSearchableDataProto() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_APP_INTEGRATION_SAFE_SEARCH)) {
+            return mAuxiliarySearchBridge.getTabsSearchableData();
+        }
+
         var tabGroupBuilder = AuxiliarySearchTabGroup.newBuilder();
         TabList tabList = mTabModelSelector.getModel(false).getComprehensiveModel();
 

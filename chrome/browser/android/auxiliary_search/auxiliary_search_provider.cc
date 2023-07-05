@@ -65,12 +65,10 @@ AuxiliarySearchProvider::~AuxiliarySearchProvider() = default;
 
 base::android::ScopedJavaLocalRef<jbyteArray>
 AuxiliarySearchProvider::GetBookmarksSearchableData(JNIEnv* env) const {
-  auxiliary_search::AuxiliarySearchBookmarkGroup group;
+  auxiliary_search::AuxiliarySearchBookmarkGroup group =
+      GetBookmarks(BookmarkModelFactory::GetForBrowserContext(profile_.get()));
+
   std::string serialized_group;
-
-  GetBookmarks(BookmarkModelFactory::GetForBrowserContext(profile_.get()),
-               &group);
-
   if (!group.SerializeToString(&serialized_group)) {
     serialized_group.clear();
   }
@@ -78,13 +76,25 @@ AuxiliarySearchProvider::GetBookmarksSearchableData(JNIEnv* env) const {
   return ToJavaByteArray(env, serialized_group);
 }
 
-void AuxiliarySearchProvider::GetBookmarks(
-    bookmarks::BookmarkModel* model,
-    auxiliary_search::AuxiliarySearchBookmarkGroup* group) const {
+base::android::ScopedJavaLocalRef<jbyteArray>
+AuxiliarySearchProvider::GetTabsSearchableData(JNIEnv* env) const {
+  auxiliary_search::AuxiliarySearchTabGroup group = GetTabs();
+
+  std::string serialized_group;
+  if (!group.SerializeToString(&serialized_group)) {
+    serialized_group.clear();
+  }
+
+  return ToJavaByteArray(env, serialized_group);
+}
+
+auxiliary_search::AuxiliarySearchBookmarkGroup
+AuxiliarySearchProvider::GetBookmarks(bookmarks::BookmarkModel* model) const {
+  auxiliary_search::AuxiliarySearchBookmarkGroup group;
   std::vector<const BookmarkNode*> nodes;
   bookmarks::GetMostRecentlyUsedEntries(model, kMaxBookmarksCount, &nodes);
   for (const BookmarkNode* node : nodes) {
-    auxiliary_search::AuxiliarySearchEntry* bookmark = group->add_bookmark();
+    auxiliary_search::AuxiliarySearchEntry* bookmark = group.add_bookmark();
     bookmark->set_title(base::UTF16ToUTF8(node->GetTitle()));
     bookmark->set_url(node->url().spec());
     if (!node->date_added().is_null()) {
@@ -94,6 +104,17 @@ void AuxiliarySearchProvider::GetBookmarks(
       bookmark->set_last_access_timestamp(node->date_last_used().ToJavaTime());
     }
   }
+
+  return group;
+}
+
+auxiliary_search::AuxiliarySearchTabGroup AuxiliarySearchProvider::GetTabs()
+    const {
+  auxiliary_search::AuxiliarySearchTabGroup group;
+  // TODO(crbug.com/1462378): Add implementation for reading tabs info from
+  // PersistedTabData.
+
+  return group;
 }
 
 // static

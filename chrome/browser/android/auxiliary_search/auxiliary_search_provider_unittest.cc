@@ -53,7 +53,6 @@ BookmarkNode* AsMutable(const BookmarkNode* node) {
 }
 
 TEST_F(AuxiliarySearchProviderTest, QueryBookmarks) {
-  auxiliary_search::AuxiliarySearchBookmarkGroup group;
   for (int i = 0; i < 200; i++) {
     std::string number = base::NumberToString(i);
     BookmarkNode* node = AsMutable(model_->AddURL(
@@ -61,7 +60,8 @@ TEST_F(AuxiliarySearchProviderTest, QueryBookmarks) {
         GURL("http://foo.com/" + number)));
     node->set_date_last_used(base::Time::FromTimeT(i));
   }
-  provider->GetBookmarks(model_.get(), &group);
+  auxiliary_search::AuxiliarySearchBookmarkGroup group =
+      provider->GetBookmarks(model_.get());
 
   EXPECT_EQ(100, group.bookmark_size());
 
@@ -79,4 +79,11 @@ TEST_F(AuxiliarySearchProviderTest, QueryBookmarks) {
     bookmark_titles_int.insert(title_int);
   }
   EXPECT_EQ(100u, bookmark_titles_int.size());
+}
+
+TEST_F(AuxiliarySearchProviderTest, QueryTabs) {
+  auxiliary_search::AuxiliarySearchTabGroup group = provider->GetTabs();
+
+  // TODO(crbug.com/1462378): Add real test once
+  // AuxiliarySearchProvider::GetTabs is implemented.
 }

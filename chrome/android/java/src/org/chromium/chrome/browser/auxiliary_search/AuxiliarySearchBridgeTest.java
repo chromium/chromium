@@ -24,6 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchTabGroup;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
@@ -37,6 +38,8 @@ import org.chromium.chrome.test.util.browser.Features;
 public final class AuxiliarySearchBridgeTest {
     private static final String BOOKMARK_TITLE = "bookmark";
     private static final String BOOKMARK_URL = "https://bookmark.google.com";
+    private static final String TAB_TITLE = "tab";
+    private static final String TAB_URL = "https://tab.google.com";
     private static final long FAKE_NATIVE_PROVIDER = 1;
 
     @Mock
@@ -69,7 +72,7 @@ public final class AuxiliarySearchBridgeTest {
 
     @Test
     @SmallTest
-    public void getSearchableDataTest() {
+    public void getBookmarksSearchableData() {
         doReturn(false).when(mProfile).isOffTheRecord();
 
         var bookmark = AuxiliarySearchEntry.newBuilder()
@@ -91,5 +94,28 @@ public final class AuxiliarySearchBridgeTest {
         assertEquals(group.getBookmarkCount(), 1);
         assertEquals(group.getBookmark(0).getTitle(), BOOKMARK_TITLE);
         assertEquals(group.getBookmark(0).getUrl(), BOOKMARK_URL);
+    }
+
+    @Test
+    @SmallTest
+    public void getTabsSearchableData() {
+        doReturn(false).when(mProfile).isOffTheRecord();
+
+        var tab = AuxiliarySearchEntry.newBuilder().setTitle(TAB_TITLE).setUrl(TAB_URL).build();
+        var proto = AuxiliarySearchTabGroup.newBuilder().addTab(tab).build();
+
+        doReturn(FAKE_NATIVE_PROVIDER).when(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
+        doReturn(proto.toByteArray())
+                .when(mMockAuxiliarySearchBridgeJni)
+                .getTabsSearchableData(FAKE_NATIVE_PROVIDER);
+
+        AuxiliarySearchBridge bridge = new AuxiliarySearchBridge(mProfile);
+        verify(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
+
+        AuxiliarySearchTabGroup group = bridge.getTabsSearchableData();
+
+        assertEquals(group.getTabCount(), 1);
+        assertEquals(group.getTab(0).getTitle(), TAB_TITLE);
+        assertEquals(group.getTab(0).getUrl(), TAB_URL);
     }
 }

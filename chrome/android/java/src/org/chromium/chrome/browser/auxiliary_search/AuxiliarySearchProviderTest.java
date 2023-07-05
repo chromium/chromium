@@ -46,6 +46,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION})
+@Features.DisableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_SAFE_SEARCH})
 public class AuxiliarySearchProviderTest {
     private static final String TAB_URL = "https://tab.google.com/";
     private static final String BOOKMARK_TITLE = "bookmark";
