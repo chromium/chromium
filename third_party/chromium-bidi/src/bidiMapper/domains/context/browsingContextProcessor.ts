@@ -320,14 +320,9 @@ export class BrowsingContextProcessor {
     this.#preloadScriptStorage.addPreloadScript(preloadScript);
 
     const cdpTargets = new Set<CdpTarget>(
-      // TODO: The unique target can be in a non-top-level browsing context.
-      // We need all the targets.
-      // To get them, we can walk through all the contexts and collect their targets into the set.
-      params.context === undefined || params.context === null
-        ? this.#browsingContextStorage
-            .getTopLevelContexts()
-            .map((context) => context.cdpTarget)
-        : [this.#browsingContextStorage.getContext(params.context).cdpTarget]
+      this.#browsingContextStorage
+        .getTopLevelContexts()
+        .map((context) => context.cdpTarget)
     );
 
     await preloadScript.initInTargets(cdpTargets);

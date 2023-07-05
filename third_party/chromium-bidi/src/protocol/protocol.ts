@@ -766,7 +766,6 @@ export namespace Script {
     functionDeclaration: string;
     arguments?: ChannelValue[];
     sandbox?: string;
-    context?: CommonDataTypes.BrowsingContext | null;
   };
 
   export type AddPreloadScriptResult = {

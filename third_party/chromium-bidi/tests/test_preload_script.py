@@ -20,27 +20,6 @@ from test_helpers import (AnyExtending, execute_command, read_JSON_message,
 
 
 @pytest.mark.asyncio
-async def test_preloadScript_add_nonExistingContext_exceptionReturned(
-        websocket, context_id):
-    DUMMY_CONTEXT = 'UNKNOWN_CONTEXT_ID'
-    assert DUMMY_CONTEXT != context_id
-
-    with pytest.raises(Exception) as exception_info:
-        await execute_command(
-            websocket, {
-                "method": "script.addPreloadScript",
-                "params": {
-                    "functionDeclaration": "() => { window.foo='bar'; }",
-                    "context": DUMMY_CONTEXT,
-                }
-            })
-    assert {
-        'error': 'no such frame',
-        'message': f'Context {DUMMY_CONTEXT} not found'
-    } == exception_info.value.args[0]
-
-
-@pytest.mark.asyncio
 async def test_preloadScript_add_setGlobalVariable(websocket, context_id,
                                                    html):
     result = await execute_command(

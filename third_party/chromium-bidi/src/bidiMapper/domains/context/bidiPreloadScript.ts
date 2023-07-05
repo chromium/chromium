@@ -74,7 +74,8 @@ export class BidiPreloadScript {
     this.#channels =
       params.arguments?.map((a) => new ChannelProxy(a.value)) ?? [];
     this.#functionDeclaration = params.functionDeclaration;
-    this.#contextId = params.context ?? null;
+    // TODO(sadym): Is this needed?
+    this.#contextId = null;
   }
 
   /** Channels of the preload script. */
