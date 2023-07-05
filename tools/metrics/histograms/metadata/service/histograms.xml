@@ -36,6 +36,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".STOPPING"
       summary="The service worker was in STOPPING state when
                ServiceWorkerMainResourceLoader was created."/>
+  <variant name=".WARMED_UP"
+      summary="The service worker was in WARMED_UP state when
+               ServiceWorkerMainResourceLoader was created."/>
+  <variant name=".WARMING_UP"
+      summary="The service worker was in WARMING_UP state when
+               ServiceWorkerMainResourceLoader was created."/>
 </variants>
 
 <variants name="NavigationType">
@@ -661,6 +667,65 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ServiceWorker.LoadTiming.MainFrame.MainResource.FindRegistrationToCompleted{EmbeddedWorkerInitialStatus}"
+    units="ms" expires_after="2023-10-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time taken from (a) the start of finding service worker registration, to
+    (b) reading response body is completed. Recorded when a fetch event handler
+    handled the request.
+
+    Recorded for each navigation request (including redirects) where there is a
+    fetch event handler and the fetch event was successfully dispatched to the
+    service worker.
+
+    {EmbeddedWorkerInitialStatus}
+  </summary>
+  <token key="EmbeddedWorkerInitialStatus"
+      variants="EmbeddedWorkerInitialStatus"/>
+</histogram>
+
+<histogram
+    name="ServiceWorker.LoadTiming.MainFrame.MainResource.FindRegistrationToFallbackNetwork{EmbeddedWorkerInitialStatus}"
+    units="ms" expires_after="2023-10-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time taken from (a) the start of finding service worker registration, to
+    (b) browser process received the IPC. Recorded when no fetch event handler
+    provided a response to the request.
+
+    Recorded for each navigation request (including redirects) where there is a
+    fetch event handler and the fetch event was successfully dispatched to the
+    service worker.
+
+    {EmbeddedWorkerInitialStatus}
+  </summary>
+  <token key="EmbeddedWorkerInitialStatus"
+      variants="EmbeddedWorkerInitialStatus"/>
+</histogram>
+
+<histogram
+    name="ServiceWorker.LoadTiming.MainFrame.MainResource.FindRegistrationToRequestStart{EmbeddedWorkerInitialStatus}"
+    units="ms" expires_after="2023-10-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time taken from (a) the start of finding service worker registration, to
+    (b) the start of a navigation request.
+
+    Recorded for each navigation request (including redirects) where there is a
+    fetch event handler and the fetch event was successfully dispatched to the
+    service worker.
+
+    {EmbeddedWorkerInitialStatus}
+  </summary>
+  <token key="EmbeddedWorkerInitialStatus"
+      variants="EmbeddedWorkerInitialStatus"/>
+</histogram>
+
+<histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.ForwardServiceWorkerToWorkerReady2{EmbeddedWorkerInitialStatus}{NavigationType}"
     units="ms" expires_after="2023-10-01">
   <owner>yyanagisawa@chromium.org</owner>
@@ -751,8 +816,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-worker@google.com</owner>
   <summary>
     The time taken from (a) the start of a navigation request, to (b) the
-    request is forwarded to a service worker code path. This includes looking up
-    a service worker registration and throttling.
+    request is forwarded to a service worker code path.
 
     Recorded for each navigation request (including redirects) where there is a
     fetch event handler and the fetch event was successfully dispatched to the

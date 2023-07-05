@@ -299,15 +299,15 @@ void ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
 
 void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
     bool is_for_navigation,
-    base::TimeTicks start_time,
+    base::TimeTicks find_registration_start_time,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
   if (is_for_navigation) {
-    DCHECK(!start_time.is_null());
+    DCHECK(!find_registration_start_time.is_null());
     auto now = base::TimeTicks::Now();
 
-    ServiceWorkerMetrics::RecordFindRegistrationForClientUrlTime(now -
-                                                                 start_time);
+    ServiceWorkerMetrics::RecordFindRegistrationForClientUrlTime(
+        now - find_registration_start_time);
 
     base::UmaHistogramBoolean(
         "ServiceWorker.FoundServiceWorkerRegistrationOnNavigation",
@@ -316,7 +316,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
         "ServiceWorker",
         "ServiceWorker.MaybeCreateLoaderToContinueWithRegistration",
-        TRACE_ID_LOCAL(this), start_time);
+        TRACE_ID_LOCAL(this), find_registration_start_time);
     TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
         "ServiceWorker",
         "ServiceWorker.MaybeCreateLoaderToContinueWithRegistration",
@@ -440,7 +440,8 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
   if (active_version->status() == ServiceWorkerVersion::ACTIVATING) {
     registration->active_version()->RegisterStatusChangeCallback(base::BindOnce(
         &ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion,
-        weak_factory_.GetWeakPtr(), registration, active_version));
+        weak_factory_.GetWeakPtr(), registration, active_version,
+        std::move(find_registration_start_time)));
     TRACE_EVENT_WITH_FLOW1(
         "ServiceWorker",
         "ServiceWorkerControlleeRequestHandler::ContinueWithRegistration",
@@ -457,12 +458,14 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   ContinueWithActivatedVersion(std::move(registration),
-                               std::move(active_version));
+                               std::move(active_version),
+                               std::move(find_registration_start_time));
 }
 
 void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
     scoped_refptr<ServiceWorkerRegistration> registration,
-    scoped_refptr<ServiceWorkerVersion> active_version) {
+    scoped_refptr<ServiceWorkerVersion> active_version,
+    base::TimeTicks find_registration_start_time) {
   if (!context_ || !container_host_) {
     TRACE_EVENT_WITH_FLOW1(
         "ServiceWorker",
@@ -655,7 +658,8 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
   // ServiceWorkerMainResourceLoader which does that work.
   loader_wrapper_ = std::make_unique<ServiceWorkerMainResourceLoaderWrapper>(
       std::make_unique<ServiceWorkerMainResourceLoader>(
-          std::move(fallback_callback_), container_host_, frame_tree_node_id_));
+          std::move(fallback_callback_), container_host_, frame_tree_node_id_,
+          std::move(find_registration_start_time)));
 
   std::move(loader_callback_)
       .Run(base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
