@@ -104,6 +104,7 @@ source_set("browser_state") {
     "//ios/chrome/browser/language",
     "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/metrics",
+    "//ios/chrome/browser/metrics:google_groups_updater",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/passwords",

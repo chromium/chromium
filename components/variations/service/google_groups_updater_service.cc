@@ -73,6 +73,19 @@ void GoogleGroupsUpdaterService::RegisterProfilePrefs(
   );
 }
 
+void GoogleGroupsUpdaterService::ClearSigninScopedState() {
+  source_prefs_->ClearPref(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      variations::kOsDogfoodGroupsSyncPrefName
+#else
+      variations::kDogfoodGroupsSyncPrefName
+#endif
+  );
+
+  // UpdateGoogleGroups() will be called via the PrefChangeRegistrar, and will
+  // propagate this change to local state.
+}
+
 void GoogleGroupsUpdaterService::UpdateGoogleGroups() {
   // Get the current value of the local state dict.
   ScopedDictPrefUpdate target_prefs_update(

@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/metrics/google_groups_updater_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
@@ -105,6 +106,9 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(ConsentAuditorFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  // Sync needs this service to still be present when the sync engine is
+  // disabled, so that preferences can be cleared.
+  DependsOn(GoogleGroupsUpdaterServiceFactory::GetInstance());
   DependsOn(ios::AboutSigninInternalsFactory::GetInstance());
   DependsOn(ios::AccountBookmarkModelFactory::GetInstance());
   DependsOn(ios::AccountBookmarkSyncServiceFactory::GetInstance());

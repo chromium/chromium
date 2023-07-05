@@ -51,6 +51,18 @@ class GoogleGroupsUpdaterServiceTest : public ::testing::Test {
                           std::move(groups_dict));
   }
 
+  void CheckSourcePrefCleared() {
+    EXPECT_TRUE(source_prefs_
+                    .GetList(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                        variations::kOsDogfoodGroupsSyncPrefName
+#else
+                        variations::kDogfoodGroupsSyncPrefName
+#endif
+                        )
+                    .empty());
+  }
+
   void CheckTargetPref(std::vector<std::string> expected_groups) {
     base::Value::List expected_list;
     for (const std::string& group : expected_groups) {
@@ -106,4 +118,27 @@ TEST_F(GoogleGroupsUpdaterServiceTest,
   // adding one group).
   SetSourcePref({"123", "789"});
   CheckTargetPref({"123", "789"});
+}
+
+TEST_F(GoogleGroupsUpdaterServiceTest, ClearProfilePrefsNotPreviouslySet) {
+  GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
+                                                   source_prefs_);
+  // This just checks that ClearSigninScopedState() deals with the case where
+  // the source pref was unset (i.e. is a no-op and doesn't crash).
+  google_groups_updater.ClearSigninScopedState();
+
+  CheckTargetPref({});
+}
+
+TEST_F(GoogleGroupsUpdaterServiceTest, ClearProfilePrefsClearsTargetPref) {
+  GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
+                                                   source_prefs_);
+  SetSourcePref({"123", "456"});
+  CheckTargetPref({"123", "456"});
+
+  google_groups_updater.ClearSigninScopedState();
+
+  // Check the source and target prefs have been cleared.
+  CheckSourcePrefCleared();
+  CheckTargetPref({});
 }

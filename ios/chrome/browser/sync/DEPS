@@ -15,6 +15,7 @@ include_rules = [
   "+ios/chrome/browser/invalidation",
   "+ios/chrome/browser/bookmarks",
   "+ios/chrome/browser/consent_auditor",
+  "+ios/chrome/browser/metrics",
   "+ios/chrome/browser/sessions",
   "+ios/chrome/browser/settings/sync",
   "+ios/chrome/browser/dom_distiller",

@@ -20,6 +20,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
+#include "chrome/browser/metrics/variations/google_groups_updater_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
@@ -91,6 +92,7 @@
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "components/trusted_vault/trusted_vault_service.h"
+#include "components/variations/service/google_groups_updater_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
@@ -725,6 +727,12 @@ syncer::SyncTypePreferenceProvider* ChromeSyncClient::GetPreferenceProvider() {
 
 void ChromeSyncClient::OnLocalSyncTransportDataCleared() {
   metrics::ClearDemographicsPrefs(profile_->GetPrefs());
+
+  GoogleGroupsUpdaterService* google_groups_updater =
+      GoogleGroupsUpdaterServiceFactory::GetForBrowserContext(profile_);
+  if (google_groups_updater != nullptr) {
+    google_groups_updater->ClearSigninScopedState();
+  }
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
