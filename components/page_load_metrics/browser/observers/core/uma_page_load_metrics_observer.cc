@@ -220,8 +220,6 @@ const char kHistogramResourceLoadTimePrefix[] =
 const char kHistogramTotalSubresourceLoadTimeAtFirstContentfulPaint[] =
     "PageLoad.Experimental.PageTiming."
     "TotalSubresourceLoadTimeAtFirstContentfulPaint";
-const char kHistogramFirstEligibleToPaint[] =
-    "PageLoad.Experimental.PaintTiming.NavigationToFirstEligibleToPaint";
 const char kHistogramFirstEligibleToPaintToFirstPaint[] =
     "PageLoad.Experimental.PaintTiming.FirstEligibleToPaintToFirstPaint";
 
@@ -403,8 +401,6 @@ void UmaPageLoadMetricsObserver::OnFirstPaintInPage(
     PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstPaint,
                         timing.paint_timing->first_paint.value());
     if (timing.paint_timing->first_eligible_to_paint) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstEligibleToPaint,
-                          timing.paint_timing->first_eligible_to_paint.value());
       PAGE_LOAD_HISTOGRAM(
           internal::kHistogramFirstEligibleToPaintToFirstPaint,
           timing.paint_timing->first_paint.value() -

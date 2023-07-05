@@ -1929,17 +1929,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PageLoad.Experimental.PaintTiming.NavigationToFirstEligibleToPaint"
-    units="ms" expires_after="2022-12-11">
-  <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    Measures the time from navigation start to when the page is eligible to
-    paint. Logged for every foreground page load.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Experimental.TotalForegroundDuration" units="ms"
     expires_after="2023-12-24">
   <owner>npm@chromium.org</owner>
