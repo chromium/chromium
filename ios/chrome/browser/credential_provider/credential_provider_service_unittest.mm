@@ -361,8 +361,6 @@ TEST_F(CredentialProviderServiceTest, PasswordSyncStoredEmail) {
 // on the account storage state.
 TEST_F(CredentialProviderServiceTest, SignedInUserStoredEmail) {
   // Set up a signed in user with the flag enabled.
-  base::test::ScopedFeatureList features(
-      password_manager::features::kEnablePasswordsAccountStorage);
   CoreAccountInfo account;
   account.email = "foo@gmail.com";
   account.gaia = "gaia";
@@ -385,27 +383,6 @@ TEST_F(CredentialProviderServiceTest, SignedInUserStoredEmail) {
       /*sync_everything=*/false,
       /*types=*/user_selectable_type_set);
   sync_service_.FireStateChanged();
-
-  EXPECT_FALSE([app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);
-}
-
-// Similar to SignedInUserStoredEmail but disable the account storage flag.
-TEST_F(CredentialProviderServiceTest,
-       SignedInUserStoredEmailWithFeatureDisabled) {
-  // Set up a signed in user with the flag disabled.
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      password_manager::features::kEnablePasswordsAccountStorage);
-  CoreAccountInfo account;
-  account.email = "foo@gmail.com";
-  account.gaia = "gaia";
-  account.account_id = CoreAccountId::FromGaiaId("gaia");
-  sync_service_.SetAccountInfo(account);
-  sync_service_.SetHasSyncConsent(false);
-  sync_service_.FireStateChanged();
-
-  CreateCredentialProviderService();
 
   EXPECT_FALSE([app_group::GetGroupUserDefaults()
       stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);

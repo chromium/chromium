@@ -314,11 +314,12 @@ using password_manager::prefs::kCredentialsEnableService;
 
 - (PasswordSettingsAccountStorageState)computeAccountStorageState {
   if (_syncService->GetAccountInfo().IsEmpty() ||
-      _syncService->IsSyncFeatureEnabled() ||
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
+      _syncService->IsSyncFeatureEnabled()) {
     return PasswordSettingsAccountStorageStateNotShown;
   }
+
+  CHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kEnablePasswordsAccountStorage));
 
   if (_prefService->IsManagedPreference(kCredentialsEnableService) ||
       _syncService->GetUserSettings()->IsTypeManagedByPolicy(

@@ -127,9 +127,6 @@ class PasswordFetcherTest : public PlatformTest {
         base::BindRepeating(&BuildPasswordStore,
                             password_manager::IsAccountStore(true)));
     chrome_browser_state_ = test_cbs_builder.Build();
-    ASSERT_EQ(base::FeatureList::IsEnabled(
-                  password_manager::features::kEnablePasswordsAccountStorage),
-              !!GetAccountPasswordStore());
   }
 
   scoped_refptr<password_manager::PasswordStoreInterface>
@@ -303,19 +300,8 @@ TEST_F(PasswordFetcherTest, FilterPassword) {
   EXPECT_TRUE(passwordFetcher);
 }
 
-class PasswordFetcherTestWithAccountStorage : public PasswordFetcherTest {
- protected:
-  PasswordFetcherTestWithAccountStorage() {
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kEnablePasswordsAccountStorage);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests PasswordFetcher ignores duplicated passwords in different stores.
-TEST_F(PasswordFetcherTestWithAccountStorage, IgnoresDuplicateInOtherStore) {
+TEST_F(PasswordFetcherTest, IgnoresDuplicateInOtherStore) {
   GetProfilePasswordStore()->AddLogin(MakeForm1());
   GetAccountPasswordStore()->AddLogin(MakeForm1());
 
