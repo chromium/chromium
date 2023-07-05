@@ -207,6 +207,10 @@
     </settings-toggle-button>
   </template>
   <template is="dom-if" if="[[!onDeviceGrammarCheckEnabled_]]">
+    <!-- This uses the same id as the toggle above, causing |querySelector|s and
+         |getElementById|s to potentially fail.
+         TODO: b/289955380 - Remove this toggle, or change the id of this
+         toggle. -->
     <settings-toggle-button id="enableSpellcheckingToggle" class="hr"
         label="$i18n{spellCheckTitle}"
         pref="{{prefs.browser.enable_spellchecking}}" no-set-pref

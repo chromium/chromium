@@ -580,8 +580,12 @@ suite('input page', () => {
 
       flush();
       // spell check is initially on
-      spellCheckToggle =
-          inputPage.shadowRoot.querySelector('#enableSpellcheckingToggle');
+      // Work around b/289955380 by only finding the only button which is not
+      // hidden. <dom-if>s use a `display: none;` inline style to hide elements.
+      // Because we do not use inline styles, the button which is not hidden
+      // does not have a `style` attribute, and the one which is hidden does.
+      spellCheckToggle = inputPage.shadowRoot.querySelector(
+          '#enableSpellcheckingToggle:not([style])');
       assertTrue(!!spellCheckToggle);
       assertTrue(spellCheckToggle.checked);
 
@@ -911,8 +915,12 @@ suite('input page', () => {
       flush();
 
       // Spell check is initially on.
-      spellCheckToggle =
-          inputPage.shadowRoot.querySelector('#enableSpellcheckingToggle');
+      // Work around b/289955380 by only finding the only button which is not
+      // hidden. <dom-if>s use a `display: none;` inline style to hide elements.
+      // Because we do not use inline styles, the button which is not hidden
+      // does not have a `style` attribute, and the one which is hidden does.
+      spellCheckToggle = inputPage.shadowRoot.querySelector(
+          '#enableSpellcheckingToggle:not([style])');
       assertTrue(!!spellCheckToggle);
       assertTrue(spellCheckToggle.checked);
 
