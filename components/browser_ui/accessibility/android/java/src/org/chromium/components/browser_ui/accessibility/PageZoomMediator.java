@@ -7,7 +7,7 @@ package org.chromium.components.browser_ui.accessibility;
 import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE;
 import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.convertZoomFactorToSeekBarValue;
 import static org.chromium.content_public.browser.HostZoomMap.AVAILABLE_ZOOM_FACTORS;
-import static org.chromium.content_public.browser.HostZoomMap.SYSTEM_FONT_SCALE;
+import static org.chromium.content_public.browser.HostZoomMap.setSystemFontScale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -37,8 +37,8 @@ public class PageZoomMediator {
 
         // Update the stored system font scale based on OS-level configuration. |this| will be
         // re-constructed after configuration changes, so this will be up-to-date for this session.
-        SYSTEM_FONT_SCALE =
-                ContextUtils.getApplicationContext().getResources().getConfiguration().fontScale;
+        setSystemFontScale(
+                ContextUtils.getApplicationContext().getResources().getConfiguration().fontScale);
     }
 
     /**

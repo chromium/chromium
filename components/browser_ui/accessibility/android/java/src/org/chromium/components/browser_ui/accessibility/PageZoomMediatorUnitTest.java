@@ -79,7 +79,7 @@ public class PageZoomMediatorUnitTest {
         mModel.set(PageZoomProperties.DEFAULT_ZOOM_FACTOR, 0.0);
         mMediator = new PageZoomMediator(mModel);
 
-        HostZoomMap.SYSTEM_FONT_SCALE = 1.0f;
+        HostZoomMap.setSystemFontScale(1.0f);
         when(mHostZoomMapMock.getDesktopSiteZoomScale(mWebContentsMock)).thenReturn(1.0);
     }
 
@@ -100,7 +100,7 @@ public class PageZoomMediatorUnitTest {
     @Test
     public void testDecreaseZoom_SmallConfiguration() {
         // Verify that calling decrease zoom method sends expected value to native code.
-        HostZoomMap.SYSTEM_FONT_SCALE = 0.85f;
+        HostZoomMap.setSystemFontScale(0.85f);
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
         mMediator.setWebContents(mWebContentsMock);
         Assert.assertEquals(
@@ -115,7 +115,7 @@ public class PageZoomMediatorUnitTest {
     @Test
     public void testDecreaseZoom_SmallConfiguration_DesktopUserAgent() {
         // Verify that calling decrease zoom method sends expected value to native code.
-        HostZoomMap.SYSTEM_FONT_SCALE = 0.85f;
+        HostZoomMap.setSystemFontScale(0.85f);
         when(mHostZoomMapMock.getDesktopSiteZoomScale(mWebContentsMock)).thenReturn(1.1);
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
         mMediator.setWebContents(mWebContentsMock);
@@ -145,7 +145,7 @@ public class PageZoomMediatorUnitTest {
     @Test
     public void testIncreaseZoom_LargeConfiguration() {
         // Verify that calling increase zoom method sends expected value to native code.
-        HostZoomMap.SYSTEM_FONT_SCALE = 1.3f;
+        HostZoomMap.setSystemFontScale(1.3f);
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
         mMediator.setWebContents(mWebContentsMock);
         Assert.assertEquals(
@@ -160,7 +160,7 @@ public class PageZoomMediatorUnitTest {
     @Test
     public void testIncreaseZoom_LargeConfiguration_DesktopUserAgent() {
         // Verify that calling increase zoom method sends expected value to native code.
-        HostZoomMap.SYSTEM_FONT_SCALE = 1.3f;
+        HostZoomMap.setSystemFontScale(1.3f);
         when(mHostZoomMapMock.getDesktopSiteZoomScale(mWebContentsMock)).thenReturn(1.1);
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
         mMediator.setWebContents(mWebContentsMock);
@@ -178,7 +178,7 @@ public class PageZoomMediatorUnitTest {
         // Verify that calling increase zoom method sends expected value to native code when the OS
         // font scale and desktop site zoom scale in use could cause the rendered zoom factor value
         // to overflow beyond the maximum displayed zoom factor value.
-        HostZoomMap.SYSTEM_FONT_SCALE = 2.0f;
+        HostZoomMap.setSystemFontScale(2.0f);
         when(mHostZoomMapMock.getDesktopSiteZoomScale(mWebContentsMock)).thenReturn(1.1);
         // Assume that the currently rendered zoom value is maximum, that is 300% or a zoom factor
         // of 6.03. For the zoom scales defined above, this will be equivalent to a display value of

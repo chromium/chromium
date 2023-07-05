@@ -4,8 +4,11 @@
 
 package org.chromium.content.browser;
 
-import static org.chromium.content_public.browser.HostZoomMap.SYSTEM_FONT_SCALE;
+import static org.chromium.content_public.browser.HostZoomMap.TEXT_SIZE_MULTIPLIER_RATIO;
+import static org.chromium.content_public.browser.HostZoomMap.getSystemFontScale;
+import static org.chromium.content_public.browser.HostZoomMap.setSystemFontScale;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.CalledByNativeForTesting;
 import org.chromium.base.annotations.JNINamespace;
@@ -73,19 +76,50 @@ public class HostZoomMapImpl {
 
     @CalledByNative
     public static double getAdjustedZoomLevel(double zoomLevel, double desktopSiteZoomScale) {
-        float systemFontScale = SYSTEM_FONT_SCALE;
+        float systemFontScale = getSystemFontScale();
         // The OS |fontScale| will not be factored in zoom estimation if Page Zoom is disabled; a
         // systemFontScale = 1 will be used in this case.
         if (!ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
             systemFontScale = 1;
         }
-        return HostZoomMap.adjustZoomLevel(
-                zoomLevel, systemFontScale, (float) desktopSiteZoomScale);
+        return adjustZoomLevel(zoomLevel, systemFontScale, (float) desktopSiteZoomScale);
+    }
+
+    /**
+     * Adjust a given zoom level to account for the OS-level |fontScale| configuration and/or the
+     * scaling factor applicable when a site uses the desktop user agent on Android.
+     *
+     * @param zoomLevel    The zoom level to adjust.
+     * @param systemFontScale  User selected font scale value.
+     * @param desktopSiteZoomScale The zoom scaling factor applicable for a desktop site.
+     * @return double      The adjusted zoom level.
+     */
+    public static double adjustZoomLevel(
+            double zoomLevel, float systemFontScale, float desktopSiteZoomScale) {
+        // No calculation to do if the user has set OS-level |fontScale| to 1 (default), and if the
+        // desktop site zoom scale is default (1, or 100%).
+        if (MathUtils.areFloatsEqual(systemFontScale, 1f)
+                && MathUtils.areFloatsEqual(desktopSiteZoomScale, 1f)) {
+            return zoomLevel;
+        }
+
+        // Convert the zoom factor to a level, e.g. factor = 0.0 should translate to 1.0 (100%).
+        // Multiply the level by the OS-level |fontScale| and the desktop site zoom scale. For
+        // example, if the user has chosen a Chrome-level zoom of 150%, and a OS-level setting of XL
+        // (130%) and the desktop site zoom scale is 110%, then we want to continue to display 150%
+        // to the user but actually render 1.5 * 1.3 * 1.1 = 2.145 (~214%) zoom. We must apply this
+        // at the zoom level (not factor) to compensate for logarithmic scale.
+        double adjustedLevel = systemFontScale * Math.pow(TEXT_SIZE_MULTIPLIER_RATIO, zoomLevel)
+                * desktopSiteZoomScale;
+
+        // We do not pass levels to the backend, but factors. So convert back and round.
+        double adjustedFactor = Math.log10(adjustedLevel) / Math.log10(TEXT_SIZE_MULTIPLIER_RATIO);
+        return MathUtils.roundTwoDecimalPlaces(adjustedFactor);
     }
 
     @CalledByNativeForTesting
     public static void setSystemFontScaleForTesting(float scale) {
-        SYSTEM_FONT_SCALE = scale;
+        setSystemFontScale(scale);
     }
 
     @NativeMethods
