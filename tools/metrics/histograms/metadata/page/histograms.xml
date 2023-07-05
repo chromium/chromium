@@ -1196,29 +1196,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="PageLoad.Clients.StaleWhileRevalidate.PaintTiming.FirstContentfulPaint"
-    units="ms" expires_after="M75">
-  <owner>dtapuska@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <summary>
-    Measures the time from navigation start to first contentful paint. Recorded
-    for pages that contain a resource that may benefit from stale while
-    revalidate.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="PageLoad.Clients.StaleWhileRevalidate.PaintTiming.ParseToFirstContentfulPaint"
-    units="ms" expires_after="M75">
-  <owner>dtapuska@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <summary>
-    Measures the time from parse start to first contentful paint. Recorded for
-    pages that contain a resource that may benefit from stale while revalidate.
-  </summary>
-</histogram>
-
 <histogram
     name="PageLoad.Clients.ThirdParty.Frames.NavigationToFirstContentfulPaint3"
     units="ms" expires_after="2023-11-05">

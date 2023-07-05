@@ -5331,16 +5331,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Spellcheck.Windows.SuggestionGatheringDuration"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="StaleWhileRevalidate" separator=".">
-  <suffix name="Cache" label=""/>
-  <suffix name="Network" label=""/>
-  <suffix name="StaleCache" label=""/>
-  <affected-histogram
-      name="PageLoad.Clients.StaleWhileRevalidate.PaintTiming.FirstContentfulPaint"/>
-  <affected-histogram
-      name="PageLoad.Clients.StaleWhileRevalidate.PaintTiming.ParseToFirstContentfulPaint"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="StartupTemperature" separator=".">
   <suffix name="ColdStartup"
       label="Startup was cold (mostly hard faults). Threshold updated Jan
