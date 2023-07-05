@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ACCOUNT_DISPLAY_NAME;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.SHOULD_OFFER_SYNC;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
 
 import androidx.fragment.app.FragmentManager;
@@ -41,6 +42,7 @@ import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningMediato
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -54,6 +56,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -109,6 +112,8 @@ public class PasswordMigrationWarningMediatorTest {
     private IdentityManager mIdentityManager;
     @Mock
     private SyncService mSyncService;
+    @Mock
+    private SigninManager mSigninManager;
 
     @Before
     public void setUp() {
@@ -359,5 +364,40 @@ public class PasswordMigrationWarningMediatorTest {
         mMediator.passwordListAvailable(2);
 
         verify(mOptionsHandler).passwordsAvailable();
+    }
+
+    @Test
+    public void testSyncNotOfferedIfPolicyDisabledSignIn() {
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
+        when(mIdentityServicesProvider.getSigninManager(mProfile)).thenReturn(mSigninManager);
+        when(mSigninManager.isSigninDisabledByPolicy()).thenReturn(true);
+        mMediator.showWarning(ScreenType.INTRO_SCREEN);
+        assertFalse(mModel.get(SHOULD_OFFER_SYNC));
+    }
+
+    @Test
+    public void testSyncNotOfferedIfPolicyDisabledSync() {
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
+        when(mIdentityServicesProvider.getSigninManager(mProfile)).thenReturn(mSigninManager);
+        when(mSigninManager.isSigninDisabledByPolicy()).thenReturn(false);
+        when(mSyncService.isSyncDisabledByEnterprisePolicy()).thenReturn(true);
+
+        mMediator.showWarning(ScreenType.INTRO_SCREEN);
+        assertFalse(mModel.get(SHOULD_OFFER_SYNC));
+    }
+
+    @Test
+    public void testSyncNotOfferedIfPolicyDisabledPasswordsSync() {
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
+        when(mIdentityServicesProvider.getSigninManager(mProfile)).thenReturn(mSigninManager);
+        when(mSigninManager.isSigninDisabledByPolicy()).thenReturn(false);
+        when(mSyncService.isSyncDisabledByEnterprisePolicy()).thenReturn(false);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.PASSWORDS)).thenReturn(true);
+
+        mMediator.showWarning(ScreenType.INTRO_SCREEN);
+        assertFalse(mModel.get(SHOULD_OFFER_SYNC));
     }
 }

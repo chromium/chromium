@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.pwd_migration;
 
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ACCOUNT_DISPLAY_NAME;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
+import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.SHOULD_OFFER_SYNC;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
 
 import androidx.annotation.IntDef;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -115,6 +117,7 @@ class PasswordMigrationWarningMediator
     }
 
     void showWarning(int screenType) {
+        mModel.set(SHOULD_OFFER_SYNC, shouldOfferSync());
         mModel.set(VISIBLE, true);
         mModel.set(CURRENT_SCREEN, screenType);
         mModel.set(ACCOUNT_DISPLAY_NAME, getAccountDisplayName(mProfile));
@@ -220,5 +223,16 @@ class PasswordMigrationWarningMediator
     @Override
     public void passwordExceptionListAvailable(int count) {
         // This is unused.
+    }
+
+    private boolean shouldOfferSync() {
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        if (signinManager == null || signinManager.isSigninDisabledByPolicy()) return false;
+
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        if (syncService == null) return false;
+        if (syncService.isSyncDisabledByEnterprisePolicy()) return false;
+        if (syncService.isTypeManagedByPolicy(UserSelectableType.PASSWORDS)) return false;
+        return true;
     }
 }

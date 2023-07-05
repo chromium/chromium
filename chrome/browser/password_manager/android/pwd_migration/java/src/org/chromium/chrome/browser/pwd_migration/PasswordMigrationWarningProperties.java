@@ -43,6 +43,10 @@ class PasswordMigrationWarningProperties {
             new ReadableObjectPropertyKey<>("dismiss_handler");
     static final ReadableObjectPropertyKey<PasswordMigrationWarningOnClickHandler>
             ON_CLICK_HANDLER = new ReadableObjectPropertyKey<>("on_click_handler");
+
+    public static final WritableBooleanPropertyKey SHOULD_OFFER_SYNC =
+            new WritableBooleanPropertyKey("should_offer_sync");
+
     public static final WritableIntPropertyKey CURRENT_SCREEN =
             new WritableIntPropertyKey("current_screen");
     public static final WritableObjectPropertyKey ACCOUNT_DISPLAY_NAME =
@@ -51,8 +55,8 @@ class PasswordMigrationWarningProperties {
     static PropertyModel createDefaultModel(Callback<Integer> dismissHandler,
             PasswordMigrationWarningOnClickHandler onClickHandler) {
         return new PropertyModel
-                .Builder(VISIBLE, DISMISS_HANDLER, ON_CLICK_HANDLER, CURRENT_SCREEN,
-                        ACCOUNT_DISPLAY_NAME)
+                .Builder(VISIBLE, DISMISS_HANDLER, SHOULD_OFFER_SYNC, ON_CLICK_HANDLER,
+                        CURRENT_SCREEN, ACCOUNT_DISPLAY_NAME)
                 .with(DISMISS_HANDLER, dismissHandler)
                 .with(ON_CLICK_HANDLER, onClickHandler)
                 .build();
