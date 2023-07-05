@@ -3,25 +3,28 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <sstream>
 #include <string>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -49,17 +52,23 @@ MATCHER_P(EqualsProto,
   return expected_serialized == actual_serialized;
 }
 
+using TestCase = std::tuple<supervised_user::SupervisionMixin::SignInMode,
+                            std::vector<base::test::FeatureRef>>;
+
 // The region code for variations service (any should work).
 constexpr base::StringPiece kRegionCode = "jp";
 
 // Tests custom filtering logic based on regions, for supervised users.
 class SupervisedUserRegionalURLFilterTest
-    : public MixinBasedInProcessBrowserTest {
+    : public MixinBasedInProcessBrowserTest,
+      public ::testing::WithParamInterface<TestCase> {
  public:
   SupervisedUserRegionalURLFilterTest() {
     // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
     // disable this feature.
-    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
+    feature_list_.InitWithFeatures(
+        GetEnabledFeatures(),
+        /*disabled_features=*/{features::kHttpsUpgrades});
   }
 
   ~SupervisedUserRegionalURLFilterTest() override = default;
@@ -98,6 +107,13 @@ class SupervisedUserRegionalURLFilterTest
     }
   };
 
+  supervised_user::SupervisionMixin::SignInMode GetSignInMode() const {
+    return std::get<0>(GetParam());
+  }
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() const {
+    return std::get<1>(GetParam());
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     create_services_subscription_ =
@@ -109,58 +125,111 @@ class SupervisedUserRegionalURLFilterTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ASSERT_TRUE(embedded_test_server()->Started());
-    std::string host_port = embedded_test_server()->host_port_pair().ToString();
-
-    // Remap all URLs in context of this test to the test server.
-    command_line->AppendSwitchASCII(network::switches::kHostResolverRules,
-                                    "MAP *.example.com " + host_port);
-
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, kRegionCode);
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
-  void SetUpOnMainThread() override {
-    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-    logged_in_user_mixin_.LogInUser();
-  }
-
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    kids_chrome_management_client_ =
-        static_cast<MockKidsChromeManagementClient*>(
-            KidsChromeManagementClientFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    Profile::FromBrowserContext(context),
-                    base::BindRepeating(
-                        &MockKidsChromeManagementClient::MakeUnique)));
+    KidsChromeManagementClientFactory::GetInstance()->SetTestingFactoryAndUse(
+        Profile::FromBrowserContext(context),
+        base::BindRepeating(&MockKidsChromeManagementClient::MakeUnique));
   }
 
-  raw_ptr<MockKidsChromeManagementClient, ExperimentalAsh>
-      kids_chrome_management_client_;
-  ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, ash::LoggedInUserMixin::LogInType::kChild,
-      embedded_test_server(), this};
+  MockKidsChromeManagementClient* GetKidsChromeManagementClient() {
+    return static_cast<MockKidsChromeManagementClient*>(
+        KidsChromeManagementClientFactory::GetForProfile(browser()->profile()));
+  }
+
+  // Only supervised users have their url requests classified, only when the
+  // feature is enabled.
+  bool ShouldUrlsBeClassified() const {
+    if (GetSignInMode() !=
+        supervised_user::SupervisionMixin::SignInMode::kSupervised) {
+      return false;
+    }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+    return true;
+#else
+    return base::FeatureList::IsEnabled(
+               supervised_user::kEnableSupervisionOnDesktopAndIOS) &&
+           base::FeatureList::IsEnabled(
+               supervised_user::
+                   kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+#endif
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription create_services_subscription_;
+  supervised_user::SupervisionMixin supervision_mixin_{
+      mixin_host_,
+      this,
+      embedded_test_server(),
+      {
+          .sign_in_mode = GetSignInMode(),
+          .embedded_test_server_options = {.resolver_rules_map_host_list =
+                                               "*.example.com"},
+      }};
 };
 
 // Verifies that the regional setting is passed to the RPC backend.
-IN_PROC_BROWSER_TEST_F(SupervisedUserRegionalURLFilterTest, RegionIsAdded) {
+IN_PROC_BROWSER_TEST_P(SupervisedUserRegionalURLFilterTest, RegionIsAdded) {
   std::string url_to_classify =
       "http://www.example.com/simple.html";  // The hostname must be handled by
-                                             // embedded server, see {@link
-                                             // SetUpCommandLine}.
+                                             // embedded server - see
+                                             // supervision_mixin_
+                                             // configuration.
 
   ClassifyUrlRequest expected;
   expected.set_region_code(std::string(kRegionCode));
   expected.set_url(url_to_classify);
-  EXPECT_CALL(*kids_chrome_management_client_,
-              ClassifyURL(Pointee(EqualsProto(expected)), /* callback= */ _));
+
+  int number_of_expected_calls = ShouldUrlsBeClassified() ? 1 : 0;
+
+  EXPECT_CALL(*GetKidsChromeManagementClient(),
+              ClassifyURL(Pointee(EqualsProto(expected)), /*callback=*/_))
+      .Times(number_of_expected_calls);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url_to_classify)));
 }
 
+// Instead of /0, /1... print human-readable description of the test: type of
+// the user signed in and the list of conditionally enabled features.
+std::string PrettyPrintTestCaseName(
+    const ::testing::TestParamInfo<TestCase>& info) {
+  supervised_user::SupervisionMixin::SignInMode sign_in_mode =
+      std::get<0>(info.param);
+  std::vector<base::test::FeatureRef> features = std::get<1>(info.param);
+  std::vector<std::string> feature_names(features.size());
+  base::ranges::transform(
+      features, feature_names.begin(),
+      [](const base::test::FeatureRef& ref) { return ref->name; });
+
+  std::stringstream ss;
+  ss << sign_in_mode << "AccountWith"
+     << (feature_names.empty() ? "NoFeatures"
+                               : base::JoinString(feature_names, "And"));
+  return ss.str();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SupervisedUserRegionalURLFilterTest,
+    testing::Combine(
+        testing::Values(
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+            // Only for platforms that support signed-out browser.
+            supervised_user::SupervisionMixin::SignInMode::kSignedOut,
+#endif
+            supervised_user::SupervisionMixin::SignInMode::kRegular,
+            supervised_user::SupervisionMixin::SignInMode::kSupervised),
+        testing::Values(
+            std::vector<base::test::FeatureRef>(),
+            std::vector<base::test::FeatureRef>(
+                {supervised_user::kEnableSupervisionOnDesktopAndIOS,
+                 supervised_user::
+                     kFilterWebsitesForSupervisedUsersOnDesktopAndIOS}))),
+    &PrettyPrintTestCaseName);
 }  // namespace
