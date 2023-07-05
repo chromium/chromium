@@ -176,9 +176,6 @@ TEST_F(LoginRemoveAccountDialogTest, ResetStateHidesConfirmData) {
   test_api.remove_user_button()->RequestFocus();
   GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
   EXPECT_TRUE(test_api.remove_user_confirm_data()->GetVisible());
-
-  bubble->ResetState();
-  EXPECT_FALSE(test_api.remove_user_confirm_data()->GetVisible());
 }
 
 }  // namespace ash

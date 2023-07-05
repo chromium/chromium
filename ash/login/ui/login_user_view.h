@@ -38,7 +38,6 @@ class ASH_EXPORT LoginUserView : public views::View,
     views::View* user_label() const;
     views::View* tap_button() const;
     views::View* dropdown() const;
-    LoginRemoveAccountDialog* remove_account_dialog() const;
     views::View* enterprise_icon_container() const;
 
     void OnTap() const;
@@ -52,6 +51,7 @@ class ASH_EXPORT LoginUserView : public views::View,
   using OnTap = base::RepeatingClosure;
   using OnRemoveWarningShown = base::RepeatingClosure;
   using OnRemove = base::RepeatingClosure;
+  using OnDropdownPressed = base::RepeatingClosure;
 
   // Returns the width of this view for the given display style.
   static int WidthForLayoutStyle(LoginDisplayStyle style);
@@ -61,8 +61,7 @@ class ASH_EXPORT LoginUserView : public views::View,
   LoginUserView(LoginDisplayStyle style,
                 bool show_dropdown,
                 const OnTap& on_tap,
-                const OnRemoveWarningShown& on_remove_warning_shown,
-                const OnRemove& on_remove);
+                const OnDropdownPressed& on_dropdown_pressed);
 
   LoginUserView(const LoginUserView&) = delete;
   LoginUserView& operator=(const LoginUserView&) = delete;
@@ -83,7 +82,12 @@ class ASH_EXPORT LoginUserView : public views::View,
 
   const LoginUserInfo& current_user() const { return current_user_; }
 
-  void UpdateDropdownIcon();
+  // Get dropdown view that can be used as an anchor view for attaching a bubble
+  // view.
+  base::WeakPtr<views::View> GetDropdownAnchorView();
+
+  // Get dropdown view as a LoginButton.
+  LoginButton* GetDropdownButton();
 
   // views::View:
   const char* GetClassName() const override;
@@ -110,14 +114,10 @@ class ASH_EXPORT LoginUserView : public views::View,
   void SetLargeLayout();
   void SetSmallishLayout();
 
-  void DeleteDialog();
-
   // Executed when the user view is pressed.
   OnTap on_tap_;
-  // Executed when the user has seen the remove user warning.
-  OnRemoveWarningShown on_remove_warning_shown_;
   // Executed when a user-remove has been requested.
-  OnRemove on_remove_;
+  OnDropdownPressed on_dropdown_pressed_;
 
   // The user that is currently being displayed (or will be displayed when an
   // animation completes).
@@ -131,13 +131,6 @@ class ASH_EXPORT LoginUserView : public views::View,
   raw_ptr<UserLabel, ExperimentalAsh> user_label_ = nullptr;
   raw_ptr<LoginButton, ExperimentalAsh> dropdown_ = nullptr;
   raw_ptr<TapButton, ExperimentalAsh> tap_button_ = nullptr;
-
-  // Bubble used for displaying the user remove account dialog. Its parent is
-  // the top level view, either LockContentsView or LockDebugView. This allows
-  // the remove account dialog to be clicked outside the bounds of the user
-  // view.
-  raw_ptr<LoginRemoveAccountDialog, DanglingUntriaged | ExperimentalAsh>
-      remove_account_dialog_ = nullptr;
 
   // True iff the view is currently opaque (ie, opacity = 1).
   bool is_opaque_ = false;

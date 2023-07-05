@@ -195,10 +195,9 @@ ScrollableUsersListView::ScrollableUsersListView(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   for (std::size_t i = 1u; i < users.size(); ++i) {
-    auto* view =
-        new LoginUserView(display_style, false /*show_dropdown*/,
-                          base::BindRepeating(on_tap_user, i - 1),
-                          base::RepeatingClosure(), base::RepeatingClosure());
+    auto* view = new LoginUserView(display_style, false /*show_dropdown*/,
+                                   base::BindRepeating(on_tap_user, i - 1),
+                                   base::RepeatingClosure());
     user_views_.push_back(view);
     view->UpdateForUser(users[i], false /*animate*/);
     user_view_host_->AddChildView(view);

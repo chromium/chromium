@@ -363,6 +363,11 @@ LoginUserView* LoginAuthUserView::TestApi::user_view() const {
   return view_->user_view_;
 }
 
+LoginRemoveAccountDialog* LoginAuthUserView::TestApi::remove_account_dialog()
+    const {
+  return view_->remove_account_dialog_.get();
+}
+
 LoginPasswordView* LoginAuthUserView::TestApi::password_view() const {
   return view_->password_view_;
 }
@@ -422,6 +427,10 @@ void LoginAuthUserView::TestApi::SetSmartLockState(SmartLockState state) const {
   return view_->SetSmartLockState(state);
 }
 
+void LoginAuthUserView::TestApi::ShowDialog() {
+  view_->ShowRemoveAccountDialog();
+}
+
 const std::u16string&
 LoginAuthUserView::TestApi::GetDisabledAuthMessageContent() const {
   return DisabledAuthMessageView::TestApi(view_->disabled_auth_message_)
@@ -438,10 +447,11 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
                                      const Callbacks& callbacks)
     : NonAccessibleView(kLoginAuthUserViewClassName),
       on_auth_(callbacks.on_auth),
-      on_tap_(callbacks.on_tap) {
+      on_tap_(callbacks.on_tap),
+      on_remove_warning_shown_(callbacks.on_remove_warning_shown),
+      on_remove_(callbacks.on_remove) {
   DCHECK(callbacks.on_auth);
   DCHECK(callbacks.on_tap);
-  DCHECK(callbacks.on_remove_warning_shown);
   DCHECK(callbacks.on_remove);
   DCHECK(callbacks.on_auth_factor_is_hiding_password_changed);
   DCHECK_NE(user.basic_user_info.type, user_manager::USER_TYPE_PUBLIC_ACCOUNT);
@@ -456,7 +466,8 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       LoginDisplayStyle::kLarge, true /*show_dropdown*/,
       base::BindRepeating(&LoginAuthUserView::OnUserViewTap,
                           base::Unretained(this)),
-      callbacks.on_remove_warning_shown, callbacks.on_remove);
+      base::BindRepeating(&LoginAuthUserView::OnAccountRemovalRequested,
+                          base::Unretained(this)));
   user_view_ = user_view.get();
 
   auto password_view = std::make_unique<LoginPasswordView>();
@@ -530,6 +541,8 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
                           base::Unretained(this)),
       button_message);
   online_sign_in_button_ = online_sign_in_button.get();
+  online_sign_in_button_->SetText(
+      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ONLINE_SIGN_IN_MESSAGE));
 
   auto disabled_auth_message = std::make_unique<DisabledAuthMessageView>();
   disabled_auth_message_ = disabled_auth_message.get();
@@ -639,7 +652,9 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   ApplyAnimationPostLayout(/*animate*/ false);
 }
 
-LoginAuthUserView::~LoginAuthUserView() = default;
+LoginAuthUserView::~LoginAuthUserView() {
+  DeleteRemoveAccountDialog();
+}
 
 void LoginAuthUserView::SetAuthMethods(
     uint32_t auth_methods,
@@ -939,14 +954,20 @@ void LoginAuthUserView::UpdateForUser(const LoginUserInfo& user) {
   const bool user_changed = current_user().basic_user_info.account_id !=
                             user.basic_user_info.account_id;
   user_view_->UpdateForUser(user, true /*animate*/);
-  if (user_changed) {
-    pin_input_view_->Reset();
-    password_view_->Reset();
-    password_view_->SetDisplayPasswordButtonVisible(
-        user.show_display_password_button);
+  if (!user_changed) {
+    return;
   }
-  online_sign_in_button_->SetText(
-      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ONLINE_SIGN_IN_MESSAGE));
+
+  pin_input_view_->Reset();
+  password_view_->Reset();
+  password_view_->SetDisplayPasswordButtonVisible(
+      user.show_display_password_button);
+
+  if (!remove_account_dialog_) {
+    return;
+  }
+  DeleteRemoveAccountDialog();
+  ShowRemoveAccountDialog();
 }
 
 void LoginAuthUserView::SetFingerprintState(FingerprintState state) {
@@ -1079,6 +1100,52 @@ void LoginAuthUserView::OnChallengeResponseAuthComplete(
   on_auth_.Run(auth_success.value_or(false),
                /*display_error_messages=*/false,
                /*authenticated_by_pin*/ false);
+}
+
+void LoginAuthUserView::ShowRemoveAccountDialog() {
+  CHECK(!remove_account_dialog_);
+  remove_account_dialog_ = std::make_unique<LoginRemoveAccountDialog>(
+      user_view_->current_user(), user_view_->GetDropdownAnchorView(),
+      user_view_->GetDropdownButton(), on_remove_warning_shown_, on_remove_);
+
+  bool opener_focused = remove_account_dialog_->GetBubbleOpener() &&
+                        remove_account_dialog_->GetBubbleOpener()->HasFocus();
+
+  if (!remove_account_dialog_->parent()) {
+    login_views_utils::GetBubbleContainer(this)->AddChildView(
+        remove_account_dialog_.get());
+  }
+
+  remove_account_dialog_->Show();
+
+  // If the remove account dialog was opened by pressing Enter on the focused
+  // dropdown, focus should automatically go to the remove-user button (for
+  // keyboard accessibility).
+  if (opener_focused) {
+    remove_account_dialog_->RequestFocus();
+  }
+}
+
+void LoginAuthUserView::DeleteRemoveAccountDialog() {
+  if (!remove_account_dialog_) {
+    return;
+  }
+
+  if (remove_account_dialog_->parent()) {
+    remove_account_dialog_->parent()->RemoveChildView(
+        remove_account_dialog_.get());
+  }
+  remove_account_dialog_.reset();
+}
+
+void LoginAuthUserView::OnAccountRemovalRequested() {
+  // If the remove account dialog is showing, just close it.
+  if (remove_account_dialog_) {
+    DeleteRemoveAccountDialog();
+    return;
+  }
+
+  ShowRemoveAccountDialog();
 }
 
 void LoginAuthUserView::OnSmartLockArrowButtonTapped() {

@@ -353,6 +353,22 @@ bool LoginScreenTestApi::IsManagedIconShown(const AccountId& account_id) {
 }
 
 // static
+bool LoginScreenTestApi::ShowRemoveAccountDialog(const AccountId& account_id) {
+  LoginBigUserView* big_user_view = GetBigUserView(account_id);
+  if (!big_user_view) {
+    ADD_FAILURE() << "Could not find user " << account_id.Serialize();
+    return false;
+  }
+  LoginAuthUserView::TestApi auth_test(big_user_view->auth_user());
+  if (auth_test.remove_account_dialog()) {
+    ADD_FAILURE() << "Dialog already shown for user " << account_id.Serialize();
+    return false;
+  }
+  auth_test.ShowDialog();
+  return true;
+}
+
+// static
 bool LoginScreenTestApi::IsManagedMessageInDialogShown(
     const AccountId& account_id) {
   LoginBigUserView* big_user_view = GetBigUserView(account_id);
@@ -360,9 +376,14 @@ bool LoginScreenTestApi::IsManagedMessageInDialogShown(
     ADD_FAILURE() << "Could not find user " << account_id.Serialize();
     return false;
   }
-  LoginUserView::TestApi user_test(big_user_view->GetUserView());
+  LoginAuthUserView::TestApi auth_test(big_user_view->auth_user());
+  if (!auth_test.remove_account_dialog()) {
+    ADD_FAILURE() << "Could not find dialog for user "
+                  << account_id.Serialize();
+    return false;
+  }
   LoginRemoveAccountDialog::TestApi user_dialog_test(
-      user_test.remove_account_dialog());
+      auth_test.remove_account_dialog());
   auto* management_disclosure_label =
       user_dialog_test.management_disclosure_label();
   return management_disclosure_label &&
@@ -781,8 +802,13 @@ std::u16string LoginScreenTestApi::GetManagementDisclosureText(
     ADD_FAILURE() << "Could not find user " << account_id.Serialize();
     return std::u16string();
   }
-  LoginUserView::TestApi user_test(big_user_view->GetUserView());
-  LoginRemoveAccountDialog::TestApi dialog(user_test.remove_account_dialog());
+  LoginAuthUserView::TestApi auth_test(big_user_view->auth_user());
+  if (!auth_test.remove_account_dialog()) {
+    ADD_FAILURE() << "Could not find dialog for user "
+                  << account_id.Serialize();
+    return std::u16string();
+  }
+  LoginRemoveAccountDialog::TestApi dialog(auth_test.remove_account_dialog());
   return dialog.management_disclosure_label()->GetText();
 }
 

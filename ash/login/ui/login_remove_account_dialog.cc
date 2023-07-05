@@ -239,20 +239,6 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
 
 LoginRemoveAccountDialog::~LoginRemoveAccountDialog() = default;
 
-void LoginRemoveAccountDialog::ResetState() {
-  if (management_disclosure_label_) {
-    management_disclosure_label_->SetVisible(true);
-  }
-  if (remove_user_confirm_data_) {
-    remove_user_confirm_data_->SetVisible(false);
-    remove_user_button_->SetAlert(false);
-    // Reset button's description to none.
-    remove_user_button_->GetViewAccessibility().OverrideDescription(
-        std::u16string(),
-        ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
-  }
-}
-
 LoginButton* LoginRemoveAccountDialog::GetBubbleOpener() const {
   return bubble_opener_;
 }

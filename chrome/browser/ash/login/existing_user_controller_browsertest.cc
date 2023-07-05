@@ -996,6 +996,8 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest,
 
   // Set the lock screen so that the managed warning can be queried.
   ScreenLockerTester().Lock();
+  EXPECT_TRUE(
+      LoginScreenTestApi::ShowRemoveAccountDialog(managed_user_.account_id));
 
   EXPECT_TRUE(LoginScreenTestApi::IsManagedMessageInDialogShown(
       managed_user_.account_id));
@@ -1020,6 +1022,8 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, ManagedUserDomain) {
 
   // Set the lock screen so that the managed warning can be queried.
   ScreenLockerTester().Lock();
+  EXPECT_TRUE(
+      LoginScreenTestApi::ShowRemoveAccountDialog(managed_user_.account_id));
 
   EXPECT_TRUE(LoginScreenTestApi::IsManagedMessageInDialogShown(
       managed_user_.account_id));
@@ -1039,6 +1043,8 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, NotManagedUserLogin) {
   EXPECT_FALSE(known_user.GetAccountManager(not_managed_user_.account_id));
 
   ScreenLockerTester().Lock();
+  EXPECT_TRUE(LoginScreenTestApi::ShowRemoveAccountDialog(
+      not_managed_user_.account_id));
 
   // Verify that no managed warning is shown for an unmanaged user.
   EXPECT_FALSE(LoginScreenTestApi::IsManagedMessageInDialogShown(

@@ -752,9 +752,9 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
   SetPreferredSize(GetPreferredSizeLandscape());
   layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>());
 
-  user_view_ = new LoginUserView(
-      LoginDisplayStyle::kExtraSmall, false /*show_dropdown*/,
-      base::DoNothing(), base::RepeatingClosure(), base::RepeatingClosure());
+  user_view_ =
+      new LoginUserView(LoginDisplayStyle::kExtraSmall, false /*show_dropdown*/,
+                        base::DoNothing(), base::RepeatingClosure());
   user_view_->SetForceOpaque(true);
   user_view_->SetTapEnabled(false);
 

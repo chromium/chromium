@@ -50,9 +50,6 @@ class ASH_EXPORT LoginRemoveAccountDialog : public LoginBaseBubbleView,
   LoginRemoveAccountDialog& operator=(const LoginRemoveAccountDialog&) = delete;
   ~LoginRemoveAccountDialog() override;
 
-  // Resets the user menu to the state where Remove User has not been pressed.
-  void ResetState();
-
   // LoginBaseBubbleView:
   LoginButton* GetBubbleOpener() const override;
 
