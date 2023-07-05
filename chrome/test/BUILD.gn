@@ -646,6 +646,8 @@ static_library("test_support") {
       "../browser/ash/login/lock/screen_locker_tester.h",
       "../browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.cc",
       "../browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h",
+      "../browser/ash/login/test/network_portal_detector_mixin.cc",
+      "../browser/ash/login/test/network_portal_detector_mixin.h",
       "../browser/ash/login/users/avatar/user_image_manager_test_util.cc",
       "../browser/ash/login/users/avatar/user_image_manager_test_util.h",
       "../browser/ash/policy/dlp/files_policy_notification_manager_test_utils.cc",
@@ -717,6 +719,7 @@ static_library("test_support") {
       "//chromeos/ash/components/cryptohome",
       "//chromeos/ash/components/dbus",
       "//chromeos/ash/components/dbus/concierge",
+      "//chromeos/ash/components/dbus/shill",
       "//chromeos/ash/components/disks:test_support",
       "//chromeos/ash/components/system",
       "//chromeos/dbus/power",
@@ -4148,8 +4151,6 @@ if (!is_android) {
         "../browser/ash/login/test/feature_parameter_interface.h",
         "../browser/ash/login/test/hid_controller_mixin.cc",
         "../browser/ash/login/test/hid_controller_mixin.h",
-        "../browser/ash/login/test/network_portal_detector_mixin.cc",
-        "../browser/ash/login/test/network_portal_detector_mixin.h",
         "../browser/ash/login/test/offline_login_test_mixin.cc",
         "../browser/ash/login/test/offline_login_test_mixin.h",
         "../browser/ash/login/test/oobe_base_test.cc",
@@ -4263,22 +4264,6 @@ if (!is_android) {
         "../browser/ash/system/timezone_resolver_manager_browsertest.cc",
         "../browser/ash/system/tray_accessibility_browsertest.cc",
         "../browser/ash/system_logs/crosapi_system_log_source_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/camera_app/camera_app_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/demo_mode_app_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/diagnostics_app_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/eche_app_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/face_ml_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/firmware_update_app_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/help_app/help_app_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/media_app/media_app_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/os_feedback_app_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/personalization_app/personalization_app_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/print_management_app_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/projector_app/projector_app_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/scanning_app_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/settings_app_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/shimless_rma_integration_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/shortcut_customization_app_integration_browsertest.cc",
         "../browser/ash/url_handler_browsertest.cc",
         "../browser/ash/video_conference/video_conference_app_service_client_browsertest.cc",
         "../browser/ash/video_conference/video_conference_ash_feature_client_browsertest.cc",
@@ -4453,10 +4438,6 @@ if (!is_android) {
         "//chrome",
         "//testing/buildbot/filters:chromeos_filters",
       ]
-      if (!is_official_build) {
-        sources += [ "../browser/ash/system_web_apps/apps/sample_system_web_app_integration_browsertest.cc" ]
-        deps += [ "//ash/webui/sample_system_web_app_ui" ]
-      }
       if (use_dbus) {
         deps += [ "//dbus:test_support" ]
       }
