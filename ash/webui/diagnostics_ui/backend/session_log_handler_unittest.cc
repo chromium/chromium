@@ -71,8 +71,6 @@ std::vector<std::string> GetCombinedLogContents(
   return GetLogLines(contents);
 }
 
-}  // namespace
-
 class TestSelectFilePolicy : public ui::SelectFilePolicy {
  public:
   TestSelectFilePolicy& operator=(const TestSelectFilePolicy&) = delete;
@@ -228,6 +226,8 @@ class SessionLogHandlerTest : public NoSessionAshTestBase {
   base::ScopedTempDir temp_dir_;
   testing::NiceMock<ash::MockHoldingSpaceClient> holding_space_client_;
 };
+
+}  // namespace
 
 TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   // Run until idle to finish necessary setup.
