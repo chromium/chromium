@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "content/public/browser/storage_partition.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "url/origin.h"
@@ -34,6 +35,9 @@ class AndroidEnvironmentIntegrityDataStorage {
   absl::optional<int64_t> GetHandle(const url::Origin& origin);
 
   void SetHandle(const url::Origin& origin, int64_t handle);
+
+  void ClearData(
+      content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher);
 
  private:
   bool EnsureDBInitialized() VALID_CONTEXT_REQUIRED(sequence_checker_);

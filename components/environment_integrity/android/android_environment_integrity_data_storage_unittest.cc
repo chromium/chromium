@@ -210,4 +210,60 @@ TEST_F(AndroidEnvironmentIntegrityDataStorageTest, GetAndSetHandle) {
   CloseDatabase();
 }
 
+TEST_F(AndroidEnvironmentIntegrityDataStorageTest, ClearDataForOrigin) {
+  OpenDatabase();
+  url::Origin origin1 = url::Origin::Create(GURL("https://foo.com"));
+  int64_t handle1 = 123;
+  url::Origin origin2 = url::Origin::Create(GURL("https://bar.com"));
+  int64_t handle2 = 234;
+
+  storage()->SetHandle(origin1, handle1);
+  storage()->SetHandle(origin2, handle2);
+
+  absl::optional<int64_t> maybe_handle1 = storage()->GetHandle(origin1);
+  absl::optional<int64_t> maybe_handle2 = storage()->GetHandle(origin2);
+  EXPECT_TRUE(maybe_handle1.has_value());
+  EXPECT_EQ(maybe_handle1.value(), handle1);
+  EXPECT_TRUE(maybe_handle2.has_value());
+  EXPECT_EQ(maybe_handle2.value(), handle2);
+
+  storage()->ClearData(
+      base::BindRepeating(std::equal_to<blink::StorageKey>(),
+                          blink::StorageKey::CreateFirstParty(origin1)));
+
+  maybe_handle1 = storage()->GetHandle(origin1);
+  maybe_handle2 = storage()->GetHandle(origin2);
+  EXPECT_FALSE(maybe_handle1.has_value());
+  EXPECT_TRUE(maybe_handle2.has_value());
+  EXPECT_EQ(maybe_handle2.value(), handle2);
+  CloseDatabase();
+}
+
+TEST_F(AndroidEnvironmentIntegrityDataStorageTest, ClearAllData) {
+  OpenDatabase();
+  url::Origin origin1 = url::Origin::Create(GURL("https://foo.com"));
+  int64_t handle1 = 123;
+  url::Origin origin2 = url::Origin::Create(GURL("https://bar.com"));
+  int64_t handle2 = 234;
+
+  storage()->SetHandle(origin1, handle1);
+  storage()->SetHandle(origin2, handle2);
+
+  absl::optional<int64_t> maybe_handle1 = storage()->GetHandle(origin1);
+  absl::optional<int64_t> maybe_handle2 = storage()->GetHandle(origin2);
+  EXPECT_TRUE(maybe_handle1.has_value());
+  EXPECT_EQ(maybe_handle1.value(), handle1);
+  EXPECT_TRUE(maybe_handle2.has_value());
+  EXPECT_EQ(maybe_handle2.value(), handle2);
+
+  url::Origin opaque_origin;
+  storage()->ClearData(base::NullCallback());
+
+  maybe_handle1 = storage()->GetHandle(origin1);
+  maybe_handle2 = storage()->GetHandle(origin2);
+  EXPECT_FALSE(maybe_handle1.has_value());
+  EXPECT_FALSE(maybe_handle2.has_value());
+  CloseDatabase();
+}
+
 }  // namespace environment_integrity

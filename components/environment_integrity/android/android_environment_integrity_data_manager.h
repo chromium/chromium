@@ -17,7 +17,8 @@ namespace environment_integrity {
 // Class for storing and accessing Environment Integrity data.
 class AndroidEnvironmentIntegrityDataManager
     : public content::StoragePartitionUserData<
-          AndroidEnvironmentIntegrityDataManager> {
+          AndroidEnvironmentIntegrityDataManager>,
+      public content::StoragePartition::DataRemovalObserver {
  public:
   using GetHandleCallback = base::OnceCallback<void(absl::optional<int64_t>)>;
 
@@ -30,6 +31,13 @@ class AndroidEnvironmentIntegrityDataManager
   void GetHandle(const url::Origin& origin, GetHandleCallback callback);
 
   void SetHandle(const url::Origin& origin, int64_t handle);
+
+  // content::StoragePartition::DataRemovalObserver
+  void OnStorageKeyDataCleared(
+      uint32_t remove_mask,
+      content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+      const base::Time begin,
+      const base::Time end) override;
 
  private:
   explicit AndroidEnvironmentIntegrityDataManager(

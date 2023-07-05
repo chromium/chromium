@@ -151,9 +151,14 @@ class BrowsingDataRemover {
 
   // 24 is already taken by DATA_TYPE_MEDIA_DEVICE_SALTS.
 
+  // Web Environment Integrity
+  // (https://github.com/RupertBenWiser/Web-Environment-Integrity/blob/main/explainer.md)
+  // persistent storage.
+  static constexpr DataType DATA_TYPE_ENVIRONMENT_INTEGRITY = 1 << 25;
+
   // Embedders can add more datatypes beyond this point.
   static constexpr DataType DATA_TYPE_CONTENT_END =
-      DATA_TYPE_MEDIA_DEVICE_SALTS;
+      DATA_TYPE_ENVIRONMENT_INTEGRITY;
 
   // All data stored by the Attribution Reporting API.
   static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING =
@@ -165,7 +170,7 @@ class BrowsingDataRemover {
       DATA_TYPE_TRUST_TOKENS | DATA_TYPE_ATTRIBUTION_REPORTING |
       DATA_TYPE_AGGREGATION_SERVICE | DATA_TYPE_INTEREST_GROUPS |
       DATA_TYPE_SHARED_STORAGE | DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL |
-      DATA_TYPE_INTEREST_GROUPS_INTERNAL;
+      DATA_TYPE_INTEREST_GROUPS_INTERNAL | DATA_TYPE_ENVIRONMENT_INTEGRITY;
 
   // Internal data stored by APIs in the Privacy Sandbox, e.g. privacy budgeting
   // information.

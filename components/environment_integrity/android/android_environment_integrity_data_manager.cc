@@ -36,7 +36,9 @@ AndroidEnvironmentIntegrityDataManager::AndroidEnvironmentIntegrityDataManager(
       storage_(base::ThreadPool::CreateSequencedTaskRunner(
                    {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
                     base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-               GetDBPath(storage_partition)) {}
+               GetDBPath(storage_partition)) {
+  storage_partition->AddObserver(this);
+}
 
 AndroidEnvironmentIntegrityDataManager::
     ~AndroidEnvironmentIntegrityDataManager() = default;
@@ -54,6 +56,18 @@ void AndroidEnvironmentIntegrityDataManager::SetHandle(
     int64_t handle) {
   storage_.AsyncCall(&AndroidEnvironmentIntegrityDataStorage::SetHandle)
       .WithArgs(origin, handle);
+}
+
+void AndroidEnvironmentIntegrityDataManager::OnStorageKeyDataCleared(
+    uint32_t remove_mask,
+    content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+    const base::Time begin,
+    const base::Time end) {
+  if (remove_mask &
+      content::StoragePartition::REMOVE_DATA_MASK_ENVIRONMENT_INTEGRITY) {
+    storage_.AsyncCall(&AndroidEnvironmentIntegrityDataStorage::ClearData)
+        .WithArgs(std::move(storage_key_matcher));
+  }
 }
 
 }  // namespace environment_integrity

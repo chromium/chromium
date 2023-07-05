@@ -467,6 +467,10 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE;
   }
+  if (remove_mask & DATA_TYPE_ENVIRONMENT_INTEGRITY) {
+    storage_partition_remove_mask |=
+        StoragePartition::REMOVE_DATA_MASK_ENVIRONMENT_INTEGRITY;
+  }
 
   StoragePartition* storage_partition = GetStoragePartition();
 

@@ -207,4 +207,84 @@ void AndroidEnvironmentIntegrityDataStorage::SetHandle(
   }
 }
 
+absl::optional<std::vector<url::Origin>> DoGetAllOrigins(sql::Database& db) {
+  std::vector<url::Origin> result;
+  sql::Statement load(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "SELECT DISTINCT origin "
+                            "FROM environment_integrity_handles"));
+  if (!load.is_valid()) {
+    DLOG(ERROR) << "GetAllOrigins SQL statement did not compile: "
+                << db.GetErrorMessage();
+    return absl::nullopt;
+  }
+
+  while (load.Step()) {
+    url::Origin origin = url::Origin::Create(GURL(load.ColumnString(0)));
+    result.push_back(origin);
+  }
+  if (!load.Succeeded()) {
+    return absl::nullopt;
+  }
+  return result;
+}
+
+bool DoDeleteForOrigin(sql::Database& db, url::Origin origin) {
+  sql::Statement delete_statement(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "DELETE FROM environment_integrity_handles "
+                            "WHERE origin=?"));
+  if (!delete_statement.is_valid()) {
+    return false;
+  }
+
+  delete_statement.BindString(0, origin.Serialize());
+  return delete_statement.Run();
+}
+
+bool DoClearData(
+    sql::Database& db,
+    content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher) {
+  sql::Transaction transaction(&db);
+
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  std::vector<url::Origin> affected_origins;
+  absl::optional<std::vector<url::Origin>> maybe_all_origins =
+      DoGetAllOrigins(db);
+
+  if (!maybe_all_origins) {
+    return false;
+  }
+  for (const url::Origin& origin : maybe_all_origins.value()) {
+    if (storage_key_matcher.is_null() ||
+        storage_key_matcher.Run(blink::StorageKey::CreateFirstParty(origin))) {
+      affected_origins.push_back(origin);
+    }
+  }
+
+  for (const auto& affected_origin : affected_origins) {
+    if (!DoDeleteForOrigin(db, affected_origin)) {
+      return false;
+    }
+  }
+
+  return transaction.Commit();
+}
+
+void AndroidEnvironmentIntegrityDataStorage::ClearData(
+    content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return;
+  }
+
+  if (!DoClearData(db_, storage_key_matcher)) {
+    DLOG(ERROR) << "Could not delete environment integrity data: "
+                << db_.GetErrorMessage();
+  }
+}
+
 }  // namespace environment_integrity
