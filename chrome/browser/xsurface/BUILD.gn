@@ -33,6 +33,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/ReliabilityLoggingTestUtil.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/StreamType.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsActionsHandler.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsLoggingParameters.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsSurfaceRenderer.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsSurfaceScope.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsSurfaceScopeDependencyProvider.java",
