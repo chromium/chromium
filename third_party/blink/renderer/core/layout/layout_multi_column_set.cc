@@ -389,11 +389,11 @@ unsigned LayoutMultiColumnSet::ActualColumnCount() const {
   return FirstFragmentainerGroup().ActualColumnCount();
 }
 
-LayoutRect LayoutMultiColumnSet::FragmentsBoundingBox(
-    const LayoutRect& bounding_box_in_flow_thread) const {
+PhysicalRect LayoutMultiColumnSet::FragmentsBoundingBox(
+    const PhysicalRect& bounding_box_in_flow_thread) const {
   NOT_DESTROYED();
   UpdateGeometryIfNeeded();
-  LayoutRect result;
+  PhysicalRect result;
   for (const auto& group : fragmentainer_groups_)
     result.Unite(group.FragmentsBoundingBox(bounding_box_in_flow_thread));
   return result;

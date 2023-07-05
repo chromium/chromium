@@ -129,7 +129,10 @@ bool LayoutFlowThread::MapToVisualRectInAncestorSpaceInternal(
   // A flow thread should never be an invalidation container.
   DCHECK_NE(ancestor, this);
   transform_state.Flatten();
-  LayoutRect rect(transform_state.LastPlanarQuad().BoundingBox());
+  gfx::RectF bounding_box = transform_state.LastPlanarQuad().BoundingBox();
+  PhysicalRect rect(LayoutUnit(bounding_box.x()), LayoutUnit(bounding_box.y()),
+                    LayoutUnit(bounding_box.width()),
+                    LayoutUnit(bounding_box.height()));
   rect = FragmentsBoundingBox(rect);
   transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
   return LayoutBlockFlow::MapToVisualRectInAncestorSpaceInternal(
@@ -202,8 +205,7 @@ void LayoutFlowThread::AddOutlineRects(
   // block direction anyway. As far as the inline direction (the column
   // progression direction) is concerned, we'll just include the full height of
   // each column involved. Should be good enough.
-  collector.AddRect(PhysicalRectToBeNoop(
-      FragmentsBoundingBox(flow_collector.Rect().ToLayoutRect())));
+  collector.AddRect(FragmentsBoundingBox(flow_collector.Rect()));
 }
 
 bool LayoutFlowThread::NodeAtPoint(HitTestResult& result,
@@ -230,12 +232,12 @@ void LayoutFlowThread::GenerateColumnSetIntervalTree() {
             column_set->LogicalBottomInFlowThread(), column_set));
 }
 
-LayoutRect LayoutFlowThread::FragmentsBoundingBox(
-    const LayoutRect& layer_bounding_box) const {
+PhysicalRect LayoutFlowThread::FragmentsBoundingBox(
+    const PhysicalRect& layer_bounding_box) const {
   NOT_DESTROYED();
   DCHECK(!column_sets_invalidated_);
 
-  LayoutRect result;
+  PhysicalRect result;
   for (const auto& column_set : multi_column_set_list_)
     result.Unite(column_set->FragmentsBoundingBox(layer_bounding_box));
 

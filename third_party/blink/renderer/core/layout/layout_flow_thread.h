@@ -163,7 +163,8 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   }
   // Return the visual bounding box based on the supplied flow-thread bounding
   // box. Both rectangles are completely physical in terms of writing mode.
-  LayoutRect FragmentsBoundingBox(const LayoutRect& layer_bounding_box) const;
+  PhysicalRect FragmentsBoundingBox(
+      const PhysicalRect& layer_bounding_box) const;
 
   // Convert a logical position in the flow thread coordinate space to a logical
   // position in the containing coordinate space.

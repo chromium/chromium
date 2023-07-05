@@ -207,8 +207,8 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   void AttachToFlowThread();
   void DetachFromFlowThread();
 
-  LayoutRect FragmentsBoundingBox(
-      const LayoutRect& bounding_box_in_flow_thread) const;
+  PhysicalRect FragmentsBoundingBox(
+      const PhysicalRect& bounding_box_in_flow_thread) const;
 
   LayoutUnit ColumnGap() const;
 

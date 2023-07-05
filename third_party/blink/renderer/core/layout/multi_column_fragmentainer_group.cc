@@ -179,10 +179,11 @@ LayoutPoint MultiColumnFragmentainerGroup::VisualPointToFlowThreadPoint(
                      local_point.Y() + LogicalTopInFlowThreadAt(column_index));
 }
 
-LayoutRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
-    const LayoutRect& bounding_box_in_flow_thread) const {
+PhysicalRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
+    const PhysicalRect& bounding_box_in_flow_thread) const {
   // Find the start and end column intersected by the bounding box.
-  LayoutRect flipped_bounding_box_in_flow_thread(bounding_box_in_flow_thread);
+  LayoutRect flipped_bounding_box_in_flow_thread =
+      bounding_box_in_flow_thread.ToLayoutRect();
   LayoutFlowThread* flow_thread = column_set_->FlowThread();
   flow_thread->DeprecatedFlipForWritingMode(
       flipped_bounding_box_in_flow_thread);
@@ -196,7 +197,7 @@ LayoutRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
   if (bounding_box_logical_bottom <= LogicalTopInFlowThread() ||
       bounding_box_logical_top >= LogicalBottomInFlowThread()) {
     // The bounding box doesn't intersect this fragmentainer group.
-    return LayoutRect();
+    return PhysicalRect();
   }
   unsigned start_column;
   unsigned end_column;
@@ -208,9 +209,10 @@ LayoutRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
       FlowThreadPortionOverflowRectAt(start_column);
   flow_thread->DeprecatedFlipForWritingMode(
       start_column_flow_thread_overflow_portion);
-  LayoutRect start_column_rect(bounding_box_in_flow_thread);
-  start_column_rect.Intersect(start_column_flow_thread_overflow_portion);
-  start_column_rect.Move(
+  PhysicalRect start_column_rect(bounding_box_in_flow_thread);
+  start_column_rect.Intersect(
+      PhysicalRect(start_column_flow_thread_overflow_portion));
+  start_column_rect.offset += PhysicalOffset(
       FlowThreadTranslationAtOffset(LogicalTopInFlowThreadAt(start_column),
                                     LayoutBox::kAssociateWithLatterPage,
                                     CoordinateSpaceConversion::kContaining));
@@ -221,9 +223,10 @@ LayoutRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
       FlowThreadPortionOverflowRectAt(end_column);
   flow_thread->DeprecatedFlipForWritingMode(
       end_column_flow_thread_overflow_portion);
-  LayoutRect end_column_rect(bounding_box_in_flow_thread);
-  end_column_rect.Intersect(end_column_flow_thread_overflow_portion);
-  end_column_rect.Move(FlowThreadTranslationAtOffset(
+  PhysicalRect end_column_rect(bounding_box_in_flow_thread);
+  end_column_rect.Intersect(
+      PhysicalRect(end_column_flow_thread_overflow_portion));
+  end_column_rect.offset += PhysicalOffset(FlowThreadTranslationAtOffset(
       LogicalTopInFlowThreadAt(end_column), LayoutBox::kAssociateWithLatterPage,
       CoordinateSpaceConversion::kContaining));
   return UnionRect(start_column_rect, end_column_rect);

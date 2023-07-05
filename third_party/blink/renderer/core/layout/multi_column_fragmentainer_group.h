@@ -123,8 +123,8 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
       const LayoutPoint& visual_point,
       SnapToColumnPolicy = kDontSnapToColumn) const;
 
-  LayoutRect FragmentsBoundingBox(
-      const LayoutRect& bounding_box_in_flow_thread) const;
+  PhysicalRect FragmentsBoundingBox(
+      const PhysicalRect& bounding_box_in_flow_thread) const;
 
   LayoutRect FlowThreadPortionRectAt(unsigned column_index) const;
 
