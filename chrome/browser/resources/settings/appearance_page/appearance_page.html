@@ -121,7 +121,8 @@
           <div id="hoverCardImagesHr" class="hr"
               hidden="[[!pageVisibility.hoverCardImages]]">
           </div>
-          <settings-toggle-button
+          <settings-toggle-button id="hoverCardImagesToggle"
+              on-settings-boolean-control-change="onHoverCardImagesEnabledChange_"
               hidden="[[!pageVisibility.hoverCardImages]]"
               pref="{{prefs.browser.hovercard_images_enabled}}"
               label="$i18n{showHoverCardImages}">
