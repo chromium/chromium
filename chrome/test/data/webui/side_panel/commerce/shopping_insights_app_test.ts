@@ -8,7 +8,7 @@ import 'chrome://shopping-insights-side-panel.top-chrome/app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ShoppingInsightsAppElement} from 'chrome://shopping-insights-side-panel.top-chrome/app.js';
 import {ShoppingListApiProxyImpl} from 'chrome://shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
-import {PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from 'chrome://shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
+import {PageCallbackRouter, PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from 'chrome://shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -63,6 +63,8 @@ suite('ShoppingInsightsAppTest', () => {
     shoppingListApi.setResultFor(
         'getProductInfoForCurrentUrl',
         Promise.resolve({productInfo: productInfo}));
+    shoppingListApi.setResultFor(
+        'isShoppingListEligible', Promise.resolve({eligible: false}));
     ShoppingListApiProxyImpl.setInstance(shoppingListApi);
 
     shoppingInsightsApp = document.createElement('shopping-insights-app');
@@ -124,5 +126,31 @@ suite('ShoppingInsightsAppTest', () => {
                                            '.panel-title')!.textContent);
     assertFalse(isVisible(
         shoppingInsightsApp.shadowRoot!.querySelector('.panel-subtitle')));
+  });
+
+  [true, false].forEach((eligible) => {
+    test('PriceTrackingSectionVisibility', async () => {
+      shoppingListApi.setResultFor(
+          'isShoppingListEligible', Promise.resolve({eligible: eligible}));
+      shoppingListApi.setResultFor(
+          'getPriceInsightsInfoForCurrentUrl',
+          Promise.resolve({priceInsightsInfo: priceInsights1}));
+      shoppingListApi.setResultFor(
+          'getPriceTrackingStatusForCurrentUrl',
+          Promise.resolve({tracked: true}));
+      const callbackRouter = new PageCallbackRouter();
+      shoppingListApi.setResultFor('getCallbackRouter', callbackRouter);
+
+      document.body.appendChild(shoppingInsightsApp);
+      await shoppingListApi.whenCalled('getProductInfoForCurrentUrl');
+      await shoppingListApi.whenCalled('getPriceInsightsInfoForCurrentUrl');
+      await shoppingListApi.whenCalled('isShoppingListEligible');
+      await flushTasks();
+
+      assertEquals(
+          isVisible(shoppingInsightsApp.shadowRoot!.querySelector(
+              '#priceTrackingSection')),
+          eligible);
+    });
   });
 });

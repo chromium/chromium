@@ -97,7 +97,7 @@ void ShoppingInsightsSidePanelUI::CreateShoppingListHandler(
   shopping_list_handler_ = std::make_unique<commerce::ShoppingListHandler>(
       std::move(page), std::move(receiver), bookmark_model, shopping_service,
       profile->GetPrefs(), tracker, g_browser_process->GetApplicationLocale(),
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(this));
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(this, profile));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ShoppingInsightsSidePanelUI)

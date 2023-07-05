@@ -108,6 +108,15 @@ interface ShoppingListHandler {
 
   // Notify the backend that the UI is ready to be shown.
   ShowInsightsSidePanelUI();
+
+  // Returns if the user is eligible for price tracking.
+  IsShoppingListEligible() => (bool eligible);
+
+  // Returns the price tracking status of the current URL.
+  GetPriceTrackingStatusForCurrentUrl() => (bool tracked);
+
+  // Sets the price tracking status of the current URL.
+  SetPriceTrackingStatusForCurrentUrl(bool track);
 };
 
 // WebUI-side handler for requests from the browser.

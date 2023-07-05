@@ -22,6 +22,7 @@ build_webui_tests("build") {
     "bookmarks/commerce/shopping_list_test.ts",
     "bookmarks/commerce/test_shopping_list_api_proxy.ts",
     "commerce/shopping_insights_app_test.ts",
+    "commerce/price_tracking_section_test.ts",
     "reading_list/reading_list_app_test.ts",
     "reading_list/test_reading_list_api_proxy.ts",
     "user_notes/app_test.ts",

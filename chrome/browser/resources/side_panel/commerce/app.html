@@ -27,6 +27,10 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  .divider {
+    border-top: 4px solid var(--cr-separator-color);
+  }
 </style>
 
 <div id="insightsContainer">
@@ -43,4 +47,10 @@
       </div>
     </template>
   </div>
+  <template is="dom-if" if="[[isProductTrackable_]]" restamp>
+    <div class="divider"></div>
+    <price-tracking-section id="priceTrackingSection"
+        product-info="[[productInfo]]">
+    </price-tracking-section>
+  </template>
 </div>

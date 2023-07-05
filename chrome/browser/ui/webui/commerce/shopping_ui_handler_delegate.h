@@ -10,12 +10,19 @@
 
 class ShoppingInsightsSidePanelUI;
 
+namespace bookmarks {
+class BookmarkModel;
+class BookmarkNode;
+}  // namespace bookmarks
+
+class Profile;
+
 namespace commerce {
 
 class ShoppingUiHandlerDelegate : public ShoppingListHandler::Delegate {
  public:
-  explicit ShoppingUiHandlerDelegate(
-      ShoppingInsightsSidePanelUI* insights_side_panel_ui);
+  ShoppingUiHandlerDelegate(ShoppingInsightsSidePanelUI* insights_side_panel_ui,
+                            Profile* profile);
   ShoppingUiHandlerDelegate(const ShoppingUiHandlerDelegate&) = delete;
   ShoppingUiHandlerDelegate& operator=(const ShoppingUiHandlerDelegate&) =
       delete;
@@ -25,10 +32,14 @@ class ShoppingUiHandlerDelegate : public ShoppingListHandler::Delegate {
 
   void ShowInsightsSidePanelUI() override;
 
+  const bookmarks::BookmarkNode* GetOrAddBookmarkForCurrentUrl() override;
+
  private:
   // This delegate is owned by |insights_side_panel_ui_| so we expect
   // |insights_side_panel_ui_| to remain valid for the lifetime of |this|.
   raw_ptr<ShoppingInsightsSidePanelUI> insights_side_panel_ui_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
 }  // namespace commerce

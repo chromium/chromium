@@ -374,6 +374,37 @@ void ShoppingListHandler::GetProductInfoForCurrentUrl(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void ShoppingListHandler::IsShoppingListEligible(
+    IsShoppingListEligibleCallback callback) {
+  std::move(callback).Run(shopping_service_->IsShoppingListEligible());
+}
+
+void ShoppingListHandler::GetPriceTrackingStatusForCurrentUrl(
+    GetPriceTrackingStatusForCurrentUrlCallback callback) {
+  const GURL current_url = delegate_->GetCurrentTabUrl().value();
+  const bookmarks::BookmarkNode* existing_node =
+      bookmark_model_->GetMostRecentlyAddedUserNodeForURL(current_url);
+  if (!existing_node) {
+    std::move(callback).Run(false);
+    return;
+  }
+  commerce::IsBookmarkPriceTracked(
+      shopping_service_, bookmark_model_, existing_node,
+      base::BindOnce(
+          &ShoppingListHandler::OnGetPriceTrackingStatusForCurrentUrl,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ShoppingListHandler::SetPriceTrackingStatusForCurrentUrl(bool track) {
+  const bookmarks::BookmarkNode* node =
+      delegate_->GetOrAddBookmarkForCurrentUrl();
+  if (track) {
+    TrackPriceForBookmark(node->id());
+  } else {
+    UntrackPriceForBookmark(node->id());
+  }
+}
+
 void ShoppingListHandler::OnFetchProductInfoForCurrentUrl(
     GetProductInfoForCurrentUrlCallback callback,
     const GURL& url,
@@ -407,6 +438,12 @@ void ShoppingListHandler::ShowInsightsSidePanelUI() {
   if (delegate_) {
     delegate_->ShowInsightsSidePanelUI();
   }
+}
+
+void ShoppingListHandler::OnGetPriceTrackingStatusForCurrentUrl(
+    GetPriceTrackingStatusForCurrentUrlCallback callback,
+    bool tracked) {
+  std::move(callback).Run(tracked);
 }
 
 void ShoppingListHandler::SetDelegateForTesting(
