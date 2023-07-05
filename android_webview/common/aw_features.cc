@@ -140,6 +140,11 @@ BASE_FEATURE(kWebViewUseMetricsUploadService,
              "WebViewUseMetricsUploadService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Propagate Android's network notification signals to networking stack
+BASE_FEATURE(kWebViewPropagateNetworkSignals,
+             "webViewPropagateNetworkSignals",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable raster in wide color gamut for apps that use webview in a wide color
 // gamut activity.
 BASE_FEATURE(kWebViewWideColorGamutSupport,

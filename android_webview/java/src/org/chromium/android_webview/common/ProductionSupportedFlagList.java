@@ -453,6 +453,9 @@ public final class ProductionSupportedFlagList {
                     "This flag won't block MIDI by default in WebView. In fact "
                             + "it makes sure the changes made to do so in "
                             + "Chromium won't affect WebView."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_PROPAGATE_NETWORK_SIGNALS,
+                    "This flag will allow webView to propagate networking signals to the networking stack. "
+                            + "Only onNetwork(Connected|Disconnected|SoonToDisconnect|MadeDefault) signals are propagated."),
             Flag.baseFeature(BlinkFeatures.REMOVE_NON_STANDARD_APPEARANCE_VALUE,
                     "Remove non-standard CSS appearance values."),
             Flag.baseFeature(ContentFeatures.WEB_ENVIRONMENT_INTEGRITY,

@@ -39,6 +39,7 @@ BASE_DECLARE_FEATURE(kWebViewSafeBrowsingSafeMode);
 BASE_DECLARE_FEATURE(kWebViewSuppressDifferentOriginSubframeJSDialogs);
 BASE_DECLARE_FEATURE(kWebViewTestFeature);
 BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadService);
+BASE_DECLARE_FEATURE(kWebViewPropagateNetworkSignals);
 BASE_DECLARE_FEATURE(kWebViewWideColorGamutSupport);
 BASE_DECLARE_FEATURE(kWebViewXRequestedWithHeaderControl);
 extern const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode;
