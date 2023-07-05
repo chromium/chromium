@@ -220,8 +220,7 @@ export class SettingsCupsPrintersEntryElement extends
 
     // Only saved printers need to display an icon with printer status.
     if (!this.isSavedPrinter_()) {
-      // TODO(b/278621575): Replace with standard printer icon once available.
-      return `${printerStatusIcon}-green`;
+      return 'os-settings:printer-plain';
     }
 
     const printerStatusReason = this.printerStatusReasonCache.get(
