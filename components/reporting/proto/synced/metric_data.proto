@@ -4,6 +4,7 @@
 
 syntax = "proto2";
 
+import "components/reporting/proto/synced/crash.proto";
 import "components/services/app_service/public/protos/app_types.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -431,6 +432,8 @@ message TelemetryData {
   optional DisplaysTelemetry displays_telemetry = 6;
   // App telemetry data.
   optional AppTelemetry app_telemetry = 7;
+  // Fatal crash data.
+  optional FatalCrashTelemetry fatal_crash_telemetry = 9;
 }
 
 enum MetricEventType {
@@ -446,6 +449,7 @@ enum MetricEventType {
   WIFI_SIGNAL_STRENGTH_RECOVERED = 14;
   NETWORK_STATE_CHANGE = 15;
   VPN_CONNECTION_STATE_CHANGE = 16;
+  CRASH_FATALLY = 17;
 
   reserved 2, 3, 10, 11, 12;
 }
@@ -519,10 +523,12 @@ message AppUninstallData {
   optional apps.ApplicationType app_type = 3;
 }
 
+// Peripherals data.
 message PeripheralsTelemetry {
   repeated UsbTelemetry usb_telemetry = 1;
 }
 
+// Usb data.
 message UsbTelemetry {
   // Vendor name
   optional string vendor = 1;

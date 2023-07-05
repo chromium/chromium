@@ -1,0 +1,64 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+import "components/reporting/proto/synced/session_affiliated_user.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+package reporting;
+
+// Fatal crash data.
+message FatalCrashTelemetry {
+  enum CrashType {
+    // Unknown crashes.
+    CRASH_TYPE_UNKNOWN = 0;
+    // Kernel crashes.
+    KERNEL = 1;
+    // EC crashes.
+    EMBEDDED_CONTROLLER = 2;
+    // More is expected to be added in the future.
+  }
+  // the session types follow user_manager::UserType. The server side will
+  // translate to the types described below.
+  enum SessionType {
+    // Including when a crash occurs on the login screen.
+    SESSION_TYPE_UNKNOWN = 0;
+    // When presenting to the admin, the following will be SIGNED_IN_USER
+    REGULAR = 1;
+    CHILD = 2;
+
+    // When presenting to the admin, the following will be KIOSK
+    KIOSK_APP = 3;
+    ARC_KIOSK_APP = 4;
+    WEB_KIOSK_APP = 5;
+
+    // When presenting to the admin, the following will be MANAGED_GUEST
+    GUEST = 6;
+    PUBLIC_ACCOUNT = 7;
+
+    // When presenting to the admin, the following will be ACTIVE_DIRECTORY
+    ACTIVE_DIRECTORY = 8;
+  }
+  optional CrashType type = 1;
+  optional SessionType session_type = 2;
+  // required
+  optional int64 timestamp_us = 3;
+  // Absent if not signed in or the user is not affiliated. Currently only
+  // contains user email.
+  optional SessionAffiliatedUser affiliated_user = 4;
+  // Absent if the crash has not been uploaded by crash_sender yet.
+  optional string crash_report_id = 5;
+  // required
+  optional string local_id = 6;
+  // If crash report ID is available, has this event been reported without ID
+  // once before?
+  // The optionality of crash_report_id is not sufficient because we need to
+  // distinguish the two cases: (a) A crash is reported for the first time with
+  // a crash report ID and (b) a crash is reported for the first time without a
+  // crash report ID and only has a crash report ID when it is reported for the
+  // second time.
+  optional bool was_reported_without_id = 7;
+}
