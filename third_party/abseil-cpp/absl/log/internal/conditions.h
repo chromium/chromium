@@ -23,7 +23,7 @@
 #ifndef ABSL_LOG_INTERNAL_CONDITIONS_H_
 #define ABSL_LOG_INTERNAL_CONDITIONS_H_
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__hexagon__)
 #include <cstdlib>
 #else
 #include <unistd.h>

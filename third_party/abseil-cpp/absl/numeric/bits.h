@@ -49,8 +49,8 @@
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
-
 #if !(defined(__cpp_lib_bitops) && __cpp_lib_bitops >= 201907L)
+
 // rotating
 template <class T>
 ABSL_MUST_USE_RESULT constexpr

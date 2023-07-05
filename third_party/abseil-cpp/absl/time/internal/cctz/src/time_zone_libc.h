@@ -15,6 +15,7 @@
 #ifndef ABSL_TIME_INTERNAL_CCTZ_TIME_ZONE_LIBC_H_
 #define ABSL_TIME_INTERNAL_CCTZ_TIME_ZONE_LIBC_H_
 
+#include <memory>
 #include <string>
 
 #include "absl/base/config.h"

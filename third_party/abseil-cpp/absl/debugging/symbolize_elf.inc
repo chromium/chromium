@@ -658,8 +658,10 @@ static bool ShouldPickFirstSymbol(const ElfW(Sym) & symbol1,
 }
 
 // Return true if an address is inside a section.
-static bool InSection(const void *address, const ElfW(Shdr) * section) {
-  const char *start = reinterpret_cast<const char *>(section->sh_addr);
+static bool InSection(const void *address, ptrdiff_t relocation,
+                      const ElfW(Shdr) * section) {
+  const char *start = reinterpret_cast<const char *>(
+      section->sh_addr + static_cast<ElfW(Addr)>(relocation));
   size_t size = static_cast<size_t>(section->sh_size);
   return start <= address && address < (start + size);
 }
@@ -699,8 +701,8 @@ static ABSL_ATTRIBUTE_NOINLINE FindSymbolResult FindSymbol(
   // starting address.  However, we do not always want to use the real
   // starting address because we sometimes want to symbolize a function
   // pointer into the .opd section, e.g. FindSymbol(&foo,...).
-  const bool pc_in_opd =
-      kPlatformUsesOPDSections && opd != nullptr && InSection(pc, opd);
+  const bool pc_in_opd = kPlatformUsesOPDSections && opd != nullptr &&
+                         InSection(pc, relocation, opd);
   const bool deref_function_descriptor_pointer =
       kPlatformUsesOPDSections && opd != nullptr && !pc_in_opd;
 
@@ -740,7 +742,7 @@ static ABSL_ATTRIBUTE_NOINLINE FindSymbolResult FindSymbol(
 #endif
 
       if (deref_function_descriptor_pointer &&
-          InSection(original_start_address, opd)) {
+          InSection(original_start_address, /*relocation=*/0, opd)) {
         // The opd section is mapped into memory.  Just dereference
         // start_address to get the first double word, which points to the
         // function entry.
@@ -1336,7 +1338,7 @@ static bool MaybeInitializeObjFile(ObjFile *obj) {
     const int phnum = obj->elf_header.e_phnum;
     const int phentsize = obj->elf_header.e_phentsize;
     auto phoff = static_cast<off_t>(obj->elf_header.e_phoff);
-    size_t num_executable_load_segments = 0;
+    size_t num_interesting_load_segments = 0;
     for (int j = 0; j < phnum; j++) {
       ElfW(Phdr) phdr;
       if (!ReadFromOffsetExact(obj->fd, &phdr, sizeof(phdr), phoff)) {
@@ -1345,23 +1347,35 @@ static bool MaybeInitializeObjFile(ObjFile *obj) {
         return false;
       }
       phoff += phentsize;
-      constexpr int rx = PF_X | PF_R;
-      if (phdr.p_type != PT_LOAD || (phdr.p_flags & rx) != rx) {
-        // Not a LOAD segment, or not executable code.
+
+#if defined(__powerpc__) && !(_CALL_ELF > 1)
+      // On the PowerPC ELF v1 ABI, function pointers actually point to function
+      // descriptors. These descriptors are stored in an .opd section, which is
+      // mapped read-only. We thus need to look at all readable segments, not
+      // just the executable ones.
+      constexpr int interesting = PF_R;
+#else
+      constexpr int interesting = PF_X | PF_R;
+#endif
+
+      if (phdr.p_type != PT_LOAD
+          || (phdr.p_flags & interesting) != interesting) {
+        // Not a LOAD segment, not executable code, and not a function
+        // descriptor.
         continue;
       }
-      if (num_executable_load_segments < obj->phdr.size()) {
-        memcpy(&obj->phdr[num_executable_load_segments++], &phdr, sizeof(phdr));
+      if (num_interesting_load_segments < obj->phdr.size()) {
+        memcpy(&obj->phdr[num_interesting_load_segments++], &phdr, sizeof(phdr));
       } else {
         ABSL_RAW_LOG(
-            WARNING, "%s: too many executable LOAD segments: %zu >= %zu",
-            obj->filename, num_executable_load_segments, obj->phdr.size());
+            WARNING, "%s: too many interesting LOAD segments: %zu >= %zu",
+            obj->filename, num_interesting_load_segments, obj->phdr.size());
         break;
       }
     }
-    if (num_executable_load_segments == 0) {
-      // This object has no "r-x" LOAD segments. That's unexpected.
-      ABSL_RAW_LOG(WARNING, "%s: no executable LOAD segments", obj->filename);
+    if (num_interesting_load_segments == 0) {
+      // This object has no interesting LOAD segments. That's unexpected.
+      ABSL_RAW_LOG(WARNING, "%s: no interesting LOAD segments", obj->filename);
       return false;
     }
   }
@@ -1389,8 +1403,8 @@ const char *Symbolizer::GetUncachedSymbol(const void *pc) {
         // X in the file will have a start address of [true relocation]+X.
         relocation = static_cast<ptrdiff_t>(start_addr - obj->offset);
 
-        // Note: some binaries have multiple "rx" LOAD segments. We must
-        // find the right one.
+        // Note: some binaries have multiple LOAD segments that can contain
+        // function pointers. We must find the right one.
         ElfW(Phdr) *phdr = nullptr;
         for (size_t j = 0; j < obj->phdr.size(); j++) {
           ElfW(Phdr) &p = obj->phdr[j];
@@ -1400,7 +1414,7 @@ const char *Symbolizer::GetUncachedSymbol(const void *pc) {
             ABSL_RAW_CHECK(p.p_type == PT_NULL, "unexpected p_type");
             break;
           }
-          if (pc < reinterpret_cast<void *>(start_addr + p.p_memsz)) {
+          if (pc < reinterpret_cast<void *>(start_addr + p.p_vaddr + p.p_memsz)) {
             phdr = &p;
             break;
           }

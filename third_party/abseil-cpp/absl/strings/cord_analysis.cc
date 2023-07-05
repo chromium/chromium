@@ -16,6 +16,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <unordered_set>
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
@@ -37,7 +38,7 @@ namespace cord_internal {
 namespace {
 
 // Accounting mode for analyzing memory usage.
-enum class Mode { kTotal, kFairShare };
+enum class Mode { kFairShare, kTotal, kTotalMorePrecise };
 
 // CordRepRef holds a `const CordRep*` reference in rep, and depending on mode,
 // holds a 'fraction' representing a cumulative inverse refcount weight.
@@ -60,6 +61,23 @@ struct RawUsage {
 
   // Add 'size' to total, ignoring the CordRepRef argument.
   void Add(size_t size, CordRepRef<mode>) { total += size; }
+};
+
+// Overloaded representation of RawUsage that tracks the set of objects
+// counted, and avoids double-counting objects referenced more than once
+// by the same Cord.
+template <>
+struct RawUsage<Mode::kTotalMorePrecise> {
+  size_t total = 0;
+  // TODO(b/289250880): Replace this with a flat_hash_set.
+  std::unordered_set<const CordRep*> counted;
+
+  void Add(size_t size, CordRepRef<Mode::kTotalMorePrecise> repref) {
+    if (counted.find(repref.rep) == counted.end()) {
+      counted.insert(repref.rep);
+      total += size;
+    }
+  }
 };
 
 // Returns n / refcount avoiding a div for the common refcount == 1.
@@ -181,6 +199,10 @@ size_t GetEstimatedMemoryUsage(const CordRep* rep) {
 
 size_t GetEstimatedFairShareMemoryUsage(const CordRep* rep) {
   return GetEstimatedUsage<Mode::kFairShare>(rep);
+}
+
+size_t GetMorePreciseMemoryUsage(const CordRep* rep) {
+  return GetEstimatedUsage<Mode::kTotalMorePrecise>(rep);
 }
 
 }  // namespace cord_internal

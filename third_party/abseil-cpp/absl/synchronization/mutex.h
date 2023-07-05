@@ -760,6 +760,16 @@ class Condition {
       : Condition(obj, static_cast<bool (T::*)() const>(&T::operator())) {}
 
   // A Condition that always returns `true`.
+  // kTrue is only useful in a narrow set of circumstances, mostly when
+  // it's passed conditionally. For example:
+  //
+  //   mu.LockWhen(some_flag ? kTrue : SomeOtherCondition);
+  //
+  // Note: {LockWhen,Await}With{Deadline,Timeout} methods with kTrue condition
+  // don't return immediately when the timeout happens, they still block until
+  // the Mutex becomes available. The return value of these methods does
+  // not indicate if the timeout was reached; rather it indicates whether or
+  // not the condition is true.
   ABSL_CONST_INIT static const Condition kTrue;
 
   // Evaluates the condition.

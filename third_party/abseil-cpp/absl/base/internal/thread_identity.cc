@@ -80,7 +80,7 @@ void SetCurrentThreadIdentity(ThreadIdentity* identity,
   absl::call_once(init_thread_identity_key_once, AllocateThreadIdentityKey,
                   reclaimer);
 
-#if defined(__EMSCRIPTEN__) || defined(__MINGW32__)
+#if defined(__EMSCRIPTEN__) || defined(__MINGW32__) || defined(__hexagon__)
   // Emscripten and MinGW pthread implementations does not support signals.
   // See https://kripken.github.io/emscripten-site/docs/porting/pthreads.html
   // for more information.

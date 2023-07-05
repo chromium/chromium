@@ -142,7 +142,7 @@ struct string_generator {
   template <class RNG>
   std::string operator()(RNG& rng) const {
     std::string res;
-    res.resize(12);
+    res.resize(size);
     std::uniform_int_distribution<uint32_t> printable_ascii(0x20, 0x7E);
     std::generate(res.begin(), res.end(), [&] { return printable_ascii(rng); });
     return res;

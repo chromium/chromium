@@ -110,7 +110,28 @@ enum class CordMemoryAccounting {
   // Counts the *approximate* number of bytes held in full or in part by this
   // Cord (which may not remain the same between invocations). Cords that share
   // memory could each be "charged" independently for the same shared memory.
+  // See also comment on `kTotalMorePrecise` on internally shared memory.
   kTotal,
+
+  // Counts the *approximate* number of bytes held in full or in part by this
+  // Cord for the distinct memory held by this cord. This option is similar
+  // to `kTotal`, except that if the cord has multiple references to the same
+  // memory, that memory is only counted once.
+  //
+  // For example:
+  //   absl::Cord cord;
+  //   cord.append(some_other_cord);
+  //   cord.append(some_other_cord);
+  //   // Counts `some_other_cord` twice:
+  //   cord.EstimatedMemoryUsage(kTotal);
+  //   // Counts `some_other_cord` once:
+  //   cord.EstimatedMemoryUsage(kTotalMorePrecise);
+  //
+  // The `kTotalMorePrecise` number is more expensive to compute as it requires
+  // deduplicating all memory references. Applications should prefer to use
+  // `kFairShare` or `kTotal` unless they really need a more precise estimate
+  // on "how much memory is potentially held / kept alive by this cord?"
+  kTotalMorePrecise,
 
   // Counts the *approximate* number of bytes held in full or in part by this
   // Cord weighted by the sharing ratio of that data. For example, if some data
@@ -1273,10 +1294,16 @@ inline size_t Cord::EstimatedMemoryUsage(
     CordMemoryAccounting accounting_method) const {
   size_t result = sizeof(Cord);
   if (const absl::cord_internal::CordRep* rep = contents_.tree()) {
-    if (accounting_method == CordMemoryAccounting::kFairShare) {
-      result += cord_internal::GetEstimatedFairShareMemoryUsage(rep);
-    } else {
-      result += cord_internal::GetEstimatedMemoryUsage(rep);
+    switch (accounting_method) {
+      case CordMemoryAccounting::kFairShare:
+        result += cord_internal::GetEstimatedFairShareMemoryUsage(rep);
+        break;
+      case CordMemoryAccounting::kTotalMorePrecise:
+        result += cord_internal::GetMorePreciseMemoryUsage(rep);
+        break;
+      case CordMemoryAccounting::kTotal:
+        result += cord_internal::GetEstimatedMemoryUsage(rep);
+        break;
     }
   }
   return result;
