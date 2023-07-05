@@ -43,6 +43,28 @@ class PaintOrderArray {
     return static_cast<EPaintOrderType>((data_ >> field_shift) & kFieldMask);
   }
 
+  // Number of keywords in the shortest (canonical) form of a paint order list.
+  //
+  // Per spec, if any keyword is omitted it will be added last using
+  // the standard ordering. So "stroke" implies an order "stroke fill
+  // markers" etc. From a serialization PoV this means we never need
+  // to emit the last keyword.
+  //
+  // https://svgwg.org/svg2-draft/painting.html#PaintOrder
+  static constexpr unsigned CanonicalLength(EPaintOrder paint_order) {
+    switch (paint_order) {
+      case kPaintOrderNormal:
+      case kPaintOrderFillStrokeMarkers:
+      case kPaintOrderStrokeFillMarkers:
+      case kPaintOrderMarkersFillStroke:
+        return 1;
+      case kPaintOrderFillMarkersStroke:
+      case kPaintOrderStrokeMarkersFill:
+      case kPaintOrderMarkersStrokeFill:
+        return 2;
+    }
+  }
+
  private:
   static constexpr unsigned kFieldBitwidth = 2;
   static constexpr unsigned kFieldMask = (1u << kFieldBitwidth) - 1;

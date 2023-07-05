@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/coord_box_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
+#include "third_party/blink/renderer/core/style/paint_order_array.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
@@ -6408,30 +6409,12 @@ const CSSValue* PaintOrder::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
 
-  // Table mapping to the shortest (canonical) form of the property.
-  //
-  // Per spec, if any keyword is omitted it will be added last using
-  // the standard ordering. So "stroke" implies an order "stroke fill
-  // markers" etc. From a serialization PoV this means we never need
-  // to emit the last keyword.
-  //
-  // https://svgwg.org/svg2-draft/painting.html#PaintOrder
-  static const EPaintOrderType canonical_form[][2] = {
-      // kPaintOrderNormal is handled above.
-      {PT_FILL, PT_NONE},       // kPaintOrderFillStrokeMarkers
-      {PT_FILL, PT_MARKERS},    // kPaintOrderFillMarkersStroke
-      {PT_STROKE, PT_NONE},     // kPaintOrderStrokeFillMarkers
-      {PT_STROKE, PT_MARKERS},  // kPaintOrderStrokeMarkersFill
-      {PT_MARKERS, PT_NONE},    // kPaintOrderMarkersFillStroke
-      {PT_MARKERS, PT_STROKE},  // kPaintOrderMarkersStrokeFill
-  };
-  DCHECK_LT(static_cast<size_t>(paint_order) - 1, std::size(canonical_form));
+  const unsigned canonical_length =
+      PaintOrderArray::CanonicalLength(paint_order);
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  for (const auto& keyword : canonical_form[paint_order - 1]) {
-    if (keyword == PT_NONE) {
-      break;
-    }
-    list->Append(*CSSIdentifierValue::Create(keyword));
+  const PaintOrderArray paint_order_array(paint_order);
+  for (unsigned i = 0; i < canonical_length; ++i) {
+    list->Append(*CSSIdentifierValue::Create(paint_order_array[i]));
   }
   return list;
 }
