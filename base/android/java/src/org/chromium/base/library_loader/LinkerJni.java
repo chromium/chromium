@@ -6,8 +6,6 @@ package org.chromium.base.library_loader;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.annotations.CalledByNative;
-
 /**
  * Mockable stub for all native methods in Linker.
  *
@@ -58,14 +56,4 @@ class LinkerJni implements Linker.Natives {
     private static native boolean nativeUseRelros(
             long localLoadAddress, Linker.LibInfo remoteLibInfo);
     private static native int nativeGetRelroSharingResult();
-
-    @CalledByNative
-    public static void reportDlopenExtTime(long millis) {
-        Linker.reportDlopenExtTime(millis);
-    }
-
-    @CalledByNative
-    public static void reportIteratePhdrTime(long millis) {
-        Linker.reportIteratePhdrTime(millis);
-    }
 }

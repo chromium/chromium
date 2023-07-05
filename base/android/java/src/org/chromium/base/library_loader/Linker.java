@@ -700,16 +700,6 @@ class Linker {
         throw new UnsatisfiedLinkError(message);
     }
 
-    public static void reportDlopenExtTime(long millis) {
-        RecordHistogram.recordTimesHistogram(
-                "ChromiumAndroidLinker.ModernLinkerDlopenExtTime", millis);
-    }
-
-    public static void reportIteratePhdrTime(long millis) {
-        RecordHistogram.recordTimesHistogram(
-                "ChromiumAndroidLinker.ModernLinkerIteratePhdrTime", millis);
-    }
-
     /**
      * Holds the information for a given native library or the address range for the future library
      * load. Owns the shared RELRO file descriptor.
