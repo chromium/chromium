@@ -960,9 +960,8 @@ void SkiaRenderer::FinishDrawingFrame() {
       surface_candidate.priority_hint = surface_plane.priority_hint;
       surface_candidate.rounded_corners = surface_plane.rounded_corners;
       surface_candidate.damage_rect =
-          gfx::RectF(surface_plane.damage_rect.value_or(
-              gfx::Rect(surface_plane.resource_size)));
-
+          use_partial_swap_ ? gfx::RectF(swap_buffer_rect_)
+                            : gfx::RectF(surface_plane.resource_size);
       current_frame()->overlay_list.insert(
           current_frame()->overlay_list.begin(), surface_candidate);
     }
