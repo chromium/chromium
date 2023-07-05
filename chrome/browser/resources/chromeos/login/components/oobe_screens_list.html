@@ -185,10 +185,17 @@
                                               screen.screenID )]]</div>
         </div>
         <div class="info-icon" aria-hidden="true">
-          <iron-icon hidden="[[isSyncedIconHidden(screen.is_synced ,
+          <iron-icon id="sync-icon"
+              hidden="[[isSyncedIconHidden(screen.is_synced ,
                                             screen.is_completed ,
                                             screen.selected)]]"
               class="sync" icon="oobe-20:sync"></iron-icon>
+          <paper-tooltip id="tooltip-element" position="left"
+              aria-hidden="true"
+              for="sync-icon"
+              animation-delay="0">
+            [[i18nDynamic(locale, 'choobeSyncedTile')]]
+          </paper-tooltip>
           <iron-icon hidden="[[!screen.selected]]"
               class="selected" icon="oobe-20:selected"></iron-icon>
         </div>
