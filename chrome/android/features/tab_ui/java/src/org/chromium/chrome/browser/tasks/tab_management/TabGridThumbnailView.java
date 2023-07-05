@@ -255,8 +255,7 @@ public class TabGridThumbnailView extends ImageView {
         // Step 2: Placeholder icon.
         // Make property changes outside the flag intentionally in the event the flag flips status
         // these will have no material effect on the UI and are safe.
-        mIconColor = TabUiThemeProvider.getThumbnailPlaceholderIconColor(
-                getContext(), isIncognito, isSelected);
+        mIconColor = newColor;
         if (TabUiFeatureUtilities.sThumbnailPlaceholder.isEnabled() && mIconDrawable != null) {
             setColorFilter(mIconColor, PorterDuff.Mode.SRC_IN);
         }

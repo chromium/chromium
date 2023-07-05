@@ -21,16 +21,12 @@ import com.google.android.material.elevation.ElevationOverlayProvider;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.ui.util.ColorUtils;
 
 /**
  * Utility class that provides theme related attributes for Tab UI.
  */
 public class TabUiThemeProvider {
     private static final String TAG = "TabUiThemeProvider";
-    private static final int ALPHA_20 = 0x33;
-    private static final int ALPHA_25 = 0x40;
-    private static final int ALPHA_40 = 0x66;
 
     /**
      * Returns the color to use for the tab grid card view background based on incognito mode.
@@ -170,37 +166,6 @@ public class TabUiThemeProvider {
         }
         return ColorStateList.valueOf(
                 MaterialColors.getColor(context, org.chromium.chrome.R.attr.colorPrimary, TAG));
-    }
-
-    /**
-     * Returns the color to use for the thumbnail placeholder icon based on the state of the card.
-     *
-     * @param context {@link Context} to access resources.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @param isSelected Whether the tab is currently selected.
-     * @return The color to tint the globe icon drawable.
-     */
-    public static @ColorInt int getThumbnailPlaceholderIconColor(
-            Context context, boolean isIncognito, boolean isSelected) {
-        if (isIncognito) {
-            final @ColorRes int colorRes = isSelected
-                    ? R.color.incognito_placeholder_icon_selected_color
-                    : R.color.incognito_placeholder_icon_color;
-            final @ColorInt int color = context.getColor(colorRes);
-            return isSelected ? ColorUtils.setAlphaComponent(color, ALPHA_40)
-                              : ColorUtils.setAlphaComponent(color, ALPHA_25);
-        } else if (ColorUtils.inNightMode(context)) {
-            final @ColorInt int color = isSelected
-                    ? SemanticColorUtils.getDefaultTextColorOnAccent1(context)
-                    : SemanticColorUtils.getDefaultIconColor(context);
-            return isSelected ? ColorUtils.setAlphaComponent(color, ALPHA_40)
-                              : ColorUtils.setAlphaComponent(color, ALPHA_25);
-        } else {
-            final @ColorInt int color = isSelected
-                    ? SemanticColorUtils.getDefaultIconColorAccent1(context)
-                    : SemanticColorUtils.getDefaultIconColor(context);
-            return isSelected ? color : ColorUtils.setAlphaComponent(color, ALPHA_20);
-        }
     }
 
     /**
