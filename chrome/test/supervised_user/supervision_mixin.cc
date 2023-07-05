@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -19,7 +20,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -52,7 +52,7 @@ bool IdentityManagerAlreadyHasPrimaryAccount(
   return account_info.email == email;
 }
 
-void SetIsSupervisedProfile(Profile* profile, bool is_supervised_profile) {
+void ConfigureSupervisedProfile(Profile* profile, bool is_supervised_profile) {
   if (is_supervised_profile) {
     EnableParentalControls(*profile->GetPrefs());
   } else {
@@ -71,7 +71,7 @@ SupervisionMixin::SupervisionMixin(
       fake_gaia_mixin_(&test_mixin_host),
       consent_level_(options.consent_level),
       email_(options.email),
-      account_type_(options.account_type) {}
+      sign_in_mode_(options.sign_in_mode) {}
 
 SupervisionMixin::SupervisionMixin(
     InProcessBrowserTestMixinHost& test_mixin_host,
@@ -87,7 +87,7 @@ SupervisionMixin::SupervisionMixin(
                                         options.embedded_test_server_options),
       consent_level_(options.consent_level),
       email_(options.email),
-      account_type_(options.account_type) {}
+      sign_in_mode_(options.sign_in_mode) {}
 
 SupervisionMixin::~SupervisionMixin() = default;
 
@@ -100,7 +100,7 @@ void SupervisionMixin::SetUpInProcessBrowserTestFixture() {
 
 void SupervisionMixin::SetUpOnMainThread() {
   SetUpIdentityTestEnvironment();
-  LogInUser();
+  ConfigureIdentityTestEnvironment();
   SetUpTestServer();
 }
 
@@ -116,7 +116,12 @@ void SupervisionMixin::SetUpIdentityTestEnvironment() {
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(GetProfile());
 }
 
-void SupervisionMixin::LogInUser() {
+void SupervisionMixin::ConfigureIdentityTestEnvironment() {
+  if (sign_in_mode_ == SignInMode::kSignedOut) {
+    GetIdentityTestEnvironment()->ClearPrimaryAccount();
+    return;
+  }
+
   if (!IdentityManagerAlreadyHasPrimaryAccount(
           GetIdentityTestEnvironment()->identity_manager(), email_,
           consent_level_)) {
@@ -130,10 +135,9 @@ void SupervisionMixin::LogInUser() {
 
   GetIdentityTestEnvironment()->SetRefreshTokenForPrimaryAccount();
   GetIdentityTestEnvironment()->SetAutomaticIssueOfAccessTokens(true);
-
-  SetIsSupervisedProfile(
+  ConfigureSupervisedProfile(
       GetProfile(),
-      /*is_supervised_profile=*/account_type_ == AccountType::kSupervised);
+      /*is_supervised_profile=*/sign_in_mode_ == SignInMode::kSupervised);
 }
 
 Profile* SupervisionMixin::GetProfile() const {
@@ -145,6 +149,24 @@ signin::IdentityTestEnvironment* SupervisionMixin::GetIdentityTestEnvironment()
   CHECK(adaptor_->identity_test_env())
       << "Do not use before the environment is set up.";
   return adaptor_->identity_test_env();
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const SupervisionMixin::SignInMode& sign_in_mode) {
+  switch (sign_in_mode) {
+    case SupervisionMixin::SignInMode::kSignedOut:
+      stream << "SignedOut";
+      break;
+    case SupervisionMixin::SignInMode::kRegular:
+      stream << "Regular";
+      break;
+    case SupervisionMixin::SignInMode::kSupervised:
+      stream << "Supervised";
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+  return stream;
 }
 
 }  // namespace supervised_user

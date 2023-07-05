@@ -99,10 +99,10 @@ class SupervisionRemovalExtensionTest : public ExtensionBrowserTest {
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,
-      {.account_type =
+      {.sign_in_mode =
            content::IsPreTest()
-               ? supervised_user::SupervisionMixin::AccountType::kSupervised
-               : supervised_user::SupervisionMixin::AccountType::kRegular}};
+               ? supervised_user::SupervisionMixin::SignInMode::kSupervised
+               : supervised_user::SupervisionMixin::SignInMode::kRegular}};
 };
 
 // Removing supervision should also remove associated disable reasons, such as
