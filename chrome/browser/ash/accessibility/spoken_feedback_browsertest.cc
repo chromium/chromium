@@ -2266,15 +2266,9 @@ class ShortcutsAppSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(b/288602247): Linux ChromiumOS MSan is flaky for spoken feedback tests
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_ShortcutCustomization DISABLED_ShortcutCustomization
-#else
-#define MAYBE_ShortcutCustomization ShortcutCustomization
-#endif
-
+// TODO(b/288602247): The test is flaky.
 IN_PROC_BROWSER_TEST_F(ShortcutsAppSpokenFeedbackTest,
-                       MAYBE_ShortcutCustomization) {
+                       DISABLED_ShortcutCustomization) {
   EnableChromeVox();
   sm_.Call([this]() {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
