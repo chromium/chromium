@@ -2212,12 +2212,6 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
 // Tests that the template count histogram is recorded properly.
 IN_PROC_BROWSER_TEST_P(DesksClientTest,
                        SystemUIDeskTemplateUserTemplateCountHistogram) {
-  if (GetParam()) {
-    // TODO(b/289258836): Skip this test while Jelly is enabled so the rest of
-    // the suite can land.
-    SUCCEED();
-    return;
-  }
   base::HistogramTester histogram_tester;
 
   ash::ToggleOverview();
