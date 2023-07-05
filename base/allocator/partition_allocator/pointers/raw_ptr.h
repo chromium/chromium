@@ -94,14 +94,11 @@ enum class RawPtrTraits : unsigned {
   // instead.
   kMayDangle = (1 << 0),
 
-#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-  // Disables any hooks, by switching to NoOpImpl in that case.
+  // Disables any hooks, by switching to NoOpImpl when building with hooks
+  // (see BUILDFLAG(USE_HOOKABLE_RAW_PTR)).
   //
   // Internal use only.
   kDisableHooks = (1 << 2),
-#else
-  kDisableHooks = kEmpty,
-#endif
 
   // Pointer arithmetic is discouraged and disabled by default.
   //
