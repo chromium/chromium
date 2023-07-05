@@ -110,7 +110,7 @@ public class HeaderViewBinderUnitTest {
         mModel.set(HeaderViewProperties.USE_MODERNIZED_HEADER_PADDING, true);
 
         int minHeight = mResources.getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_header_height_modern_phase2);
+                R.dimen.omnibox_suggestion_header_height_modern_phase2_smallest);
         int paddingStart = mResources.getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_header_padding_start_modern_smallest);
         int paddingTop = mResources.getDimensionPixelSize(
@@ -127,7 +127,7 @@ public class HeaderViewBinderUnitTest {
         mModel.set(HeaderViewProperties.USE_MODERNIZED_HEADER_PADDING, true);
 
         int minHeight = mResources.getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_header_height_modern_phase2);
+                R.dimen.omnibox_suggestion_header_height_modern_phase2_smaller);
         int paddingStart = mResources.getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_header_padding_start_modern_smaller);
         int paddingTop = mResources.getDimensionPixelSize(
