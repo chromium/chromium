@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/helper.h"
+#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -27,6 +28,7 @@ constexpr base::TimeDelta kConnectionTimeout = base::Seconds(40);
 
 constexpr char kUserActionBackButtonClicked[] = "back";
 constexpr char kUserActionContinueButtonClicked[] = "continue";
+constexpr char kUserActionQuickStartButtonClicked[] = "activateQuickStart";
 
 }  // namespace
 
@@ -37,6 +39,8 @@ std::string NetworkScreen::GetResultString(Result result) {
       return "Connected";
     case Result::BACK:
       return "Back";
+    case Result::QUICK_START:
+      return "QuickStart";
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
@@ -64,16 +68,33 @@ void NetworkScreen::ShowImpl() {
   Refresh();
   if (view_)
     view_->Show();
+
+  // Quick Start can be enabled either by feature flag or by keyboard shortcut.
+  // The shortcut method enables a simpler workflow for testers, while the
+  // feature flag will enable us to perform a first run field trial.
+  // QuickStart should not be enabled for Demo mode or OS Install flows
+  if (features::IsOobeQuickStartEnabled() &&
+      !DemoSetupController::IsOobeDemoSetupFlowInProgress() &&
+      !switches::IsOsInstallAllowed()) {
+    EnableQuickStart();
+  }
 }
 
 void NetworkScreen::HideImpl() {
   connection_timer_.Stop();
+
+  if (context()->quick_start_enabled) {
+    bootstrap_controller_.reset();
+  }
+
   UnsubscribeNetworkNotification();
 }
 
 void NetworkScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
-  if (action_id == kUserActionContinueButtonClicked) {
+  if (action_id == kUserActionQuickStartButtonClicked) {
+    OnQuickStartButtonClicked();
+  } else if (action_id == kUserActionContinueButtonClicked) {
     OnContinueButtonClicked();
   } else if (action_id == kUserActionBackButtonClicked) {
     OnBackButtonClicked();
@@ -87,6 +108,7 @@ bool NetworkScreen::HandleAccelerator(LoginAcceleratorAction action) {
     context()->enrollment_triggered_early = true;
     return true;
   }
+
   return false;
 }
 
@@ -204,6 +226,35 @@ void NetworkScreen::OnContinueButtonClicked() {
   }
   continue_pressed_ = true;
   WaitForConnection(network_id_);
+}
+
+void NetworkScreen::OnQuickStartButtonClicked() {
+  CHECK(context()->quick_start_enabled);
+  exit_callback_.Run(Result::QUICK_START);
+}
+
+void NetworkScreen::EnableQuickStart() {
+  context()->quick_start_enabled = true;
+  bootstrap_controller_ =
+      LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
+
+  bootstrap_controller_->GetFeatureSupportStatusAsync(
+      base::BindOnce(&NetworkScreen::OnGetQuickStartFeatureSupportStatus,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NetworkScreen::OnGetQuickStartFeatureSupportStatus(
+    quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status) {
+  if (status != quick_start::TargetDeviceConnectionBroker::
+                    FeatureSupportStatus::kSupported) {
+    return;
+  }
+
+  if (!view_) {
+    return;
+  }
+
+  view_->SetQuickStartEnabled();
 }
 
 bool NetworkScreen::UpdateStatusIfConnectedToEthernet() {

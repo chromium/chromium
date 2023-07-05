@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 
@@ -33,6 +34,7 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   enum class Result {
     CONNECTED,
     BACK,
+    QUICK_START,
     NOT_APPLICABLE,
   };
 
@@ -115,6 +117,13 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   // Called when continue button is clicked.
   void OnContinueButtonClicked();
 
+  // Called when quick start button is clicked.
+  void OnQuickStartButtonClicked();
+
+  void EnableQuickStart();
+  void OnGetQuickStartFeatureSupportStatus(
+      quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status);
+
   // Skip this screen or automatically continue if the device is connected to
   // Ethernet for the first time in this session.
   bool UpdateStatusIfConnectedToEthernet();
@@ -148,6 +157,9 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
 
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
+
+  base::WeakPtr<quick_start::TargetDeviceBootstrapController>
+      bootstrap_controller_;
 
   base::WeakPtrFactory<NetworkScreen> weak_ptr_factory_{this};
 };

@@ -1757,6 +1757,9 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
         demo_setup_controller_.reset();
         ShowWelcomeScreen();
         break;
+      case NetworkScreen::Result::QUICK_START:
+        NOTREACHED();
+        break;
     }
     return;
   }
@@ -1773,6 +1776,9 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
       case NetworkScreen::Result::BACK:
         ShowOsTrialScreen();
         break;
+      case NetworkScreen::Result::QUICK_START:
+        NOTREACHED();
+        break;
     }
     return;
   }
@@ -1787,6 +1793,9 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
       break;
     case NetworkScreen::Result::BACK:
       ShowWelcomeScreen();
+      break;
+    case NetworkScreen::Result::QUICK_START:
+      ShowQuickStartScreen();
       break;
   }
 }

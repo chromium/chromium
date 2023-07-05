@@ -163,7 +163,8 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PinCode) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, ClickingOnButtonEntersScreen) {
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
+                       ClickingOnButtonEntersScreenFromWelcome) {
   EnterQuickStartFlowFromWelcomeScreen();
 }
 

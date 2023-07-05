@@ -100,6 +100,7 @@ const test::UIPath kDemoPreferencesNext = {kDemoPrefsId, "nextButton"};
 const test::UIPath kNetworkScreen = {kNetworkId};
 const test::UIPath kNetworkNextButton = {kNetworkId, "nextButton"};
 const test::UIPath kNetworkBackButton = {kNetworkId, "backButton"};
+const test::UIPath kNetworkQuickStartButton = {kNetworkId, "quickStart"};
 
 const test::UIPath kDemoSetupProgressDialog = {kDemoSetupId,
                                                "demoSetupProgressDialog"};
@@ -1113,6 +1114,35 @@ IN_PROC_BROWSER_TEST_F(DemoSetupBlazeyDeviceTest,
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+}
+
+/**
+ * Test case of Quick Start enabled device, where quick start button should not
+ * show for demo mode.
+ */
+class DemoSetupQuickStartEnabledTest : public DemoSetupArcSupportedTest {
+ public:
+  ~DemoSetupQuickStartEnabledTest() override = default;
+
+  DemoSetupQuickStartEnabledTest() {
+    feature_list_.InitWithFeatures(
+        {
+            features::kEnableOobeNetworkScreenSkip,
+            features::kOobeQuickStart,
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DemoSetupQuickStartEnabledTest, QuickStartButton) {
+  SimulateNetworkDisconnected();
+
+  TriggerDemoModeOnWelcomeScreen();
+
+  test::OobeJS().ExpectHiddenPath(kNetworkQuickStartButton);
 }
 
 }  // namespace
