@@ -246,14 +246,11 @@ class FormDataImporter : public PersonalDataManagerObserver {
                                 std::vector<AddressProfileImportCandidate>*
                                     address_profile_import_candidates);
 
-  // Depending on the `predicted_country_code`, validates that the required
-  // fields in the `profile` have values. Accordingly, logs the form import
-  // requirement metrics.
-  bool LogAddressFormImportRequirementMetric(
-      const AutofillProfile& profile,
-      const std::string& predicted_country_code,
-      const std::string& app_locale,
-      LogBuffer* import_log_buffer);
+  // Validates that the required fields in the `profile` have values, based on
+  // the requirements of the `profile`'s country. Accordingly, logs the form
+  // import requirement metrics.
+  bool LogAddressFormImportRequirementMetric(const AutofillProfile& profile,
+                                             LogBuffer* import_log_buffer);
 
   // Helper method for ImportAddressProfiles which only considers the fields
   // for a specified `section`. If no section is passed, the import is

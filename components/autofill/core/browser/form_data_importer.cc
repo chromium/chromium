@@ -406,13 +406,10 @@ size_t FormDataImporter::ExtractAddressProfiles(
 
 bool FormDataImporter::LogAddressFormImportRequirementMetric(
     const AutofillProfile& profile,
-    const std::string& predicted_country_code,
-    const std::string& app_locale,
     LogBuffer* import_log_buffer) {
   base::flat_set<autofill_metrics::AddressProfileImportRequirementMetric>
       autofill_profile_requirement_results =
-          GetAutofillProfileRequirementResult(profile, predicted_country_code,
-                                              app_locale_, import_log_buffer);
+          GetAutofillProfileRequirementResult(profile, import_log_buffer);
 
   for (const auto& requirement_result : autofill_profile_requirement_results) {
     autofill_metrics::LogAddressFormImportRequirementMetric(requirement_result);
@@ -579,16 +576,13 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
     }
   }
 
-  const std::string variation_country_code =
-      client_->GetVariationConfigCountryCode();
-  std::string predicted_country_code =
-      GetPredictedCountryCode(candidate_profile, variation_country_code,
-                              app_locale_, import_log_buffer);
-
   // When setting a phone number, the region is deduced from the profile's
-  // country or the app locale. For the `variation_country_code` to take
+  // country or the app locale. For the variation country code to take
   // precedence over the app locale, country code complemention needs to happen
   // before `SetPhoneNumber()`.
+  const std::string predicted_country_code = GetPredictedCountryCode(
+      candidate_profile, client_->GetVariationConfigCountryCode(), app_locale_,
+      import_log_buffer);
   import_metadata.did_complement_country =
       ComplementCountry(candidate_profile, predicted_country_code);
 
@@ -619,11 +613,6 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
       !has_invalid_information) {
     multistep_importer_.ProcessMultiStepImport(candidate_profile,
                                                import_metadata);
-    // If `candidate_profile` was merged with a profile containing
-    // (non-complemented) country information, the country might have changed.
-    predicted_country_code =
-        GetPredictedCountryCode(candidate_profile, variation_country_code,
-                                app_locale_, /*import_log_buffer=*/nullptr);
   }
 
   // This relies on the profile's country code and must be done strictly after
@@ -632,8 +621,7 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
 
   // Do not import a profile if any of the requirements is violated.
   bool all_fulfilled = LogAddressFormImportRequirementMetric(
-                           candidate_profile, predicted_country_code,
-                           app_locale_, import_log_buffer) &&
+                           candidate_profile, import_log_buffer) &&
                        !has_invalid_information;
 
   // Collect metrics regarding the requirements for an address profile import.

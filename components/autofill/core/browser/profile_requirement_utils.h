@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PROFILE_REQUIREMENT_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PROFILE_REQUIREMENT_UTILS_H_
 
-#include <string>
-
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -43,22 +41,13 @@ constexpr autofill_metrics::AddressProfileImportRequirementMetric
 // `autofill_metrics::kMinimumAddressRequirementViolations`.
 base::flat_set<autofill_metrics::AddressProfileImportRequirementMetric>
 GetAutofillProfileRequirementResult(const AutofillProfile& profile,
-                                    const std::string& predicted_country_code,
-                                    const std::string& app_locale,
                                     LogBuffer* import_log_buffer);
-
-// Returns true if minimum requirements for import of a given `profile` have
-// been met.
-bool IsMinimumAddress(const AutofillProfile& profile,
-                      const std::string& predicted_country_code,
-                      const std::string& app_locale);
 
 // Returns true if minimum requirements for import of a given `profile` have
 // been met.
 // Uses the country_code from `profile` to fetch the requirements and the run
 // the validations.
-bool IsMinimumAddress(const AutofillProfile& profile,
-                      const std::string& app_locale);
+bool IsMinimumAddress(const AutofillProfile& profile);
 
 // Returns true if the profile can be migrated to the Account. Only sufficiently
 // complete profiles are migrated and this method does not check for the

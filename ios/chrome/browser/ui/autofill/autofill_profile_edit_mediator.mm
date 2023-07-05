@@ -120,8 +120,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (BOOL)isMinimumAddress {
-  return autofill::IsMinimumAddress(*_autofillProfile,
-                                    _personalDataManager->app_locale());
+  return autofill::IsMinimumAddress(*_autofillProfile);
 }
 
 #pragma mark - AutofillProfileEditTableViewControllerDelegate

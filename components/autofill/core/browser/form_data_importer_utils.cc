@@ -162,11 +162,7 @@ bool MultiStepImportMerger::MergeProfileWithMultiStepCandidates(
 
   // The minimum address requirements depend on the country, which has possibly
   // changed as a result of the merge.
-  if (IsMinimumAddress(
-          completed_profile,
-          GetPredictedCountryCode(completed_profile, variation_country_code_,
-                                  app_locale_, /*import_log_buffer=*/nullptr),
-          app_locale_)) {
+  if (IsMinimumAddress(completed_profile)) {
     profile = std::move(completed_profile);
     import_metadata = std::move(completed_metadata);
     multistep_candidates_.Clear();

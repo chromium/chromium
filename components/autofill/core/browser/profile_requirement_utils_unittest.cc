@@ -11,13 +11,13 @@ namespace autofill {
 
 TEST(ProfileRequirementUtilsTest, IsMinimumAddress) {
   AutofillProfile profile = test::GetFullProfile();
-  EXPECT_TRUE(IsMinimumAddress(profile, "en"));
+  EXPECT_TRUE(IsMinimumAddress(profile));
 }
 
 TEST(ProfileRequirementUtilsTest, IncompleteAddress) {
   AutofillProfile profile = test::GetFullProfile();
   profile.ClearFields({ADDRESS_HOME_ZIP});
-  EXPECT_FALSE(IsMinimumAddress(profile, "en"));
+  EXPECT_FALSE(IsMinimumAddress(profile));
 }
 
 }  // namespace autofill
