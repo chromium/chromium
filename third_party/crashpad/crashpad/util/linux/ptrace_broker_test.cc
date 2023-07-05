@@ -277,7 +277,10 @@ class SameBitnessTest : public Multiprocess {
   ScopedMmap mapping_;
 };
 
-TEST(PtraceBroker, SameBitness) {
+// TODO(https://crbug.com/1459865): This test consistently fails on ASAN/LSAN
+// but it's not clear if this test is correct in the general case (see comment 2
+// on that issue).
+TEST(PtraceBroker, DISABLED_SameBitness) {
   SameBitnessTest test;
   test.Run();
 }
