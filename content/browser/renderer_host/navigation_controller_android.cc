@@ -15,7 +15,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "content/browser/android/impression_utils.h"
+#include "content/browser/android/additional_navigation_params_utils.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/public/android/content_jni_headers/NavigationControllerImpl_jni.h"
@@ -256,7 +256,7 @@ NavigationControllerAndroid::LoadUrl(
     const JavaParamRef<jobject>& j_initiator_origin,
     jboolean has_user_gesture,
     jboolean should_clear_history_list,
-    const base::android::JavaParamRef<jobject>& j_impression,
+    const base::android::JavaParamRef<jobject>& j_additional_navigation_params,
     jlong input_start,
     jlong navigation_ui_data_ptr) {
   DCHECK(url);
@@ -277,17 +277,29 @@ NavigationControllerAndroid::LoadUrl(
   params.has_user_gesture = has_user_gesture;
   params.should_clear_history_list = should_clear_history_list;
 
-  if (j_impression) {
+  if (j_additional_navigation_params) {
     params.initiator_frame_token =
-        GetInitiatorFrameTokenFromJavaImpression(env, j_impression);
+        GetInitiatorFrameTokenFromJavaAdditionalNavigationParams(
+            env, j_additional_navigation_params);
     params.initiator_process_id =
-        GetInitiatorProcessIDFromJavaImpression(env, j_impression);
-    blink::Impression impression;
-    impression.attribution_src_token =
-        GetAttributionSrcTokenFromJavaImpression(env, j_impression).value();
-    impression.runtime_features =
-        GetAttributionRuntimeFeaturesFromJavaImpression(env, j_impression);
-    params.impression = impression;
+        GetInitiatorProcessIdFromJavaAdditionalNavigationParams(
+            env, j_additional_navigation_params);
+
+    // If the attribution src token exists, then an impression exists with this
+    // navigation.
+    if (GetAttributionSrcTokenFromJavaAdditionalNavigationParams(
+            env, j_additional_navigation_params)
+            .has_value()) {
+      blink::Impression impression;
+      impression.attribution_src_token =
+          GetAttributionSrcTokenFromJavaAdditionalNavigationParams(
+              env, j_additional_navigation_params)
+              .value();
+      impression.runtime_features =
+          GetAttributionRuntimeFeaturesFromJavaAdditionalNavigationParams(
+              env, j_additional_navigation_params);
+      params.impression = impression;
+    }
   }
 
   if (extra_headers)

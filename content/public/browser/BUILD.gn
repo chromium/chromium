@@ -595,6 +595,7 @@ source_set("browser_sources") {
       "//ui/android",
     ]
     sources += [
+      "android/additional_navigation_params_android.h",
       "android/android_overlay_provider.h",
       "android/browser_context_handle.h",
       "android/child_process_importance.h",

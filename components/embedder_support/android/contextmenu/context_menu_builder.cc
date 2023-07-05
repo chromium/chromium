@@ -9,6 +9,7 @@
 #include "base/android/unguessable_token_android.h"
 #include "base/unguessable_token.h"
 #include "components/embedder_support/android/context_menu_jni_headers/ContextMenuParams_jni.h"
+#include "content/public/browser/android/additional_navigation_params_android.h"
 #include "content/public/browser/android/impression_android.h"
 #include "content/public/browser/context_menu_params.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
@@ -31,12 +32,19 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
   std::u16string title_text =
       (params.title_text.empty() ? params.alt_text : params.title_text);
 
-  base::android::ScopedJavaLocalRef<jobject> impression;
+  absl::optional<base::UnguessableToken> attribution_src_token;
+  absl::optional<network::AttributionReportingRuntimeFeatures> runtime_features;
   if (initiator_frame_token && params.impression) {
-    impression = content::CreateJavaImpression(
-        env, params.impression->attribution_src_token.value(),
-        initiator_frame_token.value(), initiator_process_id,
-        params.impression->runtime_features);
+    attribution_src_token = params.impression->attribution_src_token.value();
+    runtime_features = params.impression->runtime_features;
+  }
+
+  base::android::ScopedJavaLocalRef<jobject> additional_navigation_params;
+  if (initiator_frame_token) {
+    additional_navigation_params =
+        content::CreateJavaAdditionalNavigationParams(
+            env, initiator_frame_token.value(), initiator_process_id,
+            attribution_src_token, runtime_features);
   }
 
   return base::android::ScopedJavaGlobalRef<jobject>(
@@ -52,7 +60,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
           url::GURLAndroid::FromNativeGURL(env, sanitizedReferrer),
           static_cast<int>(params.referrer_policy), can_save, params.x,
           params.y, params.source_type, params.opened_from_highlight,
-          impression));
+          additional_navigation_params));
 }
 
 content::ContextMenuParams* ContextMenuParamsFromJavaObject(

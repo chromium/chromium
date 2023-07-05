@@ -3600,10 +3600,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
             request->GetInitiatorFrameToken();
         EXPECT_TRUE(frame_token.has_value());
         EXPECT_EQ(initiator_frame_token, frame_token.value());
-        EXPECT_EQ(initiator_process_id, request->GetInitiatorProcessID());
+        EXPECT_EQ(initiator_process_id, request->GetInitiatorProcessId());
 
         auto* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
-            request->GetInitiatorProcessID(), *frame_token);
+            request->GetInitiatorProcessId(), *frame_token);
         ASSERT_FALSE(initiator_rfh);
 
         // Even if the initiator RenderFrameHost is gone, its policy container
@@ -3690,10 +3690,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
             request->GetInitiatorFrameToken();
         EXPECT_TRUE(frame_token.has_value());
         EXPECT_EQ(initiator_frame_token, frame_token.value());
-        EXPECT_EQ(initiator_process_id, request->GetInitiatorProcessID());
+        EXPECT_EQ(initiator_process_id, request->GetInitiatorProcessId());
 
         auto* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
-            request->GetInitiatorProcessID(), frame_token.value());
+            request->GetInitiatorProcessId(), frame_token.value());
         ASSERT_FALSE(initiator_rfh);
 
         // Even if the initiator RenderFrameHost is gone, its policy container
@@ -3796,10 +3796,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
             request->GetInitiatorFrameToken();
         EXPECT_TRUE(frame_token.has_value());
         EXPECT_EQ(initiator_frame_token, frame_token.value());
-        EXPECT_EQ(initiator_process_id, request->GetInitiatorProcessID());
+        EXPECT_EQ(initiator_process_id, request->GetInitiatorProcessId());
 
         auto* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
-            request->GetInitiatorProcessID(), frame_token.value());
+            request->GetInitiatorProcessId(), frame_token.value());
         ASSERT_FALSE(initiator_rfh);
 
         // Even if the initiator RenderFrameHost is gone, its policy container

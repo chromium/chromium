@@ -113,7 +113,8 @@ public class ContextMenuLoadUrlParamsTest {
     }
 
     /**
-     * Verifies that the referrer is correctly set for "Open in new tab".
+     * Verifies that the referrer and additional navigation params are correctly set for "Open in
+     * new tab".
      */
     @Test
     @MediumTest
@@ -125,10 +126,16 @@ public class ContextMenuLoadUrlParamsTest {
         Assert.assertNotNull(sOpenNewTabLoadUrlParams);
         Assert.assertEquals(sActivityTestRule.getTestServer().getURL(HTML_PATH),
                 sOpenNewTabLoadUrlParams.getReferrer().getUrl());
+
+        Assert.assertNotNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
+        Assert.assertNotEquals(
+                sOpenNewTabLoadUrlParams.getAdditionalNavigationParams().getInitiatorProcessId(),
+                -1);
     }
 
     /**
-     * Verifies that the referrer is not set for "Open in new incognito tab".
+     * Verifies that the referrer and additional navigation params are not set for "Open in new
+     * incognito tab".
      */
     @Test
     @MediumTest
@@ -139,6 +146,7 @@ public class ContextMenuLoadUrlParamsTest {
 
         Assert.assertNotNull(sOpenNewTabLoadUrlParams);
         Assert.assertNull(sOpenNewTabLoadUrlParams.getReferrer());
+        Assert.assertNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
     }
 
     /**

@@ -8461,10 +8461,8 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
   // Treat the automatic beacon as if it's being sent by the document that
   // initiated the top-level navigation. (You can think of it like a
   // reportEvent call from that document.)
-  // TODO(crbug.com/1450281): initiator_rfh may be null for some navigations on
-  // Android.
   RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
-      navigation_request.GetInitiatorProcessID(),
+      navigation_request.GetInitiatorProcessId(),
       navigation_request.GetInitiatorFrameToken().value());
   if (!initiator_rfh) {
     return;

@@ -54,7 +54,7 @@ public class LoadUrlParams {
     private boolean mHasUserGesture;
     private boolean mShouldClearHistoryList;
     @Nullable
-    private Impression mImpression;
+    private AdditionalNavigationParams mAdditionalNavigationParams;
     private Supplier<Long> mNavigationUIDataSupplier;
 
     /**
@@ -131,7 +131,7 @@ public class LoadUrlParams {
         copy.mInputStartTimestamp = other.mInputStartTimestamp;
         copy.mHasUserGesture = other.mHasUserGesture;
         copy.mShouldClearHistoryList = other.mShouldClearHistoryList;
-        copy.mImpression = other.mImpression;
+        copy.mAdditionalNavigationParams = other.mAdditionalNavigationParams;
         return copy;
     }
 
@@ -606,20 +606,21 @@ public class LoadUrlParams {
     }
 
     /**
-     * Set the attribution impression associated with the load.
+     * Set the additional navigation params associated with the load.
      *
-     * @param impression Attribution impression associated with the load.
+     * @param additionalNavigationParams Additional navigation params associated with the load.
      */
-    public void setImpression(Impression impression) {
-        mImpression = impression;
+    public void setAdditionalNavigationParams(
+            AdditionalNavigationParams additionalNavigationParams) {
+        mAdditionalNavigationParams = additionalNavigationParams;
     }
 
     /**
-     * @return The attribution impression associated with the load.
+     * @return The additional navigation params associated with the load.
      */
     @Nullable
-    public Impression getImpression() {
-        return mImpression;
+    public AdditionalNavigationParams getAdditionalNavigationParams() {
+        return mAdditionalNavigationParams;
     }
 
     public boolean isBaseUrlDataScheme() {

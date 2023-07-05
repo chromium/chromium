@@ -211,6 +211,7 @@ android_library("content_full_java") {
   resources_package = "org.chromium.content"
 
   sources = [
+    "java/src/org/chromium/content/browser/AdditionalNavigationParamsUtils.java",
     "java/src/org/chromium/content/browser/AppWebMessagePort.java",
     "java/src/org/chromium/content/browser/AttributionOsLevelManager.java",
     "java/src/org/chromium/content/browser/AudioFocusDelegate.java",
@@ -230,7 +231,6 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/GestureListenerManagerImpl.java",
     "java/src/org/chromium/content/browser/GpuProcessCallback.java",
     "java/src/org/chromium/content/browser/HostZoomMapImpl.java",
-    "java/src/org/chromium/content/browser/ImpressionUtils.java",
     "java/src/org/chromium/content/browser/InterfaceRegistrarImpl.java",
     "java/src/org/chromium/content/browser/JavascriptInjectorImpl.java",
     "java/src/org/chromium/content/browser/JavascriptInterface.java",
@@ -340,6 +340,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/webcontents/WebContentsObserverProxy.java",
     "java/src/org/chromium/content/browser/webid/MDocProviderAndroid.java",
     "java/src/org/chromium/content_public/browser/ActionModeCallbackHelper.java",
+    "java/src/org/chromium/content_public/browser/AdditionalNavigationParams.java",
     "java/src/org/chromium/content_public/browser/AdditionalSelectionMenuItemProvider.java",
     "java/src/org/chromium/content_public/browser/BrowserContextHandle.java",
     "java/src/org/chromium/content_public/browser/ChildProcessLauncherHelper.java",
@@ -357,7 +358,6 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/ImageDownloadCallback.java",
     "java/src/org/chromium/content_public/browser/ImeAdapter.java",
     "java/src/org/chromium/content_public/browser/ImeEventObserver.java",
-    "java/src/org/chromium/content_public/browser/Impression.java",
     "java/src/org/chromium/content_public/browser/InputMethodManagerWrapper.java",
     "java/src/org/chromium/content_public/browser/InterfaceRegistrar.java",
     "java/src/org/chromium/content_public/browser/JavaScriptCallback.java",
@@ -444,6 +444,7 @@ generate_jar_jni("jar_jni") {
 
 generate_jni("content_jni_headers") {
   sources = [
+    "java/src/org/chromium/content/browser/AdditionalNavigationParamsUtils.java",
     "java/src/org/chromium/content/browser/AppWebMessagePort.java",
     "java/src/org/chromium/content/browser/AttributionOsLevelManager.java",
     "java/src/org/chromium/content/browser/AudioFocusDelegate.java",
@@ -458,7 +459,6 @@ generate_jni("content_jni_headers") {
     "java/src/org/chromium/content/browser/GestureListenerManagerImpl.java",
     "java/src/org/chromium/content/browser/GpuProcessCallback.java",
     "java/src/org/chromium/content/browser/HostZoomMapImpl.java",
-    "java/src/org/chromium/content/browser/ImpressionUtils.java",
     "java/src/org/chromium/content/browser/InterfaceRegistrarImpl.java",
     "java/src/org/chromium/content/browser/JavascriptInjectorImpl.java",
     "java/src/org/chromium/content/browser/LauncherThread.java",

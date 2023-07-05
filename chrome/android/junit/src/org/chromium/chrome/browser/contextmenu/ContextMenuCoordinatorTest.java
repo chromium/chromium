@@ -154,7 +154,7 @@ public class ContextMenuCoordinatorTest {
     public void testGetItemListWithImageLink() {
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
                 GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "",
-                null, false, 0, 0, 0, false, /*impression=*/null);
+                null, false, 0, 0, 0, false, /*additionalNavigationParams=*/null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
         ModelList groupOne = new ModelList();
@@ -194,7 +194,7 @@ public class ContextMenuCoordinatorTest {
         // initialized. mediaType here doesn't have any effect on what we're testing.
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
                 GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "",
-                null, false, 0, 0, 0, false, /*impression=*/null);
+                null, false, 0, 0, 0, false, /*additionalNavigationParams=*/null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
         ModelList groupOne = new ModelList();
@@ -220,7 +220,7 @@ public class ContextMenuCoordinatorTest {
     public void testGetItemListWithVideo() {
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.VIDEO,
                 GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "",
-                null, false, 0, 0, 0, false, /*impression=*/null);
+                null, false, 0, 0, 0, false, /*additionalNavigationParams=*/null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Video items
         ModelList groupOne = new ModelList();
@@ -408,7 +408,8 @@ public class ContextMenuCoordinatorTest {
             int triggeringTouchXDp, int triggeringTouchYDp) {
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
                 GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "",
-                null, false, triggeringTouchXDp, triggeringTouchYDp, 0, false, /*impression=*/null);
+                null, false, triggeringTouchXDp, triggeringTouchYDp, 0, false,
+                /*additionalNavigationParams=*/null);
 
         final WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         doReturn(new WeakReference<Activity>(mActivity)).when(windowAndroid).getActivity();
