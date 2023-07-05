@@ -255,7 +255,7 @@ bool HandleRemoteAction(const {{proto_type}}::RemoteAction& input) {
 
   switch (input.method_case()) {
 {%-     for method in interface.methods %}
-    case {{proto_type}}::RemoteAction::k{{("m_" ~ method.name)|under_to_camel(digits_split=True)}}: {
+    case {{proto_type}}::RemoteAction::k{{("m_" ~ method.name)|under_to_camel}}: {
       result = HandleRemoteCall(input.id(), input.{{("m" ~ method.name)|camel_to_under}}());
     } break;
 {%-     endfor %}
@@ -276,7 +276,7 @@ bool HandleAssociatedRemoteAction(const {{proto_type}}::AssociatedRemoteAction& 
 
   switch (input.method_case()) {
 {%-     for method in interface.methods %}
-    case {{proto_type}}::AssociatedRemoteAction::k{{("m_" ~ method.name)|under_to_camel(digits_split=True)}}: {
+    case {{proto_type}}::AssociatedRemoteAction::k{{("m_" ~ method.name)|under_to_camel}}: {
       result = HandleAssociatedRemoteCall(input.id(), input.{{("m" ~ method.name)|camel_to_under}}());
     } break;
 {%-     endfor %}
@@ -297,7 +297,7 @@ bool HandleReceiverAction(
   bool result = true;
   switch (input.response_case()) {
 {%-     for method in interface.methods %}
-    case {{proto_type}}::ReceiverAction::k{{("m_" ~ method.name ~ "_response")|under_to_camel(digits_split=True)}}: {
+    case {{proto_type}}::ReceiverAction::k{{("m_" ~ method.name ~ "_response")|under_to_camel}}: {
       result = HandleResponse(input.id(), input.{{("m" ~ method.name ~ "_response")|camel_to_under}}());
     } break;
 {%-     endfor %}
