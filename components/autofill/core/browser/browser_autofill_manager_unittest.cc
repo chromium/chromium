@@ -2861,17 +2861,17 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldChanged) {
   ASSERT_TRUE(browser_autofill_manager_->GetCachedFormAndField(
       form, form.fields.front(), &form_structure, &autofill_field));
 
-  // Modify |form| so that it doesn't match |form_structure| anymore.
+  // Modify `form` so that it doesn't match `form_structure` anymore.
   ASSERT_GE(form.fields.size(), 3u);
   for (auto it = form.fields.begin() + 2; it != form.fields.end(); ++it)
     *it = FormFieldData();
 
-  const char guid[] = "00000000-0000-0000-0000-000000000001";
-  AutofillProfile* profile = personal_data().GetProfileByGUID(guid);
+  AutofillProfile* profile =
+      personal_data().GetProfileByGUID(kElvisProfileGuid);
   ASSERT_TRUE(profile);
 
   FormData response_data;
-  EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _))
+  EXPECT_CALL(*autofill_driver_, FillOrPreviewForm)
       .WillOnce((DoAll(testing::SaveArg<1>(&response_data),
                        testing::Return(std::vector<FieldGlobalId>{}))));
   browser_autofill_manager_->FillOrPreviewDataModelFormForTest(
@@ -2884,6 +2884,33 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldChanged) {
 
   EXPECT_THAT(filled_fields, Each(Not(HasValue(u""))));
   EXPECT_THAT(skipped_fields, Each(HasValue(u"")));
+}
+
+// Test that if the form cache is outdated because the form has changed, filling
+// is aborted because of that change.
+TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormChanged) {
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  FormsSeen({form});
+
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  ASSERT_TRUE(browser_autofill_manager_->GetCachedFormAndField(
+      form, form.fields.front(), &form_structure, &autofill_field));
+
+  // Modify `form` so that it doesn't match `form_structure` anymore.
+  ASSERT_GE(form.fields.size(), 3u);
+  form.fields.pop_back();
+
+  AutofillProfile* profile =
+      personal_data().GetProfileByGUID(kElvisProfileGuid);
+  ASSERT_TRUE(profile);
+
+  FormData response_data;
+  EXPECT_CALL(*autofill_driver_, FillOrPreviewForm).Times(0);
+  browser_autofill_manager_->FillOrPreviewDataModelFormForTest(
+      mojom::RendererFormDataAction::kFill, form, form.fields.front(), profile,
+      nullptr, form_structure, autofill_field);
 }
 
 TEST_F(BrowserAutofillManagerTest, UndoAutofillCallsDriver) {

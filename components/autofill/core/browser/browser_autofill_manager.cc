@@ -2395,12 +2395,6 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   form_structure->RationalizePhoneNumbersInSection(
       autofill_trigger_field->section);
 
-  FormData result = form;
-  for (size_t i = 0; i < form_structure->field_count(); ++i) {
-    // On the renderer, the section is used regardless of the autofill status.
-    result.fields[i].section = form_structure->field(i)->section;
-  }
-
   // TODO(crbug/1203667#c9): Skip if the form has changed in the meantime, which
   // may happen with refills.
   if (action == mojom::RendererFormDataAction::kFill) {
@@ -2461,6 +2455,13 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     autofill_trigger_field->AppendLogEventIfNotRepeated(
         trigger_fill_field_log_event);
     fill_event_id = trigger_fill_field_log_event.fill_event_id;
+  }
+
+  FormData result = form;
+  CHECK_EQ(result.fields.size(), form_structure->field_count());
+  for (size_t i = 0; i < form_structure->field_count(); ++i) {
+    // On the renderer, the section is used regardless of the autofill status.
+    result.fields[i].section = form_structure->field(i)->section;
   }
 
   for (size_t i : GetFieldsToFill(
