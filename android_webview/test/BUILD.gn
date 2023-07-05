@@ -500,10 +500,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//android_webview/test/embedded_test_server:aw_net_test_support_apk",
     "//net/android:net_test_support_apk",
   ]
-  srcjar_deps = [
-    ":libstandalonelibwebviewchromium__jni_registration",
-    ":webview_instrumentation_test_jni",
-  ]
+  srcjar_deps = [ ":webview_instrumentation_test_jni" ]
 }
 
 android_library("webview_instrumentation_test_mock_services_java") {
