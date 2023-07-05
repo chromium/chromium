@@ -226,6 +226,10 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
       content_suggestions::DoodleTopMargin([self topInset],
                                            self.traitCollection);
   [self.headerView updateForTopSafeAreaInset:[self topInset]];
+  self.headerViewHeightConstraint.constant =
+      content_suggestions::HeightForLogoHeader(
+          self.logoIsShowing, self.logoVendor.isShowingDoodle, [self topInset],
+          self.traitCollection);
 }
 
 - (CGFloat)pinnedOffsetY {

@@ -394,6 +394,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
   [self.headerViewController updateConstraints];
   [self updateOverscrollActionsState];
+  [self updateHeightAboveFeed];
 }
 
 #pragma mark - Public
