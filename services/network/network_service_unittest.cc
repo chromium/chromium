@@ -1385,14 +1385,7 @@ class NetworkChangeTest : public testing::Test {
   std::unique_ptr<NetworkService> service_;
 };
 
-// mojom:NetworkChangeManager isn't supported on iOS.
-// See the same ifdef in CreateNetworkChangeNotifierIfNeeded.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_NetworkChangeManagerRequest DISABLED_NetworkChangeManagerRequest
-#else
-#define MAYBE_NetworkChangeManagerRequest NetworkChangeManagerRequest
-#endif
-TEST_F(NetworkChangeTest, MAYBE_NetworkChangeManagerRequest) {
+TEST_F(NetworkChangeTest, NetworkChangeManagerRequest) {
   TestNetworkChangeManagerClient manager_client(service());
   net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
       net::NetworkChangeNotifier::CONNECTION_3G);
@@ -1425,7 +1418,7 @@ class NetworkServiceNetworkChangeTest : public testing::Test {
   std::unique_ptr<NetworkService> service_;
 };
 
-TEST_F(NetworkServiceNetworkChangeTest, MAYBE_NetworkChangeManagerRequest) {
+TEST_F(NetworkServiceNetworkChangeTest, NetworkChangeManagerRequest) {
   TestNetworkChangeManagerClient manager_client(service());
 
   // Wait for the NetworkChangeManagerClient registration to be processed within
