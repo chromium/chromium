@@ -133,7 +133,7 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
   }
   // TODO(crbug.com/1306688): Instead of setting OpaqueRegion, set the rounded
   // corners in dp.
-  platform_window()->SetOpaqueRegion(&opaque_region);
+  platform_window()->SetOpaqueRegion(opaque_region);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

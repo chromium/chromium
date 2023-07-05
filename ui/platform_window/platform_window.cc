@@ -65,7 +65,8 @@ bool PlatformWindow::CanSetDecorationInsets() const {
 
 void PlatformWindow::SetDecorationInsets(const gfx::Insets* insets_px) {}
 
-void PlatformWindow::SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) {}
+void PlatformWindow::SetOpaqueRegion(
+    absl::optional<std::vector<gfx::Rect>> region_px) {}
 
 void PlatformWindow::SetInputRegion(const gfx::Rect* region_px) {}
 

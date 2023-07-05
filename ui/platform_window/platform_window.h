@@ -187,9 +187,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   virtual void SetDecorationInsets(const gfx::Insets* insets_px);
 
   // Sets a hint for the compositor so it can avoid unnecessarily redrawing
-  // occluded portions of windows.  If |region_px| is nullptr, then any existing
-  // region will be reset.
-  virtual void SetOpaqueRegion(const std::vector<gfx::Rect>* region_px);
+  // occluded portions of windows.  If |region_px| is nullopt or empty, then any
+  // existing region will be reset.
+  virtual void SetOpaqueRegion(
+      absl::optional<std::vector<gfx::Rect>> region_px);
 
   // Sets the clickable region of a window.  This is useful for trimming down a
   // potentially large (24px) hit area for window resizing on the window shadow

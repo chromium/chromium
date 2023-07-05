@@ -359,9 +359,12 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   surface->set_color_space(
       config.color_space.value_or(gfx::ColorSpace::CreateSRGB()));
   if (set_opaque_region) {
-    std::vector<gfx::Rect> region_px = {
-        gfx::Rect(gfx::ToRoundedSize(config.bounds_rect.size()))};
-    surface->set_opaque_region(config.enable_blend ? nullptr : &region_px);
+    auto region_px =
+        config.enable_blend
+            ? absl::optional<std::vector<gfx::Rect>>(
+                  {gfx::Rect(gfx::ToRoundedSize(config.bounds_rect.size()))})
+            : absl::nullopt;
+    surface->set_opaque_region(region_px);
   }
 
   WaylandBufferHandle* buffer_handle =

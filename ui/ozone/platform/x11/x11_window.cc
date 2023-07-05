@@ -1104,7 +1104,8 @@ void X11Window::SetDecorationInsets(const gfx::Insets* insets_px) {
   }
 }
 
-void X11Window::SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) {
+void X11Window::SetOpaqueRegion(
+    absl::optional<std::vector<gfx::Rect>> region_px) {
   auto atom = x11::GetAtom("_NET_WM_OPAQUE_REGION");
   if (!region_px) {
     x11::DeleteProperty(xwindow_, atom);

@@ -130,9 +130,9 @@ class WaylandSurface {
   // Sets the region that is opaque on this surface in physical pixels. This is
   // expected to be called whenever the region that the surface span changes or
   // the opacity changes. Rects in |region_px| are specified surface-local, in
-  // physical pixels.  If |region_px| is nullptr or empty, the opaque region is
+  // physical pixels.  If |region_px| is nullopt or empty, the opaque region is
   // reset to empty.
-  void set_opaque_region(const std::vector<gfx::Rect>* region_px);
+  void set_opaque_region(absl::optional<std::vector<gfx::Rect>> region_px);
 
   // Sets the input region on this surface in physical pixels.
   // The input region indicates which parts of the surface accept pointer and

@@ -272,7 +272,7 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
       opaque_region.push_back(
           gfx::ScaleToEnclosingRect(opaque_region_dip, scale));
     }
-    window->SetOpaqueRegion(&opaque_region);
+    window->SetOpaqueRegion(opaque_region);
   }
 
   SizeConstraintsChanged();

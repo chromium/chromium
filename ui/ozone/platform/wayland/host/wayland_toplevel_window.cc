@@ -365,11 +365,8 @@ bool WaylandToplevelWindow::CanSetDecorationInsets() const {
 }
 
 void WaylandToplevelWindow::SetOpaqueRegion(
-    const std::vector<gfx::Rect>* region_px) {
-  if (region_px)
-    opaque_region_px_ = *region_px;
-  else
-    opaque_region_px_ = absl::nullopt;
+    absl::optional<std::vector<gfx::Rect>> region_px) {
+  opaque_region_px_ = region_px;
   root_surface()->set_opaque_region(region_px);
 }
 
@@ -1140,8 +1137,10 @@ void WaylandToplevelWindow::SetInitialWorkspace() {
 void WaylandToplevelWindow::UpdateWindowMask() {
   std::vector<gfx::Rect> region{gfx::Rect({}, latched_state().size_px)};
   root_surface()->set_opaque_region(
-      opaque_region_px_.has_value() ? &*opaque_region_px_
-                                    : (IsOpaqueWindow() ? &region : nullptr));
+      opaque_region_px_.has_value()
+          ? opaque_region_px_
+          : (IsOpaqueWindow() ? absl::optional<std::vector<gfx::Rect>>(region)
+                              : absl::nullopt));
   root_surface()->set_input_region(input_region_px_ ? &*input_region_px_
                                                     : &*region.begin());
 }

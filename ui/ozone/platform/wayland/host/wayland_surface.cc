@@ -326,7 +326,7 @@ void WaylandSurface::set_surface_buffer_scale(float scale) {
 }
 
 void WaylandSurface::set_opaque_region(
-    const std::vector<gfx::Rect>* region_px) {
+    absl::optional<std::vector<gfx::Rect>> region_px) {
   pending_state_.opaque_region_px.clear();
   if (!root_window_)
     return;
