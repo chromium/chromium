@@ -112,7 +112,7 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
     ambient_badge_test_->WaitForState(target_badge_state_,
                                       std::move(on_badge_done_));
     ambient_badge_test_->MaybeShow(
-        validated_url_, GetAppName(),
+        validated_url_, GetAppName(), GetAppIdentifier(),
         CreateAddToHomescreenParams(InstallableMetrics::GetInstallSource(
             web_contents(), InstallTrigger::AMBIENT_BADGE)),
         base::BindOnce(&AppBannerManagerAndroid::ShowBannerFromBadge,

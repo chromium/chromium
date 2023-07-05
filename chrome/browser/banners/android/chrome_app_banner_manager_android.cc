@@ -88,7 +88,7 @@ void ChromeAppBannerManagerAndroid::MaybeShowAmbientBadge() {
       web_contents(), GetAndroidWeakPtr(), segmentation_platform_service_,
       pref_service_);
   ambient_badge_manager_->MaybeShow(
-      validated_url_, GetAppName(),
+      validated_url_, GetAppName(), GetAppIdentifier(),
       CreateAddToHomescreenParams(InstallableMetrics::GetInstallSource(
           web_contents(), InstallTrigger::AMBIENT_BADGE)),
       base::BindOnce(&ChromeAppBannerManagerAndroid::ShowBannerFromBadge,

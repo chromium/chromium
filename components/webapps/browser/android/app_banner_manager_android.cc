@@ -186,10 +186,12 @@ bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
 }
 
 void AppBannerManagerAndroid::ResetCurrentPageData() {
+  // Reset |ambient_badge_manager_| to stop any running ambient badge pipeline
+  // before clearing installable data.
+  ambient_badge_manager_.reset();
   AppBannerManager::ResetCurrentPageData();
   native_app_data_.Reset();
   native_app_package_ = "";
-  ambient_badge_manager_.reset();
 }
 
 std::unique_ptr<AddToHomescreenParams>
