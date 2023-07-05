@@ -868,6 +868,8 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
     // TODO(b/251679480): Make this part of ShouldRouteToNativeMojoEngine logic
     // once flag is baked in.
     ConnectToImeService(engine_id);
+    // Notify the virtual keyboard extension that the IME has changed.
+    ime_base_observer_->OnActivate(engine_id);
   } else if (ShouldRouteToRuleBasedEngine(engine_id)) {
     const auto new_engine_id = NormalizeRuleBasedEngineId(engine_id);
     ConnectToImeService(new_engine_id);
