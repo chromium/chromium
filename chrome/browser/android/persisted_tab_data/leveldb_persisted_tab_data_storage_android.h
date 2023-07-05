@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_storage_android.h"
 #include "components/commerce/core/proto/persisted_state_db_content.pb.h"
 #include "components/session_proto_db/session_proto_db.h"

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android_user_data.h"
 
 class PersistedTabDataStorageAndroid;
@@ -24,10 +24,8 @@ class PersistedTabDataAndroid
   using FromCallback = base::OnceCallback<void(PersistedTabDataAndroid*)>;
   using SupplierCallback =
       base::OnceCallback<std::unique_ptr<PersistedTabDataAndroid>()>;
-  using DeserializerCallback =
-      base::OnceCallback<std::unique_ptr<PersistedTabDataAndroid>(
-          const std::vector<uint8_t>&)>;
 
+ protected:
   // Handles PersistedTabData acquisition by:
   // - Acquire PersistedTabData associated with a Tab via UserData. If not there
   // ...
@@ -36,8 +34,7 @@ class PersistedTabDataAndroid
   static void From(TabAndroid* tab_android,
                    const void* user_data_key,
                    SupplierCallback supplier_callback,
-                   FromCallback from_callback,
-                   DeserializerCallback deserializer_callback);
+                   FromCallback from_callback);
 
   // Serialize PersistedTabData for storage
   virtual std::unique_ptr<const std::vector<uint8_t>> Serialize() = 0;
@@ -55,6 +52,7 @@ class PersistedTabDataAndroid
 
  private:
   friend class TabAndroidUserData<PersistedTabDataAndroid>;
+  friend class SensitivityPersistedTabDataAndroidBrowserTest;
 
   // Storage implementation for PersistedTabData (currently only LevelDB is
   // supported) However, support may be added for other storage modes (e.g.

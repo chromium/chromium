@@ -8,10 +8,8 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/no_destructor.h"
-#include "chrome/browser/android/persisted_tab_data/leveldb_persisted_tab_data_storage_android.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_storage_android.h"
-#include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 
 namespace {
 const char kSensitivityId[] = "sensitivity";
@@ -22,19 +20,7 @@ const char kSensitivityId[] = "sensitivity";
 class PersistedTabDataConfigAndroid {
  public:
   ~PersistedTabDataConfigAndroid();
-  static PersistedTabDataConfigAndroid* Get(const void* user_data_key) {
-    static base::NoDestructor<std::unordered_map<
-        const void*, std::unique_ptr<PersistedTabDataConfigAndroid>>>
-        lookup_;
-    if (lookup_.get()->empty()) {
-      lookup_.get()->emplace(
-          SensitivityPersistedTabDataAndroid::UserDataKey(),
-          new PersistedTabDataConfigAndroid(
-              std::make_unique<LevelDBPersistedTabDataStorageAndroid>(),
-              new std::string(kSensitivityId)));
-    }
-    return lookup_.get()->find(user_data_key)->second.get();
-  }
+  static PersistedTabDataConfigAndroid* Get(const void* user_data_key);
 
   PersistedTabDataStorageAndroid* persisted_tab_data_storage_android() {
     return persisted_tab_data_storage_.get();

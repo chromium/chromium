@@ -7,6 +7,7 @@
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_config_android.h"
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_storage_android.h"
 #include "chrome/browser/android/tab_android.h"
+#include "content/public/browser/browser_thread.h"
 
 PersistedTabDataAndroid::PersistedTabDataAndroid(TabAndroid* tab_android,
                                                  const void* user_data_key)
@@ -21,12 +22,13 @@ PersistedTabDataAndroid::~PersistedTabDataAndroid() = default;
 void PersistedTabDataAndroid::From(TabAndroid* tab_android,
                                    const void* user_data_key,
                                    SupplierCallback supplier_callback,
-                                   FromCallback from_callback,
-                                   DeserializerCallback deserializer_callback) {
+                                   FromCallback from_callback) {
   if (tab_android->GetUserData(user_data_key)) {
-    std::move(from_callback)
-        .Run(static_cast<PersistedTabDataAndroid*>(
-            tab_android->GetUserData(user_data_key)));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(from_callback),
+                       static_cast<PersistedTabDataAndroid*>(
+                           tab_android->GetUserData(user_data_key))));
   } else {
     PersistedTabDataConfigAndroid* persisted_tab_data_config_android =
         PersistedTabDataConfigAndroid::Get(user_data_key);
@@ -36,32 +38,33 @@ void PersistedTabDataAndroid::From(TabAndroid* tab_android,
             persisted_tab_data_config_android->data_id(),
             base::BindOnce(
                 [](TabAndroid* tab_android, SupplierCallback supplier_callback,
-                   FromCallback from_callback,
-                   DeserializerCallback deserializer_callback,
-                   const void* user_data_key,
+                   FromCallback from_callback, const void* user_data_key,
                    const std::vector<uint8_t>& data) {
+                  std::unique_ptr<PersistedTabDataAndroid>
+                      persisted_tab_data_android =
+                          std::move(supplier_callback).Run();
                   if (data.empty()) {
-                    // No PersistedTabData found - acquire using supplier.
-                    std::unique_ptr<PersistedTabDataAndroid>
-                        persisted_tab_data_android =
-                            std::move(supplier_callback).Run();
-                    // Save for re-use after restarts.
+                    // No PersistedTabData found - use default result of the
+                    // supplier (no deserialization) and save for use across
+                    // restarts.
                     persisted_tab_data_android->Save();
-                    tab_android->SetUserData(
-                        user_data_key, std::move(persisted_tab_data_android));
                   } else {
                     // Deserialize PersistedTabData found in storage.
-                    tab_android->SetUserData(
-                        user_data_key,
-                        std::move(deserializer_callback).Run(data));
+                    // TODO(crbug.com/1458486) move to background thread as an
+                    // optimization.
+                    persisted_tab_data_android->Deserialize(data);
                   }
-                  std::move(from_callback)
-                      .Run(static_cast<PersistedTabDataAndroid*>(
-                          tab_android->GetUserData(user_data_key)));
+                  tab_android->SetUserData(
+                      user_data_key, std::move(persisted_tab_data_android));
+                  content::GetUIThreadTaskRunner({})->PostTask(
+                      FROM_HERE,
+                      base::BindOnce(
+                          std::move(from_callback),
+                          static_cast<PersistedTabDataAndroid*>(
+                              tab_android->GetUserData(user_data_key))));
                 },
                 tab_android, std::move(supplier_callback),
-                std::move(from_callback), std::move(deserializer_callback),
-                user_data_key));
+                std::move(from_callback), user_data_key));
   }
 }
 

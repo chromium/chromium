@@ -17,6 +17,21 @@ SensitivityPersistedTabDataAndroid::SensitivityPersistedTabDataAndroid(
 SensitivityPersistedTabDataAndroid::~SensitivityPersistedTabDataAndroid() =
     default;
 
+void SensitivityPersistedTabDataAndroid::From(
+    TabAndroid* tab_android,
+    PersistedTabDataAndroid::FromCallback from_callback) {
+  PersistedTabDataAndroid::From(
+      tab_android, SensitivityPersistedTabDataAndroid::UserDataKey(),
+      base::BindOnce(
+          [](TabAndroid* tab_android)
+              -> std::unique_ptr<PersistedTabDataAndroid> {
+            return std::make_unique<SensitivityPersistedTabDataAndroid>(
+                tab_android);
+          },
+          tab_android),
+      std::move(from_callback));
+}
+
 std::unique_ptr<const std::vector<uint8_t>>
 SensitivityPersistedTabDataAndroid::Serialize() {
   sensitivity::SensitivityData sensitivity_data;

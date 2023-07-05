@@ -28,6 +28,20 @@ class SensitivityPersistedTabDataAndroidBrowserTest
     return chrome_test_utils::GetActiveWebContents(this);
   }
 
+  void Remove(SensitivityPersistedTabDataAndroid* sptda) { sptda->Remove(); }
+
+  void Save(SensitivityPersistedTabDataAndroid* sptda) { sptda->Save(); }
+
+  void Deserialize(SensitivityPersistedTabDataAndroid* sptda,
+                   const std::vector<uint8_t>& data) {
+    sptda->Deserialize(data);
+  }
+
+  std::unique_ptr<const std::vector<uint8_t>> Serialize(
+      SensitivityPersistedTabDataAndroid* sptda) {
+    return sptda->Serialize();
+  }
+
  private:
   Profile* profile() {
     auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
@@ -42,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
   std::unique_ptr<SensitivityPersistedTabDataAndroid> sptda =
       std::make_unique<SensitivityPersistedTabDataAndroid>(tab_android);
   sptda->set_is_sensitive(true);
-  sptda->Remove();
+  Remove(sptda.get());
   tab_android->SetUserData(SensitivityPersistedTabDataAndroid::UserDataKey(),
                            std::move(sptda));
   SensitivityPersistedTabDataAndroid::From(
@@ -64,10 +78,10 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
   TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents());
   SensitivityPersistedTabDataAndroid sptda(tab_android);
   sptda.set_is_sensitive(true);
-  std::unique_ptr<const std::vector<uint8_t>> serialized = sptda.Serialize();
+  std::unique_ptr<const std::vector<uint8_t>> serialized = Serialize(&sptda);
   SensitivityPersistedTabDataAndroid deserialized(tab_android);
-  deserialized.Deserialize(*serialized.get());
   EXPECT_TRUE(deserialized.is_sensitive());
+  Deserialize(&deserialized, *serialized.get());
 }
 
 IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
@@ -79,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
   sptda->set_is_sensitive(true);
   tab_android->SetUserData(SensitivityPersistedTabDataAndroid::UserDataKey(),
                            nullptr);
-  sptda->Save();
+  Save(sptda);
 
   SensitivityPersistedTabDataAndroid::From(
       tab_android,
