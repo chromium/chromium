@@ -37,7 +37,10 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingLeft="@dimen/restore_tabs_sheet_padding"
-            android:paddingRight="@dimen/restore_tabs_sheet_padding">
+            android:paddingRight="@dimen/restore_tabs_sheet_padding"
+            android:clickable="true"
+            android:focusable="true">
+            <!-- Header section -->
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/restore_tabs_fre_logo_height"
@@ -46,6 +49,7 @@ found in the LICENSE file.
                 android:importantForAccessibility="no"
                 app:srcCompat="@drawable/restore_tabs_fre_logo"/>
             <LinearLayout
+                android:accessibilityHeading="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
@@ -96,13 +100,15 @@ found in the LICENSE file.
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-                    android:textAlignment="viewStart" />
+                    android:textAlignment="viewStart"
+                    android:focusable="false" />
                 <TextView
                     android:id="@+id/restore_tabs_promo_sheet_session_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-                    android:textAlignment="viewStart" />
+                    android:textAlignment="viewStart"
+                    android:focusable="false" />
             </LinearLayout>
             <ImageView
                 android:id="@+id/restore_tabs_expand_icon_device_selection"
@@ -111,7 +117,6 @@ found in the LICENSE file.
                 android:layout_marginStart="@dimen/restore_tabs_promo_sheet_expand_option_icon_margin_start"
                 android:layout_marginEnd="@dimen/restore_tabs_promo_sheet_expand_option_icon_margin_end"
                 android:layout_gravity="center_vertical"
-                android:importantForAccessibility="no"
                 android:contentDescription="@string/restore_tabs_promo_sheet_expand_icon_device_info_description"
                 app:tint="@color/default_icon_color_secondary_tint_list" />
             </LinearLayout>
