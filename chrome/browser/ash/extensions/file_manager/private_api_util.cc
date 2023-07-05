@@ -841,6 +841,7 @@ fmp::BulkPinProgress BulkPinProgressToJs(
   result.remaining_seconds = !progress.remaining_time.is_inf()
                                  ? progress.remaining_time.InSecondsF()
                                  : 0;
+  result.emptied_queue = progress.emptied_queue;
   return result;
 }
 

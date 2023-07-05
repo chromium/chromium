@@ -407,9 +407,9 @@ enum BulkPinStage {
   success,
 
   // Final error stages.
+  not_enough_space,
   cannot_get_free_space,
   cannot_list_files,
-  not_enough_space,
   cannot_enable_docs_offline
 };
 
@@ -1270,6 +1270,9 @@ dictionary BulkPinProgress {
 
   // Estimated time remaining to pin all the `bytesToPin`.
   double remainingSeconds;
+
+  // Has the bulk-pinning manager ever emptied its set of tracked items?
+  boolean emptiedQueue;
 };
 
 // Callback that does not take arguments.

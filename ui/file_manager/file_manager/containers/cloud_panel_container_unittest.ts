@@ -76,6 +76,7 @@ export async function testProgressAndItemsArePassedToElement(done: () => void) {
     pinnedBytes: 150,
     filesToPin: 24,
     remainingSeconds: 0,
+    emptiedQueue: false,
   };
 
   // Dispatch an update to the store and wait for the panel to have the
@@ -110,6 +111,7 @@ export async function testOutOfBoundsValuesDoNotUpdateProgress(
     pinnedBytes: 1000,  // Greater than `bytesToPin`.
     filesToPin: -10,    // Negative number of files to pin.
     remainingSeconds: 0,
+    emptiedQueue: false,
   };
 
   // Dispatch an update to the store and ensure the panel doesn't get
@@ -140,6 +142,7 @@ export async function testOtherStoreUpdatesDontCauseThisContainerToUpdate(
     pinnedBytes: 150,
     filesToPin: 24,
     remainingSeconds: 0,
+    emptiedQueue: false,
   };
 
   // Dispatch an update to the store and ensure the panel does get attributes.
@@ -198,6 +201,7 @@ export async function testZeroBytesToPinShouldShowAllFilesSynced(
     pinnedBytes: 0,
     filesToPin: 0,
     remainingSeconds: 0,
+    emptiedQueue: false,
   };
 
   // Dispatch an update to the store and wait for the panel to have the
@@ -263,6 +267,7 @@ export async function testInProgressStateDoesNotUpdateThePanelWhenPrefDisabled(
     pinnedBytes: 100,
     filesToPin: 10,
     remainingSeconds: 0,
+    emptiedQueue: false,
   };
 
   // Dispatch an update to the store, wait for the store to update before
@@ -305,6 +310,7 @@ testPausedStateAddsTypeAttributeAndSyncingRemovesAttribute(done: () => void) {
     pinnedBytes: 100,
     filesToPin: 10,
     remainingSeconds: 0,
+    emptiedQueue: false,
   };
 
   // Dispatch an update to the store and ensure the panel does get attributes.
@@ -371,6 +377,7 @@ testNotEnoughSpaceStateAddsTypeAttributeAndSyncingRemovesAttribute(
     pinnedBytes: 100,
     filesToPin: 10,
     remainingSeconds: 0,
+    emptiedQueue: false,
   };
 
   // Dispatch an update to the store and ensure the panel does get attributes.
@@ -427,6 +434,7 @@ export async function testExistingPropertiesAreRemovedOnSubsequentSyncds(
     pinnedBytes: 100,
     filesToPin: 10,
     remainingSeconds: 0,
+    emptiedQueue: false,
   };
 
   // Dispatch an update to the store and ensure the panel does get attributes.

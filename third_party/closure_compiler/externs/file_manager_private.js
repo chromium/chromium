@@ -464,9 +464,9 @@ chrome.fileManagerPrivate.BulkPinStage = {
   LISTING_FILES: 'listing_files',
   SYNCING: 'syncing',
   SUCCESS: 'success',
+  NOT_ENOUGH_SPACE: 'not_enough_space',
   CANNOT_GET_FREE_SPACE: 'cannot_get_free_space',
   CANNOT_LIST_FILES: 'cannot_list_files',
-  NOT_ENOUGH_SPACE: 'not_enough_space',
   CANNOT_ENABLE_DOCS_OFFLINE: 'cannot_enable_docs_offline',
 };
 
@@ -996,7 +996,8 @@ chrome.fileManagerPrivate.ParsedTrashInfoFile;
  *   bytesToPin: number,
  *   pinnedBytes: number,
  *   filesToPin: number,
- *   remainingSeconds: number
+ *   remainingSeconds: number,
+ *   emptiedQueue: boolean
  * }}
  */
 chrome.fileManagerPrivate.BulkPinProgress;
