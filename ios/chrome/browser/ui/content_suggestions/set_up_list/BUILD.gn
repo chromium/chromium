@@ -23,6 +23,7 @@ source_set("set_up_list") {
     ":constants",
     "//base",
     "//components/password_manager/core/common:features",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp:set_up_list_item_type",
     "//ios/chrome/browser/shared/ui/elements",
