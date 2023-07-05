@@ -81,6 +81,7 @@ class SingleEntryPropertiesGetterForDriveFs {
       const std::set<extensions::api::file_manager_private::EntryPropertyName>
           requested_properties,
       ResultCallback callback);
+
   ~SingleEntryPropertiesGetterForDriveFs();
 
   SingleEntryPropertiesGetterForDriveFs(
