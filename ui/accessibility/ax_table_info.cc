@@ -182,7 +182,7 @@ AXTableInfo* AXTableInfo::Create(AXTree* tree, AXNode* table_node) {
   DCHECK_EQ(node, tree->root());
 #endif
 
-  if (!IsTableLike(table_node->GetRole())) {
+  if (!IsTableLike(table_node->GetRole()) || table_node->IsIgnored()) {
     return nullptr;
   }
 

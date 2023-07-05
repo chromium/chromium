@@ -1505,6 +1505,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityTableCanvasFallback) {
+  RunHtmlTest(FILE_PATH_LITERAL("table-canvas-fallback.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityTableColumnHidden) {
   RunAriaTest(FILE_PATH_LITERAL("table-column-hidden.html"));
 }

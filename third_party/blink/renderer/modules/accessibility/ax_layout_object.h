@@ -106,7 +106,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   void HandleAutofillStateChanged(WebAXAutofillState state) override;
 
   // For a table.
-  bool IsDataTable() const override;
   unsigned ColumnCount() const override;
   unsigned RowCount() const override;
   void ColumnHeaders(AXObjectVector&) const override;

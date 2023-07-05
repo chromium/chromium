@@ -74,6 +74,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   ax::mojom::blink::Role DetermineTableSectionRole() const;
   ax::mojom::blink::Role DetermineTableCellRole() const;
   ax::mojom::blink::Role DetermineTableRowRole() const;
+  bool IsDataTable() const override;
   ax::mojom::blink::Role DetermineAccessibilityRole() override;
   ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
   void AlterSliderOrSpinButtonValue(bool increase);
