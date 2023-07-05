@@ -107,12 +107,9 @@
   }
 
   #helpIconSection {
+    --iron-icon-height: 48px;
+    --iron-icon-width: 48px;
     flex-basis: 48px;
-  }
-
-  #helpIcon {
-    display: block;
-    margin: auto;
   }
 
   #helpSectionText {
@@ -243,10 +240,7 @@
         hidden="[[!nearbyPrintersExpanded_]]">
       <div id="helpSection" hidden="[[!isPrinterSettingsRevampEnabled_]]">
         <div id="helpIconSection">
-          <!-- TODO(b/278621575): Replace with printer help icon when
-              available -->
-          <iron-icon id="helpIcon" icon="os-settings:printer-status-grey">
-          </iron-icon>
+          <iron-icon icon="os-settings:printer-setup"></iron-icon>
         </div>
         <div id="helpSectionText">
           <div class="help-title">
