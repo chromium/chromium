@@ -344,11 +344,11 @@ void LayoutMultiColumnFlowThread::EvacuateAndDestroy() {
   Destroy();
 }
 
-LayoutSize LayoutMultiColumnFlowThread::ColumnOffset(
-    const LayoutPoint& point) const {
+PhysicalOffset LayoutMultiColumnFlowThread::ColumnOffset(
+    const PhysicalOffset& point) const {
   NOT_DESTROYED();
-  return FlowThreadTranslationAtPoint(point,
-                                      CoordinateSpaceConversion::kContaining);
+  return PhysicalOffset(FlowThreadTranslationAtPoint(
+      point.ToLayoutPoint(), CoordinateSpaceConversion::kContaining));
 }
 
 bool LayoutMultiColumnFlowThread::IsPageLogicalHeightKnown() const {

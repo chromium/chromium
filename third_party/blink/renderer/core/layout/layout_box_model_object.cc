@@ -816,8 +816,7 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
            current && current->GetNode() != offset_parent;
            current = current->Container()) {
         // FIXME: What are we supposed to do inside SVG content?
-        reference_point += PhysicalOffsetToBeNoop(
-            current->ColumnOffset(reference_point.ToLayoutPoint()));
+        reference_point += current->ColumnOffset(reference_point);
         if (current->IsBox()) {
           reference_point += To<LayoutBox>(current)->PhysicalLocation();
         }

@@ -204,7 +204,7 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
     return column_count_;
   }
 
-  LayoutSize ColumnOffset(const LayoutPoint&) const final;
+  PhysicalOffset ColumnOffset(const PhysicalOffset&) const final;
 
   bool IsPageLogicalHeightKnown() const final;
 

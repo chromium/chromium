@@ -3287,8 +3287,7 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
     // everything in the fragmentation context lived in one tall single column).
     // Convert it to a visual point now, since we're about to escape the flow
     // thread.
-    container_offset += PhysicalOffsetToBeNoop(
-        ColumnOffset(transform_state.MappedPoint().ToLayoutPoint()));
+    container_offset += ColumnOffset(transform_state.MappedPoint());
   }
 
   // Text objects just copy their parent's computed style, so we need to ignore

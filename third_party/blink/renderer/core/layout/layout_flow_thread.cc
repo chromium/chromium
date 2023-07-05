@@ -253,7 +253,7 @@ void LayoutFlowThread::FlowThreadToContainingCoordinateSpace(
     position = position.TransposedPoint();
   position = DeprecatedFlipForWritingMode(position);
 
-  position.Move(ColumnOffset(position));
+  position.Move(ColumnOffset(PhysicalOffset(position)).ToLayoutSize());
 
   // Make |position| logical again, and read out the values.
   position = DeprecatedFlipForWritingMode(position);

@@ -2707,9 +2707,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Return the offset to the column in which the specified point (in
   // flow-thread coordinates) lives. This is used to convert a flow-thread point
   // to a point in the containing coordinate space.
-  virtual LayoutSize ColumnOffset(const LayoutPoint&) const {
+  virtual PhysicalOffset ColumnOffset(const PhysicalOffset&) const {
     NOT_DESTROYED();
-    return LayoutSize();
+    return PhysicalOffset();
   }
 
   bool IsFloatingOrOutOfFlowPositioned() const {
