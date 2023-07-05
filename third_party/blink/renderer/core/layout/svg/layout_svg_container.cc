@@ -53,13 +53,15 @@ void LayoutSVGContainer::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
+  SVGTransformChange transform_change = SVGTransformChange::kNone;
   // Update the local transform in subclasses.
   // At this point our bounding box may be incorrect, so any box relative
   // transforms will be incorrect. Since descendants only require the scaling
   // components to be correct, this should be fine. We update the transform
   // again, if needed, after computing the bounding box below.
-  SVGTransformChange transform_change =
-      CalculateLocalTransform(/*bounds_changed=*/false);
+  if (needs_transform_update_) {
+    transform_change = UpdateLocalTransform();
+  }
   did_screen_scale_factor_change_ =
       transform_change == SVGTransformChange::kFull ||
       SVGLayoutSupport::ScreenScaleFactorChanged(Parent());
@@ -81,9 +83,14 @@ void LayoutSVGContainer::UpdateLayout() {
   if (EverHadLayout() && (SelfNeedsLayout() || bbox_changed))
     SVGResourceInvalidator(*this).InvalidateEffects();
 
-  if (needs_transform_update_ || bbox_changed) {
-    transform_change =
-        std::max(CalculateLocalTransform(bbox_changed), transform_change);
+  if (!needs_transform_update_ && transform_uses_reference_box_) {
+    if (CheckForImplicitTransformChange(bbox_changed)) {
+      SetNeedsTransformUpdate();
+    }
+  }
+
+  if (needs_transform_update_) {
+    transform_change = std::max(UpdateLocalTransform(), transform_change);
     needs_transform_update_ = false;
   }
 
@@ -121,6 +128,7 @@ void LayoutSVGContainer::UpdateLayout() {
   }
 
   DCHECK(!needs_boundaries_update_);
+  DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
 }
 
@@ -262,8 +270,7 @@ void LayoutSVGContainer::SetNeedsTransformUpdate() {
   needs_transform_update_ = true;
 }
 
-SVGTransformChange LayoutSVGContainer::CalculateLocalTransform(
-    bool bounds_changed) {
+SVGTransformChange LayoutSVGContainer::UpdateLocalTransform() {
   NOT_DESTROYED();
   return SVGTransformChange::kNone;
 }

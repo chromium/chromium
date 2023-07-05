@@ -146,12 +146,8 @@ void LayoutSVGResourceMarker::SetNeedsTransformUpdate() {
   LayoutSVGContainer::SetNeedsTransformUpdate();
 }
 
-SVGTransformChange LayoutSVGResourceMarker::CalculateLocalTransform(
-    bool bounds_changed) {
+SVGTransformChange LayoutSVGResourceMarker::UpdateLocalTransform() {
   NOT_DESTROYED();
-  if (!NeedsTransformUpdate()) {
-    return SVGTransformChange::kNone;
-  }
   auto* marker = To<SVGMarkerElement>(GetElement());
   DCHECK(marker);
 

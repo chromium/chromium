@@ -60,6 +60,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
     NOT_DESTROYED();
     needs_boundaries_update_ = true;
   }
+  void SetNeedsTransformUpdate() override;
   bool DidScreenScaleFactorChange() const {
     NOT_DESTROYED();
     return did_screen_scale_factor_change_;
@@ -106,10 +107,6 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
     NOT_DESTROYED();
     transform_uses_reference_box_ = transform_uses_reference_box;
   }
-  bool TransformUsesReferenceBox() const {
-    NOT_DESTROYED();
-    return transform_uses_reference_box_;
-  }
 
   void AddChild(LayoutObject* child,
                 LayoutObject* before_child = nullptr) final;
@@ -125,14 +122,8 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
                    const PhysicalOffset& accumulated_offset,
                    HitTestPhase) override;
 
-  void SetNeedsTransformUpdate() override;
-  bool NeedsTransformUpdate() const {
-    NOT_DESTROYED();
-    return needs_transform_update_;
-  }
-
   // Called during layout to update the local transform.
-  virtual SVGTransformChange CalculateLocalTransform(bool bounds_changed);
+  virtual SVGTransformChange UpdateLocalTransform();
 
   bool UpdateCachedBoundaries();
 

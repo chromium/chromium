@@ -57,12 +57,8 @@ void LayoutSVGViewportContainer::UpdateLayout() {
   LayoutSVGContainer::UpdateLayout();
 }
 
-SVGTransformChange LayoutSVGViewportContainer::CalculateLocalTransform(
-    bool bounds_changed) {
+SVGTransformChange LayoutSVGViewportContainer::UpdateLocalTransform() {
   NOT_DESTROYED();
-  if (!NeedsTransformUpdate()) {
-    return SVGTransformChange::kNone;
-  }
   const auto* svg = To<SVGSVGElement>(GetElement());
   SVGTransformChangeDetector change_detector(local_to_parent_transform_);
   local_to_parent_transform_ =

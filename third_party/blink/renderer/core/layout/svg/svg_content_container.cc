@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 
@@ -68,10 +69,13 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
           // FIXME: this should be done on invalidation, not during layout.
           // When the layout size changed and when using relative values tell
           // the LayoutSVGShape to update its shape object
-          if (auto* shape = DynamicTo<LayoutSVGShape>(child)) {
+          if (auto* shape = DynamicTo<LayoutSVGShape>(*child)) {
             shape->SetNeedsShapeUpdate();
-          } else if (auto* ng_text = DynamicTo<LayoutNGSVGText>(child)) {
+          } else if (auto* ng_text = DynamicTo<LayoutNGSVGText>(*child)) {
             ng_text->SetNeedsTextMetricsUpdate();
+          } else if (auto* container =
+                         DynamicTo<LayoutSVGTransformableContainer>(*child)) {
+            container->SetNeedsTransformUpdate();
           }
 
           force_child_layout = true;

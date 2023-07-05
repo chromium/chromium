@@ -63,7 +63,7 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
 
   void UpdateLayout() override;
 
-  SVGTransformChange CalculateLocalTransform(bool bounds_changed) override;
+  SVGTransformChange UpdateLocalTransform() override;
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,

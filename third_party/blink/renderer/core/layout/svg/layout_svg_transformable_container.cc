@@ -70,35 +70,20 @@ bool LayoutSVGTransformableContainer::IsChildAllowed(
   return LayoutSVGContainer::IsChildAllowed(child, style);
 }
 
-SVGTransformChange LayoutSVGTransformableContainer::CalculateLocalTransform(
-    bool bounds_changed) {
+SVGTransformChange LayoutSVGTransformableContainer::UpdateLocalTransform() {
   NOT_DESTROYED();
   SVGElement* element = GetElement();
   DCHECK(element);
-
   // If we're the LayoutObject for a <use> element, this container needs to
   // respect the translations induced by their corresponding use elements x/y
   // attributes.
   if (IsA<SVGUseElement>(element)) {
     const ComputedStyle& style = StyleRef();
     SVGLengthContext length_context(element);
-    gfx::Vector2dF translation =
+    additional_translation_ =
         length_context.ResolveLengthPair(style.X(), style.Y(), style);
-    // TODO(fs): Signal this on style update instead.
-    if (translation != additional_translation_)
-      SetNeedsTransformUpdate();
-    additional_translation_ = translation;
   }
 
-  if (!NeedsTransformUpdate() && TransformUsesReferenceBox()) {
-    if (CheckForImplicitTransformChange(bounds_changed)) {
-      SetNeedsTransformUpdate();
-    }
-  }
-
-  if (!NeedsTransformUpdate()) {
-    return SVGTransformChange::kNone;
-  }
   SVGTransformChangeDetector change_detector(local_transform_);
   local_transform_ =
       element->CalculateTransform(SVGElement::kIncludeMotionTransform);
@@ -113,7 +98,16 @@ void LayoutSVGTransformableContainer::StyleDidChange(
   NOT_DESTROYED();
   LayoutSVGContainer::StyleDidChange(diff, old_style);
 
-  TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
+  // Check for changes to the 'x' or 'y' properties if this is a <use> element.
+  SVGElement& element = *GetElement();
+  if (old_style && IsA<SVGUseElement>(element)) {
+    const ComputedStyle& style = StyleRef();
+    if (old_style->X() != style.X() || old_style->Y() != style.Y()) {
+      SetNeedsTransformUpdate();
+    }
+  }
+
+  TransformHelper::UpdateOffsetPath(element, old_style);
   SetTransformUsesReferenceBox(
       TransformHelper::UpdateReferenceBoxDependency(*this));
 }
