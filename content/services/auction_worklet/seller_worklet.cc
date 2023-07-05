@@ -35,6 +35,7 @@
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/shared_storage_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
+#include "content/services/auction_worklet/webidl_compat.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
@@ -994,15 +995,48 @@ void SellerWorklet::V8State::ScoreAd(
   mojom::ComponentAuctionModifiedBidParamsPtr
       component_auction_modified_bid_params;
   absl::optional<double> bid_in_seller_currency;
+  // If the bid is already in seller currency, forward it as
+  // incomingBidInSellerCurrency.
+  if (bid_currency.has_value() &&
+      auction_ad_config_non_shared_params.seller_currency.has_value() &&
+      bid_currency->currency_code() == auction_ad_config_non_shared_params
+                                           .seller_currency->currency_code()) {
+    bid_in_seller_currency = bid;
+  }
+
   // Try to parse the result as a number. On success, it's the desirability
-  // score.
+  // score. Otherwise, it must be an object with the desireability score, and
+  // potentially other fields as well.
   if (!gin::ConvertFromV8(isolate, score_ad_result, &score)) {
-    // Otherwise, it must be an object with the desireability score, and
-    // potentially other fields as well.
-    if (!score_ad_result->IsObject()) {
-      errors_out.push_back(
-          base::StrCat({decision_logic_url_.spec(),
-                        " scoreAd() did not return an object or a number."}));
+    struct ScoreAdOutput {
+      double desirability;
+      absl::optional<double> bid;
+      absl::optional<std::string> bid_currency;
+      absl::optional<v8::Local<v8::Value>> ad;
+      absl::optional<double> incoming_bid_in_seller_currency;
+      absl::optional<std::string> reject_reason;
+      absl::optional<bool> allow_component_auction;
+    } result_idl;
+
+    AuctionV8Helper::TimeLimitScope time_limit_scope(total_timeout.get());
+    DictConverter convert_score_ad(
+        v8_helper_.get(), time_limit_scope,
+        base::StrCat({v8_helper_->FormatScriptName(unbound_worklet_script),
+                      " scoreAd() return:"}),
+        score_ad_result);
+    if (!convert_score_ad.GetOptional("ad", result_idl.ad) ||
+        !convert_score_ad.GetOptional("allowComponentAuction",
+                                      result_idl.allow_component_auction) ||
+        !convert_score_ad.GetOptional("bid", result_idl.bid) ||
+        !convert_score_ad.GetOptional("bidCurrency", result_idl.bid_currency) ||
+        !convert_score_ad.GetRequired("desirability",
+                                      result_idl.desirability) ||
+        !convert_score_ad.GetOptional(
+            "incomingBidInSellerCurrency",
+            result_idl.incoming_bid_in_seller_currency) ||
+        !convert_score_ad.GetOptional("rejectReason",
+                                      result_idl.reject_reason)) {
+      errors_out.push_back(convert_score_ad.ErrorMessage());
       PostScoreAdCallbackToUserThreadOnError(
           std::move(callback),
           /*scoring_latency=*/elapsed, std::move(errors_out),
@@ -1011,45 +1045,14 @@ void SellerWorklet::V8State::ScoreAd(
       return;
     }
 
-    v8::Local<v8::Object> score_ad_object = score_ad_result.As<v8::Object>();
-    gin::Dictionary result_dict(isolate, score_ad_object);
-    if (!result_dict.Get("desirability", &score)) {
-      errors_out.push_back(
-          base::StrCat({decision_logic_url_.spec(),
-                        " scoreAd() return value has incorrect structure."}));
-      PostScoreAdCallbackToUserThreadOnError(
-          std::move(callback),
-          /*scoring_latency=*/elapsed, std::move(errors_out),
-          context_recycler.private_aggregation_bindings()
-              ->TakePrivateAggregationRequests());
-      return;
-    }
+    // allowComponentAuction defaults to false.
+    allow_component_auction =
+        result_idl.allow_component_auction.value_or(false);
+    score = result_idl.desirability;
 
-    if (!result_dict.Get("allowComponentAuction", &allow_component_auction)) {
-      allow_component_auction = false;
-    }
-
-    // If the bid is already in seller currency, forward it as
-    // incomingBidInSellerCurrency.
-    if (bid_currency.has_value() &&
-        auction_ad_config_non_shared_params.seller_currency.has_value() &&
-        bid_currency->currency_code() ==
-            auction_ad_config_non_shared_params.seller_currency
-                ->currency_code()) {
-      bid_in_seller_currency = bid;
-    }
-
-    v8::Local<v8::Value> incoming_bid_in_seller_currency_value;
-    if (score_ad_object
-            ->Get(context, v8_helper_->CreateStringFromLiteral(
-                               "incomingBidInSellerCurrency"))
-            .ToLocal(&incoming_bid_in_seller_currency_value) &&
-        !incoming_bid_in_seller_currency_value->IsUndefined()) {
+    if (result_idl.incoming_bid_in_seller_currency.has_value()) {
       bool ok = true;
-      double incoming_bid_in_seller_currency = 0.0;
-
-      if (ok &&
-          !auction_ad_config_non_shared_params.seller_currency.has_value()) {
+      if (!auction_ad_config_non_shared_params.seller_currency.has_value()) {
         errors_out.push_back(base::StrCat(
             {decision_logic_url_.spec(),
              " scoreAd() attempting to set incomingBidInSellerCurrency without "
@@ -1057,21 +1060,15 @@ void SellerWorklet::V8State::ScoreAd(
         ok = false;
       }
       if (ok &&
-          !gin::ConvertFromV8(isolate, incoming_bid_in_seller_currency_value,
-                              &incoming_bid_in_seller_currency)) {
-        errors_out.push_back(base::StrCat(
-            {decision_logic_url_.spec(),
-             " scoreAd() incomingBidInSellerCurrency not a number."}));
-        ok = false;
-      }
-      if (ok && !IsValidBid(incoming_bid_in_seller_currency)) {
+          !IsValidBid(result_idl.incoming_bid_in_seller_currency.value())) {
         errors_out.push_back(base::StrCat(
             {decision_logic_url_.spec(),
              " scoreAd() incomingBidInSellerCurrency not a valid bid."}));
         ok = false;
       }
       if (bid_in_seller_currency.has_value() &&
-          incoming_bid_in_seller_currency != *bid_in_seller_currency) {
+          *result_idl.incoming_bid_in_seller_currency !=
+              *bid_in_seller_currency) {
         errors_out.push_back(base::StrCat(
             {decision_logic_url_.spec(),
              " scoreAd() attempting to set incomingBidInSellerCurrency "
@@ -1086,30 +1083,19 @@ void SellerWorklet::V8State::ScoreAd(
                 ->TakePrivateAggregationRequests());
         return;
       }
-      bid_in_seller_currency = incoming_bid_in_seller_currency;
+      bid_in_seller_currency = result_idl.incoming_bid_in_seller_currency;
     }
 
-    v8::Local<v8::Value> reject_reason_value;
-    if (score_ad_object
-            ->Get(context, v8_helper_->CreateStringFromLiteral("rejectReason"))
-            .ToLocal(&reject_reason_value) &&
-        !reject_reason_value->IsUndefined()) {
-      if (!reject_reason_value->IsString()) {
-        errors_out.push_back(base::StrCat(
-            {decision_logic_url_.spec(),
-             " rejectReason returned by scoreAd() must be a string."}));
-      } else {
-        std::string reject_reason_str;
-        result_dict.Get("rejectReason", &reject_reason_str);
-        auto reject_reason_opt = RejectReasonStringToEnum(reject_reason_str);
+    if (result_idl.reject_reason.has_value()) {
+      auto reject_reason_opt =
+          RejectReasonStringToEnum(*result_idl.reject_reason);
 
-        if (!reject_reason_opt.has_value()) {
-          errors_out.push_back(
-              base::StrCat({decision_logic_url_.spec(),
-                            " scoreAd() returned an invalid reject reason."}));
-        } else {
-          reject_reason = reject_reason_opt.value();
-        }
+      if (!reject_reason_opt.has_value()) {
+        errors_out.push_back(
+            base::StrCat({decision_logic_url_.spec(),
+                          " scoreAd() returned an invalid reject reason."}));
+      } else {
+        reject_reason = reject_reason_opt.value();
       }
     }
 
@@ -1121,39 +1107,27 @@ void SellerWorklet::V8State::ScoreAd(
       component_auction_modified_bid_params =
           mojom::ComponentAuctionModifiedBidParams::New();
 
-      v8::Local<v8::Value> ad_value;
-      if (!score_ad_object
-               ->Get(context, v8_helper_->CreateStringFromLiteral("ad"))
-               .ToLocal(&ad_value) ||
+      if (!result_idl.ad.has_value() ||
           !v8_helper_->ExtractJson(
-              context, ad_value, &component_auction_modified_bid_params->ad)) {
+              context, *result_idl.ad,
+              &component_auction_modified_bid_params->ad)) {
         component_auction_modified_bid_params->ad = "null";
       }
 
-      component_auction_modified_bid_params->bid = 0;
+      component_auction_modified_bid_params->bid = result_idl.bid.value_or(0);
       component_auction_modified_bid_params->has_bid =
-          result_dict.Get("bid", &component_auction_modified_bid_params->bid);
+          result_idl.bid.has_value();
       if (component_auction_modified_bid_params->has_bid) {
         bool drop_for_invalid_currency = false;
-        v8::Local<v8::Value> bid_currency_value;
-        component_auction_modified_bid_params->bid_currency = absl::nullopt;
-        std::string bid_currency_str;
-        if (score_ad_object
-                ->Get(context,
-                      v8_helper_->CreateStringFromLiteral("bidCurrency"))
-                .ToLocal(&bid_currency_value) &&
-            !bid_currency_value->IsUndefined()) {
-          if (!gin::ConvertFromV8(isolate, bid_currency_value,
-                                  &bid_currency_str) ||
-              !blink::IsValidAdCurrencyCode(bid_currency_str)) {
+        if (result_idl.bid_currency.has_value()) {
+          if (!blink::IsValidAdCurrencyCode(*result_idl.bid_currency)) {
             errors_out.push_back(
                 base::StrCat({decision_logic_url_.spec(),
                               " scoreAd() returned an invalid bidCurrency."}));
             drop_for_invalid_currency = true;
-          }
-          if (!drop_for_invalid_currency) {
+          } else {
             component_auction_modified_bid_params->bid_currency =
-                blink::AdCurrency::From(bid_currency_str);
+                blink::AdCurrency::From(*result_idl.bid_currency);
           }
         }
 

@@ -147,9 +147,12 @@ class CONTENT_EXPORT AuctionV8Helper
    public:
     virtual ~TimeLimit();
 
-    // Resumes the timer (must not already be running). You do not need to
-    // call it directly if you're using `RunScript` or `CallFunction`.
-    virtual void Resume() = 0;
+    // Resumes the timer if it's not already running. Returns true if it
+    // actually changed something.
+    //
+    // You do not need to call this directly if you're using `RunScript` or
+    // `CallFunction`.
+    virtual bool Resume() = 0;
 
     // Pauses the timer (must be running). You do not need to
     // call it directly if you're using `RunScript` or `CallFunction`.
@@ -161,23 +164,28 @@ class CONTENT_EXPORT AuctionV8Helper
 
   // Helper that calls Resume()/Pause() if given a non-nullptr TimeLimit.
   // v8::TryCatch::HasTerminated() can help detect the timeouts.
+  //
+  // This is safe to use recursively --- only the outer one will have an effect.
   class CONTENT_EXPORT TimeLimitScope {
    public:
     explicit TimeLimitScope(TimeLimit* script_timeout)
         : script_timeout_(script_timeout) {
       if (script_timeout) {
-        script_timeout->Resume();
+        resumed_ = script_timeout->Resume();
       }
     }
 
     ~TimeLimitScope() {
-      if (script_timeout_) {
+      if (resumed_) {
         script_timeout_->Pause();
       }
     }
 
+    bool has_time_limit() const { return script_timeout_; }
+
    private:
     raw_ptr<TimeLimit> script_timeout_;
+    bool resumed_ = false;
   };
 
   explicit AuctionV8Helper(const AuctionV8Helper&) = delete;

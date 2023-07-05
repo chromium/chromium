@@ -166,10 +166,14 @@ class AuctionV8Helper::ScriptTimeoutHelper : public AuctionV8Helper::TimeLimit {
       remaining_delay_ = base::Microseconds(1);
   }
 
-  void Resume() override {
+  bool Resume() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-    DCHECK(!running_);
-    StartTimer();
+    if (!running_) {
+      StartTimer();
+      return true;
+    } else {
+      return false;
+    }
   }
 
  private:
