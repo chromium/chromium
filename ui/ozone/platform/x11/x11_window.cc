@@ -1121,7 +1121,7 @@ void X11Window::SetOpaqueRegion(
   x11::SetArrayProperty(xwindow_, atom, x11::Atom::CARDINAL, value);
 }
 
-void X11Window::SetInputRegion(const gfx::Rect* region_px) {
+void X11Window::SetInputRegion(absl::optional<gfx::Rect> region_px) {
   if (!region_px) {
     // Reset the input region.
     connection_->shape().Mask({

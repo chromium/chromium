@@ -407,7 +407,7 @@ TEST_P(WaylandWindowTest, ApplyPendingStatesAndCommit) {
 
   std::vector<gfx::Rect> region_px = {gfx::Rect{500, 300}};
   window_->root_surface()->set_opaque_region(region_px);
-  window_->root_surface()->set_input_region(region_px.data());
+  window_->root_surface()->set_input_region(region_px[0]);
   window_->root_surface()->set_surface_buffer_scale(2);
 
   wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());

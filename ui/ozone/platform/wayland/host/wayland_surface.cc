@@ -346,7 +346,7 @@ void WaylandSurface::set_opaque_region(
   }
 }
 
-void WaylandSurface::set_input_region(const gfx::Rect* region_px) {
+void WaylandSurface::set_input_region(absl::optional<gfx::Rect> region_px) {
   pending_state_.input_region_px.reset();
   if (!root_window_)
     return;
@@ -355,7 +355,7 @@ void WaylandSurface::set_input_region(const gfx::Rect* region_px) {
     return;
   }
   if (region_px)
-    pending_state_.input_region_px = *region_px;
+    pending_state_.input_region_px = region_px;
 
   if (apply_state_immediately_) {
     state_.input_region_px = pending_state_.input_region_px;

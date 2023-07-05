@@ -145,7 +145,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool CanSetDecorationInsets() const override;
   void SetOpaqueRegion(
       absl::optional<std::vector<gfx::Rect>> region_px) override;
-  void SetInputRegion(const gfx::Rect* region_px) override;
+  void SetInputRegion(absl::optional<gfx::Rect> region_px) override;
   bool IsClientControlledWindowMovementSupported() const override;
   void NotifyStartupComplete(const std::string& startup_id) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
