@@ -279,7 +279,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
       int64_t object_store_id,
       int64_t index_id,
       std::unique_ptr<blink::IndexedDBKeyRange> key_range,
-      scoped_refptr<IndexedDBCallbacks> callbacks,
+      blink::mojom::IDBDatabase::CountCallback callback,
       IndexedDBTransaction* transaction);
 
   leveldb::Status DeleteRangeOperation(

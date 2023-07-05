@@ -1163,8 +1163,9 @@ IDBRequest* IDBObjectStore::count(ScriptState* script_state,
 
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
-  BackendDB()->Count(transaction_->Id(), Id(), IDBIndexMetadata::kInvalidId,
-                     key_range, request->CreateWebCallbacks().release());
+  BackendDB()->Count(
+      transaction_->Id(), Id(), IDBIndexMetadata::kInvalidId, key_range,
+      WTF::BindOnce(&IDBRequest::OnCount, WrapWeakPersistent(request)));
   return request;
 }
 

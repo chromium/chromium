@@ -172,15 +172,12 @@ void WebIDBDatabase::Count(int64_t transaction_id,
                            int64_t object_store_id,
                            int64_t index_id,
                            const IDBKeyRange* key_range,
-                           WebIDBCallbacks* callbacks) {
+                           mojom::blink::IDBDatabase::CountCallback callback) {
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
 
-  mojom::blink::IDBKeyRangePtr key_range_ptr =
-      mojom::blink::IDBKeyRange::From(key_range);
-  callbacks->SetState(transaction_id);
   database_->Count(transaction_id, object_store_id, index_id,
-                   std::move(key_range_ptr),
-                   GetCallbacksProxy(base::WrapUnique(callbacks)));
+                   mojom::blink::IDBKeyRange::From(key_range),
+                   std::move(callback));
 }
 
 void WebIDBDatabase::Delete(int64_t transaction_id,

@@ -1570,14 +1570,15 @@ Status IndexedDBDatabase::CountOperation(
     int64_t object_store_id,
     int64_t index_id,
     std::unique_ptr<IndexedDBKeyRange> key_range,
-    scoped_refptr<IndexedDBCallbacks> callbacks,
+    blink::mojom::IDBDatabase::CountCallback callback,
     IndexedDBTransaction* transaction) {
   TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::CountOperation", "txn.id",
                transaction->id());
 
-  if (!IsObjectStoreIdAndMaybeIndexIdInMetadata(object_store_id, index_id))
+  if (!IsObjectStoreIdAndMaybeIndexIdInMetadata(object_store_id, index_id)) {
     return leveldb::Status::InvalidArgument(
         "Invalid object_store_id and/or index_id.");
+  }
 
   uint32_t count = 0;
   std::unique_ptr<IndexedDBBackingStore::Cursor> backing_store_cursor;
@@ -1596,18 +1597,17 @@ Status IndexedDBDatabase::CountOperation(
     DLOG(ERROR) << "Unable perform count operation: " << s.ToString();
     return s;
   }
-  if (!backing_store_cursor) {
-    callbacks->OnSuccess(count);
-    return s;
+
+  if (backing_store_cursor) {
+    do {
+      if (!s.ok()) {
+        return s;
+      }
+      ++count;
+    } while (backing_store_cursor->Continue(&s));
   }
 
-  do {
-    if (!s.ok())
-      return s;
-    ++count;
-  } while (backing_store_cursor->Continue(&s));
-
-  callbacks->OnSuccess(count);
+  std::move(callback).Run(/*success=*/true, count);
   return s;
 }
 

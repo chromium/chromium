@@ -90,21 +90,21 @@ class MODULES_EXPORT WebIDBDatabase final {
              int64_t object_store_id,
              int64_t index_id,
              const IDBKeyRange*,
-             WebIDBCallbacks*);
+             mojom::blink::IDBDatabase::CountCallback callback);
   void Delete(int64_t transaction_id,
               int64_t object_store_id,
               const IDBKey* primary_key,
-              base::OnceCallback<void(bool)> success_callback);
+              mojom::blink::IDBDatabase::DeleteRangeCallback callback);
   void DeleteRange(int64_t transaction_id,
                    int64_t object_store_id,
                    const IDBKeyRange*,
-                   base::OnceCallback<void(bool)> success_callback);
+                   mojom::blink::IDBDatabase::DeleteRangeCallback callback);
   void GetKeyGeneratorCurrentNumber(int64_t transaction_id,
                                     int64_t object_store_id,
                                     WebIDBCallbacks*);
   void Clear(int64_t transaction_id,
              int64_t object_store_id,
-             mojom::blink::IDBDatabase::ClearCallback success_callback);
+             mojom::blink::IDBDatabase::ClearCallback callback);
   void CreateIndex(int64_t transaction_id,
                    int64_t object_store_id,
                    int64_t index_id,

@@ -474,6 +474,12 @@ void IDBRequest::OnDelete(bool success) {
   }
 }
 
+void IDBRequest::OnCount(bool success, uint32_t count) {
+  if (success) {
+    HandleResponse(count);
+  }
+}
+
 void IDBRequest::OnGet(mojom::blink::IDBDatabaseGetResultPtr result) {
   if (result->is_error_result()) {
     HandleError(std::move(result->get_error_result()));

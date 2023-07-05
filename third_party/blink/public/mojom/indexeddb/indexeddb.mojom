@@ -249,7 +249,6 @@ interface IDBCallbacks {
   SuccessDatabase(pending_associated_remote<IDBDatabase>? pending_database,
                   IDBDatabaseMetadata metadata);
 
-  // Database::Count
   // Factory::DeleteDatabase
   SuccessInteger(int64 value);
 };
@@ -407,11 +406,12 @@ interface IDBDatabase {
              bool key_only,
              IDBTaskType task_type)
     => (IDBDatabaseOpenCursorResult result);
+  // Correlates to IDBObjectStore::count(). On success, the return value will be
+  // the number of records that match the given query.
   Count(int64 transaction_id,
         int64 object_store_id,
         int64 index_id,
-        IDBKeyRange key_range,
-        pending_associated_remote<IDBCallbacks> pending_callbacks);
+        IDBKeyRange key_range) => (bool success, uint32 count);
   // Correlates to IDBObjectStore::delete() and also used by devtools.
   DeleteRange(int64 transaction_id,
               int64 object_store_id,

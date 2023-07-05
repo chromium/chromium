@@ -283,8 +283,10 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
       mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
           receiver);
 
+  // Callbacks for various `IDBObjectStore` methods.
   void OnClear(bool success);
   void OnDelete(bool success);
+  void OnCount(bool success, uint32_t count);
   void OnGet(mojom::blink::IDBDatabaseGetResultPtr result);
   void OnOpenCursor(mojom::blink::IDBDatabaseOpenCursorResultPtr result);
   void OnAdvanceCursor(mojom::blink::IDBCursorResultPtr result);
