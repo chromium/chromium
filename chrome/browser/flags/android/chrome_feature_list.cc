@@ -255,6 +255,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOmniboxAdaptNarrowTabletWindows,
     &kOmniboxCacheSuggestionResources,
     &kOmniboxConsumesImeInsets,
+    &kOmniboxNoopEditUrlSuggestionClicks,
     &kOmniboxWarmRecycledViewPool,
     &kOpaqueOriginForIncomingIntents,
     &kPartnerCustomizationsUma,
@@ -826,6 +827,10 @@ BASE_FEATURE(kOmniboxCacheSuggestionResources,
 
 BASE_FEATURE(kOmniboxConsumesImeInsets,
              "OmniboxConsumesImeInsets",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOmniboxNoopEditUrlSuggestionClicks,
+             "OmniboxNoopEditUrlSuggestionClicks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmniboxWarmRecycledViewPool,

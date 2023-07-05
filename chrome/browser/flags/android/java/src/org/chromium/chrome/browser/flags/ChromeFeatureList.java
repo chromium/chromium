@@ -331,6 +331,9 @@ public abstract class ChromeFeatureList {
     public static final String OMNIBOX_MODERNIZE_VISUAL_UPDATE = "OmniboxModernizeVisualUpdate";
     public static final String OMNIBOX_MOST_VISITED_TILES_ADD_RECYCLED_VIEW_POOL =
             "OmniboxMostVisitedTilesAddRecycledViewPool";
+
+    public static final String OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS =
+            "OmniboxNoopEditUrlSuggestionClicks";
     public static final String OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS =
             "OmniboxUpdatedConnectionSecurityIndicators";
     public static final String OMNIBOX_WARM_RECYCLED_VIEW_POOL = "OmniboxWarmRecycledViewPool";

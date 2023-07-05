@@ -84,6 +84,10 @@ public class OmniboxFeatures {
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.OMNIBOX_WARM_RECYCLED_VIEW_POOL, false);
 
+    private static final MutableFlagWithSafeDefault sNoopEditUrlSuggestionClicks =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS, false);
+
     /**
      * @param context The activity context.
      * @return Whether the new modernize visual UI update should be shown.
@@ -210,5 +214,13 @@ public class OmniboxFeatures {
                             BaseSwitches.DISABLE_LOW_END_DEVICE_MODE));
         }
         return sIsLowMemoryDevice;
+    }
+
+    /**
+     * Returns whether clicking the edit url suggestion / search-ready omnibox should be a no-op.
+     * Currently the default behavior is to refresh the page.
+     */
+    public static boolean noopEditUrlSuggestionClicks() {
+        return sNoopEditUrlSuggestionClicks.isEnabled();
     }
 }
