@@ -115,6 +115,7 @@ class TtsAsh;
 class VpnServiceAsh;
 class WallpaperAsh;
 class WebAppServiceAsh;
+class WebKioskServiceAsh;
 class WebPageInfoFactoryAsh;
 class UrlHandlerAsh;
 class VirtualKeyboardAsh;
@@ -357,6 +358,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindWebAppService(
       mojo::PendingReceiver<mojom::WebAppService> receiver) override;
+  void BindWebKioskService(
+      mojo::PendingReceiver<mojom::WebKioskService> receiver) override;
   void BindWebPageInfoFactory(
       mojo::PendingReceiver<mojom::WebPageInfoFactory> receiver) override;
   void OnBrowserStartup(mojom::BrowserInfoPtr browser_info) override;
@@ -498,6 +501,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   WebAppServiceAsh* web_app_service_ash() { return web_app_service_ash_.get(); }
 
+  WebKioskServiceAsh* web_kiosk_service_ash() {
+    return web_kiosk_service_ash_.get();
+  }
+
   WebPageInfoFactoryAsh* web_page_info_factory_ash() {
     return web_page_info_factory_ash_.get();
   }
@@ -612,6 +619,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;
   std::unique_ptr<WallpaperAsh> wallpaper_ash_;
   std::unique_ptr<WebAppServiceAsh> web_app_service_ash_;
+  std::unique_ptr<WebKioskServiceAsh> web_kiosk_service_ash_;
   std::unique_ptr<WebPageInfoFactoryAsh> web_page_info_factory_ash_;
 
   // Only set in the test ash chrome binary. In production ash this is always

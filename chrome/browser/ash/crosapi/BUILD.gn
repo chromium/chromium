@@ -248,6 +248,8 @@ source_set("crosapi") {
     "wallpaper_ash.h",
     "web_app_service_ash.cc",
     "web_app_service_ash.h",
+    "web_kiosk_service_ash.cc",
+    "web_kiosk_service_ash.h",
     "web_page_info_ash.cc",
     "web_page_info_ash.h",
     "window_util.cc",

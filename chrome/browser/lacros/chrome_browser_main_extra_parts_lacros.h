@@ -34,6 +34,7 @@ class TabletModePageBehavior;
 class UiMetricRecorderLacros;
 class VpnExtensionTrackerLacros;
 class WebAuthnRequestRegistrarLacros;
+class WebKioskInstallerLacros;
 class MultitaskMenuNudgeDelegateLacros;
 
 namespace arc {
@@ -123,6 +124,7 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   std::unique_ptr<ChromeKioskLaunchControllerLacros>
       chrome_kiosk_launch_controller_;
+  std::unique_ptr<WebKioskInstallerLacros> web_kiosk_installer_;
 
   // Manages the resources used in the web Kiosk session, and sends window
   // status changes of lacros-chrome to ash when necessary.

@@ -12,6 +12,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+using crosapi::mojom::WebKioskInstallState;
+
 namespace {
 
 // Histogram to log the installed web app is a placeholder.
@@ -52,7 +54,7 @@ void WebKioskAppInstaller::GetInstallState(InstallStateCallback callback) {
   auto app_id = web_app_provider().registrar_unsafe().LookUpAppIdByInstallUrl(
       install_url_);
   if (!app_id || app_id->empty()) {
-    std::move(callback).Run(InstallState::kNotInstalled, absl::nullopt);
+    std::move(callback).Run(WebKioskInstallState::kNotInstalled, absl::nullopt);
     return;
   }
 
@@ -64,11 +66,12 @@ void WebKioskAppInstaller::GetInstallState(InstallStateCallback callback) {
   base::UmaHistogramBoolean(kWebAppIsPlaceholderUMA, is_placeholder_app);
   if (is_placeholder_app) {
     SYSLOG(INFO) << "Placeholder app installed. Trying to reinstall...";
-    std::move(callback).Run(InstallState::kPlaceholderInstalled, absl::nullopt);
+    std::move(callback).Run(WebKioskInstallState::kPlaceholderInstalled,
+                            absl::nullopt);
     return;
   }
 
-  std::move(callback).Run(InstallState::kInstalled, app_id);
+  std::move(callback).Run(WebKioskInstallState::kInstalled, app_id);
 }
 
 void WebKioskAppInstaller::InstallApp(InstallCallback callback) {

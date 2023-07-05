@@ -18,6 +18,7 @@
 #include "chrome/browser/lacros/app_mode/chrome_kiosk_launch_controller_lacros.h"
 #include "chrome/browser/lacros/app_mode/device_local_account_extension_installer_lacros.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
+#include "chrome/browser/lacros/app_mode/web_kiosk_installer_lacros.h"
 #include "chrome/browser/lacros/arc/arc_icon_cache.h"
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
@@ -266,6 +267,10 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
     chrome_kiosk_launch_controller_ =
         std::make_unique<ChromeKioskLaunchControllerLacros>(*profile);
   }
+  if (chromeos::BrowserParamsProxy::Get()->SessionType() ==
+      crosapi::mojom::SessionType::kWebKioskSession) {
+    web_kiosk_installer_ = std::make_unique<WebKioskInstallerLacros>(*profile);
+  }
 
   views::ViewsTextServicesContextMenuChromeos::SetImplFactory(
       base::BindRepeating(
@@ -305,6 +310,7 @@ void ChromeBrowserMainExtraPartsLacros::PostMainMessageLoopRun() {
   // Must be destroyed before `chrome_kiosk_launch_controller_->profile_` is
   // destroyed.
   chrome_kiosk_launch_controller_.reset();
+  web_kiosk_installer_.reset();
   // Must be destroyed before
   // `kiosk_session_service_->kiosk_browser_session_->profile_` is destroyed.
   kiosk_session_service_.reset();

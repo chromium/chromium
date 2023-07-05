@@ -106,6 +106,7 @@
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "chromeos/crosapi/mojom/wallpaper.mojom.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
+#include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
 #include "chromeos/lacros/lacros_service_never_blocking_state.h"
 #include "chromeos/lacros/native_theme_cache.h"
@@ -395,6 +396,9 @@ LacrosService::LacrosService()
       crosapi::mojom::ChromeAppKioskService,
       &Crosapi::BindChromeAppKioskService,
       Crosapi::MethodMinVersions::kBindChromeAppKioskServiceMinVersion>();
+  ConstructRemote<crosapi::mojom::WebKioskService,
+                  &Crosapi::BindWebKioskService,
+                  Crosapi::MethodMinVersions::kBindWebKioskServiceMinVersion>();
   ConstructRemote<
       crosapi::mojom::KioskSessionService, &Crosapi::BindKioskSessionService,
       Crosapi::MethodMinVersions::kBindKioskSessionServiceMinVersion>();
@@ -573,8 +577,9 @@ void LacrosService::BindReceiver(const std::string& browser_version) {
 
   // In unittests/browser_tests cases, the mojo pipe may not be set up.
   // Just ignore the case.
-  if (!command_line->HasSwitch(crosapi::kCrosapiMojoPlatformChannelHandle))
+  if (!command_line->HasSwitch(crosapi::kCrosapiMojoPlatformChannelHandle)) {
     return;
+  }
 
   mojo::PlatformChannelEndpoint endpoint =
       mojo::PlatformChannel::RecoverPassedEndpointFromString(
@@ -748,8 +753,9 @@ void LacrosService::BindStableVideoDecoderFactory(
 }
 
 absl::optional<uint32_t> LacrosService::CrosapiVersion() const {
-  if (chromeos::BrowserParamsProxy::Get()->DisableCrosapiForTesting())
+  if (chromeos::BrowserParamsProxy::Get()->DisableCrosapiForTesting()) {
     return absl::nullopt;
+  }
   DCHECK(did_bind_receiver_);
   return chromeos::BrowserParamsProxy::Get()->CrosapiVersion();
 }

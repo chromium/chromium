@@ -12,17 +12,32 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
 #include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 using chromeos::WebKioskAppInstaller;
+using crosapi::mojom::WebKioskInstallState;
+
+namespace {
+
+crosapi::WebKioskServiceAsh& crosapi_web_kiosk_service() {
+  return CHECK_DEREF(
+      crosapi::CrosapiManager::Get()->crosapi_ash()->web_kiosk_service_ash());
+}
+
+}  // namespace
 
 namespace ash {
 
@@ -66,22 +81,29 @@ void WebKioskAppServiceLauncher::Initialize() {
 }
 
 void WebKioskAppServiceLauncher::OnWebAppInitialized() {
-  // Start observing app update as soon a web app system is ready so that app
-  // updates being applied while launching can be handled.
-  WebKioskAppManager::Get()->StartObservingAppUpdate(profile_, account_id_);
-
-  app_installer_ = std::make_unique<chromeos::WebKioskAppInstaller>(
-      CHECK_DEREF(profile_.get()), GetCurrentApp()->install_url());
-
-  app_installer_->GetInstallState(
+  GetInstallState(
+      GetCurrentApp()->install_url(),
       base::BindOnce(&WebKioskAppServiceLauncher::CheckWhetherNetworkIsRequired,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void WebKioskAppServiceLauncher::GetInstallState(
+    const GURL& install_url,
+    WebKioskAppInstaller::InstallStateCallback callback) {
+  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession()) {
+    crosapi_web_kiosk_service().GetWebKioskInstallState(install_url,
+                                                        std::move(callback));
+  } else {
+    app_installer_ = std::make_unique<WebKioskAppInstaller>(
+        CHECK_DEREF(profile_.get()), install_url);
+    app_installer_->GetInstallState(std::move(callback));
+  }
+}
+
 void WebKioskAppServiceLauncher::CheckWhetherNetworkIsRequired(
-    chromeos::WebKioskAppInstaller::InstallState state,
+    WebKioskInstallState state,
     const absl::optional<web_app::AppId>& id) {
-  if (state == WebKioskAppInstaller::InstallState::kInstalled) {
+  if (state == WebKioskInstallState::kInstalled) {
     NotifyAppPrepared(id);
     return;
   }
@@ -91,7 +113,26 @@ void WebKioskAppServiceLauncher::CheckWhetherNetworkIsRequired(
 
 void WebKioskAppServiceLauncher::ContinueWithNetworkReady() {
   observers_.NotifyAppInstalling();
+  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession()) {
+    InstallAppInLacros();
+  } else {
+    InstallAppInAsh();
+  }
+}
+
+void WebKioskAppServiceLauncher::InstallAppInAsh() {
+  // Start observing app update as soon a web app system is ready so that app
+  // updates being applied while launching can be handled.
+  WebKioskAppManager::Get()->StartObservingAppUpdate(profile_, account_id_);
+
   app_installer_->InstallApp(
+      base::BindOnce(&WebKioskAppServiceLauncher::OnInstallComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WebKioskAppServiceLauncher::InstallAppInLacros() {
+  crosapi_web_kiosk_service().InstallWebKiosk(
+      GetCurrentApp()->install_url(),
       base::BindOnce(&WebKioskAppServiceLauncher::OnInstallComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }

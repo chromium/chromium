@@ -5360,6 +5360,8 @@ static_library("browser") {
       "lacros/app_mode/device_local_account_extension_installer_lacros.h",
       "lacros/app_mode/kiosk_session_service_lacros.cc",
       "lacros/app_mode/kiosk_session_service_lacros.h",
+      "lacros/app_mode/web_kiosk_installer_lacros.cc",
+      "lacros/app_mode/web_kiosk_installer_lacros.h",
       "lacros/arc/arc_icon_cache.cc",
       "lacros/arc/arc_icon_cache.h",
       "lacros/arc/arc_intent_helper_mojo_lacros.cc",

@@ -102,6 +102,7 @@ import "chromeos/crosapi/mojom/volume_manager.mojom";
 import "chromeos/crosapi/mojom/vpn_extension_observer.mojom";
 import "chromeos/crosapi/mojom/wallpaper.mojom";
 import "chromeos/crosapi/mojom/web_app_service.mojom";
+import "chromeos/crosapi/mojom/web_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/web_page_info.mojom";
 import "chromeos/crosapi/mojom/media_ui.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
@@ -140,8 +141,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 111
-// Next method id: 114
+// Next version: 112
+// Next method id: 115
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -678,6 +679,11 @@ interface Crosapi {
   // launch the chrome app inside lacros.
   [MinVersion=73] BindChromeAppKioskService@76(
       pending_receiver<ChromeAppKioskService> receiver);
+
+  // Binds the web kiosk service. This service is used to install and launch the
+  // web app inside lacros.
+  [MinVersion=111] BindWebKioskService@114(
+      pending_receiver<WebKioskService> receiver);
 
   // Binds the extension service for device local accounts. This service manages
   // the cached install of extensions into Lacros.

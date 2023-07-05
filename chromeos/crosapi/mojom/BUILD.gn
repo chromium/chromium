@@ -113,6 +113,7 @@ mojom("mojom") {
     "wallpaper.mojom",
     "web_app_service.mojom",
     "web_app_types.mojom",
+    "web_kiosk_service.mojom",
     "web_page_info.mojom",
   ]
   disable_variants = true

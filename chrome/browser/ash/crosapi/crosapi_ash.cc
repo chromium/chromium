@@ -100,6 +100,7 @@
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/crosapi/wallpaper_ash.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
+#include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
@@ -166,8 +167,9 @@ Profile* GetAshProfile() {
   int num_regular_profiles = 0;
   for (const Profile* profile :
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
-    if (ash::ProfileHelper::IsUserProfile(profile))
+    if (ash::ProfileHelper::IsUserProfile(profile)) {
       ++num_regular_profiles;
+    }
   }
   DCHECK_EQ(1, num_regular_profiles);
 #endif  // DCHECK_IS_ON()
@@ -282,6 +284,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       vpn_service_ash_(std::make_unique<VpnServiceAsh>()),
       wallpaper_ash_(std::make_unique<WallpaperAsh>()),
       web_app_service_ash_(std::make_unique<WebAppServiceAsh>()),
+      web_kiosk_service_ash_(std::make_unique<WebKioskServiceAsh>()),
       web_page_info_factory_ash_(std::make_unique<WebPageInfoFactoryAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
       &CrosapiAsh::OnDisconnected, weak_factory_.GetWeakPtr()));
@@ -290,8 +293,9 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
 CrosapiAsh::~CrosapiAsh() {
   // Invoke all disconnect handlers.
   auto handlers = std::move(disconnect_handler_map_);
-  for (auto& entry : handlers)
+  for (auto& entry : handlers) {
     std::move(entry.second).Run();
+  }
 }
 
 void CrosapiAsh::BindAccountManager(
@@ -354,8 +358,9 @@ void CrosapiAsh::BindBrowserAppInstanceRegistry(
 }
 
 void CrosapiAsh::BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) {
-  if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>())
+  if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>()) {
     chromeos::CdmFactoryDaemonProxyAsh::Create(std::move(r));
+  }
 }
 
 void CrosapiAsh::BindBrowserServiceHost(
@@ -551,8 +556,9 @@ void CrosapiAsh::BindHoldingSpaceService(
   ash::HoldingSpaceKeyedService* holding_space_keyed_service =
       ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
           GetAshProfile());
-  if (holding_space_keyed_service)
+  if (holding_space_keyed_service) {
     holding_space_keyed_service->BindReceiver(std::move(receiver));
+  }
 }
 
 void CrosapiAsh::BindIdentityManager(
@@ -716,8 +722,9 @@ void CrosapiAsh::BindReceiver(
     base::OnceClosure disconnect_handler) {
   mojo::ReceiverId id =
       receiver_set_.Add(this, std::move(pending_receiver), crosapi_id);
-  if (!disconnect_handler.is_null())
+  if (!disconnect_handler.is_null()) {
     disconnect_handler_map_.emplace(id, std::move(disconnect_handler));
+  }
 }
 
 void CrosapiAsh::BindRemoteAppsLacrosBridge(
@@ -727,8 +734,9 @@ void CrosapiAsh::BindRemoteAppsLacrosBridge(
       ash::RemoteAppsManagerFactory::GetForProfile(GetAshProfile());
 
   // RemoteApps are only available for managed guest sessions.
-  if (!remote_apps_manager)
+  if (!remote_apps_manager) {
     return;
+  }
   remote_apps_manager->BindLacrosBridgeInterface(std::move(receiver));
 }
 
@@ -829,8 +837,9 @@ void CrosapiAsh::BindTelemetryProbeService(
 
 void CrosapiAsh::BindTestController(
     mojo::PendingReceiver<mojom::TestController> receiver) {
-  if (test_controller_)
+  if (test_controller_) {
     test_controller_->BindReceiver(std::move(receiver));
+  }
 }
 
 void CrosapiAsh::BindTimeZoneService(
@@ -888,6 +897,11 @@ void CrosapiAsh::BindWebAppService(
   web_app_service_ash_->BindReceiver(std::move(receiver));
 }
 
+void CrosapiAsh::BindWebKioskService(
+    mojo::PendingReceiver<mojom::WebKioskService> receiver) {
+  web_kiosk_service_ash_->BindReceiver(std::move(receiver));
+}
+
 void CrosapiAsh::BindWebPageInfoFactory(
     mojo::PendingReceiver<mojom::WebPageInfoFactory> receiver) {
   web_page_info_factory_ash_->BindReceiver(std::move(receiver));
@@ -923,8 +937,9 @@ void CrosapiAsh::SetTestControllerForTesting(
 
 void CrosapiAsh::OnDisconnected() {
   auto it = disconnect_handler_map_.find(receiver_set_.current_receiver());
-  if (it == disconnect_handler_map_.end())
+  if (it == disconnect_handler_map_.end()) {
     return;
+  }
 
   base::OnceClosure callback = std::move(it->second);
   disconnect_handler_map_.erase(it);

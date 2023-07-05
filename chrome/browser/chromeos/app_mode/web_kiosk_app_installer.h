@@ -5,15 +5,12 @@
 #ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_WEB_KIOSK_APP_INSTALLER_H_
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_WEB_KIOSK_APP_INSTALLER_H_
 
-#include <string>
-
 #include "base/check_deref.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -26,16 +23,10 @@ namespace chromeos {
 
 class WebKioskAppInstaller {
  public:
-  enum class InstallState {
-    kInstalled = 0,
-    kNotInstalled = 1,
-    kPlaceholderInstalled = 2,
-  };
   using InstallStateCallback =
-      base::OnceCallback<void(InstallState,
-                              const absl::optional<web_app::AppId>&)>;
+      crosapi::mojom::WebKioskInstaller::GetWebKioskInstallStateCallback;
   using InstallCallback =
-      base::OnceCallback<void(const absl::optional<web_app::AppId>&)>;
+      crosapi::mojom::WebKioskInstaller::InstallWebKioskCallback;
 
   WebKioskAppInstaller(Profile& profile, const GURL& install_url);
   WebKioskAppInstaller(const WebKioskAppInstaller&) = delete;
