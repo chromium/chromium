@@ -46,8 +46,8 @@ void NodePart::Trace(Visitor* visitor) const {
 }
 
 bool NodePart::IsValid() {
-  // A NodePart is valid if it has a |Node| that is connected.
-  return node_ && node_->isConnected();
+  // A NodePart is valid if there is a node reference.
+  return node_;
 }
 
 Node* NodePart::NodeToSortBy() const {

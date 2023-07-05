@@ -140,10 +140,11 @@ DocumentPartRoot* PartRoot::GetDocumentPartRoot() {
 // rules:
 //  1. parts are returned in DOM tree order. If more than one part refers to the
 //     same Node, parts are returned in the order they were constructed.
-//  2. parts referring to nodes that aren't in a document, or not in the same
-//     document as the owning DocumentPartRoot, are not returned.
-//  3. invalid parts are not returned. For example, a ChildNodePart whose
-//     previous_node comes after its next_node.
+//  2. parts referring to nodes that aren't in a document, not in the same
+//     document as the owning DocumentPartRoot, or not contained by the root
+//     Element of the DocumentPartRoot are not returned.
+//  3. parts referring to invalid parts are not returned. For example, a
+//     ChildNodePart whose previous_node comes after its next_node.
 HeapVector<Member<Part>> PartRoot::RebuildPartsList() {
   CHECK(cached_parts_list_dirty_);
   NodesToParts unordered_nodes_to_parts;
@@ -154,11 +155,14 @@ HeapVector<Member<Part>> PartRoot::RebuildPartsList() {
   Document* root_document = root->GetDocument();
   CHECK(root_document);
   for (Part* part : parts_unordered_) {
-    if (!part->IsValid() || part->GetDocument() != root_document) {
+    if (part->GetDocument() != root_document || !part->IsValid()) {
       continue;
     }
     Node* node = part->NodeToSortBy();
-    CHECK(node->isConnected());
+    if (!root->GetRootContainer().contains(node)) {
+      continue;
+    }
+    CHECK_EQ(part->GetDocumentPartRoot(), root);
     CHECK_EQ(&node->GetDocument(), root_document);
     auto result = unordered_nodes_to_parts.insert(node, nullptr);
     if (result.is_new_entry) {

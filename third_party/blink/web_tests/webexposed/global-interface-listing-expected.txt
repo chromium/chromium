@@ -2185,6 +2185,7 @@ interface DocumentFragment : Node
     method append
     method constructor
     method getElementById
+    method getPartRoot
     method prepend
     method querySelector
     method querySelectorAll

@@ -4,12 +4,14 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<div id=target style="display:none">
-  Imperative test element
-  <span id=a>A</span>
-  <span id=b>B</span>
-  <span id=c>C</span>
-</div>
+<template id=template>
+  <div id=target style="display:none">
+    Imperative test element
+    <span id=a>A</span>
+    <span id=b>B</span>
+    <span id=c>C</span>
+  </div>
+</template>
 
 <div style="display:none">
   Declarative syntax
@@ -18,71 +20,83 @@
 </div>
 
 <script>
-const target = document.getElementById('target');
-const a = document.getElementById('a');
-const b = document.getElementById('b');
-const c = document.getElementById('c');
-assert_true(!!(target && a && b && c));
+const template = document.getElementById('template');
+document.body.appendChild(template.content.cloneNode(true));
 
 function addCleanup(t, part) {
   t.add_cleanup(() => part.disconnect());
   return part;
 }
 
-test((t) => {
-  const root = document.getPartRoot();
-  assert_true(root instanceof DocumentPartRoot);
-  assert_true(root instanceof PartRoot);
-  const parts = root.getParts();
-  assert_equals(parts.length,0,'getParts() should start out empty');
+[false,true].forEach(useTemplate => {
+  test((t) => {
+    let doc;
+    if (useTemplate) {
+      doc = template.content;
+    } else {
+      doc = document;
+    }
+    const target = doc.querySelector('#target');
+    assert_true(!!(doc && target && target.children.length >= 3));
+    const root = doc.getPartRoot();
+    assert_true(root instanceof DocumentPartRoot);
+    assert_true(root instanceof PartRoot);
+    const parts = root.getParts();
+    assert_equals(parts.length,0,'getParts() should start out empty');
 
-  const nodePart = addCleanup(t,new NodePart(root,target));
-  assert_true(nodePart instanceof NodePart);
-  assert_equals(nodePart.node,target);
-  assert_equals(nodePart.root,root);
-  assert_equals(root.getParts().length,1,'getParts() for the root should now have this nodePart');
-  assert_equals(root.getParts()[0],nodePart);
-  assert_equals(parts.length,0,'Return value of getParts() is not live');
+    const nodePart = addCleanup(t,new NodePart(root,target));
+    assert_true(nodePart instanceof NodePart);
+    assert_equals(nodePart.node,target);
+    assert_equals(nodePart.root,root);
+    assert_equals(root.getParts().length,1,'getParts() for the root should now have this nodePart');
+    assert_equals(root.getParts()[0],nodePart);
+    assert_equals(parts.length,0,'Return value of getParts() is not live');
 
-  assert_throws_dom("NotSupportedError",() => new NodePart(nodePart,target.children[0]),'Constructing a Part with a NodePart as the PartRoot should throw');
+    assert_throws_dom("NotSupportedError",() => new NodePart(nodePart,target.children[0]),'Constructing a Part with a NodePart as the PartRoot should throw');
 
-  const childNodePart = addCleanup(t,new ChildNodePart(root,target.children[0], target.children[2]));
-  assert_true(childNodePart instanceof ChildNodePart);
-  assert_true(childNodePart instanceof Part);
-  assert_equals(childNodePart.root,root);
-  assert_equals(childNodePart.previousSibling,target.children[0]);
-  assert_equals(childNodePart.nextSibling,target.children[2]);
-  assert_equals(childNodePart.getParts().length,0,'childNodePart.getParts() should start out empty');
-  assert_equals(root.getParts().length,2);
-  assert_equals(root.getParts()[1],childNodePart);
+    const childNodePart = addCleanup(t,new ChildNodePart(root,target.children[0], target.children[2]));
+    assert_true(childNodePart instanceof ChildNodePart);
+    assert_true(childNodePart instanceof Part);
+    assert_equals(childNodePart.root,root);
+    assert_equals(childNodePart.previousSibling,target.children[0]);
+    assert_equals(childNodePart.nextSibling,target.children[2]);
+    assert_equals(childNodePart.getParts().length,0,'childNodePart.getParts() should start out empty');
+    assert_equals(root.getParts().length,2);
+    assert_equals(root.getParts()[1],childNodePart);
 
-  const nodeBefore = target.previousSibling || target.parentNode;
-  const nodePartBefore = addCleanup(t,new NodePart(root,nodeBefore));
-  assert_equals(root.getParts().length,3,'getParts() for the root should now have this nodePart');
-  assert_array_equals(root.getParts(),[nodePartBefore,nodePart,childNodePart],'getParts() should return nodes in tree order');
+    const nodeBefore = target.previousSibling || target.parentNode;
+    const nodePartBefore = addCleanup(t,new NodePart(root,nodeBefore));
+    assert_equals(root.getParts().length,3,'getParts() for the root should now have this nodePart');
+    assert_array_equals(root.getParts(),[nodePartBefore,nodePart,childNodePart],'getParts() should return nodes in tree order');
 
-  const nodePart2 = addCleanup(t,new NodePart(childNodePart,target.children[2]));
-  assert_equals(nodePart2.root,childNodePart);
-  assert_equals(root.getParts().length,3,'getParts() for the root DocumentPartRoot shouldn\'t change');
-  assert_array_equals(childNodePart.getParts(),[nodePart2]);
+    const nodePart2 = addCleanup(t,new NodePart(childNodePart,target.children[2]));
+    assert_equals(nodePart2.root,childNodePart);
+    assert_equals(root.getParts().length,3,'getParts() for the root DocumentPartRoot shouldn\'t change');
+    assert_array_equals(childNodePart.getParts(),[nodePart2]);
 
-  nodePart2.disconnect();
-  assert_equals(nodePart2.root,null,'root should be null after disconnect');
-  assert_equals(nodePart2.node,null,'node should be null after disconnect');
-  assert_equals(childNodePart.getParts().length,0,'calling disconnect() should remove the part from root.getParts()');
-  assert_equals(root.getParts().length,3,'getParts() for the root DocumentPartRoot still shouldn\'t change');
-  nodePart2.disconnect(); // Calling twice should be ok.
+    nodePart2.disconnect();
+    assert_equals(nodePart2.root,null,'root should be null after disconnect');
+    assert_equals(nodePart2.node,null,'node should be null after disconnect');
+    assert_equals(childNodePart.getParts().length,0,'calling disconnect() should remove the part from root.getParts()');
+    assert_equals(root.getParts().length,3,'getParts() for the root DocumentPartRoot still shouldn\'t change');
+    nodePart2.disconnect(); // Calling twice should be ok.
 
-  childNodePart.disconnect();
-  assert_equals(childNodePart.root,null,'root should be null after disconnect');
-  assert_equals(childNodePart.previousSibling,null,'previousSibling should be null after disconnect');
-  assert_equals(childNodePart.nextSibling,null,'nextSibling should be null after disconnect');
-  assert_array_equals(root.getParts(),[nodePartBefore,nodePart]);
-}, 'Basic imperative DOM Parts object construction');
+    childNodePart.disconnect();
+    assert_equals(childNodePart.root,null,'root should be null after disconnect');
+    assert_equals(childNodePart.previousSibling,null,'previousSibling should be null after disconnect');
+    assert_equals(childNodePart.nextSibling,null,'nextSibling should be null after disconnect');
+    assert_array_equals(root.getParts(),[nodePartBefore,nodePart]);
+  }, `Basic imperative DOM Parts object construction (${useTemplate ? "DocumentFragment" : "Document"})`);
+});
 
 test((t) => {
   const root = document.getPartRoot();
   assert_equals(root.getParts().length,0,'Test harness check: tests should clean up parts');
+  const target = document.querySelector('#target');
+  const a = document.querySelector('#a');
+  const b = document.querySelector('#b');
+  const c = document.querySelector('#c');
+  assert_true(!!(target && a && b && c));
 
   const nodePartB = addCleanup(t,new NodePart(root,b));
   const nodePartA = addCleanup(t,new NodePart(root,a));

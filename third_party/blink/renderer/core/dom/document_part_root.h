@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_PART_ROOT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/part_root.h"
 
@@ -18,11 +19,15 @@ class CORE_EXPORT DocumentPartRoot : public PartRoot {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit DocumentPartRoot(Document& document) : document_(document) {}
+  explicit DocumentPartRoot(ContainerNode& root_container)
+      : root_container_(root_container) {}
   DocumentPartRoot(const DocumentPartRoot&) = delete;
   ~DocumentPartRoot() override = default;
 
-  Document* GetDocument() const override { return document_; }
+  ContainerNode& GetRootContainer() const { return *root_container_; }
+  Document* GetDocument() const override {
+    return &root_container_->GetDocument();
+  }
   bool SupportsContainedParts() const override { return true; }
   void Trace(Visitor*) const override;
 
@@ -30,7 +35,7 @@ class CORE_EXPORT DocumentPartRoot : public PartRoot {
   bool IsDocumentPartRoot() const override { return true; }
 
  private:
-  Member<Document> document_;
+  Member<ContainerNode> root_container_;
 };
 
 }  // namespace blink

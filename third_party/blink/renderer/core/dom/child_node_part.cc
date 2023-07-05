@@ -59,12 +59,15 @@ void ChildNodePart::Trace(Visitor* visitor) const {
 }
 
 // A ChildNodePart is valid if:
-//  1. previous_sibling_ is connected to the document.
+//  1. previous_sibling_ and next_sibling_ are non-null.
 //  2. previous_sibling_ and next_sibling_ have the same (non-null) parent.
 //  3. previous_sibling_ does not come after next_sibling_ in the tree.
 bool ChildNodePart::IsValid() {
+  if (!previous_sibling_ || !next_sibling_) {
+    return false;
+  }
   ContainerNode* parent = previous_sibling_->parentNode();
-  if (!parent || !parent->isConnected()) {
+  if (!parent) {
     return false;
   }
   if (next_sibling_->parentNode() != parent) {

@@ -13,7 +13,7 @@
 namespace blink {
 
 void DocumentPartRoot::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
+  visitor->Trace(root_container_);
   PartRoot::Trace(visitor);
 }
 
