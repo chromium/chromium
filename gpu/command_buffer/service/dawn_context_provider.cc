@@ -146,8 +146,6 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
   std::vector<wgpu::FeatureName> features = {
       wgpu::FeatureName::DawnInternalUsages,
       wgpu::FeatureName::DawnMultiPlanarFormats,
-      wgpu::FeatureName::DepthClipControl,
-      wgpu::FeatureName::Depth32FloatStencil8,
       wgpu::FeatureName::ImplicitDeviceSynchronization,
       wgpu::FeatureName::SurfaceCapabilities,
   };
