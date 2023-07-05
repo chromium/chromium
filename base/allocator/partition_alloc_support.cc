@@ -75,6 +75,14 @@ namespace base::allocator {
 
 namespace {
 
+// When under this experiment avoid running periodic purging or reclaim for the
+// first minute after the first attempt. This is based on the insight that
+// processes often don't live paste this minute.
+static BASE_FEATURE(kDelayFirstPeriodicPAPurgeOrReclaim,
+                    "DelayFirstPeriodicPAPurgeOrReclaim",
+                    base::FEATURE_ENABLED_BY_DEFAULT);
+constexpr base::TimeDelta kFirstPAPurgeOrReclaimDelay = base::Minutes(1);
+
 // This is defined in content/public/common/content_switches.h, which is not
 // accessible in ::base. They must be kept in sync.
 namespace switches {
@@ -239,6 +247,11 @@ void StartThreadCachePeriodicPurge() {
   auto& instance = ::partition_alloc::ThreadCacheRegistry::Instance();
   TimeDelta delay =
       Microseconds(instance.GetPeriodicPurgeNextIntervalInMicroseconds());
+
+  if (base::FeatureList::IsEnabled(kDelayFirstPeriodicPAPurgeOrReclaim)) {
+    delay = std::max(delay, kFirstPAPurgeOrReclaimDelay);
+  }
+
   SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, BindOnce(RunThreadCachePeriodicPurge), delay);
 }
@@ -269,6 +282,11 @@ void StartMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
   auto* instance = ::partition_alloc::MemoryReclaimer::Instance();
   TimeDelta delay =
       Microseconds(instance->GetRecommendedReclaimIntervalInMicroseconds());
+
+  if (base::FeatureList::IsEnabled(kDelayFirstPeriodicPAPurgeOrReclaim)) {
+    delay = std::max(delay, kFirstPAPurgeOrReclaimDelay);
+  }
+
   task_runner->PostDelayedTask(
       FROM_HERE, BindOnce(RunMemoryReclaimer, task_runner), delay);
 }
