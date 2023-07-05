@@ -554,20 +554,6 @@ void SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
       pref_service_->SetBoolean(
           GetPrefNameForType(UserSelectableType::kPreferences), false);
 
-      // Addresses remains enabled only if the user didn't opt out for
-      // passwords. Note that the pref being its default value (not explicitly
-      // set) is treated as "not opted out"; see similar logic in
-      // GetSelectedTypes().
-      // TODO(crbug.com/1455963): Find a better solution than manually
-      // overriding the pref's default value.
-      const char* kPasswordsPref =
-          GetPrefNameForType(UserSelectableType::kPasswords);
-      if (!pref_service_->GetBoolean(kPasswordsPref) &&
-          !pref_service_->FindPreference(kPasswordsPref)->IsDefaultValue()) {
-        pref_service_->SetBoolean(
-            GetPrefNameForType(UserSelectableType::kAutofill), false);
-      }
-
 #if BUILDFLAG(IS_IOS)
       // Bookmarks and reading list remain enabled only if the user previously
       // explicitly opted in.

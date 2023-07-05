@@ -850,43 +850,6 @@ TEST_F(SyncPrefsMigrationTest,
 }
 #endif  // BUILDFLAG(IS_IOS)
 
-TEST_F(SyncPrefsMigrationTest, SyncToSignin_LeavesAutofillAloneIfPasswordsOn) {
-  base::test::ScopedFeatureList feature_list(
-      kReplaceSyncPromosWithSignInPromos);
-
-  // Passwords and Autofill are enabled (by default - the actual prefs are not
-  // set explicitly).
-  ASSERT_TRUE(BooleanUserPrefMatches(kPasswordsPref, PREF_UNSET));
-  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
-
-  // Run the migration for a pre-existing signed-in non-syncing user.
-  SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForSyncToSigninPart1(
-          SyncPrefs::SyncAccountState::kSignedInNotSyncing);
-
-  // Autofill should still be unset.
-  EXPECT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
-}
-
-TEST_F(SyncPrefsMigrationTest, SyncToSignin_TurnsAutofillOffIfPasswordsOff) {
-  base::test::ScopedFeatureList feature_list(
-      kReplaceSyncPromosWithSignInPromos);
-
-  // Autofill is enabled (by default; not set explicitly), but Passwords is
-  // explicitly disabled.
-  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
-  SetBooleanUserPrefValue(kPasswordsPref, PREF_FALSE);
-
-  // Run the migration for a pre-existing signed-in non-syncing user.
-  SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForSyncToSigninPart1(
-          SyncPrefs::SyncAccountState::kSignedInNotSyncing);
-
-  // Autofill should have been set to false, since the user specifically opted
-  // out of Passwords.
-  EXPECT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_FALSE));
-}
-
 TEST_F(SyncPrefsMigrationTest,
        SyncToSignin_TurnsAutofillOffForCustomPassphraseUser) {
   base::test::ScopedFeatureList feature_list(
