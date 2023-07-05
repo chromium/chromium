@@ -6781,7 +6781,8 @@
     "HelpAppLauncherSearch": [
         {
             "platforms": [
-                "chromeos"
+                "chromeos",
+                "chromeos_lacros"
             ],
             "experiments": [
                 {
