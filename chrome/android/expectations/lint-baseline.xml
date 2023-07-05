@@ -1647,17 +1647,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: BlockDrawForInitialTabAccuracy.BLOCKED_CORRECTLY, BlockDrawForInitialTabAccuracy.BLOCKED_BUT_SHOULD_NOT_HAVE, BlockDrawForInitialTabAccuracy.DID_NOT_BLOCK_BUT_SHOULD_HAVE, BlockDrawForInitialTabAccuracy.CORRECTLY_DID_NOT_BLOCK"
-        errorLine1="                BlockDrawForInitialTabAccuracy.COUNT);"
-        errorLine2="                                               ~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/AppLaunchDrawBlocker.java"
-            line="342"
-            column="48"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: Status.PENDING, Status.RUNNING, Status.FINISHED"
         errorLine1="                    GET_STATUS_UMA_HISTOGRAM, status, Status.NUM_ENTRIES);"
         errorLine2="                                                             ~~~~~~~~~~~">

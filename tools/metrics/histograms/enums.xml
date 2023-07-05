@@ -3433,13 +3433,6 @@ Unknown properties are collapsed to zero. -->
   <int value="25" label="APP_LIST_SEARCH_WEBSTORE"/>
 </enum>
 
-<enum name="AppLaunchBlockDrawForInitialTabAccuracy">
-  <int value="0" label="Blocked draw correctly"/>
-  <int value="1" label="Blocked draw when should not have"/>
-  <int value="2" label="Did not block draw when should have"/>
-  <int value="3" label="Correctly did not block draw"/>
-</enum>
-
 <enum name="AppLaunchContainer">
   <int value="0" label="LAUNCH_CONTAINER_WINDOW"/>
   <int value="1" label="LAUNCH_CONTAINER_PANEL"/>

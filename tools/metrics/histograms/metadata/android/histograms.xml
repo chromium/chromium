@@ -262,19 +262,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.AppLaunch.BlockDrawForInitialTabAccuracy"
-    enum="AppLaunchBlockDrawForInitialTabAccuracy" expires_after="2022-10-16">
-  <owner>sinansahin@google.com</owner>
-  <owner>twellington@chromium.org</owner>
-  <owner>skym@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records the accuracy of the logic used to decide whether to block the view
-    draw of the first tab, expressed as an enum. Recorded when the active tab is
-    restored or an initial tab is created in ChromeTabbedActivity.
-  </summary>
-</histogram>
-
 <histogram name="Android.AppLaunch.DurationDrawWasBlocked" units="ms"
     expires_after="2022-08-21">
   <obsolete>
@@ -308,34 +295,6 @@ chromium-metrics-reviews@google.com.
     you leave Chrome&quot; under &quot;Privacy and Security&quot; So, if the
     feature is turned off, we wouldn't block draw for this use-case and won't
     record this metric.
-  </summary>
-</histogram>
-
-<histogram name="Android.AppLaunch.DurationDrawWasBlocked.OnInitialTab"
-    units="ms" expires_after="2022-08-21">
-  <owner>sinansahin@google.com</owner>
-  <owner>twellington@chromium.org</owner>
-  <owner>skym@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records how long the initial tab's draw was blocked, if it was. Recorded no
-    more than once per cold start. Recorded when the active tab is restored or
-    an initial tab is created in ChromeTabbedActivity. Recorded always except
-    when the overview page is shown during startup.
-  </summary>
-</histogram>
-
-<histogram name="Android.AppLaunch.DurationDrawWasBlocked.OnOverviewPage"
-    units="ms" expires_after="2022-08-21">
-  <owner>sinansahin@google.com</owner>
-  <owner>twellington@chromium.org</owner>
-  <owner>skym@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records how long the overview page's draw was blocked, if it was. Recorded
-    no more than once per cold start. Recorded when the overview page state is
-    initialized in ChromeTabbedActivity and only when overview page was shown
-    during startup.
   </summary>
 </histogram>
 
