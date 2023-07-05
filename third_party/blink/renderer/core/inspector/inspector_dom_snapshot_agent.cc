@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -736,12 +737,20 @@ InspectorDOMSnapshotAgent::BuildStylesForNode(Node* node) {
       !node->GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
           *node));
   auto result = std::make_unique<protocol::Array<int>>();
-  auto* layout_object = node->GetLayoutObject();
-  if (!layout_object)
+  LayoutObject* layout_object = node->GetLayoutObject();
+  if (!layout_object) {
+    // This doesn't make sense for display:contents elements. They are also
+    // rendered, but with no LayoutObject.
     return result;
-  const ComputedStyle* style = node->EnsureComputedStyle(kPseudoIdNone);
-  if (!style)
+  }
+  Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    element = FlatTreeTraversal::ParentElement(*node);
+  }
+  const ComputedStyle* style = element ? element->GetComputedStyle() : nullptr;
+  if (!style) {
     return result;
+  }
   auto cached_style = style_cache_.find(style);
   if (cached_style != style_cache_.end())
     return std::make_unique<protocol::Array<int>>(*cached_style->value);
