@@ -19,6 +19,11 @@ namespace ash::converters {
 
 namespace unchecked {
 
+absl::optional<uint32_t> UncheckedConvertEventNullablePrimitivePtr(
+    cros_healthd::mojom::NullableUint32Ptr input) {
+  return input->value;
+}
+
 crosapi::mojom::TelemetryKeyboardInfoPtr UncheckedConvertPtr(
     diagnostics::mojom::KeyboardInfoPtr input) {
   auto result = crosapi::mojom::TelemetryKeyboardInfo::New();
@@ -132,6 +137,25 @@ crosapi::mojom::TelemetryTouchpadConnectedEventInfoPtr UncheckedConvertPtr(
       std::move(converted_touch_buttons));
 }
 
+crosapi::mojom::TelemetryStylusTouchEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::StylusTouchEventPtr input) {
+  return crosapi::mojom::TelemetryStylusTouchEventInfo::New(
+      ConvertStructPtr(std::move(input->touch_point)));
+}
+
+crosapi::mojom::TelemetryStylusConnectedEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::StylusConnectedEventPtr input) {
+  return crosapi::mojom::TelemetryStylusConnectedEventInfo::New(
+      input->max_x, input->max_y, input->max_pressure);
+}
+
+crosapi::mojom::TelemetryStylusTouchPointInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::StylusTouchPointInfoPtr input) {
+  return crosapi::mojom::TelemetryStylusTouchPointInfo::New(
+      input->x, input->y,
+      ConvertEventNullablePrimitivePtr(std::move(input->pressure)));
+}
+
 crosapi::mojom::UInt32ValuePtr UncheckedConvertPtr(
     cros_healthd::mojom::NullableUint32Ptr input) {
   return crosapi::mojom::UInt32Value::New(input->value);
@@ -189,6 +213,21 @@ crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
         return crosapi::mojom::TelemetryEventInfo::
             NewTouchpadConnectedEventInfo(ConvertStructPtr(std::move(
                 input->get_touchpad_event_info()->get_connected_event())));
+      }
+      LOG(WARNING) << "Got unsupported touchpad event";
+      return nullptr;
+    }
+    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
+        kStylusEventInfo: {
+      if (input->get_stylus_event_info()->is_touch_event()) {
+        return crosapi::mojom::TelemetryEventInfo::NewStylusTouchEventInfo(
+            ConvertStructPtr(
+                std::move(input->get_stylus_event_info()->get_touch_event())));
+      }
+      if (input->get_stylus_event_info()->is_connected_event()) {
+        return crosapi::mojom::TelemetryEventInfo::NewStylusConnectedEventInfo(
+            ConvertStructPtr(std::move(
+                input->get_stylus_event_info()->get_connected_event())));
       }
       LOG(WARNING) << "Got unsupported touchpad event";
       return nullptr;
@@ -566,6 +605,10 @@ cros_healthd::mojom::EventCategoryEnum Convert(
       return cros_healthd::mojom::EventCategoryEnum::kTouchpad;
     case crosapi::mojom::TelemetryEventCategoryEnum::kHdmi:
       return cros_healthd::mojom::EventCategoryEnum::kHdmi;
+    case crosapi::mojom::TelemetryEventCategoryEnum::kStylusTouch:
+      return cros_healthd::mojom::EventCategoryEnum::kStylus;
+    case crosapi::mojom::TelemetryEventCategoryEnum::kStylusConnected:
+      return cros_healthd::mojom::EventCategoryEnum::kStylus;
   }
   NOTREACHED();
 }

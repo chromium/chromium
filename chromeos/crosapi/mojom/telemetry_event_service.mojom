@@ -272,9 +272,50 @@ struct TelemetryTouchpadConnectedEventInfo {
   array<TelemetryInputTouchButton> buttons@3;
 };
 
+// Stylus touch point info.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct TelemetryStylusTouchPointInfo {
+  // The x position in the cartesian XY plane. The value ranges from 0 to
+  // |max_x| as defined in TelemetryStylusConnectedEventInfo.
+  uint32? x@0;
+  // The y position in the cartesian XY plane. The value ranges from 0 to
+  // |max_y| as defined in TelemetryStylusConnectedEventInfo.
+  uint32? y@1;
+  // The pressure applied to the touch contact. The value ranges from 0 to
+  // |max_pressure| as defined in TelemetryStylusConnectedEventInfo.
+  uint32? pressure@2;
+};
+
+// Emitted when new touch point is updated.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct TelemetryStylusTouchEventInfo {
+  // The info of the stylus touch point. A null touch point means the stylus
+  // leaves the contact.
+  TelemetryStylusTouchPointInfo? touch_point@0;
+};
+
+// Emitted once the observer get connected to the stylus events. This will be
+// the first event from the stylus.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct TelemetryStylusConnectedEventInfo {
+  // The maximum possible x position of touch points.
+  uint32? max_x@0;
+  // The maximum possible y position of touch points.
+  uint32? max_y@1;
+  // The maximum possible pressure of touch points, or 0 if pressure is not
+  // supported.
+  uint32? max_pressure@2;
+};
+
 // Union of event info.
 //
-// NextMinVersion: 9, NextIndex: 12
+// NextMinVersion: 10, NextIndex: 14
 [Stable, Extensible]
 union TelemetryEventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -304,11 +345,16 @@ union TelemetryEventInfo {
       touchpad_connected_event_info@10;
   // HDMI event info.
   [MinVersion=8] TelemetryHdmiEventInfo hdmi_event_info@11;
+  // Stylus Touch event info.
+  [MinVersion=9] TelemetryStylusTouchEventInfo stylus_touch_event_info@12;
+  // Stylus connected event info.
+  [MinVersion=9] TelemetryStylusConnectedEventInfo
+      stylus_connected_event_info@13;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 9, NextIndex: 12
+// NextMinVersion: 10, NextIndex: 14
 [Stable, Extensible]
 enum TelemetryEventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -324,6 +370,8 @@ enum TelemetryEventCategoryEnum {
   [MinVersion=7] kTouchpadTouch = 9,
   [MinVersion=7] kTouchpadConnected = 10,
   [MinVersion=8] kHdmi = 11,
+  [MinVersion=9] kStylusTouch = 12,
+  [MinVersion=9] kStylusConnected = 13,
 };
 
 // Implemented by clients who desire events.

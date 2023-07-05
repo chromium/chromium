@@ -65,6 +65,18 @@ void CrosHealthdEventForwarder::OnEvent(
       }
       return;
     }
+    case crosapi::mojom::TelemetryEventCategoryEnum::kStylusTouch: {
+      if (event->is_stylus_touch_event_info()) {
+        crosapi_observer_->OnEvent(std::move(event));
+      }
+      return;
+    }
+    case crosapi::mojom::TelemetryEventCategoryEnum::kStylusConnected: {
+      if (event->is_stylus_connected_event_info()) {
+        crosapi_observer_->OnEvent(std::move(event));
+      }
+      return;
+    }
     case crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack:
     case crosapi::mojom::TelemetryEventCategoryEnum::kLid:
     case crosapi::mojom::TelemetryEventCategoryEnum::kUsb:

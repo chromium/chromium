@@ -23,6 +23,9 @@ namespace ash::converters {
 
 namespace unchecked {
 
+absl::optional<uint32_t> UncheckedConvertEventNullablePrimitivePtr(
+    cros_healthd::mojom::NullableUint32Ptr input);
+
 crosapi::mojom::TelemetryAudioJackEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::AudioJackEventInfoPtr input);
 
@@ -61,6 +64,15 @@ crosapi::mojom::TelemetryTouchpadTouchEventInfoPtr UncheckedConvertPtr(
 
 crosapi::mojom::TelemetryTouchpadConnectedEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TouchpadConnectedEventPtr input);
+
+crosapi::mojom::TelemetryStylusTouchEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::StylusTouchEventPtr input);
+
+crosapi::mojom::TelemetryStylusConnectedEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::StylusConnectedEventPtr input);
+
+crosapi::mojom::TelemetryStylusTouchPointInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::StylusTouchPointInfoPtr input);
 
 crosapi::mojom::UInt32ValuePtr UncheckedConvertPtr(
     cros_healthd::mojom::NullableUint32Ptr input);
@@ -145,6 +157,14 @@ std::vector<OutputT> ConvertVector(std::vector<InputT> input) {
     result.push_back(Convert(elem));
   }
   return result;
+}
+
+template <class InputT>
+auto ConvertEventNullablePrimitivePtr(InputT input) {
+  return (!input.is_null())
+             ? unchecked::UncheckedConvertEventNullablePrimitivePtr(
+                   std::move(input))
+             : absl::nullopt;
 }
 
 template <class InputT>

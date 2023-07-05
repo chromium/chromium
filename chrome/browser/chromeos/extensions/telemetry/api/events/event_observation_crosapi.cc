@@ -181,6 +181,16 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
             std::move(args), browser_context_);
         break;
       }
+      case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
+          kStylusTouchEventInfo: {
+        NOTIMPLEMENTED();
+        break;
+      }
+      case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
+          kStylusConnectedEventInfo: {
+        NOTIMPLEMENTED();
+        break;
+      }
     }
 
     extensions::EventRouter::Get(browser_context_)
