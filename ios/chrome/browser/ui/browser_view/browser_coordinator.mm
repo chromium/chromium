@@ -1446,6 +1446,8 @@ enum class ToolbarKind {
           initWithBaseViewController:self.viewController
                              browser:self.browser
                               params:params];
+  self.paymentsSuggestionBottomSheetCoordinator.applicationCommandsHandler =
+      HandlerForProtocol(self.dispatcher, ApplicationCommands);
   [self.paymentsSuggestionBottomSheetCoordinator start];
 }
 

@@ -8,13 +8,17 @@
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/grit/components_scaled_resources.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_data.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_delegate.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -40,12 +44,19 @@ CGFloat const kCreditCardIconCornerRadius = 5;
   UIImageView* _logoImageView;
 }
 
+// The payments controller handler used to open the payments options.
+@property(nonatomic, weak) id<PaymentsSuggestionBottomSheetHandler> handler;
+
 @end
 
 @implementation PaymentsSuggestionBottomSheetViewController
 
-- (instancetype)init {
+- (instancetype)initWithHandler:
+    (id<PaymentsSuggestionBottomSheetHandler>)handler {
   self = [super init];
+  if (self) {
+    self.handler = handler;
+  }
   return self;
 }
 
@@ -58,9 +69,10 @@ CGFloat const kCreditCardIconCornerRadius = 5;
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   self.actionHandler = self;
 
-  // TODO(crbug.com/1450214): Use proper strings.
-  self.primaryActionString = @"Continue - TEST";
-  self.secondaryActionString = @"No thanks - TEST";
+  self.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_CONTINUE);
+  self.secondaryActionString =
+      l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_NO_THANKS);
 
   [super viewDidLoad];
 
@@ -92,6 +104,32 @@ CGFloat const kCreditCardIconCornerRadius = 5;
   [self dismissViewControllerAnimated:NO completion:NULL];
 }
 
+#pragma mark - UITableViewDelegate
+
+// Long press open context menu.
+- (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
+    contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
+                                        point:(CGPoint)point {
+  __weak __typeof(self) weakSelf = self;
+  UIContextMenuActionProvider actionProvider =
+      ^(NSArray<UIMenuElement*>* suggestedActions) {
+        NSMutableArray<UIMenuElement*>* menuElements =
+            [[NSMutableArray alloc] initWithArray:suggestedActions];
+
+        PaymentsSuggestionBottomSheetViewController* strongSelf = weakSelf;
+        if (strongSelf) {
+          [menuElements addObject:[strongSelf openPaymentMethodsAction]];
+        }
+
+        return [UIMenu menuWithTitle:@"" children:menuElements];
+      };
+
+  return
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                              previewProvider:nil
+                                               actionProvider:actionProvider];
+}
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView*)tableView
@@ -117,6 +155,7 @@ CGFloat const kCreditCardIconCornerRadius = 5;
             tintColor:nil
       backgroundColor:cell.backgroundColor
          cornerRadius:kCreditCardIconCornerRadius];
+  [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
 
   // Make separator invisible on last cell
   CGFloat separatorLeftMargin = [self isLastRow:indexPath]
@@ -157,8 +196,8 @@ CGFloat const kCreditCardIconCornerRadius = 5;
   _logoImageView =
       [[UIImageView alloc] initWithImage:[self googlePayBadgeImage]];
   UILabel* titleLabel = [[UILabel alloc] init];
-  // TODO(crbug.com/1450214): Use proper strings.
-  titleLabel.text = @"Autofill Payment Info - TEST";
+  titleLabel.text =
+      l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE);
   UIStackView* titleView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ _logoImageView, titleLabel ]];
   titleView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
@@ -226,6 +265,23 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 // view.
 - (BOOL)isLastRow:(NSIndexPath*)indexPath {
   return NSUInteger(indexPath.row) == (_creditCardData.count - 1);
+}
+
+// Creates the UI action used to open the payment methods view.
+- (UIAction*)openPaymentMethodsAction {
+  __weak __typeof(self) weakSelf = self;
+  void (^paymentMethodsButtonTapHandler)(UIAction*) = ^(UIAction* action) {
+    // Open Payment Methods.
+    [weakSelf.handler displayPaymentMethods];
+  };
+  UIImage* listIcon =
+      CustomSymbolWithPointSize(kReadingListSymbol, kSymbolActionPointSize);
+  return [UIAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_PAYMENT_BOTTOM_SHEET_MANAGE_PAYMENT_METHODS)
+                image:listIcon
+           identifier:nil
+              handler:paymentMethodsButtonTapHandler];
 }
 
 @end

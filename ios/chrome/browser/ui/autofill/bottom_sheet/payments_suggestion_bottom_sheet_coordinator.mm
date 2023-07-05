@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 
@@ -53,8 +54,8 @@
   self.mediator = [[PaymentsSuggestionBottomSheetMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
        personalDataManager:self.personalDataManager];
-  self.viewController =
-      [[PaymentsSuggestionBottomSheetViewController alloc] init];
+  self.viewController = [[PaymentsSuggestionBottomSheetViewController alloc]
+      initWithHandler:self];
   self.mediator.consumer = self.viewController;
   self.viewController.delegate = self.mediator;
   [self.baseViewController presentViewController:self.viewController
@@ -68,6 +69,19 @@
   self.viewController = nil;
   [self.mediator disconnect];
   self.mediator = nil;
+}
+
+#pragma mark - PaymentsSuggestionBottomSheetHandler
+
+- (void)displayPaymentMethods {
+  __weak __typeof(self) weakSelf = self;
+  [self.baseViewController.presentedViewController
+      dismissViewControllerAnimated:NO
+                         completion:^{
+                           [weakSelf stop];
+                           [weakSelf.applicationCommandsHandler
+                                   showCreditCardSettings];
+                         }];
 }
 
 @end

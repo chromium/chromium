@@ -2008,6 +2008,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_MANAGE_PAYMENT_METHODS" desc="The payment bottom sheet's long press menu item to open all payment methods view.">
         Manage Payment Methods
       </message>
+      <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_NO_THANKS" desc="The action button to dismiss the payment bottom sheet and return to the webpage without autofilling a credit card." meaning="A button to cancel the filling of a credit card info and dismiss the payment bottom sheet.">
+        No Thanks
+      </message>
       <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_SHOW_DETAILS" desc="The payment bottom sheet's long press menu item to open the credit card details view.">
         Show Details
       </message>

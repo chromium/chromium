@@ -23,6 +23,7 @@ source_set("bottom_sheet") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ui/base",
@@ -35,6 +36,7 @@ source_set("bottom_sheet_ui") {
     "payments_suggestion_bottom_sheet_consumer.h",
     "payments_suggestion_bottom_sheet_data.h",
     "payments_suggestion_bottom_sheet_delegate.h",
+    "payments_suggestion_bottom_sheet_handler.h",
     "payments_suggestion_bottom_sheet_view_controller.h",
     "payments_suggestion_bottom_sheet_view_controller.mm",
   ]
@@ -42,12 +44,15 @@ source_set("bottom_sheet_ui") {
     "//build:branding_buildflags",
     "//components/autofill/core/browser",
     "//components/resources:components_scaled_resources_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/bottom_sheet",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ui/base:base",
   ]
 }
 
