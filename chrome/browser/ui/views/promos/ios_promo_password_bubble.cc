@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/promos/ios_promo_password_bubble.h"
+
 #include <memory>
+
 #include "base/functional/bind.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +27,9 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -127,12 +132,12 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
           browser_->profile()->GetPrefs()->GetInteger(
               promos_prefs::kiOSPasswordPromoImpressionsCounter),
           promos_utils::DesktopIOSPasswordPromoAction::kGetStartedClicked);
-
-      browser_->OpenURL(content::OpenURLParams(
-          GURL(constants::kGetStartedButtonURL), content::Referrer(),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
     }
+
+    browser_->OpenURL(content::OpenURLParams(
+        GURL(constants::kGetStartedButtonURL), content::Referrer(),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
 
     ios_promo_password_delegate_->GetWidget()->Close();
   }
@@ -224,13 +229,12 @@ std::unique_ptr<views::View> CreateFooter(
                        base::Unretained(bubble_delegate));
     bubble_delegate->GetQRCodeGenerator().GenerateQRCode(std::move(request),
                                                          std::move(callback));
-    views::Label* footer_qr_description_view_ptr = nullptr;
+
     auto footer_content_container =
-        views::Builder<views::BoxLayoutView>()
-            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-            .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
-            .SetCrossAxisAlignment(
-                views::BoxLayout::CrossAxisAlignment::kCenter)
+        views::Builder<views::FlexLayoutView>()
+            .SetOrientation(views::LayoutOrientation::kHorizontal)
+            .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+            .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
             .AddChild(
                 views::Builder<views::Label>()
                     .SetText(l10n_util::GetStringUTF16(
@@ -239,9 +243,14 @@ std::unique_ptr<views::View> CreateFooter(
                         ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
                     .SetTextStyle(views::style::STYLE_SECONDARY)
                     .SetMultiLine(true)
+                    .SetProperty(
+                        views::kFlexBehaviorKey,
+                        views::FlexSpecification(
+                            views::MinimumFlexSizeRule::kScaleToMinimum,
+                            views::MaximumFlexSizeRule::kPreferred,
+                            /*adjust_height_for_width=*/true))
                     .SetHorizontalAlignment(
-                        gfx::HorizontalAlignment::ALIGN_TO_HEAD)
-                    .CopyAddressTo(&footer_qr_description_view_ptr))
+                        gfx::HorizontalAlignment::ALIGN_TO_HEAD))
             .AddChild(
                 views::Builder<views::ImageView>()
                     .SetHorizontalAlignment(
@@ -262,12 +271,7 @@ std::unique_ptr<views::View> CreateFooter(
                         views::LayoutProvider::Get()->GetCornerRadiusMetric(
                             views::Emphasis::kHigh),
                         2)))
-            .AfterBuild(base::BindOnce(
-                [](views::Label* footer_description_view_ptr,
-                   views::BoxLayoutView* view) {
-                  view->SetFlexForView(footer_description_view_ptr, 1);
-                },
-                footer_qr_description_view_ptr));
+            .SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse);
 
     return std::move(footer_view.AddChild(footer_title_container)
                          .AddChild(footer_content_container))
