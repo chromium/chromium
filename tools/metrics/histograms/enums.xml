@@ -100944,13 +100944,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Denied by First-Party Set"/>
   <int value="4" label="Denied by user"/>
   <int value="5"
-      label="Denied by missing prerequisite (user gesture, valid requesting
-             and top-level origins, feature enabled)"/>
+      label="Denied by missing prerequisite (user gesture, feature enabled)"/>
   <int value="6" label="Dismissed by user"/>
   <int value="7" label="Reused previous decision (made by user)"/>
   <int value="8" label="Denied by top-level user interaction heuristic"/>
   <int value="9" label="Access was allowed through cookie settings"/>
   <int value="10" label="Reused implicit grant (e.g. from First-Party-Sets)"/>
+  <int value="11" label="Access was denied through cookie settings"/>
 </enum>
 
 <enum name="StorageAccessInputState">

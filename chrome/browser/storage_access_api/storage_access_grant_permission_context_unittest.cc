@@ -464,6 +464,27 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
               IsEmpty());
 }
 
+// When 3p cookie access is blocked by user explicitly, request should be denied
+// without prompting.
+TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
+       DeniedByCookieSettings) {
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  settings_map->SetContentSettingDefaultScope(
+      GetRequesterURL(), GetTopLevelURL(), ContentSettingsType::COOKIES,
+      CONTENT_SETTING_BLOCK);
+
+  // User gesture is not needed.
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            DecidePermissionSync(/*user_gesture=*/false));
+  histogram_tester().ExpectUniqueSample(
+      kRequestOutcomeHistogram, RequestOutcome::kDeniedByCookieSettings, 1);
+
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              IsEmpty());
+}
+
 class StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest
     : public StorageAccessGrantPermissionContextAPIEnabledTest {
  public:

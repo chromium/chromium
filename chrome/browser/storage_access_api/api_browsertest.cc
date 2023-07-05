@@ -816,10 +816,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
-  // TODO(https://crbug.com/1441133): requestStorageAccess() should be rejected
-  // when 3p cookie is blocked by user explicitly.
-  EXPECT_TRUE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
-  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
 
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
 }
@@ -841,11 +838,8 @@ IN_PROC_BROWSER_TEST_F(
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
-  // TODO(https://crbug.com/1441133): requestStorageAccess() should be rejected
-  // when 3p cookie is blocked by user explicitly.
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       content::ExecJs(GetNestedFrame(), "document.requestStorageAccess()"));
-  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 
   EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostB), NoCookies());
 }
@@ -869,11 +863,8 @@ IN_PROC_BROWSER_TEST_F(
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
-  // TODO(https://crbug.com/1441133): requestStorageAccess() should be rejected
-  // when 3p cookie is blocked by user explicitly.
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       content::ExecJs(GetNestedFrame(), "document.requestStorageAccess()"));
-  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 
   EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostC), NoCookies());
 }

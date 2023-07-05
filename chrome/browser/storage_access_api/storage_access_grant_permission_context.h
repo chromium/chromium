@@ -51,8 +51,10 @@ enum class RequestOutcome {
   // The permission was previously granted without user action. E.g. through
   // FPS.
   kReusedImplicitGrant = 10,
+  // 3p cookies are blocked by user explicitly, so there is no need to ask.
+  kDeniedByCookieSettings = 11,
 
-  kMaxValue = kReusedImplicitGrant,
+  kMaxValue = kDeniedByCookieSettings,
 };
 
 class StorageAccessGrantPermissionContext

@@ -55,6 +55,7 @@ constexpr base::TimeDelta kExplicitGrantDuration = base::Days(30);
 bool IsImplicitOutcome(RequestOutcome outcome) {
   switch (outcome) {
     case RequestOutcome::kAllowedByCookieSettings:
+    case RequestOutcome::kDeniedByCookieSettings:
     case RequestOutcome::kDeniedByFirstPartySet:
     case RequestOutcome::kDeniedByPrerequisites:
     case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
@@ -79,6 +80,7 @@ bool ShouldDisplayOutcomeInOmnibox(RequestOutcome outcome) {
     case RequestOutcome::kReusedPreviousDecision:
       return true;
     case RequestOutcome::kAllowedByCookieSettings:
+    case RequestOutcome::kDeniedByCookieSettings:
     case RequestOutcome::kDeniedByFirstPartySet:
     case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
     case RequestOutcome::kGrantedByAllowance:
@@ -134,6 +136,7 @@ content_settings::ContentSettingConstraints ComputeConstraints(
     case RequestOutcome::kReusedImplicitGrant:
     case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
     case RequestOutcome::kAllowedByCookieSettings:
+    case RequestOutcome::kDeniedByCookieSettings:
       NOTREACHED_NORETURN();
     case RequestOutcome::kGrantedByUser:
     case RequestOutcome::kDeniedByUser:
@@ -194,6 +197,19 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(requesting_origin.is_valid());
   CHECK(embedding_origin.is_valid());
+
+  // Return early without letting SAA override any explicit user settings to
+  // block 3p cookies.
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser_context());
+  CHECK(settings_map);
+  ContentSetting setting = settings_map->GetContentSetting(
+      requesting_origin, embedding_origin, ContentSettingsType::COOKIES);
+  if (setting == CONTENT_SETTING_BLOCK) {
+    RecordOutcomeSample(RequestOutcome::kDeniedByCookieSettings);
+    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    return;
+  }
 
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(id.global_render_frame_host_id());

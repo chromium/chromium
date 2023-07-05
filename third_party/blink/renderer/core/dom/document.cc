@@ -6451,6 +6451,8 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     return promise;
   }
 
+  // TODO(https://crbug.com/1441133): we should not return early here since 3p
+  // cookies could be blocked by user explicitly.
   if (GetExecutionContext()->GetSecurityOrigin()->IsSameSiteWith(
           &*TopFrameOrigin())) {
     FireRequestStorageAccessHistogram(
@@ -6486,6 +6488,8 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     return promise;
   }
 
+  // TODO(https://crbug.com/1441133): we should not return early based on the
+  // per-frame bit since 3p cookies could be blocked by user explicitly.
   if (dom_window_->HasStorageAccess()) {
     FireRequestStorageAccessHistogram(
         RequestStorageResult::APPROVED_EXISTING_ACCESS);
