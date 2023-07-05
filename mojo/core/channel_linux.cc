@@ -375,7 +375,7 @@ class ChannelLinux::SharedBuffer {
 
   void reset() {
     if (is_valid()) {
-      if (munmap(base_ptr_, len_) < 0) {
+      if (munmap(base_ptr_.ExtractAsDangling(), len_) < 0) {
         PLOG(ERROR) << "Unable to unmap shared buffer";
         return;
       }
