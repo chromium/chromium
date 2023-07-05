@@ -138,7 +138,7 @@ void ScalableIphBrowserTestBase::TearDownOnMainThread() {
 
 void ScalableIphBrowserTestBase::InitializeScopedFeatureList() {
   base::FieldTrialParams params;
-  AppendFakeUiParams(params);
+  AppendFakeUiParamsNotification(params);
   base::test::FeatureRefAndParams test_config(kScalableIphTest, params);
 
   base::test::FeatureRefAndParams scalable_iph_feature(
@@ -147,7 +147,7 @@ void ScalableIphBrowserTestBase::InitializeScopedFeatureList() {
       {scalable_iph_feature, test_config}, {});
 }
 
-void ScalableIphBrowserTestBase::AppendFakeUiParams(
+void ScalableIphBrowserTestBase::AppendFakeUiParamsNotification(
     base::FieldTrialParams& params) {
   params[scalable_iph::kCustomUiTypeParamName] =
       scalable_iph::kCustomUiTypeValueNotification;
@@ -158,6 +158,16 @@ void ScalableIphBrowserTestBase::AppendFakeUiParams(
       kTestNotificationBodyText;
   params[scalable_iph::kCustomNotificationButtonTextParamName] =
       kTestNotificationButtonText;
+}
+
+void ScalableIphBrowserTestBase::AppendFakeUiParamsBubble(
+    base::FieldTrialParams& params) {
+  params[scalable_iph::kCustomUiTypeParamName] =
+      scalable_iph::kCustomUiTypeValueBubble;
+  params[scalable_iph::kCustomBubbleIdParamName] = kTestBubbleId;
+  params[scalable_iph::kCustomBubbleTextParamName] = kTestBubbleText;
+  params[scalable_iph::kCustomBubbleButtonTextParamName] =
+      kTestBubbleButtonText;
 }
 
 bool ScalableIphBrowserTestBase::IsMockDelegateCreatedFor(Profile* profile) {

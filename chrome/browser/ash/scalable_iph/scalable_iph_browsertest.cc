@@ -34,7 +34,7 @@ class ScalableIphBrowserTestNetworkConnection : public ScalableIphBrowserTest {
  protected:
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params;
-    AppendFakeUiParams(params);
+    AppendFakeUiParamsNotification(params);
     params[scalable_iph::kCustomConditionNetworkConnectionParamName] =
         scalable_iph::kCustomConditionNetworkConnectionOnline;
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
@@ -61,7 +61,7 @@ class ScalableIphBrowserTestClientAgeBase : public ScalableIphBrowserTest {
  protected:
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params;
-    AppendFakeUiParams(params);
+    AppendFakeUiParamsNotification(params);
     params[scalable_iph::kCustomConditionClientAgeInDaysParamName] =
         GetClientAgeTestValue();
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
@@ -158,6 +158,21 @@ class ScalableIphBrowserTestNotification : public ScalableIphBrowserTest {
   base::ScopedObservation<message_center::MessageCenter,
                           message_center::MessageCenterObserver>
       scoped_observation_{&mock_};
+};
+
+class ScalableIphBrowserTestBubble : public ScalableIphBrowserTest {
+ protected:
+  void InitializeScopedFeatureList() override {
+    base::FieldTrialParams params;
+    AppendFakeUiParamsBubble(params);
+    base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
+
+    base::test::FeatureRefAndParams scalable_iph_feature(
+        ash::features::kScalableIph, {});
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {scalable_iph_feature, test_config}, {});
+  }
 };
 
 }  // namespace
@@ -374,6 +389,16 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification,
   EXPECT_TRUE(notification);
   EXPECT_TRUE(notification->delegate());
   notification->delegate()->Click(/*button_index=*/0, /*reply=*/absl::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, ShowBubble) {
+  EnableTestIphFeature();
+
+  // Tracker::Dismissed must be called when an IPH gets dismissed.
+  EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));
+
+  TriggerConditionsCheckWithAFakeEvent();
+  // TODO(b/290066999): Verify the nudge is shown.
 }
 
 INSTANTIATE_TEST_SUITE_P(

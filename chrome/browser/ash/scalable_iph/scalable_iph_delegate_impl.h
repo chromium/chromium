@@ -52,6 +52,8 @@ class ScalableIphDelegateImpl
   void OnNetworkStateList(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
+  void OnNudgeButtonClicked(scalable_iph::ActionType action_type);
+  void OnNudgeDismissed();
 
   raw_ptr<Profile> profile_;
   bool has_online_network_ = false;

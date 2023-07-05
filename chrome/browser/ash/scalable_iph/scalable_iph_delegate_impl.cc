@@ -9,9 +9,12 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/scalable_iph/wallpaper_ash_notification_view.h"
 #include "ash/system/message_center/message_view_factory.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
@@ -143,7 +146,19 @@ ScalableIphDelegateImpl::~ScalableIphDelegateImpl() {
 void ScalableIphDelegateImpl::ShowBubble(
     const scalable_iph::ScalableIphDelegate::BubbleParams& params,
     std::unique_ptr<scalable_iph::IphSession> iph_session) {
-  // TODO(b/284158855): Add implementation.
+  ash::AnchoredNudgeData nudge_data(
+      params.bubble_id, NudgeCatalogName::kScalableIphBubble,
+      base::UTF8ToUTF16(params.text), /*anchor_view=*/nullptr);
+
+  nudge_data.dismiss_text = base::UTF8ToUTF16(params.button.text);
+  nudge_data.dismiss_callback = base::BindRepeating(
+      &ScalableIphDelegateImpl::OnNudgeButtonClicked,
+      weak_ptr_factory_.GetWeakPtr(), params.button.action.action_type);
+  nudge_data.nudge_dimiss_callback =
+      base::BindRepeating(&ScalableIphDelegateImpl::OnNudgeDismissed,
+                          weak_ptr_factory_.GetWeakPtr());
+  ash::AnchoredNudgeManager::Get()->Show(nudge_data);
+  // TODO(b/289565494): Handle life cycle of `iph_session`.
 }
 
 void ScalableIphDelegateImpl::ShowNotification(
@@ -229,6 +244,15 @@ void ScalableIphDelegateImpl::QueryOnlineNetworkState() {
 void ScalableIphDelegateImpl::OnNetworkStateList(
     std::vector<NetworkStatePropertiesPtr> networks) {
   SetHasOnlineNetwork(HasOnlineNetwork(networks));
+}
+
+void ScalableIphDelegateImpl::OnNudgeButtonClicked(
+    scalable_iph::ActionType action_type) {
+  // TODO(b/289565494): Handle life cycle of `iph_session`.
+}
+
+void ScalableIphDelegateImpl::OnNudgeDismissed() {
+  // TODO(b/289565494): Handle life cycle of `iph_session`.
 }
 
 }  // namespace ash

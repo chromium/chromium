@@ -76978,6 +76978,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="Clipboard History Onboarding"/>
   <int value="9" label="Long press diacritics"/>
   <int value="10" label="Clipboard History Duplicate Copy"/>
+  <int value="11" label="Video Conference Tray Speak On Mute Detected"/>
+  <int value="12"
+      label="Video Conference Tray Microphone Use While HW Disabled"/>
+  <int value="13"
+      label="Video Conference Tray Microphone Use While SW Disabled"/>
+  <int value="14" label="Video Conference Tray Camera Use While HW Disabled"/>
+  <int value="15" label="Video Conference Tray Camera Use While SW Disabled"/>
+  <int value="16" label="Video Conference Tray Speak On Mute Opt In"/>
+  <int value="17"
+      label="Video Conference Tray Speak On Mute Opt In Confirmation"/>
+  <int value="18" label="Scalable IPH Bubble"/>
 </enum>
 
 <enum name="NukeProfileResult">

@@ -32,6 +32,10 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   static constexpr char kTestNotificationButtonText[] =
       "Test Notification Button Text";
 
+  static constexpr char kTestBubbleId[] = "test_bubble_id";
+  static constexpr char kTestBubbleText[] = "Test Bubble Text";
+  static constexpr char kTestBubbleButtonText[] = "Test Bubble Button Text";
+
   ScalableIphBrowserTestBase();
   ~ScalableIphBrowserTestBase() override;
 
@@ -43,7 +47,8 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
  protected:
   // Allow sub-classes to initialize scoped feature list with different values.
   virtual void InitializeScopedFeatureList();
-  void AppendFakeUiParams(base::FieldTrialParams& params);
+  void AppendFakeUiParamsNotification(base::FieldTrialParams& params);
+  void AppendFakeUiParamsBubble(base::FieldTrialParams& params);
 
   feature_engagement::test::MockTracker* mock_tracker() {
     return mock_tracker_;

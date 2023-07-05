@@ -54,6 +54,12 @@ class ScalableIphDelegate {
   };
 
   struct BubbleParams {
+    BubbleParams();
+    BubbleParams(const BubbleParams&);
+    BubbleParams& operator=(const BubbleParams&);
+    ~BubbleParams();
+
+    std::string bubble_id;
     std::string text;
     BubbleIcon icon = BubbleIcon::kNoIcon;
     Button button;

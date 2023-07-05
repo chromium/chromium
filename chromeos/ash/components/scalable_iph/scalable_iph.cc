@@ -26,6 +26,7 @@ namespace {
 
 using NotificationParams =
     ::scalable_iph::ScalableIphDelegate::NotificationParams;
+using BubbleParams = ::scalable_iph::ScalableIphDelegate::BubbleParams;
 
 constexpr char kFunctionCallAfterKeyedServiceShutdown[] =
     "Function call after keyed service shutdown.";
@@ -65,8 +66,12 @@ constexpr base::TimeDelta kTimeTickEventInterval = base::Minutes(5);
 UiType ParseUiType(const base::Feature& feature) {
   std::string ui_type =
       base::GetFieldTrialParamValueByFeature(feature, kCustomUiTypeParamName);
-  CHECK(ui_type == kCustomUiTypeValueNotification);
-  return UiType::kNotification;
+  CHECK(ui_type == kCustomUiTypeValueNotification ||
+        ui_type == kCustomUiTypeValueBubble);
+  if (ui_type == kCustomUiTypeValueNotification) {
+    return UiType::kNotification;
+  }
+  return UiType::kBubble;
 }
 
 NotificationParams ParseNotificationParams(const base::Feature& feature) {
@@ -97,6 +102,26 @@ NotificationParams ParseNotificationParams(const base::Feature& feature) {
   if (image_type == kCustomNotificationImageTypeValueWallpaper) {
     param.image_type = ScalableIphDelegate::NotificationImageType::kWallpaper;
   }
+  return param;
+}
+
+BubbleParams ParseBubbleParams(const base::Feature& feature) {
+  // TODO(b/288167957): Implement a fallback for an invalid config, e.g. Do not
+  // show an IPH for the case instead of CHECK failure. Config is served from
+  // the server. This is not a constraint coming from client side.
+  BubbleParams param;
+  param.bubble_id =
+      base::GetFieldTrialParamValueByFeature(feature, kCustomBubbleIdParamName);
+  CHECK(!param.bubble_id.empty())
+      << kCustomBubbleIdParamName << " is a required field";
+  param.text = base::GetFieldTrialParamValueByFeature(
+      feature, kCustomBubbleTextParamName);
+  CHECK(!param.text.empty())
+      << kCustomBubbleTextParamName << " is a required field";
+  param.button.text = base::GetFieldTrialParamValueByFeature(
+      feature, kCustomBubbleButtonTextParamName);
+  CHECK(!param.button.text.empty())
+      << kCustomBubbleButtonTextParamName << " is a required field";
   return param;
 }
 
@@ -237,11 +262,20 @@ void ScalableIph::CheckTriggerConditions() {
         tracker_->ShouldTriggerHelpUI(*feature)) {
       // TODO(b/284053005): Support other ui types.
       UiType ui_type = ParseUiType(*feature);
-      CHECK(ui_type == UiType::kNotification)
-          << "Only Notification is implemented now";
-      delegate_->ShowNotification(
-          ParseNotificationParams(*feature),
-          std::make_unique<IphSession>(*feature, tracker_, this));
+      switch (ui_type) {
+        case UiType::kNotification:
+          delegate_->ShowNotification(
+              ParseNotificationParams(*feature),
+              std::make_unique<IphSession>(*feature, tracker_, this));
+          break;
+        case UiType::kBubble:
+          delegate_->ShowBubble(
+              ParseBubbleParams(*feature),
+              std::make_unique<IphSession>(*feature, tracker_, this));
+          break;
+        case UiType::kHelpApp:
+          CHECK(false) << "Help App Scalable IPH is not supported";
+      }
     }
   }
 }

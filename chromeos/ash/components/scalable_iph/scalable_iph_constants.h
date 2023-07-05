@@ -67,6 +67,7 @@ constexpr char kCustomConditionClientAgeInDaysParamName[] =
 // Notification is the only value supported now.
 constexpr char kCustomUiTypeParamName[] = "x_CustomUiType";
 constexpr char kCustomUiTypeValueNotification[] = "Notification";
+constexpr char kCustomUiTypeValueBubble[] = "Bubble";
 
 enum class UiType {
   kNotification,
@@ -75,7 +76,7 @@ enum class UiType {
 };
 
 // Parameters for a notification UI. All fields are required field.
-// - notification_id: the id used to add and remove a notification.
+// - Notification ID: the id used to add and remove a notification.
 // - Title: a title text of a notification.
 // - Body text: a body text of a notification.
 // - Button text: a text of a button in a notification.
@@ -90,6 +91,14 @@ constexpr char kCustomNotificationButtonTextParamName[] =
 constexpr char kCustomNotificationImageTypeParamName[] =
     "x_CustomNotificationImageType";
 constexpr char kCustomNotificationImageTypeValueWallpaper[] = "Wallpaper";
+
+// Parameters for a bubble UI. All fields are required field.
+// - Bubble ID: the id used to add and remove a bubble.
+// - Text: a text of a bubble.
+// - Button text: a text of a button in a bubble.
+constexpr char kCustomBubbleIdParamName[] = "x_CustomBubbleId";
+constexpr char kCustomBubbleTextParamName[] = "x_CustomBubbleText";
+constexpr char kCustomBubbleButtonTextParamName[] = "x_CustomBubbleButtonText";
 
 }  // namespace scalable_iph
 
