@@ -1985,9 +1985,9 @@ void WallpaperControllerImpl::RepaintOnlineWallpaper(
   set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   online_wallpaper_manager_.DownloadAndSaveOnlineWallpaper(
       GlobalChromeOSWallpapersDir(), *params,
-      base::BindOnce(&WallpaperControllerImpl::SetOnlineWallpaperImpl,
+      base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
                      set_wallpaper_weak_factory_.GetWeakPtr(), *params,
-                     /*show_wallpaper=*/true));
+                     /*callback=*/base::DoNothing()));
 }
 
 void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
@@ -2029,6 +2029,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperImpl(
     const OnlineWallpaperParams& params,
     bool show_wallpaper,
     const gfx::ImageSkia& image) {
+  DCHECK(!image.isNull()) << " image should not be empty";
   WallpaperInfo wallpaper_info = WallpaperInfo(params);
   if (!SetUserWallpaperInfo(params.account_id, wallpaper_info)) {
     LOG(ERROR) << "Setting user wallpaper info fails. This should never happen "
