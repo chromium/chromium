@@ -335,11 +335,6 @@ void BackgroundTracingManagerImpl::SetTraceToUploadForTesting(
   SetTraceToUpload(std::move(trace_data));
 }
 
-void BackgroundTracingManagerImpl::SetConfigTextFilterForTesting(
-    ConfigTextFilterForTesting predicate) {
-  config_text_filter_for_testing_ = std::move(predicate);
-}
-
 void BackgroundTracingManagerImpl::SetTraceToUpload(
     std::unique_ptr<std::string> trace_data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -357,9 +352,6 @@ BackgroundTracingManagerImpl::GetBackgroundTracingConfig(
       base::GetFieldTrialParamValue(trial_name, kBackgroundTracingConfig);
   if (config_text.empty())
     return nullptr;
-
-  if (config_text_filter_for_testing_)
-    config_text = config_text_filter_for_testing_.Run(config_text);
 
   auto value = base::JSONReader::Read(config_text);
   if (!value)

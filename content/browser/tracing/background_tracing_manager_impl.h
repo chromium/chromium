@@ -127,8 +127,6 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   CONTENT_EXPORT void AbortScenarioForTesting() override;
   CONTENT_EXPORT void SetTraceToUploadForTesting(
       std::unique_ptr<std::string> trace_data) override;
-  void SetConfigTextFilterForTesting(
-      ConfigTextFilterForTesting predicate) override;
 
  private:
   // Named triggers
@@ -162,9 +160,6 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
 
   // This field contains serialized trace log proto.
   std::string trace_to_upload_;
-
-  // Callback to override the background tracing config for testing.
-  ConfigTextFilterForTesting config_text_filter_for_testing_;
 };
 
 }  // namespace content

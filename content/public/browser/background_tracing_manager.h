@@ -134,10 +134,6 @@ class BackgroundTracingManager {
   using ConfigTextFilterForTesting =
       base::RepeatingCallback<std::string(const std::string&)>;
 
-  // Sets a callback to override the background tracing config for testing.
-  virtual void SetConfigTextFilterForTesting(
-      ConfigTextFilterForTesting predicate) = 0;
-
  protected:
   // Sets the instance returns by GetInstance() globally to |tracing_manager|.
   CONTENT_EXPORT static void SetInstance(
