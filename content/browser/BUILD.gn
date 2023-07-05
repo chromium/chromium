@@ -36,6 +36,39 @@ buildflag_header("buildflags") {
   flags = [ "USE_SOCKET_BROKER=$use_socket_broker" ]
 }
 
+if (is_apple) {
+  # TODO(https://crbug.com/1280317): Merge back into the `browser` target once
+  # all .mm files are ARCed.
+  source_set("browser_arc") {
+    configs += [
+      "//build/config/compiler:enable_arc",
+      "//content:content_implementation",
+    ]
+    deps = [
+      "//base",
+      "//content/common:mojo_bindings",
+      "//content/public/common:common_sources",
+      "//ui/accelerated_widget_mac",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+    ]
+    if (is_mac) {
+      sources = [
+        "web_contents/web_contents_impl_mac.mm",
+        "web_contents/web_contents_view_mac.mm",
+        "web_contents/web_drag_dest_mac.mm",
+      ]
+      deps += [
+        "//components/remote_cocoa/browser",
+        "//components/remote_cocoa/common:mojo",
+      ]
+    }
+    if (is_ios) {
+      sources = [ "web_contents/web_contents_view_ios.mm" ]
+    }
+  }
+}
+
 source_set("browser") {
   # Only the public target should depend on this. All other targets (even
   # internal content ones) should depend on the public one.
@@ -2541,6 +2574,8 @@ source_set("browser") {
       "child_process_task_port_provider_mac.cc",
       "child_process_task_port_provider_mac.h",
     ]
+    deps += [ ":browser_arc" ]
+    allow_circular_includes_from = [ ":browser_arc" ]
   }
 
   if (is_mac) {
@@ -2619,11 +2654,8 @@ source_set("browser") {
       "speech/tts_mac.mm",
       "theme_helper_mac.h",
       "theme_helper_mac.mm",
-      "web_contents/web_contents_impl_mac.mm",
       "web_contents/web_contents_view_mac.h",
-      "web_contents/web_contents_view_mac.mm",
       "web_contents/web_drag_dest_mac.h",
-      "web_contents/web_drag_dest_mac.mm",
     ]
     deps += [
       ":mac_helpers",
@@ -2667,7 +2699,6 @@ source_set("browser") {
       "renderer_host/web_menu_runner_ios.mm",
       "speech/tts_ios.mm",
       "web_contents/web_contents_view_ios.h",
-      "web_contents/web_contents_view_ios.mm",
     ]
     frameworks += [ "IOSurface.framework" ]
     deps += [ "//ui/accelerated_widget_mac" ]

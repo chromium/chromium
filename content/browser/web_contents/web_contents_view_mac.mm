@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Carbon/Carbon.h>
-
 #import "content/browser/web_contents/web_contents_view_mac.h"
+
+#import <Carbon/Carbon.h>
 
 #include <memory>
 #include <string>
@@ -36,6 +36,10 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/display/display_util.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using blink::DragOperationsMask;
 using remote_cocoa::mojom::DraggingInfoPtr;
