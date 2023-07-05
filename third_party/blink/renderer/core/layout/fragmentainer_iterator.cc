@@ -10,11 +10,8 @@ namespace blink {
 
 FragmentainerIterator::FragmentainerIterator(
     const LayoutFlowThread& flow_thread,
-    const LayoutRect& physical_bounding_box_in_flow_thread,
-    const LayoutRect& clip_rect_in_multicol_container)
-    : flow_thread_(flow_thread),
-      clip_rect_in_multicol_container_(clip_rect_in_multicol_container),
-      current_fragmentainer_group_index_(0) {
+    const LayoutRect& physical_bounding_box_in_flow_thread)
+    : flow_thread_(flow_thread), current_fragmentainer_group_index_(0) {
   // Put the bounds into flow thread-local coordinates by flipping it first.
   // This is how rectangles typically are represented in layout, i.e. with the
   // block direction coordinate flipped, if writing mode is vertical-rl.
@@ -42,15 +39,8 @@ FragmentainerIterator::FragmentainerIterator(
       current_column_set_->FragmentainerGroupIndexAtFlowThreadOffset(
           logical_top_in_flow_thread_, LayoutBox::kAssociateWithLatterPage);
 
-  // Now find the first and last fragmentainer we're interested in. We'll also
-  // clip against the clip rect here. In case the clip rect doesn't intersect
-  // with any of the fragmentainers, we have to move on to the next
-  // fragmentainer group, and see if we find something there.
-  if (!SetFragmentainersOfInterest()) {
-    MoveToNextFragmentainerGroup();
-    if (AtEnd())
-      return;
-  }
+  // Now find the first and last fragmentainer we're interested in.
+  SetFragmentainersOfInterest();
 }
 
 void FragmentainerIterator::Advance() {
@@ -110,31 +100,29 @@ const MultiColumnFragmentainerGroup& FragmentainerIterator::CurrentGroup()
 }
 
 void FragmentainerIterator::MoveToNextFragmentainerGroup() {
-  do {
-    current_fragmentainer_group_index_++;
-    if (current_fragmentainer_group_index_ >=
-        current_column_set_->FragmentainerGroups().size()) {
-      // That was the last fragmentainer group in this set. Advance to the next.
-      current_column_set_ = current_column_set_->NextSiblingMultiColumnSet();
-      current_fragmentainer_group_index_ = 0;
-      if (!current_column_set_ ||
-          current_column_set_->LogicalTopInFlowThread() >=
-              logical_bottom_in_flow_thread_) {
-        SetAtEnd();
-        return;  // No more sets or next set out of range. We're done.
-      }
-    }
-    if (CurrentGroup().LogicalTopInFlowThread() >=
-        logical_bottom_in_flow_thread_) {
-      // This fragmentainer group doesn't intersect with the range we're
-      // interested in. We're done.
+  current_fragmentainer_group_index_++;
+  if (current_fragmentainer_group_index_ >=
+      current_column_set_->FragmentainerGroups().size()) {
+    // That was the last fragmentainer group in this set. Advance to the next.
+    current_column_set_ = current_column_set_->NextSiblingMultiColumnSet();
+    current_fragmentainer_group_index_ = 0;
+    if (!current_column_set_ || current_column_set_->LogicalTopInFlowThread() >=
+                                    logical_bottom_in_flow_thread_) {
       SetAtEnd();
-      return;
+      return;  // No more sets or next set out of range. We're done.
     }
-  } while (!SetFragmentainersOfInterest());
+  }
+  if (CurrentGroup().LogicalTopInFlowThread() >=
+      logical_bottom_in_flow_thread_) {
+    // This fragmentainer group doesn't intersect with the range we're
+    // interested in. We're done.
+    SetAtEnd();
+    return;
+  }
+  SetFragmentainersOfInterest();
 }
 
-bool FragmentainerIterator::SetFragmentainersOfInterest() {
+void FragmentainerIterator::SetFragmentainersOfInterest() {
   const MultiColumnFragmentainerGroup& group = CurrentGroup();
 
   // Figure out the start and end fragmentainers for the block range we're
@@ -142,32 +130,7 @@ bool FragmentainerIterator::SetFragmentainersOfInterest() {
   group.ColumnIntervalForBlockRangeInFlowThread(
       logical_top_in_flow_thread_, logical_bottom_in_flow_thread_,
       current_fragmentainer_index_, end_fragmentainer_index_);
-
-  if (HasClipRect()) {
-    // Now intersect with the fragmentainers that actually intersect with the
-    // visual clip rect, to narrow it down even further. The clip rect needs to
-    // be relative to the current fragmentainer group.
-    LayoutRect clip_rect = clip_rect_in_multicol_container_;
-    LayoutSize offset = group.FlowThreadTranslationAtOffset(
-        group.LogicalTopInFlowThread(), LayoutBox::kAssociateWithFormerPage,
-        CoordinateSpaceConversion::kVisual);
-    clip_rect.Move(-offset);
-    unsigned first_fragmentainer_in_clip_rect, last_fragmentainer_in_clip_rect;
-    group.ColumnIntervalForVisualRect(clip_rect,
-                                      first_fragmentainer_in_clip_rect,
-                                      last_fragmentainer_in_clip_rect);
-    // If the two fragmentainer intervals are disjoint, there's nothing of
-    // interest in this fragmentainer group.
-    if (first_fragmentainer_in_clip_rect > end_fragmentainer_index_ ||
-        last_fragmentainer_in_clip_rect < current_fragmentainer_index_)
-      return false;
-    if (current_fragmentainer_index_ < first_fragmentainer_in_clip_rect)
-      current_fragmentainer_index_ = first_fragmentainer_in_clip_rect;
-    if (end_fragmentainer_index_ > last_fragmentainer_in_clip_rect)
-      end_fragmentainer_index_ = last_fragmentainer_in_clip_rect;
-  }
   DCHECK_GE(end_fragmentainer_index_, current_fragmentainer_index_);
-  return true;
 }
 
 }  // namespace blink

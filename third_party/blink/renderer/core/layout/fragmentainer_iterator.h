@@ -25,10 +25,8 @@ class FragmentainerIterator {
   // The clip rectangle is optional. If it's empty, it means that no clipping
   // will be performed, and that the only thing that can limit the set of
   // fragmentainers to visit is |physicalBoundingBox|.
-  FragmentainerIterator(
-      const LayoutFlowThread&,
-      const LayoutRect& physical_bounding_box_in_flow_thread,
-      const LayoutRect& clip_rect_in_multicol_container = LayoutRect());
+  FragmentainerIterator(const LayoutFlowThread&,
+                        const LayoutRect& physical_bounding_box_in_flow_thread);
 
   // Advance to the next fragmentainer. Not allowed to call this if atEnd() is
   // true.
@@ -50,7 +48,6 @@ class FragmentainerIterator {
 
  private:
   const LayoutFlowThread& flow_thread_;
-  const LayoutRect clip_rect_in_multicol_container_;
 
   const LayoutMultiColumnSet* current_column_set_;
   unsigned current_fragmentainer_group_index_;
@@ -64,11 +61,8 @@ class FragmentainerIterator {
 
   const MultiColumnFragmentainerGroup& CurrentGroup() const;
   void MoveToNextFragmentainerGroup();
-  bool SetFragmentainersOfInterest();
+  void SetFragmentainersOfInterest();
   void SetAtEnd() { current_column_set_ = nullptr; }
-  bool HasClipRect() const {
-    return !clip_rect_in_multicol_container_.IsEmpty();
-  }
 };
 
 }  // namespace blink
