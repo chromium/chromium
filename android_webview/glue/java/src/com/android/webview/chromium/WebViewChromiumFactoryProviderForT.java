@@ -5,7 +5,6 @@
 package com.android.webview.chromium;
 
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.build.annotations.UsedByReflection;
 
 @Lifetime.Singleton
 class WebViewChromiumFactoryProviderForT extends WebViewChromiumFactoryProvider {
@@ -13,7 +12,6 @@ class WebViewChromiumFactoryProviderForT extends WebViewChromiumFactoryProvider 
         return new WebViewChromiumFactoryProviderForT(delegate);
     }
 
-    @UsedByReflection("Samsung KNOX - crbug.com/1462346")
     protected WebViewChromiumFactoryProviderForT(android.webkit.WebViewDelegate delegate) {
         super(delegate);
     }
