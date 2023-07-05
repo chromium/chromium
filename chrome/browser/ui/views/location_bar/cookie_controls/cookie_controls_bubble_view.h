@@ -13,13 +13,16 @@ namespace content {
 class WebContents;
 }
 
+using OnCloseBubbleCallback = base::OnceCallback<void(views::View*)>;
+
 // Bubble view used to display the user bypass ui. This bubble view is
 // controlled by the CookieControlsBubbleViewController and contains a header
 // and a content views.
 class CookieControlsBubbleView : public LocationBarBubbleDelegateView {
  public:
   CookieControlsBubbleView(views::View* anchor_view,
-                           content::WebContents* web_contents);
+                           content::WebContents* web_contents,
+                           OnCloseBubbleCallback callback);
 
   ~CookieControlsBubbleView() override;
 
@@ -30,9 +33,12 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView {
  private:
   // LocationBarBubbleDelegateView:
   void Init() override;
+  void CloseBubble() override;
 
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
+
+  OnCloseBubbleCallback callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_VIEW_H_

@@ -15,8 +15,10 @@
 
 CookieControlsBubbleView::CookieControlsBubbleView(
     views::View* anchor_view,
-    content::WebContents* web_contents)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents) {
+    content::WebContents* web_contents,
+    OnCloseBubbleCallback callback)
+    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+      callback_(std::move(callback)) {
   SetShowCloseButton(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
 }
@@ -46,4 +48,9 @@ void CookieControlsBubbleView::UpdateSubtitle(const std::u16string& subtitle) {
 
 void CookieControlsBubbleView::ChildPreferredSizeChanged(views::View* child) {
   SizeToContents();
+}
+
+void CookieControlsBubbleView::CloseBubble() {
+  std::move(callback_).Run(this);
+  LocationBarBubbleDelegateView::CloseBubble();
 }

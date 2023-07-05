@@ -58,7 +58,8 @@ void CookieControlsIconView::UpdateImpl() {
               profile->IsOffTheRecord() ? CookieSettingsFactory::GetForProfile(
                                               profile->GetOriginalProfile())
                                         : nullptr);
-      observation_.Observe(controller_.get());
+      old_controller_observation_.Observe(controller_.get());
+      controller_observation_.Observe(controller_.get());
     }
     controller_->Update(web_contents);
   }
@@ -99,12 +100,19 @@ void CookieControlsIconView::OnStatusChanged(
     CookieControlsStatus status,
     CookieControlsEnforcement enforcement,
     base::Time expiration) {
-  // TODO(1446230): Implement OnStatusChanged.
+  if (status_ != status) {
+    status_ = status;
+    SetVisible(ShouldBeVisible());
+    UpdateIconImage();
+  }
 }
 
 void CookieControlsIconView::OnSitesCountChanged(int allowed_sites,
                                                  int blocked_sites) {
-  // TODO(1446230): Implement OnSitesCountChanged.
+  if (has_blocked_sites_ != blocked_sites > 0) {
+    has_blocked_sites_ = blocked_sites > 0;
+    SetVisible(ShouldBeVisible());
+  }
 }
 
 void CookieControlsIconView::OnBreakageConfidenceLevelChanged(
@@ -125,17 +133,13 @@ bool CookieControlsIconView::ShouldBeVisible() const {
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
-    // TODO(1446230): Remove this once the CookieControlsObserver methods have
-    // been implemented.
-    return true;
-  }
-
   switch (status_) {
     case CookieControlsStatus::kDisabledForSite:
       return true;
     case CookieControlsStatus::kEnabled:
-      return has_blocked_cookies_;
+      // TODO(crbug.com/1446230): Update visibility logic, as part of task
+      // b/285315102.
+      return has_blocked_cookies_ || has_blocked_sites_;
     case CookieControlsStatus::kDisabled:
     case CookieControlsStatus::kUninitialized:
       return false;

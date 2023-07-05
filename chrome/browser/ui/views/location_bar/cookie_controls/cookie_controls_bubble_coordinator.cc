@@ -27,8 +27,10 @@ void CookieControlsBubbleCoordinator::ShowBubble(
   if (bubble_view_ != nullptr) {
     return;
   }
-  auto bubble_view =
-      std::make_unique<CookieControlsBubbleView>(anchor_view_, web_contents);
+  auto bubble_view = std::make_unique<CookieControlsBubbleView>(
+      anchor_view_, web_contents,
+      base::BindOnce(&CookieControlsBubbleCoordinator::OnViewIsDeleting,
+                     base::Unretained(this)));
   bubble_view_ = bubble_view.get();
   bubble_view_->View::AddObserver(this);
 
