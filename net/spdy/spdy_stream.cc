@@ -152,7 +152,7 @@ void SpdyStream::PushedStreamReplay() {
   base::WeakPtr<SpdyStream> weak_this = GetWeakPtr();
 
   CHECK(delegate_);
-  delegate_->OnHeadersReceived(response_headers_, &request_headers_);
+  delegate_->OnHeadersReceived(response_headers_);
 
   // OnHeadersReceived() may have closed |this|.
   if (!weak_this)
@@ -939,16 +939,7 @@ void SpdyStream::SaveResponseHeaders(
   if (!delegate_)
     return;
 
-  // TODO(https://crbug.com/1426477): Remove this code, since pushed streams are
-  // already rejected.
-  if (type_ == SPDY_PUSH_STREAM) {
-    // OnPushPromiseHeadersReceived() must have been called before
-    // OnHeadersReceived().
-    DCHECK(request_headers_valid_);
-    delegate_->OnHeadersReceived(response_headers_, &request_headers_);
-  } else {
-    delegate_->OnHeadersReceived(response_headers_, nullptr);
-  }
+  delegate_->OnHeadersReceived(response_headers_);
 }
 
 #define STATE_CASE(s)                                       \

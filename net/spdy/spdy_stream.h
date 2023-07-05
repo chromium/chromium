@@ -95,12 +95,9 @@ class NET_EXPORT_PRIVATE SpdyStream {
     virtual void OnEarlyHintsReceived(
         const spdy::Http2HeaderBlock& headers) = 0;
 
-    // Called when response headers have been received.  In case of a pushed
-    // stream, the pushed request headers are also passed.
-    // TODO(https://crbug.com/1426477): Remove.
+    // Called when response headers have been received.
     virtual void OnHeadersReceived(
-        const spdy::Http2HeaderBlock& response_headers,
-        const spdy::Http2HeaderBlock* pushed_request_headers) = 0;
+        const spdy::Http2HeaderBlock& response_headers) = 0;
 
     // Called when data is received.  |buffer| may be NULL, which signals EOF.
     // May cause the stream to be closed.

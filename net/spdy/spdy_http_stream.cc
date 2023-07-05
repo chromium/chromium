@@ -310,8 +310,7 @@ void SpdyHttpStream::OnEarlyHintsReceived(
 }
 
 void SpdyHttpStream::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers,
-    const spdy::Http2HeaderBlock* pushed_request_headers) {
+    const spdy::Http2HeaderBlock& response_headers) {
   DCHECK(!response_headers_complete_);
   response_headers_complete_ = true;
 
