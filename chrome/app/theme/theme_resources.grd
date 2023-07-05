@@ -128,6 +128,14 @@
         <structure type="chrome_scaled_image" name="IDR_NTP_FAVICON" file="common/favicon_ntp.png" />
         <structure type="chrome_scaled_image" name="IDR_PASSWORD_CHECK" file="common/password_check.png" />
         <structure type="chrome_scaled_image" name="IDR_PASSWORD_CHECK_DARK" file="common/password_check_dark.png" />
+        <if expr="_google_chrome">
+          <then>
+            <structure type="chrome_scaled_image" name="IDR_PASSWORD_MANAGER_FAVICON" file="google_chrome/favicon_chrome_password_manager.png" />
+          </then>
+          <else>
+            <structure type="chrome_scaled_image" name="IDR_PASSWORD_MANAGER_FAVICON" file="chromium/favicon_password_manager.png" />
+          </else>
+        </if>
       </if>
       <structure type="chrome_scaled_image" name="IDR_PLUGINS_FAVICON" file="common/favicon_plugins.png" />
       <if expr="not is_android">
