@@ -74,7 +74,7 @@ void MultiColumnFragmentainerGroup::ResetColumnHeight() {
   logical_height_ = LayoutUnit();
 }
 
-LayoutSize MultiColumnFragmentainerGroup::FlowThreadTranslationAtOffset(
+PhysicalOffset MultiColumnFragmentainerGroup::FlowThreadTranslationAtOffset(
     LayoutUnit offset_in_flow_thread,
     LayoutBox::PageBoundaryRule rule,
     CoordinateSpaceConversion mode) const {
@@ -99,12 +99,12 @@ LayoutSize MultiColumnFragmentainerGroup::FlowThreadTranslationAtOffset(
   column_set_->DeprecatedFlipForWritingMode(column_rect);
   column_rect.MoveBy(column_set_->PhysicalLocation().ToLayoutPoint());
 
-  LayoutSize translation_relative_to_flow_thread =
-      column_rect.Location() - portion_rect.Location();
+  PhysicalOffset translation_relative_to_flow_thread =
+      PhysicalOffset(column_rect.Location() - portion_rect.Location());
   if (mode == CoordinateSpaceConversion::kContaining)
     return translation_relative_to_flow_thread;
 
-  LayoutSize enclosing_translation;
+  PhysicalOffset enclosing_translation;
   if (LayoutMultiColumnFlowThread* enclosing_flow_thread =
           flow_thread->EnclosingFlowThread()) {
     const MultiColumnFragmentainerGroup& first_row =
@@ -112,7 +112,7 @@ LayoutSize MultiColumnFragmentainerGroup::FlowThreadTranslationAtOffset(
     // Translation that would map points in the coordinate space of the
     // outermost flow thread to visual points in the first column in the first
     // fragmentainer group (row) in our multicol container.
-    LayoutSize enclosing_translation_origin =
+    PhysicalOffset enclosing_translation_origin =
         enclosing_flow_thread->FlowThreadTranslationAtOffset(
             first_row.BlockOffsetInEnclosingFragmentationContext(),
             LayoutBox::kAssociateWithLatterPage, mode);

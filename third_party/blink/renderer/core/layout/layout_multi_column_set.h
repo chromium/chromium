@@ -179,9 +179,9 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   // Find the column that contains the given block offset, and return the
   // translation needed to get from flow thread coordinates to visual
   // coordinates.
-  LayoutSize FlowThreadTranslationAtOffset(LayoutUnit,
-                                           PageBoundaryRule,
-                                           CoordinateSpaceConversion) const;
+  PhysicalOffset FlowThreadTranslationAtOffset(LayoutUnit,
+                                               PageBoundaryRule,
+                                               CoordinateSpaceConversion) const;
 
   LayoutPoint VisualPointToFlowThreadPoint(
       const LayoutPoint& visual_point) const;

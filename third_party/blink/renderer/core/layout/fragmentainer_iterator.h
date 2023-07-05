@@ -37,7 +37,7 @@ class FragmentainerIterator {
 
   // The physical translation to apply to shift the box when converting from
   // flowthread to visual coordinates.
-  LayoutSize PaginationOffset() const;
+  PhysicalOffset PaginationOffset() const;
 
   // The logical top of the current fragmentainer in flowthread.
   LayoutUnit FragmentainerLogicalTopInFlowThread() const;

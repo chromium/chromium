@@ -104,9 +104,9 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
 
   void ResetColumnHeight();
 
-  LayoutSize FlowThreadTranslationAtOffset(LayoutUnit,
-                                           LayoutBox::PageBoundaryRule,
-                                           CoordinateSpaceConversion) const;
+  PhysicalOffset FlowThreadTranslationAtOffset(LayoutUnit,
+                                               LayoutBox::PageBoundaryRule,
+                                               CoordinateSpaceConversion) const;
   LayoutUnit ColumnLogicalTopForOffset(LayoutUnit offset_in_flow_thread) const;
 
   // If SnapToColumnPolicy is SnapToColumn, visualPointToFlowThreadPoint() won't

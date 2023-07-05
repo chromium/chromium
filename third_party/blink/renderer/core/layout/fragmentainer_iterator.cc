@@ -52,7 +52,7 @@ void FragmentainerIterator::Advance() {
   }
 }
 
-LayoutSize FragmentainerIterator::PaginationOffset() const {
+PhysicalOffset FragmentainerIterator::PaginationOffset() const {
   return CurrentGroup().FlowThreadTranslationAtOffset(
       FragmentainerLogicalTopInFlowThread(),
       LayoutBox::kAssociateWithLatterPage, CoordinateSpaceConversion::kVisual);

@@ -289,7 +289,7 @@ LayoutUnit LayoutMultiColumnSet::LogicalBottomInFlowThread() const {
   return LastFragmentainerGroup().LogicalBottomInFlowThread();
 }
 
-LayoutSize LayoutMultiColumnSet::FlowThreadTranslationAtOffset(
+PhysicalOffset LayoutMultiColumnSet::FlowThreadTranslationAtOffset(
     LayoutUnit block_offset,
     PageBoundaryRule rule,
     CoordinateSpaceConversion mode) const {
