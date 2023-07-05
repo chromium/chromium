@@ -8569,6 +8569,7 @@ test("unit_tests") {
       "//chrome/common/extensions/api",
       "//chrome/utility/image_writer:unit_tests",
       "//components/enterprise:test_support",
+      "//components/password_manager/core/browser/features:password_features",
       "//components/safe_browsing:buildflags",
       "//components/services/storage/privileged/mojom",
       "//components/services/unzip:in_process",

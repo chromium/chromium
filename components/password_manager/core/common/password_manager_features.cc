@@ -12,20 +12,6 @@ namespace password_manager::features {
 // NOTE: It is strongly recommended to use UpperCamelCase style for feature
 //       names, e.g. "MyGreatFeature".
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Enables biometric authentication before form filling.
-BASE_FEATURE(kBiometricAuthenticationForFilling,
-             "BiometricAuthenticationForFilling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-#if BUILDFLAG(IS_MAC)
-// Enables biometric authentication in settings.
-BASE_FEATURE(kBiometricAuthenticationInSettings,
-             "BiometricAuthenticationInSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Enables Biometrics for the Touch To Fill feature. This only effects Android.
 BASE_FEATURE(kBiometricTouchToFill,
              "BiometricTouchToFill",

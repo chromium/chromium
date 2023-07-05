@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_FEATURES_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_FEATURES_H_
 
-// This file defines all the base::FeatureList features for the Password Manager
-// module.
+// DON'T ADD NEW FEATURES here.
+// If the feature doesn't logically belong to the browser process, put it into
+// components/password_manager/core/browser/features/password_features.h.
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -21,13 +22,6 @@ namespace password_manager::features {
 
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kBiometricAuthenticationForFilling);
-#endif
-#if BUILDFLAG(IS_MAC)
-BASE_DECLARE_FEATURE(kBiometricAuthenticationInSettings);
-#endif
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 BASE_DECLARE_FEATURE(kDisablePasswordsDropdownForCvcFields);
 BASE_DECLARE_FEATURE(kEnableOverwritingPlaceholderUsernames);
