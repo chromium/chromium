@@ -150,7 +150,7 @@ void FencedFrameTestHelper::NavigateFencedFrameUsingFledge(
 
       // Pick an arbitrarily high duration to guarantee that we never leave the
       // ad interest group while the test runs.
-      navigator.joinAdInterestGroup(
+      await navigator.joinAdInterestGroup(
           interest_group, /*durationSeconds=*/3000000);
 
       const url_to_navigate = new URL(FLEDGE_DECISION_URL, page_origin);

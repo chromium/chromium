@@ -2,15 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/command_line.h"
+#include "base/metrics/statistics_recorder.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
@@ -20,12 +28,14 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/shared_storage_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -33,6 +43,9 @@ namespace {
 // `chrome/test/data/interest_group/bidding_logic.js` will send
 // "reserved.top_navigation" and "click" events to this URL.
 constexpr char kReportingURL[] = "/_report_event_server.html";
+
+constexpr char kPrivateAggregationSendHistogramReportHistogram[] =
+    "PrivacySandbox.PrivateAggregation.Host.SendHistogramReportResult";
 
 }  // namespace
 
@@ -43,6 +56,12 @@ class PrivacySandboxSettingsBrowserTest : public InProcessBrowserTest {
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
 
+    FinishSetUp();
+  }
+
+  // Virtual so that derived classes can delay starting the server and/or
+  // register different handlers.
+  virtual void FinishSetUp() {
     https_server_.RegisterRequestHandler(
         base::BindRepeating(&PrivacySandboxSettingsBrowserTest::HandleRequest,
                             base::Unretained(this)));
@@ -156,47 +175,72 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsAdsApisFlagBrowserTest,
       privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting));
 }
 
-class PrivacySandboxSettingsEventReportingBrowserTest
-    : public InProcessBrowserTest {
+namespace {
+
+enum class AttestedApiStatus {
+  kSharedStorage,
+  kProtectedAudience,
+  kProtectedAudienceAndPrivateAggregation,
+};
+
+}  // namespace
+
+class PrivacySandboxSettingsAttestationsBrowserTestBase
+    : public PrivacySandboxSettingsBrowserTest {
  public:
-  PrivacySandboxSettingsEventReportingBrowserTest() {
-    feature_list_.InitAndEnableFeature(
+  PrivacySandboxSettingsAttestationsBrowserTestBase()
+      : scoped_attestations_(
+            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
+    attestations_feature_.InitAndEnableFeature(
         privacy_sandbox::kEnforcePrivacySandboxAttestations);
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
-
-    content::SetupCrossSiteRedirector(&https_server_);
-
-    // Do not start the https server at this point to allow the tests to set up
-    // response listeners.
-  }
-
-  privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings() {
-    return PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
-  }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return fenced_frame_test_helper_;
   }
 
-  content::RenderFrameHost* LoadAndNavigateFencedFrame() {
-    GURL initial_url(https_server_.GetURL("a.test", "/empty.html"));
-    GURL fenced_frame_url(
-        https_server_.GetURL("a.test", "/fenced_frames/title1.html"));
+  privacy_sandbox::PrivacySandboxAttestationsGatedAPISet
+  GetAttestationsGatedAPISet(AttestedApiStatus attested_api_status) {
+    switch (attested_api_status) {
+      case AttestedApiStatus::kSharedStorage:
+        return {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                    kSharedStorage};
+      case AttestedApiStatus::kProtectedAudience:
+        return {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                    kProtectedAudience};
+      case AttestedApiStatus::kProtectedAudienceAndPrivateAggregation:
+        return {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                    kProtectedAudience,
+                privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                    kPrivateAggregation};
+      default:
+        NOTREACHED_NORETURN();
+    }
+  }
 
+  void SetAttestations(std::vector<std::pair<std::string, AttestedApiStatus>>
+                           hostname_strings_with_attestation_statuses) {
+    privacy_sandbox::PrivacySandboxAttestationsMap attestations_map;
+    for (const auto& hostname_and_status :
+         hostname_strings_with_attestation_statuses) {
+      attestations_map[net::SchemefulSite(
+          https_server_.GetOrigin(hostname_and_status.first))] =
+          GetAttestationsGatedAPISet(hostname_and_status.second);
+    }
+    privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+        ->SetAttestationsForTesting(std::move(attestations_map));
+  }
+
+  // Navigates the main frame, loads a fenced frame, then navigates the fenced
+  // frame by joining an ad interest group, running an ad auction, and setting
+  // the fenced frame's config to be the result of the auction.
+  content::RenderFrameHost* LoadPageThenLoadAndNavigateFencedFrameViaAdAuction(
+      const GURL& initial_url,
+      const GURL& fenced_frame_url) {
     if (!ui_test_utils::NavigateToURL(browser(), initial_url)) {
       return nullptr;
     }
 
-    // Load a fenced frame.
     EXPECT_TRUE(
         ExecJs(web_contents()->GetPrimaryMainFrame(),
                "var fenced_frame = document.createElement('fencedframe');"
@@ -214,13 +258,45 @@ class PrivacySandboxSettingsEventReportingBrowserTest
     return fenced_frame_node;
   }
 
- protected:
-  net::EmbeddedTestServer https_server_{
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+  content::RenderFrameHost*
+  LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionWithPrivateAggregation(
+      const std::string& primary_main_frame_hostname,
+      const std::string& fenced_frame_hostname) {
+    GURL initial_url(https_server_.GetURL(
+        primary_main_frame_hostname,
+        "/allow-all-join-ad-interest-group-run-ad-auction.html"));
+    GURL fenced_frame_url(https_server_.GetURL(
+        fenced_frame_hostname,
+        "/fenced_frames/"
+        "ad_with_fenced_frame_private_aggregation_reporting.html"));
+
+    return LoadPageThenLoadAndNavigateFencedFrameViaAdAuction(initial_url,
+                                                              fenced_frame_url);
+  }
+
+  content::RenderFrameHost*
+  LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionForEventReporting() {
+    GURL initial_url(https_server_.GetURL("a.test", "/empty.html"));
+    GURL fenced_frame_url(
+        https_server_.GetURL("a.test", "/fenced_frames/title1.html"));
+
+    return LoadPageThenLoadAndNavigateFencedFrameViaAdAuction(initial_url,
+                                                              fenced_frame_url);
+  }
 
  private:
+  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations_;
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList attestations_feature_;
+};
+
+class PrivacySandboxSettingsEventReportingBrowserTest
+    : public PrivacySandboxSettingsAttestationsBrowserTestBase {
+ public:
+  void FinishSetUp() override {
+    // Do not start the https server at this point to allow the tests to set up
+    // response listeners.
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
@@ -235,18 +311,12 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
 
   ASSERT_TRUE(https_server_.Start());
 
-  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
-      ->SetAttestationsForTesting(
-          privacy_sandbox::PrivacySandboxAttestationsMap{
-              {net::SchemefulSite(https_server_.GetOrigin("a.test")),
-               {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                    kProtectedAudience}},
-              {net::SchemefulSite(https_server_.GetOrigin("d.test")),
-               {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                    kProtectedAudience}},
-          });
+  SetAttestations(
+      {std::make_pair("a.test", AttestedApiStatus::kProtectedAudience),
+       std::make_pair("d.test", AttestedApiStatus::kProtectedAudience)});
 
-  content::RenderFrameHost* fenced_frame_node = LoadAndNavigateFencedFrame();
+  content::RenderFrameHost* fenced_frame_node =
+      LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionForEventReporting();
   ASSERT_NE(fenced_frame_node, nullptr);
 
   // Set the automatic beacon
@@ -282,15 +352,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
 
   ASSERT_TRUE(https_server_.Start());
 
-  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
-      ->SetAttestationsForTesting(
-          privacy_sandbox::PrivacySandboxAttestationsMap{
-              {net::SchemefulSite(https_server_.GetOrigin("a.test")),
-               {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                    kProtectedAudience}},
-          });
+  SetAttestations(
+      {std::make_pair("a.test", AttestedApiStatus::kProtectedAudience)});
 
-  content::RenderFrameHost* fenced_frame_node = LoadAndNavigateFencedFrame();
+  content::RenderFrameHost* fenced_frame_node =
+      LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionForEventReporting();
   ASSERT_NE(fenced_frame_node, nullptr);
 
   // Set the automatic beacon
@@ -329,18 +395,12 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
 
   ASSERT_TRUE(https_server_.Start());
 
-  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
-      ->SetAttestationsForTesting(
-          privacy_sandbox::PrivacySandboxAttestationsMap{
-              {net::SchemefulSite(https_server_.GetOrigin("a.test")),
-               {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                    kProtectedAudience}},
-              {net::SchemefulSite(https_server_.GetOrigin("d.test")),
-               {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                    kProtectedAudience}},
-          });
+  SetAttestations(
+      {std::make_pair("a.test", AttestedApiStatus::kProtectedAudience),
+       std::make_pair("d.test", AttestedApiStatus::kProtectedAudience)});
 
-  content::RenderFrameHost* fenced_frame_node = LoadAndNavigateFencedFrame();
+  content::RenderFrameHost* fenced_frame_node =
+      LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionForEventReporting();
   ASSERT_NE(fenced_frame_node, nullptr);
 
   // Set the automatic beacon
@@ -372,18 +432,12 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
 
   ASSERT_TRUE(https_server_.Start());
 
-  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
-      ->SetAttestationsForTesting(
-          privacy_sandbox::PrivacySandboxAttestationsMap{
-              {net::SchemefulSite(https_server_.GetOrigin("a.test")),
-               {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                    kProtectedAudience}},
-              {net::SchemefulSite(https_server_.GetOrigin("d.test")),
-               {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                    kSharedStorage}},
-          });
+  SetAttestations(
+      {std::make_pair("a.test", AttestedApiStatus::kProtectedAudience),
+       std::make_pair("d.test", AttestedApiStatus::kSharedStorage)});
 
-  content::RenderFrameHost* fenced_frame_node = LoadAndNavigateFencedFrame();
+  content::RenderFrameHost* fenced_frame_node =
+      LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionForEventReporting();
   ASSERT_NE(fenced_frame_node, nullptr);
 
   // Set the automatic beacon
@@ -404,4 +458,182 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
       "response");
   response.WaitForRequest();
   EXPECT_EQ(response.http_request()->content, "response");
+}
+
+class
+    PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest
+    : public PrivacySandboxSettingsAttestationsBrowserTestBase {
+ public:
+  PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {blink::features::kPrivateAggregationApi,
+         blink::features::kInterestGroupStorage,
+         blink::features::kAdInterestGroupAPI, blink::features::kFledge,
+         blink::features::kFledgeBiddingAndAuctionServer,
+         blink::features::kFencedFrames,
+         blink::features::kFencedFramesAPIChanges,
+         privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting},
+        /*disabled_features=*/{});
+  }
+
+  void FinishSetUp() override {
+    https_server_.RegisterRequestHandler(base::BindRepeating(
+        &PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest::
+            HandleWellKnownRequest,
+        base::Unretained(this)));
+    content::SetupCrossSiteRedirector(&https_server_);
+    ASSERT_TRUE(https_server_.Start());
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleWellKnownRequest(
+      const net::test_server::HttpRequest& request) {
+    if (!base::StartsWith(request.relative_url,
+                          "/.well-known/interest-group/permissions/?origin=")) {
+      return nullptr;
+    }
+
+    // .well-known requests should advertise they accept JSON responses.
+    const auto accept_header =
+        request.headers.find(net::HttpRequestHeaders::kAccept);
+    DCHECK(accept_header != request.headers.end());
+    EXPECT_EQ(accept_header->second, "application/json");
+
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_content_type("application/json");
+    response->set_content(R"({"joinAdInterestGroup" : true})");
+    response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+    return response;
+  }
+
+  size_t GetTotalSampleCount(const std::string& histogram_name) {
+    auto buckets = histogram_tester_.GetAllSamples(histogram_name);
+    size_t count = 0;
+    for (const auto& bucket : buckets) {
+      count += bucket.count;
+    }
+    return count;
+  }
+
+  void WaitForHistogram(const std::string& histogram_name,
+                        size_t expected_sample_count) {
+    // Continue if histogram was already recorded and has at least the expected
+    // number of samples.
+    if (base::StatisticsRecorder::FindHistogram(histogram_name) &&
+        GetTotalSampleCount(histogram_name) >= expected_sample_count) {
+      return;
+    }
+
+    // Else, wait until the histogram is recorded with enough samples.
+    base::RunLoop run_loop;
+    auto histogram_observer = std::make_unique<
+        base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+        histogram_name,
+        base::BindLambdaForTesting([&](const char* histogram_name,
+                                       uint64_t name_hash,
+                                       base::HistogramBase::Sample sample) {
+          if (GetTotalSampleCount(histogram_name) >= expected_sample_count) {
+            run_loop.Quit();
+          }
+        }));
+    run_loop.Run();
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest,
+    SameOrigin_Enrolled_Success) {
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+
+  SetAttestations({std::make_pair(
+      "a.test", AttestedApiStatus::kProtectedAudienceAndPrivateAggregation)});
+
+  content::RenderFrameHost* fenced_frame_node =
+      LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionWithPrivateAggregation(
+          /*primary_main_frame_hostname=*/"a.test",
+          /*fenced_frame_hostname=*/"a.test");
+  ASSERT_NE(fenced_frame_node, nullptr);
+
+  WaitForHistogram(kPrivateAggregationSendHistogramReportHistogram, 2);
+  histogram_tester_.ExpectUniqueSample(
+      kPrivateAggregationSendHistogramReportHistogram,
+      content::GetPrivateAggregationSendHistogramSuccessValue(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest,
+    SameOrigin_NotEnrolled_Failure) {
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+
+  SetAttestations(
+      {std::make_pair("a.test", AttestedApiStatus::kProtectedAudience)});
+
+  content::RenderFrameHost* fenced_frame_node =
+      LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionWithPrivateAggregation(
+          /*primary_main_frame_hostname=*/"a.test",
+          /*fenced_frame_hostname=*/"a.test");
+  ASSERT_NE(fenced_frame_node, nullptr);
+
+  WaitForHistogram(kPrivateAggregationSendHistogramReportHistogram, 2);
+  histogram_tester_.ExpectUniqueSample(
+      kPrivateAggregationSendHistogramReportHistogram,
+      content::GetPrivateAggregationSendHistogramApiDisabledValue(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest,
+    CrossOrigin_Enrolled_Success) {
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+
+  SetAttestations(
+      {std::make_pair(
+           "a.test",
+           AttestedApiStatus::kProtectedAudienceAndPrivateAggregation),
+       std::make_pair(
+           "b.test",
+           AttestedApiStatus::kProtectedAudienceAndPrivateAggregation)});
+
+  content::RenderFrameHost* fenced_frame_node =
+      LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionWithPrivateAggregation(
+          /*primary_main_frame_hostname=*/"a.test",
+          /*fenced_frame_hostname=*/"b.test");
+  ASSERT_NE(fenced_frame_node, nullptr);
+
+  WaitForHistogram(kPrivateAggregationSendHistogramReportHistogram, 2);
+  histogram_tester_.ExpectUniqueSample(
+      kPrivateAggregationSendHistogramReportHistogram,
+      content::GetPrivateAggregationSendHistogramSuccessValue(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest,
+    CrossOrigin_NotEnrolled_Failure) {
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+
+  SetAttestations(
+      {std::make_pair(
+           "a.test",
+           AttestedApiStatus::kProtectedAudienceAndPrivateAggregation),
+       std::make_pair("b.test", AttestedApiStatus::kProtectedAudience)});
+
+  content::RenderFrameHost* fenced_frame_node =
+      LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionWithPrivateAggregation(
+          /*primary_main_frame_hostname=*/"a.test",
+          /*fenced_frame_hostname=*/"b.test");
+  ASSERT_NE(fenced_frame_node, nullptr);
+
+  WaitForHistogram(kPrivateAggregationSendHistogramReportHistogram, 2);
+  histogram_tester_.ExpectUniqueSample(
+      kPrivateAggregationSendHistogramReportHistogram,
+      content::GetPrivateAggregationSendHistogramApiDisabledValue(), 2);
 }
