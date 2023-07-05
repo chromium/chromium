@@ -9,6 +9,7 @@
 #include <sys/eventfd.h>
 #include <sys/ioctl.h>
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
