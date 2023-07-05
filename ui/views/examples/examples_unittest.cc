@@ -13,13 +13,7 @@
 
 namespace views::examples {
 
-// Fails on Win reliably: crbug.com/1456674
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_TestViewsExamplesLaunches DISABLED_TestViewsExamplesLaunches
-#else
-#define MAYBE_TestViewsExamplesLaunches TestViewsExamplesLaunches
-#endif
-TEST(ExamplesTest, MAYBE_TestViewsExamplesLaunches) {
+TEST(ExamplesTest, TestViewsExamplesLaunches) {
 #if BUILDFLAG(IS_WIN)
   if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
     GTEST_SKIP() << "Host is in dark mode; skipping test";
