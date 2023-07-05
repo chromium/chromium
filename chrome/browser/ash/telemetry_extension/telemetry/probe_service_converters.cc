@@ -62,7 +62,7 @@ cros_healthd::mojom::ProbeCategoryEnum Convert(
 
 }  // namespace
 
-namespace unchecked {
+namespace unchecked::probe {
 
 crosapi::mojom::ProbeErrorPtr UncheckedConvertPtr(
     cros_healthd::mojom::ProbeErrorPtr input) {
@@ -70,7 +70,7 @@ crosapi::mojom::ProbeErrorPtr UncheckedConvertPtr(
                                          std::move(input->msg));
 }
 
-crosapi::mojom::UInt64ValuePtr UncheckedConvertPtr(
+crosapi::mojom::UInt64ValuePtr LegacyUncheckedConvertPtr(
     cros_healthd::mojom::NullableUint64Ptr input) {
   return crosapi::mojom::UInt64Value::New(input->value);
 }
@@ -190,7 +190,7 @@ crosapi::mojom::ProbeBatteryInfoPtr UncheckedConvertPtr(
       Convert(input->charge_now), Convert(input->current_now),
       std::move(input->technology), std::move(input->status),
       std::move(input->manufacture_date),
-      ConvertProbePtr(std::move(input->temperature)));
+      LegacyConvertProbePtr(std::move(input->temperature)));
 }
 
 crosapi::mojom::ProbeBatteryResultPtr UncheckedConvertPtr(
@@ -216,7 +216,8 @@ crosapi::mojom::ProbeNonRemovableBlockDeviceInfoPtr UncheckedConvertPtr(
       Convert(input->read_time_seconds_since_last_boot),
       Convert(input->write_time_seconds_since_last_boot),
       Convert(input->io_time_seconds_since_last_boot),
-      ConvertProbePtr(std::move(input->discard_time_seconds_since_last_boot)));
+      LegacyConvertProbePtr(
+          std::move(input->discard_time_seconds_since_last_boot)));
 }
 
 crosapi::mojom::ProbeNonRemovableBlockDeviceResultPtr UncheckedConvertPtr(
@@ -544,7 +545,7 @@ crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
       ConvertProbePtr(std::move(input->bus_result)));
 }
 
-}  // namespace unchecked
+}  // namespace unchecked::probe
 
 crosapi::mojom::ProbeErrorType Convert(cros_healthd::mojom::ErrorType input) {
   switch (input) {

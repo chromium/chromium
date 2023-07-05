@@ -20,6 +20,13 @@ namespace ash::converters {
 
 using ::testing::ElementsAre;
 
+TEST(ProbeServiceConverters, LegacyUInt64ValuePtr) {
+  constexpr uint64_t kValue = (1ULL << 63) + 3000000000;
+  EXPECT_EQ(
+      LegacyConvertProbePtr(cros_healthd::mojom::NullableUint64::New(kValue)),
+      crosapi::mojom::UInt64Value::New(kValue));
+}
+
 // Note: in some tests we intentionally use New() with no arguments for
 // cros_healthd::mojom types, because there can be some fields that we don't
 // test yet.
@@ -115,12 +122,6 @@ TEST(ProbeServiceConverters, Int64Value) {
 TEST(ProbeServiceConverters, UInt64Value) {
   constexpr uint64_t kValue = (1ULL << 63) + 1000000000;
   EXPECT_EQ(Convert(kValue), crosapi::mojom::UInt64Value::New(kValue));
-}
-
-TEST(ProbeServiceConverters, UInt64ValuePtr) {
-  constexpr uint64_t kValue = (1ULL << 63) + 3000000000;
-  EXPECT_EQ(ConvertProbePtr(cros_healthd::mojom::NullableUint64::New(kValue)),
-            crosapi::mojom::UInt64Value::New(kValue));
 }
 
 TEST(ProbeServiceConverters, AudioNodeInputInfoPtr) {
@@ -817,7 +818,8 @@ TEST(ProbeServiceConverters, LogicalCpuInfoPtrNonZeroIdleTime) {
   auto input = cros_healthd::mojom::LogicalCpuInfo::New();
   input->idle_time_user_hz = kIdleTimeUserHz;
 
-  const auto output = unchecked::UncheckedConvertPtr(std::move(input), kUserHz);
+  const auto output =
+      unchecked::probe::UncheckedConvertPtr(std::move(input), kUserHz);
   ASSERT_TRUE(output);
   EXPECT_EQ(output->idle_time_ms,
             crosapi::mojom::UInt64Value::New(kIdleTimeMs));

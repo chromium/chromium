@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_TELEMETRY_PROBE_SERVICE_CONVERTERS_H_
 
 #include <cstdint>
+#include <type_traits>
 #include <vector>
 
 #include "base/check.h"
@@ -19,17 +20,17 @@ namespace ash::converters {
 // This file contains helper functions used by ProbeService to convert its
 // types to/from cros_healthd ProbeService types.
 
-namespace unchecked {
+namespace unchecked::probe {
 
 // Functions in unchecked namespace do not verify whether input pointer is
 // nullptr, they should be called only via ConvertPtr wrapper that checks
 // whether input pointer is nullptr.
 
+crosapi::mojom::UInt64ValuePtr LegacyUncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint64Ptr input);
+
 crosapi::mojom::ProbeErrorPtr UncheckedConvertPtr(
     cros_healthd::mojom::ProbeErrorPtr input);
-
-crosapi::mojom::UInt64ValuePtr UncheckedConvertPtr(
-    cros_healthd::mojom::NullableUint64Ptr input);
 
 crosapi::mojom::ProbeAudioInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::AudioInfoPtr input);
@@ -160,7 +161,7 @@ crosapi::mojom::ProbeTpmResultPtr UncheckedConvertPtr(
 crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TelemetryInfoPtr input);
 
-}  // namespace unchecked
+}  // namespace unchecked::probe
 
 crosapi::mojom::ProbeErrorType Convert(cros_healthd::mojom::ErrorType type);
 
@@ -199,7 +200,7 @@ std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {
   std::vector<OutputT> output;
   for (auto&& element : input) {
     DCHECK(!element.is_null());
-    auto converted = unchecked::UncheckedConvertPtr(std::move(element));
+    auto converted = unchecked::probe::UncheckedConvertPtr(std::move(element));
     if (!converted.is_null()) {
       output.push_back(std::move(converted));
     }
@@ -208,15 +209,28 @@ std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {
 }
 
 template <class InputT>
-auto ConvertProbePtr(InputT input) {
-  return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
-                            : nullptr;
+auto LegacyConvertProbePtr(InputT input) {
+  return (!input.is_null())
+             ? unchecked::probe::LegacyUncheckedConvertPtr(std::move(input))
+             : nullptr;
+}
+
+template <class InputT,
+          class... Types,
+          class OutputT = decltype(unchecked::probe::UncheckedConvertPtr(
+              std::declval<InputT>(),
+              std::declval<Types>()...)),
+          class = std::enable_if_t<std::is_default_constructible_v<OutputT>>>
+OutputT ConvertProbePtr(InputT input) {
+  return (!input.is_null())
+             ? unchecked::probe::UncheckedConvertPtr(std::move(input))
+             : OutputT();
 }
 
 template <class InputT>
 auto ConvertProbePairPtr(InputT input) {
   return (!input.is_null())
-             ? unchecked::UncheckedConvertPairPtr(std::move(input))
+             ? unchecked::probe::UncheckedConvertPairPtr(std::move(input))
              : std::make_pair(nullptr, nullptr);
 }
 
