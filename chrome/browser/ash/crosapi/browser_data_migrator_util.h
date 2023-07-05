@@ -193,7 +193,6 @@ constexpr const char* const kNeedCopyForCopyDataPaths[]{
     "shared_proto_db"};
 
 // List of extension ids to be kept in Ash.
-// TODO(crbug.com/1302613): make sure this is the complete list.
 constexpr const char* const kExtensionsAshOnly[] = {
     "gjjabgpgjpampikjhjpfhneeoapjbjaf",  // Google Speech Synthesis Ext. (patts)
     "dakbfdmgjiabojdgbiljlhgjbokobjpg",  // ESpeak Speech Synthesis Extension
