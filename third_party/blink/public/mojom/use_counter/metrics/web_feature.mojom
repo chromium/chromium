@@ -3935,6 +3935,7 @@ enum WebFeature {
   kTextWrapPrettyFail = 4595,
   kContainerQueryEvalUnknown = 4596,
   kEventTimingPresentationPromiseResolvedAfterReport = 4597,
+  kGetCoalescedEventsInInsecureContext = 4598,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
