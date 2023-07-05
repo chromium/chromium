@@ -353,7 +353,7 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
 void UpdateServiceImpl::TaskStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!tasks_.empty()) {
-    std::move(tasks_.front()).Run();
+    main_task_runner_->PostTask(FROM_HERE, std::move(tasks_.front()));
   }
 }
 
