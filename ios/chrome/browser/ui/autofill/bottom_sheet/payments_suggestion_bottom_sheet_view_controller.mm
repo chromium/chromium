@@ -7,6 +7,7 @@
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/grit/components_scaled_resources.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -41,6 +43,9 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 
   // View which contains the GPay logo.
   UIImageView* _logoImageView;
+
+  // URL of the current page the bottom sheet is being displayed on.
+  GURL _URL;
 }
 
 // The payments controller handler used to open the payments options.
@@ -51,10 +56,12 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 @implementation PaymentsSuggestionBottomSheetViewController
 
 - (instancetype)initWithHandler:
-    (id<PaymentsSuggestionBottomSheetHandler>)handler {
+                    (id<PaymentsSuggestionBottomSheetHandler>)handler
+                            URL:(const GURL&)URL {
   self = [super init];
   if (self) {
     self.handler = handler;
+    _URL = URL;
   }
   return self;
 }
@@ -197,8 +204,11 @@ CGFloat const kCreditCardIconCornerRadius = 5;
   _logoImageView =
       [[UIImageView alloc] initWithImage:[self googlePayBadgeImage]];
   UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.text =
-      l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE);
+  std::u16string formattedURL =
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          _URL);
+  titleLabel.text = l10n_util::GetNSStringF(
+      IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE, formattedURL);
   UIStackView* titleView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ _logoImageView, titleLabel ]];
   titleView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];

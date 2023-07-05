@@ -7,9 +7,11 @@
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -51,11 +53,14 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  WebStateList* webStateList = self.browser->GetWebStateList();
   self.mediator = [[PaymentsSuggestionBottomSheetMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()
+      initWithWebStateList:webStateList
        personalDataManager:self.personalDataManager];
-  self.viewController = [[PaymentsSuggestionBottomSheetViewController alloc]
-      initWithHandler:self];
+  const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
+  self.viewController =
+      [[PaymentsSuggestionBottomSheetViewController alloc] initWithHandler:self
+                                                                       URL:URL];
   self.mediator.consumer = self.viewController;
   self.viewController.delegate = self.mediator;
   [self.baseViewController presentViewController:self.viewController

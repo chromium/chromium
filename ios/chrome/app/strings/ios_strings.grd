@@ -2014,8 +2014,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_SHOW_DETAILS" desc="The payment bottom sheet's long press menu item to open the credit card details view.">
         Show Details
       </message>
-      <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE" desc="Subtitle of the payment bottom sheet. [iOS only]">
-        Autofill Payment Info
+      <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE" desc="Shown on the payment bottom sheet to inform users that, upon accepting the prompt, their username and password will be shared with the given website. [iOS only]" meaning="A string under the title logo of the payment bottom sheet.">
+        You'll fill info into <ph name="URL">$1<ex>chromium.org</ex></ph>
       </message>
       <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD" desc="The action button to dismiss the payment bottom sheet and revert to using the keyboard to fill in payment fields on the webpage.">
         Use Keyboard

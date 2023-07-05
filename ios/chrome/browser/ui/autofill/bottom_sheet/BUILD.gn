@@ -44,6 +44,7 @@ source_set("bottom_sheet_ui") {
     "//build:branding_buildflags",
     "//components/autofill/core/browser",
     "//components/resources:components_scaled_resources_grit",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/bottom_sheet",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -53,6 +54,7 @@ source_set("bottom_sheet_ui") {
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ui/base:base",
+    "//url",
   ]
 }
 
