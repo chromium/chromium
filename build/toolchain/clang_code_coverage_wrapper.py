@@ -44,6 +44,11 @@ version) in B, and so they'll be considered out of date by ninja and recompiled.
 Example usage:
   clang_code_coverage_wrapper.py \\
       --files-to-instrument=coverage_instrumentation_input.txt
+
+Siso implements the same logic in
+build/config/siso/clang_code_coverage_wrapper.star, which avoids the wrapper
+invocations for remote execution and performance improvement.
+Please update the Siso starlark file when updating this file.
 """
 
 
