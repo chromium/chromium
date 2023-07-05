@@ -139,14 +139,6 @@ export class DirectoryTreeContainer {
     // For file watcher.
     chrome.fileManagerPrivate.onDirectoryChanged.addListener(
         this.onFileWatcherEntryChanged_.bind(this));
-    this.tree.addEventListener('click', () => {
-      // Chromevox triggers |click| without switching focus, we force the focus
-      // here so we can handle further keyboard/mouse events to expand/collapse
-      // directories.
-      if (document.activeElement === document.body) {
-        this.tree.focus();
-      }
-    });
 
     this.store_ = getStore();
     this.store_.subscribe(this);

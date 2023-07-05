@@ -22,9 +22,18 @@ export const TREE_ITEM_INDENT = 20;
  */
 @customElement('xf-tree-item')
 export class XfTreeItem extends XfBase {
+  // "delegatesFocus = true" will make sure when the tree item is focused, <li>
+  // element inside the shadow DOM will get the focus.
+  static override get shadowRootOptions() {
+    return {
+      ...XfBase.shadowRootOptions,
+      delegatesFocus: true,
+    };
+  }
+
   /**
    * Override the tabIndex because we need to assign it to the <li> element
-   * instead of the host element.
+   * instead of the host element, so "delegatesFocus" above can work.
    */
   @property({attribute: false}) override tabIndex: number = -1;
 
@@ -83,30 +92,21 @@ export class XfTreeItem extends XfBase {
 
   /**
    * Override to focus the inner <li> instead of the host element.
-   * We use tabIndex to control if a tree item can be focused or not, need
-   * to set it to 0 before focusing the item.
+   *
+   * Why we still need this given we already have "delegatesFocus = true"? This
+   * is because delegateFocus can only delegate the focus from host element to
+   * the inner element who is focusable (tabindex = 0). Here <li> element gets
+   * "tabindex" from the property so it's asynchronous, so when we update
+   * `tabIndex` from outside by property and call `focus()` immediately,
+   * delegatesFocus won't work because due to the asynchronous nature the <li>
+   * hasn't get "tabindex = 0" yet.
    */
   override focus() {
     console.assert(
         !this.disabled,
         'Called focus() on a disabled XfTreeItem() isn\'t allowed');
 
-    this.tabIndex = 0;
     this.$treeItem_.focus();
-  }
-
-  /**
-   * Override to blur the inner <li> instead of the host element.
-   * We use tabIndex to control if a tree item can be focused or not, need
-   * to set it to -1 after blurring the item.
-   */
-  override blur() {
-    console.assert(
-        !this.disabled,
-        'Called blur() on a disabled XfTreeItem() isn\'t allowed');
-
-    this.tabIndex = -1;
-    this.$treeItem_.blur();
   }
 
   /** The level of the tree item, starting from 1. */
