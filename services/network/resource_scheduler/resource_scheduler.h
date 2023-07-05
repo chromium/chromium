@@ -136,9 +136,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   virtual void ReprioritizeRequest(net::URLRequest* request,
                                    net::RequestPriority new_priority,
                                    int intra_priority_value);
-  // Same as above, but keeps the existing intra priority value.
-  virtual void ReprioritizeRequest(net::URLRequest* request,
-                                   net::RequestPriority new_priority);
 
   // Returns true if the timer that dispatches long queued requests is running.
   virtual bool IsLongQueuedRequestsDispatchTimerRunning() const;

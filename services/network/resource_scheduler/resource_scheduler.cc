@@ -1370,17 +1370,6 @@ void ResourceScheduler::ReprioritizeRequest(net::URLRequest* request,
                               new_priority_params);
 }
 
-void ResourceScheduler::ReprioritizeRequest(net::URLRequest* request,
-                                            net::RequestPriority new_priority) {
-  int current_intra_priority = 0;
-  auto* existing_request = ScheduledResourceRequestImpl::ForRequest(request);
-  if (existing_request) {
-    current_intra_priority =
-        existing_request->get_request_priority_params().intra_priority;
-  }
-  ReprioritizeRequest(request, new_priority, current_intra_priority);
-}
-
 bool ResourceScheduler::IsLongQueuedRequestsDispatchTimerRunning() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return long_queued_requests_dispatch_timer_.IsRunning();
