@@ -20,9 +20,9 @@
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
 #include "media/gpu/windows/d3d11_status.h"
-#include "media/gpu/windows/d3d11_video_context_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
 #include "media/gpu/windows/d3d_accelerator.h"
+#include "media/gpu/windows/d3d_video_decoder_wrapper.h"
 #include "media/video/picture.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
@@ -68,9 +68,6 @@ class D3D11H264Accelerator : public D3DAccelerator,
   bool OutputPicture(scoped_refptr<H264Picture> pic) override;
 
  private:
-  bool SubmitSliceData();
-  bool RetrieveBitstreamBuffer();
-
   // Gets a pic params struct with the constant fields set.
   void FillPicParamsWithConstants(DXVA_PicParams_H264* pic_param);
 
@@ -96,12 +93,6 @@ class D3D11H264Accelerator : public D3DAccelerator,
   USHORT frame_num_list_[kRefFrameMaxCount];
   UINT used_for_reference_flags_;
   USHORT non_existing_frame_flags_;
-
-  // Information that's accumulated during slices and submitted at the end
-  std::vector<DXVA_Slice_H264_Short> slice_info_;
-  size_t current_offset_ = 0;
-  size_t bitstream_buffer_size_ = 0;
-  raw_ptr<uint8_t, AllowPtrArithmetic> bitstream_buffer_bytes_ = nullptr;
 };
 
 }  // namespace media

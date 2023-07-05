@@ -47,4 +47,10 @@ void D3DAccelerator::SetVideoDecoder(ComD3D11VideoDecoder video_decoder) {
   video_decoder_ = std::move(video_decoder);
 }
 
+void D3DAccelerator::SetVideoDecoderWrapper(
+    std::unique_ptr<D3DVideoDecoderWrapper> video_decoder_wrapper) {
+  CHECK(video_decoder_wrapper);
+  video_decoder_wrapper_ = std::move(video_decoder_wrapper);
+}
+
 }  // namespace media

@@ -205,6 +205,14 @@ HRESULT D3D11VideoDecoder::InitializeAcceleratedDecoder(
     return E_FAIL;
   }
 
+  if (set_accelerator_decoder_wrapper_cb_) {
+    auto wrapper = CreateD3D11VideoDecoderWrapper(video_decoder);
+    if (!wrapper) {
+      return E_FAIL;
+    }
+    set_accelerator_decoder_wrapper_cb_.Run(std::move(wrapper));
+  }
+
   // Provide the initial video decoder object.
   DCHECK(set_accelerator_decoder_cb_);
   set_accelerator_decoder_cb_.Run(std::move(video_decoder));
@@ -332,6 +340,17 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
     return {D3D11Status::Codes::kDecoderCreationFailed, hr};
 
   return {std::move(video_decoder)};
+}
+
+std::unique_ptr<D3D11VideoDecoderWrapper>
+D3D11VideoDecoder::CreateD3D11VideoDecoderWrapper(
+    ComD3D11VideoDecoder video_decoder) {
+  ComD3D11VideoContext video_context;
+  HRESULT hr = device_context_.As(&video_context);
+  DCHECK(SUCCEEDED(hr));
+  return D3D11VideoDecoderWrapper::Create(
+      media_log_.get(), video_device_, std::move(video_context),
+      std::move(video_decoder), usable_feature_level_);
 }
 
 void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
@@ -660,9 +679,16 @@ void D3D11VideoDecoder::DoDecode() {
       if (!video_decoder_or_error.has_value()) {
         return NotifyError(std::move(video_decoder_or_error).error());
       }
+      auto video_decoder = std::move(video_decoder_or_error).value();
+      auto wrapper = CreateD3D11VideoDecoderWrapper(video_decoder);
+      if (!wrapper) {
+        return NotifyError(D3D11StatusCode::kDecoderCreationFailed);
+      }
+      if (set_accelerator_decoder_wrapper_cb_) {
+        set_accelerator_decoder_wrapper_cb_.Run(std::move(wrapper));
+      }
       DCHECK(set_accelerator_decoder_cb_);
-      set_accelerator_decoder_cb_.Run(
-          std::move(video_decoder_or_error).value());
+      set_accelerator_decoder_cb_.Run(video_decoder);
       picture_buffers_.clear();
     } else if (result == media::AcceleratedVideoDecoder::kColorSpaceChange) {
       MEDIA_LOG(INFO, media_log_)
@@ -977,6 +1003,11 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
 
 void D3D11VideoDecoder::SetDecoderCB(const SetAcceleratorDecoderCB& cb) {
   set_accelerator_decoder_cb_ = cb;
+}
+
+void D3D11VideoDecoder::SetDecoderWrapperCB(
+    const SetAcceleratorDecoderWrapperCB& cb) {
+  set_accelerator_decoder_wrapper_cb_ = cb;
 }
 
 void D3D11VideoDecoder::NotifyError(D3D11Status reason,
