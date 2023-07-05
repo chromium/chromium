@@ -3,4 +3,14 @@ import { spawnChecked, updateRepo } from "./replay_build_scripts/common.mjs";
 
 updateRepo();
 
-spawnChecked("node", ["build.js"], { stdio: "inherit" });
+// TODO(dmiller): remove this hack when we switch to the new ci system
+spawnChecked("git", ["apply", "replay_build_scripts/windows.patch"]);
+
+try {
+  spawnChecked("node", ["build.js"], { stdio: "inherit" });
+} finally {
+  spawnChecked("git", [
+    "checkout",
+    "media/audio/win/audio_low_latency_input_win.cc",
+  ]);
+}

@@ -1,0 +1,13 @@
+diff --git a/media/audio/win/audio_low_latency_input_win.cc b/media/audio/win/audio_low_latency_input_win.cc
+index 23372ebe4e4bf..95a7a69201875 100644
+--- a/media/audio/win/audio_low_latency_input_win.cc
++++ b/media/audio/win/audio_low_latency_input_win.cc
+@@ -193,6 +193,8 @@ const char* EffectTypeToString(
+       return "DynamicRangeCompression";
+     case ABI::Windows::Media::Effects::AudioEffectType_FarFieldBeamForming:
+       return "FarFieldBeamForming";
++    case ABI::Windows::Media::Effects::AudioEffectType_DeepNoiseSuppression:
++      return "DeepNoise";
+   }
+   return "Unknown";
+ }
