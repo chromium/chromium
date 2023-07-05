@@ -430,6 +430,7 @@
 <translation id="1870473978371099486">Услуги репетиторов</translation>
 <translation id="1871208020102129563">Выбрано использование фиксированных прокси-серверов, а не URL PAC-скрипта.</translation>
 <translation id="1871284979644508959">Поле, обязательное для заполнения</translation>
+<translation id="1871739799120352748">Высокие цены</translation>
 <translation id="1873899211667975540">Рок-музыка</translation>
 <translation id="1874224422119691492">Чтобы изменить это поведение, перейдите в <ph name="SETTINGS" />.</translation>
 <translation id="1875025161375567525">Фотолоток</translation>
@@ -474,6 +475,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">Сайт <ph name="URL" /> запрашивает разрешение на постоянное хранение большого объема данных на вашем компьютере.</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{и ещё 1}one{и ещё #}few{и ещё #}many{и ещё #}other{и ещё #}}</translation>
+<translation id="2001469757375372617">Произошла ошибка. Изменение не сохранено.</translation>
 <translation id="2003709556000175978">Сброс пароля</translation>
 <translation id="2003775180883135320">Четыре отверстия сверху</translation>
 <translation id="2009942480257059311">Кнопка "Создать мероприятие". Нажмите ее, чтобы быстро создать мероприятие в Google Календаре.</translation>
@@ -533,6 +535,7 @@
 <translation id="2118132148597630479">Конверт C5</translation>
 <translation id="2119505898009119320">Кому выдан: <ph name="ORGANIZATION" /> (<ph name="JURISDICTION" />)</translation>
 <translation id="2119867082804433120">Отверстие в правом нижнем углу</translation>
+<translation id="2122214041802369259">Высокие цены</translation>
 <translation id="2122719317867821810">Правило работает корректно, но переопределяет конфликтующее значение, заданное где-то ещё.</translation>
 <translation id="2126374524350484896">Производитель PDF:</translation>
 <translation id="2130448033692577677">Указанные вами шаблоны нельзя применить, поскольку правило DnsOverHttpsMode не настроено.</translation>
@@ -921,6 +924,7 @@
 <translation id="3054512251683174387">Chrome автоматически удаляет темы, добавленные более четырех недель назад. По мере просмотра веб-страниц тема может снова появиться в списке. Чтобы тема не передавалась сайтам, заблокируйте ее. Узнайте о том, как управлять конфиденциальностью в рекламе в Chrome.</translation>
 <translation id="3061707000357573562">Исправление сервиса</translation>
 <translation id="306573536155379004">Игра началась.</translation>
+<translation id="3067505415088964188">Низкие цены</translation>
 <translation id="3068991664510324412">Компьютерные и видеоигры</translation>
 <translation id="3080254622891793721">Изображения</translation>
 <translation id="3081538120861307764">Чтобы оценивать эффективность рекламы, сайты обмениваются некоторыми типами данных, например о том, в какое время суток вам была показана реклама.</translation>
@@ -2229,6 +2233,7 @@
 <translation id="5967592137238574583">Измените контактную информацию</translation>
 <translation id="5967867314010545767">Удалить из истории</translation>
 <translation id="5968022600320704045">Ничего не найдено.</translation>
+<translation id="5969199813874624822">Сохранить и включить отслеживание цены</translation>
 <translation id="5974052231147553524">Шестой рулон</translation>
 <translation id="5975083100439434680">Уменьшить</translation>
 <translation id="5979084224081478209">Проверить пароли</translation>
@@ -3668,6 +3673,7 @@
 <translation id="9141013498910525015">Управление адресами</translation>
 <translation id="9144951720726881238">Срок действия:</translation>
 <translation id="9148507642005240123">&amp;Отменить изменения</translation>
+<translation id="9148599396704355100">Низкие цены</translation>
 <translation id="9150045010208374699">Использование камеры</translation>
 <translation id="9150685862434908345">Администратор может удаленно менять настройки браузера и управлять действиями вне браузера Chrome на этом устройстве. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Обновлено</translation>

@@ -2542,6 +2542,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3088325635286126843">&amp;Renommer...</translation>
 <translation id="3089137131053189723">Recherche effacée</translation>
 <translation id="3089941350495701096">Liste de lecture</translation>
+<translation id="3089948625237571254">Copier l'image vidéo</translation>
 <translation id="3090227230165225418">Annoncer les notifications de téléchargement</translation>
 <translation id="3090589793601454425">Ne pas déplacer</translation>
 <translation id="3090819949319990166">Impossible de copier un fichier crx externe dans <ph name="TEMP_CRX_FILE" />.</translation>
@@ -3046,6 +3047,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3559262020195162408">Échec de l'installation de la politique sur l'appareil.</translation>
 <translation id="3559533181353831840">Il reste environ <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Correction orthographique</translation>
+<translation id="3561201631376780358">Ouvrir le panneau latéral pour voir tous les favoris</translation>
 <translation id="3562423906127931518">Ce processus peut prendre quelques minutes. Configuration du conteneur Linux.</translation>
 <translation id="3562655211539199254">Consultez les onglets Chrome récents de votre téléphone</translation>
 <translation id="3563432852173030730">Impossible de télécharger l'application Kiosque.</translation>
@@ -4912,6 +4914,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5173668317844998239">Ajoutez et supprimez des empreintes digitales enregistrées sur votre clé de sécurité</translation>
 <translation id="5174169235862638850">Le mot de passe a été copié dans le presse-papiers</translation>
 <translation id="5175379009094579629">Le nom de l'appareil n'est pas valide. Entrez un nom d'appareil valide pour réessayer.</translation>
+<translation id="5176787661653201403">Copier l'image vidéo</translation>
 <translation id="5177479852722101802">Continuer à bloquer l'accès à la caméra et au microphone</translation>
 <translation id="5177549709747445269">Vous utilisez les données mobiles</translation>
 <translation id="5178667623289523808">Trouver le précédent</translation>
@@ -5363,6 +5366,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5571066253365925590">Bluetooth activé</translation>
 <translation id="5571092938913434726">Commandes multimédias générales</translation>
 <translation id="5571832155627049070">Personnaliser votre profil</translation>
+<translation id="5572166921642484567">Choisir un mode de modèle de couleurs</translation>
 <translation id="5572252023412311448">Afficher les détails du site pour <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">Vous recevrez de meilleures suggestions dans la barre d'adresse</translation>
 <translation id="557506220935336383">Voir les autorisations d'extension pour d'autres sites</translation>
