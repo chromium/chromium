@@ -1317,7 +1317,6 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
   CHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
   CHECK_NE(action, PopoverTriggerAction::kNone);
-  CHECK_NE(action, PopoverTriggerAction::kToggle);
 
   auto maybe_throw_exception = [&exception_state, &include_event_handler_text](
                                    DOMExceptionCode code, const char* msg) {
@@ -1430,6 +1429,12 @@ bool HTMLElement::togglePopover(bool force, ExceptionState& exception_state) {
     hidePopover(exception_state);
   } else if (force && !popoverOpen()) {
     ShowPopoverInternal(/*invoker*/ nullptr, &exception_state);
+  } else {
+    // Throw an exception if this element is disconnected or doesn't have a
+    // popover attribute.
+    IsPopoverReady(PopoverTriggerAction::kToggle, &exception_state,
+                   /*include_event_handler_text=*/false,
+                   /*document=*/nullptr);
   }
 
   if (GetPopoverData()) {
