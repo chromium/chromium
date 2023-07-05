@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {AppManagementAppDetailsItem} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
-import {App, AppType, InstallSource} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {App, AppType, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -152,9 +152,9 @@ suite('<app-management-app-details-item>', () => {
     assertEquals('System App', typeAndSource.textContent!.trim());
   });
 
-  test('System install source', async function() {
+  test('System install reason', async function() {
     await addApp({
-      installSource: InstallSource.kSystem,
+      installReason: InstallReason.kSystem,
     });
 
     const typeAndSourceText =
@@ -168,7 +168,7 @@ suite('<app-management-app-details-item>', () => {
     const tooltipText = infoIconTooltip.querySelector('#tooltipText');
     assertTrue(!!tooltipText);
     assertEquals(
-        'This system app is preinstalled on your device',
+        'This app is preinstalled on your device',
         tooltipText.textContent!.trim());
   });
 

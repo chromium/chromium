@@ -109,8 +109,8 @@
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TITLE" desc="Title for App Details Section">
     App details
   </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TOOLTIP_SYSTEM" desc="Text for System app tooltip">
-    This system app is preinstalled on your device
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TOOLTIP_CROS_SYSTEM" desc="Text for ChromeOS System app tooltip">
+    This app is preinstalled on your device
   </message>
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_ANDROID" desc="Text for Android app type">
     Android App

@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import './app_management_cros_shared_style.css.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppType, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
+import {AppType, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -93,7 +93,7 @@ export class AppManagementAppDetailsItem extends
    */
   private shouldShowInfoIcon_(app: App): boolean {
     return app.installSource === InstallSource.kBrowser ||
-        app.installSource === InstallSource.kSystem;
+        app.installReason === InstallReason.kSystem;
   }
 
   /**
@@ -138,9 +138,13 @@ export class AppManagementAppDetailsItem extends
   }
 
   private getTypeAndSourceString_(app: App): string {
+    // When installReason = kSystem, the system has determined that the app
+    // needs to be installed. This includes apps such as Chrome and the Play
+    // Store.
+    if (app.installReason === InstallReason.kSystem) {
+      return this.i18n('appManagementAppDetailsTypeCrosSystem');
+    }
     switch (app.installSource) {
-      case InstallSource.kSystem:
-        return this.i18n('appManagementAppDetailsTypeCrosSystem');
       case InstallSource.kPlayStore:
       case InstallSource.kChromeWebStore:
         return this
@@ -200,9 +204,10 @@ export class AppManagementAppDetailsItem extends
    * message for system apps, to be shown in the tooltip.
    */
   private getTooltipText_(app: App): string {
+    if (app.installReason === InstallReason.kSystem) {
+      return this.i18n('appManagementAppDetailsTooltipCrosSystem');
+    }
     switch (app.installSource) {
-      case InstallSource.kSystem:
-        return this.i18n('appManagementAppDetailsTooltipSystem');
       case InstallSource.kBrowser:
         return app.publisherId.replace(/\?.*$/g, '');
       default:
