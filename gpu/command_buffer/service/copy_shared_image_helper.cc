@@ -959,10 +959,11 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
   } else {
     CHECK(shared_context_state_->graphite_context());
     ReadPixelsContext context;
-    shared_context_state_->graphite_context()->asyncReadPixels(
-        sk_image.get(), dst_info.colorInfo(),
-        SkIRect::MakeXYWH(src_x, src_y, dst_info.width(), dst_info.height()),
-        &OnReadPixelsDone, &context);
+    const SkIRect src_rect =
+        SkIRect::MakeXYWH(src_x, src_y, dst_info.width(), dst_info.height());
+    shared_context_state_->graphite_context()->asyncRescaleAndReadPixels(
+        sk_image.get(), dst_info, src_rect, SkImage::RescaleGamma::kSrc,
+        SkImage::RescaleMode::kRepeatedLinear, &OnReadPixelsDone, &context);
     InsertRecordingAndSubmit(shared_context_state_, /*sync_cpu=*/true);
     CHECK(context.finished);
     if (context.async_result) {

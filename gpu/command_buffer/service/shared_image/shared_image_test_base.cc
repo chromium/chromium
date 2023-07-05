@@ -298,11 +298,10 @@ void SharedImageTestBase::VerifyPixelsWithReadbackGraphite(
 
     ASSERT_TRUE(context_state_->graphite_context());
     ReadPixelsContext context;
-    context_state_->graphite_context()->asyncReadPixels(
-        sk_image.get(), dst_info.colorInfo(),
-        SkIRect::MakeXYWH(/*src_x=*/0, /*src_y=*/0, dst_info.width(),
-                          dst_info.height()),
-        &OnReadPixelsDone, &context);
+    const SkIRect src_rect = dst_info.bounds();
+    context_state_->graphite_context()->asyncRescaleAndReadPixels(
+        sk_image.get(), dst_info, src_rect, SkImage::RescaleGamma::kSrc,
+        SkImage::RescaleMode::kRepeatedLinear, &OnReadPixelsDone, &context);
     InsertRecordingAndSubmit(context_state_.get(), /*sync_cpu=*/true);
     ASSERT_TRUE(context.finished) << "plane_index=" << plane;
     if (context.async_result) {
