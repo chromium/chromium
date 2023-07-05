@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.readaloud;
-
-import org.chromium.chrome.modules.readaloud.external.Playback;
-
-import java.time.ZonedDateTime;
+package org.chromium.chrome.modules.readaloud;
 
 /** Interface for creating ReadAloud playback. */
 public interface ReadAloudPlaybackHooks {
@@ -22,9 +18,10 @@ public interface ReadAloudPlaybackHooks {
      * Request playback for the given URL.
      *
      * @param url Page URL.
-     * @param dateModified Page dateModified property if available; pass current time if not.
+     * @param dateModifiedMsSinceEpoch Page's dateModified attribute in terms of milliseconds since
+     *         Unix epoch. Pass current time if dateModified isn't available.
      * @param callback Called when request finishes or fails.
      */
     default void createPlayback(
-            String url, ZonedDateTime dateModified, CreatePlaybackCallback callback) {}
+            String url, long dateModifiedMsSinceEpoch, CreatePlaybackCallback callback) {}
 }
