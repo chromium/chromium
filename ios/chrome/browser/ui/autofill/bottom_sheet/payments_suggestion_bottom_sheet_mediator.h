@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 
 namespace autofill {
+class CreditCard;
 class PersonalDataManager;
 }  // namespace autofill
 
@@ -31,6 +32,9 @@ class WebStateList;
 
 // Disconnects the mediator.
 - (void)disconnect;
+
+// Return the credit card associated with the backend identifier.
+- (autofill::CreditCard*)creditCardForIdentifier:(NSString*)identifier;
 
 @end
 

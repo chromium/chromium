@@ -95,10 +95,19 @@
   return self;
 }
 
+#pragma mark - Public
+
 - (void)disconnect {
   _forwarder = nullptr;
   _observer = nullptr;
   _webStateList = nullptr;
+}
+
+- (autofill::CreditCard*)creditCardForIdentifier:(NSString*)identifier {
+  CHECK(identifier);
+  CHECK(_personalDataManager);
+  return _personalDataManager->GetCreditCardByGUID(
+      base::SysNSStringToUTF8(identifier));
 }
 
 #pragma mark - Accessors

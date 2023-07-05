@@ -11,6 +11,10 @@
 // Displays the payment methods menu.
 - (void)displayPaymentMethods;
 
+// Displays the payment details menu.
+- (void)displayPaymentDetailsForCreditCardIdentifier:
+    (NSString*)creditCardIdentifier;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_HANDLER_H_

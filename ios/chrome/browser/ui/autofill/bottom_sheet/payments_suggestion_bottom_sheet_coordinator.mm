@@ -84,4 +84,21 @@
                          }];
 }
 
+// Displays the payment details menu.
+- (void)displayPaymentDetailsForCreditCardIdentifier:
+    (NSString*)creditCardIdentifier {
+  autofill::CreditCard* creditCard =
+      [self.mediator creditCardForIdentifier:creditCardIdentifier];
+  if (creditCard) {
+    __weak __typeof(self) weakSelf = self;
+    [self.baseViewController.presentedViewController
+        dismissViewControllerAnimated:NO
+                           completion:^{
+                             [weakSelf stop];
+                             [weakSelf.applicationCommandsHandler
+                                 showCreditCardDetails:creditCard];
+                           }];
+  }
+}
+
 @end

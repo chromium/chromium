@@ -118,6 +118,8 @@ CGFloat const kCreditCardIconCornerRadius = 5;
         PaymentsSuggestionBottomSheetViewController* strongSelf = weakSelf;
         if (strongSelf) {
           [menuElements addObject:[strongSelf openPaymentMethodsAction]];
+          [menuElements
+              addObject:[strongSelf openPaymentDetailsForIndexPath:indexPath]];
         }
 
         return [UIMenu menuWithTitle:@"" children:menuElements];
@@ -277,6 +279,30 @@ CGFloat const kCreditCardIconCornerRadius = 5;
                 image:listIcon
            identifier:nil
               handler:paymentMethodsButtonTapHandler];
+}
+
+// Creates the UI action used to open the payment details for form suggestion at
+// index path.
+// Test.
+- (UIAction*)openPaymentDetailsForIndexPath:(NSIndexPath*)indexPath {
+  __weak __typeof(self) weakSelf = self;
+  NSString* creditCardIdentifier =
+      [_creditCardData[indexPath.row] backendIdentifier];
+
+  void (^showDetailsButtonTapHandler)(UIAction*) = ^(UIAction* action) {
+    // Open Payments Details.
+    [weakSelf.handler
+        displayPaymentDetailsForCreditCardIdentifier:creditCardIdentifier];
+  };
+
+  UIImage* infoIcon =
+      DefaultSymbolWithPointSize(kInfoCircleSymbol, kSymbolActionPointSize);
+  return
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_PAYMENT_BOTTOM_SHEET_SHOW_DETAILS)
+                          image:infoIcon
+                     identifier:nil
+                        handler:showDetailsButtonTapHandler];
 }
 
 @end
