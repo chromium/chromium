@@ -8,6 +8,7 @@ import {CupsPrinterInfo, CupsPrintersBrowserProxyImpl, PRINTER_STATUS_QUERY_SHOR
 import {CrInputElement, CrSearchableDropDownElement, CrToastElement, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -608,17 +609,24 @@ suite('CupsSavedPrintersTests', () => {
     // icon based on the printer status previously set.
     const printerListEntries = getPrinterEntries(savedPrintersElement);
     assertEquals(3, printerListEntries.length);
+    const jelly_enabled = loadTimeData.getValue('isJellyEnabled');
     for (const entry of printerListEntries) {
       let expectedPrinterIcon;
       switch (entry.printerEntry.printerInfo.printerId) {
         case 'id1':
-          expectedPrinterIcon = 'os-settings:printer-status-green';
+          expectedPrinterIcon = jelly_enabled ?
+              'os-settings:printer-status-illo-green' :
+              'os-settings:printer-status-green';
           break;
         case 'id2':
-          expectedPrinterIcon = 'os-settings:printer-status-red';
+          expectedPrinterIcon = jelly_enabled ?
+              'os-settings:printer-status-illo-red' :
+              'os-settings:printer-status-red';
           break;
         case 'id3':
-          expectedPrinterIcon = 'os-settings:printer-status-grey';
+          expectedPrinterIcon = jelly_enabled ?
+              'os-settings:printer-status-illo-grey' :
+              'os-settings:printer-status-grey';
           break;
         default:
           assertNotReached();
