@@ -49,7 +49,9 @@ class DrivePinningScreen : public BaseScreen,
     return exit_callback_;
   }
 
-  void CalculateRequiredSpace();
+  // Returns true if the bulk-pinning manager is in the right stage and started
+  // computing the required space.
+  [[nodiscard]] bool CalculateRequiredSpace();
 
   std::string RetrieveChoobeSubtitle();
 

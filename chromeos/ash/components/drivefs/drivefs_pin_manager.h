@@ -219,7 +219,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   void RemoveObserver(Observer* const observer) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(HasObserver(observer));
     observers_.RemoveObserver(observer);
   }
 

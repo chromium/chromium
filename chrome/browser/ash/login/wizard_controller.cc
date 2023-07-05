@@ -1427,8 +1427,10 @@ void WizardController::OnConsolidatedConsentScreenExit(
   OnScreenExit(ConsolidatedConsentScreenView::kScreenId,
                ConsolidatedConsentScreen::GetResultString(result));
 
-  if (features::IsOobeDrivePinningEnabled()) {
-    GetScreen<DrivePinningScreen>()->CalculateRequiredSpace();
+  if (features::IsOobeDrivePinningEnabled() &&
+      !GetScreen<DrivePinningScreen>()->CalculateRequiredSpace()) {
+    LOG(ERROR)
+        << "DriveFS bulk-pinning manager cannot calculate the required space";
   }
 
   if (wizard_context_->is_cloud_ready_update_flow) {

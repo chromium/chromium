@@ -21,6 +21,7 @@ namespace {
 constexpr const char kUserActionNext[] = "driveNext";
 constexpr const char kUserActionReturn[] = "return";
 
+using drivefs::pinning::PinManager;
 using drivefs::pinning::Progress;
 
 bool ShouldShowChoobeReturnButton(ChoobeFlowController* controller) {
@@ -39,17 +40,11 @@ void ReportScreenCompletedToChoobe(ChoobeFlowController* controller) {
       DrivePinningScreenView::kScreenId);
 }
 
-drivefs::pinning::PinManager* GetPinManager() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-
-  drive::DriveIntegrationService* service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-
-  if (!service || !service->IsMounted() || !service->GetPinManager()) {
-    return nullptr;
-  }
-
-  return service->GetPinManager();
+PinManager* GetPinManager() {
+  drive::DriveIntegrationService* const service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(
+          ProfileManager::GetActiveUserProfile());
+  return service && service->IsMounted() ? service->GetPinManager() : nullptr;
 }
 
 }  // namespace
@@ -84,7 +79,11 @@ DrivePinningScreen::DrivePinningScreen(
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
-DrivePinningScreen::~DrivePinningScreen() = default;
+DrivePinningScreen::~DrivePinningScreen() {
+  if (PinManager* const pin_manager = GetPinManager()) {
+    pin_manager->RemoveObserver(this);
+  }
+}
 
 bool DrivePinningScreen::ShouldBeSkipped(const WizardContext& context) const {
   if (context.skip_post_login_screens_for_tests) {
@@ -112,13 +111,14 @@ bool DrivePinningScreen::MaybeSkip(WizardContext& context) {
   return false;
 }
 
-void DrivePinningScreen::CalculateRequiredSpace() {
-  auto* pin_manager = GetPinManager();
-
-  if (pin_manager) {
-    pin_manager->AddObserver(this);
-    pin_manager->CalculateRequiredSpace();
+bool DrivePinningScreen::CalculateRequiredSpace() {
+  PinManager* const pin_manager = GetPinManager();
+  if (!pin_manager) {
+    return false;
   }
+
+  pin_manager->AddObserver(this);
+  return pin_manager->CalculateRequiredSpace();
 }
 
 void DrivePinningScreen::OnProgressForTest(
