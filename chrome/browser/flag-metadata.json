@@ -6195,11 +6195,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "page-info-cookies-subpage",
-    "owners": [ "zsalata@google.com", "olesiamarukhno@google.com", "dullweber" ],
-    "expiry_milestone": 117
-  },
-  {
     "name": "page-info-hide-site-settings",
     "owners": [
       "zsalata@google.com",

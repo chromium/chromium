@@ -368,8 +368,6 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
 
 }  // namespace
 
-PageInfoUI::CookieInfo::CookieInfo() : allowed(-1), blocked(-1) {}
-
 PageInfoUI::CookiesNewInfo::CookiesNewInfo() = default;
 
 PageInfoUI::CookiesNewInfo::~CookiesNewInfo() = default;

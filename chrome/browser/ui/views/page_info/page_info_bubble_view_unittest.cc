@@ -273,11 +273,6 @@ class PageInfoBubbleViewTestApi {
     return actual_count;
   }
 
-  // Simulates updating the number of cookies.
-  void SetCookieInfo(const CookieInfoList& list) {
-    presenter_->ui_for_testing()->SetCookieInfo(list);
-  }
-
   // Simulates updating the number of blocked and allowed sites and fps info.
   void SetCookieInfo(const PageInfoUI::CookiesNewInfo& cookie_info) {
     presenter_->ui_for_testing()->SetCookieInfo(cookie_info);
@@ -1131,9 +1126,7 @@ class PageInfoBubbleViewCookiesSubpageTest : public PageInfoBubbleViewTest {
  public:
   PageInfoBubbleViewCookiesSubpageTest() {
     feature_list.InitWithFeatures(
-        {page_info::kPageInfoCookiesSubpage,
-         privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
-        {});
+        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   }
 
   void ExpectViewContainsText(views::View* view, const std::u16string& text) {

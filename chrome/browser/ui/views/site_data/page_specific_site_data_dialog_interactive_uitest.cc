@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/views/collected_cookies_views.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
@@ -32,7 +31,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/page_info/core/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
@@ -202,10 +200,7 @@ class PageSpecificSiteDataDialogInteractiveUiTest
 
  protected:
   virtual void SetUpFeatureList() {
-    feature_list_.InitWithFeatures({page_info::kPageSpecificSiteDataDialog,
-                                    page_info::kPageInfoCookiesSubpage,
-                                    net::features::kPartitionedCookies},
-                                   {});
+    feature_list_.InitWithFeatures({net::features::kPartitionedCookies}, {});
   }
 
   virtual void SetUpCookieControlMode() {
@@ -410,10 +405,7 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
  protected:
   void SetUpFeatureList() override {
     feature_list_.InitWithFeatures(
-        {page_info::kPageSpecificSiteDataDialog,
-         page_info::kPageInfoCookiesSubpage, features::kIsolatedWebApps,
-         features::kIsolatedWebAppDevMode},
-        {});
+        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
   }
 
   Browser* InstallAndLaunchIsolatedWebApp() {
@@ -489,9 +481,7 @@ class PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest
  protected:
   void SetUpFeatureList() override {
     feature_list_.InitWithFeatures(
-        {page_info::kPageSpecificSiteDataDialog,
-         page_info::kPageInfoCookiesSubpage, blink::features::kSharedStorageAPI,
-         blink::features::kFencedFrames,
+        {blink::features::kSharedStorageAPI, blink::features::kFencedFrames,
          features::kPrivacySandboxAdsAPIsOverride},
         {});
   }

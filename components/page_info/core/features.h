@@ -47,11 +47,6 @@ BASE_DECLARE_FEATURE(kPageInfoHistoryDesktop);
 // Hides site settings row.
 BASE_DECLARE_FEATURE(kPageInfoHideSiteSettings);
 
-// Enables Cookies Subpage. For implementation phase.
-BASE_DECLARE_FEATURE(kPageInfoCookiesSubpage);
-
-// Enables the new page specific site data dialog.
-BASE_DECLARE_FEATURE(kPageSpecificSiteDataDialog);
 #endif
 
 }  // namespace page_info

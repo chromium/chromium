@@ -71,23 +71,6 @@ class PageInfoUI {
     SecurityDescriptionType type;
   };
 
-  // |CookieInfo| contains information about the cookies from a specific source.
-  // A source can for example be a specific origin or an entire wildcard domain.
-  // TODO(crbug.com/1346305): Remove after finishing cookies subpage
-  // implementation.
-  struct CookieInfo {
-    CookieInfo();
-
-    // The number of allowed cookies.
-    int allowed;
-    // The number of blocked cookies.
-    int blocked;
-
-    // Whether these cookies are from the current top-level origin as seen by
-    // the user, or from third-party origins.
-    bool is_first_party;
-  };
-
   // |CookiesFpsInfo| contains information about a specific First-Party Set.
   struct CookiesFpsInfo {
     explicit CookiesFpsInfo(const std::u16string& owner_name);
@@ -206,7 +189,6 @@ class PageInfoUI {
     std::vector<privacy_sandbox::CanonicalTopic> accessed_topics;
   };
 
-  using CookieInfoList = std::vector<CookieInfo>;
   using PermissionInfoList = std::vector<PageInfo::PermissionInfo>;
   using ChosenObjectInfoList = std::vector<std::unique_ptr<ChosenObjectInfo>>;
 
@@ -280,9 +262,6 @@ class PageInfoUI {
   CreateSafetyTipSecurityDescription(const security_state::SafetyTipInfo& info);
 
   // Sets cookie information.
-  // TODO(crbug.com/1346305) remove unused function overload after finished
-  // project. Sets cookie information.
-  virtual void SetCookieInfo(const CookieInfoList& cookie_info_list) {}
   virtual void SetCookieInfo(const CookiesNewInfo& cookie_info) {}
 
   // Sets permission information.
@@ -306,7 +285,6 @@ class PageInfoUI {
       const IdentityInfo& identity_info) const;
 };
 
-typedef PageInfoUI::CookieInfoList CookieInfoList;
 typedef PageInfoUI::PermissionInfoList PermissionInfoList;
 typedef PageInfoUI::ChosenObjectInfoList ChosenObjectInfoList;
 

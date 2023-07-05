@@ -323,15 +323,11 @@ void PageInfo::OnStatusChanged(CookieControlsStatus status,
                                CookieControlsEnforcement enforcement,
                                int allowed_cookies,
                                int blocked_cookies) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoCookiesSubpage)) {
-    if (status != status_ || enforcement != enforcement_) {
-      status_ = status;
-      enforcement_ = enforcement;
-      PresentSiteData(base::DoNothing());
-    }
+  if (status != status_ || enforcement != enforcement_) {
+    status_ = status;
+    enforcement_ = enforcement;
+    PresentSiteData(base::DoNothing());
   }
-#endif
 }
 
 void PageInfo::OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) {
@@ -1365,51 +1361,26 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
   if (!web_contents_ || web_contents_->IsBeingDestroyed())
     return;
 
-  bool is_cookies_subpage_enabled = false;
-#if !BUILDFLAG(IS_ANDROID)
-  is_cookies_subpage_enabled =
-      base::FeatureList::IsEnabled(page_info::kPageInfoCookiesSubpage);
-#endif
-
-  if (is_cookies_subpage_enabled) {
-    // Add allowed sites count.
-    PageInfoUI::CookiesNewInfo cookies_info;
-    cookies_info.allowed_sites_count = GetSitesWithAllowedCookiesAccessCount();
-    cookies_info.blocked_sites_count =
-        GetThirdPartySitesWithBlockedCookiesAccessCount(site_url_);
+  // Add allowed sites count.
+  PageInfoUI::CookiesNewInfo cookies_info;
+  cookies_info.allowed_sites_count = GetSitesWithAllowedCookiesAccessCount();
+  cookies_info.blocked_sites_count =
+      GetThirdPartySitesWithBlockedCookiesAccessCount(site_url_);
 
 #if !BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(
-            privacy_sandbox::kPrivacySandboxFirstPartySetsUI)) {
-      auto fps_owner = delegate_->GetFpsOwner(site_url_);
-      if (fps_owner) {
-        cookies_info.fps_info = PageInfoUI::CookiesFpsInfo(*fps_owner);
-        cookies_info.fps_info->is_managed = delegate_->IsFpsManaged();
-      }
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxFirstPartySetsUI)) {
+    auto fps_owner = delegate_->GetFpsOwner(site_url_);
+    if (fps_owner) {
+      cookies_info.fps_info = PageInfoUI::CookiesFpsInfo(*fps_owner);
+      cookies_info.fps_info->is_managed = delegate_->IsFpsManaged();
     }
+  }
 #endif
 
-    cookies_info.status = status_;
-    cookies_info.enforcement = enforcement_;
-    ui_->SetCookieInfo(cookies_info);
-  } else {
-    CookieInfoList cookie_info_list;
-
-    // Add first party cookie and site data counts.
-    PageInfoUI::CookieInfo cookie_info;
-    cookie_info.allowed = GetFirstPartyAllowedCookiesCount(site_url_);
-    cookie_info.blocked = GetFirstPartyBlockedCookiesCount(site_url_);
-    cookie_info.is_first_party = true;
-    cookie_info_list.push_back(cookie_info);
-
-    // Add third party cookie counts.
-    cookie_info.allowed = GetThirdPartyAllowedCookiesCount(site_url_);
-    cookie_info.blocked = GetThirdPartyBlockedCookiesCount(site_url_);
-    cookie_info.is_first_party = false;
-    cookie_info_list.push_back(cookie_info);
-
-    ui_->SetCookieInfo(cookie_info_list);
-  }
+  cookies_info.status = status_;
+  cookies_info.enforcement = enforcement_;
+  ui_->SetCookieInfo(cookies_info);
 
   std::move(done).Run();
 }

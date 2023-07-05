@@ -175,8 +175,7 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     // launched. Disable features for the new version of "Cookies in use"
     // dialog. The new UI is covered by
     // PageInfoBubbleViewBrowserTestCookiesSubpage.
-    feature_list_.InitWithFeatures({}, {page_info::kPageSpecificSiteDataDialog,
-                                        page_info::kPageInfoCookiesSubpage});
+    feature_list_.InitWithFeatures({}, {});
   }
 
   PageInfoBubbleViewBrowserTest(const PageInfoBubbleViewBrowserTest& test) =
@@ -601,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
   run_loop.Run();
 
   views::View* cookies_button = GetView(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG);
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
   PerformMouseClickOnView(cookies_button);
 }
 
@@ -1165,10 +1164,7 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
  public:
   PageInfoBubbleViewBrowserTestCookiesSubpage() {
     feature_list_.InitWithFeatures(
-        {page_info::kPageInfoCookiesSubpage,
-         page_info::kPageSpecificSiteDataDialog,
-         privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
-        {});
+        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   }
 
   void SetUpOnMainThread() override {

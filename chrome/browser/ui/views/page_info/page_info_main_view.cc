@@ -153,78 +153,33 @@ PageInfoMainView::PageInfoMainView(
 PageInfoMainView::~PageInfoMainView() = default;
 
 void PageInfoMainView::EnsureCookieInfo() {
-  if (cookie_button_ == nullptr) {
-    // Get the icon.
-    PageInfo::PermissionInfo info;
-    info.type = ContentSettingsType::COOKIES;
-    info.setting = CONTENT_SETTING_ALLOW;
-    const ui::ImageModel icon = PageInfoViewFactory::GetPermissionIcon(info);
-
-    const std::u16string& tooltip =
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
-
-    if (base::FeatureList::IsEnabled(page_info::kPageInfoCookiesSubpage)) {
-      // Create a simple cookie button, that opens a cookies subpage.
-      cookie_button_ =
-          site_settings_view_->AddChildView(std::make_unique<RichHoverButton>(
-              base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
-                                  base::Unretained(navigation_handler_)),
-              icon, l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
-              std::u16string(), tooltip, std::u16string(),
-              PageInfoViewFactory::GetOpenSubpageIcon()));
-      cookie_button_->SetID(
-          PageInfoViewFactory::
-              VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
-
-    } else {
-      // Create the cookie button, leaving the secondary text blank since the
-      // cookie count is not yet known.
-      cookie_button_ =
-          site_settings_view_->AddChildView(std::make_unique<RichHoverButton>(
-              base::BindRepeating(
-                  [](PageInfoMainView* view) {
-                    view->HandleMoreInfoRequest(view->cookie_button_);
-                  },
-                  this),
-              icon, l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES),
-              /*secondary_text=*/u"", tooltip, std::u16string(),
-              PageInfoViewFactory::GetLaunchIcon()));
-      cookie_button_->SetID(
-          PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG);
-    }
-    cookie_button_->SetProperty(views::kElementIdentifierKey,
-                                kCookieButtonElementId);
-    ads_personalization_section_ =
-        site_settings_view_->AddChildView(CreateContainerView());
+  if (cookie_button_ != nullptr) {
+    return;
   }
-}
+  // Get the icon.
+  PageInfo::PermissionInfo info;
+  info.type = ContentSettingsType::COOKIES;
+  info.setting = CONTENT_SETTING_ALLOW;
+  const ui::ImageModel icon = PageInfoViewFactory::GetPermissionIcon(info);
 
-void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
-  // Calculate the number of cookies used by this site. |cookie_info_list|
-  // should only ever have 2 items: first- and third-party cookies.
-  DCHECK_EQ(cookie_info_list.size(), 2u);
-  unsigned int total_allowed = 0;
-  for (const auto& i : cookie_info_list) {
-    total_allowed += i.allowed;
-  }
+  const std::u16string& tooltip =
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
 
-  // Get the string to display the number of cookies.
-  const std::u16string num_cookies_text = l10n_util::GetPluralStringFUTF16(
-      IDS_PAGE_INFO_NUM_COOKIES, total_allowed);
+  // Create a cookie button that opens a cookies subpage.
+  cookie_button_ =
+      site_settings_view_->AddChildView(std::make_unique<RichHoverButton>(
+          base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
+                              base::Unretained(navigation_handler_)),
+          icon, l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
+          std::u16string(), tooltip, std::u16string(),
+          PageInfoViewFactory::GetOpenSubpageIcon()));
+  cookie_button_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
 
-  // Create the cookie button if it doesn't yet exist. This method gets called
-  // each time site data is updated, so if it *does* already exist, skip this
-  // part and just update the text.
-  PageInfoMainView::EnsureCookieInfo();
-
-  // Update the text displaying the number of allowed cookies.
-  if (!base::FeatureList::IsEnabled(page_info::kPageInfoCookiesSubpage)) {
-    cookie_button_->SetTitleText(
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES));
-    cookie_button_->SetSecondaryText(num_cookies_text);
-  }
-
-  PreferredSizeChanged();
+  cookie_button_->SetProperty(views::kElementIdentifierKey,
+                              kCookieButtonElementId);
+  ads_personalization_section_ =
+      site_settings_view_->AddChildView(CreateContainerView());
 }
 
 void PageInfoMainView::SetPermissionInfo(
@@ -537,9 +492,6 @@ void PageInfoMainView::HandleMoreInfoRequestAsync(int view_id) {
   switch (view_id) {
     case PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS:
       presenter_->OpenSiteSettingsView();
-      break;
-    case PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG:
-      presenter_->OpenCookiesDialog();
       break;
     default:
       NOTREACHED_NORETURN();

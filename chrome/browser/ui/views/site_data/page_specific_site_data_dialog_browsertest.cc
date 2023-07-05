@@ -58,20 +58,7 @@ class PageSpecificSiteDataDialogBrowserTest
   PageSpecificSiteDataDialogBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {net::features::kPartitionedCookies, {}}};
-
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam()) {
-      enabled_features.emplace_back(page_info::kPageSpecificSiteDataDialog,
-                                    base::FieldTrialParams());
-      enabled_features.emplace_back(page_info::kPageInfoCookiesSubpage,
-                                    base::FieldTrialParams());
-    } else {
-      disabled_features.emplace_back(page_info::kPageSpecificSiteDataDialog);
-      disabled_features.emplace_back(page_info::kPageInfoCookiesSubpage);
-    }
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
 
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
@@ -106,8 +93,7 @@ class PageSpecificSiteDataDialogBrowserTest
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
   views::Widget* OpenDialog() {
-    std::string widget_name =
-        GetParam() ? "PageSpecificSiteDataDialog" : "CollectedCookiesViews";
+    std::string widget_name = "PageSpecificSiteDataDialog";
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          widget_name);
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -171,7 +157,7 @@ class PageSpecificSiteDataDialogBrowserTest
 // Testing the dialog lifecycle, if the dialog is properly destroyed in
 // different scenarious.
 
-IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, CloseDialog) {
+IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest, CloseDialog) {
   // Test opening and closing dialog.
 
   base::HistogramTester histograms;
@@ -197,7 +183,7 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, CloseDialog) {
   EXPECT_EQ(1, user_actions.GetActionCount(open_action));
 }
 
-IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
                        NavigateSameOrigin) {
   // Test navigating while the dialog is open.
   // Navigating to the another page with the same origin won't close dialog.
@@ -209,7 +195,7 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
 
 // TODO(crbug.com/1344787): Figure out why the dialog isn't closed when
 // nnavigating away on Linux and overall flaky on other platforms.
-IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
                        DISABLED_NavigateAway) {
   // Test navigating while the dialog is open.
   // Navigation in the owning tab will close dialog.
@@ -221,12 +207,8 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   EXPECT_TRUE(dialog->IsClosed());
 }
 
-IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
                        ChangeAndCloseTab) {
-  if (!GetParam()) {
-    return;
-  }
-
   // Test closing tab while the dialog is open.
   // Closing the owning tab will close dialog.
   auto* dialog = OpenDialog();
@@ -252,7 +234,7 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
 // but synchronously removes it from the WebContentsModalDialogManager. Make
 // sure there's no crash when trying to re-open the dialog right
 // after closing it. Regression test for https://crbug.com/989888
-IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
                        CloseDialogAndReopen) {
   auto* dialog = OpenDialog();
 
@@ -267,11 +249,7 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
 // TODO(crbug.com/1344787): Add testing dialog functionality such as showing
 // infobar after changes, changing content settings, deleting data.
 
-IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
-  if (!GetParam()) {
-    return;
-  }
-
+IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
   base::HistogramTester histograms;
   base::UserActionTester user_actions;
   const std::string remove_action = "CookiesInUseDialog.RemoveButtonClicked";
@@ -311,11 +289,7 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
   EXPECT_EQ(1, user_actions.GetActionCount(remove_action));
 }
 
-IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
-  if (!GetParam()) {
-    return;
-  }
-
+IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
   base::HistogramTester histograms;
   // The histogram should start empty and no actions recorded.
   histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
@@ -354,11 +328,7 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
   histograms.ExpectTotalCount(kCookiesDialogHistogramName, 2);
 }
 
-IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
-  if (!GetParam()) {
-    return;
-  }
-
+IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
   base::HistogramTester histograms;
   // The histogram should start empty and no actions recorded.
   histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
@@ -406,12 +376,8 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
   histograms.ExpectTotalCount(kCookiesDialogHistogramName, 3);
 }
 
-IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
                        ClearOnExitMenuItem) {
-  if (!GetParam()) {
-    return;
-  }
-
   base::HistogramTester histograms;
   // The histogram should start empty and no actions recorded.
   histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
@@ -448,12 +414,8 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   histograms.ExpectTotalCount(kCookiesDialogHistogramName, 2);
 }
 
-IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
                        PartitionedCookies) {
-  if (!GetParam()) {
-    return;
-  }
-
   content::CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 8);
 
@@ -508,12 +470,8 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   // TODO(crbug.com/1344787): Check the histograms value.
 }
 
-IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
                        PartitionedCookiesAndBlockedThirdParty) {
-  if (!GetParam()) {
-    return;
-  }
-
   // Block third-party cookies.
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
@@ -577,12 +535,8 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   // TODO(crbug.com/1344787): Check the histograms value.
 }
 
-IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
                        SameOriginNavigationDeletion) {
-  if (!GetParam()) {
-    return;
-  }
-
   // Regression test for crbug.com/1421521. As the dialog remains open during
   // same-origin navigations, it mustn't cache any pointers owned by the
   // PageSpecificContentSettings, which is _page_ specific, and so changes even
@@ -606,8 +560,3 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   ClickButton(row_view->delete_button_for_testing());
   EXPECT_FALSE(dialog->IsClosed());
 }
-
-// Run tests with kPageSpecificSiteDataDialog flag enabled and disabled.
-INSTANTIATE_TEST_SUITE_P(All,
-                         PageSpecificSiteDataDialogBrowserTest,
-                         ::testing::Values(false, true));

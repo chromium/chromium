@@ -63,7 +63,6 @@ class PageInfoMainView : public views::View,
   ~PageInfoMainView() override;
 
   // PageInfoUI implementations.
-  void SetCookieInfo(const CookieInfoList& cookie_info_list) override;
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,
                          ChosenObjectInfoList chosen_object_info_list) override;
   void SetIdentityInfo(const IdentityInfo& identity_info) override;
@@ -141,7 +140,7 @@ class PageInfoMainView : public views::View,
   // The view that contains the certificate, cookie, and permissions sections.
   raw_ptr<views::View> site_settings_view_ = nullptr;
 
-  // The button that opens the "Cookies" dialog.
+  // The button that opens the "Cookies" subpage.
   raw_ptr<RichHoverButton> cookie_button_ = nullptr;
 
   // The button that opens up "Site Settings".

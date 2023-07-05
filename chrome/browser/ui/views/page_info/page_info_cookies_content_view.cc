@@ -218,7 +218,6 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesToggleOrIcon(
   // |InitBlockingThirdPartyCookiesRow| because we're adding subview to it.
   DCHECK(blocking_third_party_cookies_row_);
 
-  // TODO(crbug.com/1346305): Add correct tooltips when known.
   int tooltip_id = 0;
   bool enforced = false;
   switch (enforcement) {

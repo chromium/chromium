@@ -533,8 +533,7 @@ PageSpecificContentSettings::PageSpecificContentSettings(content::Page& page,
 #if !BUILDFLAG(IS_ANDROID)
           // TODO(crbug.com/1404234): Remove the async local storage pathway
           // completely when the new dialog has launched.
-          /*ignore_empty_localstorage=*/
-          !base::FeatureList::IsEnabled(page_info::kPageSpecificSiteDataDialog),
+          /*ignore_empty_localstorage=*/false,
 #else
           /*ignore_empty_localstorage=*/true,
 #endif

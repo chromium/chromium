@@ -58,14 +58,6 @@ BASE_FEATURE(kPageInfoHideSiteSettings,
              "PageInfoHideSiteSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPageInfoCookiesSubpage,
-             "PageInfoCookiesSubpage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPageSpecificSiteDataDialog,
-             "PageSpecificSiteDataDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif
 
 }  // namespace page_info

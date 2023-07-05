@@ -102,11 +102,6 @@ void PageInfoControllerAndroid::SetIdentityInfo(
       ConvertUTF16ToJavaString(env, security_description->details));
 }
 
-void PageInfoControllerAndroid::SetCookieInfo(
-    const CookieInfoList& cookie_info_list) {
-  NOTIMPLEMENTED();
-}
-
 void PageInfoControllerAndroid::SetPageFeatureInfo(
     const PageFeatureInfo& info) {
   NOTIMPLEMENTED();

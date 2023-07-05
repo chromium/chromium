@@ -14,8 +14,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-class CollectedCookiesViews;
-
 // Used for UMA histogram to record types of actions done by the user in
 // the "Cookies in use" dialog. These values are persisted to logs.
 // Entries should not be renumbered and numeric values should never be reused.
@@ -51,11 +49,6 @@ class PageSpecificSiteDataDialogController
     : public content::WebContentsUserData<
           PageSpecificSiteDataDialogController> {
  public:
-  // TODO(crbug.com/1344787): Don't use this method, it will be deprecated with
-  // the CollectedCookiesViews after kPageSpecificSiteDataDialog is finished.
-  static CollectedCookiesViews* GetDialogViewForTesting(
-      content::WebContents* web_contents);
-
   static void CreateAndShowForWebContents(content::WebContents* web_contents);
 
  private:
