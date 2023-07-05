@@ -28,16 +28,18 @@ using AnchoredNudgeClickCallback = base::RepeatingCallback<void()>;
 using AnchoredNudgeDismissCallback = base::RepeatingCallback<void()>;
 
 // Describes the contents of a System Nudge (AnchoredNudge), which is a notifier
-// that may anchor to an `anchor_view` and informs users about something that
-// might enhance their experience immediately. See the "Educational Nudges"
-// section in go/notifier-framework for example usages.
+// that informs users about something that might enhance their experience. See
+// the "Educational Nudges" section in go/notifier-framework for example usages.
+// Nudges may anchor to any `views::View` on screen and will follow it to set
+// its bounds. Nudges with no `anchor_view` will show in the default location.
+// Nudges `anchored_to_shelf` will set their arrow based on the shelf alignment.
 // TODO(b/285988235): `AnchoredNudge` will replace the existing `SystemNudge`
 // and take over its name.
 struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   AnchoredNudgeData(const std::string& id,
                     NudgeCatalogName catalog_name,
                     const std::u16string& body_text,
-                    views::View* anchor_view);
+                    views::View* anchor_view = nullptr);
   AnchoredNudgeData(AnchoredNudgeData&& other);
   AnchoredNudgeData& operator=(AnchoredNudgeData&& other);
   ~AnchoredNudgeData();
@@ -65,14 +67,11 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   std::u16string second_button_text;
   base::RepeatingClosure second_button_callback;
 
-  // Unowned. Must outlive the `AnchoredNudge`.
-  // TODO(b/285988197): Make setting an `anchor_view` optional. Nudges without
-  // an anchor will show on the leading bottom of the screen.
+  // Unowned view that the nudge may anchor to, to define its bounds.
+  // Nudges with no `anchor_view` will show on their default location.
   raw_ptr<views::View, DanglingUntriaged> anchor_view;
 
-  // Used to set bubble placement in relation to the anchor view.
-  // A value of `BOTTOM_CENTER` means that the nudge will be anchored from its
-  // bottom center to the anchor view.
+  // Used to set the nudge's placement in relation to the anchor view, if any.
   views::BubbleBorder::Arrow arrow = views::BubbleBorder::BOTTOM_CENTER;
 
   // Nudges with long duration are meant to persist and expect an action from

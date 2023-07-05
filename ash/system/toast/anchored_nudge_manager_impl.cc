@@ -27,7 +27,6 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/dialog_client_view.h"
 
 namespace ash {
 
@@ -112,17 +111,15 @@ class AnchoredNudgeManagerImpl::NudgeHoverObserver : public ui::EventObserver {
   void OnEvent(const ui::Event& event) override {
     switch (event.type()) {
       case ui::ET_MOUSE_ENTERED:
-        anchored_nudge_manager_->OnNudgeHoverStateChanged(
-            /*nudge_id=*/nudge_id_,
-            /*is_hovering=*/true);
+        anchored_nudge_manager_->OnNudgeHoverStateChanged(nudge_id_,
+                                                          /*is_hovering=*/true);
         if (!hover_state_change_callback_.is_null()) {
           std::move(hover_state_change_callback_).Run(true);
         }
         break;
       case ui::ET_MOUSE_EXITED:
         anchored_nudge_manager_->OnNudgeHoverStateChanged(
-            /*nudge_id=*/nudge_id_,
-            /*is_hovering=*/false);
+            nudge_id_, /*is_hovering=*/false);
         if (!hover_state_change_callback_.is_null()) {
           std::move(hover_state_change_callback_).Run(false);
         }
@@ -215,6 +212,7 @@ class AnchoredNudgeManagerImpl::NudgeWidgetObserver
                       AnchoredNudgeManagerImpl* anchored_nudge_manager)
       : anchored_nudge_(anchored_nudge),
         anchored_nudge_manager_(anchored_nudge_manager) {
+    DCHECK(anchored_nudge->GetWidget());
     anchored_nudge->GetWidget()->AddObserver(this);
   }
 
@@ -263,9 +261,13 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
   }
 
   views::View* anchor_view = nudge_data.anchor_view;
-  // Nudges cannot show without a visible anchor view or without a widget.
-  if (!anchor_view->GetVisible() || !anchor_view->GetWidget()) {
-    return;
+
+  // Nudges with an anchor view won't show if `anchor_view` is not visible or
+  // does not have a widget.
+  if (anchor_view) {
+    if (!anchor_view->GetVisible() || !anchor_view->GetWidget()) {
+      return;
+    }
   }
 
   // Chain callbacks with `Cancel()` so nudge is dismissed on button pressed.
@@ -283,19 +285,6 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
   auto* anchored_nudge_widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(anchored_nudge));
 
-  // Remove accelerator so the nudge won't be closed when pressing the Esc key.
-  anchored_nudge_ptr->GetDialogClientView()->RemoveAccelerator(
-      ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-
-  // The anchored nudge bubble is not necessarily inside the same window as the
-  // widget. `use_anchor_window_bounds` is set to false so an offset is not
-  // applied to try to fit it inside the anchor window.
-  anchored_nudge_ptr->GetBubbleFrameView()->set_use_anchor_window_bounds(false);
-
-  // The bounds of the bubble need to be updated to reflect that we are not
-  // using the anchor window bounds.
-  anchored_nudge_ptr->SizeToContents();
-
   // The widget is not activated so the nudge does not steal focus.
   anchored_nudge_widget->ShowInactive();
 
@@ -304,8 +293,10 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
   nudge_widget_observers_[id] =
       std::make_unique<NudgeWidgetObserver>(anchored_nudge_ptr, this);
 
-  anchor_view_observers_[id] = std::make_unique<AnchorViewObserver>(
-      anchored_nudge_ptr, anchor_view, this);
+  if (anchor_view) {
+    anchor_view_observers_[id] = std::make_unique<AnchorViewObserver>(
+        anchored_nudge_ptr, anchor_view, this);
+  }
 
   nudge_hover_observers_[id] = std::make_unique<NudgeHoverObserver>(
       anchored_nudge_widget->GetNativeWindow(), id,
@@ -358,7 +349,9 @@ void AnchoredNudgeManagerImpl::HandleNudgeWidgetDestroying(
     const std::string& id) {
   dismiss_timers_.erase(id);
   nudge_hover_observers_.erase(id);
-  anchor_view_observers_.erase(id);
+  if (anchor_view_observers_[id]) {
+    anchor_view_observers_.erase(id);
+  }
   nudge_widget_observers_.erase(id);
   shown_nudges_.erase(id);
 }

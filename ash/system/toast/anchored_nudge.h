@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_observer.h"
 #include "ash/shell_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -34,7 +35,8 @@ class SystemNudgeView;
 // Creates and manages the widget and contents view for an anchored nudge.
 // TODO(b/285988235): `AnchoredNudge` will replace the existing `SystemNudge`
 // and take over its name.
-class ASH_EXPORT AnchoredNudge : public ShellObserver,
+class ASH_EXPORT AnchoredNudge : public ShelfObserver,
+                                 public ShellObserver,
                                  public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(AnchoredNudge);
@@ -51,6 +53,11 @@ class ASH_EXPORT AnchoredNudge : public ShellObserver,
   views::LabelButton* GetDismissButton();
   views::LabelButton* GetSecondButton();
 
+  // views::BubbleDialogDelegateView:
+  gfx::Rect GetBubbleBounds() override;
+  void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
+                                views::Widget* widget) const override;
+
   // views::WidgetDelegate:
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
@@ -62,12 +69,20 @@ class ASH_EXPORT AnchoredNudge : public ShellObserver,
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
+  // ShelfObserver:
+  void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
+  void OnHotseatStateChanged(HotseatState old_state,
+                             HotseatState new_state) override;
+
   // ShellObserver:
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
 
   // Sets the arrow of the nudge based on the `shelf` alignment.
   void SetArrowFromShelf(Shelf* shelf);
+
+  // Sets the default anchor rect for nudges that do not have an `anchor_view`.
+  void SetDefaultAnchorRect();
 
   const std::string& id() { return id_; }
 
@@ -87,6 +102,9 @@ class ASH_EXPORT AnchoredNudge : public ShellObserver,
 
   // Used to maintain the shelf visible while a shelf-anchored nudge is shown.
   std::unique_ptr<Shelf::ScopedDisableAutoHide> disable_shelf_auto_hide_;
+
+  // Used to observe hotseat state to update nudges default location baseline.
+  base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
 };
 
 }  // namespace ash
