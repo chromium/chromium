@@ -444,7 +444,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
 
   bool UsePartialRaster(int msaa_sample_count) const;
 
-  void FlushAndIssueSignals();
+  void CheckForCompletedTasksAndIssueSignals();
   void CheckPendingGpuWorkAndIssueSignals();
   void IssueSignals();
   void ScheduleCheckRasterFinishedQueries();

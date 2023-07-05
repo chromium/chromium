@@ -229,7 +229,8 @@ bool OneCopyRasterBufferProvider::CanPartialRasterIntoProvidedResource() const {
 }
 
 bool OneCopyRasterBufferProvider::IsResourceReadyToDraw(
-    const ResourcePool::InUsePoolResource& resource) const {
+    const ResourcePool::InUsePoolResource& resource) {
+  FlushIfNeeded();
   const gpu::SyncToken& sync_token = resource.gpu_backing()->mailbox_sync_token;
   // This SyncToken() should have been set by calling OrderingBarrier() before
   // calling this.
@@ -243,7 +244,8 @@ bool OneCopyRasterBufferProvider::IsResourceReadyToDraw(
 uint64_t OneCopyRasterBufferProvider::SetReadyToDrawCallback(
     const std::vector<const ResourcePool::InUsePoolResource*>& resources,
     base::OnceClosure callback,
-    uint64_t pending_callback_id) const {
+    uint64_t pending_callback_id) {
+  FlushIfNeeded();
   gpu::SyncToken latest_sync_token;
   for (const auto* in_use : resources) {
     const gpu::SyncToken& sync_token =

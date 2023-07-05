@@ -228,7 +228,7 @@ bool ZeroCopyRasterBufferProvider::CanPartialRasterIntoProvidedResource()
 }
 
 bool ZeroCopyRasterBufferProvider::IsResourceReadyToDraw(
-    const ResourcePool::InUsePoolResource& resource) const {
+    const ResourcePool::InUsePoolResource& resource) {
   // Zero-copy resources are immediately ready to draw.
   return true;
 }
@@ -236,7 +236,7 @@ bool ZeroCopyRasterBufferProvider::IsResourceReadyToDraw(
 uint64_t ZeroCopyRasterBufferProvider::SetReadyToDrawCallback(
     const std::vector<const ResourcePool::InUsePoolResource*>& resources,
     base::OnceClosure callback,
-    uint64_t pending_callback_id) const {
+    uint64_t pending_callback_id) {
   // Zero-copy resources are immediately ready to draw.
   return 0;
 }

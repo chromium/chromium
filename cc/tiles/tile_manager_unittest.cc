@@ -2558,9 +2558,9 @@ TEST_F(InvalidResourceTileManagerTest, InvalidResource) {
 class MockReadyToDrawRasterBufferProviderImpl
     : public FakeRasterBufferProviderImpl {
  public:
-  MOCK_CONST_METHOD1(IsResourceReadyToDraw,
-                     bool(const ResourcePool::InUsePoolResource& resource));
-  MOCK_CONST_METHOD3(
+  MOCK_METHOD1(IsResourceReadyToDraw,
+               bool(const ResourcePool::InUsePoolResource& resource));
+  MOCK_METHOD3(
       SetReadyToDrawCallback,
       uint64_t(
           const std::vector<const ResourcePool::InUsePoolResource*>& resources,

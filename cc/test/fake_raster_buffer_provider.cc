@@ -53,14 +53,14 @@ bool FakeRasterBufferProviderImpl::CanPartialRasterIntoProvidedResource()
 }
 
 bool FakeRasterBufferProviderImpl::IsResourceReadyToDraw(
-    const ResourcePool::InUsePoolResource& resource) const {
+    const ResourcePool::InUsePoolResource& resource) {
   return true;
 }
 
 uint64_t FakeRasterBufferProviderImpl::SetReadyToDrawCallback(
     const std::vector<const ResourcePool::InUsePoolResource*>& resources,
     base::OnceClosure callback,
-    uint64_t pending_callback_id) const {
+    uint64_t pending_callback_id) {
   return 0;
 }
 
