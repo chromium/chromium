@@ -613,9 +613,7 @@ export async function testNavigationRootsWithFilteredVolume(done: () => void) {
       VolumeManagerCommon.VolumeType.REMOVABLE, 'removable1');
   initialState.allEntries[volume1.fileData.entry.toURL()] = volume1.fileData;
   initialState.volumes[volume1.volume.volumeId] = volume1.volume;
-  // Put volume2 in the store. Note: without calling createVolumeFileData(),
-  // volume2 won't be in volumeManager's volumeInfoList, thus should be filtered
-  // out.
+  // Put volume2 in the store.
   const volumeInfo2 = MockVolumeManager.createMockVolumeInfo(
       VolumeManagerCommon.VolumeType.REMOVABLE, 'removable2');
   const volumeEntry2 = new VolumeEntry(volumeInfo2);
@@ -624,6 +622,9 @@ export async function testNavigationRootsWithFilteredVolume(done: () => void) {
   initialState.volumes[volumeInfo2.volumeId] =
       convertVolumeInfoAndMetadataToVolume(
           volumeInfo2, createFakeVolumeMetadata(volumeInfo2));
+  // Mark volume2 as not allowed volume.
+  const {volumeManager} = window.fileManager;
+  volumeManager.isAllowedVolume = (volumeInfo) => volumeInfo !== volumeInfo2;
 
   const store = setupStore(initialState);
 

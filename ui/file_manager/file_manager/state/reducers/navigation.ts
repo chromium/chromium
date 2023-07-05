@@ -6,7 +6,7 @@ import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {NavigationKey, NavigationRoot, NavigationSection, NavigationType, State, Volume, VolumeId} from '../../externs/ts/state.js';
+import {NavigationKey, NavigationRoot, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
 import {RefreshNavigationRootsAction, UpdateNavigationEntryAction} from '../actions/navigation.js';
 import {getEntry, getFileData} from '../store.js';
 
@@ -145,15 +145,12 @@ export function refreshNavigationRoots(
   };
   // Filter volumes based on the volumeInfoList in volumeManager.
   const {volumeManager} = window.fileManager;
-  const filteredVolumeIds = new Set<VolumeId>();
-  for (let i = 0; i < volumeManager.volumeInfoList.length; i++) {
-    filteredVolumeIds.add(volumeManager.volumeInfoList.item(i).volumeId);
-  }
-  let filteredVolumes = Object.values<Volume>(currentState.volumes);
-  if (filteredVolumeIds) {
-    filteredVolumes = filteredVolumes.filter(
-        volume => filteredVolumeIds!.has(volume.volumeId));
-  }
+  const filteredVolumes =
+      Object.values<Volume>(currentState.volumes).filter(volume => {
+        const volumeEntry =
+            getEntry(currentState, volume.rootKey!) as VolumeEntry;
+        return volumeManager.isAllowedVolume(volumeEntry.volumeInfo);
+      });
 
   function getVolumeOrder(volume: Volume) {
     if (util.isOneDriveId(volume.providerId)) {

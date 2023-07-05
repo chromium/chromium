@@ -168,6 +168,14 @@ export class VolumeManager {
    * @return {boolean} Whether the volume is disabled or not.
    */
   isDisabled(volume) {}
+
+  /**
+   * Checks if a volume is allowed.
+   *
+   * @param {!VolumeInfo} volumeInfo
+   * @return {boolean}
+   */
+  isAllowedVolume(volumeInfo) {}
 }
 
 /**
