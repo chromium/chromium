@@ -7,6 +7,7 @@
 #include "ash/components/arc/compat_mode/overlay_dialog.h"
 #include "ash/components/arc/compat_mode/style/arc_color_provider.h"
 #include "ash/components/arc/vector_icons/vector_icons.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/typography.h"
@@ -22,6 +23,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
@@ -31,6 +33,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
@@ -51,14 +54,6 @@ class RoundedCornerBubbleDialogDelegateView
     auto* const frame = GetBubbleFrameView();
     if (frame)
       frame->SetCornerRadius(corner_radius_);
-  }
-
-  void OnThemeChanged() override {
-    views::BubbleDialogDelegateView::OnThemeChanged();
-    if (chromeos::features::IsJellyEnabled()) {
-      set_color(GetColorProvider()->GetColor(
-          cros_tokens::kCrosSysSystemBaseElevated));
-    }
   }
 
   base::WeakPtr<RoundedCornerBubbleDialogDelegateView> GetWeakPtr() {
@@ -310,17 +305,51 @@ ResizeToggleMenu::MakeBubbleDelegateView(
       l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TITLE));
   delegate_view->SetShowTitle(false);
   delegate_view->SetAccessibleWindowRole(ax::mojom::Role::kMenu);
+  if (chromeos::features::IsJellyEnabled()) {
+    // Clear root view's background color. We use the color in
+    // `background_view`.
+    delegate_view->set_color(SK_ColorTRANSPARENT);
+  }
 
   // Setup view.
+  delegate_view->SetUseDefaultFillLayout(true);
+
+  if (chromeos::features::IsJellyEnabled()) {
+    delegate_view->SetBorder(std::make_unique<views::HighlightBorder>(
+        kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1));
+
+    // Add empty view for background blur.
+    views::View* background_view = nullptr;
+    delegate_view->AddChildView(
+        views::Builder<views::View>()
+            .CopyAddressTo(&background_view)
+            .SetUseDefaultFillLayout(true)
+            .SetBackground(views::CreateThemedRoundedRectBackground(
+                cros_tokens::kCrosSysSystemBaseElevated, kCornerRadius))
+            .Build());
+
+    background_view->SetPaintToLayer();
+    background_view->layer()->SetBackgroundBlur(
+        ash::ColorProvider::kBackgroundBlurSigma);
+    background_view->layer()->SetBackdropFilterQuality(
+        ash::ColorProvider::kBackgroundBlurQuality);
+    background_view->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kCornerRadius));
+    background_view->layer()->SetFillsBoundsOpaquely(false);
+  }
+
+  auto* const container_view =
+      delegate_view->AddChildView(std::make_unique<views::View>());
+
   auto* const provider = views::LayoutProvider::Get();
-  delegate_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+  container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(16),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
-  const auto add_menu_button = [&delegate_view, &command_handler](
+  const auto add_menu_button = [&container_view, &command_handler](
                                    ResizeCompatMode command_id,
                                    const gfx::VectorIcon& icon, int string_id) {
-    return delegate_view->AddChildView(std::make_unique<MenuButtonView>(
+    return container_view->AddChildView(std::make_unique<MenuButtonView>(
         base::BindRepeating(command_handler, command_id), icon, string_id));
   };
   phone_button_ = add_menu_button(ResizeCompatMode::kPhone,
@@ -339,6 +368,16 @@ ResizeToggleMenu::MakeBubbleDelegateView(
 
   UpdateSelectedButton();
 
+  if (chromeos::features::IsJellyEnabled()) {
+    // We need to ensure that the layer is non-opaque for popup animation.
+    delegate_view->SetPaintToLayer();
+    delegate_view->layer()->SetFillsBoundsOpaquely(false);
+
+    // Note this view needs to be set to paint to layer so other view won't
+    // paint over it.
+    container_view->SetPaintToLayer();
+    container_view->layer()->SetFillsBoundsOpaquely(false);
+  }
   return delegate_view;
 }
 
