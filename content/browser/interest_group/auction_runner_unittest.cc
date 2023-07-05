@@ -14478,13 +14478,12 @@ TEST_P(CostRoundingTest, AdCostRounded) {
               GURL("https://buyer-reporting.example.com/?adCost=1.984375"))));
       break;
     case 16:
-      EXPECT_THAT(
-          result_.report_urls,
-          testing::ElementsAre(testing::AnyOf(
-              GURL(
-                  "https://buyer-reporting.example.com/?adCost=1.990005493164"),
-              GURL("https://buyer-reporting.example.com/"
-                   "?adCost=1.989990234375"))));
+      EXPECT_THAT(result_.report_urls,
+                  testing::ElementsAre(
+                      testing::AnyOf(GURL("https://buyer-reporting.example.com/"
+                                          "?adCost=1.990020751953125"),
+                                     GURL("https://buyer-reporting.example.com/"
+                                          "?adCost=1.989990234375"))));
       break;
     case 53:
       EXPECT_THAT(result_.report_urls,
@@ -14965,7 +14964,8 @@ TEST_P(BidRoundingTest, BidRounded) {
       EXPECT_THAT(
           result_.report_urls,
           testing::ElementsAre(testing::AnyOf(
-              GURL("https://buyer-reporting.example.com/?bid=1.990005493164"),
+              GURL(
+                  "https://buyer-reporting.example.com/?bid=1.990020751953125"),
               GURL(
                   "https://buyer-reporting.example.com/?bid=1.989990234375"))));
       break;
@@ -15040,11 +15040,11 @@ TEST_P(BidRoundingTest, HighestScoringOtherBidRounded) {
           result_.report_urls,
           testing::ElementsAre(
               testing::AnyOf(GURL("https://seller-reporting.example.com/"
-                                  "?highestScoringOtherBid=1.990005493164"),
+                                  "?highestScoringOtherBid=1.990020751953125"),
                              GURL("https://seller-reporting.example.com/"
                                   "?highestScoringOtherBid=1.989990234375")),
               testing::AnyOf(GURL("https://buyer-reporting.example.com/"
-                                  "?highestScoringOtherBid=1.990005493164"),
+                                  "?highestScoringOtherBid=1.990020751953125"),
                              GURL("https://buyer-reporting.example.com/"
                                   "?highestScoringOtherBid=1.989990234375"))));
       break;
@@ -15113,13 +15113,12 @@ TEST_P(ScoreRoundingTest, ScoreRounded) {
               GURL("https://seller-reporting.example.com/?score=1.984375"))));
       break;
     case 16:
-      EXPECT_THAT(
-          result_.report_urls,
-          testing::ElementsAre(testing::AnyOf(
-              GURL(
-                  "https://seller-reporting.example.com/?score=1.990005493164"),
-              GURL("https://seller-reporting.example.com/"
-                   "?score=1.989990234375"))));
+      EXPECT_THAT(result_.report_urls,
+                  testing::ElementsAre(testing::AnyOf(
+                      GURL("https://seller-reporting.example.com/"
+                           "?score=1.990020751953125"),
+                      GURL("https://seller-reporting.example.com/"
+                           "?score=1.989990234375"))));
       break;
     case 53:
       EXPECT_THAT(result_.report_urls,
