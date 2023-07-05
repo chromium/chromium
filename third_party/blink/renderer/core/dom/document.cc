@@ -6272,8 +6272,9 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
       return true;
     }
 
-    // #9: return global's `has storage access`.
-    return dom_window_->HasStorageAccess();
+    // #9 & #10: checks unpartitioned cookie availability with global's `has
+    // storage access`.
+    return CookiesEnabled();
   }());
   return promise;
 }
