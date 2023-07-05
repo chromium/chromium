@@ -73,12 +73,17 @@
 
   // Personal Data Manager from which we can get Credit Card information.
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
+
+  // Whether the field that triggered the bottom sheet will need to refocus when
+  // the bottom sheet is dismissed. Default is true.
+  bool _needsRefocus;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                  personalDataManager:
                      (autofill::PersonalDataManager*)personalDataManager {
   if (self = [super init]) {
+    _needsRefocus = true;
     _webStateList = webStateList;
     _personalDataManager = personalDataManager;
 
@@ -138,6 +143,7 @@
   }
 
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+  _needsRefocus = false;
 
   FormSuggestionTabHelper* tabHelper =
       FormSuggestionTabHelper::FromWebState(activeWebState);
@@ -164,7 +170,11 @@
 }
 
 - (void)disableBottomSheet {
-  // TODO(crbug.com/1450214): Add code to disable the bottom sheet
+  if (_webStateList) {
+    web::WebState* activeWebState = _webStateList->GetActiveWebState();
+    AutofillBottomSheetTabHelper::FromWebState(activeWebState)
+        ->DetachPaymentsListenersForAllFrames(_needsRefocus);
+  }
 }
 
 #pragma mark - WebStateListObserving
