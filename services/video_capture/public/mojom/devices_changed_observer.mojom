@@ -4,7 +4,7 @@
 
 module video_capture.mojom;
 
-// Callback interface for clients who wnat to get notified when virtual devices
+// Callback interface for clients who want to get notified when virtual devices
 // are added or removed.
 interface DevicesChangedObserver {
   OnDevicesChanged();
