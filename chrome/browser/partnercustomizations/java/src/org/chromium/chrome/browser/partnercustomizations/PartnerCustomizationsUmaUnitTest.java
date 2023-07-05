@@ -23,8 +23,6 @@ import static org.chromium.chrome.browser.partnercustomizations.PartnerCustomiza
 
 import android.os.SystemClock;
 
-import androidx.annotation.Nullable;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -45,6 +43,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsTestUtils.HomepageCharacterizationHelperStub;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.CustomizationProviderDelegateType;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.DelegateUnusedReason;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.PartnerCustomizationsHomepageEnum;
@@ -82,13 +81,10 @@ public class PartnerCustomizationsUmaUnitTest {
     private static final String NON_NTP_URL = "https://www.google.com/";
 
     private static final Supplier<HomepageCharacterizationHelper> HELPER_FOR_NTP =
-            () -> new HomepageCharacterizationHelperStub().setIsPartner(false).setIsNtp(true);
+            HomepageCharacterizationHelperStub::ntpHelper;
 
     private static final Supplier<HomepageCharacterizationHelper> HELPER_FOR_PARTNER_NON_NTP =
-            () -> new HomepageCharacterizationHelperStub().setIsPartner(true).setIsNtp(false);
-
-    private static final Supplier<HomepageCharacterizationHelper> HELPER_FOR_USER_OR_POLICY =
-            () -> new HomepageCharacterizationHelperStub().setIsPartner(false).setIsNtp(false);
+            HomepageCharacterizationHelperStub::nonNtpHelper;
 
     private TestValues mEnabledTestValues;
     private TestValues mDisabledTestValues;
@@ -530,37 +526,6 @@ public class PartnerCustomizationsUmaUnitTest {
         }
     }
 
-    private static class HomepageCharacterizationHelperStub
-            implements HomepageCharacterizationHelper {
-        private boolean mIsPartner;
-        private boolean mIsNtp;
-
-        @Override
-        public boolean isUrlNtp(@Nullable String url) {
-            return NTP_URL.equals(url);
-        }
-
-        @Override
-        public boolean isPartner() {
-            return mIsPartner;
-        }
-
-        @Override
-        public boolean isNtp() {
-            return mIsNtp;
-        }
-
-        HomepageCharacterizationHelperStub setIsPartner(boolean isPartner) {
-            mIsPartner = isPartner;
-            return this;
-        }
-
-        HomepageCharacterizationHelperStub setIsNtp(boolean isNtp) {
-            mIsNtp = isNtp;
-            return this;
-        }
-    }
-
     /**
      * Captures the NativeInitObserver used by the {@link #mActivityLifecycleDispatcherMock}, and
      * returns it. Also sets the Feature to be enabled so calling onFinishNativeInitialization will
@@ -676,7 +641,7 @@ public class PartnerCustomizationsUmaUnitTest {
         PartnerCustomizationsUma.logPartnerCustomizationDelegate(SOME_DELEGATE);
         mPartnerCustomizationsUma.onCreateInitialTab(false, NON_NTP_URL,
                 CREATE_DURING_CUSTOMIZATION_TIME, false, mActivityLifecycleDispatcherMock,
-                HELPER_FOR_USER_OR_POLICY);
+                HomepageCharacterizationHelperStub::nonPartnerHelper);
         mPartnerCustomizationsUma.logAsyncInitCompleted(END_TIME);
         mPartnerCustomizationsUma.logAsyncInitFinalized(START_TIME, END_TIME, true);
 

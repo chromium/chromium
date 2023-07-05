@@ -120,6 +120,7 @@ robolectric_library("junit") {
     ":delegate_public_impl_java",
     ":helper_java",
     ":java",
+    ":junit_test_utils_java",
     ":test_support_java",
     ":uma_java",
     "//base:base_java",
@@ -136,5 +137,15 @@ robolectric_library("junit") {
     "//url:gurl_java",
     "//url:gurl_junit_shadows",
     "//url:gurl_junit_test_support",
+  ]
+}
+
+android_library("junit_test_utils_java") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerCustomizationsTestUtils.java" ]
+  deps = [
+    ":helper_java",
+    "//components/embedder_support/android:util_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

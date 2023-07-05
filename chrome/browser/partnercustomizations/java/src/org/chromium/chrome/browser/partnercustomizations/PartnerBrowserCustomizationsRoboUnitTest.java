@@ -15,8 +15,11 @@ import androidx.annotation.Nullable;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -26,7 +29,13 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizationsRoboUnitTest.ShadowCustomizationProviderDelegate;
+import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsTestUtils.HomepageCharacterizationHelperStub;
+import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.PartnerCustomizationsHomepageEnum;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.ShadowGURL;
 
@@ -36,7 +45,13 @@ import org.chromium.url.ShadowGURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class, ShadowGURL.class,
                 ShadowCustomizationProviderDelegate.class})
+@Features.EnableFeatures(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA)
 public class PartnerBrowserCustomizationsRoboUnitTest {
+    @Rule
+    public Features.JUnitProcessor processor = new Features.JUnitProcessor();
+    @Mock
+    private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
+
     @Before
     public void setup() {
         ShadowCustomizationProviderDelegate.sHomepage = JUnitTestGURLs.EXAMPLE_URL;
@@ -44,14 +59,17 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
             final Handler mHandler = new Handler(Looper.getMainLooper());
             @Override
             public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
-                mHandler.post(task);
+                mHandler.postDelayed(task, delay);
             }
         });
+
+        MockitoAnnotations.openMocks(this);
     }
 
     @After
     public void tearDown() {
         PartnerBrowserCustomizations.destroy();
+        PartnerCustomizationsUma.resetStaticsForTesting();
     }
 
     @Test
@@ -115,5 +133,40 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
         protected boolean isBookmarksEditingDisabled() {
             return false;
         }
+    }
+
+    /**
+     * Tests the case where we think we're "certain" whether the NTP was created correctly or not.
+     * We already created the Tab so when we complete customization we're ready to log to UMA, but
+     * the ordering is critical. We need to call {@link
+     * PartnerCustomizationsUma#logAsyncInitCompleted} before we finalize. Ordering: Create NTP,
+     * customization says NTP, so it's either NTP_CORRECTLY (2) or NTP_UNKNOWN (0). This test will
+     * fail if the ordering is changed in the {@code onPostExecute} handler inside {@link
+     * PartnerBrowserCustomizations}.
+     */
+    @Test
+    public void initializeAsyncWithPartnerCustomizationsUma() {
+        ShadowCustomizationProviderDelegate.sHomepage = null;
+        HistogramWatcher histograms = HistogramWatcher.newSingleRecordWatcher(
+                "Android.PartnerCustomization.HomepageCustomizationOutcome",
+                PartnerCustomizationsHomepageEnum.NTP_CORRECTLY);
+
+        // Setup the Async task and get it running.
+        PartnerBrowserCustomizations.getInstance().initializeAsync(
+                ContextUtils.getApplicationContext());
+        // Run one task, so AsyncTask#doInBackground is run, but not #onFinalized.
+        ShadowLooper.runMainLooperOneTask();
+
+        // Simulate CTA#createInitialTab: Create an NTP when the delegate says Partner Homepage.
+        // TODO(donnd): call this as an async callback through setOnInitializeAsyncFinished.
+        PartnerBrowserCustomizations.getInstance().onCreateInitialTab(JUnitTestGURLs.NTP_NATIVE_URL,
+                50, true /* OverviewOrStart */, mActivityLifecycleDispatcherMock,
+                HomepageCharacterizationHelperStub::ntpHelper);
+
+        // Trigger Async completion.
+        ShadowLooper.idleMainLooper();
+
+        // Make sure the Outcome logged to UMA is correct.
+        histograms.assertExpected();
     }
 }
