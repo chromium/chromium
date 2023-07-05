@@ -14,6 +14,10 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+- chrome.*
+- chrome_os
+- android
+- webview_android
 items:
 - caption: Show cancel dialog when beforeunload event.preventDefault() is called.
   value: true
@@ -26,10 +30,5 @@ owners:
 - dom-dev@chromium.org
 schema:
   type: boolean
-supported_on:
-- chrome.*:115-125
-- chrome_os:115-125
-- android:115-125
-- webview_android:115-125
 tags: []
 type: main
