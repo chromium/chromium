@@ -268,6 +268,8 @@ struct ViewConfig {
   CrossfadeLabel* label = [[CrossfadeLabel alloc] init];
   label.text = [self titleText];
   label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.numberOfLines = 0;
+  label.lineBreakMode = NSLineBreakByWordWrapping;
   label.font =
       _config.hero_layout
           ? CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold)
