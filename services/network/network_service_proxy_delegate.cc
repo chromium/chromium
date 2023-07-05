@@ -5,6 +5,7 @@
 #include "services/network/network_service_proxy_delegate.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
@@ -134,9 +135,12 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
     return;
   }
 
-  if (proxy_config_->rules.restrict_to_network_service_proxy_allow_list &&
-      !network_service_proxy_allow_list_->Matches(url, top_frame_url)) {
-    return;
+  if (auth_token_cache_ && IsForIpProtection()) {
+    if (network_service_proxy_allow_list_ &&
+        !network_service_proxy_allow_list_->Matches(url, top_frame_url)) {
+      return;
+    }
+    auth_token_cache_->MayNeedAuthTokenSoon();
   }
 
   net::ProxyInfo proxy_info;
@@ -161,8 +165,17 @@ void NetworkServiceProxyDelegate::OnFallback(const net::ProxyServer& bad_proxy,
 void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyServer& proxy_server,
     net::HttpRequestHeaders* extra_headers) {
-  if (IsInProxyConfig(proxy_server))
+  if (IsInProxyConfig(proxy_server)) {
     MergeRequestHeaders(extra_headers, proxy_config_->connect_tunnel_headers);
+    if (auth_token_cache_ && IsForIpProtection()) {
+      auto token = auth_token_cache_->GetAuthToken();
+      if (token) {
+        auto value = base::StrCat({"Bearer ", (*token)->token});
+        extra_headers->SetHeader(net::HttpRequestHeaders::kAuthorization,
+                                 value);
+      }
+    }
+  }
 }
 
 net::Error NetworkServiceProxyDelegate::OnTunnelHeadersReceived(
@@ -226,6 +239,12 @@ bool NetworkServiceProxyDelegate::IsInProxyConfig(
 
 bool NetworkServiceProxyDelegate::MayProxyURL(const GURL& url) const {
   return !proxy_config_->rules.empty();
+}
+
+bool NetworkServiceProxyDelegate::IsForIpProtection() {
+  // Only IP protection uses the network service proxy allow list, so this
+  // config represents IP protection if and only if the allow list is in use.
+  return proxy_config_->rules.restrict_to_network_service_proxy_allow_list;
 }
 
 bool NetworkServiceProxyDelegate::EligibleForProxy(

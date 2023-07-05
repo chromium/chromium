@@ -1,4 +1,3 @@
-
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -11,12 +10,13 @@
 
 namespace network {
 namespace {
-// The temporary header name expected by the envoy proxy configuration.
-const char kIPAnonymizationProxyHeaderName[] = "password";
+
 std::string NormalizeHost(std::string s) {
   return s.substr(0, 4) == "www." ? s.substr(4) : s;
 }
+
 }  // namespace
+
 NetworkServiceProxyAllowList::NetworkServiceProxyAllowList() {
   custom_proxy_config_ = network::mojom::CustomProxyConfig::New();
 
@@ -36,11 +36,6 @@ NetworkServiceProxyAllowList::NetworkServiceProxyAllowList() {
   custom_proxy_config_->should_replace_direct = true;
   custom_proxy_config_->should_override_existing_config = false;
   custom_proxy_config_->allow_non_idempotent_methods = true;
-
-  custom_proxy_config_->connect_tunnel_headers.SetHeader(
-      kIPAnonymizationProxyHeaderName,
-      command_line.GetSwitchValueASCII(
-          network::switches::kIPAnonymizationProxyPassword));
 }
 
 NetworkServiceProxyAllowList::NetworkServiceProxyAllowList(

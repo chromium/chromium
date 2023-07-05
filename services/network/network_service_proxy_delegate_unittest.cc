@@ -30,6 +30,32 @@ constexpr char kLocalhost[] = "http://localhost";
 constexpr char kHttpsUrl[] = "https://example.com";
 constexpr char kWebsocketUrl[] = "ws://example.com";
 
+class MockIpProtectionAuthTokenCache : public IpProtectionAuthTokenCache {
+ public:
+  void MayNeedAuthTokenSoon() override { may_need_auth_token_soon_calls_++; }
+
+  absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken()
+      override {
+    return std::move(auth_token_);
+  }
+
+  // Get the count of calls to `MayNeedAuthTokenSoon()`.
+  int may_need_auth_token_soon_calls() {
+    return may_need_auth_token_soon_calls_;
+  }
+
+  // Set the auth token that will be returned from the next call to
+  // `GetAuthToken()`.
+  void SetNextAuthToken(
+      absl::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token) {
+    auth_token_ = std::move(auth_token);
+  }
+
+ private:
+  int may_need_auth_token_soon_calls_ = 0;
+  absl::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token_;
+};
+
 }  // namespace
 
 MATCHER_P2(Contain,
@@ -151,6 +177,46 @@ TEST_F(NetworkServiceProxyDelegateTest, AddsHeadersToTunnelRequest) {
   delegate->OnBeforeTunnelRequest(proxy_server, &headers);
 
   EXPECT_THAT(headers, Contain("connect", "baz"));
+}
+
+TEST_F(NetworkServiceProxyDelegateTest, AddsTokenToTunnelRequest) {
+  auto config = mojom::CustomProxyConfig::New();
+  config->rules.ParseFromString("https://proxy");
+  config->rules.restrict_to_network_service_proxy_allow_list = true;
+  config->should_override_existing_config = false;
+  config->should_replace_direct = true;
+  auto delegate = CreateDelegate(std::move(config));
+
+  auto auth_token_cache = std::make_unique<MockIpProtectionAuthTokenCache>();
+  auto token = mojom::BlindSignedAuthToken::New();
+  token->token = "a-token";
+  auth_token_cache->SetNextAuthToken(std::move(token));
+  delegate->SetIpProtectionAuthTokenCache(std::move(auth_token_cache));
+
+  net::HttpRequestHeaders headers;
+  auto proxy_server = net::PacResultElementToProxyServer("HTTPS proxy");
+  delegate->OnBeforeTunnelRequest(proxy_server, &headers);
+
+  EXPECT_THAT(headers, Contain("Authorization", "Bearer a-token"));
+}
+
+TEST_F(NetworkServiceProxyDelegateTest, NoTokenIfNotIpProtection) {
+  auto config = mojom::CustomProxyConfig::New();
+  config->rules.ParseFromString("https://proxy");
+  auto delegate = CreateDelegate(std::move(config));
+
+  auto auth_token_cache = std::make_unique<MockIpProtectionAuthTokenCache>();
+  auto token = mojom::BlindSignedAuthToken::New();
+  token->token = "a-token";
+  auth_token_cache->SetNextAuthToken(std::move(token));
+  delegate->SetIpProtectionAuthTokenCache(std::move(auth_token_cache));
+
+  net::HttpRequestHeaders headers;
+  auto proxy_server = net::PacResultElementToProxyServer("HTTPS proxy");
+  delegate->OnBeforeTunnelRequest(proxy_server, &headers);
+
+  std::string value;
+  EXPECT_FALSE(headers.GetHeader("Authorization", &value));
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessHttpProxy) {
@@ -509,6 +575,9 @@ TEST_F(
   auto delegate =
       CreateDelegate(std::move(config), &network_service_proxy_allow_list);
 
+  auto auth_token_cache = std::make_unique<MockIpProtectionAuthTokenCache>();
+  delegate->SetIpProtectionAuthTokenCache(std::move(auth_token_cache));
+
   net::ProxyInfo result;
   result.UseDirect();
   delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
@@ -531,12 +600,94 @@ TEST_F(
   auto delegate =
       CreateDelegate(std::move(config), &network_service_proxy_allow_list);
 
+  auto auth_token_cache = std::make_unique<MockIpProtectionAuthTokenCache>();
+  delegate->SetIpProtectionAuthTokenCache(std::move(auth_token_cache));
+
   net::ProxyInfo result;
   result.UseDirect();
   delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
                            net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
+}
+
+// When a `config` does not look like an IP Protection `CustomProxyConfig`, the
+// delegate does not call `IpProtectionAuthTokenCache::MayNeedAuthTokenSoon()`.
+TEST_F(NetworkServiceProxyDelegateTest,
+       OnResolveProxyIpProtectionDisabledByConfig) {
+  auto config = mojom::CustomProxyConfig::New();
+  config->rules.ParseFromString("http=foo");
+  auto delegate = CreateDelegate(std::move(config));
+  auto auth_token_cache = std::make_unique<MockIpProtectionAuthTokenCache>();
+  MockIpProtectionAuthTokenCache* mock_auth_token_cache =
+      auth_token_cache.get();
+  delegate->SetIpProtectionAuthTokenCache(std::move(auth_token_cache));
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kLocalhost), GURL("http://top.com"), "GET",
+                           net::ProxyRetryInfoMap(), &result);
+  EXPECT_TRUE(result.is_direct());
+  EXPECT_EQ(mock_auth_token_cache->may_need_auth_token_soon_calls(), 0);
+}
+
+// When a `config` does look like an IP Protection `CustomProxyConfig`, but the
+// URLs do not match the allow list, the delegate does not call
+// `IpProtectionAuthTokenCache::MayNeedAuthTokenSoon()`.
+TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyIpProtectionNoMatch) {
+  auto config = mojom::CustomProxyConfig::New();
+  config->rules.ParseFromString("http=foo");
+  config->rules.restrict_to_network_service_proxy_allow_list = true;
+  config->should_override_existing_config = false;
+  config->should_replace_direct = true;
+
+  std::map<std::string, std::set<std::string>> first_party_map;
+  auto network_service_proxy_allow_list =
+      NetworkServiceProxyAllowList::CreateForTesting(first_party_map);
+  auto delegate =
+      CreateDelegate(std::move(config), &network_service_proxy_allow_list);
+
+  auto auth_token_cache = std::make_unique<MockIpProtectionAuthTokenCache>();
+  MockIpProtectionAuthTokenCache* mock_auth_token_cache =
+      auth_token_cache.get();
+  delegate->SetIpProtectionAuthTokenCache(std::move(auth_token_cache));
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kLocalhost), GURL("http://top.com"), "GET",
+                           net::ProxyRetryInfoMap(), &result);
+  EXPECT_TRUE(result.is_direct());
+  EXPECT_EQ(mock_auth_token_cache->may_need_auth_token_soon_calls(), 0);
+}
+
+// When a `config` does look like an IP Protection `CustomProxyConfig` and
+// the URLs match the allow list, the delegate calls
+// `IpProtectionAuthTokenCache::MayNeedAuthTokenSoon()`.
+TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMayNeedAuthTokenSoon) {
+  auto config = mojom::CustomProxyConfig::New();
+  config->rules.ParseFromString("http=foo");
+  config->rules.restrict_to_network_service_proxy_allow_list = true;
+  config->should_override_existing_config = false;
+  config->should_replace_direct = true;
+
+  std::map<std::string, std::set<std::string>> first_party_map;
+  first_party_map["example.com"] = {};
+  auto network_service_proxy_allow_list =
+      NetworkServiceProxyAllowList::CreateForTesting(first_party_map);
+  auto delegate =
+      CreateDelegate(std::move(config), &network_service_proxy_allow_list);
+
+  auto auth_token_cache = std::make_unique<MockIpProtectionAuthTokenCache>();
+  MockIpProtectionAuthTokenCache* mock_auth_token_cache =
+      auth_token_cache.get();
+  delegate->SetIpProtectionAuthTokenCache(std::move(auth_token_cache));
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
+                           net::ProxyRetryInfoMap(), &result);
+  EXPECT_FALSE(result.is_direct());
+  EXPECT_EQ(mock_auth_token_cache->may_need_auth_token_soon_calls(), 1);
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, InitialConfigUsedForProxy) {
