@@ -431,6 +431,11 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
   properties_->size = metadata->size;
   properties_->present = metadata->available_offline;
   properties_->dirty = metadata->dirty;
+  // Dirty files have unsynced changes hence will eventually get queued for
+  // syncing. Let's make sure we report them as queued as soon as possible.
+  if (metadata->dirty) {
+    properties_->sync_status = file_manager_private::SYNC_STATUS_QUEUED;
+  }
   properties_->hosted = drivefs::IsHosted(metadata->type);
 
   properties_->available_offline =

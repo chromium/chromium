@@ -1093,20 +1093,6 @@ filelist.updateInlineStatus = (li, metadata) => {
           'aria-label',
           strf('IN_PROGRESS_PERCENTAGE_LABEL', (progress * 100).toFixed(0)));
       break;
-    case chrome.fileManagerPrivate.SyncStatus.NOT_FOUND:
-      // Files can have a sync status of "not_found" even though they
-      // are actually "queued". This can happen due to a delay in the
-      // "queued" status being communicated from DriveFS. In this case
-      // though, they would also be considered dirty (meaning they have
-      // unsynced changes so will eventually get queued for syncing).
-      // Hence, let's display a status "not_found" that is also "dirty"
-      // as "queued".
-      if (metadata.dirty) {
-        progress = 0;
-        syncStatus = chrome.fileManagerPrivate.SyncStatus.QUEUED;
-        inlineStatus.setAttribute('aria-label', str('QUEUED_LABEL'));
-      }
-      break;
     default:
       break;
   }
