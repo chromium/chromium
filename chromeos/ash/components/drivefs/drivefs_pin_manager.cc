@@ -823,6 +823,15 @@ bool PinManager::IsUntrackedPath(const Path& path) {
       });
 }
 
+bool PinManager::IsTrackedAndUnpinned(Id id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const Files::const_iterator it = files_to_track_.find(id);
+  if (it == files_to_track_.end()) {
+    return false;
+  }
+  return !it->second.pinned;
+}
+
 void PinManager::ListItems(const Id dir_id, Path dir_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Visiting " << dir_id << " " << Quote(dir_path);
@@ -1194,6 +1203,10 @@ void PinManager::PinSomeFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (progress_.stage != Stage::kSyncing) {
+    return NotifyProgress();
+  }
+
+  if (!should_pin_files_for_testing_) {
     return NotifyProgress();
   }
 

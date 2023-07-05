@@ -1794,3 +1794,41 @@ testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
   chrome.test.assertEq(
       Number(lastFileInlineStatus.attributes['progress']), 0.5);
 };
+
+/**
+ * Tests that when bulk pinning is enabled the queued state is shown for all
+ * files that the PinManager is tracking but has not yet pinned.
+ */
+testcase.driveAllItemsShouldBeQueuedIfTrackedByPinManager = async () => {
+  // Stop the PinManager from pinning files.
+  await sendTestMessage({name: 'setBulkPinningShouldPinFiles', enabled: false});
+
+  // Add a single empty file and load Files app up at the Drive root.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+
+  // Enable bulk pinning functionality.
+  await remoteCall.setSpacedFreeSpace(4n << 30n);
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+
+  // Wait for bulk pinning to enter the syncing stage.
+  await remoteCall.waitForBulkPinningStage('Syncing');
+
+  // The file should have a queued despite never getting set to pinned.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="hello.txt"][data-sync-status=queued]');
+
+  // Disable bulk pinning and ensure the sync status gets removed (i.e. returns
+  // to not found).
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="hello.txt"][data-sync-status=not_found]');
+
+  // Ensure the pin manager pins files then re-enable the bulk pinning
+  // preferece. The hello file should be pinned now.
+  await sendTestMessage({name: 'setBulkPinningShouldPinFiles', enabled: true});
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+  await remoteCall.waitForElement(
+      appId,
+      '#file-list [file-name="hello.txt"][data-sync-status=not_found].pinned');
+};

@@ -282,6 +282,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // directory residing outside of My drive).
   bool IsUntrackedPath(const Path& path);
 
+  // Whether the supplied `id` is currently being tracked by the PinManager and
+  // that it is unpinned.
+  bool IsTrackedAndUnpinned(Id id) const;
+
+  // For tests don't pin files after enumerating.
+  void SetShouldPinFilesForTesting(bool should_pin_files_for_testing) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    should_pin_files_for_testing_ = should_pin_files_for_testing;
+  }
+
  private:
   // Progress of a file being synced or to be synced.
   struct File {
@@ -462,6 +472,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Should the feature use `OnItemProgress`, if false it will fall back to
   // `OnSyncingStatusUpdate`.
   bool use_on_item_progress_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
+
+  // Stop at the `PinSomeFiles` stage during testing to perform assertions, this
+  // should always be true and only overridden in browser tests.
+  bool should_pin_files_for_testing_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      true;
 
   // `spaced` daemon client.
   raw_ptr<ash::SpacedClient, ExperimentalAsh> spaced_

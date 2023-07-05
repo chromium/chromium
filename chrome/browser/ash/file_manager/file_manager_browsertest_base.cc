@@ -3245,6 +3245,19 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "setBulkPinningShouldPinFiles") {
+    absl::optional<bool> enabled = value.FindBool("enabled");
+    ASSERT_TRUE(enabled.has_value())
+        << "enabled must be sent with setBulkPiningDontPinFiles";
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    ASSERT_NE(integration_service, nullptr);
+    ASSERT_NE(integration_service->GetPinManager(), nullptr);
+    integration_service->GetPinManager()->SetShouldPinFilesForTesting(
+        enabled.value());
+    return;
+  }
+
   if (name == "setCrostiniEnabled") {
     absl::optional<bool> enabled = value.FindBool("enabled");
     ASSERT_TRUE(enabled.has_value());

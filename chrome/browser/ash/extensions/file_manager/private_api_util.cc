@@ -457,6 +457,20 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
         IsPathUnderMyDrive(relative_path_)) {
       drivefs::pinning::PinManager* const pin_manager =
           GetPinManager(running_profile_);
+
+      // The `PinManager` maintains a list of 200 items that it pins, if the
+      // item is not within these 200 items it will eventually be pinned, but
+      // does not enter into a queued state just yet. This ensures the queued
+      // state is reflected for items that will be pinned but haven't called
+      // `SetPinned` yet.
+      const auto stable_id =
+          drivefs::pinning::PinManager::Id(metadata->stable_id);
+      if (properties_->sync_status ==
+              file_manager_private::SYNC_STATUS_NOT_FOUND &&
+          pin_manager->IsTrackedAndUnpinned(stable_id)) {
+        properties_->sync_status = file_manager_private::SYNC_STATUS_QUEUED;
+      }
+
       if (metadata->type == drivefs::mojom::FileMetadata::Type::kDirectory &&
           pin_manager &&
           !pin_manager->IsUntrackedPath(file_system_url_.path())) {

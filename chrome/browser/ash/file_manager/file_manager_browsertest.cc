@@ -1614,6 +1614,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin")
             .EnableBulkPinning(),
         TestCase("driveItemsOutOfViewportShouldUpdateTheirSyncStatus")
+            .EnableInlineSyncStatusProgressEvents(),
+        TestCase("driveAllItemsShouldBeQueuedIfTrackedByPinManager")
+            .EnableBulkPinning()
             .EnableInlineSyncStatusProgressEvents()
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),
