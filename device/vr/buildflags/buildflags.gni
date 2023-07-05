@@ -7,23 +7,26 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/gclient_args.gni")
 
+# This is the default set of Android configurations for which we support
+# WebXR. This flag should not be checked directly and is instead intended to
+# ease setting the default value for the various WebXr platforms that we would
+# like to support on Android by default. Embedders can still override any of
+# the particular runtimes if they do not wish to enable them.
+_is_xr_supported_android = is_android && !is_cast_android &&
+                          (current_cpu == "arm" || current_cpu == "arm64")
+
 declare_args() {
-  enable_gvr_services = is_android && !is_cast_android &&
-                        (current_cpu == "arm" || current_cpu == "arm64")
+  enable_gvr_services = _is_xr_supported_android
 
-  enable_cardboard = false
+  enable_cardboard = _is_xr_supported_android
 
-  # Controls inclusion of code for ARCore that must be identical across configs.
-  enable_arcore = is_android && !is_cast_android &&
-                (current_cpu == "arm" || current_cpu == "arm64")
+  enable_arcore = _is_xr_supported_android
 
   use_command_buffer = is_win
 
   # To build with OpenXR support, the OpenXR Loader needs to be pulled to
   # third_party/openxr.
-  enable_openxr = checkout_openxr &&
-                  (is_win || (is_android && !is_cast_android &&
-                              (current_cpu == "arm" || current_cpu == "arm64")))
+  enable_openxr = checkout_openxr && (is_win || _is_xr_supported_android)
 }
 
 declare_args() {
@@ -31,13 +34,10 @@ declare_args() {
   # We enable VR on Linux even though VR features aren't usable because
   # the binary size impact is small and allows many VR tests to run on Linux
   enable_vr =
-      enable_gvr_services || enable_openxr ||
-      enable_cardboard || enable_arcore ||
+      enable_gvr_services || enable_openxr || enable_cardboard ||
+      enable_arcore ||
       (is_linux && !is_castos && (current_cpu == "x64" || current_cpu == "x86"))
 
   # Whether to include VR extras like test APKs in non-VR-specific targets
   include_vr_data = false
-}
-
-declare_args() {
 }

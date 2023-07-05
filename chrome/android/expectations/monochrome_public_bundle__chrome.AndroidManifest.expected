@@ -21,6 +21,12 @@
         android:launchMode="singleTop"
         android:theme="@android:style/Theme.Material.Light.Dialog.Alert">
     </activity>  # DIFF-ANCHOR: 28dc9019
+    <activity  # DIFF-ANCHOR: ce279235
+        android:name="com.google.cardboard.sdk.QrCodeCaptureActivity"
+        android:exported="false"
+        android:label="@string/title_activity_qr_code_capture"
+        android:theme="@style/Theme.AppCompat.NoActionBar">
+    </activity>  # DIFF-ANCHOR: ce279235
     <activity  # DIFF-ANCHOR: 93d41352
         android:name="org.chromium.chrome.browser.BrowserRestartActivity"
         android:excludeFromRecents="true"

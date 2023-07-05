@@ -32,13 +32,7 @@ android_library("cardboard_java") {
     "src/sdk/device_params/android/java/com/google/cardboard/sdk/deviceparams/DeviceParamsUtils.java",
     "src/sdk/java_utils/android/java/com/google/cardboard/sdk/UsedByNative.java",
     "src/sdk/qrcode/android/java/com/google/cardboard/sdk/HeadsetDetectionActivity.java",
-
-    # TODO(https://crbug.com/1429091): There's a build error because a JNI in
-    # this class isn't used. Once we begin consuming it, it'll likely go away.
-    # If not, or in the mean time we can either comment it out (as done
-    # currently), or pursue a workaround as described in
-    # https://crbug.com/1407278.
-    # "src/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java",
+    "src/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java",
     "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/AsyncTask.java",
     "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/CardboardParamsUtils.java",
     "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/InputStreamProvider.java",
