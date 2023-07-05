@@ -97,7 +97,6 @@ public class SnackbarTest {
             mManager = new SnackbarManager(sActivity, sMainParent, null);
             mManager.dismissAllSnackbars();
             AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
-            AccessibilityState.setRecommendedTimeoutMultiplierForTesting(1.0f);
         });
     }
 
@@ -235,8 +234,7 @@ public class SnackbarTest {
 
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
-            AccessibilityState.setRecommendedTimeoutMultiplierForTesting(5.0f);
-            snackbar.setDuration(SnackbarManager.getDefaultA11yDurationForTesting() / 3);
+            snackbar.setDuration(SnackbarManager.getDefaultA11yDurationForTesting() * 3);
             Assert.assertTrue("Snackbar should use the recommended duration if it is more than "
                             + "the default a11y duration.",
                     SnackbarManager.getDefaultA11yDurationForTesting()

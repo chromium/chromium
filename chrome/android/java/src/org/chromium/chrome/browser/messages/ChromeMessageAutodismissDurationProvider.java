@@ -56,9 +56,8 @@ public class ChromeMessageAutodismissDurationProvider
         // multiply the duration by the recommended multiplier and use that with a minimum of 30s.
         return !AccessibilityState.isPerformGesturesEnabled()
                 ? nonA11yDuration
-                : Math.max(mAutodismissDurationWithA11yMs,
-                        (long) (AccessibilityState.getRecommendedTimeoutMultiplier()
-                                * nonA11yDuration));
+                : (long) AccessibilityState.getRecommendedTimeoutMillis(
+                        (int) mAutodismissDurationWithA11yMs, (int) nonA11yDuration);
     }
 
     @VisibleForTesting
