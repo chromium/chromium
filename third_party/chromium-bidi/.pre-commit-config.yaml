@@ -31,6 +31,13 @@ repos:
         args: [--pytest-test-first]
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v2.3.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        # c.f. https://conventionalcommits.org
+        args: [feat, fix, build, chore, ci, docs, test]
   - repo: https://github.com/PyCQA/flake8.git
     rev: 6.0.0
     hooks:
@@ -116,10 +123,3 @@ repos:
     rev: v0.1.1
     hooks:
       - id: keep-sorted
-  - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v2.3.0
-    hooks:
-      - id: conventional-pre-commit
-        stages: [commit-msg]
-        # c.f. https://conventionalcommits.org
-        args: [feat, fix, build, chore, ci, docs, refactor, test]

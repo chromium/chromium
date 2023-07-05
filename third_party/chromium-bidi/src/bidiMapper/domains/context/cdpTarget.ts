@@ -36,8 +36,8 @@ export class CdpTarget {
   readonly #eventManager: IEventManager;
   readonly #preloadScriptStorage: PreloadScriptStorage;
 
-  readonly #targetUnblocked: Deferred<void>;
-  #networkDomainActivated: boolean;
+  readonly #targetUnblocked = new Deferred<void>();
+  #networkDomainEnabled = false;
 
   static create(
     targetId: string,
@@ -82,9 +82,6 @@ export class CdpTarget {
     this.#cdpSessionId = cdpSessionId;
     this.#eventManager = eventManager;
     this.#preloadScriptStorage = preloadScriptStorage;
-
-    this.#networkDomainActivated = false;
-    this.#targetUnblocked = new Deferred();
   }
 
   /** Returns a promise that resolves when the target is unblocked. */
@@ -143,12 +140,12 @@ export class CdpTarget {
   }
 
   /**
-   * Enables the Network domain (creates NetworkProcessor on the target's cdp
-   * client) if it is not enabled yet.
+   * Enables the Network domain by creating a network processor on the target's
+   * cdp client if it is not enabled yet.
    */
   async enableNetworkDomain() {
-    if (!this.#networkDomainActivated) {
-      this.#networkDomainActivated = true;
+    if (!this.#networkDomainEnabled) {
+      this.#networkDomainEnabled = true;
       await NetworkProcessor.create(this.cdpClient, this.#eventManager);
     }
   }

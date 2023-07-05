@@ -78,7 +78,7 @@ export class Realm {
 
     this.#eventManager.registerEvent(
       {
-        method: Script.EventNames.RealmCreated,
+        method: Script.EventNames.RealmCreatedEvent,
         params: this.toBiDi(),
       },
       this.browsingContextId
@@ -325,7 +325,7 @@ export class Realm {
   delete() {
     this.#eventManager.registerEvent(
       {
-        method: Script.EventNames.RealmDestroyed,
+        method: Script.EventNames.RealmDestroyedEvent,
         params: {
           realm: this.realmId,
         },

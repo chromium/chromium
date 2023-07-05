@@ -546,7 +546,10 @@ export namespace Script {
     | GetRealmsResult
     | DisownResult
     | AddPreloadScriptResult;
-  export type Event = MessageEvent | RealmCreatedEvent | RealmDestroyedEvent;
+  export type Event =
+    | MessageEvent
+    | RealmCreatedEventEvent
+    | RealmDestroyedEventEvent;
 
   export type Realm = string;
 
@@ -810,25 +813,25 @@ export namespace Script {
     Script.MessageParameters
   >;
 
-  export type RealmCreatedEvent = EventResponse<
-    EventNames.RealmCreated,
+  export type RealmCreatedEventEvent = EventResponse<
+    EventNames.RealmCreatedEvent,
     RealmInfo
   >;
 
-  export type RealmDestroyedParameters = {
+  export type RealmDestroyedEventParameters = {
     realm: Realm;
   };
 
-  export type RealmDestroyedEvent = EventResponse<
-    EventNames.RealmDestroyed,
-    RealmDestroyedParameters
+  export type RealmDestroyedEventEvent = EventResponse<
+    EventNames.RealmDestroyedEvent,
+    RealmDestroyedEventParameters
   >;
 
   export enum EventNames {
     // keep-sorted start
     MessageEvent = 'script.message',
-    RealmCreated = 'script.realmCreated',
-    RealmDestroyed = 'script.realmDestroyed',
+    RealmCreatedEvent = 'script.realmCreated',
+    RealmDestroyedEvent = 'script.realmDestroyed',
     // keep-sorted end
   }
 
@@ -857,10 +860,10 @@ export namespace BrowsingContext {
     | ContextCreatedEvent
     | ContextDestroyedEvent
     | DomContentLoadedEvent
-    | FragmentNavigatedEvent
+    | FragmentNavigatedEventEvent
     | LoadEvent
-    | NavigationStartedEvent
-    | UserPromptClosedEvent
+    | NavigationStartedEventEvent
+    | UserPromptClosedEventEvent
     | UserPromptOpenEvent;
 
   export type Navigation = string;
@@ -1060,36 +1063,36 @@ export namespace BrowsingContext {
     BrowsingContext.Info
   >;
 
-  export type FragmentNavigatedEvent = EventResponse<
-    EventNames.FragmentNavigated,
+  export type FragmentNavigatedEventEvent = EventResponse<
+    EventNames.FragmentNavigatedEvent,
     BrowsingContext.NavigationInfo
   >;
 
-  export type NavigationStartedEvent = EventResponse<
-    EventNames.NavigationStarted,
+  export type NavigationStartedEventEvent = EventResponse<
+    EventNames.NavigationStartedEvent,
     BrowsingContext.NavigationInfo
   >;
 
-  export type UserPromptClosedParameters = {
+  export type UserPromptClosedEventParameters = {
     context: CommonDataTypes.BrowsingContext;
     accepted: boolean;
     userText?: string;
   };
 
-  export type UserPromptClosedEvent = EventResponse<
-    EventNames.UserPromptClosed,
-    UserPromptClosedParameters
+  export type UserPromptClosedEventEvent = EventResponse<
+    EventNames.UserPromptClosedEvent,
+    UserPromptClosedEventParameters
   >;
 
-  export type UserPromptOpenedParameters = {
+  export type UserPromptOpenedEventParameters = {
     context: CommonDataTypes.BrowsingContext;
     type: 'alert' | 'confirm' | 'prompt' | 'beforeunload';
     message: string;
   };
 
   export type UserPromptOpenEvent = EventResponse<
-    EventNames.UserPromptOpened,
-    UserPromptOpenedParameters
+    EventNames.UserPromptOpenedEvent,
+    UserPromptOpenedEventParameters
   >;
 
   export enum EventNames {
@@ -1097,11 +1100,11 @@ export namespace BrowsingContext {
     ContextCreatedEvent = 'browsingContext.contextCreated',
     ContextDestroyedEvent = 'browsingContext.contextDestroyed',
     DomContentLoadedEvent = 'browsingContext.domContentLoaded',
-    FragmentNavigated = 'browsingContext.fragmentNavigated',
+    FragmentNavigatedEvent = 'browsingContext.fragmentNavigated',
     LoadEvent = 'browsingContext.load',
-    NavigationStarted = 'browsingContext.navigationStarted',
-    UserPromptClosed = 'browsingContext.userPromptClosed',
-    UserPromptOpened = 'browsingContext.userPromptOpened',
+    NavigationStartedEvent = 'browsingContext.navigationStarted',
+    UserPromptClosedEvent = 'browsingContext.userPromptClosed',
+    UserPromptOpenedEvent = 'browsingContext.userPromptOpened',
     // keep-sorted end
   }
 
@@ -1111,7 +1114,7 @@ export namespace BrowsingContext {
 /** @see https://w3c.github.io/webdriver-bidi/#module-log */
 export namespace Log {
   export type LogEntry = GenericLogEntry | ConsoleLogEntry | JavascriptLogEntry;
-  export type Event = LogEntryAddedEvent;
+  export type Event = EntryAddedEvent;
   export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
   export type BaseLogEntry = {
@@ -1136,15 +1139,15 @@ export namespace Log {
     type: 'javascript';
   };
 
-  export type LogEntryAddedEvent = EventResponse<
-    EventNames.LogEntryAddedEvent,
+  export type EntryAddedEvent = EventResponse<
+    EventNames.EntryAddedEvent,
     LogEntry
   >;
 
   export const AllEvents = 'log';
 
   export enum EventNames {
-    LogEntryAddedEvent = 'log.entryAdded',
+    EntryAddedEvent = 'log.entryAdded',
   }
 }
 

@@ -297,10 +297,10 @@ export class BrowsingContextImpl {
     if (this.#isNavigating) {
       this.#eventManager.registerEvent(
         {
-          method: BrowsingContext.EventNames.NavigationStarted,
+          method: BrowsingContext.EventNames.NavigationStartedEvent,
           params: {
             context: this.id,
-            // TODO: The network event is send before the CDP Page.frameStartedLoading
+            // TODO: The navigation event is sent before CDP Page.frameStartedLoading.
             // It theory there should be a way to get the data.
             navigation: null,
             timestamp: BrowsingContextImpl.getTimestamp(),
@@ -341,7 +341,7 @@ export class BrowsingContextImpl {
 
         this.#eventManager.registerEvent(
           {
-            method: BrowsingContext.EventNames.FragmentNavigated,
+            method: BrowsingContext.EventNames.FragmentNavigatedEvent,
             params: {
               context: this.id,
               navigation: null,
@@ -502,7 +502,7 @@ export class BrowsingContextImpl {
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
       this.#eventManager.registerEvent(
         {
-          method: BrowsingContext.EventNames.UserPromptClosed,
+          method: BrowsingContext.EventNames.UserPromptClosedEvent,
           params: {
             context: this.id,
             accepted: params.result,
@@ -517,7 +517,7 @@ export class BrowsingContextImpl {
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
       this.#eventManager.registerEvent(
         {
-          method: BrowsingContext.EventNames.UserPromptOpened,
+          method: BrowsingContext.EventNames.UserPromptOpenedEvent,
           params: {
             context: this.id,
             type: params.type,
@@ -541,7 +541,7 @@ export class BrowsingContextImpl {
       : params.context.origin;
   }
 
-  #documentChanged(loaderId?: string) {
+  #documentChanged(loaderId?: Protocol.Network.LoaderId) {
     // Same document navigation.
     if (loaderId === undefined || this.#loaderId === loaderId) {
       if (this.#deferreds.Page.navigatedWithinDocument.isFinished) {

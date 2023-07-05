@@ -570,10 +570,7 @@ export class BrowsingContextProcessor {
     const context = params.context;
     const sessionId =
       this.#browsingContextStorage.getContext(context).cdpTarget.cdpSessionId;
-    if (sessionId === undefined) {
-      return {result: {session: null}};
-    }
-    return {result: {session: sessionId}};
+    return {result: {session: sessionId === undefined ? null : sessionId}};
   }
 
   async process_cdp_sendCommand(
@@ -582,12 +579,9 @@ export class BrowsingContextProcessor {
     const client = params.session
       ? this.#cdpConnection.getCdpClient(params.session)
       : this.#cdpConnection.browserClient();
-    const sendCdpCommandResult = await client.sendCommand(
-      params.method,
-      params.params
-    );
+    const result = await client.sendCommand(params.method, params.params);
     return {
-      result: sendCdpCommandResult,
+      result,
       session: params.session,
     };
   }

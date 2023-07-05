@@ -84,10 +84,10 @@ export class LogManager {
   }
 
   #initialize() {
-    this.#initializeLogEntryAddedEventListener();
+    this.#initializeEntryAddedEventListener();
   }
 
-  #initializeLogEntryAddedEventListener() {
+  #initializeEntryAddedEventListener() {
     this.#cdpTarget.cdpClient.on(
       'Runtime.consoleAPICalled',
       (params: Protocol.Runtime.ConsoleAPICalledEvent) => {
@@ -109,7 +109,7 @@ export class LogManager {
 
         this.#eventManager.registerPromiseEvent(
           argsPromise.then((args) => ({
-            method: Log.EventNames.LogEntryAddedEvent,
+            method: Log.EventNames.EntryAddedEvent,
             params: {
               level: getLogLevel(params.type),
               source: {
@@ -126,7 +126,7 @@ export class LogManager {
             },
           })),
           realm?.browsingContextId ?? 'UNKNOWN',
-          Log.EventNames.LogEntryAddedEvent
+          Log.EventNames.EntryAddedEvent
         );
       }
     );
@@ -154,7 +154,7 @@ export class LogManager {
 
         this.#eventManager.registerPromiseEvent(
           textPromise.then((text) => ({
-            method: Log.EventNames.LogEntryAddedEvent,
+            method: Log.EventNames.EntryAddedEvent,
             params: {
               level: 'error',
               source: {
@@ -168,7 +168,7 @@ export class LogManager {
             },
           })),
           realm?.browsingContextId ?? 'UNKNOWN',
-          Log.EventNames.LogEntryAddedEvent
+          Log.EventNames.EntryAddedEvent
         );
       }
     );

@@ -42,7 +42,7 @@ async def test_log_subscribeToAllLogEvents_logEventReceived(
 
 
 @pytest.mark.asyncio
-async def test_log_subscribeToLogEntryAddedEvents_logEventReceived(
+async def test_log_subscribeToEntryAddedEvents_logEventReceived(
         websocket, context_id):
     await subscribe(websocket, ["log.entryAdded"])
 

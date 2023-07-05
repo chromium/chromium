@@ -86,7 +86,7 @@ export interface IEventManager {
  * Maps event name to a desired buffer length.
  */
 const eventBufferLength: ReadonlyMap<Message.EventNames, number> = new Map([
-  [Log.EventNames.LogEntryAddedEvent, 100],
+  [Log.EventNames.EntryAddedEvent, 100],
 ]);
 
 export class EventManager implements IEventManager {

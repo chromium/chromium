@@ -430,17 +430,17 @@ describe('SubscriptionManager', () => {
         BrowsingContext.EventNames.ContextCreatedEvent,
         BrowsingContext.EventNames.ContextDestroyedEvent,
         BrowsingContext.EventNames.DomContentLoadedEvent,
-        BrowsingContext.EventNames.FragmentNavigated,
+        BrowsingContext.EventNames.FragmentNavigatedEvent,
         BrowsingContext.EventNames.LoadEvent,
-        BrowsingContext.EventNames.NavigationStarted,
-        BrowsingContext.EventNames.UserPromptClosed,
-        BrowsingContext.EventNames.UserPromptOpened,
+        BrowsingContext.EventNames.NavigationStartedEvent,
+        BrowsingContext.EventNames.UserPromptClosedEvent,
+        BrowsingContext.EventNames.UserPromptOpenedEvent,
       ]);
     });
 
     it('all Log events', () => {
       expect(unrollEvents([Log.AllEvents])).to.have.members([
-        Log.EventNames.LogEntryAddedEvent,
+        Log.EventNames.EntryAddedEvent,
       ]);
     });
 
@@ -456,27 +456,27 @@ describe('SubscriptionManager', () => {
     it('all Script events', () => {
       expect(unrollEvents([Script.AllEvents])).to.have.members([
         Script.EventNames.MessageEvent,
-        Script.EventNames.RealmCreated,
-        Script.EventNames.RealmDestroyed,
+        Script.EventNames.RealmCreatedEvent,
+        Script.EventNames.RealmDestroyedEvent,
       ]);
     });
 
     it('discrete events', () => {
       expect(
         unrollEvents([
-          Script.EventNames.RealmCreated,
-          Log.EventNames.LogEntryAddedEvent,
+          Script.EventNames.RealmCreatedEvent,
+          Log.EventNames.EntryAddedEvent,
         ])
       ).to.have.members([
-        Script.EventNames.RealmCreated,
-        Log.EventNames.LogEntryAddedEvent,
+        Script.EventNames.RealmCreatedEvent,
+        Log.EventNames.EntryAddedEvent,
       ]);
     });
 
     it('all and discrete events', () => {
       expect(
-        unrollEvents([Log.AllEvents, Log.EventNames.LogEntryAddedEvent])
-      ).to.have.members([Log.EventNames.LogEntryAddedEvent]);
+        unrollEvents([Log.AllEvents, Log.EventNames.EntryAddedEvent])
+      ).to.have.members([Log.EventNames.EntryAddedEvent]);
     });
   });
 });
