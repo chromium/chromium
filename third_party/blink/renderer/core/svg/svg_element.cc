@@ -1095,8 +1095,9 @@ const ComputedStyle* SVGElement::BaseComputedStyleForSMIL() {
   if (!HasSVGRareData())
     return EnsureComputedStyle();
   const ComputedStyle* parent_style = nullptr;
-  if (ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(*this))
+  if (Element* parent = LayoutTreeBuilderTraversal::ParentElement(*this)) {
     parent_style = parent->EnsureComputedStyle();
+  }
   return SvgRareData()->OverrideComputedStyle(this, parent_style);
 }
 
