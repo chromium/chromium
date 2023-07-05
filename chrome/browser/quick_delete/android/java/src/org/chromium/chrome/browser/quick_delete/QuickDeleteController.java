@@ -15,6 +15,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -88,8 +89,20 @@ public class QuickDeleteController implements QuickDeleteBridge.DomainVisitsCall
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(
                         QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
+                @TimePeriod
+                int timePeriod = mDialogDelegate.getCurrentTimePeriodOption().getTimePeriod();
+                // TODO(crbug.com/1412087): This is hardcoded to work on 15 minutes time range.
+                // Update this to take into account |timePeriod| and also deletion of any remaining
+                // tabs inside |mDeleteTabsFilter|. For example, when the quick delete dialog was
+                // shown and the user didn't interact with they come back to do an action after some
+                // time, then calling QuickDeleteTabFilter#closeTabsFilteredForQuickDelete method
+                // would only delete tabs in the last 15 minutes and may miss the tabs in
+                // |mDeleteTabsFilter|.
                 mDeleteTabsFilter.closeTabsFilteredForQuickDelete();
-                mDelegate.performQuickDelete(this::onQuickDeleteFinished);
+                // TODO(crbug.com/1412087): This may have similar considerations as above and
+                // therefore may need to be revisited based on what Clear browsing data is doing
+                // today.
+                mDelegate.performQuickDelete(this::onQuickDeleteFinished, timePeriod);
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(

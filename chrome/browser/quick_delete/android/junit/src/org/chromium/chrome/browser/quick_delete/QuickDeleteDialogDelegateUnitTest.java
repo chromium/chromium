@@ -32,6 +32,7 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -371,5 +372,22 @@ public class QuickDeleteDialogDelegateUnitTest {
 
         assertEquals(View.VISIBLE, quickDeleteBrowsingHistoryRow.getVisibility());
         assertEquals(View.VISIBLE, quickDeleteBrowsingHistoryRowSubtitle.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testQuickDeleteDialog_TimePeriod_Binding() {
+        QuickDeleteDialogDelegate dialog = new QuickDeleteDialogDelegate(mActivity,
+                mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock, mProfileMock);
+        QuickDeleteDialogDelegate.TimePeriodSpinnerOption options[] =
+                dialog.getTimePeriodSpinnerOptions();
+
+        assertEquals(6, options.length);
+        assertEquals(TimePeriod.LAST_15_MINUTES, options[0].getTimePeriod());
+        assertEquals(TimePeriod.LAST_HOUR, options[1].getTimePeriod());
+        assertEquals(TimePeriod.LAST_DAY, options[2].getTimePeriod());
+        assertEquals(TimePeriod.LAST_WEEK, options[3].getTimePeriod());
+        assertEquals(TimePeriod.FOUR_WEEKS, options[4].getTimePeriod());
+        assertEquals(TimePeriod.ALL_TIME, options[5].getTimePeriod());
     }
 }

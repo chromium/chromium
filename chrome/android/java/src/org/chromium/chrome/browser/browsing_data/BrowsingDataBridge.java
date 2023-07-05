@@ -249,7 +249,7 @@ public final class BrowsingDataBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void clearBrowsingData(BrowsingDataBridge caller, Profile profile, int[] dataTypes,
                 int timePeriod, String[] excludedDomains, int[] excludedDomainReasons,
                 String[] ignoredDomains, int[] ignoredDomainReasons);

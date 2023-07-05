@@ -55,8 +55,6 @@ class QuickDeleteDialogDelegate {
     /**The {@link PropertyModel} of the underlying dialog where the quick dialog view would be
      * shown.*/
     private PropertyModel mModalDialogPropertyModel;
-
-    // TODO(crbug.com/1412087): Take into account this time period when the actual deletion happens.
     private TimePeriodSpinnerOption mCurrentTimePeriodOption;
 
     /**
@@ -85,7 +83,6 @@ class QuickDeleteDialogDelegate {
      * TODO(crbug.com/1412087): This is duplicated from {@link ClearBrowsingDataFragment}, merge
      * both the implementation into chrome/browser/browsing_data/android.
      */
-    @VisibleForTesting
     static class TimePeriodSpinnerOption {
         private @TimePeriod int mTimePeriod;
         private String mTitle;
@@ -234,7 +231,8 @@ class QuickDeleteDialogDelegate {
      * both the implementation into chrome/browser/browsing_data/android.
      *
      */
-    private TimePeriodSpinnerOption[] getTimePeriodSpinnerOptions() {
+    @VisibleForTesting
+    TimePeriodSpinnerOption[] getTimePeriodSpinnerOptions() {
         List<TimePeriodSpinnerOption> options = new ArrayList<>();
         options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
                 mContext.getString(R.string.clear_browsing_data_tab_period_15_minutes)));
@@ -263,6 +261,12 @@ class QuickDeleteDialogDelegate {
                 mContext, android.R.layout.simple_spinner_dropdown_item, options);
         quickDeleteSpinner.setAdapter(adapter);
 
+        /**
+         * TODO(crbug.com/1412087): We need to add the logic here to refresh the information
+         * shown inside the dialog when a new time period is chosen. This may require
+         * refactoring the code a bit to pass {@link Runnables} to re-create {@link
+         * QuickDeleteDialogData}.
+         */
         quickDeleteSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(
@@ -397,5 +401,12 @@ class QuickDeleteDialogDelegate {
         mModalDialogPropertyModel = createQuickDeleteDialogProperty(quickDeleteDialogData);
         mModalDialogManager.showDialog(
                 mModalDialogPropertyModel, ModalDialogManager.ModalDialogType.APP);
+    }
+
+    /**
+     * @return The current time period option set in the dialog.
+     */
+    TimePeriodSpinnerOption getCurrentTimePeriodOption() {
+        return mCurrentTimePeriodOption;
     }
 }

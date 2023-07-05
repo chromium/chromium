@@ -13,25 +13,37 @@ import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibilit
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
+import android.view.View;
+import android.widget.Spinner;
 
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridgeJni;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -49,6 +61,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -66,15 +79,20 @@ public class QuickDeleteControllerTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.PRIVACY)
                     .build();
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
+    @Mock
+    private BrowsingDataBridge.Natives mBrowsingDataBridgeMock;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
 
         // Set the time for the initial tab to outside of the quick delete timespan.
@@ -187,6 +205,41 @@ public class QuickDeleteControllerTest {
 
     @Test
     @MediumTest
+    public void testQuickDeleteTimePeriodToggle_DeletesCorrectRange() {
+        openQuickDeleteDialog();
+        // Wait for the dialog to show-up so we can retrieve the dialog in the next line.
+        onViewWaiting(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
+
+        View dialogView = mActivityTestRule.getActivity()
+                                  .getModalDialogManager()
+                                  .getCurrentDialogForTest()
+                                  .get(ModalDialogProperties.CUSTOM_VIEW);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Spinner spinnerView = dialogView.findViewById(R.id.quick_delete_spinner);
+            // Set the time selection for LAST_HOUR.
+            spinnerView.setSelection(1);
+            QuickDeleteDialogDelegate.TimePeriodSpinnerOption option =
+                    (QuickDeleteDialogDelegate.TimePeriodSpinnerOption)
+                            spinnerView.getSelectedItem();
+            assertEquals(TimePeriod.LAST_HOUR, option.getTimePeriod());
+
+            // Check below that the browsing data bridge is called for LAST_HOUR.
+            mJniMocker.mock(BrowsingDataBridgeJni.TEST_HOOKS, mBrowsingDataBridgeMock);
+            doNothing()
+                    .when(mBrowsingDataBridgeMock)
+                    .clearBrowsingData(any(), any(), any(), eq(TimePeriod.LAST_HOUR), any(), any(),
+                            any(), any());
+        });
+
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
+        verify(mBrowsingDataBridgeMock)
+                .clearBrowsingData(
+                        any(), any(), any(), eq(TimePeriod.LAST_HOUR), any(), any(), any(), any());
+    }
+
+    @Test
+    @MediumTest
     public void testCancelClickedHistogram_WhenClickingCancel() throws IOException {
         openQuickDeleteDialog();
 
@@ -220,10 +273,10 @@ public class QuickDeleteControllerTest {
     public void testBrowsingDataDeletion_onClickedDelete() throws Exception {
         resetCookies();
         loadSiteDataUrl();
-        Assert.assertEquals("false", runJavascriptSync("hasCookie()"));
+        assertEquals("false", runJavascriptSync("hasCookie()"));
 
         runJavascriptSync("setCookie()");
-        Assert.assertEquals("true", runJavascriptSync("hasCookie()"));
+        assertEquals("true", runJavascriptSync("hasCookie()"));
 
         // Browsing data (cookies) should be deleted.
         openQuickDeleteDialog();
@@ -232,7 +285,7 @@ public class QuickDeleteControllerTest {
         // Since the previous tab was deleted and we are in the tab switcher, we need to open a new
         // tab.
         loadSiteDataUrl();
-        Assert.assertEquals("false", runJavascriptSync("hasCookie()"));
+        assertEquals("false", runJavascriptSync("hasCookie()"));
     }
 
     @Test
@@ -240,14 +293,14 @@ public class QuickDeleteControllerTest {
     public void testBrowsingDataDeletion_onClickedCancel() throws Exception {
         resetCookies();
         loadSiteDataUrl();
-        Assert.assertEquals("false", runJavascriptSync("hasCookie()"));
+        assertEquals("false", runJavascriptSync("hasCookie()"));
 
         runJavascriptSync("setCookie()");
-        Assert.assertEquals("true", runJavascriptSync("hasCookie()"));
+        assertEquals("true", runJavascriptSync("hasCookie()"));
 
         // Browsing data (cookies) should not be deleted.
         openQuickDeleteDialog();
         onViewWaiting(withId(R.id.negative_button)).perform(click());
-        Assert.assertEquals("true", runJavascriptSync("hasCookie()"));
+        assertEquals("true", runJavascriptSync("hasCookie()"));
     }
 }

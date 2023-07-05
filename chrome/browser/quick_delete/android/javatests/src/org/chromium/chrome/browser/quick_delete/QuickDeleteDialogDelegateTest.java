@@ -12,11 +12,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertEquals;
 
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
+import android.widget.Spinner;
 
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
@@ -191,5 +193,50 @@ public class QuickDeleteDialogDelegateTest {
                                   .getCurrentDialogForTest()
                                   .get(ModalDialogProperties.CUSTOM_VIEW);
         mRenderTestRule.render(dialogView, "quick_delete_dialog-no-tabs-or-history");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testQuickDeleteDialogDefaultSpinnerView() throws IOException {
+        openQuickDeleteDialog();
+        onView(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
+        View dialogView = mActivityTestRule.getActivity()
+                                  .getModalDialogManager()
+                                  .getCurrentDialogForTest()
+                                  .get(ModalDialogProperties.CUSTOM_VIEW);
+        Spinner spinnerView = dialogView.findViewById(R.id.quick_delete_spinner);
+        mRenderTestRule.render(spinnerView, "quick_delete_dialog_spinner_default");
+    }
+
+    @Test
+    @MediumTest
+    public void testQuickDeleteDialogSpinnerViewContents() throws IOException {
+        openQuickDeleteDialog();
+        onView(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
+        View dialogView = mActivityTestRule.getActivity()
+                                  .getModalDialogManager()
+                                  .getCurrentDialogForTest()
+                                  .get(ModalDialogProperties.CUSTOM_VIEW);
+        Spinner spinnerView = dialogView.findViewById(R.id.quick_delete_spinner);
+        assertEquals(6, spinnerView.getAdapter().getCount());
+        assertEquals(mActivityTestRule.getActivity().getString(
+                             R.string.clear_browsing_data_tab_period_15_minutes),
+                spinnerView.getItemAtPosition(0).toString());
+        assertEquals(mActivityTestRule.getActivity().getString(
+                             R.string.clear_browsing_data_tab_period_hour),
+                spinnerView.getItemAtPosition(1).toString());
+        assertEquals(mActivityTestRule.getActivity().getString(
+                             R.string.clear_browsing_data_tab_period_24_hours),
+                spinnerView.getItemAtPosition(2).toString());
+        assertEquals(mActivityTestRule.getActivity().getString(
+                             R.string.clear_browsing_data_tab_period_7_days),
+                spinnerView.getItemAtPosition(3).toString());
+        assertEquals(mActivityTestRule.getActivity().getString(
+                             R.string.clear_browsing_data_tab_period_four_weeks),
+                spinnerView.getItemAtPosition(4).toString());
+        assertEquals(mActivityTestRule.getActivity().getString(
+                             R.string.clear_browsing_data_tab_period_everything),
+                spinnerView.getItemAtPosition(5).toString());
     }
 }
