@@ -119,6 +119,9 @@
     box-shadow: var(--cr-elevation-1);
     border-radius: 4px;
     overflow: hidden;
+    /* Declare the z-index here to ensure this container is visible above
+     * everything else. */
+    z-index: 300;
   }
 
   #clear-recents, #help {
