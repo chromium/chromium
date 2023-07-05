@@ -9,6 +9,10 @@
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 #include "content/common/input/synthetic_gesture_params.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 // SyntheticGestureTarget implementation for mac
@@ -47,7 +51,7 @@ class SyntheticGestureTargetMac : public SyntheticGestureTargetBase {
   RenderWidgetHostViewMac* GetView() const;
   bool PointIsWithinContents(RenderWidgetHostView* view,
                              const gfx::PointF& point);
-  RenderWidgetHostViewCocoa* cocoa_view_;
+  RenderWidgetHostViewCocoa* __strong cocoa_view_;
 };
 
 }  // namespace content

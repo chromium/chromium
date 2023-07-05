@@ -27,7 +27,7 @@ class Range;
 namespace content {
 class RenderWidgetHost;
 
-// This class helps with the Mac OS X dictionary popup. For the design overview,
+// This class helps with the macOS dictionary popup. For the design overview,
 // look at this document:
 //   http://dev.chromium.org/developers/design-documents/system-dictionary-pop-up-architecture
 //

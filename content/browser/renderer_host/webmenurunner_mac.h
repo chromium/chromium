@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/mac/scoped_nsobject.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 
 // WebMenuRunner ---------------------------------------------------------------
@@ -18,24 +17,7 @@
 // item is selected, MenuDelegate is informed and sets a flag which can be
 // queried after the menu has finished running.
 
-@interface WebMenuRunner : NSObject {
- @private
-  // The native menu control.
-  base::scoped_nsobject<NSMenu> _menu;
-
-  // A flag set to YES if a menu item was chosen, or NO if the menu was
-  // dismissed without selecting an item.
-  BOOL _menuItemWasChosen;
-
-  // The index of the selected menu item.
-  int _index;
-
-  // The font size being used for the menu.
-  CGFloat _fontSize;
-
-  // Whether the menu should be displayed right-aligned.
-  BOOL _rightAligned;
-}
+@interface WebMenuRunner : NSObject
 
 // Initializes the MenuDelegate with a list of items sent from WebKit.
 - (id)initWithItems:(const std::vector<blink::mojom::MenuItemPtr>&)items

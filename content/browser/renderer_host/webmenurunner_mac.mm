@@ -9,6 +9,10 @@
 #include "base/base64.h"
 #include "base/strings/sys_string_conversions.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @interface WebMenuRunner (PrivateAPI)
 
 // Worker function used during initialization.
@@ -21,19 +25,36 @@
 
 @end  // WebMenuRunner (PrivateAPI)
 
-@implementation WebMenuRunner
+@implementation WebMenuRunner {
+  // The native menu control.
+  NSMenu* __strong _menu;
+
+  // A flag set to YES if a menu item was chosen, or NO if the menu was
+  // dismissed without selecting an item.
+  BOOL _menuItemWasChosen;
+
+  // The index of the selected menu item.
+  int _index;
+
+  // The font size being used for the menu.
+  CGFloat _fontSize;
+
+  // Whether the menu should be displayed right-aligned.
+  BOOL _rightAligned;
+}
 
 - (id)initWithItems:(const std::vector<blink::mojom::MenuItemPtr>&)items
            fontSize:(CGFloat)fontSize
        rightAligned:(BOOL)rightAligned {
   if ((self = [super init])) {
-    _menu.reset([[NSMenu alloc] initWithTitle:@""]);
-    [_menu setAutoenablesItems:NO];
+    _menu = [[NSMenu alloc] initWithTitle:@""];
+    _menu.autoenablesItems = NO;
     _index = -1;
     _fontSize = fontSize;
     _rightAligned = rightAligned;
-    for (size_t i = 0; i < items.size(); ++i)
-      [self addItem:items[i]];
+    for (const auto& item : items) {
+      [self addItem:item];
+    }
   }
   return self;
 }
@@ -67,30 +88,28 @@
   [menuItem setTarget:self];
 
   // Set various alignment/language attributes.
-  base::scoped_nsobject<NSMutableDictionary> attrs(
-      [[NSMutableDictionary alloc] initWithCapacity:3]);
-  base::scoped_nsobject<NSMutableParagraphStyle> paragraphStyle(
-      [[NSMutableParagraphStyle alloc] init]);
-  [paragraphStyle
-      setAlignment:_rightAligned ? NSTextAlignmentRight : NSTextAlignmentLeft];
+  NSMutableDictionary* attrs = [[NSMutableDictionary alloc] initWithCapacity:3];
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  paragraphStyle.alignment =
+      _rightAligned ? NSTextAlignmentRight : NSTextAlignmentLeft;
   NSWritingDirection writingDirection =
       item->text_direction == base::i18n::RIGHT_TO_LEFT
           ? NSWritingDirectionRightToLeft
           : NSWritingDirectionLeftToRight;
-  [paragraphStyle setBaseWritingDirection:writingDirection];
-  [attrs setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+  paragraphStyle.baseWritingDirection = writingDirection;
+  attrs[NSParagraphStyleAttributeName] = paragraphStyle;
 
   if (item->has_text_direction_override) {
-    [attrs setObject:@[ @(long{writingDirection} | NSWritingDirectionOverride) ]
-              forKey:NSWritingDirectionAttributeName];
+    attrs[NSWritingDirectionAttributeName] =
+        @[ @(long{writingDirection} | NSWritingDirectionOverride) ];
   }
 
-  [attrs setObject:[NSFont menuFontOfSize:_fontSize]
-            forKey:NSFontAttributeName];
+  attrs[NSFontAttributeName] = [NSFont menuFontOfSize:_fontSize];
 
-  base::scoped_nsobject<NSAttributedString> attrTitle(
-      [[NSAttributedString alloc] initWithString:title attributes:attrs]);
-  [menuItem setAttributedTitle:attrTitle];
+  NSAttributedString* attrTitle =
+      [[NSAttributedString alloc] initWithString:title attributes:attrs];
+  menuItem.attributedTitle = attrTitle;
 
   // We set the title as well as the attributed title here. The attributed title
   // will be displayed in the menu, but typeahead will use the non-attributed
@@ -121,18 +140,18 @@
   // Set up the button cell, converting to NSView coordinates. The menu is
   // positioned such that the currently selected menu item appears over the
   // popup button, which is the expected Mac popup menu behavior.
-  base::scoped_nsobject<NSPopUpButtonCell> cell(
-      [[NSPopUpButtonCell alloc] initTextCell:@"" pullsDown:NO]);
-  [cell setMenu:_menu];
+  NSPopUpButtonCell* cell = [[NSPopUpButtonCell alloc] initTextCell:@""
+                                                          pullsDown:NO];
+  cell.menu = _menu;
   // We use selectItemWithTag below so if the index is out-of-bounds nothing
   // bad happens.
   [cell selectItemWithTag:index];
 
   if (_rightAligned) {
-    [cell setUserInterfaceLayoutDirection:
-              NSUserInterfaceLayoutDirectionRightToLeft];
-    [_menu setUserInterfaceLayoutDirection:
-               NSUserInterfaceLayoutDirectionRightToLeft];
+    cell.userInterfaceLayoutDirection =
+        NSUserInterfaceLayoutDirectionRightToLeft;
+    _menu.userInterfaceLayoutDirection =
+        NSUserInterfaceLayoutDirectionRightToLeft;
   }
 
   // When popping up a menu near the Dock, Cocoa restricts the menu
@@ -145,13 +164,12 @@
   // Unfortunately, instead of popping up above the passed |bounds|,
   // it pops up above the bounds of the view passed to inView:.  Use a
   // dummy view to fake this out.
-  base::scoped_nsobject<NSView> dummyView(
-      [[NSView alloc] initWithFrame:bounds]);
+  NSView* dummyView = [[NSView alloc] initWithFrame:bounds];
   [view addSubview:dummyView];
 
   // Display the menu, and set a flag if a menu item was chosen.
-  [cell attachPopUpWithFrame:[dummyView bounds] inView:dummyView];
-  [cell performClickWithFrame:[dummyView bounds] inView:dummyView];
+  [cell attachPopUpWithFrame:dummyView.bounds inView:dummyView];
+  [cell performClickWithFrame:dummyView.bounds inView:dummyView];
 
   [dummyView removeFromSuperview];
 

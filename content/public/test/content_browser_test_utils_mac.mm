@@ -25,6 +25,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // The interface class used to override the implementation of some of
 // RenderWidgetHostViewCocoa methods for tests.
 @interface RenderWidgetHostViewCocoaSwizzler : NSObject
@@ -119,8 +123,8 @@ void RenderWidgetHostViewCocoaObserver::SetUpSwizzlers() {
 
 void SetWindowBounds(gfx::NativeWindow window, const gfx::Rect& bounds) {
   NSRect new_bounds = NSRectFromCGRect(bounds.ToCGRect());
-  if ([[NSScreen screens] count] > 0) {
-    new_bounds.origin.y = [[[NSScreen screens] firstObject] frame].size.height -
+  if (NSScreen.screens.count > 0) {
+    new_bounds.origin.y = NSScreen.screens.firstObject.frame.size.height -
                           new_bounds.origin.y - new_bounds.size.height;
   }
 
@@ -135,18 +139,17 @@ void GetStringAtPointForRenderWidget(
   TextInputClientMac::GetInstance()->GetStringAtPoint(
       rwh, point,
       base::BindOnce(
-          base::RetainBlock(^(
-              base::OnceCallback<void(const std::string&, const gfx::Point&)>
-                  callback,
-              ui::mojom::AttributedStringPtr attributed_string,
-              const gfx::Point& baseline_point) {
+          [](base::OnceCallback<void(const std::string&, const gfx::Point&)>
+                 callback,
+             ui::mojom::AttributedStringPtr attributed_string,
+             const gfx::Point& baseline_point) {
             std::string string =
                 attributed_string
                     ? base::SysCFStringRefToUTF8(CFAttributedStringGetString(
                           attributed_string.To<CFAttributedStringRef>()))
                     : std::string();
             std::move(callback).Run(string, baseline_point);
-          }),
+          },
           std::move(result_callback)));
 }
 
@@ -158,18 +161,17 @@ void GetStringFromRangeForRenderWidget(
   TextInputClientMac::GetInstance()->GetStringFromRange(
       rwh, range,
       base::BindOnce(
-          base::RetainBlock(^(
-              base::OnceCallback<void(const std::string&, const gfx::Point&)>
-                  callback,
-              ui::mojom::AttributedStringPtr attributed_string,
-              const gfx::Point& baseline_point) {
+          [](base::OnceCallback<void(const std::string&, const gfx::Point&)>
+                 callback,
+             ui::mojom::AttributedStringPtr attributed_string,
+             const gfx::Point& baseline_point) {
             std::string string =
                 attributed_string
                     ? base::SysCFStringRefToUTF8(CFAttributedStringGetString(
                           attributed_string.To<CFAttributedStringRef>()))
                     : std::string();
             std::move(callback).Run(string, baseline_point);
-          }),
+          },
           std::move(result_callback)));
 }
 
@@ -214,7 +216,7 @@ void GetStringFromRangeForRenderWidget(
                       eventNumber:0
                        clickCount:1
                          pressure:1.0];
-  [[NSApplication sharedApplication] postEvent:dismissal_event atStart:false];
+  [NSApplication.sharedApplication postEvent:dismissal_event atStart:false];
 }
 
 - (void)showDefinitionForAttributedString:(NSAttributedString*)attrString
@@ -233,6 +235,6 @@ void GetStringFromRangeForRenderWidget(
   if (!observer)
     return;
   observer->OnShowDefinitionForAttributedString(
-      base::SysNSStringToUTF8([attrString string]));
+      base::SysNSStringToUTF8(attrString.string));
 }
 @end

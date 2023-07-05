@@ -138,7 +138,7 @@ class WebContentsViewMac : public WebContentsView,
 
   WebContentsImpl* web_contents() { return web_contents_; }
   WebContentsViewDelegate* delegate() { return delegate_.get(); }
-  WebDragDest* drag_dest() const { return drag_dest_.get(); }
+  WebDragDest* drag_dest() const { return drag_dest_; }
 
   using RenderWidgetHostViewCreateFunction =
       RenderWidgetHostViewMac* (*)(RenderWidgetHost*);

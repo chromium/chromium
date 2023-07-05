@@ -77,6 +77,10 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using blink::WebInputEvent;
 using blink::WebMouseEvent;
 using blink::WebGestureEvent;
@@ -256,7 +260,7 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
     remote_cocoa::mojom::Application* remote_cocoa_application,
     uint64_t parent_ns_view_id) {
   // Destroy the previous remote accessibility element.
-  remote_window_accessible_.reset();
+  remote_window_accessible_ = nil;
 
   // Reset `ns_view_` before resetting `remote_ns_view_` to avoid dangling
   // pointers. `ns_view_` gets reinitialized later in this method.
@@ -747,7 +751,7 @@ void RenderWidgetHostViewMac::Destroy() {
     ns_view_->SetCursorLocked(false);
   }
 
-  // Destroy the local and remote briges to the NSView. Note that the NSView on
+  // Destroy the local and remote bridges to the NSView. Note that the NSView on
   // the other side of |ns_view_| may outlive us due to other retains.
   ns_view_ = nullptr;
   in_process_ns_view_bridge_.reset();
@@ -1234,7 +1238,7 @@ void RenderWidgetHostViewMac::FocusedNodeChanged(
   // OnSelectionBoundsChanged instead.
   if (UAZoomEnabled() && !is_editable_node) {
     NSRect bounds = NSRectFromCGRect(node_bounds_in_screen.ToCGRect());
-    UAZoomChangeFocus(&bounds, NULL, kUAZoomFocusTypeOther);
+    UAZoomChangeFocus(&bounds, nullptr, kUAZoomFocusTypeOther);
   }
 }
 
@@ -1573,7 +1577,7 @@ RenderWidgetHostViewMac::AccessibilityGetNativeViewAccessible() {
 gfx::NativeViewAccessible
 RenderWidgetHostViewMac::AccessibilityGetNativeViewAccessibleForWindow() {
   if (remote_window_accessible_)
-    return remote_window_accessible_.get();
+    return remote_window_accessible_;
   return [GetInProcessNSView() window];
 }
 
@@ -1619,7 +1623,7 @@ id RenderWidgetHostViewMac::GetFocusedBrowserAccessibilityElement() {
 void RenderWidgetHostViewMac::SetAccessibilityWindow(NSWindow* window) {
   // When running in-process, just use the NSView's NSWindow as its own
   // accessibility element.
-  remote_window_accessible_.reset();
+  remote_window_accessible_ = nil;
 }
 
 bool RenderWidgetHostViewMac::SyncIsWidgetForMainFrame(
@@ -2122,11 +2126,10 @@ void RenderWidgetHostViewMac::StopSpeaking() {
 void RenderWidgetHostViewMac::SetRemoteAccessibilityWindowToken(
     const std::vector<uint8_t>& window_token) {
   if (window_token.empty()) {
-    remote_window_accessible_.reset();
+    remote_window_accessible_ = nil;
   } else {
-    remote_window_accessible_.reset(
-        ui::RemoteAccessibility::GetRemoteElementFromToken(window_token),
-        base::scoped_policy::RETAIN);
+    remote_window_accessible_ =
+        ui::RemoteAccessibility::GetRemoteElementFromToken(window_token);
   }
 }
 

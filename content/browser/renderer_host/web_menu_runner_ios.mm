@@ -4,8 +4,11 @@
 
 #import "content/browser/renderer_host/web_menu_runner_ios.h"
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @interface UIContextMenuInteraction ()
 - (void)_presentMenuAtLocation:(CGPoint)location;
@@ -16,7 +19,7 @@
 
 @implementation WebMenuRunner {
   // The UIView in which the popup menu will be displayed.
-  UIView* _view;  // weak
+  UIView* __weak _view;
 
   // The bounds of the select element from which the menu was triggered.
   CGRect _elementBounds;
@@ -29,10 +32,10 @@
   BOOL _menuItemWasChosen;
 
   // The native UIMenu object.
-  base::scoped_nsobject<UIMenu> _menu;
+  UIMenu* __strong _menu;
 
   // Interaction for displaying a popup menu.
-  base::scoped_nsobject<UIContextMenuInteraction> _selectContextMenuInteraction;
+  UIContextMenuInteraction* __strong _selectContextMenuInteraction;
 
   // Delegate to handle menu select/cancel events.
   base::WeakPtr<content::MenuInteractionDelegate> _delegate;
@@ -59,8 +62,8 @@
   _view = view;
   _elementBounds = bounds;
 
-  _selectContextMenuInteraction.reset(
-      [[UIContextMenuInteraction alloc] initWithDelegate:self]);
+  _selectContextMenuInteraction =
+      [[UIContextMenuInteraction alloc] initWithDelegate:self];
   [_view addInteraction:_selectContextMenuInteraction];
 
   // TODO(https://crbug.com/1459846): _presentMenuAtLocation is a private API
@@ -73,8 +76,6 @@
 
 - (void)dealloc {
   [_view removeInteraction:_selectContextMenuInteraction];
-
-  [super dealloc];
 }
 
 #pragma mark - UIContextMenuInteractionDelegate
@@ -89,7 +90,7 @@
                   previewProvider:nil
                    actionProvider:^UIMenu* _Nullable(
                        NSArray<UIMenuElement*>* _Nonnull suggestedActions) {
-                     return _menu.get();
+                     return self->_menu;
                    }];
 }
 
@@ -102,22 +103,21 @@
                                            afterScreenUpdates:NO
                                                 withCapInsets:UIEdgeInsetsZero];
 
-  UIPreviewTarget* previewTarget = [[[UIPreviewTarget alloc]
+  UIPreviewTarget* previewTarget = [[UIPreviewTarget alloc]
       initWithContainer:_view
                  center:CGPointMake(CGRectGetMidX(_elementBounds),
-                                    CGRectGetMidY(_elementBounds))]
-      autorelease];
+                                    CGRectGetMidY(_elementBounds))];
 
-  return [[[UITargetedPreview alloc]
-      initWithView:snapshotView
-        parameters:[[[UIPreviewParameters alloc] init] autorelease]
-            target:previewTarget] autorelease];
+  return
+      [[UITargetedPreview alloc] initWithView:snapshotView
+                                   parameters:[[UIPreviewParameters alloc] init]
+                                       target:previewTarget];
 }
 
 - (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
        willEndForConfiguration:(UIContextMenuConfiguration*)configuration
                       animator:(id<UIContextMenuInteractionAnimating>)animator {
-  _menu.reset();
+  _menu = nil;
   if (!_delegate) {
     return;
   }
@@ -143,11 +143,11 @@
     [actions addObject:action];
   }
 
-  _menu.reset([[UIMenu menuWithTitle:@""
-                               image:nil
-                          identifier:nil
-                             options:UIMenuOptionsDisplayInline
-                            children:actions] retain]);
+  _menu = [UIMenu menuWithTitle:@""
+                          image:nil
+                     identifier:nil
+                        options:UIMenuOptionsDisplayInline
+                       children:actions];
 }
 
 // Worker function used during initialization.

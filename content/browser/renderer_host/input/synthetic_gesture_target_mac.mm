@@ -11,6 +11,10 @@
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // Unlike some event APIs, Apple does not provide a way to programmatically
 // build a zoom event. To work around this, we leverage ObjectiveC's flexible
 // typing and build up an object with the right interface to provide a zoom
@@ -42,11 +46,10 @@
 @synthesize deltaY = _deltaY;
 @synthesize modifierFlags = _modifierFlags;
 
-- (id)initWithMagnification:(float)magnification
-           locationInWindow:(NSPoint)location
-                  timestamp:(NSTimeInterval)timestamp {
-  self = [super init];
-  if (self) {
+- (instancetype)initWithMagnification:(float)magnification
+                     locationInWindow:(NSPoint)location
+                            timestamp:(NSTimeInterval)timestamp {
+  if (self = [super init]) {
     _type = NSEventTypeMagnify;
     _phase = NSEventPhaseChanged;
     _magnification = magnification;
@@ -61,16 +64,16 @@
   return self;
 }
 
-+ (id)eventWithMagnification:(float)magnification
-            locationInWindow:(NSPoint)location
-                   timestamp:(NSTimeInterval)timestamp
-                       phase:(NSEventPhase)phase {
++ (instancetype)eventWithMagnification:(float)magnification
+                      locationInWindow:(NSPoint)location
+                             timestamp:(NSTimeInterval)timestamp
+                                 phase:(NSEventPhase)phase {
   SyntheticPinchEvent* event =
       [[SyntheticPinchEvent alloc] initWithMagnification:magnification
                                         locationInWindow:location
                                                timestamp:timestamp];
   event.phase = phase;
-  return [event autorelease];
+  return event;
 }
 
 @end
@@ -93,7 +96,7 @@ void SyntheticGestureTargetMac::DispatchWebGestureEventToPlatform(
   @autoreleasepool {
     NSPoint content_local = NSMakePoint(
         web_gesture.PositionInWidget().x(),
-        [cocoa_view_ frame].size.height - web_gesture.PositionInWidget().y());
+        cocoa_view_.frame.size.height - web_gesture.PositionInWidget().y());
     NSPoint location_in_window = [cocoa_view_ convertPoint:content_local
                                                     toView:nil];
     NSTimeInterval timestamp =

@@ -1031,6 +1031,9 @@ static_library("browsertest_support") {
     deps += [ "//ui/views" ]
   }
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
   if (is_mac) {
     sources += [ "../public/test/content_browser_test_utils_mac.mm" ]
     deps += [ "//ui/base/mojom" ]

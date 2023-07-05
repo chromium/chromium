@@ -24,6 +24,10 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -42,7 +46,7 @@ BrowserCompositorIOS::BrowserCompositorIOS(
   // content (otherwise this solid color will be flashed during navigation).
   root_layer_->SetColor(SK_ColorRED);
   delegated_frame_host_ = std::make_unique<DelegatedFrameHost>(
-      frame_sink_id, this, true /* should_register_frame_sink_id */);
+      frame_sink_id, this, /*should_register_frame_sink_id=*/true);
 
   SetRenderWidgetHostIsHidden(render_widget_host_is_hidden);
 }
@@ -140,7 +144,7 @@ void BrowserCompositorIOS::UpdateSurfaceFromChild(
     }
     delegated_frame_host_->EmbedSurface(
         dfh_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-        dfh_size_dip_, GetDeadlinePolicy(true /* is_resize */));
+        dfh_size_dip_, GetDeadlinePolicy(/*is_resize=*/true));
   }
   client_->OnBrowserCompositorSurfaceIdChanged();
 }
@@ -174,7 +178,7 @@ void BrowserCompositorIOS::SetRenderWidgetHostIsHidden(bool hidden) {
     // ParentLayerCompositor, since it returns early on a no-op state
     // transition.
     delegated_frame_host_->WasShown(GetRendererLocalSurfaceId(), dfh_size_dip_,
-                                    {} /* record_tab_switch_time_request */);
+                                    /*record_tab_switch_time_request=*/{});
   }
 }
 
@@ -260,7 +264,7 @@ void BrowserCompositorIOS::TransitionToState(State new_state) {
   DCHECK_EQ(state_, new_state);
   delegated_frame_host_->AttachToCompositor(GetCompositor());
   delegated_frame_host_->WasShown(GetRendererLocalSurfaceId(), dfh_size_dip_,
-                                  {} /* record_tab_switch_time_request */);
+                                  /*record_tab_switch_time_request=*/{});
 }
 
 void BrowserCompositorIOS::TakeFallbackContentFrom(

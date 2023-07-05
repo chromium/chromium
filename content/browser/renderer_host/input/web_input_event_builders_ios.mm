@@ -11,16 +11,20 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_utils.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 namespace {
 
 constexpr size_t MAX_POINTERS = blink::WebTouchEvent::kTouchesLengthCap;
-static UITouch* g_active_touches_map[MAX_POINTERS] = {};
+static UITouch* g_active_touches[MAX_POINTERS] = {};
 
 size_t GetTouchPointerId(UITouch* touch) {
   for (size_t i = 0; i < MAX_POINTERS; ++i) {
-    if (g_active_touches_map[i] == touch) {
+    if (g_active_touches[i] == touch) {
       return i + 1;
     }
   }
@@ -30,8 +34,8 @@ size_t GetTouchPointerId(UITouch* touch) {
 void AddUITouch(UITouch* touch) {
   CHECK(GetTouchPointerId(touch) == 0);
   for (size_t i = 0; i < MAX_POINTERS; ++i) {
-    if (!g_active_touches_map[i]) {
-      g_active_touches_map[i] = [touch retain];
+    if (!g_active_touches[i]) {
+      g_active_touches[i] = touch;
       return;
     }
   }
@@ -39,9 +43,8 @@ void AddUITouch(UITouch* touch) {
 
 void RemoveUITouch(UITouch* touch) {
   for (size_t i = 0; i < MAX_POINTERS; ++i) {
-    if (g_active_touches_map[i] == touch) {
-      g_active_touches_map[i] = nullptr;
-      [touch release];
+    if (g_active_touches[i] == touch) {
+      g_active_touches[i] = nil;
       return;
     }
   }
@@ -219,11 +222,11 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(
   // WebTouchEvent for each touch point changing. But event.allTouches will have
   // it all already.
   for (size_t i = 0; i < MAX_POINTERS; ++i) {
-    if (!g_active_touches_map[i] || g_active_touches_map[i] == touch) {
+    if (!g_active_touches[i] || g_active_touches[i] == touch) {
       continue;
     }
     result.touches[touch_index] = CreateWebTouchPoint(
-        view, g_active_touches_map[i], /*was_changed=*/false, view_offset);
+        view, g_active_touches[i], /*was_changed=*/false, view_offset);
     ++touch_index;
   }
   result.touches_length = touch_index;
