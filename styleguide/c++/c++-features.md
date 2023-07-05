@@ -1067,6 +1067,25 @@ Prefer range-based for loops over `std::size()`: range-based for loops work even
 for regular arrays.
 ***
 
+### std::[u16]string_view <sup>[allowed]</sup>
+
+```c++
+std::string_view str = "foo";
+std::u16string_view str16 = u"bar";
+```
+
+**Description:** A non-owning reference to a string. Useful for providing an
+abstraction on top of strings (e.g. for parsing).
+
+**Documentation:**
+[`std::basic_string_view`](https://en.cppreference.com/w/cpp/string/basic_string_view)
+
+**Notes:**
+*** promo
+[Migration bug](https://crbug.com/691162) and
+[discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/Ix2BzMzf7WI)
+***
+
 ### Type trait variable templates <sup>[allowed]</sup>
 
 ```c++
@@ -1234,28 +1253,6 @@ for optional is the return value of a function that may fail.
 *** promo
 [Will be allowed soon](https://crbug.com/1373619); for now, use
 `absl::optional`.
-***
-
-### std::[u16]string_view <sup>[banned]</sup>
-
-```c++
-std::string_view str = "foo";
-std::u16string_view str16 = u"bar";
-```
-
-**Description:** A non-owning reference to a string. Useful for providing an
-abstraction on top of strings (e.g. for parsing).
-
-**Documentation:**
-[`std::basic_string_view`](https://en.cppreference.com/w/cpp/string/basic_string_view)
-
-**Notes:**
-*** promo
-[Will be allowed soon](https://crbug.com/691162); for now, use
-`base::StringPiece[16]`, unless interfacing with third-party code, in which
-case it is allowed. Note `base::StringPiece[16]` implicitly convert to and from
-the corresponding STL types, so one typically does not need to write the STL
-name.
 ***
 
 ### std::uncaught_exceptions <sup>[banned]</sup>
