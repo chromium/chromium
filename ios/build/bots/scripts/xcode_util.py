@@ -347,11 +347,12 @@ def install(mac_toolchain, xcode_build_version, xcode_app_path, **runtime_args):
   return is_legacy_xcode_package
 
 
-def _install_runtime_dmg(mac_toolchain, install_path, ios_version):
+def _install_runtime_dmg(mac_toolchain, install_path, ios_version,
+                         xcode_build_version):
   runtime_version = convert_ios_version_to_cipd_ref(ios_version)
   cmd = [
       mac_toolchain, 'install-runtime-dmg', '-runtime-version', runtime_version,
-      '-output-dir', install_path
+      '-xcode-version', xcode_build_version, '-output-dir', install_path
   ]
 
   LOGGER.debug('Installing runtime dmg with command: %s' % cmd)
@@ -371,7 +372,8 @@ def is_runtime_builtin(ios_version):
   return True
 
 
-def install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version):
+def install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version,
+                        xcode_build_version):
   if is_runtime_builtin(ios_version):
     LOGGER.debug(
         'Runtime is already built-in, no need to install from mac_toolchain')
@@ -381,7 +383,8 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version):
   # from the previous swarming job
   iossim_util.delete_simulator_runtime_and_wait(ios_version)
 
-  _install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version)
+  _install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version,
+                       xcode_build_version)
   iossim_util.add_simulator_runtime(get_runtime_dmg_name(runtime_cache_folder))
 
 

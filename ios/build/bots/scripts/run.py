@@ -111,7 +111,8 @@ class Runner():
       # in DMG format
       if self.args.version and mac_util.is_macos_13_or_higher():
         xcode.install_runtime_dmg(self.args.mac_toolchain_cmd,
-                                  runtime_cache_folder, self.args.version)
+                                  runtime_cache_folder, self.args.version,
+                                  self.args.xcode_build_version)
     except subprocess.CalledProcessError as e:
       # Flush buffers to ensure correct output ordering.
       sys.stdout.flush()

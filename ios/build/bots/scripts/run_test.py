@@ -539,7 +539,8 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
     mock_construct_runtime_cache_folder.assert_called_once_with(
         'test/runtime-ios-', '14.4')
     mock_install_runtime_dmg.assert_called_with('mac_toolchain',
-                                                'test/runtime-ios-14.4', '14.4')
+                                                'test/runtime-ios-14.4', '14.4',
+                                                'testXcodeVersion')
     self.assertFalse(mock_move_runtime.called)
     mock_delete_simulator_runtime_and_wait.assert_called_with('14.4')
 
@@ -578,7 +579,8 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
     mock_construct_runtime_cache_folder.assert_called_once_with(
         'test/runtime-ios-', '14.4')
     mock_install_runtime_dmg.assert_called_with('mac_toolchain',
-                                                'test/runtime-ios-14.4', '14.4')
+                                                'test/runtime-ios-14.4', '14.4',
+                                                'testXcodeVersion')
     self.assertFalse(mock_move_runtime.called)
     self.assertFalse(mock_delete_simulator_runtime_and_wait.called)
 
