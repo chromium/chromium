@@ -80279,14 +80279,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="ownership taken"/>
 </enum>
 
-<enum name="P2PLookupResult">
-  <int value="0" label="Found"/>
-  <int value="1" label="Not Found"/>
-  <int value="2" label="Vanished"/>
-  <int value="3" label="Canceled"/>
-  <int value="4" label="Filtered"/>
-</enum>
-
 <enum name="PacResultForStrippedUrl">
   <obsolete>
     Deprecated 4/27/2016. No longer tracked.
