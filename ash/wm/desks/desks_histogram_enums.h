@@ -66,6 +66,9 @@ constexpr char kPercentageOfCustomNamesHistogramName[] =
 constexpr char kCustomNameCreatedHistogramName[] =
     "Ash.Desks.CustomNameCreated";
 
+constexpr char kDeskButtonPressesHistogramName[] =
+    "Ash.Desks.DeskButton.Presses";
+
 }  // namespace ash
 
 #endif  // ASH_WM_DESKS_DESKS_HISTOGRAM_ENUMS_H_

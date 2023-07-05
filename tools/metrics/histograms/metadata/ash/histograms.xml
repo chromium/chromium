@@ -2366,6 +2366,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.DeskButton.Presses" units="BooleanHit"
+    expires_after="2024-06-30">
+  <owner>benbecker@google.com</owner>
+  <owner>nupurjain@google.com</owner>
+  <summary>
+    Emitted when a user presses on the central button on the desk button to
+    specify how often users are using the center button to open or close the
+    desk bar.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desks.DeskLifetime_{DeskIndex}" units="hr"
     expires_after="2024-01-13">
   <owner>afakhry@chromium.org</owner>

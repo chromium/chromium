@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "ash/wm/desks/desks_histogram_enums.h"
 #include "build/build_config.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -9972,6 +9973,9 @@ class DeskButtonTest
 
   // Clicks on the desk button.
   void ClickDeskButton() {
+    // In the case of left and right shelf alignments, the button must be
+    // hovered before it can be clicked if it is not already activated.
+    HoverDeskButton();
     auto* event_generator = GetEventGenerator();
     auto* desk_button = GetDeskButton();
     ASSERT_TRUE(desk_button);
@@ -9987,6 +9991,8 @@ class DeskButtonTest
     ASSERT_TRUE(desk_button);
     event_generator->MoveMouseTo(
         desk_button->GetBoundsInScreen().CenterPoint());
+    ASSERT_TRUE(desk_button->is_activated() ||
+                desk_button->is_expanded_for_test());
   }
 
   // Unhovers away from the desk button.
@@ -10213,6 +10219,16 @@ TEST_P(DeskButtonTest, ValidateDeskButtonPosition) {
   EXPECT_EQ(gfx::Rect(0, 0, 20, 36), prev_desk_button->bounds());
   EXPECT_EQ(gfx::Rect(76, 0, 20, 36), next_desk_button->bounds());
   EXPECT_EQ(gfx::Rect(20, 0, 56, 36), desk_name_label->bounds());
+}
+
+// Tests that desk button press metrics are correctly recorded.
+TEST_P(DeskButtonTest, DeskButtonPressMetrics) {
+  NewDesk();
+  base::HistogramTester histogram_tester;
+  ClickDeskButton();
+  histogram_tester.ExpectTotalCount(kDeskButtonPressesHistogramName, 1);
+  ClickDeskButton();
+  histogram_tester.ExpectTotalCount(kDeskButtonPressesHistogramName, 2);
 }
 
 // TODO(afakhry): Add more tests:

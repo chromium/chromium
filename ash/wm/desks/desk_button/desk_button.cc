@@ -17,6 +17,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -302,6 +303,8 @@ void DeskButton::OnDeskNameChanged(const Desk* desk,
 }
 
 void DeskButton::OnButtonPressed() {
+  base::UmaHistogramBoolean(kDeskButtonPressesHistogramName, true);
+
   aura::Window* root = desk_button_widget_->GetNativeWindow()->GetRootWindow();
   DeskBarController* desk_bar_controller =
       DesksController::Get()->desk_bar_controller();

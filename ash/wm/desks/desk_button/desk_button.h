@@ -75,6 +75,7 @@ class ASH_EXPORT DeskButton : public views::Button,
   std::u16string GetTitleForView(const views::View* view);
 
   views::Label* desk_name_label_for_test() const { return desk_name_label_; }
+  bool is_expanded_for_test() const { return is_expanded_; }
 
   const std::u16string& GetTextForTest() const;
 
