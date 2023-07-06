@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller.h"
 
 @protocol AutofillSettingsProfileEditTableViewControllerDelegate;
+@protocol SnackbarCommands;
 
 // The table view for the Autofill profile edit settings.
 @interface AutofillSettingsProfileEditTableViewController
@@ -26,6 +27,9 @@
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 @property(nonatomic, weak) id<AutofillProfileEditHandler> handler;
+
+// Snackbar commands handler for this ViewController.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 @end
 

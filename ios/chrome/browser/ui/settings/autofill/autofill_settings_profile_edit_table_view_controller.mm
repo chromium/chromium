@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller_delegate.h"
@@ -165,6 +167,7 @@ const CGFloat kSymbolSize = 22;
     [self.delegate didTapMigrateToAccountButton];
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     [self removeMigrateButtonSection];
+    [self showPostMigrationToast];
     return;
   }
   [self.handler didSelectRowAtIndexPath:indexPath];
@@ -258,6 +261,21 @@ const CGFloat kSymbolSize = 22;
     [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:section]
                   withRowAnimation:animation];
   }
+}
+
+- (void)showPostMigrationToast {
+  CHECK(self.snackbarCommandsHandler);
+  CHECK(_userEmail.length)
+      << "User must be signed-in to migrate an address to the "
+         "account;";
+  NSString* message = l10n_util::GetNSStringF(
+      IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_CONFIRMATION_TEXT,
+      base::SysNSStringToUTF16(self.userEmail));
+  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+  [self.snackbarCommandsHandler showSnackbarWithMessage:message
+                                             buttonText:nil
+                                          messageAction:nil
+                                       completionAction:nil];
 }
 
 @end
