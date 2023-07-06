@@ -5,12 +5,14 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BROWSER_CONTEXT_HELPER_BROWSER_CONTEXT_TYPES_H_
 #define CHROMEOS_ASH_COMPONENTS_BROWSER_CONTEXT_HELPER_BROWSER_CONTEXT_TYPES_H_
 
-// Ash has three special BrowserContext (a.k.a. Profile) types as follows:
-// 1) Singin browser context, which is used on login screen.
+// Ash has four special BrowserContext (a.k.a. Profile) types as follows:
+// 1) Signin browser context, which is used on login screen.
 // 2) Lock-screen-app browser context, which is used for launching platform
 //    apps that can display windows on top of the lock screen.
 // 3) Lock-screen browser context, which is used during online authentication
 //    on the lock screen.
+// 4) Shimless-rma-app browser context, which is used for launching 3p
+//    diagnostics apps on shimless rma screen.
 //
 // This file provides convenient utilities to check those.
 // In order to obtain a BrowserContext instance for those, please take a look
@@ -40,6 +42,10 @@ extern const char kLockScreenAppBrowserContextBaseName[];
 COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
 extern const char kLockScreenBrowserContextBaseName[];
 
+// Base name of the shimless-rma-app browser context.
+COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
+extern const char kShimlessRmaAppBrowserContextBaseName[];
+
 // Returns true if given |browser_context| is for signin.
 // Returns false if nullptr is given.
 COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
@@ -54,6 +60,11 @@ bool IsLockScreenAppBrowserContext(content::BrowserContext* browser_context);
 // Returns false if nullptr is given.
 COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
 bool IsLockScreenBrowserContext(content::BrowserContext* browser_context);
+
+// Returns true if given |browser_context| is for shimless-rma-app.
+// Returns false if nullptr is given.
+COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
+bool IsShimlessRmaAppBrowserContext(content::BrowserContext* browser_context);
 
 // Returns true if the given |browser_context| is none of these special
 // BrowserContext instances. Returns false if nullptr is given.

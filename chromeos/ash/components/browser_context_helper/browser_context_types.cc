@@ -12,6 +12,7 @@ namespace ash {
 const char kSigninBrowserContextBaseName[] = "Default";
 const char kLockScreenAppBrowserContextBaseName[] = "LockScreenAppsProfile";
 const char kLockScreenBrowserContextBaseName[] = "LockScreenProfile";
+const char kShimlessRmaAppBrowserContextBaseName[] = "ShimlessRmaAppProfile";
 
 bool IsSigninBrowserContext(content::BrowserContext* browser_context) {
   return browser_context && browser_context->GetPath().BaseName().value() ==
@@ -28,6 +29,11 @@ bool IsLockScreenBrowserContext(content::BrowserContext* browser_context) {
                                 kLockScreenBrowserContextBaseName;
 }
 
+bool IsShimlessRmaAppBrowserContext(content::BrowserContext* browser_context) {
+  return browser_context && browser_context->GetPath().BaseName().value() ==
+                                kShimlessRmaAppBrowserContextBaseName;
+}
+
 bool IsUserBrowserContext(content::BrowserContext* browser_context) {
   return browser_context &&
          IsUserBrowserContextBaseName(browser_context->GetPath().BaseName());
@@ -37,7 +43,8 @@ bool IsUserBrowserContextBaseName(const base::FilePath& base_name) {
   const auto& value = base_name.value();
   return value != kSigninBrowserContextBaseName &&
          value != kLockScreenAppBrowserContextBaseName &&
-         value != kLockScreenBrowserContextBaseName;
+         value != kLockScreenBrowserContextBaseName &&
+         value != kShimlessRmaAppBrowserContextBaseName;
 }
 
 }  // namespace ash

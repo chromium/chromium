@@ -123,6 +123,9 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
   // returns nullptr. Note that returned instance is off-the-record one.
   content::BrowserContext* GetLockScreenBrowserContext();
 
+  // Returns the path of shimless-rma-app browser context.
+  base::FilePath GetShimlessRmaAppBrowserContextPath() const;
+
  private:
   // This is only for graceful migration.
   // TODO(crbug.com/1325210): Remove this when migration is done.
