@@ -602,7 +602,6 @@ source_set("test_support") {
     "test/test_network_context_with_host_resolver.h",
     "test/test_network_quality_tracker.cc",
     "test/test_network_quality_tracker.h",
-    "test/test_resource_scheduler.h",
     "test/test_restricted_udp_socket.cc",
     "test/test_restricted_udp_socket.h",
     "test/test_shared_url_loader_factory.cc",

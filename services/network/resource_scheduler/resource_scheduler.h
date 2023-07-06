@@ -67,7 +67,7 @@ namespace network {
 // The scheduler may defer issuing the request via the ResourceThrottle
 // interface or it may alter the request's priority by calling set_priority() on
 // the URLRequest.
-class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
+class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler final {
  public:
   class COMPONENT_EXPORT(NETWORK_SERVICE) ClientId final {
    public:
@@ -105,12 +105,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   ResourceScheduler(const ResourceScheduler&) = delete;
   ResourceScheduler& operator=(const ResourceScheduler&) = delete;
 
-  virtual ~ResourceScheduler();
+  ~ResourceScheduler();
 
   // Requests that this ResourceScheduler schedule, and eventually loads, the
   // specified |url_request|. Caller should delete the returned ResourceThrottle
   // when the load completes or is canceled, before |url_request| is deleted.
-  virtual std::unique_ptr<ScheduledResourceRequest> ScheduleRequest(
+  std::unique_ptr<ScheduledResourceRequest> ScheduleRequest(
       ClientId client_id,
       bool is_async,
       net::URLRequest* url_request);
@@ -119,13 +119,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
 
   // Called when a renderer is created. |network_quality_estimator| is allowed
   // to be null.
-  virtual void OnClientCreated(
-      ClientId client_id,
-      IsBrowserInitiated is_browser_initiated,
-      net::NetworkQualityEstimator* network_quality_estimator);
+  void OnClientCreated(ClientId client_id,
+                       IsBrowserInitiated is_browser_initiated,
+                       net::NetworkQualityEstimator* network_quality_estimator);
 
   // Called when a renderer is destroyed.
-  virtual void OnClientDeleted(ClientId client_id);
+  void OnClientDeleted(ClientId client_id);
 
   // Client functions:
 
@@ -133,14 +132,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   // start the request loading if it wasn't already started.
   // If the scheduler does not know about the request, |new_priority| is set but
   // |intra_priority_value| is ignored.
-  virtual void ReprioritizeRequest(net::URLRequest* request,
-                                   net::RequestPriority new_priority,
-                                   int intra_priority_value);
+  void ReprioritizeRequest(net::URLRequest* request,
+                           net::RequestPriority new_priority,
+                           int intra_priority_value);
 
   // Returns true if the timer that dispatches long queued requests is running.
-  virtual bool IsLongQueuedRequestsDispatchTimerRunning() const;
+  bool IsLongQueuedRequestsDispatchTimerRunning() const;
 
-  virtual base::SequencedTaskRunner* task_runner();
+  base::SequencedTaskRunner* task_runner();
 
   // Testing setters
   void SetTaskRunnerForTesting(
