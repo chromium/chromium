@@ -210,7 +210,7 @@ void StorageBucket::DidRequestPersist(ScriptPromiseResolver* resolver,
   if (!success) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
-        "Unknown error occured while requesting persist."));
+        "Unknown error occurred while requesting persist."));
     return;
   }
 
@@ -228,7 +228,7 @@ void StorageBucket::DidGetPersisted(ScriptPromiseResolver* resolver,
   if (!success) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
-        "Unknown error occured while getting persisted."));
+        "Unknown error occurred while getting persisted."));
     return;
   }
 
@@ -248,7 +248,7 @@ void StorageBucket::DidGetEstimate(ScriptPromiseResolver* resolver,
   if (!success) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
-        "Unknown error occured while getting estimate."));
+        "Unknown error occurred while getting estimate."));
     return;
   }
 
@@ -270,7 +270,7 @@ void StorageBucket::DidGetDurability(ScriptPromiseResolver* resolver,
   if (!success) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
-        "Unknown error occured while getting durability."));
+        "Unknown error occurred while getting durability."));
     return;
   }
 
@@ -293,7 +293,7 @@ void StorageBucket::DidSetExpires(ScriptPromiseResolver* resolver,
   } else {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
-        "Unknown error occured while setting expires."));
+        "Unknown error occurred while setting expires."));
   }
 }
 
@@ -308,7 +308,7 @@ void StorageBucket::DidGetExpires(ScriptPromiseResolver* resolver,
   if (!success) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
-        "Unknown error occured while getting expires."));
+        "Unknown error occurred while getting expires."));
   } else if (expires.has_value()) {
     resolver->Resolve(base::Time::kMillisecondsPerSecond *
                       expires.value().ToDoubleT());
