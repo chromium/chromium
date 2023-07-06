@@ -91,7 +91,12 @@ ConsentDialogCoordinator::ConsentDialogCoordinator(Browser* browser,
                                                    Profile* profile)
     : browser_(browser), profile_(profile) {}
 
-ConsentDialogCoordinator::~ConsentDialogCoordinator() = default;
+ConsentDialogCoordinator::~ConsentDialogCoordinator() {
+  if (dialog_widget_ && !dialog_widget_->IsClosed()) {
+    dialog_widget_->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+    dialog_widget_ = nullptr;
+  }
+}
 
 void ConsentDialogCoordinator::RequestConsent(RequestConsentCallback callback) {
   pref_observer_.Init(profile_->GetPrefs());
