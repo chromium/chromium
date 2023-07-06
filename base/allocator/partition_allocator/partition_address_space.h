@@ -38,6 +38,12 @@ namespace internal {
 // See `glossary.md`.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
  public:
+  // Represents pool-specific information about a given address.
+  struct PoolInfo {
+    pool_handle handle;
+    uintptr_t offset;
+  };
+
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
   PA_ALWAYS_INLINE static uintptr_t RegularPoolBaseMask() {
     return setup_.regular_pool_base_mask_;
@@ -48,8 +54,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   }
 #endif
 
-  PA_ALWAYS_INLINE static std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
-      uintptr_t address) {
+  PA_ALWAYS_INLINE static PoolInfo GetPoolAndOffset(uintptr_t address) {
     // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     PA_DCHECK(!IsInBRPPool(address));
@@ -76,7 +81,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     } else {
       PA_NOTREACHED();
     }
-    return std::make_pair(pool, address - base);
+    return PoolInfo{.handle = pool, .offset = address - base};
   }
   PA_ALWAYS_INLINE static constexpr size_t ConfigurablePoolMaxSize() {
     return kConfigurablePoolMaxSize;
@@ -368,13 +373,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #endif
 };
 
-PA_ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
+PA_ALWAYS_INLINE PartitionAddressSpace::PoolInfo GetPoolAndOffset(
     uintptr_t address) {
   return PartitionAddressSpace::GetPoolAndOffset(address);
 }
 
 PA_ALWAYS_INLINE pool_handle GetPool(uintptr_t address) {
-  return std::get<0>(GetPoolAndOffset(address));
+  return GetPoolAndOffset(address).handle;
 }
 
 PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
