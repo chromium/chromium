@@ -755,24 +755,21 @@ bool ServiceImageTransferCacheEntry::Deserialize(
 
     // TODO(https://crbug.com/1286088): Pass a shared cache as a parameter.
     gfx::ColorConversionSkFilterCache cache;
-    if (graphite_recorder_) {
-      // TODO(crbug.com/1443068): Add color conversion support for graphite.
-      NOTIMPLEMENTED_LOG_ONCE();
+    // Allow a nullptr context for testing using the software renderer.
+    if (has_gainmap) {
+      image_ = cache.ApplyGainmap(
+          image_, gainmap_image, gainmap_info,
+          target_color_params->hdr_max_luminance_relative,
+          image_->isTextureBacked() ? gr_context_ : nullptr,
+          image_->isTextureBacked() ? graphite_recorder_ : nullptr);
     } else {
-      // Allow a nullptr context for testing using the software renderer.
-      if (has_gainmap) {
-        image_ = cache.ApplyGainmap(
-            image_, gainmap_image, gainmap_info,
-            target_color_params->hdr_max_luminance_relative,
-            image_->isTextureBacked() ? gr_context_ : nullptr);
-      } else {
-        image_ = cache.ConvertImage(
-            image_, target_color_space, target_color_params->hdr_metadata,
-            target_color_params->sdr_max_luminance_nits,
-            target_color_params->hdr_max_luminance_relative,
-            target_color_params->enable_tone_mapping,
-            image_->isTextureBacked() ? gr_context_ : nullptr);
-      }
+      image_ = cache.ConvertImage(
+          image_, target_color_space, target_color_params->hdr_metadata,
+          target_color_params->sdr_max_luminance_nits,
+          target_color_params->hdr_max_luminance_relative,
+          target_color_params->enable_tone_mapping,
+          image_->isTextureBacked() ? gr_context_ : nullptr,
+          image_->isTextureBacked() ? graphite_recorder_ : nullptr);
     }
 
     if (!image_) {
