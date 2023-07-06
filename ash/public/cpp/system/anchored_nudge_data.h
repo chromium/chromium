@@ -24,8 +24,8 @@ namespace ash {
 
 using HoverStateChangeCallback =
     base::RepeatingCallback<void(bool is_hovering)>;
-using AnchoredNudgeClickCallback = base::RepeatingCallback<void()>;
-using AnchoredNudgeDismissCallback = base::RepeatingCallback<void()>;
+using NudgeClickCallback = base::RepeatingCallback<void()>;
+using NudgeDismissCallback = base::RepeatingCallback<void()>;
 
 // Describes the contents of a System Nudge (AnchoredNudge), which is a notifier
 // that informs users about something that might enhance their experience. See
@@ -57,12 +57,12 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   // Optional system nudge buttons. If the text is not empty, the respective
   // button will be created. Pressing the button will execute its callback, if
   // any, followed by the nudge being closed. `second_button_text` should only
-  // be set if `dismiss_text` has also been set.
+  // be set if `first_button_text` has also been set.
   // TODO(b/285023559): Add a `ChainedCancelCallback` class instead of a
   // `RepeatingClosure` so we don't have to manually modify the provided
   // callbacks in the manager.
-  std::u16string dismiss_text;
-  base::RepeatingClosure dismiss_callback;
+  std::u16string first_button_text;
+  base::RepeatingClosure first_button_callback;
 
   std::u16string second_button_text;
   base::RepeatingClosure second_button_callback;
@@ -91,8 +91,8 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
 
   // Nudge action callbacks.
   HoverStateChangeCallback hover_state_change_callback;
-  AnchoredNudgeClickCallback nudge_click_callback;
-  AnchoredNudgeDismissCallback nudge_dimiss_callback;
+  NudgeClickCallback click_callback;
+  NudgeDismissCallback dismiss_callback;
 };
 
 }  // namespace ash

@@ -150,11 +150,11 @@ void ScalableIphDelegateImpl::ShowBubble(
       params.bubble_id, NudgeCatalogName::kScalableIphBubble,
       base::UTF8ToUTF16(params.text), /*anchor_view=*/nullptr);
 
-  nudge_data.dismiss_text = base::UTF8ToUTF16(params.button.text);
-  nudge_data.dismiss_callback = base::BindRepeating(
+  nudge_data.first_button_text = base::UTF8ToUTF16(params.button.text);
+  nudge_data.first_button_callback = base::BindRepeating(
       &ScalableIphDelegateImpl::OnNudgeButtonClicked,
       weak_ptr_factory_.GetWeakPtr(), params.button.action.action_type);
-  nudge_data.nudge_dimiss_callback =
+  nudge_data.dismiss_callback =
       base::BindRepeating(&ScalableIphDelegateImpl::OnNudgeDismissed,
                           weak_ptr_factory_.GetWeakPtr());
   ash::AnchoredNudgeManager::Get()->Show(nudge_data);

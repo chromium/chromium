@@ -158,7 +158,7 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
                         : kLabelMaxWidth_NudgeWithLeadingImage);
 
   // Return early if there are no buttons.
-  if (nudge_data.dismiss_text.empty()) {
+  if (nudge_data.first_button_text.empty()) {
     CHECK(nudge_data.second_button_text.empty());
 
     // Update nudge margins and labels max width if nudge only has text.
@@ -192,11 +192,11 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
 
   const bool has_second_button = !nudge_data.second_button_text.empty();
 
-  dismiss_button_ = buttons_container->AddChildView(
+  first_button_ = buttons_container->AddChildView(
       views::Builder<PillButton>()
-          .SetCallback(std::move(nudge_data.dismiss_callback))
-          .SetText(nudge_data.dismiss_text)
-          .SetTooltipText(nudge_data.dismiss_text)
+          .SetCallback(std::move(nudge_data.first_button_callback))
+          .SetText(nudge_data.first_button_text)
+          .SetTooltipText(nudge_data.first_button_text)
           .SetPillButtonType(
               use_toast_style     ? PillButton::Type::kAccentFloatingWithoutIcon
               : has_second_button ? PillButton::Type::kSecondaryWithoutIcon

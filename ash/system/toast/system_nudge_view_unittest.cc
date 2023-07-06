@@ -62,7 +62,7 @@ TEST_F(SystemNudgeViewTest, TextOnly) {
   EXPECT_FALSE(system_nudge_view->image_view());
   EXPECT_FALSE(system_nudge_view->title_label());
   ASSERT_TRUE(system_nudge_view->body_label());
-  EXPECT_FALSE(system_nudge_view->dismiss_button());
+  EXPECT_FALSE(system_nudge_view->first_button());
   EXPECT_FALSE(system_nudge_view->second_button());
 
   // Test that text labels max width is set correctly.
@@ -77,7 +77,7 @@ TEST_F(SystemNudgeViewTest, WithButtons) {
 
   // Set up base nudge data and add two buttons.
   auto nudge_data = CreateBaseNudgeData(contents_view);
-  nudge_data.dismiss_text = u"Button";
+  nudge_data.first_button_text = u"Button";
   nudge_data.second_button_text = u"Button";
 
   auto* system_nudge_view = contents_view->AddChildView(
@@ -87,7 +87,7 @@ TEST_F(SystemNudgeViewTest, WithButtons) {
   EXPECT_FALSE(system_nudge_view->image_view());
   EXPECT_FALSE(system_nudge_view->title_label());
   ASSERT_TRUE(system_nudge_view->body_label());
-  EXPECT_TRUE(system_nudge_view->dismiss_button());
+  EXPECT_TRUE(system_nudge_view->first_button());
   EXPECT_TRUE(system_nudge_view->second_button());
 
   // Test that text labels max width is set correctly.
@@ -113,7 +113,7 @@ TEST_F(SystemNudgeViewTest, TitleAndLeadingImage) {
   EXPECT_TRUE(system_nudge_view->image_view());
   EXPECT_TRUE(system_nudge_view->title_label());
   ASSERT_TRUE(system_nudge_view->body_label());
-  EXPECT_FALSE(system_nudge_view->dismiss_button());
+  EXPECT_FALSE(system_nudge_view->first_button());
   EXPECT_FALSE(system_nudge_view->second_button());
 
   // Test that text labels max width is set correctly.
@@ -126,9 +126,9 @@ TEST_F(SystemNudgeViewTest, ToastStyleNudge) {
   auto* contents_view =
       widget->SetContentsView(std::make_unique<views::View>());
 
-  // Set up base nudge data, have it use "toast style" and add a dismiss button.
+  // Set up base nudge data, have it use "toast style" and add a button.
   auto nudge_data = CreateBaseNudgeData(contents_view);
-  nudge_data.dismiss_text = u"Button";
+  nudge_data.first_button_text = u"Button";
   nudge_data.use_toast_style = true;
 
   auto* system_nudge_view = contents_view->AddChildView(
@@ -138,7 +138,7 @@ TEST_F(SystemNudgeViewTest, ToastStyleNudge) {
   EXPECT_FALSE(system_nudge_view->image_view());
   EXPECT_FALSE(system_nudge_view->title_label());
   ASSERT_TRUE(system_nudge_view->body_label());
-  EXPECT_TRUE(system_nudge_view->dismiss_button());
+  EXPECT_TRUE(system_nudge_view->first_button());
   EXPECT_FALSE(system_nudge_view->second_button());
 
   // Test that text labels max width is set correctly.

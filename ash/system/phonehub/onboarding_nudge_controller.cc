@@ -56,7 +56,7 @@ void OnboardingNudgeController::ShowNudgeIfNeeded() {
   AnchoredNudgeData nudge_data = {kPhoneHubNudgeId, NudgeCatalogName::kPhoneHub,
                                   nudge_text, phone_hub_tray_};
   nudge_data.anchored_to_shelf = true;
-  nudge_data.nudge_dimiss_callback = stop_animation_callback_;
+  nudge_data.dismiss_callback = stop_animation_callback_;
   AnchoredNudgeManager::Get()->Show(nudge_data);
   start_animation_callback_.Run();
 }

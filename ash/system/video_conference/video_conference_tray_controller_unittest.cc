@@ -67,9 +67,8 @@ views::View* GetNudgeAnchorView(const std::string& id) {
   return Shell::Get()->anchored_nudge_manager()->GetNudgeAnchorViewForTest(id);
 }
 
-views::LabelButton* GetNudgeDismissButton(const std::string& id) {
-  return Shell::Get()->anchored_nudge_manager()->GetNudgeDismissButtonForTest(
-      id);
+views::LabelButton* GetNudgeFirstButton(const std::string& id) {
+  return Shell::Get()->anchored_nudge_manager()->GetNudgeFirstButtonForTest(id);
 }
 
 views::LabelButton* GetNudgeSecondButton(const std::string& id) {
@@ -607,7 +606,7 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteOptInNudge_OptOut) {
   EXPECT_TRUE(IsNudgeShown(nudge_id));
 
   // Opt out of speak-on-mute. Nudge should be dismissed and never shown again.
-  LeftClickOn(GetNudgeDismissButton(nudge_id));
+  LeftClickOn(GetNudgeFirstButton(nudge_id));
   EXPECT_FALSE(IsNudgeShown(nudge_id));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kUserSpeakOnMuteDetectionEnabled));

@@ -66,8 +66,8 @@ AnchoredNudge::AnchoredNudge(const AnchoredNudgeData& nudge_data)
                                       views::BubbleBorder::NO_SHADOW),
       id_(nudge_data.id),
       anchored_to_shelf_(nudge_data.anchored_to_shelf),
-      nudge_click_callback_(std::move(nudge_data.nudge_click_callback)),
-      nudge_dismiss_callback_(std::move(nudge_data.nudge_dimiss_callback)) {
+      click_callback_(std::move(nudge_data.click_callback)),
+      dismiss_callback_(std::move(nudge_data.dismiss_callback)) {
   DCHECK(features::IsSystemNudgeV2Enabled());
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -84,8 +84,8 @@ AnchoredNudge::AnchoredNudge(const AnchoredNudgeData& nudge_data)
 }
 
 AnchoredNudge::~AnchoredNudge() {
-  if (!nudge_dismiss_callback_.is_null()) {
-    std::move(nudge_dismiss_callback_).Run();
+  if (!dismiss_callback_.is_null()) {
+    std::move(dismiss_callback_).Run();
   }
 
   if (anchored_to_shelf_) {
@@ -111,8 +111,8 @@ const std::u16string& AnchoredNudge::GetTitleText() {
   return system_nudge_view_->title_label()->GetText();
 }
 
-views::LabelButton* AnchoredNudge::GetDismissButton() {
-  return system_nudge_view_->dismiss_button();
+views::LabelButton* AnchoredNudge::GetFirstButton() {
+  return system_nudge_view_->first_button();
 }
 
 views::LabelButton* AnchoredNudge::GetSecondButton() {
@@ -191,16 +191,16 @@ bool AnchoredNudge::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void AnchoredNudge::OnMouseReleased(const ui::MouseEvent& event) {
-  if (event.IsOnlyLeftMouseButton() && !nudge_click_callback_.is_null()) {
-    std::move(nudge_click_callback_).Run();
+  if (event.IsOnlyLeftMouseButton() && !click_callback_.is_null()) {
+    std::move(click_callback_).Run();
   }
 }
 
 void AnchoredNudge::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::ET_GESTURE_TAP: {
-      if (!nudge_click_callback_.is_null()) {
-        std::move(nudge_click_callback_).Run();
+      if (!click_callback_.is_null()) {
+        std::move(click_callback_).Run();
         event->SetHandled();
       }
       return;

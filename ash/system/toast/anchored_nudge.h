@@ -50,7 +50,7 @@ class ASH_EXPORT AnchoredNudge : public ShelfObserver,
   views::ImageView* GetImageView();
   const std::u16string& GetBodyText();
   const std::u16string& GetTitleText();
-  views::LabelButton* GetDismissButton();
+  views::LabelButton* GetFirstButton();
   views::LabelButton* GetSecondButton();
 
   // views::BubbleDialogDelegateView:
@@ -97,8 +97,8 @@ class ASH_EXPORT AnchoredNudge : public ShelfObserver,
   raw_ptr<SystemNudgeView> system_nudge_view_ = nullptr;
 
   // Nudge action callbacks.
-  AnchoredNudgeClickCallback nudge_click_callback_;
-  AnchoredNudgeDismissCallback nudge_dismiss_callback_;
+  NudgeClickCallback click_callback_;
+  NudgeDismissCallback dismiss_callback_;
 
   // Used to maintain the shelf visible while a shelf-anchored nudge is shown.
   std::unique_ptr<Shelf::ScopedDisableAutoHide> disable_shelf_auto_hide_;

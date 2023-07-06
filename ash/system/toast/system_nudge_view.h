@@ -37,7 +37,7 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
   views::ImageView* image_view() const { return image_view_; }
   views::Label* body_label() const { return body_label_; }
   views::Label* title_label() const { return title_label_; }
-  views::LabelButton* dismiss_button() const { return dismiss_button_; }
+  views::LabelButton* first_button() const { return first_button_; }
   views::LabelButton* second_button() const { return second_button_; }
 
  private:
@@ -45,7 +45,7 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
   raw_ptr<views::ImageView> image_view_ = nullptr;
   raw_ptr<views::Label> body_label_ = nullptr;
   raw_ptr<views::Label> title_label_ = nullptr;
-  raw_ptr<views::LabelButton> dismiss_button_ = nullptr;
+  raw_ptr<views::LabelButton> first_button_ = nullptr;
   raw_ptr<views::LabelButton> second_button_ = nullptr;
 
   // Sets the maximum width for `title_label_` and `body_label_`.

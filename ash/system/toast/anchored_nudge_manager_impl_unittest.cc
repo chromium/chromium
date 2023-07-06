@@ -156,45 +156,40 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   // Set up nudge data contents.
   const std::string id = "id";
   auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
-  const std::u16string dismiss_text = u"dismiss";
+  const std::u16string first_button_text = u"first";
   const std::u16string second_button_text = u"second";
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
-  // Add a dismiss button with no callbacks.
-  nudge_data.dismiss_text = dismiss_text;
+  // Add a first button with no callbacks.
+  nudge_data.first_button_text = first_button_text;
 
-  // Show a nudge with a dismiss button.
+  // Show the nudge.
   anchored_nudge_manager()->Show(nudge_data);
   AnchoredNudge* nudge = GetShownNudges()[id];
+
+  // Ensure the nudge is visible and has set the provided contents.
   ASSERT_TRUE(nudge);
-  views::LabelButton* dismiss_button = nudge->GetDismissButton();
-  views::LabelButton* second_button = nudge->GetSecondButton();
+  ASSERT_TRUE(nudge->GetFirstButton());
+  EXPECT_EQ(first_button_text, nudge->GetFirstButton()->GetText());
+  EXPECT_FALSE(nudge->GetSecondButton());
 
-  // Ensure the nudge has a dismiss button, and does not have a second button.
-  ASSERT_TRUE(dismiss_button);
-  EXPECT_EQ(dismiss_text, dismiss_button->GetText());
-  EXPECT_FALSE(second_button);
-
-  // Press the dismiss button, the nudge should have dismissed.
-  LeftClickOn(dismiss_button);
+  // Press the first button, the nudge should have dismissed.
+  LeftClickOn(nudge->GetFirstButton());
   EXPECT_FALSE(GetShownNudges()[id]);
 
-  // Add callbacks for the dismiss button.
-  bool dismiss_button_callback_ran = false;
-  nudge_data.dismiss_callback = base::BindLambdaForTesting(
-      [&dismiss_button_callback_ran] { dismiss_button_callback_ran = true; });
+  // Add callbacks for the first button.
+  bool first_button_callback_ran = false;
+  nudge_data.first_button_callback = base::BindLambdaForTesting(
+      [&first_button_callback_ran] { first_button_callback_ran = true; });
 
   // Show the nudge again.
   anchored_nudge_manager()->Show(nudge_data);
   nudge = GetShownNudges()[id];
-  ASSERT_TRUE(nudge);
-  dismiss_button = nudge->GetDismissButton();
-  second_button = nudge->GetSecondButton();
 
-  // Press the dismiss button, `dismiss_button_callback` should have executed,
-  // and the nudge should have dismissed.
-  LeftClickOn(dismiss_button);
-  EXPECT_TRUE(dismiss_button_callback_ran);
+  // Press the first button, `first_button_callback` should have executed, and
+  // the nudge should have dismissed.
+  LeftClickOn(nudge->GetFirstButton());
+  EXPECT_TRUE(first_button_callback_ran);
   EXPECT_FALSE(GetShownNudges()[id]);
 
   // Add a second button with no callbacks.
@@ -203,16 +198,13 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   // Show the nudge again, now with a second button.
   anchored_nudge_manager()->Show(nudge_data);
   nudge = GetShownNudges()[id];
-  ASSERT_TRUE(nudge);
-  dismiss_button = nudge->GetDismissButton();
-  second_button = nudge->GetSecondButton();
 
   // Ensure the nudge has a second button.
-  ASSERT_TRUE(second_button);
-  EXPECT_EQ(second_button_text, second_button->GetText());
+  ASSERT_TRUE(nudge->GetSecondButton());
+  EXPECT_EQ(second_button_text, nudge->GetSecondButton()->GetText());
 
   // Press the second button, the nudge should have dismissed.
-  LeftClickOn(second_button);
+  LeftClickOn(nudge->GetSecondButton());
   EXPECT_FALSE(GetShownNudges()[id]);
 
   // Add a callback for the second button.
@@ -223,13 +215,10 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   // Show the nudge again.
   anchored_nudge_manager()->Show(nudge_data);
   nudge = GetShownNudges()[id];
-  ASSERT_TRUE(nudge);
-  dismiss_button = nudge->GetDismissButton();
-  second_button = nudge->GetSecondButton();
 
   // Press the second button, `second_button_callback` should have executed, and
   // the nudge should have dismissed.
-  LeftClickOn(second_button);
+  LeftClickOn(nudge->GetSecondButton());
   EXPECT_TRUE(second_button_callback_ran);
   EXPECT_FALSE(GetShownNudges()[id]);
 }

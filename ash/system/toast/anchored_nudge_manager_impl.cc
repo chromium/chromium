@@ -273,8 +273,8 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
   // Chain callbacks with `Cancel()` so nudge is dismissed on button pressed.
   // TODO(b/285023559): Add `ChainedCancelCallback` class so we don't have to
   // manually modify the provided callbacks.
-  nudge_data.dismiss_callback =
-      ChainCancelCallback(nudge_data.dismiss_callback, id);
+  nudge_data.first_button_callback =
+      ChainCancelCallback(nudge_data.first_button_callback, id);
   nudge_data.second_button_callback =
       ChainCancelCallback(nudge_data.second_button_callback, id);
 
@@ -386,10 +386,10 @@ views::View* AnchoredNudgeManagerImpl::GetNudgeAnchorViewForTest(
   return shown_nudges_[id]->GetAnchorView();
 }
 
-views::LabelButton* AnchoredNudgeManagerImpl::GetNudgeDismissButtonForTest(
+views::LabelButton* AnchoredNudgeManagerImpl::GetNudgeFirstButtonForTest(
     const std::string& id) {
   CHECK(IsNudgeShown(id));
-  return shown_nudges_[id]->GetDismissButton();
+  return shown_nudges_[id]->GetFirstButton();
 }
 
 views::LabelButton* AnchoredNudgeManagerImpl::GetNudgeSecondButtonForTest(
