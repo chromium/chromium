@@ -6593,3 +6593,6 @@ crbug.com/391068 http/tests/websocket/close-code-and-reason.html [ Failure Pass 
 crbug.com/626703 external/wpt/css/css-highlight-api/highlight-priority.html [ Crash ]
 crbug.com/626703 virtual/css-highlight-inheritance/external/wpt/css/css-highlight-api/highlight-priority.html [ Crash ]
 crbug.com/626703 virtual/css-highlight-overlay-painting/external/wpt/css/css-highlight-api/highlight-priority.html [ Crash ]
+
+# Gardening 2023-07-06
+crbug.com/1462500 [ Win ] media/picture-in-picture/picture-in-picture-interstitial-sizing.html [ Failure Pass ]
