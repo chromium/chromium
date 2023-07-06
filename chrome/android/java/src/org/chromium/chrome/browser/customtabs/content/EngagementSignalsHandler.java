@@ -25,6 +25,8 @@ public class EngagementSignalsHandler {
     private final CustomTabsConnection mConnection;
     private final CustomTabsSessionToken mSession;
     @Nullable
+    private EngagementSignalsInitialScrollObserver mInitialScrollObserver;
+    @Nullable
     private RealtimeEngagementSignalObserver mObserver;
     private TabObserverRegistrar mTabObserverRegistrar;
     private EngagementSignalsCallback mCallback;
@@ -44,7 +46,13 @@ public class EngagementSignalsHandler {
     public void setTabObserverRegistrar(TabObserverRegistrar registrar) {
         mTabObserverRegistrar = registrar;
         if (mCallback != null) {
+            // If the registrar became available after the callback, we don't need to create the
+            // EngagementSignalsInitialScrollObserver. We wouldn't be able to observe the scroll
+            // gestures without the registrar anyway.
             createEngagementSignalsObserver();
+        } else {
+            mInitialScrollObserver =
+                    new EngagementSignalsInitialScrollObserver(mTabObserverRegistrar);
         }
     }
 
@@ -71,8 +79,15 @@ public class EngagementSignalsHandler {
         }
         assert mTabObserverRegistrar != null;
         assert mCallback != null;
+        boolean hadScrollDown = mInitialScrollObserver != null
+                && mInitialScrollObserver.hasCurrentPageHadScrollDown();
         mObserver = new RealtimeEngagementSignalObserver(
-                mTabObserverRegistrar, mConnection, mSession, mCallback);
+                mTabObserverRegistrar, mConnection, mSession, mCallback, hadScrollDown);
+        if (mInitialScrollObserver != null) {
+            mInitialScrollObserver.destroy();
+            mInitialScrollObserver = null;
+        }
+
         mPrivacyPreferencesObserver = new Observer() {
             @Override
             public void onIsUsageAndCrashReportingPermittedChanged(boolean permitted) {

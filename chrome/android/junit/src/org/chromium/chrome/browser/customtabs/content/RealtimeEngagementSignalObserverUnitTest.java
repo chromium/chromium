@@ -885,7 +885,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     @Test
     @Features.DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void sendInitialOffsetUpdate_AltImplDisabled() {
-        initializeTabForTest();
+        initializeTabForTest(/*hadScrollDown*/ true);
         // When the alternative impl flag is enabled, the listener should be added with `NONE`.
         var listener = captureGestureStateListener(NONE);
 
@@ -893,16 +893,16 @@ public class RealtimeEngagementSignalObserverUnitTest {
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(42);
         listener.onScrollOffsetOrExtentChanged(42, SCROLL_EXTENT);
 
-        // TODO(sinansahin): Update this test and the one below in the next CL.
-        // We shouldn't get a notification if we didn't have a scroll start.
-        verify(mEngagementSignalsCallback, never())
-                .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
+        // We should get a notification since we initialized the observer class with true for
+        // hadScrollDown.
+        verify(mEngagementSignalsCallback)
+                .onGreatestScrollPercentageIncreased(eq(40), any(Bundle.class));
     }
 
     @Test
     @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void sendInitialOffsetUpdate_AltImplEnabled() {
-        initializeTabForTest();
+        initializeTabForTest(/*hadScrollDown*/ true);
         // When the alternative impl flag is enabled, the listener should be added with
         // `ON_SCROLL_END`.
         var listener = captureGestureStateListener(ON_SCROLL_END);
@@ -911,9 +911,10 @@ public class RealtimeEngagementSignalObserverUnitTest {
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(35);
         listener.onScrollOffsetOrExtentChanged(35, SCROLL_EXTENT);
 
-        // We shouldn't get a notification if we didn't have a scroll start.
-        verify(mEngagementSignalsCallback, never())
-                .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
+        // We should get a notification since we initialized the observer class with true for
+        // hadScrollDown.
+        verify(mEngagementSignalsCallback)
+                .onGreatestScrollPercentageIncreased(eq(35), any(Bundle.class));
     }
 
     private void advanceTime(long millis) {
@@ -944,7 +945,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         FeatureList.setTestValues(testValues);
     }
 
-    private void initializeTabForTest() {
+    private void initializeTabForTest(boolean hadScrollDown) {
         Tab initialTab = env.prepareTab();
         doAnswer(invocation -> {
             CustomTabTabObserver observer = invocation.getArgument(0);
@@ -955,11 +956,15 @@ public class RealtimeEngagementSignalObserverUnitTest {
                 .when(env.tabObserverRegistrar)
                 .registerActivityTabObserver(any());
 
-        mEngagementSignalObserver = new RealtimeEngagementSignalObserver(
-                env.tabObserverRegistrar, env.connection, env.session, mEngagementSignalsCallback);
+        mEngagementSignalObserver = new RealtimeEngagementSignalObserver(env.tabObserverRegistrar,
+                env.connection, env.session, mEngagementSignalsCallback, hadScrollDown);
         verify(env.tabObserverRegistrar).registerActivityTabObserver(mEngagementSignalObserver);
 
         env.tabProvider.setInitialTab(initialTab, TabCreationMode.DEFAULT);
+    }
+
+    private void initializeTabForTest() {
+        initializeTabForTest(false);
     }
 
     private GestureStateListener captureGestureStateListener() {

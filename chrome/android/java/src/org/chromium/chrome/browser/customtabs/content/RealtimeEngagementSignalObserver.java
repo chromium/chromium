@@ -103,11 +103,12 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
      * @param connection See {@link ChromeAppComponent#resolveCustomTabsConnection()}.
      * @param session See {@link CustomTabIntentDataProvider#getSession()}.
      * @param callback The {@link EngagementSignalsCallback} to sends the signals to.
+     * @param hadScrollDown Whether there has been a scroll down gesture.
      */
     // TODO(https://crbug.com/1378410): Inject this class and implement NativeInitObserver.
     public RealtimeEngagementSignalObserver(TabObserverRegistrar tabObserverRegistrar,
             CustomTabsConnection connection, CustomTabsSessionToken session,
-            EngagementSignalsCallback callback) {
+            EngagementSignalsCallback callback, boolean hadScrollDown) {
         mConnection = connection;
         mSession = session;
         mTabObserverRegistrar = tabObserverRegistrar;
@@ -123,9 +124,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
                 TIME_CAN_UPDATE_AFTER_END, DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS);
         mShouldSendRealValues = shouldSendRealValues();
 
-        // TODO(sinansahin): This should currently be a noop. The value for this will be passed to
-        // the constructor in the next CL.
-        mPendingInitialUpdate = false;
+        mPendingInitialUpdate = hadScrollDown;
         // Do not register observer via tab#addObserver, so it can change tabs when necessary.
         // If there is an active tab, registering the observer will immediately call
         // `#onAttachedToInitialTab`.
