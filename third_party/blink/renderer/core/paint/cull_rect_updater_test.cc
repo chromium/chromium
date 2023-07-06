@@ -34,9 +34,7 @@ class CullRectUpdaterTest : public PaintControllerPaintTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CullRectUpdaterTest,
-                         ::testing::Values(0,
-                                           kScrollUnification,
-                                           kCompositeScrollAfterPaint));
+                         ::testing::Values(0, kCompositeScrollAfterPaint));
 
 TEST_P(CullRectUpdaterTest, SimpleCullRect) {
   SetBodyInnerHTML(R"HTML(
@@ -1083,7 +1081,7 @@ class CullRectUpdateOnPaintPropertyChangeTest : public CullRectUpdaterTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CullRectUpdateOnPaintPropertyChangeTest,
-                         ::testing::Values(0, kScrollUnification));
+                         ::testing::Values(0));
 
 TEST_P(CullRectUpdateOnPaintPropertyChangeTest, Opacity) {
   TestTargetChange("opacity: 0.2", "opacity: 0.8", false, false, false);
