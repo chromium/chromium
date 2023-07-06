@@ -2452,16 +2452,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DomDistiller.Time.RunJavaScript" units="ms"
-    expires_after="M77">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Time spent in ExecuteJavaScript() in DomDistiller. It includes JavaScript
-    code transmission through IPC, parsing, compilation, execution, and
-    returning the JSON back through IPC.
-  </summary>
-</histogram>
-
 <histogram name="DomDistiller.Time.ViewerLoading" units="ms"
     expires_after="M77">
   <owner>wychen@chromium.org</owner>
