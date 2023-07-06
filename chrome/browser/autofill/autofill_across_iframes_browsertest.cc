@@ -129,30 +129,6 @@ void FillCard(content::RenderFrameHost* rfh,
                                   AutofillTriggerSource::kPopup);
 }
 
-// Clicks the first input, textarea, or select in `rfh`.
-// Returns true if such an element is clickable.
-bool ClickFirstField(content::WebContents* web_contents,
-                     content::RenderFrameHost* rfh) {
-  std::string bounds = R"(
-      const bounds = (
-        document.querySelector('input')    ||
-        document.querySelector('textarea') ||
-        document.querySelector('select')   ||
-        document.head  // Has all zeros.
-      ).getBoundingClientRect();
-  )";
-  std::string x_script = bounds + "Math.floor(bounds.left + bounds.width / 2)";
-  std::string y_script = bounds + "Math.floor(bounds.top + bounds.height / 2)";
-  gfx::Point point = rfh->GetView()->TransformPointToRootCoordSpace(
-      {content::EvalJs(rfh, x_script).ExtractInt(),
-       content::EvalJs(rfh, y_script).ExtractInt()});
-  if (point == gfx::Point(0, 0))
-    return false;
-  content::SimulateMouseClickAt(web_contents, 0,
-                                blink::WebMouseEvent::Button::kLeft, point);
-  return true;
-}
-
 // Returns the values of all fields in the  frames of `web_contents`.
 // The values are sorted by DOM order in the respective frame.
 std::map<LocalFrameToken, std::vector<std::string>> AllFieldValues(
@@ -310,64 +286,34 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
   // Each test shall prepare the intended response using SetUrlContent() in
   // advance.
   const FormStructure* NavigateToUrl(base::StringPiece relative_url,
-                                     size_t num_fields,
-                                     bool click_to_extract = false) {
+                                     size_t num_fields) {
     NavigateParams params(browser(),
                           https_server_.GetURL(kMainHostname, relative_url),
                           ui::PAGE_TRANSITION_LINK);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     ui_test_utils::NavigateToURL(&params);
     return GetOrWaitForFormWithFocusableFields(
-        /*num_fields=*/num_fields, /*click_to_extract=*/click_to_extract);
+        /*num_fields=*/num_fields);
   }
 
   // Returns a form with `num_fields` fields. If no such form exists and no such
-  // form appears within a timeout, returns nullptr. If `click_to_extract` is
-  // true, simulates a click in one field of each frame, which causes
-  // re-extraction of the form.
+  // form appears within a timeout, returns nullptr.
   //
-  // The reason for the click is a (rather rare) race condition when receiving
-  // frames: when FormForest
-  // (a) receives a child form before the parent form, and
-  // (b) the received parent form doesn't contain to the child form's
-  //     FrameToken (but instead an outdated FrameToken),
-  // then no form re-extraction is triggered. This is because FormForest hasn't
-  // seen the parent frame yet and therefore doesn't know its
-  // ContentAutofillDriver.
-  // TODO(crbug.com/1007974): Try to remove the click.
-  //
-  // Clicking into field of the iframe re-extracts the iframe's form and sends
-  // it to the browser. If necessary, FormForest would then trigger a
-  // re-extraction in the parent frame. We choose this workaround rather than
-  // triggering form re-extraction more directly (by calling
-  // ContentAutofillDriver::TriggerFormExtraction()) because clicking is typical
-  // real-world behaviour.
-  //
-  // Another, unrelated issue is focusability: sometimes fields are unfocusable
-  // (FormFieldData::is_focusable is false) when they are extracted on page
-  // load. This issue appears to be unrelated to AutofillAcrossIframes, it's
-  // probably just a race condition between Blink and Autofill's form
-  // extraction. Focusing a field re-extracts the field's form, and then fields
-  // seem to be focusable. That is, clicking into some field of each form in
-  // each frame would likely work around the focusability issue for the purposes
-  // of this bug. However, since clicking into each may also have other side
-  // effects (parsing more forms again) and is not common user behaviour, we do
-  // not simulate such clicks. Instead, we simply override
+  // Sometimes fields are unfocusable (FormFieldData::is_focusable is false)
+  // when they are extracted on page load. This issue appears to be unrelated to
+  // AutofillAcrossIframes; it's probably just a race condition between Blink
+  // and Autofill's form extraction. Focusing a field re-extracts the field's
+  // form, and then fields seem to be focusable. That is, clicking into some
+  // field of each form in each frame would likely work around the focusability
+  // issue for the purposes of this bug. However, since clicking into each may
+  // also have other side effects (parsing more forms again) and is not common
+  // user behaviour, we do not simulate such clicks. Instead, we simply override
   // FormFieldData::is_focusable for all forms. This is admissible for our
   // testing purposes because all test forms only have (what should be)
   // focusable fields.
   // TODO(crbug.com/1393058): Remove this hack when the focusability issue is
   // fixed.
-  const FormStructure* GetOrWaitForFormWithFocusableFields(
-      size_t num_fields,
-      bool click_to_extract) {
-    if (click_to_extract) {
-      size_t num_clicked = 0;
-      main_frame()->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
-        num_clicked += ClickFirstField(web_contents(), rfh);
-      });
-      EXPECT_GT(num_clicked, 0u);
-    }
+  const FormStructure* GetOrWaitForFormWithFocusableFields(size_t num_fields) {
     const FormStructure* form =
         main_autofill_manager()->WaitForMatchingForm(base::BindRepeating(
             [](size_t num_fields, const FormStructure& form) {
@@ -715,8 +661,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
                                   <input autocomplete=cc-exp>
                                   <input autocomplete=cc-csc>
                                   </form>)");
-  const FormStructure* form =
-      NavigateToUrl("/", /*num_fields=*/48, /*click_to_extract=*/true);
+  const FormStructure* form = NavigateToUrl("/", /*num_fields=*/48);
   ASSERT_TRUE(form);
   ASSERT_THAT(*form, IsWithinAutofillLimits());
   {
@@ -832,8 +777,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
                                   <form><input autocomplete=cc-number></form>
                                   <form><input autocomplete=cc-exp></form>
                                   <form><input autocomplete=cc-csc></form>)");
-  const FormStructure* form =
-      NavigateToUrl("/", /*num_fields=*/16, /*click_to_extract=*/true);
+  const FormStructure* form = NavigateToUrl("/", /*num_fields=*/16);
   ASSERT_TRUE(form);
   ASSERT_THAT(*form, IsWithinAutofillLimits());
   {
@@ -1015,8 +959,7 @@ class AutofillAcrossIframesTest_FullIframes
       return nullptr;
     }
     return GetOrWaitForFormWithFocusableFields(
-        /*num_fields=*/4,
-        /*click_to_extract=*/false);
+        /*num_fields=*/4);
   }
 
  private:
@@ -1060,8 +1003,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes,
 
   // As a consequence only 3 forms of 4 fields remain.
   EXPECT_TRUE(GetOrWaitForFormWithFocusableFields(
-      /*num_fields=*/3 * 4,
-      /*click_to_extract=*/false));
+      /*num_fields=*/3 * 4));
 }
 
 // Tests that the Autofill Manager notices if the parent containing a <form> is
@@ -1080,8 +1022,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes,
 
   // As a consequence only 3 forms of 4 fields remain.
   EXPECT_TRUE(GetOrWaitForFormWithFocusableFields(
-      /*num_fields=*/3 * 4,
-      /*click_to_extract=*/false));
+      /*num_fields=*/3 * 4));
 }
 
 }  // namespace autofill
