@@ -222,6 +222,10 @@ class ColorManagerObserver : public WaylandDisplayObserver {
   }
 
   gfx::ColorSpace GetColorSpace() const {
+    if (!wayland_display_handler_) {
+      LOG(WARNING) << "Wayland output was destroyed and not replaced.";
+      return gfx::ColorSpace::CreateSRGB();
+    }
     // Snapshot ColorSpace is only valid for ScreenAsh.
     return ash::Shell::Get()
         ->display_manager()
