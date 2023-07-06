@@ -6717,10 +6717,10 @@ New install
       <message name="IDS_GLANCEABLES_WELCOME_LABEL" desc="Personalized greeting / welcome message shown on glanceables surfaces (welcome screen and overview mode).">
         Welcome back, <ph name="GIVEN_NAME">$1<ex>John</ex></ph>
       </message>
-      <message name="IDS_GLANCEABLES_TASKS_DETAILS_FOOTER" desc="The glanceable displays tasks from a task list that's selected in a drop-down box within the glanceable UI. The first placeholder value is the number of tasks visible in the UI. The second placeholder value is the total number of tasks in the selected tasks list, including tasks that are not visible in the UI.">
-        Showing <ph name="NUM_SHOWN_TASKS">$1<ex>5</ex></ph> out of <ph name="NUM_TOTAL_TASKS">$2<ex>10</ex></ph>
+      <message name="IDS_GLANCEABLES_LIST_FOOTER_ITEMS_COUNT_LABEL" desc="The glanceable displays classroom or tasks items fetched from Google Classroom or Google Tasks API. The first placeholder value is the number of items visible in the UI. The second placeholder value is the total number of items returned from API.">
+        Showing <ph name="NUM_SHOWN_ITEMS">$1<ex>5</ex></ph> out of <ph name="NUM_TOTAL_ITEMS">$2<ex>10</ex></ph>
       </message>
-      <message name="IDS_GLANCEABLES_TASKS_ACTION_BUTTON_LABEL" desc="The glanceable displays tasks from a task list that's selected in a drop-down box within the glanceable UI. Interacting with the button and label at the bottom of the glanceable opens the Tasks companion app.">
+      <message name="IDS_GLANCEABLES_LIST_FOOTER_ACTION_BUTTON_LABEL" desc="The glanceable displays classroom or tasks items fetched from Google Classroom or Google Tasks API. Glanceables UI renders only limited number of items, the rest of them can be seen by clicking this button, which will open a corresponding website.">
         See all
       </message>
       <message name="IDS_GLANCEABLES_CLASSROOM_ASSIGNMENT_DUE_TODAY" desc="Classroom glanceable displays upcoming/missed/completed assignments from Google Classroom. This text is displayed for assignments that are due today. In other cases date formatter is used and no translation is needed.">

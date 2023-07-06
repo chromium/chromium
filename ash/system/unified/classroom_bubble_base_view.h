@@ -19,30 +19,33 @@ class ComboboxModel;
 
 namespace ash {
 
+class GlanceablesListFooterView;
+
 class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble {
  public:
   METADATA_HEADER(ClassroomBubbleBaseView);
 
-  // Known view ids.
-  static constexpr int kComboBoxViewId = 1;
-  static constexpr int kListContainerViewId = 2;
-
   // TODO(b:283370907): Add classroom glanceable contents.
-  explicit ClassroomBubbleBaseView(
-      DetailedViewDelegate* delegate,
-      std::unique_ptr<ui::ComboboxModel> combobox_model);
+  ClassroomBubbleBaseView(DetailedViewDelegate* delegate,
+                          std::unique_ptr<ui::ComboboxModel> combobox_model);
   ClassroomBubbleBaseView(const ClassroomBubbleBaseView&) = delete;
-  ClassroomBubbleBaseView& operator-(const ClassroomBubbleBaseView&) = delete;
+  ClassroomBubbleBaseView& operator=(const ClassroomBubbleBaseView&) = delete;
   ~ClassroomBubbleBaseView() override;
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  protected:
+  // Handles press on the "See all" button in `GlanceablesListFooterView`. Opens
+  // classroom web UI based on the selected menu option.
+  virtual void OnSeeAllPressed() = 0;
+
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> header_view_ = nullptr;
   raw_ptr<views::Combobox, ExperimentalAsh> combo_box_view_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> list_container_view_ =
+      nullptr;
+  raw_ptr<GlanceablesListFooterView, ExperimentalAsh> list_footer_view_ =
       nullptr;
 
   base::WeakPtrFactory<ClassroomBubbleBaseView> weak_ptr_factory_{this};

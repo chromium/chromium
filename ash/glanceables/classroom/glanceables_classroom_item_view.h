@@ -19,13 +19,6 @@ class ASH_EXPORT GlanceablesClassroomItemView : public views::FlexLayoutView {
  public:
   METADATA_HEADER(GlanceablesClassroomItemView);
 
-  // Known view ids.
-  static constexpr int kIconViewId = 1;
-  static constexpr int kCourseWorkTitleLabelId = 2;
-  static constexpr int kCourseTitleLabelId = 3;
-  static constexpr int kDueDateLabelId = 4;
-  static constexpr int kDueTimeLabelId = 5;
-
   explicit GlanceablesClassroomItemView(
       const GlanceablesClassroomStudentAssignment* assignment);
   GlanceablesClassroomItemView(const GlanceablesClassroomItemView&) = delete;

@@ -5,26 +5,21 @@
 #include "ash/system/unified/tasks_bubble_view.h"
 
 #include <algorithm>
+#include <memory>
 
+#include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_id.h"
-#include "ash/style/icon_button.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "ash/system/unified/tasks_combobox_model.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "components/vector_icons/vector_icons.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/vector_icons.h"
 
 namespace {
 
@@ -34,8 +29,6 @@ constexpr int kGlanceablesTaskViewHeight = 48;
 constexpr int kGlanceablesTaskFooterHeight = 24;
 constexpr int kGlanceablesFooterMargin = 12;
 constexpr int kGlanceableTaskVerticalMargin = 2;
-constexpr int kGlanceablesActionButtonLeftRightMargin = 4;
-constexpr int kIconSize = 24;
 
 }  // namespace
 
@@ -130,67 +123,9 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
       &TasksBubbleView::SelectedTasksListChanged, base::Unretained(this)));
   task_list_combo_box_view_->SetSelectedIndex(0);
 
-  tasks_footer_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
-  tasks_footer_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  tasks_footer_view_->SetMainAxisAlignment(views::LayoutAlignment::kStart);
-  tasks_footer_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
-  tasks_footer_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kPreferred)
-          .WithOrder(1));
-
-  tasks_bubble_details_ =
-      tasks_footer_view_->AddChildView(std::make_unique<views::Label>());
-  tasks_bubble_details_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  // Views should not be individually selected for accessibility. Accessible
-  // name and behavior comes from the parent.
-  tasks_bubble_details_->GetViewAccessibility().OverrideIsIgnored(true);
-  tasks_bubble_details_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  tasks_bubble_details_->SetAutoColorReadabilityEnabled(false);
-  if (chromeos::features::IsJellyEnabled()) {
-    tasks_bubble_details_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
-  } else {
-    tasks_bubble_details_->SetEnabledColorId(kColorAshTextColorSecondary);
-  }
-
-  // Create a transparent separator to push `action_button_` to the right-most
-  // corner of the tasks_header_view_.
-  separator_ =
-      tasks_footer_view_->AddChildView(std::make_unique<views::View>());
-  separator_->SetPreferredSize((gfx::Size(kRevampedTrayMenuWidth, 1)));
-  separator_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kPreferred)
-          .WithOrder(2));
-
-  action_button_ =
-      tasks_footer_view_->AddChildView(std::make_unique<views::LabelButton>(
-          base::BindRepeating(&TasksBubbleView::ActionButtonPressed,
-                              base::Unretained(this)),
-          l10n_util::GetStringUTF16(
-              IDS_GLANCEABLES_TASKS_ACTION_BUTTON_LABEL)));
-  action_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-  action_button_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(0, kGlanceablesActionButtonLeftRightMargin)));
-
-  if (chromeos::features::IsJellyEnabled()) {
-    action_button_->SetTextColorId(views::Button::STATE_NORMAL,
-                                   cros_tokens::kCrosSysOnSurface);
-    action_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
-                                       cros_tokens::kCrosSysOnSurface,
-                                       kIconSize));
-  } else {
-    action_button_->SetTextColorId(views::Button::STATE_NORMAL,
-                                   kColorAshTextColorPrimary);
-    action_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
-                                       kColorAshTextColorPrimary, kIconSize));
-  }
+  list_footer_view_ = AddChildView(
+      std::make_unique<GlanceablesListFooterView>(base::BindRepeating(
+          &TasksBubbleView::ActionButtonPressed, base::Unretained(this))));
 
   ScheduleUpdateTasksList();
 }
@@ -236,10 +171,7 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
     ++num_tasks_;
   }
 
-  tasks_bubble_details_->SetText(
-      l10n_util::GetStringFUTF16(IDS_GLANCEABLES_TASKS_DETAILS_FOOTER,
-                                 base::NumberToString16(num_tasks_shown_),
-                                 base::NumberToString16(num_tasks_)));
+  list_footer_view_->UpdateItemsCount(num_tasks_shown_, num_tasks_);
 }
 
 BEGIN_METADATA(TasksBubbleView, views::View)

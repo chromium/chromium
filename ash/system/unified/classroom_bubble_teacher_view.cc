@@ -11,11 +11,13 @@
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
+#include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/geometry/insets.h"
@@ -92,6 +94,10 @@ ClassroomBubbleTeacherView::ClassroomBubbleTeacherView(
 
 ClassroomBubbleTeacherView::~ClassroomBubbleTeacherView() = default;
 
+void ClassroomBubbleTeacherView::OnSeeAllPressed() {
+  NOTIMPLEMENTED();
+}
+
 void ClassroomBubbleTeacherView::OnGetTeacherAssignments(
     std::vector<std::unique_ptr<GlanceablesClassroomTeacherAssignment>>
         assignments) {
@@ -113,6 +119,9 @@ void ClassroomBubbleTeacherView::OnGetTeacherAssignments(
     list_container_view_->children().back()->SetProperty(views::kMarginsKey,
                                                          gfx::Insets());
   }
+
+  list_footer_view_->UpdateItemsCount(list_container_view_->children().size(),
+                                      assignments.size());
 }
 
 void ClassroomBubbleTeacherView::SelectedAssignmentListChanged() {

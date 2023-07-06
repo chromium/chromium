@@ -8,6 +8,7 @@
 
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
+#include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -20,6 +21,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -99,7 +101,7 @@ std::unique_ptr<views::ImageView> BuildIcon() {
   return views::Builder<views::ImageView>()
       .SetBackground(views::CreateThemedRoundedRectBackground(
           cros_tokens::kCrosSysSystemOnBase1, kIconViewBackgroundRadius))
-      .SetID(GlanceablesClassroomItemView::kIconViewId)
+      .SetID(base::to_underlying(GlanceablesViewId::kClassroomItemIcon))
       .SetImage(ui::ImageModel::FromVectorIcon(
           kGlanceablesClassroomAssignmentIcon, cros_tokens::kCrosSysOnSurface,
           kIconSize))
@@ -120,18 +122,19 @@ std::unique_ptr<views::BoxLayoutView> BuildAssignmentTitleLabels(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded))
-      .AddChild(
-          views::Builder<views::Label>()
-              .SetText(base::UTF8ToUTF16(assignment->course_work_title))
-              .SetID(GlanceablesClassroomItemView::kCourseWorkTitleLabelId)
-              .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
-              .SetFontList(typography_provider->ResolveTypographyToken(
-                  TypographyToken::kCrosButton2))
-              .SetLineHeight(typography_provider->ResolveLineHeight(
-                  TypographyToken::kCrosButton2)))
+      .AddChild(views::Builder<views::Label>()
+                    .SetText(base::UTF8ToUTF16(assignment->course_work_title))
+                    .SetID(base::to_underlying(
+                        GlanceablesViewId::kClassroomItemCourseWorkTitleLabel))
+                    .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                    .SetFontList(typography_provider->ResolveTypographyToken(
+                        TypographyToken::kCrosButton2))
+                    .SetLineHeight(typography_provider->ResolveLineHeight(
+                        TypographyToken::kCrosButton2)))
       .AddChild(views::Builder<views::Label>()
                     .SetText(base::UTF8ToUTF16(assignment->course_title))
-                    .SetID(GlanceablesClassroomItemView::kCourseTitleLabelId)
+                    .SetID(base::to_underlying(
+                        GlanceablesViewId::kClassroomItemCourseTitleLabel))
                     .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
                     .SetFontList(typography_provider->ResolveTypographyToken(
                         TypographyToken::kCrosAnnotation1))
@@ -151,7 +154,8 @@ std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
       .SetProperty(views::kMarginsKey, kDueLabelsMargin)
       .AddChild(views::Builder<views::Label>()
                     .SetText(GetFormattedDueDate(assignment->due.value()))
-                    .SetID(GlanceablesClassroomItemView::kDueDateLabelId)
+                    .SetID(base::to_underlying(
+                        GlanceablesViewId::kClassroomItemDueDateLabel))
                     .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
                     .SetFontList(typography_provider->ResolveTypographyToken(
                         TypographyToken::kCrosAnnotation1))
@@ -159,7 +163,8 @@ std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
                         TypographyToken::kCrosAnnotation1)))
       .AddChild(views::Builder<views::Label>()
                     .SetText(GetFormattedDueTime(assignment->due.value()))
-                    .SetID(GlanceablesClassroomItemView::kDueTimeLabelId)
+                    .SetID(base::to_underlying(
+                        GlanceablesViewId::kClassroomItemDueTimeLabel))
                     .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
                     .SetFontList(typography_provider->ResolveTypographyToken(
                         TypographyToken::kCrosAnnotation1))

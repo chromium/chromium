@@ -6,7 +6,11 @@
 
 #include <memory>
 
+#include "ash/glanceables/common/glanceables_list_footer_view.h"
+#include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "base/functional/bind.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/image_model.h"
@@ -51,14 +55,16 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
 
   combo_box_view_ = header_view_->AddChildView(
       std::make_unique<views::Combobox>(std::move(combobox_model)));
-  combo_box_view_->SetID(kComboBoxViewId);
+  combo_box_view_->SetID(
+      base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox));
   combo_box_view_->SetSelectedIndex(0);
   // TODO(b:283370907): Implement accessibility behavior.
   combo_box_view_->SetTooltipTextAndAccessibleName(u"Assignment list selector");
 
   list_container_view_ =
       AddChildView(std::make_unique<views::FlexLayoutView>());
-  list_container_view_->SetID(kListContainerViewId);
+  list_container_view_->SetID(
+      base::to_underlying(GlanceablesViewId::kClassroomBubbleListContainer));
   list_container_view_->SetOrientation(views::LayoutOrientation::kVertical);
   list_container_view_->SetPaintToLayer();
   list_container_view_->layer()->SetFillsBoundsOpaquely(false);
@@ -67,6 +73,12 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
   list_container_view_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kSpacingAboveListContainerView, 0, 0, 0));
+
+  list_footer_view_ = AddChildView(
+      std::make_unique<GlanceablesListFooterView>(base::BindRepeating(
+          &ClassroomBubbleBaseView::OnSeeAllPressed, base::Unretained(this))));
+  list_footer_view_->SetID(
+      base::to_underlying(GlanceablesViewId::kClassroomBubbleListFooter));
 }
 
 ClassroomBubbleBaseView::~ClassroomBubbleBaseView() = default;

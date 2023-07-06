@@ -19,6 +19,10 @@ class ASH_EXPORT ClassroomBubbleTeacherView : public ClassroomBubbleBaseView {
       delete;
   ~ClassroomBubbleTeacherView() override;
 
+ private:
+  // ClassroomBubbleBaseView:
+  void OnSeeAllPressed() override;
+
   // Handle switching between assignment lists.
   void SelectedAssignmentListChanged();
 

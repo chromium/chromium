@@ -6,26 +6,21 @@
 #define ASH_SYSTEM_UNIFIED_TASKS_BUBBLE_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_model.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/metadata/view_factory.h"
 
 namespace views {
 class Combobox;
 class ImageView;
-class Label;
-class LabelButton;
 }  // namespace views
 
 namespace ash {
+
+class GlanceablesListFooterView;
 class TasksComboboxModel;
 
 // 'TasksBubbleView' uses nested `FlexLayoutView`s to layout the tasks bubble.
@@ -61,10 +56,7 @@ class TasksComboboxModel;
 // +----------------------------------------------------------------+
 //
 // +--------------------------------------------------------------+
-// |'tasks_footer_view_'                                          |
-// | +-----------------------+ +-------------+ +----------------+ |
-// | |`tasks_bubble_details_`| |`separator_` | |`action_button_`| |
-// | +-----------------------+ +-------------+ +----------------+ |
+// |'list_footer_view_'                                           |
 // +--------------------------------------------------------------+
 
 class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
@@ -95,7 +87,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   // Setup child views.
   void InitViews(ui::ListModel<GlanceablesTaskList>* task_list);
 
-  // Handles on-click behavior for `action_button_`
+  // Handles on-click behavior for the "See all" button in `list_footer_view_`.
   void ActionButtonPressed();
 
   // Handles switching between tasks lists.
@@ -115,11 +107,9 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   raw_ptr<views::ImageView, ExperimentalAsh> task_icon_view_ = nullptr;
   raw_ptr<views::Combobox, ExperimentalAsh> task_list_combo_box_view_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> button_container_ = nullptr;
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_footer_view_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> tasks_bubble_details_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> separator_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> action_button_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> task_items_container_view_ =
+      nullptr;
+  raw_ptr<GlanceablesListFooterView, ExperimentalAsh> list_footer_view_ =
       nullptr;
 
   base::WeakPtrFactory<TasksBubbleView> weak_ptr_factory_{this};

@@ -11,6 +11,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
+#include "ash/glanceables/common/glanceables_list_footer_view.h"
+#include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -19,11 +21,13 @@
 #include "ash/test/ash_test_base.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
@@ -94,13 +98,18 @@ class ClassroomBubbleViewTest : public AshTestBase {
   }
 
   views::Combobox* GetComboBoxView() {
-    return views::AsViewClass<views::Combobox>(
-        view_->GetViewByID(ClassroomBubbleBaseView::kComboBoxViewId));
+    return views::AsViewClass<views::Combobox>(view_->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
   }
 
   const views::View* GetListContainerView() const {
-    return views::AsViewClass<views::View>(
-        view_->GetViewByID(ClassroomBubbleBaseView::kListContainerViewId));
+    return views::AsViewClass<views::View>(view_->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kClassroomBubbleListContainer)));
+  }
+
+  const views::Label* GetListFooterItemsCountLabel() const {
+    return views::AsViewClass<views::Label>(view_->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kListFooterItemsCountLabel)));
   }
 
  protected:
@@ -245,6 +254,9 @@ TEST_F(ClassroomBubbleStudentViewTest, RendersListItems) {
 
   GetComboBoxView()->MenuSelectionAt(3);
   EXPECT_EQ(GetListContainerView()->children().size(), 3u);  // No more than 3.
+
+  ASSERT_TRUE(GetListFooterItemsCountLabel());
+  EXPECT_EQ(GetListFooterItemsCountLabel()->GetText(), u"Showing 3 out of 5");
 }
 
 TEST_F(ClassroomBubbleTeacherViewTest, RendersListItems) {
@@ -269,6 +281,9 @@ TEST_F(ClassroomBubbleTeacherViewTest, RendersListItems) {
 
   GetComboBoxView()->MenuSelectionAt(3);
   EXPECT_EQ(GetListContainerView()->children().size(), 3u);  // No more than 3.
+
+  ASSERT_TRUE(GetListFooterItemsCountLabel());
+  EXPECT_EQ(GetListFooterItemsCountLabel()->GetText(), u"Showing 3 out of 5");
 }
 
 }  // namespace ash
