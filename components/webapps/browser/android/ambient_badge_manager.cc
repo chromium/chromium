@@ -244,7 +244,7 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeSmart(
       segmentation_platform::kWebAppInstallationPromoKey, prediction_options,
       input_context,
       base::BindOnce(&AmbientBadgeManager::OnGotClassificationResult,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void AmbientBadgeManager::OnGotClassificationResult(
