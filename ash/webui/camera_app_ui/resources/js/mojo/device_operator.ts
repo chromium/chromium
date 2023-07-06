@@ -6,6 +6,7 @@ import {assert, assertExists, assertNotReached} from '../assert.js';
 import {AsyncJobQueue} from '../async_job_queue.js';
 import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
+import {isLocalDev} from '../models/load_time_data.js';
 import * as state from '../state.js';
 import {
   CameraSuspendError,
@@ -130,7 +131,7 @@ export class DeviceOperator {
    * An interface remote that is used to construct the mojo interface.
    */
   private readonly deviceProvider =
-      wrapEndpoint(CameraAppDeviceProvider.getRemote());
+      isLocalDev() ? null : wrapEndpoint(CameraAppDeviceProvider.getRemote());
 
   /**
    * Map which maps from device id to the remote of devices. We want to have
@@ -182,6 +183,9 @@ export class DeviceOperator {
    * devices is supported.
    */
   async isSupported(): Promise<boolean> {
+    if (this.deviceProvider === null) {
+      return false;
+    }
     const {isSupported} = await this.deviceProvider.isSupported();
     return isSupported;
   }
@@ -212,6 +216,7 @@ export class DeviceOperator {
     }
     const newDevice = (async () => {
       try {
+        assert(this.deviceProvider !== null);
         const {device, status} =
             await this.deviceProvider.getCameraAppDevice(deviceId);
         if (status === GetCameraAppDeviceStatus.ERROR_INVALID_ID) {
@@ -709,6 +714,7 @@ export class DeviceOperator {
    */
   async setVirtualDeviceEnabled(deviceId: string, enabled: boolean):
       Promise<void> {
+    assert(this.deviceProvider !== null);
     // TODO(pihsun): Check if there's actually case that deviceId is empty
     // string here.
     if (deviceId !== '') {

@@ -65,3 +65,10 @@ export function getIsTestImage(): boolean {
 export function getBrowserVersion(): string {
   return loadTimeData.getString('browser_version');
 }
+
+/**
+ * Returns if CCA is running on local development server.
+ */
+export function isLocalDev(): boolean {
+  return getBoard() === 'local-dev';
+}

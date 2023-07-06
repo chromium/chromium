@@ -37,3 +37,8 @@ def run_node(args: List[str]):
     node = os.path.join(root, "third_party/node/linux/node-linux-x64/bin/node")
     binary = os.path.join(root, "third_party/node/node_modules", args[0])
     run([node, binary] + args[1:])
+
+
+def get_gen_dir(board: str) -> str:
+    root_dir = get_chromium_root()
+    return os.path.join(root_dir, f"out_{board}/Release/gen")

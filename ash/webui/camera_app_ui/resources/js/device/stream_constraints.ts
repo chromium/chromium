@@ -25,8 +25,14 @@ export interface StreamConstraints {
  */
 export function toMediaStreamConstraints(constraints: StreamConstraints):
     MediaStreamConstraints {
+  // TODO(pihsun): Investigate why deviceId is '' for fake VCD on non-CrOS
+  // environment.
+  const videoCostraint = {...constraints.video};
+  if (constraints.deviceId !== '') {
+    videoCostraint.deviceId = {exact: constraints.deviceId};
+  }
   return {
     audio: constraints.audio ? {echoCancellation: false} : false,
-    video: {...constraints.video, deviceId: {exact: constraints.deviceId}},
+    video: videoCostraint,
   };
 }

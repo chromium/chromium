@@ -10,6 +10,7 @@ import {
 import * as error from '../error.js';
 import * as expert from '../expert.js';
 import {Point} from '../geometry.js';
+import {isLocalDev} from '../models/load_time_data.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {ScreenState} from '../mojo/type.js';
 import * as nav from '../nav.js';
@@ -120,18 +121,23 @@ export class CameraManager implements EventListener {
     );
 
     // Monitors the states to stop camera when locked/minimized.
-    const idleDetector = new IdleDetector();
-    idleDetector.addEventListener('change', () => {
-      this.locked = idleDetector.screenState === 'locked';
-      if (this.locked) {
-        this.reconfigure();
-      }
-    });
-    idleDetector.start().catch((e) => {
-      error.reportError(
-          ErrorType.IDLE_DETECTOR_FAILURE, ErrorLevel.ERROR,
-          assertInstanceof(e, Error));
-    });
+    // TODO(pihsun): The IdleDetector permission is auto-granted on CrOS. For
+    // local dev, we can request it by IdleDetector.requestPermission(), but
+    // that needs to be done in a user gesture and can't be done here.
+    if (!isLocalDev()) {
+      const idleDetector = new IdleDetector();
+      idleDetector.addEventListener('change', () => {
+        this.locked = idleDetector.screenState === 'locked';
+        if (this.locked) {
+          this.reconfigure();
+        }
+      });
+      idleDetector.start().catch((e) => {
+        error.reportError(
+            ErrorType.IDLE_DETECTOR_FAILURE, ErrorLevel.ERROR,
+            assertInstanceof(e, Error));
+      });
+    }
 
     document.addEventListener('visibilitychange', () => {
       const recording = state.get(state.State.TAKING) && state.get(Mode.VIDEO);

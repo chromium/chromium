@@ -9,6 +9,7 @@ from cca import cli
 from cca.commands import check_color_tokens
 from cca.commands import check_strings
 from cca.commands import deploy
+from cca.commands import dev
 from cca.commands import lint
 from cca.commands import test
 from cca.commands import tsc
@@ -18,6 +19,7 @@ from cca.commands import tsc
     check_color_tokens.cmd,
     check_strings.cmd,
     deploy.cmd,
+    dev.cmd,
     lint.cmd,
     test.cmd,
     tsc.cmd,

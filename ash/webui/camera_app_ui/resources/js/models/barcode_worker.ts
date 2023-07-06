@@ -8,9 +8,16 @@ import * as Comlink from '../lib/comlink.js';
  * A barcode worker to detect barcode from images.
  */
 class BarcodeWorkerImpl {
-  private readonly detector = new BarcodeDetector({formats: ['qr_code']});
+  // BarcodeDetector should always be available on ChromeOS. The check is used
+  // for local development server.
+  private readonly detector = 'BarcodeDetector' in self ?
+      new BarcodeDetector({formats: ['qr_code']}) :
+      null;
 
   async detect(bitmap: ImageBitmap): Promise<string|null> {
+    if (this.detector === null) {
+      return null;
+    }
     const codes = await this.detector.detect(bitmap);
 
     const cx = bitmap.width / 2;

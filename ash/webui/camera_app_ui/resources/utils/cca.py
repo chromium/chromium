@@ -3,6 +3,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+"""Development script for CCA.
+
+This tool bundles several scripts that are used for development only. See
+`cca.py --help` for a list of commands.
+
+Note that this should never be executed by any .gn file / by the real build
+process of Chrome.
+"""
+
 import sys
 from typing import List, Optional
 

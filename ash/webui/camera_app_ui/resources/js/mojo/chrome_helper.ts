@@ -5,6 +5,7 @@
 import {assert, assertNotReached} from '../assert.js';
 import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
+import {isLocalDev} from '../models/load_time_data.js';
 import {
   ErrorLevel,
   ErrorType,
@@ -65,16 +66,7 @@ function castToMojoRotation(rotation: number): Rotation {
   }
 }
 
-/**
- * Communicates with Chrome.
- */
-export class ChromeHelper {
-  /**
-   * An interface remote that is used to communicate with Chrome.
-   */
-  private readonly remote: CameraAppHelperRemote =
-      wrapEndpoint(CameraAppHelper.getRemote());
-
+export abstract class ChromeHelper {
   /**
    * Starts monitoring tablet mode state of device.
    *
@@ -83,7 +75,304 @@ export class ChromeHelper {
    *     tablet mode.
    * @return Resolved to initial tablet mode state of device.
    */
-  async initTabletModeMonitor(onChange: (isTablet: boolean) => void):
+  abstract initTabletModeMonitor(onChange: (isTablet: boolean) => void):
+      Promise<boolean>;
+
+  /**
+   * Starts monitoring screen state of device.
+   *
+   * @param onChange Callback called each time when screen state of device
+   *     changes with parameter of newly changed value.
+   * @return Resolved to initial screen state of device.
+   */
+  abstract initScreenStateMonitor(onChange: (state: ScreenState) => void):
+      Promise<ScreenState>;
+
+  /**
+   * Starts monitoring the existence of external screens.
+   *
+   * @param onChange Callback called each time when the existence of external
+   *     screens changes.
+   * @return Resolved to the initial state of external screens existence.
+   */
+  abstract initExternalScreenMonitor(
+      onChange: (hasExternalScreen: boolean) => void): Promise<boolean>;
+
+  abstract isTabletMode(): Promise<boolean>;
+
+  /**
+   * Initializes the camera window controller and bootstraps the mojo
+   * communication to get window states.
+   */
+  abstract initCameraWindowController(): Promise<void>;
+
+  /**
+   * Starts event tracing of `event` in Chrome.
+   */
+  abstract startTracing(event: string): void;
+
+  /**
+   * Stops event tracing of `event` in Chrome.
+   */
+  abstract stopTracing(event: string): void;
+
+  /**
+   * Opens the file in Downloads folder by its `name` in gallery.
+   */
+  abstract openFileInGallery(name: string): void;
+
+  /**
+   * Opens the chrome feedback dialog.
+   *
+   * @param placeholder The text of the placeholder in the description
+   *     field.
+   */
+  abstract openFeedbackDialog(placeholder: string): void;
+
+  /**
+   * Opens the given `url` in the browser.
+   */
+  abstract openUrlInBrowser(url: string): void;
+
+  /**
+   * Notifies ARC++ to finish the intent of given `intendId`.
+   */
+  abstract finish(intentId: number): Promise<void>;
+
+  /**
+   * Notifies ARC++ to append `data` to intent of the given `intentId`.
+   *
+   * @param intentId Intent id of the intent which `data` appends to.
+   * @param data The data to be appended to intent result.
+   */
+  abstract appendData(intentId: number, data: Uint8Array): Promise<void>;
+
+  /**
+   * Notifies ARC++ to clear appended intent result data.
+   *
+   * @param intentId Intent id of the intent whose results to be cleared.
+   */
+  abstract clearData(intentId: number): Promise<void>;
+
+  /**
+   * Returns if the logging consent option is enabled.
+   */
+  abstract isMetricsAndCrashReportingEnabled(): Promise<boolean>;
+
+  /**
+   * Sends the broadcast to ARC to notify the new photo/video is captured.
+   */
+  abstract sendNewCaptureBroadcast(args: {isVideo: boolean, name: string}):
+      void;
+
+  /**
+   * Notifies Tote client when a photo/pdf/video/gif is captured.
+   */
+  abstract notifyTote(format: ToteMetricFormat, name: string): void;
+
+  /**
+   * Monitors for the file deletion of the file given by its `name` and
+   * triggers `callback` when the file is deleted. Note that a previous
+   * monitor request will be canceled once another monitor request is sent.
+   *
+   * @return Resolved when the file is deleted or the current monitor is
+   *     canceled by future monitor call.
+   * @throws When error occurs during monitor.
+   */
+  abstract monitorFileDeletion(name: string, callback: () => void):
+      Promise<void>;
+
+  abstract getDocumentScannerReadyState():
+      Promise<{supported: boolean, ready: boolean}>;
+
+  /**
+   * Checks the document mode readiness. Returns false if it fails to load.
+   */
+  abstract checkDocumentModeReadiness(): Promise<boolean>;
+
+  /**
+   * Scans the `blob` data and returns the detected document corners.
+   *
+   * @return Promise resolve to positions of document corner. Null for failing
+   *     to detected corner positions.
+   */
+  abstract scanDocumentCorners(blob: Blob): Promise<Point[]|null>;
+
+  /**
+   * Converts the blob to document given by its `blob` data, `rotation` and
+   * target `corners` to crop. The output will be converted according to given
+   * `mimeType`.
+   */
+  abstract convertToDocument(
+      blob: Blob, corners: Point[], rotation: number,
+      mimeType: MimeType): Promise<Blob>;
+
+  /**
+   * Converts given `jpegBlobs` to PDF format.
+   *
+   * @return Blob in PDF format.
+   */
+  abstract convertToPdf(jpegBlobs: Blob[]): Promise<Blob>;
+
+  /**
+   * Tries to trigger HaTS survey for CCA.
+   */
+  abstract maybeTriggerSurvey(): void;
+
+  abstract startMonitorStorage(
+      onChange: (status: StorageMonitorStatus) => void):
+      Promise<StorageMonitorStatus>;
+
+  abstract stopMonitorStorage(): void;
+
+  abstract openStorageManagement(): void;
+
+  /**
+   * Creates a new instance of ChromeHelper if it is not set. Returns the
+   *     existing instance.
+   *
+   * @return The singleton instance.
+   */
+  static getInstance(): ChromeHelper {
+    if (instance === null) {
+      if (isLocalDev()) {
+        instance = new ChromeHelperFake();
+      } else {
+        instance = new ChromeHelperImpl();
+      }
+    }
+    return instance;
+  }
+}
+
+export class ChromeHelperFake extends ChromeHelper {
+  override async initTabletModeMonitor(_onChange: (isTablet: boolean) => void):
+      Promise<boolean> {
+    return false;
+  }
+
+  override async initScreenStateMonitor(
+      _onChange: (state: ScreenState) => void): Promise<ScreenState> {
+    return ScreenState.ON;
+  }
+
+  override async initExternalScreenMonitor(
+      _onChange: (hasExternalScreen: boolean) => void): Promise<boolean> {
+    return false;
+  }
+
+  override async isTabletMode(): Promise<boolean> {
+    return false;
+  }
+
+  override async initCameraWindowController(): Promise<void> {
+    /* Do nothing. */
+  }
+
+  override startTracing(_event: string): void {
+    /* Do nothing. */
+  }
+
+  override stopTracing(_event: string): void {
+    /* Do nothing. */
+  }
+
+  override openFileInGallery(_name: string): void {
+    // TODO(pihsun): Mock this and open the file in a new tab.
+  }
+
+  override openFeedbackDialog(_placeholder: string): void {
+    alert('Feedback dialog.');
+  }
+
+  override openUrlInBrowser(_url: string): void {
+    // TODO(pihsun): Mock this and open the URL in a new tab.
+  }
+
+  override async finish(_intentId: number): Promise<void> {
+    /* Do nothing. */
+  }
+
+  override async appendData(_intentId: number, _data: Uint8Array):
+      Promise<void> {
+    /* Do nothing. */
+  }
+
+  override async clearData(_intentId: number): Promise<void> {
+    /* Do nothing. */
+  }
+
+  override async isMetricsAndCrashReportingEnabled(): Promise<boolean> {
+    return false;
+  }
+
+  override sendNewCaptureBroadcast(_args: {isVideo: boolean, name: string}):
+      void {
+    /* Do nothing. */
+  }
+
+  override notifyTote(_format: ToteMetricFormat, _name: string): void {
+    /* Do nothing. */
+  }
+
+  override async monitorFileDeletion(_name: string, _callback: () => void):
+      Promise<void> {
+    /* Do nothing. */
+  }
+
+  override async getDocumentScannerReadyState():
+      Promise<{supported: boolean, ready: boolean}> {
+    return {supported: false, ready: false};
+  }
+
+  override async checkDocumentModeReadiness(): Promise<boolean> {
+    return false;
+  }
+
+  override async scanDocumentCorners(_blob: Blob): Promise<Point[]|null> {
+    return null;
+  }
+
+  override async convertToDocument(
+      _blob: Blob, _corners: Point[], _rotation: number,
+      _mimeType: MimeType): Promise<Blob> {
+    assertNotReached();
+  }
+
+  override async convertToPdf(_jpegBlobs: Blob[]): Promise<Blob> {
+    assertNotReached();
+  }
+
+  override maybeTriggerSurvey(): void {
+    /* Do nothing. */
+  }
+
+  override async startMonitorStorage(
+      _onChange: (status: StorageMonitorStatus) => void):
+      Promise<StorageMonitorStatus> {
+    return StorageMonitorStatus.NORMAL;
+  }
+
+  override stopMonitorStorage(): void {
+    /* Do nothing. */
+  }
+
+  override openStorageManagement(): void {
+    /* Do nothing. */
+  }
+}
+
+/**
+ * Communicates with Chrome.
+ */
+class ChromeHelperImpl extends ChromeHelper {
+  /**
+   * An interface remote that is used to communicate with Chrome.
+   */
+  private readonly remote: CameraAppHelperRemote =
+      wrapEndpoint(CameraAppHelper.getRemote());
+
+  override async initTabletModeMonitor(onChange: (isTablet: boolean) => void):
       Promise<boolean> {
     const monitorCallbackRouter =
         wrapEndpoint(new TabletModeMonitorCallbackRouter());
@@ -94,14 +383,7 @@ export class ChromeHelper {
     return isTabletMode;
   }
 
-  /**
-   * Starts monitoring screen state of device.
-   *
-   * @param onChange Callback called each time when screen state of device
-   *     changes with parameter of newly changed value.
-   * @return Resolved to initial screen state of device.
-   */
-  async initScreenStateMonitor(onChange: (state: ScreenState) => void):
+  override async initScreenStateMonitor(onChange: (state: ScreenState) => void):
       Promise<ScreenState> {
     const monitorCallbackRouter =
         wrapEndpoint(new ScreenStateMonitorCallbackRouter());
@@ -112,14 +394,7 @@ export class ChromeHelper {
     return initialState;
   }
 
-  /**
-   * Starts monitoring the existence of external screens.
-   *
-   * @param onChange Callback called each time when the existence of external
-   *     screens changes.
-   * @return Resolved to the initial state of external screens existence.
-   */
-  async initExternalScreenMonitor(
+  override async initExternalScreenMonitor(
       onChange: (hasExternalScreen: boolean) => void): Promise<boolean> {
     const monitorCallbackRouter =
         wrapEndpoint(new ExternalScreenMonitorCallbackRouter());
@@ -130,62 +405,37 @@ export class ChromeHelper {
     return hasExternalScreen;
   }
 
-  async isTabletMode(): Promise<boolean> {
+  override async isTabletMode(): Promise<boolean> {
     const {isTabletMode} = await this.remote.isTabletMode();
     return isTabletMode;
   }
 
-  /**
-   * Initializes the camera window controller and bootstraps the mojo
-   * communication to get window states.
-   */
-  async initCameraWindowController(): Promise<void> {
+  override async initCameraWindowController(): Promise<void> {
     let {controller} = await this.remote.getWindowStateController();
     controller = wrapEndpoint(controller);
     await windowController.bind(controller);
   }
 
-  /**
-   * Starts event tracing of |event| in Chrome.
-   */
-  startTracing(event: string): void {
+  override startTracing(event: string): void {
     this.remote.startPerfEventTrace(event);
   }
 
-  /**
-   * Stops event tracing of |event| in Chrome.
-   */
-  stopTracing(event: string): void {
+  override stopTracing(event: string): void {
     this.remote.stopPerfEventTrace(event);
   }
 
-  /**
-   * Opens the file in Downloads folder by its |name| in gallery.
-   */
-  openFileInGallery(name: string): void {
+  override openFileInGallery(name: string): void {
     this.remote.openFileInGallery(name);
   }
 
-  /**
-   * Opens the chrome feedback dialog.
-   *
-   * @param placeholder The text of the placeholder in the description
-   *     field.
-   */
-  openFeedbackDialog(placeholder: string): void {
+  override openFeedbackDialog(placeholder: string): void {
     this.remote.openFeedbackDialog(placeholder);
   }
 
-  /**
-   * Opens the given |url| in the browser.
-   */
-  openUrlInBrowser(url: string): void {
+  override openUrlInBrowser(url: string): void {
     this.remote.openUrlInBrowser({url: url});
   }
 
-  /**
-   * Checks |value| returned from handleCameraResult() succeed.
-   */
   private async checkReturn(
       caller: string, value: Promise<{isSuccess: boolean}>): Promise<void> {
     const {isSuccess} = await value;
@@ -196,71 +446,40 @@ export class ChromeHelper {
     }
   }
 
-  /**
-   * Notifies ARC++ to finish the intent of given |intendId|.
-   */
-  async finish(intentId: number): Promise<void> {
+  override async finish(intentId: number): Promise<void> {
     const ret =
         this.remote.handleCameraResult(intentId, CameraIntentAction.FINISH, []);
     await this.checkReturn('finish()', ret);
   }
 
-  /**
-   * Notifies ARC++ to append |data| to intent of the given |intentId|.
-   *
-   * @param intentId Intent id of the intent which |data| appends to.
-   * @param data The data to be appended to intent result.
-   */
-  async appendData(intentId: number, data: Uint8Array): Promise<void> {
+  override async appendData(intentId: number, data: Uint8Array): Promise<void> {
     const ret = this.remote.handleCameraResult(
         intentId, CameraIntentAction.APPEND_DATA, castToNumberArray(data));
     await this.checkReturn('appendData()', ret);
   }
 
-  /**
-   * Notifies ARC++ to clear appended intent result data.
-   *
-   * @param intentId Intent id of the intent whose results to be cleared.
-   */
-  async clearData(intentId: number): Promise<void> {
+  override async clearData(intentId: number): Promise<void> {
     const ret = this.remote.handleCameraResult(
         intentId, CameraIntentAction.CLEAR_DATA, []);
     await this.checkReturn('clearData()', ret);
   }
 
-  /**
-   * Returns if the logging consent option is enabled.
-   */
-  async isMetricsAndCrashReportingEnabled(): Promise<boolean> {
+  override async isMetricsAndCrashReportingEnabled(): Promise<boolean> {
     const {isEnabled} = await this.remote.isMetricsAndCrashReportingEnabled();
     return isEnabled;
   }
 
-  /**
-   * Sends the broadcast to ARC to notify the new photo/video is captured.
-   */
-  sendNewCaptureBroadcast({isVideo, name}: {isVideo: boolean, name: string}):
-      void {
+  override sendNewCaptureBroadcast({isVideo, name}:
+                                       {isVideo: boolean, name: string}): void {
     this.remote.sendNewCaptureBroadcast(isVideo, name);
   }
 
-  /**
-   * Notifies Tote client when a photo/pdf/video/gif is captured.
-   */
-  notifyTote(format: ToteMetricFormat, name: string): void {
+  override notifyTote(format: ToteMetricFormat, name: string): void {
     this.remote.notifyTote(format, name);
   }
 
-  /**
-   * Monitors for the file deletion of the file given by its |name| and triggers
-   * |callback| when the file is deleted. Note that a previous monitor request
-   * will be canceled once another monitor request is sent.
-   *
-   * @return Resolved when the file is deleted or the current monitor is
-   *     canceled by future monitor call.
-   * @throws When error occurs during monitor.
-   */
-  async monitorFileDeletion(name: string, callback: () => void): Promise<void> {
+  override async monitorFileDeletion(name: string, callback: () => void):
+      Promise<void> {
     const {result} = await this.remote.monitorFileDeletion(name);
     switch (result) {
       case FileMonitorResult.DELETED:
@@ -276,7 +495,7 @@ export class ChromeHelper {
     }
   }
 
-  async getDocumentScannerReadyState():
+  override async getDocumentScannerReadyState():
       Promise<{supported: boolean, ready: boolean}> {
     const {readyState} = await this.remote.getDocumentScannerReadyState();
     return {
@@ -285,21 +504,12 @@ export class ChromeHelper {
     };
   }
 
-  /**
-   * Checks the document mode readiness. Returns false if it fails to load.
-   */
-  async checkDocumentModeReadiness(): Promise<boolean> {
+  override async checkDocumentModeReadiness(): Promise<boolean> {
     const {isLoaded} = await this.remote.checkDocumentModeReadiness();
     return isLoaded;
   }
 
-  /**
-   * Scans the |blob| data and returns the detected document corners.
-   *
-   * @return Promise resolve to positions of document corner. Null for failing
-   *     to detected corner positions.
-   */
-  async scanDocumentCorners(blob: Blob): Promise<Point[]|null> {
+  override async scanDocumentCorners(blob: Blob): Promise<Point[]|null> {
     const buffer = new Uint8Array(await blob.arrayBuffer());
 
     const {corners} =
@@ -310,12 +520,7 @@ export class ChromeHelper {
     return corners.map(({x, y}) => new Point(x, y));
   }
 
-  /**
-   * Converts the blob to document given by its |blob| data, |rotation| and
-   * target |corners| to crop. The output will be converted according to given
-   * |mimeType|.
-   */
-  async convertToDocument(
+  override async convertToDocument(
       blob: Blob, corners: Point[], rotation: number,
       mimeType: MimeType): Promise<Blob> {
     assert(corners.length === 4, 'Unexpected amount of corners');
@@ -335,12 +540,7 @@ export class ChromeHelper {
     return new Blob([new Uint8Array(docData)], {type: mimeType});
   }
 
-  /**
-   * Converts given |jpegBlobs| to PDF format.
-   *
-   * @return Blob in PDF format.
-   */
-  async convertToPdf(jpegBlobs: Blob[]): Promise<Blob> {
+  override async convertToPdf(jpegBlobs: Blob[]): Promise<Blob> {
     const numArrays = await Promise.all(jpegBlobs.map(async (blob) => {
       const buffer = new Uint8Array(await blob.arrayBuffer());
       return castToNumberArray(buffer);
@@ -349,14 +549,12 @@ export class ChromeHelper {
     return new Blob([new Uint8Array(pdfData)], {type: MimeType.PDF});
   }
 
-  /**
-   * Tries to trigger HaTS survey for CCA.
-   */
-  maybeTriggerSurvey(): void {
+  override maybeTriggerSurvey(): void {
     this.remote.maybeTriggerSurvey();
   }
 
-  async startMonitorStorage(onChange: (status: StorageMonitorStatus) => void):
+  override async startMonitorStorage(
+      onChange: (status: StorageMonitorStatus) => void):
       Promise<StorageMonitorStatus> {
     const storageCallbackRouter =
         wrapEndpoint(new StorageMonitorCallbackRouter());
@@ -379,24 +577,11 @@ export class ChromeHelper {
     return initialStatus;
   }
 
-  stopMonitorStorage(): void {
+  override stopMonitorStorage(): void {
     this.remote.stopStorageMonitor();
   }
 
-  openStorageManagement(): void {
+  override openStorageManagement(): void {
     this.remote.openStorageManagement();
-  }
-
-  /**
-   * Creates a new instance of ChromeHelper if it is not set. Returns the
-   *     existing instance.
-   *
-   * @return The singleton instance.
-   */
-  static getInstance(): ChromeHelper {
-    if (instance === null) {
-      instance = new ChromeHelper();
-    }
-    return instance;
   }
 }

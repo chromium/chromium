@@ -59,7 +59,7 @@ def build_preload_images_js(outdir: str):
 
 def _get_tsc_paths(board: str) -> Dict[str, List[str]]:
     root_dir = util.get_chromium_root()
-    target_gen_dir = os.path.join(root_dir, f"out_{board}/Release/gen")
+    target_gen_dir = util.get_gen_dir(board)
 
     resources_dir = os.path.join(target_gen_dir, "ui/webui/resources/tsc/*")
 
@@ -76,7 +76,7 @@ def _get_tsc_paths(board: str) -> Dict[str, List[str]]:
 def _make_mojom_symlink(board: str):
     cca_root = os.getcwd()
     root_dir = util.get_chromium_root()
-    target_gen_dir = os.path.join(root_dir, f"out_{board}/Release/gen")
+    target_gen_dir = util.get_gen_dir(board)
     src_relative_dir = os.path.relpath(cca_root, root_dir)
     generated_mojom_dir = os.path.join(target_gen_dir, src_relative_dir,
                                        "mojom")
@@ -99,8 +99,7 @@ def _make_mojom_symlink(board: str):
 
 
 def _get_tsc_references(board: str) -> List[Dict[str, str]]:
-    root_dir = util.get_chromium_root()
-    target_gen_dir = os.path.join(root_dir, f"out_{board}/Release/gen")
+    target_gen_dir = util.get_gen_dir(board)
     mwc_tsconfig_path = os.path.join(
         target_gen_dir,
         "third_party/material_web_components/tsconfig_library.json",
@@ -117,7 +116,7 @@ def generate_tsconfig(board: str):
     root_dir = util.get_chromium_root()
     common_definitions = os.path.join(root_dir, "tools/typescript/definitions")
 
-    target_gen_dir = os.path.join(root_dir, f"out_{board}/Release/gen")
+    target_gen_dir = util.get_gen_dir(board)
     assert os.path.exists(target_gen_dir), (
         f"Failed to find the build output dir {target_gen_dir}."
         " Please check the board name and build Chrome once.")
