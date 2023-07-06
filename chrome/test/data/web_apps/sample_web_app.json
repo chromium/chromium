@@ -186,7 +186,7 @@
    },
    "last_badging_time": "1970-02-06 10:58:36.765 UTC",
    "last_launch_time": "1970-01-28 05:07:28.623 UTC",
-   "latest_install_source": 17,
+   "latest_install_source": "menu create shortcut",
    "launch_handler": {
       "client_mode": "kNavigateExisting"
    },
@@ -472,7 +472,7 @@
       "origin": "https://app-17838994132.com",
       "paths": [  ]
    } ],
-   "user_display_mode": "tabbed",
+   "user_display_mode": "kTabbed",
    "user_launch_ordinal": "INVALID[]",
    "user_page_ordinal": "INVALID[]",
    "window_controls_overlay_enabled": false

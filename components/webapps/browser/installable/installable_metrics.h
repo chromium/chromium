@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_METRICS_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_METRICS_H_
 
+#include <iosfwd>
+
 namespace base {
 class TimeDelta;
 }
@@ -133,6 +135,8 @@ enum class WebappInstallSource {
   // Add any new values above this one.
   COUNT,
 };
+
+std::ostream& operator<<(std::ostream& os, WebappInstallSource source);
 
 // Uninstall surface from which an uninstall was initiated. This value cannot be
 // used to infer an install source. These values are persisted to logs. Entries

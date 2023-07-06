@@ -4,16 +4,82 @@
 
 #include "components/webapps/browser/installable/installable_metrics.h"
 
+#include <atomic>
+#include <ostream>
+
+#include "base/check.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/service_worker_context.h"
-#include "content/public/browser/web_contents.h"
 
 namespace webapps {
+
+std::ostream& operator<<(std::ostream& os, WebappInstallSource source) {
+  switch (source) {
+    case WebappInstallSource::MENU_BROWSER_TAB:
+      return os << "menu browser tab";
+    case WebappInstallSource::MENU_CUSTOM_TAB:
+      return os << "menu custom tab";
+    case WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB:
+      return os << "automatic prompt browser tab";
+    case WebappInstallSource::AUTOMATIC_PROMPT_CUSTOM_TAB:
+      return os << "automatic prompt custom tab";
+    case WebappInstallSource::API_BROWSER_TAB:
+      return os << "api browser tab";
+    case WebappInstallSource::API_CUSTOM_TAB:
+      return os << "api custom tab";
+    case WebappInstallSource::DEVTOOLS:
+      return os << "devtools";
+    case WebappInstallSource::MANAGEMENT_API:
+      return os << "management api";
+    case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
+      return os << "ambient badge browser tab";
+    case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
+      return os << "ambient badge custom tab";
+    case WebappInstallSource::ARC:
+      return os << "arc";
+    case WebappInstallSource::INTERNAL_DEFAULT:
+      return os << "internal default";
+    case WebappInstallSource::EXTERNAL_DEFAULT:
+      return os << "external default";
+    case WebappInstallSource::EXTERNAL_POLICY:
+      return os << "external policy";
+    case WebappInstallSource::SYSTEM_DEFAULT:
+      return os << "system default";
+    case WebappInstallSource::OMNIBOX_INSTALL_ICON:
+      return os << "omnibox install icon";
+    case WebappInstallSource::SYNC:
+      return os << "sync";
+    case WebappInstallSource::MENU_CREATE_SHORTCUT:
+      return os << "menu create shortcut";
+    case WebappInstallSource::SUB_APP:
+      return os << "sub app";
+    case WebappInstallSource::CHROME_SERVICE:
+      return os << "chrome service";
+    case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
+      return os << "rich install ui weblayer";
+    case WebappInstallSource::KIOSK:
+      return os << "kiosk";
+    case WebappInstallSource::ISOLATED_APP_DEV_INSTALL:
+      return os << "isolated app dev install";
+    case WebappInstallSource::EXTERNAL_LOCK_SCREEN:
+      return os << "external lock screen";
+    case WebappInstallSource::PRELOADED_OEM:
+      return os << "preloaded oem";
+    case WebappInstallSource::MICROSOFT_365_SETUP:
+      return os << "microsoft 365 setup";
+    case WebappInstallSource::PROFILE_MENU:
+      return os << "profile menu";
+    case WebappInstallSource::ML_PROMOTION:
+      return os << "ml promotion";
+    case WebappInstallSource::COUNT:
+      return os << "count";
+  }
+}
 
 // static
 void InstallableMetrics::TrackInstallEvent(WebappInstallSource source) {

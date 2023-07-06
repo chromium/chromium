@@ -4,40 +4,57 @@
 
 #include "chrome/browser/web_applications/web_app.h"
 
+#include <array>
+#include <bitset>
 #include <ostream>
+#include <string>
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
-#include "base/functional/overloaded.h"
-#include "base/json/values_util.h"
+#include "base/containers/flat_tree.h"
 #include "base/notreached.h"
+#include "base/numerics/clamped_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/strings/to_string.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/sync/base/time.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
+#include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
+#include "third_party/liburlpattern/options.h"
+#include "third_party/liburlpattern/pattern.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
 
 namespace web_app {
 
 namespace {
+
+// Converts an optional value to a string, or to "nullopt" if absent.
+template <typename T>
+std::string OptionalToString(const absl::optional<T>& optional) {
+  if (optional.has_value()) {
+    return base::ToString(optional.value());
+  }
+  return "nullopt";
+}
 
 std::string ColorToString(absl::optional<SkColor> color) {
   return color.has_value() ? color_utils::SkColorToRgbaString(color.value())
@@ -928,40 +945,23 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("app_service_icon_url",
            base::StrCat({"chrome://app-icon/", app_id_, "/32"}));
 
-  if (app_size_in_bytes_.has_value()) {
-    root.Set("app_size_in_bytes",
-             base::NumberToString(app_size_in_bytes_.value()));
-  } else {
-    root.Set("app_size_in_bytes", "");
-  }
+  root.Set("app_size_in_bytes", OptionalToString(app_size_in_bytes_));
 
   root.Set("allowed_launch_protocols", ConvertList(allowed_launch_protocols_));
 
-  if (data_size_in_bytes_.has_value()) {
-    root.Set("data_size_in_bytes",
-             base::NumberToString(data_size_in_bytes_.value()));
-  } else {
-    root.Set("data_size_in_bytes", "");
-  }
-
-  root.Set("disallowed_launch_protocols",
-           ConvertList(disallowed_launch_protocols_));
-
   root.Set("background_color", ColorToString(background_color_));
 
-  root.Set("dark_mode_theme_color", ColorToString(dark_mode_theme_color_));
+  root.Set("capture_links", base::ToString(capture_links_));
+
+  root.Set("data_size_in_bytes", OptionalToString(data_size_in_bytes_));
 
   root.Set("dark_mode_background_color",
            ColorToString(dark_mode_background_color_));
 
-  root.Set("capture_links", base::ToString(capture_links_));
+  root.Set("dark_mode_theme_color", ColorToString(dark_mode_theme_color_));
 
-  if (data_size_in_bytes_.has_value()) {
-    root.Set("data_size_in_bytes",
-             base::NumberToString(data_size_in_bytes_.value()));
-  } else {
-    root.Set("data_size_in_bytes", "");
-  }
+  root.Set("disallowed_launch_protocols",
+           ConvertList(disallowed_launch_protocols_));
 
   root.Set("description", description_);
 
@@ -989,12 +989,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("manifest_icons", ConvertDebugValueList(manifest_icons_));
 
-  if (latest_install_source_) {
-    root.Set("latest_install_source",
-             static_cast<int>(*latest_install_source_));
-  } else {
-    root.Set("latest_install_source", "not set");
-  }
+  root.Set("latest_install_source", OptionalToString(latest_install_source_));
 
   base::Value::Dict external_map;
   for (auto it : management_to_external_config_map_) {
@@ -1105,10 +1100,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("scope_extensions_validated",
            ConvertDebugValueList(validated_scope_extensions_));
 
-  root.Set("user_display_mode",
-           user_display_mode_.has_value()
-               ? ConvertUserDisplayModeToString(*user_display_mode_)
-               : "");
+  root.Set("user_display_mode", OptionalToString(user_display_mode_));
 
   root.Set("user_launch_ordinal", user_launch_ordinal_.ToDebugString());
 

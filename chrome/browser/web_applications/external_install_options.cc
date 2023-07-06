@@ -155,10 +155,9 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
                            : base::Value());
 #endif
   root.Set("uninstall_and_replace", ConvertStringList(uninstall_and_replace));
-  root.Set("user_display_mode",
-           user_display_mode.has_value()
-               ? ConvertUserDisplayModeToString(*user_display_mode)
-               : "");
+  root.Set("user_display_mode", user_display_mode.has_value()
+                                    ? base::ToString(*user_display_mode)
+                                    : "");
   root.Set("user_type_allowlist", ConvertStringList(user_type_allowlist));
   root.Set("wait_for_windows_closed", wait_for_windows_closed);
 
