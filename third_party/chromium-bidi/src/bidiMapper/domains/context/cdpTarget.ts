@@ -18,7 +18,6 @@
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
-import type {BrowsingContext} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/deferred.js';
 import type {IEventManager} from '../events/EventManager.js';
 import {LogManager} from '../log/logManager.js';
@@ -30,7 +29,6 @@ import type {PreloadScriptStorage} from './PreloadScriptStorage.js';
 
 export class CdpTarget {
   readonly #targetId: string;
-  readonly #parentTargetId: string | null;
   readonly #cdpClient: ICdpClient;
   readonly #cdpSessionId: string;
   readonly #eventManager: IEventManager;
@@ -41,7 +39,6 @@ export class CdpTarget {
 
   static create(
     targetId: string,
-    parentTargetId: string | null,
     cdpClient: ICdpClient,
     cdpSessionId: string,
     realmStorage: RealmStorage,
@@ -50,7 +47,6 @@ export class CdpTarget {
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
-      parentTargetId,
       cdpClient,
       cdpSessionId,
       eventManager,
@@ -70,14 +66,12 @@ export class CdpTarget {
 
   private constructor(
     targetId: string,
-    parentTargetId: string | null,
     cdpClient: ICdpClient,
     cdpSessionId: string,
     eventManager: IEventManager,
     preloadScriptStorage: PreloadScriptStorage
   ) {
     this.#targetId = targetId;
-    this.#parentTargetId = parentTargetId;
     this.#cdpClient = cdpClient;
     this.#cdpSessionId = cdpSessionId;
     this.#eventManager = eventManager;
@@ -175,19 +169,15 @@ export class CdpTarget {
    * All the ProxyChannels from all the preload scripts of the given
    * BrowsingContext.
    */
-  getChannels(contextId: BrowsingContext.BrowsingContext): ChannelProxy[] {
+  getChannels(): ChannelProxy[] {
     return this.#preloadScriptStorage
-      .findPreloadScripts({
-        contextIds: [null, contextId],
-      })
+      .findPreloadScripts()
       .flatMap((script) => script.channels);
   }
 
-  /** Loads all top-level and parent preload scripts. */
+  /** Loads all top-level preload scripts. */
   async #initAndEvaluatePreloadScripts() {
-    for (const script of this.#preloadScriptStorage.findPreloadScripts({
-      contextIds: [null, this.#parentTargetId],
-    })) {
+    for (const script of this.#preloadScriptStorage.findPreloadScripts()) {
       await script.initInTarget(this);
       // Upon attaching to a new target, schedule running preload scripts right
       // after `Runtime.runIfWaitingForDebugger`, but don't wait for the result.

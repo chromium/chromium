@@ -14,20 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {BrowsingContext} from '../../../protocol/protocol.js';
-
 import type {BidiPreloadScript} from './bidiPreloadScript.js';
 import type {CdpTarget} from './cdpTarget.js';
 
-/**
- * BidiPreloadScripts can be filtered by either context ID, BiDi ID or
- * target ID.
- */
+/** BidiPreloadScripts can be filtered by BiDi ID or target ID. */
 export type BidiPreloadScriptFilter = Partial<
-  Pick<BidiPreloadScript, 'contextId'> &
-    Pick<BidiPreloadScript, 'id'> &
-    Pick<CdpTarget, 'targetId'>
-> & {contextIds?: (BrowsingContext.BrowsingContext | null)[]};
+  Pick<BidiPreloadScript, 'id'> & Pick<CdpTarget, 'targetId'>
+>;
 
 /**
  * Container class for preload scripts.
@@ -44,18 +37,6 @@ export class PreloadScriptStorage {
 
     return [...this.#scripts].filter((script) => {
       if (filter.id !== undefined && filter.id !== script.id) {
-        return false;
-      }
-      if (
-        filter.contextId !== undefined &&
-        filter.contextId !== script.contextId
-      ) {
-        return false;
-      }
-      if (
-        filter.contextIds !== undefined &&
-        !filter.contextIds.includes(script.contextId)
-      ) {
         return false;
       }
       if (

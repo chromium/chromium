@@ -161,7 +161,6 @@ export class BrowsingContextProcessor {
 
     const cdpTarget = CdpTarget.create(
       targetInfo.targetId,
-      maybeContext?.parentId ?? null,
       targetCdpClient,
       sessionId,
       this.#realmStorage,

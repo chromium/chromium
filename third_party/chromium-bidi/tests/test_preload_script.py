@@ -27,7 +27,6 @@ async def test_preloadScript_add_setGlobalVariable(websocket, context_id,
             "method": "script.addPreloadScript",
             "params": {
                 "functionDeclaration": "() => { window.foo='bar'; }",
-                "context": context_id,
             }
         })
     assert result == {'script': ANY_STR}
@@ -66,7 +65,6 @@ async def test_preloadScript_add_logging(websocket, context_id, html):
             "method": "script.addPreloadScript",
             "params": {
                 "functionDeclaration": "() => console.log('my preload script')",
-                "context": context_id,
             }
         })
     assert result == {'script': ANY_STR}
@@ -99,14 +97,12 @@ async def test_preloadScript_add_logging(websocket, context_id, html):
 
 
 @pytest.mark.asyncio
-async def test_preloadScript_add_multipleScriptsAddedToSameContext(
-        websocket, context_id, html):
+async def test_preloadScript_add_multipleScripts(websocket, context_id, html):
     await execute_command(
         websocket, {
             "method": "script.addPreloadScript",
             "params": {
                 "functionDeclaration": "() => { window.foo1=1; }",
-                "context": context_id,
             }
         })
     await execute_command(
@@ -114,7 +110,6 @@ async def test_preloadScript_add_multipleScriptsAddedToSameContext(
             "method": "script.addPreloadScript",
             "params": {
                 "functionDeclaration": "() => { window.foo2=2; }",
-                "context": context_id,
             }
         })
 
@@ -144,7 +139,7 @@ async def test_preloadScript_add_multipleScriptsAddedToSameContext(
 
 
 @pytest.mark.asyncio
-async def test_preloadScript_add_sameScript_multipleTimes_addedToSameContext(
+async def test_preloadScript_add_sameScript_multipleTimes(
         websocket, context_id, html):
     EXPRESSION = "() => { window.foo1 = (window.foo1 ?? 0) + 1; }"
 
@@ -153,7 +148,6 @@ async def test_preloadScript_add_sameScript_multipleTimes_addedToSameContext(
             "method": "script.addPreloadScript",
             "params": {
                 "functionDeclaration": EXPRESSION,
-                "context": context_id,
             }
         })
     assert result == {'script': ANY_STR}
@@ -164,7 +158,6 @@ async def test_preloadScript_add_sameScript_multipleTimes_addedToSameContext(
             "method": "script.addPreloadScript",
             "params": {
                 "functionDeclaration": EXPRESSION,
-                "context": context_id,
             }
         })
     assert result == {'script': ANY_STR}
@@ -209,7 +202,6 @@ async def test_preloadScript_add_loadedInNewIframes(websocket, context_id,
             "method": "script.addPreloadScript",
             "params": {
                 "functionDeclaration": "() => console.log('my preload script')",
-                "context": context_id,
             }
         })
 
@@ -282,7 +274,6 @@ async def test_preloadScript_add_loadedInNewIframes_withChildScript(
             "method": "script.addPreloadScript",
             "params": {
                 "functionDeclaration": "() => console.log('my preload script')",
-                "context": context_id,
             }
         })
 
@@ -354,17 +345,14 @@ async def test_preloadScript_add_loadedInNewIframes_withChildScript(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("globally", [True, False])
 async def test_preloadScript_add_loadedInMultipleContexts(
-        websocket, context_id, globally, html):
+        websocket, context_id, html):
     await execute_command(
         websocket, {
             "method": "script.addPreloadScript",
             "params": {
                 "functionDeclaration": "() => { window.foo='bar'; }",
-            } | ({} if globally else {
-                "context": context_id
-            })
+            }
         })
 
     await execute_command(
@@ -393,83 +381,7 @@ async def test_preloadScript_add_loadedInMultipleContexts(
 
 
 @pytest.mark.asyncio
-async def test_preloadScript_addGlobally_loadedInNewContexts(
-        websocket, context_id, create_context, html):
-    await execute_command(
-        websocket, {
-            "method": "script.addPreloadScript",
-            "params": {
-                "functionDeclaration": "() => { window.foo='bar'; }",
-            }
-        })
-
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": html(),
-                "wait": "complete",
-                "context": context_id
-            }
-        })
-
-    result = await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": "window.foo",
-                "target": {
-                    "context": context_id
-                },
-                "awaitPromise": True,
-                "resultOwnership": "root"
-            }
-        })
-    assert result["result"] == {"type": "string", "value": 'bar'}
-
-    new_context_id = await create_context()
-
-    result = await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": "window.foo",
-                "target": {
-                    "context": new_context_id
-                },
-                "awaitPromise": True,
-                "resultOwnership": "root"
-            }
-        })
-    assert result["result"] == {"type": "string", "value": 'bar'}
-
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": html(),
-                "wait": "complete",
-                "context": new_context_id
-            }
-        })
-
-    result = await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": "window.foo",
-                "target": {
-                    "context": new_context_id
-                },
-                "awaitPromise": True,
-                "resultOwnership": "root"
-            }
-        })
-    assert result["result"] == {"type": "string", "value": 'bar'}
-
-
-@pytest.mark.asyncio
-async def test_preloadScript_addGlobally_loadedInMultipleContexts_withIframes(
+async def test_preloadScript_add_loadedInMultipleContexts_withIframes(
         websocket, context_id, url_all_origins, html, read_sorted_messages):
     await execute_command(
         websocket, {
@@ -553,6 +465,82 @@ async def test_preloadScript_addGlobally_loadedInMultipleContexts_withIframes(
 
 
 @pytest.mark.asyncio
+async def test_preloadScript_add_loadedInNewContexts(websocket, context_id,
+                                                     create_context, html):
+    await execute_command(
+        websocket, {
+            "method": "script.addPreloadScript",
+            "params": {
+                "functionDeclaration": "() => { window.foo='bar'; }",
+            }
+        })
+
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": html(),
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.foo",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True,
+                "resultOwnership": "root"
+            }
+        })
+    assert result["result"] == {"type": "string", "value": 'bar'}
+
+    new_context_id = await create_context()
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.foo",
+                "target": {
+                    "context": new_context_id
+                },
+                "awaitPromise": True,
+                "resultOwnership": "root"
+            }
+        })
+    assert result["result"] == {"type": "string", "value": 'bar'}
+
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": html(),
+                "wait": "complete",
+                "context": new_context_id
+            }
+        })
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.foo",
+                "target": {
+                    "context": new_context_id
+                },
+                "awaitPromise": True,
+                "resultOwnership": "root"
+            }
+        })
+    assert result["result"] == {"type": "string", "value": 'bar'}
+
+
+@pytest.mark.asyncio
 async def test_preloadScript_remove_nonExistingScript_fails(websocket):
     with pytest.raises(Exception) as exception_info:
         await execute_command(websocket, {
@@ -575,7 +563,6 @@ async def test_preloadScript_remove_addAndRemoveIsNoop_secondRemoval_fails(
             "method": "script.addPreloadScript",
             "params": {
                 "functionDeclaration": "() => { window.foo='bar'; }",
-                "context": context_id,
             }
         })
     assert result == {'script': ANY_STR}
@@ -686,7 +673,7 @@ async def test_preloadScript_channel_navigate(websocket, context_id, html,
 
 
 @pytest.mark.asyncio
-async def test_preloadScript_channel_newContext(websocket, context_id, html,
+async def test_preloadScript_channel_newContext(websocket,
                                                 read_sorted_messages):
     await subscribe(websocket, ["script.message"])
 

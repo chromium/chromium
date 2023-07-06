@@ -477,7 +477,7 @@ export class BrowsingContextImpl {
           // TODO: extend for not default realms by the sandbox name.
           void Promise.all(
             this.#cdpTarget
-              .getChannels(this.id)
+              .getChannels()
               .map((channel) =>
                 channel.startListenerFromWindow(realm, this.#eventManager)
               )

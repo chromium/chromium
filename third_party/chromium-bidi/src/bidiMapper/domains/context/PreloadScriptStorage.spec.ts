@@ -46,80 +46,66 @@ describe('PreloadScriptStorage', () => {
     ).to.be.empty;
     expect(
       preloadScriptStorage.findPreloadScripts({
-        contextId: null,
-      })
-    ).to.be.empty;
-    expect(
-      preloadScriptStorage.findPreloadScripts({
-        contextId: '',
+        targetId: '',
       })
     ).to.be.empty;
   });
 
+  it(`add preload scripts`, () => {
+    const preloadScript1 = createPreloadScript(MOCKED_UUID_1);
+    const preloadScript2 = createPreloadScript(MOCKED_UUID_2);
+
+    preloadScriptStorage.addPreloadScript(preloadScript1);
+    preloadScriptStorage.addPreloadScript(preloadScript2);
+
+    expect(preloadScriptStorage.findPreloadScripts()).to.deep.equal([
+      preloadScript1,
+      preloadScript2,
+    ]);
+  });
+
+  it(`remove non-existing BiDi id`, () => {
+    const preloadScript1 = createPreloadScript(MOCKED_UUID_1);
+    const preloadScript2 = createPreloadScript(MOCKED_UUID_2);
+    preloadScriptStorage.addPreloadScript(preloadScript1);
+    preloadScriptStorage.addPreloadScript(preloadScript2);
+
+    const preloadScripts = preloadScriptStorage.findPreloadScripts();
+
+    preloadScriptStorage.removeBiDiPreloadScripts({
+      id: `${MOCKED_UUID_1}_NON_EXISTING`,
+    });
+
+    expect(preloadScriptStorage.findPreloadScripts()).to.be.deep.equal(
+      preloadScripts
+    );
+  });
+
   [
-    {contextDescription: 'global context', context: null},
-    {contextDescription: 'non-global context', context: 'CONTEXT_1'},
-  ].forEach(({contextDescription, context}) => {
-    it(`add preload scripts in ${contextDescription}`, () => {
-      const preloadScript1 = createPreloadScript(MOCKED_UUID_1, context);
-      const preloadScript2 = createPreloadScript(MOCKED_UUID_2, context);
-
+    {
+      filterDescription: 'bidi id',
+      filter: {id: MOCKED_UUID_1},
+    },
+    {
+      filterDescription: 'target id',
+      filter: {targetId: CDP_TARGET_ID},
+    },
+  ].forEach(({filterDescription, filter}) => {
+    it(`find preload scripts by ${filterDescription}`, () => {
+      const preloadScript1 = createPreloadScript(MOCKED_UUID_1);
       preloadScriptStorage.addPreloadScript(preloadScript1);
-      preloadScriptStorage.addPreloadScript(preloadScript2);
 
-      expect(
-        preloadScriptStorage.findPreloadScripts({contextId: context})
-      ).to.deep.equal([preloadScript1, preloadScript2]);
+      expect(preloadScriptStorage.findPreloadScripts(filter)).to.deep.equal([
+        preloadScript1,
+      ]);
     });
 
-    it(`remove non-existing BiDi id in ${contextDescription}`, () => {
-      const preloadScript1 = createPreloadScript(MOCKED_UUID_1, context);
-      const preloadScript2 = createPreloadScript(MOCKED_UUID_2, context);
+    it(`remove preload scripts by ${filterDescription}`, () => {
+      const preloadScript1 = createPreloadScript(MOCKED_UUID_1);
       preloadScriptStorage.addPreloadScript(preloadScript1);
-      preloadScriptStorage.addPreloadScript(preloadScript2);
+      preloadScriptStorage.removeBiDiPreloadScripts(filter);
 
-      const preloadScripts = preloadScriptStorage.findPreloadScripts({
-        contextId: context,
-      });
-
-      preloadScriptStorage.removeBiDiPreloadScripts({
-        contextId: context,
-        id: `${MOCKED_UUID_1}_NON_EXISTING`,
-      });
-
-      expect(
-        preloadScriptStorage.findPreloadScripts({contextId: context})
-      ).to.be.deep.equal(preloadScripts);
-    });
-
-    [
-      {filterDescription: 'context id', filter: {contextId: null}},
-      {filterDescription: 'context ids', filter: {contextIds: [null]}},
-      {
-        filterDescription: 'bidi id',
-        filter: {id: MOCKED_UUID_1},
-      },
-      {
-        filterDescription: 'target id',
-        filter: {targetId: CDP_TARGET_ID},
-      },
-    ].forEach(({filterDescription, filter}) => {
-      it(`find preload scripts in ${contextDescription} by ${filterDescription}`, () => {
-        const preloadScript1 = createPreloadScript(MOCKED_UUID_1, null);
-        preloadScriptStorage.addPreloadScript(preloadScript1);
-
-        expect(preloadScriptStorage.findPreloadScripts(filter)).to.deep.equal([
-          preloadScript1,
-        ]);
-      });
-
-      it(`remove preload scripts by in ${contextDescription} by ${filterDescription}`, () => {
-        const preloadScript1 = createPreloadScript(MOCKED_UUID_1, context);
-        preloadScriptStorage.addPreloadScript(preloadScript1);
-        preloadScriptStorage.removeBiDiPreloadScripts(filter);
-
-        expect(preloadScriptStorage.findPreloadScripts(filter)).to.be.empty;
-      });
+      expect(preloadScriptStorage.findPreloadScripts(filter)).to.be.empty;
     });
   });
 
@@ -127,13 +113,9 @@ describe('PreloadScriptStorage', () => {
     sinon.restore();
   });
 
-  function createPreloadScript(
-    id: string,
-    context: null | string
-  ): BidiPreloadScript {
+  function createPreloadScript(id: string): BidiPreloadScript {
     const preloadScript = sinon.createStubInstance(BidiPreloadScript);
     sinon.stub(preloadScript, 'id').get(() => id);
-    sinon.stub(preloadScript, 'contextId').get(() => context);
     sinon.stub(preloadScript, 'targetIds').get(() => new Set([CDP_TARGET_ID]));
     return preloadScript;
   }
