@@ -290,6 +290,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
   // Overrides internal clock for testing purposes.
   void SetClockForTesting(const base::TickClock* clock) { clock_ = clock; }
+  int tracing_id() const { return tracing_id_; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ResourcePoolTest, ReuseResource);

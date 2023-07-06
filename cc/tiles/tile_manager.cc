@@ -22,9 +22,11 @@
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/features.h"
@@ -432,9 +434,16 @@ TileManager::TileManager(
               base::Unretained(this))),
       has_scheduled_tile_tasks_(false),
       prepare_tiles_count_(0u),
-      next_tile_id_(0u) {}
+      next_tile_id_(0u) {
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+        this, "TileManager", base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
+}
 
 TileManager::~TileManager() {
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
   FinishTasksAndCleanUp();
 }
 
@@ -1934,6 +1943,55 @@ void TileManager::SetOverridesForTesting(
     const base::TickClock* clock) {
   task_runner_for_testing_ = task_runner_for_testing;
   tick_clock_for_testing_ = clock;
+}
+
+bool TileManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                               base::trace_event::ProcessMemoryDump* pmd) {
+  if (args.level_of_detail !=
+          base::trace_event::MemoryDumpLevelOfDetail::DETAILED ||
+      !resource_pool_) {
+    return true;
+  }
+
+  std::string manager_path =
+      base::StringPrintf("cc/tile_manager_%d", resource_pool_->tracing_id());
+  auto* dump = pmd->CreateAllocatorDump(manager_path);
+  dump->AddString(
+      "memory_policy", "",
+      TileMemoryLimitPolicyToString(global_state_.memory_limit_policy));
+  dump->AddScalar("soft_memory_limit", "bytes",
+                  global_state_.soft_memory_limit_in_bytes);
+  dump->AddScalar("hard_memory_limit", "bytes",
+                  global_state_.hard_memory_limit_in_bytes);
+  dump->AddScalar("num_resources_limit", "count",
+                  global_state_.num_resources_limit);
+
+  std::unique_ptr<EvictionTilePriorityQueue> eviction_priority_queue(
+      client_->BuildEvictionQueue(global_state_.tree_priority));
+  std::set<Tile*> tiles_to_evict;
+  while (!eviction_priority_queue->IsEmpty()) {
+    const PrioritizedTile& tile = eviction_priority_queue->Top();
+
+    std::string name =
+        base::StringPrintf("%s/tile_%u", manager_path.c_str(),
+                           static_cast<unsigned int>(tile.tile()->id()));
+    auto* tile_dump = pmd->CreateAllocatorDump(name);
+    tile_dump->AddString("priority", "",
+                         TilePriorityBinToString(tile.priority().priority_bin));
+    tile_dump->AddScalar("distance_to_visible", "px",
+                         tile.priority().distance_to_visible);
+
+    tile_dump->AddScalar("is_prepaint", "bool", tile.tile()->is_prepaint());
+    tile_dump->AddScalar("gpu_memory", "bytes",
+                         tile.tile()->GPUMemoryUsageInBytes());
+    auto size = tile.tile()->desired_texture_size();
+    tile_dump->AddScalar("width", "px", size.width());
+    tile_dump->AddScalar("height", "px", size.height());
+
+    eviction_priority_queue->Pop();
+  }
+
+  return true;
 }
 
 bool TileManager::ShouldRasterOccludedTiles() const {

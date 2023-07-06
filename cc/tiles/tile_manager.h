@@ -20,6 +20,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "cc/base/unique_notifier.h"
 #include "cc/paint/target_color_params.h"
 #include "cc/raster/raster_buffer_provider.h"
@@ -148,7 +150,8 @@ RasterTaskCompletionStatsAsValue(const RasterTaskCompletionStats& stats);
 // work for these tiles on the TaskGraph blocks starting decode work for
 // checker-imaged pre-decode tiles.
 
-class CC_EXPORT TileManager : CheckerImageTrackerClient {
+class CC_EXPORT TileManager : CheckerImageTrackerClient,
+                              public base::trace_event::MemoryDumpProvider {
  public:
   TileManager(TileManagerClient* client,
               base::SequencedTaskRunner* origin_task_runner,
@@ -329,6 +332,9 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   void SetOverridesForTesting(
       scoped_refptr<base::TaskRunner> task_runner_for_testing,
       const base::TickClock* clock);
+
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
 
  protected:
   friend class Tile;
