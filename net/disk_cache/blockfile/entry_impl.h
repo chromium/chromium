@@ -155,9 +155,6 @@ class NET_EXPORT_PRIVATE EntryImpl
   // the upgrade tool.
   void SetTimes(base::Time last_used, base::Time last_modified);
 
-  // Generates a histogram for the time spent working on this operation.
-  void ReportIOTime(Operation op, const base::TimeTicks& start);
-
   // Logs a begin event and enables logging for the EntryImpl.  Will also cause
   // an end event to be logged on destruction.  The EntryImpl must have its key
   // initialized before this is called.  |created| is true if the Entry was

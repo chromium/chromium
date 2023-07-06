@@ -7,12 +7,6 @@
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/format_macros.h"
-#include "base/metrics/bucket_ranges.h"
-#include "base/metrics/histogram.h"
-#include "base/metrics/histogram_samples.h"
-#include "base/metrics/sample_vector.h"
-#include "base/metrics/statistics_recorder.h"
-#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
@@ -184,14 +178,6 @@ void Stats::GetItems(StatsItems* items) {
   }
 }
 
-int Stats::GetHitRatio() const {
-  return GetRatio(OPEN_HIT, OPEN_MISS);
-}
-
-int Stats::GetResurrectRatio() const {
-  return GetRatio(RESURRECT_HIT, CREATE_HIT);
-}
-
 void Stats::ResetRatios() {
   SetCounter(OPEN_HIT, 0);
   SetCounter(OPEN_MISS, 0);
@@ -224,6 +210,7 @@ int Stats::SerializeStats(void* data, int num_bytes, Addr* address) {
 }
 
 int Stats::GetBucketRange(size_t i) const {
+  CHECK_LE(i, static_cast<size_t>(kDataSizesLength));
   if (i < 2)
     return static_cast<int>(1024 * i);
 
@@ -234,10 +221,6 @@ int Stats::GetBucketRange(size_t i) const {
     return static_cast<int>(4096 * (i - 11)) + 20 * 1024;
 
   int n = 64 * 1024;
-  if (i > static_cast<size_t>(kDataSizesLength)) {
-    NOTREACHED();
-    i = kDataSizesLength;
-  }
 
   i -= 17;
   n <<= i;

@@ -490,7 +490,6 @@ component("net") {
     "disk_cache/blockfile/file_block.h",
     "disk_cache/blockfile/file_lock.cc",
     "disk_cache/blockfile/file_lock.h",
-    "disk_cache/blockfile/histogram_macros.h",
     "disk_cache/blockfile/in_flight_backend_io.cc",
     "disk_cache/blockfile/in_flight_backend_io.h",
     "disk_cache/blockfile/in_flight_io.cc",

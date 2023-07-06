@@ -794,17 +794,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="BlueZ.PerProfile.ProbingResult"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="CacheDeletedEntries" separator="_">
-  <suffix name="11" label="Out of the experiment"/>
-  <suffix name="12" label="Control"/>
-  <suffix name="13" label="Extended deleted list (2x)"/>
-  <affected-histogram name="DiskCache.0.DeletedRatio"/>
-  <affected-histogram name="DiskCache.0.HitRatio"/>
-  <affected-histogram name="DiskCache.0.ResurrectRatio"/>
-  <affected-histogram name="DiskCache.2.HitRatio"/>
-  <affected-histogram name="DiskCache.3.HitRatio"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="CachedResourceType" separator=".">
   <suffix name="Audio"
       label="Showing cache patterns only for audio resources."/>
@@ -1530,78 +1519,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Network" label="DevTools launched to the Network panel"/>
   <suffix name="Sources" label="DevTools launched to the Sources panel"/>
   <affected-histogram name="DevTools.Launch"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DiskCacheExperiment1" separator="_">
-  <suffix name="1" label="Experiment group 1 (70% clients)"/>
-  <suffix name="2" label="Experiment group 2 (10% clients)"/>
-  <suffix name="3" label="Experiment group 3 (10% clients)"/>
-  <suffix name="4" label="Experiment group 4 (10% clients)"/>
-  <affected-histogram name="DiskCache.0.Entries"/>
-  <affected-histogram name="DiskCache.0.TrimAge"/>
-  <affected-histogram name="DiskCache.2.Entries"/>
-  <affected-histogram name="DiskCache.2.TrimAge"/>
-  <affected-histogram name="DiskCache.3.Entries"/>
-  <affected-histogram name="DiskCache.3.Size"/>
-  <affected-histogram name="DiskCache.3.TrimAge"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DiskCacheExperiment2" separator="_">
-  <suffix name="5" label="Experiment group 5"/>
-  <suffix name="6" label="Experiment group 6"/>
-  <suffix name="7" label="Experiment group 7"/>
-  <suffix name="8" label="Experiment group 8"/>
-  <suffix name="9" label="Experiment group 9"/>
-  <suffix name="10" label="Experiment group 10"/>
-  <affected-histogram name="DiskCache.0.EntrySize"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DiskCacheExperiment3" separator="_">
-  <suffix name="8" label="Experiment group 8"/>
-  <affected-histogram name="DiskCache.0.FirstHighUseRatio"/>
-  <affected-histogram name="DiskCache.0.FirstLowUseRatio"/>
-  <affected-histogram name="DiskCache.0.FirstNoUseRatio"/>
-  <affected-histogram name="DiskCache.0.FirstResurrectRatio"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DiskCacheExperiment4" separator="_">
-  <suffix name="7" label="Experiment group 7"/>
-  <suffix name="8" label="Experiment group 8"/>
-  <affected-histogram name="DiskCache.0.DeletedAge"/>
-  <affected-histogram name="DiskCache.0.DeletedRatio"/>
-  <affected-histogram name="DiskCache.0.HighUseAge"/>
-  <affected-histogram name="DiskCache.0.HighUseRatio"/>
-  <affected-histogram name="DiskCache.0.LowUseAge"/>
-  <affected-histogram name="DiskCache.0.LowUseRatio"/>
-  <affected-histogram name="DiskCache.0.NoUseAge"/>
-  <affected-histogram name="DiskCache.0.NoUseRatio"/>
-  <affected-histogram name="DiskCache.0.ResurrectRatio"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DiskCacheExperiment5" separator="_">
-  <suffix name="1" label="Experiment group 1"/>
-  <suffix name="2" label="Experiment group 2"/>
-  <suffix name="3" label="Experiment group 3"/>
-  <suffix name="4" label="Experiment group 4"/>
-  <suffix name="5" label="Experiment group 5"/>
-  <suffix name="6" label="Experiment group 6"/>
-  <suffix name="7" label="Experiment group 7"/>
-  <suffix name="8" label="Experiment group 8"/>
-  <suffix name="9" label="Experiment group 9"/>
-  <suffix name="10" label="Experiment group 10"/>
-  <affected-histogram name="DiskCache.0.HitRatio"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DiskCacheExperiment5" separator="_">
-  <suffix name="1" label="Experiment group 1"/>
-  <suffix name="2" label="Experiment group 2"/>
-  <suffix name="3" label="Experiment group 3"/>
-  <suffix name="4" label="Experiment group 4"/>
-  <affected-histogram name="DiskCache.0.LargeEntriesRatio"/>
-  <affected-histogram name="DiskCache.2.HitRatio"/>
-  <affected-histogram name="DiskCache.2.LargeEntriesRatio"/>
-  <affected-histogram name="DiskCache.3.HitRatio"/>
-  <affected-histogram name="DiskCache.3.LargeEntriesRatio"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="DnsDropdownSelectionEvent" separator=".">

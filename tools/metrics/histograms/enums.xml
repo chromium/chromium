@@ -97217,12 +97217,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="12" label="Extension Renderer"/>
 </enum>
 
-<enum name="ShortReportReason">
-  <int value="1" label="No create time"/>
-  <int value="2" label="Not full"/>
-  <int value="3" label="Not full and no create time"/>
-</enum>
-
 <enum name="ShouldAllowOpenURLFailureReason">
   <summary>
     Specifies the reason why the web-accessible resource check in

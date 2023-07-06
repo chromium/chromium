@@ -44,7 +44,6 @@
 #include "net/disk_cache/blockfile/backend_impl.h"
 #include "net/disk_cache/blockfile/entry_impl.h"
 #include "net/disk_cache/blockfile/experiments.h"
-#include "net/disk_cache/blockfile/histogram_macros.h"
 #include "net/disk_cache/blockfile/mapped_file.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/disk_cache_test_base.h"
@@ -75,9 +74,6 @@ using testing::Field;
 
 #include <windows.h>
 #endif
-
-// Provide a BackendImpl object to macros from histogram_macros.h.
-#define CACHE_UMA_BACKEND_IMPL_OBJ backend_
 
 // TODO(crbug.com/949811): Fix memory leaks in tests and re-enable on LSAN.
 #ifdef LEAK_SANITIZER
@@ -3816,17 +3812,6 @@ TEST_F(DiskCacheTest, AutomaticMaxSize) {
   // Region 6: expected = largest possible size
   EXPECT_EQ(largest_size, disk_cache::PreferredCacheSize(largest_size * 100));
   EXPECT_EQ(largest_size, disk_cache::PreferredCacheSize(largest_size * 10000));
-}
-
-// Tests that we can "migrate" a running instance from one experiment group to
-// another.
-TEST_F(DiskCacheBackendTest, Histograms) {
-  InitCache();
-  disk_cache::BackendImpl* backend_ = cache_impl_;  // Needed be the macro.
-
-  for (int i = 1; i < 3; i++) {
-    CACHE_UMA(HOURS, "FillupTime", i, 28);
-  }
 }
 
 // Make sure that we keep the total memory used by the internal buffers under
