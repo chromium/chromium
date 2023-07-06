@@ -1336,4 +1336,12 @@ void Performance::ResetTimeOriginForTesting(base::TimeTicks time_origin) {
   time_origin_ = time_origin;
 }
 
+// TODO(https://crbug.com/1457049): remove this once visited links are
+// partitioned.
+bool Performance::softNavPaintMetricsSupported() const {
+  CHECK(
+      RuntimeEnabledFeatures::SoftNavigationHeuristicsExposeFPAndFCPEnabled());
+  return true;
+}
+
 }  // namespace blink

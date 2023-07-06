@@ -43,7 +43,7 @@ const testSoftNavigation =
         await validateSoftNavigationEntry(
             clicks, extraValidations, pushUrl);
 
-        await runEntryValidations(preClickLcp, clicks + 1);
+        await runEntryValidations(preClickLcp, clicks + 1, options.validate != "no-lcp");
       }, testName);
     };
 
@@ -87,23 +87,37 @@ const testSoftNavigationNotDetected = options => {
     }, options.testName);
   };
 
-const runEntryValidations = async (preClickLcp, entries_expected_number = 2) => {
+const runEntryValidations = async (preClickLcp, entries_expected_number = 2, expect_lcp = true) => {
   await validatePaintEntries('first-contentful-paint', entries_expected_number);
   await validatePaintEntries('first-paint', entries_expected_number);
   const postClickLcp = await getLcpEntries();
   const postClickLcpWithoutSoftNavs = await getLcpEntriesWithoutSoftNavs();
-  assert_greater_than(
-      postClickLcp.length, preClickLcp.length,
-      'Soft navigation should have triggered at least an LCP entry');
+  if (expect_lcp) {
+    assert_greater_than(
+        postClickLcp.length, preClickLcp.length,
+        'Soft navigation should have triggered at least an LCP entry');
+  } else {
+    assert_equals(
+        postClickLcp.length, preClickLcp.length,
+        'Soft navigation should not have triggered an LCP entry');
+  }
   assert_equals(
       postClickLcpWithoutSoftNavs.length, preClickLcp.length,
       'Soft navigation should not have triggered an LCP entry when the ' +
       'observer did not opt in');
-  assert_not_equals(
-      postClickLcp[postClickLcp.length - 1].size,
-      preClickLcp[preClickLcp.length - 1].size,
-      'Soft navigation LCP element should not have identical size to the hard ' +
-          'navigation LCP element');
+  if (expect_lcp) {
+    assert_not_equals(
+        postClickLcp[postClickLcp.length - 1].size,
+        preClickLcp[preClickLcp.length - 1].size,
+        'Soft navigation LCP element should not have identical size to the hard ' +
+            'navigation LCP element');
+  } else {
+    assert_equals(
+        postClickLcp[postClickLcp.length - 1].size,
+        preClickLcp[preClickLcp.length - 1].size,
+        'Soft navigation LCP element should have an identical size to the hard ' +
+            'navigation LCP element');
+  }
 };
 
 const click = link => {
@@ -176,6 +190,9 @@ const validateSoftNavigationEntry = async (clicks, extraValidations,
 };
 
 const validatePaintEntries = async (type, entries_number) => {
+  if (!performance.softNavPaintMetricsSupported) {
+    return;
+  }
   const expected_entries_number = Math.min(entries_number, MAX_PAINT_ENTRIES);
   const entries = await new Promise(resolve => {
     const entries = [];
@@ -246,6 +263,10 @@ const addTextToDivOnMain = () => {
 
 const waitOnPaintEntriesPromise = () => {
   return new Promise((resolve, reject) => {
+    if (!performance.softNavPaintMetricsSupported) {
+      // If we don't have paint entries, fall back to a timer instead.
+      step_timeout(resolve, 200);
+    }
     const paint_entries = []
     new PerformanceObserver(list => {
       paint_entries.push(...list.getEntries());

@@ -2129,6 +2129,15 @@
     "expires": "Dec 1, 2023"
   },
   {
+    "prefix": "soft-navigation-fp-fcp",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/soft-navigation-heuristics"
+    ],
+    "args": ["--enable-blink-features=SoftNavigationHeuristicsExposeFPAndFCP"],
+    "expires": "Dec 31, 2023"
+  },
+  {
     "prefix": "produce-compile-hints",
     "platforms": ["Linux"],
     "bases": [
