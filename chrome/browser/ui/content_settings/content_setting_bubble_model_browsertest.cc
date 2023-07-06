@@ -122,19 +122,19 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
   // active tab loads the correct internal url.
 
   // The microphone bubble links to microphone exceptions.
-  ManageMediaStreamSettings(PageSpecificContentSettings::MICROPHONE_ACCESSED);
+  ManageMediaStreamSettings({PageSpecificContentSettings::kMicrophoneAccessed});
   EXPECT_EQ(GURL("chrome://settings/contentExceptions#media-stream-mic"),
             GetActiveTab()->GetLastCommittedURL());
 
   // The bubble for both media devices links to the the first section of the
   // default media content settings, which is the microphone section.
-  ManageMediaStreamSettings(PageSpecificContentSettings::MICROPHONE_ACCESSED |
-                            PageSpecificContentSettings::CAMERA_ACCESSED);
+  ManageMediaStreamSettings({PageSpecificContentSettings::kMicrophoneAccessed,
+                             PageSpecificContentSettings::kCameraAccessed});
   EXPECT_EQ(GURL("chrome://settings/content#media-stream-mic"),
             GetActiveTab()->GetLastCommittedURL());
 
   // The camera bubble links to camera exceptions.
-  ManageMediaStreamSettings(PageSpecificContentSettings::CAMERA_ACCESSED);
+  ManageMediaStreamSettings({PageSpecificContentSettings::kCameraAccessed});
   EXPECT_EQ(GURL("chrome://settings/contentExceptions#media-stream-camera"),
             GetActiveTab()->GetLastCommittedURL());
 }
@@ -149,16 +149,16 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
   OpenTab();
 
   std::unique_ptr<ContentSettingBubbleModel> mic_and_camera_bubble =
-      ShowBubble(PageSpecificContentSettings::MICROPHONE_ACCESSED |
-                 PageSpecificContentSettings::CAMERA_ACCESSED);
+      ShowBubble({PageSpecificContentSettings::kMicrophoneAccessed,
+                  PageSpecificContentSettings::kCameraAccessed});
   EXPECT_TRUE(mic_and_camera_bubble->bubble_content().is_user_modifiable);
 
   std::unique_ptr<ContentSettingBubbleModel> mic_bubble =
-      ShowBubble(PageSpecificContentSettings::MICROPHONE_ACCESSED);
+      ShowBubble({PageSpecificContentSettings::kMicrophoneAccessed});
   EXPECT_FALSE(mic_bubble->bubble_content().is_user_modifiable);
 
   std::unique_ptr<ContentSettingBubbleModel> camera_bubble =
-      ShowBubble(PageSpecificContentSettings::CAMERA_ACCESSED);
+      ShowBubble({PageSpecificContentSettings::kCameraAccessed});
   EXPECT_TRUE(camera_bubble->bubble_content().is_user_modifiable);
 }
 
@@ -172,16 +172,16 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
   OpenTab();
 
   std::unique_ptr<ContentSettingBubbleModel> mic_and_camera_bubble =
-      ShowBubble(PageSpecificContentSettings::MICROPHONE_ACCESSED |
-                 PageSpecificContentSettings::CAMERA_ACCESSED);
+      ShowBubble({PageSpecificContentSettings::kMicrophoneAccessed,
+                  PageSpecificContentSettings::kCameraAccessed});
   EXPECT_TRUE(mic_and_camera_bubble->bubble_content().is_user_modifiable);
 
   std::unique_ptr<ContentSettingBubbleModel> mic_bubble =
-      ShowBubble(PageSpecificContentSettings::MICROPHONE_ACCESSED);
+      ShowBubble({PageSpecificContentSettings::kMicrophoneAccessed});
   EXPECT_TRUE(mic_bubble->bubble_content().is_user_modifiable);
 
   std::unique_ptr<ContentSettingBubbleModel> camera_bubble =
-      ShowBubble(PageSpecificContentSettings::CAMERA_ACCESSED);
+      ShowBubble({PageSpecificContentSettings::kCameraAccessed});
   EXPECT_FALSE(camera_bubble->bubble_content().is_user_modifiable);
 }
 
@@ -196,16 +196,16 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
   OpenTab();
 
   std::unique_ptr<ContentSettingBubbleModel> mic_and_camera_bubble =
-      ShowBubble(PageSpecificContentSettings::MICROPHONE_ACCESSED |
-                 PageSpecificContentSettings::CAMERA_ACCESSED);
+      ShowBubble({PageSpecificContentSettings::kMicrophoneAccessed,
+                  PageSpecificContentSettings::kCameraAccessed});
   EXPECT_FALSE(mic_and_camera_bubble->bubble_content().is_user_modifiable);
 
   std::unique_ptr<ContentSettingBubbleModel> mic_bubble =
-      ShowBubble(PageSpecificContentSettings::MICROPHONE_ACCESSED);
+      ShowBubble({PageSpecificContentSettings::kMicrophoneAccessed});
   EXPECT_FALSE(mic_bubble->bubble_content().is_user_modifiable);
 
   std::unique_ptr<ContentSettingBubbleModel> camera_bubble =
-      ShowBubble(PageSpecificContentSettings::CAMERA_ACCESSED);
+      ShowBubble({PageSpecificContentSettings::kCameraAccessed});
   EXPECT_FALSE(camera_bubble->bubble_content().is_user_modifiable);
 }
 
@@ -224,8 +224,8 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
 
   // The mic & camera bubble content does not include camera PTZ.
   std::unique_ptr<ContentSettingBubbleModel> mic_and_camera_bubble =
-      ShowBubble(PageSpecificContentSettings::MICROPHONE_ACCESSED |
-                 PageSpecificContentSettings::CAMERA_ACCESSED);
+      ShowBubble({PageSpecificContentSettings::kMicrophoneAccessed,
+                  PageSpecificContentSettings::kCameraAccessed});
   EXPECT_EQ(mic_and_camera_bubble->bubble_content().radio_group.radio_items[0],
             l10n_util::GetStringFUTF16(
                 IDS_ALLOWED_MEDIASTREAM_MIC_AND_CAMERA_NO_ACTION,
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
 
   // The camera bubble content does not include camera PTZ.
   std::unique_ptr<ContentSettingBubbleModel> camera_bubble =
-      ShowBubble(PageSpecificContentSettings::CAMERA_ACCESSED);
+      ShowBubble({PageSpecificContentSettings::kCameraAccessed});
   EXPECT_EQ(camera_bubble->bubble_content().radio_group.radio_items[0],
             l10n_util::GetStringFUTF16(
                 IDS_ALLOWED_MEDIASTREAM_CAMERA_NO_ACTION,
@@ -247,8 +247,8 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
 
   // The mic & camera bubble content includes camera PTZ.
   std::unique_ptr<ContentSettingBubbleModel> mic_and_camera_ptz_bubble =
-      ShowBubble(PageSpecificContentSettings::MICROPHONE_ACCESSED |
-                 PageSpecificContentSettings::CAMERA_ACCESSED);
+      ShowBubble({PageSpecificContentSettings::kMicrophoneAccessed,
+                  PageSpecificContentSettings::kCameraAccessed});
   EXPECT_EQ(
       mic_and_camera_ptz_bubble->bubble_content().radio_group.radio_items[0],
       l10n_util::GetStringFUTF16(
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
 
   // The camera bubble content includes camera PTZ.
   std::unique_ptr<ContentSettingBubbleModel> camera_ptz_bubble =
-      ShowBubble(PageSpecificContentSettings::CAMERA_ACCESSED);
+      ShowBubble({PageSpecificContentSettings::kCameraAccessed});
   EXPECT_EQ(camera_ptz_bubble->bubble_content().radio_group.radio_items[0],
             l10n_util::GetStringFUTF16(
                 IDS_ALLOWED_CAMERA_PAN_TILT_ZOOM_NO_ACTION,

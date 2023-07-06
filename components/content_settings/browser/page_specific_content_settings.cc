@@ -549,8 +549,7 @@ PageSpecificContentSettings::PageSpecificContentSettings(content::Page& page,
           delegate_->CreateBrowsingDataModelDelegate())),
       blocked_browsing_data_model_(BrowsingDataModel::BuildEmpty(
           GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition(),
-          delegate_->CreateBrowsingDataModelDelegate())),
-      microphone_camera_state_(MICROPHONE_CAMERA_NOT_ACCESSED) {
+          delegate_->CreateBrowsingDataModelDelegate())) {
   observation_.Observe(map_.get());
   if (page.GetMainDocument().GetLifecycleState() ==
       LifecycleState::kPrerendering) {
@@ -1120,21 +1119,23 @@ void PageSpecificContentSettings::OnProtectedMediaIdentifierPermissionSet(
 
 PageSpecificContentSettings::MicrophoneCameraState
 PageSpecificContentSettings::GetMicrophoneCameraState() const {
-  return microphone_camera_state_ | delegate_->GetMicrophoneCameraState();
+  return Union(microphone_camera_state_, delegate_->GetMicrophoneCameraState());
 }
 
 bool PageSpecificContentSettings::IsMicrophoneCameraStateChanged() const {
-  if ((microphone_camera_state_ & MICROPHONE_ACCESSED) &&
-      ((microphone_camera_state_ & MICROPHONE_BLOCKED)
+  if (microphone_camera_state_.Has(kMicrophoneAccessed) &&
+      (microphone_camera_state_.Has(kMicrophoneBlocked)
            ? !IsContentBlocked(ContentSettingsType::MEDIASTREAM_MIC)
-           : !IsContentAllowed(ContentSettingsType::MEDIASTREAM_MIC)))
+           : !IsContentAllowed(ContentSettingsType::MEDIASTREAM_MIC))) {
     return true;
+  }
 
-  if ((microphone_camera_state_ & CAMERA_ACCESSED) &&
-      ((microphone_camera_state_ & CAMERA_BLOCKED)
+  if (microphone_camera_state_.Has(kCameraAccessed) &&
+      (microphone_camera_state_.Has(kCameraBlocked)
            ? !IsContentBlocked(ContentSettingsType::MEDIASTREAM_CAMERA)
-           : !IsContentAllowed(ContentSettingsType::MEDIASTREAM_CAMERA)))
+           : !IsContentAllowed(ContentSettingsType::MEDIASTREAM_CAMERA))) {
     return true;
+  }
 
   return delegate_->IsMicrophoneCameraStateChanged(
       microphone_camera_state_, media_stream_selected_audio_device(),
@@ -1151,10 +1152,10 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
   DCHECK(!IsEmbeddedPage());
   media_stream_access_origin_ = request_origin;
 
-  if (new_microphone_camera_state & MICROPHONE_ACCESSED) {
+  if (new_microphone_camera_state.Has(kMicrophoneAccessed)) {
     media_stream_requested_audio_device_ = media_stream_requested_audio_device;
     media_stream_selected_audio_device_ = media_stream_selected_audio_device;
-    bool mic_blocked = (new_microphone_camera_state & MICROPHONE_BLOCKED) != 0;
+    bool mic_blocked = new_microphone_camera_state.Has(kMicrophoneBlocked);
     ContentSettingsStatus& status =
         content_settings_status_[ContentSettingsType::MEDIASTREAM_MIC];
     if (!status.allowed && !mic_blocked) {
@@ -1165,10 +1166,10 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     status.blocked = mic_blocked;
   }
 
-  if (new_microphone_camera_state & CAMERA_ACCESSED) {
+  if (new_microphone_camera_state.Has(kCameraAccessed)) {
     media_stream_requested_video_device_ = media_stream_requested_video_device;
     media_stream_selected_video_device_ = media_stream_selected_video_device;
-    bool cam_blocked = (new_microphone_camera_state & CAMERA_BLOCKED) != 0;
+    bool cam_blocked = new_microphone_camera_state.Has(kCameraBlocked);
     ContentSettingsStatus& status =
         content_settings_status_[ContentSettingsType::MEDIASTREAM_CAMERA];
     if (!status.allowed && !cam_blocked) {
@@ -1330,12 +1331,8 @@ void PageSpecificContentSettings::BlockAllContentForTesting() {
 
   // Media must be blocked separately, as the generic
   // PageSpecificContentSettings::OnContentBlocked does not apply to them.
-  MicrophoneCameraStateFlags media_blocked =
-      static_cast<MicrophoneCameraStateFlags>(
-          PageSpecificContentSettings::MICROPHONE_ACCESSED |
-          PageSpecificContentSettings::MICROPHONE_BLOCKED |
-          PageSpecificContentSettings::CAMERA_ACCESSED |
-          PageSpecificContentSettings::CAMERA_BLOCKED);
+  MicrophoneCameraState media_blocked{kMicrophoneAccessed, kMicrophoneBlocked,
+                                      kCameraAccessed, kCameraBlocked};
   OnMediaStreamPermissionSet(page().GetMainDocument().GetLastCommittedURL(),
                              media_blocked, std::string(), std::string(),
                              std::string(), std::string());

@@ -153,20 +153,21 @@ void ContentSettingBubbleDialogTest::ApplyMediastreamSettings(
       ->SetContentSettingDefaultScope(last_committed_url, GURL(),
                                       ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
                                       CONTENT_SETTING_ASK);
-  const int mic_setting =
-      mic_accessed
-          ? content_settings::PageSpecificContentSettings::MICROPHONE_ACCESSED
-          : 0;
-  const int camera_setting =
-      camera_accessed
-          ? content_settings::PageSpecificContentSettings::CAMERA_ACCESSED
-          : 0;
+  content_settings::PageSpecificContentSettings::MicrophoneCameraState state;
+  if (mic_accessed) {
+    state.Put(
+        content_settings::PageSpecificContentSettings::kMicrophoneAccessed);
+  }
+  if (camera_accessed) {
+    state.Put(content_settings::PageSpecificContentSettings::kCameraAccessed);
+  }
+
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
-  content_settings->OnMediaStreamPermissionSet(
-      last_committed_url, mic_setting | camera_setting, std::string(),
-      std::string(), std::string(), std::string());
+  content_settings->OnMediaStreamPermissionSet(last_committed_url, state,
+                                               std::string(), std::string(),
+                                               std::string(), std::string());
 }
 
 void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(

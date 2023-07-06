@@ -183,9 +183,10 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMicAndCamera) {
           web_contents()->GetPrimaryMainFrame());
   std::string request_host = "google.com";
   GURL security_origin("http://" + request_host);
-  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state =
-      PageSpecificContentSettings::MICROPHONE_ACCESSED |
-      PageSpecificContentSettings::CAMERA_ACCESSED;
+  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state{
+      PageSpecificContentSettings::kMicrophoneAccessed,
+      PageSpecificContentSettings::kCameraAccessed,
+  };
   content_settings->OnMediaStreamPermissionSet(security_origin,
                                                microphone_camera_state,
                                                GetDefaultAudioDevice(),
@@ -236,11 +237,12 @@ TEST_F(ContentSettingBubbleModelTest, BlockedMediastreamMicAndCamera) {
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents()->GetPrimaryMainFrame());
-  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state =
-      PageSpecificContentSettings::MICROPHONE_ACCESSED |
-      PageSpecificContentSettings::MICROPHONE_BLOCKED |
-      PageSpecificContentSettings::CAMERA_ACCESSED |
-      PageSpecificContentSettings::CAMERA_BLOCKED;
+  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state{
+      PageSpecificContentSettings::kMicrophoneAccessed,
+      PageSpecificContentSettings::kCameraAccessed,
+      PageSpecificContentSettings::kMicrophoneBlocked,
+      PageSpecificContentSettings::kCameraBlocked,
+  };
   content_settings->OnMediaStreamPermissionSet(url,
                                                microphone_camera_state,
                                                GetDefaultAudioDevice(),
@@ -299,9 +301,10 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents()->GetPrimaryMainFrame());
-  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state =
-      PageSpecificContentSettings::MICROPHONE_ACCESSED |
-      PageSpecificContentSettings::MICROPHONE_BLOCKED;
+  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state{
+      PageSpecificContentSettings::kMicrophoneAccessed,
+      PageSpecificContentSettings::kMicrophoneBlocked,
+  };
   content_settings->OnMediaStreamPermissionSet(url,
                                                microphone_camera_state,
                                                GetDefaultAudioDevice(),
@@ -393,9 +396,10 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubbleMediaMenus) {
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents()->GetPrimaryMainFrame());
-  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state =
-      PageSpecificContentSettings::MICROPHONE_ACCESSED |
-      PageSpecificContentSettings::MICROPHONE_BLOCKED;
+  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state{
+      PageSpecificContentSettings::kMicrophoneAccessed,
+      PageSpecificContentSettings::kMicrophoneBlocked,
+  };
   content_settings->OnMediaStreamPermissionSet(url,
                                                microphone_camera_state,
                                                GetDefaultAudioDevice(),
@@ -445,7 +449,8 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubbleMediaMenus) {
                              content::MediaStreamUI::SourceCallback(),
                              /*label=*/std::string(), /*screen_capture_ids=*/{},
                              content::MediaStreamUI::StateChangeCallback());
-  microphone_camera_state &= ~PageSpecificContentSettings::MICROPHONE_BLOCKED;
+  microphone_camera_state.Remove(
+      PageSpecificContentSettings::kMicrophoneBlocked);
   content_settings->OnMediaStreamPermissionSet(url,
                                                microphone_camera_state,
                                                GetDefaultAudioDevice(),
@@ -490,7 +495,7 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubbleMediaMenus) {
   }
 
   // Simulate that yet another audio stream capture request was initiated.
-  microphone_camera_state |= PageSpecificContentSettings::MICROPHONE_BLOCKED;
+  microphone_camera_state.Put(PageSpecificContentSettings::kMicrophoneBlocked);
   content_settings->OnMediaStreamPermissionSet(url,
                                                microphone_camera_state,
                                                GetDefaultAudioDevice(),
@@ -530,8 +535,8 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
           web_contents()->GetPrimaryMainFrame());
   std::string request_host = "google.com";
   GURL security_origin("http://" + request_host);
-  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state =
-      PageSpecificContentSettings::MICROPHONE_ACCESSED;
+  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state{
+      PageSpecificContentSettings::kMicrophoneAccessed};
   content_settings->OnMediaStreamPermissionSet(security_origin,
                                                microphone_camera_state,
                                                GetDefaultAudioDevice(),
@@ -563,7 +568,7 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
             bubble_content.media_menus.begin()->first);
 
   // Change the microphone access.
-  microphone_camera_state |= PageSpecificContentSettings::MICROPHONE_BLOCKED;
+  microphone_camera_state.Put(PageSpecificContentSettings::kMicrophoneBlocked);
   content_settings->OnMediaStreamPermissionSet(security_origin,
                                                microphone_camera_state,
                                                GetDefaultAudioDevice(),
@@ -607,8 +612,8 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
           web_contents()->GetPrimaryMainFrame());
   std::string request_host = "google.com";
   GURL security_origin("http://" + request_host);
-  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state =
-      PageSpecificContentSettings::CAMERA_ACCESSED;
+  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state{
+      PageSpecificContentSettings::kCameraAccessed};
   content_settings->OnMediaStreamPermissionSet(security_origin,
                                                microphone_camera_state,
                                                std::string(),
@@ -640,7 +645,7 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
             bubble_content.media_menus.begin()->first);
 
   // Change the camera access.
-  microphone_camera_state |= PageSpecificContentSettings::CAMERA_BLOCKED;
+  microphone_camera_state.Put(PageSpecificContentSettings::kCameraBlocked);
   content_settings->OnMediaStreamPermissionSet(security_origin,
                                                microphone_camera_state,
                                                std::string(),
@@ -687,8 +692,8 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
   GURL security_origin("http://" + request_host);
 
   // Firstly, add microphone access.
-  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state =
-      PageSpecificContentSettings::MICROPHONE_ACCESSED;
+  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state{
+      PageSpecificContentSettings::kMicrophoneAccessed};
   content_settings->OnMediaStreamPermissionSet(security_origin,
                                                microphone_camera_state,
                                                GetDefaultAudioDevice(),
@@ -717,7 +722,7 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
             bubble_content.media_menus.begin()->first);
 
   // Then add camera access.
-  microphone_camera_state |= PageSpecificContentSettings::CAMERA_ACCESSED;
+  microphone_camera_state.Put(PageSpecificContentSettings::kCameraAccessed);
   content_settings->OnMediaStreamPermissionSet(security_origin,
                                                microphone_camera_state,
                                                GetDefaultAudioDevice(),

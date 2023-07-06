@@ -936,8 +936,9 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
 
   // If neither the microphone nor the camera stream was accessed then no icon
   // is displayed in the omnibox.
-  if (state_ == PageSpecificContentSettings::MICROPHONE_CAMERA_NOT_ACCESSED)
+  if (state_.Empty()) {
     return false;
+  }
 
 #if BUILDFLAG(IS_MAC)
   // Don't show an icon when the user has not made a decision yet for
@@ -1054,19 +1055,19 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
 }
 
 bool ContentSettingMediaImageModel::IsMicAccessed() {
-  return ((state_ & PageSpecificContentSettings::MICROPHONE_ACCESSED) != 0);
+  return state_.Has(PageSpecificContentSettings::kMicrophoneAccessed);
 }
 
 bool ContentSettingMediaImageModel::IsCamAccessed() {
-  return ((state_ & PageSpecificContentSettings::CAMERA_ACCESSED) != 0);
+  return state_.Has(PageSpecificContentSettings::kCameraAccessed);
 }
 
 bool ContentSettingMediaImageModel::IsMicBlockedOnSiteLevel() {
-  return ((state_ & PageSpecificContentSettings::MICROPHONE_BLOCKED) != 0);
+  return state_.Has(PageSpecificContentSettings::kMicrophoneBlocked);
 }
 
 bool ContentSettingMediaImageModel::IsCameraBlockedOnSiteLevel() {
-  return ((state_ & PageSpecificContentSettings::CAMERA_BLOCKED) != 0);
+  return state_.Has(PageSpecificContentSettings::kCameraBlocked);
 }
 
 #if BUILDFLAG(IS_MAC)

@@ -65,17 +65,17 @@ void PageSpecificContentSettingsDelegate::UpdateLocationBar() {
   PageSpecificContentSettings::MicrophoneCameraState state =
       pscs->GetMicrophoneCameraState();
 
-  if ((state & PageSpecificContentSettings::CAMERA_ACCESSED) ||
-      (state & PageSpecificContentSettings::MICROPHONE_ACCESSED)) {
+  if (state.Has(PageSpecificContentSettings::kCameraAccessed) ||
+      state.Has(PageSpecificContentSettings::kMicrophoneAccessed)) {
     auto* permission_tracker =
         permissions::PermissionRecoverySuccessRateTracker::FromWebContents(
             web_contents());
 
-    if (state & PageSpecificContentSettings::MICROPHONE_ACCESSED) {
+    if (state.Has(PageSpecificContentSettings::kMicrophoneAccessed)) {
       permission_tracker->TrackUsage(ContentSettingsType::MEDIASTREAM_MIC);
     }
 
-    if (state & PageSpecificContentSettings::CAMERA_ACCESSED) {
+    if (state.Has(PageSpecificContentSettings::kCameraAccessed)) {
       permission_tracker->TrackUsage(ContentSettingsType::MEDIASTREAM_CAMERA);
     }
   }
@@ -178,27 +178,28 @@ bool PageSpecificContentSettingsDelegate::IsMicrophoneCameraStateChanged(
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator();
 
-  if ((microphone_camera_state &
-       PageSpecificContentSettings::MICROPHONE_ACCESSED) &&
+  if (microphone_camera_state.Has(
+          PageSpecificContentSettings::kMicrophoneAccessed) &&
       prefs->GetString(prefs::kDefaultAudioCaptureDevice) !=
           media_stream_selected_audio_device &&
-      media_indicator->IsCapturingAudio(web_contents()))
+      media_indicator->IsCapturingAudio(web_contents())) {
     return true;
+  }
 
-  if ((microphone_camera_state &
-       PageSpecificContentSettings::CAMERA_ACCESSED) &&
+  if (microphone_camera_state.Has(
+          PageSpecificContentSettings::kCameraAccessed) &&
       prefs->GetString(prefs::kDefaultVideoCaptureDevice) !=
           media_stream_selected_video_device &&
-      media_indicator->IsCapturingVideo(web_contents()))
+      media_indicator->IsCapturingVideo(web_contents())) {
     return true;
+  }
 
   return false;
 }
 
 PageSpecificContentSettings::MicrophoneCameraState
 PageSpecificContentSettingsDelegate::GetMicrophoneCameraState() {
-  PageSpecificContentSettings::MicrophoneCameraState state =
-      PageSpecificContentSettings::MICROPHONE_CAMERA_NOT_ACCESSED;
+  PageSpecificContentSettings::MicrophoneCameraState state;
 
   // Include capture devices in the state if there are still consumers of the
   // approved media stream.
@@ -206,9 +207,9 @@ PageSpecificContentSettingsDelegate::GetMicrophoneCameraState() {
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator();
   if (media_indicator->IsCapturingAudio(web_contents()))
-    state |= PageSpecificContentSettings::MICROPHONE_ACCESSED;
+    state.Put(PageSpecificContentSettings::kMicrophoneAccessed);
   if (media_indicator->IsCapturingVideo(web_contents()))
-    state |= PageSpecificContentSettings::CAMERA_ACCESSED;
+    state.Put(PageSpecificContentSettings::kCameraAccessed);
 
   return state;
 }

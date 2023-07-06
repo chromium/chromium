@@ -12,6 +12,7 @@
 #include <set>
 #include <string>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -114,17 +115,21 @@ class PageSpecificContentSettings
       public content::PageUserData<PageSpecificContentSettings> {
  public:
   // Fields describing the current mic/camera state. If a page has attempted to
-  // access a device, the XXX_ACCESSED bit will be set. If access was blocked,
-  // XXX_BLOCKED will be set.
+  // access a device, the kXxxAccessed bit will be set. If access was blocked,
+  // kXxxBlocked will be set.
   enum MicrophoneCameraStateFlags {
-    MICROPHONE_CAMERA_NOT_ACCESSED = 0,
-    MICROPHONE_ACCESSED = 1 << 0,
-    MICROPHONE_BLOCKED = 1 << 1,
-    CAMERA_ACCESSED = 1 << 2,
-    CAMERA_BLOCKED = 1 << 3,
+    kMicrophoneAccessed,
+    kMicrophoneBlocked,
+    kCameraAccessed,
+    kCameraBlocked,
+
+    kMinValue = kMicrophoneAccessed,
+    kMaxValue = kCameraBlocked,
   };
-  // Use signed int, that's what the enum flags implicitly convert to.
-  typedef int32_t MicrophoneCameraState;
+  using MicrophoneCameraState =
+      base::EnumSet<MicrophoneCameraStateFlags,
+                    MicrophoneCameraStateFlags::kMinValue,
+                    MicrophoneCameraStateFlags::kMaxValue>;
 
   class Delegate {
    public:

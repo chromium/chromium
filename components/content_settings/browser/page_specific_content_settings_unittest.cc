@@ -161,11 +161,11 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
 #endif
   content_settings->OnContentBlocked(ContentSettingsType::POPUPS);
   PageSpecificContentSettings::MicrophoneCameraState
-      blocked_microphone_camera_state =
-          PageSpecificContentSettings::MICROPHONE_ACCESSED |
-          PageSpecificContentSettings::MICROPHONE_BLOCKED |
-          PageSpecificContentSettings::CAMERA_ACCESSED |
-          PageSpecificContentSettings::CAMERA_BLOCKED;
+      blocked_microphone_camera_state = {
+          PageSpecificContentSettings::kMicrophoneAccessed,
+          PageSpecificContentSettings::kMicrophoneBlocked,
+          PageSpecificContentSettings::kCameraAccessed,
+          PageSpecificContentSettings::kCameraBlocked};
   content_settings->OnMediaStreamPermissionSet(
       GURL("http://google.com"), blocked_microphone_camera_state, std::string(),
       std::string(), std::string(), std::string());

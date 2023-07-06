@@ -421,17 +421,18 @@ void VRUiHostImpl::PollCapturingState() {
           settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
 
       active_capturing.audio_capture_enabled =
-          (settings->GetMicrophoneCameraState() &
-           content_settings::PageSpecificContentSettings::
-               MICROPHONE_ACCESSED) &&
-          !(settings->GetMicrophoneCameraState() &
-            content_settings::PageSpecificContentSettings::MICROPHONE_BLOCKED);
+          settings->GetMicrophoneCameraState().Has(
+              content_settings::PageSpecificContentSettings::
+                  kMicrophoneAccessed) &&
+          !settings->GetMicrophoneCameraState().Has(
+              content_settings::PageSpecificContentSettings::
+                  kMicrophoneBlocked);
 
       active_capturing.video_capture_enabled =
-          (settings->GetMicrophoneCameraState() &
-           content_settings::PageSpecificContentSettings::CAMERA_ACCESSED) &
-          !(settings->GetMicrophoneCameraState() &
-            content_settings::PageSpecificContentSettings::CAMERA_BLOCKED);
+          settings->GetMicrophoneCameraState().Has(
+              content_settings::PageSpecificContentSettings::kCameraAccessed) &&
+          !settings->GetMicrophoneCameraState().Has(
+              content_settings::PageSpecificContentSettings::kCameraBlocked);
 
       active_capturing.midi_connected =
           settings->IsContentAllowed(ContentSettingsType::MIDI_SYSEX);

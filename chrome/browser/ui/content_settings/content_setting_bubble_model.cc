@@ -915,8 +915,7 @@ const blink::MediaStreamDevice& GetMediaDeviceById(
 ContentSettingMediaStreamBubbleModel::ContentSettingMediaStreamBubbleModel(
     Delegate* delegate,
     WebContents* web_contents)
-    : ContentSettingBubbleModel(delegate, web_contents),
-      state_(PageSpecificContentSettings::MICROPHONE_CAMERA_NOT_ACCESSED) {
+    : ContentSettingBubbleModel(delegate, web_contents) {
   // TODO(msramek): The media bubble has three states - mic only, camera only,
   // and both. There is a lot of duplicated code which does the same thing
   // for camera and microphone separately. Consider refactoring it to avoid
@@ -1009,19 +1008,19 @@ void ContentSettingMediaStreamBubbleModel::OnDoneButtonClicked() {
 }
 
 bool ContentSettingMediaStreamBubbleModel::MicrophoneAccessed() const {
-  return (state_ & PageSpecificContentSettings::MICROPHONE_ACCESSED) != 0;
+  return state_.Has(PageSpecificContentSettings::kMicrophoneAccessed);
 }
 
 bool ContentSettingMediaStreamBubbleModel::CameraAccessed() const {
-  return (state_ & PageSpecificContentSettings::CAMERA_ACCESSED) != 0;
+  return state_.Has(PageSpecificContentSettings::kCameraAccessed);
 }
 
 bool ContentSettingMediaStreamBubbleModel::MicrophoneBlocked() const {
-  return (state_ & PageSpecificContentSettings::MICROPHONE_BLOCKED) != 0;
+  return state_.Has(PageSpecificContentSettings::kMicrophoneBlocked);
 }
 
 bool ContentSettingMediaStreamBubbleModel::CameraBlocked() const {
-  return (state_ & PageSpecificContentSettings::CAMERA_BLOCKED) != 0;
+  return state_.Has(PageSpecificContentSettings::kCameraBlocked);
 }
 
 void ContentSettingMediaStreamBubbleModel::SetIsUserModifiable() {
@@ -1088,8 +1087,8 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
   DCHECK(CameraAccessed() || MicrophoneAccessed());
   int radio_allow_label_id = 0;
   int radio_block_label_id = 0;
-  if (state_ & (PageSpecificContentSettings::MICROPHONE_BLOCKED |
-                PageSpecificContentSettings::CAMERA_BLOCKED)) {
+  if (state_.Has(PageSpecificContentSettings::kMicrophoneBlocked) ||
+      state_.Has(PageSpecificContentSettings::kCameraBlocked)) {
     if (network::IsUrlPotentiallyTrustworthy(url)) {
       radio_item_setting_[0] = CONTENT_SETTING_ALLOW;
       radio_allow_label_id = IDS_BLOCKED_MEDIASTREAM_CAMERA_ALLOW;
