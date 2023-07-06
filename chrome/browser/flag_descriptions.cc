@@ -4206,6 +4206,11 @@ const char kSiteIsolationForPasswordSitesDescription[] =
 const char kSlimCompositorName[] = "Slim browser compositor";
 const char kSlimCompositorDescription[] = "Use new simpler browser compositor";
 
+const char kSmartZoomName[] = "Smart Zoom";
+const char kSmartZoomDescription[] =
+    "Enable the Smart Zoom accessibility feature as an alternative approach "
+    "to zooming web contents.";
+
 const char kSmartSuggestionForLargeDownloadsName[] =
     "Smart suggestion for large downloads";
 const char kSmartSuggestionForLargeDownloadsDescription[] =

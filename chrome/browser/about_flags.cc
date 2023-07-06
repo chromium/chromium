@@ -5267,6 +5267,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityPerformanceFilteringDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAccessibilityPerformanceFiltering)},
+    {"enable-smart-zoom", flag_descriptions::kSmartZoomName,
+     flag_descriptions::kSmartZoomDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kSmartZoom)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-experimental-accessibility-language-detection",
      flag_descriptions::kExperimentalAccessibilityLanguageDetectionName,

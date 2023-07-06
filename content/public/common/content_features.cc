@@ -1487,6 +1487,10 @@ BASE_FEATURE(kAccessibilityPageZoom,
              "AccessibilityPageZoom",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows the use of "Smart Zoom", an alternative form of page zoom, and
+// enables the associated UI.
+BASE_FEATURE(kSmartZoom, "SmartZoom", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Automatically disables accessibility on Android when no assistive
 // technologies are present
 BASE_FEATURE(kAutoDisableAccessibilityV2,

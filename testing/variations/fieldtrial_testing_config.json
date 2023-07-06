@@ -12764,6 +12764,21 @@
             ]
         }
     ],
+    "SmartZoom": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SmartZoom"
+                    ]
+                }
+            ]
+        }
+    ],
     "SpeculationRulesPrerenderMemoryLimit": [
         {
             "platforms": [

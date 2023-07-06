@@ -3379,6 +3379,17 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-smart-zoom",
+    "owners": [
+      "mschillaci@google.com",
+      "aldietz@google.com",
+      "jocelyntran@google.com",
+      "aashnas@google.com",
+      "//ui/accessibility/OWNERS"
+    ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-start-surface",
     "owners": [ "hanxi", "wychen" ],
     "expiry_milestone": 140

@@ -64338,6 +64338,7 @@ from previous Chrome versions.
   <int value="301513718" label="PrivacySandboxSettings4:enabled"/>
   <int value="301536977" label="DetailedLanguageSettings:enabled"/>
   <int value="301630312" label="ForcedColors:disabled"/>
+  <int value="301733463" label="SmartZoom:disabled"/>
   <int value="301869874" label="NTPPhysicalWebPageSuggestions:disabled"/>
   <int value="302725573" label="NewInstanceFromDraggedLink:enabled"/>
   <int value="302754902" label="MicMuteNotifications:disabled"/>
@@ -66969,6 +66970,7 @@ from previous Chrome versions.
   <int value="1679347136" label="ExperimentalWebAppProfileIsolation:enabled"/>
   <int value="1679558835" label="ArcAvailableForChildAccount:enabled"/>
   <int value="1680248931" label="use-fake-device-for-media-stream:enabled"/>
+  <int value="1680381128" label="SmartZoom:enabled"/>
   <int value="1680524929" label="AutofillEnableSupportForLandmark:disabled"/>
   <int value="1680855806" label="LacrosPrimary:disabled"/>
   <int value="1681219077" label="VoiceButtonInTopToolbar:enabled"/>
