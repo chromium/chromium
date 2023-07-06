@@ -202,11 +202,16 @@ style.{{group_setter_expression(subgroup)}} = other.{{group_expression}};
 if (style.{{group_expression}}.Get() != other.{{group_expression}}.Get()) {
 {{fieldwise_copy(subgroup, fields_to_copy)|indent(2, true)}}
 }
+  {% else %}
+  // Not copied: style.{{group_expression}} (group)
   {% endif %}
 {% endfor %}
 {% for field in group.fields|rejectattr("custom_copy")|select("in", fields_to_copy) -%}
   style.{{setter_expression(field)}} = other.{{getter_expression(field)}};
 {% endfor %}
+  {% for field in group.fields|rejectattr("custom_copy")|reject("in", fields_to_copy) -%}
+  //  - Not copied: {{getter_expression(field)}} (single field)
+  {% endfor %}
 {% endmacro %}
 
 {% macro fieldwise_pointer_compare_inherited(group, boolean_and=None) %}
