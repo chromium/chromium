@@ -729,6 +729,9 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
                             &paint, SkCanvas::kStrict_SrcRectConstraint);
       canvas->restoreToCount(save_count);
     } else {
+      // TODO(crbug.com/1450879): Make this path work for Graphite after Dawn
+      // supports multiplanar rendering and we integrate it into Chrome.
+      CHECK(shared_context_state_->gr_context());
       SkSurface* yuva_sk_surfaces[SkYUVAInfo::kMaxPlanes] = {};
       for (int plane_index = 0; plane_index < dest_format.NumberOfPlanes();
            plane_index++) {
