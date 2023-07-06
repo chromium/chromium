@@ -1075,14 +1075,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="PhysicalWeb" label="Physical Web pages"/>
   <suffix name="ReadingList" label="Reading List entries"/>
   <suffix name="RecentTabs" label="Recent (offline) tabs"/>
-  <affected-histogram
-      name="NewTabPage.ContentSuggestions.CountOnNtpOpenedIfVisible"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.MenuOpened"/>
   <affected-histogram name="NewTabPage.ContentSuggestions.Opened"/>
   <affected-histogram name="NewTabPage.ContentSuggestions.Shown"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.ShownAge"/>
-  <affected-histogram
-      name="NewTabPage.ContentSuggestions.ShownScoreNormalized"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ContextMenuShoppingDomain" separator=".">
