@@ -9,8 +9,6 @@
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "build/build_config.h"
-#include "net/cert/pem.h"
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_issuer_source_static.h"
 #include "net/cert/pki/common_cert_errors.h"

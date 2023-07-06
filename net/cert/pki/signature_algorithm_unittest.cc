@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/files/file_util.h"
-#include "net/cert/pem.h"
 #include "net/der/input.h"
 #include "net/der/parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
