@@ -488,13 +488,10 @@ struct TraitsToImpl {
       /*ExperimentalAsh=*/Contains(Traits, RawPtrTraits::kExperimentalAsh)>;
 
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
-  using UnderlyingImpl = std::conditional_t<
-      Contains(Traits, RawPtrTraits::kMayDangle),
-      // No special bookkeeping required for this case,
-      // just treat these as ordinary pointers.
-      internal::RawPtrNoOpImpl,
-      internal::RawPtrAsanUnownedImpl<
-          Contains(Traits, RawPtrTraits::kAllowPtrArithmetic)>>;
+  using UnderlyingImpl = internal::RawPtrAsanUnownedImpl<
+      Contains(Traits, RawPtrTraits::kAllowPtrArithmetic),
+      Contains(Traits, RawPtrTraits::kMayDangle)>;
+
 #elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
   using UnderlyingImpl =
       std::conditional_t<Contains(Traits, RawPtrTraits::kDisableHooks),
