@@ -16,13 +16,11 @@
  *
  */
 
-import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
+import {ChromiumBidi, Script} from '../../../protocol/protocol.js';
 import type {IEventManager} from '../events/EventManager.js';
 import {uuidv4} from '../../../utils/uuid';
 
 import type {Realm} from './realm.js';
-
-import Handle = CommonDataTypes.Handle;
 
 /**
  * Used to send messages from realm to BiDi user.
@@ -58,7 +56,10 @@ export class ChannelProxy {
    * Creates a channel proxy in the given realm, initialises listener and
    * returns a handle to `sendMessage` delegate.
    */
-  async init(realm: Realm, eventManager: IEventManager): Promise<Handle> {
+  async init(
+    realm: Realm,
+    eventManager: IEventManager
+  ): Promise<Script.Handle> {
     const channelHandle = await ChannelProxy.#createAndGetHandleInRealm(realm);
     const sendMessageHandle = await ChannelProxy.#createSendMessageHandle(
       realm,
@@ -119,7 +120,7 @@ export class ChannelProxy {
   /** Creates a ChannelProxy in the given realm. */
   static async #createAndGetHandleInRealm(
     realm: Realm
-  ): Promise<CommonDataTypes.Handle> {
+  ): Promise<Script.Handle> {
     const createChannelHandleResult = await realm.cdpClient.sendCommand(
       'Runtime.evaluate',
       {
@@ -142,8 +143,8 @@ export class ChannelProxy {
   /** Gets a handle to `sendMessage` delegate from the ChannelProxy handle. */
   static async #createSendMessageHandle(
     realm: Realm,
-    channelHandle: CommonDataTypes.Handle
-  ): Promise<Handle> {
+    channelHandle: Script.Handle
+  ): Promise<Script.Handle> {
     const sendMessageArgResult = await realm.cdpClient.sendCommand(
       'Runtime.callFunctionOn',
       {
@@ -166,7 +167,7 @@ export class ChannelProxy {
   /** Starts listening for the channel events of the provided ChannelProxy. */
   async #startListener(
     realm: Realm,
-    channelHandle: Handle,
+    channelHandle: Script.Handle,
     eventManager: IEventManager
   ) {
     // TODO(#294): Remove this loop after the realm is destroyed.
@@ -209,12 +210,12 @@ export class ChannelProxy {
 
       eventManager.registerEvent(
         {
-          method: Script.EventNames.MessageEvent,
+          method: ChromiumBidi.Script.EventNames.MessageEvent,
           params: {
             channel: this.#properties.channel,
             data: realm.cdpToBidiValue(
               message,
-              this.#properties.ownership ?? 'none'
+              this.#properties.ownership ?? Script.ResultOwnership.None
             ),
             source: {
               realm: realm.realmId,

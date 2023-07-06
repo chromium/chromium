@@ -15,9 +15,14 @@
  * limitations under the License.
  */
 
-import {Input} from '../../../protocol/protocol.js';
+import type {Input} from '../../../protocol/protocol.js';
 
-export import SourceType = Input.SourceActionsType;
+export const enum SourceType {
+  Key = 'key',
+  Pointer = 'pointer',
+  Wheel = 'wheel',
+  None = 'none',
+}
 
 export class NoneSource {
   type = SourceType.None as const;

@@ -17,14 +17,14 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {
-  type CommonDataTypes,
-  Message,
+  NoSuchHandleException,
+  NoSuchNodeException,
   type Script,
 } from '../../../protocol/protocol.js';
 import type {IEventManager} from '../events/EventManager.js';
 
-import type {Realm} from './realm.js';
 import {ChannelProxy} from './channelProxy.js';
+import type {Realm} from './realm.js';
 
 // As `script.evaluate` wraps call into serialization script, `lineNumber`
 // should be adjusted.
@@ -76,7 +76,7 @@ export class ScriptEvaluator {
     cdpRemoteObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.ResultOwnership,
     realm: Realm
-  ): Promise<CommonDataTypes.RemoteValue> {
+  ): Promise<Script.RemoteValue> {
     const arg = ScriptEvaluator.#cdpRemoteObjectToCallArgument(cdpRemoteObject);
 
     const cdpWebDriverValue: Protocol.Runtime.CallFunctionOnResponse =
@@ -98,7 +98,7 @@ export class ScriptEvaluator {
     awaitPromise: boolean,
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions
-  ): Promise<Script.ScriptResult> {
+  ): Promise<Script.EvaluateResult> {
     const additionalParameters =
       this.#getAdditionalSerializationParameters(serializationOptions);
 
@@ -165,7 +165,7 @@ export class ScriptEvaluator {
     awaitPromise: boolean,
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions
-  ): Promise<Script.ScriptResult> {
+  ): Promise<Script.EvaluateResult> {
     const callFunctionAndSerializeScript = `(...args)=>{ return _callFunction((\n${functionDeclaration}\n), args);
       function _callFunction(f, args) {
         const deserializedThis = args.shift();
@@ -218,7 +218,7 @@ export class ScriptEvaluator {
           'Invalid remote object id',
         ].includes(e.message)
       ) {
-        throw new Message.NoSuchHandleException('Handle was not found.');
+        throw new NoSuchHandleException('Handle was not found.');
       }
       throw e;
     }
@@ -259,7 +259,7 @@ export class ScriptEvaluator {
     argumentValue: Script.ArgumentValue,
     realm: Realm
   ): Promise<Protocol.Runtime.CallArgument> {
-    if ('sharedId' in argumentValue) {
+    if ('sharedId' in argumentValue && argumentValue.sharedId !== undefined) {
       const [navigableId, rawBackendNodeId] =
         argumentValue.sharedId.split(SHARED_ID_DIVIDER);
 
@@ -269,13 +269,13 @@ export class ScriptEvaluator {
         backendNodeId === undefined ||
         navigableId === undefined
       ) {
-        throw new Message.NoSuchNodeException(
+        throw new NoSuchNodeException(
           `SharedId "${argumentValue.sharedId}" was not found.`
         );
       }
 
       if (realm.navigableId !== navigableId) {
-        throw new Message.NoSuchNodeException(
+        throw new NoSuchNodeException(
           `SharedId "${argumentValue.sharedId}" belongs to different document. Current document is ${realm.navigableId}.`
         );
       }
@@ -291,7 +291,7 @@ export class ScriptEvaluator {
         // Heuristic to detect "no such node" exception. Based on the  specific
         // CDP implementation.
         if (e.code === -32000 && e.message === 'No node with given id found') {
-          throw new Message.NoSuchNodeException(
+          throw new NoSuchNodeException(
             `SharedId "${argumentValue.sharedId}" was not found.`
           );
         }
@@ -464,7 +464,7 @@ export class ScriptEvaluator {
   }
 
   async #flattenKeyValuePairs(
-    mapping: CommonDataTypes.MappingLocalValue,
+    mapping: Script.MappingLocalValue,
     realm: Realm
   ): Promise<Protocol.Runtime.CallArgument[]> {
     const keyValueArray: Protocol.Runtime.CallArgument[] = [];
@@ -487,7 +487,7 @@ export class ScriptEvaluator {
   }
 
   async #flattenValueList(
-    list: CommonDataTypes.ListLocalValue,
+    list: Script.ListLocalValue,
     realm: Realm
   ): Promise<Protocol.Runtime.CallArgument[]> {
     return Promise.all(

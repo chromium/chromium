@@ -10,3 +10,4 @@ logs/
 node_modules/
 wptreport*.json
 wpt/
+/src/protocol/webdriver-bidi.ts

@@ -17,35 +17,31 @@
 
 import {expect} from 'chai';
 
-import type {CommonDataTypes} from '../../../protocol/protocol.js';
+import type {Script} from '../../../protocol/protocol.js';
 
 import {getRemoteValuesText} from './logHelper.js';
 
 describe('getRemoteValuesText', () => {
   it('single line input test', () => {
-    const inputArgs = [{type: 'string', value: 'line 1'}];
+    const inputArgs = [
+      {type: 'string', value: 'line 1'},
+    ] satisfies Script.RemoteValue[];
     const outputString = 'line 1';
-    expect(
-      getRemoteValuesText(inputArgs as CommonDataTypes.RemoteValue[], false)
-    ).to.equal(outputString);
+    expect(getRemoteValuesText(inputArgs, false)).to.equal(outputString);
   });
 
   it('multiple line input test', () => {
     const inputArgs = [
       {type: 'string', value: 'line 1'},
       {type: 'string', value: 'line 2'},
-    ];
+    ] satisfies Script.RemoteValue[];
     const outputString = 'line 1\u0020line 2';
-    expect(
-      getRemoteValuesText(inputArgs as CommonDataTypes.RemoteValue[], false)
-    ).to.equal(outputString);
+    expect(getRemoteValuesText(inputArgs, false)).to.equal(outputString);
   });
 
   it('no input test', () => {
-    const inputArgs: unknown[] = [];
+    const inputArgs = [] satisfies Script.RemoteValue[];
     const outputString = '';
-    expect(
-      getRemoteValuesText(inputArgs as CommonDataTypes.RemoteValue[], false)
-    ).to.equal(outputString);
+    expect(getRemoteValuesText(inputArgs, false)).to.equal(outputString);
   });
 });

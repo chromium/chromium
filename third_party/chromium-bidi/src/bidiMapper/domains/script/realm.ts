@@ -17,8 +17,11 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import {Script} from '../../../protocol/protocol.js';
-import type {CommonDataTypes} from '../../../protocol/protocol.js';
+import {
+  ChromiumBidi,
+  type BrowsingContext,
+  Script,
+} from '../../../protocol/protocol.js';
 import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 import type {IEventManager} from '../events/EventManager.js';
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
@@ -33,7 +36,7 @@ export class Realm {
   readonly #realmStorage: RealmStorage;
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #realmId: Script.Realm;
-  readonly #browsingContextId: CommonDataTypes.BrowsingContext;
+  readonly #browsingContextId: BrowsingContext.BrowsingContext;
   readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
   readonly #origin: string;
   readonly #type: RealmType;
@@ -49,7 +52,7 @@ export class Realm {
     realmStorage: RealmStorage,
     browsingContextStorage: BrowsingContextStorage,
     realmId: Script.Realm,
-    browsingContextId: CommonDataTypes.BrowsingContext,
+    browsingContextId: BrowsingContext.BrowsingContext,
     executionContextId: Protocol.Runtime.ExecutionContextId,
     origin: string,
     type: RealmType,
@@ -78,14 +81,14 @@ export class Realm {
 
     this.#eventManager.registerEvent(
       {
-        method: Script.EventNames.RealmCreatedEvent,
+        method: ChromiumBidi.Script.EventNames.RealmCreated,
         params: this.toBiDi(),
       },
       this.browsingContextId
     );
   }
 
-  async #releaseObject(handle: CommonDataTypes.Handle): Promise<void> {
+  async #releaseObject(handle: Script.Handle): Promise<void> {
     try {
       await this.cdpClient.sendCommand('Runtime.releaseObject', {
         objectId: handle,
@@ -99,7 +102,7 @@ export class Realm {
     }
   }
 
-  async disown(handle: CommonDataTypes.Handle): Promise<void> {
+  async disown(handle: Script.Handle): Promise<void> {
     // Disowning an object from different realm does nothing.
     if (this.#realmStorage.knownHandlesToRealm.get(handle) !== this.realmId) {
       return;
@@ -115,13 +118,13 @@ export class Realm {
       | Protocol.Runtime.CallFunctionOnResponse
       | Protocol.Runtime.EvaluateResponse,
     resultOwnership: Script.ResultOwnership
-  ): CommonDataTypes.RemoteValue {
+  ): Script.RemoteValue {
     const deepSerializedValue = cdpValue.result.deepSerializedValue!;
     const bidiValue = this.deepSerializedToBiDi(deepSerializedValue);
 
     if (cdpValue.result.objectId) {
       const objectId = cdpValue.result.objectId;
-      if (resultOwnership === 'root') {
+      if (resultOwnership === Script.ResultOwnership.Root) {
         // Extend BiDi value with `handle` based on required `resultOwnership`
         // and  CDP response but not on the actual BiDi type.
         (bidiValue as any).handle = objectId;
@@ -140,7 +143,7 @@ export class Realm {
 
   deepSerializedToBiDi(
     webDriverValue: Protocol.Runtime.DeepSerializedValue
-  ): CommonDataTypes.RemoteValue {
+  ): Script.RemoteValue {
     // This relies on the CDP to implement proper BiDi serialization, except
     // backendNodeId/sharedId and `platformobject`.
     const result = webDriverValue as any;
@@ -153,7 +156,7 @@ export class Realm {
     // Platform object is a special case. It should have only `{type: object}`
     // without `value` field.
     if (result.type === 'platformobject') {
-      return {type: 'object'} as CommonDataTypes.RemoteValue;
+      return {type: 'object'} as Script.RemoteValue;
     }
 
     const bidiValue = result.value;
@@ -225,7 +228,7 @@ export class Realm {
     );
   }
 
-  get browsingContextId(): CommonDataTypes.BrowsingContext {
+  get browsingContextId(): BrowsingContext.BrowsingContext {
     return this.#browsingContextId;
   }
 
@@ -252,23 +255,21 @@ export class Realm {
     awaitPromise: boolean,
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions
-  ): Promise<Script.CallFunctionResult> {
+  ): Promise<Script.EvaluateResult> {
     const context = this.#browsingContextStorage.getContext(
       this.browsingContextId
     );
     await context.awaitUnblocked();
 
-    return {
-      result: await this.#scriptEvaluator.callFunction(
-        this,
-        functionDeclaration,
-        _this,
-        _arguments,
-        awaitPromise,
-        resultOwnership,
-        serializationOptions
-      ),
-    };
+    return this.#scriptEvaluator.callFunction(
+      this,
+      functionDeclaration,
+      _this,
+      _arguments,
+      awaitPromise,
+      resultOwnership,
+      serializationOptions
+    );
   }
 
   async scriptEvaluate(
@@ -282,15 +283,13 @@ export class Realm {
     );
     await context.awaitUnblocked();
 
-    return {
-      result: await this.#scriptEvaluator.scriptEvaluate(
-        this,
-        expression,
-        awaitPromise,
-        resultOwnership,
-        serializationOptions
-      ),
-    };
+    return this.#scriptEvaluator.scriptEvaluate(
+      this,
+      expression,
+      awaitPromise,
+      resultOwnership,
+      serializationOptions
+    );
   }
 
   /**
@@ -302,7 +301,7 @@ export class Realm {
   async serializeCdpObject(
     cdpObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.ResultOwnership
-  ): Promise<CommonDataTypes.RemoteValue> {
+  ): Promise<Script.RemoteValue> {
     return this.#scriptEvaluator.serializeCdpObject(
       cdpObject,
       resultOwnership,
@@ -325,7 +324,7 @@ export class Realm {
   delete() {
     this.#eventManager.registerEvent(
       {
-        method: Script.EventNames.RealmDestroyedEvent,
+        method: ChromiumBidi.Script.EventNames.RealmDestroyed,
         params: {
           realm: this.realmId,
         },

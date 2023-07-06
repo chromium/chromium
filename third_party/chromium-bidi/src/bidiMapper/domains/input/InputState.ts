@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-import {Input, Message} from '../../../protocol/protocol.js';
+import {
+  Input,
+  InvalidArgumentException,
+  UnknownErrorException,
+} from '../../../protocol/protocol.js';
 import {Mutex} from '../../../utils/Mutex.js';
 
 import type {ActionOption} from './ActionOption.js';
 import {
-  type InputSource,
-  PointerSource,
-  type InputSourceFor,
-  NoneSource,
   KeySource,
-  WheelSource,
+  NoneSource,
+  PointerSource,
   SourceType,
+  WheelSource,
+  type InputSource,
+  type InputSourceFor,
 } from './InputSource.js';
 
 export class InputState {
@@ -75,7 +79,7 @@ export class InputState {
           source = new WheelSource();
           break;
         default:
-          throw new Message.InvalidArgumentException(
+          throw new InvalidArgumentException(
             `Expected "${SourceType.None}", "${SourceType.Key}", "${SourceType.Pointer}", or "${SourceType.Wheel}". Found unknown source type ${type}.`
           );
       }
@@ -83,7 +87,7 @@ export class InputState {
       return source as InputSourceFor<Type>;
     }
     if (source.type !== type) {
-      throw new Message.InvalidArgumentException(
+      throw new InvalidArgumentException(
         `Input source type of ${id} is ${source.type}, but received ${type}.`
       );
     }
@@ -93,7 +97,7 @@ export class InputState {
   get(id: string): InputSource {
     const source = this.#sources.get(id);
     if (!source) {
-      throw new Message.UnknownErrorException(`Internal error.`);
+      throw new UnknownErrorException(`Internal error.`);
     }
     return source;
   }

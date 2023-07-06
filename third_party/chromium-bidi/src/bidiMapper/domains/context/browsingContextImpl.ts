@@ -17,14 +17,16 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import {inchesFromCm} from '../../../utils/unitConversions.js';
 import {
   BrowsingContext,
-  type CommonDataTypes,
-  Message,
+  ChromiumBidi,
+  UnknownErrorException,
+  UnsupportedOperationException,
+  type EmptyResult,
 } from '../../../protocol/protocol.js';
-import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {Deferred} from '../../../utils/deferred.js';
+import {LogType, type LoggerFn} from '../../../utils/log.js';
+import {inchesFromCm} from '../../../utils/unitConversions.js';
 import type {IEventManager} from '../events/EventManager.js';
 import {Realm} from '../script/realm.js';
 import type {RealmStorage} from '../script/realmStorage.js';
@@ -34,16 +36,16 @@ import type {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextImpl {
   /** The ID of this browsing context. */
-  readonly #id: CommonDataTypes.BrowsingContext;
+  readonly #id: BrowsingContext.BrowsingContext;
 
   /**
    * The ID of the parent browsing context.
    * If null, this is a top-level context.
    */
-  readonly #parentId: CommonDataTypes.BrowsingContext | null;
+  readonly #parentId: BrowsingContext.BrowsingContext | null;
 
   /** Direct children browsing contexts. */
-  readonly #children = new Set<CommonDataTypes.BrowsingContext>();
+  readonly #children = new Set<BrowsingContext.BrowsingContext>();
 
   readonly #browsingContextStorage: BrowsingContextStorage;
 
@@ -71,8 +73,8 @@ export class BrowsingContextImpl {
   private constructor(
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
-    id: CommonDataTypes.BrowsingContext,
-    parentId: CommonDataTypes.BrowsingContext | null,
+    id: BrowsingContext.BrowsingContext,
+    parentId: BrowsingContext.BrowsingContext | null,
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
     logger?: LoggerFn
@@ -89,8 +91,8 @@ export class BrowsingContextImpl {
   static create(
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
-    id: CommonDataTypes.BrowsingContext,
-    parentId: CommonDataTypes.BrowsingContext | null,
+    id: BrowsingContext.BrowsingContext,
+    parentId: BrowsingContext.BrowsingContext | null,
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
     logger?: LoggerFn
@@ -114,7 +116,7 @@ export class BrowsingContextImpl {
 
     eventManager.registerEvent(
       {
-        method: BrowsingContext.EventNames.ContextCreatedEvent,
+        method: ChromiumBidi.BrowsingContext.EventNames.ContextCreatedEvent,
         params: context.serializeToBidiValue(),
       },
       context.id
@@ -152,7 +154,7 @@ export class BrowsingContextImpl {
 
     this.#eventManager.registerEvent(
       {
-        method: BrowsingContext.EventNames.ContextDestroyedEvent,
+        method: ChromiumBidi.BrowsingContext.EventNames.ContextDestroyedEvent,
         params: this.serializeToBidiValue(),
       },
       this.id
@@ -161,12 +163,12 @@ export class BrowsingContextImpl {
   }
 
   /** Returns the ID of this context. */
-  get id(): CommonDataTypes.BrowsingContext {
+  get id(): BrowsingContext.BrowsingContext {
     return this.#id;
   }
 
   /** Returns the parent context ID. */
-  get parentId(): CommonDataTypes.BrowsingContext | null {
+  get parentId(): BrowsingContext.BrowsingContext | null {
     return this.#parentId;
   }
 
@@ -210,7 +212,7 @@ export class BrowsingContextImpl {
     return topContext;
   }
 
-  addChild(childId: CommonDataTypes.BrowsingContext) {
+  addChild(childId: BrowsingContext.BrowsingContext) {
     this.#children.add(childId);
   }
 
@@ -297,7 +299,7 @@ export class BrowsingContextImpl {
     if (this.#isNavigating) {
       this.#eventManager.registerEvent(
         {
-          method: BrowsingContext.EventNames.NavigationStartedEvent,
+          method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
           params: {
             context: this.id,
             // TODO: The navigation event is sent before CDP Page.frameStartedLoading.
@@ -341,7 +343,7 @@ export class BrowsingContextImpl {
 
         this.#eventManager.registerEvent(
           {
-            method: BrowsingContext.EventNames.FragmentNavigatedEvent,
+            method: ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
             params: {
               context: this.id,
               navigation: null,
@@ -406,7 +408,8 @@ export class BrowsingContextImpl {
             );
             this.#eventManager.registerEvent(
               {
-                method: BrowsingContext.EventNames.DomContentLoadedEvent,
+                method:
+                  ChromiumBidi.BrowsingContext.EventNames.DomContentLoadedEvent,
                 params: {
                   context: this.id,
                   navigation: this.#loaderId ?? null,
@@ -422,7 +425,7 @@ export class BrowsingContextImpl {
             this.#deferreds.Page.lifecycleEvent.load.resolve(params);
             this.#eventManager.registerEvent(
               {
-                method: BrowsingContext.EventNames.LoadEvent,
+                method: ChromiumBidi.BrowsingContext.EventNames.LoadEvent,
                 params: {
                   context: this.id,
                   navigation: this.#loaderId ?? null,
@@ -502,7 +505,7 @@ export class BrowsingContextImpl {
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
       this.#eventManager.registerEvent(
         {
-          method: BrowsingContext.EventNames.UserPromptClosedEvent,
+          method: ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
           params: {
             context: this.id,
             accepted: params.result,
@@ -517,7 +520,7 @@ export class BrowsingContextImpl {
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
       this.#eventManager.registerEvent(
         {
-          method: BrowsingContext.EventNames.UserPromptOpenedEvent,
+          method: ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
           params: {
             context: this.id,
             type: params.type,
@@ -603,16 +606,15 @@ export class BrowsingContextImpl {
       });
 
     if (cdpNavigateResult.errorText) {
-      throw new Message.UnknownErrorException(cdpNavigateResult.errorText);
+      throw new UnknownErrorException(cdpNavigateResult.errorText);
     }
 
     this.#documentChanged(cdpNavigateResult.loaderId);
 
     switch (wait) {
-      case 'none':
+      case BrowsingContext.ReadinessState.None:
         break;
-
-      case 'interactive':
+      case BrowsingContext.ReadinessState.Interactive:
         // No `loaderId` means same-document navigation.
         if (cdpNavigateResult.loaderId === undefined) {
           await this.#deferreds.Page.navigatedWithinDocument;
@@ -620,8 +622,7 @@ export class BrowsingContextImpl {
           await this.#deferreds.Page.lifecycleEvent.DOMContentLoaded;
         }
         break;
-
-      case 'complete':
+      case BrowsingContext.ReadinessState.Complete:
         // No `loaderId` means same-document navigation.
         if (cdpNavigateResult.loaderId === undefined) {
           await this.#deferreds.Page.navigatedWithinDocument;
@@ -632,17 +633,15 @@ export class BrowsingContextImpl {
     }
 
     return {
-      result: {
-        navigation: cdpNavigateResult.loaderId ?? null,
-        url,
-      },
+      navigation: cdpNavigateResult.loaderId ?? null,
+      url,
     };
   }
 
   async reload(
     ignoreCache: boolean,
     wait: BrowsingContext.ReadinessState
-  ): Promise<Message.EmptyResult> {
+  ): Promise<EmptyResult> {
     await this.awaitUnblocked();
 
     await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
@@ -652,19 +651,17 @@ export class BrowsingContextImpl {
     this.#resetDeferredsIfFinished();
 
     switch (wait) {
-      case 'none':
+      case BrowsingContext.ReadinessState.None:
         break;
-
-      case 'interactive':
+      case BrowsingContext.ReadinessState.Interactive:
         await this.#deferreds.Page.lifecycleEvent.DOMContentLoaded;
         break;
-
-      case 'complete':
+      case BrowsingContext.ReadinessState.Complete:
         await this.awaitLoaded();
         break;
     }
 
-    return {result: {}};
+    return {};
   }
 
   async setViewport(viewport: BrowsingContext.Viewport | null) {
@@ -691,7 +688,7 @@ export class BrowsingContextImpl {
             'Width and height values must be positive'
           )
         ) {
-          throw new Message.UnsupportedOperationException(
+          throw new UnsupportedOperationException(
             'Provided viewport dimensions are not supported'
           );
         }
@@ -757,9 +754,7 @@ export class BrowsingContextImpl {
       }
     );
     return {
-      result: {
-        data: result.data,
-      },
+      data: result.data,
     };
   }
 
@@ -808,9 +803,7 @@ export class BrowsingContextImpl {
     );
 
     return {
-      result: {
-        data: result.data,
-      },
+      data: result.data,
     };
   }
 

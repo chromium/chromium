@@ -17,15 +17,19 @@
  * @license
  */
 
-import {Message} from '../protocol/protocol';
 import {
   BidiServer,
-  type BidiTransport,
   OutgoingBidiMessage,
+  type BidiTransport,
 } from '../bidiMapper/bidiMapper.js';
 import {CdpConnection} from '../cdp/cdpConnection.js';
-import type {ITransport} from '../utils/transport.js';
+import {
+  ErrorCode,
+  type ChromiumBidi,
+  type ErrorResponse,
+} from '../protocol/protocol.js';
 import {LogType} from '../utils/log.js';
+import type {ITransport} from '../utils/transport.js';
 
 import {BidiParserImpl} from './BidiParserImpl';
 import {generatePage, log} from './mapperTabPage.js';
@@ -104,19 +108,19 @@ function createCdpConnection() {
 
 function createBidiServer(selfTargetId: string) {
   class WindowBidiTransport implements BidiTransport {
-    #onMessage: ((message: Message.RawCommandRequest) => void) | null = null;
+    #onMessage: ((message: ChromiumBidi.Command) => void) | null = null;
 
     constructor() {
       window.onBidiMessage = (messageStr: string) => {
         log(`${LogType.bidi}:RECV ◂`, messageStr);
-        let messageObject: Message.RawCommandRequest;
+        let messageObject: ChromiumBidi.Command;
         try {
           messageObject = WindowBidiTransport.#parseBidiMessage(messageStr);
         } catch (e: any) {
           // Transport-level error does not provide channel.
           this.#respondWithError(
             messageStr,
-            Message.ErrorCode.InvalidArgument,
+            ErrorCode.InvalidArgument,
             e.message,
             null
           );
@@ -130,7 +134,7 @@ function createBidiServer(selfTargetId: string) {
       this.#onMessage = onMessage;
     }
 
-    sendMessage(message: Message.OutgoingMessage) {
+    sendMessage(message: ChromiumBidi.Message) {
       const messageStr = JSON.stringify(message);
       window.sendBidiResponse(messageStr);
       log(`${LogType.bidi}:SEND ▸`, messageStr);
@@ -143,7 +147,7 @@ function createBidiServer(selfTargetId: string) {
 
     #respondWithError(
       plainCommandData: string,
-      errorCode: Message.ErrorCode,
+      errorCode: ErrorCode,
       errorMessage: string,
       channel: string | null
     ) {
@@ -158,7 +162,7 @@ function createBidiServer(selfTargetId: string) {
         this.sendMessage({
           ...errorResponse,
           channel,
-        } as any);
+        });
       } else {
         this.sendMessage(errorResponse);
       }
@@ -176,9 +180,9 @@ function createBidiServer(selfTargetId: string) {
 
     static #getErrorResponse(
       messageStr: string,
-      errorCode: Message.ErrorCode,
+      errorCode: ErrorCode,
       errorMessage: string
-    ): Message.OutgoingMessage {
+    ): ErrorResponse {
       // XXX: this is bizarre per spec. We reparse the payload and
       // extract the ID, regardless of what kind of value it was.
       let messageId;
@@ -200,8 +204,8 @@ function createBidiServer(selfTargetId: string) {
       };
     }
 
-    static #parseBidiMessage(messageStr: string): Message.RawCommandRequest {
-      let messageObject: Message.RawCommandRequest;
+    static #parseBidiMessage(messageStr: string): ChromiumBidi.Command {
+      let messageObject: ChromiumBidi.Command;
       try {
         messageObject = JSON.parse(messageStr);
       } catch {

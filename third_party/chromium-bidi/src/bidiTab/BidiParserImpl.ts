@@ -29,35 +29,35 @@ export class BidiParserImpl implements BidiParser {
   // Browsing Context domain
   // keep-sorted start block=yes
   parseCaptureScreenshotParams(
-    params: object
+    params: unknown
   ): BrowsingContext.CaptureScreenshotParameters {
     return Parser.BrowsingContext.parseCaptureScreenshotParams(params);
   }
-  parseCloseParams(params: object): BrowsingContext.CloseParameters {
+  parseCloseParams(params: unknown): BrowsingContext.CloseParameters {
     return Parser.BrowsingContext.parseCloseParams(params);
   }
-  parseCreateParams(params: object): BrowsingContext.CreateParameters {
+  parseCreateParams(params: unknown): BrowsingContext.CreateParameters {
     return Parser.BrowsingContext.parseCreateParams(params);
   }
-  parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters {
+  parseGetTreeParams(params: unknown): BrowsingContext.GetTreeParameters {
     return Parser.BrowsingContext.parseGetTreeParams(params);
   }
   parseHandleUserPromptParams(
-    params: object
+    params: unknown
   ): BrowsingContext.HandleUserPromptParameters {
     return Parser.BrowsingContext.parseHandleUserPromptParameters(params);
   }
-  parseNavigateParams(params: object): BrowsingContext.NavigateParameters {
+  parseNavigateParams(params: unknown): BrowsingContext.NavigateParameters {
     return Parser.BrowsingContext.parseNavigateParams(params);
   }
-  parsePrintParams(params: object): BrowsingContext.PrintParameters {
+  parsePrintParams(params: unknown): BrowsingContext.PrintParameters {
     return Parser.BrowsingContext.parsePrintParams(params);
   }
-  parseReloadParams(params: object): BrowsingContext.ReloadParameters {
+  parseReloadParams(params: unknown): BrowsingContext.ReloadParameters {
     return Parser.BrowsingContext.parseReloadParams(params);
   }
   parseSetViewportParams(
-    params: object
+    params: unknown
   ): BrowsingContext.SetViewportParameters {
     return Parser.BrowsingContext.parseSetViewportParams(params);
   }
@@ -65,54 +65,54 @@ export class BidiParserImpl implements BidiParser {
 
   // CDP domain
   // keep-sorted start block=yes
-  parseGetSessionParams(params: object): Cdp.GetSessionParams {
-    return Parser.Cdp.parseGetSessionParams(params);
+  parseGetSessionParams(params: unknown): Cdp.GetSessionParameters {
+    return Parser.Cdp.parseGetSessionRequest(params);
   }
-  parseSendCommandParams(params: object): Cdp.SendCommandParams {
-    return Parser.Cdp.parseSendCommandParams(params);
+  parseSendCommandParams(params: unknown): Cdp.SendCommandParameters {
+    return Parser.Cdp.parseSendCommandRequest(params);
   }
   // keep-sorted end block=yes
 
   // Input domain
   // keep-sorted start block=yes
-  parsePerformActionsParams(params: object): Input.PerformActionsParameters {
+  parsePerformActionsParams(params: unknown): Input.PerformActionsParameters {
     return Parser.Input.parsePerformActionsParams(params);
   }
-  parseReleaseActionsParams(params: object): Input.ReleaseActionsParameters {
+  parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters {
     return Parser.Input.parseReleaseActionsParams(params);
   }
   // keep-sorted end block=yes
 
   // Network domain
   // keep-sorted start block=yes
-  parseAddInterceptParams(params: object): Network.AddInterceptParameters {
+  parseAddInterceptParams(params: unknown): Network.AddInterceptParameters {
     return Parser.Network.parseAddInterceptParams(params);
   }
   parseContinueRequestParams(
-    params: object
+    params: unknown
   ): Network.ContinueRequestParameters {
     return Parser.Network.parseContinueRequestParams(params);
   }
   parseContinueResponseParams(
-    params: object
+    params: unknown
   ): Network.ContinueResponseParameters {
     return Parser.Network.parseContinueResponseParams(params);
   }
   parseContinueWithAuthParams(
-    params: object
+    params: unknown
   ): Network.ContinueWithAuthParameters {
     return Parser.Network.parseContinueWithAuthParams(params);
   }
-  parseFailRequestParams(params: object): Network.FailRequestParameters {
+  parseFailRequestParams(params: unknown): Network.FailRequestParameters {
     return Parser.Network.parseFailRequestParams(params);
   }
   parseProvideResponseParams(
-    params: object
+    params: unknown
   ): Network.ProvideResponseParameters {
     return Parser.Network.parseProvideResponseParams(params);
   }
   parseRemoveInterceptParams(
-    params: object
+    params: unknown
   ): Network.RemoveInterceptParameters {
     return Parser.Network.parseRemoveInterceptParams(params);
   }
@@ -121,24 +121,24 @@ export class BidiParserImpl implements BidiParser {
   // Script domain
   // keep-sorted start block=yes
   parseAddPreloadScriptParams(
-    params: object
+    params: unknown
   ): Script.AddPreloadScriptParameters {
     return Parser.Script.parseAddPreloadScriptParams(params);
   }
-  parseCallFunctionParams(params: object): Script.CallFunctionParameters {
+  parseCallFunctionParams(params: unknown): Script.CallFunctionParameters {
     return Parser.Script.parseCallFunctionParams(params);
   }
-  parseDisownParams(params: object): Script.DisownParameters {
+  parseDisownParams(params: unknown): Script.DisownParameters {
     return Parser.Script.parseDisownParams(params);
   }
-  parseEvaluateParams(params: object): Script.EvaluateParameters {
+  parseEvaluateParams(params: unknown): Script.EvaluateParameters {
     return Parser.Script.parseEvaluateParams(params);
   }
-  parseGetRealmsParams(params: object): Script.GetRealmsParameters {
+  parseGetRealmsParams(params: unknown): Script.GetRealmsParameters {
     return Parser.Script.parseGetRealmsParams(params);
   }
   parseRemovePreloadScriptParams(
-    params: object
+    params: unknown
   ): Script.RemovePreloadScriptParameters {
     return Parser.Script.parseRemovePreloadScriptParams(params);
   }
@@ -146,7 +146,7 @@ export class BidiParserImpl implements BidiParser {
 
   // Session domain
   // keep-sorted start block=yes
-  parseSubscribeParams(params: object): Session.SubscriptionRequest {
+  parseSubscribeParams(params: unknown): Session.SubscriptionRequest {
     return Parser.Session.parseSubscribeParams(params);
   }
   // keep-sorted end block=yes

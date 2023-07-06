@@ -18,13 +18,13 @@
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
-import {LogManager} from '../log/logManager.js';
-import type {RealmStorage} from '../script/realmStorage.js';
-import type {IEventManager} from '../events/EventManager.js';
-import type {CommonDataTypes} from '../../../protocol/protocol.js';
+import type {BrowsingContext} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/deferred.js';
+import type {IEventManager} from '../events/EventManager.js';
+import {LogManager} from '../log/logManager.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
 import type {ChannelProxy} from '../script/channelProxy.js';
+import type {RealmStorage} from '../script/realmStorage.js';
 
 import type {PreloadScriptStorage} from './PreloadScriptStorage.js';
 
@@ -175,7 +175,7 @@ export class CdpTarget {
    * All the ProxyChannels from all the preload scripts of the given
    * BrowsingContext.
    */
-  getChannels(contextId: CommonDataTypes.BrowsingContext): ChannelProxy[] {
+  getChannels(contextId: BrowsingContext.BrowsingContext): ChannelProxy[] {
     return this.#preloadScriptStorage
       .findPreloadScripts({
         contextIds: [null, contextId],

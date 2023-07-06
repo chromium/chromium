@@ -24,7 +24,11 @@ import type Protocol from 'devtools-protocol';
 
 import {Deferred} from '../../../utils/deferred.js';
 import type {IEventManager} from '../events/EventManager.js';
-import {Network, type BrowsingContext} from '../../../protocol/protocol.js';
+import {
+  type Network,
+  type BrowsingContext,
+  ChromiumBidi,
+} from '../../../protocol/protocol.js';
 
 export class NetworkRequest {
   static #unknown = 'UNKNOWN';
@@ -143,7 +147,7 @@ export class NetworkRequest {
 
     this.#eventManager.registerEvent(
       {
-        method: Network.EventNames.FetchErrorEvent,
+        method: ChromiumBidi.Network.EventNames.FetchErrorEvent,
         params: {
           ...this.#getBaseEventParams(),
           errorText: event.errorText,
@@ -243,18 +247,18 @@ export class NetworkRequest {
           this.#getBeforeRequestEvent()
         ),
         this.#requestWillBeSentEvent?.frameId ?? null,
-        Network.EventNames.BeforeRequestSentEvent
+        ChromiumBidi.Network.EventNames.BeforeRequestSentEvent
       );
     }
   }
 
-  #getBeforeRequestEvent(): Network.BeforeRequestSentEvent {
+  #getBeforeRequestEvent(): Network.BeforeRequestSent {
     if (this.#requestWillBeSentEvent === undefined) {
       throw new Error('RequestWillBeSentEvent is not set');
     }
 
     return {
-      method: Network.EventNames.BeforeRequestSentEvent,
+      method: ChromiumBidi.Network.EventNames.BeforeRequestSentEvent,
       params: {
         ...this.#getBaseEventParams(),
         initiator: {
@@ -273,12 +277,12 @@ export class NetworkRequest {
           this.#getResponseReceivedEvent()
         ),
         this.#responseReceivedEvent?.frameId ?? null,
-        Network.EventNames.ResponseCompletedEvent
+        ChromiumBidi.Network.EventNames.ResponseCompletedEvent
       );
     }
   }
 
-  #getResponseReceivedEvent(): Network.ResponseCompletedEvent {
+  #getResponseReceivedEvent(): Network.ResponseCompleted {
     if (this.#requestWillBeSentEvent === undefined) {
       throw new Error('RequestWillBeSentEvent is not set');
     }
@@ -298,7 +302,7 @@ export class NetworkRequest {
     );
 
     return {
-      method: Network.EventNames.ResponseCompletedEvent,
+      method: ChromiumBidi.Network.EventNames.ResponseCompletedEvent,
       params: {
         ...this.#getBaseEventParams(),
         response: {

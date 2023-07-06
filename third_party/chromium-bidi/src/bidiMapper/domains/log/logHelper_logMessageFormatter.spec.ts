@@ -17,7 +17,7 @@
 
 import {expect} from 'chai';
 
-import type {CommonDataTypes} from '../../../protocol/protocol.js';
+import type {Script} from '../../../protocol/protocol.js';
 
 import {logMessageFormatter} from './logHelper.js';
 
@@ -288,11 +288,9 @@ function testPattern(
       type: 'string',
       value: formatString,
     },
-    argument,
-  ];
-  const result = logMessageFormatter(
-    inputArgs as CommonDataTypes.RemoteValue[]
-  );
+    argument as Script.RemoteValue,
+  ] satisfies Script.RemoteValue[];
+  const result = logMessageFormatter(inputArgs);
   expect(result).to.equal(expected);
 }
 
@@ -356,29 +354,23 @@ describe('logMessageFormatter', () => {
       {type: 'string', value: 'test string %i string test'},
       {type: 'number', value: 1},
       {type: 'number', value: 2},
-    ];
+    ] satisfies Script.RemoteValue[];
 
-    expect(
-      logMessageFormatter.bind(
-        undefined,
-        inputArgs as CommonDataTypes.RemoteValue[]
-      )
-    ).to.throw('More value is provided: "test string %i string test 1 2"');
+    expect(logMessageFormatter.bind(undefined, inputArgs)).to.throw(
+      'More value is provided: "test string %i string test 1 2"'
+    );
   });
 
   it('less values', () => {
     const inputArgs = [
       {type: 'string', value: 'test string %i %i string test'},
       {type: 'number', value: 1},
-    ];
+    ] satisfies Script.RemoteValue[];
     const outputString =
       'Less value is provided: "test string %i %i string test 1"';
 
-    expect(
-      logMessageFormatter.bind(
-        undefined,
-        inputArgs as CommonDataTypes.RemoteValue[]
-      )
-    ).to.throw(outputString);
+    expect(logMessageFormatter.bind(undefined, inputArgs)).to.throw(
+      outputString
+    );
   });
 });

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import type {Message} from '../protocol/protocol.js';
+import type {ChromiumBidi} from '../protocol/protocol.js';
 
 export interface IBidiTransport {
   setOnMessage: (
-    handler: (message: Message.RawCommandRequest) => Promise<void> | void
+    handler: (message: ChromiumBidi.Command) => Promise<void> | void
   ) => void;
-  sendMessage: (message: Message.OutgoingMessage) => Promise<void> | void;
+  sendMessage: (message: ChromiumBidi.Message) => Promise<void> | void;
   close(): void;
 }

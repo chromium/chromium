@@ -16,30 +16,33 @@
  */
 import type Protocol from 'devtools-protocol';
 
+import type {ICdpClient} from '../../../cdp/cdpClient.js';
+import type {ICdpConnection} from '../../../cdp/cdpConnection.js';
 import {
-  type BrowsingContext,
-  type Cdp,
+  BrowsingContext,
   Input,
-  Message,
+  InvalidArgumentException,
+  NoSuchScriptException,
+  Script,
+  type Cdp,
+  type EmptyResult,
   type Network,
-  type Script,
 } from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {IEventManager} from '../events/EventManager.js';
+import {ActionDispatcher} from '../input/ActionDispatcher.js';
+import type {ActionOption} from '../input/ActionOption.js';
+import {SourceType} from '../input/InputSource.js';
+import type {InputState} from '../input/InputState.js';
+import {InputStateManager} from '../input/InputStateManager.js';
 import type {Realm} from '../script/realm.js';
 import type {RealmStorage} from '../script/realmStorage.js';
-import type {ActionOption} from '../input/ActionOption.js';
-import {InputStateManager} from '../input/InputStateManager.js';
-import {ActionDispatcher} from '../input/ActionDispatcher.js';
-import type {InputState} from '../input/InputState.js';
-import type {ICdpConnection} from '../../../cdp/cdpConnection.js';
-import type {ICdpClient} from '../../../cdp/cdpClient.js';
 
 import {PreloadScriptStorage} from './PreloadScriptStorage.js';
+import {BidiPreloadScript} from './bidiPreloadScript';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import type {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpTarget} from './cdpTarget.js';
-import {BidiPreloadScript} from './bidiPreloadScript';
 
 export class BrowsingContextProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -225,11 +228,9 @@ export class BrowsingContextProcessor {
         : [this.#browsingContextStorage.getContext(params.root)];
 
     return {
-      result: {
-        contexts: resultContexts.map((c) =>
-          c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE)
-        ),
-      },
+      contexts: resultContexts.map((c) =>
+        c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE)
+      ),
     };
   }
 
@@ -244,7 +245,7 @@ export class BrowsingContextProcessor {
         params.referenceContext
       );
       if (!referenceContext.isTopLevelContext()) {
-        throw new Message.InvalidArgumentException(
+        throw new InvalidArgumentException(
           `referenceContext should be a top-level context`
         );
       }
@@ -253,13 +254,13 @@ export class BrowsingContextProcessor {
     let result: Protocol.Target.CreateTargetResponse;
 
     switch (params.type) {
-      case 'tab':
+      case BrowsingContext.CreateType.Tab:
         result = await browserCdpClient.sendCommand('Target.createTarget', {
           url: 'about:blank',
           newWindow: false,
         });
         break;
-      case 'window':
+      case BrowsingContext.CreateType.Window:
         result = await browserCdpClient.sendCommand('Target.createTarget', {
           url: 'about:blank',
           newWindow: true,
@@ -276,11 +277,7 @@ export class BrowsingContextProcessor {
     const context = this.#browsingContextStorage.getContext(contextId);
     await context.awaitLoaded();
 
-    return {
-      result: {
-        context: context.id,
-      },
-    };
+    return {context: context.id};
   }
 
   process_browsingContext_navigate(
@@ -288,15 +285,21 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.NavigateResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
 
-    return context.navigate(params.url, params.wait ?? 'none');
+    return context.navigate(
+      params.url,
+      params.wait ?? BrowsingContext.ReadinessState.None
+    );
   }
 
   process_browsingContext_reload(
     params: BrowsingContext.ReloadParameters
-  ): Promise<Message.EmptyResult> {
+  ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
 
-    return context.reload(params.ignoreCache ?? false, params.wait ?? 'none');
+    return context.reload(
+      params.ignoreCache ?? false,
+      params.wait ?? BrowsingContext.ReadinessState.None
+    );
   }
 
   async process_browsingContext_captureScreenshot(
@@ -328,15 +331,13 @@ export class BrowsingContextProcessor {
     await preloadScript.initInTargets(cdpTargets);
 
     return {
-      result: {
-        script: preloadScript.id,
-      },
+      script: preloadScript.id,
     };
   }
 
   async process_script_removePreloadScript(
     params: Script.RemovePreloadScriptParameters
-  ): Promise<Message.EmptyResult> {
+  ): Promise<EmptyResult> {
     const bidiId = params.script;
 
     const scripts = this.#preloadScriptStorage.findPreloadScripts({
@@ -344,7 +345,7 @@ export class BrowsingContextProcessor {
     });
 
     if (scripts.length === 0) {
-      throw new Message.NoSuchScriptException(
+      throw new NoSuchScriptException(
         `No preload script with BiDi ID '${bidiId}'`
       );
     }
@@ -355,7 +356,7 @@ export class BrowsingContextProcessor {
       id: bidiId,
     });
 
-    return {result: {}};
+    return {};
   }
 
   async process_script_evaluate(
@@ -365,7 +366,7 @@ export class BrowsingContextProcessor {
     return realm.scriptEvaluate(
       params.expression,
       params.awaitPromise,
-      params.resultOwnership ?? 'none',
+      params.resultOwnership ?? Script.ResultOwnership.None,
       params.serializationOptions ?? {}
     );
   }
@@ -383,12 +384,12 @@ export class BrowsingContextProcessor {
         type: params.type,
       })
       .map((realm: Realm) => realm.toBiDi());
-    return {result: {realms}};
+    return {realms};
   }
 
   async process_script_callFunction(
     params: Script.CallFunctionParameters
-  ): Promise<Script.CallFunctionResult> {
+  ): Promise<Script.EvaluateResult> {
     const realm = await this.#getRealm(params.target);
     return realm.callFunction(
       params.functionDeclaration,
@@ -397,22 +398,22 @@ export class BrowsingContextProcessor {
       }, // `this` is `undefined` by default.
       params.arguments ?? [], // `arguments` is `[]` by default.
       params.awaitPromise,
-      params.resultOwnership ?? 'none',
+      params.resultOwnership ?? Script.ResultOwnership.None,
       params.serializationOptions ?? {}
     );
   }
 
   async process_script_disown(
     params: Script.DisownParameters
-  ): Promise<Script.DisownResult> {
+  ): Promise<EmptyResult> {
     const realm = await this.#getRealm(params.target);
     await Promise.all(params.handles.map(async (h) => realm.disown(h)));
-    return {result: {}};
+    return {};
   }
 
   async process_input_performActions(
     params: Input.PerformActionsParameters
-  ): Promise<Message.EmptyResult> {
+  ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     const inputState = this.#inputStateManager.get(context.top);
     const actionsByTick = this.#getActionsByTick(params, inputState);
@@ -422,7 +423,7 @@ export class BrowsingContextProcessor {
       await ActionDispatcher.isMacOS(context).catch(() => false)
     );
     await dispatcher.dispatchActions(actionsByTick);
-    return {result: {}};
+    return {};
   }
 
   #getActionsByTick(
@@ -432,24 +433,24 @@ export class BrowsingContextProcessor {
     const actionsByTick: ActionOption[][] = [];
     for (const action of params.actions) {
       switch (action.type) {
-        case Input.SourceActionsType.Pointer: {
+        case SourceType.Pointer: {
           action.parameters ??= {pointerType: Input.PointerType.Mouse};
           action.parameters.pointerType ??= Input.PointerType.Mouse;
 
           const source = inputState.getOrCreate(
             action.id,
-            Input.SourceActionsType.Pointer,
+            SourceType.Pointer,
             action.parameters.pointerType
           );
           if (source.subtype !== action.parameters.pointerType) {
-            throw new Message.InvalidArgumentException(
+            throw new InvalidArgumentException(
               `Expected input source ${action.id} to be ${source.subtype}; got ${action.parameters.pointerType}.`
             );
           }
           break;
         }
         default:
-          inputState.getOrCreate(action.id, action.type);
+          inputState.getOrCreate(action.id, action.type as SourceType);
       }
       const actions = action.actions.map((item) => ({
         id: action.id,
@@ -467,7 +468,7 @@ export class BrowsingContextProcessor {
 
   async process_input_releaseActions(
     params: Input.ReleaseActionsParameters
-  ): Promise<Message.EmptyResult> {
+  ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     const topContext = context.top;
     const inputState = this.#inputStateManager.get(topContext);
@@ -478,39 +479,39 @@ export class BrowsingContextProcessor {
     );
     await dispatcher.dispatchTickActions(inputState.cancelList.reverse());
     this.#inputStateManager.delete(topContext);
-    return {result: {}};
+    return {};
   }
 
   async process_browsingContext_setViewport(
     params: BrowsingContext.SetViewportParameters
-  ): Promise<Message.EmptyResult> {
+  ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     if (!context.isTopLevelContext()) {
-      throw new Message.InvalidArgumentException(
+      throw new InvalidArgumentException(
         'Emulating viewport is only supported on the top-level context'
       );
     }
     await context.setViewport(params.viewport);
-    return {result: {}};
+    return {};
   }
 
   async process_browsingContext_handleUserPrompt(
     params: BrowsingContext.HandleUserPromptParameters
-  ): Promise<Message.EmptyResult> {
+  ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     await context.handleUserPrompt(params);
-    return {result: {}};
+    return {};
   }
 
   async process_browsingContext_close(
     commandParams: BrowsingContext.CloseParameters
-  ): Promise<Message.EmptyResult> {
+  ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(
       commandParams.context
     );
 
     if (!context.isTopLevelContext()) {
-      throw new Message.InvalidArgumentException(
+      throw new InvalidArgumentException(
         `Non top-level browsing context ${context.id} cannot be closed.`
       );
     }
@@ -551,7 +552,7 @@ export class BrowsingContextProcessor {
       }
     }
 
-    return {result: {}};
+    return {};
   }
 
   #isValidTarget(target: Protocol.Target.TargetInfo) {
@@ -561,15 +562,20 @@ export class BrowsingContextProcessor {
     return ['page', 'iframe'].includes(target.type);
   }
 
-  process_cdp_getSession(params: Cdp.GetSessionParams): Cdp.GetSessionResult {
+  process_cdp_getSession(
+    params: Cdp.GetSessionParameters
+  ): Cdp.GetSessionResult {
     const context = params.context;
     const sessionId =
       this.#browsingContextStorage.getContext(context).cdpTarget.cdpSessionId;
-    return {result: {session: sessionId === undefined ? null : sessionId}};
+    if (sessionId === undefined) {
+      return {};
+    }
+    return {session: sessionId};
   }
 
   async process_cdp_sendCommand(
-    params: Cdp.SendCommandParams
+    params: Cdp.SendCommandParameters
   ): Promise<Cdp.SendCommandResult> {
     const client = params.session
       ? this.#cdpConnection.getCdpClient(params.session)
@@ -586,51 +592,49 @@ export class BrowsingContextProcessor {
   ): Network.AddInterceptResult {
     // TODO: Implement.
     return {
-      result: {
-        intercept: '',
-      },
+      intercept: '',
     };
   }
 
   process_network_continueRequest(
     _params: Network.ContinueRequestParameters
-  ): Message.EmptyResult {
+  ): EmptyResult {
     // TODO: Implement.
-    return {result: {}};
+    return {};
   }
 
   process_network_continueResponse(
     _params: Network.ContinueResponseParameters
-  ): Message.EmptyResult {
+  ): EmptyResult {
     // TODO: Implement.
-    return {result: {}};
+    return {};
   }
 
   process_network_continueWithAuth(
     _params: Network.ContinueWithAuthParameters
-  ): Message.EmptyResult {
+  ): EmptyResult {
     // TODO: Implement.
-    return {result: {}};
+    return {};
   }
 
   process_network_failRequest(
     _params: Network.FailRequestParameters
-  ): Message.EmptyResult {
+  ): EmptyResult {
     // TODO: Implement.
-    return {result: {}};
+    return {};
   }
 
   process_network_provideResponse(
     _params: Network.ProvideResponseParameters
-  ): Message.EmptyResult {
+  ): EmptyResult {
     // TODO: Implement.
-    return {result: {}};
+    return {};
   }
 
   process_network_removeIntercept(
     _params: Network.RemoveInterceptParameters
-  ): Message.EmptyResult {
+  ): EmptyResult {
     // TODO: Implement.
-    return {result: {}};
+    return {};
   }
 }

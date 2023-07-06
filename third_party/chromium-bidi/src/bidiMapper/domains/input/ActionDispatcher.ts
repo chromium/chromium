@@ -16,9 +16,11 @@
  */
 
 import {
-  type CommonDataTypes,
   Input,
-  Message,
+  InvalidArgumentException,
+  MoveTargetOutOfBoundsException,
+  NoSuchElementException,
+  Script,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
 import type {BrowsingContextImpl} from '../context/browsingContextImpl.js';
@@ -27,7 +29,7 @@ import type {ActionOption} from './ActionOption.js';
 import type {KeySource, PointerSource, WheelSource} from './InputSource.js';
 import type {InputState} from './InputState.js';
 import {KeyToKeyCode} from './USKeyboardLayout.js';
-import {getNormalizedKey, getKeyCode, getKeyLocation} from './keyUtils.js';
+import {getKeyCode, getKeyLocation, getNormalizedKey} from './keyUtils.js';
 
 /** https://w3c.github.io/webdriver/#dfn-center-point */
 const CALCULATE_IN_VIEW_CENTER_PT_DECL = ((i: Element) => {
@@ -45,20 +47,20 @@ const IS_MAC_DECL = (() => {
 
 async function getElementCenter(
   context: BrowsingContextImpl,
-  element: CommonDataTypes.SharedReference
+  element: Script.SharedReference
 ) {
-  const {result} = await (
+  const result = await (
     await context.getOrCreateSandbox(undefined)
   ).callFunction(
     CALCULATE_IN_VIEW_CENTER_PT_DECL,
     {type: 'undefined'},
     [element],
     false,
-    'none',
+    Script.ResultOwnership.None,
     {}
   );
   if (result.type === 'exception') {
-    throw new Message.NoSuchElementException(
+    throw new NoSuchElementException(
       `Origin element ${element.sharedId} was not found`
     );
   }
@@ -75,9 +77,16 @@ async function getElementCenter(
 
 export class ActionDispatcher {
   static isMacOS = async (context: BrowsingContextImpl) => {
-    const {result} = await (
+    const result = await (
       await context.getOrCreateSandbox(undefined)
-    ).callFunction(IS_MAC_DECL, {type: 'undefined'}, [], false, 'none', {});
+    ).callFunction(
+      IS_MAC_DECL,
+      {type: 'undefined'},
+      [],
+      false,
+      Script.ResultOwnership.None,
+      {}
+    );
     assert(result.type !== 'exception');
     assert(result.result.type === 'boolean');
     return result.result.value;
@@ -131,28 +140,28 @@ export class ActionDispatcher {
     const source = this.#inputState.get(id);
     const keyState = this.#inputState.getGlobalKeyState();
     switch (action.type) {
-      case Input.ActionType.KeyDown: {
+      case 'keyDown': {
         // SAFETY: The source is validated before.
         await this.#dispatchKeyDownAction(source as KeySource, action);
         this.#inputState.cancelList.push({
           id,
           action: {
             ...action,
-            type: Input.ActionType.KeyUp,
+            type: 'keyUp',
           },
         });
         break;
       }
-      case Input.ActionType.KeyUp: {
+      case 'keyUp': {
         // SAFETY: The source is validated before.
         await this.#dispatchKeyUpAction(source as KeySource, action);
         break;
       }
-      case Input.ActionType.Pause: {
+      case 'pause': {
         // TODO: Implement waiting on the input source.
         break;
       }
-      case Input.ActionType.PointerDown: {
+      case 'pointerDown': {
         // SAFETY: The source is validated before.
         await this.#dispatchPointerDownAction(
           source as PointerSource,
@@ -163,12 +172,12 @@ export class ActionDispatcher {
           id,
           action: {
             ...action,
-            type: Input.ActionType.PointerUp,
+            type: 'pointerUp',
           },
         });
         break;
       }
-      case Input.ActionType.PointerMove: {
+      case 'pointerMove': {
         // SAFETY: The source is validated before.
         await this.#dispatchPointerMoveAction(
           source as PointerSource,
@@ -177,7 +186,7 @@ export class ActionDispatcher {
         );
         break;
       }
-      case Input.ActionType.PointerUp: {
+      case 'pointerUp': {
         // SAFETY: The source is validated before.
         await this.#dispatchPointerUpAction(
           source as PointerSource,
@@ -186,7 +195,7 @@ export class ActionDispatcher {
         );
         break;
       }
-      case Input.ActionType.Scroll: {
+      case 'scroll': {
         // SAFETY: The source is validated before.
         await this.#dispatchScrollAction(
           source as WheelSource,
@@ -373,7 +382,7 @@ export class ActionDispatcher {
     );
 
     if (targetX < 0 || targetY < 0) {
-      throw new Message.MoveTargetOutOfBoundsException(
+      throw new MoveTargetOutOfBoundsException(
         `Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`
       );
     }
@@ -498,7 +507,7 @@ export class ActionDispatcher {
     } = action;
 
     if (origin === 'pointer') {
-      throw new Message.InvalidArgumentException(
+      throw new InvalidArgumentException(
         '"pointer" origin is invalid for scrolling.'
       );
     }
@@ -512,7 +521,7 @@ export class ActionDispatcher {
     );
 
     if (targetX < 0 || targetY < 0) {
-      throw new Message.MoveTargetOutOfBoundsException(
+      throw new MoveTargetOutOfBoundsException(
         `Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`
       );
     }

@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {CommonDataTypes} from '../../../protocol/protocol.js';
+import type {BrowsingContext} from '../../../protocol/protocol.js';
 
-import type {CdpTarget} from './cdpTarget.js';
 import type {BidiPreloadScript} from './bidiPreloadScript.js';
+import type {CdpTarget} from './cdpTarget.js';
 
 /**
  * BidiPreloadScripts can be filtered by either context ID, BiDi ID or
@@ -27,7 +27,7 @@ export type BidiPreloadScriptFilter = Partial<
   Pick<BidiPreloadScript, 'contextId'> &
     Pick<BidiPreloadScript, 'id'> &
     Pick<CdpTarget, 'targetId'>
-> & {contextIds?: (CommonDataTypes.BrowsingContext | null)[]};
+> & {contextIds?: (BrowsingContext.BrowsingContext | null)[]};
 
 /**
  * Container class for preload scripts.

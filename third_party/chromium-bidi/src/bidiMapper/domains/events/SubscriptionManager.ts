@@ -16,13 +16,9 @@
  */
 
 import {
-  BrowsingContext,
-  type CommonDataTypes,
-  Log,
-  Message,
-  Network,
-  Script,
-  type Session,
+  ChromiumBidi,
+  InvalidArgumentException,
+  type BrowsingContext,
 } from '../../../protocol/protocol.js';
 import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
@@ -40,11 +36,11 @@ export function cartesianProduct(...a: any[][]) {
 
 /** Expands "AllEvents" events into atomic events. */
 export function unrollEvents(
-  events: Session.SubscriptionRequestEvent[]
-): Session.SubscriptionRequestEvent[] {
-  const allEvents = new Set<Session.SubscriptionRequestEvent>();
+  events: ChromiumBidi.EventNames[]
+): ChromiumBidi.EventNames[] {
+  const allEvents = new Set<ChromiumBidi.EventNames>();
 
-  function addEvents(events: Session.SubscriptionRequestEvent[]) {
+  function addEvents(events: ChromiumBidi.EventNames[]) {
     for (const event of events) {
       allEvents.add(event);
     }
@@ -52,17 +48,35 @@ export function unrollEvents(
 
   for (const event of events) {
     switch (event) {
-      case BrowsingContext.AllEvents:
-        addEvents(Object.values(BrowsingContext.EventNames));
+      case ChromiumBidi.BrowsingContext.EventNames.AllBrowsingContextEvent:
+        addEvents(
+          Object.values(ChromiumBidi.BrowsingContext.EventNames).filter(
+            (name) =>
+              name !==
+              ChromiumBidi.BrowsingContext.EventNames.AllBrowsingContextEvent
+          )
+        );
         break;
-      case Log.AllEvents:
-        addEvents(Object.values(Log.EventNames));
+      case ChromiumBidi.Log.EventNames.AllLogEvent:
+        addEvents(
+          Object.values(ChromiumBidi.Log.EventNames).filter(
+            (name) => name !== ChromiumBidi.Log.EventNames.AllLogEvent
+          )
+        );
         break;
-      case Network.AllEvents:
-        addEvents(Object.values(Network.EventNames));
+      case ChromiumBidi.Network.EventNames.AllNetworkEvent:
+        addEvents(
+          Object.values(ChromiumBidi.Network.EventNames).filter(
+            (name) => name !== ChromiumBidi.Network.EventNames.AllNetworkEvent
+          )
+        );
         break;
-      case Script.AllEvents:
-        addEvents(Object.values(Script.EventNames));
+      case ChromiumBidi.Script.EventNames.AllScriptEvent:
+        addEvents(
+          Object.values(ChromiumBidi.Script.EventNames).filter(
+            (name) => name !== ChromiumBidi.Script.EventNames.AllScriptEvent
+          )
+        );
         break;
       default:
         allEvents.add(event);
@@ -80,8 +94,8 @@ export class SubscriptionManager {
   #channelToContextToEventMap = new Map<
     string | null,
     Map<
-      CommonDataTypes.BrowsingContext | null,
-      Map<Session.SubscriptionRequestEvent, number>
+      BrowsingContext.BrowsingContext | null,
+      Map<ChromiumBidi.EventNames, number>
     >
   >();
   #browsingContextStorage: BrowsingContextStorage;
@@ -91,8 +105,8 @@ export class SubscriptionManager {
   }
 
   getChannelsSubscribedToEvent(
-    eventMethod: Session.SubscriptionRequestEvent,
-    contextId: CommonDataTypes.BrowsingContext | null
+    eventMethod: ChromiumBidi.EventNames,
+    contextId: BrowsingContext.BrowsingContext | null
   ): (string | null)[] {
     const prioritiesAndChannels = Array.from(
       this.#channelToContextToEventMap.keys()
@@ -117,8 +131,8 @@ export class SubscriptionManager {
   }
 
   #getEventSubscriptionPriorityForChannel(
-    eventMethod: Session.SubscriptionRequestEvent,
-    contextId: CommonDataTypes.BrowsingContext | null,
+    eventMethod: ChromiumBidi.EventNames,
+    contextId: BrowsingContext.BrowsingContext | null,
     channel: string | null
   ): null | number {
     const contextToEventMap = this.#channelToContextToEventMap.get(channel);
@@ -147,36 +161,52 @@ export class SubscriptionManager {
   }
 
   subscribe(
-    event: Session.SubscriptionRequestEvent,
-    contextId: CommonDataTypes.BrowsingContext | null,
+    event: ChromiumBidi.EventNames,
+    contextId: BrowsingContext.BrowsingContext | null,
     channel: string | null
   ): void {
     // All the subscriptions are handled on the top-level contexts.
     contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
 
-    if (event === BrowsingContext.AllEvents) {
-      Object.values(BrowsingContext.EventNames).map((specificEvent) =>
-        this.subscribe(specificEvent, contextId, channel)
-      );
-      return;
-    }
-    if (event === Log.AllEvents) {
-      Object.values(Log.EventNames).map((specificEvent) =>
-        this.subscribe(specificEvent, contextId, channel)
-      );
-      return;
-    }
-    if (event === Network.AllEvents) {
-      Object.values(Network.EventNames).map((specificEvent) =>
-        this.subscribe(specificEvent, contextId, channel)
-      );
-      return;
-    }
-    if (event === Script.AllEvents) {
-      Object.values(Script.EventNames).map((specificEvent) =>
-        this.subscribe(specificEvent, contextId, channel)
-      );
-      return;
+    switch (event) {
+      case ChromiumBidi.BrowsingContext.EventNames.AllBrowsingContextEvent:
+        Object.values(ChromiumBidi.BrowsingContext.EventNames)
+          .filter(
+            (name) =>
+              name !==
+              ChromiumBidi.BrowsingContext.EventNames.AllBrowsingContextEvent
+          )
+          .map((specificEvent) =>
+            this.subscribe(specificEvent, contextId, channel)
+          );
+        return;
+      case ChromiumBidi.Log.EventNames.AllLogEvent:
+        Object.values(ChromiumBidi.Log.EventNames)
+          .filter((name) => name !== ChromiumBidi.Log.EventNames.AllLogEvent)
+          .map((specificEvent) =>
+            this.subscribe(specificEvent, contextId, channel)
+          );
+        return;
+      case ChromiumBidi.Network.EventNames.AllNetworkEvent:
+        Object.values(ChromiumBidi.Network.EventNames)
+          .filter(
+            (name) => name !== ChromiumBidi.Network.EventNames.AllNetworkEvent
+          )
+          .map((specificEvent) =>
+            this.subscribe(specificEvent, contextId, channel)
+          );
+        return;
+      case ChromiumBidi.Script.EventNames.AllScriptEvent:
+        Object.values(ChromiumBidi.Script.EventNames)
+          .filter(
+            (name) => name !== ChromiumBidi.Script.EventNames.AllScriptEvent
+          )
+          .map((specificEvent) =>
+            this.subscribe(specificEvent, contextId, channel)
+          );
+        return;
+      default:
+      // Intentionally left empty.
     }
 
     if (!this.#channelToContextToEventMap.has(channel)) {
@@ -201,8 +231,8 @@ export class SubscriptionManager {
    * Unsubscribes atomically from all events in the given contexts and channel.
    */
   unsubscribeAll(
-    events: Session.SubscriptionRequestEvent[],
-    contextIds: (CommonDataTypes.BrowsingContext | null)[],
+    events: ChromiumBidi.EventNames[],
+    contextIds: (BrowsingContext.BrowsingContext | null)[],
     channel: string | null
   ) {
     // Assert all contexts are known.
@@ -213,8 +243,8 @@ export class SubscriptionManager {
     }
 
     const eventContextPairs: [
-      eventName: Session.SubscriptionRequestEvent,
-      contextId: CommonDataTypes.BrowsingContext | null
+      eventName: ChromiumBidi.EventNames,
+      contextId: BrowsingContext.BrowsingContext | null
     ][] = cartesianProduct(unrollEvents(events), contextIds);
 
     // Assert all unsubscriptions are valid.
@@ -231,23 +261,23 @@ export class SubscriptionManager {
    * Syntactic sugar for "unsubscribeAll".
    */
   unsubscribe(
-    eventName: Session.SubscriptionRequestEvent,
-    contextId: CommonDataTypes.BrowsingContext | null,
+    eventName: ChromiumBidi.EventNames,
+    contextId: BrowsingContext.BrowsingContext | null,
     channel: string | null
   ) {
     this.unsubscribeAll([eventName], [contextId], channel);
   }
 
   #checkUnsubscribe(
-    event: Session.SubscriptionRequestEvent,
-    contextId: CommonDataTypes.BrowsingContext | null,
+    event: ChromiumBidi.EventNames,
+    contextId: BrowsingContext.BrowsingContext | null,
     channel: string | null
   ): () => void {
     // All the subscriptions are handled on the top-level contexts.
     contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
 
     if (!this.#channelToContextToEventMap.has(channel)) {
-      throw new Message.InvalidArgumentException(
+      throw new InvalidArgumentException(
         `Cannot unsubscribe from ${event}, ${
           contextId === null ? 'null' : contextId
         }. No subscription found.`
@@ -256,7 +286,7 @@ export class SubscriptionManager {
     const contextToEventMap = this.#channelToContextToEventMap.get(channel)!;
 
     if (!contextToEventMap.has(contextId)) {
-      throw new Message.InvalidArgumentException(
+      throw new InvalidArgumentException(
         `Cannot unsubscribe from ${event}, ${
           contextId === null ? 'null' : contextId
         }. No subscription found.`
@@ -265,7 +295,7 @@ export class SubscriptionManager {
     const eventMap = contextToEventMap.get(contextId)!;
 
     if (!eventMap.has(event)) {
-      throw new Message.InvalidArgumentException(
+      throw new InvalidArgumentException(
         `Cannot unsubscribe from ${event}, ${
           contextId === null ? 'null' : contextId
         }. No subscription found.`

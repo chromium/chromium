@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
+import type {ICdpConnection} from '../cdp/cdpConnection.js';
+import type {ChromiumBidi} from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
-import type {Message} from '../protocol/protocol.js';
 import {ProcessingQueue} from '../utils/processingQueue.js';
-import type {ICdpConnection} from '../cdp/cdpConnection.js';
 
-import {CommandProcessor} from './CommandProcessor.js';
 import type {IBidiParser} from './BidiParser.js';
 import type {IBidiTransport} from './BidiTransport.js';
+import {CommandProcessor} from './CommandProcessor.js';
+import type {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 import {EventManager} from './domains/events/EventManager.js';
-import type {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {RealmStorage} from './domains/script/realmStorage.js';
 
-type BidiServerEvents = {
-  message: Message.RawCommandRequest;
+type BidiServerEvent = {
+  message: ChromiumBidi.Command;
 };
 
-export class BidiServer extends EventEmitter<BidiServerEvents> {
+export class BidiServer extends EventEmitter<BidiServerEvent> {
   #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
   #transport: IBidiTransport;
   #commandProcessor: CommandProcessor;
@@ -41,7 +41,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   #realmStorage = new RealmStorage();
   #logger?: LoggerFn;
 
-  #handleIncomingMessage = (message: Message.RawCommandRequest) => {
+  #handleIncomingMessage = (message: ChromiumBidi.Command) => {
     void this.#commandProcessor.processCommand(message).catch((error) => {
       this.#logger?.(LogType.system, error);
     });

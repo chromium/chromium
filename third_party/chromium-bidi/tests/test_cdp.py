@@ -32,7 +32,7 @@ async def test_cdp_sendCommand_resultReturned(websocket):
             }
         })
 
-    assert {"targetInfos": ANY} == command_result
+    assert {"result": {"targetInfos": ANY}} == command_result
 
 
 @pytest.mark.asyncio

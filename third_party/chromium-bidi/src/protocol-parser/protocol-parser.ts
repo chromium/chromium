@@ -19,24 +19,22 @@
  * @fileoverview Provides parsing and validator for WebDriver BiDi protocol.
  * Parser types should match the `../protocol` types.
  */
-import {type ZodType, z as zod} from 'zod';
+import {z as zod, type ZodType} from 'zod';
 
+import {InvalidArgumentException} from '../protocol/protocol.js';
 import {
   BrowsingContext as BrowsingContextTypes,
-  Script as ScriptTypes,
-  Log as LogTypes,
-  type Cdp as CdpTypes,
-  Message as MessageTypes,
-  type Session as SessionTypes,
-  Network as NetworkTypes,
-  type CommonDataTypes as CommonDataTypesTypes,
+  ChromiumBidi,
   Input as InputTypes,
+  Script as ScriptTypes,
+  type Cdp as CdpTypes,
+  type Session as SessionTypes,
 } from '../protocol/protocol.js';
 
 const MAX_INT = 9007199254740991 as const;
 
 export function parseObject<T extends ZodType>(
-  obj: object,
+  obj: unknown,
   schema: T
 ): zod.infer<T> {
   const parseResult = schema.safeParse(obj);
@@ -51,7 +49,7 @@ export function parseObject<T extends ZodType>(
     )
     .join(' ');
 
-  throw new MessageTypes.InvalidArgumentException(errorMessage);
+  throw new InvalidArgumentException(errorMessage);
 }
 
 const UnicodeCharacterSchema = zod.string().refine((value) => {
@@ -127,8 +125,8 @@ export namespace CommonDataTypes {
     BigIntValueSchema,
   ]);
 
-  export const LocalValueSchema: zod.ZodType<CommonDataTypesTypes.LocalValue> =
-    zod.lazy(() =>
+  export const LocalValueSchema: zod.ZodType<ScriptTypes.LocalValue> = zod.lazy(
+    () =>
       zod.union([
         PrimitiveProtocolValueSchema,
         ArrayLocalValueSchema,
@@ -138,7 +136,7 @@ export namespace CommonDataTypes {
         RegExpLocalValueSchema,
         SetLocalValueSchema,
       ])
-    );
+  );
 
   // Order is important, as `parse` is processed in the same order.
   // `SharedReferenceSchema`->`RemoteReferenceSchema`->`LocalValueSchema`.
@@ -241,7 +239,7 @@ export namespace Script {
   });
 
   export function parseGetRealmsParams(
-    params: object
+    params: unknown
   ): ScriptTypes.GetRealmsParameters {
     return parseObject(params, GetRealmsParametersSchema);
   }
@@ -269,7 +267,10 @@ export namespace Script {
   const TargetSchema = zod.union([RealmTargetSchema, ContextTargetSchema]);
 
   // ResultOwnership = "root" / "none"
-  const ResultOwnershipSchema = zod.enum(['root', 'none']);
+  const ResultOwnershipSchema = zod.enum([
+    ScriptTypes.ResultOwnership.Root,
+    ScriptTypes.ResultOwnership.None,
+  ]);
 
   // SerializationOptions = {
   //   ?maxDomDepth: (js-uint / null) .default 0,
@@ -302,7 +303,7 @@ export namespace Script {
   });
 
   export function parseEvaluateParams(
-    params: object
+    params: unknown
   ): ScriptTypes.EvaluateParameters {
     return parseObject(params, EvaluateParametersSchema);
   }
@@ -317,7 +318,7 @@ export namespace Script {
   });
 
   export function parseDisownParams(
-    params: object
+    params: unknown
   ): ScriptTypes.DisownParameters {
     return parseObject(params, DisownParametersSchema);
   }
@@ -345,7 +346,7 @@ export namespace Script {
   });
 
   export function parseAddPreloadScriptParams(
-    params: object
+    params: unknown
   ): ScriptTypes.AddPreloadScriptParameters {
     return parseObject(params, AddPreloadScriptParametersSchema);
   }
@@ -355,7 +356,7 @@ export namespace Script {
   });
 
   export function parseRemovePreloadScriptParams(
-    params: object
+    params: unknown
   ): ScriptTypes.RemovePreloadScriptParameters {
     return parseObject(params, RemovePreloadScriptParametersSchema);
   }
@@ -392,7 +393,7 @@ export namespace Script {
   });
 
   export function parseCallFunctionParams(
-    params: object
+    params: unknown
   ): ScriptTypes.CallFunctionParameters {
     return parseObject(params, CallFunctionParametersSchema);
   }
@@ -410,13 +411,17 @@ export namespace BrowsingContext {
   });
 
   export function parseGetTreeParams(
-    params: object
+    params: unknown
   ): BrowsingContextTypes.GetTreeParameters {
     return parseObject(params, GetTreeParametersSchema);
   }
 
   // ReadinessState = "none" / "interactive" / "complete"
-  const ReadinessStateSchema = zod.enum(['none', 'interactive', 'complete']);
+  const ReadinessStateSchema = zod.enum([
+    BrowsingContextTypes.ReadinessState.None,
+    BrowsingContextTypes.ReadinessState.Complete,
+    BrowsingContextTypes.ReadinessState.Interactive,
+  ]);
 
   // BrowsingContextNavigateParameters = {
   //   context: BrowsingContext,
@@ -431,7 +436,7 @@ export namespace BrowsingContext {
   });
 
   export function parseNavigateParams(
-    params: object
+    params: unknown
   ): BrowsingContextTypes.NavigateParameters {
     return parseObject(params, NavigateParametersSchema);
   }
@@ -443,7 +448,7 @@ export namespace BrowsingContext {
   });
 
   export function parseReloadParams(
-    params: object
+    params: unknown
   ): BrowsingContextTypes.ReloadParameters {
     return parseObject(params, ReloadParametersSchema);
   }
@@ -453,12 +458,15 @@ export namespace BrowsingContext {
   //   type: BrowsingContextCreateType
   // }
   const CreateParametersSchema = zod.object({
-    type: zod.enum(['tab', 'window']),
+    type: zod.enum([
+      BrowsingContextTypes.CreateType.Tab,
+      BrowsingContextTypes.CreateType.Window,
+    ]),
     referenceContext: CommonDataTypes.BrowsingContextSchema.optional(),
   });
 
   export function parseCreateParams(
-    params: object
+    params: unknown
   ): BrowsingContextTypes.CreateParameters {
     return parseObject(params, CreateParametersSchema);
   }
@@ -471,7 +479,7 @@ export namespace BrowsingContext {
   });
 
   export function parseCloseParams(
-    params: object
+    params: unknown
   ): BrowsingContextTypes.CloseParameters {
     return parseObject(params, CloseParametersSchema);
   }
@@ -484,7 +492,7 @@ export namespace BrowsingContext {
   });
 
   export function parseCaptureScreenshotParams(
-    params: object
+    params: unknown
   ): BrowsingContextTypes.CaptureScreenshotParameters {
     return parseObject(params, CaptureScreenshotParametersSchema);
   }
@@ -555,7 +563,7 @@ export namespace BrowsingContext {
   });
 
   export function parsePrintParams(
-    params: object
+    params: unknown
   ): BrowsingContextTypes.PrintParameters {
     return parseObject(params, PrintParametersSchema);
   }
@@ -579,7 +587,7 @@ export namespace BrowsingContext {
   });
 
   export function parseSetViewportParams(
-    params: object
+    params: unknown
   ): BrowsingContextTypes.SetViewportParameters {
     return parseObject(params, SetViewportActionSchema);
   }
@@ -591,14 +599,14 @@ export namespace BrowsingContext {
   });
 
   export function parseHandleUserPromptParameters(
-    params: object
+    params: unknown
   ): BrowsingContextTypes.HandleUserPromptParameters {
     return parseObject(params, HandleUserPromptActionSchema);
   }
 }
 
 export namespace Cdp {
-  const SendCommandParamsSchema = zod.object({
+  const SendCommandRequestSchema = zod.object({
     // Allowing any cdpMethod, and casting to proper type later on.
     method: zod.string(),
     // `passthrough` allows object to have any fields.
@@ -607,38 +615,36 @@ export namespace Cdp {
     session: zod.string().optional(),
   });
 
-  export function parseSendCommandParams(
-    params: object
-  ): CdpTypes.SendCommandParams {
+  export function parseSendCommandRequest(
+    params: unknown
+  ): CdpTypes.SendCommandParameters {
     return parseObject(
       params,
-      SendCommandParamsSchema
-    ) as CdpTypes.SendCommandParams;
+      SendCommandRequestSchema
+    ) as CdpTypes.SendCommandParameters;
   }
 
-  const GetSessionParamsSchema = zod.object({
+  const GetSessionRequestSchema = zod.object({
     context: CommonDataTypes.BrowsingContextSchema,
   });
 
-  export function parseGetSessionParams(
-    params: object
-  ): CdpTypes.GetSessionParams {
-    return parseObject(params, GetSessionParamsSchema);
+  export function parseGetSessionRequest(
+    params: unknown
+  ): CdpTypes.GetSessionParameters {
+    return parseObject(params, GetSessionRequestSchema);
   }
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-session */
 export namespace Session {
-  const BiDiSubscriptionRequestParametersEventsSchema = zod.enum([
-    BrowsingContextTypes.AllEvents,
-    ...Object.values(BrowsingContextTypes.EventNames),
-    LogTypes.AllEvents,
-    ...Object.values(LogTypes.EventNames),
-    NetworkTypes.AllEvents,
-    ...Object.values(NetworkTypes.EventNames),
-    ScriptTypes.AllEvents,
-    ...Object.values(ScriptTypes.EventNames),
-  ]);
+  const BiDiSubscriptionRequestParametersEventsSchema = zod.nativeEnum({
+    // keep-sorted start
+    ...ChromiumBidi.BrowsingContext.EventNames,
+    ...ChromiumBidi.Log.EventNames,
+    ...ChromiumBidi.Network.EventNames,
+    ...ChromiumBidi.Script.EventNames,
+    // keep-sorted end
+  });
 
   // BiDi+ events
   const CdpSubscriptionRequestParametersEventsSchema =
@@ -661,7 +667,7 @@ export namespace Session {
   });
 
   export function parseSubscribeParams(
-    params: object
+    params: unknown
   ): SessionTypes.SubscriptionRequest {
     return parseObject(params, SubscriptionRequestParametersSchema);
   }
@@ -680,7 +686,7 @@ export namespace Network {
     urlPatterns: zod.array(zod.string()).optional(),
   });
 
-  export function parseAddInterceptParams(params: object) {
+  export function parseAddInterceptParams(params: unknown) {
     return parseObject(params, AddInterceptParametersSchema);
   }
 
@@ -720,7 +726,7 @@ export namespace Network {
     url: zod.string().optional(),
   });
 
-  export function parseContinueRequestParams(params: object) {
+  export function parseContinueRequestParams(params: unknown) {
     return parseObject(params, ContinueRequestParametersSchema);
   }
 
@@ -738,7 +744,7 @@ export namespace Network {
     statusCode: zod.number().int().nonnegative().optional(),
   });
 
-  export function parseContinueResponseParams(params: object) {
+  export function parseContinueResponseParams(params: unknown) {
     return parseObject(params, ContinueResponseParametersSchema);
   }
 
@@ -762,7 +768,7 @@ export namespace Network {
       ])
     );
 
-  export function parseContinueWithAuthParams(params: object) {
+  export function parseContinueWithAuthParams(params: unknown) {
     return parseObject(params, ContinueWithAuthParametersSchema);
   }
 
@@ -770,7 +776,7 @@ export namespace Network {
     request: RequestSchema,
   });
 
-  export function parseFailRequestParams(params: object) {
+  export function parseFailRequestParams(params: unknown) {
     return parseObject(params, FailRequestParametersSchema);
   }
 
@@ -782,7 +788,7 @@ export namespace Network {
     statusCode: zod.number().int().nonnegative().optional(),
   });
 
-  export function parseProvideResponseParams(params: object) {
+  export function parseProvideResponseParams(params: unknown) {
     return parseObject(params, ProvideResponseParametersSchema);
   }
 
@@ -792,7 +798,7 @@ export namespace Network {
     intercept: InterceptSchema,
   });
 
-  export function parseRemoveInterceptParams(params: object) {
+  export function parseRemoveInterceptParams(params: unknown) {
     return parseObject(params, RemoveInterceptParametersSchema);
   }
 }
@@ -820,7 +826,7 @@ export namespace Input {
   //   ? duration: js-uint
   // }
   const PauseActionSchema = zod.object({
-    type: zod.literal(InputTypes.ActionType.Pause),
+    type: zod.literal('pause'),
     duration: zod.number().nonnegative().int().optional(),
   });
 
@@ -829,7 +835,7 @@ export namespace Input {
   //   value: text
   // }
   const KeyDownActionSchema = zod.object({
-    type: zod.literal(InputTypes.ActionType.KeyDown),
+    type: zod.literal('keyDown'),
     value: UnicodeCharacterSchema,
   });
 
@@ -838,7 +844,7 @@ export namespace Input {
   //   value: text
   // }
   const KeyUpActionSchema = zod.object({
-    type: zod.literal(InputTypes.ActionType.KeyUp),
+    type: zod.literal('keyUp'),
     value: UnicodeCharacterSchema,
   });
 
@@ -895,7 +901,7 @@ export namespace Input {
   // }
   const PointerUpActionSchema = zod
     .object({
-      type: zod.literal(InputTypes.ActionType.PointerUp),
+      type: zod.literal('pointerUp'),
       button: zod.number().nonnegative().int(),
     })
     .and(PointerCommonPropertiesSchema);
@@ -907,7 +913,7 @@ export namespace Input {
   // }
   const PointerDownActionSchema = zod
     .object({
-      type: zod.literal(InputTypes.ActionType.PointerDown),
+      type: zod.literal('pointerDown'),
       button: zod.number().nonnegative().int(),
     })
     .and(PointerCommonPropertiesSchema);
@@ -922,7 +928,7 @@ export namespace Input {
   // }
   const PointerMoveActionSchema = zod
     .object({
-      type: zod.literal(InputTypes.ActionType.PointerMove),
+      type: zod.literal('pointerMove'),
       x: zod.number().int(),
       y: zod.number().int(),
       duration: zod.number().nonnegative().int().optional(),
@@ -940,7 +946,7 @@ export namespace Input {
   //   ? origin: input.Origin .default "viewport",
   // }
   const WheelScrollActionSchema = zod.object({
-    type: zod.literal(InputTypes.ActionType.Scroll),
+    type: zod.literal('scroll'),
     x: zod.number().int(),
     y: zod.number().int(),
     deltaX: zod.number().int(),
@@ -964,7 +970,7 @@ export namespace Input {
   //   actions: [*input.WheelSourceAction]
   // }
   const WheelSourceActionsSchema = zod.object({
-    type: zod.literal(InputTypes.SourceActionsType.Wheel),
+    type: zod.literal('wheel'),
     id: zod.string(),
     actions: zod.array(WheelSourceActionSchema),
   });
@@ -983,7 +989,11 @@ export namespace Input {
   ]);
 
   // input.PointerType = "mouse" / "pen" / "touch"
-  const PointerTypeSchema = zod.nativeEnum(InputTypes.PointerType);
+  const PointerTypeSchema = zod.enum([
+    InputTypes.PointerType.Mouse,
+    InputTypes.PointerType.Pen,
+    InputTypes.PointerType.Touch,
+  ]);
 
   // input.PointerParameters = {
   //   ? pointerType: input.PointerType .default "mouse"
@@ -1001,7 +1011,7 @@ export namespace Input {
   //   actions: [*input.PointerSourceAction]
   // }
   const PointerSourceActionsSchema = zod.object({
-    type: zod.literal(InputTypes.SourceActionsType.Pointer),
+    type: zod.literal('pointer'),
     id: zod.string(),
     parameters: PointerParametersSchema.optional(),
     actions: zod.array(PointerSourceActionSchema),
@@ -1024,7 +1034,7 @@ export namespace Input {
   //   actions: [*input.KeySourceAction]
   // }
   const KeySourceActionsSchema = zod.object({
-    type: zod.literal(InputTypes.SourceActionsType.Key),
+    type: zod.literal('key'),
     id: zod.string(),
     actions: zod.array(KeySourceActionSchema),
   });
@@ -1038,7 +1048,7 @@ export namespace Input {
   //   actions: [*input.NoneSourceAction]
   // }
   const NoneSourceActionsSchema = zod.object({
-    type: zod.literal(InputTypes.SourceActionsType.None),
+    type: zod.literal('none'),
     id: zod.string(),
     actions: zod.array(NoneSourceActionSchema),
   });
@@ -1066,7 +1076,7 @@ export namespace Input {
   });
 
   export function parsePerformActionsParams(
-    params: object
+    params: unknown
   ): InputTypes.PerformActionsParameters {
     return parseObject(params, PerformActionsParametersSchema);
   }
@@ -1079,7 +1089,7 @@ export namespace Input {
   });
 
   export function parseReleaseActionsParams(
-    params: object
+    params: unknown
   ): InputTypes.ReleaseActionsParameters {
     return parseObject(params, ReleaseActionsParametersSchema);
   }

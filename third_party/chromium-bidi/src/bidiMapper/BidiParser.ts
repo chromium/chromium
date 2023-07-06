@@ -28,63 +28,71 @@ export interface IBidiParser {
   // Browsing Context domain
   // keep-sorted start block=yes
   parseCaptureScreenshotParams(
-    params: object
+    params: unknown
   ): BrowsingContext.CaptureScreenshotParameters;
-  parseCloseParams(params: object): BrowsingContext.CloseParameters;
-  parseCreateParams(params: object): BrowsingContext.CreateParameters;
-  parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters;
+  parseCloseParams(params: unknown): BrowsingContext.CloseParameters;
+  parseCreateParams(params: unknown): BrowsingContext.CreateParameters;
+  parseGetTreeParams(params: unknown): BrowsingContext.GetTreeParameters;
   parseHandleUserPromptParams(
-    params: object
+    params: unknown
   ): BrowsingContext.HandleUserPromptParameters;
-  parseNavigateParams(params: object): BrowsingContext.NavigateParameters;
-  parsePrintParams(params: object): BrowsingContext.PrintParameters;
-  parseReloadParams(params: object): BrowsingContext.ReloadParameters;
-  parseSetViewportParams(params: object): BrowsingContext.SetViewportParameters;
+  parseNavigateParams(params: unknown): BrowsingContext.NavigateParameters;
+  parsePrintParams(params: unknown): BrowsingContext.PrintParameters;
+  parseReloadParams(params: unknown): BrowsingContext.ReloadParameters;
+  parseSetViewportParams(
+    params: unknown
+  ): BrowsingContext.SetViewportParameters;
   // keep-sorted end
 
   // CDP domain
   // keep-sorted start block=yes
-  parseGetSessionParams(params: object): Cdp.GetSessionParams;
-  parseSendCommandParams(params: object): Cdp.SendCommandParams;
+  parseGetSessionParams(params: unknown): Cdp.GetSessionParameters;
+  parseSendCommandParams(params: unknown): Cdp.SendCommandParameters;
   // keep-sorted end
 
   // Input domain
   // keep-sorted start block=yes
-  parsePerformActionsParams(params: object): Input.PerformActionsParameters;
-  parseReleaseActionsParams(params: object): Input.ReleaseActionsParameters;
+  parsePerformActionsParams(params: unknown): Input.PerformActionsParameters;
+  parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters;
   // keep-sorted end block=yes
 
   // Network domain
   // keep-sorted start block=yes
-  parseAddInterceptParams(params: object): Network.AddInterceptParameters;
-  parseContinueRequestParams(params: object): Network.ContinueRequestParameters;
+  parseAddInterceptParams(params: unknown): Network.AddInterceptParameters;
+  parseContinueRequestParams(
+    params: unknown
+  ): Network.ContinueRequestParameters;
   parseContinueResponseParams(
-    params: object
+    params: unknown
   ): Network.ContinueResponseParameters;
   parseContinueWithAuthParams(
-    params: object
+    params: unknown
   ): Network.ContinueWithAuthParameters;
-  parseFailRequestParams(params: object): Network.FailRequestParameters;
-  parseProvideResponseParams(params: object): Network.ProvideResponseParameters;
-  parseRemoveInterceptParams(params: object): Network.RemoveInterceptParameters;
+  parseFailRequestParams(params: unknown): Network.FailRequestParameters;
+  parseProvideResponseParams(
+    params: unknown
+  ): Network.ProvideResponseParameters;
+  parseRemoveInterceptParams(
+    params: unknown
+  ): Network.RemoveInterceptParameters;
   // keep-sorted end
 
   // Script domain
   // keep-sorted start block=yes
   parseAddPreloadScriptParams(
-    params: object
+    params: unknown
   ): Script.AddPreloadScriptParameters;
-  parseCallFunctionParams(params: object): Script.CallFunctionParameters;
-  parseDisownParams(params: object): Script.DisownParameters;
-  parseEvaluateParams(params: object): Script.EvaluateParameters;
-  parseGetRealmsParams(params: object): Script.GetRealmsParameters;
+  parseCallFunctionParams(params: unknown): Script.CallFunctionParameters;
+  parseDisownParams(params: unknown): Script.DisownParameters;
+  parseEvaluateParams(params: unknown): Script.EvaluateParameters;
+  parseGetRealmsParams(params: unknown): Script.GetRealmsParameters;
   parseRemovePreloadScriptParams(
-    params: object
+    params: unknown
   ): Script.RemovePreloadScriptParameters;
   // keep-sorted end
 
   // Session domain
   // keep-sorted start block=yes
-  parseSubscribeParams(params: object): Session.SubscriptionRequest;
+  parseSubscribeParams(params: unknown): Session.SubscriptionRequest;
   // keep-sorted end
 }

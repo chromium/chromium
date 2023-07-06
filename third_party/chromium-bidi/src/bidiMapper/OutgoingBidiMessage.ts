@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-import type {Message} from '../protocol/protocol.js';
+import type {ChromiumBidi} from '../protocol/protocol.js';
 
 export class OutgoingBidiMessage {
-  readonly #message: Message.OutgoingMessage;
+  readonly #message: ChromiumBidi.Message;
   readonly #channel: string | null;
 
-  private constructor(
-    message: Message.OutgoingMessage,
-    channel: string | null
-  ) {
+  private constructor(message: ChromiumBidi.Message, channel: string | null) {
     this.#message = message;
     this.#channel = channel;
   }
 
   static async createFromPromise(
-    messagePromise: Promise<Message.OutgoingMessage>,
+    messagePromise: Promise<ChromiumBidi.Message>,
     channel: string | null
   ): Promise<OutgoingBidiMessage> {
     return messagePromise.then(
@@ -39,13 +36,13 @@ export class OutgoingBidiMessage {
   }
 
   static createResolved(
-    message: Message.OutgoingMessage,
+    message: ChromiumBidi.Message,
     channel: string | null
   ): Promise<OutgoingBidiMessage> {
     return Promise.resolve(new OutgoingBidiMessage(message, channel));
   }
 
-  get message(): Message.OutgoingMessage {
+  get message(): ChromiumBidi.Message {
     return this.#message;
   }
 

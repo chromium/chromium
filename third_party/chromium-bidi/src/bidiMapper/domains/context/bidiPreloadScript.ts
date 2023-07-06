@@ -16,7 +16,7 @@
  *
  */
 
-import type {CommonDataTypes, Script} from '../../../protocol/protocol.js';
+import type {BrowsingContext, Script} from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import {ChannelProxy} from '../script/channelProxy.js';
 
@@ -47,7 +47,7 @@ export class BidiPreloadScript {
   /** The script itself, in a format expected by the spec i.e. a function. */
   readonly #functionDeclaration: string;
   /** Browsing context ID. */
-  readonly #contextId: CommonDataTypes.BrowsingContext | null;
+  readonly #contextId: BrowsingContext.BrowsingContext | null;
   /** Targets, in which the preload script is initialized. */
   readonly #targetIds = new Set<string>();
   /** Channels to be added as arguments to functionDeclaration. */
@@ -57,7 +57,7 @@ export class BidiPreloadScript {
     return this.#id;
   }
 
-  get contextId(): CommonDataTypes.BrowsingContext | null {
+  get contextId(): BrowsingContext.BrowsingContext | null {
     return this.#contextId;
   }
 

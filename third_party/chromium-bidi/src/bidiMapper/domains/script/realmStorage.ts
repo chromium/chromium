@@ -17,16 +17,16 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {
-  type CommonDataTypes,
-  Message,
   type Script,
+  NoSuchFrameException,
+  type BrowsingContext,
 } from '../../../protocol/protocol.js';
 
 import type {Realm, RealmType} from './realm.js';
 
 type RealmFilter = {
   realmId?: Script.Realm;
-  browsingContextId?: CommonDataTypes.BrowsingContext;
+  browsingContextId?: BrowsingContext.BrowsingContext;
   navigableId?: string;
   executionContextId?: Protocol.Runtime.ExecutionContextId;
   origin?: string;
@@ -106,7 +106,7 @@ export class RealmStorage {
   getRealm(filter: RealmFilter): Realm {
     const maybeRealm = this.findRealm(filter);
     if (maybeRealm === undefined) {
-      throw new Message.NoSuchFrameException(
+      throw new NoSuchFrameException(
         `Realm ${JSON.stringify(filter)} not found`
       );
     }

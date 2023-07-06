@@ -19,11 +19,8 @@ import {expect} from 'chai';
 import * as sinon from 'sinon';
 
 import {
-  BrowsingContext,
-  type CommonDataTypes,
-  Log,
-  Network,
-  Script,
+  type BrowsingContext,
+  ChromiumBidi,
 } from '../../../protocol/protocol.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
@@ -33,10 +30,13 @@ import {
   unrollEvents,
 } from './SubscriptionManager.js';
 
-const ALL_EVENTS = BrowsingContext.AllEvents;
-const SOME_EVENT = BrowsingContext.EventNames.LoadEvent;
-const ANOTHER_EVENT = BrowsingContext.EventNames.ContextCreatedEvent;
-const YET_ANOTHER_EVENT = BrowsingContext.EventNames.DomContentLoadedEvent;
+const ALL_EVENTS =
+  ChromiumBidi.BrowsingContext.EventNames.AllBrowsingContextEvent;
+const SOME_EVENT = ChromiumBidi.BrowsingContext.EventNames.LoadEvent;
+const ANOTHER_EVENT =
+  ChromiumBidi.BrowsingContext.EventNames.ContextCreatedEvent;
+const YET_ANOTHER_EVENT =
+  ChromiumBidi.BrowsingContext.EventNames.DomContentLoadedEvent;
 
 const SOME_CONTEXT = 'SOME_CONTEXT';
 const SOME_NESTED_CONTEXT = 'SOME_NESTED_CONTEXT';
@@ -54,7 +54,7 @@ describe('SubscriptionManager', () => {
       sinon.createStubInstance(BrowsingContextStorage);
     browsingContextStorage.findTopLevelContextId = sinon
       .stub()
-      .callsFake((contextId: CommonDataTypes.BrowsingContext) => {
+      .callsFake((contextId: BrowsingContext.BrowsingContext) => {
         if (contextId === SOME_NESTED_CONTEXT) {
           return SOME_CONTEXT;
         }
@@ -426,57 +426,68 @@ describe('SubscriptionManager', () => {
 
   describe('unroll events', () => {
     it('all Browsing Context events', () => {
-      expect(unrollEvents([BrowsingContext.AllEvents])).to.have.members([
-        BrowsingContext.EventNames.ContextCreatedEvent,
-        BrowsingContext.EventNames.ContextDestroyedEvent,
-        BrowsingContext.EventNames.DomContentLoadedEvent,
-        BrowsingContext.EventNames.FragmentNavigatedEvent,
-        BrowsingContext.EventNames.LoadEvent,
-        BrowsingContext.EventNames.NavigationStartedEvent,
-        BrowsingContext.EventNames.UserPromptClosedEvent,
-        BrowsingContext.EventNames.UserPromptOpenedEvent,
+      expect(
+        unrollEvents([
+          ChromiumBidi.BrowsingContext.EventNames.AllBrowsingContextEvent,
+        ])
+      ).to.have.members([
+        ChromiumBidi.BrowsingContext.EventNames.ContextCreatedEvent,
+        ChromiumBidi.BrowsingContext.EventNames.ContextDestroyedEvent,
+        ChromiumBidi.BrowsingContext.EventNames.DomContentLoadedEvent,
+        ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+        ChromiumBidi.BrowsingContext.EventNames.LoadEvent,
+        ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+        ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
+        ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
       ]);
     });
 
     it('all Log events', () => {
-      expect(unrollEvents([Log.AllEvents])).to.have.members([
-        Log.EventNames.EntryAddedEvent,
-      ]);
+      expect(
+        unrollEvents([ChromiumBidi.Log.EventNames.AllLogEvent])
+      ).to.have.members([ChromiumBidi.Log.EventNames.LogEntryAddedEvent]);
     });
 
     it('all Network events', () => {
-      expect(unrollEvents([Network.AllEvents])).to.have.members([
-        Network.EventNames.BeforeRequestSentEvent,
-        Network.EventNames.FetchErrorEvent,
-        Network.EventNames.ResponseCompletedEvent,
-        Network.EventNames.ResponseStartedEvent,
+      expect(
+        unrollEvents([ChromiumBidi.Network.EventNames.AllNetworkEvent])
+      ).to.have.members([
+        ChromiumBidi.Network.EventNames.BeforeRequestSentEvent,
+        ChromiumBidi.Network.EventNames.FetchErrorEvent,
+        ChromiumBidi.Network.EventNames.ResponseCompletedEvent,
+        ChromiumBidi.Network.EventNames.ResponseStartedEvent,
       ]);
     });
 
     it('all Script events', () => {
-      expect(unrollEvents([Script.AllEvents])).to.have.members([
-        Script.EventNames.MessageEvent,
-        Script.EventNames.RealmCreatedEvent,
-        Script.EventNames.RealmDestroyedEvent,
+      expect(
+        unrollEvents([ChromiumBidi.Script.EventNames.AllScriptEvent])
+      ).to.have.members([
+        ChromiumBidi.Script.EventNames.MessageEvent,
+        ChromiumBidi.Script.EventNames.RealmCreated,
+        ChromiumBidi.Script.EventNames.RealmDestroyed,
       ]);
     });
 
     it('discrete events', () => {
       expect(
         unrollEvents([
-          Script.EventNames.RealmCreatedEvent,
-          Log.EventNames.EntryAddedEvent,
+          ChromiumBidi.Script.EventNames.RealmCreated,
+          ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
         ])
       ).to.have.members([
-        Script.EventNames.RealmCreatedEvent,
-        Log.EventNames.EntryAddedEvent,
+        ChromiumBidi.Script.EventNames.RealmCreated,
+        ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
       ]);
     });
 
     it('all and discrete events', () => {
       expect(
-        unrollEvents([Log.AllEvents, Log.EventNames.EntryAddedEvent])
-      ).to.have.members([Log.EventNames.EntryAddedEvent]);
+        unrollEvents([
+          ChromiumBidi.Log.EventNames.AllLogEvent,
+          ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
+        ])
+      ).to.have.members([ChromiumBidi.Log.EventNames.LogEntryAddedEvent]);
     });
   });
 });

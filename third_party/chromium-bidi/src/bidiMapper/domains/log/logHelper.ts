@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import type {CommonDataTypes} from '../../../protocol/protocol.js';
+import type {Script} from '../../../protocol/protocol.js';
 
 const specifiers = ['%s', '%d', '%i', '%f', '%o', '%O', '%c'];
 
-function isFormmatSpecifier(str: string): boolean {
+function isFormatSpecifier(str: string): boolean {
   return specifiers.some((spec) => str.includes(spec));
 }
 
@@ -27,9 +27,7 @@ function isFormmatSpecifier(str: string): boolean {
  * @param args input remote values to be format printed
  * @return parsed text of the remote values in specific format
  */
-export function logMessageFormatter(
-  args: CommonDataTypes.RemoteValue[]
-): string {
+export function logMessageFormatter(args: Script.RemoteValue[]): string {
   let output = '';
   const argFormat = (args[0] as {type: string; value: string}).value.toString();
   const argValues = args.slice(1, undefined);
@@ -41,7 +39,7 @@ export function logMessageFormatter(
     if (token === undefined || token === '') {
       continue;
     }
-    if (isFormmatSpecifier(token)) {
+    if (isFormatSpecifier(token)) {
       const arg = argValues.shift();
       // raise an exception when less value is provided
       if (arg === undefined) {
@@ -106,7 +104,7 @@ export function logMessageFormatter(
  * input: {"type": "object", "value": [["font-size", {"type": "string", "value": "20px"}]]}
  * output: '{"font-size": "20px"}'
  */
-function toJson(arg: CommonDataTypes.RemoteValue): string {
+function toJson(arg: Script.RemoteValue): string {
   // arg type validation
   if (
     arg.type !== 'array' &&
@@ -146,7 +144,7 @@ function toJson(arg: CommonDataTypes.RemoteValue): string {
   throw Error(`Invalid value type: ${arg.toString()}`);
 }
 
-function stringFromArg(arg: CommonDataTypes.RemoteValue): string {
+function stringFromArg(arg: Script.RemoteValue): string {
   if (!Object.hasOwn(arg, 'value')) {
     return arg.type;
   }
@@ -166,9 +164,9 @@ function stringFromArg(arg: CommonDataTypes.RemoteValue): string {
     case 'array':
       return `Array(${arg.value?.length ?? ''})`;
     case 'map':
-      return `Map(${arg.value.length})`;
+      return `Map(${arg.value?.length})`;
     case 'set':
-      return `Set(${arg.value.length})`;
+      return `Set(${arg.value?.length})`;
 
     default:
       return arg.type;
@@ -176,7 +174,7 @@ function stringFromArg(arg: CommonDataTypes.RemoteValue): string {
 }
 
 export function getRemoteValuesText(
-  args: CommonDataTypes.RemoteValue[],
+  args: Script.RemoteValue[],
   formatText: boolean
 ): string {
   const arg = args[0];
@@ -188,7 +186,7 @@ export function getRemoteValuesText(
   // if args[0] is a format specifier, format the args as output
   if (
     arg.type === 'string' &&
-    isFormmatSpecifier(arg.value.toString()) &&
+    isFormatSpecifier(arg.value.toString()) &&
     formatText
   ) {
     return logMessageFormatter(args);

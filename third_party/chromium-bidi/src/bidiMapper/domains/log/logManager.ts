@@ -16,11 +16,7 @@
  */
 import type {Protocol} from 'devtools-protocol';
 
-import {
-  type CommonDataTypes,
-  Log,
-  type Script,
-} from '../../../protocol/protocol.js';
+import {ChromiumBidi, Log, Script} from '../../../protocol/protocol.js';
 import type {IEventManager} from '../events/EventManager.js';
 import type {Realm} from '../script/realm.js';
 import type {RealmStorage} from '../script/realmStorage.js';
@@ -44,17 +40,17 @@ function getBidiStackTrace(
   return stackFrames ? {callFrames: stackFrames} : undefined;
 }
 
-function getLogLevel(consoleApiType: string): Log.LogLevel {
-  if (['assert', 'error'].includes(consoleApiType)) {
-    return 'error';
+function getLogLevel(consoleApiType: string): Log.Level {
+  if ([Log.Level.Error, 'assert'].includes(consoleApiType)) {
+    return Log.Level.Error;
   }
-  if (['debug', 'trace'].includes(consoleApiType)) {
-    return 'debug';
+  if ([Log.Level.Debug, 'trace'].includes(consoleApiType)) {
+    return Log.Level.Debug;
   }
-  if (['warn', 'warning'].includes(consoleApiType)) {
-    return 'warn';
+  if ([Log.Level.Warn, 'warning'].includes(consoleApiType)) {
+    return Log.Level.Warn;
   }
-  return 'info';
+  return Log.Level.Info;
 }
 
 export class LogManager {
@@ -97,19 +93,22 @@ export class LogManager {
           cdpSessionId: this.#cdpTarget.cdpSessionId,
           executionContextId: params.executionContextId,
         });
-        const argsPromise: Promise<CommonDataTypes.RemoteValue[]> =
+        const argsPromise: Promise<Script.RemoteValue[]> =
           realm === undefined
-            ? Promise.resolve(params.args as CommonDataTypes.RemoteValue[])
+            ? Promise.resolve(params.args as Script.RemoteValue[])
             : // Properly serialize arguments if possible.
               Promise.all(
                 params.args.map((arg) => {
-                  return realm.serializeCdpObject(arg, 'none');
+                  return realm.serializeCdpObject(
+                    arg,
+                    Script.ResultOwnership.None
+                  );
                 })
               );
 
         this.#eventManager.registerPromiseEvent(
           argsPromise.then((args) => ({
-            method: Log.EventNames.EntryAddedEvent,
+            method: ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
             params: {
               level: getLogLevel(params.type),
               source: {
@@ -126,7 +125,7 @@ export class LogManager {
             },
           })),
           realm?.browsingContextId ?? 'UNKNOWN',
-          Log.EventNames.EntryAddedEvent
+          ChromiumBidi.Log.EventNames.LogEntryAddedEvent
         );
       }
     );
@@ -154,9 +153,9 @@ export class LogManager {
 
         this.#eventManager.registerPromiseEvent(
           textPromise.then((text) => ({
-            method: Log.EventNames.EntryAddedEvent,
+            method: ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
             params: {
-              level: 'error',
+              level: Log.Level.Error,
               source: {
                 realm: realm?.realmId ?? 'UNKNOWN',
                 context: realm?.browsingContextId ?? 'UNKNOWN',
@@ -168,7 +167,7 @@ export class LogManager {
             },
           })),
           realm?.browsingContextId ?? 'UNKNOWN',
-          Log.EventNames.EntryAddedEvent
+          ChromiumBidi.Log.EventNames.LogEntryAddedEvent
         );
       }
     );

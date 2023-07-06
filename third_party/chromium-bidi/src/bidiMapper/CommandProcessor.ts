@@ -15,17 +15,24 @@
  * limitations under the License.
  */
 
-import {Message, type Session} from '../protocol/protocol.js';
-import {LogType, type LoggerFn} from '../utils/log.js';
-import {EventEmitter} from '../utils/EventEmitter.js';
 import type {ICdpConnection} from '../cdp/cdpConnection.js';
+import {
+  Exception,
+  UnknownCommandException,
+  UnknownErrorException,
+  type ChromiumBidi,
+  type EmptyResult,
+  type Session,
+} from '../protocol/protocol.js';
+import {EventEmitter} from '../utils/EventEmitter.js';
+import {LogType, type LoggerFn} from '../utils/log.js';
 
-import type {IBidiParser} from './BidiParser.js';
 import {BidiNoOpParser} from './BidiNoOpParser.js';
+import type {IBidiParser} from './BidiParser.js';
+import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor.js';
 import type {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 import type {IEventManager} from './domains/events/EventManager.js';
-import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import type {RealmStorage} from './domains/script/realmStorage.js';
 
 type CommandProcessorEvents = {
@@ -62,74 +69,74 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   }
 
   static #process_session_status(): Session.StatusResult {
-    return {result: {ready: false, message: 'already connected'}};
+    return {ready: false, message: 'already connected'};
   }
 
   async #process_session_subscribe(
     params: Session.SubscriptionRequest,
     channel: string | null
-  ): Promise<Message.EmptyResult> {
+  ): Promise<EmptyResult> {
     await this.#eventManager.subscribe(
-      params.events,
+      params.events as ChromiumBidi.EventNames[],
       params.contexts ?? [null],
       channel
     );
-    return {result: {}};
+    return {};
   }
 
   async #process_session_unsubscribe(
     params: Session.SubscriptionRequest,
     channel: string | null
-  ): Promise<Message.EmptyResult> {
+  ): Promise<EmptyResult> {
     await this.#eventManager.unsubscribe(
-      params.events,
+      params.events as ChromiumBidi.EventNames[],
       params.contexts ?? [null],
       channel
     );
-    return {result: {}};
+    return {};
   }
 
   async #processCommand(
-    commandData: Message.RawCommandRequest
-  ): Promise<Message.ResultData> {
-    switch (commandData.method) {
+    command: ChromiumBidi.Command
+  ): Promise<ChromiumBidi.ResultData> {
+    switch (command.method) {
       // Browsing Context domain
       // keep-sorted start block=yes
       case 'browsingContext.captureScreenshot':
         return this.#contextProcessor.process_browsingContext_captureScreenshot(
-          this.#parser.parseCaptureScreenshotParams(commandData.params)
+          this.#parser.parseCaptureScreenshotParams(command.params)
         );
       case 'browsingContext.close':
         return this.#contextProcessor.process_browsingContext_close(
-          this.#parser.parseCloseParams(commandData.params)
+          this.#parser.parseCloseParams(command.params)
         );
       case 'browsingContext.create':
         return this.#contextProcessor.process_browsingContext_create(
-          this.#parser.parseCreateParams(commandData.params)
+          this.#parser.parseCreateParams(command.params)
         );
       case 'browsingContext.getTree':
         return this.#contextProcessor.process_browsingContext_getTree(
-          this.#parser.parseGetTreeParams(commandData.params)
+          this.#parser.parseGetTreeParams(command.params)
         );
       case 'browsingContext.handleUserPrompt':
         return this.#contextProcessor.process_browsingContext_handleUserPrompt(
-          this.#parser.parseHandleUserPromptParams(commandData.params)
+          this.#parser.parseHandleUserPromptParams(command.params)
         );
       case 'browsingContext.navigate':
         return this.#contextProcessor.process_browsingContext_navigate(
-          this.#parser.parseNavigateParams(commandData.params)
+          this.#parser.parseNavigateParams(command.params)
         );
       case 'browsingContext.print':
         return this.#contextProcessor.process_browsingContext_print(
-          this.#parser.parsePrintParams(commandData.params)
+          this.#parser.parsePrintParams(command.params)
         );
       case 'browsingContext.reload':
         return this.#contextProcessor.process_browsingContext_reload(
-          this.#parser.parseReloadParams(commandData.params)
+          this.#parser.parseReloadParams(command.params)
         );
       case 'browsingContext.setViewport':
         return this.#contextProcessor.process_browsingContext_setViewport(
-          this.#parser.parseSetViewportParams(commandData.params)
+          this.#parser.parseSetViewportParams(command.params)
         );
       // keep-sorted end
 
@@ -137,11 +144,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       // keep-sorted start block=yes
       case 'cdp.getSession':
         return this.#contextProcessor.process_cdp_getSession(
-          this.#parser.parseGetSessionParams(commandData.params)
+          this.#parser.parseGetSessionParams(command.params)
         );
       case 'cdp.sendCommand':
         return this.#contextProcessor.process_cdp_sendCommand(
-          this.#parser.parseSendCommandParams(commandData.params)
+          this.#parser.parseSendCommandParams(command.params)
         );
       // keep-sorted end
 
@@ -149,11 +156,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       // keep-sorted start block=yes
       case 'input.performActions':
         return this.#contextProcessor.process_input_performActions(
-          this.#parser.parsePerformActionsParams(commandData.params)
+          this.#parser.parsePerformActionsParams(command.params)
         );
       case 'input.releaseActions':
         return this.#contextProcessor.process_input_releaseActions(
-          this.#parser.parseReleaseActionsParams(commandData.params)
+          this.#parser.parseReleaseActionsParams(command.params)
         );
       // keep-sorted end
 
@@ -161,31 +168,31 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       // keep-sorted start block=yes
       case 'network.addIntercept':
         return this.#contextProcessor.process_network_addIntercept(
-          this.#parser.parseAddInterceptParams(commandData.params)
+          this.#parser.parseAddInterceptParams(command.params)
         );
       case 'network.continueRequest':
         return this.#contextProcessor.process_network_continueRequest(
-          this.#parser.parseContinueRequestParams(commandData.params)
+          this.#parser.parseContinueRequestParams(command.params)
         );
       case 'network.continueResponse':
         return this.#contextProcessor.process_network_continueResponse(
-          this.#parser.parseContinueResponseParams(commandData.params)
+          this.#parser.parseContinueResponseParams(command.params)
         );
       case 'network.continueWithAuth':
         return this.#contextProcessor.process_network_continueWithAuth(
-          this.#parser.parseContinueWithAuthParams(commandData.params)
+          this.#parser.parseContinueWithAuthParams(command.params)
         );
       case 'network.failRequest':
         return this.#contextProcessor.process_network_failRequest(
-          this.#parser.parseFailRequestParams(commandData.params)
+          this.#parser.parseFailRequestParams(command.params)
         );
       case 'network.provideResponse':
         return this.#contextProcessor.process_network_provideResponse(
-          this.#parser.parseProvideResponseParams(commandData.params)
+          this.#parser.parseProvideResponseParams(command.params)
         );
       case 'network.removeIntercept':
         return this.#contextProcessor.process_network_removeIntercept(
-          this.#parser.parseRemoveInterceptParams(commandData.params)
+          this.#parser.parseRemoveInterceptParams(command.params)
         );
       // keep-sorted end
 
@@ -193,27 +200,27 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       // keep-sorted start block=yes
       case 'script.addPreloadScript':
         return this.#contextProcessor.process_script_addPreloadScript(
-          this.#parser.parseAddPreloadScriptParams(commandData.params)
+          this.#parser.parseAddPreloadScriptParams(command.params)
         );
       case 'script.callFunction':
         return this.#contextProcessor.process_script_callFunction(
-          this.#parser.parseCallFunctionParams(commandData.params)
+          this.#parser.parseCallFunctionParams(command.params)
         );
       case 'script.disown':
         return this.#contextProcessor.process_script_disown(
-          this.#parser.parseDisownParams(commandData.params)
+          this.#parser.parseDisownParams(command.params)
         );
       case 'script.evaluate':
         return this.#contextProcessor.process_script_evaluate(
-          this.#parser.parseEvaluateParams(commandData.params)
+          this.#parser.parseEvaluateParams(command.params)
         );
       case 'script.getRealms':
         return this.#contextProcessor.process_script_getRealms(
-          this.#parser.parseGetRealmsParams(commandData.params)
+          this.#parser.parseGetRealmsParams(command.params)
         );
       case 'script.removePreloadScript':
         return this.#contextProcessor.process_script_removePreloadScript(
-          this.#parser.parseRemovePreloadScriptParams(commandData.params)
+          this.#parser.parseRemovePreloadScriptParams(command.params)
         );
       // keep-sorted end
 
@@ -223,13 +230,13 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         return CommandProcessor.#process_session_status();
       case 'session.subscribe':
         return this.#process_session_subscribe(
-          this.#parser.parseSubscribeParams(commandData.params),
-          commandData.channel ?? null
+          this.#parser.parseSubscribeParams(command.params),
+          command.channel ?? null
         );
       case 'session.unsubscribe':
         return this.#process_session_unsubscribe(
-          this.#parser.parseSubscribeParams(commandData.params),
-          commandData.channel ?? null
+          this.#parser.parseSubscribeParams(command.params),
+          command.channel ?? null
         );
       // keep-sorted end
     }
@@ -237,26 +244,26 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     // Intentionally kept outside of the switch statement to ensure that
     // ESLint @typescript-eslint/switch-exhaustiveness-check triggers if a new
     // command is added.
-    throw new Message.UnknownCommandException(
-      `Unknown command '${commandData.method as string}'.`
+    throw new UnknownCommandException(
+      `Unknown command '${command.method as string}'.`
     );
   }
 
-  async processCommand(command: Message.RawCommandRequest): Promise<void> {
+  async processCommand(command: ChromiumBidi.Command): Promise<void> {
     try {
       const result = await this.#processCommand(command);
 
       const response = {
         id: command.id,
-        ...result,
-      };
+        result,
+      } satisfies ChromiumBidi.CommandResponse;
 
       this.emit(
         'response',
         OutgoingBidiMessage.createResolved(response, command.channel ?? null)
       );
     } catch (e) {
-      if (e instanceof Message.ErrorResponse) {
+      if (e instanceof Exception) {
         const errorResponse = e;
         this.emit(
           'response',
@@ -271,9 +278,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         this.emit(
           'response',
           OutgoingBidiMessage.createResolved(
-            new Message.UnknownErrorException(error).toErrorResponse(
-              command.id
-            ),
+            new UnknownErrorException(
+              error.message,
+              error.stack
+            ).toErrorResponse(command.id),
             command.channel ?? null
           )
         );

@@ -16,27 +16,25 @@
  */
 
 import {
-  type CommonDataTypes,
-  Log,
-  type Message,
-  type Session,
+  ChromiumBidi,
+  type BrowsingContext,
 } from '../../../protocol/protocol.js';
-import type {BidiServer} from '../../BidiServer.js';
+import {DefaultMap} from '../../../utils/DefaultMap.js';
 import {Buffer} from '../../../utils/buffer.js';
 import {IdWrapper} from '../../../utils/idWrapper.js';
+import type {BidiServer} from '../../BidiServer.js';
 import {OutgoingBidiMessage} from '../../OutgoingBidiMessage.js';
-import {DefaultMap} from '../../../utils/DefaultMap.js';
 
 import {SubscriptionManager} from './SubscriptionManager.js';
 
 class EventWrapper {
   readonly #idWrapper = new IdWrapper();
-  readonly #contextId: CommonDataTypes.BrowsingContext | null;
-  readonly #event: Promise<Message.EventMessage>;
+  readonly #contextId: BrowsingContext.BrowsingContext | null;
+  readonly #event: Promise<ChromiumBidi.Event>;
 
   constructor(
-    event: Promise<Message.EventMessage>,
-    contextId: CommonDataTypes.BrowsingContext | null
+    event: Promise<ChromiumBidi.Event>,
+    contextId: BrowsingContext.BrowsingContext | null
   ) {
     this.#event = event;
     this.#contextId = contextId;
@@ -46,36 +44,36 @@ class EventWrapper {
     return this.#idWrapper.id;
   }
 
-  get contextId(): CommonDataTypes.BrowsingContext | null {
+  get contextId(): BrowsingContext.BrowsingContext | null {
     return this.#contextId;
   }
 
-  get event(): Promise<Message.EventMessage> {
+  get event(): Promise<ChromiumBidi.Event> {
     return this.#event;
   }
 }
 
 export interface IEventManager {
   registerEvent(
-    event: Message.EventMessage,
-    contextId: CommonDataTypes.BrowsingContext | null
+    event: ChromiumBidi.Event,
+    contextId: BrowsingContext.BrowsingContext | null
   ): void;
 
   registerPromiseEvent(
-    event: Promise<Message.EventMessage>,
-    contextId: CommonDataTypes.BrowsingContext | null,
-    eventName: Message.EventNames
+    event: Promise<ChromiumBidi.Event>,
+    contextId: BrowsingContext.BrowsingContext | null,
+    eventName: ChromiumBidi.EventNames
   ): void;
 
   subscribe(
-    events: Session.SubscriptionRequestEvent[],
-    contextIds: (CommonDataTypes.BrowsingContext | null)[],
+    events: ChromiumBidi.EventNames[],
+    contextIds: (BrowsingContext.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void>;
 
   unsubscribe(
-    events: Session.SubscriptionRequestEvent[],
-    contextIds: (CommonDataTypes.BrowsingContext | null)[],
+    events: ChromiumBidi.EventNames[],
+    contextIds: (BrowsingContext.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> | void;
 
@@ -85,9 +83,9 @@ export interface IEventManager {
 /**
  * Maps event name to a desired buffer length.
  */
-const eventBufferLength: ReadonlyMap<Message.EventNames, number> = new Map([
-  [Log.EventNames.EntryAddedEvent, 100],
-]);
+const eventBufferLength: ReadonlyMap<ChromiumBidi.EventNames, number> = new Map(
+  [[ChromiumBidi.Log.EventNames.LogEntryAddedEvent, 100]]
+);
 
 export class EventManager implements IEventManager {
   static readonly #NETWORK_DOMAIN_PREFIX = 'network';
@@ -98,7 +96,7 @@ export class EventManager implements IEventManager {
    */
   #eventToContextsMap = new DefaultMap<
     string,
-    Set<CommonDataTypes.BrowsingContext | null>
+    Set<BrowsingContext.BrowsingContext | null>
   >(() => new Set());
   /**
    * Maps `eventName` + `browsingContext` to buffer. Used to get buffered events
@@ -131,24 +129,28 @@ export class EventManager implements IEventManager {
    * Returns consistent key to be used to access value maps.
    */
   static #getMapKey(
-    eventName: Message.EventNames,
-    browsingContext: CommonDataTypes.BrowsingContext | null,
+    eventName: ChromiumBidi.EventNames,
+    browsingContext: BrowsingContext.BrowsingContext | null,
     channel?: string | null
   ) {
     return JSON.stringify({eventName, browsingContext, channel});
   }
 
   registerEvent(
-    event: Message.EventMessage,
-    contextId: CommonDataTypes.BrowsingContext | null
+    event: ChromiumBidi.Event,
+    contextId: BrowsingContext.BrowsingContext | null
   ): void {
-    this.registerPromiseEvent(Promise.resolve(event), contextId, event.method);
+    this.registerPromiseEvent(
+      Promise.resolve(event),
+      contextId,
+      event.method as ChromiumBidi.EventNames
+    );
   }
 
   registerPromiseEvent(
-    event: Promise<Message.EventMessage>,
-    contextId: CommonDataTypes.BrowsingContext | null,
-    eventName: Message.EventNames
+    event: Promise<ChromiumBidi.Event>,
+    contextId: BrowsingContext.BrowsingContext | null,
+    eventName: ChromiumBidi.EventNames
   ): void {
     const eventWrapper = new EventWrapper(event, contextId);
     const sortedChannels =
@@ -167,8 +169,8 @@ export class EventManager implements IEventManager {
   }
 
   async subscribe(
-    eventNames: Session.SubscriptionRequestEvent[],
-    contextIds: (CommonDataTypes.BrowsingContext | null)[],
+    eventNames: ChromiumBidi.EventNames[],
+    contextIds: (BrowsingContext.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {
     // First check if all the contexts are known.
@@ -184,7 +186,7 @@ export class EventManager implements IEventManager {
         await this.#handleDomains(eventName, contextId);
         this.#subscriptionManager.subscribe(eventName, contextId, channel);
         for (const eventWrapper of this.#getBufferedEvents(
-          eventName as Message.EventNames,
+          eventName,
           contextId,
           channel
         )) {
@@ -192,11 +194,7 @@ export class EventManager implements IEventManager {
           this.#bidiServer.emitOutgoingMessage(
             OutgoingBidiMessage.createFromPromise(eventWrapper.event, channel)
           );
-          this.#markEventSent(
-            eventWrapper,
-            channel,
-            eventName as Message.EventNames
-          );
+          this.#markEventSent(eventWrapper, channel, eventName);
         }
       }
     }
@@ -207,8 +205,8 @@ export class EventManager implements IEventManager {
    * globally.
    */
   async #handleDomains(
-    eventName: Session.SubscriptionRequestEvent,
-    contextId: CommonDataTypes.BrowsingContext | null
+    eventName: ChromiumBidi.EventNames,
+    contextId: BrowsingContext.BrowsingContext | null
   ) {
     // Enable network domain if user subscribed to any of network events.
     if (eventName.startsWith(EventManager.#NETWORK_DOMAIN_PREFIX)) {
@@ -231,8 +229,8 @@ export class EventManager implements IEventManager {
   }
 
   unsubscribe(
-    eventNames: Session.SubscriptionRequestEvent[],
-    contextIds: (CommonDataTypes.BrowsingContext | null)[],
+    eventNames: ChromiumBidi.EventNames[],
+    contextIds: (BrowsingContext.BrowsingContext | null)[],
     channel: string | null
   ) {
     this.#subscriptionManager.unsubscribeAll(eventNames, contextIds, channel);
@@ -241,7 +239,7 @@ export class EventManager implements IEventManager {
   /**
    * If the event is buffer-able, put it in the buffer.
    */
-  #bufferEvent(eventWrapper: EventWrapper, eventName: Message.EventNames) {
+  #bufferEvent(eventWrapper: EventWrapper, eventName: ChromiumBidi.EventNames) {
     if (!eventBufferLength.has(eventName)) {
       // Do nothing if the event is no buffer-able.
       return;
@@ -267,7 +265,7 @@ export class EventManager implements IEventManager {
   #markEventSent(
     eventWrapper: EventWrapper,
     channel: string | null,
-    eventName: Message.EventNames
+    eventName: ChromiumBidi.EventNames
   ) {
     if (!eventBufferLength.has(eventName)) {
       // Do nothing if the event is no buffer-able.
@@ -289,8 +287,8 @@ export class EventManager implements IEventManager {
    * Returns events which are buffered and not yet sent to the given channel events.
    */
   #getBufferedEvents(
-    eventName: Message.EventNames,
-    contextId: CommonDataTypes.BrowsingContext | null,
+    eventName: ChromiumBidi.EventNames,
+    contextId: BrowsingContext.BrowsingContext | null,
     channel: string | null
   ): EventWrapper[] {
     const bufferMapKey = EventManager.#getMapKey(eventName, contextId);
