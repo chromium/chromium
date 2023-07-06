@@ -85,6 +85,7 @@ void TutorialService::StartTutorial(TutorialIdentifier id,
                      base::Unretained(this)));
 
   // Start the tutorial and mark the params used to created it for restarting.
+  most_recent_tutorial_id_ = id;
   running_tutorial_->Start();
 }
 
@@ -226,8 +227,12 @@ void TutorialService::HideCurrentBubbleIfShowing() {
   currently_displayed_bubble_.reset();
 }
 
-bool TutorialService::IsRunningTutorial() const {
-  return running_tutorial_ != nullptr;
+bool TutorialService::IsRunningTutorial(
+    absl::optional<TutorialIdentifier> id) const {
+  if (!running_tutorial_) {
+    return false;
+  }
+  return !id.has_value() || id.value() == most_recent_tutorial_id_;
 }
 
 void TutorialService::ResetRunningTutorial() {

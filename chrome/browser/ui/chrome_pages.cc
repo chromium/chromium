@@ -439,8 +439,9 @@ void ShowPasswordManager(Browser* browser) {
         UserEducationServiceFactory::GetForProfile(browser->profile());
     if (service) {
       auto* tutorial_service = &service->tutorial_service();
-      if (tutorial_service && tutorial_service->IsRunningTutorial()) {
-        ShowSingletonTab(browser, GURL(kChromeUIPasswordManagerURL));
+      if (tutorial_service &&
+          tutorial_service->IsRunningTutorial(kPasswordManagerTutorialId)) {
+        ShowSingletonTab(browser, GURL(kChromeUIPasswordManagerSettingsURL));
         return;
       }
     }

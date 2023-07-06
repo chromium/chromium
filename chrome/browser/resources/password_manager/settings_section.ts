@@ -180,7 +180,9 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       const params = new URLSearchParams();
       Router.getInstance().updateRouterParams(params);
     }
+  }
 
+  private onShortcutBannerDomChanged_() {
     const addShortcutBanner = this.root!.querySelector('#addShortcutBanner');
     if (addShortcutBanner) {
       this.registerHelpBubble(

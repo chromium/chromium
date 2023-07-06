@@ -170,13 +170,16 @@ class TestTutorialService : public user_education::TutorialService {
       ui::ElementContext context,
       base::OnceClosure completed_callback = base::DoNothing(),
       base::OnceClosure aborted_callback = base::DoNothing()) override {
-    running_ = true;
+    running_id_ = id;
   }
 
-  bool IsRunningTutorial() const override { return running_; }
+  bool IsRunningTutorial(
+      absl::optional<user_education::TutorialIdentifier> id) const override {
+    return id.has_value() ? id == running_id_ : running_id_.has_value();
+  }
 
  private:
-  bool running_ = false;
+  absl::optional<user_education::TutorialIdentifier> running_id_;
 };
 
 class MockTutorialService : public TestTutorialService {
@@ -196,7 +199,8 @@ class MockTutorialService : public TestTutorialService {
   MOCK_METHOD(void,
               LogStartedFromWhatsNewPage,
               (user_education::TutorialIdentifier, bool));
-  MOCK_CONST_METHOD0(IsRunningTutorial, bool());
+  MOCK_CONST_METHOD1(IsRunningTutorial,
+                     bool(absl::optional<user_education::TutorialIdentifier>));
 };
 
 class MockCommandHandler : public TestCommandHandler {
