@@ -6,6 +6,8 @@
 
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
+#include "content/shell/browser/shell.h"
+#include "content/shell/browser/shell_devtools_manager_delegate.h"
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_main_delegate.h"
 #include "wolvic/wolvic_main_parts.h"
@@ -43,6 +45,12 @@ WolvicContentBrowserClient::CreateBrowserMainParts(
   CHECK(!browser_main_parts_);
   browser_main_parts_ = new WolvicMainParts();
   return std::unique_ptr<BrowserMainParts>(browser_main_parts_);
+}
+
+std::unique_ptr<content::DevToolsManagerDelegate>
+WolvicContentBrowserClient::CreateDevToolsManagerDelegate() {
+  return std::make_unique<content::ShellDevToolsManagerDelegate>(
+      GetBrowserContext());
 }
 
 #if BUILDFLAG(ENABLE_VR)

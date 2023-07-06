@@ -23,6 +23,7 @@ class WolvicMainParts : public BrowserMainParts {
   // BrowserMainParts overrides.
   int PreEarlyInitialization() override;
   int PreMainMessageLoopRun() override;
+  void PostMainMessageLoopRun() override;
 
   WolvicBrowserContext* browser_context() { return browser_context_.get(); }
 

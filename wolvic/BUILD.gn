@@ -17,7 +17,18 @@ group("empty_group") {
 shared_library("libcontent_native") {
   testonly = true
   sources = [
+    "../content/shell/browser/shell.cc",
+    "../content/shell/browser/shell.h",
+    "../content/shell/browser/shell_devtools_bindings.cc",
+    "../content/shell/browser/shell_devtools_bindings.h",
+    "../content/shell/browser/shell_devtools_manager_delegate.cc",
+    "../content/shell/browser/shell_devtools_manager_delegate.h",
+    "../content/shell/browser/shell_javascript_dialog_manager.cc",
+    "../content/shell/browser/shell_javascript_dialog_manager.h",
     "../content/shell/browser/shell_paths.cc",
+    "../content/shell/browser/shell_platform_delegate_android.cc",
+    "../content/shell/common/shell_switches.cc",
+    "../content/shell/common/shell_switches.h",
     "browser/tab_jni.cc",
     "browser/vr/moz_external_vr.h",
     "browser/vr/wolvic_xr_integration_client.cc",
