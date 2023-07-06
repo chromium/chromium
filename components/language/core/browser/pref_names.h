@@ -8,33 +8,42 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-namespace language {
-namespace prefs {
+namespace language::prefs {
 
-extern const char kAcceptLanguages[];
+// The value to use for Accept-Languages HTTP header when making an HTTP
+// request. This should not be set directly as it is a combination of
+// kSelectedLanguages and kForcedLanguages. To update the list of preferred
+// languages, set kSelectedLanguages and this pref will update automatically.
+inline constexpr char kAcceptLanguages[] = "intl.accept_languages";
 
-extern const char kSelectedLanguages[];
+// List which contains the user-selected languages.
+inline constexpr char kSelectedLanguages[] = "intl.selected_languages";
 
-extern const char kForcedLanguages[];
+// List which contains the policy-forced languages.
+inline constexpr char kForcedLanguages[] = "intl.forced_languages";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kPreferredLanguages[];
-extern const char kPreferredLanguagesSyncable[];
-#endif
+// A string pref (comma-separated list) set to the preferred language IDs
+// (ex. "en-US,fr,ko").
+inline constexpr char kPreferredLanguages[] =
+    "settings.language.preferred_languages";
+inline constexpr char kPreferredLanguagesSyncable[] =
+    "settings.language.preferred_languages_syncable";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The application locale as selected by the user, such as "en-AU". This may not
 // necessarily be a string locale (a locale that we have strings for on this
 // platform). Use |l10n_util::CheckAndResolveLocale| to convert it to a string
 // locale if needed, such as "en-GB".
-extern const char kApplicationLocale[];
+inline constexpr char kApplicationLocale[] = "intl.app_locale";
 
 #if BUILDFLAG(IS_ANDROID)
-extern const char kAppLanguagePromptShown[];
+inline constexpr char kAppLanguagePromptShown[] =
+    "language.app_language_prompt_shown";
 
-extern const char kULPLanguages[];
+inline constexpr char kULPLanguages[] = "language.ulp_languages";
 #endif
 
-}  // namespace prefs
-}  // namespace language
+}  // namespace language::prefs
 
 #endif  // COMPONENTS_LANGUAGE_CORE_BROWSER_PREF_NAMES_H_

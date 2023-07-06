@@ -21,7 +21,6 @@ component("constants") {
     "ash_features.h",
     "ash_paths.cc",
     "ash_paths.h",
-    "ash_pref_names.cc",
     "ash_pref_names.h",
     "ash_switches.cc",
     "ash_switches.h",

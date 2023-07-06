@@ -7,8 +7,7 @@
 
 class PrefRegistrySimple;
 
-namespace quick_answers {
-namespace prefs {
+namespace quick_answers::prefs {
 
 // The status of the user's consent. The enum values cannot be changed because
 // they are persisted on disk.
@@ -23,19 +22,49 @@ enum ConsentStatus {
   kRejected = 2,
 };
 
-extern const char kQuickAnswersNoticed[];
-extern const char kQuickAnswersEnabled[];
-extern const char kQuickAnswersConsentStatus[];
-extern const char kQuickAnswersDefinitionEnabled[];
-extern const char kQuickAnswersTranslationEnabled[];
-extern const char kQuickAnswersUnitConversionEnabled[];
-extern const char kQuickAnswersNoticeImpressionCount[];
-extern const char kQuickAnswersNoticeImpressionDuration[];
+// A preference that indicates the user has seen the Quick Answers notice.
+inline constexpr char kQuickAnswersNoticed[] =
+    "settings.quick_answers.consented";
+
+// A preference that indicates the user has enabled the Quick Answers services.
+// This preference can be overridden by the administrator policy.
+inline constexpr char kQuickAnswersEnabled[] = "settings.quick_answers.enabled";
+
+// A preference that indicates the user consent status for the Quick
+// Answers feature.
+inline constexpr char kQuickAnswersConsentStatus[] =
+    "settings.quick_answers.consent_status";
+
+// A preference that indicates the user has enabled the Quick Answers definition
+// services.
+// This preference can be overridden by the administrator policy.
+inline constexpr char kQuickAnswersDefinitionEnabled[] =
+    "settings.quick_answers.definition.enabled";
+
+// A preference that indicates the user has enabled the Quick Answers
+// translation services.
+// This preference can be overridden by the administrator policy.
+inline constexpr char kQuickAnswersTranslationEnabled[] =
+    "settings.quick_answers.translation.enabled";
+
+// A preference that indicates the user has enabled the Quick Answers unit
+// conversion services.
+// This preference can be overridden by the administrator policy.
+inline constexpr char kQuickAnswersUnitConversionEnabled[] =
+    "settings.quick_answers.unit_conversion.enabled";
+
+// A preference to keep track of the number of Quick Answers notice impression.
+inline constexpr char kQuickAnswersNoticeImpressionCount[] =
+    "settings.quick_answers.consent.count";
+
+// A preference to keep track of how long (in seconds) the Quick Answers notice
+// has shown to the user.
+inline constexpr char kQuickAnswersNoticeImpressionDuration[] =
+    "settings.quick_answers.consent.duration";
 
 // Registers Quick Answers specific profile preferences for browser prefs.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-}  // namespace prefs
-}  // namespace quick_answers
+}  // namespace quick_answers::prefs
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_PUBLIC_CPP_QUICK_ANSWERS_PREFS_H_
