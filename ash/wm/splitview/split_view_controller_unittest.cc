@@ -34,6 +34,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/float/float_controller.h"
@@ -61,6 +62,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/wm/features.h"
@@ -706,13 +708,22 @@ TEST_F(SplitViewControllerTest,
 
   WallpaperWidgetController* wallpaper_widget_controller =
       Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
-  EXPECT_GT(wallpaper_widget_controller->GetWallpaperBlur(), 0);
+
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
+  // When Jellyroll is enabled, the wallpaper blur is removed in overview mode.
+  EXPECT_EQ(wallpaper_widget_controller->GetWallpaperBlur(),
+            chromeos::features::IsJellyrollEnabled()
+                ? wallpaper_constants::kClear
+                : wallpaper_constants::kOverviewBlur);
   EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ToggleOverview();
-  EXPECT_GT(wallpaper_widget_controller->GetWallpaperBlur(), 0);
+
+  EXPECT_EQ(wallpaper_widget_controller->GetWallpaperBlur(),
+            is_jellyroll_enabled ? wallpaper_constants::kClear
+                                 : wallpaper_constants::kOverviewBlur);
   EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 
   WaitForOverviewExitAnimation();
