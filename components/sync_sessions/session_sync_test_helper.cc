@@ -13,7 +13,6 @@
 
 namespace sync_sessions {
 
-static const char* kClientName = "name";
 static const char* kAppId = "app_id";
 static const char* kVirtualUrl = "http://foo/1";
 static const char* kReferrer = "referrer";
@@ -23,12 +22,13 @@ static const char* kTitle = "title";
 sync_pb::SessionSpecifics
 SessionSyncTestHelper::BuildHeaderSpecificsWithoutWindows(
     const std::string& tag,
+    const std::string& client_name,
     const syncer::DeviceInfo::FormFactor& device_form_factor) {
   sync_pb::SessionSpecifics specifics;
   specifics.set_session_tag(tag);
   sync_pb::SessionHeader* header = specifics.mutable_header();
   header->set_device_form_factor(ToDeviceFormFactorProto(device_form_factor));
-  header->set_client_name(kClientName);
+  header->set_client_name(client_name);
   return specifics;
 }
 

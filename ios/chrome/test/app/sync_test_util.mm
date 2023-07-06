@@ -190,7 +190,7 @@ void AddSessionToFakeSyncServer(
   // Header specifics.
   sync_pb::SessionSpecifics header =
       sync_sessions::SessionSyncTestHelper::BuildHeaderSpecificsWithoutWindows(
-          session.tag, session.form_factor);
+          session.tag, session.name, session.form_factor);
   sync_sessions::SessionSyncTestHelper::AddWindowSpecifics(window_id, tab_list,
                                                            &header);
   specifics_list.push_back(header);
