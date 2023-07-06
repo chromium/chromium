@@ -1083,42 +1083,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabManager.Heuristics.FromBackgroundedToFirstFaviconUpdated"
-    units="ms" expires_after="M85">
-  <owner>chrisha@chromium.org</owner>
-  <owner>lpy@chromium.org</owner>
-  <summary>
-    Measures the time duration from when the tab is backgrounded to when its
-    favicon is updated. The first-time set of favicon will be ignored; this
-    metric will only be recorded after 5 minutes from main frame navigation
-    committed and when the tab is in the background.
-  </summary>
-</histogram>
-
-<histogram
-    name="TabManager.Heuristics.FromBackgroundedToFirstNonPersistentNotificationCreated"
-    units="ms" expires_after="M78">
-  <owner>chrisha@chromium.org</owner>
-  <owner>lpy@chromium.org</owner>
-  <summary>
-    Measures the time duration from when the tab is backgrounded to when a
-    non-persistent notification is created. Only recorded when the tab is in the
-    background.
-  </summary>
-</histogram>
-
-<histogram name="TabManager.Heuristics.FromBackgroundedToFirstTitleUpdated"
-    units="ms" expires_after="M77">
-  <owner>chrisha@chromium.org</owner>
-  <owner>lpy@chromium.org</owner>
-  <summary>
-    Measures the time duration from when the tab is backgrounded to when its
-    title is updated. The first-time set of title will be ignored; this metric
-    will only be recorded after 5 minutes from main frame navigation committed
-    and when the tab is in the background.
-  </summary>
-</histogram>
-
 <histogram name="TabManager.SessionOverlap.BackgroundTabOpening"
     enum="BooleanOverlap" expires_after="M79">
   <owner>chrisha@chromium.org</owner>

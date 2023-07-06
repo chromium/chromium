@@ -146,7 +146,6 @@ static_library("performance_manager") {
     "public/graph/process_node.h",
     "public/graph/system_node.h",
     "public/graph/worker_node.h",
-    "public/metrics/background_metrics_reporter.h",
     "public/metrics/metrics_collector.h",
     "public/performance_manager.h",
     "public/performance_manager_main_thread_mechanism.h",
