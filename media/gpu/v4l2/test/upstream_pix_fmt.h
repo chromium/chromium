@@ -17,6 +17,13 @@
                                    */
 #endif
 
+// TODO(b/278157861): Remove this once ChromeOS V4L2 header is updated
+// Add it directly instead of including hevc-ctrls-upstream.h
+#ifndef V4L2_PIX_FMT_HEVC_SLICE
+#define V4L2_PIX_FMT_HEVC_SLICE \
+  v4l2_fourcc('S', '2', '6', '5') /* HEVC parsed slices */
+#endif
+
 // TODO(b/232419944): remove this once V4L2 header is updated.
 #ifndef V4L2_PIX_FMT_MM21
 // MTK 8-bit block mode, two non-contiguous planes.
