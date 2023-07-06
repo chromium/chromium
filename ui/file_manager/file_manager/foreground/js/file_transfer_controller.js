@@ -330,8 +330,7 @@ export class FileTransferController {
         clipboardData, effectAllowed, volumeInfo,
         this.selectionHandler_.selection.entries,
         !this.selectionHandler_.isAvailable());
-    this.appendUriList_(
-        clipboardData, this.selectionHandler_.selection.entries);
+    this.appendFiles_(clipboardData, this.selectionHandler_.selection.entries);
   }
 
   /**
@@ -379,14 +378,12 @@ export class FileTransferController {
   }
 
   /**
-   * Appends uri-list of |entries| to |clipboardData|.
+   * Appends files of |entries| to |clipboardData|.
    * @param {DataTransfer} clipboardData ClipboardData from the event.
    * @param {!Array<!Entry>} entries
    * @private
    */
-  appendUriList_(clipboardData, entries) {
-    let externalFileUrl;
-
+  appendFiles_(clipboardData, entries) {
     for (let i = 0; i < entries.length; i++) {
       const url = entries[i].toURL();
       if (!this.selectedAsyncData_[url]) {
@@ -395,13 +392,6 @@ export class FileTransferController {
       if (this.selectedAsyncData_[url].file) {
         clipboardData.items.add(assert(this.selectedAsyncData_[url].file));
       }
-      if (!externalFileUrl) {
-        externalFileUrl = this.selectedAsyncData_[url].externalFileUrl;
-      }
-    }
-
-    if (externalFileUrl) {
-      clipboardData.setData('text/uri-list', externalFileUrl);
     }
   }
 
