@@ -36,6 +36,10 @@ source_set("browser_tests") {
     "whats_new/whats_new_browsertest.cc",
   ]
 
+  if (enable_dice_support) {
+    sources += [ "welcome/welcome_browsertest.cc" ]
+  }
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
@@ -217,10 +221,7 @@ if (include_js_tests) {
     }
 
     if (enable_dice_support) {
-      sources += [
-        "welcome/a11y_tests.js",
-        "welcome/welcome_browsertest.js",
-      ]
+      sources += [ "welcome/a11y_tests.js" ]
     }
 
     if (enable_dice_support || is_chromeos_ash) {
