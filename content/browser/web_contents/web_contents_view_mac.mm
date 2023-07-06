@@ -323,7 +323,7 @@ void WebContentsViewMac::CreateView(gfx::NativeView context) {
       std::make_unique<remote_cocoa::WebContentsNSViewBridge>(ns_view_id_,
                                                               this);
 
-  drag_dest_.reset([[WebDragDest alloc] initWithWebContentsImpl:web_contents_]);
+  drag_dest_ = [[WebDragDest alloc] initWithWebContentsImpl:web_contents_];
   if (delegate_)
     [drag_dest_ setDragDelegate:delegate_->GetDragDestDelegate()];
 }

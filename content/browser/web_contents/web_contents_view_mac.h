@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_MAC_H_
 #define CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_MAC_H_
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
 
 #include <list>
@@ -14,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
@@ -26,6 +24,10 @@
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #import "ui/base/cocoa/views_hostable.h"
 #include "ui/gfx/geometry/size.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class WebContentsViewCocoa;
 @class WebDragDest;
@@ -192,7 +194,7 @@ class WebContentsViewMac : public WebContentsView,
   raw_ptr<WebContentsImpl> web_contents_;
 
   // Destination for drag-drop.
-  base::scoped_nsobject<WebDragDest> drag_dest_;
+  WebDragDest* __strong drag_dest_;
 
   // Tracks the RenderWidgetHost where the current drag started.
   base::WeakPtr<content::RenderWidgetHostImpl> drag_source_start_rwh_;

@@ -11,11 +11,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/apple/bridging.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/mac/foundation_util.h"
-#include "base/memory/scoped_policy.h"
 #include "base/pickle.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
@@ -34,6 +34,10 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
 #include "url/url_constants.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @implementation WebDragSource {
   // The host through which to communicate with the WebContents. Owns
@@ -55,7 +59,7 @@
 
   // The file type associated with the file drag, if any. TODO(macOS 11): Change
   // to a UTType object.
-  base::scoped_nsobject<NSString> _fileUTType;
+  NSString* __strong _fileUTType;
 }
 
 - (instancetype)initWithHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host
@@ -135,18 +139,18 @@
       if (@available(macOS 11, *)) {
         UTType* type =
             [UTType typeWithMIMEType:base::SysUTF8ToNSString(mimeType)];
-        _fileUTType.reset(type.identifier, base::scoped_policy::RETAIN);
+        _fileUTType = type.identifier;
       } else {
         base::ScopedCFTypeRef<CFStringRef> mimeTypeCF(
             base::SysUTF8ToCFStringRef(mimeType));
-        _fileUTType.reset(
-            base::mac::CFToNSCast(UTTypeCreatePreferredIdentifierForTag(
-                kUTTagClassMIMEType, mimeTypeCF.get(), nullptr)));
+        _fileUTType = base::apple::CFToNSOwnershipCast(
+            UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType,
+                                                  mimeTypeCF.get(), nullptr));
       }
 
       // Promise both the file's contents...
       if (!_dropData.file_contents.empty()) {
-        [writableTypes addObject:_fileUTType.get()];
+        [writableTypes addObject:_fileUTType];
       }
 
       // ... and materialization of the file if requested.
@@ -161,9 +165,9 @@
       // https://buckleyisms.com/blog/how-to-actually-implement-file-dragging-from-your-app-on-mac/
 
       [writableTypes
-          addObject:base::mac::CFToNSCast(kPasteboardTypeFileURLPromise)];
-      [writableTypes
-          addObject:base::mac::CFToNSCast(kPasteboardTypeFilePromiseContent)];
+          addObject:base::apple::CFToNSPtrCast(kPasteboardTypeFileURLPromise)];
+      [writableTypes addObject:base::apple::CFToNSPtrCast(
+                                   kPasteboardTypeFilePromiseContent)];
     }
   }
 
@@ -178,13 +182,13 @@
   // an image drop, but the MIME time is tested anyway for paranoia's sake.)
   bool hasImageData;
   if (@available(macOS 11, *)) {
-    hasImageData = !_dropData.file_contents.empty() && _fileUTType &&
-                   [[UTType typeWithIdentifier:_fileUTType.get()]
-                       conformsToType:UTTypeImage];
+    hasImageData =
+        !_dropData.file_contents.empty() && _fileUTType &&
+        [[UTType typeWithIdentifier:_fileUTType] conformsToType:UTTypeImage];
   } else {
-    hasImageData = !_dropData.file_contents.empty() && _fileUTType &&
-                   UTTypeConformsTo(base::mac::NSToCFCast(_fileUTType.get()),
-                                    kUTTypeImage);
+    hasImageData =
+        !_dropData.file_contents.empty() && _fileUTType &&
+        UTTypeConformsTo(base::apple::NSToCFPtrCast(_fileUTType), kUTTypeImage);
   }
   if (hasHTMLData) {
     if (hasImageData) {
@@ -248,11 +252,11 @@
   }
 
   // File instantiation promise.
-  if ([type isEqualToString:base::mac::CFToNSCast(
+  if ([type isEqualToString:base::apple::CFToNSPtrCast(
                                 kPasteboardTypeFilePromiseContent)]) {
-    return _fileUTType.get();
+    return _fileUTType;
   }
-  if ([type isEqualToString:base::mac::CFToNSCast(
+  if ([type isEqualToString:base::apple::CFToNSPtrCast(
                                 kPasteboardTypeFileURLPromise)]) {
     // The official way of getting the drop destination is to call
     // `PasteboardCopyPasteLocation` on the Carbon Pasteboard Manager, but what

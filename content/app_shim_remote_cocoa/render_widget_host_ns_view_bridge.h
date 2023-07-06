@@ -7,7 +7,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "base/mac/scoped_nsobject.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #import "content/app_shim_remote_cocoa/popup_window_mac.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
@@ -19,6 +18,10 @@
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 #include "ui/base/mojom/attributed_string.mojom-forward.h"
 #include "ui/display/display_observer.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace remote_cocoa {
 
@@ -99,7 +102,7 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
   void OnDisplayMetricsChanged(const display::Display&, uint32_t) override;
 
   // The NSView used for input and display.
-  base::scoped_nsobject<RenderWidgetHostViewCocoa> cocoa_view_;
+  RenderWidgetHostViewCocoa* __strong cocoa_view_;
 
   // Once set, all calls to set the background color or CALayer content will
   // be ignored.
@@ -110,7 +113,7 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
 
   // The background CALayer which is hosted by |cocoa_view_|, and is used as
   // the root of |display_ca_layer_tree_|.
-  base::scoped_nsobject<CALayer> background_layer_;
+  CALayer* __strong background_layer_;
   std::unique_ptr<ui::DisplayCALayerTree> display_ca_layer_tree_;
 
   // Cached copy of the tooltip text, to avoid redundant calls.

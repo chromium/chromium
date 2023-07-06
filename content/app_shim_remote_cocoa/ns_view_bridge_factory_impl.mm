@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/mac/scoped_nsobject.h"
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_bridge.h"
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h"
 #include "content/app_shim_remote_cocoa/web_contents_ns_view_bridge.h"
@@ -26,6 +25,10 @@
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace remote_cocoa {
 
@@ -150,8 +153,6 @@ class RenderWidgetHostNSViewBridgeOwner
 
   mojo::AssociatedRemote<mojom::RenderWidgetHostNSViewHost> host_;
   std::unique_ptr<RenderWidgetHostNSViewBridge> bridge_;
-  base::scoped_nsobject<NSAccessibilityRemoteUIElement>
-      remote_accessibility_element_;
 };
 }
 

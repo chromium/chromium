@@ -5,9 +5,9 @@
 #ifndef CONTENT_APP_SHIM_REMOTE_COCOA_SHARING_SERVICE_PICKER_H_
 #define CONTENT_APP_SHIM_REMOTE_COCOA_SHARING_SERVICE_PICKER_H_
 
-#include <string>
-
 #include <AppKit/AppKit.h>
+
+#include <string>
 
 #include "content/common/render_widget_host_ns_view.mojom.h"
 

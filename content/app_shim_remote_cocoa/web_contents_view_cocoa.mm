@@ -25,6 +25,10 @@
 #include "ui/gfx/image/image.h"
 #include "ui/resources/grit/ui_resources.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using content::DropData;
 using features::kMacWebContentsOcclusion;
 using remote_cocoa::mojom::DraggingInfo;
@@ -102,6 +106,28 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 // WebContentsViewCocoa
 
 @implementation WebContentsViewCocoa {
+  // Instances of this class are owned by both `_host` and AppKit. The `_host`
+  // must call `-setHost:nil` in its destructor.
+  raw_ptr<remote_cocoa::mojom::WebContentsNSViewHost> _host;
+
+  // The interface exported to views::Views that embed this as a sub-view.
+  raw_ptr<ui::ViewsHostableView> _viewsHostableView;
+
+  BOOL _mouseDownCanMoveWindow;
+
+  // Utility to copy screenshots to a usable directory for PWAs. This utility
+  // will maintain a temporary directory for such screenshot files until this
+  // WebContents is destroyed.
+  // https://crbug.com/1148078
+  std::unique_ptr<remote_cocoa::DroppedScreenShotCopierMac>
+      _droppedScreenShotCopier;
+
+  // Drag variables.
+  WebDragSource* __strong _dragSource;
+  NSDragOperation _dragOperation;
+
+  gfx::Rect _windowControlsOverlayRect;
+
   // TODO(https://crbug.com/883031): Remove this when kMacWebContentsOcclusion
   // is enabled by default.
   BOOL _inFullScreenTransition;
@@ -136,8 +162,6 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self cancelDelayedSetWebContentsOccluded];
-
-  [super dealloc];
 }
 
 - (void)enableDroppedScreenShotCopier {
@@ -230,11 +254,11 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
                                         clickCount:1
                                           pressure:1.0];
 
-  _dragSource.reset([[WebDragSource alloc] initWithHost:_host
-                                               dropData:dropData
-                                           isPrivileged:isPrivileged]);
-  NSDraggingItem* draggingItem = [[[NSDraggingItem alloc]
-      initWithPasteboardWriter:_dragSource] autorelease];
+  _dragSource = [[WebDragSource alloc] initWithHost:_host
+                                           dropData:dropData
+                                       isPrivileged:isPrivileged];
+  NSDraggingItem* draggingItem =
+      [[NSDraggingItem alloc] initWithPasteboardWriter:_dragSource];
 
   if (!image) {
     image = content::GetContentClient()
@@ -292,7 +316,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 
   // The drag is complete. Disconnect the drag source.
   [_dragSource webContentsIsGone];
-  _dragSource.reset();
+  _dragSource = nil;
 }
 
 // NSDraggingDestination methods

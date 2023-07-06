@@ -11,6 +11,10 @@
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace remote_cocoa {
 
 WebContentsNSViewBridge::WebContentsNSViewBridge(
@@ -18,22 +22,21 @@ WebContentsNSViewBridge::WebContentsNSViewBridge(
     mojo::PendingAssociatedRemote<mojom::WebContentsNSViewHost> client)
     : host_(std::move(client),
             ui::WindowResizeHelperMac::Get()->task_runner()) {
-  ns_view_.reset(
-      [[WebContentsViewCocoa alloc] initWithViewsHostableView:nullptr]);
+  ns_view_ = [[WebContentsViewCocoa alloc] initWithViewsHostableView:nullptr];
   [ns_view_ setHost:host_.get()];
   [ns_view_ enableDroppedScreenShotCopier];
-  view_id_ = std::make_unique<remote_cocoa::ScopedNSViewIdMapping>(
-      view_id, ns_view_.get());
+  view_id_ =
+      std::make_unique<remote_cocoa::ScopedNSViewIdMapping>(view_id, ns_view_);
 }
 
 WebContentsNSViewBridge::WebContentsNSViewBridge(
     uint64_t view_id,
     content::WebContentsViewMac* web_contents_view) {
-  ns_view_.reset([[WebContentsViewCocoa alloc]
-      initWithViewsHostableView:web_contents_view]);
+  ns_view_ = [[WebContentsViewCocoa alloc]
+      initWithViewsHostableView:web_contents_view];
   [ns_view_ setHost:web_contents_view];
-  view_id_ = std::make_unique<remote_cocoa::ScopedNSViewIdMapping>(
-      view_id, ns_view_.get());
+  view_id_ =
+      std::make_unique<remote_cocoa::ScopedNSViewIdMapping>(view_id, ns_view_);
 }
 
 WebContentsNSViewBridge::~WebContentsNSViewBridge() {

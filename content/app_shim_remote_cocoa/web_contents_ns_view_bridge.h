@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#import "base/mac/scoped_nsobject.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "content/common/content_export.h"
@@ -17,6 +16,10 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class WebContentsViewCocoa;
 
@@ -49,7 +52,7 @@ class CONTENT_EXPORT WebContentsNSViewBridge : public mojom::WebContentsNSView {
   void Bind(mojo::PendingAssociatedReceiver<mojom::WebContentsNSView> receiver,
             scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  WebContentsViewCocoa* GetNSView() const { return ns_view_.get(); }
+  WebContentsViewCocoa* GetNSView() const { return ns_view_; }
 
   // mojom::WebContentsNSViewBridge:
   void SetParentNSView(uint64_t parent_ns_view_id) override;
@@ -67,7 +70,7 @@ class CONTENT_EXPORT WebContentsNSViewBridge : public mojom::WebContentsNSView {
   void Destroy() override;
 
  private:
-  base::scoped_nsobject<WebContentsViewCocoa> ns_view_;
+  WebContentsViewCocoa* __strong ns_view_;
   mojo::AssociatedReceiver<mojom::WebContentsNSView> receiver_{this};
   mojo::AssociatedRemote<mojom::WebContentsNSViewHost> host_;
 

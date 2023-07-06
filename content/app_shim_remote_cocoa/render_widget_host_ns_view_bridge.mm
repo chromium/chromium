@@ -6,6 +6,7 @@
 
 #include <Foundation/Foundation.h>
 
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
@@ -23,6 +24,10 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using blink::WebGestureEvent;
 
 namespace remote_cocoa {
@@ -33,15 +38,14 @@ RenderWidgetHostNSViewBridge::RenderWidgetHostNSViewBridge(
     uint64_t ns_view_id,
     base::OnceClosure destroy_callback)
     : destroy_callback_(std::move(destroy_callback)) {
-  cocoa_view_.reset([[RenderWidgetHostViewCocoa alloc]
-        initWithHost:host
-      withHostHelper:host_helper]);
+  cocoa_view_ = [[RenderWidgetHostViewCocoa alloc] initWithHost:host
+                                                 withHostHelper:host_helper];
 
-  background_layer_.reset([[CALayer alloc] init]);
+  background_layer_ = [[CALayer alloc] init];
   display_ca_layer_tree_ =
-      std::make_unique<ui::DisplayCALayerTree>(background_layer_.get());
-  [cocoa_view_ setLayer:background_layer_];
-  [cocoa_view_ setWantsLayer:YES];
+      std::make_unique<ui::DisplayCALayerTree>(background_layer_);
+  cocoa_view_.layer = background_layer_;
+  cocoa_view_.wantsLayer = YES;
 
   view_id_ = std::make_unique<remote_cocoa::ScopedNSViewIdMapping>(ns_view_id,
                                                                    cocoa_view_);
@@ -49,14 +53,13 @@ RenderWidgetHostNSViewBridge::RenderWidgetHostNSViewBridge(
 
 RenderWidgetHostNSViewBridge::~RenderWidgetHostNSViewBridge() {
   [cocoa_view_ setHostDisconnected];
-  // Do not immediately remove |cocoa_view_| from the NSView heirarchy, because
-  // the call to -[NSView removeFromSuperview] may cause use to call into the
+  // Do not immediately remove |cocoa_view_| from the NSView hierarchy, because
+  // the call to -[NSView removeFromSuperview] may cause us to call into the
   // RWHVMac during tear-down, via WebContentsImpl::UpdateWebContentsVisibility.
   // https://crbug.com/834931
   [cocoa_view_ performSelector:@selector(removeFromSuperview)
                     withObject:nil
                     afterDelay:0];
-  cocoa_view_.autorelease();
   popup_window_.reset();
 }
 
@@ -86,8 +89,8 @@ void RenderWidgetHostNSViewBridge::SetParentWebContentsNSView(
   CHECK(parent_ns_view);
   // Set the frame and autoresizing mask of the RenderWidgetHostViewCocoa as is
   // done by WebContentsViewMac.
-  [cocoa_view_ setFrame:[parent_ns_view bounds]];
-  [cocoa_view_ setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+  cocoa_view_.frame = parent_ns_view.bounds;
+  cocoa_view_.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
   // Place the new view below all other views, matching the behavior in
   // WebContentsViewMac::CreateViewForWidget.
   // https://crbug.com/1017446
@@ -97,7 +100,7 @@ void RenderWidgetHostNSViewBridge::SetParentWebContentsNSView(
 }
 
 void RenderWidgetHostNSViewBridge::MakeFirstResponder() {
-  [[cocoa_view_ window] makeFirstResponder:cocoa_view_];
+  [cocoa_view_.window makeFirstResponder:cocoa_view_];
 }
 
 void RenderWidgetHostNSViewBridge::DisableDisplay() {
@@ -131,7 +134,7 @@ void RenderWidgetHostNSViewBridge::SetBounds(const gfx::Rect& rect) {
   // view to screen-capture resolution). In this case, simply treat the view as
   // relative to the screen.
   BOOL isRelativeToScreen =
-      IsPopup() || ![[cocoa_view_ superview] isKindOfClass:[BaseView class]];
+      IsPopup() || ![cocoa_view_.superview isKindOfClass:[BaseView class]];
   if (isRelativeToScreen) {
     // The position of |rect| is screen coordinate system and we have to
     // consider Cocoa coordinate system is upside-down and also multi-screen.
@@ -139,13 +142,13 @@ void RenderWidgetHostNSViewBridge::SetBounds(const gfx::Rect& rect) {
     if (IsPopup())
       [popup_window_->window() setFrame:frame display:YES];
     else
-      [cocoa_view_ setFrame:frame];
+      cocoa_view_.frame = frame;
   } else {
-    BaseView* superview = static_cast<BaseView*>([cocoa_view_ superview]);
-    gfx::Rect rect2 = [superview flipNSRectToRect:[cocoa_view_ frame]];
+    BaseView* superview = static_cast<BaseView*>(cocoa_view_.superview);
+    gfx::Rect rect2 = [superview flipNSRectToRect:cocoa_view_.frame];
     rect2.set_width(rect.width());
     rect2.set_height(rect.height());
-    [cocoa_view_ setFrame:[superview flipRectToNSRect:rect2]];
+    cocoa_view_.frame = [superview flipRectToNSRect:rect2];
   }
 }
 
@@ -160,14 +163,12 @@ void RenderWidgetHostNSViewBridge::SetBackgroundColor(SkColor color) {
   if (display_disabled_)
     return;
   ScopedCAActionDisabler disabler;
-  base::ScopedCFTypeRef<CGColorRef> cg_color =
-      skia::CGColorCreateFromSkColor(color);
-  [background_layer_ setBackgroundColor:cg_color];
+  background_layer_.backgroundColor = skia::CGColorCreateFromSkColor(color);
 }
 
 void RenderWidgetHostNSViewBridge::SetVisible(bool visible) {
   ScopedCAActionDisabler disabler;
-  [cocoa_view_ setHidden:!visible];
+  cocoa_view_.hidden = !visible;
 }
 
 void RenderWidgetHostNSViewBridge::SetTooltipText(
@@ -175,8 +176,9 @@ void RenderWidgetHostNSViewBridge::SetTooltipText(
   // Called from the renderer to tell us what the tooltip text should be. It
   // calls us frequently so we need to cache the value to prevent doing a lot
   // of repeat work.
-  if (tooltip_text == tooltip_text_ || ![[cocoa_view_ window] isKeyWindow])
+  if (tooltip_text == tooltip_text_ || !cocoa_view_.window.keyWindow) {
     return;
+  }
   tooltip_text_ = tooltip_text;
 
   // Maximum number of characters we allow in a tooltip.
@@ -216,7 +218,7 @@ void RenderWidgetHostNSViewBridge::SetTextSelection(const std::u16string& text,
                                                     const gfx::Range& range) {
   [cocoa_view_ setTextSelectionText:text offset:offset range:range];
   // Updates markedRange when there is no marked text so that retrieving
-  // markedRange immediately after calling setMarkdText: returns the current
+  // markedRange immediately after calling setMarkedText: returns the current
   // caret position.
   if (![cocoa_view_ hasMarkedText]) {
     [cocoa_view_ setMarkedRange:range.ToNSRange()];
@@ -267,13 +269,13 @@ void RenderWidgetHostNSViewBridge::ShowDictionaryOverlay(
     const gfx::Point& baseline_point) {
   CFAttributedStringRef cf_string =
       attributed_string.To<CFAttributedStringRef>();
-  NSAttributedString* string = base::mac::CFToNSCast(cf_string);
-  if ([string length] == 0) {
+  NSAttributedString* string = base::apple::CFToNSPtrCast(cf_string);
+  if (string.length == 0) {
     return;
   }
   NSPoint flipped_baseline_point = {
       static_cast<CGFloat>(baseline_point.x()),
-      [cocoa_view_ frame].size.height - baseline_point.y(),
+      cocoa_view_.frame.size.height - baseline_point.y(),
   };
   [cocoa_view_ showDefinitionForAttributedString:string
                                          atPoint:flipped_baseline_point];

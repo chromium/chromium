@@ -53,10 +53,19 @@ if (is_apple) {
       "//ui/events:gesture_detection",
       "//ui/gfx",
       "//ui/gfx/geometry",
+      "//ui/resources",
     ]
     if (is_mac) {
       sources = [
+        "../app_shim_remote_cocoa/ns_view_bridge_factory_impl.mm",
+        "../app_shim_remote_cocoa/popup_window_mac.mm",
+        "../app_shim_remote_cocoa/render_widget_host_ns_view_bridge.mm",
         "../app_shim_remote_cocoa/render_widget_host_view_cocoa.mm",
+        "../app_shim_remote_cocoa/sharing_service_picker.mm",
+        "../app_shim_remote_cocoa/web_contents_ns_view_bridge.mm",
+        "../app_shim_remote_cocoa/web_contents_occlusion_checker_mac.mm",
+        "../app_shim_remote_cocoa/web_contents_view_cocoa.mm",
+        "../app_shim_remote_cocoa/web_drag_source_mac.mm",
         "renderer_host/browser_compositor_view_mac.mm",
         "renderer_host/clipboard_host_impl_mac.mm",
         "renderer_host/input/fling_scheduler_mac.mm",
@@ -77,6 +86,7 @@ if (is_apple) {
         "//components/remote_cocoa/app_shim",
         "//components/remote_cocoa/browser",
         "//components/remote_cocoa/common:mojo",
+        "//ui/base/dragdrop:types",
         "//ui/events:dom_keyboard_layout",
       ]
     }
@@ -2606,23 +2616,15 @@ source_set("browser") {
 
   if (is_mac) {
     sources += [
-      "../app_shim_remote_cocoa/ns_view_bridge_factory_impl.mm",
       "../app_shim_remote_cocoa/popup_window_mac.h",
-      "../app_shim_remote_cocoa/popup_window_mac.mm",
       "../app_shim_remote_cocoa/render_widget_host_ns_view_bridge.h",
-      "../app_shim_remote_cocoa/render_widget_host_ns_view_bridge.mm",
       "../app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h",
       "../app_shim_remote_cocoa/render_widget_host_view_cocoa.h",
       "../app_shim_remote_cocoa/sharing_service_picker.h",
-      "../app_shim_remote_cocoa/sharing_service_picker.mm",
       "../app_shim_remote_cocoa/web_contents_ns_view_bridge.h",
-      "../app_shim_remote_cocoa/web_contents_ns_view_bridge.mm",
       "../app_shim_remote_cocoa/web_contents_occlusion_checker_mac.h",
-      "../app_shim_remote_cocoa/web_contents_occlusion_checker_mac.mm",
       "../app_shim_remote_cocoa/web_contents_view_cocoa.h",
-      "../app_shim_remote_cocoa/web_contents_view_cocoa.mm",
       "../app_shim_remote_cocoa/web_drag_source_mac.h",
-      "../app_shim_remote_cocoa/web_drag_source_mac.mm",
       "accessibility/browser_accessibility_cocoa.h",
       "accessibility/browser_accessibility_cocoa.mm",
       "accessibility/browser_accessibility_mac.h",
