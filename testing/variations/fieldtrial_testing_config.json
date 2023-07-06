@@ -11736,7 +11736,7 @@
             ]
         }
     ],
-    "RevampedPasswordManagementBubble_IPH": [
+    "RevampedPasswordManagementBubble": [
         {
             "platforms": [
                 "chromeos",
@@ -11750,7 +11750,8 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IPH_PasswordsManagementBubbleAfterSave",
-                        "IPH_PasswordsManagementBubbleDuringSignin"
+                        "IPH_PasswordsManagementBubbleDuringSignin",
+                        "RevampedPasswordManagementBubble"
                     ]
                 }
             ]
