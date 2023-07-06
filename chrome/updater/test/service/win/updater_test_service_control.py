@@ -29,8 +29,10 @@ import rpc_client
 _UPDATER_TEST_SERVICE_NAME = 'UpdaterTestService'
 
 # Errors that might be raised when interacting with the service.
+# pylint: disable=undefined-variable
 _ServiceErrors = (OSError, pywintypes.error, win32api.error,
-                  win32service.error, WindowsError)  # pylint: disable=undefined-variable
+                  win32service.error, WindowsError)
+# pylint: enable=undefined-variable
 
 
 def _RunCommand(command, log_error=True):
@@ -56,10 +58,6 @@ def _RunCommand(command, log_error=True):
 
 def _SetupEnvironmentForVPython():
     """Setup vpython environment."""
-    if os.getenv('VIRTUAL_ENV') is None:
-        logging.info('Not running in vpython, no additional setup is needed.')
-        return
-
     # vpython_spec above brings the pywin32 module we need, but it may not be
     # ready to use, run the post install scripts as described by
     # https://pypi.org/project/pywin32/.
@@ -73,11 +71,11 @@ def _SetupEnvironmentForVPython():
 
     # Make pythonservice.exe explicit for our service. This is to avoid pickup
     # an incompatible interpreter accidentally.
-    source = os.path.join(os.environ['VIRTUAL_ENV'], 'Lib', 'site-packages',
+    python_dir = os.path.dirname(os.path.abspath(sys.executable))
+    source = os.path.join(os.path.dirname(python_dir), 'Lib', 'site-packages',
                           'win32', 'pythonservice.exe')
-    python_service_path = os.path.join(
-        os.path.dirname(os.path.abspath(sys.executable)), 'pythonservice.exe')
-    if not os.path.exists(python_service_path):
+    python_service_path = os.path.join(python_dir, 'pythonservice.exe')
+    if os.path.exists(source) and not os.path.exists(python_service_path):
         shutil.copyfile(source, python_service_path)
     os.environ['PYTHON_SERVICE_EXE'] = python_service_path
 
