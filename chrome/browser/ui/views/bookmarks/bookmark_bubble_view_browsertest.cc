@@ -114,8 +114,7 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
 class BookmarkBubbleViewBrowserTest : public BaseBookmarkBubbleViewBrowserTest {
  public:
   BookmarkBubbleViewBrowserTest() {
-    test_features_.InitWithFeatures(
-        {commerce::kShoppingList}, {features::kPowerBookmarksSidePanel});
+    test_features_.InitAndEnableFeature(commerce::kShoppingList);
   }
 
   BookmarkBubbleViewBrowserTest(const BookmarkBubbleViewBrowserTest&) = delete;

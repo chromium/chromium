@@ -127,19 +127,19 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
       PressButton(kSidePanelButtonElementId), WaitForShow(kSidePanelElementId),
       // Switch to the bookmarks entry using the header combobox
       SelectDropdownItem(kSidePanelComboboxElementId,
-                         static_cast<int>(SidePanelEntry::Id::kReadingList)),
-      InstrumentNonTabWebView(kReadLaterWebContentsId,
-                              kReadLaterSidePanelWebViewElementId),
-      FlushEvents(),
-      // Switch to the reading list entry using the header combobox
-      SelectDropdownItem(kSidePanelComboboxElementId,
                          static_cast<int>(SidePanelEntry::Id::kBookmarks)),
       InstrumentNonTabWebView(kBookmarksWebContentsId,
                               kBookmarkSidePanelWebViewElementId),
+      FlushEvents(),
+      // Switch to the reading list entry using the header combobox
+      SelectDropdownItem(kSidePanelComboboxElementId,
+                         static_cast<int>(SidePanelEntry::Id::kReadingList)),
+      InstrumentNonTabWebView(kReadLaterWebContentsId,
+                              kReadLaterSidePanelWebViewElementId),
       // Click on the close button to dismiss the side panel
       PressButton(kSidePanelCloseButtonElementId),
       WaitForHide(kSidePanelElementId),
-      EnsureNotPresent(kBookmarkSidePanelWebViewElementId));
+      EnsureNotPresent(kReadLaterSidePanelWebViewElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,

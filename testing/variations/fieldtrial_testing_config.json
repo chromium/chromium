@@ -10574,26 +10574,6 @@
             ]
         }
     ],
-    "PowerBookmarksSidePanel": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230509",
-                    "enable_features": [
-                        "IPH_PowerBookmarksSidePanel",
-                        "PowerBookmarksSidePanel"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreconnectCreateNewTab": [
         {
             "platforms": [

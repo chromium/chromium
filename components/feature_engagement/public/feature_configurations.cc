@@ -198,9 +198,10 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
+    config->session_rate = Comparator(ANY, 0);
+    // Show the promo once a year if the price tracking IPH was not triggered.
     config->trigger = EventConfig("iph_power_bookmarks_side_panel_trigger",
-                                  Comparator(LESS_THAN, 3), 360, 360);
+                                  Comparator(EQUAL, 0), 360, 360);
     config->used = EventConfig("power_bookmarks_side_panel_shown",
                                Comparator(EQUAL, 0), 360, 360);
     return config;
