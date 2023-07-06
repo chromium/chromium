@@ -21,7 +21,7 @@ class NavigationHandle;
 }  // namespace content
 
 namespace optimization_guide {
-class OptimizationGuideDecider;
+class NewOptimizationGuideDecider;
 enum class OptimizationGuideDecision;
 class OptimizationMetadata;
 }  // namespace optimization_guide
@@ -163,7 +163,7 @@ class LoadingPredictorTabHelper
   base::WeakPtr<LoadingPredictor> predictor_;
 
   // The optimization guide decider to consult for remote predictions.
-  raw_ptr<optimization_guide::OptimizationGuideDecider>
+  raw_ptr<optimization_guide::NewOptimizationGuideDecider>
       optimization_guide_decider_ = nullptr;
 
   // Used to get a weak pointer to |this|.

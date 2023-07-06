@@ -71,8 +71,8 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
   MOCK_METHOD1(
       RegisterOptimizationTypes,
       void(const std::vector<optimization_guide::proto::OptimizationType>&));
-  MOCK_METHOD3(CanApplyOptimizationAsync,
-               void(content::NavigationHandle*,
+  MOCK_METHOD3(CanApplyOptimization,
+               void(const GURL&,
                     optimization_guide::proto::OptimizationType,
                     optimization_guide::OptimizationGuideDecisionCallback));
 };
@@ -350,8 +350,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::LOADING_PREDICTOR,
-                                base::test::IsNotNullCallback()))
+      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
+                           base::test::IsNotNullCallback()))
       .Times(0);
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org/otherpage");
 
@@ -385,8 +385,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   optimization_metadata.set_loading_predictor_metadata(lp_metadata);
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::LOADING_PREDICTOR,
-                                base::test::IsNotNullCallback()))
+      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
+                           base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(optimization_metadata)));
@@ -434,8 +434,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   optimization_guide::OptimizationGuideDecisionCallback callback;
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::LOADING_PREDICTOR,
-                                base::test::IsNotNullCallback()))
+      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
+                           base::test::IsNotNullCallback()))
       .WillOnce(WithArg<2>(
           Invoke([&](optimization_guide::OptimizationGuideDecisionCallback
                          got_callback) -> void {
@@ -498,8 +498,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   optimization_guide::OptimizationGuideDecisionCallback callback;
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::LOADING_PREDICTOR,
-                                base::test::IsNotNullCallback()))
+      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
+                           base::test::IsNotNullCallback()))
       .Times(3)
       .WillOnce(WithArg<2>(
           Invoke([&](optimization_guide::OptimizationGuideDecisionCallback
@@ -541,8 +541,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::LOADING_PREDICTOR,
-                                base::test::IsNotNullCallback()));
+      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
+                           base::test::IsNotNullCallback()));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
   // Adding subframe navigation to ensure that the committed main frame url will
@@ -580,8 +580,8 @@ TEST_F(
   optimization_guide::OptimizationGuideDecisionCallback callback;
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::LOADING_PREDICTOR,
-                                base::test::IsNotNullCallback()))
+      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
+                           base::test::IsNotNullCallback()))
       .WillOnce(WithArg<2>(
           Invoke([&](optimization_guide::OptimizationGuideDecisionCallback
                          got_callback) -> void {
@@ -625,8 +625,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   optimization_guide::OptimizationMetadata optimization_metadata;
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::LOADING_PREDICTOR,
-                                base::test::IsNotNullCallback()))
+      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
+                           base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kFalse,
           ByRef(optimization_metadata)));
@@ -665,8 +665,8 @@ TEST_F(
   optimization_guide::OptimizationMetadata optimization_metadata;
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::LOADING_PREDICTOR,
-                                base::test::IsNotNullCallback()))
+      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
+                           base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(optimization_metadata)));
@@ -729,8 +729,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
   optimization_metadata.set_loading_predictor_metadata(lp_metadata);
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::LOADING_PREDICTOR,
-                                base::test::IsNotNullCallback()))
+      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
+                           base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(optimization_metadata)));
