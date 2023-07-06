@@ -91,7 +91,6 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
     // TODO(crbug.com/1413922): base::MatchPattern() is treating '?' in the
     // pattern as an wildcard. We need to introduce a new flag in
     // base::MatchPattern() to treat '?' as a normal character.
-    // TODO(crbug.com/1413922): Need to check the expiration of the dictionary.
     // TODO(crbug.com/1413922): Need support path expansion for relative paths.
     if ((item.first.size() > mached_path_size) &&
         base::MatchPattern(url.path(), item.first)) {

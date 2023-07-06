@@ -191,6 +191,22 @@ class SharedDictionaryManagerTest
     task_environment_.RunUntilIdle();
   }
 
+  std::vector<network::mojom::SharedDictionaryInfoPtr> GetSharedDictionaryInfo(
+      SharedDictionaryManager* manager,
+      const net::SharedDictionaryIsolationKey& isolation_key) {
+    std::vector<network::mojom::SharedDictionaryInfoPtr> result;
+    base::RunLoop run_loop;
+    manager->GetSharedDictionaryInfo(
+        isolation_key,
+        base::BindLambdaForTesting(
+            [&](std::vector<network::mojom::SharedDictionaryInfoPtr> info) {
+              result = std::move(info);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return result;
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -1462,18 +1478,8 @@ TEST_P(SharedDictionaryManagerTest, GetSharedDictionaryInfo) {
   // Update `last_used_time`.
   EXPECT_TRUE(storage1->GetDictionary(GURL("https://origin1.test/p2?")));
 
-  std::vector<network::mojom::SharedDictionaryInfoPtr> result1;
-  {
-    base::RunLoop run_loop;
-    manager->GetSharedDictionaryInfo(
-        isolation_key1,
-        base::BindLambdaForTesting(
-            [&](std::vector<network::mojom::SharedDictionaryInfoPtr> result) {
-              result1 = std::move(result);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-  }
+  std::vector<network::mojom::SharedDictionaryInfoPtr> result1 =
+      GetSharedDictionaryInfo(manager.get(), isolation_key1);
   ASSERT_EQ(2u, result1.size());
 
   EXPECT_EQ("/p1*", result1[0]->match);
@@ -1492,18 +1498,8 @@ TEST_P(SharedDictionaryManagerTest, GetSharedDictionaryInfo) {
   EXPECT_EQ(kTestData2.size(), result1[1]->size);
   EXPECT_EQ(kTestData2Hash, result1[1]->hash);
 
-  std::vector<network::mojom::SharedDictionaryInfoPtr> result2;
-  {
-    base::RunLoop run_loop;
-    manager->GetSharedDictionaryInfo(
-        isolation_key2,
-        base::BindLambdaForTesting(
-            [&](std::vector<network::mojom::SharedDictionaryInfoPtr> result) {
-              result2 = std::move(result);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-  }
+  std::vector<network::mojom::SharedDictionaryInfoPtr> result2 =
+      GetSharedDictionaryInfo(manager.get(), isolation_key2);
   ASSERT_EQ(1u, result2.size());
   EXPECT_EQ("/p*", result2[0]->match);
   EXPECT_EQ(GURL("https://origin2.test/d"), result2[0]->dictionary_url);
@@ -1517,18 +1513,55 @@ TEST_P(SharedDictionaryManagerTest, GetSharedDictionaryInfo) {
 TEST_P(SharedDictionaryManagerTest, GetSharedDictionaryInfoEmptyResult) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
+  EXPECT_TRUE(GetSharedDictionaryInfo(
+                  manager.get(),
+                  net::SharedDictionaryIsolationKey(
+                      url::Origin::Create(GURL("https://frame.test/")),
+                      net::SchemefulSite(GURL("https://top-frame.test"))))
+                  .empty());
+}
 
-  base::RunLoop run_loop;
-  manager->GetSharedDictionaryInfo(
-      net::SharedDictionaryIsolationKey(
-          url::Origin::Create(GURL("https://frame.test/")),
-          net::SchemefulSite(GURL("https://top-frame.test"))),
-      base::BindLambdaForTesting(
-          [&](std::vector<network::mojom::SharedDictionaryInfoPtr> result) {
-            EXPECT_TRUE(result.empty());
-            run_loop.Quit();
-          }));
-  run_loop.Run();
+TEST_P(SharedDictionaryManagerTest, DeleteExpiredDictionariesOnGetDictionary) {
+  net::SharedDictionaryIsolationKey isolation_key(
+      url::Origin::Create(GURL("https://frame.test/")),
+      net::SchemefulSite(GURL("https://target.test")));
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  WriteDictionary(storage.get(), GURL("https://origin.test/d1"), "p1*",
+                  {kTestData1}, /*additional_options=*/",expires=20");
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  WriteDictionary(storage.get(), GURL("https://origin.test/d1"), "p2*",
+                  {kTestData2}, /*additional_options=*/",expires=5");
+
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  task_environment_.FastForwardBy(base::Seconds(4));
+
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin.test/p1?")));
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin.test/p2?")));
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin.test/p1?")));
+
+  EXPECT_EQ(2u, GetSharedDictionaryInfo(manager.get(), isolation_key).size());
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin.test/p2?")));
+  EXPECT_EQ(1u, GetSharedDictionaryInfo(manager.get(), isolation_key).size());
+
+  task_environment_.FastForwardBy(base::Seconds(4));
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin.test/p1?")));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(1u, GetSharedDictionaryInfo(manager.get(), isolation_key).size());
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin.test/p1?")));
+  EXPECT_TRUE(GetSharedDictionaryInfo(manager.get(), isolation_key).empty());
 }
 
 }  // namespace network

@@ -37,6 +37,11 @@ SharedDictionaryStorageInMemory::GetDictionary(const GURL& url) {
   if (!info) {
     return nullptr;
   }
+
+  if (info->response_time() + info->expiration() <= base::Time::Now()) {
+    DeleteDictionary(url::SchemeHostPort(info->url()), info->match());
+    return nullptr;
+  }
   info->set_last_used_time(base::Time::Now());
   return std::make_unique<SharedDictionaryInMemory>(info->data(), info->size(),
                                                     info->hash());

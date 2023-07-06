@@ -94,6 +94,10 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   // time.
   void MaybePostMismatchingEntryDeletionTask();
 
+  // Posts a ExpiredDictionaryDeletionTask if there is no ongoing or queued
+  // MismatchingEntryDeletionTask.
+  void MaybePostExpiredDictionaryDeletionTask();
+
  private:
   class SerializedTask {
    public:
@@ -142,7 +146,6 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   void MaybeStartSerializedTask();
 
   void MaybePostCacheEvictionTask();
-  void MaybePostExpiredDictionaryDeletionTask();
 
   void OnDictionaryDeleted(
       const std::set<base::UnguessableToken>& disk_cache_key_tokens,

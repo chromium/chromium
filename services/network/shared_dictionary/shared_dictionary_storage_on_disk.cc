@@ -149,6 +149,11 @@ std::unique_ptr<SharedDictionary> SharedDictionaryStorageOnDisk::GetDictionary(
     return nullptr;
   }
 
+  if (info->response_time() + info->expiration() <= base::Time::Now()) {
+    manager_->MaybePostExpiredDictionaryDeletionTask();
+    return nullptr;
+  }
+
   manager_->UpdateDictionaryLastUsedTime(*info);
 
   auto it = dictionaries_.find(info->disk_cache_key_token());
