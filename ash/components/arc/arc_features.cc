@@ -104,11 +104,6 @@ BASE_FEATURE(kExternalStorageAccess,
              "ArcExternalStorageAccess",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to pop up ghost window for ARC app before fixup finishes.
-BASE_FEATURE(kFixupWindowFeature,
-             "ArcFixupWindowFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether new UI style for ARC ghost window.
 BASE_FEATURE(kGhostWindowNewStyle,
              "ArcGhostWindowNewStyle",

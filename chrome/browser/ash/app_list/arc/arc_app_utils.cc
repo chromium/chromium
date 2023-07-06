@@ -229,10 +229,6 @@ std::string ConstructArcAppShortcutUrl(const std::string& app_id,
   return "appshortcutsearch://" + app_id + "/" + shortcut_id;
 }
 
-bool IsFixupWindowEnabled() {
-  return base::FeatureList::IsEnabled(arc::kFixupWindowFeature);
-}
-
 bool IsInstantResponseOpenEnabled() {
   return base::FeatureList::IsEnabled(arc::kInstantResponseWindowOpen);
 }
@@ -346,8 +342,7 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
 
   // Some apps need fixup when ARC version upgrade e.g. from ARC P to ARC R.
   // Before fixup finishes, the |app_info->ready| is true but not launchable.
-  if (app_info &&
-      ((IsFixupWindowEnabled() && app_info->need_fixup) || !app_info->ready)) {
+  if (app_info && (app_info->need_fixup || !app_info->ready)) {
     if (!IsArcPlayStoreEnabledForProfile(profile)) {
       if (prefs->IsDefault(app_id)) {
         // The setting can fail if the preference is managed.  However, the
@@ -394,7 +389,7 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
       arc::ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMA(context);
     }
 
-    if (IsFixupWindowEnabled() && app_info->need_fixup) {
+    if (app_info->need_fixup) {
       // TODO(sstan): Use different UI after UX design finalized.
       if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
               profile, app_id, *app_info, launch_intent_to_send, event_flags,

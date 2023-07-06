@@ -265,11 +265,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "arc-fixup-window",
-    "owners": ["momohatt", "sstan"],
-    "expiry_milestone": 115
-  },
-  {
     "name": "arc-game-mode",
     "owners": [ "matvore", "niwa" ],
     "expiry_milestone": 118
