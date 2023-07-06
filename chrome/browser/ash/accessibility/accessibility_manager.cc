@@ -1716,15 +1716,19 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
 
     if (::features::
             AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
+      bool color_correction_enabled = IsColorCorrectionEnabled();
       base::UmaHistogramBoolean("Accessibility.CrosColorCorrection",
-                                IsColorCorrectionEnabled());
-      base::UmaHistogramEnumeration(
-          "Accessibility.CrosColorCorrection.FilterType",
-          static_cast<ColorVisionCorrectionType>(prefs->GetInteger(
-              prefs::kAccessibilityColorVisionCorrectionType)));
-      base::UmaHistogramPercentage(
-          "Accessibility.CrosColorCorrection.FilterAmount",
-          prefs->GetInteger(prefs::kAccessibilityColorVisionCorrectionAmount));
+                                color_correction_enabled);
+      if (color_correction_enabled) {
+        base::UmaHistogramEnumeration(
+            "Accessibility.CrosColorCorrection.FilterType",
+            static_cast<ColorVisionCorrectionType>(prefs->GetInteger(
+                prefs::kAccessibilityColorVisionCorrectionType)));
+        base::UmaHistogramPercentage(
+            "Accessibility.CrosColorCorrection.FilterAmount",
+            prefs->GetInteger(
+                prefs::kAccessibilityColorVisionCorrectionAmount));
+      }
     }
   }
   base::UmaHistogramBoolean("Accessibility.CrosCaretHighlight",
