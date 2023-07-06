@@ -21,6 +21,7 @@
 #include "content/public/common/isolated_world_ids.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -1025,6 +1026,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // browser (e.g. typing on the location bar) or from the renderer while having
   // transient user activation
   virtual bool IsLastCrossDocumentNavigationStartedByUser() const = 0;
+
+  // Checks Blink runtime-enabled features (BREF) to create and return
+  // a CookieSettingOverrides pertaining to the last committed document in the
+  // frame. Can only be called on a frame with a committed navigation.
+  virtual net::CookieSettingOverrides GetCookieSettingOverrides() = 0;
 
  private:
   // This interface should only be implemented inside content.

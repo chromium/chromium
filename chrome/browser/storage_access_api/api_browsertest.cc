@@ -608,30 +608,6 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, PermissionQueryCrossSite) {
   EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
 }
 
-// When 3p cookie is allowed, check that in a A(B) frame tree, the embedded
-// B iframe can access cookie without requesting, but the prompt is still shown
-// if the iframe makes the request.
-IN_PROC_BROWSER_TEST_F(
-    StorageAccessAPIBrowserTest,
-    ThirdPartyCookiesAccess_CrossSiteIframe_AllowCrossSiteCookie) {
-  SetBlockThirdPartyCookies(false);
-
-  NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(EchoCookiesURL(kHostB));
-
-  // The cross-site iframe has cookie access since 3p cookies are allowed.
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB),
-            CookieBundleWithContent("cross-site=b.test"));
-
-  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  prompt_factory()->set_response_type(
-      permissions::PermissionRequestManager::ACCEPT_ALL);
-  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
-  // TODO(https://crbug.com/1441133): No prompt should be shown when 3p cookie
-  // is allowed.
-  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
-}
-
 // Validate that a cross-site iframe can bypass third-party cookie blocking via
 // the Storage Access API.
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
@@ -2105,8 +2081,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(ReadCookies(GetFrame(), kHostA), CookieBundle("cross-site=a.test"));
 }
 
-// Tests to verify that whether 3p cookie is already accessible is checked in
-// hasStorageAccess.
+// Tests to verify that when 3p cookie is allowed, the embedded iframe can
+// access cookie without requesting, and no prompt is shown if the iframe makes
+// the request.
 class StorageAccessAPIWith3PCEnabledBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
@@ -2125,6 +2102,11 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
 
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB),
             CookieBundleWithContent("cross-site=b.test"));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DISMISS);
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
@@ -2147,6 +2129,11 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
   NavigateFrameTo(EchoCookiesURL(kHostB));
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB),
             CookieBundleWithContent("cross-site=b.test"));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DISMISS);
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
 }
 
 // TODO(crbug.com/1448957): Add test cases of 3PC enabled by other mechanisms.

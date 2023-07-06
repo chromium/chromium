@@ -45,7 +45,10 @@ enum class RequestOutcome {
   // The request was denied because the most recent top-level interaction on
   // the embedded site was too long ago, or there is no such interaction.
   kDeniedByTopLevelInteractionHeuristic = 8,
-  kMaxValue = kDeniedByTopLevelInteractionHeuristic,
+  // 3p cookies are already allowed by user agent, so there is no need to ask.
+  kAllowedByCookieSettings = 9,
+
+  kMaxValue = kAllowedByCookieSettings,
 };
 
 class StorageAccessGrantPermissionContext
