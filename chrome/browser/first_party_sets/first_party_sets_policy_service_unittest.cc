@@ -182,7 +182,7 @@ class FirstPartySetsPolicyServiceTest
   }
 
   void TearDown() override {
-    DCHECK(service_);
+    CHECK(service_);
     // Even though we reassign this in SetUp, service may be persisted between
     // tests if the factory has already created a service for the testing
     // profile being used.

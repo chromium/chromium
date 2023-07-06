@@ -52,7 +52,7 @@ FirstPartySetsPolicyService::FirstPartySetsPolicyService(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(browser_context);
+  CHECK(browser_context);
   Init();
 }
 
@@ -77,7 +77,7 @@ void FirstPartySetsPolicyService::Init() {
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   // profile is guaranteed to be non-null since we create this service with a
   // non-null `context`.
-  DCHECK(profile);
+  CHECK(profile);
 
   PrefService* prefs = profile->GetPrefs();
   pref_enabled_ = GetEnabledPolicyForProfile(prefs);
@@ -134,7 +134,7 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal(
     const std::set<net::SchemefulSite>& party_context,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(config_.has_value());
+  CHECK(config_.has_value());
 
   if (!is_enabled()) {
     std::move(callback).Run({});
@@ -174,8 +174,8 @@ void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
 void FirstPartySetsPolicyService::RegisterThrottleResumeCallback(
     base::OnceClosure resume_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!is_ready());
-  DCHECK(is_enabled());
+  CHECK(!is_ready());
+  CHECK(is_enabled());
   on_ready_callbacks_.push_back(std::move(resume_callback));
 }
 
@@ -190,9 +190,9 @@ void FirstPartySetsPolicyService::Shutdown() {
 void FirstPartySetsPolicyService::WaitForFirstInitCompleteForTesting(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!on_first_init_complete_for_testing_.has_value());
+  CHECK(!on_first_init_complete_for_testing_.has_value());
   if (first_initialization_complete_for_testing_) {
-    DCHECK(config_.has_value());
+    CHECK(config_.has_value());
     std::move(callback).Run();
     return;
   }
