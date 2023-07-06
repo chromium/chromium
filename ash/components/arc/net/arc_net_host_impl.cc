@@ -1398,5 +1398,8 @@ void ArcNetHostImpl::EnsureFactoryBuilt() {
   ArcNetHostImplFactory::GetInstance();
 }
 
-void ArcNetHostImpl::NotifyAndroidWifiMulticastLockChange(bool is_held) {}
+void ArcNetHostImpl::NotifyAndroidWifiMulticastLockChange(bool is_held) {
+  ash::PatchPanelClient::Get()->NotifyAndroidWifiMulticastLockChange(is_held);
+}
+
 }  // namespace arc

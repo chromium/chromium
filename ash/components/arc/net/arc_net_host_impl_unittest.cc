@@ -14,6 +14,9 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include "chromeos/ash/components/dbus/patchpanel/fake_patchpanel_client.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
+
 namespace arc {
 namespace {
 
@@ -33,6 +36,10 @@ class ArcNetHostImplTest : public testing::Test {
   }
 
   ~ArcNetHostImplTest() override { service_->Shutdown(); }
+
+  void SetUp() override { ash::PatchPanelClient::InitializeFake(); }
+
+  void TearDown() override { ash::PatchPanelClient::Shutdown(); }
 
   ArcNetHostImpl* service() { return service_; }
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
@@ -56,6 +63,21 @@ TEST_F(ArcNetHostImplTest, SetAlwaysOnVpn_SetPackage) {
 
   EXPECT_EQ(lockdown, pref_service()->GetBoolean(prefs::kAlwaysOnVpnLockdown));
   EXPECT_EQ(vpn_package, pref_service()->GetString(prefs::kAlwaysOnVpnPackage));
+}
+
+TEST_F(ArcNetHostImplTest, NotifyAndroidWifiMulticastLockChange) {
+  int cnt1 = ash::FakePatchPanelClient::Get()
+                 ->GetAndroidWifiMulticastLockChangeNotifyCount();
+  service()->NotifyAndroidWifiMulticastLockChange(true);
+  int cnt2 = ash::FakePatchPanelClient::Get()
+                 ->GetAndroidWifiMulticastLockChangeNotifyCount();
+
+  service()->NotifyAndroidWifiMulticastLockChange(false);
+  int cnt3 = ash::FakePatchPanelClient::Get()
+                 ->GetAndroidWifiMulticastLockChangeNotifyCount();
+
+  EXPECT_EQ(1, cnt2 - cnt1);
+  EXPECT_EQ(1, cnt3 - cnt2);
 }
 
 }  // namespace

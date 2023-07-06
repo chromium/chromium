@@ -75,6 +75,25 @@ class PatchPanelClientImpl : public PatchPanelClient {
                                   base::DoNothing());
   }
 
+  void NotifyAndroidWifiMulticastLockChange(bool is_held) override {
+    dbus::MethodCall method_call(
+        patchpanel::kPatchPanelInterface,
+        patchpanel::kNotifyAndroidWifiMulticastLockChangeMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    patchpanel::NotifyAndroidWifiMulticastLockChangeRequest request;
+    request.set_held(is_held);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to parse NotifyAndroidWifiMulticastLockChange "
+                    "request proto";
+      return;
+    }
+
+    patchpanel_proxy_->CallMethod(&method_call,
+                                  dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                  base::DoNothing());
+  }
+
   void Init(dbus::Bus* bus) override {
     patchpanel_proxy_ = bus->GetObjectProxy(
         patchpanel::kPatchPanelServiceName,
