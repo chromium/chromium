@@ -32,7 +32,7 @@ public class PriceMessageCardViewModel {
     public static PropertyModel create(Context context,
             MessageCardView.DismissActionProvider uiDismissActionProvider,
             PriceMessageService.PriceMessageData data) {
-        boolean isIconVisible = data.getType() == PriceMessageType.PRICE_WELCOME ? false : true;
+        boolean isIconVisible = data.getType() != PriceMessageType.PRICE_WELCOME;
         String titleText = getTitle(context, data.getType());
         String descriptionText = getDescription(context, data.getType());
         String actionText = getActionText(context, data.getType());

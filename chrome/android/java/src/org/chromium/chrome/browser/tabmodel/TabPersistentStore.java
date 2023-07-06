@@ -514,7 +514,7 @@ public class TabPersistentStore {
                     mPersistencePolicy.setMergeInProgress(true);
                     readSavedStateFile(stream,
                             createOnTabStateReadCallback(mTabModelSelector.isIncognitoSelected(),
-                                    mTabsToRestore.size() == 0 ? false : true),
+                                    mTabsToRestore.size() != 0),
                             null);
                 }
                 if (!mMergedFileNames.isEmpty()) {

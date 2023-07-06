@@ -24,7 +24,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.services.ISafeModeService;
-import org.chromium.android_webview.services.SafeModeService.TrustedPackage;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;

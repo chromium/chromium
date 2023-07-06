@@ -639,8 +639,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         @ActivityHeightResizeBehavior
         int activityHeightResizeBehavior = IntentUtils.safeGetIntExtra(
                 intent, EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR, ACTIVITY_HEIGHT_DEFAULT);
-        mIsPartialCustomTabFixedHeight =
-                activityHeightResizeBehavior == ACTIVITY_HEIGHT_FIXED ? true : false;
+        mIsPartialCustomTabFixedHeight = activityHeightResizeBehavior == ACTIVITY_HEIGHT_FIXED;
 
         @BackgroundInteractBehavior
         int backgroundInteractBehavior = IntentUtils.safeGetIntExtra(

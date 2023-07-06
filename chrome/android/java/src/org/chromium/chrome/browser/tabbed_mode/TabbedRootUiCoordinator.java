@@ -861,7 +861,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Override
             public void onStatusIndicatorHeightChanged(int indicatorHeight) {
                 mStatusIndicatorHeight = indicatorHeight;
-                boolean animate = sDisableStatusIndicatorAnimations ? false : true;
+                boolean animate = !sDisableStatusIndicatorAnimations;
                 updateTopControlsHeight(animate);
             }
         };

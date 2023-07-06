@@ -773,7 +773,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     }
 
     private boolean testMethodHasAnnotation(Class<? extends Annotation> clazz) {
-        return mCurrentTestDescription.getAnnotation(clazz) != null ? true : false;
+        return mCurrentTestDescription.getAnnotation(clazz) != null;
     }
 
     /**

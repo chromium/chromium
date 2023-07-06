@@ -203,8 +203,8 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 activity, params, Profile.fromWebContents(mWebContents), mNativeDelegate);
 
         // The Integer here specifies the {@link ListItemType}.
-        ModelList listItems = getItemList(
-                activity, items, onItemClicked, params.getOpenedFromHighlight() ? false : true);
+        ModelList listItems =
+                getItemList(activity, items, onItemClicked, !params.getOpenedFromHighlight());
 
         ModelListAdapter adapter = new ModelListAdapter(listItems) {
             @Override
