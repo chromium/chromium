@@ -546,6 +546,19 @@ const GURL& PageNodeImpl::GetMainFrameUrl() const {
   return main_frame_url();
 }
 
+uint64_t PageNodeImpl::EstimateMainFramePrivateFootprintSize() const {
+  uint64_t total = 0;
+  FrameNodeImpl* main_frame_node = GetMainFrameNodeImpl();
+  if (main_frame_node) {
+    performance_manager::GraphImplOperations::VisitFrameAndChildrenPreOrder(
+        main_frame_node, [&total](FrameNodeImpl* frame_node) {
+          total += frame_node->private_footprint_kb_estimate();
+          return true;
+        });
+  }
+  return total;
+}
+
 bool PageNodeImpl::HadFormInteraction() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return had_form_interaction();

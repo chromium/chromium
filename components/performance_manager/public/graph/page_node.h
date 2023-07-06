@@ -195,6 +195,11 @@ class PageNode : public Node {
   // See PageNodeObserver::OnMainFrameNavigationCommitted.
   virtual const GURL& GetMainFrameUrl() const = 0;
 
+  // Returns the private memory footprint size of the main frame and its
+  // children. This differs from EstimatePrivateFootprintSize which includes
+  // all the frames under the page node.
+  virtual uint64_t EstimateMainFramePrivateFootprintSize() const = 0;
+
   // Indicates if at least one of the frames in the page has received some form
   // interactions.
   virtual bool HadFormInteraction() const = 0;

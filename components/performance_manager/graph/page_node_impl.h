@@ -224,6 +224,7 @@ class PageNodeImpl
   bool VisitMainFrameNodes(const FrameNodeVisitor& visitor) const override;
   const base::flat_set<const FrameNode*> GetMainFrameNodes() const override;
   const GURL& GetMainFrameUrl() const override;
+  uint64_t EstimateMainFramePrivateFootprintSize() const override;
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   const WebContentsProxy& GetContentsProxy() const override;
