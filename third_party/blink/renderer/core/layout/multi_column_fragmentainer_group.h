@@ -121,8 +121,8 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   // rectangle, we'll get to the beginning of the next column. This is behavior
   // that positionForPoint() depends on.
   enum SnapToColumnPolicy { kDontSnapToColumn, kSnapToColumn };
-  LayoutPoint VisualPointToFlowThreadPoint(
-      const LayoutPoint& visual_point,
+  LogicalOffset VisualPointToFlowThreadPoint(
+      const LogicalOffset& visual_point,
       SnapToColumnPolicy = kDontSnapToColumn) const;
 
   PhysicalRect FragmentsBoundingBox(
@@ -171,7 +171,7 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   // Return the column that the specified visual point belongs to. Only the
   // coordinate on the column progression axis is relevant. Every point belongs
   // to a column, even if said point is not inside any of the columns.
-  unsigned ColumnIndexAtVisualPoint(const LayoutPoint& visual_point) const;
+  unsigned ColumnIndexAtVisualPoint(const LogicalOffset& visual_point) const;
 
   unsigned UnclampedActualColumnCount() const;
 

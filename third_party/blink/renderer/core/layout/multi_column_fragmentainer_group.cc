@@ -11,19 +11,6 @@
 
 namespace blink {
 
-namespace {
-
-// This function should be removed soon.
-LayoutRect ToFlippedPhysical(const LogicalRect& logical,
-                             WritingMode writing_mode) {
-  LayoutRect rect =
-      LayoutRect(logical.offset.inline_offset, logical.offset.block_offset,
-                 logical.size.inline_size, logical.size.block_size);
-  return IsHorizontalWritingMode(writing_mode) ? rect : rect.TransposedRect();
-}
-
-}  // namespace
-
 // Limit the maximum column count, to prevent potential performance problems.
 static const unsigned kColumnCountClampMax = 10000;
 
@@ -158,39 +145,26 @@ LayoutUnit MultiColumnFragmentainerGroup::ColumnLogicalTopForOffset(
   return LogicalTopInFlowThreadAt(column_index);
 }
 
-LayoutPoint MultiColumnFragmentainerGroup::VisualPointToFlowThreadPoint(
-    const LayoutPoint& visual_point,
+LogicalOffset MultiColumnFragmentainerGroup::VisualPointToFlowThreadPoint(
+    const LogicalOffset& visual_point,
     SnapToColumnPolicy snap) const {
   unsigned column_index = ColumnIndexAtVisualPoint(visual_point);
-  // This function works in the flipped block-flow coordinate system.
-  LayoutRect column_rect = ToFlippedPhysical(
-      ColumnRectAt(column_index), column_set_->Style()->GetWritingMode());
-  LayoutPoint local_point(visual_point);
-  local_point.MoveBy(-column_rect.Location());
-  if (!column_set_->IsHorizontalWritingMode()) {
-    if (snap == kSnapToColumn) {
-      LayoutUnit column_start = column_set_->StyleRef().IsLeftToRightDirection()
-                                    ? LayoutUnit()
-                                    : column_rect.Height();
-      if (local_point.X() < 0)
-        local_point = LayoutPoint(LayoutUnit(), column_start);
-      else if (local_point.X() > ColumnLogicalHeight())
-        local_point = LayoutPoint(ColumnLogicalHeight(), column_start);
-    }
-    return LayoutPoint(local_point.X() + LogicalTopInFlowThreadAt(column_index),
-                       local_point.Y());
-  }
+  LogicalRect column_rect = ColumnRectAt(column_index);
+  LogicalOffset local_point(visual_point);
+  local_point -= column_rect.offset;
   if (snap == kSnapToColumn) {
     LayoutUnit column_start = column_set_->StyleRef().IsLeftToRightDirection()
                                   ? LayoutUnit()
-                                  : column_rect.Width();
-    if (local_point.Y() < 0)
-      local_point = LayoutPoint(column_start, LayoutUnit());
-    else if (local_point.Y() > ColumnLogicalHeight())
-      local_point = LayoutPoint(column_start, ColumnLogicalHeight());
+                                  : column_rect.size.inline_size;
+    if (local_point.block_offset < 0) {
+      local_point = LogicalOffset(column_start, LayoutUnit());
+    } else if (local_point.block_offset > ColumnLogicalHeight()) {
+      local_point = LogicalOffset(column_start, ColumnLogicalHeight());
+    }
   }
-  return LayoutPoint(local_point.X(),
-                     local_point.Y() + LogicalTopInFlowThreadAt(column_index));
+  return LogicalOffset(
+      local_point.inline_offset,
+      local_point.block_offset + LogicalTopInFlowThreadAt(column_index));
 }
 
 PhysicalRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
@@ -380,11 +354,10 @@ unsigned MultiColumnFragmentainerGroup::ConstrainedColumnIndexAtOffset(
 }
 
 unsigned MultiColumnFragmentainerGroup::ColumnIndexAtVisualPoint(
-    const LayoutPoint& visual_point) const {
+    const LogicalOffset& visual_point) const {
   LayoutUnit column_length = column_set_->PageLogicalWidth();
   LayoutUnit offset_in_column_progression_direction =
-      column_set_->IsHorizontalWritingMode() ? visual_point.X()
-                                             : visual_point.Y();
+      visual_point.inline_offset;
   if (!column_set_->StyleRef().IsLeftToRightDirection()) {
     offset_in_column_progression_direction =
         column_set_->LogicalWidth() - offset_in_column_progression_direction;

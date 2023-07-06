@@ -298,18 +298,20 @@ PhysicalOffset LayoutMultiColumnSet::FlowThreadTranslationAtOffset(
       .FlowThreadTranslationAtOffset(block_offset, rule, mode);
 }
 
+// `visual_point` is in the flipped block-flow coordinate system.
 LayoutPoint LayoutMultiColumnSet::VisualPointToFlowThreadPoint(
     const LayoutPoint& visual_point) const {
   NOT_DESTROYED();
   const MultiColumnFragmentainerGroup& row =
       FragmentainerGroupAtVisualPoint(visual_point);
-  LogicalOffset column_offset = row.OffsetFromColumnSet();
-  // `visual_point` is in the flipped block-flow coordinate system.
-  LayoutSize flipped_column_offset =
+  LogicalOffset logical_point =
       IsHorizontalWritingMode()
-          ? LayoutSize(column_offset.inline_offset, column_offset.block_offset)
-          : LayoutSize(column_offset.block_offset, column_offset.inline_offset);
-  return row.VisualPointToFlowThreadPoint(visual_point - flipped_column_offset);
+          ? LogicalOffset(visual_point.X(), visual_point.Y())
+          : LogicalOffset(visual_point.Y(), visual_point.X());
+  LogicalOffset logical_result = row.VisualPointToFlowThreadPoint(
+      logical_point - row.OffsetFromColumnSet());
+  LayoutPoint result(logical_result.inline_offset, logical_result.block_offset);
+  return IsHorizontalWritingMode() ? result : result.TransposedPoint();
 }
 
 void LayoutMultiColumnSet::ResetColumnHeight() {
