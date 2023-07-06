@@ -70,7 +70,7 @@ class AutofillProgressDialogControllerImpl
   }
 
  private:
-  const raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
 
   // View that displays the error dialog.
   raw_ptr<AutofillProgressDialogView> autofill_progress_dialog_view_ = nullptr;
