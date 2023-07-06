@@ -116,7 +116,8 @@ class ArcUtilTest : public ash::AshTestBase {
         [job_name_to_fail](const std::string& job_name,
                            const std::vector<std::string>& env) {
           // Return success unless |job_name| is |job_name_to_fail|.
-          return job_name != job_name_to_fail;
+          return ash::FakeUpstartClient::StartJobResult(job_name !=
+                                                        job_name_to_fail);
         }));
   }
 
@@ -136,7 +137,7 @@ class ArcUtilTest : public ash::AshTestBase {
         base::BindLambdaForTesting([this](const std::string& job_name,
                                           const std::vector<std::string>& env) {
           upstart_operations_.emplace_back(job_name, true);
-          return true;
+          return ash::FakeUpstartClient::StartJobResult(true /* success */);
         }));
     upstart_client->set_stop_job_cb(
         base::BindLambdaForTesting([this](const std::string& job_name,

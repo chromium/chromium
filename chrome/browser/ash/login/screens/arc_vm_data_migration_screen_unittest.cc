@@ -463,7 +463,8 @@ TEST_F(ArcVmDataMigrationScreenTest,
        ArcVmDataMigratorStartFailureOnGetAndroidDataSizeIsFatal) {
   FakeUpstartClient::Get()->set_start_job_cb(base::BindLambdaForTesting(
       [](const std::string& job_name, const std::vector<std::string>& env) {
-        return job_name != arc::kArcVmDataMigratorJobName;
+        return FakeUpstartClient::StartJobResult(
+            job_name != arc::kArcVmDataMigratorJobName);
       }));
 
   screen_->Show(wizard_context_.get());
@@ -478,7 +479,8 @@ TEST_F(ArcVmDataMigrationScreenTest,
 
   FakeUpstartClient::Get()->set_start_job_cb(base::BindLambdaForTesting(
       [](const std::string& job_name, const std::vector<std::string>& env) {
-        return job_name != arc::kArcVmDataMigratorJobName;
+        return FakeUpstartClient::StartJobResult(
+            job_name != arc::kArcVmDataMigratorJobName);
       }));
 
   PressUpdateButton();
@@ -583,7 +585,8 @@ TEST_F(ArcVmDataMigrationScreenTest,
   // Let ArcVmDataMigrator fail to start.
   FakeUpstartClient::Get()->set_start_job_cb(base::BindLambdaForTesting(
       [](const std::string& job_name, const std::vector<std::string>& env) {
-        return job_name != arc::kArcVmDataMigratorJobName;
+        return FakeUpstartClient::StartJobResult(
+            job_name != arc::kArcVmDataMigratorJobName);
       }));
 
   screen_->Show(wizard_context_.get());
@@ -634,7 +637,8 @@ TEST_F(ArcVmDataMigrationScreenTest, MigrationFailure) {
 TEST_F(ArcVmDataMigrationScreenTest, MigrationFailure_ArcDataRemovalFailed) {
   FakeUpstartClient::Get()->set_start_job_cb(base::BindLambdaForTesting(
       [](const std::string& job_name, const std::vector<std::string>& env) {
-        return job_name != kArcRemoveDataJobName;
+        return FakeUpstartClient::StartJobResult(job_name !=
+                                                 kArcRemoveDataJobName);
       }));
 
   screen_->Show(wizard_context_.get());

@@ -86,7 +86,7 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
         base::BindLambdaForTesting([this](const std::string& job_name,
                                           const std::vector<std::string>& env) {
           upstart_operations_.emplace_back(job_name, true);
-          return true;
+          return ash::FakeUpstartClient::StartJobResult(true /* success */);
         }));
     upstart_client->set_stop_job_cb(
         base::BindLambdaForTesting([this](const std::string& job_name,

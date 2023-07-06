@@ -553,7 +553,8 @@ class ArcVmClientAdapterTest : public testing::Test,
         [job_name_to_fail](const std::string& job_name,
                            const std::vector<std::string>& env) {
           // Return success unless |job_name| is |job_name_to_fail|.
-          return job_name != job_name_to_fail;
+          return ash::FakeUpstartClient::StartJobResult(job_name !=
+                                                        job_name_to_fail);
         }));
   }
 
@@ -574,7 +575,7 @@ class ArcVmClientAdapterTest : public testing::Test,
                                           const std::vector<std::string>& env) {
           upstart_operations_.push_back(
               {job_name, env, UpstartOperationType::START});
-          return true;
+          return ash::FakeUpstartClient::StartJobResult(true /* success */);
         }));
     upstart_client->set_stop_job_cb(
         base::BindLambdaForTesting([this](const std::string& job_name,
