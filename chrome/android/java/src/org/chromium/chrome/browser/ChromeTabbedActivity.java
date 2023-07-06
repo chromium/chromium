@@ -461,21 +461,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // clang-format on
     }
 
-    private void incrementCounter(String key) {
-        // Increment a counter for sessions where Java code runs up to this
-        // point, with the counter to be reset in the native C++ code. Thus
-        // this serves as a diagnostic tool in the cases where the native C++
-        // code is not reached.
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
-        int count = prefs.readInt(key, 0);
-        // Note that this is written asynchronously, so there is a chance that
-        // this will not succeed.
-        prefs.writeInt(key, count + 1);
-    }
-
     @Override
     protected void onPreCreate() {
-        incrementCounter(ChromePreferenceKeys.UMA_ON_PRECREATE_COUNTER);
         super.onPreCreate();
         mMultiInstanceManager = MultiInstanceManager.create(this, getTabModelOrchestratorSupplier(),
                 getMultiWindowModeStateDispatcher(), getLifecycleDispatcher(),
@@ -2988,7 +2975,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public void onResume() {
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onResume")) {
-            incrementCounter(ChromePreferenceKeys.UMA_ON_RESUME_COUNTER);
             super.onResume();
         }
     }

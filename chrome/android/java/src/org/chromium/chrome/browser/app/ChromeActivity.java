@@ -140,7 +140,9 @@ import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.selection.SelectionPopupBackPressHandler;
@@ -407,8 +409,21 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
     }
 
+    private void incrementCounter(String key) {
+        // Increment a counter for sessions where Java code runs up to this
+        // point, with the counter to be reset in the native C++ code. Thus
+        // this serves as a diagnostic tool in the cases where the native C++
+        // code is not reached.
+        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        int count = prefs.readInt(key, 0);
+        // Note that this is written asynchronously, so there is a chance that
+        // this will not succeed.
+        prefs.writeInt(key, count + 1);
+    }
+
     @Override
     protected void onPreCreate() {
+        incrementCounter(ChromePreferenceKeys.UMA_ON_PRECREATE_COUNTER);
         CachedFeatureFlags.onStartOrResumeCheckpoint();
         super.onPreCreate();
         initializeBackPressHandling();
@@ -1397,6 +1412,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (mCompositorViewHolderSupplier.hasValue()) mCompositorViewHolderSupplier.get().onStart();
 
         mStarted = true;
+    }
+
+    @Override
+    public void onResume() {
+        incrementCounter(ChromePreferenceKeys.UMA_ON_RESUME_COUNTER);
+        super.onResume();
     }
 
     /**

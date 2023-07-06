@@ -895,7 +895,7 @@ public final class ChromePreferenceKeys {
     public static final String UI_THEME_SETTING = "ui_theme_setting";
 
     // Diagnostic counters for short sessions; see histogram
-    // UMA.PreNative.ChromeTabbedActivityCounter.
+    // UMA.PreNative.ChromeActivityCounter.
     public static final String UMA_ON_PRECREATE_COUNTER = "Chrome.UMA.OnPreCreateCounter";
     public static final String UMA_ON_RESUME_COUNTER = "Chrome.UMA.OnResumeCounter";
 

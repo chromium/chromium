@@ -15892,6 +15892,30 @@ Called by update_protocol_commands_enum.py.-->
   <int value="6" label="Notification Action Click"/>
 </enum>
 
+<enum name="ChromeActivityCounter">
+  <summary>
+    Encodes the number of times onPreCreate and onResume were called when a
+    foreground session is ended in the native C++ code. The counts are capped at
+    3.
+  </summary>
+  <int value="0" label="p0r0"/>
+  <int value="1" label="p0r1"/>
+  <int value="2" label="p0r2"/>
+  <int value="3" label="p0r3+"/>
+  <int value="4" label="p1r0"/>
+  <int value="5" label="p1r1"/>
+  <int value="6" label="p1r2"/>
+  <int value="7" label="p1r3+"/>
+  <int value="8" label="p2r0"/>
+  <int value="9" label="p2r1"/>
+  <int value="10" label="p2r2"/>
+  <int value="11" label="p2r3+"/>
+  <int value="12" label="p3+r0"/>
+  <int value="13" label="p3+r1"/>
+  <int value="14" label="p3+r2"/>
+  <int value="15" label="p3+r3+"/>
+</enum>
+
 <enum name="ChromeActivityType">
   <int value="0" label="Tabbed Chrome"/>
   <int value="1" label="Custom Tab"/>
@@ -16897,30 +16921,6 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="0" label="Failure"/>
   <int value="1" label="Allow"/>
   <int value="2" label="Disallow"/>
-</enum>
-
-<enum name="ChromeTabbedActivityCounter">
-  <summary>
-    Encodes the number of times onPreCreate and onResume were called when a
-    foreground session is ended in the native C++ code. The counts are capped at
-    3.
-  </summary>
-  <int value="0" label="c0r0"/>
-  <int value="1" label="c0r1"/>
-  <int value="2" label="c0r2"/>
-  <int value="3" label="c0r3+"/>
-  <int value="4" label="c1r0"/>
-  <int value="5" label="c1r1"/>
-  <int value="6" label="c1r2"/>
-  <int value="7" label="c1r3+"/>
-  <int value="8" label="c2r0"/>
-  <int value="9" label="c2r1"/>
-  <int value="10" label="c2r2"/>
-  <int value="11" label="c2r3+"/>
-  <int value="12" label="c3+r0"/>
-  <int value="13" label="c3+r1"/>
-  <int value="14" label="c3+r2"/>
-  <int value="15" label="c3+r3+"/>
 </enum>
 
 <enum name="ChromeVoxGestureType">
