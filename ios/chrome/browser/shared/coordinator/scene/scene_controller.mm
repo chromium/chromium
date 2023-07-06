@@ -337,6 +337,9 @@ void InjectNTP(Browser* browser) {
 @property(nonatomic, strong)
     IncognitoInterstitialCoordinator* incognitoInterstitialCoordinator;
 
+// YES if the Settings view is being dismissed.
+@property(nonatomic, assign) BOOL dismissingSettings;
+
 @end
 
 @implementation SceneController
@@ -2994,19 +2997,17 @@ void InjectNTP(Browser* browser) {
     strongSelf.dismissingSigninPromptFromExternalTrigger = NO;
   };
 
-  if (self.settingsNavigationController) {
-    __weak SettingsNavigationController* settingsNavigationController =
-        self.settingsNavigationController;
-    self.settingsNavigationController = nil;
+  if (self.settingsNavigationController && !self.dismissingSettings) {
+    self.dismissingSettings = YES;
     // Store a reference to the presentingViewController in case the user
     // is dismissing the Signin screen and then dismisses Settings before
     // the Signin screen is done animating, which will delay the execution of
     // the `dismissSettings` block stopping the code from accessing
     // the `presentingViewController` property.
     __weak UIViewController* weakPresentingViewController =
-        [settingsNavigationController presentingViewController];
+        [self.settingsNavigationController presentingViewController];
     ProceduralBlock dismissSettings = ^() {
-      [settingsNavigationController cleanUpSettings];
+      [weakSelf.settingsNavigationController cleanUpSettings];
       UIViewController* strongPresentingViewController =
           weakPresentingViewController;
       if (strongPresentingViewController) {
@@ -3017,6 +3018,8 @@ void InjectNTP(Browser* browser) {
         // The view is already dismissed. Completion should still be called.
         completion();
       }
+      weakSelf.settingsNavigationController = nil;
+      weakSelf.dismissingSettings = NO;
     };
     // `self.signinCoordinator` can be presented on top of the settings, to
     // present the Trusted Vault reauthentication `self.signinCoordinator` has
