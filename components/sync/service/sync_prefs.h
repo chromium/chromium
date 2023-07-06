@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
@@ -125,6 +126,10 @@ class SyncPrefs {
   void SetSelectedTypeForAccount(UserSelectableType type,
                                  bool is_type_on,
                                  const signin::GaiaIdHash& gaia_id_hash);
+  // Used to clear per account prefs for all users *except* the ones in the
+  // passed-in |available_gaia_ids|.
+  void KeepAccountSettingsPrefsOnlyForUsers(
+      const std::vector<signin::GaiaIdHash>& available_gaia_ids);
 
 #if BUILDFLAG(IS_IOS)
   // Sets the opt-in for bookmarks & reading list in transport mode.

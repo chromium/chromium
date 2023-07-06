@@ -7,8 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "build/chromeos_buildflags.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,6 +37,10 @@ class SyncUserSettingsMock : public SyncUserSettings {
               (bool, UserSelectableTypeSet),
               (override));
   MOCK_METHOD(void, SetSelectedType, (UserSelectableType, bool), (override));
+  MOCK_METHOD(void,
+              KeepAccountSettingsPrefsOnlyForUsers,
+              (const std::vector<signin::GaiaIdHash>&),
+              (override));
 #if BUILDFLAG(IS_IOS)
   MOCK_METHOD(void,
               SetBookmarksAndReadingListAccountStorageOptIn,

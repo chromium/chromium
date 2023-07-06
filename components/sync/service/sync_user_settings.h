@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -67,6 +69,10 @@ class SyncUserSettings {
   // this function is only allowed while IsSyncEverythingEnabled() returns
   // false.
   virtual void SetSelectedType(UserSelectableType type, bool is_type_on) = 0;
+  // Clears per account prefs for all users *except* the ones in the passed-in
+  // |available_gaia_ids|.
+  virtual void KeepAccountSettingsPrefsOnlyForUsers(
+      const std::vector<signin::GaiaIdHash>& available_gaia_ids) = 0;
 #if BUILDFLAG(IS_IOS)
   // Enables the account storage for bookmark and reading list datatype.
   virtual void SetBookmarksAndReadingListAccountStorageOptIn(bool value) = 0;

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -297,6 +298,28 @@ void SyncPrefs::SetSelectedTypeForAccount(
   }
   for (SyncPrefObserver& observer : sync_pref_observers_) {
     observer.OnPreferredDataTypesPrefChange();
+  }
+}
+
+void SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(
+    const std::vector<signin::GaiaIdHash>& available_gaia_ids) {
+  std::vector<std::string> removed_identities;
+  for (std::pair<const std::string&, const base::Value&> account_settings :
+       pref_service_->GetDict(prefs::internal::kSelectedTypesPerAccount)) {
+    if (!base::Contains(available_gaia_ids, signin::GaiaIdHash::FromBase64(
+                                                account_settings.first))) {
+      removed_identities.push_back(account_settings.first);
+    }
+  }
+  if (!removed_identities.empty()) {
+    {
+      ScopedDictPrefUpdate update_selected_types_dict(
+          pref_service_, prefs::internal::kSelectedTypesPerAccount);
+      base::Value::Dict& all_accounts = update_selected_types_dict.Get();
+      for (const auto& account_id : removed_identities) {
+        all_accounts.Remove(account_id);
+      }
+    }
   }
 }
 

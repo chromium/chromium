@@ -5,6 +5,7 @@
 #include "components/sync/service/sync_prefs.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -359,6 +360,42 @@ TEST_F(SyncPrefsTest,
   // kPreferences should still be disabled.
   EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
                    .Has(UserSelectableType::kPreferences));
+}
+
+TEST_F(SyncPrefsTest, KeepAccountSettingsPrefsOnlyForUsers) {
+  base::test::ScopedFeatureList feature_list(
+      kReplaceSyncPromosWithSignInPromos);
+
+  const UserSelectableTypeSet default_selected_types =
+      sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_);
+
+  auto gaia_id_hash_2 = signin::GaiaIdHash::FromGaiaId("account_gaia_2");
+
+  // Change one of the default values for example kPasswords for account 1.
+  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, false,
+                                         gaia_id_hash_);
+  // Change one of the default values for example kReadingList for account 2.
+  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kReadingList,
+                                         false, gaia_id_hash_2);
+  ASSERT_EQ(
+      sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
+      Difference(default_selected_types, {UserSelectableType::kPasswords}));
+  ASSERT_EQ(
+      sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_2),
+      Difference(default_selected_types, {UserSelectableType::kReadingList}));
+
+  // Remove account 2 from device by setting the available_gaia_ids to have the
+  // gaia id of account 1 only.
+  sync_prefs_->KeepAccountSettingsPrefsOnlyForUsers(
+      /*available_gaia_ids=*/{gaia_id_hash_});
+
+  // Nothing should change on account 1.
+  EXPECT_EQ(
+      sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
+      Difference(default_selected_types, {UserSelectableType::kPasswords}));
+  // Account 2 should be cleared to default values.
+  EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_2),
+            default_selected_types);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

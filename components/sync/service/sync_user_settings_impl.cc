@@ -162,6 +162,11 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
   }
 }
 
+void SyncUserSettingsImpl::KeepAccountSettingsPrefsOnlyForUsers(
+    const std::vector<signin::GaiaIdHash>& available_gaia_ids) {
+  prefs_->KeepAccountSettingsPrefsOnlyForUsers(available_gaia_ids);
+}
+
 #if BUILDFLAG(IS_IOS)
 void SyncUserSettingsImpl::SetBookmarksAndReadingListAccountStorageOptIn(
     bool value) {

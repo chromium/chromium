@@ -80,6 +80,9 @@ void TestSyncUserSettings::SetSelectedType(UserSelectableType type,
   }
 }
 
+void TestSyncUserSettings::KeepAccountSettingsPrefsOnlyForUsers(
+    const std::vector<signin::GaiaIdHash>& available_gaia_ids) {}
+
 #if BUILDFLAG(IS_IOS)
 void TestSyncUserSettings::SetBookmarksAndReadingListAccountStorageOptIn(
     bool value) {}
