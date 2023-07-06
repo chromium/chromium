@@ -330,7 +330,14 @@ HRESULT MediaFoundationStreamWrapper::ServiceSampleRequest(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   lock_.AssertAcquired();
 
-  if (buffer->end_of_stream()) {
+  const bool is_end_of_stream = buffer->end_of_stream();
+  const bool is_encrypted = !is_end_of_stream && buffer->decrypt_config();
+  const auto timestamp_us =
+      is_end_of_stream ? 0 : buffer->timestamp().InMicroseconds();
+  TRACE_EVENT2("media", "MediaFoundationStreamWrapper::ServiceSampleRequest",
+               "is_encrypted", is_encrypted, "timestamp_us", timestamp_us);
+
+  if (is_end_of_stream) {
     if (!enabled_) {
       DVLOG_FUNC(2) << "Ignoring EOS for disabled stream";
       // token not dropped to reflect an outstanding request that stream wrapper
