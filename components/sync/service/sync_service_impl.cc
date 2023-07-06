@@ -292,6 +292,8 @@ void SyncServiceImpl::Initialize() {
       GetSyncAccountStateForPrefs());
 
   if (!IsLocalSyncEnabled()) {
+    // TODO(crbug.com/1454037): Record these histograms only if
+    // `is_regular_profile_for_uma_` is true.
     const bool account_info_fully_loaded =
         auth_manager_->IsActiveAccountInfoFullyLoaded();
     base::UmaHistogramBoolean("Sync.Startup.AccountInfoFullyLoaded",
@@ -304,6 +306,10 @@ void SyncServiceImpl::Initialize() {
 
   // If sync is disabled permanently, clean up old data that may be around (e.g.
   // crash during signout).
+  // TODO(crbug.com/1456707): The IsActiveAccountInfoFullyLoaded() here
+  // shouldn't be necessary - the signin state is known even before refresh
+  // tokens are fully loaded. But on ChromeOS-Ash, on the very first startup of
+  // a fresh profile, the signed-in account isn't known yet.
   if (HasDisableReason(DISABLE_REASON_ENTERPRISE_POLICY) ||
       (HasDisableReason(DISABLE_REASON_NOT_SIGNED_IN) &&
        auth_manager_->IsActiveAccountInfoFullyLoaded())) {
@@ -332,12 +338,7 @@ void SyncServiceImpl::Initialize() {
   }
 
   if (base::FeatureList::IsEnabled(
-          kSyncAllowClearingMetadataWhenDataTypeIsStopped) &&
-      // The selected types depend on the signin state. Checking that the
-      // account info is fully loaded avoids accidentally clearing stuff.
-      // For local sync, no account info is needed.
-      (IsLocalSyncEnabled() ||
-       auth_manager_->IsActiveAccountInfoFullyLoaded())) {
+          kSyncAllowClearingMetadataWhenDataTypeIsStopped)) {
     // Call Stop() on controllers for non-preferred types to clear metadata.
     // This allows clearing metadata for types disabled in previous run early-on
     // during initialization.
