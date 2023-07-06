@@ -758,6 +758,46 @@ void WaylandEventSource::OnPinchEvent(EventType event_type,
   SetTargetAndDispatchEvent(&event, target);
 }
 
+void WaylandEventSource::OnHoldEvent(EventType event_type,
+                                     uint32_t finger_count,
+                                     base::TimeTicks timestamp,
+                                     int device_id,
+                                     wl::EventDispatchPolicy dispatch_policy) {
+  // Lifting the finger from the touchpad will be ignored.
+  if (event_type != ET_TOUCH_PRESSED) {
+    return;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Prevent generating any scroll events if pointer has just been moved.
+  if (!is_fling_active_) {
+    return;
+  }
+  is_fling_active_ = false;
+#endif
+
+  // Prevent fling start if axis stop arrives after hold gesture.
+  if (pointer_scroll_data_) {
+    pointer_scroll_data_->dx = 0;
+    pointer_scroll_data_->dy = 0;
+  }
+
+  pointer_scroll_data_set_.clear();
+
+  ScrollEvent event(ET_SCROLL_FLING_CANCEL, pointer_location_,
+                    pointer_location_, EventTimeForNow(), pointer_flags_, 0, 0,
+                    0, 0, finger_count);
+
+  auto* target = window_manager_->GetCurrentPointerFocusedWindow();
+
+  if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
+    SetTargetAndDispatchEvent(&event, target);
+  } else {
+    pointer_frames_.push_back(
+        std::make_unique<FrameData>(event, base::NullCallback()));
+  }
+}
+
 void WaylandEventSource::SetRelativePointerMotionEnabled(bool enabled) {
   if (enabled)
     relative_pointer_location_ = pointer_location_;
@@ -1030,6 +1070,7 @@ void WaylandEventSource::ProcessPointerScrollData() {
                    WL_POINTER_AXIS_SOURCE_CONTINUOUS) {
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
       // Fling has to be stopped if a new scroll event is received.
+      // From Wayland 1.23 this will be done through hold event.
       if (is_fling_active_) {
         is_fling_active_ = false;
         ScrollEvent stop_fling_event(

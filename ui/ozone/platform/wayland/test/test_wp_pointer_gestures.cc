@@ -16,8 +16,10 @@ namespace {
 
 const struct zwp_pointer_gesture_pinch_v1_interface kTestPinchImpl = {
     DestroyResource};
+const struct zwp_pointer_gesture_hold_v1_interface kTestHoldImpl = {
+    DestroyResource};
 
-constexpr uint32_t kInterfaceVersion = 1;
+constexpr uint32_t kInterfaceVersion = 3;
 
 }  // namespace
 
@@ -25,6 +27,7 @@ const struct zwp_pointer_gestures_v1_interface kInterfaceImpl = {
     TestWpPointerGestures::GetSwipeGesture,
     TestWpPointerGestures::GetPinchGesture,
     DestroyResource,
+    TestWpPointerGestures::GetHoldGesture,
 };
 
 TestWpPointerGestures::TestWpPointerGestures()
@@ -57,9 +60,27 @@ void TestWpPointerGestures::GetPinchGesture(
       GetUserDataAs<TestPinchGesture>(pinch_gesture_resource);
 }
 
+// static
+void TestWpPointerGestures::GetHoldGesture(
+    struct wl_client* client,
+    struct wl_resource* pointer_gestures_resource,
+    uint32_t id,
+    struct wl_resource* pointer) {
+  wl_resource* hold_gesture_resource = CreateResourceWithImpl<TestHoldGesture>(
+      client, &zwp_pointer_gesture_hold_v1_interface, 3, &kTestHoldImpl, id);
+
+  GetUserDataAs<TestWpPointerGestures>(pointer_gestures_resource)->hold_ =
+      GetUserDataAs<TestHoldGesture>(hold_gesture_resource);
+}
+
 TestPinchGesture::TestPinchGesture(wl_resource* resource)
     : ServerObject(resource) {}
 
 TestPinchGesture::~TestPinchGesture() = default;
+
+TestHoldGesture::TestHoldGesture(wl_resource* resource)
+    : ServerObject(resource) {}
+
+TestHoldGesture::~TestHoldGesture() = default;
 
 }  // namespace wl

@@ -163,6 +163,11 @@ class WaylandEventSource : public PlatformEventSource,
                     base::TimeTicks timestamp,
                     int device_id,
                     absl::optional<float> scale_delta) override;
+  void OnHoldEvent(EventType event_type,
+                   uint32_t finger_count,
+                   base::TimeTicks timestamp,
+                   int device_id,
+                   wl::EventDispatchPolicy dispatch_policy) override;
 
   // WaylandZwpRelativePointerManager::Delegate:
   void SetRelativePointerMotionEnabled(bool enabled) override;
