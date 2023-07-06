@@ -180,7 +180,6 @@ class DataDecoder {
   // facility. The parser conforms to RFC 7049, except a few limitations:
   // - Does not support null or undefined values.
   // - Integers must fit in the 'int' type.
-  // - Does not support float values (limitations in components/cbor library).
   // - The keys in Maps must be a string or byte-string.
   // - If at least one Map key is invalid, an error will be returned.
   //

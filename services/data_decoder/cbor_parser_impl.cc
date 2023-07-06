@@ -90,6 +90,9 @@ absl::optional<base::Value> ConvertToBaseValue(const cbor::Value& cbor_value) {
     case cbor::Value::Type::BYTE_STRING:
       return base::Value(cbor_value.GetBytestring());
 
+    case cbor::Value::Type::FLOAT_VALUE:
+      return base::Value(cbor_value.GetDouble());
+
     default:
       return absl::nullopt;
   }
@@ -103,8 +106,11 @@ CborParserImpl::~CborParserImpl() = default;
 
 void CborParserImpl::Parse(mojo_base::BigBuffer cbor, ParseCallback callback) {
   cbor::Reader::DecoderError error;
+  cbor::Reader::Config config;
+  config.error_code_out = &error;
+  config.allow_floating_point = true;
 
-  auto ret = cbor::Reader::Read(cbor, &error);
+  auto ret = cbor::Reader::Read(cbor, config);
 
   if (!ret.has_value()) {
     std::move(callback).Run(absl::nullopt,

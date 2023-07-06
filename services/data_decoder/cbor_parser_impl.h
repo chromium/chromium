@@ -16,7 +16,6 @@ namespace data_decoder {
 // Current Limitations:
 // - Does not support null or undefined values
 // - Integers must fit in the 'int' type
-// - Does not support float values (limitations in components/cbor library)
 // - The keys in Maps must be a string or bytestring
 // - If at least one Map key is invalid, an error will be returned
 class CborParserImpl : public mojom::CborParser {

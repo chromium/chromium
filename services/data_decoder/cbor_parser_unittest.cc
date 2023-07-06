@@ -49,6 +49,11 @@ TEST_F(CborToValueTest, SuccesfulParseValues) {
           base::Value(-100),
       },
       {
+          "Float",
+          {0xf9, 0x00, 0x00},  // 0.0
+          base::Value(0.0),
+      },
+      {
           "Array",  // [100, false, "string", {"k": "v"}]
           {0x84, 0x18, 0x64, 0xF4, 0x66, 0x73, 0x74, 0x72, 0x69, 0x6E, 0x67,
            0xA1, 0x61, 0x6B, 0x61, 0x76},
