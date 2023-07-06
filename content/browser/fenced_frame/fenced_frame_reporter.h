@@ -135,10 +135,11 @@ class CONTENT_EXPORT FencedFrameReporter
   // information is received. If there's no matching information for
   // `event_type`, does nothing.
   //
-  // Returns false and populated `error_message` if no network request was
-  // attempted, unless the reporting URL map for `reporting_destination` is
-  // pending. In that case, errors are currently never reported, even if the
-  // reporting URL map results in no request being sent.
+  // Returns false and populated `error_message` and `console_message_level` if
+  // no network request was attempted, unless the reporting URL map for
+  // `reporting_destination` is pending. In that case, errors are currently
+  // never reported, even if the reporting URL map results in no request being
+  // sent.
   //
   // `initiator_frame_tree_node_id` is used for DevTools support only.
   //
@@ -156,6 +157,7 @@ class CONTENT_EXPORT FencedFrameReporter
       network::AttributionReportingRuntimeFeatures
           attribution_reporting_runtime_features,
       std::string& error_message,
+      blink::mojom::ConsoleMessageLevel& console_message_level,
       int initiator_frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId,
       absl::optional<int64_t> navigation_id = absl::nullopt);
 
@@ -264,8 +266,9 @@ class CONTENT_EXPORT FencedFrameReporter
       const url::Origin& request_initiator,
       const absl::optional<AttributionReportingData>&
           attribution_reporting_data,
+      int initiator_frame_tree_node_id,
       std::string& error_message,
-      int initiator_frame_tree_node_id);
+      blink::mojom::ConsoleMessageLevel& console_message_level);
 
   // Helper to send private aggregation requests in
   // `private_aggregation_event_map_` with key `pa_event_type`.

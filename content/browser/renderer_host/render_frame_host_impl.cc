@@ -8586,13 +8586,16 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
   }
 
   std::string error_message;
+  // By default, log w/ error severity. Can be overwritten to lower severity
+  // depending on the error.
+  blink::mojom::ConsoleMessageLevel console_message_level =
+      blink::mojom::ConsoleMessageLevel::kError;
   if (!fenced_frame_properties->fenced_frame_reporter_->SendReport(
           event_type, event_data, destination,
           /*request_initiator_frame=*/this,
           attribution_reporting_runtime_features, error_message,
-          initiator_frame_tree_node_id, navigation_id)) {
-    AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
-                        error_message);
+          console_message_level, initiator_frame_tree_node_id, navigation_id)) {
+    AddMessageToConsole(console_message_level, error_message);
   }
 }
 

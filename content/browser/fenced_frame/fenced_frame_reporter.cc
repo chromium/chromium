@@ -284,11 +284,13 @@ void FencedFrameReporter::OnUrlMappingReady(
   auto pending_events = std::exchange(it->second.pending_events, {});
   for (const auto& pending_event : pending_events) {
     std::string ignored_error_message;
+    blink::mojom::ConsoleMessageLevel ignored_console_message_level =
+        blink::mojom::ConsoleMessageLevel::kError;
     SendReportInternal(it->second, pending_event.type, pending_event.data,
                        reporting_destination, pending_event.request_initiator,
                        pending_event.attribution_reporting_data,
-                       ignored_error_message,
-                       pending_event.initiator_frame_tree_node_id);
+                       pending_event.initiator_frame_tree_node_id,
+                       ignored_error_message, ignored_console_message_level);
   }
 }
 
@@ -300,6 +302,7 @@ bool FencedFrameReporter::SendReport(
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features,
     std::string& error_message,
+    blink::mojom::ConsoleMessageLevel& console_message_level,
     int initiator_frame_tree_node_id,
     absl::optional<int64_t> navigation_id) {
   DCHECK(request_initiator_frame);
@@ -322,6 +325,7 @@ bool FencedFrameReporter::SendReport(
     error_message = base::StrCat(
         {"This frame did not register reporting metadata for destination '",
          ReportingDestinationAsString(reporting_destination), "'."});
+    console_message_level = blink::mojom::ConsoleMessageLevel::kWarning;
     return false;
   }
 
@@ -356,10 +360,10 @@ bool FencedFrameReporter::SendReport(
     return true;
   }
 
-  return SendReportInternal(it->second, event_type, event_data,
-                            reporting_destination, request_initiator,
-                            attribution_reporting_data, error_message,
-                            initiator_frame_tree_node_id);
+  return SendReportInternal(
+      it->second, event_type, event_data, reporting_destination,
+      request_initiator, attribution_reporting_data,
+      initiator_frame_tree_node_id, error_message, console_message_level);
 }
 
 bool FencedFrameReporter::SendReportInternal(
@@ -369,8 +373,9 @@ bool FencedFrameReporter::SendReportInternal(
     blink::FencedFrame::ReportingDestination reporting_destination,
     const url::Origin& request_initiator,
     const absl::optional<AttributionReportingData>& attribution_reporting_data,
+    int initiator_frame_tree_node_id,
     std::string& error_message,
-    int initiator_frame_tree_node_id) {
+    blink::mojom::ConsoleMessageLevel& console_message_level) {
   // The URL map should not be pending at this point.
   DCHECK(reporting_destination_info.reporting_url_map);
 
@@ -382,6 +387,7 @@ bool FencedFrameReporter::SendReportInternal(
         {"This frame did not register reporting url for destination '",
          ReportingDestinationAsString(reporting_destination),
          "' and event_type '", event_type, "'."});
+    console_message_level = blink::mojom::ConsoleMessageLevel::kWarning;
     NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
     return false;
   }
@@ -393,6 +399,7 @@ bool FencedFrameReporter::SendReportInternal(
         {"This frame registered invalid reporting url for destination '",
          ReportingDestinationAsString(reporting_destination),
          "' and event_type '", event_type, "'."});
+    console_message_level = blink::mojom::ConsoleMessageLevel::kError;
     NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
     return false;
   }
@@ -408,6 +415,7 @@ bool FencedFrameReporter::SendReportInternal(
         InvokingAPIAsString(invoking_api_),
         "'.",
     });
+    console_message_level = blink::mojom::ConsoleMessageLevel::kError;
     NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
     return false;
   }
