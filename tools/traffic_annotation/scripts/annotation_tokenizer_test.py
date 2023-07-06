@@ -67,6 +67,10 @@ class AnnotationTokenizerTest(unittest.TestCase):
     self.assertEqual(
         'the quick\nbrown\nfox', tokenizer.advance('string_literal'))
 
+  def testAdvanceTextBlock(self):
+    tokenizer = Tokenizer('\n """\n  the quick\n  red\n  fox"""', 'foo.txt', 2)
+    self.assertEqual('the quick\nred\nfox', tokenizer.advance('string_literal'))
+
   def testAdvanceErrorPaths(self):
     tokenizer = Tokenizer('  hello , ', 'foo.txt', 33)
     tokenizer.advance('symbol')
@@ -99,10 +103,10 @@ class AnnotationTokenizerTest(unittest.TestCase):
   def testEscaping(self):
     tokenizer = Tokenizer(
         '''
-      "\\"abc \\\\\\" def \\\\\\""
+      "\\"ab\\nc \\\\\\" def \\\\\\""
       "string ends here:\\\\" this is not part of the string"
     ''', 'foo.txt', 33)
-    self.assertEqual('"abc \\" def \\"', tokenizer.advance('string_literal'))
+    self.assertEqual('"ab\nc \\" def \\"', tokenizer.advance('string_literal'))
     self.assertEqual('string ends here:\\', tokenizer.advance('string_literal'))
 
 
