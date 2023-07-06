@@ -309,16 +309,6 @@ void MaybeResetCascade(StyleCascade& cascade) {
 #endif  // DCHECK_IS_ON()
 }
 
-void PreserveTextAutosizingMultiplierIfNeeded(
-    StyleResolverState& state,
-    const StyleRequest& style_request) {
-  const ComputedStyle* old_style = state.GetElement().GetComputedStyle();
-  if (!style_request.IsPseudoStyleRequest() && old_style) {
-    state.StyleBuilder().SetTextAutosizingMultiplier(
-        old_style->TextAutosizingMultiplier());
-  }
-}
-
 bool TextAutosizingMultiplierChanged(const StyleResolverState& state,
                                      const ComputedStyle& base_computed_style) {
   // Note that |old_style| can be a style replaced by
@@ -1179,6 +1169,17 @@ void StyleResolver::InitStyleAndApplyInheritance(
   if (!style_request.IsPseudoStyleRequest() && element.IsLink()) {
     state.StyleBuilder().SetIsLink();
   }
+
+  if (!style_request.IsPseudoStyleRequest()) {
+    // Preserve the text autosizing multiplier on style recalc. Autosizer will
+    // update it during layout if needed.
+    // NOTE: This must occur before CascadeAndApplyMatchedProperties for correct
+    // computation of font-relative lengths.
+    // NOTE: This can never be overwritten by a MPC hit, since we don't use the
+    // MPC if TextAutosizingMultiplier() is different from 1.
+    state.StyleBuilder().SetTextAutosizingMultiplier(
+        state.TextAutosizingMultiplier());
+  }
 }
 
 void StyleResolver::ApplyMathMLCustomStyleProperties(
@@ -1398,12 +1399,6 @@ void StyleResolver::ApplyBaseStyleNoCache(
       return;
     }
   }
-
-  // Preserve the text autosizing multiplier on style recalc. Autosizer will
-  // update it during layout if needed.
-  // NOTE: This must occur before CascadeAndApplyMatchedProperties for correct
-  // computation of font-relative lengths.
-  PreserveTextAutosizingMultiplierIfNeeded(state, style_request);
 
   if (match_result.HasNonUniversalHighlightPseudoStyles()) {
     state.StyleBuilder().SetHasNonUniversalHighlightPseudoStyles(true);
@@ -2032,7 +2027,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
   const CachedMatchedProperties* cached_matched_properties =
       key.IsValid() ? matched_properties_cache_.Find(key, state) : nullptr;
 
-  if (cached_matched_properties && MatchedPropertiesCache::IsCacheable(state)) {
+  if (cached_matched_properties) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_hit, 1);
 

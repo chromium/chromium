@@ -235,6 +235,15 @@ class CORE_EXPORT StyleResolverState {
     return is_resolving_position_fallback_style_;
   }
 
+  float TextAutosizingMultiplier() const {
+    const ComputedStyle* old_style = GetElement().GetComputedStyle();
+    if (element_type_ != ElementType::kPseudoElement && old_style) {
+      return old_style->TextAutosizingMultiplier();
+    } else {
+      return 1.0f;
+    }
+  }
+
  private:
   CSSToLengthConversionData UnzoomedLengthConversionData(const FontSizeStyle&);
 

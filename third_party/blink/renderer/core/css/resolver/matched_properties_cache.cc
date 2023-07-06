@@ -126,6 +126,12 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
     const Key& key,
     const StyleResolverState& style_resolver_state) {
   DCHECK(key.IsValid());
+
+  // Matches the corresponding test in IsStyleCacheable().
+  if (style_resolver_state.TextAutosizingMultiplier() != 1.0f) {
+    return nullptr;
+  }
+
   Cache::iterator it = cache_.find(key.hash_);
   if (it == cache_.end()) {
     return nullptr;
