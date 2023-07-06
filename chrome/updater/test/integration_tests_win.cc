@@ -30,6 +30,7 @@
 #include "base/process/process.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -1684,6 +1685,13 @@ void RunHandoff(UpdaterScope scope, const std::string& app_id) {
   ASSERT_EQ(exit_code, 0);
 }
 
+std::wstring GetFakeUpdaterTaskName(UpdaterScope scope,
+                                    const std::wstring& type) {
+  return base::StrCat({IsSystemInstall(scope) ? kLegacyTaskNamePrefixSystem
+                                              : kLegacyTaskNamePrefixUser,
+                       type, base::NumberToWString(::GetCurrentProcessId())});
+}
+
 void SetupFakeLegacyUpdater(UpdaterScope scope) {
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
 
@@ -1766,12 +1774,8 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
       TaskScheduler::CreateInstance(scope, /*use_task_subfolders=*/false);
   ASSERT_TRUE(task_scheduler);
 
-  const std::wstring task_name_prefix(IsSystemInstall(scope)
-                                          ? kLegacyTaskNamePrefixSystem
-                                          : kLegacyTaskNamePrefixUser);
-  for (const std::wstring& task_name :
-       {base::StrCat({task_name_prefix, L"Core"}),
-        base::StrCat({task_name_prefix, L"UA"})}) {
+  for (const std::wstring& task_name : {GetFakeUpdaterTaskName(scope, L"Core"),
+                                        GetFakeUpdaterTaskName(scope, L"UA")}) {
     ASSERT_TRUE(task_scheduler->RegisterTask(
         task_name, task_name,
         base::CommandLine::FromString(L"C:\\temp\\temp.exe"),
@@ -1868,17 +1872,19 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   EXPECT_EQ(count_entries, 0);
 
   // Expect no GoogleUpdate tasks.
-  count_entries = 0;
-  const std::wstring task_name_prefix(IsSystemInstall(scope)
-                                          ? kLegacyTaskNamePrefixSystem
-                                          : kLegacyTaskNamePrefixUser);
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope, /*use_task_subfolders=*/false);
-  task_scheduler->ForEachTaskWithPrefix(
-      task_name_prefix,
-      [&count_entries](const std::wstring& /*task_name*/) { ++count_entries; });
+  ASSERT_TRUE(task_scheduler);
+  for (const std::wstring& task_name : {GetFakeUpdaterTaskName(scope, L"Core"),
+                                        GetFakeUpdaterTaskName(scope, L"UA")}) {
+    count_entries = 0;
+    task_scheduler->ForEachTaskWithPrefix(
+        task_name, [&count_entries](const std::wstring& /*task_name*/) {
+          ++count_entries;
+        });
 
-  EXPECT_EQ(count_entries, 0);
+    EXPECT_EQ(count_entries, 0);
+  }
 
   // Expect only a single file `GoogleUpdate.exe` and nothing else under
   // `\Google\Update`.
