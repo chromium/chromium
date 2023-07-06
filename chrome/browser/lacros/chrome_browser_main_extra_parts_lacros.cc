@@ -314,6 +314,8 @@ void ChromeBrowserMainExtraPartsLacros::PostMainMessageLoopRun() {
   // Must be destroyed before
   // `kiosk_session_service_->kiosk_browser_session_->profile_` is destroyed.
   kiosk_session_service_.reset();
+  // Must be destroyed before the extension system gets destroyed.
+  force_installed_tracker_.reset();
 
   // Initialized in PreProfileInit.
   device::GeolocationManager::SetInstance(nullptr);
