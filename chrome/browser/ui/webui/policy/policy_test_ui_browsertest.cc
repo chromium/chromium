@@ -7,8 +7,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -19,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -120,3 +123,91 @@ IN_PROC_BROWSER_TEST_P(PolicyTestPageUITest, TestPageVisibleWhenEnabled) {
 INSTANTIATE_TEST_SUITE_P(PolicyTestPageUITestInstance,
                          PolicyTestPageUITest,
                          testing::Combine(testing::Bool(), testing::Bool()));
+
+namespace {
+class PolicyTestHandlerTest : public PlatformBrowserTest {
+ public:
+  PolicyTestHandlerTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        policy::features::kEnablePolicyTestPage, true);
+  }
+  PolicyTestHandlerTest(const PolicyTestHandlerTest&) = delete;
+  PolicyTestHandlerTest& operator=(const PolicyTestHandlerTest&) = delete;
+
+  ~PolicyTestHandlerTest() override = default;
+
+  content::WebContents* web_contents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  std::unique_ptr<PolicyUIHandler> SetUpHandler() {
+    auto handler = std::make_unique<PolicyUIHandler>();
+    web_ui()->set_web_contents(web_contents());
+    handler->set_web_ui_for_test(web_ui());
+    handler->RegisterMessages();
+    return handler;
+  }
+
+ protected:
+  content::TestWebUI* web_ui() { return &web_ui_; }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  content::TestWebUI web_ui_;
+};
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, HandleSetLocalTestPolicies) {
+  std::unique_ptr<PolicyUIHandler> handler = SetUpHandler();
+
+  // Send policies through front-end.
+  const std::string jsonString =
+      R"([
+      {"level": 0,"scope": 0,"source": 0,
+      "name": "AutofillAddressEnabled","value": false},
+      {"level": 1,"scope": 1,"source": 2,
+      "name": "CloudReportingEnabled","value": true}
+      ])";
+
+  base::Value::List list_args;
+
+  list_args.Append("setLocalTestPolicies");
+  list_args.Append(jsonString);
+
+  web_ui()->HandleReceivedMessage("setLocalTestPolicies", list_args);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Check correct policies applied
+  const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
+                                                 std::string());
+  policy::PolicyService* policy_service = g_browser_process->policy_service();
+  const policy::PolicyMap* policy_map =
+      &policy_service->GetPolicies(chrome_namespace);
+
+  {
+    const policy::PolicyMap::Entry* entry =
+        policy_map->Get(policy::key::kAutofillAddressEnabled);
+    ASSERT_TRUE(entry);
+    const base::Value* value = entry->value(base::Value::Type::BOOLEAN);
+    ASSERT_TRUE(value);
+    EXPECT_EQ(base::Value(false), *value);
+    EXPECT_EQ(entry->level, policy::POLICY_LEVEL_RECOMMENDED);
+    EXPECT_EQ(entry->scope, policy::POLICY_SCOPE_USER);
+    EXPECT_EQ(entry->source, policy::POLICY_SOURCE_ENTERPRISE_DEFAULT);
+  }
+
+  {
+    const policy::PolicyMap::Entry* entry =
+        policy_map->Get(policy::key::kCloudReportingEnabled);
+    ASSERT_TRUE(entry);
+    const base::Value* value = entry->value(base::Value::Type::BOOLEAN);
+    ASSERT_TRUE(value);
+    EXPECT_EQ(base::Value(true), *value);
+    EXPECT_EQ(entry->level, policy::POLICY_LEVEL_MANDATORY);
+    EXPECT_EQ(entry->scope, policy::POLICY_SCOPE_MACHINE);
+    EXPECT_EQ(entry->source, policy::POLICY_SOURCE_CLOUD);
+  }
+
+  handler.reset();
+}

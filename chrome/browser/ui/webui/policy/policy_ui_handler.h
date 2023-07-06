@@ -49,6 +49,8 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 
   void AddInfobarForActiveLocalTestPolicies();
 
+  void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
+
  protected:
   // ui::SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,
@@ -61,6 +63,8 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void HandleListenPoliciesUpdates(const base::Value::List& args);
   void HandleReloadPolicies(const base::Value::List& args);
   void HandleCopyPoliciesJson(const base::Value::List& args);
+  void HandleSetLocalTestPolicies(const base::Value::List& args);
+
 #if !BUILDFLAG(IS_CHROMEOS)
   void HandleUploadReport(const base::Value::List& args);
 #endif

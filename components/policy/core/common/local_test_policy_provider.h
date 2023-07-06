@@ -27,6 +27,8 @@ class POLICY_EXPORT LocalTestPolicyProvider
 
   ~LocalTestPolicyProvider() override;
 
+  void LoadJsonPolicies(const std::string& json_policies_string);
+
   // ConfigurationPolicyProvider implementation
   void RefreshPolicies() override;
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;

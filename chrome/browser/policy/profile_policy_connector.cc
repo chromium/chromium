@@ -518,7 +518,9 @@ void ProfilePolicyConnector::UseLocalTestPolicyProvider() {
     provider->set_active(false);
   }
 
-  local_test_policy_provider_->set_active(true);
+  if (local_test_policy_provider_) {
+    local_test_policy_provider_->set_active(true);
+  }
   policy_service()->RefreshPolicies(base::DoNothing());
 }
 

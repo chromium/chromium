@@ -269,7 +269,7 @@ ChromeBrowserPolicyConnector::CreatePolicyProviders() {
       LocalTestPolicyProvider::CreateIfAllowed(chrome::GetChannel());
 
   if (local_test_provider) {
-    local_test_provider_ = local_test_provider_.get();
+    local_test_provider_ = local_test_provider.get();
     providers.push_back(std::move(local_test_provider));
   }
 

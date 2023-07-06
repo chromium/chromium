@@ -32,6 +32,12 @@ LocalTestPolicyProvider::CreateIfAllowed(version_info::Channel channel) {
 
 LocalTestPolicyProvider::~LocalTestPolicyProvider() = default;
 
+void LocalTestPolicyProvider::LoadJsonPolicies(
+    const std::string& json_policies_string) {
+  loader_.SetPolicyListJson(json_policies_string);
+  RefreshPolicies();
+}
+
 void LocalTestPolicyProvider::RefreshPolicies() {
   PolicyBundle bundle = loader_.Load();
   first_policies_loaded_ = true;
