@@ -437,6 +437,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/authentication/cells:constants",

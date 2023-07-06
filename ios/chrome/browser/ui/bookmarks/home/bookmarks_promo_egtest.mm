@@ -10,6 +10,7 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -72,7 +73,16 @@ using chrome_test_util::SecondarySignInButton;
     // TODO(crbug.com/1455018): Re-enable the flag for non-legacy tests.
     config.features_disabled.push_back(
         bookmarks::kEnableBookmarksAccountStorage);
+  } else if ([self isRunningTest:@selector
+                   (testSyncPromoIfSyncToSigninDisabled)]) {
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  } else if ([self isRunningTest:@selector
+                   (testNoSyncPromoIfSyncToSigninEnabled)]) {
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
   }
+
   return config;
 }
 
@@ -414,13 +424,23 @@ using chrome_test_util::SecondarySignInButton;
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
-// Tests that the turn on sync promo is shown if the user is signed in only.
-- (void)testTurnOnSyncPromo {
+// Tests that the turn on sync promo is shown if the user is signed in only and
+// kReplaceSyncPromosWithSignInPromos is disabled.
+- (void)testSyncPromoIfSyncToSigninDisabled {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:NO];
   [BookmarkEarlGreyUI openBookmarks];
   [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
                         SigninPromoViewModeSyncWithPrimaryAccount];
+}
+
+// Tests that no sync promo is shown if the user is signed in only and
+// kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)testNoSyncPromoIfSyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:NO];
+  [BookmarkEarlGreyUI openBookmarks];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
 @end

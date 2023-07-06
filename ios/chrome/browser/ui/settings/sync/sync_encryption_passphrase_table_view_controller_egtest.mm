@@ -26,7 +26,6 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::MatchInWindowWithNumber;
@@ -113,43 +112,6 @@ NSString* const kPassphrase = @"hello";
 
   [SigninEarlGrey signOut];
   [SigninEarlGrey verifySignedOut];
-}
-
-// Tests entering sync passphrase from the advanced sync settings in the sign-in
-// dialog.
-- (void)testEnterSyncPassphraseInSignIn {
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
-  // Access advanced settings sign-in.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsSignInRowMatcher()];
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
-
-  // Scroll to bottom of Manage Sync Settings, if necessary.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityID(
-                                kManageSyncTableViewAccessibilityIdentifier),
-                            grey_sufficientlyVisible(), nil)]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  // Select Encryption item.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(ButtonWithAccessibilityLabelId(
-                                              IDS_IOS_MANAGE_SYNC_ENCRYPTION),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-
-  // Type and submit the sync passphrase.
-  [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
-
-  // Close the advanced sync settings and the sign-in dialog.
-  [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
-      performAction:grey_tap()];
-  [SigninEarlGreyUI tapSigninConfirmationDialog];
-
-  // Test the user is signed in.
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests Sync is on after opening settings from the Infobar and entering the

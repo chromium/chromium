@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "components/policy/policy_constants.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -49,6 +50,8 @@ using chrome_test_util::SettingsDoneButton;
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_disabled.push_back(kHideSettingsSyncPromo);
+  config.features_disabled.push_back(
+      syncer::kReplaceSyncPromosWithSignInPromos);
   return config;
 }
 

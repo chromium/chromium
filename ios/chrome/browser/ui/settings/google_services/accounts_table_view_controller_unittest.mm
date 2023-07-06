@@ -217,7 +217,11 @@ TEST_F(AccountsTableViewControllerTest, IgnoreMismatchWithAccountInfo) {
 
 // Tests that when eligible the account model holds the passphrase error and
 // clears the error when the error is resolved.
+// kReplaceSyncPromosWithSignInPromos is disabled.
 TEST_F(AccountsTableViewControllerTest, HoldPassphraseErrorWhenEligible) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
   const std::string email = "foo@gmail.com";
   const std::string gaia_id = "fooID";
 
@@ -250,7 +254,11 @@ TEST_F(AccountsTableViewControllerTest, HoldPassphraseErrorWhenEligible) {
 // Tests that the Account Storage error is removed from the account model when
 // the error is resolved. Triggers the model update by firing a Sync State
 // change.
+// kReplaceSyncPromosWithSignInPromos is disabled.
 TEST_F(AccountsTableViewControllerTest, ClearPassphraseErrorWhenResolved) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
   const std::string email = "foo@gmail.com";
   const std::string gaia_id = "fooID";
 
@@ -293,7 +301,11 @@ TEST_F(AccountsTableViewControllerTest, ClearPassphraseErrorWhenResolved) {
 
 // Tests that when ineligible the account model doesn't hold the Account Storage
 // error.
+// kReplaceSyncPromosWithSignInPromos is disabled.
 TEST_F(AccountsTableViewControllerTest, DontHoldPassphraseErrorWhenIneligible) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
   const std::string email = "foo@gmail.com";
   const std::string gaia_id = "fooID";
 
@@ -314,6 +326,42 @@ TEST_F(AccountsTableViewControllerTest, DontHoldPassphraseErrorWhenIneligible) {
   account.gaia = gaia_id;
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   SetSyncStateFeatureActive(account, test_sync_service());
+  test_sync_service()->SetPassphraseRequiredForPreferredDataTypes(true);
+
+  CreateController();
+  CheckController();
+
+  EXPECT_EQ(2, NumberOfSections());
+}
+
+// Tests that when kReplaceSyncPromosWithSignInPromos is enabled, no passphrase
+// error is exposed in the account table view (since it's exposed one level up).
+// kReplaceSyncPromosWithSignInPromos is enabled.
+TEST_F(AccountsTableViewControllerTest,
+       DontHoldPassphraseErrorWhenSyncToSigninEnabled) {
+  base::test::ScopedFeatureList features(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
+  const std::string email = "foo@gmail.com";
+  const std::string gaia_id = "fooID";
+
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity identityWithEmail:base::SysUTF8ToNSString(email)
+                                     gaiaID:base::SysUTF8ToNSString(gaia_id)
+                                       name:@"Fake Foo"];
+  fake_system_identity_manager()->AddIdentity(identity);
+
+  // Simulate a credential reload.
+  authentication_service()->SignIn(
+      identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  fake_system_identity_manager()->FireSystemIdentityReloaded();
+  base::RunLoop().RunUntilIdle();
+
+  CoreAccountInfo account;
+  account.email = email;
+  account.gaia = gaia_id;
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+  SetSyncStateTransportActive(account, test_sync_service());
   test_sync_service()->SetPassphraseRequiredForPreferredDataTypes(true);
 
   CreateController();
