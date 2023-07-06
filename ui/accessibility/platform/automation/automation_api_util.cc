@@ -223,10 +223,10 @@ AutomationEventTypeToAXEventTuple(const char* event_type_string) {
   }
 
   // Otherwise use the AX event type.
-  ax::mojom::Event ax_event = ax::mojom::Event::kNone;
-  MaybeParseAXEnum<ax::mojom::Event>(event_type_string, &ax_event);
+  auto ax_event = MaybeParseAXEnum<ax::mojom::Event>(event_type_string);
   return std::tuple<ax::mojom::Event, AXEventGenerator::Event>(
-      ax_event, AXEventGenerator::Event::NONE);
+      ax_event.value_or(ax::mojom::Event::kNone),
+      AXEventGenerator::Event::NONE);
 }
 
 AXPositionKind StringToAXPositionKind(const std::string& type) {

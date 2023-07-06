@@ -939,13 +939,11 @@ bool AccessibilityNodeInfoDataWrapper::HasImportantPropertyInternal() const {
 
 ax::mojom::Role AccessibilityNodeInfoDataWrapper::GetChromeRole() const {
   std::string chrome_role;
+  absl::optional<ax::mojom::Role> result;
   if (GetProperty(AXStringProperty::CHROME_ROLE, &chrome_role)) {
-    ax::mojom::Role result;
-    if (ui::MaybeParseAXEnum<ax::mojom::Role>(chrome_role.c_str(), &result)) {
-      return result;
-    }
+    result = ui::MaybeParseAXEnum<ax::mojom::Role>(chrome_role.c_str());
   }
-  return ax::mojom::Role::kNone;
+  return result.value_or(ax::mojom::Role::kNone);
 }
 
 }  // namespace ax::android
