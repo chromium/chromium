@@ -343,7 +343,8 @@ void WaylandFrameManager::ApplySurfaceConfigure(
       &WaylandFrameManager::FeedbackPresented,
       &WaylandFrameManager::FeedbackDiscarded};
 
-  surface->set_buffer_transform(config.transform);
+  surface->set_buffer_transform(
+      absl::get<gfx::OverlayTransform>(config.transform));
   surface->set_surface_buffer_scale(config.surface_scale_factor);
   surface->set_buffer_crop(config.crop_rect);
   surface->set_viewport_destination(config.bounds_rect.size());

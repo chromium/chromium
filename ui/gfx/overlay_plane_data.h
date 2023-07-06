@@ -6,11 +6,13 @@
 #define UI_GFX_OVERLAY_PLANE_DATA_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/overlay_priority_hint.h"
@@ -20,20 +22,21 @@ namespace gfx {
 
 struct GFX_EXPORT OverlayPlaneData {
   OverlayPlaneData();
-  OverlayPlaneData(int z_order,
-                   OverlayTransform plane_transform,
-                   const RectF& display_bounds,
-                   const RectF& crop_rect,
-                   bool enable_blend,
-                   const Rect& damage_rect,
-                   float opacity,
-                   OverlayPriorityHint priority_hint,
-                   const gfx::RRectF& rounded_corners,
-                   const gfx::ColorSpace& color_space,
-                   const absl::optional<HDRMetadata>& hdr_metadata,
-                   absl::optional<SkColor4f> color = absl::nullopt,
-                   bool is_solid_color = false,
-                   absl::optional<Rect> clip_rect = absl::nullopt);
+  OverlayPlaneData(
+      int z_order,
+      absl::variant<gfx::OverlayTransform, gfx::Transform> plane_transform,
+      const RectF& display_bounds,
+      const RectF& crop_rect,
+      bool enable_blend,
+      const Rect& damage_rect,
+      float opacity,
+      OverlayPriorityHint priority_hint,
+      const gfx::RRectF& rounded_corners,
+      const gfx::ColorSpace& color_space,
+      const absl::optional<HDRMetadata>& hdr_metadata,
+      absl::optional<SkColor4f> color = absl::nullopt,
+      bool is_solid_color = false,
+      absl::optional<Rect> clip_rect = absl::nullopt);
   ~OverlayPlaneData();
 
   OverlayPlaneData(const OverlayPlaneData& other);
@@ -43,7 +46,10 @@ struct GFX_EXPORT OverlayPlaneData {
   int z_order = 0;
 
   // Specifies how the buffer is to be transformed during composition.
-  OverlayTransform plane_transform = OverlayTransform::OVERLAY_TRANSFORM_NONE;
+  // Note: An |OverlayTransform| transforms the buffer within its bounds and
+  // does not affect |display_bounds|.
+  absl::variant<gfx::OverlayTransform, gfx::Transform> plane_transform =
+      OverlayTransform::OVERLAY_TRANSFORM_NONE;
 
   // Bounds within the display to position the image in pixel coordinates. They
   // are sent as floating point rect as some backends such as Wayland are able

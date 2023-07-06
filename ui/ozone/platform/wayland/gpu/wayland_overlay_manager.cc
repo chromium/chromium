@@ -95,8 +95,11 @@ bool WaylandOverlayManager::CanHandleCandidate(
                            kAssumedMaxDeviceScaleFactor) == 0)
     return false;
 
-  if (candidate.transform == gfx::OVERLAY_TRANSFORM_INVALID)
+  if (absl::holds_alternative<gfx::Transform>(candidate.transform) ||
+      absl::get<gfx::OverlayTransform>(candidate.transform) ==
+          gfx::OVERLAY_TRANSFORM_INVALID) {
     return false;
+  }
 
   if (candidate.background_color.has_value() &&
       !manager_gpu_->supports_surface_background_color()) {

@@ -259,9 +259,10 @@ void MAYBE_DrmOverlayValidatorTest::AddPlane(
 
   scoped_refptr<DrmFramebuffer> drm_framebuffer = CreateOverlayBuffer(
       GetFourCCFormatFromBufferFormat(params.format), params.buffer_size);
-  plane_list_.emplace_back(
-      std::move(drm_framebuffer), params.plane_z_order, params.transform,
-      gfx::ToNearestRect(params.display_rect), params.crop_rect, true, nullptr);
+  plane_list_.emplace_back(std::move(drm_framebuffer), params.plane_z_order,
+                           absl::get<gfx::OverlayTransform>(params.transform),
+                           gfx::ToNearestRect(params.display_rect),
+                           params.crop_rect, true, nullptr);
 }
 
 void MAYBE_DrmOverlayValidatorTest::TearDown() {

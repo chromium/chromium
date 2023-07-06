@@ -203,8 +203,8 @@ void FlatlandSurface::Present(
         overlay.pixmap.get(), /*is_primary_plane=*/false);
     const auto image_id = flatland_ids.image_id;
     const auto transform_id = flatland_ids.transform_id;
-    const auto overlay_plane_transform =
-        overlay.overlay_plane_data.plane_transform;
+    const auto overlay_plane_transform = absl::get<gfx::OverlayTransform>(
+        overlay.overlay_plane_data.plane_transform);
 
     if (overlay.gpu_fence) {
       acquire_fences.push_back(overlay.gpu_fence->GetGpuFenceHandle().Clone());

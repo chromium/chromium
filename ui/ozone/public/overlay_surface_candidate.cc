@@ -26,13 +26,21 @@ bool OverlaySurfaceCandidate::operator<(
   int rheight = param.buffer_size.height();
   gfx::Rect lrect = gfx::ToNearestRect(display_rect);
   gfx::Rect rrect = gfx::ToNearestRect(param.display_rect);
+  gfx::OverlayTransform ltransform =
+      absl::holds_alternative<gfx::OverlayTransform>(transform)
+          ? absl::get<gfx::OverlayTransform>(transform)
+          : gfx::OVERLAY_TRANSFORM_INVALID;
+  gfx::OverlayTransform rtransform =
+      absl::holds_alternative<gfx::OverlayTransform>(param.transform)
+          ? absl::get<gfx::OverlayTransform>(param.transform)
+          : gfx::OVERLAY_TRANSFORM_INVALID;
 
-  return std::tie(plane_z_order, format, lrect, lwidth, lheight, transform,
+  return std::tie(plane_z_order, format, lrect, lwidth, lheight, ltransform,
                   crop_rect, is_opaque, opacity, native_pixmap_unique_id,
                   color_space) <
          std::tie(param.plane_z_order, param.format, rrect, rwidth, rheight,
-                  param.transform, param.crop_rect, param.is_opaque,
-                  param.opacity, param.native_pixmap_unique_id, color_space);
+                  rtransform, param.crop_rect, param.is_opaque, param.opacity,
+                  param.native_pixmap_unique_id, color_space);
 }
 
 }  // namespace ui

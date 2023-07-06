@@ -10,7 +10,7 @@ OverlayPlaneData::OverlayPlaneData() = default;
 
 OverlayPlaneData::OverlayPlaneData(
     int z_order,
-    OverlayTransform plane_transform,
+    absl::variant<gfx::OverlayTransform, gfx::Transform> plane_transform,
     const RectF& display_bounds,
     const RectF& crop_rect,
     bool enable_blend,

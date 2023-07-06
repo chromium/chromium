@@ -57,8 +57,7 @@ void ConvertToOzoneOverlaySurface(
 void ConvertToOzoneOverlaySurface(
     const OverlayCandidate& overlay_candidate,
     ui::OverlaySurfaceCandidate* ozone_candidate) {
-  ozone_candidate->transform =
-      absl::get<gfx::OverlayTransform>(overlay_candidate.transform);
+  ozone_candidate->transform = overlay_candidate.transform;
   ozone_candidate->format = overlay_candidate.format;
   ozone_candidate->color_space = overlay_candidate.color_space;
   ozone_candidate->display_rect = overlay_candidate.display_rect;

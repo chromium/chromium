@@ -50,6 +50,8 @@ OzonePlatform::PlatformRuntimeProperties::SupportsSsdForTest
 OzonePlatform::PlatformProperties::PlatformProperties() = default;
 OzonePlatform::PlatformProperties::~PlatformProperties() = default;
 
+OzonePlatform::PlatformRuntimeProperties::PlatformRuntimeProperties() = default;
+
 OzonePlatform::OzonePlatform() {
   DCHECK(!g_instance) << "There should only be a single OzonePlatform.";
   g_instance = this;

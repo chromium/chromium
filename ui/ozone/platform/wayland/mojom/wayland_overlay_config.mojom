@@ -10,7 +10,13 @@ import "ui/gfx/mojom/gpu_fence_handle.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
 import "ui/gfx/mojom/overlay_priority_hint.mojom";
 import "ui/gfx/mojom/rrect_f.mojom";
+import "ui/gfx/mojom/transform.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
+
+union TransformUnion {
+  gfx.mojom.OverlayTransform overlay_transform;
+  gfx.mojom.Transform matrix_transform;
+};
 
 // This is not a mirror of ui::OverlayPlane, it only contains things that are
 // useful to ozone/wayland.
@@ -23,7 +29,7 @@ struct WaylandOverlayConfig {
   gfx.mojom.ColorSpace? color_space;
 
   // Specifies how the buffer is to be transformed during composition.
-  gfx.mojom.OverlayTransform transform;
+  TransformUnion transform;
 
   // A unique id for the buffer, which is used to identify imported wl_buffers
   // on the browser process.

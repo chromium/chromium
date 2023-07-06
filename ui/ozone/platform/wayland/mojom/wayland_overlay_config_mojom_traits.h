@@ -11,10 +11,32 @@
 #include "ui/gfx/mojom/overlay_priority_hint_mojom_traits.h"
 #include "ui/gfx/mojom/overlay_transform_mojom_traits.h"
 #include "ui/gfx/mojom/rrect_f_mojom_traits.h"
+#include "ui/gfx/mojom/transform_mojom_traits.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom-shared.h"
 
 namespace mojo {
+
+template <>
+struct UnionTraits<wl::mojom::TransformUnionDataView,
+                   absl::variant<gfx::OverlayTransform, gfx::Transform>> {
+  static wl::mojom::TransformUnionDataView::Tag GetTag(
+      const absl::variant<gfx::OverlayTransform, gfx::Transform>& transform);
+
+  static gfx::OverlayTransform overlay_transform(
+      const absl::variant<gfx::OverlayTransform, gfx::Transform>& transform) {
+    return absl::get<gfx::OverlayTransform>(transform);
+  }
+
+  static gfx::Transform matrix_transform(
+      const absl::variant<gfx::OverlayTransform, gfx::Transform>& transform) {
+    return absl::get<gfx::Transform>(transform);
+  }
+
+  static bool Read(wl::mojom::TransformUnionDataView data,
+                   absl::variant<gfx::OverlayTransform, gfx::Transform>* out);
+};
 
 template <>
 struct StructTraits<wl::mojom::WaylandOverlayConfigDataView,
@@ -28,7 +50,7 @@ struct StructTraits<wl::mojom::WaylandOverlayConfigDataView,
     return input.color_space;
   }
 
-  static const gfx::OverlayTransform& transform(
+  static const absl::variant<gfx::OverlayTransform, gfx::Transform>& transform(
       const wl::WaylandOverlayConfig& input) {
     return input.transform;
   }
