@@ -119,12 +119,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         ]),
       },
 
-      languageSettingsV2Update2Enabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
-        },
-      },
+      languageSettingsV2Update2Enabled_: Boolean,
 
       languageSettingsJapaneseEnabled_: {
         type: Boolean,
@@ -208,7 +203,8 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   // loadTimeData flags.
   private onDeviceGrammarCheckEnabled_: boolean;
-  private languageSettingsV2Update2Enabled_: boolean;
+  // TODO: b/263823772 - Inline this variable.
+  private languageSettingsV2Update2Enabled_ = true;
   private languageSettingsJapaneseEnabled_: boolean;
   private shouldShowLanguagePacksNotice_: boolean;
 

@@ -141,12 +141,7 @@ class OsSettingsLanguagesPageV2Element extends
         ]),
       },
 
-      languageSettingsV2Update2Enabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
-        },
-      },
+      languageSettingsV2Update2Enabled_: Boolean,
     };
   }
 
@@ -179,7 +174,8 @@ class OsSettingsLanguagesPageV2Element extends
   private isGuest_: boolean;
   private isSecondaryUser_: boolean;
   private primaryUserEmail_: string;
-  private languageSettingsV2Update2Enabled_: boolean;
+  // TODO: b/263823772 - Inline this variable.
+  private languageSettingsV2Update2Enabled_ = true;
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.

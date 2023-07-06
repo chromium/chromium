@@ -625,11 +625,6 @@ suite('languages page', () => {
     });
 
     test('when clicking on Manage Google Account language', async () => {
-      // This test requires Language Settings V2 Update 2 to be enabled.
-      languagesPage.languageSettingsV2Update2Enabled_ = true;
-      loadTimeData.overrideValues({enableLanguageSettingsV2Update2: true});
-      flush();
-
       // The below would normally create a new window using `window.open`, which
       // would change the focus from this test to the new window.
       // Prevent this from happening by overriding `window.open`.
@@ -642,32 +637,7 @@ suite('languages page', () => {
           LanguagesPageInteraction.OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE);
     });
 
-    test('when clicking on "learn more" about web languages', async () => {
-      // This test requires Update 2 to be disabled.
-      languagesPage.languageSettingsV2Update2Enabled_ = false;
-      loadTimeData.overrideValues({enableLanguageSettingsV2Update2: false});
-      flush();
-
-      const anchor =
-          languagesPage.shadowRoot.querySelector('#webLanguagesDescription')
-              .shadowRoot.querySelector('a');
-      // The below would normally create a new window, which would change the
-      // focus from this test to the new window.
-      // Prevent this from happening by adding an event listener on the anchor
-      // element which stops the default behaviour (of opening a new window).
-      anchor.addEventListener('click', (e) => e.preventDefault());
-      anchor.click();
-      assertEquals(
-          await metricsProxy.whenCalled('recordInteraction'),
-          LanguagesPageInteraction.OPEN_WEB_LANGUAGES_LEARN_MORE);
-    });
-
     test('when clicking on "learn more" about web languages U2', async () => {
-      // This test requires Update 2 to be enabled.
-      languagesPage.languageSettingsV2Update2Enabled_ = true;
-      loadTimeData.overrideValues({enableLanguageSettingsV2Update2: true});
-      flush();
-
       const anchor =
           languagesPage.shadowRoot.querySelector('#webLanguagesDescription')
               .shadowRoot.querySelector('a');

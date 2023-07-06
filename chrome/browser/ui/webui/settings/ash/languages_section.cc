@@ -530,8 +530,9 @@ LanguagesSection::LanguagesSection(Profile* profile,
 
   if (IsEmojiSuggestionAllowed()) {
     updater.AddSearchTags(GetSmartInputsSearchConcepts());
-    if (IsEmojiSuggestionAllowed())
+    if (IsEmojiSuggestionAllowed()) {
       updater.AddSearchTags(GetEmojiSuggestionSearchConcepts());
+    }
   }
   updater.AddSearchTags(GetAutoCorrectionSearchConcepts());
 }
@@ -572,7 +573,6 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddLanguagesPageStringsV2(html_source);
   AddInputPageStringsV2(html_source);
 
-  html_source->AddBoolean("enableLanguageSettingsV2Update2", true);
   html_source->AddBoolean(
       "onDeviceGrammarCheckEnabled",
       base::FeatureList::IsEnabled(features::kOnDeviceGrammarCheck));

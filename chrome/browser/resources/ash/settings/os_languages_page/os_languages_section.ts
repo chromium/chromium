@@ -82,8 +82,8 @@ class OsSettingsLanguagesSectionElement extends
       inputPageTitle_: {
         type: String,
         value(this: OsSettingsLanguagesSectionElement): string {
-          const isUpdate2 =
-              loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
+          // TODO: b/263823772 - Inline this variable.
+          const isUpdate2 = true;
           return this.i18n(isUpdate2 ? 'inputPageTitleV2' : 'inputPageTitle');
         },
       },
