@@ -34251,27 +34251,6 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="Hit, region matched."/>
 </enum>
 
-<enum name="EventHitTestValidity">
-  <int value="0" label="Valid, exact match."/>
-  <int value="1" label="Valid, region match."/>
-  <int value="2" label="Incorrect, exact match (rect query)."/>
-  <int value="3" label="Incorrect, exact match (point query)."/>
-  <int value="4" label="Incorrect, region match (rect query)."/>
-  <int value="5" label="Incorrect, region match (point query)."/>
-</enum>
-
-<enum name="EventHitTestValidityScore">
-  <int value="0" label="Nothing matched."/>
-  <int value="1" label="Over widget matched."/>
-  <int value="2" label="Scrollbar matched."/>
-  <int value="4" label="URL element matched."/>
-  <int value="8" label="Local point matched."/>
-  <int value="16" label="Point in inner frame matched."/>
-  <int value="32" label="Inner pseudo node matched."/>
-  <int value="64" label="Inner node matched."/>
-  <int value="128" label="Request type matched."/>
-</enum>
-
 <enum name="EventLatencyEventType">
   <int value="0" label="MousePressed"/>
   <int value="1" label="MouseReleased"/>

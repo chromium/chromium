@@ -123,28 +123,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.HitTestValidity" enum="EventHitTestValidity"
-    expires_after="M85">
-  <owner>dtapuska@chromium.org</owner>
-  <summary>
-    For hit tests that are validated, records whether it was correct or not, and
-    why.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
-<histogram name="Event.HitTestValidityScore" enum="EventHitTestValidityScore"
-    expires_after="M85">
-  <owner>dtapuska@chromium.org</owner>
-  <summary>
-    For hit tests that are invalid, records the score (a series of bits
-    indicating what was matched and what wasn't).
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
 <histogram name="Event.InputEventPrediction.Scroll.Frame{ScoreType}"
     units="pixels" expires_after="2024-03-13">
   <owner>flackr@chromium.org</owner>
