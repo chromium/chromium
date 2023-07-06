@@ -26,10 +26,25 @@ component("browser_context_helper") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  deps = [
+    ":browser_context_helper",
+    "//base",
+    "//content/public/browser",
+    "//content/test:test_support",
+  ]
+  sources = [
+    "fake_browser_context_helper_delegate.cc",
+    "fake_browser_context_helper_delegate.h",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   deps = [
     ":browser_context_helper",
+    ":test_support",
     "//base/test:test_support",
     "//components/account_id",
     "//components/user_manager",

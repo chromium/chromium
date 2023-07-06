@@ -4,8 +4,12 @@
 
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -16,64 +20,6 @@
 
 namespace ash {
 namespace {
-
-class FakeBrowserContextHelperDelegate : public BrowserContextHelper::Delegate {
- public:
-  FakeBrowserContextHelperDelegate() {
-    CHECK(user_data_dir_.CreateUniqueTempDir());
-  }
-
-  content::BrowserContext* CreateBrowserContext(const base::FilePath& path,
-                                                bool is_off_the_record) {
-    auto browser_context = std::make_unique<content::TestBrowserContext>(path);
-    browser_context->set_is_off_the_record(is_off_the_record);
-    auto* browser_context_ptr = browser_context.get();
-    browser_context_list_.push_back(std::move(browser_context));
-    return browser_context_ptr;
-  }
-
-  // BrowserContextHelper::Delegate overrides.
-  content::BrowserContext* GetBrowserContextByPath(
-      const base::FilePath& path) override {
-    for (auto& candidate : browser_context_list_) {
-      if (candidate->GetPath() == path && !candidate->IsOffTheRecord()) {
-        return candidate.get();
-      }
-    }
-    return nullptr;
-  }
-
-  content::BrowserContext* DeprecatedGetBrowserContext(
-      const base::FilePath& path) override {
-    auto* browser_context = GetBrowserContextByPath(path);
-    if (browser_context) {
-      return nullptr;
-    }
-
-    return CreateBrowserContext(path, /*is_off_the_record=*/false);
-  }
-
-  content::BrowserContext* GetOrCreatePrimaryOTRBrowserContext(
-      content::BrowserContext* browser_context) override {
-    const auto& path = browser_context->GetPath();
-    for (auto& candidate : browser_context_list_) {
-      if (candidate.get() != browser_context && candidate->GetPath() == path &&
-          candidate->IsOffTheRecord()) {
-        return candidate.get();
-      }
-    }
-    return CreateBrowserContext(path, /*is_off_the_record=*/true);
-  }
-
-  const base::FilePath* GetUserDataDir() override {
-    return &user_data_dir_.GetPath();
-  }
-
- private:
-  base::ScopedTempDir user_data_dir_;
-  std::vector<std::unique_ptr<content::TestBrowserContext>>
-      browser_context_list_;
-};
 
 class BrowserContextHelperTest : public testing::Test {
  public:
