@@ -19,6 +19,7 @@
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -29,6 +30,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/dns/mock_host_resolver.h"
 
 namespace extensions {
 
@@ -318,6 +320,8 @@ class EventsApiTest : public ExtensionApiTest {
  protected:
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
     EXPECT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
   }
 
@@ -455,6 +459,75 @@ IN_PROC_BROWSER_TEST_F(EventsApiTest, MAYBE_NewlyIntroducedListener) {
     // Expect tabs.onCreated to fire.
     EXPECT_TRUE(catcher.GetNextResult());
   }
+}
+
+// Tests that, if an extension registers multiple listeners for a filtered
+// event where the listeners overlap, but are not identical, each listener is
+// only triggered once for a given event.
+// TODO(https://crbug.com/373579): This test is currently (intentionally)
+// testing improper behavior and will be fixed as part of the linked bug.
+IN_PROC_BROWSER_TEST_F(
+    EventsApiTest,
+    MultipleFilteredListenersWithOverlappingFiltersShouldOnlyTriggerOnce) {
+  // Load an extension that registers two listeners for a webNavigation event
+  // (which supports filters). The first filter is for any event with a host
+  // that matches 'example' (such as 'example.com') and the second filter is
+  // for any that has a path that matches 'simple'. Thus, the URL
+  // http://example.com/simple.html matches both filters.
+  // Note that we use a page here (instead of a service worker) because we
+  // separately (and purely coincidentally) de-dupe messages to lazy contexts.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Events test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["webNavigation"]
+         })";
+  static constexpr char kPageHtml[] =
+      R"(<html><script src="page.js"></script></html>)";
+  static constexpr char kPageJs[] =
+      R"(self.receivedEvents = 0;
+         chrome.webNavigation.onCommitted.addListener(() => {
+           ++receivedEvents;
+         }, {url: [{hostContains: 'example'}]});
+         chrome.webNavigation.onCommitted.addListener(() => {
+           ++receivedEvents;
+         }, {url: [{pathContains: 'simple'}]});)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kPageJs);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to the extension page that registers the events.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("page.html")));
+
+  content::WebContents* extension_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // So far, no events should have been received.
+  EXPECT_EQ(0, content::EvalJs(extension_contents, "self.receivedEvents;"));
+
+  // Navigate to http://example.com/simple.html.
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // TODO(https://crbug.com/373579): This should be:
+  // EXPECT_EQ(2, content::EvalJs(extension_contents, "self.receivedEvents;"));
+  // because each listener should fire exactly once (we only visited one new
+  // page).
+  // However, currently we'll disptach the event to the same process twice
+  // (once for each listener), and each dispatch will match both listeners,
+  // resulting in each listener being triggered twice (for a total of four
+  // received events).
+  EXPECT_EQ(4, content::EvalJs(extension_contents, "self.receivedEvents;"));
 }
 
 class ChromeUpdatesEventsApiTest : public EventsApiTest,
