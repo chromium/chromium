@@ -271,16 +271,15 @@ std::vector<std::u16string> PrivacyHubNotification::GetAppsAccessingSensors(
         sensor_apps = delegate->GetAppsAccessingSensor(sensor);
       }
     }
-    // Copy de-duplicated app names.
-    std::sort(std::begin(sensor_apps), std::end(sensor_apps));
-    const auto unique_end =
-        std::unique(std::begin(sensor_apps), std::end(sensor_apps));
-    const auto elements_to_copy = std::min(
-        remaining_capacity, std::distance(std::begin(sensor_apps), unique_end));
-    std::copy(std::begin(sensor_apps),
-              std::next(std::begin(sensor_apps), elements_to_copy),
+    // Copy app names for the given sensor.
+    std::copy(std::begin(sensor_apps), std::end(sensor_apps),
               std::back_inserter(app_names));
   }
+
+  // De-duplicate app names.
+  std::sort(std::begin(app_names), std::end(app_names));
+  app_names.erase(std::unique(std::begin(app_names), std::end(app_names)),
+                  std::end(app_names));
 
   CHECK_LE(app_names.size(), number_of_apps);
   return app_names;
