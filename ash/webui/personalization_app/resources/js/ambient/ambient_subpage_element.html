@@ -28,6 +28,10 @@
   #toggleRowPlaceholder {
     margin: 0 8px;
   }
+  ambient-duration,
+  #durationPlaceholder {
+    margin-bottom: 13px;
+  }
   .ambient-toggle-label-placeholder {
     height: 20px;
     margin-bottom: 2px;
@@ -125,11 +129,15 @@
             </div>
           </div>
           <template is="dom-if" if="[[isScreenSaverDurationEnabled_]]">
-            <div id="durationPlaceholder" class="ambient-toggle-row">
-              <h3 class="ambient-subpage-element-title" aria-hidden="true">
-                $i18n{ambientModeDurationTitle}
-              </h3>
-              <div class="ambient-secondary-text-placeholder placeholder"></div>
+            <div id="durationPlaceholder">
+              <div class="ambient-toggle-row">
+                <h3 class="ambient-subpage-element-title" aria-hidden="true">
+                  $i18n{ambientModeDurationTitle}
+                </h3>
+                <div class="ambient-secondary-text-placeholder placeholder"></div>
+              </div>
+              <div class="ambient-secondary-text-placeholder placeholder duration-description">
+              </div>
             </div>
           </template>
           <div id="animationThemePlaceholder">

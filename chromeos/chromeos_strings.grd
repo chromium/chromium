@@ -2499,6 +2499,9 @@
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_FOREVER" desc="Label for the screen saver duration option forever.">
          forever
         </message>
+        <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_DESCRIPTION" desc="Label for the screen saver duration description.">
+         To conserve battery, screen saver works only while charging.
+        </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_TITLE" desc="Label for the radio button group of ambient mode topic source, where the screen contents come from.">
          Image source
         </message>
