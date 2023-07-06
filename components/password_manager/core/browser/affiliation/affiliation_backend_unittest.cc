@@ -320,7 +320,10 @@ class AffiliationBackendTest : public testing::TestWithParam<bool> {
     }
   }
 
-  void DestroyBackend() { backend_.reset(); }
+  void DestroyBackend() {
+    mock_fetch_throttler_ = nullptr;
+    backend_.reset();
+  }
 
   void AdvanceTime(base::TimeDelta delta) {
     backend_task_runner_->FastForwardBy(delta);
@@ -430,8 +433,7 @@ class AffiliationBackendTest : public testing::TestWithParam<bool> {
   MockAffiliationConsumer mock_consumer_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   // Owned by |backend_|.
-  raw_ptr<MockAffiliationFetchThrottler, DanglingUntriaged>
-      mock_fetch_throttler_ = nullptr;
+  raw_ptr<MockAffiliationFetchThrottler> mock_fetch_throttler_ = nullptr;
 };
 
 TEST_P(AffiliationBackendTest, OnDemandRequestSucceedsWithFetch) {
