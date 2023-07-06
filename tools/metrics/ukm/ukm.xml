@@ -3975,6 +3975,29 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Blink.ContentManagementSystem.Versions" singular="True">
+  <owner>felixarntz@google.com</owner>
+  <owner>nrosenthal@chromium.org</owner>
+  <summary>
+    Metrics stating the detected major+minor version of known content management
+    systems when detected. This event is recorded when the page is loaded. For
+    interoperability with the framework detection above, this reports each
+    content management system individually instead of a single number. The
+    version numbers here are a bit mask: 0xMMmm (Major+minor), e.g. version 16.3
+    would be 0x1003
+  </summary>
+  <metric name="DrupalVersion">
+    <summary>
+      A bitmask (0xMMmm) representing the Drupal version
+    </summary>
+  </metric>
+  <metric name="WordPressVersion">
+    <summary>
+      A bitmask (0xMMmm) representing the WordPress version
+    </summary>
+  </metric>
+</event>
+
 <event name="Blink.ContextMenu.ImageSelection">
   <obsolete>
     No longer recorded after August 2022 launch of the feature.
@@ -4340,11 +4363,6 @@ be describing additional metrics about the same event.
       A bitmask (0xMMmm) representing the Angular version
     </summary>
   </metric>
-  <metric name="DrupalVersion">
-    <summary>
-      A bitmask (0xMMmm) representing the Drupal version
-    </summary>
-  </metric>
   <metric name="NextJSVersion">
     <summary>
       A bitmask (0xMMmm) representing the NextJS version
@@ -4358,11 +4376,6 @@ be describing additional metrics about the same event.
   <metric name="VueVersion">
     <summary>
       A bitmask (0xMMmm) representing the Vue version
-    </summary>
-  </metric>
-  <metric name="WordPressVersion">
-    <summary>
-      A bitmask (0xMMmm) representing the WordPress version
     </summary>
   </metric>
 </event>
@@ -7335,6 +7348,50 @@ be describing additional metrics about the same event.
   <metric name="IsOffline" enum="Boolean">
     <summary>
       Whether the browser was offline when the content was opened.
+    </summary>
+  </metric>
+</event>
+
+<event name="ContentManagementSystemPageLoad" singular="True">
+  <owner>felixarntz@google.com</owner>
+  <owner>npm@chromium.org</owner>
+  <summary>
+    Metrics stating whether the main frame of a page uses certain content
+    management systems. This event is recorded when the page is going to be
+    unloaded or when the app enters the background on Android. The content
+    management system detection is done when the document is loaded (similar to
+    when load event is fired). If a CMS is used after this then it would not be
+    detected. For interoperability with the JavaScript framework detection
+    above, this reports each CMS individually instead of a single enum.
+  </summary>
+  <metric name="DrupalPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Drupal CMS.
+    </summary>
+  </metric>
+  <metric name="JoomlaPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Joomloa CMS.
+    </summary>
+  </metric>
+  <metric name="ShopifyPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Shopify CMS.
+    </summary>
+  </metric>
+  <metric name="SquarespacePageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Squarespace CMS.
+    </summary>
+  </metric>
+  <metric name="WixPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Wix CMS.
+    </summary>
+  </metric>
+  <metric name="WordPressPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the WordPress CMS.
     </summary>
   </metric>
 </event>
@@ -12308,20 +12365,10 @@ be describing additional metrics about the same event.
       framework.
     </summary>
   </metric>
-  <metric name="DrupalPageLoad" enum="Boolean">
-    <summary>
-      True if the page loaded in the main frame uses the Drupal CMS.
-    </summary>
-  </metric>
   <metric name="GatsbyPageLoad" enum="Boolean">
     <summary>
       True if the page loaded in the main frame uses the Gatsby JavaScript
       framework.
-    </summary>
-  </metric>
-  <metric name="JoomlaPageLoad" enum="Boolean">
-    <summary>
-      True if the page loaded in the main frame uses the Joomloa CMS.
     </summary>
   </metric>
   <metric name="NextJSPageLoad" enum="Boolean">
@@ -12354,16 +12401,6 @@ be describing additional metrics about the same event.
       framework.
     </summary>
   </metric>
-  <metric name="ShopifyPageLoad" enum="Boolean">
-    <summary>
-      True if the page loaded in the main frame uses the Shopify CMS.
-    </summary>
-  </metric>
-  <metric name="SquarespacePageLoad" enum="Boolean">
-    <summary>
-      True if the page loaded in the main frame uses the Squarespace CMS.
-    </summary>
-  </metric>
   <metric name="SveltePageLoad" enum="Boolean">
     <summary>
       True if the page loaded in the main frame uses the Svelte JavaScript
@@ -12380,16 +12417,6 @@ be describing additional metrics about the same event.
     <summary>
       True if the page loaded in the main frame uses the VuePress JavaScript
       framework.
-    </summary>
-  </metric>
-  <metric name="WixPageLoad" enum="Boolean">
-    <summary>
-      True if the page loaded in the main frame uses the Wix CMS.
-    </summary>
-  </metric>
-  <metric name="WordPressPageLoad" enum="Boolean">
-    <summary>
-      True if the page loaded in the main frame uses the WordPress CMS.
     </summary>
   </metric>
 </event>
