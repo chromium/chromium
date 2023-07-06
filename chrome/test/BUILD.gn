@@ -1101,6 +1101,7 @@ if (is_android) {
       "//components/safe_browsing/content/renderer/phishing_classifier:phishing_classifier",
       "//components/safe_browsing/core/common/fbs:client_model",
       "//components/safe_browsing/core/common/proto:client_model_proto",
+      "//components/safe_browsing/core/common/proto:csd_proto",
       "//components/segmentation_platform/public:public",
       "//components/segmentation_platform/public:test_support",
       "//components/site_engagement/content:content",
@@ -8775,6 +8776,7 @@ test("unit_tests") {
       "//components/safe_browsing/content/common:file_type_policies",
       "//components/safe_browsing/content/common:file_type_policies_test_support",
       "//components/safe_browsing/core/browser:token_fetcher",
+      "//components/safe_browsing/core/common/proto:csd_proto",
     ]
   }
 
