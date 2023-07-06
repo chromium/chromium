@@ -74,6 +74,7 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
@@ -92,6 +93,10 @@ const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("Conversions");
 
 constexpr int64_t kUnsetRecordId = -1;
+
+const base::FeatureParam<bool> kSourceDeactivationAfterFiltering{
+    &blink::features::kConversionMeasurement,
+    "source_deactivation_after_filtering", false};
 
 void RecordInitializationStatus(
     const AttributionStorageSql::InitStatus status) {
@@ -1202,6 +1207,23 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
         AggregatableResult::kNoMatchingSourceFilterData);
   }
 
+  const bool deactivate_after_filtering =
+      kSourceDeactivationAfterFiltering.Get();
+
+  if (deactivate_after_filtering) {
+    // Delete all unattributed sources.
+    if (!DeleteSources(source_ids_to_delete)) {
+      return assemble_report_result(EventLevelResult::kInternalError,
+                                    AggregatableResult::kInternalError);
+    }
+
+    // Deactivate all attributed sources not used.
+    if (!DeactivateSources(source_ids_to_deactivate)) {
+      return assemble_report_result(EventLevelResult::kInternalError,
+                                    AggregatableResult::kInternalError);
+    }
+  }
+
   absl::optional<uint64_t> dedup_key;
   if (!event_level_status.has_value()) {
     if (EventLevelResult create_event_level_status =
@@ -1330,16 +1352,18 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                   store_aggregatable_status);
   }
 
-  // Delete all unattributed sources.
-  if (!DeleteSources(source_ids_to_delete)) {
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
-  }
+  if (!deactivate_after_filtering) {
+    // Delete all unattributed sources.
+    if (!DeleteSources(source_ids_to_delete)) {
+      return assemble_report_result(EventLevelResult::kInternalError,
+                                    AggregatableResult::kInternalError);
+    }
 
-  // Deactivate all attributed sources.
-  if (!DeactivateSources(source_ids_to_deactivate)) {
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
+    // Deactivate all attributed sources not used.
+    if (!DeactivateSources(source_ids_to_deactivate)) {
+      return assemble_report_result(EventLevelResult::kInternalError,
+                                    AggregatableResult::kInternalError);
+    }
   }
 
   // Based on the deletion logic here and the fact that we delete sources

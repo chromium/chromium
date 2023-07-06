@@ -56,6 +56,7 @@
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -1206,6 +1207,63 @@ TEST_F(AttributionStorageTest,
               ElementsAre(AggregatableAttributionDataIs(
                   AggregatableHistogramContributionsAre(
                       DefaultAggregatableHistogramContributions()))));
+}
+
+TEST_F(AttributionStorageTest,
+       AttributeFalseImpression_OtherSourceDeactivated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kConversionMeasurement,
+      {{"source_deactivation_after_filtering", "true"}});
+
+  storage()->StoreSource(SourceBuilder().SetSourceEventId(7).Build());
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  const base::Time fake_report_time = base::Time::Now() + kReportDelay;
+  const base::Time fake_trigger_time = fake_report_time - base::Microseconds(1);
+
+  delegate()->set_randomized_response(
+      std::vector<AttributionStorageDelegate::FakeReport>{
+          {.trigger_data = 7,
+           .trigger_time = fake_trigger_time,
+           .report_time = fake_report_time}});
+  StoreSourceResult result =
+      storage()->StoreSource(SourceBuilder().SetSourceEventId(5).Build());
+  EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
+  delegate()->set_randomized_response(absl::nullopt);
+
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2u));
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kFalselyAttributedSource,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+
+  EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(SourceEventIdIs(5u)));
+}
+
+TEST_F(AttributionStorageTest,
+       AttributeFalseImpression_OtherSourceStillActive) {
+  storage()->StoreSource(SourceBuilder().SetSourceEventId(7).Build());
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  const base::Time fake_report_time = base::Time::Now() + kReportDelay;
+  const base::Time fake_trigger_time = fake_report_time - base::Microseconds(1);
+
+  delegate()->set_randomized_response(
+      std::vector<AttributionStorageDelegate::FakeReport>{
+          {.trigger_data = 7,
+           .trigger_time = fake_trigger_time,
+           .report_time = fake_report_time}});
+  StoreSourceResult result =
+      storage()->StoreSource(SourceBuilder().SetSourceEventId(5).Build());
+  EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
+  delegate()->set_randomized_response(absl::nullopt);
+
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2u));
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kFalselyAttributedSource,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2u));
 }
 
 TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsChanged) {
