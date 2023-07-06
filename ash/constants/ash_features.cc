@@ -2186,6 +2186,11 @@ BASE_FEATURE(kShimlessRMAComplianceCheck,
              "ShimlessRMAComplianceCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables 3p diagnostics in the Shimless RMA flow.
+BASE_FEATURE(kShimlessRMA3pDiagnostics,
+             "ShimlessRMA3pDiagnostics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the jelly colors will be used in the shortcut customization app.
 // Requires jelly-colors flag to also be enabled.
 BASE_FEATURE(kShortcutCustomizationJelly,
@@ -3403,7 +3408,6 @@ bool IsOobeLazyLoadingEnabled() {
   return base::FeatureList::IsEnabled(kOobeLazyLoading);
 }
 
-
 bool IsOobeQuickStartEnabled() {
   return base::FeatureList::IsEnabled(kOobeQuickStart);
 }
@@ -3661,6 +3665,10 @@ bool IsShimlessRMADiagnosticPageEnabled() {
 
 bool IsShimlessRMAComplianceCheckEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMAComplianceCheck);
+}
+
+bool IsShimlessRMA3pDiagnosticsEnabled() {
+  return base::FeatureList::IsEnabled(kShimlessRMA3pDiagnostics);
 }
 
 bool IsSmdsSupportEnabled() {
