@@ -36,6 +36,10 @@ static_library("redaction_tool") {
 
 source_set("unit_tests") {
   testonly = true
+  data = [
+    "test_data/test_logs.txt",
+    "test_data/test_logs_redacted.txt",
+  ]
   sources = [
     "inprocess_metrics_tester.cc",
     "inprocess_metrics_tester.h",

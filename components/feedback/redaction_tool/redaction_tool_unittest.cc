@@ -8,7 +8,10 @@
 #include <set>
 #include <utility>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/redaction_tool/metrics_tester.h"
@@ -920,7 +923,32 @@ TEST_F(RedactionToolTest, RedactAndroidAppStoragePaths) {
       "key=value exe=/data/app/pack.age1/b_ key=value\n";
   EXPECT_EQ(kDuOutputRedacted, RedactAndroidAppStoragePaths(kDuOutput));
 }
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_IOS)
+// TODO(xiangdongkong): Make the test work on IOS builds. Current issue: the
+// test files do not exist.
+//
+// Redact the text in the input file "test_data/test_logs.txt".
+// The expected output is from "test_data/test_logs_redacted.txt".
+TEST_F(RedactionToolTest, RedactTextFileContent) {
+  base::FilePath base_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path);
+  base_path = base_path.AppendASCII("components/feedback/redaction_tool")
+                  .AppendASCII("test_data");
+
+  std::string text_to_be_redacted;
+  std::string text_redacted;
+  ASSERT_TRUE(base::ReadFileToString(base_path.AppendASCII("test_logs.txt"),
+                                     &text_to_be_redacted));
+  ASSERT_TRUE(base::ReadFileToString(
+      base_path.AppendASCII("test_logs_redacted.txt"), &text_redacted));
+
+  EXPECT_EQ(text_redacted, redactor_.Redact(text_to_be_redacted));
+}
+
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(RedactionToolTest, RedactBlockDevices) {
   // Test cases in the form {input, output}.
