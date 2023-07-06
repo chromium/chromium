@@ -1316,6 +1316,10 @@ void CaptionBubble::UpdateLiveTranslateLabelStyle(
 }
 
 void CaptionBubble::UpdateLanguageLabelText() {
+  if (!base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    return;
+  }
+
   language_label_offsets_.clear();
 
   if (profile_prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
