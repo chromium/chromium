@@ -1976,12 +1976,20 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     bool wraps_video_frame_texture = false;
     gpu::Mailbox mailbox;
 
-    // `texture_target` is set only when the image backing the frame is
-    // compatible with GL.
-    bool can_wrap_texture = video_frame->NumTextures() == 1 &&
-                            video_frame->shared_image_format_type() ==
-                                SharedImageFormatType::kLegacy &&
-                            video_frame->mailbox_holder(0).texture_target != 0;
+    // Wrapping the video frame into a GL texture is possible iff:
+    // * The frame has only a single texture that represents the whole image as
+    //   a single plane (i.e., per-plane sampling of a multiplanar image is not
+    //   being used)
+    // * The image backing the frame is compatible with GL (possible to detect
+    //   via checking `texture_target`, which will be set only if this is the
+    //   case)
+    bool can_wrap_texture =
+        video_frame->NumTextures() == 1 &&
+        (video_frame->shared_image_format_type() ==
+             SharedImageFormatType::kLegacy ||
+         video_frame->shared_image_format_type() ==
+             SharedImageFormatType::kSharedImageFormatExternalSampler) &&
+        video_frame->mailbox_holder(0).texture_target != 0;
 
     if (allow_wrap_texture && can_wrap_texture) {
       cache_.emplace(video_frame->unique_id());
