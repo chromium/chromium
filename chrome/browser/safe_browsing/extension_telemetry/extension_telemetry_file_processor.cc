@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "crypto/sha2.h"
@@ -70,8 +71,8 @@ void RecordValidExtension(bool valid) {
 
 struct ExtensionTelemetryFileProcessor::FileExtensionsComparator {
   bool operator()(const base::FilePath& a, const base::FilePath& b) const {
-    return kFileTypePriorityMap.at(a.Extension()) >=
-           kFileTypePriorityMap.at(b.Extension());
+    return kFileTypePriorityMap.at(base::ToLowerASCII(a.Extension())) >=
+           kFileTypePriorityMap.at(base::ToLowerASCII(b.Extension()));
   }
 };
 
