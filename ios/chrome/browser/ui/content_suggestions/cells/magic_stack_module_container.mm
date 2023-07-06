@@ -35,7 +35,7 @@ const CGFloat kContentBottomInset = 24.0f;
 const CGFloat kReducedContentBottomInset = 10.0f;
 
 // Vertical spacing between the content views.
-const float kContentVerticalSpacing = 20.0f;
+const CGFloat kContentVerticalSpacing = 16.0f;
 
 // The corner radius of this container.
 const float kCornerRadius = 24;
