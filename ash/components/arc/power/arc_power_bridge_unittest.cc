@@ -12,6 +12,8 @@
 #include "ash/components/arc/test/fake_power_instance.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/patchpanel/fake_patchpanel_client.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
@@ -69,6 +71,7 @@ class ArcPowerBridgeTest : public testing::Test {
 
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
+    ash::PatchPanelClient::InitializeFake();
     power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
 
     wake_lock_provider_ = std::make_unique<device::TestWakeLockProvider>();
@@ -88,6 +91,7 @@ class ArcPowerBridgeTest : public testing::Test {
     DestroyPowerInstance();
     power_bridge_.reset();
     chromeos::PowerManagerClient::Shutdown();
+    ash::PatchPanelClient::Shutdown();
   }
 
  protected:
@@ -188,12 +192,24 @@ TEST_F(ArcPowerBridgeTest, SetInteractive) {
   power_bridge()->OnPowerStateChanged(chromeos::DISPLAY_POWER_ALL_OFF);
   EXPECT_FALSE(power_instance()->interactive());
 
+  int cnt1 =
+      ash::FakePatchPanelClient::Get()->GetAndroidInteractiveStateNotifyCount();
   power_bridge()->OnPowerStateChanged(chromeos::DISPLAY_POWER_ALL_ON);
   EXPECT_TRUE(power_instance()->interactive());
+  int cnt2 =
+      ash::FakePatchPanelClient::Get()->GetAndroidInteractiveStateNotifyCount();
+  // NotifyAndroidInteractiveState is expected to be called when ARC interactive
+  // state changes.
+  EXPECT_EQ(1, cnt2 - cnt1);
 
   // We shouldn't crash if the instance isn't ready.
   DestroyPowerInstance();
   power_bridge()->OnPowerStateChanged(chromeos::DISPLAY_POWER_ALL_OFF);
+  int cnt3 =
+      ash::FakePatchPanelClient::Get()->GetAndroidInteractiveStateNotifyCount();
+  // NotifyAndroidInteractiveState is not supposed to be called when power
+  // instance is not ready.
+  EXPECT_EQ(cnt2, cnt3);
 }
 
 TEST_F(ArcPowerBridgeTest, ScreenBrightness) {

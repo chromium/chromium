@@ -49,6 +49,9 @@ class COMPONENT_EXPORT(PATCHPANEL) PatchPanelClient
   // patchpanel.
   virtual void GetDevices(GetDevicesCallback callback) = 0;
 
+  // Called when power status of device is changed.
+  virtual void NotifyAndroidInteractiveState(bool interactive) = 0;
+
   // Adds an observer.
   virtual void AddObserver(Observer* observer) = 0;
 

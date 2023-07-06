@@ -57,6 +57,24 @@ class PatchPanelClientImpl : public PatchPanelClient {
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void NotifyAndroidInteractiveState(bool interactive) override {
+    dbus::MethodCall method_call(
+        patchpanel::kPatchPanelInterface,
+        patchpanel::kNotifyAndroidInteractiveStateMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    patchpanel::NotifyAndroidInteractiveStateRequest request;
+    request.set_interactive(interactive);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode NotifyAndroidInteractiveState proto";
+      return;
+    }
+
+    patchpanel_proxy_->CallMethod(&method_call,
+                                  dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                  base::DoNothing());
+  }
+
   void Init(dbus::Bus* bus) override {
     patchpanel_proxy_ = bus->GetObjectProxy(
         patchpanel::kPatchPanelServiceName,
