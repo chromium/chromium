@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -1254,6 +1255,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   EXPECT_EQ(0u, notification_count_);
 
   // Not enough space without going through syncing phase.
+  EXPECT_FALSE(progress.emptied_queue);
   progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
@@ -1291,11 +1293,13 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
 
   // Get the strings for the displayed notification.
   const std::string notification_id = "drive-bulk-pinning-error";
-  Strings strings = bridge_->GetStrings(notification_id);
-  EXPECT_EQ(strings.title, u"Couldn’t finish setting up file sync");
-  EXPECT_EQ(strings.message,
-            u"There isn’t enough storage space to sync all of your files");
-  EXPECT_THAT(strings.buttons, ElementsAre(u"Settings"));
+  {
+    const Strings strings = bridge_->GetStrings(notification_id);
+    EXPECT_EQ(strings.title, u"Couldn’t finish setting up file sync");
+    EXPECT_EQ(strings.message,
+              u"There isn’t enough storage space to sync all of your files");
+    EXPECT_THAT(strings.buttons, ElementsAre(u"Settings"));
+  }
 
   // Click the notification body.
   bridge_->ClickNotification(notification_id);
@@ -1320,8 +1324,9 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
 
-  // Syncing.
+  // Back to syncing stage. Pretend that everything has been synced.
   progress.stage = BULK_PIN_STAGE_SYNCING;
+  progress.emptied_queue = true;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
             List().Append(progress.ToValue())));
@@ -1344,6 +1349,15 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(1u, notification_count_);
 
+  // Get the strings for the displayed notification.
+  {
+    const Strings strings = bridge_->GetStrings(notification_id);
+    EXPECT_EQ(strings.title, u"File sync turned off");
+    EXPECT_EQ(strings.message,
+              u"There isn’t enough storage space to continue syncing files");
+    EXPECT_THAT(strings.buttons, ElementsAre(u"Settings"));
+  }
+
   // Click the notification button #0.
   bridge_->ClickButton(notification_id, 0);
 
@@ -1353,6 +1367,50 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
   EXPECT_EQ(1, notification_manager_->drive_settings_open_count_);
+  notification_manager_->drive_settings_open_count_ = 0;
+
+  // Back to syncing stage.
+  progress.stage = BULK_PIN_STAGE_SYNCING;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be no notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
+  // Error duing syncing phase.
+  progress.stage = BULK_PIN_STAGE_CANNOT_GET_FREE_SPACE;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be one notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(1u, notification_count_);
+
+  // Get the strings for the displayed notification.
+  {
+    const Strings strings = bridge_->GetStrings(notification_id);
+    EXPECT_EQ(strings.title, u"File sync turned off");
+    EXPECT_EQ(strings.message, u"Something went wrong.");
+    EXPECT_THAT(strings.buttons, ElementsAre(u"Settings"));
+  }
+
+  // Click the notification button #0.
+  bridge_->ClickButton(notification_id, 0);
+
+  // The notification should have been closed.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+  EXPECT_EQ(1, notification_manager_->drive_settings_open_count_);
+  notification_manager_->drive_settings_open_count_ = 0;
 }
 
 // Tests all the various error notifications.

@@ -1815,8 +1815,14 @@
   <message name="IDS_FILE_BROWSER_DRIVE_SYNC_ERROR_TITLE" desc="Title of system notification displayed when an error occurred while syncing Google Drive files">
     Couldn’t finish setting up file sync
   </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_SYNC_TURNED_OFF_TITLE" desc="Title of system notification displayed when an error occurred while syncing Google Drive files">
+    File sync turned off
+  </message>
   <message name="IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE_NOTIFICATION" desc="The text displayed by the system notification when the bulk pinning of Google Drive items stopped due to insufficient space">
     There isn’t enough storage space to sync all of your files
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE_NOTIFICATION_2" desc="The text displayed by the system notification when the bulk pinning of Google Drive items stopped due to insufficient space">
+    There isn’t enough storage space to continue syncing files
   </message>
   <message name="IDS_FILE_BROWSER_DRIVE_DATA_DIR_MISSING_TITLE" desc="Title of the system notification displayed when the Google Drive cache file were removed while the user was logged out">
     Your offline files had to be removed
