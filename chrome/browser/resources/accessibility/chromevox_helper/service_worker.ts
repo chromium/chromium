@@ -18,7 +18,8 @@ async function main() {
   if (initialized && INITIALIZED_KEY in initialized) {
     return;
   }
-  chrome.storage.session.set({INITIALIZED_KEY: true});
+  const storageUpdate = {[INITIALIZED_KEY]: true};
+  chrome.storage.session.set(storageUpdate);
 
   // Inject into already-active tabs.
   let matches = [];
