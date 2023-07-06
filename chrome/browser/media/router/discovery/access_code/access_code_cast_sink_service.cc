@@ -34,6 +34,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_lacros.h"
+#include "chromeos/lacros/crosapi_pref_observer.h"
 #endif
 
 namespace media_router {
@@ -138,6 +139,12 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
       prefs::kAccessCodeCastEnabled,
       base::BindRepeating(&AccessCodeCastSinkService::OnEnabledPrefChange,
                           base::Unretained(this)));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  user_prefs_registrar_->Add(
+      prefs::kAccessCodeCastDevices,
+      base::BindRepeating(&AccessCodeCastSinkService::OnDevicesPrefChange,
+                          base::Unretained(this)));
+#endif
 }
 
 AccessCodeCastSinkService::AccessCodeCastSinkService(Profile* profile)
@@ -584,6 +591,19 @@ void AccessCodeCastSinkService::OnStoredDevicesValidated(
   InitExpirationTimers(validated_devices);
 }
 
+void AccessCodeCastSinkService::OnSyncedDevicesValidated(
+    const std::vector<MediaSinkInternal>& validated_sinks) {
+  for (auto sink : validated_sinks) {
+    AddSinkToMediaRouter(sink, base::DoNothing());
+    // This function is called after a new sink is stored in the prefs service.
+    // In that case, we don't need to set the expiration timer again.
+    auto existing_timer = current_session_expiration_timers_.find(sink.id());
+    if (existing_timer == current_session_expiration_timers_.end()) {
+      SetExpirationTimer(sink.id());
+    }
+  }
+}
+
 void AccessCodeCastSinkService::FetchAndValidateStoredDevices(
     base::OnceCallback<void(const std::vector<MediaSinkInternal>&)>
         on_device_validated_callback) {
@@ -631,11 +651,10 @@ void AccessCodeCastSinkService::ValidateStoredDevices(
         ParseValueDictIntoMediaSinkInternal(*dict_value);
     if (!media_sink.has_value()) {
       LogWarning(
-          "The Media Sink id " + sink_id_string +
-              " is missing from one or more of the pref "
-              "services. Attempting to remove all sink_id references right "
-              "now.",
-          "");
+          "The media sink is missing from one or more of the pref "
+          "services. Attempting to remove all sink_id references right "
+          "now.",
+          sink_id_string);
       invalid_sinks.push_back(sink_id_string);
       continue;
     }
@@ -658,13 +677,6 @@ void AccessCodeCastSinkService::InitExpirationTimers(
 
 void AccessCodeCastSinkService::SetExpirationTimer(
     const MediaSink::Id& sink_id) {
-  // Either retrieve collection or create it if it doesn't exist before an
-  // operation can occur.
-  auto existing_timer = current_session_expiration_timers_.find(sink_id);
-  if (existing_timer != current_session_expiration_timers_.end()) {
-    // We must first stop the timer before resetting it.
-    existing_timer->second->Stop();
-  }
   CalculateDurationTillExpiration(
       sink_id, base::BindOnce(&AccessCodeCastSinkService::DoSetExpirationTimer,
                               GetWeakPtr(), sink_id));
@@ -673,6 +685,14 @@ void AccessCodeCastSinkService::SetExpirationTimer(
 void AccessCodeCastSinkService::DoSetExpirationTimer(
     const MediaSink::Id& sink_id,
     base::TimeDelta time_till_expiration) {
+  // Either retrieve collection or create it if it doesn't exist before an
+  // operation can occur.
+  auto existing_timer = current_session_expiration_timers_.find(sink_id);
+  if (existing_timer != current_session_expiration_timers_.end()) {
+    // We must first stop the timer before resetting it.
+    existing_timer->second->Stop();
+  }
+
   auto expiration_timer = std::make_unique<base::OneShotTimer>();
   // Make sure we include a delay in the case of instant expiration to ensure
   // the sink is not removed before the route is created.
@@ -751,8 +771,7 @@ void AccessCodeCastSinkService::OnExpiration(const MediaSink::Id& sink_id) {
   if (route.has_value() && route.value().is_local()) {
     LogInfo("The sink id: " + sink_id +
                 " still has a local route open. Wait to expire it until the "
-                "route has "
-                "ended.",
+                "route has ended.",
             sink_id);
     return;
   }
@@ -761,7 +780,12 @@ void AccessCodeCastSinkService::OnExpiration(const MediaSink::Id& sink_id) {
 }
 
 void AccessCodeCastSinkService::ExpireSink(const MediaSink::Id& sink_id) {
-  RemoveSinkIdFromAllEntries(sink_id);
+  // There is no need to remove sinks from the prefs service from the Lacros
+  // side if Lacros is using prefs stored in Ash.
+  if (!IsAccessCodeCastLacrosSyncEnabled()) {
+    RemoveSinkIdFromAllEntries(sink_id);
+  }
+
   // Must find the sink from media router for removal since it has more total
   // information.
   cast_media_sink_service_impl_->task_runner()->PostTaskAndReplyWithResult(
@@ -803,13 +827,18 @@ void AccessCodeCastSinkService::StoreSinkInPrefs(
         sink->id());
     return;
   }
-  // `on_sink_stored_callback` will be invoked after `barrier_callback` is
-  // invoked twice, after `UpdateDevicesDict()` and
-  // `UpdateDeviceAddedTimeDict()` have finished.
-  auto barrier_callback =
-      base::BarrierClosure(2, std::move(on_sink_stored_callback));
-  pref_updater_->UpdateDevicesDict(*sink, barrier_callback);
-  pref_updater_->UpdateDeviceAddedTimeDict(sink->id(), barrier_callback);
+  // Enforce the ordering of updating the pref service so that when Ash/Lacros
+  // gets notified of changes in the devices dict, it's guaranteed that the
+  // device added time dict has been updated and can be used to set proper
+  // expiration timers.
+  pref_updater_->UpdateDeviceAddedTimeDict(
+      sink->id(),
+      base::BindOnce(
+          [](AccessCodeCastPrefUpdater* pref_updater,
+             const MediaSinkInternal* sink, base::OnceClosure callback) {
+            pref_updater->UpdateDevicesDict(*sink, std::move(callback));
+          },
+          pref_updater_.get(), sink, std::move(on_sink_stored_callback)));
 }
 
 void AccessCodeCastSinkService::StoreSinkAndSetExpirationTimer(
@@ -823,7 +852,7 @@ void AccessCodeCastSinkService::StoreSinkAndSetExpirationTimer(
 }
 
 void AccessCodeCastSinkService::AddStoredDevicesToMediaRouter(
-    const std::vector<MediaSinkInternal> cast_sinks) {
+    const std::vector<MediaSinkInternal>& cast_sinks) {
   std::vector<MediaSinkInternal> cast_sinks_to_add;
   for (auto cast_sink : cast_sinks) {
     AddSinkResultCallback callback =
@@ -881,7 +910,6 @@ void AccessCodeCastSinkService::RemoveAndDisconnectMediaSinkFromRouter(
       "Attempting to disconnect and remove the cast sink from "
       "the media router.",
       sink->id());
-
   cast_media_sink_service_impl_->task_runner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CastMediaSinkServiceImpl::DisconnectAndRemoveSink,
@@ -898,6 +926,11 @@ void AccessCodeCastSinkService::RemoveAndDisconnectExistingSinksOnNetwork() {
     if (GetActiveRoute(sink_id).has_value()) {
       continue;
     }
+    // We should remove `sinks_id` now because it is possible that the sink
+    // service attempts to fetch from the pref service before
+    // `RemoveAndDisconnectMediaSinkFromRouter()` is called. If `sink_id` is not
+    // removed here, this sink might be considered a connected sink and the sink
+    // service won't add it to the Media Router.
 
     // There are no active routes for this sink so it is safe to remove from the
     // media router. Must find the sink from media router for removal since it
@@ -965,6 +998,12 @@ void AccessCodeCastSinkService::OnEnabledPrefChange() {
   }
 }
 
+void AccessCodeCastSinkService::OnDevicesPrefChange() {
+  FetchAndValidateStoredDevices(
+      base::BindOnce(&AccessCodeCastSinkService::OnSyncedDevicesValidated,
+                     base::Unretained(this)));
+}
+
 void AccessCodeCastSinkService::Shutdown() {
   network_monitor_->RemoveObserver(this);
   // There's no guarantee that MediaRouter is still in the
@@ -1016,13 +1055,37 @@ void AccessCodeCastSinkService::MaybeCreateAccessCodePrefUpdaterLacros(
   // `pref_updater_` with the AccessCodeCastPrefUpdaterLacros and run the
   // callback to continue validating stored devices.
   if (is_pref_registered) {
+    lacros_device_sync_enabled_ = true;
     pref_updater_ = std::make_unique<AccessCodeCastPrefUpdaterLacros>();
+    access_code_cast_devices_observer_ = std::make_unique<CrosapiPrefObserver>(
+        crosapi::mojom::PrefPath::kAccessCodeCastDevices,
+        base::BindRepeating(
+            &AccessCodeCastSinkService::OnAccessCodeCastDevicesChanged,
+            base::Unretained(this)));
   } else {
     pref_updater_ = std::make_unique<AccessCodeCastPrefUpdaterImpl>(prefs_);
   }
 
   InitAllStoredDevices();
 }
+
+void AccessCodeCastSinkService::OnAccessCodeCastDevicesChanged(
+    base::Value value) {
+  if (value.is_dict()) {
+    ValidateStoredDevices(
+        base::BindOnce(&AccessCodeCastSinkService::OnSyncedDevicesValidated,
+                       weak_ptr_factory_.GetWeakPtr()),
+        std::move(value).TakeDict());
+  }
+}
 #endif
+
+bool AccessCodeCastSinkService::IsAccessCodeCastLacrosSyncEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return lacros_device_sync_enabled_;
+#else
+  return false;
+#endif
+}
 
 }  // namespace media_router

@@ -229,6 +229,15 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
     }
   }
 
+  void AddSinkToMediaRouter(const MediaSinkInternal& sink) {
+    base::RunLoop loop;
+    EXPECT_CALL(*mock_cast_media_sink_service_impl(), OpenChannel)
+        .WillOnce([&] { loop.Quit(); });
+    access_code_cast_sink_service_->AddSinkToMediaRouter(sink,
+                                                         base::DoNothing());
+    loop.Run();
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
@@ -544,6 +553,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksExpiration) {
   EXPECT_EQ(3u, current_session_expiration_timers().size());
 
   task_environment_.FastForwardBy(base::Seconds(50));
+  task_environment_.RunUntilIdle();
+
   // Now all the expiration timers should be completed and the devices should be
   // removed.
   EXPECT_TRUE(IsDeviceAddedTimeDictEmpty());
@@ -742,16 +753,17 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeEnabledPref) {
   // and all prefs related to access code casting are removed.
   SetDeviceDurationPrefForTest(base::Seconds(10000));
 
-  const MediaSinkInternal cast_sink1 = CreateCastSink(1);
-  StoreSinkInPrefs(cast_sink1);
-  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink1);
-  SetExpirationTimerAndExpectTimerRunning(cast_sink1);
+  const MediaSinkInternal cast_sink = CreateCastSink(1);
+  StoreSinkInPrefs(cast_sink);
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink);
+  AddSinkToMediaRouter(cast_sink);
+  SetExpirationTimerAndExpectTimerRunning(cast_sink);
 
   EXPECT_FALSE(IsDeviceAddedTimeDictEmpty());
   EXPECT_FALSE(IsDevicesDictEmpty());
 
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
-              DisconnectAndRemoveSink(cast_sink1));
+              DisconnectAndRemoveSink(cast_sink));
   GetTestingPrefs()->SetManagedPref(prefs::kAccessCodeCastEnabled,
                                     base::Value(false));
   task_environment_.FastForwardBy(kRemoveRouteDelay);
@@ -1337,5 +1349,58 @@ TEST_F(AccessCodeCastSinkServiceTest, AddRouteCallsHandleMediaRoute) {
   histogram_tester.ExpectBucketCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 10, 1);
 }
+
+TEST_F(AccessCodeCastSinkServiceTest, InitializePrefUpdater) {
+  auto cast_sink = CreateCastSink(1);
+  base::Value::Dict devices_dict;
+  devices_dict.Set(cast_sink.id(),
+                   CreateValueDictFromMediaSinkInternal(cast_sink));
+  GetTestingPrefs()->SetDict(prefs::kAccessCodeCastDevices,
+                             std::move(devices_dict));
+  ExpectOpenChannels({cast_sink}, 1);
+  ExpectHasSink({cast_sink}, 1);
+
+  // InitializePrefUpdater() should instnatiate `pref_updater_` as
+  // AccessCodeCastPrefUpdaterImpl.
+  access_code_cast_sink_service_->pref_updater_.reset();
+  access_code_cast_sink_service_->InitializePrefUpdater();
+  task_environment_.RunUntilIdle();
+
+  // There's no Ash instance when running unit_tests on Lacros and the Prefs
+  // crosapi is not available. So it is expected that Lacros's user prefs is
+  // used.
+  EXPECT_FALSE(
+      access_code_cast_sink_service_->IsAccessCodeCastLacrosSyncEnabled());
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(AccessCodeCastSinkServiceTest, OnDevicesPrefChange) {
+  auto cast_sink = CreateCastSink(1);
+  base::Value::Dict devices_dict;
+  devices_dict.Set(cast_sink.id(),
+                   CreateValueDictFromMediaSinkInternal(cast_sink));
+  static_cast<MockAccessCodeCastPrefUpdater*>(pref_updater())
+      ->set_devices_dict(std::move(devices_dict));
+
+  ExpectOpenChannels({cast_sink}, 1);
+  ExpectHasSink({cast_sink}, 1);
+
+  // We don't need to actually store the devices in the pref service
+  // since we are using MockAccessCodeCastPrefUpdater, which does not use the
+  // pref service. We only need to modify the pref service so that
+  // AccessCodeCastSinkService is notified.
+  GetTestingPrefs()->SetDict(prefs::kAccessCodeCastDevices,
+                             base::Value::Dict());
+  task_environment_.RunUntilIdle();
+
+  // if there's no new device in the pref service, the access code cast sink
+  // service shouldn't attempt to open channels to existing sinks.
+  ExpectOpenChannels({cast_sink}, 0);
+  ExpectHasSink({cast_sink}, 0);
+  GetTestingPrefs()->SetDict(prefs::kAccessCodeCastDevices,
+                             base::Value::Dict());
+  task_environment_.RunUntilIdle();
+}
+#endif
 
 }  // namespace media_router

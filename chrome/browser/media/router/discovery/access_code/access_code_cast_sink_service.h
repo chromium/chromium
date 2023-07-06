@@ -25,6 +25,10 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "net/base/backoff_entry.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class CrosapiPrefObserver;
+#endif
+
 namespace media_router {
 
 using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
@@ -77,6 +81,11 @@ class AccessCodeCastSinkService : public KeyedService,
   // function exists largely for edge case scenarios with instant expiration
   // that require expiration before the default kExpirationTimerDelay.
   void CheckMediaSinkForExpiration(const MediaSink::Id& sink_id);
+
+  void SetTaskRunnerForTest(
+      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) {
+    task_runner_ = task_runner;
+  }
 
  private:
   class AccessCodeMediaRoutesObserver : public MediaRoutesObserver {
@@ -158,6 +167,10 @@ class AccessCodeCastSinkService : public KeyedService,
                            HandleMediaRouteAdded);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            RestartExpirationTimerDoesntResetTimer);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           InitializePrefUpdater);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           ValidateStoredDevices);
 
   // Use |AccessCodeCastSinkServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
@@ -205,11 +218,17 @@ class AccessCodeCastSinkService : public KeyedService,
   // currently active in the media router.
   absl::optional<const MediaRoute> GetActiveRoute(const MediaSink::Id& sink_id);
 
-  // Fetches and validates stored devices from the pref service. Then adds the
-  // validated devices to the Media Router and sets the expiration timers.
-  // No-op if `pref_updater_` hasn't been instantiated.
+  // Fetches and validates stored devices from the pref service. No-op if
+  // `pref_updater_` hasn't been instantiated.
   void InitAllStoredDevices();
+
+  // Invoked with validated sinks fetched from the pref service. Adds the
+  // validated sinks to the Media Router and sets the expiration timers.
+  // `OnStored...` is used when the sink service initializes with stored
+  // devicces. `OnSynced...` is used when the pref service is changed.
   void OnStoredDevicesValidated(
+      const std::vector<MediaSinkInternal>& validated_sinks);
+  void OnSyncedDevicesValidated(
       const std::vector<MediaSinkInternal>& validated_sinks);
 
   // Fetches devices and passes the validated devices to
@@ -254,7 +273,7 @@ class AccessCodeCastSinkService : public KeyedService,
   void StoreSinkAndSetExpirationTimer(const MediaSink::Id& sink_id);
 
   void AddStoredDevicesToMediaRouter(
-      const std::vector<MediaSinkInternal> cast_sinks);
+      const std::vector<MediaSinkInternal>& cast_sinks);
 
   // Removes the given |sink_id| from all entries in the AccessCodeCast pref
   // service.
@@ -276,6 +295,7 @@ class AccessCodeCastSinkService : public KeyedService,
 
   void OnDurationPrefChange();
   void OnEnabledPrefChange();
+  void OnDevicesPrefChange();
 
   cast_channel::CastSocketOpenParams CreateCastSocketOpenParams(
       const MediaSinkInternal& sink);
@@ -288,7 +308,10 @@ class AccessCodeCastSinkService : public KeyedService,
   // crosapi. In that case, we should use AccessCodeCastPrefUpdaterImpl for
   // Lacros.
   void MaybeCreateAccessCodePrefUpdaterLacros(bool is_pref_registered);
+  void OnAccessCodeCastDevicesChanged(base::Value value);
 #endif
+
+  bool IsAccessCodeCastLacrosSyncEnabled();
 
   void LogInfo(const std::string& log_message, const std::string& sink_id);
   void LogWarning(const std::string& log_message, const std::string& sink_id);
@@ -296,11 +319,6 @@ class AccessCodeCastSinkService : public KeyedService,
 
   // KeyedService.
   void Shutdown() override;
-
-  void SetTaskRunnerForTest(
-      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) {
-    task_runner_ = task_runner;
-  }
 
   const raw_ptr<media_router::CastMediaSinkServiceImpl>
   GetCastMediaSinkServiceImpl() {
@@ -357,6 +375,14 @@ class AccessCodeCastSinkService : public KeyedService,
 
   // This registrar monitors for user prefs changes.
   std::unique_ptr<PrefChangeRegistrar> user_prefs_registrar_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<CrosapiPrefObserver> access_code_cast_devices_observer_;
+
+  // Its value is set to True when `pref_updater_` is initialized as a
+  // AccessCodeCastPrefUpdaterLacros.
+  bool lacros_device_sync_enabled_ = false;
+#endif
 
   base::WeakPtrFactory<AccessCodeCastSinkService> weak_ptr_factory_{this};
 };

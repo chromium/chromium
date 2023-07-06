@@ -84,10 +84,6 @@ class AccessCodeCastIntegrationBrowserTest
   // This function spins the run loop until an error code is surfaced.
   int WaitForAddSinkErrorCode(content::WebContents* dialog_contents);
 
-  // This function spins the run loop until the given sink_id is not in the pref
-  // service.
-  void WaitForPrefRemoval(const MediaSink::Id& sink_id);
-
   bool HasSinkInDevicesDict(const MediaSink::Id& sink_id);
   absl::optional<base::Time> GetDeviceAddedTimeFromDict(
       const MediaSink::Id& sink_id);
@@ -161,11 +157,18 @@ class AccessCodeCastIntegrationBrowserTest
 
   base::Time device_added_time() { return device_added_time_; }
 
-  void UpdateDeviceAddedTime(const MediaSinkInternal& cast_sink);
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner() {
+    return task_runner_;
+  }
+
+  void UpdateDeviceAddedTime(const MediaSink::Id& sink_id);
+  void SetAccessCodeCastSinkServiceTaskRunner();
+  bool IsAccessCodeCastLacrosSyncEnabled();
 
  private:
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription subscription_;
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
