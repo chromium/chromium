@@ -4,7 +4,8 @@
 
 module viz.mojom;
 
-// Corresponds to viz::ResourceFormat.
+// An enum for singleplanar SharedImage format. Intended for usage only within
+// SharedImageFormat itself.
 enum ResourceFormat {
   RGBA_8888,
   RGBA_4444,
@@ -24,6 +25,10 @@ enum ResourceFormat {
   BGRX_8888,
   RGBX_1010102,
   BGRX_1010102,
+
+  // Legacy formats for multiplanar images with external sampling.
+  // TODO(crbug.com/1366495): Remove these once all clients are converted to
+  // use MultiplanarSharedImage for this use case.
   YVU_420,
   YUV_420_BIPLANAR,
   YUVA_420_TRIPLANAR,

@@ -173,7 +173,8 @@ static_assert(std::is_trivially_copyable_v<SharedImageFormat>);
 // like manually packing bits into a single uint64_t for storage.
 
 bool SharedImageFormat::IsBitmapFormatSupported() const {
-  return is_single_plane() && resource_format() == RGBA_8888;
+  return is_single_plane() &&
+         resource_format() == mojom::ResourceFormat::RGBA_8888;
 }
 
 int SharedImageFormat::NumberOfPlanes() const {
@@ -342,14 +343,14 @@ std::string SharedImageFormat::ToTestParamString() const {
 bool SharedImageFormat::HasAlpha() const {
   if (is_single_plane()) {
     switch (resource_format()) {
-      case ResourceFormat::RGBA_8888:
-      case ResourceFormat::RGBA_4444:
-      case ResourceFormat::RGBA_1010102:
-      case ResourceFormat::BGRA_8888:
-      case ResourceFormat::BGRA_1010102:
-      case ResourceFormat::ALPHA_8:
-      case ResourceFormat::RGBA_F16:
-      case ResourceFormat::YUVA_420_TRIPLANAR:
+      case mojom::ResourceFormat::RGBA_8888:
+      case mojom::ResourceFormat::RGBA_4444:
+      case mojom::ResourceFormat::RGBX_1010102:
+      case mojom::ResourceFormat::BGRA_8888:
+      case mojom::ResourceFormat::BGRX_1010102:
+      case mojom::ResourceFormat::ALPHA_8:
+      case mojom::ResourceFormat::RGBA_F16:
+      case mojom::ResourceFormat::YUVA_420_TRIPLANAR:
         return true;
       default:
         return false;
@@ -365,7 +366,7 @@ bool SharedImageFormat::HasAlpha() const {
 }
 
 bool SharedImageFormat::IsCompressed() const {
-  return is_single_plane() && resource_format() == ResourceFormat::ETC1;
+  return is_single_plane() && resource_format() == mojom::ResourceFormat::ETC1;
 }
 
 bool SharedImageFormat::IsLegacyMultiplanar() const {
@@ -373,10 +374,10 @@ bool SharedImageFormat::IsLegacyMultiplanar() const {
     return false;
 
   switch (resource_format()) {
-    case ResourceFormat::YVU_420:
-    case ResourceFormat::YUV_420_BIPLANAR:
-    case ResourceFormat::YUVA_420_TRIPLANAR:
-    case ResourceFormat::P010:
+    case mojom::ResourceFormat::YVU_420:
+    case mojom::ResourceFormat::YUV_420_BIPLANAR:
+    case mojom::ResourceFormat::YUVA_420_TRIPLANAR:
+    case mojom::ResourceFormat::P010:
       return true;
     default:
       return false;
@@ -386,33 +387,33 @@ bool SharedImageFormat::IsLegacyMultiplanar() const {
 int SharedImageFormat::BitsPerPixel() const {
   CHECK(is_single_plane());
   switch (resource_format()) {
-    case RGBA_F16:
+    case mojom::ResourceFormat::RGBA_F16:
       return 64;
-    case BGRA_8888:
-    case RGBA_8888:
-    case RGBX_8888:
-    case BGRX_8888:
-    case RGBA_1010102:
-    case BGRA_1010102:
-    case RG16_EXT:
+    case mojom::ResourceFormat::BGRA_8888:
+    case mojom::ResourceFormat::RGBA_8888:
+    case mojom::ResourceFormat::RGBX_8888:
+    case mojom::ResourceFormat::BGRX_8888:
+    case mojom::ResourceFormat::RGBX_1010102:
+    case mojom::ResourceFormat::BGRX_1010102:
+    case mojom::ResourceFormat::RG16_EXT:
       return 32;
-    case RGBA_4444:
-    case RGB_565:
-    case LUMINANCE_F16:
-    case R16_EXT:
-    case BGR_565:
-    case RG_88:
+    case mojom::ResourceFormat::RGBA_4444:
+    case mojom::ResourceFormat::RGB_565:
+    case mojom::ResourceFormat::LUMINANCE_F16:
+    case mojom::ResourceFormat::R16_EXT:
+    case mojom::ResourceFormat::BGR_565:
+    case mojom::ResourceFormat::RG_88:
       return 16;
-    case ALPHA_8:
-    case LUMINANCE_8:
-    case RED_8:
+    case mojom::ResourceFormat::ALPHA_8:
+    case mojom::ResourceFormat::LUMINANCE_8:
+    case mojom::ResourceFormat::RED_8:
       return 8;
-    case ETC1:
+    case mojom::ResourceFormat::ETC1:
       return 4;
-    case P010:
-    case YUVA_420_TRIPLANAR:
-    case YVU_420:
-    case YUV_420_BIPLANAR:
+    case mojom::ResourceFormat::P010:
+    case mojom::ResourceFormat::YUVA_420_TRIPLANAR:
+    case mojom::ResourceFormat::YVU_420:
+    case mojom::ResourceFormat::YUV_420_BIPLANAR:
       // Legacy multiplanar formats are not supported.
       CHECK(0);
   }

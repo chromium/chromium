@@ -6,7 +6,6 @@
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_SHARED_IMAGE_FORMAT_MOJOM_TRAITS_H_
 
 #include "components/viz/common/resources/shared_image_format.h"
-#include "services/viz/public/cpp/compositing/resource_format_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/shared_image_format.mojom-shared.h"
 
 namespace mojo {
@@ -81,7 +80,7 @@ struct UnionTraits<viz::mojom::SharedImageFormatDataView,
       return viz::mojom::SharedImageFormatDataView::Tag::kResourceFormat;
   }
 
-  static viz::SharedImageFormat::ResourceFormat resource_format(
+  static viz::mojom::ResourceFormat resource_format(
       const viz::SharedImageFormat& format) {
     return format.resource_format();
   }

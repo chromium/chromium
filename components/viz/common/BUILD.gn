@@ -23,6 +23,7 @@ viz_component("resource_format") {
   public_deps = [
     "//base",
     "//mojo/public/cpp/bindings",
+    "//services/viz/public/mojom:resource_format",
   ]
   deps = [ "//ui/gfx/geometry:geometry" ]
 }

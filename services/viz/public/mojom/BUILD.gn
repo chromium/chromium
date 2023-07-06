@@ -616,23 +616,6 @@ mojom("mojom") {
 mojom("resource_format") {
   generate_java = true
   sources = [ "compositing/resource_format.mojom" ]
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "viz.mojom.ResourceFormat"
-          cpp = "::viz::SharedImageFormat::ResourceFormat"
-        },
-      ]
-      traits_headers = [
-        "//services/viz/public/cpp/compositing/resource_format_mojom_traits.h",
-      ]
-      traits_sources = [
-        "//services/viz/public/cpp/compositing/resource_format_mojom_traits.cc",
-      ]
-      traits_public_deps = [ "//components/viz/common:resource_format" ]
-    },
-  ]
 }
 
 mojom("shared_image_format") {
