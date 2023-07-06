@@ -24,6 +24,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_loader.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/grit/app_icon_resources.h"

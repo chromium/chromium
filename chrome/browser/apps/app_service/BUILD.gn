@@ -18,6 +18,7 @@ source_set("app_service") {
     "app_icon/app_icon_util.h",
     "app_icon/dip_px_util.cc",
     "app_icon/dip_px_util.h",
+    "app_icon/icon_effects.h",
     "app_icon/icon_key_util.cc",
     "app_icon/icon_key_util.h",
     "app_service_proxy.h",

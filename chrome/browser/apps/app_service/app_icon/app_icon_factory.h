@@ -13,15 +13,18 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "ui/gfx/image/image_skia.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/base/resource/resource_scale_factor.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ui/base/resource/resource_scale_factor.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace gfx {

@@ -19,7 +19,7 @@
 #include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"

@@ -41,6 +41,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/app_icon/arc_icon_once_loader.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"

@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/instance_registry_updater.h"
