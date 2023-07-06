@@ -21,6 +21,10 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace global_media_controls {
+class MediaItemUIFooter;
+}  // namespace global_media_controls
+
 namespace global_media_controls::mojom {
 class DeviceService;
 }  // namespace global_media_controls::mojom
@@ -52,6 +56,13 @@ std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     global_media_controls::mojom::DeviceService* device_service,
     MediaItemUIDeviceSelectorDelegate* selector_delegate,
+    Profile* profile,
+    global_media_controls::GlobalMediaControlsEntryPoint entry_point,
+    absl::optional<media_message_center::MediaColorTheme> media_color_theme =
+        absl::nullopt);
+
+std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
+    base::WeakPtr<media_message_center::MediaNotificationItem> item,
     Profile* profile,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,
     absl::optional<media_message_center::MediaColorTheme> media_color_theme =

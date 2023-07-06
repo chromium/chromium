@@ -6,7 +6,10 @@
 
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_cast_footer_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_legacy_cast_footer_view.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_session_notification_item.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
@@ -145,4 +148,29 @@ std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
       id, selector_delegate, std::move(host), std::move(client_receiver),
       /* has_audio_output */ is_local_media_session, entry_point,
       show_expand_button, media_color_theme);
+}
+
+std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
+    base::WeakPtr<media_message_center::MediaNotificationItem> item,
+    Profile* profile,
+    global_media_controls::GlobalMediaControlsEntryPoint entry_point,
+    absl::optional<media_message_center::MediaColorTheme> media_color_theme) {
+  if (item->SourceType() != media_message_center::SourceType::kCast ||
+      !media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
+    return nullptr;
+  }
+
+  // Show a stop casting button for the Cast item.
+  if (media_color_theme.has_value()) {
+    return std::make_unique<MediaItemUICastFooterView>(
+        base::BindRepeating(
+            &CastMediaNotificationItem::StopCasting,
+            static_cast<CastMediaNotificationItem*>(item.get())->GetWeakPtr(),
+            entry_point),
+        media_color_theme.value());
+  }
+  return std::make_unique<MediaItemUILegacyCastFooterView>(base::BindRepeating(
+      &CastMediaNotificationItem::StopCasting,
+      static_cast<CastMediaNotificationItem*>(item.get())->GetWeakPtr(),
+      entry_point));
 }

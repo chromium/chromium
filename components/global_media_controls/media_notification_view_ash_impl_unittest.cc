@@ -71,9 +71,6 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
     container_ = std::make_unique<NiceMock<MockMediaNotificationContainer>>();
     item_ = std::make_unique<NiceMock<MockMediaNotificationItem>>();
 
-    auto footer = std::make_unique<NiceMock<MockMediaItemUIFooter>>();
-    footer_ = footer.get();
-
     auto device_selector =
         std::make_unique<NiceMock<MockMediaItemUIDeviceSelector>>();
     device_selector_ = device_selector.get();
@@ -84,7 +81,7 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
     widget_ = CreateTestWidget();
     view_ =
         widget_->SetContentsView(std::make_unique<MediaNotificationViewAshImpl>(
-            container_.get(), item_->GetWeakPtr(), std::move(footer),
+            container_.get(), item_->GetWeakPtr(), nullptr,
             std::move(device_selector), media_message_center::MediaColorTheme(),
             MediaDisplayPage::kQuickSettingsMediaView));
     widget_->Show();
@@ -92,7 +89,6 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
 
   void TearDown() override {
     view_ = nullptr;
-    footer_ = nullptr;
     device_selector_ = nullptr;
     widget_.reset();
     actions_.clear();
@@ -105,6 +101,16 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
     return std::make_unique<MediaNotificationViewAshImpl>(
         container_.get(), item_->GetWeakPtr(), nullptr, nullptr,
         media_message_center::MediaColorTheme(), media_display_page);
+  }
+
+  std::unique_ptr<MediaNotificationViewAshImpl> CreateViewWithFooter(
+      std::unique_ptr<MediaItemUIFooter> footer) {
+    auto device_selector =
+        std::make_unique<NiceMock<MockMediaItemUIDeviceSelector>>();
+    return std::make_unique<MediaNotificationViewAshImpl>(
+        container_.get(), item_->GetWeakPtr(), std::move(footer),
+        std::move(device_selector), media_message_center::MediaColorTheme(),
+        MediaDisplayPage::kQuickSettingsMediaView);
   }
 
   void EnableAllActions() {
@@ -140,29 +146,16 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
 
   MockMediaNotificationItem& item() { return *item_; }
 
-  MockMediaItemUIFooter* footer() { return footer_; }
-
   MockMediaItemUIDeviceSelector* device_selector() { return device_selector_; }
 
-  std::vector<views::Button*> media_control_buttons() const {
-    return view()->action_buttons_;
-  }
-
-  views::Button* GetButtonForAction(MediaSessionAction action) const {
-    auto buttons = media_control_buttons();
-    const auto i = base::ranges::find(buttons, static_cast<int>(action),
-                                      &views::View::GetID);
-    return (i == buttons.end()) ? nullptr : *i;
-  }
-
   bool IsActionButtonVisible(MediaSessionAction action) const {
-    auto* button = GetButtonForAction(action);
+    views::Button* button = view()->GetActionButtonForTesting(action);
     return button && button->GetVisible();
   }
 
   void SimulateButtonClick(MediaSessionAction action) {
-    views::Button* button = GetButtonForAction(action);
-    EXPECT_TRUE(button->GetVisible());
+    views::Button* button = view()->GetActionButtonForTesting(action);
+    EXPECT_TRUE(button && button->GetVisible());
 
     views::test::ButtonTestApi(button).NotifyClick(
         ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
@@ -176,7 +169,6 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
   std::unique_ptr<MockMediaNotificationContainer> container_;
   std::unique_ptr<MockMediaNotificationItem> item_;
   raw_ptr<MediaNotificationViewAshImpl> view_;
-  raw_ptr<MockMediaItemUIFooter> footer_;
   raw_ptr<MockMediaItemUIDeviceSelector> device_selector_;
   std::unique_ptr<views::Widget> widget_;
 };
@@ -189,14 +181,12 @@ TEST_F(MediaNotificationViewAshImplTest, ChevronIconVisibilityCheck) {
   EXPECT_EQ(view->GetChevronIconForTesting(), nullptr);
 }
 
-TEST_F(MediaNotificationViewAshImplTest, DeviceSelectorCheck) {
+TEST_F(MediaNotificationViewAshImplTest, DeviceSelectorViewCheck) {
   EXPECT_NE(view()->GetStartCastingButtonForTesting(), nullptr);
-  EXPECT_EQ(view()->GetStartCastingButtonForTesting()->GetVisible(), true);
-  EXPECT_EQ(view()->GetFooterForTesting(), footer());
+  EXPECT_TRUE(view()->GetStartCastingButtonForTesting()->GetVisible());
   EXPECT_EQ(view()->GetDeviceSelectorForTesting(), device_selector());
   EXPECT_NE(view()->GetDeviceSelectorSeparatorForTesting(), nullptr);
-  EXPECT_EQ(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible(),
-            false);
+  EXPECT_FALSE(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible());
 
   EXPECT_CALL(*device_selector(), ShowOrHideDeviceList());
   EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
@@ -204,7 +194,26 @@ TEST_F(MediaNotificationViewAshImplTest, DeviceSelectorCheck) {
   views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
-  EXPECT_EQ(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible(), true);
+  EXPECT_TRUE(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible());
+}
+
+TEST_F(MediaNotificationViewAshImplTest, FooterViewCheck) {
+  auto footer = std::make_unique<NiceMock<MockMediaItemUIFooter>>();
+  auto* footer_ptr = footer.get();
+  auto view = CreateViewWithFooter(std::move(footer));
+
+  EXPECT_EQ(view->GetFooterForTesting(), footer_ptr);
+  EXPECT_NE(view->GetStartCastingButtonForTesting(), nullptr);
+  EXPECT_FALSE(view->GetStartCastingButtonForTesting()->GetVisible());
+
+  base::flat_set<MediaSessionAction> actions;
+  actions.insert(MediaSessionAction::kEnterPictureInPicture);
+  view->UpdateWithMediaActions(actions);
+
+  views::Button* button = view->GetActionButtonForTesting(
+      MediaSessionAction::kEnterPictureInPicture);
+  EXPECT_NE(button, nullptr);
+  EXPECT_FALSE(button->GetVisible());
 }
 
 TEST_F(MediaNotificationViewAshImplTest, MetadataUpdated) {
@@ -287,9 +296,15 @@ TEST_F(MediaNotificationViewAshImplTest, ButtonVisibilityCheck) {
   view()->UpdateWithMediaSessionInfo(session_info.Clone());
 
   DisableAllActions();
-  for (auto* button : media_control_buttons()) {
-    EXPECT_FALSE(button->GetVisible());
-  }
+  EXPECT_FALSE(IsActionButtonVisible(MediaSessionAction::kPlay));
+  EXPECT_FALSE(IsActionButtonVisible(MediaSessionAction::kPause));
+  EXPECT_FALSE(IsActionButtonVisible(MediaSessionAction::kPreviousTrack));
+  EXPECT_FALSE(IsActionButtonVisible(MediaSessionAction::kNextTrack));
+  EXPECT_FALSE(IsActionButtonVisible(MediaSessionAction::kStop));
+  EXPECT_FALSE(
+      IsActionButtonVisible(MediaSessionAction::kEnterPictureInPicture));
+  EXPECT_FALSE(
+      IsActionButtonVisible(MediaSessionAction::kExitPictureInPicture));
 
   EnableAction(MediaSessionAction::kPause);
   EXPECT_TRUE(IsActionButtonVisible(MediaSessionAction::kPause));

@@ -237,24 +237,28 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   if (device_selector_view) {
     start_casting_button_ = CreateMediaButton(
         controls_row, kNotMediaActionButtonId,
-        media_message_center::kMediaCastIcon,
+        media_message_center::kMediaCastStartIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_START_CASTING);
     start_casting_button_->SetCallback(base::BindRepeating(
         &MediaNotificationViewAshImpl::StartCastingButtonPressed,
         base::Unretained(this), start_casting_button_));
   }
 
-  // Create the picture in picture button.
+  // Create the picture-in-picture button.
   picture_in_picture_button_ = CreateMediaButton(
       controls_row,
       static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
       media_message_center::kMediaEnterPipIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP);
 
-  // TODO(crbug.com/1442056): Fix the UI for footer view.
-  // Create the stop casting button.
+  // Create the stop casting button. It will only show up when this media item
+  // is being casted to another device.
   if (footer_view) {
-    footer_view_ = AddChildView(std::move(footer_view));
+    footer_view_ = controls_row->AddChildView(std::move(footer_view));
+    if (start_casting_button_) {
+      start_casting_button_->SetVisible(false);
+    }
+    picture_in_picture_button_->SetVisible(false);
   }
 
   if (device_selector_view) {
@@ -387,6 +391,7 @@ void MediaNotificationViewAshImpl::UpdateWithMediaArtwork(
 
 void MediaNotificationViewAshImpl::UpdateActionButtonsVisibility() {
   bool should_invalidate_layout = false;
+
   for (auto* button : action_buttons_) {
     bool should_show = base::Contains(
         enabled_actions_, static_cast<MediaSessionAction>(button->GetID()));
@@ -394,6 +399,12 @@ void MediaNotificationViewAshImpl::UpdateActionButtonsVisibility() {
       button->SetVisible(should_show);
       should_invalidate_layout = true;
     }
+  }
+
+  // The picture-in-picture button remains invisible if there is a footer view
+  // regardless of media actions.
+  if (footer_view_) {
+    picture_in_picture_button_->SetVisible(false);
   }
 
   if (should_invalidate_layout) {
@@ -447,6 +458,13 @@ views::Label* MediaNotificationViewAshImpl::GetTitleLabelForTesting() {
 
 views::ImageView* MediaNotificationViewAshImpl::GetChevronIconForTesting() {
   return chevron_icon_;
+}
+
+views::Button* MediaNotificationViewAshImpl::GetActionButtonForTesting(
+    media_session::mojom::MediaSessionAction action) {
+  const auto i = base::ranges::find(action_buttons_, static_cast<int>(action),
+                                    &views::View::GetID);
+  return (i == action_buttons_.end()) ? nullptr : *i;
 }
 
 views::Button* MediaNotificationViewAshImpl::GetStartCastingButtonForTesting() {

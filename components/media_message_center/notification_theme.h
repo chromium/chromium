@@ -39,6 +39,12 @@ struct COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaColorTheme {
 
   // Color ID for device selector view separator line.
   ui::ColorId separator_color_id = 0;
+
+  // Color ID for the stop casting button text.
+  ui::ColorId error_foreground_color_id = 0;
+
+  // Color ID for the stop casting button container.
+  ui::ColorId error_container_color_id = 0;
 };
 
 }  // namespace media_message_center
