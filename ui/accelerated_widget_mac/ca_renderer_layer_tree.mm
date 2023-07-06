@@ -1150,7 +1150,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
   } else {
     switch (type_) {
       case CALayerType::kHDRCopier:
-        ca_layer_.reset(metal::CreateHDRCopierLayer());
+        ca_layer_.reset([metal::MakeHDRCopierLayer() retain]);
         break;
       case CALayerType::kVideo:
         av_layer_.reset([[AVSampleBufferDisplayLayer alloc] init]);

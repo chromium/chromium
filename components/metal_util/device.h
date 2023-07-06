@@ -12,7 +12,7 @@
 namespace metal {
 
 // Return a low-power device, if one exists, otherwise return the system default
-// device. Returns an autoreleased object.
+// device.
 id<MTLDevice> METAL_UTIL_EXPORT GetDefaultDevice();
 
 }  // namespace metal

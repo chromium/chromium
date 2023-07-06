@@ -7,17 +7,19 @@
 #import <Metal/Metal.h>
 
 #include "base/logging.h"
-#include "base/mac/scoped_nsobject.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace metal {
 
 id<MTLDevice> GetDefaultDevice() {
   // First attempt to find a low power device to use.
 #if BUILDFLAG(IS_MAC)
-  base::scoped_nsobject<NSArray<id<MTLDevice>>> devices(MTLCopyAllDevices());
-  for (id<MTLDevice> device in devices.get()) {
+  for (id<MTLDevice> device in MTLCopyAllDevices()) {
     if (device.lowPower) {
-      return [[device retain] autorelease];
+      return device;
     }
   }
 #endif
@@ -28,7 +30,7 @@ id<MTLDevice> GetDefaultDevice() {
     return nil;
   }
 
-  return [system_default autorelease];
+  return system_default;
 }
 
 }  // namespace metal
