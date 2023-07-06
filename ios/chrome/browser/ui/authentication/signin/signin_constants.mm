@@ -14,6 +14,8 @@ NSString* const kAddAccountAccessibilityIdentifier =
     @"AddAccountAccessibilityIdentifier";
 NSString* const kConfirmationAccessibilityIdentifier =
     @"ConfirmationAccessibilityIdentifier";
+NSString* const kHistorySyncViewAccessibilityIdentifier =
+    @"HistorySyncViewAccessibilityIdentifier";
 NSString* const kMoreAccessibilityIdentifier = @"MoreAccessibilityIdentifier";
 NSString* const kWebSigninAccessibilityIdentifier =
     @"WebSigninAccessibilityIdentifier";

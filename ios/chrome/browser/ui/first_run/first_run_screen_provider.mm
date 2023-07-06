@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 
+#import "base/feature_list.h"
 #import "base/notreached.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/ui/screen/screen_provider+protected.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
@@ -18,7 +20,12 @@
 - (instancetype)init {
   NSMutableArray* screens = [NSMutableArray array];
   [screens addObject:@(kSignIn)];
-  [screens addObject:@(kTangibleSync)];
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    [screens addObject:@(kHistorySync)];
+  } else {
+    [screens addObject:@(kTangibleSync)];
+  }
   [screens addObject:@(kDefaultBrowserPromo)];
 
   if (ios::provider::IsChoiceEnabled()) {

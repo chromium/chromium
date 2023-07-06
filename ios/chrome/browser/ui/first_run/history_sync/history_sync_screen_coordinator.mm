@@ -5,11 +5,16 @@
 #import "ios/chrome/browser/ui/first_run/history_sync/history_sync_screen_coordinator.h"
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+@interface HistorySyncScreenCoordinator () <HistorySyncCoordinatorDelegate>
+@end
 
 @implementation HistorySyncScreenCoordinator {
   __weak id<FirstRunScreenDelegate> _delegate;
@@ -37,20 +42,26 @@
 
 - (void)start {
   [super start];
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  if (!authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    // Don't show sync screen if no logged-in user account.
+    [_delegate screenWillFinishPresenting];
+    return;
+  }
   _historySyncCoordinator = [[HistorySyncCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
-                               browser:self.browser];
-  __weak __typeof(self) weakSelf = self;
-  _historySyncCoordinator.coordinatorCompleted = ^(bool success) {
-    [weakSelf historySyncCoordinatorCompletedWithSuccess:success];
-  };
+                               browser:self.browser
+                              delegate:self
+                              firstRun:YES];
   [_historySyncCoordinator start];
 }
 
 - (void)stop {
   [super stop];
   [_historySyncCoordinator stop];
-  _historySyncCoordinator.coordinatorCompleted = nil;
   _historySyncCoordinator = nil;
   _baseNavigationController = nil;
 }
@@ -60,15 +71,12 @@
   DUMP_WILL_BE_CHECK(!_historySyncCoordinator);
 }
 
-#pragma mark - Private
+#pragma mark - HistorySyncCoordinatorDelegate
 
-// Dismisses the current screen, and stops the FRE if `success` is `false`.
-- (void)historySyncCoordinatorCompletedWithSuccess:(bool)success {
-  if (success) {
-    [_delegate skipAllScreens];
-  } else {
-    [_delegate screenWillFinishPresenting];
-  }
+// Dismisses the current screen.
+- (void)closeHistorySyncCoordinator:
+    (HistorySyncCoordinator*)historySyncCoordinator {
+  [_delegate screenWillFinishPresenting];
 }
 
 @end

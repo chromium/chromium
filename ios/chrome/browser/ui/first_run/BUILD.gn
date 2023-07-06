@@ -113,6 +113,7 @@ source_set("first_run_provider") {
   deps = [
     ":field_trial",
     "//base",
+    "//components/sync/base:features",
     "//ios/chrome/browser/ui/screen:screen_provider",
     "//ios/chrome/browser/ui/screen:screen_provider_protected",
     "//ios/chrome/browser/ui/screen:screen_type",

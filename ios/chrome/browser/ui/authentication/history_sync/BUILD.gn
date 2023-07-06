@@ -15,9 +15,13 @@ source_set("history_sync") {
   deps = [
     ":ui",
     "//base",
+    "//components/signin/public/identity_manager/objc",
+    "//components/unified_consent",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:constants",
+    "//ios/chrome/common/ui/promo_style",
   ]
   public_deps =
       [ "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator" ]
@@ -31,6 +35,8 @@ source_set("ui") {
     "history_sync_view_controller.mm",
   ]
   deps = [
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",
   ]

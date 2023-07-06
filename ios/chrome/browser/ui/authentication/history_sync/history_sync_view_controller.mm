@@ -4,16 +4,40 @@
 
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller.h"
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 @implementation HistorySyncViewController
 
+@dynamic delegate;
+
 - (void)viewDidLoad {
-  // TODO(crbug.com/1442218): Needs implementation.
-  self.bannerName = @"**history_sync_screen_banner**";
+  self.view.accessibilityIdentifier = kHistorySyncViewAccessibilityIdentifier;
+  self.shouldHideBanner = YES;
+  self.hasAvatarImage = YES;
+  // TODO(crbug.com/1442218): Replace these temporary strings with the
+  // definitive ones.
+  self.titleText = @"** Save Time, Type Less **";
+  self.subtitleText = @"** To quickly get back to sites you've visited, sync "
+                      @"your tabs and history **";
+  self.primaryActionString = @"** Yes, I'm in **";
+  self.secondaryActionString = @"** No, thanks **";
   [super viewDidLoad];
+}
+
+#pragma mark - HistorySyncConsumer
+
+- (void)setPrimaryIdentityAvatarImage:(UIImage*)primaryIdentityAvatarImage {
+  self.avatarImage = primaryIdentityAvatarImage;
+}
+
+- (void)setPrimaryIdentityAvatarAccessibilityLabel:
+    (NSString*)primaryIdentityAvatarAccessibilityLabel {
+  self.avatarAccessibilityLabel = primaryIdentityAvatarAccessibilityLabel;
 }
 
 @end

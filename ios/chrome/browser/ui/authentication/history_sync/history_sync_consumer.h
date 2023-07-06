@@ -7,10 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
-// Handles history sync UI updates.
+// Handles history sync UI updates
 @protocol HistorySyncConsumer
 
-// TODO(crbug.com/1442218): Needs implementation.
+// Set the avatar image for the primary identity
+- (void)setPrimaryIdentityAvatarImage:(UIImage*)primaryIdentityAvatarImage;
+
+// Set the avatar label for the primary identity
+- (void)setPrimaryIdentityAvatarAccessibilityLabel:
+    (NSString*)primaryIdentityAvatarAccessibilityLabel;
 
 @end
 

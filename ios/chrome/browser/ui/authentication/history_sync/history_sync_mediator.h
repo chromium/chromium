@@ -7,13 +7,36 @@
 
 #import <UIKit/UIKit.h>
 
+@class AuthenticationFlow;
+class AuthenticationService;
+class ChromeAccountManagerService;
+@class HistorySyncMediator;
 @protocol HistorySyncConsumer;
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+@protocol HistorySyncMediatorDelegate <NSObject>
+
+// Notifies the mediator that the user has been removed
+- (void)historySyncMediatorPrimaryAccountCleared:(HistorySyncMediator*)mediator;
+
+@end
 
 // Mediator that handles the sync operations.
 @interface HistorySyncMediator : NSObject
 
-// Consumer for this mediator.
-@property(nonatomic, weak) id<HistorySyncConsumer> consumer;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)
+    initWithAuthenticationService:(AuthenticationService*)authenticationService
+      chromeAccountManagerService:
+          (ChromeAccountManagerService*)chromeAccountManagerService
+                  identityManager:(signin::IdentityManager*)identityManager
+                         consumer:(id<HistorySyncConsumer>)consumer
+                         delegate:(id<HistorySyncMediatorDelegate>)delegate
+    NS_DESIGNATED_INITIALIZER;
 
 // Disconnect the mediator.
 - (void)disconnect;
