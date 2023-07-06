@@ -170,6 +170,8 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   completion(@[ action ]);
 }
 
+#pragma mark - EditMenuProvider
+
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
   NSString* linkToTextId = @"chromecommand.menu.linktotext";
 

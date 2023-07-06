@@ -326,6 +326,8 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   completion(@[ action ]);
 }
 
+#pragma mark - EditMenuProvider
+
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
   if (![self shouldInstallPartialTranslate]) {
     return;

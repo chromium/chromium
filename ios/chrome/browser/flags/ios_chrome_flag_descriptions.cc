@@ -553,10 +553,6 @@ const char kIOSBrowserEditMenuMetricsName[] = "Browser edit menu metrics";
 const char kIOSBrowserEditMenuMetricsDescription[] =
     "Collect metrics for edit menu usage.";
 
-const char kIOSCustomBrowserEditMenuName[] = "Custom browser edit menu";
-const char kIOSCustomBrowserEditMenuDescription[] =
-    "Use the new API for the WKWebView Edit menu.";
-
 const char kIOSEditMenuPartialTranslateName[] =
     "Enable partial translate in edit menu";
 const char kIOSEditMenuPartialTranslateDescription[] =

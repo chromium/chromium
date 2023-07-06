@@ -4769,11 +4769,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "ios-custom-browser-edit-menu",
-    "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "ios-edit-menu-hide-search-web",
     "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 130

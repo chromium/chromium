@@ -118,8 +118,7 @@
         self.partialTranslateMediator;
   }
 
-  if (IsSearchWithEnabled() &&
-      base::FeatureList::IsEnabled(kIOSCustomBrowserEditMenu)) {
+  if (IsSearchWithEnabled()) {
     TemplateURLService* templateURLService =
         ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
     self.searchWithMediator =
@@ -133,7 +132,6 @@
     self.browserEditMenuHandler.searchWithDelegate = self.searchWithMediator;
   }
 
-  self.browserEditMenuHandler.rootView = self.viewController.view;
   [self.webContentAreaOverlayContainerCoordinator start];
   self.viewController.webContentsOverlayContainerViewController =
       self.webContentAreaOverlayContainerCoordinator.viewController;

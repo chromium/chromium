@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
-#import "ios/chrome/browser/ui/partial_translate/partial_translate_delegate.h"
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/test/providers/partial_translate/test_partial_translate.h"
@@ -310,8 +309,7 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
     AddPartialTranslate(expectedMenuDescription);
     AddLinkToText(expectedMenuDescription);
     base::test::ScopedFeatureList feature_list_;
-    feature_list_.InitWithFeatures(
-        {kIOSEditMenuPartialTranslate, kIOSCustomBrowserEditMenu}, {});
+    feature_list_.InitWithFeatures({kIOSEditMenuPartialTranslate}, {});
     SetupTranslateControllerFactory();
     PartialTranslateMediator* partial_translate_mediator =
         [[PartialTranslateMediator alloc]

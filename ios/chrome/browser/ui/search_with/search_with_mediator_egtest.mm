@@ -156,7 +156,6 @@ void TriggerEditMenu() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kIOSEditMenuSearchWith);
-  config.features_enabled.push_back(kIOSCustomBrowserEditMenu);
   return config;
 }
 

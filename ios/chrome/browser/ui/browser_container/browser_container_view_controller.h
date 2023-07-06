@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/ui/browser_container/browser_container_consumer.h"
 
-@protocol LinkToTextDelegate;
 @class BrowserEditMenuHandler;
 
 // UIViewController which allows displaying and removing a content view.

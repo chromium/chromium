@@ -61,10 +61,6 @@ BASE_FEATURE(kDefaultBrowserVideoPromo,
              "DefaultBrowserVideoPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSCustomBrowserEditMenu,
-             "IOSCustomBrowserEditMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const char kIOSEditMenuPartialTranslateNoIncognitoParam[] =
     "IOSEditMenuPartialTranslateNoIncognitoParam";
 
@@ -99,8 +95,7 @@ BASE_FEATURE(kIOSEditMenuSearchWith,
 
 bool IsSearchWithEnabled() {
   if (@available(iOS 16, *)) {
-    return base::FeatureList::IsEnabled(kIOSEditMenuSearchWith) &&
-           base::FeatureList::IsEnabled(kIOSCustomBrowserEditMenu);
+    return base::FeatureList::IsEnabled(kIOSEditMenuSearchWith);
   }
   return false;
 }

@@ -213,7 +213,7 @@ void LogTrigger(bool incognito, bool search_engine_google) {
   [self.applicationCommandHandler openURLInNewTab:command];
 }
 
-#pragma mark - SearchWithDelegate
+#pragma mark - EditMenuProvider
 
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
   if (![self canPerformSearch]) {

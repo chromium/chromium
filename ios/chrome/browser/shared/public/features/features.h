@@ -54,9 +54,6 @@ BASE_DECLARE_FEATURE(kDefaultBrowserRefactoringPromoManager);
 // Feature flag that enables the default browser video promo.
 BASE_DECLARE_FEATURE(kDefaultBrowserVideoPromo);
 
-// Feature flag to use the new Edit menu API for browser view.
-BASE_DECLARE_FEATURE(kIOSCustomBrowserEditMenu);
-
 // Feature param under kIOSEditMenuPartialTranslate to disable on incognito.
 extern const char kIOSEditMenuPartialTranslateNoIncognitoParam[];
 // Feature flag to enable partial translate in the edit menu.
