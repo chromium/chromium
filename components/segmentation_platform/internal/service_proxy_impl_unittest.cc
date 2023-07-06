@@ -68,7 +68,9 @@ class MockModelExecutionScheduler : public ModelExecutionScheduler {
 
 class MockModelExecutionManager : public ModelExecutionManager {
  public:
-  MOCK_METHOD(ModelProvider*, GetProvider, (proto::SegmentId segment_id));
+  MOCK_METHOD(ModelProvider*,
+              GetModelProvider,
+              (proto::SegmentId segment_id, proto::ModelSource model_source));
 };
 
 }  // namespace

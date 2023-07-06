@@ -71,7 +71,9 @@ class TestModelProvider : public ModelProvider {
 
 class MockModelExecutionManager : public ModelExecutionManager {
  public:
-  MOCK_METHOD(ModelProvider*, GetProvider, (proto::SegmentId segment_id));
+  MOCK_METHOD(ModelProvider*,
+              GetModelProvider,
+              (proto::SegmentId segment_id, proto::ModelSource model_source));
 };
 
 }  // namespace
@@ -227,7 +229,9 @@ TEST_F(SegmentResultProviderTest, GetFromModelExecutionFailed) {
       .WillRepeatedly(Return(true));
 
   // No model available to execute.
-  EXPECT_CALL(*mock_execution_manager_, GetProvider(kTestSegment))
+  EXPECT_CALL(
+      *mock_execution_manager_,
+      GetModelProvider(kTestSegment, proto::ModelSource::SERVER_MODEL_SOURCE))
       .WillOnce(Return(nullptr));
   ExpectSegmentResultOnGet(
       kTestSegment, /*ignore_db_scores=*/true,
@@ -236,7 +240,9 @@ TEST_F(SegmentResultProviderTest, GetFromModelExecutionFailed) {
 
   // Feature processing failed.
   TestModelProvider provider(kTestSegment);
-  EXPECT_CALL(*mock_execution_manager_, GetProvider(kTestSegment))
+  EXPECT_CALL(
+      *mock_execution_manager_,
+      GetModelProvider(kTestSegment, proto::ModelSource::SERVER_MODEL_SOURCE))
       .WillOnce(Return(&provider));
   EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _, _))
       .WillOnce(RunOnceCallback<6>(/*error=*/true,
@@ -256,7 +262,9 @@ TEST_F(SegmentResultProviderTest, GetFromModel) {
       .WillOnce(Return(true));
 
   TestModelProvider provider(kTestSegment);
-  EXPECT_CALL(*mock_execution_manager_, GetProvider(kTestSegment))
+  EXPECT_CALL(
+      *mock_execution_manager_,
+      GetModelProvider(kTestSegment, proto::ModelSource::SERVER_MODEL_SOURCE))
       .WillOnce(Return(&provider));
   EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _, _))
       .WillOnce(RunOnceCallback<6>(/*error=*/false,

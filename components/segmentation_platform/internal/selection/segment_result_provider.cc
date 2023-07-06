@@ -149,8 +149,10 @@ void SegmentResultProviderImpl::OnGetSegmentInfo(
   request_state->options = std::move(options);
   request_state->available_segments.swap(available_segments);
   request_state->model_providers[DefaultModelManager::SegmentSource::DATABASE] =
-      execution_service_ ? execution_service_->GetModelProvider(segment_id)
-                         : nullptr;
+      execution_service_
+          ? execution_service_->GetModelProvider(
+                segment_id, proto::ModelSource::SERVER_MODEL_SOURCE)
+          : nullptr;
   // Default manager can be null in tests.
   request_state
       ->model_providers[DefaultModelManager::SegmentSource::DEFAULT_MODEL] =

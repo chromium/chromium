@@ -75,7 +75,8 @@ class ExecutionService {
   void OnNewModelInfoReadyLegacy(const proto::SegmentInfo& segment_info);
 
   // Gets the model provider for execution.
-  ModelProvider* GetModelProvider(SegmentId segment_id);
+  ModelProvider* GetModelProvider(SegmentId segment_id,
+                                  ModelSource model_source);
 
   void RequestModelExecution(std::unique_ptr<ExecutionRequest> request);
 

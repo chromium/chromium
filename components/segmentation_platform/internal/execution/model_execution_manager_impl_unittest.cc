@@ -21,6 +21,7 @@
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
@@ -45,6 +46,9 @@ namespace segmentation_platform {
 namespace {
 
 const int64_t kModelVersion = 123;
+
+constexpr SegmentId kSearchUserSegmentId =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER;
 
 using Sample = SignalDatabase::Sample;
 
@@ -90,6 +94,12 @@ class ModelExecutionManagerTest : public testing::Test {
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     signal_database_ = std::make_unique<MockSignalDatabase>();
     clock_.SetNow(base::Time::Now());
+    // Initialize DB and default models with 1 respectively.
+    model_provider_data_.segments_supporting_default_model = {
+        kSearchUserSegmentId};
+    default_model_manager_ = std::make_unique<DefaultModelManager>(
+        &model_provider_factory_,
+        model_provider_data_.segments_supporting_default_model);
   }
 
   void TearDown() override {
@@ -104,7 +114,7 @@ class ModelExecutionManagerTest : public testing::Test {
       const ModelExecutionManager::SegmentationModelUpdatedCallback& callback) {
     model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
         segment_ids, &model_provider_factory_, &clock_, segment_database_.get(),
-        callback);
+        default_model_manager_.get(), callback);
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -122,6 +132,7 @@ class ModelExecutionManagerTest : public testing::Test {
   base::SimpleTestClock clock_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   std::unique_ptr<MockSignalDatabase> signal_database_;
+  std::unique_ptr<DefaultModelManager> default_model_manager_;
 
   std::unique_ptr<ModelExecutionManagerImpl> model_execution_manager_;
 };
@@ -159,6 +170,7 @@ TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
   CreateModelExecutionManager({segment_id}, callback.Get());
 
   proto::SegmentInfo segment_info;
+  segment_info.set_model_source(proto::ModelSource::DEFAULT_MODEL_SOURCE);
   proto::SegmentationModelMetadata metadata;
   metadata.set_bucket_duration(42u);
   metadata.set_time_unit(proto::TimeUnit::DAY);
@@ -299,6 +311,56 @@ TEST_F(ModelExecutionManagerTest,
   // We shuold have kept the prediction result.
   EXPECT_THAT(segment_info.prediction_result().result(),
               testing::ElementsAre(2));
+}
+
+// TODO(ritikagup) : Update this test to test the OnSegmentationModelUpdated
+// flow for default models, once default model runs the callback for it.
+TEST_F(ModelExecutionManagerTest, DatabaseUpdateForDefaultModel) {
+  auto segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER;
+
+  // Fill in old data for default model in the SegmentInfo database.
+  segment_database_->SetBucketDuration(
+      segment_id, 456, proto::TimeUnit::MONTH,
+      proto::ModelSource::DEFAULT_MODEL_SOURCE);
+  segment_database_->AddUserActionFeature(
+      segment_id, /*user_action=*/"hello", /*bucket_count=*/2,
+      /*tensor_length=*/2, proto::Aggregation::BUCKETED_COUNT,
+      proto::ModelSource::DEFAULT_MODEL_SOURCE);
+  segment_database_->AddPredictionResult(
+      segment_id, 2, clock_.Now(), proto::ModelSource::DEFAULT_MODEL_SOURCE);
+
+  base::MockCallback<SegmentInfoDatabase::SegmentInfoCallback> db_callback_1;
+  absl::optional<proto::SegmentInfo> segment_info_from_db_1;
+  EXPECT_CALL(db_callback_1, Run(_))
+      .WillOnce(SaveArg<0>(&segment_info_from_db_1));
+  segment_database_->GetSegmentInfo(
+      segment_id, ModelSource::DEFAULT_MODEL_SOURCE, db_callback_1.Get());
+  EXPECT_TRUE(segment_info_from_db_1.has_value());
+  EXPECT_EQ(segment_id, segment_info_from_db_1->segment_id());
+
+  // Verify the old metadata and prediction result has been stored correctly for
+  // default model.
+  EXPECT_EQ(456u, segment_info_from_db_1->model_metadata().bucket_duration());
+  EXPECT_THAT(segment_info_from_db_1->prediction_result().result(),
+              testing::ElementsAre(2));
+  EXPECT_EQ(ModelSource::DEFAULT_MODEL_SOURCE,
+            segment_info_from_db_1->model_source());
+
+  // Verify the metadata features have been stored correctly for default model.
+  EXPECT_EQ(proto::SignalType::USER_ACTION,
+            segment_info_from_db_1->model_metadata()
+                .input_features(0)
+                .uma_feature()
+                .type());
+  EXPECT_EQ("hello", segment_info_from_db_1->model_metadata()
+                         .input_features(0)
+                         .uma_feature()
+                         .name());
+  EXPECT_EQ(proto::Aggregation::BUCKETED_COUNT,
+            segment_info_from_db_1->model_metadata()
+                .input_features(0)
+                .uma_feature()
+                .aggregation());
 }
 
 }  // namespace segmentation_platform

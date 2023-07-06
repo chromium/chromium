@@ -51,7 +51,9 @@ class MockFieldTrialRegister : public FieldTrialRegister {
 
 class MockModelExecutionManager : public ModelExecutionManager {
  public:
-  MOCK_METHOD(ModelProvider*, GetProvider, (proto::SegmentId segment_id));
+  MOCK_METHOD(ModelProvider*,
+              GetModelProvider,
+              (proto::SegmentId segment_id, proto::ModelSource model_source));
 };
 
 std::unique_ptr<Config> CreateTestConfig() {

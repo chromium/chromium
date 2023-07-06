@@ -74,8 +74,8 @@ void ModelExecutionSchedulerImpl::RequestModelExecution(
       base::BindOnce(&ModelExecutionSchedulerImpl::OnModelExecutionCompleted,
                      weak_ptr_factory_.GetWeakPtr(), segment_info)));
   auto request = std::make_unique<ExecutionRequest>();
-  request->model_provider =
-      model_execution_manager_->GetProvider(segment_info.segment_id());
+  request->model_provider = model_execution_manager_->GetModelProvider(
+      segment_info.segment_id(), proto::ModelSource::SERVER_MODEL_SOURCE);
   DCHECK(request->model_provider);
   request->segment_info = &segment_info;
   request->callback = outstanding_requests_[segment_id].callback();

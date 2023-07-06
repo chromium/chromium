@@ -30,6 +30,9 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
   void Initialize(SuccessCallback callback) override;
   void GetSegmentInfoForSegments(const base::flat_set<SegmentId>& segment_ids,
                                  MultipleSegmentInfoCallback callback) override;
+  std::unique_ptr<SegmentInfoDatabase::SegmentInfoList>
+  GetSegmentInfoForBothModels(
+      const base::flat_set<SegmentId>& segment_ids) override;
   void GetSegmentInfo(SegmentId segment_id,
                       ModelSource model_source,
                       SegmentInfoCallback callback) override;
@@ -55,34 +58,48 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
                        TrainingDataCallback callback) override;
 
   // Test helper methods.
-  void AddUserActionFeature(SegmentId segment_id,
-                            const std::string& user_action,
-                            uint64_t bucket_count,
-                            uint64_t tensor_length,
-                            proto::Aggregation aggregation);
-  void AddHistogramValueFeature(SegmentId segment_id,
-                                const std::string& histogram,
-                                uint64_t bucket_count,
-                                uint64_t tensor_length,
-                                proto::Aggregation aggregation);
-  void AddHistogramEnumFeature(SegmentId segment_id,
-                               const std::string& histogram_name,
-                               uint64_t bucket_count,
-                               uint64_t tensor_length,
-                               proto::Aggregation aggregation,
-                               const std::vector<int32_t>& accepted_enum_ids);
-  void AddSqlFeature(SegmentId segment_id,
-                     const MetadataWriter::SqlFeature& feature);
-  void AddPredictionResult(SegmentId segment_id,
-                           float score,
-                           base::Time timestamp);
-  void AddDiscreteMapping(SegmentId segment_id,
-                          const float mappings[][2],
-                          int num_pairs,
-                          const std::string& discrete_mapping_key);
-  void SetBucketDuration(SegmentId segment_id,
-                         uint64_t bucket_duration,
-                         proto::TimeUnit time_unit);
+  void AddUserActionFeature(
+      SegmentId segment_id,
+      const std::string& user_action,
+      uint64_t bucket_count,
+      uint64_t tensor_length,
+      proto::Aggregation aggregation,
+      ModelSource model_source = ModelSource::SERVER_MODEL_SOURCE);
+  void AddHistogramValueFeature(
+      SegmentId segment_id,
+      const std::string& histogram,
+      uint64_t bucket_count,
+      uint64_t tensor_length,
+      proto::Aggregation aggregation,
+      ModelSource model_source = ModelSource::SERVER_MODEL_SOURCE);
+  void AddHistogramEnumFeature(
+      SegmentId segment_id,
+      const std::string& histogram_name,
+      uint64_t bucket_count,
+      uint64_t tensor_length,
+      proto::Aggregation aggregation,
+      const std::vector<int32_t>& accepted_enum_ids,
+      ModelSource model_source = ModelSource::SERVER_MODEL_SOURCE);
+  void AddSqlFeature(
+      SegmentId segment_id,
+      const MetadataWriter::SqlFeature& feature,
+      ModelSource model_source = ModelSource::SERVER_MODEL_SOURCE);
+  void AddPredictionResult(
+      SegmentId segment_id,
+      float score,
+      base::Time timestamp,
+      ModelSource model_source = ModelSource::SERVER_MODEL_SOURCE);
+  void AddDiscreteMapping(
+      SegmentId segment_id,
+      const float mappings[][2],
+      int num_pairs,
+      const std::string& discrete_mapping_key,
+      ModelSource model_source = ModelSource::SERVER_MODEL_SOURCE);
+  void SetBucketDuration(
+      SegmentId segment_id,
+      uint64_t bucket_duration,
+      proto::TimeUnit time_unit,
+      ModelSource model_source = ModelSource::SERVER_MODEL_SOURCE);
 
   // Finds a segment with given |segment_id| and |model_source|. Creates one if
   // it doesn't exists. By default the |model_source| corresponds to server

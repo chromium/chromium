@@ -39,6 +39,18 @@ void TestSegmentInfoDatabase::GetSegmentInfoForSegments(
   std::move(callback).Run(std::move(result));
 }
 
+std::unique_ptr<SegmentInfoDatabase::SegmentInfoList>
+TestSegmentInfoDatabase::GetSegmentInfoForBothModels(
+    const base::flat_set<SegmentId>& segment_ids) {
+  auto result = std::make_unique<SegmentInfoDatabase::SegmentInfoList>();
+  for (const auto& pair : segment_infos_) {
+    if (base::Contains(segment_ids, pair.first)) {
+      result->emplace_back(pair);
+    }
+  }
+  return result;
+}
+
 void TestSegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
                                              ModelSource model_source,
                                              SegmentInfoCallback callback) {
@@ -140,8 +152,9 @@ void TestSegmentInfoDatabase::AddUserActionFeature(
     const std::string& name,
     uint64_t bucket_count,
     uint64_t tensor_length,
-    proto::Aggregation aggregation) {
-  proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+    proto::Aggregation aggregation,
+    ModelSource model_source) {
+  proto::SegmentInfo* info = FindOrCreateSegment(segment_id, model_source);
   MetadataWriter writer(info->mutable_model_metadata());
   MetadataWriter::UMAFeature feature{
       .signal_type = proto::SignalType::USER_ACTION,
@@ -159,8 +172,9 @@ void TestSegmentInfoDatabase::AddHistogramValueFeature(
     const std::string& name,
     uint64_t bucket_count,
     uint64_t tensor_length,
-    proto::Aggregation aggregation) {
-  proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+    proto::Aggregation aggregation,
+    ModelSource model_source) {
+  proto::SegmentInfo* info = FindOrCreateSegment(segment_id, model_source);
   MetadataWriter writer(info->mutable_model_metadata());
   MetadataWriter::UMAFeature feature{
       .signal_type = proto::SignalType::HISTOGRAM_VALUE,
@@ -179,8 +193,9 @@ void TestSegmentInfoDatabase::AddHistogramEnumFeature(
     uint64_t bucket_count,
     uint64_t tensor_length,
     proto::Aggregation aggregation,
-    const std::vector<int32_t>& accepted_enum_ids) {
-  proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+    const std::vector<int32_t>& accepted_enum_ids,
+    ModelSource model_source) {
+  proto::SegmentInfo* info = FindOrCreateSegment(segment_id, model_source);
   MetadataWriter writer(info->mutable_model_metadata());
   MetadataWriter::UMAFeature feature{
       .signal_type = proto::SignalType::HISTOGRAM_ENUM,
@@ -196,8 +211,9 @@ void TestSegmentInfoDatabase::AddHistogramEnumFeature(
 
 void TestSegmentInfoDatabase::AddSqlFeature(
     SegmentId segment_id,
-    const MetadataWriter::SqlFeature& feature) {
-  proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+    const MetadataWriter::SqlFeature& feature,
+    ModelSource model_source) {
+  proto::SegmentInfo* info = FindOrCreateSegment(segment_id, model_source);
   MetadataWriter writer(info->mutable_model_metadata());
   MetadataWriter::SqlFeature features[] = {feature};
   writer.AddSqlFeatures(features, 1);
@@ -205,8 +221,9 @@ void TestSegmentInfoDatabase::AddSqlFeature(
 
 void TestSegmentInfoDatabase::AddPredictionResult(SegmentId segment_id,
                                                   float score,
-                                                  base::Time timestamp) {
-  proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+                                                  base::Time timestamp,
+                                                  ModelSource model_source) {
+  proto::SegmentInfo* info = FindOrCreateSegment(segment_id, model_source);
   proto::PredictionResult* result = info->mutable_prediction_result();
   result->clear_result();
   result->add_result(score);
@@ -218,8 +235,9 @@ void TestSegmentInfoDatabase::AddDiscreteMapping(
     SegmentId segment_id,
     const float mappings[][2],
     int num_pairs,
-    const std::string& discrete_mapping_key) {
-  proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+    const std::string& discrete_mapping_key,
+    ModelSource model_source) {
+  proto::SegmentInfo* info = FindOrCreateSegment(segment_id, model_source);
   auto* discrete_mappings_map =
       info->mutable_model_metadata()->mutable_discrete_mappings();
   auto& discrete_mappings = (*discrete_mappings_map)[discrete_mapping_key];
@@ -233,8 +251,9 @@ void TestSegmentInfoDatabase::AddDiscreteMapping(
 
 void TestSegmentInfoDatabase::SetBucketDuration(SegmentId segment_id,
                                                 uint64_t bucket_duration,
-                                                proto::TimeUnit time_unit) {
-  proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+                                                proto::TimeUnit time_unit,
+                                                ModelSource model_source) {
+  proto::SegmentInfo* info = FindOrCreateSegment(segment_id, model_source);
   info->mutable_model_metadata()->set_bucket_duration(bucket_duration);
   info->mutable_model_metadata()->set_time_unit(time_unit);
 }

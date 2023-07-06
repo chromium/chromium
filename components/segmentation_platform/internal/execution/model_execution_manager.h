@@ -16,8 +16,7 @@ class SegmentInfo;
 class ModelProvider;
 
 // The ModelExecutionManager is used to own ModelProvider(s) that interact with
-// optimization_guide, and not used for default model. All model updates are
-// saved to database.
+// optimization_guide. All model updates are saved to database.
 class ModelExecutionManager {
  public:
   virtual ~ModelExecutionManager() = default;
@@ -31,7 +30,8 @@ class ModelExecutionManager {
   using SegmentationModelUpdatedCallback =
       base::RepeatingCallback<void(proto::SegmentInfo)>;
 
-  virtual ModelProvider* GetProvider(proto::SegmentId segment_id) = 0;
+  virtual ModelProvider* GetModelProvider(proto::SegmentId segment_id,
+                                          proto::ModelSource model_source) = 0;
 
  protected:
   ModelExecutionManager() = default;

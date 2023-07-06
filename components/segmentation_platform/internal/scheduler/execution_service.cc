@@ -68,7 +68,8 @@ void ExecutionService::Initialize(
 
   model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
       all_segment_ids, model_provider_factory, clock,
-      storage_service->segment_info_database(), callback);
+      storage_service->segment_info_database(),
+      storage_service->default_model_manager(), callback);
 
   model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
       std::move(observers), storage_service->segment_info_database(),
@@ -84,8 +85,9 @@ void ExecutionService::OnNewModelInfoReadyLegacy(
   model_execution_scheduler_->OnNewModelInfoReady(segment_info);
 }
 
-ModelProvider* ExecutionService::GetModelProvider(SegmentId segment_id) {
-  return model_execution_manager_->GetProvider(segment_id);
+ModelProvider* ExecutionService::GetModelProvider(SegmentId segment_id,
+                                                  ModelSource model_source) {
+  return model_execution_manager_->GetModelProvider(segment_id, model_source);
 }
 
 void ExecutionService::RequestModelExecution(

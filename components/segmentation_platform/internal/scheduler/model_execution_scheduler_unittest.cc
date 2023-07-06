@@ -44,7 +44,9 @@ class MockModelExecutionObserver : public ModelExecutionScheduler::Observer {
 
 class MockModelExecutionManager : public ModelExecutionManager {
  public:
-  MOCK_METHOD(ModelProvider*, GetProvider, (proto::SegmentId segment_id));
+  MOCK_METHOD(ModelProvider*,
+              GetModelProvider,
+              (proto::SegmentId segment_id, proto::ModelSource model_source));
 };
 
 class MockModelExecutor : public ModelExecutor {
@@ -89,6 +91,7 @@ MATCHER_P(IsForTarget, segment_id, "") {
 TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
   auto* segment_info = segment_database_->FindOrCreateSegment(kTestSegmentId);
   segment_info->set_segment_id(kTestSegmentId);
+  segment_info->set_model_source(proto::ModelSource::SERVER_MODEL_SOURCE);
   auto* metadata = segment_info->mutable_model_metadata();
   metadata->set_result_time_to_live(1);
   metadata->set_time_unit(proto::TimeUnit::DAY);
@@ -103,7 +106,9 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
 
   // If the metadata DOES meet the signal requirement, and we have no old,
   // PredictionResult we SHOULD try to execute the model.
-  EXPECT_CALL(model_execution_manager_, GetProvider(kTestSegmentId))
+  EXPECT_CALL(
+      model_execution_manager_,
+      GetModelProvider(kTestSegmentId, proto::ModelSource::SERVER_MODEL_SOURCE))
       .WillOnce(Return(&provider));
   EXPECT_CALL(model_executor_, ExecuteModel(IsForTarget(kTestSegmentId)))
       .Times(1);
@@ -137,7 +142,9 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
   prediction_result->add_result(0.9);
   prediction_result->set_timestamp_us(
       just_expired_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  EXPECT_CALL(model_execution_manager_, GetProvider(kTestSegmentId))
+  EXPECT_CALL(
+      model_execution_manager_,
+      GetModelProvider(kTestSegmentId, proto::ModelSource::SERVER_MODEL_SOURCE))
       .WillOnce(Return(&provider));
   EXPECT_CALL(model_executor_, ExecuteModel(IsForTarget(kTestSegmentId)))
       .Times(1);
@@ -152,7 +159,9 @@ TEST_F(ModelExecutionSchedulerTest, RequestModelExecutionForEligibleSegments) {
   // TODO(shaktisahu): Add tests for expired segments, freshly computed segments
   // etc.
 
-  EXPECT_CALL(model_execution_manager_, GetProvider(kTestSegmentId))
+  EXPECT_CALL(
+      model_execution_manager_,
+      GetModelProvider(kTestSegmentId, proto::ModelSource::SERVER_MODEL_SOURCE))
       .WillOnce(Return(&provider));
   EXPECT_CALL(model_executor_, ExecuteModel(IsForTarget(kTestSegmentId)))
       .Times(1);
