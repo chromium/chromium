@@ -18,6 +18,7 @@ import "components/sync/protocol/app_specifics.proto";
 import "components/sync/protocol/arc_package_specifics.proto";
 import "components/sync/protocol/autofill_specifics.proto";
 import "components/sync/protocol/autofill_offer_specifics.proto";
+import "components/sync/protocol/autofill_wallet_credential_specifics.proto";
 import "components/sync/protocol/autofill_wallet_usage_specifics.proto";
 import "components/sync/protocol/bookmark_specifics.proto";
 import "components/sync/protocol/contact_info_specifics.proto";
@@ -147,6 +148,7 @@ message EntitySpecifics {
         incoming_password_sharing_invitation = 1141935;
     OutgoingPasswordSharingInvitationSpecifics
         outgoing_password_sharing_invitation = 1142081;
+    AutofillWalletCredentialSpecifics autofill_wallet_credential = 1164238;
 
     // No-longer-supported data types, in various stages of removal.
     // TODO(crbug.com/1395003): Eventually, these should all become "reserved"
