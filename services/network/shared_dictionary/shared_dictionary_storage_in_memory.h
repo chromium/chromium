@@ -91,6 +91,15 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
 
   // SharedDictionaryStorage
   std::unique_ptr<SharedDictionary> GetDictionary(const GURL& url) override;
+  void GetDictionaryAsync(
+      const GURL& url,
+      base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback)
+      override;
+  scoped_refptr<SharedDictionaryWriter> CreateWriter(
+      const GURL& url,
+      base::Time response_time,
+      base::TimeDelta expiration,
+      const std::string& match) override;
 
   const std::map<url::SchemeHostPort, std::map<std::string, DictionaryInfo>>&
   GetDictionaryMap() {
@@ -108,13 +117,6 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
   friend class SharedDictionaryManagerTest;
   friend class network::cors::CorsURLLoaderSharedDictionaryTest;
   ~SharedDictionaryStorageInMemory() override;
-
-  // SharedDictionaryStorage
-  scoped_refptr<SharedDictionaryWriter> CreateWriter(
-      const GURL& url,
-      base::Time response_time,
-      base::TimeDelta expiration,
-      const std::string& match) override;
 
   // Called when SharedDictionaryWriterInMemory::Finish() is called.
   void OnDictionaryWritten(const GURL& url,

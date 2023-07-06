@@ -484,6 +484,56 @@ TEST_F(SharedDictionaryManagerOnDiskTest, MultipleDictionaries) {
                         dict2->size()));
 }
 
+TEST_F(SharedDictionaryManagerOnDiskTest, GetDictionaryAsync) {
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+
+    // Write the test data to the dictionary.
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict"),
+                    "testfile*", kTestData1);
+
+    FlushCacheTasks();
+    // Releasing `storage` and `manager`.
+  }
+  // FlushCacheTasks() to finish the persistence operation.
+  FlushCacheTasks();
+
+  // The dictionaries must be available after recreating `manager`.
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin.test/testfile")));
+  std::unique_ptr<SharedDictionary> dict;
+  storage->GetDictionaryAsync(
+      GURL("https://origin.test/testfile"),
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<SharedDictionary> dictionary) {
+            dict = std::move(dictionary);
+          }));
+  EXPECT_FALSE(dict);
+
+  // RunUntilIdle() to load from the database.
+  task_environment_.RunUntilIdle();
+
+  ASSERT_TRUE(dict);
+  net::TestCompletionCallback read_callback;
+  EXPECT_EQ(net::OK,
+            read_callback.GetResult(dict->ReadAll(read_callback.callback())));
+  EXPECT_EQ(kTestData1,
+            std::string(reinterpret_cast<const char*>(dict->data()->data()),
+                        dict->size()));
+}
+
 #if !BUILDFLAG(IS_FUCHSIA)
 // Test that corruptted disk cache doesn't cause crash.
 // CorruptDiskCache() doesn't work on Fuchsia. So disabling the following tests

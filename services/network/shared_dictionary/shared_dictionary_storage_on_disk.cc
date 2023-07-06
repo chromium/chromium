@@ -4,6 +4,7 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -11,6 +12,8 @@
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -171,6 +174,19 @@ std::unique_ptr<SharedDictionary> SharedDictionaryStorageOnDisk::GetDictionary(
       std::move(ref_counted_shared_dictionary));
 }
 
+void SharedDictionaryStorageOnDisk::GetDictionaryAsync(
+    const GURL& url,
+    base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback) {
+  if (is_metadata_ready_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), GetDictionary(url)));
+    return;
+  }
+  pending_get_dictionary_tasks_.emplace_back(
+      base::BindOnce(&SharedDictionaryStorageOnDisk::GetDictionaryAsync,
+                     weak_factory_.GetWeakPtr(), url, std::move(callback)));
+}
+
 scoped_refptr<SharedDictionaryWriter>
 SharedDictionaryStorageOnDisk::CreateWriter(const GURL& url,
                                             base::Time response_time,
@@ -200,6 +216,11 @@ void SharedDictionaryStorageOnDisk::OnDatabaseRead(
     const std::string match = info.match();
     (dictionary_info_map_[scheme_host_port])
         .insert(std::make_pair(match, std::move(info)));
+  }
+
+  auto callbacks = std::move(pending_get_dictionary_tasks_);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run();
   }
 }
 

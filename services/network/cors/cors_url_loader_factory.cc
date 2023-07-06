@@ -355,6 +355,21 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     if (isolation_info)
       isolation_info_ptr = &isolation_info.value();
 
+    scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage =
+        shared_dictionary_storage_;
+    if (isolation_info_ptr && !shared_dictionary_storage &&
+        context_->GetSharedDictionaryManager() && client_security_state_ &&
+        client_security_state_->is_web_secure_context) {
+      // For navigation requests, `shared_dictionary_storage_` is null. We need
+      // to get a storage using `isolation_info_ptr`.
+      absl::optional<net::SharedDictionaryIsolationKey> isolation_key =
+          net::SharedDictionaryIsolationKey::MaybeCreate(*isolation_info_ptr);
+      if (isolation_key) {
+        shared_dictionary_storage =
+            context_->GetSharedDictionaryManager()->GetStorage(*isolation_key);
+      }
+    }
+
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver> observer_remote;
     if (url_loader_network_service_observer_.is_bound()) {
       url_loader_network_service_observer_->Clone(
@@ -373,7 +388,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         HasFactoryOverride(!!factory_override_), *isolation_info_ptr,
         std::move(devtools_observer), client_security_state_.get(),
         std::move(observer_remote), cross_origin_embedder_policy_,
-        shared_dictionary_storage_,
+        shared_dictionary_storage,
         shared_dictionary_observer_ ? shared_dictionary_observer_.get()
                                     : nullptr,
         context_);

@@ -36,8 +36,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   SharedDictionaryStorage(const SharedDictionaryStorage&) = delete;
   SharedDictionaryStorage& operator=(const SharedDictionaryStorage&) = delete;
 
-  // Returns a matching SharedDictionary for `url`.
+  // Returns a matching SharedDictionary for `url`. If the metadata has not been
+  // read from the database, this method returns nullptr.
   virtual std::unique_ptr<SharedDictionary> GetDictionary(const GURL& url) = 0;
+
+  // This method waits until the metadata, and calls `callback` with the result
+  // of `GetDictionary()`.
+  virtual void GetDictionaryAsync(
+      const GURL& url,
+      base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback) = 0;
 
   // Returns a SharedDictionaryWriter if `headers` has a valid
   // `use-as-dictionary` header, and `access_allowed_check_callback`

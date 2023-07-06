@@ -5,9 +5,12 @@
 #include "services/network/shared_dictionary/shared_dictionary_storage_in_memory.h"
 
 #include "base/containers/cxx20_erase_map.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
 #include "net/base/io_buffer.h"
 #include "services/network/shared_dictionary/shared_dictionary_in_memory.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager_in_memory.h"
@@ -37,6 +40,13 @@ SharedDictionaryStorageInMemory::GetDictionary(const GURL& url) {
   info->set_last_used_time(base::Time::Now());
   return std::make_unique<SharedDictionaryInMemory>(info->data(), info->size(),
                                                     info->hash());
+}
+
+void SharedDictionaryStorageInMemory::GetDictionaryAsync(
+    const GURL& url,
+    base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), GetDictionary(url)));
 }
 
 void SharedDictionaryStorageInMemory::DeleteDictionary(

@@ -33,6 +33,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/shared_dictionary/shared_dictionary.h"
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
 #include "services/network/shared_dictionary/shared_dictionary_data_pipe_writer.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
@@ -315,6 +316,19 @@ CorsURLLoader::CorsURLLoader(
   DCHECK(network_loader_factory_);
   DCHECK(origin_access_list_);
   SetCorsFlagIfNeeded();
+
+  if (shared_dictionary_storage_) {
+    shared_dictionary_storage_->GetDictionaryAsync(
+        request_.url,
+        base::BindOnce(
+            [](base::WeakPtr<CorsURLLoader> loader,
+               std::unique_ptr<SharedDictionary> shared_dictionary) {
+              if (loader) {
+                loader->shared_dictionary_ = std::move(shared_dictionary);
+              }
+            },
+            weak_factory_.GetWeakPtr()));
+  }
 }
 
 CorsURLLoader::~CorsURLLoader() {
