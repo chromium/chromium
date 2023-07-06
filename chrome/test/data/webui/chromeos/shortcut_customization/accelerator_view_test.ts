@@ -115,11 +115,11 @@ suite('acceleratorViewTest', function() {
 
     await flush();
 
-    const ctrlKey = getInputKey('#ctrlKey');
-    const altKey = getInputKey('#altKey');
-    const shiftKey = getInputKey('#shiftKey');
-    const metaKey = getInputKey('#searchKey');
-    const pendingKey = getInputKey('#pendingKey');
+    let ctrlKey = getInputKey('#ctrlKey');
+    let altKey = getInputKey('#altKey');
+    let shiftKey = getInputKey('#shiftKey');
+    let metaKey = getInputKey('#searchKey');
+    let pendingKey = getInputKey('#pendingKey');
 
     // By default, no keys should be registered.
     assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
@@ -149,11 +149,36 @@ suite('acceleratorViewTest', function() {
 
     await flush();
 
-    assertEquals('modifier-selected', ctrlKey.keyState);
-    assertEquals('modifier-selected', altKey.keyState);
-    assertEquals('not-selected', shiftKey.keyState);
-    assertEquals('not-selected', metaKey.keyState);
-    assertEquals('alpha-numeric-selected', pendingKey.keyState);
+    assertEquals(KeyInputState.MODIFIER_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.MODIFIER_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.ALPHANUMERIC_SELECTED, pendingKey.keyState);
+    assertEquals('e', pendingKey.key);
+
+    // Release Ctrl, expect it to not be selected.
+    viewElement.dispatchEvent(new KeyboardEvent('keyup', {
+      key: 'Control',
+      keyCode: 17,
+      code: 'Control',
+      ctrlKey: true,
+      altKey: false,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flush();
+    ctrlKey = getInputKey('#ctrlKey');
+    altKey = getInputKey('#altKey');
+    shiftKey = getInputKey('#shiftKey');
+    metaKey = getInputKey('#searchKey');
+    pendingKey = getInputKey('#pendingKey');
+
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.MODIFIER_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.ALPHANUMERIC_SELECTED, pendingKey.keyState);
     assertEquals('e', pendingKey.key);
   });
 

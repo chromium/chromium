@@ -20,7 +20,7 @@ import {getShortcutProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCustomizationDisabled, isFunctionKey, isStandardAcceleratorInfo} from './shortcut_utils.js';
+import {createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCustomizationDisabled, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -227,7 +227,21 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private onKeyUp(e: KeyboardEvent): void {
     e.preventDefault();
     e.stopPropagation();
-    // TODO(jimmyxgong): Check for errors e.g. accelerator conflicts.
+    // Remove the modifier that was just released.
+    if (this.isModifierKey(e)) {
+      const modifier = keyCodeToModifier[e.keyCode];
+      const pendingModifiers = this.pendingAcceleratorInfo.layoutProperties
+                                   .standardAccelerator.accelerator.modifiers;
+      // Assert that the released modifier is present in the pending
+      // accelerator.
+      assert(pendingModifiers & modifier);
+      // Remove the released modifier.
+      const updatedModifiers = pendingModifiers - modifier;
+      this.set(
+          'pendingAcceleratorInfo.layoutProperties.standardAccelerator.' +
+              'accelerator.modifiers',
+          updatedModifiers);
+    }
   }
 
   private handleKey(e: KeyboardEvent): void {
