@@ -35,7 +35,11 @@ void CheckWallpaperBlur(float expected) {
 class OverviewWallpaperControllerTest : public AshTestBase {
  public:
   OverviewWallpaperControllerTest() {
-    scoped_feature_list_.InitAndDisableFeature(chromeos::features::kJellyroll);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{chromeos::features::kJelly,
+                               chromeos::features::kJellyroll});
+    ;
   }
 
   OverviewWallpaperControllerTest(const OverviewWallpaperControllerTest&) =
