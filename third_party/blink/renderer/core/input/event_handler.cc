@@ -1967,8 +1967,7 @@ void EventHandler::ApplyTouchAdjustment(WebGestureEvent* gesture_event,
   }
 
   Node* adjusted_node = nullptr;
-  gfx::Point adjusted_point =
-      gfx::ToFlooredPoint(gesture_event->PositionInRootFrame());
+  gfx::Point adjusted_point;
   bool adjusted =
       BestNodeForHitTestResult(touch_adjustment_candiate_type, location,
                                hit_test_result, adjusted_point, adjusted_node);
