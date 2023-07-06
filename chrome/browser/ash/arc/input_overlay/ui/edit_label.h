@@ -42,7 +42,6 @@ class EditLabel : public views::LabelButton {
 
   void SetToDefault();
   void SetToFocused();
-  void SetToUnbound();
 
   // views::View:
   void OnFocus() override;

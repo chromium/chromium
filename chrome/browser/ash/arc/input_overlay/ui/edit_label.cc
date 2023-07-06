@@ -63,17 +63,19 @@ void EditLabel::Init() {
   SetHotTracked(false);
   SetShowInkDropWhenHotTracked(false);
   SetHasInkDropActionOnClick(false);
-
+  ash::bubble_utils::ApplyStyle(label(), ash::TypographyToken::kCrosHeadline1,
+                                cros_tokens::kCrosSysOnPrimaryContainer);
   OnActionUpdated();
 }
 
 void EditLabel::SetTextLabel(const std::u16string& text) {
   SetText(text);
   SetAccessibleName(CalculateAccessibleName());
-
-  if (text == kUnknownBind) {
-    SetToUnbound();
-  } else if (HasFocus()) {
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      text == kUnknownBind ? cros_tokens::kCrosSysErrorHighlight
+                           : cros_tokens::kCrosSysHighlightShape,
+      /*radius=*/8));
+  if (HasFocus()) {
     SetToFocused();
   } else {
     SetToDefault();
@@ -94,49 +96,29 @@ std::u16string EditLabel::CalculateAccessibleName() {
 }
 
 void EditLabel::SetToDefault() {
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysHighlightShape, /*corner_radius=*/8));
-  ash::bubble_utils::ApplyStyle(label(), ash::TypographyToken::kCrosHeadline1,
-                                cros_tokens::kCrosSysOnPrimaryContainer);
+  SetEnabledTextColorIds(IsInputUnbound()
+                             ? cros_tokens::kCrosSysError
+                             : cros_tokens::kCrosSysOnPrimaryContainer);
   SetBorder(nullptr);
 }
 
 void EditLabel::SetToFocused() {
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysHighlightShape, /*corner_radius=*/8));
-  ash::bubble_utils::ApplyStyle(label(), ash::TypographyToken::kCrosHeadline1,
-                                cros_tokens::kCrosSysHighlightText);
+  SetEnabledTextColorIds(IsInputUnbound() ? cros_tokens::kCrosSysError
+                                          : cros_tokens::kCrosSysHighlightText);
   SetBorder(views::CreateThemedRoundedRectBorder(
       /*thickness=*/2, /*corner_radius=*/8, cros_tokens::kCrosSysPrimary));
 }
 
-void EditLabel::SetToUnbound() {
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosRefError30, /*corner_radius=*/8));
-  ash::bubble_utils::ApplyStyle(label(), ash::TypographyToken::kCrosHeadline1,
-                                cros_tokens::kCrosRefError0);
-  SetBorder(nullptr);
-}
-
 void EditLabel::OnFocus() {
   LabelButton::OnFocus();
-
-  if (IsInputUnbound()) {
-    SetToUnbound();
-  } else {
-    SetToFocused();
-  }
+  SetToFocused();
 }
 
 void EditLabel::OnBlur() {
   LabelButton::OnBlur();
-
-  if (IsInputUnbound()) {
-    SetToUnbound();
-  } else {
-    SetToDefault();
-    SetNameTagState(/*is_error=*/false, u"");
-  }
+  SetToDefault();
+  // Reset the error state if an reserved key was pressed.
+  SetNameTagState(/*is_error=*/false, u"");
 }
 
 bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
