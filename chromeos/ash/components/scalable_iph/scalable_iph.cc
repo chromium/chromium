@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
@@ -63,9 +64,29 @@ const std::vector<const base::Feature*>& GetFeatureListConstant() {
 
 constexpr base::TimeDelta kTimeTickEventInterval = base::Minutes(5);
 
+std::string GetParamValue(const base::Feature& feature,
+                          const std::string& param_name) {
+  std::string fully_qualified_param_name =
+      base::StrCat({feature.name, "_", param_name});
+  std::string value = base::GetFieldTrialParamValueByFeature(
+      feature, fully_qualified_param_name);
+
+  // Non-fully-qualified name field must always be empty.
+  DCHECK(base::GetFieldTrialParamValueByFeature(feature, param_name).empty())
+      << param_name
+      << " is specified in a non-fully-qualified way. It should be specified "
+         "as "
+      << fully_qualified_param_name
+      << ". It's often the case in Scalable Iph to enable multiple features at "
+         "once. To avoid an unexpected fall-back behavior, non-fully-qualified "
+         "name is not accepted. Parameter names of custom fields must be "
+         "specified in a fully qualified way: [Feature Name]_[Parameter Name]";
+
+  return value;
+}
+
 UiType ParseUiType(const base::Feature& feature) {
-  std::string ui_type =
-      base::GetFieldTrialParamValueByFeature(feature, kCustomUiTypeParamName);
+  std::string ui_type = GetParamValue(feature, kCustomUiTypeParamName);
   CHECK(ui_type == kCustomUiTypeValueNotification ||
         ui_type == kCustomUiTypeValueBubble);
   if (ui_type == kCustomUiTypeValueNotification) {
@@ -79,25 +100,23 @@ NotificationParams ParseNotificationParams(const base::Feature& feature) {
   // show an IPH for the case instead of CHECK failure. Config is served from
   // the server. This is not a constraint coming from client side.
   NotificationParams param;
-  param.notification_id = base::GetFieldTrialParamValueByFeature(
-      feature, kCustomNotificationIdParamName);
+  param.notification_id =
+      GetParamValue(feature, kCustomNotificationIdParamName);
   CHECK(!param.notification_id.empty())
       << kCustomNotificationIdParamName << " is a required field";
-  param.title = base::GetFieldTrialParamValueByFeature(
-      feature, kCustomNotificationTitleParamName);
+  param.title = GetParamValue(feature, kCustomNotificationTitleParamName);
   CHECK(!param.title.empty())
       << kCustomNotificationTitleParamName << " is a required field";
-  param.text = base::GetFieldTrialParamValueByFeature(
-      feature, kCustomNotificationBodyTextParamName);
+  param.text = GetParamValue(feature, kCustomNotificationBodyTextParamName);
   CHECK(!param.text.empty())
       << kCustomNotificationBodyTextParamName << " is a required field";
-  param.button.text = base::GetFieldTrialParamValueByFeature(
-      feature, kCustomNotificationButtonTextParamName);
+  param.button.text =
+      GetParamValue(feature, kCustomNotificationButtonTextParamName);
   CHECK(!param.button.text.empty())
       << kCustomNotificationButtonTextParamName << " is a required field";
 
-  std::string image_type = base::GetFieldTrialParamValueByFeature(
-      feature, kCustomNotificationImageTypeParamName);
+  std::string image_type =
+      GetParamValue(feature, kCustomNotificationImageTypeParamName);
   param.image_type = ScalableIphDelegate::NotificationImageType::kNoImage;
   if (image_type == kCustomNotificationImageTypeValueWallpaper) {
     param.image_type = ScalableIphDelegate::NotificationImageType::kWallpaper;
@@ -110,16 +129,13 @@ BubbleParams ParseBubbleParams(const base::Feature& feature) {
   // show an IPH for the case instead of CHECK failure. Config is served from
   // the server. This is not a constraint coming from client side.
   BubbleParams param;
-  param.bubble_id =
-      base::GetFieldTrialParamValueByFeature(feature, kCustomBubbleIdParamName);
+  param.bubble_id = GetParamValue(feature, kCustomBubbleIdParamName);
   CHECK(!param.bubble_id.empty())
       << kCustomBubbleIdParamName << " is a required field";
-  param.text = base::GetFieldTrialParamValueByFeature(
-      feature, kCustomBubbleTextParamName);
+  param.text = GetParamValue(feature, kCustomBubbleTextParamName);
   CHECK(!param.text.empty())
       << kCustomBubbleTextParamName << " is a required field";
-  param.button.text = base::GetFieldTrialParamValueByFeature(
-      feature, kCustomBubbleButtonTextParamName);
+  param.button.text = GetParamValue(feature, kCustomBubbleButtonTextParamName);
   CHECK(!param.button.text.empty())
       << kCustomBubbleButtonTextParamName << " is a required field";
   return param;
@@ -285,8 +301,8 @@ bool ScalableIph::CheckCustomConditions(const base::Feature& feature) {
 }
 
 bool ScalableIph::CheckNetworkConnection(const base::Feature& feature) {
-  std::string connection_condition = base::GetFieldTrialParamValueByFeature(
-      feature, kCustomConditionNetworkConnectionParamName);
+  std::string connection_condition =
+      GetParamValue(feature, kCustomConditionNetworkConnectionParamName);
   if (connection_condition.empty()) {
     return true;
   }
@@ -303,8 +319,8 @@ bool ScalableIph::CheckNetworkConnection(const base::Feature& feature) {
 }
 
 bool ScalableIph::CheckClientAge(const base::Feature& feature) {
-  std::string client_age_condition = base::GetFieldTrialParamValueByFeature(
-      feature, kCustomConditionClientAgeInDaysParamName);
+  std::string client_age_condition =
+      GetParamValue(feature, kCustomConditionClientAgeInDaysParamName);
   if (client_age_condition.empty()) {
     return true;
   }

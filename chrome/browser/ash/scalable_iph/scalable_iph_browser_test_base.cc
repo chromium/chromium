@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/mock_scalable_iph_delegate.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_delegate_impl.h"
@@ -149,25 +150,44 @@ void ScalableIphBrowserTestBase::InitializeScopedFeatureList() {
 
 void ScalableIphBrowserTestBase::AppendFakeUiParamsNotification(
     base::FieldTrialParams& params) {
-  params[scalable_iph::kCustomUiTypeParamName] =
+  params[FullyQualified(kScalableIphTest,
+                        scalable_iph::kCustomUiTypeParamName)] =
       scalable_iph::kCustomUiTypeValueNotification;
-  params[scalable_iph::kCustomNotificationIdParamName] = kTestNotificationId;
-  params[scalable_iph::kCustomNotificationTitleParamName] =
+  params[FullyQualified(kScalableIphTest,
+                        scalable_iph::kCustomNotificationIdParamName)] =
+      kTestNotificationId;
+  params[FullyQualified(kScalableIphTest,
+                        scalable_iph::kCustomNotificationTitleParamName)] =
       kTestNotificationTitle;
-  params[scalable_iph::kCustomNotificationBodyTextParamName] =
+  params[FullyQualified(kScalableIphTest,
+                        scalable_iph::kCustomNotificationBodyTextParamName)] =
       kTestNotificationBodyText;
-  params[scalable_iph::kCustomNotificationButtonTextParamName] =
+  params[FullyQualified(kScalableIphTest,
+                        scalable_iph::kCustomNotificationButtonTextParamName)] =
       kTestNotificationButtonText;
 }
 
 void ScalableIphBrowserTestBase::AppendFakeUiParamsBubble(
     base::FieldTrialParams& params) {
-  params[scalable_iph::kCustomUiTypeParamName] =
+  params[FullyQualified(kScalableIphTest,
+                        scalable_iph::kCustomUiTypeParamName)] =
       scalable_iph::kCustomUiTypeValueBubble;
-  params[scalable_iph::kCustomBubbleIdParamName] = kTestBubbleId;
-  params[scalable_iph::kCustomBubbleTextParamName] = kTestBubbleText;
-  params[scalable_iph::kCustomBubbleButtonTextParamName] =
+  params[FullyQualified(kScalableIphTest,
+                        scalable_iph::kCustomBubbleIdParamName)] =
+      kTestBubbleId;
+  params[FullyQualified(kScalableIphTest,
+                        scalable_iph::kCustomBubbleTextParamName)] =
+      kTestBubbleText;
+  params[FullyQualified(kScalableIphTest,
+                        scalable_iph::kCustomBubbleButtonTextParamName)] =
       kTestBubbleButtonText;
+}
+
+// static
+std::string ScalableIphBrowserTestBase::FullyQualified(
+    const base::Feature& feature,
+    const std::string& param_name) {
+  return base::StrCat({feature.name, "_", param_name});
 }
 
 bool ScalableIphBrowserTestBase::IsMockDelegateCreatedFor(Profile* profile) {

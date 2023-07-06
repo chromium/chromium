@@ -35,7 +35,9 @@ class ScalableIphBrowserTestNetworkConnection : public ScalableIphBrowserTest {
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params;
     AppendFakeUiParamsNotification(params);
-    params[scalable_iph::kCustomConditionNetworkConnectionParamName] =
+    params[FullyQualified(
+        TestIphFeature(),
+        scalable_iph::kCustomConditionNetworkConnectionParamName)] =
         scalable_iph::kCustomConditionNetworkConnectionOnline;
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
 
@@ -62,7 +64,9 @@ class ScalableIphBrowserTestClientAgeBase : public ScalableIphBrowserTest {
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params;
     AppendFakeUiParamsNotification(params);
-    params[scalable_iph::kCustomConditionClientAgeInDaysParamName] =
+    params[FullyQualified(
+        TestIphFeature(),
+        scalable_iph::kCustomConditionClientAgeInDaysParamName)] =
         GetClientAgeTestValue();
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
 

@@ -49,6 +49,8 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   virtual void InitializeScopedFeatureList();
   void AppendFakeUiParamsNotification(base::FieldTrialParams& params);
   void AppendFakeUiParamsBubble(base::FieldTrialParams& params);
+  static std::string FullyQualified(const base::Feature& feature,
+                                    const std::string& param_name);
 
   feature_engagement::test::MockTracker* mock_tracker() {
     return mock_tracker_;
