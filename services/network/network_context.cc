@@ -2976,4 +2976,15 @@ void NetworkContext::GetSharedDictionaryUsageInfo(
   shared_dictionary_manager_->GetUsageInfo(std::move(callback));
 }
 
+void NetworkContext::GetSharedDictionaryInfo(
+    const net::SharedDictionaryIsolationKey& isolation_key,
+    GetSharedDictionaryInfoCallback callback) {
+  if (!shared_dictionary_manager_) {
+    std::move(callback).Run({});
+    return;
+  }
+  shared_dictionary_manager_->GetSharedDictionaryInfo(isolation_key,
+                                                      std::move(callback));
+}
+
 }  // namespace network

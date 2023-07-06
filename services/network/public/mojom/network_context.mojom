@@ -36,6 +36,7 @@ import "services/network/public/mojom/net_log.mojom";
 import "services/network/public/mojom/network_isolation_key.mojom";
 import "services/network/public/mojom/network_anonymization_key.mojom";
 import "services/network/public/mojom/oblivious_http_request.mojom";
+import "services/network/public/mojom/hash_value.mojom";
 import "services/network/public/mojom/isolation_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
@@ -598,6 +599,17 @@ struct NetworkConditions {
   // Maximal aggregated upload throughput (bytes/sec). <=0 disables upload
   // throttling.
   double upload_throughput;
+};
+
+// Represents a shared dictionary.
+struct SharedDictionaryInfo {
+  string match;
+  url.mojom.Url dictionary_url;
+  mojo_base.mojom.Time response_time;
+  mojo_base.mojom.TimeDelta expiration;
+  mojo_base.mojom.Time last_used_time;
+  uint64 size;
+  SHA256HashValue hash;
 };
 
 // Represents a signed exchange report.
@@ -1591,6 +1603,10 @@ interface NetworkContext {
   // Get the usage information of shared dictionaries.
   GetSharedDictionaryUsageInfo()
       => (array<SharedDictionaryUsageInfo> usage_info);
+
+  // Get shared dictionaries information for `isolation_key`.
+  GetSharedDictionaryInfo(SharedDictionaryIsolationKey isolation_key)
+      => (array<SharedDictionaryInfo> dictionaries);
 
   // Sets maximum size of the shared dictionary cache.
   SetSharedDictionaryCacheMaxSize(uint64 cache_max_size);

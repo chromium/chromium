@@ -329,6 +329,9 @@ class TestNetworkContext : public mojom::NetworkContext {
       ClearSharedDictionaryCacheForIsolationKeyCallback callback) override {}
   void GetSharedDictionaryUsageInfo(
       GetSharedDictionaryUsageInfoCallback callback) override {}
+  void GetSharedDictionaryInfo(
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      GetSharedDictionaryInfoCallback callback) override {}
 };
 
 }  // namespace network

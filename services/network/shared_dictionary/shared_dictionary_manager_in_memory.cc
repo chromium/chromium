@@ -225,4 +225,27 @@ void SharedDictionaryManagerInMemory::GetUsageInfo(
   std::move(callback).Run(std::move(result));
 }
 
+void SharedDictionaryManagerInMemory::GetSharedDictionaryInfo(
+    const net::SharedDictionaryIsolationKey& isolation_key,
+    base::OnceCallback<
+        void(std::vector<network::mojom::SharedDictionaryInfoPtr>)> callback) {
+  std::vector<network::mojom::SharedDictionaryInfoPtr> dictionaries;
+
+  const auto it = storages().find(isolation_key);
+  if (it == storages().end()) {
+    std::move(callback).Run(std::move(dictionaries));
+    return;
+  }
+  SharedDictionaryStorageInMemory* storage =
+      reinterpret_cast<SharedDictionaryStorageInMemory*>(it->second.get());
+
+  std::vector<network::mojom::SharedDictionaryInfoPtr> dicts;
+  for (const auto& it1 : storage->GetDictionaryMap()) {
+    for (const auto& it2 : it1.second) {
+      dictionaries.push_back(ToMojoSharedDictionaryInfo(it2.second));
+    }
+  }
+  std::move(callback).Run(std::move(dictionaries));
+}
+
 }  // namespace network

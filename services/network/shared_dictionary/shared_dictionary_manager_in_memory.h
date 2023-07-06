@@ -42,6 +42,11 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
   void GetUsageInfo(base::OnceCallback<
                     void(const std::vector<net::SharedDictionaryUsageInfo>&)>
                         callback) override;
+  void GetSharedDictionaryInfo(
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      base::OnceCallback<
+          void(std::vector<network::mojom::SharedDictionaryInfoPtr>)> callback)
+      override;
 
   void MaybeRunCacheEvictionPerSite(const net::SchemefulSite& top_frame_site);
   void MaybeRunCacheEviction();

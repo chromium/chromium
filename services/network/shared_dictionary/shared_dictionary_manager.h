@@ -14,8 +14,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace base {
 namespace android {
@@ -80,6 +82,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
   virtual void GetUsageInfo(
       base::OnceCallback<void(
           const std::vector<net::SharedDictionaryUsageInfo>&)> callback) = 0;
+  virtual void GetSharedDictionaryInfo(
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      base::OnceCallback<void(
+          std::vector<network::mojom::SharedDictionaryInfoPtr>)> callback) = 0;
 
  protected:
   SharedDictionaryManager();
@@ -112,6 +118,24 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
 
   base::WeakPtrFactory<SharedDictionaryManager> weak_factory_{this};
 };
+
+// Creates a network::mojom::SharedDictionaryInfo from a `DictionaryInfoType`.
+// This is a template method because SharedDictionaryManagerOnDisk and
+// SharedDictionaryManagerInMemory are using different class for
+// DictionaryInfoType.
+template <class DictionaryInfoType>
+network::mojom::SharedDictionaryInfoPtr ToMojoSharedDictionaryInfo(
+    const DictionaryInfoType& info) {
+  auto mojo_info = network::mojom::SharedDictionaryInfo::New();
+  mojo_info->match = info.match();
+  mojo_info->dictionary_url = info.url();
+  mojo_info->response_time = info.response_time();
+  mojo_info->expiration = info.expiration();
+  mojo_info->last_used_time = info.last_used_time();
+  mojo_info->size = info.size();
+  mojo_info->hash = info.hash();
+  return mojo_info;
+}
 
 }  // namespace network
 

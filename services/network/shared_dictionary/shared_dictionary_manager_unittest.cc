@@ -60,6 +60,17 @@ const net::SchemefulSite kSite3(kUrl3);
 const std::string kTestData1 = "Hello world";
 const std::string kTestData2 = "Bonjour le monde";
 
+// The SHA256 hash of kTestData1
+const net::SHA256HashValue kTestData1Hash = {
+    {0x64, 0xec, 0x88, 0xca, 0x00, 0xb2, 0x68, 0xe5, 0xba, 0x1a, 0x35,
+     0x67, 0x8a, 0x1b, 0x53, 0x16, 0xd2, 0x12, 0xf4, 0xf3, 0x66, 0xb2,
+     0x47, 0x72, 0x32, 0x53, 0x4a, 0x8a, 0xec, 0xa3, 0x7f, 0x3c}};
+// The SHA256 hash of kTestData2
+const net::SHA256HashValue kTestData2Hash = {
+    {0x4d, 0xc4, 0x5b, 0x5e, 0xd3, 0xde, 0x20, 0x2a, 0x56, 0x93, 0xc9,
+     0x26, 0xca, 0xf9, 0x5b, 0xd9, 0x71, 0x0b, 0xef, 0x4f, 0xe5, 0xfb,
+     0x16, 0xa1, 0xc2, 0x4a, 0x08, 0xed, 0x42, 0x8e, 0x8a, 0xe0}};
+
 const size_t kCacheMaxCount = 100;
 
 void CheckDiskCacheEntryDataEquals(
@@ -94,14 +105,14 @@ void WriteDictionary(SharedDictionaryStorage* storage,
                      const GURL& dictionary_url,
                      const std::string& match,
                      const std::vector<std::string>& data_list,
-                     base::Time now_time = base::Time::Now()) {
+                     const std::string& additional_options = std::string()) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"/", match, "\"\n\n"}));
+           ": match=\"/", match, "\"", additional_options, "\n\n"}));
   ASSERT_TRUE(headers);
   scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      dictionary_url, now_time, *headers,
+      dictionary_url, base::Time::Now(), *headers,
       /*access_allowed_check_callback=*/base::BindOnce([]() { return true; }));
   ASSERT_TRUE(writer);
   for (const std::string& data : data_list) {
@@ -245,7 +256,7 @@ TEST_P(SharedDictionaryManagerTest, CachedStorage) {
       manager->GetStorage(isolation_key);
   // Write the test data to the dictionary.
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
-                  {"Hello"}, base::Time::Now());
+                  {"Hello"});
   if (GetParam() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
@@ -271,7 +282,7 @@ TEST_P(SharedDictionaryManagerTest, CachedStorageEvicted) {
       manager->GetStorage(isolation_key);
   // Write the test data to the dictionary.
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
-                  {"Hello"}, base::Time::Now());
+                  {"Hello"});
   if (GetParam() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
@@ -324,7 +335,7 @@ TEST_P(SharedDictionaryManagerTest,
       manager->GetStorage(isolation_key);
   // Write the test data to the dictionary.
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
-                  {"Hello"}, base::Time::Now());
+                  {"Hello"});
   if (GetParam() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
@@ -355,7 +366,7 @@ TEST_P(SharedDictionaryManagerTest,
       manager->GetStorage(isolation_key);
   // Write the test data to the dictionary.
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
-                  {"Hello"}, base::Time::Now());
+                  {"Hello"});
   if (GetParam() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
@@ -381,7 +392,7 @@ TEST_P(SharedDictionaryManagerTest,
       manager->GetStorage(isolation_key);
   // Write the test data to the dictionary.
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
-                  {"Hello"}, base::Time::Now());
+                  {"Hello"});
   if (GetParam() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
@@ -412,7 +423,7 @@ TEST_P(SharedDictionaryManagerTest,
       manager->GetStorage(isolation_key);
   // Write the test data to the dictionary.
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "p*",
-                  {"Hello"}, base::Time::Now());
+                  {"Hello"});
   if (GetParam() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
@@ -610,7 +621,7 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
   const std::string data2 = "world";
   // Write the test data to the dictionary.
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "testfile*",
-                  {data1, data2}, now_time);
+                  {data1, data2});
 
   // Calculate the hash.
   std::unique_ptr<crypto::SecureHash> secure_hash =
@@ -1406,6 +1417,110 @@ TEST_P(SharedDictionaryManagerTest, GetUsageInfoEmptyResult) {
         EXPECT_TRUE(usage_info.empty());
         run_loop.Quit();
       }));
+  run_loop.Run();
+}
+
+TEST_P(SharedDictionaryManagerTest, GetSharedDictionaryInfo) {
+  net::SharedDictionaryIsolationKey isolation_key1(
+      url::Origin::Create(GURL("https://frame1.test/")),
+      net::SchemefulSite(GURL("https://target1.test")));
+  net::SharedDictionaryIsolationKey isolation_key2(
+      url::Origin::Create(GURL("https://frame2.test/")),
+      net::SchemefulSite(GURL("https://target2.test")));
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  const base::Time start_time = base::Time::Now();
+
+  scoped_refptr<SharedDictionaryStorage> storage1 =
+      manager->GetStorage(isolation_key1);
+  WriteDictionary(storage1.get(), GURL("https://origin1.test/1"), "p1*",
+                  {kTestData1});
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  WriteDictionary(storage1.get(), GURL("https://origin1.test/2"), "p2*",
+                  {kTestData2});
+
+  scoped_refptr<SharedDictionaryStorage> storage2 =
+      manager->GetStorage(isolation_key2);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  WriteDictionary(storage2.get(), GURL("https://origin2.test/d"), "p*",
+                  {kTestData2}, /*additional_options=*/",expires=123456");
+
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  // Update `last_used_time`.
+  EXPECT_TRUE(storage1->GetDictionary(GURL("https://origin1.test/p2?")));
+
+  std::vector<network::mojom::SharedDictionaryInfoPtr> result1;
+  {
+    base::RunLoop run_loop;
+    manager->GetSharedDictionaryInfo(
+        isolation_key1,
+        base::BindLambdaForTesting(
+            [&](std::vector<network::mojom::SharedDictionaryInfoPtr> result) {
+              result1 = std::move(result);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+  ASSERT_EQ(2u, result1.size());
+
+  EXPECT_EQ("/p1*", result1[0]->match);
+  EXPECT_EQ(GURL("https://origin1.test/1"), result1[0]->dictionary_url);
+  EXPECT_EQ(start_time, result1[0]->response_time);
+  EXPECT_EQ(shared_dictionary::kDefaultExpiration, result1[0]->expiration);
+  EXPECT_EQ(start_time, result1[0]->last_used_time);
+  EXPECT_EQ(kTestData1.size(), result1[0]->size);
+  EXPECT_EQ(kTestData1Hash, result1[0]->hash);
+
+  EXPECT_EQ("/p2*", result1[1]->match);
+  EXPECT_EQ(GURL("https://origin1.test/2"), result1[1]->dictionary_url);
+  EXPECT_EQ(start_time + base::Seconds(1), result1[1]->response_time);
+  EXPECT_EQ(shared_dictionary::kDefaultExpiration, result1[1]->expiration);
+  EXPECT_EQ(start_time + base::Seconds(3), result1[1]->last_used_time);
+  EXPECT_EQ(kTestData2.size(), result1[1]->size);
+  EXPECT_EQ(kTestData2Hash, result1[1]->hash);
+
+  std::vector<network::mojom::SharedDictionaryInfoPtr> result2;
+  {
+    base::RunLoop run_loop;
+    manager->GetSharedDictionaryInfo(
+        isolation_key2,
+        base::BindLambdaForTesting(
+            [&](std::vector<network::mojom::SharedDictionaryInfoPtr> result) {
+              result2 = std::move(result);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+  ASSERT_EQ(1u, result2.size());
+  EXPECT_EQ("/p*", result2[0]->match);
+  EXPECT_EQ(GURL("https://origin2.test/d"), result2[0]->dictionary_url);
+  EXPECT_EQ(start_time + base::Seconds(2), result2[0]->response_time);
+  EXPECT_EQ(base::Seconds(123456), result2[0]->expiration);
+  EXPECT_EQ(start_time + base::Seconds(2), result2[0]->last_used_time);
+  EXPECT_EQ(kTestData2.size(), result2[0]->size);
+  EXPECT_EQ(kTestData2Hash, result2[0]->hash);
+}
+
+TEST_P(SharedDictionaryManagerTest, GetSharedDictionaryInfoEmptyResult) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  base::RunLoop run_loop;
+  manager->GetSharedDictionaryInfo(
+      net::SharedDictionaryIsolationKey(
+          url::Origin::Create(GURL("https://frame.test/")),
+          net::SchemefulSite(GURL("https://top-frame.test"))),
+      base::BindLambdaForTesting(
+          [&](std::vector<network::mojom::SharedDictionaryInfoPtr> result) {
+            EXPECT_TRUE(result.empty());
+            run_loop.Quit();
+          }));
   run_loop.Run();
 }
 

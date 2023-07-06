@@ -26,6 +26,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
+#include "net/base/hash_value.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -67,6 +68,10 @@ constexpr char kOriginTrialToken[] =
 // (content/test/data/shared_dictionary/test.dict).
 const std::string kExpectedDictionaryHash =
     "53969bcf5e960e0edbf0a4bdde6b0b3e9381e156de7f5b91ce8391624270f416";
+const net::SHA256HashValue kExpectedDictionaryHashValue = {
+    {0x53, 0x96, 0x9b, 0xcf, 0x5e, 0x96, 0x0e, 0x0e, 0xdb, 0xf0, 0xa4,
+     0xbd, 0xde, 0x6b, 0x0b, 0x3e, 0x93, 0x81, 0xe1, 0x56, 0xde, 0x7f,
+     0x5b, 0x91, 0xce, 0x83, 0x91, 0x62, 0x42, 0x70, 0xf4, 0x16}};
 const std::string kUncompressedDataString = "test(\"This is uncompressed.\");";
 const std::string kErrorInvalidHashString =
     "test(\"Invalid dictionary hash.\");";
@@ -662,6 +667,27 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest, GetUsageInfo) {
   loop.Run();
 }
 
+IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
+                       GetSharedDictionaryInfo) {
+  network::mojom::NetworkContext* network_context =
+      shell()
+          ->web_contents()
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition()
+          ->GetNetworkContext();
+  base::RunLoop loop;
+  network_context->GetSharedDictionaryInfo(
+      net::SharedDictionaryIsolationKey(
+          url::Origin::Create(GURL("https://frame.test/")),
+          net::SchemefulSite(GURL("https://top-frame.test"))),
+      base::BindLambdaForTesting(
+          [&](std::vector<network::mojom::SharedDictionaryInfoPtr> result) {
+            EXPECT_TRUE(result.empty());
+            loop.Quit();
+          }));
+  loop.Run();
+}
+
 // Tests end to end functionality of "compression dictionary transport" feature
 // with fully enabled features.
 class SharedDictionaryBrowserTest
@@ -1083,6 +1109,50 @@ IN_PROC_BROWSER_TEST_P(
           EXPECT_TRUE(usage_info.empty());
           loop.Quit();
         }));
+    loop.Run();
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, GetSharedDictionaryInfo) {
+  Shell* target_shell = GetBrowserType() == BrowserType::kNormal
+                            ? shell()
+                            : CreateOffTheRecordBrowser();
+  RunWriteDictionaryTest(
+      target_shell, FetchType::kLinkRelDictionary,
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
+      embedded_test_server()->GetURL("/shared_dictionary/test.dict"),
+      GetBrowserType() == BrowserType::kNormal
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+          : "Net.SharedDictionaryWriterInMemory.DictionarySize",
+      /*expect_success=*/true);
+
+  net::SharedDictionaryIsolationKey isolation_key =
+      net::SharedDictionaryIsolationKey(
+          url::Origin::Create(embedded_test_server()->GetURL("/")),
+          net::SchemefulSite(embedded_test_server()->GetURL("/")));
+  network::mojom::NetworkContext* network_context =
+      target_shell->web_contents()
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition()
+          ->GetNetworkContext();
+  {
+    base::RunLoop loop;
+    network_context->GetSharedDictionaryInfo(
+        isolation_key,
+        base::BindLambdaForTesting(
+            [&](std::vector<network::mojom::SharedDictionaryInfoPtr> result) {
+              ASSERT_EQ(1u, result.size());
+
+              EXPECT_EQ("/shared_dictionary/path/*", result[0]->match);
+              EXPECT_EQ(embedded_test_server()->GetURL(
+                            "/shared_dictionary/test.dict"),
+                        result[0]->dictionary_url);
+              EXPECT_EQ(static_cast<uint64_t>(
+                            GetTestDataFileSize("shared_dictionary/test.dict")),
+                        result[0]->size);
+              EXPECT_EQ(kExpectedDictionaryHashValue, result[0]->hash);
+              loop.Quit();
+            }));
     loop.Run();
   }
 }

@@ -500,6 +500,31 @@ void SharedDictionaryManagerOnDisk::GetUsageInfo(
       std::move(callback)));
 }
 
+void SharedDictionaryManagerOnDisk::GetSharedDictionaryInfo(
+    const net::SharedDictionaryIsolationKey& isolation_key,
+    base::OnceCallback<
+        void(std::vector<network::mojom::SharedDictionaryInfoPtr>)> callback) {
+  metadata_store_.GetDictionaries(
+      isolation_key,
+      base::BindOnce(
+          [](base::OnceCallback<void(
+                 std::vector<network::mojom::SharedDictionaryInfoPtr>)>
+                 callback,
+             net::SQLitePersistentSharedDictionaryStore::DictionaryListOrError
+                 result) {
+            std::vector<network::mojom::SharedDictionaryInfoPtr> dictionaries;
+            if (!result.has_value()) {
+              std::move(callback).Run(std::move(dictionaries));
+              return;
+            }
+            for (auto& info : result.value()) {
+              dictionaries.push_back(ToMojoSharedDictionaryInfo(info));
+            }
+            std::move(callback).Run(std::move(dictionaries));
+          },
+          std::move(callback)));
+}
+
 scoped_refptr<SharedDictionaryWriter>
 SharedDictionaryManagerOnDisk::CreateWriter(
     const net::SharedDictionaryIsolationKey& isolation_key,
