@@ -504,7 +504,7 @@ crbug.com/483282 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/fbocolorbuffer/bl
 crbug.com/654187 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/framebufferblit/conversion_28.html [ Failure ]
 crbug.com/654187 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/framebufferblit/conversion_30.html [ Failure ]
 crbug.com/654187 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/framebufferblit/conversion_33.html [ Failure ]
-crbug.com/1424484 [ mac nvidia-0xfe9 ] deqp/functional/gles3/multisample/fbo_max_samples.html [ RetryOnFailure ]
+crbug.com/1424484 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/multisample/fbo_max_samples.html [ RetryOnFailure ]
 crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
 crbug.com/795052 [ mac nvidia-0xfe9 ] conformance2/uniforms/draw-with-uniform-blocks.html [ Failure ]
 crbug.com/1414878 [ mojave nvidia-0xfe9 ] conformance2/textures/video/* [ RetryOnFailure ]
@@ -787,9 +787,7 @@ crbug.com/1219024 [ chromeos chromeos-board-kevin ] conformance/misc/shader-prec
 crbug.com/1219024 [ chromeos chromeos-board-kevin ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1219057 [ chromeos chromeos-board-kevin ] conformance2/buffers/uniform-buffers.html [ Failure ]
 
-crbug.com/1446328 [ chromeos chromeos-board-kevin passthrough ] conformance/context/context-creation-and-destruction.html [ Failure ]
 crbug.com/1374285 [ chromeos chromeos-board-kevin passthrough ] conformance2/rendering/rasterizer-discard-and-implicit-clear.html [ Failure ]
-crbug.com/1285112 [ chromeos chromeos-board-kevin passthrough ] conformance2/rendering/blitframebuffer-multisampled-readbuffer.html [ Failure ]
 crbug.com/1446328 [ chromeos chromeos-board-kevin passthrough ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
 crbug.com/1285114 [ chromeos chromeos-board-kevin passthrough ] conformance2/transform_feedback/transform_feedback.html [ Failure ]
 crbug.com/1286099 [ chromeos chromeos-board-kevin passthrough ] conformance2/rendering/blitframebuffer-r11f-g11f-b10f.html [ Failure ]
