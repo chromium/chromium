@@ -669,7 +669,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest, GetUsageInfo) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
-                       GetSharedDictionaryInfo) {
+                       GetSharedDictionaryInfoEmptyResult) {
   network::mojom::NetworkContext* network_context =
       shell()
           ->web_contents()
@@ -684,6 +684,42 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
       base::BindLambdaForTesting(
           [&](std::vector<network::mojom::SharedDictionaryInfoPtr> result) {
             EXPECT_TRUE(result.empty());
+            loop.Quit();
+          }));
+  loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
+                       GetSharedDictionaryInfoExpirationDuringOriginTrial) {
+  if (GetFeatureState() == FeatureState::kDisabled) {
+    // We want to check the behavior of kBackendOnly and kFullyEnabled.
+    return;
+  }
+  RunWriteDictionaryTest(
+      shell(), FetchType::kLinkRelDictionary,
+      GURL("https://shared-dictionary.test/blank.html?ot=enabled"),
+      https_server()->GetURL("/shared_dictionary/test.dict"),
+      "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB",
+      /*expect_success=*/true);
+
+  network::mojom::NetworkContext* network_context =
+      shell()
+          ->web_contents()
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition()
+          ->GetNetworkContext();
+  base::RunLoop loop;
+  network_context->GetSharedDictionaryInfo(
+      net::SharedDictionaryIsolationKey(
+          url::Origin::Create(GURL("https://shared-dictionary.test/")),
+          net::SchemefulSite(GURL("https://shared-dictionary.test/"))),
+      base::BindLambdaForTesting(
+          [&](std::vector<network::mojom::SharedDictionaryInfoPtr> result) {
+            ASSERT_EQ(1u, result.size());
+            EXPECT_EQ(GetFeatureState() == FeatureState::kBackendOnly
+                          ? base::Days(30)
+                          : base::Seconds(31536000),
+                      result[0]->expiration);
             loop.Quit();
           }));
   loop.Run();

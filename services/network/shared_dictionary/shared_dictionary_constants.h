@@ -17,6 +17,11 @@ namespace network::shared_dictionary {
 // HTTP header.
 constexpr base::TimeDelta kDefaultExpiration = base::Seconds(31536000);
 
+// The max expiration time (30 days) for Origin Trial. This is used when
+// CompressionDictionaryTransport feature is disabled in the network service.
+// TODO(crbug.com/1413922): Remove this after the Origin Trial experiment.
+constexpr base::TimeDelta kMaxExpirationForOriginTrial = base::Days(30);
+
 // The total dictionary count limit per NetworkContext.
 constexpr uint64_t kDictionaryMaxCountPerNetworkContext = 1000u;
 
