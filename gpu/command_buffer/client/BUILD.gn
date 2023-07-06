@@ -82,10 +82,7 @@ source_set("client_sources") {
 
   all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
 
-  public_deps = [
-    "//base",
-    "//components/viz/common:resource_format",
-  ]
+  public_deps = [ "//base" ]
   deps = [
     ":gles2_interface",
     "//gpu/command_buffer/common:common_sources",
@@ -104,7 +101,10 @@ source_set("client_sources") {
       "shared_image_interface.h",
     ]
 
-    public_deps += [ "//skia" ]
+    public_deps += [
+      "//components/viz/common:resource_format",
+      "//skia",
+    ]
 
     deps += [ "//skia:buildflags" ]
   }
