@@ -176,6 +176,8 @@ class CodecProfileLevelList {
         switch (codec) {
             case VideoCodec.H264:
                 switch (level) {
+                    case CodecProfileLevel.AVCLevel1b:
+                        return 9;
                     case CodecProfileLevel.AVCLevel1:
                         return 10;
                     case CodecProfileLevel.AVCLevel11:
