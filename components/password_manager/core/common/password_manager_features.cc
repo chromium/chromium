@@ -173,7 +173,7 @@ BASE_FEATURE(kRecoverFromNeverSaveAndroid,
 // manually clicking on the key icon in the omnibox.
 BASE_FEATURE(kRevampedPasswordManagementBubble,
              "RevampedPasswordManagementBubble",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
