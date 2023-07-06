@@ -24,6 +24,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -129,6 +130,8 @@ public class AddToHomescreenDialogView
                                 R.string.cancel)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mParentView)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
+                                UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS)
                         .build();
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
     }
