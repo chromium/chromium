@@ -98,9 +98,11 @@ base::span<CSSSelector> CSSSelectorParser::ParseSelector(
     const CSSParserContext* context,
     CSSNestingType nesting_type,
     const StyleRule* parent_rule_for_nesting,
+    bool semicolon_aborts_nested_selector,
     StyleSheetContents* style_sheet,
     HeapVector<CSSSelector>& arena) {
-  CSSSelectorParser parser(context, parent_rule_for_nesting, style_sheet,
+  CSSSelectorParser parser(context, parent_rule_for_nesting,
+                           semicolon_aborts_nested_selector, style_sheet,
                            arena);
   range.ConsumeWhitespace();
   base::span<CSSSelector> result =
@@ -119,10 +121,12 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
     const CSSParserContext* context,
     CSSNestingType nesting_type,
     const StyleRule* parent_rule_for_nesting,
+    bool semicolon_aborts_nested_selector,
     StyleSheetContents* style_sheet,
     CSSParserObserver* observer,
     HeapVector<CSSSelector>& arena) {
-  CSSSelectorParser parser(context, parent_rule_for_nesting, style_sheet,
+  CSSSelectorParser parser(context, parent_rule_for_nesting,
+                           semicolon_aborts_nested_selector, style_sheet,
                            arena);
   stream.ConsumeWhitespace();
   base::span<CSSSelector> result =
@@ -139,8 +143,9 @@ absl::optional<base::span<CSSSelector>> CSSSelectorParser::ParseScopeBoundary(
     const StyleRule* parent_rule_for_nesting,
     StyleSheetContents* style_sheet,
     HeapVector<CSSSelector>& arena) {
-  CSSSelectorParser parser(context, parent_rule_for_nesting, style_sheet,
-                           arena);
+  CSSSelectorParser parser(context, parent_rule_for_nesting,
+                           /*semicolon_aborts_nested_selector=*/false,
+                           style_sheet, arena);
   DisallowPseudoElementsScope disallow_pseudo_elements(&parser);
 
   range.ConsumeWhitespace();
@@ -161,7 +166,8 @@ bool CSSSelectorParser::SupportsComplexSelector(
   range.ConsumeWhitespace();
   HeapVector<CSSSelector> arena;
   CSSSelectorParser parser(context, /*parent_rule_for_nesting=*/nullptr,
-                           nullptr, arena);
+                           /*semicolon_aborts_nested_selector=*/false, nullptr,
+                           arena);
   parser.SetInSupportsParsing();
   base::span<CSSSelector> selectors =
       parser.ConsumeComplexSelector(range, CSSNestingType::kNone,
@@ -177,10 +183,12 @@ bool CSSSelectorParser::SupportsComplexSelector(
 
 CSSSelectorParser::CSSSelectorParser(const CSSParserContext* context,
                                      const StyleRule* parent_rule_for_nesting,
+                                     bool semicolon_aborts_nested_selector,
                                      StyleSheetContents* style_sheet,
                                      HeapVector<CSSSelector>& output)
     : context_(context),
       parent_rule_for_nesting_(parent_rule_for_nesting),
+      semicolon_aborts_nested_selector_(semicolon_aborts_nested_selector),
       style_sheet_(style_sheet),
       output_(output) {}
 
@@ -219,7 +227,8 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
   while (true) {
     const wtf_size_t selector_offset_start = stream.LookAheadOffset();
     CSSParserTokenRange complex_selector =
-        (nesting_type != CSSNestingType::kNone)
+        AbortsNestedSelectorParsing(
+            kSemicolonToken, semicolon_aborts_nested_selector_, nesting_type)
             ? stream.ConsumeUntilPeekedTypeIs<kLeftBraceToken, kCommaToken,
                                               kSemicolonToken>()
             : stream.ConsumeUntilPeekedTypeIs<kLeftBraceToken, kCommaToken>();
@@ -242,8 +251,9 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
     }
 
     if (stream.Peek().GetType() == kLeftBraceToken ||
-        AbortsNestedSelectorParsing(stream.Peek(),
-                                    nesting_type != CSSNestingType::kNone)) {
+        AbortsNestedSelectorParsing(stream.Peek().GetType(),
+                                    semicolon_aborts_nested_selector_,
+                                    nesting_type)) {
       break;
     }
 

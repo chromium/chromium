@@ -61,6 +61,7 @@ class CORE_EXPORT CSSSelectorParser {
       const CSSParserContext*,
       CSSNestingType,
       const StyleRule* parent_rule_for_nesting,
+      bool semicolon_aborts_nested_selector,
       StyleSheetContents*,
       HeapVector<CSSSelector>&);
   static base::span<CSSSelector> ConsumeSelector(
@@ -68,6 +69,7 @@ class CORE_EXPORT CSSSelectorParser {
       const CSSParserContext*,
       CSSNestingType,
       const StyleRule* parent_rule_for_nesting,
+      bool semicolon_aborts_nested_selector,
       StyleSheetContents*,
       CSSParserObserver*,
       HeapVector<CSSSelector>&);
@@ -103,6 +105,7 @@ class CORE_EXPORT CSSSelectorParser {
  private:
   CSSSelectorParser(const CSSParserContext*,
                     const StyleRule* parent_rule_for_nesting,
+                    bool semicolon_aborts_nested_selector,
                     StyleSheetContents*,
                     HeapVector<CSSSelector>&);
 
@@ -211,6 +214,8 @@ class CORE_EXPORT CSSSelectorParser {
   // The parent rule pointed to by the nesting selector (&).
   // https://drafts.csswg.org/css-nesting-1/#nest-selector
   const StyleRule* parent_rule_for_nesting_;
+  // See AbortsNestedSelectorParsing.
+  bool semicolon_aborts_nested_selector_ = false;
   const StyleSheetContents* style_sheet_;
 
   bool failed_parsing_ = false;
@@ -329,9 +334,12 @@ class CORE_EXPORT CSSSelectorParser {
 //
 // This function only deals with semicolons, not other things that would
 // abort selector parsing (such as EOF).
-static inline bool AbortsNestedSelectorParsing(const CSSParserToken& token,
-                                               bool in_nested_style_rule) {
-  return in_nested_style_rule && token.GetType() == kSemicolonToken;
+static inline bool AbortsNestedSelectorParsing(
+    CSSParserTokenType token_type,
+    bool semicolon_aborts_nested_selector,
+    CSSNestingType nesting_type) {
+  return semicolon_aborts_nested_selector && token_type == kSemicolonToken &&
+         nesting_type != CSSNestingType::kNone;
 }
 
 }  // namespace blink

@@ -235,7 +235,8 @@ CSSSelectorList* ParseSelectorList(const String& string,
   CSSParserTokenRange range(tokens);
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
-      range, context, nesting_type, parent_rule_for_nesting, sheet, arena);
+      range, context, nesting_type, parent_rule_for_nesting,
+      /* semicolon_aborts_nested_selector */ false, sheet, arena);
   return CSSSelectorList::AdoptSelectorVector(vector);
 }
 

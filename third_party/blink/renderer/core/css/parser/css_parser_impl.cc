@@ -624,6 +624,7 @@ bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
       allowed_rules = ComputeNewAllowedRules(allowed_rules, rule);
       callback(rule, offset);
     }
+    DCHECK_GT(stream.Offset(), offset);
   }
 
   return first_rule_valid;
@@ -812,7 +813,8 @@ StyleRuleBase* CSSParserImpl::ConsumeQualifiedRule(
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting) {
   if (allowed_rules <= kRegularRules) {
-    return ConsumeStyleRule(stream, nesting_type, parent_rule_for_nesting);
+    return ConsumeStyleRule(stream, nesting_type, parent_rule_for_nesting,
+                            /* semicolon_aborts_nested_selector */ false);
   }
 
   if (allowed_rules == kKeyframeRules) {
@@ -1848,9 +1850,11 @@ static bool MayContainNestedRules(const String& text,
              '{', length * char_size) != nullptr;
 }
 
-StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
-                                           CSSNestingType nesting_type,
-                                           StyleRule* parent_rule_for_nesting) {
+StyleRule* CSSParserImpl::ConsumeStyleRule(
+    CSSParserTokenStream& stream,
+    CSSNestingType nesting_type,
+    StyleRule* parent_rule_for_nesting,
+    bool semicolon_aborts_nested_selector) {
   if (!in_nested_style_rule_) {
     DCHECK_EQ(0u, arena_.size());
   }
@@ -1868,16 +1872,17 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
 
   // Parse the prelude of the style rule
   base::span<CSSSelector> selector_vector = CSSSelectorParser::ConsumeSelector(
-      stream, context_, nesting_type, parent_rule_for_nesting, style_sheet_,
-      observer_, arena_);
+      stream, context_, nesting_type, parent_rule_for_nesting,
+      semicolon_aborts_nested_selector, style_sheet_, observer_, arena_);
 
   if (selector_vector.empty()) {
     // Read the rest of the prelude if there was an error
     stream.EnsureLookAhead();
     while (!stream.UncheckedAtEnd() &&
            stream.UncheckedPeek().GetType() != kLeftBraceToken &&
-           !AbortsNestedSelectorParsing(stream.UncheckedPeek(),
-                                        parent_rule_for_nesting)) {
+           !AbortsNestedSelectorParsing(stream.UncheckedPeek().GetType(),
+                                        semicolon_aborts_nested_selector,
+                                        nesting_type)) {
       stream.UncheckedConsumeComponentValue();
     }
   }
@@ -1886,8 +1891,9 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
     observer_->EndRuleHeader(stream.LookAheadOffset());
   }
 
-  if (stream.AtEnd() || AbortsNestedSelectorParsing(stream.UncheckedPeek(),
-                                                    parent_rule_for_nesting)) {
+  if (stream.AtEnd() || AbortsNestedSelectorParsing(
+                            stream.UncheckedPeek().GetType(),
+                            semicolon_aborts_nested_selector, nesting_type)) {
     // Parse error, EOF instead of qualified rule block
     // (or we went into error recovery above).
     // NOTE: If we aborted due to a semicolon, don't consume it here;
@@ -2158,7 +2164,8 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
   if (!id.has_value()) {
     base::AutoReset<bool> reset_in_nested_style_rule(&in_nested_style_rule_,
                                                      true);
-    child = ConsumeStyleRule(stream, nesting_type, parent_rule_for_nesting);
+    child = ConsumeStyleRule(stream, nesting_type, parent_rule_for_nesting,
+                             /* semicolon_aborts_nested_selector */ true);
   } else {
     child = ConsumeAtRuleContents(*id, stream, kNestedGroupRules, nesting_type,
                                   parent_rule_for_nesting);

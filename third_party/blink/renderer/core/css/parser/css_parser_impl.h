@@ -240,7 +240,8 @@ class CORE_EXPORT CSSParserImpl {
                                               CSSParserTokenStream& block);
   StyleRule* ConsumeStyleRule(CSSParserTokenStream&,
                               CSSNestingType,
-                              StyleRule* parent_rule_for_nesting);
+                              StyleRule* parent_rule_for_nesting,
+                              bool semicolon_aborts_nested_selector);
   StyleRule* ConsumeStyleRuleContents(base::span<CSSSelector> selector_vector,
                                       CSSParserTokenStream& stream);
 
