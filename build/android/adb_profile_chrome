@@ -6,4 +6,4 @@
 #
 # Start / stop profiling in chrome.
 CATAPULT_DIR="$(dirname "$0")"/../../third_party/catapult
-exec "${CATAPULT_DIR}"/systrace/bin/adb_profile_chrome "$@"
+exec vpython "${CATAPULT_DIR}"/systrace/bin/adb_profile_chrome "$@"
