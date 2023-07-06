@@ -5,15 +5,18 @@ package org.chromium.components.page_info;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.text.format.Formatter;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TimeUtils;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.site_settings.FPSCookieInfo;
 import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsPreferenceFragment;
@@ -31,14 +34,20 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
     private static final String COOKIE_SWITCH_PREFERENCE = "cookie_switch";
     private static final String COOKIE_IN_USE_PREFERENCE = "cookie_in_use";
     private static final String FPS_IN_USE_PREFERENCE = "fps_in_use";
+    private static final String TPC_TITLE = "tpc_title";
+    private static final String TPC_SUMMARY = "tpc_summary";
 
     private ChromeSwitchPreference mCookieSwitch;
     private ChromeImageViewPreference mCookieInUse;
     private ChromeImageViewPreference mFPSInUse;
+    private TextMessagePreference mThirdPartyCookiesTitle;
+    private TextMessagePreference mThirdPartyCookiesSummary;
     private Runnable mOnClearCallback;
     private Dialog mConfirmationDialog;
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
+    private int mAllowedSites;
+    private int mBlockedSites;
     private CharSequence mHostName;
     private FPSCookieInfo mFPSInfo;
 
@@ -70,6 +79,8 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
         mCookieInUse = findPreference(COOKIE_IN_USE_PREFERENCE);
         mFPSInUse = findPreference(FPS_IN_USE_PREFERENCE);
         mFPSInUse.setVisible(false);
+        mThirdPartyCookiesTitle = findPreference(TPC_TITLE);
+        mThirdPartyCookiesSummary = findPreference(TPC_SUMMARY);
     }
 
     @Override
@@ -133,6 +144,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
                         .show();
     }
 
+    // Only used when UserBypassUI flag is off.
     public void setCookieBlockingStatus(@CookieControlsStatus int status, boolean isEnforced) {
         boolean visible = status != CookieControlsStatus.DISABLED;
         boolean enabled = status == CookieControlsStatus.ENABLED;
@@ -143,6 +155,54 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
             mCookieSwitch.setChecked(enabled);
             mCookieSwitch.setEnabled(!isEnforced);
         }
+    }
+
+    // Only used when UserBypassUI flag is on.
+    public void setCookieStatus(
+            @CookieControlsStatus int status, boolean isEnforced, long expiration) {
+        boolean visible = status != CookieControlsStatus.DISABLED;
+        boolean blockingEnabled = status == CookieControlsStatus.ENABLED;
+
+        mCookieSwitch.setVisible(visible);
+        mThirdPartyCookiesTitle.setVisible(visible);
+        mThirdPartyCookiesSummary.setVisible(visible);
+
+        if (!visible) return;
+
+        mCookieSwitch.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.ic_eye_crossed));
+        mCookieSwitch.setChecked(blockingEnabled);
+        mCookieSwitch.setEnabled(!isEnforced);
+
+        boolean permanentException = (expiration == 0);
+
+        // TODO(crbug.com/1446230): Implement feedback click handling.
+        NoUnderlineClickableSpan feedbackSpan =
+                new NoUnderlineClickableSpan(getContext(), (view) -> {});
+
+        if (blockingEnabled) {
+            mThirdPartyCookiesTitle.setTitle(
+                    getContext().getString(R.string.page_info_cookies_site_not_working_title));
+            // TODO(crbug.com/1446230): Check the flag param for temporary/permanent exception.
+            mThirdPartyCookiesSummary.setSummary(getContext().getString(
+                    R.string.page_info_cookies_site_not_working_description_temporary));
+        } else if (permanentException) {
+            mThirdPartyCookiesTitle.setTitle(
+                    getContext().getString(R.string.page_info_cookies_permanent_allowed_title));
+            mThirdPartyCookiesSummary.setSummary(SpanApplier.applySpans(
+                    getContext().getString(R.string.page_info_cookies_send_feedback_description),
+                    new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
+        } else { // Not blocking and temporary exception.
+            // Calculate the days to expiration.
+            long currentTime = TimeUtils.currentTimeMillis();
+            int days = (int) ((expiration - currentTime) / DateUtils.DAY_IN_MILLIS);
+            mThirdPartyCookiesTitle.setTitle(getContext().getResources().getQuantityString(
+                    R.plurals.page_info_cookies_blocking_restart_title, days, days));
+            mThirdPartyCookiesSummary.setSummary(SpanApplier.applySpans(
+                    getContext().getString(R.string.page_info_cookies_send_feedback_description),
+                    new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
+        }
+
+        updateCookieSwitch();
     }
 
     public void setCookiesCount(int allowedCookies, int blockedCookies) {
@@ -157,23 +217,13 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
         updateCookieDeleteButton();
     }
 
-    // TODO(crbug.com/1446230): Update the strings for when FPS are on.
     public void setSitesCount(int allowedSites, int blockedSites) {
-        // TODO(crbug.com/1446230): Invert the cookie switch.
-        if (mCookieSwitch.isChecked()) {
-            mCookieSwitch.setSummary(blockedSites > 0
-                            ? getContext().getResources().getQuantityString(
-                                    R.plurals.page_info_sites_blocked, blockedSites, blockedSites)
-                            : null);
-        } else {
-            mCookieSwitch.setSummary(allowedSites > 0
-                            ? getContext().getResources().getQuantityString(
-                                    R.plurals.page_info_sites_allowed, allowedSites, allowedSites)
-                            : null);
-        }
+        mAllowedSites = allowedSites;
+        mBlockedSites = blockedSites;
 
         mDataUsed |= allowedSites != 0;
         updateCookieDeleteButton();
+        updateCookieSwitch();
     }
 
     public void setStorageUsage(long storageUsage) {
@@ -230,5 +280,21 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
         mCookieInUse.setImageColor(!mDeleteDisabled && mDataUsed
                         ? R.color.default_icon_color_accent1_tint_list
                         : R.color.default_icon_color_disabled);
+    }
+
+    // TODO(crbug.com/1446230): Invert the cookie switch.
+    private void updateCookieSwitch() {
+        // TODO(crbug.com/1446230): Update the strings for when FPS are on.
+        if (mCookieSwitch.isChecked()) {
+            mCookieSwitch.setSummary(mBlockedSites > 0
+                            ? getContext().getResources().getQuantityString(
+                                    R.plurals.page_info_sites_blocked, mBlockedSites, mBlockedSites)
+                            : null);
+        } else {
+            mCookieSwitch.setSummary(mAllowedSites > 0
+                            ? getContext().getResources().getQuantityString(
+                                    R.plurals.page_info_sites_allowed, mAllowedSites, mAllowedSites)
+                            : null);
+        }
     }
 }

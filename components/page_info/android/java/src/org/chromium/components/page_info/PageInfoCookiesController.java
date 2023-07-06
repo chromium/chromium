@@ -44,6 +44,7 @@ public class PageInfoCookiesController
     private int mBlockedSites;
     private int mStatus;
     private boolean mIsEnforced;
+    private long mExpiration;
     private Website mWebsite;
 
     public PageInfoCookiesController(PageInfoMainController mainController, PageInfoRowView rowView,
@@ -96,11 +97,12 @@ public class PageInfoCookiesController
         params.hostName = mMainController.getURL().getHost();
         mSubPage.setParams(params);
         if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
+            mSubPage.setCookieStatus(mStatus, mIsEnforced, mExpiration);
             mSubPage.setSitesCount(mAllowedSites, mBlockedSites);
         } else {
+            mSubPage.setCookieBlockingStatus(mStatus, mIsEnforced);
             mSubPage.setCookiesCount(mAllowedCookies, mBlockedCookies);
         }
-        mSubPage.setCookieBlockingStatus(mStatus, mIsEnforced);
 
         SiteSettingsCategory storageCategory = SiteSettingsCategory.createFromType(
                 mMainController.getBrowserContext(), SiteSettingsCategory.Type.USE_STORAGE);
@@ -191,9 +193,9 @@ public class PageInfoCookiesController
     public void onStatusChanged(int status, int enforcement, long expiration) {
         mStatus = status;
         mIsEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
-        // TODO(crbug.com/1446230): Store and pass the expiration.
+        mExpiration = expiration;
         if (mSubPage != null) {
-            mSubPage.setCookieBlockingStatus(mStatus, mIsEnforced);
+            mSubPage.setCookieStatus(mStatus, mIsEnforced, expiration);
         }
     }
 
