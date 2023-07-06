@@ -264,6 +264,7 @@ source_set("variations_app_state_agent") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/variations:fetcher",
+    "//ios/chrome/browser/variations:store",
     "//ios/chrome/common",
   ]
 }

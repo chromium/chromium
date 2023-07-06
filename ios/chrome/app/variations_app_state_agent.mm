@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_fetcher.h"
+#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
 #import "ios/chrome/common/channel_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -36,10 +37,14 @@ const char kIOSChromeVariationsTrialControlGroup[] = "Control-v1";
 const char kIOSChromeVariationsTrialEnabledGroup[] = "Enabled-v1";
 // Histogram name for seed expiry.
 const char kIOSSeedExpiryHistogram[] = "IOS.Variations.CreateTrials.SeedExpiry";
+// Histogram name for seed application stage.
+const char kIOSSeedApplicationStageHistogram[] =
+    "IOS.Variations.FirstRun.SeedApplicationStage";
 
 namespace {
 
 using ::variations::HasSeedExpiredSinceTime;
+using ::variations::SeedApplicationStage;
 using ::variations::VariationsSeedExpiry;
 using ::variations::VariationsSeedStore;
 using ::version_info::Channel;
@@ -252,6 +257,11 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 - (void)appState:(AppState*)appState
     willTransitionToInitStage:(InitStage)nextInitStage {
   if (self.appState.initStage == InitStageBrowserObjectsForBackgroundHandlers) {
+    if (_group == IOSChromeVariationsGroup::kEnabled) {
+      base::UmaHistogramEnumeration(
+          kIOSSeedApplicationStageHistogram,
+          [IOSChromeVariationsSeedStore seedApplicationStage]);
+    }
     ActivateFieldTrialForGroup(_group);
   }
 }

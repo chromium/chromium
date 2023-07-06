@@ -22,6 +22,8 @@ extern const char kIOSChromeVariationsTrialEnabledGroup[];
 
 // Histogram name for seed expiry.
 extern const char kIOSSeedExpiryHistogram[];
+// Histogram name for seed application stage.
+extern const char kIOSSeedApplicationStageHistogram[];
 
 @interface VariationsAppStateAgent (Testing)
 

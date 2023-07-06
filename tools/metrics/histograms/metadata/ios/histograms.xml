@@ -2827,6 +2827,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Variations.FirstRun.SeedApplicationStage"
+    enum="VariationsFirstRunSeedApplicationStage" expires_after="2024-07-01">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    The stage of applying a downloaded initial variations seed during Chrome
+    first run on platforms that implemented first run variations. This would be
+    emitted on the first run, after Chrome iOS has finished initializing the
+    browser objects for the background handlers, to indicate whether the initial
+    variations seed fetched natively has been applied, and if not, which stage
+    of the variations seed importing process has it reached for debugging
+    purpose.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Variations.FirstRun.SeedFetchResult"
     enum="VariationsSeedFetchResult" expires_after="2023-08-09">
   <owner>ginnyhuang@chromium.org</owner>

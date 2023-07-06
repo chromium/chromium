@@ -125,6 +125,7 @@ source_set("client_side") {
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/ntp:field_trial",
+    "//ios/chrome/browser/variations:store",
   ]
 }
 

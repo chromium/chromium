@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_fetcher.h"
+#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
 
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
@@ -16,7 +17,7 @@
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/variations/constants.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_fetcher+testing.h"
-#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
+#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store+testing.h"
 #import "net/http/http_status_code.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -67,7 +68,7 @@ MockValueForHTTPHeaderField GetMockMethodWithHeader(
 class IOSChromeVariationsSeedFetcherTest : public PlatformTest {
  protected:
   void TearDown() override {
-    [IOSChromeVariationsSeedStore popSeed];
+    [IOSChromeVariationsSeedStore resetForTesting];
     [IOSChromeVariationsSeedFetcher resetFetchingStatusForTesting];
     PlatformTest::TearDown();
   }

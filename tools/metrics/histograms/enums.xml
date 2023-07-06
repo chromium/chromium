@@ -108670,6 +108670,19 @@ Full version information for the fingerprint enum values:
   <int value="4" label="Seed import failed - invalid response date string"/>
 </enum>
 
+<enum name="VariationsFirstRunSeedApplicationStage">
+  <int value="0" label="Seed missing">
+    No seed in native variations seed store
+  </int>
+  <int value="1" label="Seed stored">
+    Seed stored in native variations seed store
+  </int>
+  <int value="2" label="Seed imported">
+    Variations service imported seed from native variations seed store
+  </int>
+  <int value="3" label="Seed used">Seed is applied by variations service</int>
+</enum>
+
 <enum name="VariationsHeadersOwner">
   <int value="0" label="Unknown (render-thread-initiated request)"/>
   <int value="1" label="Unknown (request initiated elsewhere)"/>
