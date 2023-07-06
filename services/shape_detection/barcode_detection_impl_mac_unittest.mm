@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/shape_detection/barcode_detection_impl_mac_vision.h"
+#include "services/shape_detection/barcode_detection_impl_mac.h"
 
 #import <Vision/Vision.h>
 
@@ -16,6 +16,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "services/shape_detection/barcode_detection_impl_mac_vision.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,9 +34,17 @@ namespace shape_detection {
 
 namespace {
 
+std::unique_ptr<mojom::BarcodeDetection> CreateBarcodeDetectorImplMacCoreImage(
+    mojom::BarcodeDetectorOptionsPtr options) {
+  return std::make_unique<BarcodeDetectionImplMac>();
+}
+
 std::unique_ptr<mojom::BarcodeDetection> CreateBarcodeDetectorImplMacVision(
     mojom::BarcodeDetectorOptionsPtr options) {
-  return std::make_unique<BarcodeDetectionImplMacVision>(std::move(options));
+  if (!BarcodeDetectionImplMacVision::IsBlockedMacOSVersion()) {
+    return std::make_unique<BarcodeDetectionImplMacVision>(std::move(options));
+  }
+  return nullptr;
 }
 
 using BarcodeDetectorFactory =
@@ -50,6 +59,10 @@ struct TestParams {
   BarcodeDetectorFactory factory;
   NSString* __strong test_code_generator;
 } kTestParams[] = {
+    // CoreImage only supports QR Codes.
+    {false, mojom::BarcodeFormat::QR_CODE,
+     base::BindRepeating(&CreateBarcodeDetectorImplMacCoreImage),
+     @"CIQRCodeGenerator"},
     // Vision only supports a number of 1D/2D codes. Not all of them are
     // available for generation, though, only a few.
     {false, mojom::BarcodeFormat::PDF417,

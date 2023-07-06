@@ -5,6 +5,8 @@
 #ifndef SERVICES_SHAPE_DETECTION_FACE_DETECTION_IMPL_MAC_VISION_H_
 #define SERVICES_SHAPE_DETECTION_FACE_DETECTION_IMPL_MAC_VISION_H_
 
+#include <os/availability.h>
+
 #include <memory>
 #include <utility>
 
