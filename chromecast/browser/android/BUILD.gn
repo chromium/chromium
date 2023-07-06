@@ -125,9 +125,40 @@ android_library("reactive_android_java") {
   ]
 }
 
+android_library("crash_handler_java") {
+  java_src_dir = "//chromecast/browser/android/apk/src"
+  sources = [
+    "$java_src_dir/org/chromium/chromecast/shell/AndroidAppLogcatProvider.java",
+    "$java_src_dir/org/chromium/chromecast/shell/CastCrashHandler.java",
+    "$java_src_dir/org/chromium/chromecast/shell/CastCrashUploader.java",
+    "$java_src_dir/org/chromium/chromecast/shell/CastCrashUploaderFactory.java",
+    "$java_src_dir/org/chromium/chromecast/shell/ElidedLogcatProvider.java",
+    "$java_src_dir/org/chromium/chromecast/shell/ExternalServiceDeviceLogcatProvider.java",
+    "$java_src_dir/org/chromium/chromecast/shell/LogcatElision.java",
+  ]
+  srcjar_deps = [
+    ":cast_shell_build_config_gen",
+    ":logs_provider_aidl",
+  ]
+  deps = [
+    ":reactive_android_java",
+    "//base:base_java",
+    "//base:jni_java",
+    "//components/minidump_uploader:minidump_uploader_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+  annotation_processor_deps =
+      [ "//components/module_installer/android:module_interface_processor" ]
+}
+
+generate_jni("crash_handler_jni_headers") {
+  sources = [ "apk/src/org/chromium/chromecast/shell/CastCrashHandler.java" ]
+}
+
 common_android_library_deps = [
   ":cast_command_line_helper_java",
   ":cast_intents_java",
+  ":crash_handler_java",
   ":reactive_android_java",
   "//base:base_java",
   "//base:jni_java",
@@ -137,7 +168,6 @@ common_android_library_deps = [
   "//components/crash/android:java",
   "//components/embedder_support/android:content_view_java",
   "//components/embedder_support/android:view_java",
-  "//components/minidump_uploader:minidump_uploader_java",
   "//components/module_installer/android:module_installer_java",
   "//components/module_installer/android:module_interface_java",
   "//content/public/android:content_java",
@@ -157,7 +187,6 @@ common_android_library_deps = [
 
 common_java_src_dir = "//chromecast/browser/android/apk/src"
 common_java_sources = [
-  "$common_java_src_dir/org/chromium/chromecast/shell/AndroidAppLogcatProvider.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastApplication.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowser.java",
@@ -165,9 +194,6 @@ common_java_sources = [
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserImpl.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserService.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
-  "$common_java_src_dir/org/chromium/chromecast/shell/CastCrashHandler.java",
-  "$common_java_src_dir/org/chromium/chromecast/shell/CastCrashUploader.java",
-  "$common_java_src_dir/org/chromium/chromecast/shell/CastCrashUploaderFactory.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastMetricsHelper.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsActivity.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsComponent.java",
@@ -175,9 +201,6 @@ common_java_sources = [
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsScopes.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsService.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsSurfaceHelper.java",
-  "$common_java_src_dir/org/chromium/chromecast/shell/ElidedLogcatProvider.java",
-  "$common_java_src_dir/org/chromium/chromecast/shell/ExternalServiceDeviceLogcatProvider.java",
-  "$common_java_src_dir/org/chromium/chromecast/shell/LogcatElision.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/TaskRemovedMonitorService.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/WebContentsRegistry.java",
 ]
@@ -191,7 +214,6 @@ generate_jni("jni_headers") {
   sources = [
     "apk/src/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
     "apk/src/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
-    "apk/src/org/chromium/chromecast/shell/CastCrashHandler.java",
     "apk/src/org/chromium/chromecast/shell/CastMetricsHelper.java",
   ]
 }
@@ -201,9 +223,7 @@ android_library("cast_shell_java") {
 
   resources_package = "org.chromium.chromecast.shell"
   srcjar_deps = [
-    ":cast_shell_build_config_gen",
     ":jni_headers",
-    ":logs_provider_aidl",
     ":product_config_for_browser",
     "//chromecast/browser:java_enums",
   ]
@@ -223,9 +243,7 @@ android_library("cast_browser_java") {
 
   resources_package = "org.chromium.chromecast.shell"
   srcjar_deps = [
-    ":cast_shell_build_config_gen",
     ":jni_headers",
-    ":logs_provider_aidl",
     "//chromecast/browser:java_enums",
   ]
 
@@ -257,6 +275,7 @@ robolectric_binary("cast_shell_junit_tests") {
   deps = [
     ":cast_intents_java",
     ":cast_shell_java",
+    ":crash_handler_java",
     ":reactive_android_java",
     "//base:base_java",
     "//base:base_java_test_support",

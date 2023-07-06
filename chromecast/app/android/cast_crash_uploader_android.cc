@@ -22,7 +22,7 @@
 #include "chromecast/app/android/cast_crash_reporter_client_android.h"
 #include "chromecast/base/cast_paths.h"
 #include "chromecast/base/pref_names.h"
-#include "chromecast/browser/android/jni_headers/CastCrashHandler_jni.h"
+#include "chromecast/browser/android/crash_handler_jni_headers/CastCrashHandler_jni.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/common/crash_key.h"
@@ -109,7 +109,7 @@ void CastCrashUploaderAndroid::StartPeriodicCrashReportUpload() {
   OnStartPeriodicCrashReportUpload();
   crash_reporter_timer_ = std::make_unique<base::RepeatingTimer>();
   crash_reporter_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromMinutes(20), this,
+      FROM_HERE, base::Minutes(20), this,
       &CastCrashUploaderAndroid::OnStartPeriodicCrashReportUpload);
 }
 

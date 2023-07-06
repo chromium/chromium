@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
@@ -48,7 +47,6 @@ class CastCrashUploaderAndroid : public CastCrashUploader {
 
   std::unique_ptr<CastCrashReporterClientAndroid> crash_reporter_client_;
   base::WeakPtrFactory<CastCrashUploaderAndroid> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(CastCrashUploaderAndroid);
 };
 
 }  // namespace chromecast
