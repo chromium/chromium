@@ -212,8 +212,7 @@ struct ShortcutsWidgetEntryView: View {
     let maxNumberOfShortcuts = 4
     let numberOfShortcuts = min(ntpTiles.count, maxNumberOfShortcuts)
 
-    ForEach(0..<numberOfShortcuts) {
-      index in
+    ForEach(0..<numberOfShortcuts, id: \.self) { index in
       HStack(spacing: 0.5) {
         Link(destination: ntpTiles[index].url) {
           WebsiteLogo(ntpTile: ntpTiles[index])
