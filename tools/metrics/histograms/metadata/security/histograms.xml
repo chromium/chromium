@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.TimeOpen" units="ms"
-    expires_after="2023-07-09">
+    expires_after="2023-11-12">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -593,7 +593,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SecurityLevel.DownloadStarted" enum="SecurityLevel"
-    expires_after="2023-06-30">
+    expires_after="2023-11-12">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -607,7 +607,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SecurityLevel.FormSubmission" enum="SecurityLevel"
-    expires_after="2023-06-30">
+    expires_after="2023-11-12">
   <owner>carlosil@chromium.org</owner>
   <owner>cthomp@chromium.org</owner>
   <summary>
