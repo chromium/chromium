@@ -554,18 +554,6 @@ bool GeometryMapper::MightOverlapForCompositingInternal(
   return v1.Intersects(v2);
 }
 
-const ClipPaintPropertyNode* GeometryMapper::HighestOutputClipBetween(
-    const EffectPaintPropertyNode& ancestor,
-    const EffectPaintPropertyNode& descendant) {
-  const ClipPaintPropertyNode* result = nullptr;
-  for (const auto* effect = &descendant; effect != &ancestor;
-       effect = effect->UnaliasedParent()) {
-    if (const auto* output_clip = effect->OutputClip())
-      result = &output_clip->Unalias();
-  }
-  return result;
-}
-
 gfx::RectF GeometryMapper::VisualRectForCompositingOverlap(
     const gfx::RectF& local_rect,
     const PropertyTreeState& local_state,

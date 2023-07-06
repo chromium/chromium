@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
