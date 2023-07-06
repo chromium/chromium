@@ -12120,6 +12120,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.PostRestoreDefaultBrowser.Displayed">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Recorded when the Post Restore Default Browser Promo is displayed. iOS only.
+  </description>
+</action>
+
 <action name="IOS.SearchEngines.RecentlyViewed.Delete">
   <owner>sczs@chromium.org</owner>
   <owner>gambard@chromium.org</owner>

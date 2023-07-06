@@ -17,6 +17,9 @@
 @interface PostRestoreDefaultBrowserPromoProvider
     : NSObject <StandardPromoAlertProvider>
 
+// Delegate callback to tell the provider that the promo was displayed.
+- (void)promoWasDisplayed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_POST_RESTORE_POST_RESTORE_DEFAULT_BROWSER_PROMO_PROVIDER_H_
