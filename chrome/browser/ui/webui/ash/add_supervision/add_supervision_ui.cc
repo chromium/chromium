@@ -212,6 +212,8 @@ void AddSupervisionUI::SetUpResources() {
       base::make_span(kSupervisionResources, kSupervisionResourcesSize));
 
   source->AddLocalizedString("pageTitle", IDS_ADD_SUPERVISION_PAGE_TITLE);
+  source->AddLocalizedString("webviewLoadingMessage",
+                             IDS_ADD_SUPERVISION_WEBVIEW_LOADING_MESSAGE);
   source->AddLocalizedString("supervisedUserErrorDescription",
                              IDS_SUPERVISED_USER_ERROR_DESCRIPTION);
   source->AddLocalizedString("supervisedUserErrorTitle",

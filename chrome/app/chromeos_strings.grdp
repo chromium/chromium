@@ -6255,6 +6255,9 @@ Permissions you've already given to websites and apps may apply to this account.
   <message name="IDS_ADD_SUPERVISION_PAGE_TITLE" desc="Title for the ChromeOS Add Supervision screen. Since the title bar is not visible, this string is only used by screen readers.">
     Set Up Parental Controls
   </message>
+  <message name="IDS_ADD_SUPERVISION_WEBVIEW_LOADING_MESSAGE" desc="Message shown while the Add Supervision screen is loading.">
+    Please wait...
+  </message>
   <message name="IDS_ADD_SUPERVISION_EXIT_DIALOG_TITLE" desc="Title for the dialog shown when attempting to exit the Add Supervision screen.">
     Are you sure you want to exit?
   </message>

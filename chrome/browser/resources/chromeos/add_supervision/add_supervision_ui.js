@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
@@ -73,6 +74,14 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
+  properties: {
+    /** Indicates whether the webview is loading. */
+    webviewLoading: {
+      type: Boolean,
+      value: true,
+    },
+  },
+
   /** Attempts to close the dialog. */
   closeDialog_() {
     this.server.requestClose();
@@ -116,6 +125,11 @@ Polymer({
         window.open(e.targetUrl);
       });
 
+      // Change loading indicator on load in order to hide loading spinner.
+      webview.addEventListener('contentload', () => {
+        this.webviewLoading = false;
+      });
+
       // Sets focus on the inner webview, so that ChromeVox users don't need to
       // navigate through multiple containers when linear navigating through the
       // page (https://crbug.com/1231798).
@@ -129,6 +143,7 @@ Polymer({
       });
 
       webview.addEventListener('loadabort', () => {
+        this.webviewLoading = false;
         this.showErrorPage();
       });
 
