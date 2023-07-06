@@ -458,7 +458,12 @@ gfx::RectF ScopedOverviewTransformWindow::ShrinkRectToFitPreservingAspectRatio(
         const float new_width = height * window_ratio;
         new_bounds.set_width(new_width);
       } else {
-        const float new_height = bounds.width() / window_ratio;
+        // For some use cases, the `new_height` is larger than the maximum
+        // height should be applied to the window within the `bounds` even it's
+        // letter box window type. In this case we should use maximum height
+        // directly.
+        float new_height = std::min(height, bounds.width() / window_ratio);
+
         new_bounds = bounds;
         new_bounds.Inset(gfx::InsetsF::TLBR(title_height, 0, 0, 0));
         if (top_view_inset) {
