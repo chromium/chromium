@@ -23,6 +23,7 @@
 #include "base/test/task_environment.h"
 #include "ui/aura/window.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 
@@ -95,8 +96,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_SingleNudge) {
   anchored_nudge_manager()->Show(nudge_data);
 
   // Ensure the nudge is visible and has set the provided contents.
-  raw_ptr<AnchoredNudge, DanglingUntriaged> nudge =
-      raw_ptr<AnchoredNudge, DanglingUntriaged>(GetShownNudges()[id]);
+  AnchoredNudge* nudge = GetShownNudges()[id];
   ASSERT_TRUE(nudge);
   EXPECT_TRUE(nudge->GetVisible());
   EXPECT_EQ(text, nudge->GetBodyText());
@@ -163,25 +163,21 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   // Add a dismiss button with no callbacks.
   nudge_data.dismiss_text = dismiss_text;
 
-  // Show a nudge.
+  // Show a nudge with a dismiss button.
   anchored_nudge_manager()->Show(nudge_data);
+  AnchoredNudge* nudge = GetShownNudges()[id];
+  ASSERT_TRUE(nudge);
+  views::LabelButton* dismiss_button = nudge->GetDismissButton();
+  views::LabelButton* second_button = nudge->GetSecondButton();
 
-  // Ensure the nudge is visible and has set the provided contents.
-  raw_ptr<AnchoredNudge, DanglingUntriaged> nudge =
-      raw_ptr<AnchoredNudge, DanglingUntriaged>(GetShownNudges()[id]);
-  EXPECT_TRUE(nudge);
-  EXPECT_EQ(dismiss_text, nudge->GetDismissButton()->GetText());
-
-  // Ensure the nudge does not have a second button.
-  EXPECT_FALSE(nudge->GetSecondButton());
+  // Ensure the nudge has a dismiss button, and does not have a second button.
+  ASSERT_TRUE(dismiss_button);
+  EXPECT_EQ(dismiss_text, dismiss_button->GetText());
+  EXPECT_FALSE(second_button);
 
   // Press the dismiss button, the nudge should have dismissed.
-  LeftClickOn(nudge->GetDismissButton());
+  LeftClickOn(dismiss_button);
   EXPECT_FALSE(GetShownNudges()[id]);
-
-  // Show the nudge again.
-  anchored_nudge_manager()->Show(nudge_data);
-  nudge = GetShownNudges()[id];
 
   // Add callbacks for the dismiss button.
   bool dismiss_button_callback_ran = false;
@@ -191,10 +187,13 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   // Show the nudge again.
   anchored_nudge_manager()->Show(nudge_data);
   nudge = GetShownNudges()[id];
+  ASSERT_TRUE(nudge);
+  dismiss_button = nudge->GetDismissButton();
+  second_button = nudge->GetSecondButton();
 
   // Press the dismiss button, `dismiss_button_callback` should have executed,
   // and the nudge should have dismissed.
-  LeftClickOn(nudge->GetDismissButton());
+  LeftClickOn(dismiss_button);
   EXPECT_TRUE(dismiss_button_callback_ran);
   EXPECT_FALSE(GetShownNudges()[id]);
 
@@ -204,12 +203,16 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   // Show the nudge again, now with a second button.
   anchored_nudge_manager()->Show(nudge_data);
   nudge = GetShownNudges()[id];
+  ASSERT_TRUE(nudge);
+  dismiss_button = nudge->GetDismissButton();
+  second_button = nudge->GetSecondButton();
 
   // Ensure the nudge has a second button.
-  EXPECT_TRUE(nudge->GetSecondButton());
+  ASSERT_TRUE(second_button);
+  EXPECT_EQ(second_button_text, second_button->GetText());
 
   // Press the second button, the nudge should have dismissed.
-  LeftClickOn(nudge->GetSecondButton());
+  LeftClickOn(second_button);
   EXPECT_FALSE(GetShownNudges()[id]);
 
   // Add a callback for the second button.
@@ -220,10 +223,13 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   // Show the nudge again.
   anchored_nudge_manager()->Show(nudge_data);
   nudge = GetShownNudges()[id];
+  ASSERT_TRUE(nudge);
+  dismiss_button = nudge->GetDismissButton();
+  second_button = nudge->GetSecondButton();
 
   // Press the second button, `second_button_callback` should have executed, and
   // the nudge should have dismissed.
-  LeftClickOn(nudge->GetSecondButton());
+  LeftClickOn(second_button);
   EXPECT_TRUE(second_button_callback_ran);
   EXPECT_FALSE(GetShownNudges()[id]);
 }
@@ -382,21 +388,21 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_NudgeWithIdAlreadyExists) {
 
   // Show a nudge with some initial contents.
   anchored_nudge_manager()->Show(nudge_data);
-  raw_ptr<AnchoredNudge, DanglingUntriaged> nudge =
-      raw_ptr<AnchoredNudge, DanglingUntriaged>(GetShownNudges()[id]);
+
+  // First nudge contents should be set.
+  AnchoredNudge* nudge = GetShownNudges()[id];
+  ASSERT_TRUE(nudge);
   EXPECT_EQ(text, nudge->GetBodyText());
   EXPECT_EQ(anchor_view, nudge->GetAnchorView());
 
   // Attempt to show a nudge with different contents but with the same id.
   anchored_nudge_manager()->Show(nudge_data_2);
 
-  // Previously shown nudge should be cancelled and replaced with new nudge.
+  // The previous nudge should be cancelled and replaced with the new nudge.
   nudge = GetShownNudges()[id];
+  ASSERT_TRUE(nudge);
   EXPECT_EQ(text_2, nudge->GetBodyText());
   EXPECT_EQ(anchor_view_2, nudge->GetAnchorView());
-
-  // Cleanup.
-  CancelNudge(id);
 }
 
 // Tests that a nudge is not created if its anchor view is not visible.
@@ -696,7 +702,8 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgePersistsOnHover) {
 
   // Show a nudge.
   anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  AnchoredNudge* nudge = GetShownNudges()[id];
+  EXPECT_TRUE(nudge);
 
   // Wait for half of the nudge's duration.
   task_environment()->FastForwardBy(
@@ -705,14 +712,14 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgePersistsOnHover) {
   // Hover on the nudge and wait for its full duration. It should persist.
   GetEventGenerator()->MoveMouseTo(
       GetShownNudges()[id]->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(GetShownNudges()[id]->IsMouseHovered());
+  EXPECT_TRUE(nudge->IsMouseHovered());
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeDefaultDuration);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  EXPECT_TRUE(nudge);
 
   // Hover out of the nudge and wait its duration. It should be dismissed.
   GetEventGenerator()->MoveMouseTo(gfx::Point(-100, -100));
-  EXPECT_FALSE(GetShownNudges()[id]->IsMouseHovered());
+  EXPECT_FALSE(nudge->IsMouseHovered());
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeDefaultDuration / 2 + base::Seconds(1));
   EXPECT_FALSE(GetShownNudges()[id]);
