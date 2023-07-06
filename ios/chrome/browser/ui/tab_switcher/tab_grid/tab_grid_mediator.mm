@@ -271,15 +271,11 @@ void RecordTabGridCloseTabsCount(int count) {
                                .pinned_state = PinnedState::kNonPinned,
                            })];
 
-  const bool isPinnedWebState =
-      IsPinnedTabsEnabled() &&
-      webStateList->IsWebStatePinnedAt(selection.index);
-
   // The pinned WebState could be detached only in case it was displayed in
   // the Tab Search and was closed from the context menu. In such a case
   // there were no observation added for it. Therefore, there is no need to
   // remove one.
-  if (!isPinnedWebState) {
+  if (![self isPinnedWebState:selection.index]) {
     _scopedWebStateObservation->RemoveObservation(detachedWebState);
   }
 }
@@ -313,23 +309,27 @@ void RecordTabGridCloseTabsCount(int count) {
       // Do nothing when a WebState is detached.
       break;
     case WebStateListChange::Type::kMove: {
-      if (IsPinnedTabsEnabled() &&
-          webStateList->IsWebStatePinnedAt(selection.index)) {
-        return;
-      }
-
       const WebStateListChangeMove& moveChange =
           change.As<WebStateListChangeMove>();
-      NSUInteger itemIndex =
-          [self itemIndexFromWebStateListIndex:selection.index];
-      [self.consumer
-          moveItemWithID:moveChange.moved_web_state()->GetStableIdentifier()
-                 toIndex:itemIndex];
+      if (![self isPinnedWebState:selection.index]) {
+        // TabGridMediator handles only non pinned tabs because pinned tabs are
+        // handled in PinnedTabsMediator.
+        NSUInteger itemIndex =
+            [self itemIndexFromWebStateListIndex:selection.index];
+        [self.consumer
+            moveItemWithID:moveChange.moved_web_state()->GetStableIdentifier()
+                   toIndex:itemIndex];
+      }
+
+      // The pinned state can be updated when a tab is moved.
+      if (selection.pinned_state_change) {
+        [self changePinnedStateForWebState:moveChange.moved_web_state()
+                                   atIndex:selection.index];
+      }
       break;
     }
     case WebStateListChange::Type::kReplace: {
-      if (IsPinnedTabsEnabled() &&
-          webStateList->IsWebStatePinnedAt(selection.index)) {
+      if ([self isPinnedWebState:selection.index]) {
         return;
       }
 
@@ -347,8 +347,7 @@ void RecordTabGridCloseTabsCount(int count) {
       break;
     }
     case WebStateListChange::Type::kInsert: {
-      if (IsPinnedTabsEnabled() &&
-          webStateList->IsWebStatePinnedAt(selection.index)) {
+      if ([self isPinnedWebState:selection.index]) {
         [self.consumer
             selectItemWithID:GetActiveWebStateIdentifier(
                                  webStateList,
@@ -1155,7 +1154,7 @@ void RecordTabGridCloseTabsCount(int count) {
 // Inserts/removes a non pinned item to/from the collection.
 - (void)changePinnedStateForWebState:(web::WebState*)webState
                              atIndex:(int)index {
-  if (IsPinnedTabsEnabled() && self.webStateList->IsWebStatePinnedAt(index)) {
+  if ([self isPinnedWebState:index]) {
     [self.consumer
         removeItemWithID:webState->GetStableIdentifier()
           selectedItemID:GetActiveWebStateIdentifier(
@@ -1179,6 +1178,13 @@ void RecordTabGridCloseTabsCount(int count) {
 
     _scopedWebStateObservation->AddObservation(webState);
   }
+}
+
+- (BOOL)isPinnedWebState:(int)index {
+  if (IsPinnedTabsEnabled() && self.webStateList->IsWebStatePinnedAt(index)) {
+    return YES;
+  }
+  return NO;
 }
 
 // Records when the user switches between incognito, regular or remotes pages in

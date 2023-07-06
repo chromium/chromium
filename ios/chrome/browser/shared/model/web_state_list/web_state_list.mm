@@ -265,7 +265,8 @@ void WebStateList::MoveWebStateAt(int from_index, int to_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
   to_index = ConstrainMoveIndex(to_index, IsWebStatePinnedAt(from_index));
-  return MoveWebStateAtImpl(from_index, to_index);
+  return MoveWebStateAtImpl(from_index, to_index,
+                            /*pinned_state_change=*/false);
 }
 
 std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAt(
@@ -377,13 +378,26 @@ int WebStateList::InsertWebStateImpl(int index,
   return index;
 }
 
-void WebStateList::MoveWebStateAtImpl(int from_index, int to_index) {
+void WebStateList::MoveWebStateAtImpl(int from_index,
+                                      int to_index,
+                                      bool pinned_state_change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
   DCHECK(ContainsIndex(from_index));
   DCHECK(ContainsIndex(to_index));
 
   if (from_index == to_index) {
+    if (pinned_state_change) {
+      // Notify the event to the observers that the pinned state is updated but
+      // the layout in WebStateList isn't updated.
+      const WebStateListChangeSelectionOnly selection_only_change(
+          web_state_wrappers_[to_index]->web_state());
+      const WebStateSelection selection = {
+          .index = to_index, .activating = false, .pinned_state_change = true};
+      for (auto& observer : observers_) {
+        observer.WebStateListDidChange(this, selection_only_change, selection);
+      }
+    }
     return;
   }
 
@@ -407,7 +421,9 @@ void WebStateList::MoveWebStateAtImpl(int from_index, int to_index) {
 
   const WebStateListChangeMove move_change(web_state, from_index);
   const WebStateSelection selection = {
-      .index = to_index, .activating = false, .pinned_state_change = false};
+      .index = to_index,
+      .activating = false,
+      .pinned_state_change = pinned_state_change};
   for (auto& observer : observers_) {
     observer.WebStateListDidChange(this, move_change, selection);
   }
@@ -691,17 +707,10 @@ int WebStateList::SetWebStatePinnedImpl(int index, bool pinned) {
     pinned_tabs_count_--;
   }
 
-  // TODO(crbug.com/1442546): Merge 2 API calls into one; WebStateListDidChange
-  // with kMove and WebStateListDidChange with kSelectionOnly.
-  MoveWebStateAtImpl(index, new_index);
-
-  const WebStateListChangeSelectionOnly selection_only_change(
-      web_state_wrappers_[new_index]->web_state());
-  const WebStateSelection selection = {
-      .index = new_index, .activating = false, .pinned_state_change = true};
-  for (auto& observer : observers_) {
-    observer.WebStateListDidChange(this, selection_only_change, selection);
-  }
+  // The pinned state update is notified in `MoveWebStateAtImpl()` with the type
+  // of `kMove` when a WebState is moved or `kSelectionOnly` when a WebState is
+  // not moved.
+  MoveWebStateAtImpl(index, new_index, /*pinned_state_change=*/true);
 
   return new_index;
 }

@@ -186,15 +186,21 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
       // Do nothing when a WebState is detached.
       break;
     case WebStateListChange::Type::kMove: {
-      if (!webStateList->IsWebStatePinnedAt(selection.index)) {
-        return;
-      }
-
       const WebStateListChangeMove& moveChange =
           change.As<WebStateListChangeMove>();
-      [self.consumer
-          moveItemWithID:moveChange.moved_web_state()->GetStableIdentifier()
-                 toIndex:selection.index];
+      if (webStateList->IsWebStatePinnedAt(selection.index)) {
+        // PinnedTabsMediator handles only pinned tabs because non pinned tabs
+        // are handled in TabGridMediator.
+        [self.consumer
+            moveItemWithID:moveChange.moved_web_state()->GetStableIdentifier()
+                   toIndex:selection.index];
+      }
+
+      // The pinned state can be updated when a tab is moved.
+      if (selection.pinned_state_change) {
+        [self changePinnedStateForWebState:moveChange.moved_web_state()
+                                   atIndex:selection.index];
+      }
       break;
     }
     case WebStateListChange::Type::kReplace: {
