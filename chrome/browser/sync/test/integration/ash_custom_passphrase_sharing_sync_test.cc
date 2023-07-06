@@ -137,8 +137,7 @@ class PassphraseStateNotifiedToCrosapiObserverChecker
 class AshCustomPassphraseSharingSyncTest : public SyncTest {
  public:
   AshCustomPassphraseSharingSyncTest() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary}, {});
+    feature_list_.InitWithFeatures({ash::features::kLacrosOnly}, {});
   }
 
   AshCustomPassphraseSharingSyncTest(
@@ -160,6 +159,8 @@ class AshCustomPassphraseSharingSyncTest : public SyncTest {
   }
 
   void SetupCrosapi() {
+    ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
+
     crosapi::CrosapiAsh* crosapi_ash =
         crosapi::CrosapiManager::Get()->crosapi_ash();
     DCHECK(crosapi_ash);
