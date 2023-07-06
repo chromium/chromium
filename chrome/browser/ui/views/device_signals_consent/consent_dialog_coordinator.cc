@@ -146,6 +146,7 @@ void ConsentDialogCoordinator::OnConsentPreferenceUpdated(
     if (dialog_widget_) {
       dialog_widget_->CloseWithReason(
           views::Widget::ClosedReason::kAcceptButtonClicked);
+      dialog_widget_ = nullptr;
     }
     callback.Run();
   }
