@@ -68,7 +68,7 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   // a guess (i.e. when there are no usable constraints).
   bool IsLogicalHeightKnown() const { return is_logical_height_known_; }
 
-  LayoutSize OffsetFromColumnSet() const;
+  LogicalOffset OffsetFromColumnSet() const;
 
   // Return the block offset from the enclosing fragmentation context, if
   // nested. In the coordinate space of the enclosing fragmentation context.
@@ -146,7 +146,7 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
                                    unsigned& first_column,
                                    unsigned& last_column) const;
 
-  LayoutRect CalculateOverflow() const;
+  LogicalRect CalculateOverflow() const;
 
   unsigned ColumnIndexAtOffset(LayoutUnit offset_in_flow_thread,
                                LayoutBox::PageBoundaryRule) const;
@@ -169,7 +169,7 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   void Trace(Visitor*) const;
 
  private:
-  LayoutRect ColumnRectAt(unsigned column_index) const;
+  LogicalRect ColumnRectAt(unsigned column_index) const;
   LayoutUnit LogicalTopInFlowThreadAt(unsigned column_index) const {
     return logical_top_in_flow_thread_ + column_index * ColumnLogicalHeight();
   }

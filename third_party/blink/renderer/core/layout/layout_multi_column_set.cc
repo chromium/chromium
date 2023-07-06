@@ -303,8 +303,13 @@ LayoutPoint LayoutMultiColumnSet::VisualPointToFlowThreadPoint(
   NOT_DESTROYED();
   const MultiColumnFragmentainerGroup& row =
       FragmentainerGroupAtVisualPoint(visual_point);
-  return row.VisualPointToFlowThreadPoint(visual_point -
-                                          row.OffsetFromColumnSet());
+  LogicalOffset column_offset = row.OffsetFromColumnSet();
+  // `visual_point` is in the flipped block-flow coordinate system.
+  LayoutSize flipped_column_offset =
+      IsHorizontalWritingMode()
+          ? LayoutSize(column_offset.inline_offset, column_offset.block_offset)
+          : LayoutSize(column_offset.block_offset, column_offset.inline_offset);
+  return row.VisualPointToFlowThreadPoint(visual_point - flipped_column_offset);
 }
 
 void LayoutMultiColumnSet::ResetColumnHeight() {
@@ -423,13 +428,18 @@ void LayoutMultiColumnSet::AddVisualOverflowFromChildren() {
   if (!IsPageLogicalHeightKnown())
     return;
   UpdateGeometryIfNeeded();
-  LayoutRect overflow_rect;
+  LogicalRect logical_overflow_rect;
   for (const auto& group : fragmentainer_groups_) {
-    LayoutRect rect = group.CalculateOverflow();
-    rect.Move(group.OffsetFromColumnSet());
-    overflow_rect.Unite(rect);
+    LogicalRect rect = group.CalculateOverflow();
+    rect.offset += group.OffsetFromColumnSet();
+    logical_overflow_rect.Unite(rect);
   }
-  if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
+  LayoutRect overflow_rect = CreateWritingModeConverter()
+                                 .ToPhysical(logical_overflow_rect)
+                                 .ToLayoutRect();
+  // We should apply a flipped block-flow rectangle if 'LayoutNGNoLocation'
+  // flag is disabled.
+  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
     overflow_rect = FlipForWritingMode(overflow_rect).ToLayoutRect();
   }
   AddContentsVisualOverflow(overflow_rect);
