@@ -1460,7 +1460,7 @@ BASE_FEATURE(kSendCnameAliasesToSubresourceFilterFromRenderer,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSerializeAccessibilityPostLifecycle,
-             "SerializeAccessibilityPostLifeycle",
+             "SerializeAccessibilityPostLifecycle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Experiment of the delay from navigation to starting an update of a service
