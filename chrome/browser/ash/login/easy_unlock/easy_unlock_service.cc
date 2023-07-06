@@ -396,34 +396,21 @@ void EasyUnlockService::Shutdown() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void EasyUnlockService::OnScreenDidLock(
-    proximity_auth::ScreenlockBridge::LockHandler::ScreenType screen_type) {
+void EasyUnlockService::OnScreenDidLock() {
   ShowInitialSmartLockState();
 
   set_will_authenticate_using_easy_unlock(false);
   lock_screen_last_shown_timestamp_ = base::TimeTicks::Now();
 }
 
-void EasyUnlockService::OnScreenDidUnlock(
-    proximity_auth::ScreenlockBridge::LockHandler::ScreenType screen_type) {
+void EasyUnlockService::OnScreenDidUnlock() {
   // If we tried to load remote devices (e.g. after a sync or the
   // service was initialized) while the screen was locked, we can now
   // load the new remote devices.
-  //
-  // It's important to go through this code path even if unlocking the
-  // login screen. Because when the service is initialized while the
-  // user is signing in we need to load the remotes. Otherwise, the
-  // first time the user locks the screen the feature won't work.
   if (deferring_device_load_) {
     PA_LOG(VERBOSE) << "Loading deferred devices after screen unlock.";
     deferring_device_load_ = false;
     LoadRemoteDevices();
-  }
-
-  // Do not process events for the login screen.
-  if (screen_type !=
-      proximity_auth::ScreenlockBridge::LockHandler::LOCK_SCREEN) {
-    return;
   }
 
   if (shown_pairing_changed_notification_) {
@@ -458,10 +445,6 @@ void EasyUnlockService::OnScreenDidUnlock(
   }
 
   set_will_authenticate_using_easy_unlock(false);
-}
-
-void EasyUnlockService::OnFocusedUserChanged(const AccountId& account_id) {
-  // Nothing to do.
 }
 
 void EasyUnlockService::OnReady() {
@@ -673,9 +656,7 @@ void EasyUnlockService::LoadRemoteDevices() {
     return;
   }
 
-  // This code path may be hit by:
-  //   1. New devices were synced on the lock screen.
-  //   2. The service was initialized while the login screen is still up.
+  // This code path may be hit if new devices were synced on the lock screen.
   if (proximity_auth::ScreenlockBridge::Get()->IsLocked()) {
     PA_LOG(VERBOSE) << "Deferring device load until screen is unlocked.";
     deferring_device_load_ = true;
@@ -773,10 +754,10 @@ void EasyUnlockService::ShowInitialSmartLockState() {
   // persisting within UpdateSmartLockState().
   //
   // Note: ScreenlockBridge::IsLocked() may return a false positive if the
-  // system is "warming up". To work around this race,
-  // ShowInitialSmartLockState() is also called from OnScreenDidLock() (which
-  // triggers when ScreenlockBridge::IsLocked() becomes true) to ensure that
-  // an initial state is displayed in the UI.
+  // system is "warming up" (for example, on screen lock or after suspend). To
+  // work around this race, ShowInitialSmartLockState() is also called from
+  // OnScreenDidLock() (which triggers when ScreenlockBridge::IsLocked() becomes
+  // true) to ensure that an initial state is displayed in the UI.
   // TODO(b/227674947) Investigate whether a false positive is still possible
   // now that Sign in with Smart Lock is deprecated.
   auto* screenlock_bridge = proximity_auth::ScreenlockBridge::Get();

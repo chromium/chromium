@@ -37,24 +37,15 @@ void ScreenlockBridge::SetLockHandler(LockHandler* lock_handler) {
 
   DCHECK(lock_handler_ == nullptr || lock_handler == nullptr);
 
-  // TODO(isherman): If |lock_handler| is null, then |lock_handler_| might have
-  // been freed. Cache the screen type rather than querying it below.
-  LockHandler::ScreenType screen_type;
-  if (lock_handler_) {
-    screen_type = lock_handler_->GetScreenType();
-  } else {
-    screen_type = lock_handler->GetScreenType();
-  }
-
   lock_handler_ = lock_handler;
   if (lock_handler_) {
     for (auto& observer : observers_) {
-      observer.OnScreenDidLock(screen_type);
+      observer.OnScreenDidLock();
     }
   } else {
     focused_account_id_ = EmptyAccountId();
     for (auto& observer : observers_) {
-      observer.OnScreenDidUnlock(screen_type);
+      observer.OnScreenDidUnlock();
     }
   }
 }

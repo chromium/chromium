@@ -97,12 +97,11 @@ class EasyUnlockService
   AccountId GetAccountId() const;
 
   // To be called when EasyUnlockService is "warming up", for example, on screen
-  // lock, after suspend, when the login screen is starting up, etc. During a
-  // period like this, not all sub-systems are fully initialized, particularly
-  // UnlockManager and the Bluetooth stack, so to avoid UI jank, callers can use
-  // this method to fill in the UI with an approximation of what the UI will
-  // look like in <1 second. The resulting initial state will be one of two
-  // possibilities:
+  // lock, after suspend, etc. During a period like this, not all sub-systems
+  // are fully initialized, particularly UnlockManager and the Bluetooth stack,
+  // so to avoid UI jank, callers can use this method to fill in the UI with an
+  // approximation of what the UI will look like in <1 second. The resulting
+  // initial state will be one of two possibilities:
   //   * SmartLockState::kConnectingToPhone: if the feature is allowed, enabled,
   //     and has kicked off a scan/connection.
   //   * SmartLockState::kDisabled: if any values above can't be confirmed.
@@ -145,12 +144,8 @@ class EasyUnlockService
   void Shutdown() override;
 
   // proximity_auth::ScreenlockBridge::Observer:
-  void OnScreenDidLock(proximity_auth::ScreenlockBridge::LockHandler::ScreenType
-                           screen_type) override;
-  void OnScreenDidUnlock(
-      proximity_auth::ScreenlockBridge::LockHandler::ScreenType screen_type)
-      override;
-  void OnFocusedUserChanged(const AccountId& account_id) override;
+  void OnScreenDidLock() override;
+  void OnScreenDidUnlock() override;
 
   // device_sync::DeviceSyncClient::Observer:
   void OnReady() override;

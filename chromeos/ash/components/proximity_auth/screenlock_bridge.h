@@ -27,8 +27,7 @@ class ScreenlockBridge {
  public:
   class LockHandler {
    public:
-    // TODO(b/227674947): Remove deprecated SIGNIN_SCREEN value.
-    enum ScreenType { SIGNIN_SCREEN = 0, LOCK_SCREEN = 1, OTHER_SCREEN = 2 };
+    enum ScreenType { LOCK_SCREEN = 0, OTHER_SCREEN = 1 };
 
     // Displays |message| in a banner on the lock screen.
     virtual void ShowBannerMessage(const std::u16string& message,
@@ -70,14 +69,13 @@ class ScreenlockBridge {
   class Observer {
    public:
     // Invoked after the screen is locked.
-    virtual void OnScreenDidLock(LockHandler::ScreenType screen_type) = 0;
+    virtual void OnScreenDidLock() = 0;
 
     // Invoked after the screen lock is dismissed.
-    virtual void OnScreenDidUnlock(LockHandler::ScreenType screen_type) = 0;
+    virtual void OnScreenDidUnlock() = 0;
 
-    // TODO(b/227674947): This method isn't being used anywhere and can be
-    // deleted. Invoked when the user focused on the lock screen changes.
-    virtual void OnFocusedUserChanged(const AccountId& account_id) = 0;
+    // Invoked when the user focused on the lock screen changes.
+    virtual void OnFocusedUserChanged(const AccountId& account_id) {}
 
    protected:
     virtual ~Observer() {}

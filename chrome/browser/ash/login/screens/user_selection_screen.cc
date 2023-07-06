@@ -742,10 +742,6 @@ UserSelectionScreen::GetScreenType() const {
   switch (display_type_) {
     case DisplayedScreen::LOCK_SCREEN:
       return ScreenType::LOCK_SCREEN;
-
-    case DisplayedScreen::SIGN_IN_SCREEN:
-      return ScreenType::SIGNIN_SCREEN;
-
     default:
       return ScreenType::OTHER_SCREEN;
   }
