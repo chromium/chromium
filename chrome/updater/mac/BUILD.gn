@@ -575,8 +575,10 @@ if (!is_component_build && enable_dsyms) {
     outputs = [ _output ]
     args = [ rebase_path(_output, root_out_dir) ] +
            rebase_path([
+                         "$root_out_dir/$updater_product_full_name.dSYM",
                          "$root_out_dir/ksadmin.dSYM",
                          "$root_out_dir/ksinstall.dSYM",
+                         "$root_out_dir/launcher.dSYM",
                        ],
                        root_out_dir)
   }
