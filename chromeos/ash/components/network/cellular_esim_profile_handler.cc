@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/hermes_metrics_util.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 
 namespace ash {
@@ -225,8 +226,9 @@ void CellularESimProfileHandler::PerformRequestAvailableProfiles(
   if (info->smds_activation_codes.empty()) {
     // TODO(b/278135630): Emit
     // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
-    // TODO(b/278135534): Emit Network.Ash.Cellular.ESim.SMDSScan.ProfileCount.
     NET_LOG(EVENT) << "Finished requesting available profiles";
+    CellularNetworkMetricsLogger::LogSmdsScanProfileCount(
+        info->profile_list.size());
     std::move(info->callback)
         .Run(cellular_setup::mojom::ESimOperationResult::kSuccess,
              std::move(info->profile_list));

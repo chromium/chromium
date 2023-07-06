@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -446,7 +447,7 @@ void CellularPolicyHandler::OnRefreshSmdxProfiles(
 
   if (current_request->activation_code.type() ==
       policy_util::SmdxActivationCode::Type::SMDS) {
-    // TODO(b/278135534): Emit Network.Ash.Cellular.ESim.SMDSScan.ProfileCount.
+    CellularNetworkMetricsLogger::LogSmdsScanProfileCount(profile_paths.size());
     // TODO(b/278135481): Emit
     // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.Duration.
     // TODO(b/278135630): Emit

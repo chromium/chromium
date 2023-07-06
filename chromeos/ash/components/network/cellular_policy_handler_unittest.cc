@@ -19,11 +19,11 @@
 #include "chromeos/ash/components/network/cellular_esim_installer.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
-#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "components/onc/onc_constants.h"
 #include "components/prefs/testing_pref_service.h"
@@ -136,6 +136,8 @@ class CellularPolicyHandlerTest : public testing::Test {
     size_t inhibit_failed_retry_count = 0u;
     size_t hermes_install_failed_initial_count = 0u;
     size_t hermes_install_failed_retry_count = 0u;
+    size_t smds_scan_profile_total_count = 0u;
+    size_t smds_scan_profile_sum = 0u;
   };
 
   CellularPolicyHandlerTest(
@@ -154,6 +156,8 @@ class CellularPolicyHandlerTest : public testing::Test {
                                                   &device_prefs_);
     cellular_policy_handler_ = NetworkHandler::Get()->cellular_policy_handler();
     base::RunLoop().RunUntilIdle();
+
+    cellular_policy_handler_ = NetworkHandler::Get()->cellular_policy_handler();
   }
 
   void TearDown() override { network_handler_test_helper_.reset(); }
@@ -316,6 +320,12 @@ class CellularPolicyHandlerTest : public testing::Test {
         /*success_count=*/state.success_retry_count,
         /*inhibit_failed_count=*/state.inhibit_failed_retry_count,
         /*hermes_install_failed=*/state.hermes_install_failed_retry_count);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanProfileCount,
+        /*expected_count=*/state.smds_scan_profile_total_count);
+    EXPECT_EQ(static_cast<int64_t>(state.smds_scan_profile_sum),
+              histogram_tester_.GetTotalSum(
+                  CellularNetworkMetricsLogger::kSmdsScanProfileCount));
   }
 
   void FastForwardBy(base::TimeDelta delay) {
@@ -499,6 +509,8 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
                                  /*check_for_service=*/true));
   EXPECT_TRUE(HasIccidMetadata(/*expected=*/true));
   expected_state.success_initial_count++;
+  expected_state.smds_scan_profile_total_count++;
+  expected_state.smds_scan_profile_sum++;
   CheckHistogramState(expected_state);
 }
 
@@ -598,6 +610,8 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
                                  /*check_for_service=*/true));
   EXPECT_TRUE(HasIccidMetadata(/*expected=*/true));
   expected_state.success_initial_count++;
+  expected_state.smds_scan_profile_total_count++;
+  expected_state.smds_scan_profile_sum = 5;
   CheckHistogramState(expected_state);
 }
 
@@ -827,6 +841,8 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
   EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+  expected_state.smds_scan_profile_total_count++;
+  expected_state.smds_scan_profile_sum++;
   CheckHistogramState(expected_state);
 }
 

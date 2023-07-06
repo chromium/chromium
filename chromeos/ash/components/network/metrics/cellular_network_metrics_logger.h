@@ -89,6 +89,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   static constexpr char kCustomApnsManagedMigrationTypeHistogram[] =
       "Network.Ash.Cellular.Apn.Managed.MigrationType";
 
+  static constexpr char kSmdsScanProfileCount[] =
+      "Network.Ash.Cellular.ESim.SmdsScan.ProfileCount";
+
   CellularNetworkMetricsLogger(
       NetworkStateHandler* network_state_handler,
       NetworkMetadataStore* network_metadata_store,
@@ -113,6 +116,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   static void LogUnmanagedCustomApnMigrationType(
       UnmanagedApnMigrationType type);
   static void LogManagedCustomApnMigrationType(ManagedApnMigrationType type);
+
+  // Logs results from attempting operations related to eSIM.
+  static void LogSmdsScanProfileCount(size_t count);
 
  private:
   // ConnectionInfoMetricsLogger::Observer:
