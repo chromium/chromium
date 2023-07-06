@@ -170,22 +170,20 @@ export interface ZoomLevelEntry {
 }
 
 /**
- * TODO(crbug.com/1373962): Remove the origin key from `RawFileSystemGrant`
+ * TODO(crbug.com/1373962): Remove the origin key from `FileSystemGrant`
  * before the launch of the Persistent Permissions settings page UI.
  */
-export interface RawFileSystemGrant {
+export interface FileSystemGrant {
   origin: string;
   filePath: string;
-  isWritable: boolean;
+  displayName: string;
   isDirectory: boolean;
 }
 
-export interface FileSystemGrantsForOrigin {
+export interface OriginFileSystemGrants {
   origin: string;
-  directoryReadGrants: RawFileSystemGrant[];
-  directoryWriteGrants: RawFileSystemGrant[];
-  fileReadGrants: RawFileSystemGrant[];
-  fileWriteGrants: RawFileSystemGrant[];
+  viewGrants: FileSystemGrant[];
+  editGrants: FileSystemGrant[];
 }
 
 export interface SiteSettingsPrefsBrowserProxy {
@@ -255,7 +253,7 @@ export interface SiteSettingsPrefsBrowserProxy {
   /**
    * Gets the File System Access permission grants, grouped by origin.
    */
-  getFileSystemGrants(): Promise<FileSystemGrantsForOrigin[]>;
+  getFileSystemGrants(): Promise<OriginFileSystemGrants[]>;
 
   revokeFileSystemGrant(origin: string, filePath: string): void;
 

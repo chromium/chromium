@@ -50,15 +50,14 @@ typedef std::map<std::pair<ContentSettingsPattern, std::string>,
 // objects that belong to the same device.
 using ChooserExceptionDetails = std::set<std::tuple<GURL, std::string, bool>>;
 
+// TODO(crbug.com/1373962): Prefix the types related to the File System Access
+// API so that their relation to the file system is more apparent.
 constexpr char kChooserType[] = "chooserType";
-constexpr char kDirectoryReadGrants[] = "directoryReadGrants";
-constexpr char kDirectoryWriteGrants[] = "directoryWriteGrants";
 constexpr char kDisabled[] = "disabled";
 constexpr char kDisplayName[] = "displayName";
+constexpr char kEditGrants[] = "editGrants";
 constexpr char kEmbeddingOrigin[] = "embeddingOrigin";
 constexpr char kFilePath[] = "filePath";
-constexpr char kFileReadGrants[] = "fileReadGrants";
-constexpr char kFileWriteGrants[] = "fileWriteGrants";
 constexpr char kHostOrSpec[] = "hostOrSpec";
 constexpr char kIncognito[] = "incognito";
 constexpr char kIsDirectory[] = "isDirectory";
@@ -77,6 +76,7 @@ constexpr char kSource[] = "source";
 constexpr char kType[] = "type";
 constexpr char kNotificationPermissionsReviewListMaybeChangedEvent[] =
     "notification-permission-review-list-maybe-changed";
+constexpr char kViewGrants[] = "viewGrants";
 
 enum class SiteSettingSource {
   kAllowlist,

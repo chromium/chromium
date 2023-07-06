@@ -13,15 +13,15 @@ import './file_system_site_entry.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 
+import {ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './file_system_site_list.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {RawFileSystemGrant} from './site_settings_prefs_browser_proxy.js';
 
 export interface FileSystemGrant {
   isDirectory: boolean;
@@ -43,63 +43,6 @@ declare global {
   }
 }
 
-/**
- * Map the given edit grants to the allowPermissionGrantsList, to be displayed
- * on the UI.
- *
- * @param grants A list of file system permission grants returned from
- *     the browserProxy.
- * @param isDirectory Determines whether the grants being mapped over
- *     are for a file or for a directory.
- * @returns A list of allowed view grants, where there is not an existing
- *     write grant for the given origin / filepath.
- */
-function mapEditGrantsToAllowPermissionGrants(
-    grants: RawFileSystemGrant[], isDirectory: boolean): FileSystemGrant[] {
-  return grants.map(grant => {
-    return {
-      origin: grant.origin,
-      isDirectory: isDirectory,
-      filePath: grant.filePath,
-      displayName: grant.filePath,
-    };
-  });
-}
-
-/**
- * Filter out view grants that have a corresponding write grant,
- * so that there is only either a view OR edit grant displayed on the
- * chrome://settings/content/filesystem UI for a given origin + filepath.
- *
- * Map the filtered view grants to the allowPermissionGrantsList,
- * to be displayed on the UI.
- *
- * @param grants A list of file system permission grants returned from
- *     the browserProxy.
- * @param allowPermissionGrantsList A list of formatted permission grants, to
- *     be displayed on the UI.
- * @param isDirectory Determines whether the grants being mapped over
- *     are for a file or for a directory.
- * @returns A list of allowed view grants, where there is not an existing
- *     write grant for the given origin / filepath.
- */
-function mapViewGrantsToAllowPermissionGrants(
-    viewGrants: RawFileSystemGrant[], editGrants: FileSystemGrant[],
-    isDirectory: boolean): FileSystemGrant[] {
-  return viewGrants
-      .filter(
-          viewGrant => !editGrants.some(
-              editGrant => editGrant.filePath === viewGrant.filePath))
-      .map(viewGrant => {
-        return {
-          origin: viewGrant.origin,
-          isDirectory: isDirectory,
-          filePath: viewGrant.filePath,
-          displayName: viewGrant.filePath,
-        };
-      });
-}
-
 export interface FileSystemSiteListElement {
   $: {
     menu: CrLazyRenderElement<CrActionMenuElement>,
@@ -107,7 +50,7 @@ export interface FileSystemSiteListElement {
 }
 
 const FileSystemSiteListElementBase =
-    RouteObserverMixin(SiteSettingsMixin(PolymerElement));
+    WebUiListenerMixin(RouteObserverMixin(SiteSettingsMixin(PolymerElement)));
 
 export class FileSystemSiteListElement extends FileSystemSiteListElementBase {
   static get is() {
@@ -138,28 +81,22 @@ export class FileSystemSiteListElement extends FileSystemSiteListElementBase {
   }
 
   private allowedGrants_: OriginFileSystemGrants[];
-  private eventTracker_: EventTracker;
   private selectedOrigin_: string;
 
   override connectedCallback() {
     super.connectedCallback();
-    this.eventTracker_ = new EventTracker();
 
-    /**
-     * Update the allowed permission grants list when the UI is visible.
-     */
-    this.eventTracker_.add(document, 'visibilitychange', () => {
-      const currentRoute = Router.getInstance().currentRoute;
-      if (document.visibilityState === 'visible' &&
-          currentRoute === routes.SITE_SETTINGS_FILE_SYSTEM_WRITE) {
-        this.populateList_();
-      }
-    });
+    this.addWebUiListener(
+        'contentSettingChooserPermissionChanged',
+        (category: ContentSettingsTypes) => {
+          if (category === ContentSettingsTypes.FILE_SYSTEM_WRITE) {
+            this.populateList_();
+          }
+        });
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.eventTracker_.removeAll();
   }
 
   /**
@@ -175,57 +112,18 @@ export class FileSystemSiteListElement extends FileSystemSiteListElementBase {
     }
   }
 
+  private onOpenOptionsMenu_(e: CustomEvent<OriginFileSystemGrants>) {
+    this.selectedOrigin_ = e.detail.origin;
+    this.$.menu.get().showAt(e.target as HTMLElement);
+  }
+
   /**
    * Retrieves a list of all known origins with allowed permissions,
    * granted via the File System Access API.
    */
   private async populateList_() {
-    // TODO(crbug.com/1373962): Display |response| in the UI once mocks are
-    // done.
     const response = await this.browserProxy.getFileSystemGrants();
-    this.allowedGrants_ = [];
-
-    for (let i = 0; i < response.length; i++) {
-      const allowPermissionGrants: OriginFileSystemGrants = {
-        origin: '',
-        viewGrants: [],
-        editGrants: [],
-      };
-      allowPermissionGrants.origin = response[i].origin;
-
-      allowPermissionGrants.editGrants = mapEditGrantsToAllowPermissionGrants(
-          response[i].fileWriteGrants, false);
-
-      allowPermissionGrants.editGrants =
-          allowPermissionGrants.editGrants.concat(
-              mapEditGrantsToAllowPermissionGrants(
-                  response[i].directoryWriteGrants, true));
-
-      allowPermissionGrants.viewGrants = mapViewGrantsToAllowPermissionGrants(
-          response[i].fileReadGrants, allowPermissionGrants.editGrants, false);
-
-      allowPermissionGrants.viewGrants =
-          allowPermissionGrants.viewGrants.concat(
-              mapViewGrantsToAllowPermissionGrants(
-                  response[i].directoryReadGrants,
-                  allowPermissionGrants.editGrants, true));
-
-      // TODO(crbug.com/1373962): Look into whether this logic can be
-      // simplified before the launch of the Persistent Permissions
-      // settings page UI.
-      const existingIndex = this.allowedGrants_.findIndex(
-          grant => grant.origin === response[i].origin);
-      if (existingIndex !== -1) {
-        this.set(`allowedGrants_.${existingIndex}`, allowPermissionGrants);
-      } else {
-        this.push('allowedGrants_', allowPermissionGrants);
-      }
-    }
-  }
-
-  private onOpenOptionsMenu_(e: CustomEvent<OriginFileSystemGrants>) {
-    this.selectedOrigin_ = e.detail.origin;
-    this.$.menu.get().showAt(e.target as HTMLElement);
+    this.set('allowedGrants_', response);
   }
 
   /**
@@ -234,9 +132,6 @@ export class FileSystemSiteListElement extends FileSystemSiteListElementBase {
    */
   private onRevokeGrant_(e: CustomEvent<FileSystemGrant>) {
     this.browserProxy.revokeFileSystemGrant(e.detail.origin, e.detail.filePath);
-    // TODO(crbug.com/1373962): Implement an observer on the backend that
-    // triggers a UI update when permission grants are modified.
-    this.populateList_();
   }
 
   /**
@@ -245,11 +140,8 @@ export class FileSystemSiteListElement extends FileSystemSiteListElementBase {
    */
   private onRemoveGrantsClick_() {
     this.browserProxy.revokeFileSystemGrants(this.selectedOrigin_);
-    // TODO(crbug.com/1373962): Implement an observer on the backend that
-    // triggers a UI update when permission grants are modified.
     this.$.menu.get().close();
     this.selectedOrigin_ = '';
-    this.populateList_();
   }
 
   /**

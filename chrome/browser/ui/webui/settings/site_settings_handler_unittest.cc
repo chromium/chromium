@@ -2850,55 +2850,42 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   EXPECT_EQ(CHECK_DEREF(second_grant.FindString(site_settings::kOrigin)),
             "https://www.b.com/");
 
-  const base::Value::List* kTestOrigin1FileReadGrants =
-      first_grant.FindList(site_settings::kFileReadGrants);
-  const base::Value::List* kTestOrigin1FileWriteGrants =
-      first_grant.FindList(site_settings::kFileWriteGrants);
-  const base::Value::List* kTestOrigin1DirectoryReadGrants =
-      first_grant.FindList(site_settings::kDirectoryReadGrants);
-  const base::Value::List* kTestOrigin1DirectoryWriteGrants =
-      first_grant.FindList(site_settings::kDirectoryWriteGrants);
+  const base::Value::List* kTestOrigin1ViewGrants =
+      first_grant.FindList(site_settings::kViewGrants);
+  const base::Value::List* kTestOrigin1EditGrants =
+      first_grant.FindList(site_settings::kEditGrants);
 
-  const base::Value::List* kTestOrigin2FileReadGrants =
-      second_grant.FindList(site_settings::kFileReadGrants);
-  const base::Value::List* kTestOrigin2FileWriteGrants =
-      second_grant.FindList(site_settings::kFileWriteGrants);
-  const base::Value::List* kTestOrigin2DirectoryReadGrants =
-      second_grant.FindList(site_settings::kDirectoryReadGrants);
-  const base::Value::List* kTestOrigin2DirectoryWriteGrants =
-      second_grant.FindList(site_settings::kDirectoryWriteGrants);
+  const base::Value::List* kTestOrigin2ViewGrants =
+      second_grant.FindList(site_settings::kViewGrants);
+  const base::Value::List* kTestOrigin2EditGrants =
+      second_grant.FindList(site_settings::kEditGrants);
 
   // Checks that the grants for test origins are populated as expected.
-  EXPECT_FALSE(CHECK_DEREF(kTestOrigin1FileReadGrants)[0]
-                   .GetDict()
-                   .FindBool(site_settings::kIsDirectory)
-                   .value_or(true));
-  ASSERT_TRUE(kTestOrigin1FileWriteGrants != nullptr);
-  EXPECT_TRUE(kTestOrigin1FileWriteGrants->empty());
+  EXPECT_TRUE(CHECK_DEREF(kTestOrigin1ViewGrants)[0]
+                  .GetDict()
+                  .FindBool(site_settings::kIsDirectory)
+                  .value_or(false));
   EXPECT_EQ(
-      CHECK_DEREF(
-          CHECK_DEREF(kTestOrigin1DirectoryReadGrants)[0].GetDict().FindString(
-              site_settings::kFilePath)),
-      "/e/");
-  ASSERT_TRUE(kTestOrigin1DirectoryWriteGrants != nullptr);
-  EXPECT_TRUE(kTestOrigin1DirectoryWriteGrants->empty());
+      CHECK_DEREF(CHECK_DEREF(kTestOrigin1ViewGrants)[1].GetDict().FindString(
+          site_settings::kFilePath)),
+      "/a/b");
+  ASSERT_TRUE(kTestOrigin1EditGrants != nullptr);
+  EXPECT_TRUE(kTestOrigin1EditGrants->empty());
 
   // In the case of kTestOrigin2, check that when an origin has an
   // associated 'write' grant, that the grant is only recorded in the
   // respective write grants list, and is not recorded in the origin's
   // read grants list.
-  ASSERT_TRUE(kTestOrigin2FileReadGrants != nullptr);
-  EXPECT_TRUE(kTestOrigin2FileReadGrants->empty());
-  EXPECT_TRUE(CHECK_DEREF(kTestOrigin2FileWriteGrants)[0]
-                  .GetDict()
-                  .FindBool(site_settings::kIsWritable)
-                  .value_or(false));
-  ASSERT_TRUE(kTestOrigin2DirectoryReadGrants != nullptr);
-  EXPECT_TRUE(kTestOrigin2DirectoryReadGrants->empty());
-  EXPECT_TRUE(CHECK_DEREF(kTestOrigin2DirectoryWriteGrants)[0]
-                  .GetDict()
-                  .FindBool(site_settings::kIsDirectory)
-                  .value_or(false));
+  ASSERT_TRUE(kTestOrigin2ViewGrants != nullptr);
+  EXPECT_TRUE(kTestOrigin2ViewGrants->empty());
+  EXPECT_EQ(
+      CHECK_DEREF(CHECK_DEREF(kTestOrigin2EditGrants)[0].GetDict().FindString(
+          site_settings::kDisplayName)),
+      "/f/g/h/");
+  EXPECT_FALSE(CHECK_DEREF(kTestOrigin2EditGrants)[1]
+                   .GetDict()
+                   .FindBool(site_settings::kIsDirectory)
+                   .value_or(true));
 }
 
 // RevokeGrant() revokes a single File System Access permission grant,
@@ -2946,14 +2933,10 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   const base::Value::List& grants = data.arg3()->GetList();
 
-  // After revoking the `file_read_grant` for kTestOrigin1, only one
-  // `directory_read_grant` should remain when retrieving the file system grants
-  // for kTestOrigin1.
-  EXPECT_TRUE(
-      grants[0].GetDict().FindList(site_settings::kFileReadGrants)->empty());
-  EXPECT_EQ(
-      grants[0].GetDict().FindList(site_settings::kDirectoryReadGrants)->size(),
-      1UL);
+  // After revoking the `file_read_grant` for kTestOrigin1, only one view grant
+  // should remain when retrieving the file system grants for kTestOrigin1.
+  EXPECT_EQ(grants[0].GetDict().FindList(site_settings::kViewGrants)->size(),
+            1UL);
 
   // Revoking a single grant from an origin with multiple grants in a given
   // grants list only revokes the grant with the given file path.
@@ -2970,13 +2953,11 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
       *web_ui()->call_data().back();
   const base::Value::List& updated_grants = updated_data.arg3()->GetList();
 
-  EXPECT_EQ(updated_grants[1]
-                .GetDict()
-                .FindList(site_settings::kDirectoryWriteGrants)
-                ->size(),
-            1UL);
+  EXPECT_EQ(
+      updated_grants[1].GetDict().FindList(site_settings::kEditGrants)->size(),
+      1UL);
   EXPECT_EQ(CHECK_DEREF(CHECK_DEREF(updated_grants[1].GetDict().FindList(
-                site_settings::kDirectoryWriteGrants))[0]
+                site_settings::kEditGrants))[0]
                             .GetDict()
                             .FindString(site_settings::kFilePath)),
             "/f/g/h/");
@@ -3038,16 +3019,15 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   // All grants are revoked for kTestOrigin1, and the grants for kTestOrigin2
   // are unaffected.
   EXPECT_EQ(updated_grants.size(), 1UL);
-  EXPECT_EQ(updated_grants[0]
-                .GetDict()
-                .FindList(site_settings::kFileWriteGrants)
-                ->size(),
-            1UL);
-  EXPECT_EQ(updated_grants[0]
-                .GetDict()
-                .FindList(site_settings::kDirectoryWriteGrants)
-                ->size(),
-            1UL);
+  EXPECT_EQ(
+      updated_grants[0].GetDict().FindList(site_settings::kEditGrants)->size(),
+      2UL);
+
+  // Expect that the WebUIListenerCallback was triggered.
+  EXPECT_EQ(web_ui()->call_data()[0]->function_name(),
+            "cr.webUIListenerCallback");
+
+  EXPECT_EQ(updated_data.arg1()->GetString(), kCallbackId);
 }
 
 namespace {
