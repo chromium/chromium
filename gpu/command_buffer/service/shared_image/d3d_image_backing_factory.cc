@@ -506,6 +506,8 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     uint32_t usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
+  // Windows does not support external sampler.
+  CHECK(!format.PrefersExternalSampler());
   return CreateSharedImageGMBs(mailbox, std::move(handle), format,
                                gfx::BufferPlane::DEFAULT, size, color_space,
                                surface_origin, alpha_type, usage);
@@ -529,6 +531,11 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   }
 
   auto format = viz::GetSharedImageFormat(buffer_format);
+  // Format cannot be using external sampling due to checks in
+  // `IsPlaneValidForGpuMemoryBufferFormat`.
+  if (format.IsLegacyMultiplanar()) {
+    CHECK_NE(plane, gfx::BufferPlane::DEFAULT);
+  }
   return CreateSharedImageGMBs(mailbox, std::move(handle), format, plane, size,
                                color_space, surface_origin, alpha_type, usage);
 }

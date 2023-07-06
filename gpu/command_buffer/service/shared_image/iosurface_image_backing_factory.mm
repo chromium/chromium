@@ -187,6 +187,8 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     uint32_t usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
+  // MacOS does not support external sampler.
+  CHECK(!format.PrefersExternalSampler());
   return CreateSharedImageGMBs(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(handle), /*io_surface_plane=*/0, gfx::BufferPlane::DEFAULT,
@@ -213,6 +215,11 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
 
   const uint32_t io_surface_plane = GetPlaneIndex(plane, buffer_format);
   auto format = viz::GetSharedImageFormat(buffer_format);
+  // Format cannot be using external sampling due to checks in
+  // `IsPlaneValidForGpuMemoryBufferFormat`.
+  if (format.IsLegacyMultiplanar()) {
+    CHECK_NE(plane, gfx::BufferPlane::DEFAULT);
+  }
   return CreateSharedImageGMBs(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(handle), io_surface_plane, plane, /*is_plane_format=*/true);

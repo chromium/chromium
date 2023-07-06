@@ -166,6 +166,12 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     return false;
   }
 
+  if (!IsPlaneValidForGpuMemoryBufferFormat(plane, format)) {
+    LOG(ERROR) << "SharedImageStub: Incompatible format.";
+    OnError();
+    return false;
+  }
+
   if (!factory_->CreateSharedImage(mailbox, std::move(handle), format, plane,
                                    size, color_space, surface_origin,
                                    alpha_type, usage, GetLabel(debug_label))) {
@@ -197,6 +203,13 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     OnError();
     return false;
   }
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+  if (format.PrefersExternalSampler()) {
+    LOG(ERROR) << "SharedImageStub: Incompatible format.";
+    OnError();
+    return false;
+  }
+#endif
 
   bool needs_gl = usage & SHARED_IMAGE_USAGE_GLES2;
   if (!MakeContextCurrent(needs_gl)) {

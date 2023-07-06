@@ -298,6 +298,10 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
     gfx::GpuMemoryBufferHandle buffer_handle) {
   DCHECK(gpu::IsValidClientUsage(usage));
 
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+  CHECK(!format.PrefersExternalSampler());
+#endif
+
   auto mailbox = Mailbox::GenerateForSharedImage();
   {
     base::AutoLock lock(lock_);
