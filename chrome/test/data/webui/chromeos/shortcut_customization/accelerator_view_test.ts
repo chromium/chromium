@@ -180,6 +180,31 @@ suite('acceleratorViewTest', function() {
     assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
     assertEquals(KeyInputState.ALPHANUMERIC_SELECTED, pendingKey.keyState);
     assertEquals('e', pendingKey.key);
+
+    // Release `e`, expect it to not be selected.
+    viewElement.dispatchEvent(new KeyboardEvent('keyup', {
+      key: '',
+      keyCode: 69,
+      code: 'KeyE',
+      ctrlKey: false,
+      altKey: false,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flush();
+    ctrlKey = getInputKey('#ctrlKey');
+    altKey = getInputKey('#altKey');
+    shiftKey = getInputKey('#shiftKey');
+    metaKey = getInputKey('#searchKey');
+    pendingKey = getInputKey('#pendingKey');
+
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.MODIFIER_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
+    assertEquals('key', pendingKey.key);
   });
 
   test('EditWithFunctionKeyAsOnlyKey', async () => {

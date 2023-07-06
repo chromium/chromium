@@ -227,11 +227,12 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private onKeyUp(e: KeyboardEvent): void {
     e.preventDefault();
     e.stopPropagation();
+    const pendingAccelerator = this.pendingAcceleratorInfo.layoutProperties
+                                   .standardAccelerator.accelerator;
     // Remove the modifier that was just released.
     if (this.isModifierKey(e)) {
       const modifier = keyCodeToModifier[e.keyCode];
-      const pendingModifiers = this.pendingAcceleratorInfo.layoutProperties
-                                   .standardAccelerator.accelerator.modifiers;
+      const pendingModifiers = pendingAccelerator.modifiers;
       // Assert that the released modifier is present in the pending
       // accelerator.
       assert(pendingModifiers & modifier);
@@ -241,6 +242,18 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
           'pendingAcceleratorInfo.layoutProperties.standardAccelerator.' +
               'accelerator.modifiers',
           updatedModifiers);
+    } else {
+      // Remove the key that was just released.
+      const updatedAccelerator = pendingAccelerator;
+      updatedAccelerator.keyCode = 0;
+      this.set(
+          'pendingAcceleratorInfo.layoutProperties.standardAccelerator.' +
+              'accelerator',
+          updatedAccelerator);
+      this.set(
+          'pendingAcceleratorInfo.layoutProperties.standardAccelerator' +
+              '.keyDisplay',
+          '');
     }
   }
 
