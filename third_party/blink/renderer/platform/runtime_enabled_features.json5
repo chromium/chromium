@@ -3280,9 +3280,6 @@
       origin_trial_feature_name: "SoftNavigationHeuristics",
     },
     {
-      name: "SoftNavigationHeuristicsExposeFPAndFCP",
-    },
-    {
       name: "SolidColorLayers",
     },
     {
