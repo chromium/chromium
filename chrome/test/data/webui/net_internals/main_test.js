@@ -13,6 +13,7 @@ suite('NetInternalsMainTests', function() {
       dns: true,
       sockets: true,
       hsts: true,
+      sharedDictionary: true,
       // <if expr="chromeos_ash">
       chromeos: true,
       // </if>

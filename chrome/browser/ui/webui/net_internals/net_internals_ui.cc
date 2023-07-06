@@ -14,6 +14,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -35,14 +38,18 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/resources/grit/webui_resources.h"
+#include "url/origin.h"
 #include "url/scheme_host_port.h"
 
 using content::BrowserThread;
@@ -193,6 +200,21 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
       const absl::optional<net::AddressList>&,
       const absl::optional<net::HostResolverEndpointResults>&,
       NetInternalsResolveHostClient* dns_lookup_client);
+  void OnClearSharedDictionary(const base::Value::List& list);
+  void OnClearSharedDictionaryCacheForIsolationKey(
+      const base::Value::List& list);
+  void OnGetSharedDictionaryUsageInfo(const base::Value::List& list);
+  void OnGetSharedDictionaryInfo(const base::Value::List& list);
+
+  void OnClearSharedDictionaryDone(const std::string& callback_id);
+  void OnClearSharedDictionaryForIsolationKeyDone(
+      const std::string& callback_id);
+  void OnGetSharedDictionaryUsageInfoDone(
+      const std::string& callback_id,
+      const std::vector<net::SharedDictionaryUsageInfo>& usage_info);
+  void OnGetSharedDictionaryInfoDone(
+      const std::string& callback_id,
+      std::vector<network::mojom::SharedDictionaryInfoPtr> usage_info);
 
   raw_ptr<content::WebUI> web_ui_;
   std::set<std::unique_ptr<NetInternalsResolveHostClient>,
@@ -242,6 +264,26 @@ void NetInternalsMessageHandler::RegisterMessages() {
       "flushSocketPools",
       base::BindRepeating(&NetInternalsMessageHandler::OnFlushSocketPools,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "clearSharedDictionary",
+      base::BindRepeating(&NetInternalsMessageHandler::OnClearSharedDictionary,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "clearSharedDictionaryCacheForIsolationKey",
+      base::BindRepeating(&NetInternalsMessageHandler::
+                              OnClearSharedDictionaryCacheForIsolationKey,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "getSharedDictionaryUsageInfo",
+      base::BindRepeating(
+          &NetInternalsMessageHandler::OnGetSharedDictionaryUsageInfo,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getSharedDictionaryInfo",
+      base::BindRepeating(
+          &NetInternalsMessageHandler::OnGetSharedDictionaryInfo,
+          base::Unretained(this)));
 }
 
 void NetInternalsMessageHandler::OnJavascriptDisallowed() {
@@ -288,6 +330,60 @@ void NetInternalsMessageHandler::OnResolveHost(const base::Value::List& list) {
 void NetInternalsMessageHandler::OnClearHostResolverCache(
     const base::Value::List& list) {
   GetNetworkContext()->ClearHostCache(/*filter=*/nullptr, base::NullCallback());
+}
+
+void NetInternalsMessageHandler::OnClearSharedDictionary(
+    const base::Value::List& list) {
+  const std::string* callback_id = list[0].GetIfString();
+  DCHECK(callback_id);
+
+  GetNetworkContext()->ClearSharedDictionaryCache(
+      base::Time::Min(), base::Time::Max(), /*filter=*/nullptr,
+      base::BindOnce(&NetInternalsMessageHandler::OnClearSharedDictionaryDone,
+                     weak_factory_.GetWeakPtr(), *callback_id));
+}
+
+void NetInternalsMessageHandler::OnClearSharedDictionaryCacheForIsolationKey(
+    const base::Value::List& list) {
+  const std::string* callback_id = list[0].GetIfString();
+  const std::string* frame_origin = list[1].GetIfString();
+  const std::string* top_frame_site = list[2].GetIfString();
+  DCHECK(callback_id);
+  DCHECK(frame_origin);
+  DCHECK(top_frame_site);
+
+  GetNetworkContext()->ClearSharedDictionaryCacheForIsolationKey(
+      net::SharedDictionaryIsolationKey(
+          url::Origin::Create(GURL(*frame_origin)),
+          net::SchemefulSite(GURL(*top_frame_site))),
+      base::BindOnce(&NetInternalsMessageHandler::
+                         OnClearSharedDictionaryForIsolationKeyDone,
+                     weak_factory_.GetWeakPtr(), *callback_id));
+}
+
+void NetInternalsMessageHandler::OnGetSharedDictionaryUsageInfo(
+    const base::Value::List& list) {
+  const std::string* callback_id = list[0].GetIfString();
+  DCHECK(callback_id);
+  GetNetworkContext()->GetSharedDictionaryUsageInfo(base::BindOnce(
+      &NetInternalsMessageHandler::OnGetSharedDictionaryUsageInfoDone,
+      weak_factory_.GetWeakPtr(), *callback_id));
+}
+
+void NetInternalsMessageHandler::OnGetSharedDictionaryInfo(
+    const base::Value::List& list) {
+  const std::string* callback_id = list[0].GetIfString();
+  const std::string* frame_origin = list[1].GetIfString();
+  const std::string* top_frame_site = list[2].GetIfString();
+  DCHECK(callback_id);
+  DCHECK(frame_origin);
+  DCHECK(top_frame_site);
+  GetNetworkContext()->GetSharedDictionaryInfo(
+      net::SharedDictionaryIsolationKey(
+          url::Origin::Create(GURL(*frame_origin)),
+          net::SchemefulSite(GURL(*top_frame_site))),
+      base::BindOnce(&NetInternalsMessageHandler::OnGetSharedDictionaryInfoDone,
+                     weak_factory_.GetWeakPtr(), *callback_id));
 }
 
 void NetInternalsMessageHandler::OnDomainSecurityPolicyDelete(
@@ -381,6 +477,55 @@ void NetInternalsMessageHandler::OnResolveHostDone(
   result.Set("alternative_endpoints", std::move(alternative_endpoints_list));
 
   ResolveJavascriptCallback(base::Value(callback_id), std::move(result));
+}
+
+void NetInternalsMessageHandler::OnGetSharedDictionaryUsageInfoDone(
+    const std::string& callback_id,
+    const std::vector<net::SharedDictionaryUsageInfo>& usage_info) {
+  base::Value::List result_list;
+  for (const auto& usage : usage_info) {
+    base::Value::Dict dict;
+    dict.Set("frame_origin", usage.isolation_key.frame_origin().Serialize());
+    dict.Set("top_frame_site",
+             usage.isolation_key.top_frame_site().Serialize());
+    dict.Set("total_size_bytes",
+             base::Value(base::NumberToString(usage.total_size_bytes)));
+    result_list.Append(std::move(dict));
+  }
+  AllowJavascript();
+  ResolveJavascriptCallback(base::Value(callback_id), std::move(result_list));
+}
+
+void NetInternalsMessageHandler::OnGetSharedDictionaryInfoDone(
+    const std::string& callback_id,
+    std::vector<network::mojom::SharedDictionaryInfoPtr> dictionaries) {
+  base::Value::List dict_list;
+  for (const auto& item : dictionaries) {
+    base::Value::Dict dict;
+    dict.Set("match", item->match);
+    dict.Set("dictionary_url", item->dictionary_url.spec());
+    dict.Set("response_time", base::TimeFormatHTTP(item->response_time));
+    dict.Set("expiration", base::NumberToString(item->expiration.InSeconds()));
+    dict.Set("last_used_time", base::TimeFormatHTTP(item->last_used_time));
+    dict.Set("size", base::NumberToString(item->size));
+    dict.Set("hash", base::ToLowerASCII(base::HexEncode(
+                         item->hash.data, sizeof(item->hash.data))));
+    dict_list.Append(std::move(dict));
+  }
+  AllowJavascript();
+  ResolveJavascriptCallback(base::Value(callback_id), std::move(dict_list));
+}
+
+void NetInternalsMessageHandler::OnClearSharedDictionaryDone(
+    const std::string& callback_id) {
+  AllowJavascript();
+  ResolveJavascriptCallback(base::Value(callback_id), true);
+}
+
+void NetInternalsMessageHandler::OnClearSharedDictionaryForIsolationKeyDone(
+    const std::string& callback_id) {
+  AllowJavascript();
+  ResolveJavascriptCallback(base::Value(callback_id), true);
 }
 
 // g_network_context_for_testing is used only for testing.

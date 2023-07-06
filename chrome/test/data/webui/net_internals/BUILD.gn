@@ -13,6 +13,7 @@ preprocessed_files = [
 non_preprocessed_files = [
   "dns_view_test.js",
   "domain_security_policy_view_test.js",
+  "shared_dictionary_view_test.js",
   "task_queue.js",
 ]
 

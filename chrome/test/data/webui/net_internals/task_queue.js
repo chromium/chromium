@@ -133,7 +133,9 @@ export class Task {
     // it with the test framework code.
     if (this.completeAsync_) {
       window.setTimeout(
-          window.activeTest_.continueTest(WhenTestDone.EXPECT, runNextTask), 0);
+          NetInternalsTest.activeTest.continueTest(
+              WhenTestDone.EXPECT, runNextTask),
+          0);
       return;
     }
 

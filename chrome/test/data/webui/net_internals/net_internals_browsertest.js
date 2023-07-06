@@ -172,3 +172,52 @@ TEST_F('NetInternalsDomainSecurityPolicyViewTest', 'AddOverwrite', function() {
 TEST_F('NetInternalsDomainSecurityPolicyViewTest', 'AddTwice', function() {
   this.runMochaTest(domain_security_policy_view_test.TestNames.AddTwice);
 });
+
+/**
+ * @constructor
+ * @extends NetInternalsBrowserTest
+ */
+function NetInternalsSharedDictionaryViewTest() {}
+
+NetInternalsSharedDictionaryViewTest.prototype = {
+  __proto__: NetInternalsBrowserTest.prototype,
+
+  browsePreload: 'chrome://net-internals/index.html?module=net_internals/' +
+      'shared_dictionary_view_test.js',
+
+  /** @param {string} testName The name of the test to run. */
+  runMochaTest: function(testName) {
+    runMochaTest(shared_dictionary_view_test.suiteName, testName);
+  },
+};
+
+TEST_F('NetInternalsSharedDictionaryViewTest', 'ReloadEmpty', function() {
+  this.runMochaTest(shared_dictionary_view_test.TestNames.ReloadEmpty);
+});
+
+TEST_F(
+    'NetInternalsSharedDictionaryViewTest', 'ReloadOneDictionary', function() {
+      this.runMochaTest(
+          shared_dictionary_view_test.TestNames.ReloadOneDictionary);
+    });
+
+TEST_F(
+    'NetInternalsSharedDictionaryViewTest', 'ReloadTwoDictionaries',
+    function() {
+      this.runMochaTest(
+          shared_dictionary_view_test.TestNames.ReloadTwoDictionaries);
+    });
+
+TEST_F(
+    'NetInternalsSharedDictionaryViewTest', 'ReloadTwoIsolaitons', function() {
+      this.runMochaTest(
+          shared_dictionary_view_test.TestNames.ReloadTwoIsolaitons);
+    });
+
+TEST_F('NetInternalsSharedDictionaryViewTest', 'ClearForIsolation', function() {
+  this.runMochaTest(shared_dictionary_view_test.TestNames.ClearForIsolation);
+});
+
+TEST_F('NetInternalsSharedDictionaryViewTest', 'ClearAll', function() {
+  this.runMochaTest(shared_dictionary_view_test.TestNames.ClearAll);
+});
