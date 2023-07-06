@@ -23,13 +23,36 @@ class ASH_EXPORT WallpaperBlurManager {
 
   // Returns whether the current wallpaper is allowed to be blurred on
   // lock/login screen. See https://crbug.com/775591.
-  bool IsBlurAllowedForLockState(const WallpaperType wallpaper_type) const;
+  bool IsBlurAllowedForLockState(WallpaperType wallpaper_type) const;
+
+  // Set whether the wallpaper view should blur for lock state. Depending on the
+  // order of adding new displays and activating lock state, some displays may
+  // or may not be blurred when they should be. Update all of them and return if
+  // anything actually changed.
+  bool UpdateWallpaperBlurForLockState(bool blur, WallpaperType wallpaper_type);
+
+  // When user presses the physical lock button on device, a quick blur
+  // animation shows as the device is locking. This animation may show over
+  // other forms of blur like overview mode wallpaper blur. If the user lets go
+  // of the lock button before the device is locked, the animation rolls back
+  // and should restore the prior blur state.
+  void RestoreWallpaperBlurForLockState(float blur,
+                                        WallpaperType wallpaper_type);
+
+  bool is_wallpaper_blurred_for_lock_state() const {
+    return is_wallpaper_blurred_for_lock_state_;
+  }
+
+  void set_is_wallpaper_blurred_for_lock_state(bool blur) {
+    is_wallpaper_blurred_for_lock_state_ = blur;
+  }
 
   // Make pixel testing more reliable by allowing wallpaper blur.
   void set_allow_blur_for_testing() { allow_blur_for_testing_ = true; }
 
  private:
   bool allow_blur_for_testing_ = false;
+  bool is_wallpaper_blurred_for_lock_state_ = false;
 };
 
 }  // namespace ash

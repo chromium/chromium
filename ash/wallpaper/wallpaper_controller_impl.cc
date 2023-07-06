@@ -103,10 +103,6 @@ constexpr base::TimeDelta kWallpaperReloadDelay = base::Milliseconds(100);
 // How long to wait for resizing of the the wallpaper.
 constexpr base::TimeDelta kCompositorLockTimeout = base::Milliseconds(750);
 
-// Duration of the lock animation performed when pressing a lock button.
-constexpr base::TimeDelta kLockAnimationBlurAnimationDuration =
-    base::Milliseconds(100);
-
 // Duration of the cross fade animation when loading wallpaper.
 constexpr base::TimeDelta kWallpaperLoadAnimationDuration =
     base::Milliseconds(250);
@@ -589,49 +585,25 @@ void WallpaperControllerImpl::ShowWallpaperImage(const gfx::ImageSkia& image,
 }
 
 void WallpaperControllerImpl::UpdateWallpaperBlurForLockState(bool blur) {
-  if (!blur_manager_->IsBlurAllowedForLockState(GetWallpaperType())) {
-    return;
-  }
-
-  bool changed = is_wallpaper_blurred_for_lock_state_ != blur;
-  float blur_sigma =
-      blur ? wallpaper_constants::kLockLoginBlur : wallpaper_constants::kClear;
-  if (IsOobeWallpaper()) {
-    blur_sigma = wallpaper_constants::kOobeBlur;
-  }
-  // is_wallpaper_blurrred_for_lock_state_ may already be updated in
-  // InstallDesktopController. Always try to update, then invoke observer
-  // if something changed.
-  for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {
-    changed |=
-        root_window_controller->wallpaper_widget_controller()->SetWallpaperBlur(
-            blur_sigma, kLockAnimationBlurAnimationDuration);
-  }
-
-  is_wallpaper_blurred_for_lock_state_ = blur;
+  bool changed =
+      blur_manager_->UpdateWallpaperBlurForLockState(blur, GetWallpaperType());
   if (changed) {
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnWallpaperBlurChanged();
+    }
   }
 }
 
 void WallpaperControllerImpl::RestoreWallpaperBlurForLockState(float blur) {
-  if (!blur_manager_->IsBlurAllowedForLockState(GetWallpaperType())) {
+  const WallpaperType wallpaper_type = GetWallpaperType();
+  if (!blur_manager_->IsBlurAllowedForLockState(wallpaper_type)) {
     return;
   }
 
-  // |is_wallpaper_blurrred_for_lock_state_| may already be updated in
-  // InstallDesktopController. Always try to update, then invoke observer
-  // if something changed.
-  for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {
-    root_window_controller->wallpaper_widget_controller()->SetWallpaperBlur(
-        blur, kLockAnimationBlurAnimationDuration);
-  }
-
-  DCHECK(is_wallpaper_blurred_for_lock_state_);
-  is_wallpaper_blurred_for_lock_state_ = false;
-  for (auto& observer : observers_)
+  blur_manager_->RestoreWallpaperBlurForLockState(blur, wallpaper_type);
+  for (auto& observer : observers_) {
     observer.OnWallpaperBlurChanged();
+  }
 }
 
 bool WallpaperControllerImpl::ShouldApplyShield() const {
@@ -1440,7 +1412,7 @@ void WallpaperControllerImpl::LoadPreviewImage(
 }
 
 bool WallpaperControllerImpl::IsWallpaperBlurredForLockState() const {
-  return is_wallpaper_blurred_for_lock_state_;
+  return blur_manager_->is_wallpaper_blurred_for_lock_state();
 }
 
 bool WallpaperControllerImpl::IsActiveUserWallpaperControlledByPolicy() {
@@ -1774,13 +1746,13 @@ void WallpaperControllerImpl::UpdateWallpaperForRootWindow(
   float blur = wallpaper_widget_controller->GetWallpaperBlur();
 
   if (lock_state_changed || new_root) {
-    const bool is_wallpaper_blurred_for_lock_state =
+    const bool should_wallpaper_blur_for_lock_state =
         Shell::Get()->session_controller()->IsUserSessionBlocked() &&
         blur_manager_->IsBlurAllowedForLockState(GetWallpaperType());
-    if (is_wallpaper_blurred_for_lock_state_ !=
-        is_wallpaper_blurred_for_lock_state) {
-      is_wallpaper_blurred_for_lock_state_ =
-          is_wallpaper_blurred_for_lock_state;
+    if (IsWallpaperBlurredForLockState() !=
+        should_wallpaper_blur_for_lock_state) {
+      blur_manager_->set_is_wallpaper_blurred_for_lock_state(
+          should_wallpaper_blur_for_lock_state);
       for (auto& observer : observers_)
         observer.OnWallpaperBlurChanged();
     }
@@ -1790,7 +1762,7 @@ void WallpaperControllerImpl::UpdateWallpaperForRootWindow(
     if (IsOobeWallpaper()) {
       blur = wallpaper_constants::kOobeBlur;
     } else {
-      blur = is_wallpaper_blurred_for_lock_state
+      blur = should_wallpaper_blur_for_lock_state
                  ? wallpaper_constants::kLockLoginBlur
                  : wallpaper_constants::kClear;
     }

@@ -5,8 +5,20 @@
 #include "ash/wallpaper/wallpaper_blur_manager.h"
 
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 
 namespace ash {
+
+namespace {
+
+// Duration of the lock animation performed when pressing a lock button.
+constexpr base::TimeDelta kLockAnimationBlurAnimationDuration =
+    base::Milliseconds(100);
+
+}  // namespace
 
 WallpaperBlurManager::WallpaperBlurManager() = default;
 
@@ -33,6 +45,45 @@ bool WallpaperBlurManager::IsBlurAllowedForLockState(
     case WallpaperType::kCount:
       return true;
   }
+}
+
+bool WallpaperBlurManager::UpdateWallpaperBlurForLockState(
+    const bool blur,
+    const WallpaperType wallpaper_type) {
+  if (!IsBlurAllowedForLockState(wallpaper_type)) {
+    return false;
+  }
+
+  float blur_sigma =
+      blur ? wallpaper_constants::kLockLoginBlur : wallpaper_constants::kClear;
+  if (wallpaper_type == WallpaperType::kOobe) {
+    blur_sigma = wallpaper_constants::kOobeBlur;
+  }
+
+  bool changed = is_wallpaper_blurred_for_lock_state_ != blur;
+  // Always update the visual wallpaper blur just in case one of the displays is
+  // out of sync.
+  for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {
+    changed |=
+        root_window_controller->wallpaper_widget_controller()->SetWallpaperBlur(
+            blur_sigma, kLockAnimationBlurAnimationDuration);
+  }
+
+  is_wallpaper_blurred_for_lock_state_ = blur;
+
+  return changed;
+}
+
+void WallpaperBlurManager::RestoreWallpaperBlurForLockState(
+    const float blur,
+    const WallpaperType wallpaper_type) {
+  DCHECK(IsBlurAllowedForLockState(wallpaper_type));
+  DCHECK(is_wallpaper_blurred_for_lock_state_);
+  for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {
+    root_window_controller->wallpaper_widget_controller()->SetWallpaperBlur(
+        blur, kLockAnimationBlurAnimationDuration);
+  }
+  is_wallpaper_blurred_for_lock_state_ = false;
 }
 
 }  // namespace ash

@@ -838,8 +838,6 @@ class ASH_EXPORT WallpaperControllerImpl
 
   base::TimeDelta wallpaper_reload_delay_;
 
-  bool is_wallpaper_blurred_for_lock_state_ = false;
-
   // The wallpaper animation duration. An empty value disables the animation.
   base::TimeDelta animation_duration_;
 
