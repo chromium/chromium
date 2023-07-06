@@ -1642,100 +1642,88 @@ cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange& range,
       url_string, context.CompleteURL(url_string));
 }
 
-static int ClampRGBComponent(const CSSPrimitiveValue& value) {
-  double result = value.GetDoubleValue();
-  if (value.IsPercentage()) {
-    // 2.55 cannot be precisely represented as a double
-    result = (result / 100.0) * 255.0;
-  }
-  return ClampTo<int>(round(result), 0, 255);
-}
-
 static bool ParseRGBParameters(CSSParserTokenRange& range,
                                const CSSParserContext& context,
                                Color& result) {
   DCHECK(range.Peek().FunctionId() == CSSValueID::kRgb ||
          range.Peek().FunctionId() == CSSValueID::kRgba);
   CSSParserTokenRange args = ConsumeFunction(range);
-  CSSPrimitiveValue* value;
-  absl::optional<int> color_array[3];
-  bool requires_commas = false;
-  bool requires_percent = false;
-  bool requires_bare_numbers = false;
+  absl::optional<double> color_array[3];
+  absl::optional<double> alpha = 1.0f;
+  bool has_commas = false;
+  bool has_percent = false;
+  bool has_bare_numbers = false;
   bool has_none = false;
-  for (absl::optional<int>& color : color_array) {
+  for (int channel = 0; channel < 3; ++channel) {
     // Commas have to be consistent
     if (ConsumeCommaIncludingWhitespace(args)) {
-      requires_commas = true;
-    } else if (requires_commas || args.AtEnd()) {
+      has_commas = true;
+    } else if (has_commas || args.AtEnd()) {
       return false;
     }
 
-    // Cannot mix percentages and bare numbers
-    value = ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
-    if (value) {
-      if (requires_bare_numbers) {
-        return false;
-      }
-      requires_percent = true;
-    } else {
-      value = ConsumeNumber(args, context, CSSPrimitiveValue::ValueRange::kAll);
-      if (value) {
-        if (requires_percent) {
-          return false;
-        }
-        requires_bare_numbers = true;
-      }
-    }
-
-    if (value) {
-      color = ClampRGBComponent(*value);
-    } else {
-      if (!ConsumeIdent<CSSValueID::kNone>(args)) {
-        return false;
-      }
+    if (CSSPrimitiveValue* value_percent = ConsumePercent(
+            args, context, CSSPrimitiveValue::ValueRange::kAll)) {
+      color_array[channel] =
+          value_percent->GetDoubleValueWithoutClamping() / 100.0f;
+      has_percent = true;
+    } else if (CSSPrimitiveValue* value_number = ConsumeNumber(
+                   args, context, CSSPrimitiveValue::ValueRange::kAll)) {
+      color_array[channel] =
+          value_number->GetDoubleValueWithoutClamping() / 255.0f;
+      has_bare_numbers = true;
+    } else if (ConsumeIdent<CSSValueID::kNone>(args)) {
       has_none = true;
+    } else {
+      return false;
     }
+  }
+
+  if (has_bare_numbers && has_percent) {
+    return false;
   }
 
   bool comma_consumed = ConsumeCommaIncludingWhitespace(args);
   bool slash_consumed = ConsumeSlashIncludingWhitespace(args);
-  if ((comma_consumed && !requires_commas) ||
-      (slash_consumed && requires_commas)) {
+  if ((comma_consumed && !has_commas) || (slash_consumed && has_commas)) {
     return false;
   }
   if (comma_consumed || slash_consumed) {
-    absl::optional<double> alpha;
-    if (double alpha_double; ConsumeNumberRaw(args, context, alpha_double)) {
-      alpha = alpha_double;
+    if (CSSPrimitiveValue* value = ConsumeNumberOrPercent(
+            args, context, CSSPrimitiveValue::ValueRange::kAll)) {
+      alpha = value->GetDoubleValueWithoutClamping();
+      if (isfinite(alpha.value())) {
+        alpha = ClampTo<double>(alpha.value(), 0.0, 1.0);
+      }
     } else {
-      CSSPrimitiveValue* alpha_percent =
-          ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
-      if (!alpha_percent) {
-        if (!ConsumeIdent<CSSValueID::kNone>(args)) {
-          return false;
-        }
+      if (ConsumeIdent<CSSValueID::kNone>(args)) {
+        alpha.reset();
         has_none = true;
       } else {
-        alpha = alpha_percent->GetDoubleValue() / 100.0;
+        return false;
       }
     }
-    // W3 standard stipulates a 2.55 alpha value multiplication factor.
-    absl::optional<int> alpha_component;
-    if (alpha) {
-      alpha_component = static_cast<int>(
-          lround(ClampTo<double>(alpha.value(), 0.0, 1.0) * 255.0));
-    }
-    result = Color::FromRGBALegacy(color_array[0], color_array[1],
-                                   color_array[2], alpha_component);
-  } else {
-    result = Color::FromRGBALegacy(color_array[0], color_array[1],
-                                   color_array[2], 255);
   }
 
-  if (has_none && requires_commas) {
+  // <modern-rgba-syntax> allows for "none" but disallows commas.
+  // <legacy-rgba-syntax> allows for commas, but not "none". They cannot be
+  // mixed. https://csswg.sesse.net/css-color-4/#typedef-modern-rgb-syntax
+  if (has_none && has_commas) {
     return false;
   }
+
+  // TODO(crbug.com/1399566): There are many code paths that still compress
+  // alpha to be an 8-bit integer. If it is not explicitly compressed here,
+  // tests will fail due to some paths doing this compression and others not.
+  // See compositing/background-color/background-color-alpha.html for example.
+  // Ideally we would allow alpha to be any float value, but we have to clean
+  // up all spots where this compression happens before this is possible.
+  if (alpha && isfinite(alpha.value())) {
+    alpha = round(alpha.value() * 255.0) / 255.0;
+  }
+
+  result = Color::FromColorSpace(Color::ColorSpace::kSRGBLegacy, color_array[0],
+                                 color_array[1], color_array[2], alpha);
 
   return args.AtEnd();
 }

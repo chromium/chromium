@@ -1564,6 +1564,7 @@ TEST_P(CompositingSimTest, SafeOpaqueBackgroundColor) {
   EXPECT_EQ(opaque_image->background_color(), SkColors::kTransparent);
   EXPECT_EQ(opaque_image->SafeOpaqueBackgroundColor(), SkColors::kTransparent);
 
+  // TODO(crbug.com/1399566): Alpha here should be 0.5.
   const SkColor4f kTranslucentCyan{0.0f, 1.0f, 1.0f, 128.0f / 255.0f};
   auto* opaque_image_translucent_color =
       CcLayerByDOMElementId("opaque-image-translucent-color");
