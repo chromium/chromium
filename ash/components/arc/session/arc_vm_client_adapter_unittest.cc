@@ -345,6 +345,7 @@ class ArcVmClientAdapterTest : public testing::Test,
   ArcVmClientAdapterTest& operator=(const ArcVmClientAdapterTest&) = delete;
 
   ~ArcVmClientAdapterTest() override {
+    ash::UpstartClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::DebugDaemonClient::SetInstanceForTest(nullptr);
     test_debug_daemon_client_.reset();
@@ -369,7 +370,6 @@ class ArcVmClientAdapterTest : public testing::Test,
     GetTestConciergeClient()->set_start_vm_response(start_vm_response);
 
     // Reset to the original behavior.
-    RemoveUpstartStartStopJobFailures();
     SetArcVmBootNotificationServerFdForTesting(absl::nullopt);
 
     const std::string abstract_addr(GenerateAbstractAddress());
@@ -583,14 +583,6 @@ class ArcVmClientAdapterTest : public testing::Test,
               {job_name, env, UpstartOperationType::STOP});
           return true;
         }));
-  }
-
-  void RemoveUpstartStartStopJobFailures() {
-    auto* upstart_client = ash::FakeUpstartClient::Get();
-    upstart_client->set_start_job_cb(
-        ash::FakeUpstartClient::StartStopJobCallback());
-    upstart_client->set_stop_job_cb(
-        ash::FakeUpstartClient::StartStopJobCallback());
   }
 
   // We expect ConciergeClient::StopVm to have been called two times,

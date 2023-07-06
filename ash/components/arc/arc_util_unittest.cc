@@ -100,12 +100,11 @@ class ArcUtilTest : public ash::AshTestBase {
   ArcUtilTest() { ash::UpstartClient::InitializeFake(); }
   ArcUtilTest(const ArcUtilTest&) = delete;
   ArcUtilTest& operator=(const ArcUtilTest&) = delete;
-  ~ArcUtilTest() override = default;
+  ~ArcUtilTest() override { ash::UpstartClient::Shutdown(); }
 
   void SetUp() override {
     ash::AshTestBase::SetUp();
     prefs::RegisterProfilePrefs(profile_prefs_.registry());
-    RemoveUpstartStartStopJobFailures();
   }
 
   void TearDown() override { ash::AshTestBase::TearDown(); }
@@ -154,14 +153,6 @@ class ArcUtilTest : public ash::AshTestBase {
   PrefService* profile_prefs() { return &profile_prefs_; }
 
  private:
-  void RemoveUpstartStartStopJobFailures() {
-    auto* upstart_client = ash::FakeUpstartClient::Get();
-    upstart_client->set_start_job_cb(
-        ash::FakeUpstartClient::StartStopJobCallback());
-    upstart_client->set_stop_job_cb(
-        ash::FakeUpstartClient::StartStopJobCallback());
-  }
-
   TestingPrefServiceSimple profile_prefs_;
 
   // List of upstart operations recorded. When it's "start" the boolean is set
