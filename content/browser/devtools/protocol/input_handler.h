@@ -244,7 +244,7 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
     std::unique_ptr<blink::WebMouseEvent> last_mouse_move_ = nullptr;
     base::WeakPtr<RenderWidgetHostImpl> last_widget_host_ = nullptr;
 
-    std::unique_ptr<DragState> drag_state_ = nullptr;
+    std::unique_ptr<DragState> drag_state_;
 
     base::WeakPtrFactory<DragController> weak_factory_{this};
   };
