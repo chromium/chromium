@@ -142,6 +142,7 @@ class Mediator final
   bool IsDeviceCurrentlyShowingNotification(scoped_refptr<Device> device);
   bool IsDeviceBlockedForDiscoveryNotifications(scoped_refptr<Device> device);
   void UpdateDiscoveryBlockList(scoped_refptr<Device> device);
+  void RemoveFromDiscoveryBlockList(scoped_refptr<Device> device);
 
   bool has_at_least_one_discovery_session_ = false;
 

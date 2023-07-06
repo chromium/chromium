@@ -766,11 +766,22 @@ TEST_F(MediatorTest, DiscoveryBanLogic_InitialParing) {
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
   mock_scanner_broker_->NotifyDeviceFound(initial_device_);
 
-  // We only expect the notification to be shown again when the Fast Pair
+  // We expect the notification to be shown again when the Fast Pair
   // state is reset. Simulate the Fast Pair toggle being turned off then on
   // again.
   feature_status_tracker_->SetIsFastPairEnabled(false);
   feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+
+  // We also expect the notification to be shown again after a successful
+  // pairing. Trigger the ban logic.
+  mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
+                                         DiscoveryAction::kDismissedByUser);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+  // Trigger a successful pairing
+  mock_pairer_broker_->NotifyDevicePaired(initial_device_);
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
   mock_scanner_broker_->NotifyDeviceFound(initial_device_);
 }
@@ -821,11 +832,22 @@ TEST_F(MediatorTest, DiscoveryBan_SubsequentParing) {
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
   mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
 
-  // We only expect the notification to be shown again when the Fast Pair
+  // We expect the notification to be shown again when the Fast Pair
   // state is reset. Simulate the Fast Pair toggle being turned off then on
   // again.
   feature_status_tracker_->SetIsFastPairEnabled(false);
   feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
+
+  // We also expect the notification to be shown again after a successful
+  // pairing. Trigger the ban logic.
+  mock_ui_broker_->NotifyDiscoveryAction(subsequent_device_,
+                                         DiscoveryAction::kDismissedByUser);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
+  // Trigger a successful pairing
+  mock_pairer_broker_->NotifyDevicePaired(subsequent_device_);
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
   mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
 }

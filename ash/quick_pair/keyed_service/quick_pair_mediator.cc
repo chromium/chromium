@@ -304,6 +304,9 @@ void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
   // of the first times we have mac address and model ID for a paired device.
   fast_pair_repository_->FetchDeviceImages(device);
   fast_pair_repository_->PersistDeviceImages(device);
+
+  // Unban notifications for this device since it was successfully paired.
+  RemoveFromDiscoveryBlockList(device);
 }
 
 void Mediator::OnPairFailure(scoped_refptr<Device> device,
@@ -366,6 +369,11 @@ void Mediator::UpdateDiscoveryBlockList(scoped_refptr<Device> device) {
       // `kLongBan` was shown, and then dismissed by user.
       NOTREACHED();
   }
+}
+
+void Mediator::RemoveFromDiscoveryBlockList(scoped_refptr<Device> device) {
+  auto key = std::make_pair(device->metadata_id(), device->protocol());
+  discovery_notification_block_list_.erase(key);
 }
 
 void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
