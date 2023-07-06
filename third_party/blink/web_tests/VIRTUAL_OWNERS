@@ -29,6 +29,9 @@
 #   'never' when it is not expected to expire. In this case an explanation is
 #   required.
 #
+# - The owners field is a list of email addresses for the owners. New or updated
+#   VTS should have this field set up properly.
+#
 # [1] https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md#testing-runtime-flags
 
 andruud@chromium.org

@@ -66,8 +66,6 @@ def lint(host, options):
     # Force a manifest update to ensure it's always up-to-date.
     # TODO(crbug.com/1411505): See if the manifest refresh can be made faster.
     options.manifest_update = True
-    # Not a presubmit error for stale test expectations due to expired VTS
-    options.include_expired = True
     port = host.port_factory.get(options=options)
 
     # Add all extra expectation files to be linted.
