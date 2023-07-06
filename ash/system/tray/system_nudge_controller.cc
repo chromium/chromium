@@ -110,7 +110,7 @@ void SystemNudgeController::MaybeRecordNudgeAction(
 }
 
 void SystemNudgeController::ShowNudge() {
-  if (nudge_ && !nudge_->widget()->IsClosed()) {
+  if (nudge_ && nudge_->widget() && !nudge_->widget()->IsClosed()) {
     if (hide_nudge_timer_) {
       hide_nudge_timer_->AbandonAndStop();
     }
@@ -161,8 +161,9 @@ void SystemNudgeController::StartFadeAnimation(bool show) {
 
   // `nudge_` may not exist if `StartFadeAnimation(false)` has been called
   // before a new nudge has been created.
-  if (!nudge_)
+  if (!nudge_ || !nudge_->widget()) {
     return;
+  }
 
   ui::Layer* layer = nudge_->widget()->GetLayer();
   if (layer->GetAnimator()->is_animating()) {
