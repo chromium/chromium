@@ -895,15 +895,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.QuarantineService.ConnectionError"
-    enum="BooleanConnectionError" expires_after="M80">
-  <owner>pmonette@chromium.org</owner>
-  <owner>alewoolf@microsoft.com</owner>
-  <summary>
-    Whether a connection error has happened for the QuarantineService.
-  </summary>
-</histogram>
-
 <histogram name="Download.ResultsRenderedTime" units="ms" expires_after="M90">
   <owner>calamity@chromium.org</owner>
   <owner>dbeam@chromium.org</owner>
