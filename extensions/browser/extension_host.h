@@ -178,6 +178,13 @@ class ExtensionHost : public DeferredStartRenderHost,
   virtual bool IsBackgroundPage() const;
 
  private:
+  struct UnackedEventData {
+    // The event to dispatch.
+    std::string event_name;
+
+    // TODO(crbug.com/1441221): add the dispatch time here.
+  };
+
   // DeferredStartRenderHost:
   void CreateRendererNow() override;
 
@@ -234,8 +241,8 @@ class ExtensionHost : public DeferredStartRenderHost,
   GURL initial_url_;
 
   // Messages sent out to the renderer that have not been acknowledged yet.
-  // Maps event ID to event name.
-  std::unordered_map<int, std::string> unacked_messages_;
+  // Maps event ID to unacknowledged event information.
+  std::map<int, UnackedEventData> unacked_messages_;
 
   // The type of view being hosted.
   mojom::ViewType extension_host_type_;

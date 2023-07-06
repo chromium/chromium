@@ -175,7 +175,7 @@ void ExtensionHost::RemoveObserver(ExtensionHostObserver* observer) {
 void ExtensionHost::OnBackgroundEventDispatched(const std::string& event_name,
                                                 int event_id) {
   CHECK(IsBackgroundPage());
-  unacked_messages_[event_id] = event_name;
+  unacked_messages_[event_id] = UnackedEventData{event_name};
   for (auto& observer : observer_list_)
     observer.OnBackgroundEventDispatched(this, event_name, event_id);
 }
@@ -349,7 +349,7 @@ void ExtensionHost::OnEventAck(int event_id) {
 
   EventRouter* router = EventRouter::Get(browser_context_);
   if (router)
-    router->OnEventAck(browser_context_, extension_id(), it->second);
+    router->OnEventAck(browser_context_, extension_id(), it->second.event_name);
 
   for (auto& observer : observer_list_)
     observer.OnBackgroundEventAcked(this, event_id);
