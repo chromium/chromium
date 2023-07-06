@@ -59,8 +59,8 @@ enum class NGLayoutCacheStatus;
 struct BoxLayoutExtraInput;
 struct NGFragmentGeometry;
 struct NGPhysicalBoxStrut;
+struct NonOverflowingScrollRange;
 struct PaintInfo;
-struct PhysicalScrollRange;
 
 enum SizeType { kMainOrPreferredSize, kMinSize, kMaxSize };
 enum AvailableLogicalHeightType {
@@ -1680,8 +1680,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Returns position fallback results for anchor positioned element.
   absl::optional<wtf_size_t> PositionFallbackIndex() const;
-  const Vector<PhysicalScrollRange>* PositionFallbackNonOverflowingRanges()
-      const;
+  const Vector<NonOverflowingScrollRange>*
+  PositionFallbackNonOverflowingRanges() const;
 
   const NGBoxStrut& OutOfFlowInsetsForGetComputedStyle() const;
 

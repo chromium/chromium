@@ -313,6 +313,10 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
   absl::optional<LayoutUnit> Evaluate(
       const CalculationExpressionNode&) const override;
 
+  // Finds the rect of the element referenced by the `position-fallback-bounds`
+  // property, or nullopt if there's no such element.
+  absl::optional<LogicalRect> GetAdditionalFallbackBoundsRect() const;
+
  private:
   const NGLogicalAnchorQuery* AnchorQuery() const;
   const NGLogicalAnchorReference* ResolveAnchorReference(

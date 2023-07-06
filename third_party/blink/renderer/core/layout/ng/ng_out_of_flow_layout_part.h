@@ -9,13 +9,13 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
-#include "third_party/blink/renderer/core/layout/geometry/scroll_offset_range.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_static_position.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/inline_containing_block_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
+#include "third_party/blink/renderer/core/layout/ng/non_overflowing_scroll_range.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -241,7 +241,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     // These two fields are set only if this |OffsetInfo| is calculated from a
     // @try rule of a @position-fallback rule.
     absl::optional<wtf_size_t> fallback_index;
-    Vector<PhysicalScrollRange> non_overflowing_ranges;
+    Vector<NonOverflowingScrollRange> non_overflowing_ranges;
 
     void Trace(Visitor* visitor) const;
   };
@@ -335,7 +335,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       const LayoutObject* implicit_anchor,
       bool try_fit_available_space,
       bool is_first_run,
-      PhysicalScrollRange* out_scroll_range);
+      NonOverflowingScrollRange* out_scroll_range);
 
   const NGLayoutResult* Layout(
       const NodeToLayout& oof_node_to_layout,

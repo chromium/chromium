@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/ng/non_overflowing_scroll_range.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 
@@ -38,10 +39,22 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   return anchor;
 }
 
+// Finds the LayoutObject of the element given by position-fallback-bounds.
+const LayoutObject* PositionFallbackBoundsObject(
+    const LayoutObject* layout_object) {
+  if (!layout_object || !layout_object->IsOutOfFlowPositioned() ||
+      !layout_object->StyleRef().PositionFallbackBounds()) {
+    return nullptr;
+  }
+
+  return To<LayoutBox>(layout_object)
+      ->FindTargetAnchor(*layout_object->StyleRef().PositionFallbackBounds());
+}
+
 const PaintLayer* ContainingScrollContainerLayer(const PaintLayer& layer) {
-  // Normally, |scroller_layer| is the result. There's only one special case
-  // where |layer| is fixed-positioned and |scroller_layer| is the LayoutView,
-  // then |layer| doesn't actually scroll with |scroller_layer|, and null
+  // Normally, `scroller_layer` is the result. There's only one special case
+  // where `layer` is fixed-positioned and `scroller_layer` is the LayoutView,
+  // then `layer` doesn't actually scroll with `scroller_layer`, and null
   // should be returned.
   bool is_fixed_to_view = false;
   const PaintLayer* scroller_layer =
@@ -49,13 +62,43 @@ const PaintLayer* ContainingScrollContainerLayer(const PaintLayer& layer) {
   return is_fixed_to_view ? nullptr : scroller_layer;
 }
 
-const Vector<PhysicalScrollRange>* GetNonOverflowingScrollRanges(
+const Vector<NonOverflowingScrollRange>* GetNonOverflowingScrollRanges(
     const LayoutObject* layout_object) {
   if (!layout_object || !layout_object->IsOutOfFlowPositioned()) {
     return nullptr;
   }
   CHECK(layout_object->IsBox());
   return To<LayoutBox>(layout_object)->PositionFallbackNonOverflowingRanges();
+}
+
+AnchorScrollData::ScrollContainersData GetScrollContainersData(
+    const LayoutObject* layout_object,
+    const LayoutObject* anchor_or_bounds) {
+  AnchorScrollData::ScrollContainersData result;
+  if (!layout_object || !anchor_or_bounds) {
+    return result;
+  }
+
+  CHECK(layout_object->IsBox());
+  const PaintLayer* starting_layer =
+      anchor_or_bounds->HasLayer()
+          ? ContainingScrollContainerLayer(
+                *To<LayoutBoxModelObject>(anchor_or_bounds)->Layer())
+          : anchor_or_bounds->ContainingScrollContainer()->Layer();
+  const PaintLayer* bounding_layer =
+      ContainingScrollContainerLayer(*To<LayoutBox>(layout_object)->Layer());
+  for (const PaintLayer* layer = starting_layer;
+       layer && layer != bounding_layer;
+       layer = ContainingScrollContainerLayer(*layer)) {
+    const PaintLayerScrollableArea* scrollable_area =
+        layer->GetScrollableArea();
+    result.scroll_container_ids.push_back(
+        scrollable_area->GetScrollElementId());
+    result.accumulated_scroll_offset += scrollable_area->GetScrollOffset();
+    result.accumulated_scroll_origin +=
+        scrollable_area->ScrollOrigin().OffsetFromOrigin();
+  }
+  return result;
 }
 
 }  // namespace
@@ -74,63 +117,68 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
     bool update) {
   DCHECK(IsActive());
 
-  Vector<CompositorElementId> new_scroll_container_ids;
-  gfx::Vector2dF new_accumulated_scroll_offset;
-  gfx::Vector2d new_accumulated_scroll_origin;
+  const LayoutObject* layout_object = owner_->GetLayoutObject();
+  ScrollContainersData new_scrollers_data =
+      GetScrollContainersData(layout_object, AnchorScrollObject(layout_object));
 
-  if (const LayoutObject* anchor =
-          AnchorScrollObject(owner_->GetLayoutObject())) {
-    const PaintLayer* starting_layer =
-        anchor->HasLayer() ? ContainingScrollContainerLayer(
-                                 *To<LayoutBoxModelObject>(anchor)->Layer())
-                           : anchor->ContainingScrollContainer()->Layer();
-    const PaintLayer* bounding_layer =
-        ContainingScrollContainerLayer(*owner_->GetLayoutBox()->Layer());
-    for (const PaintLayer* layer = starting_layer;
-         layer && layer != bounding_layer;
-         layer = ContainingScrollContainerLayer(*layer)) {
-      const PaintLayerScrollableArea* scrollable_area =
-          layer->GetScrollableArea();
-      new_scroll_container_ids.push_back(scrollable_area->GetScrollElementId());
-      new_accumulated_scroll_offset += scrollable_area->GetScrollOffset();
-      new_accumulated_scroll_origin +=
-          scrollable_area->ScrollOrigin().OffsetFromOrigin();
-    }
+  gfx::Vector2dF new_additional_bounds_scroll_offset;
+  if (const LayoutObject* position_fallback_bounds_object =
+          PositionFallbackBoundsObject(layout_object)) {
+    new_additional_bounds_scroll_offset =
+        GetScrollContainersData(layout_object, position_fallback_bounds_object)
+            .accumulated_scroll_offset;
   }
 
   SnapshotDiff diff;
-  if (scroll_container_ids_ != new_scroll_container_ids) {
+  if (scroll_container_ids_ != new_scrollers_data.scroll_container_ids) {
     diff = SnapshotDiff::kScrollersOrFallbackPosition;
-  } else if (accumulated_scroll_offset_ != new_accumulated_scroll_offset ||
-             accumulated_scroll_origin_ != new_accumulated_scroll_origin) {
-    diff = IsFallbackPositionValid(new_accumulated_scroll_offset)
-               ? SnapshotDiff::kOffsetOnly
-               : SnapshotDiff::kScrollersOrFallbackPosition;
   } else {
-    diff = SnapshotDiff::kNone;
+    const bool anchor_scrolled =
+        accumulated_scroll_offset_ !=
+            new_scrollers_data.accumulated_scroll_offset ||
+        accumulated_scroll_origin_ !=
+            new_scrollers_data.accumulated_scroll_origin;
+    const bool additional_bounds_scrolled =
+        additional_bounds_scroll_offset_ != new_additional_bounds_scroll_offset;
+    if ((anchor_scrolled || additional_bounds_scrolled) &&
+        !IsFallbackPositionValid(new_scrollers_data.accumulated_scroll_offset,
+                                 new_additional_bounds_scroll_offset)) {
+      diff = SnapshotDiff::kScrollersOrFallbackPosition;
+    } else if (anchor_scrolled) {
+      diff = SnapshotDiff::kOffsetOnly;
+    } else {
+      // When the additional bounds rect is scrolled without invalidating the
+      // current fallback position, `owner_` doesn't need paint update.
+      diff = SnapshotDiff::kNone;
+    }
   }
 
   if (update && diff != SnapshotDiff::kNone) {
-    scroll_container_ids_.swap(new_scroll_container_ids);
-    accumulated_scroll_offset_ = new_accumulated_scroll_offset;
-    accumulated_scroll_origin_ = new_accumulated_scroll_origin;
+    scroll_container_ids_.swap(new_scrollers_data.scroll_container_ids);
+    accumulated_scroll_offset_ = new_scrollers_data.accumulated_scroll_offset;
+    accumulated_scroll_origin_ = new_scrollers_data.accumulated_scroll_origin;
+    additional_bounds_scroll_offset_ = new_additional_bounds_scroll_offset;
   }
 
   return diff;
 }
 
 bool AnchorScrollData::IsFallbackPositionValid(
-    const gfx::Vector2dF& new_accumulated_scroll_offset) const {
-  const Vector<PhysicalScrollRange>* non_overflowing_scroll_ranges =
+    const gfx::Vector2dF& new_accumulated_scroll_offset,
+    const gfx::Vector2dF& new_additional_bounds_scroll_offset) const {
+  const Vector<NonOverflowingScrollRange>* non_overflowing_scroll_ranges =
       GetNonOverflowingScrollRanges(owner_->GetLayoutObject());
   if (!non_overflowing_scroll_ranges ||
       non_overflowing_scroll_ranges->empty()) {
     return true;
   }
 
-  for (const PhysicalScrollRange& range : *non_overflowing_scroll_ranges) {
-    if (range.Contains(accumulated_scroll_offset_) !=
-        range.Contains(new_accumulated_scroll_offset)) {
+  for (const NonOverflowingScrollRange& range :
+       *non_overflowing_scroll_ranges) {
+    if (range.Contains(accumulated_scroll_offset_,
+                       additional_bounds_scroll_offset_) !=
+        range.Contains(new_accumulated_scroll_offset,
+                       new_additional_bounds_scroll_offset)) {
       return false;
     }
   }

@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
-#include "third_party/blink/renderer/core/layout/geometry/scroll_offset_range.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -22,31 +21,37 @@ class Element;
 // Created for each anchor-positioned element that uses anchor-scroll.
 // Stores a snapshot of all the scroll containers of the anchor up to the
 // containing block (exclusively) for use by layout, paint and compositing.
+// Also stores a similar snapshot for the target of the
+// 'position-fallback-bounds' property.
+//
+// The snapshot is passed as input to the position fallback algorithm.
+//
 // The snapshot is updated once per frame update on top of animation frame to
-// avoid layout cycling.
-//
-// === Validation of fallback position on scrolling ===
-//
-// Each fallback position corresponds to a 2D range such that when the
-// anchor-scroll translation offset is within the range, the element's
-// margin box translated by the offset doesn't overflow the scroll-adjusted
-// inset-modified containing block. This is called the non-overflowing scroll
-// range of the fallback position.
-//
-// Then the element should use the a fallback position if and only if:
-// 1. The current translation offset is not in any previous fallback
-//    position's non-overflowing scroll range, and
-// 2. This is the last fallback position or the current translation offset is
-//    in this fallback position's non-overflowing scroll range
-//
-// Whenever taking a snapshot, we also check if the above still holds for the
-// current fallback position. If not, a layout invalidation is needed.
+// avoid layout cycling. If there is any change, we trigger an update to
+// layout and/or paint.
 class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
                          public ScrollSnapshotClient,
                          public ElementRareDataField {
  public:
   explicit AnchorScrollData(Element*);
   virtual ~AnchorScrollData();
+
+  struct ScrollContainersData {
+    DISALLOW_NEW();
+
+    // Compositor element ids of the ancestor scroll containers of some element
+    // element (anchor or position-fallback-bounds), up to the containing block
+    // of `owner_` (exclusively).
+    Vector<CompositorElementId> scroll_container_ids;
+
+    // Sum of the scroll offsets of the above scroll containers. This is the
+    // snapshotted scroll offset when tracking the anchor element, or the offset
+    // applied to additional fallback-bounds rect.
+    gfx::Vector2dF accumulated_scroll_offset;
+
+    // Sum of the scroll origins of the above scroll containers.
+    gfx::Vector2d accumulated_scroll_origin;
+  };
 
   Element* OwnerElement() const { return owner_; }
 
@@ -60,6 +65,9 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
   const Vector<CompositorElementId>& ScrollContainerIds() const {
     return scroll_container_ids_;
   }
+  gfx::Vector2dF AdditionalBoundsScrollOffset() const {
+    return additional_bounds_scroll_offset_;
+  }
 
   // Utility function that returns accumulated_scroll_offset_ rounded as a
   // PhysicalOffset.
@@ -70,7 +78,7 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
     return -PhysicalOffset::FromVector2dFFloor(accumulated_scroll_offset_);
   }
 
-  // Returns whether |owner_| is still an anchor-positioned element using |this|
+  // Returns whether `owner_` is still an anchor-positioned element using `this`
   // as its AnchroScrollData.
   bool IsActive() const;
 
@@ -85,10 +93,11 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
  private:
   enum class SnapshotDiff { kNone, kScrollersOrFallbackPosition, kOffsetOnly };
   // Takes an up-to-date snapshot, and compares it with the existing one.
-  // If |update| is true, also rewrites the existing snapshot.
+  // If `update` is true, also rewrites the existing snapshot.
   SnapshotDiff TakeAndCompareSnapshot(bool update);
   bool IsFallbackPositionValid(
-      const gfx::Vector2dF& accumulated_scroll_offset) const;
+      const gfx::Vector2dF& new_accumulated_scroll_offset,
+      const gfx::Vector2dF& new_additional_bounds_scroll_offset) const;
 
   void InvalidateLayoutAndPaint();
   void InvalidatePaint();
@@ -100,18 +109,20 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
   // The anchor-positioned element.
   Member<Element> owner_;
 
-  // Compositor element ids of the ancestor scroll containers of the anchor
-  // element, up to the containing block of |owner_| (exclusively).
+  // Compositor element ids of the ancestor scroll containers of the anchor, up
+  // to the containing block of `owner_` (exclusively).
   Vector<CompositorElementId> scroll_container_ids_;
 
-  // Sum of the scroll offsets of the above scroll containers. This is the
-  // offset that the element should be translated in position-fallback choosing
-  // and paint.
+  // The snapshotted scroll offset, calculated as the sum of the scroll offsets
+  // of the above scroll containers.
   gfx::Vector2dF accumulated_scroll_offset_;
 
   // Sum of the scroll origins of the above scroll containers. Used by
   // compositor to deal with writing modes.
   gfx::Vector2d accumulated_scroll_origin_;
+
+  // The scroll offset applied to the additional fallback-bounds rect.
+  gfx::Vector2dF additional_bounds_scroll_offset_;
 };
 
 template <>

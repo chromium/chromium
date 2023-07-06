@@ -433,6 +433,29 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
                                      self_writing_direction_.GetWritingMode());
 }
 
+absl::optional<LogicalRect>
+NGAnchorEvaluatorImpl::GetAdditionalFallbackBoundsRect() const {
+  if (!query_object_) {
+    return absl::nullopt;
+  }
+  const ScopedCSSName* position_fallback_bounds =
+      query_object_->StyleRef().PositionFallbackBounds();
+  if (!position_fallback_bounds || !AnchorQuery()) {
+    return absl::nullopt;
+  }
+  const NGLogicalAnchorReference* reference =
+      AnchorQuery()->AnchorReference(*query_object_, position_fallback_bounds);
+  if (!reference) {
+    return absl::nullopt;
+  }
+  // `reference->rect` is in container's writing direction. Convert it to self
+  // writing direction, but the offset is still relative to container.
+  WritingModeConverter self_converter(self_writing_direction_,
+                                      container_converter_.OuterSize());
+  return self_converter.ToLogical(
+      container_converter_.ToPhysical(reference->rect));
+}
+
 void NGLogicalAnchorReference::Trace(Visitor* visitor) const {
   visitor->Trace(layout_object);
   visitor->Trace(next);

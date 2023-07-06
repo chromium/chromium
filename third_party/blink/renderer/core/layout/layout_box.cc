@@ -5917,7 +5917,7 @@ absl::optional<wtf_size_t> LayoutBox::PositionFallbackIndex() const {
   return layout_results.front()->PositionFallbackIndex();
 }
 
-const Vector<PhysicalScrollRange>*
+const Vector<NonOverflowingScrollRange>*
 LayoutBox::PositionFallbackNonOverflowingRanges() const {
   const auto& layout_results = GetLayoutResults();
   if (layout_results.empty()) {

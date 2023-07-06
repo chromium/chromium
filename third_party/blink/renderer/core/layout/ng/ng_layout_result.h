@@ -10,7 +10,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/geometry/scroll_offset_range.h"
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_data.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_offset.h"
@@ -23,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_link.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/non_overflowing_scroll_range.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/wtf/bit_field.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -182,8 +182,8 @@ class CORE_EXPORT NGLayoutResult final
   absl::optional<wtf_size_t> PositionFallbackIndex() const {
     return rare_data_ ? rare_data_->PositionFallbackIndex() : absl::nullopt;
   }
-  const Vector<PhysicalScrollRange>* PositionFallbackNonOverflowingRanges()
-      const {
+  const Vector<NonOverflowingScrollRange>*
+  PositionFallbackNonOverflowingRanges() const {
     return rare_data_ ? rare_data_->PositionFallbackNonOverflowingRanges()
                       : nullptr;
   }
@@ -516,7 +516,7 @@ class CORE_EXPORT NGLayoutResult final
 
     void SetPositionFallbackResult(
         wtf_size_t fallback_index,
-        const Vector<PhysicalScrollRange>& non_overflowing_ranges) {
+        const Vector<NonOverflowingScrollRange>& non_overflowing_ranges) {
       layout_result_->EnsureRareData()->SetPositionFallbackResult(
           fallback_index, non_overflowing_ranges);
     }
@@ -826,7 +826,7 @@ class CORE_EXPORT NGLayoutResult final
 
     void SetPositionFallbackResult(
         wtf_size_t fallback_index,
-        const Vector<PhysicalScrollRange>& non_overflowing_ranges) {
+        const Vector<NonOverflowingScrollRange>& non_overflowing_ranges) {
       position_fallback_index = fallback_index;
       position_fallback_non_overflowing_ranges = non_overflowing_ranges;
       set_position_fallback_result_is_set(true);
@@ -837,8 +837,8 @@ class CORE_EXPORT NGLayoutResult final
       }
       return position_fallback_index;
     }
-    const Vector<PhysicalScrollRange>* PositionFallbackNonOverflowingRanges()
-        const {
+    const Vector<NonOverflowingScrollRange>*
+    PositionFallbackNonOverflowingRanges() const {
       if (!position_fallback_result_is_set()) {
         return nullptr;
       }
@@ -885,7 +885,7 @@ class CORE_EXPORT NGLayoutResult final
 
     // Only valid if position_fallback_result_is_set
     wtf_size_t position_fallback_index;
-    Vector<PhysicalScrollRange> position_fallback_non_overflowing_ranges;
+    Vector<NonOverflowingScrollRange> position_fallback_non_overflowing_ranges;
 
     // Only valid if oof_positioned_offset_is_set
     LogicalOffset oof_positioned_offset;

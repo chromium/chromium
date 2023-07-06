@@ -72,8 +72,14 @@ bool CalculateNonOverflowingRangeInOneAxis(
     const LayoutUnit& container_end,
     const LayoutUnit& margin_box_start,
     const LayoutUnit& margin_box_end,
+    const absl::optional<LayoutUnit>& additional_bounds_start,
+    const absl::optional<LayoutUnit>& additional_bounds_end,
     absl::optional<LayoutUnit>* out_scroll_min,
-    absl::optional<LayoutUnit>* out_scroll_max) {
+    absl::optional<LayoutUnit>* out_scroll_max,
+    absl::optional<LayoutUnit>* out_additional_scroll_min,
+    absl::optional<LayoutUnit>* out_additional_scroll_max) {
+  CHECK_EQ(additional_bounds_start.has_value(),
+           additional_bounds_end.has_value());
   LayoutUnit start_available_space = margin_box_start - container_start;
   if (inset_start) {
     // If the start inset is non-auto, then the start edges of both the
@@ -101,6 +107,18 @@ bool CalculateNonOverflowingRangeInOneAxis(
   if (*out_scroll_min && *out_scroll_max &&
       out_scroll_min->value() > out_scroll_max->value()) {
     return false;
+  }
+
+  if (additional_bounds_start) {
+    // Note that the margin box is adjusted by the anchor's scroll offset, while
+    // the additional fallback-bounds rect is adjusted by the
+    // `position-fallback-bounds` element's scroll offset. The scroll
+    // range calculated here is for the difference between the two offsets.
+    *out_additional_scroll_min = margin_box_end - *additional_bounds_end;
+    *out_additional_scroll_max = margin_box_start - *additional_bounds_start;
+    if (*out_additional_scroll_min > *out_additional_scroll_max) {
+      return false;
+    }
   }
   return true;
 }
@@ -1688,18 +1706,19 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
     const NGLogicalAnchorQueryMap* anchor_queries) {
   const LayoutObject* implicit_anchor = nullptr;
   gfx::Vector2dF anchor_scroll_offset;
+  gfx::Vector2dF additional_bounds_scroll_offset;
   if (Element* element = DynamicTo<Element>(node_info.node.GetDOMNode())) {
-    if (element->GetAnchorScrollData()) {
-      anchor_scroll_offset =
-          element->GetAnchorScrollData()->AccumulatedScrollOffset();
+    if (const AnchorScrollData* data = element->GetAnchorScrollData()) {
+      anchor_scroll_offset = data->AccumulatedScrollOffset();
+      additional_bounds_scroll_offset = data->AdditionalBoundsScrollOffset();
     }
     if (element->ImplicitAnchorElement()) {
       implicit_anchor = element->ImplicitAnchorElement()->GetLayoutObject();
     }
   }
 
-  // See anchor_scroll_data.h for documentation of non-overflowing ranges.
-  Vector<PhysicalScrollRange> non_overflowing_ranges;
+  // See non_overflowing_scroll_range.h for documentation.
+  Vector<NonOverflowingScrollRange> non_overflowing_ranges;
 
   // If `@position-fallback` exists, let |TryCalculateOffset| check if the
   // result fits the available space.
@@ -1707,7 +1726,7 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   absl::optional<OffsetInfo> offset_info;
   while (!offset_info) {
     const bool has_next_fallback_style = iter.HasNextStyle();
-    PhysicalScrollRange non_overflowing_range;
+    NonOverflowingScrollRange non_overflowing_range;
     offset_info = TryCalculateOffset(node_info, iter.GetStyle(), anchor_queries,
                                      implicit_anchor, has_next_fallback_style,
                                      is_first_run, &non_overflowing_range);
@@ -1715,7 +1734,8 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
     // Also check if it fits the containing block after applying scroll offset.
     if (offset_info && has_next_fallback_style) {
       non_overflowing_ranges.push_back(non_overflowing_range);
-      if (!non_overflowing_range.Contains(anchor_scroll_offset)) {
+      if (!non_overflowing_range.Contains(anchor_scroll_offset,
+                                          additional_bounds_scroll_offset)) {
         offset_info = absl::nullopt;
       }
     }
@@ -1744,7 +1764,7 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
     const LayoutObject* implicit_anchor,
     bool try_fit_available_space,
     bool is_first_run,
-    PhysicalScrollRange* out_non_overflowing_range) {
+    NonOverflowingScrollRange* out_non_overflowing_range) {
   const WritingDirectionMode candidate_writing_direction =
       candidate_style.GetWritingDirection();
   const auto container_writing_direction =
@@ -1834,17 +1854,33 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
           replaced_size, container_writing_direction, anchor_evaluator,
           &node_dimensions);
 
+  const absl::optional<LogicalRect> additional_fallback_bounds =
+      try_fit_available_space
+          ? anchor_evaluator->GetAdditionalFallbackBoundsRect()
+          : absl::nullopt;
+
   // Calculate the inline scroll offset range where the inline dimension fits.
   absl::optional<LayoutUnit> inline_scroll_min;
   absl::optional<LayoutUnit> inline_scroll_max;
+  absl::optional<LayoutUnit> additional_inline_scroll_min;
+  absl::optional<LayoutUnit> additional_inline_scroll_max;
   if (try_fit_available_space) {
     if (!CalculateNonOverflowingRangeInOneAxis(
             insets.inline_start, insets.inline_end,
             unclamped_available_rect.offset.inline_offset,
             unclamped_available_rect.InlineEndOffset(),
             node_dimensions.MarginBoxInlineStart(),
-            node_dimensions.MarginBoxInlineEnd(), &inline_scroll_min,
-            &inline_scroll_max)) {
+            node_dimensions.MarginBoxInlineEnd(),
+            additional_fallback_bounds.has_value()
+                ? absl::make_optional(
+                      additional_fallback_bounds->offset.inline_offset)
+                : absl::nullopt,
+            additional_fallback_bounds.has_value()
+                ? absl::make_optional(
+                      additional_fallback_bounds->InlineEndOffset())
+                : absl::nullopt,
+            &inline_scroll_min, &inline_scroll_max,
+            &additional_inline_scroll_min, &additional_inline_scroll_max)) {
       return absl::nullopt;
     }
   }
@@ -1862,14 +1898,25 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
   // Calculate the block scroll offset range where the block dimension fits.
   absl::optional<LayoutUnit> block_scroll_min;
   absl::optional<LayoutUnit> block_scroll_max;
+  absl::optional<LayoutUnit> additional_block_scroll_min;
+  absl::optional<LayoutUnit> additional_block_scroll_max;
   if (try_fit_available_space) {
     if (!CalculateNonOverflowingRangeInOneAxis(
             insets.block_start, insets.block_end,
             unclamped_available_rect.offset.block_offset,
             unclamped_available_rect.BlockEndOffset(),
             node_dimensions.MarginBoxBlockStart(),
-            node_dimensions.MarginBoxBlockEnd(), &block_scroll_min,
-            &block_scroll_max)) {
+            node_dimensions.MarginBoxBlockEnd(),
+            additional_fallback_bounds.has_value()
+                ? absl::make_optional(
+                      additional_fallback_bounds->offset.block_offset)
+                : absl::nullopt,
+            additional_fallback_bounds.has_value()
+                ? absl::make_optional(
+                      additional_fallback_bounds->BlockEndOffset())
+                : absl::nullopt,
+            &block_scroll_min, &block_scroll_max, &additional_block_scroll_min,
+            &additional_block_scroll_max)) {
       return absl::nullopt;
     }
   }
@@ -1920,10 +1967,17 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
   }
 
   if (try_fit_available_space) {
-    *out_non_overflowing_range =
+    out_non_overflowing_range->containing_block_range =
         LogicalScrollRange{inline_scroll_min, inline_scroll_max,
                            block_scroll_min, block_scroll_max}
             .ToPhysical(candidate_writing_direction);
+    if (additional_fallback_bounds) {
+      out_non_overflowing_range->additional_bounds_range =
+          LogicalScrollRange{
+              additional_inline_scroll_min, additional_inline_scroll_max,
+              additional_block_scroll_min, additional_block_scroll_max}
+              .ToPhysical(candidate_writing_direction);
+    }
   }
 
   return offset_info;
