@@ -35,7 +35,6 @@
 
 using testing::_;
 using testing::SaveArg;
-using testing::SaveArgPointee;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 
 constexpr char kExampleSite[] = "https://example.com";
