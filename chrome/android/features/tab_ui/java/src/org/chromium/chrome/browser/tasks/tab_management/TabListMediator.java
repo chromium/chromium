@@ -40,7 +40,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -112,17 +111,6 @@ class TabListMediator {
     private boolean mVisible;
     private boolean mShownIPH;
     private Tab mTabToAddDelayed;
-
-    /**
-     * An interface to get the thumbnails to be shown inside the tab grid cards.
-     */
-    public interface ThumbnailProvider {
-        /**
-         * @see TabContentManager#getTabThumbnailWithCallback
-         */
-        void getTabThumbnailWithCallback(int tabId, Size thumbnailSize, Callback<Bitmap> callback,
-                boolean forceUpdate, boolean writeToCache, boolean isSelected);
-    }
 
     /**
      * An interface to handle requests about updating TabGridDialog.

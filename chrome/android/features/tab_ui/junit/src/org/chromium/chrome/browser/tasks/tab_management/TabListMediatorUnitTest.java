@@ -3841,7 +3841,7 @@ public class TabListMediatorUnitTest {
         doReturn(mTabModel.getCount()).when(mRecyclerView).getChildCount();
     }
 
-    private TabListMediator.ThumbnailProvider getTabThumbnailCallback() {
+    private ThumbnailProvider getTabThumbnailCallback() {
         return (tabId, thumbnailSize, callback, forceUpdate, writeToCache, isSelected) -> {
             mTabContentManager.getTabThumbnailWithCallback(
                     tabId, thumbnailSize, callback, forceUpdate, writeToCache);

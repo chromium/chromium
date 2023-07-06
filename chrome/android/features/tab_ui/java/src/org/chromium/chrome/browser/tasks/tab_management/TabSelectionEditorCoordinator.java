@@ -164,7 +164,7 @@ class TabSelectionEditorCoordinator {
                             .inflate(R.layout.tab_selection_editor_layout, parentView, false)
                             .findViewById(R.id.selectable_list);
 
-            TabListMediator.ThumbnailProvider thumbnailProvider =
+            ThumbnailProvider thumbnailProvider =
                     initThumbnailProvider(displayGroups, tabContentManager);
             PseudoTab.TitleProvider titleProvider = displayGroups ? this::getTitle : null;
 
@@ -287,7 +287,7 @@ class TabSelectionEditorCoordinator {
         return TabGroupTitleEditor.getDefaultTitle(context, numRelatedTabs);
     }
 
-    private TabListMediator.ThumbnailProvider initThumbnailProvider(
+    private ThumbnailProvider initThumbnailProvider(
             boolean displayGroups, TabContentManager tabContentManager) {
         if (displayGroups) {
             mMultiThumbnailCardProvider =

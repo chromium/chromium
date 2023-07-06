@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,12 @@ import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_L
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.IS_VISIBLE;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.LATERAL_MARGIN;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TAB_THUMBNAIL;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.URL;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -49,16 +52,17 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** Tests for {@link SingleTabViewBinder}. */
+/** Tests for {@link SingleTabViewBinder} with {@link R.layout.single_tab_module_layout} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class SingleTabViewBinderUnitTest {
+public class SingleTabModuleViewBinderUnitTest {
     private static final String TEST_TITLE = "test";
+    private static final String TEST_URL = "www.foo.com";
     private final int mTabId = 1;
     private static final String HISTOGRAM_START_SURFACE_MODULE_CLICK = "StartSurface.Module.Click";
 
     private Activity mActivity;
-    private SingleTabView mSingleTabView;
+    private SingleTabView mSingleTabModuleView;
     private PropertyModelChangeProcessor<PropertyModel, SingleTabView, PropertyKey>
             mPropertyModelChangeProcessor;
     private PropertyModel mPropertyModel;
@@ -77,69 +81,85 @@ public class SingleTabViewBinderUnitTest {
         MockitoAnnotations.initMocks(this);
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mSingleTabView = (SingleTabView) mActivity.getLayoutInflater().inflate(
-                R.layout.single_tab_view_layout, null);
-        mActivity.setContentView(mSingleTabView);
+        mSingleTabModuleView = (SingleTabView) mActivity.getLayoutInflater().inflate(
+                R.layout.single_tab_module_layout, null);
+        mActivity.setContentView(mSingleTabModuleView);
 
         mPropertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
-                mPropertyModel, mSingleTabView, SingleTabViewBinder::bind);
+                mPropertyModel, mSingleTabModuleView, SingleTabViewBinder::bind);
     }
 
     @After
     public void tearDown() throws Exception {
         mPropertyModelChangeProcessor.destroy();
         mPropertyModel = null;
-        mSingleTabView = null;
+        mSingleTabModuleView = null;
         mActivity = null;
     }
 
     private boolean isViewVisible(int viewId) {
-        return mSingleTabView.findViewById(viewId).getVisibility() == View.VISIBLE;
+        return mSingleTabModuleView.findViewById(viewId).getVisibility() == View.VISIBLE;
+    }
+
+    @Test
+    @SmallTest
+    public void testVisibility() {
+        mPropertyModel.set(IS_VISIBLE, true);
+        assertTrue(isViewVisible(org.chromium.chrome.R.id.single_tab_view));
+
+        mPropertyModel.set(IS_VISIBLE, false);
+        assertFalse(isViewVisible(org.chromium.chrome.R.id.single_tab_view));
     }
 
     @Test
     @SmallTest
     public void testSetTitle() {
-        mPropertyModel.set(IS_VISIBLE, true);
-        assertTrue(isViewVisible(R.id.single_tab_view));
-        TextView title = mSingleTabView.findViewById(R.id.tab_title_view);
+        TextView title = mSingleTabModuleView.findViewById(org.chromium.chrome.R.id.tab_title_view);
         assertEquals("", title.getText());
 
         mPropertyModel.set(TITLE, TEST_TITLE);
         assertEquals(TEST_TITLE, title.getText());
+    }
 
-        mPropertyModel.set(IS_VISIBLE, false);
-        assertFalse(isViewVisible(R.id.single_tab_view));
+    @Test
+    @SmallTest
+    public void testSetUrl() {
+        TextView url = mSingleTabModuleView.findViewById(org.chromium.chrome.R.id.tab_url_view);
+        assertEquals("", url.getText());
+
+        mPropertyModel.set(URL, TEST_URL);
+        assertEquals(TEST_URL, url.getText());
     }
 
     @Test
     @SmallTest
     public void testSetFavicon() {
-        mPropertyModel.set(IS_VISIBLE, true);
-        assertTrue(isViewVisible(R.id.single_tab_view));
-        ImageView favicon = mSingleTabView.findViewById(R.id.tab_favicon_view);
+        ImageView favicon =
+                mSingleTabModuleView.findViewById(org.chromium.chrome.R.id.tab_favicon_view);
         assertNull(favicon.getDrawable());
 
         mPropertyModel.set(FAVICON, new BitmapDrawable());
         assertNotNull(favicon.getDrawable());
+    }
 
-        mPropertyModel.set(IS_VISIBLE, false);
-        assertFalse(isViewVisible(R.id.single_tab_view));
+    @Test
+    @SmallTest
+    public void testSetTabThumbnail() {
+        ImageView thumbnail = mSingleTabModuleView.findViewById(R.id.tab_thumbnail);
+        assertNull(thumbnail.getDrawable());
+
+        Bitmap bitmap = Bitmap.createBitmap(300, 400, Bitmap.Config.ALPHA_8);
+        mPropertyModel.set(TAB_THUMBNAIL, bitmap);
+        assertNotNull(thumbnail.getDrawable());
     }
 
     @Test
     @SmallTest
     public void testClickListener() {
-        mPropertyModel.set(IS_VISIBLE, true);
-        assertTrue(isViewVisible(R.id.single_tab_view));
-
         mPropertyModel.set(CLICK_LISTENER, mClickListener);
-        mSingleTabView.performClick();
+        mSingleTabModuleView.performClick();
         verify(mClickListener).onClick(any());
-
-        mPropertyModel.set(IS_VISIBLE, false);
-        assertFalse(isViewVisible(R.id.single_tab_view));
     }
 
     @Test
@@ -151,7 +171,7 @@ public class SingleTabViewBinderUnitTest {
                 new SingleTabSwitcherMediator(ContextUtils.getApplicationContext(), mPropertyModel,
                         mTabModelSelector, mTabListFaviconProvider, null, false);
         mediator.setOnTabSelectingListener(mOnTabSelectingListener);
-        mSingleTabView.performClick();
+        mSingleTabModuleView.performClick();
         assertEquals(HISTOGRAM_START_SURFACE_MODULE_CLICK
                         + " is not recorded correctly when clicking on the single tab card.",
                 1,
@@ -165,7 +185,7 @@ public class SingleTabViewBinderUnitTest {
     public void testStartMargin() {
         int lateralMargin = 100;
         MarginLayoutParams marginLayoutParams =
-                (MarginLayoutParams) mSingleTabView.getLayoutParams();
+                (MarginLayoutParams) mSingleTabModuleView.getLayoutParams();
         assertEquals(0, marginLayoutParams.getMarginStart());
 
         mPropertyModel.set(LATERAL_MARGIN, lateralMargin);

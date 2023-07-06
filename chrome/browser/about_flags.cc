@@ -2440,6 +2440,11 @@ const FeatureEntry::FeatureParam
         {"polish_omnibox_size", "true"},
         {"polish_omnibox_color", "true"}};
 
+const FeatureEntry::FeatureParam kSurfacePolish_polish_single_tab_card[] = {
+    {"polish_omnibox_size", "true"},
+    {"polish_omnibox_color", "true"},
+    {"polish_single_tab_card", "true"}};
+
 const FeatureEntry::FeatureParam kSurfacePolish_use_magic_space[] = {
     {"polish_omnibox_size", "true"},
     {"polish_omnibox_color", "true"},
@@ -2451,6 +2456,8 @@ const FeatureEntry::FeatureVariation kSurfacePolishVariations[] = {
     {"Polish omnibox size and color",
      kSurfacePolish_polish_omnibox_size_and_color,
      std::size(kSurfacePolish_polish_omnibox_size_and_color), nullptr},
+    {"Polish single tab card", kSurfacePolish_polish_single_tab_card,
+     std::size(kSurfacePolish_polish_single_tab_card), nullptr},
     {"Use magic space", kSurfacePolish_use_magic_space,
      std::size(kSurfacePolish_use_magic_space), nullptr},
 };

@@ -155,6 +155,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final TabCreatorManager mTabCreatorManager;
     private final boolean mUseMagicSpace;
+    private final boolean mIsSurfacePolishEnabled;
 
     // Boolean histogram used to record whether cached
     // ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE is consistent with
@@ -258,6 +259,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mTabSwitcherContainer = tabSwitcherContainer;
         mTabSwitcherModule = tabSwitcherModule;
         mController = mTabSwitcherModule != null ? mTabSwitcherModule.getController() : controller;
+        mIsSurfacePolishEnabled =
+                isStartSurfaceEnabled && ChromeFeatureList.sSurfacePolish.isEnabled();
         mUseMagicSpace = isStartSurfaceEnabled && StartSurfaceConfiguration.useMagicSpace();
         // When a magic space is enabled on Start surface, it doesn't need a controller to handle
         // its showing and hiding.
@@ -1663,8 +1666,14 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
     private void tweakMarginsBetweenSections() {
         Resources resources = mContext.getResources();
-        mPropertyModel.set(TASKS_SURFACE_BODY_TOP_MARGIN,
-                resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin));
+        if (mIsSurfacePolishEnabled) {
+            mPropertyModel.set(TASKS_SURFACE_BODY_TOP_MARGIN,
+                    resources.getDimensionPixelSize(
+                            R.dimen.tasks_surface_body_top_margin_polished));
+        } else {
+            mPropertyModel.set(TASKS_SURFACE_BODY_TOP_MARGIN,
+                    resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin));
+        }
         mPropertyModel.set(MV_TILES_CONTAINER_TOP_MARGIN,
                 resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin));
         mPropertyModel.set(TAB_SWITCHER_TITLE_TOP_MARGIN,

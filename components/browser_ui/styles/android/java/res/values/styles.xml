@@ -147,6 +147,10 @@ found in the LICENSE file.
     </style>
 
     <!-- Secondary text styles -->
+    <style name="TextAppearance.Headline2Thick.Secondary" >
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+    </style>
+
     <style name="TextAppearance.TextLarge.Secondary">
         <item name="android:textColor">@color/default_text_color_secondary_list</item>
     </style>

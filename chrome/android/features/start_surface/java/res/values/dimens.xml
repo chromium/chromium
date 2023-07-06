@@ -6,6 +6,7 @@ found in the LICENSE file.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="tasks_surface_body_top_margin">24dp</dimen>
+    <dimen name="tasks_surface_body_top_margin_polished">16dp</dimen>
     <dimen name="mv_tiles_container_top_margin">17dp</dimen>
     <dimen name="single_tab_view_top_margin_for_feed_improvement">32dp</dimen>
     <dimen name="tab_switcher_title_top_margin">16dp</dimen>
@@ -15,7 +16,21 @@ found in the LICENSE file.
     <dimen name="single_tab_card_lateral_margin_portrait_tablet">14dp</dimen>
     <dimen name="single_tab_card_lateral_margin">16dp</dimen>
     <dimen name="single_tab_card_start_padding">2dp</dimen>
-    
+
     <!-- Surface Polish -->
     <dimen name="home_surface_background_color_elevation">@dimen/default_elevation_2</dimen>
+    <dimen name="home_surface_ui_background_color_elevation">@dimen/default_elevation_0</dimen>
+    <dimen name="home_surface_ui_background_radius">24dp</dimen>
+
+    <!-- Single Tab module on phones -->
+    <dimen name="single_tab_module_lateral_margin">20dp</dimen>
+    <dimen name="single_tab_module_padding_top">16dp</dimen>
+    <dimen name="single_tab_module_padding_bottom">20dp</dimen>
+    <dimen name="single_tab_module_tab_thumbnail_width">100dp</dimen>
+    <dimen name="single_tab_module_tab_thumbnail_height">116dp</dimen>
+    <dimen name="single_tab_thumbnail_margin">1dp</dimen>
+    <dimen name="single_tab_thumbnail_radius">12dp</dimen>
+    <dimen name="favicon_padding">4dp</dimen>
+    <dimen name="favicon_background_radius">4dp</dimen>
+    <dimen name="favicon_background_color_elevation">@dimen/default_elevation_0</dimen>
 </resources>

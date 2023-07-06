@@ -38,10 +38,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * A {@link TabListMediator.ThumbnailProvider} that will create a single Bitmap Thumbnail for all
+ * A {@link ThumbnailProvider} that will create a single Bitmap Thumbnail for all
  * the related tabs for the given tabs.
  */
-public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProvider {
+public class MultiThumbnailCardProvider implements ThumbnailProvider {
     private final TabContentManager mTabContentManager;
     private final TabModelSelector mTabModelSelector;
     private final TabModelSelectorObserver mTabModelSelectorObserver;

@@ -374,6 +374,11 @@
           View all
       </message>
 
+      <!-- Single Tab module strings -->
+      <message name="IDS_SINGLE_TAB_MODULE_TITLE" desc="Title of the single Tab module on the magic space of the start surface or NTP home surface.">
+          Your last tab
+      </message>
+
       <!-- Tab Suggestion strings -->
       <message name="IDS_TAB_SUGGESTION_REVIEW_BUTTON" desc="This text button shows next to the message 'X of your tabs haven't been used lately. Close them?', or 'X tabs seem related. Group them?'. When a user clicks this 'Review' text button, they will enter a selection mode where they can see the suggested tabs to close or to group, see the rest of their open tabs, and choose what tabs to close or to group.">
           Review

@@ -133,7 +133,7 @@ public class TabListCoordinator
      *                      Currently only valid for TabListMode.GRID and TabListMode.LIST.
      */
     TabListCoordinator(@TabListMode int mode, Context context, TabModelSelector tabModelSelector,
-            @Nullable TabListMediator.ThumbnailProvider thumbnailProvider,
+            @Nullable ThumbnailProvider thumbnailProvider,
             @Nullable PseudoTab.TitleProvider titleProvider, boolean actionOnRelatedTabs,
             @Nullable TabListMediator
                     .GridCardOnClickListenerProvider gridCardOnClickListenerProvider,

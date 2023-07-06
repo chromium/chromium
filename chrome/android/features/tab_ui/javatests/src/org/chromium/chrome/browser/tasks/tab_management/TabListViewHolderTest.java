@@ -188,7 +188,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     private OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
 
     private TabListMediator.ThumbnailFetcher mMockThumbnailProvider =
-            new TabListMediator.ThumbnailFetcher(new TabListMediator.ThumbnailProvider() {
+            new TabListMediator.ThumbnailFetcher(new ThumbnailProvider() {
                 @Override
                 public void getTabThumbnailWithCallback(int tabId, Size thumbnailSize,
                         Callback<Bitmap> callback, boolean forceUpdate, boolean writeToCache,

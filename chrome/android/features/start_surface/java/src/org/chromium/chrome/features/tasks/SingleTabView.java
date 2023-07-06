@@ -5,11 +5,14 @@
 package org.chromium.chrome.features.tasks;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.start_surface.R;
 
@@ -18,6 +21,10 @@ class SingleTabView extends LinearLayout {
     private final Context mContext;
     private ImageView mFavicon;
     private TextView mTitle;
+    @Nullable
+    private ImageView mTabThumbnail;
+    @Nullable
+    private TextView mUrl;
 
     /** Default constructor needed to inflate via XML. */
     public SingleTabView(Context context, AttributeSet attrs) {
@@ -31,6 +38,8 @@ class SingleTabView extends LinearLayout {
 
         mFavicon = findViewById(R.id.tab_favicon_view);
         mTitle = findViewById(R.id.tab_title_view);
+        mTabThumbnail = findViewById(R.id.tab_thumbnail);
+        mUrl = findViewById(R.id.tab_url_view);
     }
 
     /**
@@ -42,10 +51,26 @@ class SingleTabView extends LinearLayout {
     }
 
     /**
+     * Set the Tab thumbnail.
+     * @param thumbnail The given Tab thumbnail {@link Bitmap}.
+     */
+    public void setTabThumbnail(Bitmap thumbnail) {
+        mTabThumbnail.setImageBitmap(thumbnail);
+    }
+
+    /**
      * Set the title.
      * @param title The given title.
      */
     public void setTitle(String title) {
         mTitle.setText(title);
+    }
+
+    /**
+     * Set the URL.
+     * @param url The given URL.
+     */
+    public void setUrl(String url) {
+        mUrl.setText(url);
     }
 }

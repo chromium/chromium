@@ -7,12 +7,16 @@ package org.chromium.chrome.features.tasks;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.IS_VISIBLE;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TAB_THUMBNAIL;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.URL;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Size;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -21,12 +25,15 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -39,6 +46,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.Ta
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherViewObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.tasks.tab_management.ThumbnailProvider;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
@@ -58,6 +66,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     private final TabModelSelectorObserver mTabModelSelectorObserver;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
+    private final boolean mIsSurfacePolishEnabled;
     private TabSwitcher.OnTabSelectingListener mTabSelectingListener;
     private boolean mShouldIgnoreNextSelect;
     private boolean mSelectedTabDidNotChangedAfterShown;
@@ -65,13 +74,24 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     private Long mTabTitleAvailableTime;
     private boolean mFaviconInitialized;
     private Context mContext;
+    private ThumbnailProvider mThumbnailProvider;
+    private Size mThumbnailSize;
 
     SingleTabSwitcherMediator(Context context, PropertyModel propertyModel,
-            TabModelSelector tabModelSelector, TabListFaviconProvider tabListFaviconProvider) {
+            TabModelSelector tabModelSelector, TabListFaviconProvider tabListFaviconProvider,
+            TabContentManager tabContentManager, boolean isSurfacePolishEnabled) {
         mTabModelSelector = tabModelSelector;
         mPropertyModel = propertyModel;
         mTabListFaviconProvider = tabListFaviconProvider;
         mContext = context;
+        mIsSurfacePolishEnabled = isSurfacePolishEnabled;
+        mThumbnailProvider = initThumbnailProvider(tabContentManager);
+        if (mThumbnailProvider != null) {
+            int width = mContext.getResources().getDimensionPixelSize(
+                    R.dimen.single_tab_module_tab_thumbnail_width);
+            int height = (int) (width / TabUtils.getTabThumbnailAspectRatio(mContext));
+            mThumbnailSize = new Size(width, height);
+        }
 
         mPropertyModel.set(FAVICON, mTabListFaviconProvider.getDefaultFaviconDrawable(false));
         mPropertyModel.set(CLICK_LISTENER, v -> {
@@ -125,6 +145,9 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
 
                     Tab tab = normalTabModel.getTabAt(selectedTabIndex);
                     mPropertyModel.set(TITLE, tab.getTitle());
+                    if (isSurfacePolishEnabled) {
+                        mPropertyModel.set(URL, tab.getUrl().getHost());
+                    }
                     if (mTabTitleAvailableTime == null) {
                         mTabTitleAvailableTime = SystemClock.elapsedRealtime();
                     }
@@ -134,6 +157,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                     if (mTabListFaviconProvider.isInitialized()) {
                         mFaviconInitialized = true;
                         updateFavicon(tab);
+                        mayUpdateTabThumbnail(tab);
                     }
                 }
             }
@@ -149,6 +173,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
             assert normalTabModel.getCount() > 0;
             Tab tab = normalTabModel.getTabAt(selectedTabIndex);
             updateFavicon(tab);
+            mayUpdateTabThumbnail(tab);
             mFaviconInitialized = true;
         }
     }
@@ -157,6 +182,15 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         assert mTabListFaviconProvider.isInitialized();
         mTabListFaviconProvider.getFaviconDrawableForUrlAsync(tab.getUrl(), false,
                 (Drawable favicon) -> { mPropertyModel.set(FAVICON, favicon); });
+    }
+
+    private void mayUpdateTabThumbnail(Tab tab) {
+        if (!mIsSurfacePolishEnabled) return;
+
+        mThumbnailProvider.getTabThumbnailWithCallback(
+                tab.getId(), mThumbnailSize, (Bitmap tabThumbnail) -> {
+                    mPropertyModel.set(TAB_THUMBNAIL, tabThumbnail);
+                }, true /* forceUpdate */, true /* writeToCache */, false /* isSelected */);
     }
 
     void setOnTabSelectingListener(TabSwitcher.OnTabSelectingListener listener) {
@@ -192,6 +226,10 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         mPropertyModel.set(IS_VISIBLE, false);
         mPropertyModel.set(FAVICON, mTabListFaviconProvider.getDefaultFaviconDrawable(false));
         mPropertyModel.set(TITLE, "");
+        if (mIsSurfacePolishEnabled) {
+            mPropertyModel.set(TAB_THUMBNAIL, null);
+            mPropertyModel.set(URL, "");
+        }
 
         for (TabSwitcherViewObserver observer : mObservers) {
             observer.startedHiding();
@@ -216,6 +254,9 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
             }
             if (activeTab != null) {
                 mPropertyModel.set(TITLE, activeTab.getTitle());
+                if (mIsSurfacePolishEnabled) {
+                    mPropertyModel.set(URL, activeTab.getUrl().getHost());
+                }
                 if (mTabTitleAvailableTime == null) {
                     mTabTitleAvailableTime = SystemClock.elapsedRealtime();
                 }
@@ -304,6 +345,10 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         }
         mTabListFaviconProvider.getFaviconDrawableForUrlAsync(tab.getUrl(), false,
                 (Drawable favicon) -> { mPropertyModel.set(FAVICON, favicon); });
+        if (mIsSurfacePolishEnabled) {
+            mPropertyModel.set(URL, tab.getUrl().getHost());
+            mayUpdateTabThumbnail(tab);
+        }
     }
 
     private void selectTheCurrentTab() {
@@ -313,5 +358,14 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         }
         mTabSelectingListener.onTabSelecting(
                 LayoutManagerImpl.time(), mTabModelSelector.getCurrentTabId());
+    }
+
+    private ThumbnailProvider initThumbnailProvider(TabContentManager tabContentManager) {
+        if (tabContentManager == null) return null;
+
+        return (tabId, thumbnailSize, callback, forceUpdate, writeBack, isSelected) -> {
+            tabContentManager.getTabThumbnailWithCallback(
+                    tabId, thumbnailSize, callback, forceUpdate, writeBack);
+        };
     }
 }

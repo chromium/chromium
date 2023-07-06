@@ -1091,7 +1091,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mSingleTabSwitcherCoordinator = new SingleTabSwitcherCoordinator(mActivity,
                 mSingleTabCardContainer, mActivityLifecycleDispatcher, mTabModelSelector, true,
                 isScrollableMvtEnabled(mContext), mostRecentTab, this::onSingleTabCardClicked,
-                () -> mSnapshotSingleTabCardChanged = true);
+                () -> mSnapshotSingleTabCardChanged = true, null /* tabContentManager */);
         mSingleTabSwitcherCoordinator.initWithNative();
         setSingleTabCardVisibility(true);
     }

@@ -7,4 +7,8 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Surface Polish -->
   <dimen name="home_surface_background_color_elevation">@dimen/default_elevation_0</dimen>
+  <dimen name="home_surface_ui_background_color_elevation">@dimen/default_elevation_1</dimen>
+
+  <!-- Single Tab module on phones -->
+  <dimen name="favicon_background_color_elevation">@dimen/default_elevation_2</dimen>
 </resources>
