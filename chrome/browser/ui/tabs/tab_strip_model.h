@@ -513,6 +513,8 @@ class TabStripModel : public TabGroupController {
     CommandFollowSite,
     CommandUnfollowSite,
     CommandCopyURL,
+    CommandGoBack,
+    CommandCloseAllTabs,
     CommandLast
   };
 

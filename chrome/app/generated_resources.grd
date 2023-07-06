@@ -9612,6 +9612,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_CXMENU_CLOSETABSTOLEFT" desc="The label of the 'Close Tabs to the Left' Tab context menu item. Translate this verbatim, do not localize for RTL languages (we have separate strings for RTL).">
           Close tabs to the left
         </message>
+        <message name="IDS_TAB_CXMENU_CLOSEALLTABS" desc="The label of the 'Close All Tabs' Tab context menu item.">
+          Close all tabs
+        </message>
         <message name="IDS_TAB_CXMENU_FOCUS_THIS_TAB" desc="The label of the 'Focus this tab' Tab context menu item.">
           Focus this tab
         </message>
@@ -9708,6 +9711,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_TAB_CXMENU_CLOSETABSTOLEFT" desc="In Title Case: The label of the 'Close Tabs to the Left' Tab context menu item. Translate this verbatim, do not localize for RTL languages (we have separate strings for RTL).">
           Close Tabs to the Left
+        </message>
+        <message name="IDS_TAB_CXMENU_CLOSEALLTABS" desc="In Title Case: The label of the 'Close All Tabs' Tab context menu item.">
+          Close All Tabs
         </message>
         <message name="IDS_TAB_CXMENU_FOCUS_THIS_TAB" desc="In Title Case: The label of the 'Focus This Tab' Tab context menu item.">
           Focus This Tab

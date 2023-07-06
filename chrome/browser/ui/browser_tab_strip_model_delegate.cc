@@ -294,6 +294,15 @@ void BrowserTabStripModelDelegate::CopyURL(content::WebContents* web_contents) {
   chrome::CopyURL(web_contents);
 }
 
+void BrowserTabStripModelDelegate::GoBack(content::WebContents* web_contents) {
+  chrome::GoBack(web_contents);
+}
+
+bool BrowserTabStripModelDelegate::CanGoBack(
+    content::WebContents* web_contents) {
+  return chrome::CanGoBack(web_contents);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserTabStripModelDelegate, private:
 

@@ -35564,12 +35564,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabContextMenu_Back">
+  <owner>loubrett@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>User selected Back from tab context menu.</description>
+</action>
+
 <action name="TabContextMenu_BookmarkAllTabs">
   <obsolete>Deprecated due to removal.</obsolete>
   <owner>wittman@chromium.org</owner>
   <description>
     User selected Bookmark All Tabs from the tab context menu.
   </description>
+</action>
+
+<action name="TabContextMenu_CloseAllTabs">
+  <owner>loubrett@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>User selected Close All Tabs from tab context menu.</description>
 </action>
 
 <action name="TabContextMenu_CloseOtherTabs">

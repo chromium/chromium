@@ -39,6 +39,7 @@ class TabMenuModel : public ui::SimpleMenuModel {
 
  private:
   void Build(TabStripModel* tab_strip, int index);
+  void BuildForWebApp(TabStripModel* tab_strip, int index);
 
   std::unique_ptr<ui::SimpleMenuModel> add_to_existing_group_submenu_;
   std::unique_ptr<ui::SimpleMenuModel> add_to_existing_window_submenu_;
