@@ -4,6 +4,9 @@
 
 syntax = "proto2";
 
+// Following comment adds import statement for annotations in google3
+// ${COPYBARA_DATAPOL_IMPORT}
+
 import "components/reporting/proto/synced/session_affiliated_user.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -14,7 +17,7 @@ package reporting;
 message FatalCrashTelemetry {
   enum CrashType {
     // Unknown crashes.
-    CRASH_TYPE_UNKNOWN = 0;
+    CRASH_TYPE_UNSPECIFIED = 0;
     // Kernel crashes.
     KERNEL = 1;
     // EC crashes.
@@ -25,7 +28,7 @@ message FatalCrashTelemetry {
   // translate to the types described below.
   enum SessionType {
     // Including when a crash occurs on the login screen.
-    SESSION_TYPE_UNKNOWN = 0;
+    SESSION_TYPE_UNSPECIFIED = 0;
     // When presenting to the admin, the following will be SIGNED_IN_USER
     REGULAR = 1;
     CHILD = 2;
@@ -45,11 +48,13 @@ message FatalCrashTelemetry {
   optional CrashType type = 1;
   optional SessionType session_type = 2;
   // required
+  // ${COPYBARA_DATAPOL_ST_SENSITIVE_TIMESTAMP}
   optional int64 timestamp_us = 3;
   // Absent if not signed in or the user is not affiliated. Currently only
   // contains user email.
   optional SessionAffiliatedUser affiliated_user = 4;
   // Absent if the crash has not been uploaded by crash_sender yet.
+  // ${COPYBARA_DATAPOL_ST_IDENTIFYING_ID}
   optional string crash_report_id = 5;
   // required
   optional string local_id = 6;
