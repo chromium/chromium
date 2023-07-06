@@ -119,7 +119,8 @@ void DlpFilesPolicyServiceProvider::IsDlpPolicyMatched(
           ? files_controller->IsDlpPolicyMatched(
                 policy::DlpFilesControllerAsh::FileDaemonInfo(
                     request.file_metadata().inode(), base::FilePath(),
-                    request.file_metadata().source_url()))
+                    request.file_metadata().source_url(),
+                    request.file_metadata().referrer_url()))
           : false;
 
   dlp::IsDlpPolicyMatchedResponse response_proto;
@@ -158,7 +159,7 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
       continue;
     }
     files_info.emplace_back(file.inode(), base::FilePath(file.path()),
-                            file.source_url());
+                            file.source_url(), file.referrer_url());
   }
 
   policy::DlpFilesControllerAsh* files_controller =
@@ -217,6 +218,8 @@ void DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer(
     files_restriction->mutable_file_metadata()->set_path(file.path.value());
     files_restriction->mutable_file_metadata()->set_source_url(
         file.source_url.spec());
+    files_restriction->mutable_file_metadata()->set_referrer_url(
+        file.referrer_url.spec());
     files_restriction->set_restriction_level(level);
   }
   std::unique_ptr<dbus::Response> response =

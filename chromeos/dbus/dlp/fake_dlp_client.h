@@ -58,7 +58,8 @@ class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
   int set_dlp_files_policy_count_ = 0;
   bool file_access_allowed_ = true;
   bool is_alive_ = true;
-  base::flat_map<ino_t, std::string> files_database_;
+  // Map from inode number to a pair of source_url and referrer_url.
+  base::flat_map<ino_t, std::pair<std::string, std::string>> files_database_;
   absl::optional<std::string> fake_source_;
   absl::optional<dlp::CheckFilesTransferResponse>
       check_files_transfer_response_;

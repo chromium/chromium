@@ -371,9 +371,11 @@ DlpFilesControllerAsh* DlpFilesControllerAsh::GetForPrimaryProfile() {
 
 DlpFilesControllerAsh::DlpFileMetadata::DlpFileMetadata(
     const std::string& source_url,
+    const std::string& referrer_url,
     bool is_dlp_restricted,
     bool is_restricted_for_destination)
     : source_url(source_url),
+      referrer_url(referrer_url),
       is_dlp_restricted(is_dlp_restricted),
       is_restricted_for_destination(is_restricted_for_destination) {}
 
@@ -388,12 +390,6 @@ DlpFilesControllerAsh::DlpFileRestrictionDetails::operator=(
 
 DlpFilesControllerAsh::DlpFileRestrictionDetails::~DlpFileRestrictionDetails() =
     default;
-
-DlpFilesControllerAsh::FileDaemonInfo::FileDaemonInfo(
-    ino64_t inode,
-    const base::FilePath& path,
-    const std::string& source_url)
-    : inode(inode), path(path), source_url(source_url) {}
 
 DlpFilesControllerAsh::DlpFilesControllerAsh(
     const DlpRulesManager& rules_manager)
@@ -537,7 +533,9 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
     return;
   }
 
-  FileDaemonInfo file_info({}, file_path, download_src.url_or_path().value());
+  // TODO(b/290200170): Check whether referrer_url could be set too.
+  FileDaemonInfo file_info({}, file_path, download_src.url_or_path().value(),
+                           /*referrer_url=*/"");
   IsFilesTransferRestricted(
       absl::nullopt, {std::move(file_info)},
       DlpFileDestination(file_path.value()), dlp::FileAction::kDownload,
@@ -1089,19 +1087,19 @@ void DlpFilesControllerAsh::ReturnDlpMetadata(
 
     metadata_map.emplace(
         metadata.inode(),
-        DlpFileMetadata(metadata.source_url(), is_dlp_restricted,
-                        is_restricted_for_destination));
+        DlpFileMetadata(metadata.source_url(), metadata.referrer_url(),
+                        is_dlp_restricted, is_restricted_for_destination));
   }
 
   std::vector<DlpFileMetadata> result;
   for (const auto& inode : inodes) {
     if (!inode.has_value()) {
-      result.emplace_back("", false, false);
+      result.emplace_back("", "", false, false);
       continue;
     }
     auto metadata_itr = metadata_map.find(inode.value());
     if (metadata_itr == metadata_map.end()) {
-      result.emplace_back("", false, false);
+      result.emplace_back("", "", false, false);
     } else {
       result.emplace_back(metadata_itr->second);
     }

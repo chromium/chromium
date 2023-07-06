@@ -57,7 +57,8 @@ void FakeDlpClient::AddFiles(const dlp::AddFilesRequest request,
   for (const dlp::AddFileRequest& file_request : request.add_file_requests()) {
     if (file_request.has_file_path() && file_request.has_source_url()) {
       files_database_[GetInodeValue(base::FilePath(file_request.file_path()))] =
-          file_request.source_url();
+          std::make_pair(file_request.source_url(),
+                         file_request.referrer_url());
     }
   }
 
@@ -80,7 +81,9 @@ void FakeDlpClient::GetFilesSources(const dlp::GetFilesSourcesRequest request,
 
     dlp::FileMetadata* file_metadata = response.add_files_metadata();
     file_metadata->set_inode(file_inode);
-    file_metadata->set_source_url(fake_source_.value_or(file_itr->second));
+    file_metadata->set_source_url(
+        fake_source_.value_or(file_itr->second.first));
+    file_metadata->set_referrer_url(file_itr->second.second);
   }
   std::move(callback).Run(response);
 }

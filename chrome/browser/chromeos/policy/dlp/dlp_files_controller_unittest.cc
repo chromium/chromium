@@ -228,6 +228,7 @@ TEST_F(DlpFilesControllerTest, LocalFileCopyTest) {
       expected_request.add_add_file_requests();
   file_request->set_file_path(destination.path().value());
   file_request->set_source_url(metadata->source_url());
+  file_request->set_referrer_url(metadata->referrer_url());
 
   EXPECT_CALL(add_files_call, Run(EqualsProto(expected_request),
                                   base::test::IsNotNullCallback()))

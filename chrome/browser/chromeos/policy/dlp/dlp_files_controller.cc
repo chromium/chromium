@@ -59,6 +59,8 @@ void GotFilesSourcesOfCopy(
   ::dlp::AddFileRequest* add_request = request.add_add_file_requests();
   add_request->set_file_path(destination.path().value());
   add_request->set_source_url(response.files_metadata().Get(0).source_url());
+  add_request->set_referrer_url(
+      response.files_metadata().Get(0).referrer_url());
 
   // The callback will be invoked with the destruction of the
   // ScopedFileAccessCopy object
@@ -114,6 +116,22 @@ absl::optional<ino64_t> GetInodeValue(const base::FilePath& path) {
 }
 
 }  // namespace
+
+DlpFilesController::FileDaemonInfo::FileDaemonInfo(
+    ino64_t inode,
+    const base::FilePath& path,
+    const std::string& source_url,
+    const std::string& referrer_url)
+    : inode(inode),
+      path(path),
+      source_url(source_url),
+      referrer_url(referrer_url) {}
+
+DlpFilesController::FileDaemonInfo::FileDaemonInfo(const FileDaemonInfo& o)
+    : inode(o.inode),
+      path(o.path),
+      source_url(o.source_url),
+      referrer_url(o.referrer_url) {}
 
 DlpFilesController::DlpFilesController(const DlpRulesManager& rules_manager)
     : rules_manager_(rules_manager) {}
