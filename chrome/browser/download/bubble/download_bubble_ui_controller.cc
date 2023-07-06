@@ -240,6 +240,7 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
     case DownloadCommands::CANCEL_DEEP_SCAN:
+    case DownloadCommands::LEARN_MORE_SCANNING:
       commands.ExecuteCommand(command);
       break;
     default:
