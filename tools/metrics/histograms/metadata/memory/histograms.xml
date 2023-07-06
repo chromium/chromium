@@ -2686,6 +2686,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.VmmSwap.TotalBytesWrittenInAWeek" units="MiB"
+    expires_after="2024-01-31">
+  <owner>kawasin@google.com</owner>
+  <owner>sstan@google.com</owner>
+  <summary>
+    The total bytes written by vmm-swap feature for a week. This is sent weekly
+    once any disk writes for vmm-swap has done. Once reporting has started it
+    reports weekly even if the total bytes written is zero.
+  </summary>
+</histogram>
+
 <histogram name="Memory.VmmSwap.{VmName}.ActiveAfterEnableDuration"
     units="Hours" expires_after="2024-01-31">
   <owner>kawasin@google.com</owner>
@@ -2696,6 +2707,19 @@ chromium-metrics-reviews@google.com.
     Shorter &quot;.InactiveBeforeEnableDuration&quot; and longer
     &quot;.ActiveAfterEnableDuration&quot; indicates the vmm-swap policies are
     doing a good job at deciding when to enable vmm-swap.
+  </summary>
+  <token key="VmName" variants="VmmSwapVmName"/>
+</histogram>
+
+<histogram name="Memory.VmmSwap.{VmName}.AvgPagesInFile" units="Pages"
+    expires_after="2024-01-31">
+  <owner>kawasin@google.com</owner>
+  <owner>sstan@google.com</owner>
+  <summary>
+    An lower bound estimate of the average number of pages resident on disk over
+    the duration of the vmm-swap period. Even if the actual page size is not
+    4KiB, it is recalculated to be the number of 4KiB pages. This is sent when
+    vmm-swap is disabled.
   </summary>
   <token key="VmName" variants="VmmSwapVmName"/>
 </histogram>
@@ -2721,6 +2745,33 @@ chromium-metrics-reviews@google.com.
     swappable-idle. This is sent when vmm-swap is disabled. If reported values
     are mostly long, it indicates that the policies are missing chances to
     enable vmm-swap.
+  </summary>
+  <token key="VmName" variants="VmmSwapVmName"/>
+</histogram>
+
+<histogram name="Memory.VmmSwap.{VmName}.MinPagesInFile" units="Pages"
+    expires_after="2024-01-31">
+  <owner>kawasin@google.com</owner>
+  <owner>sstan@google.com</owner>
+  <summary>
+    The minimum number of pages resident on disk any given point during the
+    vmm-swap period. Even if the actual page size is not 4KiB, it is
+    recalculated to be the number of 4KiB pages. This is sent when vmm-swap is
+    disabled.
+  </summary>
+  <token key="VmName" variants="VmmSwapVmName"/>
+</histogram>
+
+<histogram name="Memory.VmmSwap.{VmName}.PageAverageDurationInFile"
+    units="Seconds" expires_after="2024-01-31">
+  <owner>kawasin@google.com</owner>
+  <owner>sstan@google.com</owner>
+  <summary>
+    The average duration of each page of the guest memory lives in the swap
+    file. We expect most cold pages live in the swap file for a long time and
+    hot pages are not swapped out but kept in the memory. The durations are
+    measured every 10 minutes to estimate the average duration. This is sent
+    when vmm-swap is disabled.
   </summary>
   <token key="VmName" variants="VmmSwapVmName"/>
 </histogram>
