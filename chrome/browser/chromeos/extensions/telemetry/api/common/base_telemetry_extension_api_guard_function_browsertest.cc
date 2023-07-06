@@ -69,6 +69,14 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function getDisplayInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getDisplayInfo(),
+            'Error: Unauthorized access to chrome.os.telemetry.' +
+            'getDisplayInfo. %s'
+        );
+        chrome.test.succeed();
+      },
       async function getInternetConnectivityInfo() {
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getInternetConnectivityInfo(),

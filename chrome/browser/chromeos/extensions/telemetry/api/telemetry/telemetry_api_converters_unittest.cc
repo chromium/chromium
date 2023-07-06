@@ -1090,4 +1090,171 @@ TEST(TelemetryApiConverters, VpdInfoWithPermission) {
   EXPECT_EQ(*result.serial_number, kSerialNumber);
 }
 
+TEST(TelemetryApiConverters, DisplayInputType) {
+  EXPECT_EQ(Convert(crosapi::ProbeDisplayInputType::kUnmappedEnumField),
+            cx_telem::DisplayInputType::kUnknown);
+
+  EXPECT_EQ(Convert(crosapi::ProbeDisplayInputType::kDigital),
+            cx_telem::DisplayInputType::kDigital);
+
+  EXPECT_EQ(Convert(crosapi::ProbeDisplayInputType::kAnalog),
+            cx_telem::DisplayInputType::kAnalog);
+}
+
+TEST(TelemetryApiConverters, DisplayInfo) {
+  // Constants for embedded display
+  constexpr bool kPrivacyScreenSupported = true;
+  constexpr bool kPrivacyScreenEnabled = false;
+  constexpr uint32_t kDisplayWidthEmbedded = 0;
+  constexpr uint32_t kDisplayHeightEmbedded = 1;
+  constexpr uint32_t kResolutionHorizontalEmbedded = 2;
+  constexpr uint32_t kResolutionVerticalEmbedded = 3;
+  constexpr double kRefreshRateEmbedded = 4.4;
+  constexpr char kManufacturerEmbedded[] = "manufacturer_1";
+  constexpr uint16_t kModelIdEmbedded = 5;
+  constexpr uint32_t kSerialNumberEmbedded = 6;
+  constexpr uint8_t kManufactureWeekEmbedded = 7;
+  constexpr uint16_t kManufactureYearEmbedded = 8;
+  constexpr char kEdidVersionEmbedded[] = "1.4";
+  constexpr crosapi::ProbeDisplayInputType kInputTypeEmbedded =
+      crosapi::ProbeDisplayInputType::kAnalog;
+  constexpr char kDisplayNameEmbedded[] = "display_1";
+
+  // constants for external display 1
+  constexpr uint32_t kDisplayWidthExternal = 10;
+  constexpr uint32_t kDisplayHeightExternal = 11;
+  constexpr uint32_t kResolutionHorizontalExternal = 12;
+  constexpr uint32_t kResolutionVerticalExternal = 13;
+  constexpr double kRefreshRateExternal = 14.4;
+  constexpr char kManufacturerExternal[] = "manufacturer_2";
+  constexpr uint16_t kModelIdExternal = 15;
+  constexpr uint32_t kSerialNumberExternal = 16;
+  constexpr uint8_t kManufactureWeekExternal = 17;
+  constexpr uint16_t kManufactureYearExternal = 18;
+  constexpr char kEdidVersionExternal[] = "1.4";
+  constexpr crosapi::ProbeDisplayInputType kInputTypeExternal =
+      crosapi::ProbeDisplayInputType::kDigital;
+  constexpr char kDisplayNameExternal[] = "display_2";
+
+  auto input = crosapi::ProbeDisplayInfo::New();
+  {
+    auto embedded_display = crosapi::ProbeEmbeddedDisplayInfo::New(
+        kPrivacyScreenSupported, kPrivacyScreenEnabled, kDisplayWidthEmbedded,
+        kDisplayHeightEmbedded, kResolutionHorizontalEmbedded,
+        kResolutionVerticalEmbedded, kRefreshRateEmbedded,
+        std::string(kManufacturerEmbedded), kModelIdEmbedded,
+        kSerialNumberEmbedded, kManufactureWeekEmbedded,
+        kManufactureYearEmbedded, std::string(kEdidVersionEmbedded),
+        kInputTypeEmbedded, std::string(kDisplayNameEmbedded));
+
+    auto external_display_1 = crosapi::ProbeExternalDisplayInfo::New(
+        kDisplayWidthExternal, kDisplayHeightExternal,
+        kResolutionHorizontalExternal, kResolutionVerticalExternal,
+        kRefreshRateExternal, std::string(kManufacturerExternal),
+        kModelIdExternal, kSerialNumberExternal, kManufactureWeekExternal,
+        kManufactureYearExternal, std::string(kEdidVersionExternal),
+        kInputTypeExternal, std::string(kDisplayNameExternal));
+
+    auto external_display_empty = crosapi::ProbeExternalDisplayInfo::New(
+        absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt,
+        absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt,
+        absl::nullopt, absl::nullopt, absl::nullopt,
+        crosapi::ProbeDisplayInputType::kUnmappedEnumField, absl::nullopt);
+
+    std::vector<crosapi::ProbeExternalDisplayInfoPtr> external_displays;
+    external_displays.push_back(std::move(external_display_1));
+    external_displays.push_back(std::move(external_display_empty));
+
+    input->edp_info = std::move(embedded_display);
+    input->dp_infos = std::move(external_displays);
+  }
+
+  auto result = ConvertPtr<cx_telem::DisplayInfo>(std::move(input));
+
+  const auto& edp_info = result.edp_info;
+  const auto& dp_infos = result.dp_infos;
+  EXPECT_EQ(dp_infos.size(), static_cast<size_t>(2));
+
+  // Check equality for embedded display
+  EXPECT_EQ(edp_info.privacy_screen_supported, kPrivacyScreenSupported);
+  EXPECT_EQ(edp_info.privacy_screen_enabled, kPrivacyScreenEnabled);
+  ASSERT_TRUE(edp_info.display_width);
+  EXPECT_EQ(static_cast<uint32_t>(*edp_info.display_width),
+            kDisplayWidthEmbedded);
+  ASSERT_TRUE(edp_info.display_height);
+  EXPECT_EQ(static_cast<uint32_t>(*edp_info.display_height),
+            kDisplayHeightEmbedded);
+  ASSERT_TRUE(edp_info.resolution_horizontal);
+  EXPECT_EQ(static_cast<uint32_t>(*edp_info.resolution_horizontal),
+            kResolutionHorizontalEmbedded);
+  ASSERT_TRUE(edp_info.resolution_vertical);
+  EXPECT_EQ(static_cast<uint32_t>(*edp_info.resolution_vertical),
+            kResolutionVerticalEmbedded);
+  ASSERT_TRUE(edp_info.refresh_rate);
+  EXPECT_EQ(static_cast<double>(*edp_info.refresh_rate), kRefreshRateEmbedded);
+  EXPECT_EQ(edp_info.manufacturer, kManufacturerEmbedded);
+  ASSERT_TRUE(edp_info.model_id);
+  EXPECT_EQ(static_cast<uint16_t>(*edp_info.model_id), kModelIdEmbedded);
+  ASSERT_TRUE(edp_info.serial_number);
+  EXPECT_EQ(static_cast<uint32_t>(*edp_info.serial_number),
+            kSerialNumberEmbedded);
+  ASSERT_TRUE(edp_info.manufacture_week);
+  EXPECT_EQ(static_cast<uint8_t>(*edp_info.manufacture_week),
+            kManufactureWeekEmbedded);
+  ASSERT_TRUE(edp_info.manufacture_year);
+  EXPECT_EQ(static_cast<uint16_t>(*edp_info.manufacture_year),
+            kManufactureYearEmbedded);
+  EXPECT_EQ(edp_info.edid_version, kEdidVersionEmbedded);
+  EXPECT_EQ(edp_info.input_type, Convert(kInputTypeEmbedded));
+  EXPECT_EQ(edp_info.display_name, kDisplayNameEmbedded);
+
+  // Check equality for external display 1
+  ASSERT_TRUE(dp_infos[0].display_width);
+  EXPECT_EQ(static_cast<uint32_t>(*dp_infos[0].display_width),
+            kDisplayWidthExternal);
+  ASSERT_TRUE(dp_infos[0].display_height);
+  EXPECT_EQ(static_cast<uint32_t>(*dp_infos[0].display_height),
+            kDisplayHeightExternal);
+  ASSERT_TRUE(dp_infos[0].resolution_horizontal);
+  EXPECT_EQ(static_cast<uint32_t>(*dp_infos[0].resolution_horizontal),
+            kResolutionHorizontalExternal);
+  ASSERT_TRUE(dp_infos[0].resolution_vertical);
+  EXPECT_EQ(static_cast<uint32_t>(*dp_infos[0].resolution_vertical),
+            kResolutionVerticalExternal);
+  ASSERT_TRUE(dp_infos[0].refresh_rate);
+  EXPECT_EQ(static_cast<double>(*dp_infos[0].refresh_rate),
+            kRefreshRateExternal);
+  EXPECT_EQ(dp_infos[0].manufacturer, kManufacturerExternal);
+  ASSERT_TRUE(dp_infos[0].model_id);
+  EXPECT_EQ(static_cast<uint16_t>(*dp_infos[0].model_id), kModelIdExternal);
+  ASSERT_TRUE(dp_infos[0].serial_number);
+  EXPECT_EQ(static_cast<uint32_t>(*dp_infos[0].serial_number),
+            kSerialNumberExternal);
+  ASSERT_TRUE(dp_infos[0].manufacture_week);
+  EXPECT_EQ(static_cast<uint8_t>(*dp_infos[0].manufacture_week),
+            kManufactureWeekExternal);
+  ASSERT_TRUE(dp_infos[0].manufacture_year);
+  EXPECT_EQ(static_cast<uint16_t>(*dp_infos[0].manufacture_year),
+            kManufactureYearExternal);
+  EXPECT_EQ(dp_infos[0].edid_version, kEdidVersionExternal);
+  EXPECT_EQ(dp_infos[0].input_type, Convert(kInputTypeExternal));
+  EXPECT_EQ(dp_infos[0].display_name, kDisplayNameExternal);
+
+  // Check equality for empty external display
+  ASSERT_FALSE(dp_infos[1].display_width);
+  ASSERT_FALSE(dp_infos[1].display_height);
+  ASSERT_FALSE(dp_infos[1].resolution_horizontal);
+  ASSERT_FALSE(dp_infos[1].resolution_vertical);
+  ASSERT_FALSE(dp_infos[1].refresh_rate);
+  EXPECT_EQ(dp_infos[1].manufacturer, absl::nullopt);
+  ASSERT_FALSE(dp_infos[1].model_id);
+  ASSERT_FALSE(dp_infos[1].serial_number);
+  ASSERT_FALSE(dp_infos[1].manufacture_week);
+  ASSERT_FALSE(dp_infos[1].manufacture_year);
+  EXPECT_EQ(dp_infos[1].edid_version, absl::nullopt);
+  EXPECT_EQ(dp_infos[1].input_type,
+            Convert(crosapi::ProbeDisplayInputType::kUnmappedEnumField));
+  EXPECT_EQ(dp_infos[1].display_name, absl::nullopt);
+}
+
 }  // namespace chromeos::converters

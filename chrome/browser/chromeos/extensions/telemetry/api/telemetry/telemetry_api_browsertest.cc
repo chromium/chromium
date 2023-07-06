@@ -1416,4 +1416,168 @@ IN_PROC_BROWSER_TEST_F(
   )");
 }
 
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetDisplayInfo_NoFeatureFlagEnabledError) {
+  // If the permission is not enabled, the method isn't defined
+  // on `chrome.os.telemetry`.
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+        function getDisplayInfo() {
+            chrome.test.assertThrows(() => {
+                    chrome.os.telemetry.getDisplayInfo();
+                }, [],
+                "chrome.os.telemetry.getDisplayInfo is not a function");
+            chrome.test.succeed();
+        }
+    ]);
+  )");
+}
+
+class PendingApprovalTelemetryExtensionTelemetryApiBrowserTest
+    : public TelemetryExtensionTelemetryApiBrowserTest {
+ public:
+  PendingApprovalTelemetryExtensionTelemetryApiBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
+                       GetDisplayInfo_Error) {
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::ProbeCategoryEnum::kDisplay});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getDisplayInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getDisplayInfo(),
+            'Error: API internal error'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
+                       GetDisplayInfo_Success) {
+  // Configure FakeProbeService.
+  {
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
+    {
+      auto edp_info = crosapi::ProbeEmbeddedDisplayInfo::New();
+      edp_info->privacy_screen_supported = true;
+      edp_info->privacy_screen_enabled = false;
+      edp_info->display_width = 1;
+      edp_info->display_height = 2;
+      edp_info->resolution_horizontal = 3;
+      edp_info->resolution_vertical = 4;
+      edp_info->refresh_rate = 5;
+      edp_info->manufacturer = "manufacturer1";
+      edp_info->model_id = 6;
+      edp_info->serial_number = 7;
+      edp_info->manufacture_week = 8;
+      edp_info->manufacture_year = 9;
+      edp_info->edid_version = "1.4";
+      edp_info->input_type = crosapi::ProbeDisplayInputType::kDigital;
+      edp_info->display_name = "display1";
+
+      auto dp_info_1 = crosapi::ProbeExternalDisplayInfo::New();
+      dp_info_1->display_width = 11;
+      dp_info_1->display_height = 12;
+      dp_info_1->resolution_horizontal = 13;
+      dp_info_1->resolution_vertical = 14;
+      dp_info_1->refresh_rate = 15;
+      dp_info_1->manufacturer = "manufacturer2";
+      dp_info_1->model_id = 16;
+      dp_info_1->serial_number = 17;
+      dp_info_1->manufacture_week = 18;
+      dp_info_1->manufacture_year = 19;
+      dp_info_1->edid_version = "1.4";
+      dp_info_1->input_type = crosapi::ProbeDisplayInputType::kAnalog;
+      dp_info_1->display_name = "display2";
+
+      auto dp_info_2 = crosapi::ProbeExternalDisplayInfo::New();
+
+      std::vector<crosapi::ProbeExternalDisplayInfoPtr> dp_infos;
+      dp_infos.push_back(std::move(dp_info_1));
+      dp_infos.push_back(std::move(dp_info_2));
+
+      auto display_info = crosapi::ProbeDisplayInfo::New(std::move(edp_info),
+                                                         std::move(dp_infos));
+
+      telemetry_info->display_result =
+          crosapi::ProbeDisplayResult::NewDisplayInfo(std::move(display_info));
+    }
+
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::ProbeCategoryEnum::kDisplay});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getDisplayInfo() {
+        const result = await chrome.os.telemetry.getDisplayInfo();
+        chrome.test.assertEq(
+          // The dictionary members are ordered lexicographically by the Unicode
+          // codepoints that comprise their identifiers.
+          {
+            "dp_infos": [
+              {
+                "display_height": 12,
+                "display_name": "display2",
+                "display_width": 11,
+                "edid_version": "1.4",
+                "input_type": "analog",
+                "manufacture_week": 18,
+                "manufacture_year": 19,
+                "manufacturer": "manufacturer2",
+                "model_id": 16,
+                "refresh_rate": 15,
+                "resolution_horizontal": 13,
+                "resolution_vertical": 14,
+                "serial_number": 17
+              },
+              {
+                "input_type": "unknown"
+              }
+            ],
+            "edp_info": {
+              "display_height": 2,
+              "display_name": "display1",
+              "display_width": 1,
+              "edid_version": "1.4",
+              "input_type": "digital",
+              "manufacture_week": 8,
+              "manufacture_year": 9,
+              "manufacturer": "manufacturer1",
+              "model_id": 6,
+              "privacy_screen_enabled": false,
+              "privacy_screen_supported": true,
+              "refresh_rate": 5,
+              "resolution_horizontal": 3,
+              "resolution_vertical": 4,
+              "serial_number": 7
+            }
+          }, result);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
 }  // namespace chromeos

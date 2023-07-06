@@ -37070,6 +37070,7 @@ Called by update_extension_histograms.py.-->
   <int value="1798" label="AUTOTESTPRIVATE_GETCURRENTINPUTMETHODDESCRIPTOR"/>
   <int value="1799" label="OS_DIAGNOSTICS_RUNBLUETOOTHPOWERROUTINE"/>
   <int value="1800" label="OS_DIAGNOSTICS_RUNUFSLIFETIMEROUTINE"/>
+  <int value="1801" label="OS_TELEMETRY_GETDISPLAYINFO"/>
 </enum>
 
 <enum name="ExtensionIconState">

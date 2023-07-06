@@ -97,6 +97,15 @@ chromeos::api::os_telemetry::VpdInfo UncheckedConvertPtr(
     crosapi::mojom::ProbeCachedVpdInfoPtr input,
     bool has_serial_number_permission);
 
+chromeos::api::os_telemetry::DisplayInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeDisplayInfoPtr input);
+
+chromeos::api::os_telemetry::EmbeddedDisplayInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeEmbeddedDisplayInfoPtr input);
+
+chromeos::api::os_telemetry::ExternalDisplayInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeExternalDisplayInfoPtr input);
+
 }  // namespace unchecked
 
 chromeos::api::os_telemetry::CpuArchitectureEnum Convert(
@@ -119,6 +128,9 @@ chromeos::api::os_telemetry::UsbVersion Convert(
 
 chromeos::api::os_telemetry::UsbSpecSpeed Convert(
     crosapi::mojom::ProbeUsbSpecSpeed input);
+
+chromeos::api::os_telemetry::DisplayInputType Convert(
+    crosapi::mojom::ProbeDisplayInputType input);
 
 template <class OutputT, class InputT>
 std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {

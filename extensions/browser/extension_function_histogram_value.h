@@ -1860,6 +1860,7 @@ enum HistogramValue {
   AUTOTESTPRIVATE_GETCURRENTINPUTMETHODDESCRIPTOR = 1798,
   OS_DIAGNOSTICS_RUNBLUETOOTHPOWERROUTINE = 1799,
   OS_DIAGNOSTICS_RUNUFSLIFETIMEROUTINE = 1800,
+  OS_TELEMETRY_GETDISPLAYINFO = 1801,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

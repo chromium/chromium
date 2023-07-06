@@ -105,6 +105,87 @@ namespace os.telemetry {
 
   callback CpuInfoCallback = void (CpuInfo cpuInfo);
 
+  // An enumeration of display input type.
+  enum DisplayInputType {
+    // Unknown enum value.
+    unknown,
+    // Digital input.
+    digital,
+    // Analog input.
+    analog
+  };
+
+  dictionary EmbeddedDisplayInfo {
+    // Privacy screen is supported or not.
+    boolean? privacy_screen_supported;
+    // Privacy screen is enabled or not.
+    boolean? privacy_screen_enabled;
+    // Display width in millimeters.
+    long? display_width;
+    // Display height in millimeters.
+    long? display_height;
+    // Horizontal resolution.
+    long? resolution_horizontal;
+    // Vertical resolution.
+    long? resolution_vertical;
+    // Refresh rate.
+    double? refresh_rate;
+    // Three letter manufacturer ID.
+    DOMString? manufacturer;
+    // Manufacturer product code.
+    long? model_id;
+    // 32 bits serial number.
+    long? serial_number;
+    // Week of manufacture.
+    long? manufacture_week;
+    // Year of manufacture.
+    long? manufacture_year;
+    // EDID version.
+    DOMString? edid_version;
+    // Digital or analog input.
+    DisplayInputType input_type;
+    // Name of display product.
+    DOMString? display_name;
+  };
+
+  dictionary ExternalDisplayInfo {
+    // Display width in millimeters.
+    long? display_width;
+    // Display height in millimeters.
+    long? display_height;
+    // Horizontal resolution.
+    long? resolution_horizontal;
+    // Vertical resolution.
+    long? resolution_vertical;
+    // Refresh rate.
+    double? refresh_rate;
+    // Three letter manufacturer ID.
+    DOMString? manufacturer;
+    // Manufacturer product code.
+    long? model_id;
+    // 32 bits serial number.
+    long? serial_number;
+    // Week of manufacture.
+    long? manufacture_week;
+    // Year of manufacture.
+    long? manufacture_year;
+    // EDID version.
+    DOMString? edid_version;
+    // Digital or analog input.
+    DisplayInputType input_type;
+    // Name of display product.
+    DOMString? display_name;
+  };
+
+  dictionary DisplayInfo {
+    // Embedded display info.
+    EmbeddedDisplayInfo edp_info;
+    // External display info.
+    ExternalDisplayInfo[] dp_infos;
+  };
+
+  callback DisplayInfoCallback = void (DisplayInfo displayInfo);
+
   dictionary MarketingInfo {
     DOMString? marketingName;
   };
@@ -400,5 +481,7 @@ namespace os.telemetry {
     [supportsPromises] static void getStatefulPartitionInfo(StatefulPartitionInfoCallback callback);
 
     [supportsPromises] static void getTpmInfo(TpmInfoCallback callback);
+
+    [supportsPromises] static void getDisplayInfo(DisplayInfoCallback callback);
   };
 };

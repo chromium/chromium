@@ -158,6 +158,30 @@ void OsTelemetryGetCpuInfoFunction::OnResult(
   Respond(ArgumentList(cx_telem::GetCpuInfo::Results::Create(result)));
 }
 
+// OsTelemetryGetDisplayInfoFunction
+// -----------------------------------------------
+
+void OsTelemetryGetDisplayInfoFunction::RunIfAllowed() {
+  auto cb = base::BindOnce(&OsTelemetryGetDisplayInfoFunction::OnResult, this);
+
+  GetRemoteService()->ProbeTelemetryInfo({crosapi::ProbeCategoryEnum::kDisplay},
+                                         std::move(cb));
+}
+
+void OsTelemetryGetDisplayInfoFunction::OnResult(
+    crosapi::ProbeTelemetryInfoPtr ptr) {
+  if (!ptr || !ptr->display_result || !ptr->display_result->is_display_info()) {
+    Respond(Error("API internal error"));
+    return;
+  }
+
+  cx_telem::DisplayInfo result;
+  result = converters::ConvertPtr<cx_telem::DisplayInfo>(
+      std::move(ptr->display_result->get_display_info()));
+
+  Respond(ArgumentList(cx_telem::GetDisplayInfo::Results::Create(result)));
+}
+
 // OsTelemetryGetInternetConnectivityInfoFunction ------------------------------
 
 void OsTelemetryGetInternetConnectivityInfoFunction::RunIfAllowed() {
