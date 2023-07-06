@@ -110,12 +110,10 @@ public class AccountManagerFacadeImplTest {
     @Test
     public void testAccountsChangerObservationInitialization() {
         mFacadeWithSystemDelegate.addObserver(mObserverMock);
-        verify(mObserverMock, never()).onAccountsChanged();
         verify(mObserverMock, never()).onCoreAccountInfosChanged();
 
         mContext.sendBroadcast(new Intent(AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION));
 
-        verify(mObserverMock).onAccountsChanged();
         verify(mObserverMock).onCoreAccountInfosChanged();
     }
 

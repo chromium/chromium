@@ -326,10 +326,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         } else {
             mAccountsPromise.fulfill(newAccounts);
         }
-        for (AccountsChangeObserver observer : mObservers) {
-            observer.onAccountsChanged();
-        }
-
         fetchGaiaIdsAndUpdateCoreAccountInfos();
     }
 
