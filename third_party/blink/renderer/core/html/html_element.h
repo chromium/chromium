@@ -254,7 +254,9 @@ class CORE_EXPORT HTMLElement : public Element {
                            HidePopoverTransitionBehavior event_firing,
                            ExceptionState* exception_state);
   void PopoverHideFinishIfNeeded(bool immediate);
-  static const HTMLElement* FindTopmostPopoverAncestor(HTMLElement&);
+  static const HTMLElement* FindTopmostPopoverAncestor(
+      HTMLElement& new_popover,
+      Element* new_popovers_invoker);
 
   // Retrieves the element pointed to by this element's 'anchor' content
   // attribute, if that element exists.
