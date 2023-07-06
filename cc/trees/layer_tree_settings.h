@@ -171,10 +171,6 @@ class CC_EXPORT LayerTreeSettings {
   // https://crbug.com/414283.
   bool commit_fractional_scroll_deltas = false;
 
-  // When false, we do not check for occlusion and all quads are drawn.
-  // Defaults to true.
-  bool enable_occlusion = true;
-
   // Whether the compositor should attempt to sync with the scroll handlers
   // before submitting a frame.
   bool enable_synchronized_scrolling = true;
