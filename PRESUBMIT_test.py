@@ -3079,6 +3079,7 @@ class NoProductionCodeUsingTestOnlyFunctionsTest(unittest.TestCase):
       MockFile('some/path/foo.mm', ['FooForTesting() {']),
       MockFile('some/path/foo.cc', ['::FooForTests();']),
       MockFile('some/path/foo.cpp', ['// foo_for_test();']),
+      MockFile('some/path/foo.cxx', ['foo_for_test(); // IN-TEST']),
     ]
 
     results = PRESUBMIT.CheckNoProductionCodeUsingTestOnlyFunctions(
@@ -3143,6 +3144,7 @@ class NoProductionJavaCodeUsingTestOnlyFunctionsTest(unittest.TestCase):
         ' * Use FooForTest(); to obtain foo in tests.'
         ' */'
       ]),
+      MockFile('dir/java/src/bar6.java', ['FooForTesting(); // IN-TEST']),
     ]
 
     results = PRESUBMIT.CheckNoProductionCodeUsingTestOnlyFunctionsJava(
