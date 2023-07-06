@@ -84,6 +84,9 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
 
   // The button that opens the Set Up List menu.
   UIButton* _menuButton;
+
+  // The list title label.
+  UILabel* _listTitle;
 }
 
 - (instancetype)initWithItems:(NSArray<SetUpListItemViewData*>*)items
@@ -113,6 +116,10 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
       self.traitCollection.userInterfaceStyle) {
     _itemsStack.layer.borderColor =
         [UIColor colorNamed:kSeparatorColor].CGColor;
+  }
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    _listTitle.font = [self listTitleFont];
   }
 }
 
@@ -215,10 +222,10 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
   self.translatesAutoresizingMaskIntoConstraints = NO;
   self.accessibilityIdentifier = set_up_list::kAccessibilityID;
 
-  UILabel* listTitle = [self createListTitle];
+  _listTitle = [self createListTitle];
   _menuButton = [self createMenuButton];
   UIStackView* titleContainer = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ listTitle, _menuButton ]];
+      initWithArrangedSubviews:@[ _listTitle, _menuButton ]];
   titleContainer.translatesAutoresizingMaskIntoConstraints = NO;
   titleContainer.axis = UILayoutConstraintAxisHorizontal;
   titleContainer.distribution = UIStackViewDistributionFill;
@@ -242,9 +249,9 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
 
   if (_expandButton) {
     self.accessibilityElements =
-        @[ listTitle, _menuButton, _itemsStack, _expandButton ];
+        @[ _listTitle, _menuButton, _itemsStack, _expandButton ];
   } else {
-    self.accessibilityElements = @[ listTitle, _menuButton, _itemsStack ];
+    self.accessibilityElements = @[ _listTitle, _menuButton, _itemsStack ];
   }
 }
 
@@ -301,13 +308,17 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
 - (UILabel*)createListTitle {
   UILabel* label = [[UILabel alloc] init];
   label.text = l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
-  label.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightMedium);
+  label.font = [self listTitleFont];
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
   label.accessibilityTraits = UIAccessibilityTraitHeader;
   label.numberOfLines = 0;
   label.lineBreakMode = NSLineBreakByWordWrapping;
   return label;
+}
+
+// Returns the font used for the list title label.
+- (UIFont*)listTitleFont {
+  return CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightMedium);
 }
 
 // Creates the menu button at the top of the Set Up List.

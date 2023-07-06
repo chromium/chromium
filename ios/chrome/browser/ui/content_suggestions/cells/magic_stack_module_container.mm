@@ -62,6 +62,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
 @implementation MagicStackModuleContainer {
   NSLayoutConstraint* _contentViewWidthAnchor;
   id<MagicStackModuleContainerDelegate> _delegate;
+  UILabel* _title;
 }
 
 - (instancetype)initWithType:(ContentSuggestionsModuleType)type {
@@ -95,18 +96,16 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     [titleStackView setContentHuggingPriority:UILayoutPriorityDefaultHigh
                                       forAxis:UILayoutConstraintAxisVertical];
 
-    UILabel* title = [[UILabel alloc] init];
-    title.text = [MagicStackModuleContainer titleStringForModule:type];
-    title.font =
-        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
-    title.adjustsFontForContentSizeCategory = YES;
-    title.textColor = [UIColor colorNamed:kTextPrimaryColor];
-    title.numberOfLines = 0;
-    title.lineBreakMode = NSLineBreakByWordWrapping;
-    title.accessibilityTraits |= UIAccessibilityTraitHeader;
-    title.accessibilityIdentifier =
+    _title = [[UILabel alloc] init];
+    _title.text = [MagicStackModuleContainer titleStringForModule:type];
+    _title.font = [MagicStackModuleContainer fontForTitle];
+    _title.textColor = [UIColor colorNamed:kTextPrimaryColor];
+    _title.numberOfLines = 0;
+    _title.lineBreakMode = NSLineBreakByWordWrapping;
+    _title.accessibilityTraits |= UIAccessibilityTraitHeader;
+    _title.accessibilityIdentifier =
         [MagicStackModuleContainer titleStringForModule:type];
-    [titleStackView addArrangedSubview:title];
+    [titleStackView addArrangedSubview:_title];
 
     if ([self shouldShowSeeMore]) {
       UIButton* showMoreButton = [[UIButton alloc] init];
@@ -117,7 +116,13 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
                            forState:UIControlStateNormal];
       [showMoreButton.titleLabel
           setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]];
+      showMoreButton.titleLabel.numberOfLines = 2;
+      showMoreButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
       showMoreButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+      [showMoreButton
+          setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                          forAxis:
+                                              UILayoutConstraintAxisHorizontal];
       [showMoreButton addTarget:self
                          action:@selector(seeMoreButtonWasTapped:)
                forControlEvents:UIControlEventTouchUpInside];
@@ -130,13 +135,14 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     stackView.axis = UILayoutConstraintAxisVertical;
     stackView.spacing = kContentVerticalSpacing;
     stackView.distribution = UIStackViewDistributionFill;
-    if ([title.text length] > 0) {
+    [stackView addSubview:contentView];
+    if ([_title.text length] > 0) {
       [stackView addArrangedSubview:titleStackView];
+      // Add constraints to the title so that it doesn't grow wider than the
+      // content view when dynamic type is set very large.
       [NSLayoutConstraint activateConstraints:@[
-        [titleStackView.leadingAnchor
-            constraintEqualToAnchor:stackView.leadingAnchor],
-        [titleStackView.trailingAnchor
-            constraintEqualToAnchor:stackView.trailingAnchor
+        [titleStackView.widthAnchor
+            constraintEqualToAnchor:contentView.widthAnchor
                            constant:-kTitleStackViewTrailingMargin],
       ]];
     }
@@ -157,7 +163,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     }
     [stackView addArrangedSubview:contentView];
 
-    self.accessibilityElements = @[ title, contentView ];
+    self.accessibilityElements = @[ _title, contentView ];
 
     _contentViewWidthAnchor = [contentView.widthAnchor
         constraintEqualToConstant:[self contentViewWidth]];
@@ -199,6 +205,10 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
   }
 }
 
++ (UIFont*)fontForTitle {
+  return CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
+}
+
 - (NSDirectionalEdgeInsets)contentMargins {
   NSDirectionalEdgeInsets contentMargins =
       NSDirectionalEdgeInsetsMake(kContentTopInset, kContentHorizontalInset,
@@ -231,18 +241,22 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
                                                           self.window) &&
       [_delegate doesMagicStackShowOnlyOneModule:_type];
   if (MVTModuleShouldUseWideWidth || moduleShouldUseWideWidth) {
-    return CGSizeMake(kMagicStackWideWidth, self.bounds.size.height);
+    return CGSizeMake(kMagicStackWideWidth, UIViewNoIntrinsicMetric);
   }
   return CGSizeMake(
       [MagicStackModuleContainer
           moduleWidthForHorizontalTraitCollection:self.traitCollection],
-      self.bounds.size.height);
+      UIViewNoIntrinsicMetric);
 }
 
 #pragma mark - UITraitEnvironment
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    _title.font = [MagicStackModuleContainer fontForTitle];
+  }
   _contentViewWidthAnchor.constant = [self contentViewWidth];
   // Trigger relayout so intrinsic contentsize is recalculated.
   [self invalidateIntrinsicContentSize];

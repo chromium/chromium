@@ -145,6 +145,18 @@ struct ViewConfig {
       stringWithFormat:@"%@, %@", [self titleText], [self descriptionText]];
 }
 
+#pragma mark - UITraitEnvironment
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    // Force a layout since the size of text components may have changed.
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
+  }
+}
+
 #pragma mark - Public methods
 
 - (void)handleTap:(UITapGestureRecognizer*)sender {
@@ -292,6 +304,7 @@ struct ViewConfig {
   label.numberOfLines = 4;
   label.lineBreakMode = NSLineBreakByTruncatingTail;
   label.font = [UIFont preferredFontForTextStyle:_config.description_font];
+  label.adjustsFontForContentSizeCategory = YES;
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
   if (_complete) {
     label.attributedText = Strikethrough(label.text);

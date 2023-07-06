@@ -143,6 +143,21 @@ NSInteger kFeedSymbolPointSize = 17;
   [self applyHeaderConstraints];
 }
 
+#pragma mark - UITraitEnvironment
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    UIFont* font = [self fontForTitle];
+    self.titleLabel.font = font;
+    NSDictionary* attributes =
+        [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+    [self.segmentedControl setTitleTextAttributes:attributes
+                                         forState:UIControlStateNormal];
+  }
+}
+
 #pragma mark - Public
 
 - (void)toggleBackgroundBlur:(BOOL)blurred animated:(BOOL)animated {
@@ -375,10 +390,8 @@ NSInteger kFeedSymbolPointSize = 17;
 - (UILabel*)createTitleLabel {
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  titleLabel.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightMedium);
+  titleLabel.font = [self fontForTitle];
   titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.accessibilityIdentifier =
       ntp_home::DiscoverHeaderTitleAccessibilityID();
   titleLabel.text = [self feedHeaderTitleText];
@@ -398,8 +411,7 @@ NSInteger kFeedSymbolPointSize = 17;
   [segmentedControl setApportionsSegmentWidthsByContent:NO];
 
   // Set text font and color.
-  UIFont* font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightMedium);
+  UIFont* font = [self fontForTitle];
   NSDictionary* attributes =
       [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
   [segmentedControl setTitleTextAttributes:attributes
@@ -416,6 +428,10 @@ NSInteger kFeedSymbolPointSize = 17;
       kNTPFeedHeaderSegmentedControlIdentifier;
 
   return segmentedControl;
+}
+
+- (UIFont*)fontForTitle {
+  return CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightMedium);
 }
 
 // Configures and returns the dot indicating that there is new content in the
