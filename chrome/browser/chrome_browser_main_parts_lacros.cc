@@ -86,6 +86,12 @@ void ChromeBrowserMainPartsLacros::PreProfileInit() {
   content::TtsPlatform::GetInstance();
 }
 
+void ChromeBrowserMainPartsLacros::PostProfileInit(Profile* profile,
+                                                   bool is_initial_profile) {
+  ChromeBrowserMainPartsLinux::PostProfileInit(profile, is_initial_profile);
+  prefs_ash_observer_->InitPostProfileInitialized(profile);
+}
+
 void ChromeBrowserMainPartsLacros::PostDestroyThreads() {
   chromeos::LacrosShutdownDBus();
 
