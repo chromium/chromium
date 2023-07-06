@@ -51,6 +51,17 @@ export class NetworkProcessor {
   ): Promise<NetworkProcessor> {
     const networkProcessor = new NetworkProcessor(eventManager);
 
+    cdpClient
+      .browserClient()
+      .on(
+        'Target.detachedFromTarget',
+        (params: Protocol.Target.DetachedFromTargetEvent) => {
+          if (cdpClient.sessionId === params.sessionId) {
+            networkProcessor.dispose();
+          }
+        }
+      );
+
     cdpClient.on(
       'Network.requestWillBeSent',
       (params: Protocol.Network.RequestWillBeSentEvent) => {
@@ -112,5 +123,13 @@ export class NetworkProcessor {
 
   #getOrCreateNetworkRequest(requestId: Network.Request): NetworkRequest {
     return this.#requestMap.get(requestId);
+  }
+
+  dispose() {
+    for (const request of this.#requestMap.values()) {
+      request.dispose();
+    }
+
+    this.#requestMap.clear();
   }
 }

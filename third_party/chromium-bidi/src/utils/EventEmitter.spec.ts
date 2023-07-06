@@ -115,4 +115,32 @@ describe('EventEmitter', () => {
       expect(listener.firstCall.args[0]).to.equal(data);
     });
   });
+
+  describe('removeAllListeners', () => {
+    it('for different events', () => {
+      const listener1 = sinon.spy();
+      const listener2 = sinon.spy();
+      const listener3 = sinon.spy();
+      emitter.on('foo', listener1).on('foo', listener2).on('bar', listener3);
+      emitter.removeAllListeners();
+
+      emitter.emit('foo', undefined);
+      expect(listener1.callCount).to.equal(0);
+      expect(listener2.callCount).to.equal(0);
+      expect(listener3.callCount).to.equal(0);
+    });
+
+    it('for a single event', () => {
+      const listener1 = sinon.spy();
+      const listener2 = sinon.spy();
+      const listener3 = sinon.spy();
+      emitter.on('foo', listener1).on('foo', listener2).on('bar', listener3);
+      emitter.removeAllListeners('bar');
+
+      emitter.emit('foo', undefined);
+      expect(listener1.callCount).to.equal(1);
+      expect(listener2.callCount).to.equal(1);
+      expect(listener3.callCount).to.equal(0);
+    });
+  });
 });

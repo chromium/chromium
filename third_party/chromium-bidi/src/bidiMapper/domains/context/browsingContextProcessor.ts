@@ -124,7 +124,7 @@ export class BrowsingContextProcessor {
     if (params.reason === 'swap') {
       return;
     }
-    this.#browsingContextStorage.findContext(params.frameId)?.delete();
+    this.#browsingContextStorage.findContext(params.frameId)?.dispose();
   }
 
   #handleAttachedToTargetEvent(
@@ -192,7 +192,7 @@ export class BrowsingContextProcessor {
     // params.sessionId instead.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/60
     const contextId = params.targetId!;
-    this.#browsingContextStorage.findContext(contextId)?.delete();
+    this.#browsingContextStorage.findContext(contextId)?.dispose();
 
     this.#preloadScriptStorage
       .findPreloadScripts({targetId: contextId})
@@ -477,7 +477,7 @@ export class BrowsingContextProcessor {
       await ActionDispatcher.isMacOS(context).catch(() => false)
     );
     await dispatcher.dispatchTickActions(inputState.cancelList.reverse());
-    this.#inputStateManager.delete(topContext);
+    this.#inputStateManager.dispose(topContext);
     return {};
   }
 
@@ -515,11 +515,8 @@ export class BrowsingContextProcessor {
       );
     }
 
-    const browserCdpClient = this.#cdpConnection.browserClient();
-
     try {
-      await context.close();
-
+      const browserCdpClient = this.#cdpConnection.browserClient();
       const detachedFromTargetPromise = new Promise<void>((resolve) => {
         const onContextDestroyed = (
           event: Protocol.Target.DetachedFromTargetEvent
@@ -534,6 +531,9 @@ export class BrowsingContextProcessor {
         };
         browserCdpClient.on('Target.detachedFromTarget', onContextDestroyed);
       });
+
+      await context.close();
+
       // Sometimes CDP command finishes before `detachedFromTarget` event,
       // sometimes after. Wait for the CDP command to be finished, and then wait
       // for `detachedFromTarget` if it hasn't emitted.

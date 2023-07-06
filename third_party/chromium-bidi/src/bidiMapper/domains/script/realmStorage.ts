@@ -116,7 +116,7 @@ export class RealmStorage {
   /** Deletes all realms that match the given filter. */
   deleteRealms(filter: RealmFilter) {
     this.findRealms(filter).map((realm) => {
-      realm.delete();
+      realm.dispose();
       this.#realmMap.delete(realm.realmId);
       Array.from(this.knownHandlesToRealm.entries())
         .filter(([, r]) => r === realm.realmId)

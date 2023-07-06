@@ -321,7 +321,7 @@ export class Realm {
     return ScriptEvaluator.stringifyObject(cdpObject, this);
   }
 
-  delete() {
+  dispose() {
     this.#eventManager.registerEvent(
       {
         method: ChromiumBidi.Script.EventNames.RealmDestroyed,

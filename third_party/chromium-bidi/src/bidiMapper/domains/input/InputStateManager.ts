@@ -35,7 +35,7 @@ export class InputStateManager {
     return state;
   }
 
-  delete(context: BrowsingContextImpl) {
+  dispose(context: BrowsingContextImpl) {
     this.#states.delete(context);
   }
 }

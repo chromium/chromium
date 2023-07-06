@@ -77,4 +77,19 @@ export class EventEmitter<Events extends Record<EventType, unknown>> {
   emit<Key extends keyof Events>(event: Key, eventData: Events[Key]): void {
     this.#emitter.emit(event, eventData);
   }
+
+  /**
+   * Removes all listeners. If given an event argument, it will remove only
+   * listeners for that event.
+   * @param event - the event to remove listeners for.
+   * @returns `this` to enable you to chain method calls.
+   */
+  removeAllListeners(event?: EventType): this {
+    if (event) {
+      this.#emitter.all.delete(event);
+    } else {
+      this.#emitter.all.clear();
+    }
+    return this;
+  }
 }

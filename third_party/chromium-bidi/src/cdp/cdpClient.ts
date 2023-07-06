@@ -30,6 +30,16 @@ export class CloseError extends Error {}
 
 export interface ICdpClient extends EventEmitter<CdpEvents> {
   /**
+   * Unique session identifier.
+   */
+  sessionId: string | undefined;
+
+  /**
+   * Get the default browser client (no sessionId)
+   */
+  browserClient(): ICdpClient;
+
+  /**
    * Provides an unique way to detect if an error was caused by the closure of a
    * Target or Session.
    *
@@ -60,6 +70,14 @@ export class CdpClient extends EventEmitter<CdpEvents> implements ICdpClient {
     super();
     this.#cdpConnection = cdpConnection;
     this.#sessionId = sessionId;
+  }
+
+  get sessionId(): string | undefined {
+    return this.#sessionId;
+  }
+
+  browserClient(): ICdpClient {
+    return this.#cdpConnection.browserClient();
   }
 
   sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(

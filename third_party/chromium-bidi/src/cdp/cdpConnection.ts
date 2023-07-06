@@ -121,17 +121,11 @@ export class CdpConnection implements ICdpConnection {
     const messagePretty = JSON.stringify(messageParsed, null, 2);
     this.#logger?.(`${LogType.cdp}:RECV ◂`, messagePretty);
 
-    // Update client map if a session is attached or detached.
+    // Update client map if a session is attached
     // Listen for these events on every session.
     if (messageParsed.method === 'Target.attachedToTarget') {
       const {sessionId} = messageParsed.params;
       this.#sessionCdpClients.set(sessionId, new CdpClient(this, sessionId));
-    } else if (messageParsed.method === 'Target.detachedFromTarget') {
-      const {sessionId} = messageParsed.params;
-      const client = this.#sessionCdpClients.get(sessionId);
-      if (client) {
-        this.#sessionCdpClients.delete(sessionId);
-      }
     }
 
     if (messageParsed.id !== undefined) {
@@ -150,6 +144,17 @@ export class CdpConnection implements ICdpConnection {
         ? this.#sessionCdpClients.get(messageParsed.sessionId)
         : this.#browserCdpClient;
       client?.emit(messageParsed.method, messageParsed.params || {});
+
+      // Update client map if a session is detached
+      // But emit on that session
+      if (messageParsed.method === 'Target.detachedFromTarget') {
+        const {sessionId} = messageParsed.params;
+        const client = this.#sessionCdpClients.get(sessionId);
+        if (client) {
+          this.#sessionCdpClients.delete(sessionId);
+          client.removeAllListeners();
+        }
+      }
     }
   };
 }

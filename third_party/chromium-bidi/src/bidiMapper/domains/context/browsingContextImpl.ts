@@ -140,7 +140,7 @@ export class BrowsingContextImpl {
     return this.#loaderId;
   }
 
-  delete() {
+  dispose() {
     this.#deleteAllChildren();
 
     this.#realmStorage.deleteRealms({
@@ -217,7 +217,7 @@ export class BrowsingContextImpl {
   }
 
   #deleteAllChildren() {
-    this.directChildren.map((child) => child.delete());
+    this.directChildren.map((child) => child.dispose());
   }
 
   get #defaultRealm(): Realm {

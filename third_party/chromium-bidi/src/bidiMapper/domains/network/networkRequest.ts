@@ -40,7 +40,7 @@ export class NetworkRequest {
    * The identifier for a request resulting from a redirect matches that of the
    * request that initiated it.
    */
-  requestId: Network.Request;
+  readonly requestId: Network.Request;
 
   #servedFromCache = false;
   #redirectCount = 0;
@@ -155,6 +155,12 @@ export class NetworkRequest {
       },
       this.#requestWillBeSentEvent?.frameId ?? null
     );
+  }
+
+  dispose() {
+    const error = new Error('Network processor detached');
+    this.#responseReceivedDeferred.reject(error);
+    this.#beforeRequestSentDeferred.reject(error);
   }
 
   #getBaseEventParams(): Network.BaseParameters {
