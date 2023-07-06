@@ -553,7 +553,12 @@ void ServiceWorkerContextCore::UpdateServiceWorker(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   BrowserContext* browser_context = wrapper_->browser_context();
-  CHECK(browser_context);
+  if (!browser_context) {
+    // There is no associated browser context (this can happen while the context
+    // is shutting down). Bail.
+    return;
+  }
+
   if (!GetContentClient()
            ->browser()
            ->ShouldTryToUpdateServiceWorkerRegistration(registration->scope(),
@@ -574,7 +579,12 @@ void ServiceWorkerContextCore::UpdateServiceWorker(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   BrowserContext* browser_context = wrapper_->browser_context();
-  CHECK(browser_context);
+  if (!browser_context) {
+    // There is no associated browser context (this can happen while the context
+    // is shutting down). Bail.
+    return;
+  }
+
   if (!GetContentClient()
            ->browser()
            ->ShouldTryToUpdateServiceWorkerRegistration(registration->scope(),
