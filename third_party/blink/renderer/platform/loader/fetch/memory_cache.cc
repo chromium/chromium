@@ -371,10 +371,6 @@ void MemoryCache::Prune() {
 
   recordreplay::Assert("[RUN-1975-2287] MemoryCache::Prune");
 
-  // Cache state can vary when replaying, make sure we don't interact
-  // with the recording while pruning.
-  recordreplay::AutoDisallowEvents disallow("MemoryCache::Prune");
-
   if (in_prune_resources_)
     return;
   if (size_ <= capacity_)  // Fast path.
