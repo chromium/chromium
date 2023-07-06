@@ -126,7 +126,6 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
 
   wgpu::DawnTogglesDescriptor toggles_desc;
   std::vector<const char*> enabled_toggles;
-  std::vector<const char*> disabled_toggles;
 #if DCHECK_IS_ON()
   enabled_toggles.push_back("use_user_defined_labels_in_backend");
 #else
@@ -134,12 +133,9 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
   // TODO(crbug.com/1456492): check if below toggles are necessary.
   enabled_toggles.push_back("disable_robustness");
   enabled_toggles.push_back("skip_validation");
-  disabled_toggles.push_back("lazy_clear_resource_on_first_use");
 #endif
   toggles_desc.enabledToggles = enabled_toggles.data();
   toggles_desc.enabledTogglesCount = enabled_toggles.size();
-  toggles_desc.disabledToggles = disabled_toggles.data();
-  toggles_desc.disabledTogglesCount = disabled_toggles.size();
   descriptor.nextInChain = &toggles_desc;
 
   // TODO(crbug.com/1456492): verify the required features.
