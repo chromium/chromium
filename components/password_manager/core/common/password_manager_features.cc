@@ -12,12 +12,6 @@ namespace password_manager::features {
 // NOTE: It is strongly recommended to use UpperCamelCase style for feature
 //       names, e.g. "MyGreatFeature".
 
-// Disables fallback filling if the server or the autocomplete attribute says it
-// is a credit card field.
-BASE_FEATURE(kDisablePasswordsDropdownForCvcFields,
-             "DisablePasswordsDropdownForCvcFields",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the overwriting of prefilled username fields if the server predicted
 // the field to contain a placeholder value.
 BASE_FEATURE(kEnableOverwritingPlaceholderUsernames,

@@ -24,4 +24,10 @@ BASE_FEATURE(kBiometricTouchToFill,
              "BiometricTouchToFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Disables fallback filling if the server or the autocomplete attribute says it
+// is a credit card field.
+BASE_FEATURE(kDisablePasswordsDropdownForCvcFields,
+             "DisablePasswordsDropdownForCvcFields",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace password_manager::features

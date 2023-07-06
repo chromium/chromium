@@ -22,7 +22,6 @@ namespace password_manager::features {
 
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
-BASE_DECLARE_FEATURE(kDisablePasswordsDropdownForCvcFields);
 BASE_DECLARE_FEATURE(kEnableOverwritingPlaceholderUsernames);
 
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);

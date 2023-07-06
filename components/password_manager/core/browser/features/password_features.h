@@ -22,6 +22,7 @@ BASE_DECLARE_FEATURE(kBiometricAuthenticationInSettings);
 #endif
 
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
+BASE_DECLARE_FEATURE(kDisablePasswordsDropdownForCvcFields);
 
 }  // namespace password_manager::features
 
