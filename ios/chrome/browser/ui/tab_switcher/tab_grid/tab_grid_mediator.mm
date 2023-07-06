@@ -1137,20 +1137,6 @@ void RecordTabGridCloseTabsCount(int count) {
   return index + self.webStateList->GetIndexOfFirstNonPinnedWebState();
 }
 
-- (NSSet<NSString*>*)nonPinnedWebStates {
-  NSMutableSet<NSString*>* nonPinnedWebStates = [NSMutableSet set];
-
-  for (int index = self.webStateList->GetIndexOfFirstNonPinnedWebState();
-       index < self.webStateList->count(); ++index) {
-    web::WebState* webState = self.webStateList->GetWebStateAt(index);
-    if (webState != nil && webState->GetStableIdentifier() != nil) {
-      [nonPinnedWebStates addObject:webState->GetStableIdentifier()];
-    }
-  }
-
-  return [nonPinnedWebStates copy];
-}
-
 // Inserts/removes a non pinned item to/from the collection.
 - (void)changePinnedStateForWebState:(web::WebState*)webState
                              atIndex:(int)index {
