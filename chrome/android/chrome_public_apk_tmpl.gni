@@ -697,10 +697,10 @@ template("chrome_common_apk_or_module_tmpl") {
       # depend on their respective versions of the shared library APK even
       # though they're functionally the same.
       if (_include_primary_abi && loadable_modules == []) {
-        native_lib_placeholders = [ "libdummy.so" ]
+        native_lib_placeholders = [ "libplaceholder.so" ]
       }
       if (_include_secondary_abi && secondary_abi_loadable_modules == []) {
-        secondary_native_lib_placeholders = [ "libdummy.so" ]
+        secondary_native_lib_placeholders = [ "libplaceholder.so" ]
       }
 
       # http://crbug.com/1042107.
