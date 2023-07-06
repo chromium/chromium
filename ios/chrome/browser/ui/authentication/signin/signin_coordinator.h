@@ -163,8 +163,15 @@ class PrefRegistrySyncable;
 // Interrupts the sign-in flow.
 // `signinCompletion(SigninCoordinatorResultInterrupted, nil)` is guaranteed to
 // be called before `completion()`.
-// `action` action describing how to interrupt the sign-in.
-// `completion` called once the sign-in is fully interrupted.
+// When the coordinator is interrupted with `UIShutdownNoDismiss` action, both
+// `signinCompletion()` and `completion()` are called synchronously in this
+// order.
+// When the coordinator is interrupted with `DismissWithoutAnimation` or
+// `DismissWithAnimation`, the view is dismissed first. After being dismissed,
+// `signinCompletion()` is called, and then `completion()` is called.
+//
+// It is still mandatory to call `-[SigninCoordinator stop]` once
+// `signinCompletion()` is called.
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion;
 
