@@ -98,6 +98,11 @@ guestMessagePipe.registerHandler(Message.SHOW_PARENTAL_CONTROLS, () => {
 });
 
 guestMessagePipe.registerHandler(
+    Message.TRIGGER_WELCOME_TIP_CALL_TO_ACTION, (actionTypeId) => {
+      help_app.handler.triggerWelcomeTipCallToAction(actionTypeId);
+    });
+
+guestMessagePipe.registerHandler(
     Message.ADD_OR_UPDATE_SEARCH_INDEX, async (message) => {
       if (!(await isLssEnabled)) {
         return;

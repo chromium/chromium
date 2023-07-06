@@ -209,6 +209,14 @@ helpApp.ClientApiDelegate.prototype.openFeedbackDialog = function() {};
 helpApp.ClientApiDelegate.prototype.showParentalControls = function() {};
 
 /**
+ * Triggers the call-to-action associated with the given action type id.
+ * @param {number} actionTypeId
+ * @return {!Promise<undefined>}
+ */
+helpApp.ClientApiDelegate.prototype.triggerWelcomeTipCallToAction = function(
+    actionTypeId) {};
+
+/**
  * Add or update the content that is stored in the Search Index.
  * @param {!Array<!helpApp.SearchableItem>} data
  * @return {!Promise<undefined>}

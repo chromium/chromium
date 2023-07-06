@@ -30,6 +30,10 @@ const DELEGATE = {
   async showParentalControls() {
     await parentMessagePipe.sendMessage(Message.SHOW_PARENTAL_CONTROLS);
   },
+  async triggerWelcomeTipCallToAction(actionTypeId) {
+    await parentMessagePipe.sendMessage(
+        Message.TRIGGER_WELCOME_TIP_CALL_TO_ACTION, actionTypeId);
+  },
   /**
    * @override
    * @param {!Array<!helpApp.SearchableItem>} data

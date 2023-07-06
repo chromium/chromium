@@ -29,6 +29,10 @@ class HelpAppUIDelegate {
   // Opens OS Settings at the parental controls section.
   virtual void ShowParentalControls() = 0;
 
+  // Triggers the call-to-action associated with the given action type id.
+  virtual void TriggerWelcomeTipCallToAction(
+      help_app::mojom::ActionTypeId action_type_id) = 0;
+
   // Gets locally stored users preferences and state.
   virtual PrefService* GetLocalState() = 0;
 

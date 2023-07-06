@@ -26,6 +26,7 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -93,14 +94,19 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean(
       "HelpAppSearchServiceIntegration",
       base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
-  source->AddBoolean("HelpAppWelcomeTips",
-                     ash::features::AreHelpAppWelcomeTipsEnabled());
   source->AddBoolean("isCloudGamingDevice",
                      chromeos::features::IsCloudGamingDeviceEnabled());
   source->AddBoolean("jelly", chromeos::features::IsJellyEnabled());
 
   Profile* profile = Profile::FromWebUI(web_ui);
   PrefService* pref_service = profile->GetPrefs();
+
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(profile);
+  if (scalable_iph) {
+    source->AddBoolean("HelpAppWelcomeTips",
+                       ash::features::AreHelpAppWelcomeTipsEnabled());
+  }
 
   // Add state from the OOBE flow.
   source->AddBoolean(

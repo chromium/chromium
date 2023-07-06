@@ -37,6 +37,11 @@ void HelpAppPageHandler::ShowParentalControls() {
   help_app_ui_->delegate()->ShowParentalControls();
 }
 
+void HelpAppPageHandler::TriggerWelcomeTipCallToAction(
+    help_app::mojom::ActionTypeId action_type_id) {
+  help_app_ui_->delegate()->TriggerWelcomeTipCallToAction(action_type_id);
+}
+
 void HelpAppPageHandler::IsLssEnabled(IsLssEnabledCallback callback) {
   std::move(callback).Run(is_lss_enabled_);
 }

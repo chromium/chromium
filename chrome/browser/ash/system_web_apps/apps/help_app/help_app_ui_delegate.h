@@ -36,6 +36,8 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
   // HelpAppUIDelegate:
   absl::optional<std::string> OpenFeedbackDialog() override;
   void ShowParentalControls() override;
+  void TriggerWelcomeTipCallToAction(
+      help_app::mojom::ActionTypeId action_type_id) override;
   PrefService* GetLocalState() override;
   void LaunchMicrosoft365Setup() override;
   void MaybeShowDiscoverNotification() override;

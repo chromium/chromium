@@ -3913,6 +3913,7 @@ source_set("ash") {
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/peripheral_notification",
     "//chromeos/ash/components/power",
+    "//chromeos/ash/components/scalable_iph:constants",
     "//chromeos/ash/components/scalable_iph:iph_session",
     "//chromeos/ash/components/scalable_iph:scalable_iph_delegate",
     "//chromeos/ash/components/standalone_browser",

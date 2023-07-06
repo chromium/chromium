@@ -11,15 +11,17 @@ enum class ActionType {
   // `kInvalid` is reserved to be used as an initial value. This must not be
   // used in prod.
   kInvalid = 0,
-  kOpenChrome,
-  kOpenPersonalizationApp,
-  kOpenPlayStore,
-  kOpenGoogleDocs,
-  kOpenGooglePhotos,
-  kOpenSettingsPrinter,
-  kOpenPhoneHub,
-  kOpenYouTube,
-  kOpenFileManager,
+  kOpenChrome = 1,
+  kOpenLauncher = 2,  // Not implemented for V1 of Scalable IPH
+  kOpenPersonalizationApp = 3,
+  kOpenPlayStore = 4,
+  kOpenGoogleDocs = 5,
+  kOpenGooglePhotos = 6,
+  kOpenSettingsPrinter = 7,
+  kOpenPhoneHub = 8,
+  kOpenYouTube = 9,
+  kOpenFileManager = 10,
+  kLastAction = kOpenFileManager,
 };
 
 // Constants for events.
