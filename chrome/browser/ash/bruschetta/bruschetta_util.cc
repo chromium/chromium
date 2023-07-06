@@ -18,7 +18,13 @@ absl::optional<const base::Value::Dict*> GetConfigWithEnabledLevel(
     const Profile* profile,
     const std::string& config_id,
     prefs::PolicyEnabledState enabled_level) {
-  if (!virtual_machines::AreVirtualMachinesAllowedByPolicy()) {
+  // If virtual machines are disabled, we should treat every policy as
+  // BLOCKED. If the caller is looking for an enabled level of RUN_ALLOWED
+  // or higher we should return nothing, but it can still be useful in
+  // some places to retrieve a config even if it's currently BLOCKED e.g. for
+  // display names.
+  if (!virtual_machines::AreVirtualMachinesAllowedByPolicy() &&
+      enabled_level > prefs::PolicyEnabledState::BLOCKED) {
     return absl::nullopt;
   }
 
