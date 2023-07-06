@@ -159,7 +159,7 @@ class AuthenticationFlowTest : public PlatformTest {
 
   // Used to wait for sign-in workflow to complete.
   base::RunLoop run_loop_;
-  signin::Tribool signin_result_ = signin::Tribool::kFalse;
+  signin::Tribool signin_result_ = signin::Tribool::kUnknown;
 };
 
 // Tests a Sign In of a normal account on the same profile with Sync
@@ -182,6 +182,8 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
       identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE, nil);
 
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
+  // completion block should not be called synchronously.
+  EXPECT_EQ(signin::Tribool::kUnknown, signin_result_);
 
   CheckSignInCompletion(/*expected_signed_in=*/true);
   histogram_tester_.ExpectUniqueSample(

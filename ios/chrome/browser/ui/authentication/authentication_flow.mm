@@ -167,7 +167,13 @@ enum AuthenticationState {
   if (!_performer) {
     _performer = [[AuthenticationFlowPerformer alloc] initWithDelegate:self];
   }
-  [self continueSignin];
+  // Make sure -[AuthenticationFlow startSignInWithCompletion:] doesn't call
+  // the completion block synchronously.
+  // Related to http://crbug.com/1246480.
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf continueSignin];
+  });
 }
 
 - (void)cancelAndDismissAnimated:(BOOL)animated {
@@ -489,13 +495,9 @@ enum AuthenticationState {
     }
   }
   if (_signInCompletion) {
-    // Make sure the completion callback is always called after
-    // -[AuthenticationFlow startSignInWithCompletion:] returns.
     CompletionCallback signInCompletion = _signInCompletion;
     _signInCompletion = nil;
-    dispatch_async(dispatch_get_main_queue(), ^{
-      signInCompletion(success);
-    });
+    signInCompletion(success);
   }
   if (_shouldShowSigninSnackbar) {
     [_performer showSnackbarWithSignInIdentity:_identityToSignIn
