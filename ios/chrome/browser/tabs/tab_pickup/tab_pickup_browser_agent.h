@@ -88,7 +88,7 @@ class TabPickupBrowserAgent : public BrowserObserver,
   // recorded.
   static bool transition_time_metric_recorded;
   // The currently displayed infobar.
-  raw_ptr<infobars::InfoBar> infobar_;
+  raw_ptr<infobars::InfoBar> infobar_ = nullptr;
   // The owning Browser.
   raw_ptr<Browser> browser_ = nullptr;
   // The active webState.
