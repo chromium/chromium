@@ -323,9 +323,14 @@ test("test_libaom") {
 
   if (is_android) {
     use_raw_android_executable = true
-    defines += [ "LIBAOM_TEST_DATA_PATH=libaom_testdata" ]
+    defines += [ "LIBAOM_TEST_DATA_PATH=/data/local/tmp/chromium_tests_root/third_party/libaom/testdata" ]
+    data = [ "testdata/" ]
   } else {
-    defines += [ "LIBAOM_TEST_DATA_PATH=../../third_party/libaom/testdata" ]
+    defines += [ string_join("",
+                             [
+                               "LIBAOM_TEST_DATA_PATH=",
+                               rebase_path("testdata"),
+                             ]) ]
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
