@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_error_dialog.h"
 
+#include <string>
+
 #include "ash/style/typography.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
@@ -16,19 +18,39 @@
 
 namespace policy {
 
+namespace {
+// Returns the block reason description for `policy`.
+std::u16string GetPolicyString(Policy policy) {
+  switch (policy) {
+    case Policy::kDlp:
+      return u"Files were blocked because of policy";
+    case Policy::kEnterpriseConnectors:
+      return u"Files were blocked because of content";
+  }
+}
+}  // namespace
+
 FilesPolicyErrorDialog::FilesPolicyErrorDialog(
     const std::map<DlpConfidentialFile, Policy>& files,
     DlpFileDestination destination,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent)
-    : FilesPolicyDialog(files.size(), destination, action, modal_parent),
-      files_(files) {
+    : FilesPolicyDialog(files.size(), destination, action, modal_parent) {
   SetAcceptCallback(base::BindOnce(&FilesPolicyErrorDialog::Dismiss,
                                    weak_factory_.GetWeakPtr()));
   SetCancelCallback(base::BindOnce(&FilesPolicyErrorDialog::OpenHelpPage,
                                    weak_factory_.GetWeakPtr()));
   SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
   SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
+
+  for (const auto& file : files) {
+    if (!base::Contains(files_, file.second)) {
+      files_.emplace(file.second, std::vector<DlpConfidentialFile>{file.first});
+    } else {
+      files_.at(file.second).push_back(file.first);
+    }
+  }
+  CHECK(files_.size() == 1 || files_.size() == 2);
 
   AddGeneralInformation();
   MaybeAddConfidentialRows();
@@ -42,17 +64,11 @@ void FilesPolicyErrorDialog::MaybeAddConfidentialRows() {
   }
 
   SetupScrollView();
-  std::map<Policy, std::vector<DlpConfidentialFile>> policy_to_blocked_files;
-  for (const auto& file : files_) {
-    if (!base::Contains(policy_to_blocked_files, file.second)) {
-      policy_to_blocked_files.emplace(
-          file.second, std::vector<DlpConfidentialFile>({file.first}));
-    } else {
-      policy_to_blocked_files.at(file.second).push_back(file.first);
+  for (const auto& reason : files_) {
+    if (files_.size() > 1) {
+      // Only add the reason if it's a mixed errors dialog.
+      AddPolicyRow(reason.first);
     }
-  }
-  for (const auto& reason : policy_to_blocked_files) {
-    AddPolicyRow(reason.first);
     for (const auto& file : reason.second) {
       AddConfidentialRow(file.icon, file.title);
     }
@@ -91,8 +107,12 @@ std::u16string FilesPolicyErrorDialog::GetTitle() {
 }
 
 std::u16string FilesPolicyErrorDialog::GetMessage() {
-  // Error dialogs don't have a single message, but rather add one or two policy
-  // reasons for blocked files in `AddPolicyRow()`.
+  // Single error dialogs specify the policy reason before the scrollable list.
+  if (files_.size() == 1) {
+    return GetPolicyString(files_.begin()->first);
+  }
+  // Mixed error dialogs don't have a single message, but use `AddPolicyRow()`
+  // to add the policy reason directly in the scrollable file list.
   return u"";
 }
 
@@ -105,8 +125,7 @@ void FilesPolicyErrorDialog::AddPolicyRow(Policy policy) {
       gfx::Insets::TLBR(10, 16, 10, 16), 0));
 
   // TODO(b/279435843): Replace with translation strings.
-  views::Label* title_label =
-      AddRowTitle(u"Files were blocked because of policy", row);
+  views::Label* title_label = AddRowTitle(GetPolicyString(policy), row);
   title_label->SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosBody1));

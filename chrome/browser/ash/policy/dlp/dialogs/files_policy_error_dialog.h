@@ -53,7 +53,8 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
   // Dismisses the dialog.
   void Dismiss();
 
-  std::map<DlpConfidentialFile, Policy> files_;
+  // Maps each policy reason to the list of files blocked because of it.
+  std::map<Policy, std::vector<DlpConfidentialFile>> files_;
 
   base::WeakPtrFactory<FilesPolicyErrorDialog> weak_factory_{this};
 };

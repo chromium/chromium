@@ -118,6 +118,12 @@ views::Label* FilesPolicyDialog::AddTitle(const std::u16string& title) {
 }
 
 views::Label* FilesPolicyDialog::AddMessage(const std::u16string& message) {
+  if (message.empty()) {
+    // Some dialogs, like the mixed error dialogs don't have a single message,
+    // but add the error description inside the scrollable list, so skip adding
+    // the element altogether.
+    return nullptr;
+  }
   // Call the parent class to setup the element. Do not remove.
   views::Label* message_label = PolicyDialogBase::AddMessage(message);
   message_label->SetFontList(
