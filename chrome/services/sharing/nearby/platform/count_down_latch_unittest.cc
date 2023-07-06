@@ -80,7 +80,7 @@ class CountDownLatchTest : public testing::Test {
     base::AutoLock al(map_lock_);
     ASSERT_TRUE(base::Contains(id_to_result_map_, id));
     ASSERT_TRUE(id_to_result_map_[id]);
-    EXPECT_TRUE(id_to_result_map_[id]->ok());
+    EXPECT_EQ(expected_result, id_to_result_map_[id]->ok());
     EXPECT_EQ(expected_result, id_to_result_map_[id]->result());
   }
 
