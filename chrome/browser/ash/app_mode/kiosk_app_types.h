@@ -30,11 +30,6 @@ class KioskAppId {
   static KioskAppId ForWebApp(const AccountId& account_id);
   static KioskAppId ForArcApp(const AccountId& account_id);
 
-  // Use this method when we are unsure which type of kiosk app this AccountId
-  // belongs to.
-  static bool FromAccountId(const AccountId& account_id,
-                            KioskAppId* kiosk_app_id);
-
  private:
   KioskAppId(KioskAppType type, const std::string& app_id);
   KioskAppId(KioskAppType type, const AccountId& account_id);
