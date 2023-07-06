@@ -7,6 +7,7 @@
 
 #include "chromecast/cast_core/grpc/server_reactor_tracker.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 
 namespace cast {
 namespace utils {
@@ -28,7 +29,7 @@ class TrackableReactor : public TReactor {
   ~TrackableReactor() override { server_reactor_tracker_->RemoveReactor(this); }
 
  private:
-  ServerReactorTracker* const server_reactor_tracker_;
+  base::raw_ptr<ServerReactorTracker> const server_reactor_tracker_;
 };
 
 }  // namespace utils

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "chromecast/cast_core/grpc/grpc_call.h"
 #include "chromecast/cast_core/grpc/grpc_client_reactor.h"
 #include "chromecast/cast_core/grpc/grpc_status_or.h"
@@ -87,7 +88,7 @@ class GrpcServerStreamingCall : public GrpcCall<TGrpcStub, TRequest> {
 
     void Start() override {
       ReactorBase::Start();
-      (async_interface_->*AsyncMethodPtr)(context(), request(), this);
+      (async_interface_.get()->*AsyncMethodPtr)(context(), request(), this);
       grpc::ClientReadReactor<Response>::StartRead(&response_);
       grpc::ClientReadReactor<Response>::StartCall();
     }
@@ -121,7 +122,7 @@ class GrpcServerStreamingCall : public GrpcCall<TGrpcStub, TRequest> {
                                 const Request*,
                                 grpc::ClientReadReactor<Response>*)>;
 
-    AsyncInterface* async_interface_;
+    base::raw_ptr<AsyncInterface> async_interface_;
     ResponseCallback response_callback_;
     Response response_;
   };

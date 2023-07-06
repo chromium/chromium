@@ -9,6 +9,7 @@
 #include <grpcpp/support/client_callback.h>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromecast/cast_core/grpc/grpc_call.h"
 #include "chromecast/cast_core/grpc/grpc_client_reactor.h"
 #include "chromecast/cast_core/grpc/grpc_status_or.h"
@@ -111,7 +112,7 @@ class GrpcUnaryCall : public GrpcCall<TGrpcStub, TRequest> {
 
     void Start() override {
       ReactorBase::Start();
-      (async_interface_->*AsyncMethodPtr)(context(), request(), &response_,
+      (async_interface_.get()->*AsyncMethodPtr)(context(), request(), &response_,
                                           this);
       grpc::ClientUnaryReactor::StartCall();
     }
@@ -134,7 +135,7 @@ class GrpcUnaryCall : public GrpcCall<TGrpcStub, TRequest> {
                                                   Response*,
                                                   grpc::ClientUnaryReactor*)>;
 
-    AsyncInterface* async_interface_;
+    base::raw_ptr<AsyncInterface> async_interface_;
     ResponseCallback response_callback_;
     Response response_;
   };
