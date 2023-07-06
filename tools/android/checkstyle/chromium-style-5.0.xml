@@ -13,6 +13,14 @@
   <module name="SuppressWarningsFilter"/>
   <module name="TreeWalker">
     <module name="SuppressWarningsHolder"/>
+    <module name="ArrayTypeStyle"/>
+    <module name="AvoidDoubleBraceInitialization"/>
+    <module name="DefaultComesLast"/>
+    <module name="EmptyStatement"/>
+    <module name="InnerAssignment"/>
+    <module name="OneStatementPerLine"/>
+    <module name="StringLiteralEquality"/>
+    <module name="UnusedLocalVariable"/>
     <module name="AvoidStarImport">
       <property name="severity" value="error"/>
     </module>
