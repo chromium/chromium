@@ -104,6 +104,11 @@ void Font::ReleaseFontFallbackListRef() const {
     return;
   }
 
+  if (recordreplay::AreEventsDisallowed("Font::ReleaseFontFallbackListRef")) {
+    // [RUN-1436] Leak font_fallback_list_.
+    return;
+  }
+
   FontFallbackList& list_ref = *font_fallback_list_;
   // Failing this CHECK causes use-after-free below.
   CHECK(!list_ref.HasOneRef());
