@@ -13,9 +13,11 @@
 @protocol PaymentsSuggestionBottomSheetConsumer
 
 // Sends the list of credit cards to be presented to the user on the bottom
-// sheet.
+// sheet and a BOOL to determine if the user sees the GPay logo as title of the
+// bottom sheet.
 - (void)setCreditCardData:
-    (NSArray<id<PaymentsSuggestionBottomSheetData>>*)creditCardData;
+            (NSArray<id<PaymentsSuggestionBottomSheetData>>*)creditCardData
+        showGooglePayLogo:(BOOL)showGooglePayLogo;
 
 // Request to dismiss the bottom sheet.
 - (void)dismiss;

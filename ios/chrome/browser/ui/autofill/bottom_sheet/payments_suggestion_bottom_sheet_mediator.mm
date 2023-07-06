@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
@@ -50,8 +51,9 @@
   if (self = [super init]) {
     self.cardNameAndLastFourDigits =
         base::SysUTF16ToNSString(creditCard->CardNameAndLastFourDigits());
-    self.expirationDate =
-        base::SysUTF16ToNSString(creditCard->ExpirationDateForDisplay());
+    self.expirationDate = base::SysUTF16ToNSString(
+        creditCard->AbbreviatedExpirationDateForDisplay(
+            /* with_prefix=*/false));
     self.backendIdentifier = base::SysUTF8ToNSString(creditCard->guid());
     self.icon = icon;
   }
@@ -130,6 +132,7 @@
     return;
   }
 
+  BOOL hasNonLocalCard = NO;
   NSMutableArray<id<PaymentsSuggestionBottomSheetData>>* creditCardData =
       [[NSMutableArray alloc] initWithCapacity:creditCards.size()];
   for (const auto* creditCard : creditCards) {
@@ -138,9 +141,10 @@
         addObject:[[PaymentsSuggestionBottomSheetCreditCardInfo alloc]
                       initWithCreditCard:creditCard
                                     icon:[self iconForCreditCard:creditCard]]];
+    hasNonLocalCard |= !autofill::IsCreditCardLocal(*creditCard);
   }
 
-  [consumer setCreditCardData:creditCardData];
+  [consumer setCreditCardData:creditCardData showGooglePayLogo:hasNonLocalCard];
 }
 
 #pragma mark - PaymentsSuggestionBottomSheetDelegate

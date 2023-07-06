@@ -43,6 +43,7 @@ source_set("bottom_sheet_ui") {
   deps = [
     "//build:branding_buildflags",
     "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
     "//components/resources:components_scaled_resources_grit",
     "//components/url_formatter",
     "//ios/chrome/app/strings",

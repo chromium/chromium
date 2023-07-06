@@ -40,6 +40,9 @@
 // The subtitle below the title. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* subtitleString;
 
+// Text style for the subtitle. If nil, will default to UIFontTextStyleBody.
+@property(nonatomic, copy) UIFontTextStyle subtitleTextStyle;
+
 // The text for the primary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* primaryActionString;
 

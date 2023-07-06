@@ -72,6 +72,7 @@
   _tableViewIsMinimized = YES;
 
   self.titleView = [self setUpTitleView];
+  self.customSpacing = 0;
 
   // Set the properties read by the super when constructing the
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.

@@ -51,6 +51,9 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 // The payments controller handler used to open the payments options.
 @property(nonatomic, weak) id<PaymentsSuggestionBottomSheetHandler> handler;
 
+// YES if the GPay logo should be shown to the user.
+@property(nonatomic, assign) BOOL showGooglePayLogo;
+
 @end
 
 @implementation PaymentsSuggestionBottomSheetViewController
@@ -69,7 +72,15 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  self.titleView = [self setUpTitleView];
+  _logoImageView = [[UIImageView alloc] initWithImage:[self titleImage]];
+  self.titleView = _logoImageView;
+  self.subtitleTextStyle = UIFontTextStyleFootnote;
+  std::u16string formattedURL =
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          _URL);
+  self.subtitleString = l10n_util::GetNSStringF(
+      IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE, formattedURL);
+  self.customSpacing = 10;
 
   // Set the properties read by the super when constructing the
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
@@ -91,7 +102,7 @@ CGFloat const kCreditCardIconCornerRadius = 5;
   if (self.traitCollection.userInterfaceStyle !=
       previousTraitCollection.userInterfaceStyle) {
     // Make sure the GPay logo matches the new trait collection.
-    _logoImageView.image = [self googlePayBadgeImage];
+    _logoImageView.image = [self titleImage];
   }
 }
 
@@ -102,8 +113,10 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 #pragma mark - PaymentsSuggestionBottomSheetConsumer
 
 - (void)setCreditCardData:
-    (NSArray<id<PaymentsSuggestionBottomSheetData>>*)creditCardData {
+            (NSArray<id<PaymentsSuggestionBottomSheetData>>*)creditCardData
+        showGooglePayLogo:(BOOL)showGooglePayLogo {
   _creditCardData = creditCardData;
+  self.showGooglePayLogo = showGooglePayLogo;
 }
 
 - (void)dismiss {
@@ -199,36 +212,24 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 
 #pragma mark - Private
 
-// Configures the title view of this ViewController.
-- (UIView*)setUpTitleView {
-  _logoImageView =
-      [[UIImageView alloc] initWithImage:[self googlePayBadgeImage]];
-  UILabel* titleLabel = [[UILabel alloc] init];
-  std::u16string formattedURL =
-      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          _URL);
-  titleLabel.text = l10n_util::GetNSStringF(
-      IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE, formattedURL);
-  UIStackView* titleView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ _logoImageView, titleLabel ]];
-  titleView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  titleView.axis = UILayoutConstraintAxisVertical;
-  titleView.alignment = UIStackViewAlignmentCenter;
-  titleView.translatesAutoresizingMaskIntoConstraints = NO;
-  return titleView;
-}
-
-// Returns the google pay badge image corresponding to the current
-// UIUserInterfaceStyle (light/dark mode).
-- (UIImage*)googlePayBadgeImage {
+// Returns the logo to display as title. It should return the Google Pay badge
+// image corresponding to the current UIUserInterfaceStyle (light/dark mode) if
+// `showGooglePayLogo` value is YES otherwise the Chrome logo is shown.
+- (UIImage*)titleImage {
   // IDR_AUTOFILL_GOOGLE_PAY_DARK only exists in official builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
-             ? NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK)
-             : NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
+  if (self.showGooglePayLogo) {
+    return self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
+               ? NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK)
+               : NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
+  }
+#endif
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  return MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kChromeSymbol, kInfobarSymbolPointSize));
 #else
   return NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
-#endif
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 }
 
 // Returns the string to display at a given row in the table view.

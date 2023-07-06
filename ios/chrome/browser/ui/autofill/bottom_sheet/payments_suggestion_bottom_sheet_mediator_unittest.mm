@@ -78,16 +78,19 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
   }
 
   // Add credit card to personal data manager.
-  autofill::CreditCard CreateCreditCard(std::string guid,
-                                        std::string number = kTestNumber,
-                                        int64_t instrument_id = 0) {
+  autofill::CreditCard CreateCreditCard(
+      std::string guid,
+      std::string number = kTestNumber,
+      int64_t instrument_id = 0,
+      autofill::CreditCard::RecordType record_type =
+          autofill::CreditCard::MASKED_SERVER_CARD) {
     autofill::CreditCard card = autofill::CreditCard();
     autofill::test::SetCreditCardInfo(&card, "Jane Doe", number.c_str(),
                                       autofill::test::NextMonth().c_str(),
                                       autofill::test::NextYear().c_str(), "1");
     card.set_guid(guid);
     card.set_instrument_id(instrument_id);
-    card.set_record_type(autofill::CreditCard::MASKED_SERVER_CARD);
+    card.set_record_type(record_type);
 
     std::unique_ptr<autofill::CreditCard> server_credit_card =
         std::make_unique<autofill::CreditCard>(card);
@@ -103,6 +106,15 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
   void CreateMediatorWithSuggestions() {
     CreateMediator();
     CreateCreditCard(kTestGuid.value());
+    personal_data_manager_->SetSyncingForTest(true);
+  }
+
+  // Create a mediator and make sure the personal data manager contains at least
+  // 1 local card.
+  void CreateMediatorWithLocalCardOnlySuggestions() {
+    CreateMediator();
+    CreateCreditCard(kTestGuid.value(), kTestNumber, 0,
+                     autofill::CreditCard::LOCAL_CARD);
     personal_data_manager_->SetSyncingForTest(true);
   }
 
@@ -132,12 +144,25 @@ TEST_F(PaymentsSuggestionBottomSheetMediatorTest, NoSuggestion) {
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
-// Tests consumer when suggestions are available.
+// Tests consumer when suggestions are available (with non local card).
 TEST_F(PaymentsSuggestionBottomSheetMediatorTest, WithSuggestions) {
   CreateMediatorWithSuggestions();
   EXPECT_TRUE(mediator_);
 
-  OCMExpect([consumer_ setCreditCardData:[OCMArg isNotNil]]);
+  OCMExpect([consumer_ setCreditCardData:[OCMArg isNotNil]
+                       showGooglePayLogo:YES]);
+  [mediator_ setConsumer:consumer_];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests consumer when suggestions are available (with local card).
+TEST_F(PaymentsSuggestionBottomSheetMediatorTest,
+       WithLocalCardOnlySuggestions) {
+  CreateMediatorWithLocalCardOnlySuggestions();
+  EXPECT_TRUE(mediator_);
+
+  OCMExpect([consumer_ setCreditCardData:[OCMArg isNotNil]
+                       showGooglePayLogo:NO]);
   [mediator_ setConsumer:consumer_];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
