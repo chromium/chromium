@@ -39,8 +39,7 @@ found in the LICENSE file.
                      placeholder="example.com">
             <input type="submit" value="Lookup" id="dns-view-dns-lookup-submit">
           </form>
-          <div style="margin-top: 1em; margin-left: 2em;"
-          id="dns-view-dns-lookup-output">
+          <div class="output-box" id="dns-view-dns-lookup-output">
           </div>
         </h4>
         <h4>
@@ -50,7 +49,7 @@ found in the LICENSE file.
       </div>
 
       <div id="sockets-view-tab-content" class="content-box">
-        <ul style="margin-top:0">
+        <ul>
           <li>
             <input type="button" value="Close idle sockets"
                 id="sockets-view-close-idle-button">
@@ -98,8 +97,7 @@ found in the LICENSE file.
                    placeholder="example.com">
           <input type="submit" value="Query" id="hsts-view-query-submit">
         </form>
-        <div style="margin-top: 1em; margin-left: 2em;"
-            id="hsts-view-query-output">
+        <div class="output-box" id="hsts-view-query-output">
         </div>
 
         <h3>Delete domain security policies</h3>
@@ -124,15 +122,14 @@ found in the LICENSE file.
         <div>
           <button value="Reload" id="shared-dictionary-reload">Reload</button>
           <button id="shared-dictionary-view-clear-all">Clear all</button>
-          <div style="margin-top: 1em; margin-left: 2em;"
-           id="shared-dictionary-output">
+          <div class="output-box" id="shared-dictionary-output">
           </div>
         </div>
       </div>
 
 <if expr="chromeos_ash">
       <div id="chromeos-view-tab-content" class="content-box">
-        <h4 style="margin-top:0">Import ONC file</h4>
+        <h4 class="tab-title">Import ONC file</h4>
         <div>
           Import ONC File has moved to
           <a href="chrome://network#general">chrome://network#general</a>.

@@ -90,3 +90,16 @@ ul {
 input + label {
   margin-inline-start: 10px;
 }
+
+ul {
+  margin-top:0;
+}
+
+.output-box {
+  margin-top: 1em;
+  margin-left: 2em;
+}
+
+.content-box > *:first-child {
+  margin-top:0
+}
