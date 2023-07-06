@@ -55,7 +55,7 @@ namespace network {
 // has been deleted.
 //
 // The ResourceScheduler tracks many Clients, which should correlate with tabs.
-// A client is uniquely identified by its child_id and route_id.
+// A client is uniquely identified by an opaque identifier.
 //
 // Each Client may have many Requests in flight. Requests are uniquely
 // identified within a Client by its ScheduledResourceRequest.
