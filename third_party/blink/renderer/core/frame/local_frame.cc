@@ -793,8 +793,8 @@ LCPCriticalPathPredictor* LocalFrame::GetLCPP() {
     return nullptr;
   }
 
-  // For now, we only attach LCPP to the main frames.
-  if (!IsMainFrame()) {
+  // For now, we only attach LCPP to the outermost main frames.
+  if (!IsOutermostMainFrame()) {
     return nullptr;
   }
 
