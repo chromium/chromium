@@ -1192,6 +1192,23 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, ClearSiteData) {
   // we implement shared dictionary decompression logic in network fetch.
 }
 
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       DictionaryReadCountForNavigation) {
+  if (GetBrowserType() == BrowserType::kOffTheRecord) {
+    // We want to test the behavior of SharedDictionaryStorageOnDisk.
+    return;
+  }
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "/shared_dictionary/blank.html")));
+  const std::string histogram_name =
+      "Net.SharedDictionaryStorageOnDisk.MetadataReadTime.Empty";
+
+  EXPECT_TRUE(WaitForHistogram(histogram_name));
+  histogram_tester.ExpectTotalCount(histogram_name,
+                                    /*expected_count=*/1);
+}
+
 }  // namespace
 
 }  // namespace content

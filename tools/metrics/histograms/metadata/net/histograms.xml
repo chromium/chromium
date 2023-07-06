@@ -4812,6 +4812,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse"
+    enum="Boolean" expires_after="2023-12-01">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    Records whether the shared dictionary metadata has been read when
+    GetDictionary() is called for the first time.
+  </summary>
+</histogram>
+
 <histogram name="Net.SharedDictionaryStore.DictionaryCountPerSiteWhenAdded"
     units="count" expires_after="2023-12-01">
   <owner>horo@chromium.org</owner>
@@ -4832,6 +4842,21 @@ chromium-metrics-reviews@google.com.
     SQLitePersistentSharedDictionaryStore is writing a dictionary in the
     database.
   </summary>
+</histogram>
+
+<histogram name="Net.SharedDictionaryStore.MetadataReadTime.{Result}"
+    units="ms" expires_after="2023-12-01">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    The time taken to read shared dictionary metadata from the database.
+    Recorded when SharedDictionaryStorageOnDisk receives the result.
+  </summary>
+  <token key="Result">
+    <variant name="Empty"/>
+    <variant name="Failure"/>
+    <variant name="NonEmpty"/>
+  </token>
 </histogram>
 
 <histogram name="Net.SharedDictionaryWriterInMemory.DictionarySize"

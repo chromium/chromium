@@ -83,6 +83,9 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   std::map<base::UnguessableToken, raw_ptr<RefCountedSharedDictionary>>
       dictionaries_;
 
+  bool get_dictionary_called_ = false;
+  bool is_metadata_ready_ = false;
+
   base::WeakPtrFactory<SharedDictionaryStorageOnDisk> weak_factory_{this};
 };
 }  // namespace network
