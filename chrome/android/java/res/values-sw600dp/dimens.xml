@@ -22,7 +22,6 @@ found in the LICENSE file.
 
     <dimen name="location_bar_icon_width">48dp</dimen>
     <dimen name="location_bar_icon_margin_end">0dp</dimen>
-    <dimen name="location_bar_icon_end_padding">0dp</dimen>
     <dimen name="location_bar_status_icon_width">48dp</dimen>
     <dimen name="location_bar_action_icon_width">48dp</dimen>
 

@@ -327,12 +327,17 @@ public class LocationBarLayout extends FrameLayout {
 
     /** Returns the increase in StatusView end padding, when the Url bar is focused. */
     public int getEndPaddingPixelSizeOnFocusDelta() {
-        int focusedPaddingDimen = OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())
-                        && OmniboxFeatures.shouldShowSmallBottomMargin()
+        boolean modernizeVisualUpdate =
+                OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext());
+        int focusedPaddingDimen =
+                modernizeVisualUpdate && OmniboxFeatures.shouldShowSmallBottomMargin()
                 ? R.dimen.location_bar_icon_end_padding_focused_smaller
                 : R.dimen.location_bar_icon_end_padding_focused;
-        return getResources().getDimensionPixelSize(focusedPaddingDimen)
-                - getResources().getDimensionPixelSize(R.dimen.location_bar_icon_end_padding);
+        if (modernizeVisualUpdate && mLocationBarDataProvider.isIncognito()) {
+            focusedPaddingDimen = R.dimen.location_bar_icon_end_padding_focused_incognito;
+        }
+
+        return getResources().getDimensionPixelSize(focusedPaddingDimen);
     }
 
     /**
