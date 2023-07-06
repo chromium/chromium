@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/uuid.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -25,7 +26,8 @@ void EventAckData::IncrementInflightEvent(
     content::ServiceWorkerContext* context,
     int render_process_id,
     int64_t version_id,
-    int event_id) {
+    int event_id,
+    base::TimeTicks dispatch_start_time) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::Uuid request_uuid = base::Uuid::GenerateRandomV4();
@@ -43,8 +45,9 @@ void EventAckData::IncrementInflightEvent(
 
   // TODO(lazyboy): Clean up |unacked_events_| if RenderProcessHost died before
   // it got a chance to ack |event_id|. This shouldn't happen in common cases.
-  auto insert_result = unacked_events_.insert(std::make_pair(
-      event_id, EventInfo{request_uuid, render_process_id, start_ok}));
+  auto insert_result = unacked_events_.try_emplace(
+      event_id, EventInfo{request_uuid, render_process_id, start_ok,
+                          dispatch_start_time});
   DCHECK(insert_result.second) << "EventAckData: Duplicate event_id.";
 }
 
@@ -63,6 +66,13 @@ void EventAckData::DecrementInflightEvent(
     std::move(failure_callback).Run();
     return;
   }
+
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker",
+      /*time=*/base::TimeTicks::Now() -
+          request_info_iter->second.dispatch_start_time,
+      /*minimum=*/base::Microseconds(1), /*maximum=*/base::Minutes(5),
+      /*bucket_count=*/100);
 
   base::Uuid request_uuid = std::move(request_info_iter->second.request_uuid);
   bool start_ok = request_info_iter->second.start_ok;

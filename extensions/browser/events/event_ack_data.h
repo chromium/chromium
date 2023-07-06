@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 
 namespace content {
@@ -17,7 +18,7 @@ class ServiceWorkerContext;
 
 namespace extensions {
 
-// Manages inflight events for extension Service Worker.
+// Manages in-flight events for extension Service Worker.
 class EventAckData {
  public:
   EventAckData();
@@ -27,14 +28,15 @@ class EventAckData {
 
   ~EventAckData();
 
-  // Records the fact that an event with |event_id| was dispatched to an
+  // Records the fact that an event with `event_id` was dispatched to an
   // extension Service Worker and we expect an ack for the event from the worker
   // later on.
   void IncrementInflightEvent(content::ServiceWorkerContext* context,
                               int render_process_id,
                               int64_t version_id,
-                              int event_id);
-  // Clears the record of our knowledge of an inflight event with |event_id|.
+                              int event_id,
+                              base::TimeTicks dispatch_start_time);
+  // Clears the record of our knowledge of an in-flight event with |event_id|.
   //
   // On failure, |failure_callback| is called synchronously or asynchronously.
   void DecrementInflightEvent(content::ServiceWorkerContext* context,
@@ -53,9 +55,14 @@ class EventAckData {
     int render_process_id;
     // Whether or not StartExternalRequest succeeded.
     bool start_ok;
+    // The time the event was dispatched to the event router for the extension.
+    base::TimeTicks dispatch_start_time;
   };
 
-  // Contains map of unacked event information keyed by event id.
+  // TODO(crbug.com/1441221): Mark events that are not acked within 5 minutes
+  // (if the worker is still around) as stale, and emit
+  // Extensions.Events.DispatchToAckTime.ExtensionServiceWorker at that point.
+  // Acks after that point should check staleness and not emit a second time.
   std::map<int, EventInfo> unacked_events_;
 
   base::WeakPtrFactory<EventAckData> weak_factory_{this};

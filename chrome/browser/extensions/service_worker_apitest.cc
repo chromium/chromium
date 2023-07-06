@@ -325,6 +325,7 @@ class ServiceWorkerWithManifestVersionTest
 // an event listener for tabs.onCreated event. The step also verifies that tab
 // creation correctly fires the listener.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PRE_Basic) {
+  base::HistogramTester histogram_tester;
   ExtensionTestMessageListener newtab_listener("CREATED");
   newtab_listener.set_failure_message("CREATE_FAILED");
   ExtensionTestMessageListener worker_listener("WORKER_RUNNING");
@@ -343,6 +344,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PRE_Basic) {
 
   // Service Worker extension does not have ExtensionHost.
   EXPECT_FALSE(process_manager()->GetBackgroundHostForExtension(extension_id));
+
+  // Call to runtime.onInstalled and tabs.onCreated are expected.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker",
+      /*expected_count=*/2);
 }
 
 // After browser restarts, this test step ensures that opening a tab fires

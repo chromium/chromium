@@ -225,6 +225,7 @@ void EventRouter::DispatchEventToSender(
     base::Value::List event_args,
     mojom::EventFilteringInfoPtr info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::TimeTicks dispatch_start_time = base::TimeTicks::Now();
   int event_id = g_extension_event_id.GetNext();
 
   if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
@@ -237,10 +238,13 @@ void EventRouter::DispatchEventToSender(
   CHECK(registry);
   const Extension* extension =
       registry->enabled_extensions().GetByID(extension_id);
+  // If this is ever false, we won't log the metric for dispatch_start_time. But
+  // this means we aren't dispatching an event to an extension so the metric
+  // wouldn't be relevant anyways (e.g. would go to a web page or webUI).
   if (extension) {
-    event_router->IncrementInFlightEvents(browser_context, rph, extension,
-                                          event_id, event_name,
-                                          service_worker_version_id);
+    event_router->IncrementInFlightEvents(
+        browser_context, rph, extension, event_id, event_name,
+        dispatch_start_time, service_worker_version_id);
     event_router->ReportEvent(histogram_value, extension,
                               /*did_enqueue=*/false);
   }
@@ -920,6 +924,7 @@ void EventRouter::DispatchEventWithLazyListener(const std::string& extension_id,
 void EventRouter::DispatchEventImpl(const std::string& restrict_to_extension_id,
                                     const GURL& restrict_to_url,
                                     std::unique_ptr<Event> event) {
+  event->dispatch_start_time = base::TimeTicks::Now();
   DCHECK(event);
   // We don't expect to get events from a completely different browser context.
   DCHECK(!event->restrict_to_browser_context ||
@@ -1128,7 +1133,8 @@ void EventRouter::DispatchEventToProcess(
     ReportEvent(event.histogram_value, extension, did_enqueue);
 
     IncrementInFlightEvents(listener_context, process, extension, event_id,
-                            event.event_name, service_worker_version_id);
+                            event.event_name, event.dispatch_start_time,
+                            service_worker_version_id);
   }
 }
 
@@ -1137,6 +1143,7 @@ void EventRouter::IncrementInFlightEvents(BrowserContext* context,
                                           const Extension* extension,
                                           int event_id,
                                           const std::string& event_name,
+                                          base::TimeTicks dispatch_start_time,
                                           int64_t service_worker_version_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -1160,7 +1167,7 @@ void EventRouter::IncrementInFlightEvents(BrowserContext* context,
           process->GetStoragePartition()->GetServiceWorkerContext();
       event_ack_data_.IncrementInflightEvent(
           service_worker_context, process->GetID(), service_worker_version_id,
-          event_id);
+          event_id, dispatch_start_time);
     }
   }
 }

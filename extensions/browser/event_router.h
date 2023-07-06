@@ -474,6 +474,7 @@ class EventRouter : public KeyedService,
                                const Extension* extension,
                                int event_id,
                                const std::string& event_name,
+                               base::TimeTicks dispatch_start_time,
                                int64_t service_worker_version_id);
 
   void RouteDispatchEvent(content::RenderProcessHost* rph,
@@ -587,6 +588,10 @@ struct Event {
   // If not empty, the event is only sent to extensions with host permissions
   // for this url.
   GURL event_url;
+
+  // When the event router received the event to be dispatched to the extension.
+  // Used in UMA histograms.
+  base::TimeTicks dispatch_start_time;
 
   // Whether a user gesture triggered the event.
   EventRouter::UserGestureState user_gesture;
