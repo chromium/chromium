@@ -158,11 +158,6 @@ bool HasSingleUsernameVote(const FormPredictions& form) {
 // Returns true if at least one of the fields in |form| has a prediction to be a
 // new-password related field.
 bool HasNewPasswordVote(const FormPredictions& form) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kEnablePasswordGenerationForClearTextFields)) {
-    return false;
-  }
   auto is_creation_password_or_new_password = [](const auto& type) {
     return type == ACCOUNT_CREATION_PASSWORD || type == NEW_PASSWORD;
   };

@@ -155,13 +155,6 @@ bool IsNotUsernameField(const ProcessedField& field) {
   return field.server_hints_not_username;
 }
 
-// Checks if the Finch experiment for offering password generation for
-// server-predicted clear-text fields is enabled.
-bool IsPasswordGenerationForClearTextFieldsEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordGenerationForClearTextFields);
-}
-
 // Returns true iff |field_type| is one of password types.
 bool IsPasswordPrediction(const CredentialFieldType field_type) {
   switch (field_type) {
@@ -478,10 +471,6 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
         if (!result->new_password) {
           processed_field = FindField(processed_fields, prediction);
           if (processed_field) {
-            if (!IsPasswordGenerationForClearTextFieldsEnabled() &&
-                !processed_field->is_password) {
-              continue;
-            }
             result->new_password = processed_field->field;
             processed_field->is_predicted_as_password = true;
           }
@@ -490,10 +479,6 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
       case CredentialFieldType::kConfirmationPassword:
         processed_field = FindField(processed_fields, prediction);
         if (processed_field) {
-          if (!IsPasswordGenerationForClearTextFieldsEnabled() &&
-              !processed_field->is_password) {
-            continue;
-          }
           result->confirmation_password = processed_field->field;
           processed_field->is_predicted_as_password = true;
         }

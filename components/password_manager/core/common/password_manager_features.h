@@ -30,7 +30,6 @@ inline constexpr base::FeatureParam<int>
         &kEnablePasswordsAccountStorage,
         "max_account_storage_new_feature_icon_impressions", 5};
 
-BASE_DECLARE_FEATURE(kEnablePasswordGenerationForClearTextFields);
 BASE_DECLARE_FEATURE(kFillingAcrossAffiliatedWebsites);
 BASE_DECLARE_FEATURE(kFillingAcrossGroupedSites);
 BASE_DECLARE_FEATURE(kFillOnAccountSelect);

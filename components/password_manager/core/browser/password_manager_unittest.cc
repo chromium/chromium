@@ -3655,10 +3655,6 @@ TEST_F(PasswordManagerTest, FillSingleUsername) {
 // in marking the password field as eligible for password generation.
 TEST_F(PasswordManagerTest,
        MarkServerPredictedClearTextPasswordFieldEligibleForGeneration) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kEnablePasswordGenerationForClearTextFields);
-
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));

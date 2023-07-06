@@ -29,10 +29,6 @@ BASE_FEATURE(kEnablePasswordsAccountStorage,
 #endif
 );
 
-BASE_FEATURE(kEnablePasswordGenerationForClearTextFields,
-             "EnablePasswordGenerationForClearTextFields",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables filling password on a website when there is saved password on
 // affiliated website.
 BASE_FEATURE(kFillingAcrossAffiliatedWebsites,
