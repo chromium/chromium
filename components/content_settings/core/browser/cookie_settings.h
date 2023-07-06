@@ -152,6 +152,10 @@ class CookieSettings : public CookieSettingsBase,
   // This method may be called on any thread. Virtual for testing.
   virtual bool ShouldBlockThirdPartyCookies() const;
 
+  // Returns true if there is an active storage access exception with
+  // |first_party_url| as the secondary pattern.
+  bool HasAnyFrameRequestedStorageAccess(const GURL& first_party_url) const;
+
   // content_settings::CookieSettingsBase:
   ContentSetting GetSettingForLegacyCookieAccess(
       const std::string& cookie_domain) const override;

@@ -156,7 +156,12 @@ CookieControlsController::GetConfidenceLevel(CookieControlsStatus status,
     return CookieControlsBreakageConfidenceLevel::kLow;
   }
 
-  // TODO(crbug.com/1446230): Check if FedCM or SAA were requested.
+  // TODO(crbug.com/1446230): Check if FedCM was requested.
+  auto* web_contents = GetWebContents();
+  const GURL& url = web_contents->GetLastCommittedURL();
+  if (cookie_settings_->HasAnyFrameRequestedStorageAccess(url)) {
+    return CookieControlsBreakageConfidenceLevel::kMedium;
+  }
 
   if (recent_reloads_count_ >= kFrequentReloadThreshold) {
     return CookieControlsBreakageConfidenceLevel::kHigh;
