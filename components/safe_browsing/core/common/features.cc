@@ -264,7 +264,12 @@ BASE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests,
 
 BASE_FEATURE(kSafeBrowsingSkipImageCssFont,
              "SafeBrowsingSkipImageCssFont",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kSevenZipEvaluationEnabled,
              "SafeBrowsingSevenZipEvaluationEnabled",

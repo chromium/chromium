@@ -11928,21 +11928,6 @@
             ]
         }
     ],
-    "SafeBrowsingSkipImageCssFont": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingSkipImageCssFont"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingTailoredSecurityObserverBasedRetry": [
         {
             "platforms": [
