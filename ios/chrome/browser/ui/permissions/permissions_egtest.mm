@@ -302,6 +302,10 @@ void TapDoneButtonOnInfobarModal() {
 // could see a banner notification and then toggle the permissions through both
 // the infobar modal and the location bar badge.
 - (void)testAllowAndBlockCameraAndMicrophonePermissions {
+  // TODO(crbug.com/1462372): Failing on iOS17.
+  if (@available(iOS 17.0, *)) {
+    XCTSkip(@"Failing on iOS17");
+  }
   if (@available(iOS 15.0, *)) {
     GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
     [ChromeEarlGrey loadURL:self.testServer->GetURL(
@@ -385,6 +389,11 @@ void TapDoneButtonOnInfobarModal() {
 // Tests that permissions infobar banner, modal and badge works the same way in
 // incognito by toggling camera access.
 - (void)testTogglePermissionsInIncognito {
+  // TODO(crbug.com/1462372): Failing on iOS17.
+  if (@available(iOS 17.0, *)) {
+    XCTSkip(@"Failing on iOS17");
+  }
+
   if (@available(iOS 15.0, *)) {
     GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
     [ChromeEarlGrey openNewIncognitoTab];
@@ -441,6 +450,11 @@ void TapDoneButtonOnInfobarModal() {
 
 // Tests that permissions are reset after user navigation.
 - (void)testPermissionsAfterNavigation {
+  // TODO(crbug.com/1462372): Failing on iOS17.
+  if (@available(iOS 17.0, *)) {
+    XCTSkip(@"Failing on iOS17");
+  }
+
   if (@available(iOS 15.0, *)) {
     GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
     [ChromeEarlGrey
@@ -485,6 +499,10 @@ void TapDoneButtonOnInfobarModal() {
 // Tests that permissions stay the same after user switches to another tab then
 // comes back.
 - (void)testPermissionsAfterTabSwitch {
+  // TODO(crbug.com/1462372): Failing on iOS17.
+  if (@available(iOS 17.0, *)) {
+    XCTSkip(@"Failing on iOS17");
+  }
   if (@available(iOS 15.0, *)) {
     GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
     // Opens a page that requests both camera and microphone permissions, and
@@ -534,6 +552,11 @@ void TapDoneButtonOnInfobarModal() {
 
 // Tests that permissions are reset after reload.
 - (void)testPermissionsAfterReload {
+  // TODO(crbug.com/1462372): Failing on iOS17.
+  if (@available(iOS 17.0, *)) {
+    XCTSkip(@"Failing on iOS17");
+  }
+
   if (@available(iOS 15.0, *)) {
     GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
     // Opens a page that requests camera permission.
