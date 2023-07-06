@@ -61433,7 +61433,6 @@ from previous Chrome versions.
   <int value="-1217425153" label="ChromeHomeClearUrlOnOpen:enabled"/>
   <int value="-1216837777" label="clear-data-reduction-proxy-data-savings"/>
   <int value="-1216570731" label="OfflineHome:enabled"/>
-  <int value="-1215340781" label="CrOSSystemVoiceIsolationOption:enabled"/>
   <int value="-1215163628"
       label="AccessibilityUnserializeOptimizations:disabled"/>
   <int value="-1214870820" label="EnableNewStyleLauncher:enabled"/>
@@ -62158,7 +62157,6 @@ from previous Chrome versions.
   <int value="-843496368" label="AutofillRejectCompanyBirthyear:disabled"/>
   <int value="-842597982" label="ShelfPalmRejectionTouchArea:disabled"/>
   <int value="-842438090" label="enable-md-feedback"/>
-  <int value="-842236618" label="CrOSSystemVoiceIsolationOption:disabled"/>
   <int value="-841549378" label="DisableLacrosTtsSupport:disabled"/>
   <int value="-839822160" label="WebAppManifestImmediateUpdating:enabled"/>
   <int value="-839664591" label="enable-web-authentication-testing-api"/>
@@ -101023,12 +101021,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Failed to add set"/>
   <int value="4" label="Failed to add affiliation"/>
   <int value="5" label="Failed to add group"/>
-</enum>
-
-<enum name="StreamEffectState">
-  <int value="0" label="Force disable system effect"/>
-  <int value="1" label="Force enable system effect"/>
-  <int value="2" label="Use platform default state"/>
 </enum>
 
 <enum name="StreamParserBufferDurationType">
