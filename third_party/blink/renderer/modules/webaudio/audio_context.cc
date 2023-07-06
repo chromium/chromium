@@ -1118,8 +1118,9 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kOther,
             mojom::ConsoleMessageLevel::kInfo,
-            "AudioContext: Fallback to default device due to audio device "
-            "changed."));
+            "[AudioContext] Fallback to the default device due to an invalid"
+            " audio device change. ("
+            + String(sink_descriptor_.SinkId().Utf8()) + ")"));
     sink_descriptor_ = WebAudioSinkDescriptor(
         String(""),
         To<LocalDOMWindow>(GetExecutionContext())->GetLocalFrameToken());
