@@ -180,6 +180,8 @@ class CORE_EXPORT DocumentSpeculationRules
   // TODO(crbug.com/1425870): This can be deleted when/if these discrete events
   // are no longer filtered by default.
   bool wants_pointer_events_ = false;
+
+  bool first_update_after_restored_from_bfcache_ = false;
 };
 
 }  // namespace blink

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/state_transitions.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -137,6 +138,19 @@ absl::optional<Referrer> GetReferrer(SpeculationRule* rule,
 
   return referrer;
 }
+
+// The reason for calling |UpdateSpeculationCandidates| for metrics.
+// Currently, this is designed to measure the impact of
+// |kRetriggerPreloadingOnBFCacheRestoration|(crbug.com/1449163) so that
+// other update reasons (such as ruleset insertion/removal etc...) will be
+// tentatively classified as |kOther|.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class UpdateSpeculationCandidatesReason {
+  kOther = 0,
+  kRestoredFromBFCache = 1,
+  kMaxValue = kRestoredFromBFCache,
+};
 
 }  // namespace
 
@@ -431,6 +445,9 @@ void DocumentSpeculationRules::DisplayLockedElementDisconnected(Element* root) {
 }
 
 void DocumentSpeculationRules::DocumentRestoredFromBFCache() {
+  CHECK(base::FeatureList::IsEnabled(
+      blink::features::kRetriggerPreloadingOnBFCacheRestoration));
+  first_update_after_restored_from_bfcache_ = true;
   QueueUpdateSpeculationCandidates();
 }
 
@@ -612,6 +629,17 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   if (eagerness_set.Has(SpeculationEagerness::kEager)) {
     UseCounter::Count(GetSupplementable(),
                       WebFeature::kSpeculationRulesEagernessEager);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kRetriggerPreloadingOnBFCacheRestoration)) {
+    base::UmaHistogramEnumeration(
+        "Preloading.Experimental.UpdateSpeculationCandidatesReason",
+        first_update_after_restored_from_bfcache_
+            ? UpdateSpeculationCandidatesReason::kRestoredFromBFCache
+            : UpdateSpeculationCandidatesReason::kOther);
+
+    first_update_after_restored_from_bfcache_ = false;
   }
 }
 

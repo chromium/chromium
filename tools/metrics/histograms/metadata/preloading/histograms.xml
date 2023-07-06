@@ -88,6 +88,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Preloading.Experimental.UpdateSpeculationCandidatesReason"
+    enum="PreloadingUpdateSpeculationCandidatesReason"
+    expires_after="2023-09-30">
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    This metric counts the number of the update of speculation rules preloading,
+    classified by the reason for updates. Currently, this is introduced to
+    measure the overall impact of BFCache retrigger(crbug.com/1449163). This
+    metric is recorded when UpdateSpeculationCandidates is called on
+    DocumentSpeculationRules.
+  </summary>
+</histogram>
+
 <histogram
     name="Preloading.Experimental.{ExperimentalPreloadingPrediction}.{GroundTruth}"
     units="param" expires_after="2024-06-01">

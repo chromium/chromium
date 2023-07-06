@@ -85618,6 +85618,11 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="10" label="NoOp"/>
 </enum>
 
+<enum name="PreloadingUpdateSpeculationCandidatesReason">
+  <int value="0" label="kOther"/>
+  <int value="1" label="kRestoredFromBFCache"/>
+</enum>
+
 <enum name="PreloadPagesState">
   <int value="0" label="No preloading"/>
   <int value="1" label="Standard preloading"/>
