@@ -10,8 +10,8 @@
 
 namespace content {
 
+class BrowserContext;
 class WolvicMainParts;
-class WolvicBrowserContext;
 
 class WolvicContentBrowserClient : public ContentBrowserClient {
  public:
@@ -29,14 +29,18 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
 
   ~WolvicContentBrowserClient() override;
 
+  // Returns the single instance.
+  static WolvicContentBrowserClient* Get();
+
+  // Returns the single browser context for Wolvic.
+  content::BrowserContext* GetBrowserContext();
+
   // ContentBrowserClient overrides.
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
       bool is_integration_test) override;
 #if BUILDFLAG(ENABLE_VR)
   XrIntegrationClient* GetXrIntegrationClient() override;
 #endif
-
-  WolvicBrowserContext* browser_context();
 
  private:
   WolvicMainParts* browser_main_parts_;
