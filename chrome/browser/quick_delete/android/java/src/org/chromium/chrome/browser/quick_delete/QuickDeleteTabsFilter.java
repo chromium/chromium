@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -19,7 +20,12 @@ import java.util.List;
  * A class responsible for providing logic around filtered tabs.
  */
 class QuickDeleteTabsFilter {
-    private static final long FIFTEEN_MINUTES_IN_MS = 15 * 60 * 1000;
+    static final long FIFTEEN_MINUTES_IN_MS = 15 * 60 * 1000;
+    static final long ONE_HOUR_IN_MS = FIFTEEN_MINUTES_IN_MS * 4;
+    static final long ONE_DAY_IN_MS = ONE_HOUR_IN_MS * 24;
+    static final long ONE_WEEK_IN_MS = ONE_DAY_IN_MS * 7;
+    static final long FOUR_WEEKS_IN_MS = ONE_WEEK_IN_MS * 4;
+
     private final TabModel mTabModel;
 
     /**
@@ -36,17 +42,60 @@ class QuickDeleteTabsFilter {
         mTabModel = tabModel;
     }
 
+    private List<Tab> getListOfAllTabsToBeClosed() {
+        List<Tab> mTabList = new ArrayList<>();
+        for (int i = 0; i < mTabModel.getCount(); ++i) {
+            Tab tab = mTabModel.getTabAt(i);
+            if (tab == null || tab.isCustomTab()) continue;
+            mTabList.add(tab);
+        }
+        return mTabList;
+    }
+
+    private long getCurrentTime() {
+        if (mCurrentTimeForTesting != null) {
+            return mCurrentTimeForTesting;
+        } else {
+            return System.currentTimeMillis();
+        }
+    }
+
+    @VisibleForTesting
+    void setCurrentTimeForTesting(long currentTime) {
+        mCurrentTimeForTesting = currentTime;
+    }
+
+    static long getTimePeriodToMilliseconds(@TimePeriod int timePeriod) {
+        switch (timePeriod) {
+            case TimePeriod.LAST_15_MINUTES:
+                return FIFTEEN_MINUTES_IN_MS;
+            case TimePeriod.LAST_HOUR:
+                return ONE_HOUR_IN_MS;
+            case TimePeriod.LAST_DAY:
+                return ONE_DAY_IN_MS;
+            case TimePeriod.LAST_WEEK:
+                return ONE_WEEK_IN_MS;
+            case TimePeriod.FOUR_WEEKS:
+                return FOUR_WEEKS_IN_MS;
+            default:
+                throw new IllegalStateException("Unexpected value: " + timePeriod);
+        }
+    }
+
     /**
      * A method to close tabs which were either created or had a navigation committed, in the
      * last 15 minutes.
      */
-    void closeTabsFilteredForQuickDelete() {
-        List<Tab> mTabs = getListOfTabsToBeClosed();
+    void closeTabsFilteredForQuickDelete(@TimePeriod int timePeriod) {
+        List<Tab> mTabs = getListOfTabsToBeClosed(timePeriod);
         mTabModel.closeMultipleTabs(mTabs, /*canUndo=*/false);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    List<Tab> getListOfTabsToBeClosed() {
+    List<Tab> getListOfTabsToBeClosed(@TimePeriod int timePeriod) {
+        if (TimePeriod.ALL_TIME == timePeriod) {
+            return getListOfAllTabsToBeClosed();
+        }
+
         List<Tab> mTabList = new ArrayList<>();
         for (int i = 0; i < mTabModel.getCount(); ++i) {
             Tab tab = mTabModel.getTabAt(i);
@@ -56,23 +105,10 @@ class QuickDeleteTabsFilter {
                     CriticalPersistedTabData.from(tab).getLastNavigationCommittedTimestampMillis();
             final long currentTime = getCurrentTime();
 
-            if (recentNavigationTime > currentTime - FIFTEEN_MINUTES_IN_MS) {
+            if (recentNavigationTime > currentTime - getTimePeriodToMilliseconds(timePeriod)) {
                 mTabList.add(tab);
             }
         }
         return mTabList;
-    }
-
-    @VisibleForTesting
-    void setCurrentTimeForTesting(long currentTime) {
-        mCurrentTimeForTesting = currentTime;
-    }
-
-    private long getCurrentTime() {
-        if (mCurrentTimeForTesting != null) {
-            return mCurrentTimeForTesting;
-        } else {
-            return System.currentTimeMillis();
-        }
     }
 }

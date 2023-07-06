@@ -98,7 +98,7 @@ public class QuickDeleteController implements QuickDeleteBridge.DomainVisitsCall
                 // time, then calling QuickDeleteTabFilter#closeTabsFilteredForQuickDelete method
                 // would only delete tabs in the last 15 minutes and may miss the tabs in
                 // |mDeleteTabsFilter|.
-                mDeleteTabsFilter.closeTabsFilteredForQuickDelete();
+                mDeleteTabsFilter.closeTabsFilteredForQuickDelete(timePeriod);
                 // TODO(crbug.com/1412087): This may have similar considerations as above and
                 // therefore may need to be revisited based on what Clear browsing data is doing
                 // today.
@@ -179,9 +179,15 @@ public class QuickDeleteController implements QuickDeleteBridge.DomainVisitsCall
     @Override
     public void onLastVisitedDomainAndUniqueDomainCountReady(
             String lastVisitedDomain, int domainCount) {
-        QuickDeleteDialogDelegate.QuickDeleteDialogData data =
-                new QuickDeleteDialogDelegate.QuickDeleteDialogData(lastVisitedDomain, domainCount,
-                        mDeleteTabsFilter.getListOfTabsToBeClosed().size());
+        QuickDeleteDialogDelegate
+                .QuickDeleteDialogData data = new QuickDeleteDialogDelegate.QuickDeleteDialogData(
+                lastVisitedDomain, domainCount,
+                mDeleteTabsFilter
+                        .getListOfTabsToBeClosed(
+                                mDialogDelegate.getCurrentTimePeriodOption().getTimePeriod())
+                        .size());
+        // TODO(crbug.com/1412087): Add support to dynamically refresh the dialog on changes to time
+        // period.
         mDialogDelegate.showDialog(data);
     }
 }
