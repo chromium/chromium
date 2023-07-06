@@ -71,8 +71,6 @@ class SupervisedUserRegionalURLFilterTest
         /*disabled_features=*/{features::kHttpsUpgrades});
   }
 
-  ~SupervisedUserRegionalURLFilterTest() override = default;
-
  protected:
   class MockKidsChromeManagementClient : public KidsChromeManagementClient {
    public:
