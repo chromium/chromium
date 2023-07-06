@@ -51,6 +51,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1130,9 +1131,22 @@ bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
     const url::Origin* destination_origin,
     const url::Origin* reporting_origin) {
   // WebView only supports OS-level attribution and not web-attribution.
-  return operation == AttributionReportingOperation::kAny ||
-         operation == AttributionReportingOperation::kOsSource ||
-         operation == AttributionReportingOperation::kOsTrigger;
+  switch (operation) {
+    case AttributionReportingOperation::kAny:
+    case AttributionReportingOperation::kOsSource:
+    case AttributionReportingOperation::kOsTrigger:
+    case AttributionReportingOperation::kOsSourceVerboseDebugReport:
+    case AttributionReportingOperation::kOsTriggerVerboseDebugReport:
+      return true;
+    case AttributionReportingOperation::kSource:
+    case AttributionReportingOperation::kTrigger:
+    case AttributionReportingOperation::kSourceVerboseDebugReport:
+    case AttributionReportingOperation::kTriggerVerboseDebugReport:
+    case AttributionReportingOperation::kReport:
+      return false;
+  }
+
+  NOTREACHED_NORETURN();
 }
 
 bool AwContentBrowserClient::IsWebAttributionReportingAllowed() {

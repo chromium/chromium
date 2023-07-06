@@ -275,8 +275,12 @@ mojom("registration_mojom") {
         },
         {
           mojom = "attribution_reporting.mojom.OsRegistration"
-          cpp = "::std::vector<::GURL>"
+          cpp = "::std::vector<::attribution_reporting::OsRegistrationItem>"
           move_only = true
+        },
+        {
+          mojom = "attribution_reporting.mojom.OsRegistrationItem"
+          cpp = "::attribution_reporting::OsRegistrationItem"
         },
       ]
       traits_headers = [ "registration_mojom_traits.h" ]

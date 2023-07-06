@@ -905,6 +905,8 @@ class CONTENT_EXPORT ContentBrowserClient {
     kTriggerVerboseDebugReport,
     kOsSource,
     kOsTrigger,
+    kOsSourceVerboseDebugReport,
+    kOsTriggerVerboseDebugReport,
     kAny,
   };
 

@@ -165,9 +165,19 @@ struct TriggerRegistration {
   SourceRegistrationTimeConfig source_registration_time_config;
 };
 
-// Represents a source or trigger registration that will be passed to the OS, if supported.
-struct OsRegistration {
-  // The URLs to which the OS will make a request in order to retrieve the actual
+// Represents a source or trigger registration item that will be passed to the OS, if supported.
+struct OsRegistrationItem {
+  // The URL to which the OS will make a request in order to retrieve the actual
   // source or trigger registration.
-  array<url.mojom.Url> urls;
+  url.mojom.Url url;
+  // Specifies whether to enable verbose debug reporting.
+  bool debug_reporting;
+};
+
+// Represents a source or trigger registration that will be passed to the OS, if supported.
+// A registration may contain multiple registration items.
+struct OsRegistration {
+  // The registrations to which the OS will make a request in order to retrieve the actual
+  // source or trigger registration.
+  array<OsRegistrationItem> items;
 };

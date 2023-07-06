@@ -1414,9 +1414,53 @@ void AttributionManagerImpl::OnOsRegistration(
     bool is_debug_key_allowed,
     const OsRegistration& registration,
     bool success) {
+  MaybeSendVerboseDebugReport(registration);
+
   NotifyOsRegistration(registration, is_debug_key_allowed,
                        success ? OsRegistrationResult::kPassedToOs
                                : OsRegistrationResult::kRejectedByOs);
+}
+
+void AttributionManagerImpl::MaybeSendVerboseDebugReport(
+    const OsRegistration& registration) {
+  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
+    return;
+  }
+
+  const auto registration_origin =
+      url::Origin::Create(registration.registration_url);
+
+  ContentBrowserClient::AttributionReportingOperation operation;
+  const url::Origin* source_origin;
+  const url::Origin* destination_origin;
+  switch (registration.GetType()) {
+    case OsRegistrationType::kSource:
+      operation = ContentBrowserClient::AttributionReportingOperation::
+          kOsSourceVerboseDebugReport;
+      source_origin = &registration.top_level_origin;
+      destination_origin = nullptr;
+      break;
+    case OsRegistrationType::kTrigger:
+      operation = ContentBrowserClient::AttributionReportingOperation::
+          kOsTriggerVerboseDebugReport;
+      source_origin = nullptr;
+      destination_origin = &registration.top_level_origin;
+      break;
+  }
+
+  if (!IsOperationAllowed(storage_partition_.get(), operation,
+                          /*rfh=*/nullptr, source_origin, destination_origin,
+                          /*reporting_origin=*/&registration_origin)) {
+    return;
+  }
+
+  if (absl::optional<AttributionDebugReport> debug_report =
+          AttributionDebugReport::Create(registration)) {
+    report_sender_->SendReport(
+        std::move(*debug_report),
+        base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 }  // namespace content

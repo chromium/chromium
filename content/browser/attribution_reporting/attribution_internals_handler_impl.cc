@@ -436,6 +436,7 @@ void AttributionInternalsHandlerImpl::OnOsRegistration(
   web_ui_os_registration->registration_url = registration.registration_url;
   web_ui_os_registration->top_level_origin = registration.top_level_origin;
   web_ui_os_registration->is_debug_key_allowed = is_debug_key_allowed;
+  web_ui_os_registration->debug_reporting = registration.debug_reporting;
   web_ui_os_registration->type = registration.GetType();
   web_ui_os_registration->result = result;
 

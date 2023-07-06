@@ -16,6 +16,7 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
@@ -153,6 +154,16 @@ bool operator==(const AggregatableDedupKey& a, const AggregatableDedupKey& b) {
 std::ostream& operator<<(std::ostream& out,
                          const AggregatableDedupKey& aggregatable_dedup_key) {
   return out << aggregatable_dedup_key.ToJson();
+}
+
+bool operator==(const OsRegistrationItem& a, const OsRegistrationItem& b) {
+  return std::tie(a.url, a.debug_reporting) ==
+         std::tie(b.url, b.debug_reporting);
+}
+
+std::ostream& operator<<(std::ostream& out, const OsRegistrationItem& item) {
+  return out << "{url=" << item.url
+             << ", debug_reporting=" << item.debug_reporting << "}";
 }
 
 }  // namespace attribution_reporting

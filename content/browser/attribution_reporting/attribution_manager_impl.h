@@ -231,6 +231,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                                    bool is_debug_cookie_set,
                                    const CreateReportResult& result);
 
+  void MaybeSendVerboseDebugReport(const OsRegistration&);
+
   void AddPendingAggregatableReportTiming(const AttributionReport&);
   void RecordPendingAggregatableReportsTimings();
 

@@ -664,7 +664,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 }
 
 void AttributionDataHostManagerImpl::OsSourceDataAvailable(
-    std::vector<GURL> registration_urls) {
+    std::vector<attribution_reporting::OsRegistrationItem> registration_items) {
   const RegistrationContext* context =
       GetReceiverRegistrationContextForSource();
   if (!context) {
@@ -675,25 +675,29 @@ void AttributionDataHostManagerImpl::OsSourceDataAvailable(
   if (context->navigation().has_value()) {
     input_event = context->navigation()->input_event();
   }
-  for (GURL& url : registration_urls) {
+  for (auto& item : registration_items) {
     attribution_manager_->HandleOsRegistration(
-        OsRegistration(std::move(url), context->context_origin(), input_event),
+        OsRegistration(std::move(item.url), item.debug_reporting,
+                       context->context_origin(), input_event,
+                       context->is_within_fenced_frame()),
         context->render_frame_id());
   }
 }
 
 void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
-    std::vector<GURL> registration_urls) {
+    std::vector<attribution_reporting::OsRegistrationItem> registration_items) {
   const RegistrationContext* context =
       GetReceiverRegistrationContextForTrigger();
   if (!context) {
     return;
   }
 
-  for (GURL& url : registration_urls) {
+  for (auto& item : registration_items) {
     attribution_manager_->HandleOsRegistration(
-        OsRegistration(std::move(url), context->context_origin(),
-                       /*input_event=*/absl::nullopt),
+        OsRegistration(std::move(item.url), item.debug_reporting,
+                       context->context_origin(),
+                       /*input_event=*/absl::nullopt,
+                       context->is_within_fenced_frame()),
         context->render_frame_id());
   }
 }
@@ -839,16 +843,18 @@ void AttributionDataHostManagerImpl::OnOsSourceParsed(SourceRegistrationsId id,
   {
     // TODO: Report parsing errors to DevTools.
     if (result.has_value()) {
-      std::vector<GURL> registration_urls =
-          attribution_reporting::ParseOsSourceOrTriggerHeader(*result);
+      std::vector<attribution_reporting::OsRegistrationItem>
+          registration_items =
+              attribution_reporting::ParseOsSourceOrTriggerHeader(*result);
 
       AttributionInputEvent input_event = registrations->input_event()
                                               ? *registrations->input_event()
                                               : AttributionInputEvent();
-      for (GURL& url : registration_urls) {
+      for (auto& item : registration_items) {
         attribution_manager_->HandleOsRegistration(
-            OsRegistration(std::move(url), registrations->source_origin(),
-                           input_event),
+            OsRegistration(std::move(item.url), item.debug_reporting,
+                           registrations->source_origin(), input_event,
+                           registrations->is_within_fenced_frame()),
             registrations->render_frame_id());
       }
     }
