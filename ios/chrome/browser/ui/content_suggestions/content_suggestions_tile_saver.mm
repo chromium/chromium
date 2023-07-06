@@ -154,6 +154,13 @@ void WriteSingleUpdatedTileToDisk(NTPTile* tile) {
   WriteSavedMostVisited(tiles);
 }
 
+// Updates the Shortcut's widget with the user's current most visited sites
+void UpdateShortcutsWidget() {
+#if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
+  [WidgetTimelinesUpdater reloadTimelinesOfKind:@"ShortcutsWidget"];
+#endif
+}
+
 void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_data) {
   NSError* error = nil;
   NSData* data = [NSKeyedArchiver archivedDataWithRootObject:most_visited_data
@@ -168,10 +175,7 @@ void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_data) {
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
 
   [sharedDefaults setObject:data forKey:app_group::kSuggestedItems];
-  // Updates the Shortcut's widget with the user's current most visited sites
-#if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
-  [WidgetTimelinesUpdater reloadTimelinesOfKind:@"ShortcutsWidget"];
-#endif
+  UpdateShortcutsWidget();
 }
 
 NSDictionary* ReadSavedMostVisited() {
@@ -215,9 +219,9 @@ void UpdateSingleFavicon(const GURL& site_url,
             [imageData writeToURL:fileURL atomically:YES];
           });
 
-          base::ThreadPool::PostTask(
+          base::ThreadPool::PostTaskAndReply(
               FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-              std::move(writeImage));
+              std::move(writeImage), base::BindOnce(&UpdateShortcutsWidget));
         } else {
           NSDictionary* tiles = ReadSavedMostVisited();
           NTPTile* tile = [tiles objectForKey:siteNSURL];
