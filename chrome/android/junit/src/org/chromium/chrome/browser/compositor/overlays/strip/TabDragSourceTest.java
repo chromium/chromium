@@ -99,6 +99,8 @@ public class TabDragSourceTest {
     private static final float TAB_Y_OFFSET_OUTSIDE = TAB_STRIP_HEIGHT + 1.f;
     private static final float TAB_WIDTH = 150.f;
     private static final long TIMESTAMP = 5000;
+    private static final float DROP_X_SCREEN_POS = 1000.f;
+    private static final float DROP_Y_SCREEN_POS = 500.f;
 
     /** Resets the environment before each test. */
     @Before
@@ -398,8 +400,14 @@ public class TabDragSourceTest {
         assertTrue("Toolbar hash code should match.",
                 mTabDragSource.getDragSourceTabsToolbarHashCode()
                         == System.identityHashCode(mTabsToolbarView));
-        onTabDragListener.onDrag(
-                mTabsToolbarView, createDragEvent(DragEvent.ACTION_DRAG_ENDED, 0f, 0f, 0));
+        if (withinStripLayout) {
+            onTabDragListener.onDrag(
+                    mTabsToolbarView, createDragEvent(DragEvent.ACTION_DRAG_ENDED, 0f, 0f, 0));
+        } else {
+            onTabDragListener.onDrag(mTabsToolbarView,
+                    createDragEvent(
+                            DragEvent.ACTION_DRAG_ENDED, DROP_X_SCREEN_POS, DROP_Y_SCREEN_POS, 0));
+        }
         assertTrue("Toolbar hash code should be cleared.",
                 mTabDragSource.getDragSourceTabsToolbarHashCode() == 0);
 
@@ -514,5 +522,30 @@ public class TabDragSourceTest {
         anotherTabsToolbarView = Mockito.spy(new View(mActivity));
         anotherTabsToolbarView.setLayoutParams(new MarginLayoutParams(300, 50));
         return anotherTabsToolbarView;
+    }
+
+    /**
+     * Tests the instance of the local class {@link TabDragSource#OnDragListenerImpl}.
+     *
+     * Checks that a drop position of the new window is broadcasted when new window is opened.
+     */
+    @Test
+    public void test_sendPositionInfoToSysUI_WithNewWindowIsOpened_ReturnsSuccess() {
+        // Prepare
+        initializeTest(false, false, 1, 5);
+        mTabDragSource.prepareForDragDrop(mTabsToolbarView, mMultiInstanceManager, mTabDropTarget);
+        mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
+                mStripLayoutHelper.getTabById(mClickedTab.getId()));
+
+        // Perform drag n drop simulation actions for movement outside the strip layout.
+        TabDragSource.OnDragListenerImpl onTabDragListener =
+                simulateDragDropEvents(/*withinStripLayout*/ false);
+
+        // Verify
+        // Since the drop is outside the TabToolbar area check if intent is send to SysUI to
+        // position the window.
+        verify(mTabDragSource, times(1))
+                .sendPositionInfoToSysUI(eq(mTabsToolbarView), anyFloat(), anyFloat(),
+                        eq(DROP_X_SCREEN_POS), eq(DROP_Y_SCREEN_POS));
     }
 }
