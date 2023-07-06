@@ -2307,7 +2307,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_5_1_20230501",
+                    "name": "Enabled_5_1_20230705",
                     "params": {
                         "image_count": "5",
                         "tight_medium_limit": "1"
@@ -2317,40 +2317,10 @@
                     ]
                 },
                 {
-                    "name": "Enabled_5_0_20230501",
-                    "params": {
-                        "image_count": "5",
-                        "tight_medium_limit": "0"
-                    },
-                    "enable_features": [
-                        "BoostImagePriority"
-                    ]
-                },
-                {
-                    "name": "Enabled_5_2_20230501",
+                    "name": "Enabled_5_2_20230705",
                     "params": {
                         "image_count": "5",
                         "tight_medium_limit": "2"
-                    },
-                    "enable_features": [
-                        "BoostImagePriority"
-                    ]
-                },
-                {
-                    "name": "Enabled_2_1_20230501",
-                    "params": {
-                        "image_count": "2",
-                        "tight_medium_limit": "1"
-                    },
-                    "enable_features": [
-                        "BoostImagePriority"
-                    ]
-                },
-                {
-                    "name": "Enabled_10_1_20230501",
-                    "params": {
-                        "image_count": "10",
-                        "tight_medium_limit": "1"
                     },
                     "enable_features": [
                         "BoostImagePriority"
