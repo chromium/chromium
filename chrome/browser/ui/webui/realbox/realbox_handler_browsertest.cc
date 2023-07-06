@@ -199,8 +199,7 @@ IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadBrowserTest, SearchPreloadSuccess) {
   std::string search_terms = "prerender";
   AddNewSuggestionRule(input_query, {search_terms}, /*prefetch_index=*/0,
                        /*prerender_index=*/0);
-  GURL prerender_url = GetSearchServerQueryURL(search_terms + "&pf=cs&");
-
+  auto [_, prerender_url] = GetSearchPrefetchAndNonPrefetch(search_terms);
   // Fake a WebUI input.
   remote_page_handler->QueryAutocomplete(base::ASCIIToUTF16(input_query),
                                          /*prevent_inline_autocomplete=*/false);

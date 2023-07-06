@@ -220,8 +220,12 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
     : public OmniboxPrerenderBrowserTest {
  public:
   PrerenderOmniboxSearchSuggestionBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kSupportSearchSuggestionForPrerender2}, {});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSupportSearchSuggestionForPrerender2,
+          {
+              {"implementation_type", "ignore_prefetch"},
+          }}},
+        {});
   }
 
   void SetUp() override {
@@ -372,9 +376,12 @@ class PrerenderOmniboxSearchSuggestionReloadBrowserTest
       public PrerenderOmniboxSearchSuggestionBrowserTest {
  public:
   PrerenderOmniboxSearchSuggestionReloadBrowserTest() {
-    // Disable BFCache, to test the HTTP Cache path.
-    feature_list_.InitWithFeatures(
-        {features::kSupportSearchSuggestionForPrerender2},
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSupportSearchSuggestionForPrerender2,
+          {
+              {"implementation_type", "ignore_prefetch"},
+          }}},
+        // Disable BFCache, to test the HTTP Cache path.
         {features::kBackForwardCache});
   }
 
@@ -434,7 +441,10 @@ class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
  public:
   PrerenderOmniboxSearchSuggestionExpiryBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2, {}},
+        {{features::kSupportSearchSuggestionForPrerender2,
+          {
+              {"implementation_type", "ignore_prefetch"},
+          }},
          {kSearchPrefetchServicePrefetching,
           {
               {"prefetch_caching_limit_ms", "10"},

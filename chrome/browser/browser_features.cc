@@ -267,7 +267,7 @@ const base::FeatureParam<SearchSuggestionPrerenderImplementationType>::Option
 const base::FeatureParam<SearchSuggestionPrerenderImplementationType>
     kSearchSuggestionPrerenderImplementationTypeParam{
         &kSupportSearchSuggestionForPrerender2, "implementation_type",
-        SearchSuggestionPrerenderImplementationType::kIgnorePrefetch,
+        SearchSuggestionPrerenderImplementationType::kUsePrefetch,
         &search_suggestion_implementation_types};
 
 const base::FeatureParam<SearchPreloadShareableCacheType>::Option
