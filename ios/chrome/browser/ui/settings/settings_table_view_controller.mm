@@ -2056,6 +2056,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   _identityObserverBridge.reset();
   _accountManagerServiceObserver.reset();
 
+  // Remove PrefObserverDelegates.
+  _notificationsObserver.delegate = nil;
+  _notificationsObserver = nil;
+
   // Clear C++ ivars.
   _voiceLocaleCode.Destroy();
   _passwordCheckManager.reset();
