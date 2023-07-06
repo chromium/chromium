@@ -94,11 +94,10 @@ export class FileOperationHandler {
             if (event.itemCount === 1) {
               // Single item: the user can continue the action directly from
               // the notification.
-              const params = chrome.fileManagerPrivate.ResumeParams();
-              params.policyParams =
-                  chrome.fileManagerPrivate.PolicyResumeParams(
-                      event.pauseParams.policyParams.type);
-              chrome.fileManagerPrivate.resumeIOTask(event.taskId, params);
+              chrome.fileManagerPrivate.resumeIOTask(event.taskId, {
+                policyParams: {type: event.pauseParams.policyParams.type},
+                conflictParams: undefined,
+              });
             } else {
               // Multiple items: the user can continue the action from the
               // review dialog.
