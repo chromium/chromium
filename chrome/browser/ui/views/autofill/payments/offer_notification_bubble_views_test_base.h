@@ -25,13 +25,17 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
+#include "content/public/test/content_mock_cert_verifier.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 
 class CouponService;
 
 namespace autofill {
 
 namespace {
-const int64_t kCreditCardInstrumentId = 0x4444;
+constexpr int64_t kCreditCardInstrumentId = 0x4444;
 }  // namespace
 
 // Test base class for the OfferNotificationBubbleViews related tests. Provides
@@ -71,6 +75,7 @@ class OfferNotificationBubbleViewsTestBase
   // InProcessBrowserTest:
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
+  void SetUpCommandLine(base::CommandLine* command_line) override;
 
   // OfferNotificationBubbleControllerImpl::ObserverForTest:
   void OnBubbleShown() override;
@@ -103,8 +108,12 @@ class OfferNotificationBubbleViewsTestBase
 
   TestAutofillManager* GetAutofillManager();
 
-  void NavigateTo(const std::string& file_path);
-  void NavigateToAndWaitForForm(const std::string& file_path);
+  // The test fixture's HTTPS server listens at a random port.
+  // `GetUrl("foo.com", "/index.html")` returns a URL
+  // `GURL("https://foo.com:1234/index.html")` for the right port.
+  GURL GetUrl(std::string_view host, std::string_view path) const;
+  void NavigateTo(const GURL& url);
+  void NavigateToAndWaitForForm(const GURL& url);
 
   OfferNotificationBubbleViews* GetOfferNotificationBubbleViews();
 
@@ -151,11 +160,13 @@ class OfferNotificationBubbleViewsTestBase
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
   raw_ptr<PersonalDataManager> personal_data_ = nullptr;
   raw_ptr<CouponService> coupon_service_ = nullptr;
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_;
+  content::ContentMockCertVerifier cert_verifier_;
 };
 
 }  // namespace autofill
