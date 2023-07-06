@@ -1177,14 +1177,16 @@ void ServiceWorkerVersion::ExecuteScriptForTest(
 }
 
 bool ServiceWorkerVersion::IsWarmingUp() const {
-  if (running_status() != EmbeddedWorkerStatus::STARTING) {
+  if (running_status() != EmbeddedWorkerStatus::STARTING ||
+      !embedded_worker_->pause_initializing_global_scope()) {
     return false;
   }
   return !warm_up_callbacks_.empty();
 }
 
 bool ServiceWorkerVersion::IsWarmedUp() const {
-  if (running_status() != EmbeddedWorkerStatus::STARTING) {
+  if (running_status() != EmbeddedWorkerStatus::STARTING ||
+      !embedded_worker_->pause_initializing_global_scope()) {
     return false;
   }
   switch (embedded_worker_->starting_phase()) {
