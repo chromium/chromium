@@ -79,10 +79,6 @@ const uint32_t kSpdyMaxHeaderTableSize = 64 * 1024;
 // The maximum size of header list that the server is allowed to send.
 const uint32_t kSpdyMaxHeaderListSize = 256 * 1024;
 
-// Specifies the maximum concurrent streams server could send (via push).
-// TODO(https://crbug.com/1426477): Remove.
-const uint32_t kSpdyMaxConcurrentPushedStreams = 1000;
-
 // Self-contained structure with all the simple configuration options
 // supported by the HttpNetworkSession.
 struct NET_EXPORT HttpNetworkSessionParams {

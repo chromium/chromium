@@ -2426,8 +2426,6 @@ TEST_F(SpdyNetworkTransactionTest, ServerPushReset) {
   spdy::SettingsMap initial_settings;
   initial_settings[spdy::SETTINGS_HEADER_TABLE_SIZE] = kSpdyMaxHeaderTableSize;
   initial_settings[spdy::SETTINGS_ENABLE_PUSH] = 0;
-  initial_settings[spdy::SETTINGS_MAX_CONCURRENT_STREAMS] =
-      kSpdyMaxConcurrentPushedStreams;
   initial_settings[spdy::SETTINGS_MAX_HEADER_LIST_SIZE] =
       kSpdyMaxHeaderListSize;
   spdy::SpdySerializedFrame initial_settings_frame(
@@ -5355,8 +5353,6 @@ TEST_F(SpdyNetworkTransactionTest, WindowUpdateSent) {
 
   spdy::SettingsMap initial_settings;
   initial_settings[spdy::SETTINGS_HEADER_TABLE_SIZE] = kSpdyMaxHeaderTableSize;
-  initial_settings[spdy::SETTINGS_MAX_CONCURRENT_STREAMS] =
-      kSpdyMaxConcurrentPushedStreams;
   initial_settings[spdy::SETTINGS_INITIAL_WINDOW_SIZE] =
       stream_max_recv_window_size;
   initial_settings[spdy::SETTINGS_MAX_HEADER_LIST_SIZE] =
