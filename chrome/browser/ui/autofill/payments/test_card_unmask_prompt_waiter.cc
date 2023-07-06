@@ -61,6 +61,7 @@ TestCardUnmaskPromptWaiter::TestCardUnmaskPromptWaiter(
 
 TestCardUnmaskPromptWaiter::~TestCardUnmaskPromptWaiter() {
   if (injected_controller_) {
+    injected_controller_ = nullptr;
     client_->SetCardUnmaskControllerForTesting(std::move(old_controller_));
   }
 }
