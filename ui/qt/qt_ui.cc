@@ -19,6 +19,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_canvas.h"
@@ -238,6 +239,14 @@ bool QtUi::Initialize() {
   }
   void* create_qt_interface = dlsym(libqt_shim, "CreateQtInterface");
   DCHECK(create_qt_interface);
+
+  // Under certain conditions, a hang may occur in libICE when reading from the
+  // ICE connection.  Chrome doesn't use QT's session save/restore capabilities
+  // and instead manages it's own sessions, so this is not needed anyway.  Unset
+  // SESSION_MANAGER to prevent creating an ICE connection.  See [1] and [2].
+  // [1] https://crbug.com/1450759
+  // [2] https://bugreports.qt.io/browse/QTBUG-38599
+  base::ScopedEnvironmentVariableOverride env_override("SESSION_MANAGER");
 
   cmd_line_ = CopyCmdLine(*base::CommandLine::ForCurrentProcess());
   shim_.reset((reinterpret_cast<decltype(&CreateQtInterface)>(
