@@ -62,6 +62,9 @@ void SetCommonButtonAttributes(views::ImageButton* button) {
 }
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kTextField);
+
 class FindBarMatchCountLabel : public views::Label {
  public:
   METADATA_HEADER(FindBarMatchCountLabel);
@@ -180,6 +183,7 @@ FindBarView::FindBarView(FindBarHost* host) {
           layout_provider->GetInsetsMetric(INSETS_TOAST) - horizontal_margin))
       .SetHost(host)
       .SetFlipCanvasOnPaintForRTLUI(true)
+      .SetProperty(views::kElementIdentifierKey, kElementId)
       .AddChildren(
           views::Builder<views::Textfield>()
               .CopyAddressTo(&find_text_)
@@ -189,6 +193,7 @@ FindBarView::FindBarView(FindBarHost* host) {
               .SetID(VIEW_ID_FIND_IN_PAGE_TEXT_FIELD)
               .SetMinimumWidthInChars(1)
               .SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF)
+              .SetProperty(views::kElementIdentifierKey, kTextField)
               .SetProperty(views::kMarginsKey, toast_control_vertical_margin +
                                                    horizontal_margin -
                                                    textfield_hover_padding)

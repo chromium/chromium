@@ -10,17 +10,20 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
+#include "chrome/browser/ui/views/find_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/find_result_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/find_in_page/find_notification_details.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
@@ -30,11 +33,14 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/focus_changed_observer.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/clipboard/clipboard.h"
-#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event_constants.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 
@@ -44,16 +50,29 @@ using ui_test_utils::IsViewFocused;
 
 namespace {
 const char kSimplePage[] = "/find_in_page/simple.html";
+
+std::unique_ptr<net::test_server::HttpResponse> HandleHttpRequest(
+    const net::test_server::HttpRequest& request) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_content(
+      "This is some text with a <a href=\"linked_page.html\">link</a>.");
+  response->set_content_type("text/html");
+  return response;
+}
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabBId);
 }  // namespace
 
-class FindInPageTest : public InProcessBrowserTest {
+// Remaining tests should be migrated to FindInPageTest
+class LegacyFindInPageTest : public InProcessBrowserTest {
  public:
-  FindInPageTest() {
+  LegacyFindInPageTest() {
     FindBarHost::disable_animations_during_testing_ = true;
   }
 
-  FindInPageTest(const FindInPageTest&) = delete;
-  FindInPageTest& operator=(const FindInPageTest&) = delete;
+  LegacyFindInPageTest(const LegacyFindInPageTest&) = delete;
+  LegacyFindInPageTest& operator=(const LegacyFindInPageTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Some bots are flaky due to slower loading interacting with
@@ -112,8 +131,53 @@ class FindInPageTest : public InProcessBrowserTest {
   }
 };
 
+class FindInPageTest : public InteractiveBrowserTest {
+ public:
+  FindInPageTest() { FindBarHost::disable_animations_during_testing_ = true; }
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->RegisterDefaultHandler(
+        base::BindRepeating(&HandleHttpRequest));
+    embedded_test_server()->StartAcceptingConnections();
+
+    InteractiveBrowserTest::SetUpOnMainThread();
+  }
+
+  ui::InteractionSequence::StepBuilder BringBrowserWindowToFront() {
+    return std::move(Check([this]() {
+                       return ui_test_utils::BringBrowserWindowToFront(
+                           browser());
+                     }).SetDescription("BringBrowserWindowToFront()"));
+  }
+
+  auto ShowFindBar() {
+    return Steps(Do([this]() { browser()->GetFindBarController()->Show(); }),
+                 WaitForShow(FindBarView::kTextField));
+  }
+
+  // NB: Prefer using SendAccelerator() when possible.
+  auto SendKeyPress(ui::KeyboardCode key, bool control, bool shift) {
+    return Check([this, key, control, shift]() {
+      return ui_test_utils::SendKeyPressSync(browser(), key, control, shift,
+                                             false, false);
+    });
+  }
+
+ private:
+  FindBarHost* GetFindBarHost() {
+    FindBar* find_bar = browser()->GetFindBarController()->find_bar();
+    return static_cast<FindBarHost*>(find_bar);
+  }
+};
+
 // Flaky because the test server fails to start? See: http://crbug.com/96594.
-IN_PROC_BROWSER_TEST_F(FindInPageTest, CrashEscHandlers) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, CrashEscHandlers) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // First we navigate to our test page (tab A).
@@ -148,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, CrashEscHandlers) {
       browser(), ui::VKEY_ESCAPE, false, false, false, false));
 }
 
-IN_PROC_BROWSER_TEST_F(FindInPageTest, NavigationByKeyEvent) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, NavigationByKeyEvent) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Make sure Chrome is in the foreground, otherwise sending input
   // won't do anything and the test will hang.
@@ -181,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, NavigationByKeyEvent) {
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON));
 }
 
-IN_PROC_BROWSER_TEST_F(FindInPageTest, ButtonsDoNotAlterFocus) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, ButtonsDoNotAlterFocus) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Make sure Chrome is in the foreground, otherwise sending input
   // won't do anything and the test will hang.
@@ -233,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, ButtonsDoNotAlterFocus) {
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON));
 }
 
-IN_PROC_BROWSER_TEST_F(FindInPageTest, ButtonsDisabledWithoutText) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, ButtonsDisabledWithoutText) {
   if (browser()
           ->GetFindBarController()
           ->find_bar()
@@ -261,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, ButtonsDisabledWithoutText) {
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_CLOSE_BUTTON));
 }
 
-IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestore) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, FocusRestore) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url = embedded_test_server()->GetURL("/title1.html");
@@ -302,90 +366,63 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestore) {
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 }
 
-// Flaky on Windows. https://crbug.com/792313
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_SelectionRestoreOnTabSwitch DISABLED_SelectionRestoreOnTabSwitch
-#else
-#define MAYBE_SelectionRestoreOnTabSwitch SelectionRestoreOnTabSwitch
-#endif
-IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_SelectionRestoreOnTabSwitch) {
+IN_PROC_BROWSER_TEST_F(FindInPageTest, SelectionRestoreOnTabSwitch) {
 #if BUILDFLAG(IS_MAC)
   // Mac intentionally changes selection on focus.
-  GTEST_SKIP() << "Mac intentionally has different behavior";
+  if (::testing::internal::AlwaysTrue()) {
+    GTEST_SKIP() << "Mac intentionally has different behavior";
+  }
 #endif
-  ASSERT_TRUE(embedded_test_server()->Start());
 
-  // Make sure Chrome is in the foreground, otherwise sending input
-  // won't do anything and the test will hang.
-  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  constexpr char16_t kAbc[] = u"abc";
+  constexpr char16_t kBc[] = u"bc";
+  constexpr char16_t kDef[] = u"def";
+  constexpr char16_t kDe[] = u"de";
+  const GURL page_a = embedded_test_server()->GetURL("/a.html");
+  const GURL page_b = embedded_test_server()->GetURL("/b.html");
 
-  // First we navigate to any page in the current tab (tab A).
-  GURL url = embedded_test_server()->GetURL(kSimplePage);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Show the Find bar.
-  browser()->GetFindBarController()->Show();
-
-  // Search for "abc".
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_A, false, false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_B, false, false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_C, false, false, false, false));
-  EXPECT_EQ(u"abc", GetFindBarText());
-
-  // Select "bc".
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_LEFT, false, true, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_LEFT, false, true, false, false));
-  EXPECT_EQ(u"bc", GetFindBarSelectedText());
-
-  // Open another tab (tab B).
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
-  chrome::AddSelectedTabWithURL(browser(), url, ui::PAGE_TRANSITION_TYPED);
-  observer.Wait();
-
-  // Show the Find bar.
-  browser()->GetFindBarController()->Show();
-
-  // Search for "def".
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_D, false, false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_E, false, false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_F, false, false, false, false));
-  EXPECT_EQ(u"def", GetFindBarText());
-
-  // Select "de".
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_HOME, false, false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_RIGHT, false, true, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_RIGHT, false, true, false, false));
-  EXPECT_EQ(u"de", GetFindBarSelectedText());
-
-  // Select tab A. Find bar should select "bc".
-  browser()->tab_strip_model()->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-  EXPECT_EQ(u"bc", GetFindBarSelectedText());
-
-  // Select tab B. Find bar should select "de".
-  browser()->tab_strip_model()->ActivateTabAt(
-      1, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-  EXPECT_EQ(u"de", GetFindBarSelectedText());
+  RunTestSequence(
+      // Make sure Chrome is in the foreground, otherwise sending input
+      // won't do anything and the test will hang.
+      // BringBrowserWindowToFront(),
+      InstrumentTab(kTabId), NavigateWebContents(kTabId, page_a),
+      WaitForWebContentsReady(kTabId),
+      // Show the find bar
+      ShowFindBar(),
+      // Search for "abc".
+      EnterText(FindBarView::kTextField, kAbc),
+      CheckViewProperty(FindBarView::kElementId, &FindBarView::GetFindText,
+                        kAbc),
+      // Select "bc".
+      // NB: SendAccelerator() didn't work here.
+      SendKeyPress(ui::VKEY_LEFT, false, true),
+      SendKeyPress(ui::VKEY_LEFT, false, true),
+      CheckViewProperty(FindBarView::kElementId,
+                        &FindBarView::GetFindSelectedText, kBc),
+      // Open another tab (tab B).
+      AddInstrumentedTab(kTabBId, page_b), ShowFindBar(),
+      // Search for "def".
+      EnterText(FindBarView::kTextField, kDef),
+      CheckViewProperty(FindBarView::kElementId, &FindBarView::GetFindText,
+                        kDef),
+      // Select "de".
+      // NB: SendAccelerator() didn't work here.
+      SendKeyPress(ui::VKEY_HOME, false, false),
+      SendKeyPress(ui::VKEY_RIGHT, false, true),
+      SendKeyPress(ui::VKEY_RIGHT, false, true),
+      CheckViewProperty(FindBarView::kElementId,
+                        &FindBarView::GetFindSelectedText, kDe),
+      // Select tab A. Find bar should select "bc".
+      SelectTab(kTabStripElementId, 0),
+      CheckViewProperty(FindBarView::kElementId,
+                        &FindBarView::GetFindSelectedText, kBc),
+      // Select tab B. Find bar should select "de".
+      SelectTab(kTabStripElementId, 1),
+      CheckViewProperty(FindBarView::kElementId,
+                        &FindBarView::GetFindSelectedText, kDe));
 }
 
-IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitch) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, FocusRestoreOnTabSwitch) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -437,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitch) {
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 }
 
-IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitchDismiss) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, FocusRestoreOnTabSwitchDismiss) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -483,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitchDismiss) {
 // This tests that whenever you clear values from the Find box and close it that
 // it respects that and doesn't show you the last search, as reported in bug:
 // http://crbug.com/40121. For Aura see bug http://crbug.com/292299.
-IN_PROC_BROWSER_TEST_F(FindInPageTest, PrepopulateRespectBlank) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, PrepopulateRespectBlank) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Make sure Chrome is in the foreground, otherwise sending input
@@ -539,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, PrepopulateRespectBlank) {
 // Flaky on Win. http://crbug.com/92467
 // Flaky on ChromeOS. http://crbug.com/118216
 // Flaky on linux aura. http://crbug.com/163931
-IN_PROC_BROWSER_TEST_F(FindInPageTest, DISABLED_PasteWithoutTextChange) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, DISABLED_PasteWithoutTextChange) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Make sure Chrome is in the foreground, otherwise sending input
@@ -598,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, DISABLED_PasteWithoutTextChange) {
 #else
 #define MAYBE_CtrlEnter CtrlEnter
 #endif
-IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_CtrlEnter) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, MAYBE_CtrlEnter) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("data:text/html,This is some text with a "
                       "<a href=\"about:blank\">link</a>.")));
@@ -638,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_CtrlEnter) {
 // matches) and have no active-match highlighting. The bug caused it to display
 // 1/N, with the first having active-match highlighting (and the page wouldn't
 // scroll to the match if it was off-screen).
-IN_PROC_BROWSER_TEST_F(FindInPageTest, ActiveMatchAfterNoResults) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, ActiveMatchAfterNoResults) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Make sure Chrome is in the foreground, otherwise sending input
   // won't do anything and the test will hang.
@@ -677,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, ActiveMatchAfterNoResults) {
   EXPECT_EQ(0, details.active_match_ordinal());
 }
 
-IN_PROC_BROWSER_TEST_F(FindInPageTest, SelectionDuringFind) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, SelectionDuringFind) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Make sure Chrome is in the foreground, otherwise sending input
   // won't do anything and the test will hang.
@@ -760,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, SelectionDuringFind) {
   EXPECT_EQ(4, details.number_of_matches());
 }
 
-IN_PROC_BROWSER_TEST_F(FindInPageTest, GlobalEscapeClosesFind) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, GlobalEscapeClosesFind) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Make sure Chrome is in the foreground, otherwise sending input
   // won't do anything and the test will hang.
@@ -784,7 +821,8 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, GlobalEscapeClosesFind) {
   EXPECT_FALSE(IsFindBarVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(FindInPageTest, ConsumedGlobalEscapeDoesNotCloseFind) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest,
+                       ConsumedGlobalEscapeDoesNotCloseFind) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Make sure Chrome is in the foreground, otherwise sending input
   // won't do anything and the test will hang.
@@ -810,7 +848,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, ConsumedGlobalEscapeDoesNotCloseFind) {
 }
 
 // See http://crbug.com/1142027
-IN_PROC_BROWSER_TEST_F(FindInPageTest, MatchOrdinalStableWhileTyping) {
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, MatchOrdinalStableWhileTyping) {
   // Make sure Chrome is in the foreground, otherwise sending input
   // won't do anything and the test will hang.
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));

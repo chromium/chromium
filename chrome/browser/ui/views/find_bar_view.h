@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/browser/ui/views/dropdown_bar_host_delegate.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -47,6 +48,10 @@ class FindBarView : public views::BoxLayoutView,
                     public views::TextfieldController {
  public:
   METADATA_HEADER(FindBarView);
+
+  // Element IDs for ui::ElementTracker
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTextField);
 
   explicit FindBarView(FindBarHost* host = nullptr);
 
