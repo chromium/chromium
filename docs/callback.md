@@ -17,7 +17,7 @@ different MessageLoops.
 
 A callback with no unbound input parameters (`base::OnceCallback<void()>`) is
 called a `base::OnceClosure`. The same pattern exists for
-base::RepeatingCallback, as base::RepeatingClosure. Note that this is NOT the
+base::RepeatingCallback, as `base::RepeatingClosure`. Note that this is NOT the
 same as what other languages refer to as a closure -- it does not retain a
 reference to its enclosing environment.
 
