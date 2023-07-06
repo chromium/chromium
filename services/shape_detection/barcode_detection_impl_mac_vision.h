@@ -29,8 +29,6 @@ namespace shape_detection {
 // framework (https://developer.apple.com/documentation/vision).
 class BarcodeDetectionImplMacVision : public mojom::BarcodeDetection {
  public:
-  static bool IsBlockedMacOSVersion();
-
   explicit BarcodeDetectionImplMacVision(
       mojom::BarcodeDetectorOptionsPtr options);
 
