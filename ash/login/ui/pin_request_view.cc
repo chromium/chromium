@@ -399,7 +399,8 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
         new IconButton(base::BindRepeating(&PinRequestView::SubmitCode,
                                            base::Unretained(this)),
                        IconButton::Type::kMediumFloating, &kLockScreenArrowIcon,
-                       IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME, true);
+                       IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME,
+                       /*togglable=*/true, /*has_border=*/false);
     static_cast<IconButton*>(submit_button_)->SetToggled(true);
   } else {
     submit_button_ =
