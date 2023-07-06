@@ -75,6 +75,39 @@ class ClipboardHistoryItemView::DisplayView
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
     SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
     SetBorder(views::CreateEmptyBorder(ClipboardHistoryViews::kContentsInsets));
+
+    // Add an icon portraying the item's type if `this` is meant to display one.
+    const auto* const item = container->GetClipboardHistoryItem();
+    CHECK(item);
+    if (item->display_format() ==
+            crosapi::mojom::ClipboardHistoryDisplayFormat::kFile ||
+        chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+      CHECK(item->icon());
+      AddChildView(views::Builder<views::ImageView>()
+                       .SetImageSize(ClipboardHistoryViews::kIconSize)
+                       .SetProperty(views::kMarginsKey,
+                                    ClipboardHistoryViews::kIconMargins)
+                       .SetImage(*item->icon())
+                       .Build());
+    }
+
+    if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+      // Add the item's contents and a delete button occupying the same space.
+      AddChildView(
+          views::Builder<views::View>()
+              .SetLayoutManager(std::make_unique<views::FillLayout>())
+              .AddChildren(
+                  views::Builder<views::View>(container->CreateContentsView()),
+                  views::Builder<views::View>(container->CreateDeleteButton()))
+              .Build());
+    } else {
+      // Add the item's contents and a delete button that, when visible, takes
+      // away some of the contents' horizontal space.
+      AddChildView(views::Builder<views::View>(container->CreateContentsView())
+                       .AddChild(views::Builder<views::View>(
+                           container->CreateDeleteButton()))
+                       .Build());
+    }
   }
 
   DisplayView(const DisplayView& rhs) = delete;
@@ -193,7 +226,6 @@ void ClipboardHistoryItemView::HandleMainButtonPressEvent(
 }
 
 void ClipboardHistoryItemView::Init() {
-  views::BoxLayoutView* display_view = nullptr;
   views::Builder<views::View>(this)
       .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
       .SetLayoutManager(std::make_unique<views::FillLayout>())
@@ -204,29 +236,8 @@ void ClipboardHistoryItemView::Init() {
           views::Builder<views::View>(
               std::make_unique<ClipboardHistoryMainButton>(this))
               .CopyAddressTo(&main_button_),
-          views::Builder<views::BoxLayoutView>(
-              std::make_unique<DisplayView>(this))
-              .CopyAddressTo(&display_view)
-              .AddChild(views::Builder<views::View>(CreateContentsView())
-                            .AddChild(views::Builder<views::View>(
-                                CreateDeleteButton()))))
+          views::Builder<views::View>(std::make_unique<DisplayView>(this)))
       .BuildChildren();
-
-  const auto* const item = GetClipboardHistoryItem();
-  CHECK(item);
-  if (item->display_format() ==
-          crosapi::mojom::ClipboardHistoryDisplayFormat::kFile ||
-      chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-    CHECK(item->icon());
-    views::Builder<views::View>(display_view)
-        .AddChildAt(views::Builder<views::ImageView>()
-                        .SetImageSize(ClipboardHistoryViews::kIconSize)
-                        .SetProperty(views::kMarginsKey,
-                                     ClipboardHistoryViews::kIconMargins)
-                        .SetImage(*item->icon()),
-                    /*index=*/0)
-        .BuildChildren();
-  }
 
   subscription_ = container_->AddSelectedChangedCallback(base::BindRepeating(
       &ClipboardHistoryItemView::OnSelectionChanged, base::Unretained(this)));
