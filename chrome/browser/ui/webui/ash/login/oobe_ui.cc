@@ -131,6 +131,7 @@
 #include "chrome/grit/oobe_conditional_resources.h"
 #include "chrome/grit/oobe_unconditional_resources.h"
 #include "chrome/grit/oobe_unconditional_resources_map.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
@@ -304,6 +305,8 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
       "isChromeVoxHintImprovementsEnabled",
       ::features::
           IsExperimentalAccessibilityChromeVoxOobeDialogImprovementsEnabled());
+  source->AddBoolean("isOobeAssistantEnabled",
+                     !features::IsOobeSkipAssistantEnabled());
   source->AddBoolean("isOobeGaiaInfoScreenEnabled",
                      features::IsOobeGaiaInfoScreenEnabled());
   source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());

@@ -34,9 +34,9 @@ import {InjectedKeyboardUtils} from '../../components/keyboard_utils.js';
 import {globalOobeKeyboard, KEYBOARD_UTILS_FOR_INJECTION} from '../../components/keyboard_utils_oobe.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
+import * as OobeDebugger from '../../debug/debug.js';
 import {DisplayManager, invokePolymerMethod} from '../../display_manager.js';
 import {ActiveDirectoryErrorState, ADLoginStep, JoinConfigType} from '../common/offline_ad_login.js';
-
 
 /**
  * @constructor
@@ -567,7 +567,24 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       return;
     }
     this.isCancelDisabled = false;
+
+    if (this.openedFromDebugOverlay()) {
+      return;
+    }
     chrome.send('frameLoadingCompleted');
+  }
+
+  /** @suppress {missingProperties} */
+  openedFromDebugOverlay() {
+    if (OobeDebugger.DebuggerUI &&
+        OobeDebugger.DebuggerUI.getInstance().currentScreenId ===
+            'enterprise-enrollment') {
+      console.warn(
+          'Enrollment screen was opened using debug overlay: ' +
+          'omit chrome.send() to prevent calls on C++ side.');
+      return true;
+    }
+    return false;
   }
 
   onLicenseTypeSelected(e) {

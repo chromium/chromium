@@ -286,9 +286,9 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
           id: 'success',
           trigger: (screen) => {
             screen.updateCountdownString(
-                'Your device will shut down in 60 seconds. Remove the USB \
-                 before turning your device back on. Then you can start using \
-                 ChromeOS Flex.');
+                'Your device will shut down in 60 seconds. Remove the USB' +
+                ' before turning your device back on. Then you can start' +
+                ' using ChromeOS Flex.');
             screen.showStep('success');
           },
         },
@@ -442,28 +442,17 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     {
       id: 'enterprise-enrollment',
       kind: ScreenKind.NORMAL,
-      defaultState: 'step-signin',
-      handledSteps: 'error,ad-join',
+      handledSteps: 'error',
       suffix: 'E',
+      data: {
+        gaiaPath: 'embedded/setup/v2/chromeos',
+        gaiaUrl: 'https://accounts.google.com/',
+      },
       states: [
         {
           id: 'error',
           trigger: (screen) => {
             screen.showError('Some error message', true);
-          },
-        },
-        {
-          id: 'ad-join-encrypted',
-          trigger: (screen) => {
-            screen.setAdJoinParams('machineName', 'userName', 0, true);
-            screen.showStep('ad-join');
-          },
-        },
-        {
-          id: 'ad-join',
-          trigger: (screen) => {
-            screen.setAdJoinParams('machineName', 'userName', 0, false);
-            screen.showStep('ad-join');
           },
         },
       ],
@@ -672,10 +661,23 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     {
       id: 'gaia-signin',
       kind: ScreenKind.NORMAL,
-      handledSteps: 'allowlist-error',
+      handledSteps: 'online-gaia,allowlist-error',
       states: [
         {
-          id: 'allowlist-customer',
+          id: 'online-gaia',
+          trigger: (screen) => {
+            screen.loadAuthExtension({
+              chromeType: 'chromedevice',
+              enterpriseManagedDevice: false,
+              forceReload: true,
+              gaiaPath: 'embedded/setup/v2/chromeos',
+              gaiaUrl: 'https://accounts.google.com/',
+              hl: loadTimeData.getString('app_locale'),
+            });
+          },
+        },
+        {
+          id: 'allowlist-error',
           trigger: (screen) => {
             screen.showAllowlistCheckFailedError({
               enterpriseManaged: false,
@@ -1860,6 +1862,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       this.knownScreens = undefined;
       /** Iterator for making a series of screenshots */
       this.commandIterator_ = undefined;
+    }
+
+    get currentScreenId() {
+      return this.currentScreenId_;
     }
 
     showDebugUI() {

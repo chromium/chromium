@@ -77,7 +77,11 @@ export const commonScreensList = [
   {tag: 'add-child-element', id: 'add-child'},
   {tag: 'app-downloading-element', id: 'app-downloading'},
   {tag: 'app-launch-splash-element', id: 'app-launch-splash'},
-  {tag: 'assistant-optin-element', id: 'assistant-optin-flow'},
+  {
+    tag: 'assistant-optin-element',
+    id: 'assistant-optin-flow',
+    condition: 'isOobeAssistantEnabled',
+  },
   {tag: 'autolaunch-element', id: 'autolaunch'},
   {
     tag: 'choobe-element',
