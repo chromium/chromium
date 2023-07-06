@@ -582,7 +582,8 @@ public class LayoutManagerChrome
             }
 
             if (direction == ScrollDirection.DOWN) {
-                boolean isAccessibility = ChromeAccessibilityUtil.get().isAccessibilityEnabled();
+                boolean isAccessibility =
+                        DeviceClassManager.enableAccessibilityLayout(mHost.getContext());
                 return isTabSwitcherReady() && !isAccessibility;
             }
 
