@@ -287,7 +287,8 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void testBrowsingHistory_OneDomain_OnlyDisplaysLastVisitedDomain() {
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
                 mTabModelSelectorMock, mProfileMock)
-                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData("example.com", 1));
+                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData(
+                        new QuickDeleteDialogDelegate.DomainVisitsData("example.com", 1)));
 
         View dialogView =
                 mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
@@ -306,7 +307,8 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void testBrowsingHistory_TwoDomains_UpdatesHistoryText_Singular() {
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
                 mTabModelSelectorMock, mProfileMock)
-                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData("example.com", 2));
+                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData(
+                        new QuickDeleteDialogDelegate.DomainVisitsData("example.com", 2)));
 
         View dialogView =
                 mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
@@ -325,7 +327,8 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void testBrowsingHistory_MultipleDomains_UpdatesHistoryText_Plural() {
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
                 mTabModelSelectorMock, mProfileMock)
-                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData("example.com", 5));
+                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData(
+                        new QuickDeleteDialogDelegate.DomainVisitsData("example.com", 5)));
 
         View dialogView =
                 mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
@@ -345,7 +348,8 @@ public class QuickDeleteDialogDelegateUnitTest {
         setHistorySyncStatus(false);
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
                 mTabModelSelectorMock, mProfileMock)
-                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData("example.com", 1));
+                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData(
+                        new QuickDeleteDialogDelegate.DomainVisitsData("example.com", 1)));
 
         View dialogView =
                 mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
@@ -364,7 +368,8 @@ public class QuickDeleteDialogDelegateUnitTest {
         setHistorySyncStatus(true);
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
                 mTabModelSelectorMock, mProfileMock)
-                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData("example.com", 1));
+                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData(
+                        new QuickDeleteDialogDelegate.DomainVisitsData("example.com", 1)));
 
         View dialogView =
                 mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);

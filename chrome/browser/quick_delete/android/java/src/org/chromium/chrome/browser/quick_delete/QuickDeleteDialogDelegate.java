@@ -48,6 +48,61 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
  * A delegate responsible for providing logic around the quick delete modal dialog.
  */
 class QuickDeleteDialogDelegate {
+    /**
+     * A data-structure to hold the strings for the Browsing history row in the dialog.
+     */
+    static class DomainVisitsData {
+        final String mLastVisitedDomain;
+        final int mDomainsCount;
+
+        /**
+         * @param lastVisitedDomain The last visited domain shown inside the browsing history row of
+         *         the dialog.
+         * @param domainsCount The number of synced unique domains shown inside the browsing history
+         *         row of the dialog.
+         */
+        DomainVisitsData(@NonNull String lastVisitedDomain, int domainsCount) {
+            mLastVisitedDomain = lastVisitedDomain;
+            mDomainsCount = domainsCount;
+        }
+    }
+
+    /**
+     * Stores the data needed for the dialog.
+     */
+    static class QuickDeleteDialogData {
+        private final DomainVisitsData mDomainVisitsData;
+        private final int mTabsToCloseCount;
+
+        /**
+         * @param domainVisitsData {@link DomainVisitsData} shown inside the browsing history row.
+         * @param tabsToCloseCount the count of tabs that the user visited within range and will
+         *         be closed with the deletion.
+         */
+        QuickDeleteDialogData(@NonNull DomainVisitsData domainVisitsData, int tabsToCloseCount) {
+            mDomainVisitsData = domainVisitsData;
+            mTabsToCloseCount = tabsToCloseCount;
+        }
+
+        @VisibleForTesting
+        QuickDeleteDialogData(int tabsToCloseCount) {
+            mDomainVisitsData = new DomainVisitsData("", 0);
+            mTabsToCloseCount = tabsToCloseCount;
+        }
+
+        @VisibleForTesting
+        QuickDeleteDialogData() {
+            mDomainVisitsData = new DomainVisitsData("", 0);
+            mTabsToCloseCount = 0;
+        }
+
+        @VisibleForTesting
+        QuickDeleteDialogData(@NonNull DomainVisitsData domainVisitsData) {
+            mDomainVisitsData = domainVisitsData;
+            mTabsToCloseCount = 0;
+        }
+    }
+
     private final @NonNull ModalDialogManager mModalDialogManager;
     private final @NonNull Context mContext;
     private final @NonNull Callback<Integer> mOnDismissCallback;
@@ -79,50 +134,6 @@ class QuickDeleteDialogDelegate {
                     mOnDismissCallback.onResult(dismissalCause);
                 }
             };
-
-    /**
-     * Stores the data needed for the dialog.
-     */
-    static class QuickDeleteDialogData {
-        private final String mLastVisitedDomain;
-        private final int mDomainsCount;
-        private final int mTabsToCloseCount;
-
-        /**
-         * @param lastVisitedDomain the most recently visited synced domain on all devices.
-         * @param domainsCount the unique domain count of synced domain visited on all devices.
-         *         history disambiguation notice.
-         * @param tabsToCloseCount the count of tabs that the user visited within range and will
-         *         be closed with the deletion.
-         */
-        QuickDeleteDialogData(
-                @NonNull String lastVisitedDomain, int domainsCount, int tabsToCloseCount) {
-            mLastVisitedDomain = lastVisitedDomain;
-            mDomainsCount = domainsCount;
-            mTabsToCloseCount = tabsToCloseCount;
-        }
-
-        @VisibleForTesting
-        QuickDeleteDialogData() {
-            mLastVisitedDomain = "";
-            mDomainsCount = 0;
-            mTabsToCloseCount = 0;
-        }
-
-        @VisibleForTesting
-        QuickDeleteDialogData(int tabsToCloseCount) {
-            mLastVisitedDomain = "";
-            mDomainsCount = 0;
-            mTabsToCloseCount = tabsToCloseCount;
-        }
-
-        @VisibleForTesting
-        QuickDeleteDialogData(@NonNull String lastVisitedDomain, int domainsCount) {
-            mLastVisitedDomain = lastVisitedDomain;
-            mDomainsCount = domainsCount;
-            mTabsToCloseCount = 0;
-        }
-    }
 
     /**
      * @param context               The associated {@link Context}.
@@ -242,11 +253,11 @@ class QuickDeleteDialogDelegate {
      */
     private void addBrowsingHistoryRowIfAvailable(
             @NonNull ViewGroup row, @NonNull QuickDeleteDialogData data) {
-        if (data.mDomainsCount < 1) return;
+        if (data.mDomainVisitsData.mDomainsCount < 1) return;
 
         TemplatePreservingTextView title = row.findViewById(R.id.quick_delete_history_row_title);
         TextView subtitle = row.findViewById(R.id.quick_delete_history_row_subtitle);
-        int domainsCount = data.mDomainsCount;
+        int domainsCount = data.mDomainVisitsData.mDomainsCount;
 
         // Subtract 1 from the domainsCount to not count the lastVisitedDomain twice.
         domainsCount--;
@@ -260,7 +271,7 @@ class QuickDeleteDialogDelegate {
             title.setTemplate(browsingHistoryRowTitleTemplate);
         }
 
-        title.setText(data.mLastVisitedDomain);
+        title.setText(data.mDomainVisitsData.mLastVisitedDomain);
         row.setVisibility(View.VISIBLE);
         if (isSyncingHistory()) {
             subtitle.setVisibility(View.VISIBLE);

@@ -181,7 +181,7 @@ public class QuickDeleteController implements QuickDeleteBridge.DomainVisitsCall
             String lastVisitedDomain, int domainCount) {
         QuickDeleteDialogDelegate
                 .QuickDeleteDialogData data = new QuickDeleteDialogDelegate.QuickDeleteDialogData(
-                lastVisitedDomain, domainCount,
+                new QuickDeleteDialogDelegate.DomainVisitsData(lastVisitedDomain, domainCount),
                 mDeleteTabsFilter
                         .getListOfTabsToBeClosed(
                                 mDialogDelegate.getCurrentTimePeriodOption().getTimePeriod())
