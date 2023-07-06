@@ -2159,21 +2159,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Manifest.HasProperty"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Media_Learning_BinaryThreshold" separator=".">
-  <suffix name="BaseTable" label="Basic features, lookup table model"/>
-  <suffix name="BaseUnweightedTable"
-      label="Basic features, unweighted lookup table model"/>
-  <suffix name="BaseUnweightedTree"
-      label="Basic features, unweighted ExtraTrees model"/>
-  <suffix name="BaseUnweightedTree200"
-      label="Basic features, unweighted ExtraTrees model, 200 examples"/>
-  <suffix name="EnhancedUnweightedTree200"
-      label="Basic+extra features, unweighted ExtraTrees model, 200 examples"/>
-  <affected-histogram name="Media.Learning.BinaryThreshold.Aggregate"/>
-  <affected-histogram name="Media.Learning.BinaryThreshold.ByFeature"/>
-  <affected-histogram name="Media.Learning.BinaryThreshold.ByTrainingWeight"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="MediaAudioInputControllerTime" separator=".">
   <suffix name="CloseTime" label="Measures the time taken for DoClose()."/>
   <suffix name="CreateTime" label="Measures the time taken for DoCreate()."/>
