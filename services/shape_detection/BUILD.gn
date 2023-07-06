@@ -35,8 +35,7 @@ source_set("lib") {
       "text_detection_impl_mac.h",
       "text_detection_impl_mac.mm",
     ]
-    frameworks = [ "QuartzCore.framework" ]
-    weak_frameworks = [ "Vision.framework" ]
+    frameworks = [ "Vision.framework" ]
   } else if (is_win) {
     sources += [
       "detection_utils_win.cc",
@@ -61,8 +60,6 @@ source_set("lib") {
   if (is_mac) {
     # On macOS there is a barcode detection API available from the platform.
     sources += [
-      "barcode_detection_impl_mac.h",
-      "barcode_detection_impl_mac.mm",
       "barcode_detection_impl_mac_vision.h",
       "barcode_detection_impl_mac_vision.mm",
       "barcode_detection_impl_mac_vision_api.h",
