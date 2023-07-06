@@ -11,6 +11,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/views/animation/animation_abort_handle.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -67,6 +68,13 @@ class ASH_EXPORT DeskMiniView : public views::View,
   bool is_animating_to_remove() const { return is_animating_to_remove_; }
   void set_is_animating_to_remove(bool value) {
     is_animating_to_remove_ = value;
+  }
+
+  // Sets the animation abort handle. Please note, it will abort the existing
+  // animation first (if there is one) when a new one comes.
+  void set_animation_abort_handle(
+      std::unique_ptr<views::AnimationAbortHandle> animation_abort_handle) {
+    animation_abort_handle_ = std::move(animation_abort_handle);
   }
 
   gfx::Rect GetPreviewBoundsInScreen() const;
@@ -196,6 +204,11 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // HandleKeyEvent function detects that the escape key was pressed so that
   // OnViewBlurred does not change the name of `desk_`.
   bool should_commit_name_changes_ = true;
+
+  // A handle that aborts the active mini view animation when:
+  //   1. The mini view is destroyed as the whole bar view is gone.
+  //   2. Another new animation is triggered for the same mini view.
+  std::unique_ptr<views::AnimationAbortHandle> animation_abort_handle_;
 };
 
 }  // namespace ash

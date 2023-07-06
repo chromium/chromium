@@ -2330,10 +2330,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
 
 // Tests that launching the same desk template multiple times creates desks with
 // different/incremented names.
-//
-// TODO(crbug.com/1459519): Disabled by sheriff 2023-06-30 due to failures
-IN_PROC_BROWSER_TEST_P(DesksClientTest,
-                       DISABLED_SystemUILaunchMultipleDeskTemplates) {
+IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchMultipleDeskTemplates) {
   const base::Uuid kDeskUuid = base::Uuid::GenerateRandomV4();
   const std::u16string kDeskName(u"Test Desk Name");
 
@@ -2656,9 +2653,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, ThrottleImmediateDeskAction) {
 }
 
 // Tests save an empty desk should fail.
-//
-// TODO(crbug.com/1459519): Disabled by sheriff 2023-06-30 due to failures
-IN_PROC_BROWSER_TEST_P(DesksClientTest, DISABLED_SaveEmptyDesk) {
+IN_PROC_BROWSER_TEST_P(DesksClientTest, SaveEmptyDesk) {
   // Create a new browser and add a few tabs to it.
   Browser* browser = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
   aura::Window* window = browser->window()->GetNativeWindow();
@@ -2686,9 +2681,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, DISABLED_SaveEmptyDesk) {
 }
 
 // Tests save an active desk to library and remove it from desk list.
-//
-// TODO(crbug.com/1459519): Disabled by sheriff 2023-06-30 due to failures
-IN_PROC_BROWSER_TEST_P(DesksClientTest, DISABLED_SaveActiveDesk) {
+IN_PROC_BROWSER_TEST_P(DesksClientTest, SaveActiveDesk) {
   // Create a new browser and add a few tabs to it.
   Browser* browser = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
   aura::Window* window = browser->window()->GetNativeWindow();
@@ -2732,8 +2725,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, DeleteSavedDesk) {
 }
 
 // Tests recall a saved desk from library.
-// TODO(crbug.com/1461959): Flaky on linux-chromeos-chrome.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, DISABLED_RecallSavedDesk) {
+IN_PROC_BROWSER_TEST_P(DesksClientTest, RecallSavedDesk) {
   auto* desk_model = DesksClient::Get()->GetDeskModel();
   EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 1);
 
