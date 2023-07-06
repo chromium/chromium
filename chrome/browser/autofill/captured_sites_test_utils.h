@@ -281,8 +281,7 @@ class TestRecipeReplayer {
   TestRecipeReplayer& operator=(const TestRecipeReplayer&) = delete;
 
   ~TestRecipeReplayer();
-  void Setup();
-  void Cleanup();
+
   // Replay a test by:
   // 1. Starting a WPR server using the specified capture file.
   // 2. Replaying the specified Test Recipe file.
@@ -428,7 +427,8 @@ class TestRecipeReplayer {
   raw_ptr<TestRecipeReplayChromeFeatureActionExecutor> feature_action_executor_;
   // The Web Page Replay server that serves the captured sites.
   std::unique_ptr<captured_sites_test_utils::WebPageReplayServerWrapper>
-      web_page_replay_server_wrapper_;
+      web_page_replay_server_wrapper_ =
+          std::make_unique<WebPageReplayServerWrapper>(true);
 
   std::vector<testing::AssertionResult> validation_failures_;
 

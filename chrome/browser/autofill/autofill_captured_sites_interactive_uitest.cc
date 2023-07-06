@@ -285,7 +285,6 @@ class AutofillCapturedSitesInteractiveTest
     recipe_replayer_ =
         std::make_unique<captured_sites_test_utils::TestRecipeReplayer>(
             browser(), this);
-    recipe_replayer()->Setup();
 
     SetServerUrlLoader(std::make_unique<test::ServerUrlLoader>(
         std::make_unique<test::ServerCacheReplayer>(
@@ -300,13 +299,13 @@ class AutofillCapturedSitesInteractiveTest
     if (metrics_scraper_) {
       metrics_scraper_->ScrapeMetrics();
     }
-    recipe_replayer()->Cleanup();
+    recipe_replayer_.reset();
     // Need to delete the URL loader and its underlying interceptor on the main
     // thread. Will result in a fatal crash otherwise. The pointer has its
     // memory cleaned up twice: first time in that single thread, a second time
     // when the fixture's destructor is called, which will have no effect since
     // the raw pointer will be nullptr.
-    server_url_loader_.reset(nullptr);
+    server_url_loader_.reset();
     AutofillUiTest::TearDownOnMainThread();
   }
 
