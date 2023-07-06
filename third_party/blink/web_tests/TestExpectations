@@ -6596,3 +6596,7 @@ crbug.com/626703 virtual/css-highlight-overlay-painting/external/wpt/css/css-hig
 
 # Gardening 2023-07-06
 crbug.com/1462500 [ Win ] media/picture-in-picture/picture-in-picture-interstitial-sizing.html [ Failure Pass ]
+
+# Temporarily disable to introduce Material 3 color tokens 
+crbug.com/1456677 http/tests/devtools/security/mixed-content-sidebar.js [ Failure Pass ]
+crbug.com/1456677 http/tests/devtools/security/interstitial-sidebar.js [ Failure Pass ]
