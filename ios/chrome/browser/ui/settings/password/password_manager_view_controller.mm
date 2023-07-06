@@ -294,7 +294,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 - (instancetype)initWithChromeAccountManagerService:
                     (ChromeAccountManagerService*)accountManagerService
-                                        prefService:(PrefService*)prefService {
+                                        prefService:(PrefService*)prefService
+                                        requireAuth:(BOOL)requireAuth {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _prefService = prefService;
@@ -307,6 +308,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
     // Default behavior: search bar is enabled.
     self.shouldEnableSearchBar = YES;
+
+    // TODO(crbug.com/1462419): Configure for Auth Mode.
 
     [self updateUIForEditState];
   }

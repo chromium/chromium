@@ -493,6 +493,11 @@ extern const char kIOSForceTranslateEnabledDescription[];
 extern const char kIOSNewPostRestoreExperienceName[];
 extern const char kIOSNewPostRestoreExperienceDescription[];
 
+// Title and description for the flag to require Biometric Authentication before
+// accessing the Password Manager.
+extern const char kIOSPasswordAuthOnEntryName[];
+extern const char kIOSPasswordAuthOnEntryDescription[];
+
 // Title and description for the flag to enabled displaying and managing
 // compromised, weak and reused credentials in the Password Manager.
 extern const char kIOSPasswordCheckupName[];

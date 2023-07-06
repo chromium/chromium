@@ -578,6 +578,11 @@ const char kIOSNewPostRestoreExperienceDescription[] =
     "When enabled, a prompt will be presented after a device restore to "
     "allow the user to sign in again.";
 
+const char kIOSPasswordAuthOnEntryName[] = "Password Manager Auth on Entry";
+const char kIOSPasswordAuthOnEntryDescription[] =
+    "Requires Biometric Authentication before showing saved credentials in "
+    "Password Manager.";
+
 const char kIOSPasswordCheckupName[] = "Password Checkup";
 const char kIOSPasswordCheckupDescription[] =
     "Enables displaying and managing compromised, weak and reused credentials "

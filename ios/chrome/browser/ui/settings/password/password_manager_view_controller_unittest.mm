@@ -168,7 +168,8 @@ class BasePasswordManagerViewControllerTest
             browser_state_.get());
     return [[PasswordManagerViewController alloc]
         initWithChromeAccountManagerService:account_manager_service
-                                prefService:browser_state_.get()->GetPrefs()];
+                                prefService:browser_state_.get()->GetPrefs()
+                                requireAuth:require_auth_];
   }
 
   PasswordManagerViewController* GetPasswordManagerViewController() {
@@ -338,6 +339,7 @@ class BasePasswordManagerViewControllerTest
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;
   id passwords_settings_commands_strict_mock_;
+  bool require_auth_ = false;
 };
 
 // Test suite for PasswordManagerViewController.
