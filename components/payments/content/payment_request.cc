@@ -84,6 +84,8 @@ PaymentRequest::PaymentRequest(
               ->transaction_mode()),
       journey_logger_(delegate_->IsOffTheRecord(),
                       delegate_->GetRenderFrameHost()->GetPageUkmSourceId()) {
+  CHECK(!delegate_->GetRenderFrameHost()->IsInLifecycleState(
+      content::RenderFrameHost::LifecycleState::kPrerendering));
   payment_handler_host_ = std::make_unique<PaymentHandlerHost>(
       web_contents(), weak_ptr_factory_.GetWeakPtr());
 }
