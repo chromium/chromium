@@ -50,6 +50,9 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
   bool EnsureARCoreLoaded() override;
   base::android::ScopedJavaLocalRef<jobject> GetCurrentActivityContext()
       override;
+  base::android::ScopedJavaLocalRef<jobject> GetActivityFrom(
+      int render_process_id,
+      int render_frame_id) override;
 
   void RequestXrSession(ActivityReadyCallback ready_callback);
 

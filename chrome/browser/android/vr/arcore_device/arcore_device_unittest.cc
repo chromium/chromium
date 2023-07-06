@@ -155,6 +155,12 @@ class StubXrJavaCoordinator : public XrJavaCoordinator {
     jobject context = env->CallObjectMethod(at, getApplication);
     return base::android::ScopedJavaLocalRef<jobject>(env, context);
   }
+
+  base::android::ScopedJavaLocalRef<jobject> GetActivityFrom(
+      int render_process_id,
+      int render_frame_id) override {
+    return nullptr;
+  }
 };
 
 // Note that this must be created and destroyed on the same thread as the mojo

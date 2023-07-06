@@ -195,6 +195,13 @@ ScopedJavaLocalRef<jobject> XrSessionCoordinator::GetCurrentActivityContext() {
   return Java_XrSessionCoordinator_getCurrentActivityContext(env);
 }
 
+ScopedJavaLocalRef<jobject> XrSessionCoordinator::GetActivityFrom(
+    int render_process_id,
+    int render_frame_id) {
+  return GetActivity(
+      webxr::GetJavaWebContents(render_process_id, render_frame_id));
+}
+
 // static
 ScopedJavaLocalRef<jobject> XrSessionCoordinator::GetApplicationContext() {
   JNIEnv* env = AttachCurrentThread();

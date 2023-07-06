@@ -55,6 +55,9 @@ class XrJavaCoordinator {
   virtual bool EnsureARCoreLoaded() = 0;
   virtual base::android::ScopedJavaLocalRef<jobject>
   GetCurrentActivityContext() = 0;
+  virtual base::android::ScopedJavaLocalRef<jobject> GetActivityFrom(
+      int render_process_id,
+      int render_frame_id) = 0;
   virtual void RequestArSession(
       int render_process_id,
       int render_frame_id,
