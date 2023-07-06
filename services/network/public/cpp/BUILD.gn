@@ -544,6 +544,7 @@ source_set("tests") {
     "empty_url_loader_client_unittest.cc",
     "file_enumeration_entry_mojom_traits_unittest.cc",
     "first_party_sets_mojom_traits_unittest.cc",
+    "hash_value_mojom_traits_unittest.cc",
     "header_util_unittest.cc",
     "host_resolver_mojom_traits_unittest.cc",
     "initiator_lock_compatibility_unittest.cc",

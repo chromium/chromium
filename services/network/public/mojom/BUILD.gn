@@ -1354,6 +1354,7 @@ mojom("mojom") {
     "dhcp_wpad_url_client.mojom",
     "digitally_signed.mojom",
     "first_party_sets_access_delegate.mojom",
+    "hash_value.mojom",
     "http_cache_backend_file_operations.mojom",
     "key_pinning.mojom",
     "mdns_responder.mojom",
@@ -1565,6 +1566,19 @@ mojom("mojom") {
       traits_sources = [
         "//services/network/public/cpp/transferable_socket_mojom_traits.cc",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.SHA256HashValue"
+          cpp = "::net::SHA256HashValue"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/hash_value_mojom_traits.h" ]
+      traits_sources =
+          [ "//services/network/public/cpp/hash_value_mojom_traits.cc" ]
+      traits_public_deps = [ "//net" ]
     },
   ]
 
