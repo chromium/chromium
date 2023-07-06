@@ -41,6 +41,15 @@ void FakeDlpClient::SetDlpFilesPolicy(
 
 void FakeDlpClient::AddFiles(const dlp::AddFilesRequest request,
                              AddFilesCallback callback) {
+  std::vector<base::FilePath> added_files;
+  for (const dlp::AddFileRequest& file_request : request.add_file_requests()) {
+    added_files.emplace_back(file_request.file_path());
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnFilesAddedToDlpDaemon(added_files);
+  }
+
   if (add_files_mock_.has_value()) {
     add_files_mock_->Run(request, std::move(callback));
     return;
