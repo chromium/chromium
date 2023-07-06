@@ -41,8 +41,6 @@ typedef HeapLinkedHashSet<Member<LayoutBox>> TrackedLayoutBoxLinkedHashSet;
 typedef HeapHashMap<WeakMember<const LayoutBlock>,
                     Member<TrackedLayoutBoxLinkedHashSet>>
     TrackedDescendantsMap;
-typedef HeapHashMap<WeakMember<const LayoutBox>, Member<LayoutBlock>>
-    TrackedContainerMap;
 
 // LayoutBlock is the class that is used by any LayoutObject
 // that is a containing block.
