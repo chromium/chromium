@@ -76,16 +76,6 @@ export class BidiPreloadScript {
   }
 
   /**
-   * Adds the script to the given CDP targets by calling the
-   * `Page.addScriptToEvaluateOnNewDocument` command.
-   */
-  async initInTargets(cdpTargets: Iterable<CdpTarget>) {
-    await Promise.all(
-      Array.from(cdpTargets).map((cdpTarget) => this.initInTarget(cdpTarget))
-    );
-  }
-
-  /**
    * String to be evaluated. Wraps user-provided function so that the following
    * steps are run:
    * 1. Create channels.
@@ -101,14 +91,30 @@ export class BidiPreloadScript {
   }
 
   /**
+   * Adds the script to the given CDP targets by calling the
+   * `Page.addScriptToEvaluateOnNewDocument` command.
+   */
+  async initInTargets(
+    cdpTargets: Iterable<CdpTarget>,
+    runImmediately: boolean
+  ) {
+    await Promise.all(
+      Array.from(cdpTargets).map((cdpTarget) =>
+        this.initInTarget(cdpTarget, runImmediately)
+      )
+    );
+  }
+
+  /**
    * Adds the script to the given CDP target by calling the
    * `Page.addScriptToEvaluateOnNewDocument` command.
    */
-  async initInTarget(cdpTarget: CdpTarget) {
+  async initInTarget(cdpTarget: CdpTarget, runImmediately: boolean) {
     const addCdpPreloadScriptResult = await cdpTarget.cdpClient.sendCommand(
       'Page.addScriptToEvaluateOnNewDocument',
       {
         source: this.#getEvaluateString(),
+        runImmediately,
       }
     );
 
@@ -117,16 +123,6 @@ export class BidiPreloadScript {
       preloadScriptId: addCdpPreloadScriptResult.identifier,
     });
     this.#targetIds.add(cdpTarget.targetId);
-  }
-
-  /**
-   * Schedules the script to be run right after
-   * `Runtime.runIfWaitingForDebugger`, but does not wait for result.
-   */
-  scheduleEvaluateInTarget(cdpTarget: CdpTarget) {
-    void cdpTarget.cdpClient.sendCommand('Runtime.evaluate', {
-      expression: this.#getEvaluateString(),
-    });
   }
 
   /**
@@ -145,10 +141,8 @@ export class BidiPreloadScript {
     }
   }
 
-  /**
-   * Removes the provided cdp target from the list of cdp preload scripts.
-   */
-  cdpTargetIsGone(cdpTargetId: string) {
+  /** Removes the provided cdp target from the list of cdp preload scripts. */
+  dispose(cdpTargetId: string) {
     this.#cdpPreloadScripts = this.#cdpPreloadScripts.filter(
       (cdpPreloadScript) => cdpPreloadScript.target?.targetId !== cdpTargetId
     );

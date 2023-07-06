@@ -541,6 +541,68 @@ async def test_preloadScript_add_loadedInNewContexts(websocket, context_id,
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("with_reload", [True, False],
+                         ids=["with reload", "without reload"])
+async def test_preloadScript_add_runImmediately(websocket, html, context_id,
+                                                with_reload):
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": html(),
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    await execute_command(
+        websocket, {
+            "method": "script.addPreloadScript",
+            "params": {
+                "functionDeclaration": "() => { window.foo='bar'; }",
+            }
+        })
+
+    if with_reload:
+        await execute_command(
+            websocket, {
+                "method": "browsingContext.reload",
+                "params": {
+                    "wait": "complete",
+                    "context": context_id
+                }
+            })
+
+        result = await execute_command(
+            websocket, {
+                "method": "script.evaluate",
+                "params": {
+                    "expression": "window.foo",
+                    "target": {
+                        "context": context_id
+                    },
+                    "awaitPromise": True,
+                    "resultOwnership": "root"
+                }
+            })
+        assert result["result"] == {"type": "string", "value": 'bar'}
+    else:
+        result = await execute_command(
+            websocket, {
+                "method": "script.evaluate",
+                "params": {
+                    "expression": "window.foo",
+                    "target": {
+                        "context": context_id
+                    },
+                    "awaitPromise": True,
+                    "resultOwnership": "root"
+                }
+            })
+        assert result["result"] == {"type": "undefined"}
+
+
+@pytest.mark.asyncio
 async def test_preloadScript_remove_nonExistingScript_fails(websocket):
     with pytest.raises(Exception) as exception_info:
         await execute_command(websocket, {
