@@ -87,7 +87,7 @@ void EnterTestMode(const GURL& update_url,
                   .SetDeviceManagementURL(device_management_url.spec())
                   .SetUseCUP(false)
                   .SetInitialDelay(base::Milliseconds(100))
-                  .SetServerKeepAliveTime(base::Seconds(1))
+                  .SetServerKeepAliveTime(base::Seconds(2))
                   .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
                   .SetOverinstallTimeout(base::Seconds(5))
                   .SetIdleCheckPeriod(idle_timeout)
