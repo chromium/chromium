@@ -339,9 +339,13 @@ ImageProcessorFactory::CreateGLImageProcessorWithInputCandidatesForTesting(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     PickFormatCB out_format_picker,
     ImageProcessor::ErrorCB error_cb) {
+#if defined(ARCH_CPU_ARM_FAMILY)
   return CreateGLImageProcessorWithInputCandidates(
       input_candidates, input_visible_rect, output_size, client_task_runner,
       out_format_picker, error_cb);
+#else
+  return nullptr;
+#endif
 }
 #endif
 
