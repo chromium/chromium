@@ -2322,6 +2322,9 @@ extern const char kMessagesForAndroidSaveCardDescription[];
 extern const char kMessagesForAndroidStackingAnimationName[];
 extern const char kMessagesForAndroidStackingAnimationDescription[];
 
+extern const char kMobilePWAInstallPromptMlName[];
+extern const char kMobilePWAInstallPromptMlDescription[];
+
 extern const char kNetworkServiceInProcessName[];
 extern const char kNetworkServiceInProcessDescription[];
 

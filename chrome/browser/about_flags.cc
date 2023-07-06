@@ -10554,6 +10554,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kSmartCard)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"ml-mobile-pwa-prompt", flag_descriptions::kMobilePWAInstallPromptMlName,
+     flag_descriptions::kMobilePWAInstallPromptMlDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(webapps::features::kInstallPromptSegmentation)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -60161,6 +60161,7 @@ from previous Chrome versions.
   <int value="-1865499199" label="SidePanelDragAndDrop:enabled"/>
   <int value="-1865155026" label="AutoFetchOnNetErrorPage:enabled"/>
   <int value="-1863962664" label="LockScreenNotifications:enabled"/>
+  <int value="-1863893966" label="InstallPromptSegmentation:enabled"/>
   <int value="-1863249844" label="AccessibilityService:disabled"/>
   <int value="-1863020461" label="PasswordChangeInSettings:enabled"/>
   <int value="-1861814223" label="MidiManagerDynamicInstantiation:enabled"/>
@@ -66485,6 +66486,7 @@ from previous Chrome versions.
   <int value="1414652547" label="LinkCapturingAutoDisplayIntentPicker:enabled"/>
   <int value="1414918327" label="enable-accelerated-video-decode"/>
   <int value="1416592483" label="ash-enable-mirrored-screen"/>
+  <int value="1416845437" label="InstallPromptSegmentation:disabled"/>
   <int value="1416970206" label="ArcGameModeFeature:disabled"/>
   <int value="1418054870" label="SpecialLocale:enabled"/>
   <int value="1419806576" label="OsFeedback:enabled"/>
