@@ -12,6 +12,7 @@
 #include "components/ukm/ukm_recorder_observer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -322,6 +323,37 @@ TEST(UkmRecorderImplTest, ObserverNotifiedOnSourceURLUpdate) {
   urls.emplace_back(url);
   test_ukm_recorder.UpdateSourceURL(source_id, url);
   test_observer.WaitUpdateSourceURLCallback(source_id, urls);
+}
+
+// Tests that UkmRecorderObserver is notified on source URL updates.
+TEST(UkmRecorderImplTest, ObserverNotifiedWhenNotRecording) {
+  base::test::TaskEnvironment env;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  TestUkmObserver test_observer(&test_ukm_recorder);
+  test_ukm_recorder.DisableRecording();
+
+  GURL url("http://abc.com");
+  std::vector<GURL> urls;
+  urls.emplace_back(url);
+
+  // Updating source should notify observers when recording is disabled.
+  uint64_t source_id1 = 345;
+  test_ukm_recorder.UpdateSourceURL(source_id1, url);
+  test_observer.WaitUpdateSourceURLCallback(source_id1, urls);
+
+  // Updating app URLs should notify observers when recording is disabled.
+  uint64_t source_id2 = 12;
+  test_ukm_recorder.UpdateAppURL(source_id2, url, AppType::kPWA);
+  test_observer.WaitUpdateSourceURLCallback(source_id2, urls);
+
+  // Recording navigation data should notify observers when recording is
+  // disabled.
+  SourceId source_id3 = ConvertToSourceId(15, SourceIdType::NAVIGATION_ID);
+  UkmSource::NavigationData data;
+  data.urls.push_back(url);
+  data.urls.emplace_back("https://bcd.com");
+  test_ukm_recorder.RecordNavigation(source_id3, data);
+  test_observer.WaitUpdateSourceURLCallback(source_id3, data.urls);
 }
 
 // Tests that UkmRecorderObserver is notified on purge.

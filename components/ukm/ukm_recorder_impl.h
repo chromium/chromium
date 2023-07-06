@@ -202,7 +202,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
  private:
   friend ::metrics::UkmBrowserTestBase;
   friend ::ukm::debug::UkmDebugDataExtractor;
-  friend ::ukm::UkmRecorderImplTest;
   friend ::ukm::UkmTestHelper;
   friend ::ukm::UkmUtilsForTest;
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, IsSampledIn);
@@ -212,6 +211,8 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, WebIdentityScopeUrl);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, ObserverNotifiedOnNewEntry);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, AddRemoveObserver);
+  FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest,
+                           ObserverNotifiedWhenNotRecording);
 
   struct MetricAggregate {
     uint64_t total_count = 0;
@@ -238,16 +239,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
     uint64_t dropped_due_to_unconfigured = 0;
   };
 
-  // Result for ShouldRecordUrl() method.
-  enum class ShouldRecordUrlResult {
-    kOk = 0,        // URL will be recorded and observers will be notified.
-    kObserverOnly,  // The client has opted out from uploading UKM metrics.
-                    // As a result, observers will be notified but URL will not
-                    // be recorded.
-    kDropped,       // The URL is not allowed to be recorded and will be
-                    // dropped. Observers are not nofitied either.
-  };
-
   using MetricAggregateMap = std::map<uint64_t, MetricAggregate>;
 
   // Marks for deletion if the |source_id| is of a certain type.
@@ -260,8 +251,7 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
                               bool has_recorded_reason) const;
 
   // Returns the result whether |sanitized_url| should be recorded.
-  ShouldRecordUrlResult ShouldRecordUrl(SourceId source_id,
-                                        const GURL& sanitized_url) const;
+  bool ShouldRecordUrl(SourceId source_id, const GURL& sanitized_url) const;
 
   void RecordSource(std::unique_ptr<UkmSource> source);
 
