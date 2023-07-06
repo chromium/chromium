@@ -207,6 +207,10 @@ using web::WebState;
   [self updateLatestCommittedURLForWebState:webState];
 }
 
+- (void)webStateDestroyed:(web::WebState*)webState {
+  webState->RemoveObserver(_webStateObserverBridge.get());
+}
+
 #pragma mark - private
 
 /// Removes whatever the previously remembered URL was for a given webstate.
