@@ -35,17 +35,20 @@ BrowserLauncher* BrowserLauncher::GetForProfile(Profile* profile) {
       profile->GetUserData(kBrowserLauncherKey));
 }
 
-void BrowserLauncher::LaunchForFullRestore(bool skip_crash_restore) {
-  DCHECK(!is_launching_for_full_restore_);
+bool BrowserLauncher::LaunchForLastOpenedProfiles(bool skip_crash_restore) {
+  DCHECK(!is_launching_for_last_opened_profiles_);
 
-  // There must not be any previously opened browsers as this could change the
-  // list of profiles returned from `GetLastOpenedProfiles()` below.
-  if (BrowserList::GetInstance()->size() != 0) {
-    LOG(ERROR) << "Cannot full restore with pre-existing browser instances.";
-    return;
+  // Launching for last opened profiles can only complete successfully if
+  // ProfileManager has not yet updated the list of last opened profiles for the
+  // current session.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (profile_manager->has_updated_last_opened_profiles()) {
+    LOG(ERROR) << "Cannot launch for last opened profiles because last opened "
+                  "profiles have been updated for this session.";
+    return false;
   }
 
-  base::AutoReset<bool> resetter(&is_launching_for_full_restore_, true);
+  base::AutoReset<bool> resetter(&is_launching_for_last_opened_profiles_, true);
 
   // Ensure that we do not start with the profile picker.
   StartupProfileInfo profile_info{profile_.get(),
@@ -54,8 +57,7 @@ void BrowserLauncher::LaunchForFullRestore(bool skip_crash_restore) {
   // Get the last opened profiles from the last session. This is only valid
   // before any browsers have been opened for the current session as opening /
   // closing browsers will cause the last opened profiles to change.
-  auto last_opened_profiles =
-      g_browser_process->profile_manager()->GetLastOpenedProfiles();
+  auto last_opened_profiles = profile_manager->GetLastOpenedProfiles();
 
   // Currently the kNoStartupWindow flag is set when lacros-chrome is launched
   // with crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow. The intention
@@ -82,4 +84,6 @@ void BrowserLauncher::LaunchForFullRestore(bool skip_crash_restore) {
       *lacros_command_line, base::FilePath(),
       chrome::startup::IsProcessStartup::kYes, chrome::startup::IsFirstRun::kNo,
       profile_info, last_opened_profiles);
+
+  return true;
 }

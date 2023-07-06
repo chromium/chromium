@@ -338,6 +338,10 @@ class ProfileManager : public Profile::Delegate {
   // Notifies `OnProfileMarkedForPermanentDeletion()` to the observers.
   void NotifyOnProfileMarkedForPermanentDeletion(Profile* profile);
 
+  bool has_updated_last_opened_profiles() const {
+    return has_updated_last_opened_profiles_;
+  }
+
  protected:
   // Creates a new profile by calling into the profile's profile creation
   // method. Virtual so that unittests can return a TestingProfile instead
@@ -575,6 +579,11 @@ class ProfileManager : public Profile::Delegate {
   // during the last run. This is why they are kept in a list, not in a set.
   std::vector<Profile*> active_profiles_;
   bool closing_all_browsers_ = false;
+
+  // Tracks whether the the list of last opened Profiles has been updated for
+  // the current session. If this is false `GetLastOpenedProfiles()` will return
+  // the list of Profiles that were open the last time Chrome was running.
+  bool has_updated_last_opened_profiles_ = false;
 
   // Becomes true once the refcount for any profile hits 0. This is used to
   // measure how often DestroyProfileOnBrowserClose logic triggers.

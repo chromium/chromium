@@ -650,3 +650,130 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
   EXPECT_EQ(1u, chrome::GetBrowserCount(&profile1));
   EXPECT_EQ(1u, chrome::GetBrowserCount(&profile2));
 }
+
+// Tests that if the previous session ended as the result of a crash, and a
+// Chrome app is opened before the browser, the browser will still open for the
+// last session's profiles.
+// The test runs the following sequence.
+//   1. Setup the previous session with two browsers of different profiles.
+//   2. Simulate a crash for this session.
+//   3. Start a new session, lacros starts in its windowless state.
+//   4. Launch an app.
+//   5. Attempt to perform a Launch action for the browser. This will attempt to
+//      launch lacros for the last opened profiles.
+// Even if the user opens the app browser before opening lacros, the last
+// session profile windows should still open as expected.
+// This is a regression test for crbug.com/1455065.
+IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
+                       PRE_LaunchForLastProfilesPostCrashAppOpenedFirst) {
+  // Simulate a full restore by creating the profiles in a PRE_ test.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Load the main profile and create one additional profile.
+  base::FilePath dest_path = profile_manager->user_data_dir();
+  Profile& profile1 = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GetPrimaryUserProfilePath());
+  Profile& profile2 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
+  DisableWelcomePages({&profile1, &profile2});
+
+  // Don't delete Profiles too early.
+  ScopedProfileKeepAlive profile1_keep_alive(
+      &profile1, ProfileKeepAliveOrigin::kBrowserWindow);
+  ScopedProfileKeepAlive profile2_keep_alive(
+      &profile2, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  // Create a browser for each profile and navigate the tab to a unique URL.
+  Browser* browser1 = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, &profile1, true));
+  chrome::NewTab(browser1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser1, embedded_test_server()->GetURL("/empty.html")));
+
+  Browser* browser2 = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, &profile2, true));
+  chrome::NewTab(browser2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser2, embedded_test_server()->GetURL("/form.html")));
+
+  // Set different startup preferences for the 2 profiles. Despite these
+  // differences the browsers for each profile should relaunch as expected with
+  // the crash recovery flow.
+  std::vector<GURL> urls1;
+  urls1.push_back(ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title1.html"))));
+  std::vector<GURL> urls2;
+  urls2.push_back(ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title2.html"))));
+
+  SessionStartupPref pref1(SessionStartupPref::URLS);
+  pref1.urls = urls1;
+  SessionStartupPref::SetStartupPref(&profile1, pref1);
+  SessionStartupPref pref2(SessionStartupPref::URLS);
+  pref2.urls = urls2;
+  SessionStartupPref::SetStartupPref(&profile2, pref2);
+
+  profile1.GetPrefs()->CommitPendingWrite();
+  profile2.GetPrefs()->CommitPendingWrite();
+
+  // Ensure the session ends with the above two profiles.
+  auto last_opened_profiles =
+      g_browser_process->profile_manager()->GetLastOpenedProfiles();
+  EXPECT_EQ(2u, last_opened_profiles.size());
+  EXPECT_TRUE(base::Contains(last_opened_profiles, &profile1));
+  EXPECT_TRUE(base::Contains(last_opened_profiles, &profile2));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
+                       LaunchForLastProfilesPostCrashAppOpenedFirst) {
+  // Browser launch should be suppressed with the kNoStartupWindow switch.
+  ASSERT_FALSE(browser());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  // Re-recreate the last two profiles.
+  base::FilePath dest_path = profile_manager->user_data_dir();
+  Profile& profile1 = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GetPrimaryUserProfilePath());
+  Profile& profile2 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
+
+  // The profiles to be restored should match those setup in the PRE_ test.
+  auto last_opened_profiles =
+      g_browser_process->profile_manager()->GetLastOpenedProfiles();
+  EXPECT_EQ(2u, last_opened_profiles.size());
+  EXPECT_TRUE(base::Contains(last_opened_profiles, &profile1));
+  EXPECT_TRUE(base::Contains(last_opened_profiles, &profile2));
+
+  // Disable the profile picker and set the exit type to crashed.
+  g_browser_process->local_state()->SetInteger(
+      prefs::kBrowserProfilePickerAvailabilityOnStartup,
+      static_cast<int>(ProfilePicker::AvailabilityOnStartup::kDisabled));
+  ExitTypeService::GetInstanceForProfile(&profile1)
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
+  ExitTypeService::GetInstanceForProfile(&profile2)
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
+
+  // First launch the app. Only the app browser should exist.
+  web_app::AppId app_id = InstallPWA(&profile1, GetWebAppStartUrl());
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(&profile1, app_id);
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  ASSERT_NE(app_browser, nullptr);
+  ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  // Launch the browser. A browser window for each last profile should be
+  // restored.
+  base::test::TestFuture<void> launch_future;
+  browser_service()->Launch(0, launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Wait()) << "Launch did not trigger the callback.";
+
+  // Make sure 2 windows are preserved, one for each profile.
+  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, chrome::GetBrowserCount(&profile1));
+  EXPECT_EQ(1u, chrome::GetBrowserCount(&profile2));
+}

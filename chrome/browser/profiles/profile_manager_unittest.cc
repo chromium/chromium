@@ -1270,6 +1270,7 @@ TEST_F(ProfileManagerTest, LastOpenedProfiles) {
   std::vector<Profile*> last_opened_profiles =
       profile_manager->GetLastOpenedProfiles();
   ASSERT_EQ(0U, last_opened_profiles.size());
+  EXPECT_FALSE(profile_manager->has_updated_last_opened_profiles());
 
   // Create a browser for profile1.
   Browser::CreateParams profile1_params(profile1, true);
@@ -1278,6 +1279,7 @@ TEST_F(ProfileManagerTest, LastOpenedProfiles) {
 
   last_opened_profiles = profile_manager->GetLastOpenedProfiles();
   ASSERT_EQ(1U, last_opened_profiles.size());
+  EXPECT_TRUE(profile_manager->has_updated_last_opened_profiles());
   EXPECT_EQ(profile1, last_opened_profiles[0]);
 
   // And for profile2.
@@ -1287,6 +1289,7 @@ TEST_F(ProfileManagerTest, LastOpenedProfiles) {
 
   last_opened_profiles = profile_manager->GetLastOpenedProfiles();
   ASSERT_EQ(2U, last_opened_profiles.size());
+  EXPECT_TRUE(profile_manager->has_updated_last_opened_profiles());
   EXPECT_EQ(profile1, last_opened_profiles[0]);
   EXPECT_EQ(profile2, last_opened_profiles[1]);
 
@@ -1295,6 +1298,7 @@ TEST_F(ProfileManagerTest, LastOpenedProfiles) {
       CreateBrowserWithTestWindowForParams(profile1_params));
   last_opened_profiles = profile_manager->GetLastOpenedProfiles();
   ASSERT_EQ(2U, last_opened_profiles.size());
+  EXPECT_TRUE(profile_manager->has_updated_last_opened_profiles());
   EXPECT_EQ(profile1, last_opened_profiles[0]);
   EXPECT_EQ(profile2, last_opened_profiles[1]);
 
@@ -1302,17 +1306,22 @@ TEST_F(ProfileManagerTest, LastOpenedProfiles) {
   browser1a.reset();
   last_opened_profiles = profile_manager->GetLastOpenedProfiles();
   ASSERT_EQ(2U, last_opened_profiles.size());
+  EXPECT_TRUE(profile_manager->has_updated_last_opened_profiles());
   EXPECT_EQ(profile1, last_opened_profiles[0]);
   EXPECT_EQ(profile2, last_opened_profiles[1]);
 
   browser1b.reset();
   last_opened_profiles = profile_manager->GetLastOpenedProfiles();
   ASSERT_EQ(1U, last_opened_profiles.size());
+  EXPECT_TRUE(profile_manager->has_updated_last_opened_profiles());
   EXPECT_EQ(profile2, last_opened_profiles[0]);
 
+  // `has_updated_last_opened_profiles()` should return true even after all
+  // profiles have been cleared from the list.
   browser2.reset();
   last_opened_profiles = profile_manager->GetLastOpenedProfiles();
   ASSERT_EQ(0U, last_opened_profiles.size());
+  EXPECT_TRUE(profile_manager->has_updated_last_opened_profiles());
 }
 
 TEST_F(ProfileManagerTest, LastOpenedProfilesAtShutdown) {

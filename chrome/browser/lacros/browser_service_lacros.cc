@@ -571,11 +571,11 @@ void BrowserServiceLacros::NewWindowWithProfile(
 
   display::ScopedDisplayForNewWindows scoped(target_display_id);
 
-  if (HasPendingUncleanExit(profile)) {
+  if (HasPendingUncleanExit(profile) &&
+      BrowserLauncher::GetForProfile(profile)->LaunchForLastOpenedProfiles(
+          /*skip_crash_restore=*/false)) {
     // Restore all previously open profiles when recovering from a crash with
-    // the profile picker disabled, which is equivalent to performing a
-    // FullRestore.
-    OpenForFullRestoreWithProfile(/*skip_crash_restore=*/false, profile);
+    // the profile picker disabled.
     std::move(callback).Run();
     return;
   }
@@ -689,11 +689,11 @@ void BrowserServiceLacros::LaunchOrNewTabWithProfile(
 
   display::ScopedDisplayForNewWindows scoped(target_display_id);
 
-  if (HasPendingUncleanExit(profile)) {
+  if (HasPendingUncleanExit(profile) &&
+      BrowserLauncher::GetForProfile(profile)->LaunchForLastOpenedProfiles(
+          /*skip_crash_restore=*/false)) {
     // Restore all previously open profiles when recovering from a crash with
-    // the profile picker disabled, which is equivalent to performing a
-    // FullRestore.
-    OpenForFullRestoreWithProfile(/*skip_crash_restore=*/false, profile);
+    // the profile picker disabled.
     std::move(callback).Run();
     return;
   }
@@ -770,7 +770,7 @@ void BrowserServiceLacros::OpenForFullRestoreWithProfile(
                     "Aborting the requested action.";
     return;
   }
-  BrowserLauncher::GetForProfile(profile)->LaunchForFullRestore(
+  BrowserLauncher::GetForProfile(profile)->LaunchForLastOpenedProfiles(
       skip_crash_restore);
 }
 
