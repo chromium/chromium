@@ -103,9 +103,9 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
       // tasks can safely be executed.
       scoped_refptr<base::SequencedTaskRunner> watchdog_sequence =
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-      watchdog_ = std::unique_ptr<ModelExecutionTimeoutWatchdog,
-                                  base::OnTaskRunnerDeleter>(
-          new ModelExecutionTimeoutWatchdog(
+      using WatchdogType = ModelExecutionTimeoutWatchdog<OutputType, InputType>;
+      watchdog_ = std::unique_ptr<WatchdogType, base::OnTaskRunnerDeleter>(
+          new WatchdogType(
               watchdog_sequence, optimization_target_,
               model_inference_timeout.value_or(
                   features::ModelExecutionWatchdogDefaultTimeout())),
@@ -248,12 +248,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
       // IMPORTANT: Once the arm method is called, disarm must be called when
       // the model execution finishes. Do NOT early-return in this next block.
       if (watchdog_) {
-        // |base::Unretained| is safe here since the watchdog itself guarantees
-        // the lifetime of the stored pointer will not extend beyond when it is
-        // disarmed.
-        watchdog_->ArmWithTask(
-            base::BindOnce(&ModelExecutionTask::Cancel,
-                           base::Unretained(loaded_model_.get())));
+        watchdog_->ArmWithTask(loaded_model_.get());
       }
       {
         TRACE_EVENT1("browser", "OptGuideModelExecutor::Execute",
@@ -380,7 +375,8 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
 
   bool should_unload_model_on_complete_ = true;
 
-  std::unique_ptr<ModelExecutionTimeoutWatchdog, base::OnTaskRunnerDeleter>
+  std::unique_ptr<ModelExecutionTimeoutWatchdog<OutputType, InputType>,
+                  base::OnTaskRunnerDeleter>
       watchdog_;
 
   scoped_refptr<base::SequencedTaskRunner> execution_task_runner_;
