@@ -1114,4 +1114,26 @@ public class BookmarkManagerMediatorTest {
                 mModelList.get(2).model.get(
                         ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
     }
+
+    // Tests directly related to a regression.
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testShowInFolder() { // https://crbug.com/1456275
+        when(mBookmarkModel.searchBookmarks(eq("test"), anyInt()))
+                .thenReturn(Collections.singletonList(mBookmarkId21));
+        finishLoading();
+
+        mMediator.openFolder(mFolderId1);
+        mMediator.openSearchUi();
+        mMediator.search("test");
+        BasicListMenu menu =
+                (BasicListMenu) mMediator.createListMenuForBookmark(mModelList.get(1).model);
+        assertNotNull(menu);
+        assertFalse(mModelList.get(1).model.get(BookmarkManagerProperties.IS_HIGHLIGHTED));
+
+        // show in folder.
+        menu.onItemClick(null, null, 4, 0);
+        assertTrue(mModelList.get(1).model.get(BookmarkManagerProperties.IS_HIGHLIGHTED));
+    }
 }

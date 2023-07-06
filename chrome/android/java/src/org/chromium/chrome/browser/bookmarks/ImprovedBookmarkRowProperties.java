@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -57,10 +58,11 @@ class ImprovedBookmarkRowProperties {
     static final WritableObjectPropertyKey<ShoppingAccessoryCoordinator>
             SHOPPING_ACCESSORY_COORDINATOR = new WritableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_KEYS = {BookmarkManagerProperties.BOOKMARK_LIST_ENTRY,
-            BookmarkManagerProperties.BOOKMARK_ID, BookmarkManagerProperties.LOCATION, TITLE,
-            DESCRIPTION, START_IMAGE_VISIBILITY, START_AREA_BACKGROUND_COLOR, START_ICON_TINT,
+    private static final PropertyKey[] IMPROVED_BOOKAMRK_ROW_PROPERTIES = {TITLE, DESCRIPTION,
+            START_IMAGE_VISIBILITY, START_AREA_BACKGROUND_COLOR, START_ICON_TINT,
             START_ICON_DRAWABLE, START_IMAGE_FOLDER_DRAWABLES, FOLDER_CHILD_COUNT, ACCESSORY_VIEW,
             LIST_MENU_BUTTON_DELEGATE, POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED,
             EDITABLE, OPEN_BOOKMARK_CALLBACK, SHOPPING_ACCESSORY_COORDINATOR};
+    static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
+            BookmarkManagerProperties.ALL_KEYS, IMPROVED_BOOKAMRK_ROW_PROPERTIES);
 }
