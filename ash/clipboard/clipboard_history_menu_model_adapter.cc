@@ -52,8 +52,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kHeaderBetweenChildSpacing = 16;
-
 // Returns whether the given `index` in the menu model's item list corresponds
 // to the menu header.
 bool IsHeaderIndex(size_t index) {
@@ -84,39 +82,27 @@ bool IsFooterIndex(size_t index, size_t num_clipboard_history_items) {
               : num_clipboard_history_items);
 }
 
-// Populates `container` with a menu title and remove-all button to appear at
-// the top of the clipboard history menu.
+// Populates `container` with a menu title to appear at the top of the clipboard
+// history menu.
 void InsertHeaderContent(views::MenuItemView* container) {
   container->AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
           .SetBorder(
               views::CreateEmptyBorder(ClipboardHistoryViews::kContentsInsets))
-          .SetBetweenChildSpacing(kHeaderBetweenChildSpacing)
           .AfterBuild(base::BindOnce([](views::BoxLayoutView* header) {
             const int width =
                 clipboard_history_util::GetPreferredItemViewWidth();
             header->SetPreferredSize(
                 gfx::Size(width, header->GetHeightForWidth(width)));
           }))
-          .AddChildren(
-              views::Builder<views::Label>(
-                  bubble_utils::CreateLabel(
-                      TypographyToken::kCrosButton1,
-                      l10n_util::GetStringUTF16(
-                          IDS_ASH_CLIPBOARD_HISTORY_HEADER_TITLE),
-                      cros_tokens::kCrosSysOnSurface))
-                  .SetID(clipboard_history_util::kMenuTitleViewID)
-                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                  .SetProperty(views::kFlexBehaviorKey,
-                               views::FlexSpecification().WithWeight(1)),
-              views::Builder<views::Label>(
-                  bubble_utils::CreateLabel(
-                      TypographyToken::kCrosButton2,
-                      l10n_util::GetStringUTF16(
-                          IDS_ASH_CLIPBOARD_HISTORY_REMOVE_ALL_BUTTON),
-                      cros_tokens::kCrosSysPrimary))
-                  .SetID(clipboard_history_util::kRemoveAllButtonViewID))
+          .AddChild(views::Builder<views::Label>(
+                        bubble_utils::CreateLabel(
+                            TypographyToken::kCrosButton1,
+                            l10n_util::GetStringUTF16(
+                                IDS_ASH_CLIPBOARD_HISTORY_HEADER_TITLE),
+                            cros_tokens::kCrosSysOnSurface))
+                        .SetHorizontalAlignment(gfx::ALIGN_LEFT))
           .Build());
 }
 
@@ -254,7 +240,7 @@ void ClipboardHistoryMenuModelAdapter::Run(
 
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     // Add a placeholder non-interactive item that will contain the clipboard
-    // history menu's header, consisting of a title and a remove-all button.
+    // history menu's header.
     model_->AddTitle(std::u16string());
   }
 

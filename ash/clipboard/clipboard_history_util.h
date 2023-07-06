@@ -60,8 +60,6 @@ enum MenuViewID {
   // We start at 1 because 0 is not a valid view ID.
   kDeleteButtonViewID = 1,
   kMainButtonViewID,
-  kMenuTitleViewID,
-  kRemoveAllButtonViewID,
 };
 
 // Modes for specifying a clipboard history pause's semantics.

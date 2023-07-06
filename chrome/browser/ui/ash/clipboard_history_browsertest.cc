@@ -1772,8 +1772,7 @@ class ClipboardHistoryRefreshEnabledBrowserTest
 };
 
 // Verifies that clicking the clipboard history menu's header does nothing and
-// that tab and arrow key traversal pass over the header.
-// TODO(http://b/267693860): Update this test when the remove-all button works.
+// that tab and arrow key traversal passes over the header.
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshEnabledBrowserTest,
                        HeaderNotInteractive) {
   // Write some things to the clipboard.
@@ -1790,25 +1789,11 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshEnabledBrowserTest,
   EXPECT_EQ(menu->GetMenuItemsCount(), 2u);
   ASSERT_EQ(menu->GetModelForTest()->GetItemCount(), 3u);
 
+  // Verify that clicking on the header does nothing.
   EXPECT_TRUE(textfield_->GetText().empty());
   const auto* const header = menu->GetMenuItemViewAtForTest(/*index=*/0u);
   ASSERT_TRUE(header);
-
-  // Verify that clicking on the header's title does nothing.
-  const auto* const title =
-      header->GetViewByID(ash::clipboard_history_util::kMenuTitleViewID);
-  ASSERT_TRUE(title);
-  GetEventGenerator()->MoveMouseTo(title->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
-  EXPECT_TRUE(textfield_->GetText().empty());
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-
-  // Verify that clicking on the header's remove-all button does nothing.
-  const auto* const remove_all_button =
-      header->GetViewByID(ash::clipboard_history_util::kRemoveAllButtonViewID);
-  ASSERT_TRUE(remove_all_button);
-  GetEventGenerator()->MoveMouseTo(
-      remove_all_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->MoveMouseTo(header->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickLeftButton();
   EXPECT_TRUE(textfield_->GetText().empty());
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());

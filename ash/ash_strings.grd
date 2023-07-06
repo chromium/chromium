@@ -5945,9 +5945,6 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_CLIPBOARD_HISTORY_HEADER_TITLE" desc="The title of the ChromeOS clipboard history menu, which shows the user's most recently copied items.">
         Clipboard
       </message>
-      <message name="IDS_ASH_CLIPBOARD_HISTORY_REMOVE_ALL_BUTTON" desc="The display text for a button in the top-right corner of the ChromeOS clipboard history menu. Users can activate this button to clear their clipboard history (remove all items from the menu).">
-        Remove all
-      </message>
       <message name="IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE" desc="The label used for the multipaste nudge, to be seen once the user copies and pastes multiple times in a short time span.">
         Press <ph name="SHORTCUT_KEY_NAME">$1<ex>Launcher</ex></ph> + V to view your clipboard. The last 5 items you've copied are saved to your clipboard.
       </message>
