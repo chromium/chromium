@@ -52,9 +52,6 @@ constexpr char kMyFilesUuid[] = "0000000000000000000000000000CAFEF00D2019";
 // Dummy UUID for testing.
 constexpr char kDummyUuid[] = "00000000000000000000000000000000DEADBEEF";
 
-constexpr char kArcppMediaSharingServicesJobName[] =
-    "arcpp_2dmedia_2dsharing_2dservices";
-
 // The minimum and maximum values of app UID in Android. Defined in Android's
 // system/core/libcutils/include/private/android_filesystem_config.h.
 constexpr uint32_t kAndroidAppUidStart = 10000;

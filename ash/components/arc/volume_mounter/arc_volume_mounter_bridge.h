@@ -24,6 +24,9 @@ class BrowserContext;
 
 namespace arc {
 
+constexpr char kArcppMediaSharingServicesJobName[] =
+    "arcpp_2dmedia_2dsharing_2dservices";
+
 class ArcBridgeService;
 
 // This class handles Volume mount/unmount requests from cros-disks and

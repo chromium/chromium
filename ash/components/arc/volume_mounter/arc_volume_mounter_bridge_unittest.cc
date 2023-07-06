@@ -10,6 +10,7 @@
 #include "ash/components/arc/mojom/volume_mounter.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/session/arc_vm_client_adapter.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_volume_mounter_instance.h"
 #include "ash/components/arc/test/test_browser_context.h"
@@ -18,10 +19,15 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
+#include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/components/disks/disks_prefs.h"
+#include "components/account_id/account_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/cros-disks/dbus-constants.h"
@@ -31,12 +37,18 @@ namespace {
 
 using ash::disks::DiskMountManager;
 
+constexpr int kValidMediaProviderUID = 10062;
 constexpr char kMyFilesMountPath[] = "/home/chronos/user/MyFiles";
 
 void SetArcAndroidSdkVersionForTesting(int version) {
   base::SysInfo::SetChromeOSVersionInfoForTest(
       base::StringPrintf("CHROMEOS_ARC_ANDROID_SDK_VERSION=%d", version),
       base::Time::Now());
+}
+
+void ResetArcAndroidSdkVersionForTesting(int version) {
+  base::SysInfo::ResetChromeOSVersionInfoForTest();
+  SetArcAndroidSdkVersionForTesting(version);
 }
 
 class FakeArcVolumeMounterBridgeDelegate
@@ -78,6 +90,7 @@ class ArcVolumeMounterBridgeTest : public testing::Test {
   ~ArcVolumeMounterBridgeTest() override = default;
 
   void SetUp() override {
+    ash::UpstartClient::InitializeFake();
     ash::disks::DiskMountManager::InitializeForTesting(
         new ash::disks::FakeDiskMountManager());
 
@@ -96,6 +109,10 @@ class ArcVolumeMounterBridgeTest : public testing::Test {
     WaitForInstanceReady(
         ArcServiceManager::Get()->arc_bridge_service()->volume_mounter());
 
+    // Set a non-empty fake user ID.
+    ArcServiceManager::Get()->set_account_id(
+        AccountId::FromUserEmail("test@gmail.com"));
+
     // Assume ARC++ P by default to simplify test cases that check sending mount
     // point information to ARC.
     base::CommandLine::ForCurrentProcess()->RemoveSwitch(
@@ -107,6 +124,7 @@ class ArcVolumeMounterBridgeTest : public testing::Test {
     base::SysInfo::ResetChromeOSVersionInfoForTest();
     bridge_.reset();
     ash::disks::DiskMountManager::Shutdown();
+    ash::UpstartClient::Shutdown();
   }
 
   ArcVolumeMounterBridge* bridge() { return bridge_.get(); }
@@ -122,6 +140,10 @@ class ArcVolumeMounterBridgeTest : public testing::Test {
   }
 
   FakeArcVolumeMounterBridgeDelegate* delegate() { return &delegate_; }
+
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -341,6 +363,180 @@ TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents) {
   EXPECT_FALSE(mount_point_info_myfiles.is_null());
   EXPECT_EQ(mount_point_info_myfiles->mount_event,
             DiskMountManager::MountEvent::MOUNTING);
+}
+
+TEST_F(ArcVolumeMounterBridgeTest, RequestAllMountPoints_P_Container) {
+  // Use ARC++ (container) P.
+  ResetArcAndroidSdkVersionForTesting(arc::kArcVersionP);
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      ash::switches::kEnableArcVm);
+
+  // In ARC++ P, the bridge is always ready to send mount points.
+  bridge()->RequestAllMountPoints();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+}
+
+TEST_F(ArcVolumeMounterBridgeTest, RequestAllMountPoints_R_VM) {
+  // Use ARCVM R.
+  ResetArcAndroidSdkVersionForTesting(arc::kArcVersionR);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVm);
+
+  // Starting job succeeds only for arcvm-media-sharing-services.
+  ash::FakeUpstartClient::Get()->set_start_job_cb(base::BindRepeating(
+      [](const std::string& job_name, const std::vector<std::string>& env) {
+        return ash::FakeUpstartClient::StartJobResult(
+            job_name == kArcVmMediaSharingServicesJobName);
+      }));
+
+  // In ARCVM R, the bridge is not ready to send mount points before
+  // arcvm-media-sharing-services is started.
+  bridge()->RequestAllMountPoints();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 0);
+
+  // Start arcvm-media-sharing-services.
+  base::test::TestFuture<bool> future;
+  bridge()->SetUpExternalStorageMountPoints(kValidMediaProviderUID,
+                                            future.GetCallback());
+  EXPECT_TRUE(future.Get());
+
+  // The bridge can now send the mount point info to the instance.
+  bridge()->RequestAllMountPoints();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+
+  // Trigger ArcVolumeMounterBridge::OnConnectionClosed().
+  ArcServiceManager::Get()
+      ->arc_bridge_service()
+      ->volume_mounter()
+      ->CloseInstance(volume_mounter_instance());
+
+  // The bridge can no longer send the mount point info to the instance.
+  bridge()->RequestAllMountPoints();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+}
+
+TEST_F(ArcVolumeMounterBridgeTest, RequestAllMountPoints_R_Container) {
+  // Use ARC++ (container) R.
+  ResetArcAndroidSdkVersionForTesting(arc::kArcVersionR);
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      ash::switches::kEnableArcVm);
+
+  // Starting job succeeds only for arcpp-media-sharing-services.
+  ash::FakeUpstartClient::Get()->set_start_job_cb(base::BindRepeating(
+      [](const std::string& job_name, const std::vector<std::string>& env) {
+        return ash::FakeUpstartClient::StartJobResult(
+            job_name == kArcppMediaSharingServicesJobName);
+      }));
+
+  // In R container, the bridge is not ready to send mount points before
+  // arcpp-media-sharing-services is started.
+  bridge()->RequestAllMountPoints();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 0);
+
+  // Start arcpp-media-sharing-services.
+  base::test::TestFuture<bool> future;
+  bridge()->SetUpExternalStorageMountPoints(kValidMediaProviderUID,
+                                            future.GetCallback());
+  EXPECT_TRUE(future.Get());
+
+  // The bridge can now send the mount point info to the instance.
+  bridge()->RequestAllMountPoints();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+
+  // Trigger ArcVolumeMounterBridge::OnConnectionClosed().
+  ArcServiceManager::Get()
+      ->arc_bridge_service()
+      ->volume_mounter()
+      ->CloseInstance(volume_mounter_instance());
+
+  // The bridge can no longer send the mount point info to the instance.
+  bridge()->RequestAllMountPoints();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+}
+
+TEST_F(ArcVolumeMounterBridgeTest,
+       SetUpExternalStorageMountPoints_JobAlreadyStarted) {
+  // Use ARCVM R.
+  ResetArcAndroidSdkVersionForTesting(arc::kArcVersionR);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVm);
+
+  // Inject |kAlreadyStartedError| for starting arcvm-media-sharing-services.
+  ash::FakeUpstartClient::Get()->set_start_job_cb(base::BindRepeating(
+      [](const std::string& job_name, const std::vector<std::string>& env) {
+        if (job_name == kArcVmMediaSharingServicesJobName) {
+          return ash::FakeUpstartClient::StartJobResult(
+              false /* success */, ash::UpstartClient::kAlreadyStartedError);
+        }
+        return ash::FakeUpstartClient::StartJobResult(false /* success */);
+      }));
+
+  // SetUpExternalStorageMountPoints still succeeds.
+  base::test::TestFuture<bool> future;
+  bridge()->SetUpExternalStorageMountPoints(kValidMediaProviderUID,
+                                            future.GetCallback());
+  EXPECT_TRUE(future.Get());
+
+  // The bridge can send the mount point info to the instance.
+  bridge()->RequestAllMountPoints();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+}
+
+TEST_F(ArcVolumeMounterBridgeTest,
+       SetUpExternalStorageMountPoints_InvalidMediaProviderUID) {
+  // Use ARCVM R.
+  ResetArcAndroidSdkVersionForTesting(arc::kArcVersionR);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVm);
+
+  // When called with invalid MediaProvider UID, SetUpExternalStorageMountPoints
+  // returns false in the callback.
+  base::test::TestFuture<bool> future1, future2;
+  bridge()->SetUpExternalStorageMountPoints(20000 /* media_provider_uid */,
+                                            future1.GetCallback());
+  EXPECT_FALSE(future1.Get());
+  bridge()->SetUpExternalStorageMountPoints(9999 /* media_provider_uid */,
+                                            future2.GetCallback());
+  EXPECT_FALSE(future2.Get());
+
+  // The bridge is still not ready to send the mount point info.
+  bridge()->RequestAllMountPoints();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 0);
+}
+
+TEST_F(ArcVolumeMounterBridgeTest,
+       SetUpExternalStorageMountPoints_StartUpstartJobFailed) {
+  // Use ARCVM R.
+  ResetArcAndroidSdkVersionForTesting(arc::kArcVersionR);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVm);
+
+  // Inject failure for starting arcvm-media-sharing-services.
+  ash::FakeUpstartClient::Get()->set_start_job_cb(base::BindRepeating(
+      [](const std::string& job_name, const std::vector<std::string>& env) {
+        return ash::FakeUpstartClient::StartJobResult(
+            job_name != kArcVmMediaSharingServicesJobName);
+      }));
+
+  // SetUpExternalStorageMountPoints returns false in the callback.
+  base::test::TestFuture<bool> future;
+  bridge()->SetUpExternalStorageMountPoints(kValidMediaProviderUID,
+                                            future.GetCallback());
+  EXPECT_FALSE(future.Get());
+
+  // The bridge is still not ready to send the mount point info.
+  bridge()->RequestAllMountPoints();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 0);
 }
 
 }  // namespace
