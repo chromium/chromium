@@ -52,8 +52,8 @@ mojom("mojom") {
   deps = [ "//gpu/ipc/common:gmb_interface" ]
 
   public_deps = [
-    ":resource_format",
     ":shared_image_format",
+    ":singleplanar_format",
     "//gpu/ipc/common:interfaces",
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",
@@ -613,9 +613,20 @@ mojom("mojom") {
     },
   ]
 }
-mojom("resource_format") {
+
+# The enum that SharedImageFormat uses internally to denote singleplanar
+# formats. Must be defined in a separate file and GN target from
+# shared_image_format.mojom as it is used by shared_image_format.h, which
+# itself is used from shared_image_format_mojom_traits.*.
+# Not intended for client usage.
+mojom("singleplanar_format") {
   generate_java = true
-  sources = [ "compositing/resource_format.mojom" ]
+  sources = [ "compositing/internal/singleplanar_format.mojom" ]
+  visibility = [
+    ":mojom",
+    ":shared_image_format",
+    "//components/viz/common:resource_format",
+  ]
 }
 
 mojom("shared_image_format") {
@@ -633,5 +644,7 @@ mojom("shared_image_format") {
       traits_sources = [ "//services/viz/public/cpp/compositing/shared_image_format_mojom_traits.cc" ]
     },
   ]
-  public_deps = [ ":resource_format" ]
+
+  # TODO(crbug.com/1378708): Does this need to be public_deps vs. deps?
+  public_deps = [ ":singleplanar_format" ]
 }

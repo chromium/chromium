@@ -13,7 +13,7 @@
 #include "base/component_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
-#include "services/viz/public/mojom/compositing/resource_format.mojom.h"
+#include "services/viz/public/mojom/compositing/internal/singleplanar_format.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -29,7 +29,7 @@ class MultiplanarFormatDataView;
 
 // This class represents the image format used by SharedImages for single plane
 // images (eg. RGBA) or multiplanar images (eg. NV12). This format can be
-// either ResourceFormat or MultiplanarFormat (PlaneConfig + Subsampling +
+// either SingleplanarFormat or MultiplanarFormat (PlaneConfig + Subsampling +
 // ChannelFormat).
 class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
  public:
@@ -138,7 +138,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
   // Returns true if the format is ETC1 compressed.
   bool IsCompressed() const;
 
-  // Returns true if format is legacy multiplanar ResourceFormat i.e.
+  // Returns true if format is legacy multiplanar SingleplanarFormat i.e.
   // YUV_420_BIPLANAR, YVU_420, YUVA_420_TRIPLANAR, P010.
   bool IsLegacyMultiplanar() const;
 
@@ -172,14 +172,14 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
 
     SharedImageFormatUnion() = default;
     explicit constexpr SharedImageFormatUnion(
-        mojom::ResourceFormat resource_format)
-        : resource_format(resource_format) {}
+        mojom::SingleplanarFormat singleplanar_format)
+        : singleplanar_format(singleplanar_format) {}
     constexpr SharedImageFormatUnion(PlaneConfig plane_config,
                                      Subsampling subsampling,
                                      ChannelFormat channel_format)
         : multiplanar_format({plane_config, subsampling, channel_format}) {}
 
-    mojom::ResourceFormat resource_format;
+    mojom::SingleplanarFormat singleplanar_format;
     MultiplanarFormat multiplanar_format;
   };
 
@@ -190,8 +190,9 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
   friend struct mojo::StructTraits<mojom::MultiplanarFormatDataView,
                                    SharedImageFormatUnion::MultiplanarFormat>;
 
-  explicit constexpr SharedImageFormat(mojom::ResourceFormat resource_format)
-      : plane_type_(PlaneType::kSinglePlane), format_(resource_format) {}
+  explicit constexpr SharedImageFormat(
+      mojom::SingleplanarFormat singleplanar_format)
+      : plane_type_(PlaneType::kSinglePlane), format_(singleplanar_format) {}
   constexpr SharedImageFormat(PlaneConfig plane_config,
                               Subsampling subsampling,
                               ChannelFormat channel_format)
@@ -204,13 +205,13 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
     return format_.multiplanar_format;
   }
 
-  mojom::ResourceFormat resource_format() const {
+  mojom::SingleplanarFormat singleplanar_format() const {
     DCHECK(is_single_plane());
-    return format_.resource_format;
+    return format_.singleplanar_format;
   }
 
   PlaneType plane_type_ = PlaneType::kUnknown;
-  // `format_` can only be ResourceFormat (for single plane, eg. RGBA) or
+  // `format_` can only be SingleplanarFormat (for single plane, eg. RGBA) or
   // MultiplanarFormat at any given time.
   SharedImageFormatUnion format_;
 };
@@ -222,41 +223,41 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
 class SinglePlaneFormat {
  public:
   static constexpr SharedImageFormat kRGBA_8888 =
-      SharedImageFormat(mojom::ResourceFormat::RGBA_8888);
+      SharedImageFormat(mojom::SingleplanarFormat::RGBA_8888);
   static constexpr SharedImageFormat kRGBA_4444 =
-      SharedImageFormat(mojom::ResourceFormat::RGBA_4444);
+      SharedImageFormat(mojom::SingleplanarFormat::RGBA_4444);
   static constexpr SharedImageFormat kBGRA_8888 =
-      SharedImageFormat(mojom::ResourceFormat::BGRA_8888);
+      SharedImageFormat(mojom::SingleplanarFormat::BGRA_8888);
   static constexpr SharedImageFormat kALPHA_8 =
-      SharedImageFormat(mojom::ResourceFormat::ALPHA_8);
+      SharedImageFormat(mojom::SingleplanarFormat::ALPHA_8);
   static constexpr SharedImageFormat kLUMINANCE_8 =
-      SharedImageFormat(mojom::ResourceFormat::LUMINANCE_8);
+      SharedImageFormat(mojom::SingleplanarFormat::LUMINANCE_8);
   static constexpr SharedImageFormat kRGB_565 =
-      SharedImageFormat(mojom::ResourceFormat::RGB_565);
+      SharedImageFormat(mojom::SingleplanarFormat::RGB_565);
   static constexpr SharedImageFormat kBGR_565 =
-      SharedImageFormat(mojom::ResourceFormat::BGR_565);
+      SharedImageFormat(mojom::SingleplanarFormat::BGR_565);
   static constexpr SharedImageFormat kETC1 =
-      SharedImageFormat(mojom::ResourceFormat::ETC1);
+      SharedImageFormat(mojom::SingleplanarFormat::ETC1);
   static constexpr SharedImageFormat kR_8 =
-      SharedImageFormat(mojom::ResourceFormat::RED_8);
+      SharedImageFormat(mojom::SingleplanarFormat::RED_8);
   static constexpr SharedImageFormat kRG_88 =
-      SharedImageFormat(mojom::ResourceFormat::RG_88);
+      SharedImageFormat(mojom::SingleplanarFormat::RG_88);
   static constexpr SharedImageFormat kLUMINANCE_F16 =
-      SharedImageFormat(mojom::ResourceFormat::LUMINANCE_F16);
+      SharedImageFormat(mojom::SingleplanarFormat::LUMINANCE_F16);
   static constexpr SharedImageFormat kRGBA_F16 =
-      SharedImageFormat(mojom::ResourceFormat::RGBA_F16);
+      SharedImageFormat(mojom::SingleplanarFormat::RGBA_F16);
   static constexpr SharedImageFormat kR_16 =
-      SharedImageFormat(mojom::ResourceFormat::R16_EXT);
+      SharedImageFormat(mojom::SingleplanarFormat::R16_EXT);
   static constexpr SharedImageFormat kRG_1616 =
-      SharedImageFormat(mojom::ResourceFormat::RG16_EXT);
+      SharedImageFormat(mojom::SingleplanarFormat::RG16_EXT);
   static constexpr SharedImageFormat kRGBX_8888 =
-      SharedImageFormat(mojom::ResourceFormat::RGBX_8888);
+      SharedImageFormat(mojom::SingleplanarFormat::RGBX_8888);
   static constexpr SharedImageFormat kBGRX_8888 =
-      SharedImageFormat(mojom::ResourceFormat::BGRX_8888);
+      SharedImageFormat(mojom::SingleplanarFormat::BGRX_8888);
   static constexpr SharedImageFormat kRGBA_1010102 =
-      SharedImageFormat(mojom::ResourceFormat::RGBX_1010102);
+      SharedImageFormat(mojom::SingleplanarFormat::RGBX_1010102);
   static constexpr SharedImageFormat kBGRA_1010102 =
-      SharedImageFormat(mojom::ResourceFormat::BGRX_1010102);
+      SharedImageFormat(mojom::SingleplanarFormat::BGRX_1010102);
 
   // All known singleplanar formats.
   static constexpr SharedImageFormat kAll[18] = {
@@ -275,22 +276,21 @@ class SinglePlaneFormat {
 class LegacyMultiPlaneFormat {
  public:
   static constexpr SharedImageFormat kYV12 =
-      SharedImageFormat(mojom::ResourceFormat::YVU_420);
+      SharedImageFormat(mojom::SingleplanarFormat::YVU_420);
   static constexpr SharedImageFormat kNV12 =
-      SharedImageFormat(mojom::ResourceFormat::YUV_420_BIPLANAR);
+      SharedImageFormat(mojom::SingleplanarFormat::YUV_420_BIPLANAR);
   static constexpr SharedImageFormat kNV12A =
-      SharedImageFormat(mojom::ResourceFormat::YUVA_420_TRIPLANAR);
+      SharedImageFormat(mojom::SingleplanarFormat::YUVA_420_TRIPLANAR);
   static constexpr SharedImageFormat kP010 =
-      SharedImageFormat(mojom::ResourceFormat::P010);
+      SharedImageFormat(mojom::SingleplanarFormat::P010);
 
   // All known legacy multiplanar formats.
   static constexpr SharedImageFormat kAll[4] = {kYV12, kNV12, kNV12A, kP010};
 
-  // The number of singleplanar and legacy multiplanar formats should correspond
-  // exactly to the number of ResourceFormat types. Note that
-  // RESOURCE_FORMAT_MAX uses zero-based indexing.
+  // The number of singleplanar and legacy multiplanar formats should
+  // correspond exactly to the number of SingleplanarFormat types.
   static_assert(std::size(SinglePlaneFormat::kAll) + std::size(kAll) ==
-                static_cast<int>(mojom::ResourceFormat::kMaxValue) + 1);
+                static_cast<int>(mojom::SingleplanarFormat::kMaxValue) + 1);
 };
 
 // Constants for common multi-planar formats.

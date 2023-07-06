@@ -77,12 +77,12 @@ struct UnionTraits<viz::mojom::SharedImageFormatDataView,
     if (format.is_multi_plane())
       return viz::mojom::SharedImageFormatDataView::Tag::kMultiplanarFormat;
     else
-      return viz::mojom::SharedImageFormatDataView::Tag::kResourceFormat;
+      return viz::mojom::SharedImageFormatDataView::Tag::kSingleplanarFormat;
   }
 
-  static viz::mojom::ResourceFormat resource_format(
+  static viz::mojom::SingleplanarFormat singleplanar_format(
       const viz::SharedImageFormat& format) {
-    return format.resource_format();
+    return format.singleplanar_format();
   }
   static viz::SharedImageFormat::SharedImageFormatUnion::MultiplanarFormat
   multiplanar_format(const viz::SharedImageFormat& format) {

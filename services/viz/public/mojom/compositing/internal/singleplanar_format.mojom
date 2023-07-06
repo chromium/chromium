@@ -6,7 +6,7 @@ module viz.mojom;
 
 // An enum for singleplanar SharedImage format. Intended for usage only within
 // SharedImageFormat itself.
-enum ResourceFormat {
+enum SingleplanarFormat {
   RGBA_8888,
   RGBA_4444,
   BGRA_8888,

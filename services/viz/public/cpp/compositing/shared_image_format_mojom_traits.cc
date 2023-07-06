@@ -126,9 +126,10 @@ bool UnionTraits<
     viz::SharedImageFormat>::Read(viz::mojom::SharedImageFormatDataView data,
                                   viz::SharedImageFormat* out) {
   switch (data.tag()) {
-    case viz::mojom::SharedImageFormatDataView::Tag::kResourceFormat:
-      if (!data.ReadResourceFormat(&out->format_.resource_format))
+    case viz::mojom::SharedImageFormatDataView::Tag::kSingleplanarFormat:
+      if (!data.ReadSingleplanarFormat(&out->format_.singleplanar_format)) {
         return false;
+      }
       out->plane_type_ = viz::SharedImageFormat::PlaneType::kSinglePlane;
       return true;
     case viz::mojom::SharedImageFormatDataView::Tag::kMultiplanarFormat:

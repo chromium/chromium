@@ -174,7 +174,7 @@ static_assert(std::is_trivially_copyable_v<SharedImageFormat>);
 
 bool SharedImageFormat::IsBitmapFormatSupported() const {
   return is_single_plane() &&
-         resource_format() == mojom::ResourceFormat::RGBA_8888;
+         singleplanar_format() == mojom::SingleplanarFormat::RGBA_8888;
 }
 
 int SharedImageFormat::NumberOfPlanes() const {
@@ -342,15 +342,15 @@ std::string SharedImageFormat::ToTestParamString() const {
 
 bool SharedImageFormat::HasAlpha() const {
   if (is_single_plane()) {
-    switch (resource_format()) {
-      case mojom::ResourceFormat::RGBA_8888:
-      case mojom::ResourceFormat::RGBA_4444:
-      case mojom::ResourceFormat::RGBX_1010102:
-      case mojom::ResourceFormat::BGRA_8888:
-      case mojom::ResourceFormat::BGRX_1010102:
-      case mojom::ResourceFormat::ALPHA_8:
-      case mojom::ResourceFormat::RGBA_F16:
-      case mojom::ResourceFormat::YUVA_420_TRIPLANAR:
+    switch (singleplanar_format()) {
+      case mojom::SingleplanarFormat::RGBA_8888:
+      case mojom::SingleplanarFormat::RGBA_4444:
+      case mojom::SingleplanarFormat::RGBX_1010102:
+      case mojom::SingleplanarFormat::BGRA_8888:
+      case mojom::SingleplanarFormat::BGRX_1010102:
+      case mojom::SingleplanarFormat::ALPHA_8:
+      case mojom::SingleplanarFormat::RGBA_F16:
+      case mojom::SingleplanarFormat::YUVA_420_TRIPLANAR:
         return true;
       default:
         return false;
@@ -366,18 +366,19 @@ bool SharedImageFormat::HasAlpha() const {
 }
 
 bool SharedImageFormat::IsCompressed() const {
-  return is_single_plane() && resource_format() == mojom::ResourceFormat::ETC1;
+  return is_single_plane() &&
+         singleplanar_format() == mojom::SingleplanarFormat::ETC1;
 }
 
 bool SharedImageFormat::IsLegacyMultiplanar() const {
   if (!is_single_plane())
     return false;
 
-  switch (resource_format()) {
-    case mojom::ResourceFormat::YVU_420:
-    case mojom::ResourceFormat::YUV_420_BIPLANAR:
-    case mojom::ResourceFormat::YUVA_420_TRIPLANAR:
-    case mojom::ResourceFormat::P010:
+  switch (singleplanar_format()) {
+    case mojom::SingleplanarFormat::YVU_420:
+    case mojom::SingleplanarFormat::YUV_420_BIPLANAR:
+    case mojom::SingleplanarFormat::YUVA_420_TRIPLANAR:
+    case mojom::SingleplanarFormat::P010:
       return true;
     default:
       return false;
@@ -386,34 +387,34 @@ bool SharedImageFormat::IsLegacyMultiplanar() const {
 
 int SharedImageFormat::BitsPerPixel() const {
   CHECK(is_single_plane());
-  switch (resource_format()) {
-    case mojom::ResourceFormat::RGBA_F16:
+  switch (singleplanar_format()) {
+    case mojom::SingleplanarFormat::RGBA_F16:
       return 64;
-    case mojom::ResourceFormat::BGRA_8888:
-    case mojom::ResourceFormat::RGBA_8888:
-    case mojom::ResourceFormat::RGBX_8888:
-    case mojom::ResourceFormat::BGRX_8888:
-    case mojom::ResourceFormat::RGBX_1010102:
-    case mojom::ResourceFormat::BGRX_1010102:
-    case mojom::ResourceFormat::RG16_EXT:
+    case mojom::SingleplanarFormat::BGRA_8888:
+    case mojom::SingleplanarFormat::RGBA_8888:
+    case mojom::SingleplanarFormat::RGBX_8888:
+    case mojom::SingleplanarFormat::BGRX_8888:
+    case mojom::SingleplanarFormat::RGBX_1010102:
+    case mojom::SingleplanarFormat::BGRX_1010102:
+    case mojom::SingleplanarFormat::RG16_EXT:
       return 32;
-    case mojom::ResourceFormat::RGBA_4444:
-    case mojom::ResourceFormat::RGB_565:
-    case mojom::ResourceFormat::LUMINANCE_F16:
-    case mojom::ResourceFormat::R16_EXT:
-    case mojom::ResourceFormat::BGR_565:
-    case mojom::ResourceFormat::RG_88:
+    case mojom::SingleplanarFormat::RGBA_4444:
+    case mojom::SingleplanarFormat::RGB_565:
+    case mojom::SingleplanarFormat::LUMINANCE_F16:
+    case mojom::SingleplanarFormat::R16_EXT:
+    case mojom::SingleplanarFormat::BGR_565:
+    case mojom::SingleplanarFormat::RG_88:
       return 16;
-    case mojom::ResourceFormat::ALPHA_8:
-    case mojom::ResourceFormat::LUMINANCE_8:
-    case mojom::ResourceFormat::RED_8:
+    case mojom::SingleplanarFormat::ALPHA_8:
+    case mojom::SingleplanarFormat::LUMINANCE_8:
+    case mojom::SingleplanarFormat::RED_8:
       return 8;
-    case mojom::ResourceFormat::ETC1:
+    case mojom::SingleplanarFormat::ETC1:
       return 4;
-    case mojom::ResourceFormat::P010:
-    case mojom::ResourceFormat::YUVA_420_TRIPLANAR:
-    case mojom::ResourceFormat::YVU_420:
-    case mojom::ResourceFormat::YUV_420_BIPLANAR:
+    case mojom::SingleplanarFormat::P010:
+    case mojom::SingleplanarFormat::YUVA_420_TRIPLANAR:
+    case mojom::SingleplanarFormat::YVU_420:
+    case mojom::SingleplanarFormat::YUV_420_BIPLANAR:
       // Legacy multiplanar formats are not supported.
       CHECK(0);
   }
@@ -428,7 +429,7 @@ bool SharedImageFormat::operator==(const SharedImageFormat& o) const {
     case PlaneType::kUnknown:
       return true;
     case PlaneType::kSinglePlane:
-      return resource_format() == o.resource_format();
+      return singleplanar_format() == o.singleplanar_format();
     case PlaneType::kMultiPlane:
       return multiplanar_format() == o.multiplanar_format();
   }
@@ -447,7 +448,7 @@ bool SharedImageFormat::operator<(const SharedImageFormat& o) const {
     case PlaneType::kUnknown:
       return false;
     case PlaneType::kSinglePlane:
-      return resource_format() < o.resource_format();
+      return singleplanar_format() < o.singleplanar_format();
     case PlaneType::kMultiPlane:
       return multiplanar_format() < o.multiplanar_format();
   }
