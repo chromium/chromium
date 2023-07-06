@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/ax_tree.h"
 
+#include "base/containers/contains.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
