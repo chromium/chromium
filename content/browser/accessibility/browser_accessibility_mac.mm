@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Cocoa/Cocoa.h>
-
 #import "content/browser/accessibility/browser_accessibility_mac.h"
+
+#import <Cocoa/Cocoa.h>
 
 #include "base/debug/stack_trace.h"
 #include "base/mac/scoped_nsobject.h"
@@ -15,9 +15,13 @@
 #import "content/browser/accessibility/browser_accessibility_cocoa.h"
 #include "content/browser/accessibility/browser_accessibility_manager_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
-// Static.
+// static
 std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
     BrowserAccessibilityManager* manager,
     ui::AXNode* node) {
@@ -70,8 +74,7 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
   // We need to keep the old native wrapper alive until we set up the new one
   // because we need to retrieve some information from the old wrapper in order
   // to add it to the new one, e.g. its list of children.
-  base::scoped_nsobject<AXPlatformNodeCocoa> old_native_obj(
-      platform_node_->ReleaseNativeWrapper(), base::scoped_policy::RETAIN);
+  AXPlatformNodeCocoa* old_native_obj = platform_node_->ReleaseNativeWrapper();
 
   // We should have never called this method if a native wrapper has not been
   // created, but keep a null check just in case.
@@ -107,13 +110,13 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::scoped_nsobject<AXPlatformNodeCocoa> destroyed) {
+          [](AXPlatformNodeCocoa* destroyed) {
             if (destroyed && [destroyed instanceActive]) {
               // Follow destruction pattern from NativeReleaseReference().
               [destroyed detach];
             }
           },
-          std::move(old_native_obj)),
+          old_native_obj),
       base::Milliseconds(1000));
 }
 

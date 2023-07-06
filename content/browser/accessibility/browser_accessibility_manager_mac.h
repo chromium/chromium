@@ -62,10 +62,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerMac
                               bool root_changed,
                               const std::vector<Change>& changes) override;
 
-  // Returns an autoreleased object.
   NSDictionary* GetUserInfoForSelectedTextChangedNotification();
 
-  // Returns an autoreleased object.
   NSDictionary* GetUserInfoForValueChangedNotification(
       const BrowserAccessibilityCocoa* native_node,
       const std::u16string& deleted_text,
