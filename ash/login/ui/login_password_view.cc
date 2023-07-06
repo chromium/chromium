@@ -10,6 +10,7 @@
 #include "ash/login/ui/horizontal_image_sequence_animation_decoder.h"
 #include "ash/login/ui/hover_notifier.h"
 #include "ash/login/ui/lock_screen.h"
+#include "ash/login/ui/login_arrow_navigation_delegate.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -645,15 +646,8 @@ bool LoginPasswordView::HandleKeyEvent(views::Textfield* sender,
     return false;
   }
 
-  switch (key_event.key_code()) {
-    case ui::VKEY_LEFT:
-      LockScreen::Get()->FocusPreviousUser();
-      break;
-    case ui::VKEY_RIGHT:
-      LockScreen::Get()->FocusNextUser();
-      break;
-    default:
-      return false;
+  if (arrow_navigation_delegate_) {
+    return arrow_navigation_delegate_->HandleKeyEvent(key_event);
   }
 
   return true;
@@ -708,6 +702,11 @@ void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
   capslock_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       kLockScreenCapsLockIcon,
       highlight ? enabled_icon_color_id : disabled_icon_color_id));
+}
+
+void LoginPasswordView::SetLoginArrowNavigationDelegate(
+    LoginArrowNavigationDelegate* delegate) {
+  arrow_navigation_delegate_ = delegate;
 }
 
 BEGIN_METADATA(LoginPasswordView, views::View)

@@ -4,6 +4,9 @@
 
 #include "ash/login/ui/login_password_view.h"
 
+#include <memory>
+
+#include "ash/login/ui/login_arrow_navigation_delegate.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/shell.h"
@@ -40,6 +43,9 @@ class LoginPasswordViewTest : public LoginTestBase {
     LoginTestBase::SetUp();
 
     view_ = new LoginPasswordView();
+    arrow_navigation_delegate_ =
+        std::make_unique<LoginScreenArrowNavigationDelegate>();
+    view_->SetLoginArrowNavigationDelegate(arrow_navigation_delegate_.get());
     // Focusable views are expected to have accessible names in order to pass
     // the accessibility paint checks.
     view_->SetAccessibleName(u"Password");
@@ -62,6 +68,8 @@ class LoginPasswordViewTest : public LoginTestBase {
   raw_ptr<LoginPasswordView, ExperimentalAsh> view_ = nullptr;
   absl::optional<std::u16string> password_;
   bool is_password_field_empty_ = true;
+  std::unique_ptr<LoginScreenArrowNavigationDelegate>
+      arrow_navigation_delegate_;
 };
 
 }  // namespace

@@ -16,6 +16,7 @@
 #include "ash/login/ui/horizontal_image_sequence_animation_decoder.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/locked_tpm_message_view.h"
+#include "ash/login/ui/login_arrow_navigation_delegate.h"
 #include "ash/login/ui/login_auth_factors_view.h"
 #include "ash/login/ui/login_constants.h"
 #include "ash/login/ui/login_display_style.h"
@@ -716,6 +717,10 @@ void LoginAuthUserView::SetAuthMethods(
   password_view_->SetFocusEnabledForTextfield(current_state.has_password);
   password_view_->SetVisible(current_state.has_password);
   password_view_->layer()->SetOpacity(current_state.has_password);
+  arrow_navigation_delegate_ =
+      std::make_unique<LoginScreenArrowNavigationDelegate>();
+  password_view_->SetLoginArrowNavigationDelegate(
+      arrow_navigation_delegate_.get());
 
   pin_input_view_->UpdateLength(auth_metadata_.autosubmit_pin_length);
   pin_input_view_->SetAuthenticateWithEmptyPinOnReturnKey(false);

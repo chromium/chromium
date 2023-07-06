@@ -27,6 +27,7 @@ class ToggleImageButton;
 
 namespace ash {
 class ArrowButtonView;
+class LoginArrowNavigationDelegate;
 
 // Contains a textfield and a submit button. When the display password button
 // is visible, the textfield contains a button in the form of an eye icon that
@@ -161,6 +162,9 @@ class ASH_EXPORT LoginPasswordView
   // field.
   void SubmitPassword();
 
+  // Sets the delegate of the arrow keys navigation.
+  void SetLoginArrowNavigationDelegate(LoginArrowNavigationDelegate* delegate);
+
  private:
   class DisplayPasswordButton;
   class LoginPasswordRow;
@@ -185,6 +189,10 @@ class ASH_EXPORT LoginPasswordView
 
   // Is the password field enabled when there is no text?
   bool enabled_on_empty_password_ = false;
+
+  // Arrow keystrokes delegate.
+  raw_ptr<LoginArrowNavigationDelegate, ExperimentalAsh>
+      arrow_navigation_delegate_ = nullptr;
 
   // Clears the password field after a time without action if the display
   // password button is visible.
