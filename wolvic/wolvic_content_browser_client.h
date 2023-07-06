@@ -38,6 +38,8 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
   // ContentBrowserClient overrides.
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
       bool is_integration_test) override;
+  std::unique_ptr<content::DevToolsManagerDelegate>
+  CreateDevToolsManagerDelegate() override;
 #if BUILDFLAG(ENABLE_VR)
   XrIntegrationClient* GetXrIntegrationClient() override;
 #endif

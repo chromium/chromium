@@ -4,6 +4,7 @@
 
 #include "wolvic/wolvic_main_parts.h"
 
+#include "content/shell/browser/shell_devtools_manager_delegate.h"
 #include "content/public/common/result_codes.h"
 #include "net/android/network_change_notifier_factory_android.h"
 #include "net/base/network_change_notifier.h"
@@ -24,7 +25,12 @@ int WolvicMainParts::PreEarlyInitialization() {
 
 int WolvicMainParts::PreMainMessageLoopRun() {
   browser_context_ = std::make_unique<WolvicBrowserContext>();
+  ShellDevToolsManagerDelegate::StartHttpHandler(browser_context_.get());
   return 0;
+}
+
+void WolvicMainParts::PostMainMessageLoopRun() {
+  ShellDevToolsManagerDelegate::StopHttpHandler();
 }
 
 void WolvicMainParts::set_browser_context(WolvicBrowserContext* context) {
