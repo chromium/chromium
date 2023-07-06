@@ -203,7 +203,7 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
 
   const CommonSourceInfo& common_info = source.common_info();
 
-  const AttributionConfig::RateLimitConfig rate_limits =
+  const AttributionConfig::RateLimitConfig& rate_limits =
       delegate_->GetRateLimits();
   DCHECK_GT(rate_limits.time_window, base::TimeDelta());
   DCHECK_GT(rate_limits.max_attributions, 0);
@@ -343,7 +343,7 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
     const CommonSourceInfo& common_info,
     base::Time time,
     const base::flat_set<net::SchemefulSite>& destination_sites) {
-  const AttributionConfig::RateLimitConfig rate_limits =
+  const AttributionConfig::RateLimitConfig& rate_limits =
       delegate_->GetRateLimits();
   DCHECK_GT(rate_limits.time_window, base::TimeDelta());
 

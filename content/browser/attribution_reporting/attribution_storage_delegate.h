@@ -12,13 +12,16 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
-#include "base/uuid.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/destination_throttler.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class Uuid;
+}  // namespace base
 
 namespace network {
 class TriggerVerification;
@@ -62,7 +65,14 @@ class CONTENT_EXPORT AttributionStorageDelegate {
 
   explicit AttributionStorageDelegate(const AttributionConfig& config);
 
-  virtual ~AttributionStorageDelegate() = default;
+  virtual ~AttributionStorageDelegate();
+
+  AttributionStorageDelegate(const AttributionStorageDelegate&) = delete;
+  AttributionStorageDelegate& operator=(const AttributionStorageDelegate&) =
+      delete;
+
+  AttributionStorageDelegate(AttributionStorageDelegate&&) = delete;
+  AttributionStorageDelegate& operator=(AttributionStorageDelegate&&) = delete;
 
   // Returns the time an event-level report should be sent for a given trigger
   // time and its corresponding source.
@@ -103,7 +113,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   int GetMaxDestinationsPerSourceSiteReportingSite() const;
 
   // Returns the rate limits for capping contributions per window.
-  AttributionConfig::RateLimitConfig GetRateLimits() const;
+  const AttributionConfig::RateLimitConfig& GetRateLimits() const;
 
   // Returns the maximum frequency at which to delete expired sources.
   // Must be positive.

@@ -134,7 +134,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       attribution_reporting::mojom::SourceType source_type,
       base::TimeDelta expiry_deadline) const;
 
- protected:
+ private:
   AttributionStorageDelegateImpl(AttributionNoiseMode noise_mode,
                                  AttributionDelayMode delay_mode,
                                  const AttributionConfig& config);
@@ -142,7 +142,6 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   const AttributionNoiseMode noise_mode_ GUARDED_BY_CONTEXT(sequence_checker_);
   const AttributionDelayMode delay_mode_ GUARDED_BY_CONTEXT(sequence_checker_);
 
- private:
   std::vector<base::TimeDelta> EarlyDeadlines(
       attribution_reporting::mojom::SourceType source_type) const;
   base::Time ReportTimeAtWindow(base::Time source_time,

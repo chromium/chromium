@@ -16,10 +16,6 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace network {
-class TriggerVerification;
-}  // namespace network
-
 namespace content {
 
 class ConfigurableStorageDelegate : public AttributionStorageDelegate {
@@ -116,7 +112,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   bool reverse_verifications_on_shuffle_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
 
-  double randomized_response_rate_ = 0.0;
+  double randomized_response_rate_ GUARDED_BY_CONTEXT(sequence_checker_) = 0.0;
 
   RandomizedResponse randomized_response_
       GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;

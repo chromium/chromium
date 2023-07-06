@@ -4,9 +4,12 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 
+#include <stdint.h>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "components/attribution_reporting/source_type.mojom.h"
+#include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 
 namespace content {
@@ -20,6 +23,8 @@ AttributionStorageDelegate::AttributionStorageDelegate(
     : config_(config) {
   DCHECK(config_.Validate());
 }
+
+AttributionStorageDelegate::~AttributionStorageDelegate() = default;
 
 int AttributionStorageDelegate::GetMaxAttributionsPerSource(
     SourceType source_type) const {
@@ -57,8 +62,8 @@ int AttributionStorageDelegate::GetMaxDestinationsPerSourceSiteReportingSite()
   return config_.max_destinations_per_source_site_reporting_site;
 }
 
-AttributionConfig::RateLimitConfig AttributionStorageDelegate::GetRateLimits()
-    const {
+const AttributionConfig::RateLimitConfig&
+AttributionStorageDelegate::GetRateLimits() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.rate_limit;
 }
