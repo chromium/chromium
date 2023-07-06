@@ -33,16 +33,20 @@ class ServiceWorkerRegistrationWaiter
 
   void AwaitRegistration(
       const base::Location& location = base::Location::Current());
+  void AwaitRegistrationStored(
+      const base::Location& location = base::Location::Current());
 
  private:
   // content::ServiceWorkerContextObserver:
   void OnRegistrationCompleted(const GURL& pattern) override;
+  void OnRegistrationStored(int64_t registration_id,
+                            const GURL& scope) override;
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
   raw_ptr<content::ServiceWorkerContext> service_worker_context_;
   const GURL url_;
-  base::RunLoop run_loop_;
-
+  base::RunLoop stored_run_loop_;
+  base::RunLoop complete_run_loop_;
 };
 
 }  // namespace web_app

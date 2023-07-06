@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
@@ -84,13 +85,6 @@ MLInstallabilityPromoter::RegisterCurrentInstallForWebContents(
   }
   current_install_ = tracker->GetWeakPtr();
   return tracker;
-}
-
-void MLInstallabilityPromoter::SetAwaitTimeoutTaskPendingCallbackForTesting(
-    base::OnceClosure await_site_resources_load_callback_for_testing) {
-  CHECK_IS_TEST();
-  await_timeout_task_pending_callback_for_testing_ =
-      std::move(await_site_resources_load_callback_for_testing);
 }
 
 void MLInstallabilityPromoter::SetTaskRunnerForTesting(
@@ -180,16 +174,26 @@ void MLInstallabilityPromoter::MaybeCompleteMetricsCollection() {
     // This allows us to reach a state in tests where both the site quality and
     // site metrics tasks have run but the timeout task has not, allowing
     // effective testing of update logic.
-    if (IsTimeoutTaskOnlyPending()) {
-      if (await_timeout_task_pending_callback_for_testing_) {
-        CHECK_IS_TEST();
-        std::move(await_timeout_task_pending_callback_for_testing_).Run();
-      }
+    if (IsTimeoutTaskOnlyPending() && run_loop_for_testing_) {
+      CHECK_IS_TEST();
+      run_loop_for_testing_->Quit();
     }
     return;
   }
-
   EmitUKMs();
+}
+
+void MLInstallabilityPromoter::AwaitMetricsCollectionTasksCompleteForTesting() {
+  CHECK_IS_TEST();
+  if (!site_manifest_metrics_task_ && !site_quality_metrics_task_) {
+    return;
+  }
+
+  if (!run_loop_for_testing_) {
+    run_loop_for_testing_ = std::make_unique<base::RunLoop>();
+  }
+  run_loop_for_testing_->Run();
+  run_loop_for_testing_.reset();
 }
 
 GURL MLInstallabilityPromoter::GetProjectedManifestIdAfterMetricsCollection() {

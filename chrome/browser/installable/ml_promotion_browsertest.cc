@@ -15,11 +15,13 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/installable/ml_promotion_browsertest_base.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -34,8 +36,6 @@
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/browser/installable/ml_install_result_reporter.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
-#include "content/public/browser/service_worker_context.h"
-#include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -101,50 +101,6 @@ std::string GetMLPromotionDialogTestName(
   }
 }
 
-class ServiceWorkerLoadAwaiter : public content::ServiceWorkerContextObserver {
- public:
-  ServiceWorkerLoadAwaiter(content::WebContents* web_contents, const GURL& url)
-      : site_url_(url) {
-    CHECK(web_contents);
-    context_ = web_contents->GetPrimaryMainFrame()
-                   ->GetStoragePartition()
-                   ->GetServiceWorkerContext();
-    context_->AddObserver(this);
-  }
-
-  ~ServiceWorkerLoadAwaiter() override {
-    if (context_) {
-      context_->RemoveObserver(this);
-    }
-  }
-
-  bool AwaitRegistration() {
-    run_loop_.Run();
-    return service_worker_reg_complete_;
-  }
-
- private:
-  void OnRegistrationStored(int64_t registration_id,
-                            const GURL& pattern) override {
-    if (content::ServiceWorkerContext::ScopeMatches(pattern, site_url_)) {
-      service_worker_reg_complete_ = true;
-      run_loop_.Quit();
-    }
-  }
-
-  void OnDestruct(content::ServiceWorkerContext* context) override {
-    if (context_) {
-      context_->RemoveObserver(this);
-      context_ = nullptr;
-    }
-  }
-
-  const GURL site_url_;
-  raw_ptr<content::ServiceWorkerContext> context_;
-  bool service_worker_reg_complete_ = false;
-  base::RunLoop run_loop_;
-};
-
 class WebContentsObserverAdapter : public content::WebContentsObserver {
  public:
   explicit WebContentsObserverAdapter(content::WebContents* web_contents)
@@ -181,14 +137,14 @@ class WebContentsObserverAdapter : public content::WebContentsObserver {
   base::RunLoop favicon_run_loop_;
 };
 
-class MLPromotionBrowsertest : public MLPromotionBrowserTestBase {
+class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
  public:
-  MLPromotionBrowsertest() {
+  MLPromotionBrowserTest() {
     task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     scoped_feature_list_.InitAndEnableFeature(
         webapps::features::kWebAppsEnableMLModelForPromotion);
   }
-  ~MLPromotionBrowsertest() override = default;
+  ~MLPromotionBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     MLPromotionBrowserTestBase::SetUpOnMainThread();
@@ -243,43 +199,40 @@ class MLPromotionBrowsertest : public MLPromotionBrowserTestBase {
 
   // Wait for service workers to be registered and the MLInstallabilityPromoter
   // to finish.
-  void AwaitServiceWorkerRegistrationAndPendingDelayedTask(const GURL& url) {
-    base::test::TestFuture<void> timeout_task_future;
-    ml_promoter()->SetAwaitTimeoutTaskPendingCallbackForTesting(
-        timeout_task_future.GetCallback());
-    ServiceWorkerLoadAwaiter service_worker_loader(web_contents(), url);
-    EXPECT_TRUE(service_worker_loader.AwaitRegistration());
-    EXPECT_TRUE(timeout_task_future.Wait());
+  void NavigateAwaitSWRegistrationPendingDelayedTask(const GURL& url) {
+    web_app::ServiceWorkerRegistrationWaiter registration_waiter(profile(),
+                                                                 url);
+    NavigateAndAwaitInstallabilityCheck(url);
+    ml_promoter()->AwaitMetricsCollectionTasksCompleteForTesting();
+    registration_waiter.AwaitRegistrationStored();
+    ml_promoter()->AwaitMetricsCollectionTasksCompleteForTesting();
   }
 
-  void AwaitManifestUrlUpdatedAndPendingDelayedTask(
+  void NavigateUpdateManifestAndAwaitDelayedTaskPending(
+      const GURL& site_url,
       const GURL& new_manifest_url) {
-    base::test::TestFuture<void> timeout_task_future;
-    ml_promoter()->SetAwaitTimeoutTaskPendingCallbackForTesting(
-        timeout_task_future.GetCallback());
+    NavigateAndAwaitMetricsCollectionPending(site_url);
     WebContentsObserverAdapter web_contents_observer(web_contents());
+    EXPECT_TRUE(content::ExecJs(
+        web_contents(),
+        "addManifestLinkTag('/banners/manifest_for_no_manifest_page.json')"));
     EXPECT_TRUE(
         web_contents_observer.AwaitManifestUrlChanged(new_manifest_url));
-    EXPECT_TRUE(timeout_task_future.Wait());
+    ml_promoter()->AwaitMetricsCollectionTasksCompleteForTesting();
   }
 
   void UpdateFaviconAndRunPipelinePendingDelayedTask(const GURL& url) {
-    base::test::TestFuture<void> timeout_task_future;
-    ml_promoter()->SetAwaitTimeoutTaskPendingCallbackForTesting(
-        timeout_task_future.GetCallback());
+    ml_promoter()->AwaitMetricsCollectionTasksCompleteForTesting();
     WebContentsObserverAdapter web_contents_observer(web_contents());
     NavigateAndAwaitInstallabilityCheck(url);
     EXPECT_TRUE(content::ExecJs(web_contents(), "addFavicon('favicon_1.ico')"));
     web_contents_observer.AwaitFaviconUrlsChanged();
-    EXPECT_TRUE(timeout_task_future.Wait());
+    ml_promoter()->AwaitMetricsCollectionTasksCompleteForTesting();
   }
 
   void NavigateAndAwaitMetricsCollectionPending(const GURL& url) {
-    base::test::TestFuture<void> delayed_task_future;
-    ml_promoter()->SetAwaitTimeoutTaskPendingCallbackForTesting(
-        delayed_task_future.GetCallback());
     NavigateAndAwaitInstallabilityCheck(url);
-    EXPECT_TRUE(delayed_task_future.Wait());
+    ml_promoter()->AwaitMetricsCollectionTasksCompleteForTesting();
   }
 
   void ExpectClasificationCallReturnResult(
@@ -331,7 +284,7 @@ class MLPromotionBrowsertest : public MLPromotionBrowserTestBase {
 };
 
 // Manifest Data Fetching tests.
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, CompletelyFilledManifestUKM) {
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, CompletelyFilledManifestUKM) {
   NavigateAndAwaitMetricsCollectionPending(
       GetUrlWithManifestAllFieldsLoadedForML());
   task_runner_->RunPendingTasks();
@@ -361,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, CompletelyFilledManifestUKM) {
       entry, ManifestUkmEntry::kHasStartUrlName, /*kValid=*/2);
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, PartiallyFilledManifestUKM) {
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, PartiallyFilledManifestUKM) {
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
   task_runner_->RunPendingTasks();
 
@@ -389,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, PartiallyFilledManifestUKM) {
       entry, ManifestUkmEntry::kHasStartUrlName, /*kValid=*/2);
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, NoManifestUKM) {
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, NoManifestUKM) {
   NavigateAndAwaitMetricsCollectionPending(GetUrlWithNoManifest());
   task_runner_->RunPendingTasks();
 
@@ -423,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, NoManifestUKM) {
       entry, ManifestUkmEntry::kHasStartUrlName, -1);
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, ManifestUpdateChangesUKM) {
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, ManifestUpdateChangesUKM) {
   // Run the pipeline with the first update, verify no manifest data is logged
   // to UKMs.
   NavigateAndAwaitMetricsCollectionPending(GetUrlWithNoManifest());
@@ -445,14 +398,12 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, ManifestUpdateChangesUKM) {
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, ManifestUkmEntry::kHasStartUrlName, -1);
 
-  // Restart the pipeline by simulating a refresh of the page.
-  NavigateAndAwaitMetricsCollectionPending(GetUrlWithNoManifest());
-  EXPECT_TRUE(content::ExecJs(
-      web_contents(),
-      "addManifestLinkTag('/banners/manifest_for_no_manifest_page.json')"));
+  // Restart the pipeline by navigating to about::blank and then navigating back
+  // to the no manifest page.
+  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
 
-  AwaitManifestUrlUpdatedAndPendingDelayedTask(
-      GetManifestUrlForNoManifestTestPage());
+  NavigateUpdateManifestAndAwaitDelayedTaskPending(
+      GetUrlWithNoManifest(), GetManifestUrlForNoManifestTestPage());
   task_runner_->RunPendingTasks();
 
   auto updated_entries =
@@ -470,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, ManifestUpdateChangesUKM) {
 }
 
 // SiteInstallMetrics tests.
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, FullyInstalledAppMeasurement) {
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, FullyInstalledAppMeasurement) {
   NavigateAndAwaitInstallabilityCheck(GetInstallableAppURL());
   EXPECT_TRUE(InstallAppForCurrentWebContents(/*install_locally=*/true));
 
@@ -492,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, FullyInstalledAppMeasurement) {
       entry, InstallUkmEntry::kIsPartiallyInstalledName, false);
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
                        PartiallyInstalledAppMeasurement) {
   NavigateAndAwaitInstallabilityCheck(GetInstallableAppURL());
   EXPECT_TRUE(InstallAppForCurrentWebContents(/*install_locally=*/false));
@@ -515,18 +466,9 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
 }
 
 // SiteQualityMetrics tests.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/1450421): Fix the flakiness of the test.
-#define MAYBE_SiteQualityMetrics_ServiceWorker_FetchHandler \
-  DISABLED_SiteQualityMetrics_ServiceWorker_FetchHandler
-#else
-#define MAYBE_SiteQualityMetrics_ServiceWorker_FetchHandler \
-  SiteQualityMetrics_ServiceWorker_FetchHandler
-#endif
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
-                       MAYBE_SiteQualityMetrics_ServiceWorker_FetchHandler) {
-  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
-  AwaitServiceWorkerRegistrationAndPendingDelayedTask(GetInstallableAppURL());
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
+                       SiteQualityMetrics_ServiceWorker_FetchHandler) {
+  NavigateAwaitSWRegistrationPendingDelayedTask(GetInstallableAppURL());
   task_runner_->RunPendingTasks();
 
   auto entries = test_ukm_recorder().GetEntries(
@@ -542,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   EXPECT_GT(entry.metrics[QualityUkmEntry::kServiceWorkerScriptSizeName], 0);
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
                        SiteQualityMetrics_NoServiceWorker_NoFetchHandler) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   NavigateAndAwaitMetricsCollectionPending(GetUrlWithNoSWNoFetchHandler());
@@ -562,19 +504,9 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   EXPECT_EQ(entry.metrics[QualityUkmEntry::kServiceWorkerScriptSizeName], 0);
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1450786): Fix the flakiness of the test.
-#define MAYBE_SiteQualityMetrics_ServiceWorker_EmptyFetchHandler \
-  DISABLED_SiteQualityMetrics_ServiceWorker_EmptyFetchHandler
-#else
-#define MAYBE_SiteQualityMetrics_ServiceWorker_EmptyFetchHandler \
-  SiteQualityMetrics_ServiceWorker_EmptyFetchHandler
-#endif
-IN_PROC_BROWSER_TEST_F(
-    MLPromotionBrowsertest,
-    MAYBE_SiteQualityMetrics_ServiceWorker_EmptyFetchHandler) {
-  NavigateAndAwaitMetricsCollectionPending(GetUrlWithSWEmptyFetchHandler());
-  AwaitServiceWorkerRegistrationAndPendingDelayedTask(
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
+                       SiteQualityMetrics_ServiceWorker_EmptyFetchHandler) {
+  NavigateAwaitSWRegistrationPendingDelayedTask(
       GetUrlWithSWEmptyFetchHandler());
   task_runner_->RunPendingTasks();
 
@@ -592,19 +524,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_GT(entry.metrics[QualityUkmEntry::kServiceWorkerScriptSizeName], 0);
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1450786): Fix the flakiness of the test.
-#define MAYBE_SiteQualityMetrics_ServiceWorker_NoFetchHandler \
-  DISABLED_SiteQualityMetrics_ServiceWorker_NoFetchHandler
-#else
-#define MAYBE_SiteQualityMetrics_ServiceWorker_NoFetchHandler \
-  SiteQualityMetrics_ServiceWorker_NoFetchHandler
-#endif
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
-                       MAYBE_SiteQualityMetrics_ServiceWorker_NoFetchHandler) {
-  NavigateAndAwaitMetricsCollectionPending(GetUrlWithSwNoFetchHandler());
-  AwaitServiceWorkerRegistrationAndPendingDelayedTask(
-      GetUrlWithSwNoFetchHandler());
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
+                       SiteQualityMetrics_ServiceWorker_NoFetchHandler) {
+  NavigateAwaitSWRegistrationPendingDelayedTask(GetUrlWithSwNoFetchHandler());
   task_runner_->RunPendingTasks();
 
   auto entries = test_ukm_recorder().GetEntries(
@@ -620,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   EXPECT_GT(entry.metrics[QualityUkmEntry::kServiceWorkerScriptSizeName], 0);
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
                        PageLoadsWithDefaultFaviconName) {
   GURL url_with_default_favicon_name = https_server()->GetURL(
       "/banners/test_page_with_default_favicon_name.html");
@@ -637,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   EXPECT_EQ(entry.metrics[QualityUkmEntry::kHasFaviconsName], 1);
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, PageLoadsWithExistingFavicon) {
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, PageLoadsWithExistingFavicon) {
   auto url_with_preloaded_favicons =
       https_server()->GetURL("/banners/test_page_with_favicon.html");
   NavigateAndAwaitMetricsCollectionPending(url_with_preloaded_favicons);
@@ -653,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, PageLoadsWithExistingFavicon) {
   EXPECT_EQ(entry.metrics[QualityUkmEntry::kHasFaviconsName], 1);
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, PageLoadVerifyFaviconUpdate) {
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, PageLoadVerifyFaviconUpdate) {
   NavigateAndAwaitMetricsCollectionPending(GetUrlWithNoManifest());
   task_runner_->RunPendingTasks();
 
@@ -689,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, PageLoadVerifyFaviconUpdate) {
 
 // TODO(b/287255120) : Implement ways of measuring ML outputs on Android.
 class MLPromotionInstallDialogBrowserTest
-    : public MLPromotionBrowsertest,
+    : public MLPromotionBrowserTest,
       public ::testing::WithParamInterface<InstallDialogState> {
  public:
   MLPromotionInstallDialogBrowserTest() = default;

@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/segmentation_platform/public/trigger.h"
@@ -108,10 +109,9 @@ class MLInstallabilityPromoter
   RegisterCurrentInstallForWebContents(WebappInstallSource install_source);
 
   // ------ Testing functionalities, only to be called from tests -----
-  void SetAwaitTimeoutTaskPendingCallbackForTesting(
-      base::OnceClosure await_timeout_task_pending_callback_for_testing);
   void SetTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+  void AwaitMetricsCollectionTasksCompleteForTesting();
 
   bool IsPendingVisibilityForTesting() {
     return state_ == MLPipelineState::kWaitingForVisibility;
@@ -198,12 +198,10 @@ class MLInstallabilityPromoter
   std::unique_ptr<MlInstallResultReporter> ml_result_reporter_;
 
   // - The following variables are not reset on page navigation. -
-
-  base::OnceClosure await_timeout_task_pending_callback_for_testing_;
-
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   raw_ptr<content::StoragePartition> storage_partition_;
   raw_ptr<content::ServiceWorkerContext> service_worker_context_;
+  std::unique_ptr<base::RunLoop> run_loop_for_testing_;
 
   base::WeakPtrFactory<MLInstallabilityPromoter> weak_factory_{this};
 

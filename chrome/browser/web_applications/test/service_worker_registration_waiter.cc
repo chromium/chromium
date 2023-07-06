@@ -34,13 +34,26 @@ ServiceWorkerRegistrationWaiter::~ServiceWorkerRegistrationWaiter() {
 
 void ServiceWorkerRegistrationWaiter::AwaitRegistration(
     const base::Location& location) {
-  run_loop_.Run(location);
+  complete_run_loop_.Run(location);
+}
+
+void ServiceWorkerRegistrationWaiter::AwaitRegistrationStored(
+    const base::Location& location) {
+  stored_run_loop_.Run(location);
 }
 
 void ServiceWorkerRegistrationWaiter::OnRegistrationCompleted(
     const GURL& pattern) {
   if (content::ServiceWorkerContext::ScopeMatches(pattern, url_))
-    run_loop_.Quit();
+    complete_run_loop_.Quit();
+}
+
+void ServiceWorkerRegistrationWaiter::OnRegistrationStored(
+    int64_t registration_id,
+    const GURL& scope) {
+  if (content::ServiceWorkerContext::ScopeMatches(scope, url_)) {
+    stored_run_loop_.Quit();
+  }
 }
 
 void ServiceWorkerRegistrationWaiter::OnDestruct(
