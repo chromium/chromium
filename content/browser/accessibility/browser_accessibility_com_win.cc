@@ -17,7 +17,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/win/enum_variant.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "content/browser/accessibility/browser_accessibility_manager_win.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
@@ -76,6 +78,16 @@ BrowserAccessibilityComWin::BrowserAccessibilityComWin()
 
 BrowserAccessibilityComWin::~BrowserAccessibilityComWin() = default;
 
+void BrowserAccessibilityComWin::OnReferenced() {
+  TRACE_EVENT("accessibility", "OnReferenced",
+              perfetto::Flow::FromPointer(this));
+}
+
+void BrowserAccessibilityComWin::OnDereferenced() {
+  TRACE_EVENT("accessibility", "OnDereferenced",
+              perfetto::TerminatingFlow::FromPointer(this));
+}
+
 //
 // IAccessible2 overrides:
 //
@@ -95,6 +107,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollTo(IA2ScrollType scroll_type) {
 //
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_appName(BSTR* app_name) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_appName");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_APP_NAME);
 
   if (!app_name)
@@ -115,6 +128,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_appName(BSTR* app_name) {
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_appVersion(BSTR* app_version) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_appVersion");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_APP_VERSION);
 
   if (!app_version)
@@ -136,6 +150,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_appVersion(BSTR* app_version) {
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_toolkitName(BSTR* toolkit_name) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_toolkitName");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_TOOLKIT_NAME);
   if (!toolkit_name)
     return E_INVALIDARG;
@@ -147,6 +162,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_toolkitName(BSTR* toolkit_name) {
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_toolkitVersion(
     BSTR* toolkit_version) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_toolkitVersion");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_TOOLKIT_VERSION);
   if (!toolkit_version)
     return E_INVALIDARG;
@@ -162,6 +178,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_toolkitVersion(
 //
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_description(BSTR* desc) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_description");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_DESCRIPTION);
   if (!GetOwner()) {
     return E_FAIL;
@@ -183,6 +200,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_imagePosition(
     IA2CoordinateType coordinate_type,
     LONG* x,
     LONG* y) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_imagePosition");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_IMAGE_POSITION);
   if (!GetOwner()) {
     return E_FAIL;
@@ -212,6 +230,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_imagePosition(
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_imageSize(LONG* height,
                                                          LONG* width) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_imageSize");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_IMAGE_SIZE);
   if (!GetOwner()) {
     return E_FAIL;
@@ -236,6 +255,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_characterExtents(
     LONG* out_y,
     LONG* out_width,
     LONG* out_height) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_characterExtents");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_CHARACTER_EXTENTS);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes |
                             ui::AXMode::kInlineTextBoxes);
@@ -290,6 +310,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_selection(LONG selection_index,
 IFACEMETHODIMP BrowserAccessibilityComWin::get_text(LONG start_offset,
                                                     LONG end_offset,
                                                     BSTR* text) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_text");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_TEXT);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -325,6 +346,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_text(LONG start_offset,
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_newText(
     IA2TextSegment* new_text) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_newText");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_NEW_TEXT);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -353,6 +375,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_newText(
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_oldText(
     IA2TextSegment* old_text) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_oldText");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_OLD_TEXT);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -384,10 +407,12 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollSubstringTo(
     LONG start_index,
     LONG end_index,
     IA2ScrollType scroll_type) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("scrollSubstringTo");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_SCROLL_SUBSTRING_TO);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes |
                             ui::AXMode::kInlineTextBoxes);
   // TODO(dmazzoni): adjust this for the start and end index, too.
+  // TODO(grt): Call an impl fn rather than the COM method.
   return scrollTo(scroll_type);
 }
 
@@ -397,6 +422,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollSubstringToPoint(
     IA2CoordinateType coordinate_type,
     LONG x,
     LONG y) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("scrollSubstringToPoint");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_SCROLL_SUBSTRING_TO_POINT);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes |
                             ui::AXMode::kInlineTextBoxes);
@@ -420,6 +446,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollSubstringToPoint(
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::setCaretOffset(LONG offset) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("setCaretOffset");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_SET_CARET_OFFSET);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -432,6 +459,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::setCaretOffset(LONG offset) {
 IFACEMETHODIMP BrowserAccessibilityComWin::setSelection(LONG selection_index,
                                                         LONG start_offset,
                                                         LONG end_offset) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("setSelection");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_SET_SELECTION);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -450,6 +478,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(
     LONG* start_offset,
     LONG* end_offset,
     BSTR* text_attributes) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_attributes");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_IATEXT_GET_ATTRIBUTES);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!start_offset || !end_offset || !text_attributes)
@@ -501,6 +530,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_nHyperlinks(
     LONG* hyperlink_count) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nHyperlinks");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_N_HYPERLINKS);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -522,6 +552,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nHyperlinks(
 IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlink(
     LONG index,
     IAccessibleHyperlink** hyperlink) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_hyperlink");
   *hyperlink = nullptr;
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_HYPERLINK);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
@@ -578,6 +609,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlink(
 IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlinkIndex(
     LONG char_index,
     LONG* hyperlink_index) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_hyperlinkIndex");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_HYPERLINK_INDEX);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -610,6 +642,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlinkIndex(
 // Currently, only text links are supported.
 IFACEMETHODIMP BrowserAccessibilityComWin::get_anchor(LONG index,
                                                       VARIANT* anchor) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_anchor");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ANCHOR);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner() || !IsHyperlink()) {
@@ -637,6 +670,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_anchor(LONG index,
 IFACEMETHODIMP BrowserAccessibilityComWin::get_anchorTarget(
     LONG index,
     VARIANT* anchor_target) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_anchorTarget");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ANCHOR_TARGET);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner() || !IsHyperlink()) {
@@ -667,6 +701,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_anchorTarget(
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_startIndex(LONG* index) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_startIndex");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_START_INDEX);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner() || !IsHyperlink()) {
@@ -687,9 +722,11 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_startIndex(LONG* index) {
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_endIndex(LONG* index) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_endIndex");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_END_INDEX);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   LONG start_index;
+  // TODO(grt): Call an impl fn rather than the COM method.
   HRESULT hr = get_startIndex(&start_index);
   if (hr == S_OK)
     *index = start_index + 1;
@@ -698,6 +735,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_endIndex(LONG* index) {
 
 // This method is deprecated in the IA2 Spec.
 IFACEMETHODIMP BrowserAccessibilityComWin::get_valid(boolean* valid) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_valid");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_VALID);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   return E_NOTIMPL;
@@ -708,6 +746,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_valid(boolean* valid) {
 //
 
 IFACEMETHODIMP BrowserAccessibilityComWin::nActions(LONG* n_actions) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("nActions");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_N_ACTIONS);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -722,6 +761,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::nActions(LONG* n_actions) {
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::doAction(LONG action_index) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("doAction");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_DO_ACTION);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -743,6 +783,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::doAction(LONG action_index) {
 IFACEMETHODIMP
 BrowserAccessibilityComWin::get_description(LONG action_index,
                                             BSTR* description) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_description");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_IAACTION_GET_DESCRIPTION);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   return E_NOTIMPL;
@@ -752,6 +793,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_keyBinding(LONG action_index,
                                                           LONG n_max_bindings,
                                                           BSTR** key_bindings,
                                                           LONG* n_bindings) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_keyBinding");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_KEY_BINDING);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -786,6 +828,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_keyBinding(LONG action_index,
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_name(LONG action_index,
                                                     BSTR* name) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_name");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_NAME);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -826,6 +869,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_name(LONG action_index,
 IFACEMETHODIMP
 BrowserAccessibilityComWin::get_localizedName(LONG action_index,
                                               BSTR* localized_name) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_localizedName");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_LOCALIZED_NAME);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -869,6 +913,7 @@ BrowserAccessibilityComWin::get_localizedName(LONG action_index,
 //
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_URL(BSTR* url) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_URL");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_URL);
   if (!GetOwner()) {
     return E_FAIL;
@@ -896,6 +941,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_URL(BSTR* url) {
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_title(BSTR* title) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_title");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_TITLE);
   if (!GetOwner()) {
     return E_FAIL;
@@ -919,6 +965,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_title(BSTR* title) {
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_mimeType(BSTR* mime_type) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_mimeType");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_MIME_TYPE);
   if (!GetOwner()) {
     return E_FAIL;
@@ -942,6 +989,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_mimeType(BSTR* mime_type) {
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_docType(BSTR* doc_type) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_docType");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_DOC_TYPE);
   if (!GetOwner()) {
     return E_FAIL;
@@ -967,6 +1015,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_docType(BSTR* doc_type) {
 IFACEMETHODIMP
 BrowserAccessibilityComWin::get_nameSpaceURIForID(SHORT name_space_id,
                                                   BSTR* name_space_uri) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nameSpaceURIForID");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_NAMESPACE_URI_FOR_ID);
   return E_NOTIMPL;
 }
@@ -974,6 +1023,7 @@ BrowserAccessibilityComWin::get_nameSpaceURIForID(SHORT name_space_id,
 IFACEMETHODIMP
 BrowserAccessibilityComWin::put_alternateViewMediaTypes(
     BSTR* comma_separated_media_types) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("put_alternateViewMediaTypes");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_PUT_ALTERNATE_VIEW_MEDIA_TYPES);
   return E_NOTIMPL;
 }
@@ -989,6 +1039,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nodeInfo(
     unsigned int* num_children,
     unsigned int* unique_id,
     USHORT* node_type) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nodeInfo");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_NODE_INFO);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -1031,6 +1082,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
                                                           SHORT* name_space_id,
                                                           BSTR* attrib_values,
                                                           USHORT* num_attribs) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_attributes");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ISIMPLEDOMNODE_GET_ATTRIBUTES);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -1069,6 +1121,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributesForNames(
     BSTR* attrib_names,
     SHORT* name_space_id,
     BSTR* attrib_values) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_attributesForNames");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ATTRIBUTES_FOR_NAMES);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -1104,6 +1157,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_computedStyle(
     BSTR* style_properties,
     BSTR* style_values,
     USHORT* num_style_properties) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_computedStyle");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_COMPUTED_STYLE);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -1135,6 +1189,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_computedStyleForProperties(
     boolean use_alternate_view,
     BSTR* style_properties,
     BSTR* style_values) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_computedStyleForProperties");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_COMPUTED_STYLE_FOR_PROPERTIES);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -1162,6 +1217,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_computedStyleForProperties(
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::scrollTo(boolean placeTopLeft) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("scrollTo");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ISIMPLEDOMNODE_SCROLL_TO);
   return scrollTo(placeTopLeft ? IA2_SCROLL_TYPE_TOP_LEFT
                                : IA2_SCROLL_TYPE_ANYWHERE);
@@ -1169,6 +1225,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollTo(boolean placeTopLeft) {
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_parentNode(
     ISimpleDOMNode** node) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_parentNode");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_PARENT_NODE);
   if (!GetOwner()) {
     return E_FAIL;
@@ -1184,6 +1241,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_parentNode(
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_firstChild(
     ISimpleDOMNode** node) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_firstChild");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_FIRST_CHILD);
   if (!GetOwner()) {
     return E_FAIL;
@@ -1204,6 +1262,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_firstChild(
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_lastChild(
     ISimpleDOMNode** node) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_lastChild");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_LAST_CHILD);
   if (!GetOwner()) {
     return E_FAIL;
@@ -1224,6 +1283,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_lastChild(
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_previousSibling(
     ISimpleDOMNode** node) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_previousSibling");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_PREVIOUS_SIBLING);
   if (!GetOwner()) {
     return E_FAIL;
@@ -1248,6 +1308,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_previousSibling(
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_nextSibling(
     ISimpleDOMNode** node) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nextSibling");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_NEXT_SIBLING);
   if (!GetOwner()) {
     return E_FAIL;
@@ -1274,6 +1335,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nextSibling(
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_childAt(unsigned int child_index,
                                                        ISimpleDOMNode** node) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_childAt");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_CHILD_AT);
   if (!GetOwner()) {
     return E_FAIL;
@@ -1298,6 +1360,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_childAt(unsigned int child_index,
 
 // We only support this method for retrieving MathML content.
 IFACEMETHODIMP BrowserAccessibilityComWin::get_innerHTML(BSTR* innerHTML) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_innerHTML");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_INNER_HTML);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -1317,12 +1380,14 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_innerHTML(BSTR* innerHTML) {
 
 IFACEMETHODIMP
 BrowserAccessibilityComWin::get_localInterface(void** local_interface) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_localInterface");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_LOCAL_INTERFACE);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   return E_NOTIMPL;
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_language(BSTR* language) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_language");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_LANGUAGE);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!language)
@@ -1347,6 +1412,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_language(BSTR* language) {
 //
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_domText(BSTR* dom_text) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_domText");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_DOM_TEXT);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!GetOwner()) {
@@ -1366,6 +1432,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_clippedSubstringBounds(
     int* out_y,
     int* out_width,
     int* out_height) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_clippedSubstringBounds");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_CLIPPED_SUBSTRING_BOUNDS);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes |
                             ui::AXMode::kInlineTextBoxes);
@@ -1382,6 +1449,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_unclippedSubstringBounds(
     int* out_y,
     int* out_width,
     int* out_height) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_unclippedSubstringBounds");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_UNCLIPPED_SUBSTRING_BOUNDS);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes |
                             ui::AXMode::kInlineTextBoxes);
@@ -1410,6 +1478,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_unclippedSubstringBounds(
 IFACEMETHODIMP BrowserAccessibilityComWin::scrollToSubstring(
     unsigned int start_index,
     unsigned int end_index) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("scrollToSubstring");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_SCROLL_TO_SUBSTRING);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes |
                             ui::AXMode::kInlineTextBoxes);
@@ -1436,6 +1505,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollToSubstring(
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_fontFamily(BSTR* font_family) {
+  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_fontFamily");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_FONT_FAMILY);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!font_family)
@@ -1463,6 +1533,10 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_fontFamily(BSTR* font_family) {
 IFACEMETHODIMP BrowserAccessibilityComWin::QueryService(REFGUID guid_service,
                                                         REFIID riid,
                                                         void** object) {
+  TRACE_EVENT("accessibility", "QueryService",
+              perfetto::Flow::FromPointer(this), "guidService",
+              base::WideToASCII(base::win::WStringFromGUID(guid_service)),
+              "riid", base::WideToASCII(base::win::WStringFromGUID(riid)));
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_QUERY_SERVICE);
   if (!GetOwner()) {
     return E_FAIL;

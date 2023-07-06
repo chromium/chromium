@@ -12,6 +12,8 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/strings/stringprintf.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
@@ -505,6 +507,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
 void BrowserAccessibilityManagerWin::FireWinAccessibilityEvent(
     LONG win_event_type,
     BrowserAccessibility* node) {
+  TRACE_EVENT("accessibility", "FireWinAccessibilityEvent");
   if (!ShouldFireEventForNode(node))
     return;
   // Suppress events when |IGNORED_CHANGED| except for related SHOW / HIDE.
@@ -535,8 +538,11 @@ void BrowserAccessibilityManagerWin::FireWinAccessibilityEvent(
   // argument to NotifyWinEvent; the AT client will then call get_accChild
   // on the HWND's accessibility object and pass it that same id, which
   // we can use to retrieve the IAccessible for this node.
-  LONG child_id = -(ToBrowserAccessibilityWin(node)->GetCOM()->GetUniqueId());
-  ::NotifyWinEvent(win_event_type, hwnd, OBJID_CLIENT, child_id);
+  auto* const com = ToBrowserAccessibilityWin(node)->GetCOM();
+  TRACE_EVENT("accessibility", "NotifyWinEvent",
+              perfetto::Flow::FromPointer(com), "win_event_type",
+              base::StringPrintf("0x%04lX", win_event_type));
+  ::NotifyWinEvent(win_event_type, hwnd, OBJID_CLIENT, -(com->GetUniqueId()));
 }
 
 bool BrowserAccessibilityManagerWin::IsIgnoredChangedNode(

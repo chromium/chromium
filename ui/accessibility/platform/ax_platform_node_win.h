@@ -327,6 +327,11 @@ enum {
     return E_INVALIDARG;                  \
   *arg = {};
 
+// A helper for tracing calls for functions implementing accessibility COM
+// interfaces.
+#define WIN_ACCESSIBILITY_API_TRACE_EVENT(function) \
+  TRACE_EVENT("accessibility", function, perfetto::Flow::FromPointer(this))
+
 namespace base {
 namespace win {
 class VariantVector;
@@ -463,6 +468,19 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // AXPlatformNodeBase overrides.
   void Destroy() override;
   bool IsPlatformCheckable() const override;
+
+  // CComObjectRootEx (non-virtual) overrides.
+  ULONG InternalAddRef();
+  ULONG InternalRelease();
+
+  // Invoked when the instance's refcount rises above 1. This generally means
+  // that a reference to an interface pointer is being handed out to an
+  // accessibility consumer.
+  virtual void OnReferenced();
+
+  // Invoked when the instance's refcount drops to 1. This generally means that
+  // an accessibility consumer has released its last reference to the instance.
+  virtual void OnDereferenced();
 
   //
   // IAccessible methods.

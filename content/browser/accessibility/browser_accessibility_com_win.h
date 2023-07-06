@@ -81,6 +81,10 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
 
   CONTENT_EXPORT ~BrowserAccessibilityComWin() override;
 
+  // AXPlatformNodeWin methods.
+  CONTENT_EXPORT void OnReferenced() override;
+  CONTENT_EXPORT void OnDereferenced() override;
+
   // Called after an atomic tree update completes. See
   // BrowserAccessibilityManagerWin::OnAtomicUpdateFinished for more
   // details on what these do.
