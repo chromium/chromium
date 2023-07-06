@@ -51,7 +51,7 @@ NOT_TAIL_CALLED BASE_EXPORT bool DumpWithoutCrashingUnthrottled();
 // `time_between_dumps` Time until the next dump should be captured.
 NOT_TAIL_CALLED BASE_EXPORT bool DumpWithoutCrashing(
     const base::Location& location = base::Location::Current(),
-    base::TimeDelta time_between_dumps = base::Minutes(5));
+    base::TimeDelta time_between_dumps = base::Days(1));
 
 // Handler to silently dump the current process without crashing that takes a
 // location and unique id to keep a track and apply throttling. This function
@@ -73,7 +73,7 @@ NOT_TAIL_CALLED BASE_EXPORT bool DumpWithoutCrashing(
 NOT_TAIL_CALLED BASE_EXPORT bool DumpWithoutCrashingWithUniqueId(
     size_t unique_identifier,
     const base::Location& location = base::Location::Current(),
-    base::TimeDelta time_between_dumps = base::Minutes(5));
+    base::TimeDelta time_between_dumps = base::Days(1));
 
 // Sets a function that'll be invoked to dump the current process when
 // DumpWithoutCrashing* is called. May be called with null to remove a
