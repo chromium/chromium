@@ -235,6 +235,33 @@ TEST_F(ColorPaletteControllerTest, SetStaticColor_JellyDisabled_AlwaysKMeans) {
 }
 
 TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+
+  // A seed color needs to be present for the observer to trigger.
+  WallpaperControllerTestApi wallpaper(wallpaper_controller());
+  wallpaper.SetCalculatedColors(
+      WallpaperCalculatedColors({}, kKMeanColor, SK_ColorWHITE));
+
+  // Initialize Dark mode to a known state.
+  dark_light_controller()->SetDarkModeEnabledForTest(false);
+
+  MockPaletteObserver observer;
+  base::ScopedObservation<ColorPaletteController,
+                          ColorPaletteController::Observer>
+      observation(&observer);
+  observation.Observe(color_palette_controller());
+
+  EXPECT_CALL(observer, OnColorPaletteChanging(testing::Field(
+                            &ColorPaletteSeed::color_mode,
+                            ui::ColorProviderKey::ColorMode::kDark)))
+      .Times(1);
+  dark_light_controller()->SetDarkModeEnabledForTest(true);
+}
+
+TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver_JellyDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(chromeos::features::kJelly);
+
   // Initialize Dark mode to a known state.
   dark_light_controller()->SetDarkModeEnabledForTest(false);
 
@@ -313,8 +340,12 @@ TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged_JellyEnabled) {
 }
 
 // Emulates Dark mode changes on login screen that can result from pod
-// selection.
-TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged_NoSession) {
+// selection. When Jelly is enabled, this happens through
+// `SelectLocalAccount()`.
+TEST_F(ColorPaletteControllerTest,
+       NativeTheme_DarkModeChanged_NoSession_JellyDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(chromeos::features::kJelly);
   GetSessionControllerClient()->Reset();
 
   // Set to a known state.
@@ -502,6 +533,8 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 
 TEST_F(ColorPaletteControllerLocalPrefTest,
        SelectLocalAccount_JellyDisabled_SkipsNotification) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(chromeos::features::kJelly);
   SessionController::Get()->SetClient(nullptr);
 
   MockPaletteObserver observer;
