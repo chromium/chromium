@@ -567,10 +567,11 @@ suite('input page', () => {
     let spellCheckList;
 
     setup(() => {
-      // Disable Update 2.
+      // Disable Update 2, and disable grammar check.
       // We use the property directly instead of loadTimeData, as overriding
       // loadTimeData does not work as the property is set using a value().
       inputPage.languageSettingsV2Update2Enabled_ = false;
+      inputPage.onDeviceGrammarCheckEnabled_ = false;
       // However, we should still set loadTimeData as some other code may use
       // it (such as languages.js).
       loadTimeData.overrideValues({
@@ -902,10 +903,11 @@ suite('input page', () => {
     let spellCheckList;
 
     setup(() => {
-      // Enable Update 2.
+      // Enable Update 2 and grammar check.
       // We use the property directly instead of loadTimeData, as overriding
       // loadTimeData does not work as the property is set using a value().
       inputPage.languageSettingsV2Update2Enabled_ = true;
+      inputPage.onDeviceGrammarCheckEnabled_ = true;
       // However, we should still set loadTimeData as some other code may use
       // it (such as languages.js).
       loadTimeData.overrideValues({
