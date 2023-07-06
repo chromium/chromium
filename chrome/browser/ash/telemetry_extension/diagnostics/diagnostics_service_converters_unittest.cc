@@ -164,6 +164,11 @@ TEST(DiagnosticsServiceConvertersTest,
   EXPECT_EQ(
       Convert(cros_healthd::DiagnosticRoutineUserMessageEnum::kCheckLedColor),
       crosapi::DiagnosticsRoutineUserMessageEnum::kUnknown);
+  // Power Button routine is not yet supported in telemetry extension.
+  EXPECT_EQ(
+      Convert(
+          cros_healthd::DiagnosticRoutineUserMessageEnum::kPressPowerButton),
+      crosapi::DiagnosticsRoutineUserMessageEnum::kUnknown);
 }
 
 TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineCommandEnum) {

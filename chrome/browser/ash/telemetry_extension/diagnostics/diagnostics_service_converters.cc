@@ -160,6 +160,10 @@ crosapi::mojom::DiagnosticsRoutineUserMessageEnum Convert(
     case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kCheckLedColor:
       NOTIMPLEMENTED();
       return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::kUnknown;
+    case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::
+        kPressPowerButton:
+      NOTIMPLEMENTED();
+      return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::kUnknown;
   }
   NOTREACHED();
   return static_cast<crosapi::mojom::DiagnosticsRoutineUserMessageEnum>(
