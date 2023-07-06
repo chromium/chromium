@@ -16,6 +16,10 @@ constexpr auto kContentsInsets = gfx::Insets::VH(kContentsVerticalInset, 16);
 // The size of the `DeleteButton`.
 constexpr int kDeleteButtonSizeDip = 16;
 
+// The maximum number of lines allotted to a text item's label when the
+// clipboard history refresh is enabled.
+constexpr size_t kTextItemMaxLines = 2u;
+
 // The margins of the `DeleteButton` instance showing on a
 // `ClipboardHistoryTextItemView`.
 constexpr auto kTextItemDeleteButtonMargins = gfx::Insets::TLBR(0, 8, 0, 4);

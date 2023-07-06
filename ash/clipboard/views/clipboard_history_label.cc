@@ -14,26 +14,31 @@
 namespace ash {
 ClipboardHistoryLabel::ClipboardHistoryLabel(const std::u16string& text)
     : views::Label(text) {
-  // TODO(http://b/267693870): Remove `SetPreferredSize()` entirely when
-  // refreshing clipboard history items' delete button UI.
-  SetPreferredSize(
-      gfx::Size(clipboard_history_util::GetPreferredItemViewWidth() -
-                    ClipboardHistoryViews::kContentsInsets.width(),
-                ClipboardHistoryViews::kLabelPreferredHeight));
-  if (chromeos::features::IsJellyEnabled()) {
-    TypographyProvider::Get()->StyleLabel(
-        chromeos::features::IsClipboardHistoryRefreshEnabled()
-            ? TypographyToken::kCrosButton2
-            : TypographyToken::kCrosBody1,
-        *this);
-  } else {
-    SetFontList(views::style::GetFont(views::style::CONTEXT_TOUCH_MENU,
-                                      views::style::STYLE_PRIMARY));
-  }
-  SetMultiLine(false);
-  SetHorizontalAlignment(gfx::ALIGN_LEFT);
   SetAutoColorReadabilityEnabled(false);
   SetEnabledColorId(cros_tokens::kTextColorPrimary);
+  SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  // Available horizontal space for text item contents.
+  const int contents_width =
+      clipboard_history_util::GetPreferredItemViewWidth() -
+      ClipboardHistoryViews::kContentsInsets.width();
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *this);
+    SetMultiLine(true);
+    SetMaxLines(ClipboardHistoryViews::kTextItemMaxLines);
+    // Reduce width to accommodate an icon when the refresh is enabled.
+    SizeToFit(contents_width - ClipboardHistoryViews::kIconSize.width() -
+              ClipboardHistoryViews::kIconMargins.width());
+  } else {
+    SetPreferredSize(gfx::Size(contents_width,
+                               ClipboardHistoryViews::kLabelPreferredHeight));
+    if (chromeos::features::IsJellyEnabled()) {
+      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody1, *this);
+    } else {
+      SetFontList(views::style::GetFont(views::style::CONTEXT_TOUCH_MENU,
+                                        views::style::STYLE_PRIMARY));
+    }
+  }
 }
 
 BEGIN_METADATA(ClipboardHistoryLabel, views::Label)
