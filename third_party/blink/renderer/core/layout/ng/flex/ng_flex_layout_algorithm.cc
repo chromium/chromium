@@ -2500,16 +2500,18 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
     container_sizes += main_axis_margins;
   }
 
-  const LayoutUnit gap_inline_size =
-      (algorithm_.NumItems() - 1) * algorithm_.gap_between_items_;
-  if (algorithm_.IsMultiline()) {
-    container_sizes.min_size = largest_outer_min_content_contribution;
-    container_sizes.max_size += gap_inline_size;
-  } else {
-    DCHECK_EQ(largest_outer_min_content_contribution, LayoutUnit())
-        << "largest_outer_min_content_contribution is not filled in for "
-           "singleline containers.";
-    container_sizes += gap_inline_size;
+  if (algorithm_.NumItems() > 0) {
+    const LayoutUnit gap_inline_size =
+        (algorithm_.NumItems() - 1) * algorithm_.gap_between_items_;
+    if (algorithm_.IsMultiline()) {
+      container_sizes.min_size = largest_outer_min_content_contribution;
+      container_sizes.max_size += gap_inline_size;
+    } else {
+      DCHECK_EQ(largest_outer_min_content_contribution, LayoutUnit())
+          << "largest_outer_min_content_contribution is not filled in for "
+             "singleline containers.";
+      container_sizes += gap_inline_size;
+    }
   }
 
   // Handle potential weirdness caused by items' negative margins.
@@ -2638,16 +2640,18 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer() {
     container_sizes += main_axis_margins;
   }
 
-  const LayoutUnit gap_inline_size =
-      (algorithm_.NumItems() - 1) * algorithm_.gap_between_items_;
-  if (algorithm_.IsMultiline()) {
-    container_sizes.min_size = largest_outer_min_content_contribution;
-    container_sizes.max_size += gap_inline_size;
-  } else {
-    DCHECK_EQ(largest_outer_min_content_contribution, LayoutUnit())
-        << "largest_outer_min_content_contribution is not filled in for "
-           "singleline containers.";
-    container_sizes += gap_inline_size;
+  if (algorithm_.NumItems() > 0) {
+    const LayoutUnit gap_inline_size =
+        (algorithm_.NumItems() - 1) * algorithm_.gap_between_items_;
+    if (algorithm_.IsMultiline()) {
+      container_sizes.min_size = largest_outer_min_content_contribution;
+      container_sizes.max_size += gap_inline_size;
+    } else {
+      DCHECK_EQ(largest_outer_min_content_contribution, LayoutUnit())
+          << "largest_outer_min_content_contribution is not filled in for "
+             "singleline containers.";
+      container_sizes += gap_inline_size;
+    }
   }
 
   // Handle potential weirdness caused by items' negative margins.
@@ -2721,7 +2725,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
       }
     }
   }
-  if (!is_column_) {
+  if (!is_column_ && number_of_items > 0) {
     LayoutUnit gap_inline_size =
         (number_of_items - 1) * algorithm_.gap_between_items_;
     sizes.max_size += gap_inline_size;
