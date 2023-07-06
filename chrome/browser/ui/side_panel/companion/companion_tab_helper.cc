@@ -116,6 +116,11 @@ CompanionTabHelper::GetCompanionPageHandler() {
   return companion_page_handler_;
 }
 
+void CompanionTabHelper::AddCompanionFinishedLoadingCallback(
+    CompanionTabHelper::CompanionLoadedCallback callback) {
+  delegate_->AddCompanionFinishedLoadingCallback(std::move(callback));
+}
+
 content::WebContents* CompanionTabHelper::GetCompanionWebContentsForTesting() {
   return delegate_->GetCompanionWebContentsForTesting();  // IN-TEST
 }

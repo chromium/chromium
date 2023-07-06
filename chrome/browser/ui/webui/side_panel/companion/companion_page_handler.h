@@ -90,7 +90,8 @@ class CompanionPageHandler
   // Notifies the companion side panel about a link click that happened in
   // the side panel that maybe was handled by the browser (either new tab or
   // same tab).
-  void NotifyLinkOpened(GURL opened_url, bool was_handled);
+  void NotifyLinkOpened(GURL opened_url,
+                        side_panel::mojom::LinkOpenMetadataPtr metadata);
 
  private:
   // Notifies the companion side panel about the URL of the main frame. Based on

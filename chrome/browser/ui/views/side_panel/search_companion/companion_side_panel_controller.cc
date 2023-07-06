@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -201,10 +202,60 @@ void CompanionSidePanelController::DidOpenRequestedURL(
   // Notify server that a link was opened in browser.
   auto* companion_helper =
       companion::CompanionTabHelper::FromWebContents(tab_web_contents);
+  if (companion_helper) {
+    auto* pref_service = browser->profile()->GetPrefs();
+    bool is_entry_point_default_pinned =
+        pref_service ? pref_service
+                           ->GetDefaultPrefValue(
+                               prefs::kSidePanelCompanionEntryPinnedToToolbar)
+                           ->GetBool()
+                     : false;
+    auto metadata = side_panel::mojom::LinkOpenMetadata::New(
+        (open_in_current_tab
+             ? side_panel::mojom::LinkOpenMetadata::LinkOpenAction::kClobbered
+             : side_panel::mojom::LinkOpenMetadata::LinkOpenAction::kNewTab),
+        is_entry_point_default_pinned);
+    companion_helper->AddCompanionFinishedLoadingCallback(base::BindOnce(
+        &CompanionSidePanelController::NotifyLinkClick, base::Unretained(this),
+        url, std::move(metadata), tab_web_contents));
+  }
+}
+
+void CompanionSidePanelController::NotifyLinkClick(
+    GURL opened_url,
+    side_panel::mojom::LinkOpenMetadataPtr metadata,
+    content::WebContents* main_tab_contents) {
+  auto* companion_helper =
+      companion::CompanionTabHelper::FromWebContents(main_tab_contents);
   if (companion_helper && companion_helper->GetCompanionPageHandler()) {
     companion_helper->GetCompanionPageHandler()->NotifyLinkOpened(
-        url, /**was_handled=*/true);
+        opened_url, std::move(metadata));
   }
+}
+
+void CompanionSidePanelController::AddCompanionFinishedLoadingCallback(
+    CompanionTabHelper::CompanionLoadedCallback callback) {
+  if (has_companion_loaded) {
+    std::move(callback).Run();
+    return;
+  }
+  companion_loaded_callbacks_.push_back(std::move(callback));
+}
+
+void CompanionSidePanelController::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
+  // Ensure the iframe that holds the Search Companion webpage is the one
+  // finished loading instead of the WebUI
+  if (validated_url.host() !=
+      GURL(companion::GetHomepageURLForCompanion()).host()) {
+    return;
+  }
+  has_companion_loaded = true;
+  for (auto& callback : companion_loaded_callbacks_) {
+    std::move(callback).Run();
+  }
+  companion_loaded_callbacks_.clear();
 }
 
 }  // namespace companion

@@ -216,8 +216,10 @@ void CompanionPageHandler::NotifyURLChanged(bool is_full_reload) {
   }
 }
 
-void CompanionPageHandler::NotifyLinkOpened(GURL opened_url, bool was_handled) {
-  page_->NotifyLinkOpen(opened_url, was_handled);
+void CompanionPageHandler::NotifyLinkOpened(
+    GURL opened_url,
+    side_panel::mojom::LinkOpenMetadataPtr metadata) {
+  page_->NotifyLinkOpen(opened_url, std::move(metadata));
 }
 
 void CompanionPageHandler::OnImageQuery(
