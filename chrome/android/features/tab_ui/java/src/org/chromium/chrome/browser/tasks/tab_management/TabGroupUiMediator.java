@@ -377,6 +377,10 @@ public class TabGroupUiMediator implements BackPressHandler {
      *            not, associated tabs from #getTabsToShowForID will be showing in the tab strip.
      */
     private void resetTabStripWithRelatedTabsForId(int id) {
+        // TODO(crbug/1449465): PseudoTab#getRelatedTabList() requires the tab state to be
+        // initialized. If this is called before tab state is initialized just skip.
+        if (!mTabModelSelector.isTabStateInitialized()) return;
+
         // TODO(crbug.com/1090655): We should be able to guard this call behind some checks so that
         // we can assert here that 1) mIsShowingOverViewMode is false 2) mIsTabGroupUiVisible with
         // valid id is false.
