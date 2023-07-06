@@ -123,9 +123,8 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetElideBehavior(gfx::FADE_TAIL);
 
-  // TODO(crbug.com/1399944): Remove this code after typography is updated.
   if (features::IsChromeRefresh2023()) {
-    title_->SetLineHeight(16);
+    title_->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
   }
 
   // Enable keyboard focus.

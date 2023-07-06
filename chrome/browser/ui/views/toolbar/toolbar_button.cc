@@ -93,6 +93,10 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
   // allocate the property once and modify the value.
   SetProperty(views::kInternalPaddingKey, gfx::Insets());
 
+  if (features::IsChromeRefresh2023()) {
+    label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
+  }
+
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
 }
