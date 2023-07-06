@@ -18,7 +18,10 @@ const composeCustomResponse = () => {
 
 self.addEventListener('install', e => {
   e.registerRouter({
-    condition: {urlPattern: "/service_worker/direct"},
+    condition: {
+      urlPattern: "/service_worker/direct",
+      requestMethod: "GET",
+    },
     source: "network"
   });
   self.skipWaiting();

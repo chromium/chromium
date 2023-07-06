@@ -5,9 +5,13 @@
 // Experimental.
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
 dictionary RouterCondition {
-};
-
-dictionary RouterUrlPatternCondition : RouterCondition {
+  // For the URLPattern condition.
   // a relative path pattern string usable for URLPattern.
   USVString urlPattern;
+
+  // For the Request condition.
+  USVString requestMethod;
+  RequestMode requestMode;
+  RequestDestination requestDestination;
 };
+

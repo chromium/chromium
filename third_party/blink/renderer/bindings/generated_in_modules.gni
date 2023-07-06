@@ -885,8 +885,6 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_router_rule.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_router_condition.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_router_condition.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_router_url_pattern_condition.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_router_url_pattern_condition.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rsa_other_primes_info.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rsa_other_primes_info.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_answer_options.cc",

@@ -9,6 +9,6 @@ enum RouterSourceEnum { "network", "race-network-and-fetch-handler", "fetch-even
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
 // TODO(crbug.com/1371756): implement final form.
 dictionary RouterRule {
-  RouterUrlPatternCondition condition;
+  RouterCondition condition;
   RouterSourceEnum source;
 };
