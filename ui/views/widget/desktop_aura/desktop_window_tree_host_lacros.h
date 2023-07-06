@@ -73,7 +73,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
   void AddAdditionalInitProperties(
       const Widget::InitParams& params,
       ui::PlatformWindowInitProperties* properties) override;
-  std::unique_ptr<corewm::Tooltip> CreateTooltip() override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,

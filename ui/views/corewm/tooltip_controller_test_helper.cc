@@ -30,9 +30,7 @@ TooltipControllerTestHelper::~TooltipControllerTestHelper() {
 
 bool TooltipControllerTestHelper::UseServerSideTooltip() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return ui::OzonePlatform::GetInstance()
-      ->GetPlatformRuntimeProperties()
-      .supports_tooltip;
+  return true;
 #else
   return false;
 #endif
