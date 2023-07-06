@@ -563,15 +563,9 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     GridIndex index(selected_page, row * apps_grid_view->cols() + column);
     AppListItemView* view = test_api.GetViewAtIndex(index);
 
-    InitiateDragForView(pointer, view, apps_grid_view);
-    return view;
-  }
-
-  void InitiateDragForView(AppsGridView::Pointer pointer,
-                           AppListItemView* view,
-                           AppsGridView* apps_grid_view) {
     StartDragForViewAndFireTimer(pointer, view);
     TriggerDragFlow(pointer);
+    return view;
   }
 
   void StartDragForViewAndFireTimer(AppsGridView::Pointer pointer,
@@ -592,28 +586,36 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
       generator->PressLeftButton();
       view->FireMouseDragTimerForTest();
     }
-    current_drag_location_ = from;
   }
 
   void TriggerDragFlow(AppsGridView::Pointer pointer) {
-    DCHECK(current_drag_location_.has_value());
     // Call UpdateDrag to trigger |apps_grid_view| change to cardified_state -
     // the cardified state starts only once the drag distance exceeds a drag
     // threshold, so the pointer has to sufficiently move from the original
     // position.
-    current_drag_location_ =
-        current_drag_location_.value() + gfx::Vector2d(10, 10);
-    UpdateDragInScreen(pointer, current_drag_location_.value(), 2);
+    UpdateDragInScreen(
+        pointer,
+        GetEventGenerator()->current_screen_location() + gfx::Vector2d(10, 10),
+        1);
+    if (use_drag_drop_refactor_) {
+      // A second smaller drag movement is needed to trigger OnDragEntered from
+      // the DragDropController.
+      UpdateDragInScreen(
+          pointer,
+          GetEventGenerator()->current_screen_location() + gfx::Vector2d(5, 5),
+          1);
+    }
   }
 
   void UpdateDragInScreen(AppsGridView::Pointer pointer,
                           const gfx::Point& to_in_screen,
                           int steps = 1) {
+    gfx::Point start(GetEventGenerator()->current_screen_location());
     for (int step = 1; step <= steps; step += 1) {
-      gfx::Point drag_increment_point(*current_drag_location_);
-      drag_increment_point += gfx::Vector2d(
-          (to_in_screen.x() - current_drag_location_->x()) * step / steps,
-          (to_in_screen.y() - current_drag_location_->y()) * step / steps);
+      gfx::Point drag_increment_point(start);
+      drag_increment_point +=
+          gfx::Vector2d((to_in_screen.x() - start.x()) * step / steps,
+                        (to_in_screen.y() - start.y()) * step / steps);
       auto* generator = GetEventGenerator();
       if (pointer == AppsGridView::TOUCH) {
         generator->MoveTouch(drag_increment_point);
@@ -621,7 +623,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
         generator->MoveMouseTo(drag_increment_point);
       }
     }
-    current_drag_location_ = to_in_screen;
   }
 
   // Updates the drag from the current drag location to the destination point
@@ -631,15 +632,10 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
                   const gfx::Point& to,
                   AppsGridView* apps_grid_view,
                   int steps = 1) {
-    // Check that the drag has been initialized.
-    DCHECK(current_drag_location_);
-
     gfx::Point to_in_screen(to);
     views::View::ConvertPointToScreen(apps_grid_view, &to_in_screen);
 
     UpdateDragInScreen(pointer, to_in_screen, steps);
-
-    current_drag_location_ = to_in_screen;
   }
 
   void EndDrag(AppsGridView::Pointer pointer = AppsGridView::MOUSE) {
@@ -648,8 +644,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
       generator->ReleaseTouch();
     else
       generator->ReleaseLeftButton();
-
-    current_drag_location_ = absl::nullopt;
   }
 
   // Simulate drag from the |from| point to either next or previous page's |to|
@@ -748,8 +742,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
  private:
   // Restores the locale to default when destructor is called.
   base::test::ScopedRestoreICUDefaultLocale restore_locale_;
-
-  absl::optional<gfx::Point> current_drag_location_;
 
   // Used to track haptics events sent during drag.
   std::unique_ptr<HapticsTrackingTestInputController> haptics_tracker_;
@@ -4341,28 +4333,34 @@ TEST_P(AppsGridViewDragTest, DragAndPinNotInitiallyVisibleItemToShelf) {
   ASSERT_TRUE(apps_grid_view_->GetWidget()->GetWindowBoundsInScreen().Contains(
       item_view->GetBoundsInScreen()));
 
-  InitiateDragForView(AppsGridView::MOUSE, item_view, apps_grid_view_);
-  MaybeCheckHaptickEventsCount(1);
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, item_view);
 
-  // Verify app list item drag has started.
-  ASSERT_TRUE(apps_grid_view_->drag_item());
-  ASSERT_TRUE(apps_grid_view_->IsDragging());
-  ASSERT_EQ(item_view->item(), apps_grid_view_->drag_item());
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
 
-  // Shelf should start handling the drag if it moves within its bounds.
-  auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
-  UpdateDragInScreen(
-      AppsGridView::MOUSE,
-      shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
-      /*steps=*/1);
-  if (!use_drag_drop_refactor()) {
-    ASSERT_TRUE(apps_grid_view_->FireDragToShelfTimerForTest());
-  }
+    // Verify app list item drag has started.
+    ASSERT_TRUE(apps_grid_view_->drag_item());
+    ASSERT_TRUE(apps_grid_view_->IsDragging());
+    ASSERT_EQ(item_view->item(), apps_grid_view_->drag_item());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Shelf should start handling the drag if it moves within its bounds.
+    auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+    UpdateDragInScreen(
+        AppsGridView::MOUSE,
+        shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
+        /*steps=*/1);
+    if (!use_drag_drop_refactor()) {
+      ASSERT_TRUE(apps_grid_view_->FireDragToShelfTimerForTest());
+    }
 
-  EXPECT_EQ("Item 40", shelf_view->drag_and_drop_shelf_id().app_id);
+    EXPECT_EQ("Item 40", shelf_view->drag_and_drop_shelf_id().app_id);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 
   // Releasing drag over shelf should pin the dragged app.
-  EndDrag();
   MaybeCheckHaptickEventsCount(1);
   EXPECT_TRUE(ShelfModel::Get()->IsAppPinned("Item 40"));
   EXPECT_EQ("Item 40", ShelfModel::Get()->items()[0].id.app_id);
@@ -4476,38 +4474,44 @@ TEST_P(AppsGridViewDragTest, DragAndPinNotInitiallyVisibleFolderItemToShelf) {
   ASSERT_TRUE(app_list_folder_view()->GetBoundsInScreen().Contains(
       item_view->GetBoundsInScreen()));
 
-  InitiateDragForView(AppsGridView::MOUSE, item_view, apps_grid_view_);
-  MaybeCheckHaptickEventsCount(1);
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, item_view);
 
-  // Verify app list item drag has started.
-  ASSERT_TRUE(folder_apps_grid_view()->drag_item());
-  ASSERT_TRUE(folder_apps_grid_view()->IsDragging());
-  ASSERT_EQ(item_view->item(), folder_apps_grid_view()->drag_item());
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
 
-  UpdateDragInScreen(
-      AppsGridView::MOUSE,
-      app_list_folder_view()->GetBoundsInScreen().right_center() +
-          gfx::Vector2d(20, 0),
-      /*steps=*/1);
+    // Verify app list item drag has started.
+    ASSERT_TRUE(folder_apps_grid_view()->drag_item());
+    ASSERT_TRUE(folder_apps_grid_view()->IsDragging());
+    ASSERT_EQ(item_view->item(), folder_apps_grid_view()->drag_item());
 
-  // Fire the reparent timer that should be started when an item is dragged out
-  // of folder bounds.
-  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+    UpdateDragInScreen(
+        AppsGridView::MOUSE,
+        app_list_folder_view()->GetBoundsInScreen().right_center() +
+            gfx::Vector2d(20, 0),
+        /*steps=*/1);
 
-  // Shelf should start handling the drag if it moves within its bounds.
-  auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
-  UpdateDragInScreen(
-      AppsGridView::MOUSE,
-      shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
-      /*steps=*/1);
-  if (!use_drag_drop_refactor()) {
-    ASSERT_TRUE(folder_apps_grid_view()->FireDragToShelfTimerForTest());
-  }
+    // Fire the reparent timer that should be started when an item is dragged
+    // out of folder bounds.
+    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Shelf should start handling the drag if it moves within its bounds.
+    auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+    UpdateDragInScreen(
+        AppsGridView::MOUSE,
+        shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
+        /*steps=*/1);
+    if (!use_drag_drop_refactor()) {
+      ASSERT_TRUE(folder_apps_grid_view()->FireDragToShelfTimerForTest());
+    }
 
-  EXPECT_EQ("Item 30", shelf_view->drag_and_drop_shelf_id().app_id);
+    EXPECT_EQ("Item 30", shelf_view->drag_and_drop_shelf_id().app_id);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 
   // Releasing drag over shelf should pin the dragged app.
-  EndDrag();
   MaybeCheckHaptickEventsCount(1);
 
   EXPECT_TRUE(ShelfModel::Get()->IsAppPinned("Item 30"));
@@ -4576,40 +4580,51 @@ TEST_P(AppsGridViewDragTest, RemoveDisplayWhileDraggingItemOntoShelf) {
   GetAppListTestHelper()->ShowAndRunLoop(GetSecondaryDisplay().id());
 
   AppListItemView* const item_view = GetItemViewInTopLevelGrid(1);
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, item_view);
 
-  InitiateDragForView(AppsGridView::MOUSE, item_view, apps_grid_view_);
-  MaybeCheckHaptickEventsCount(1);
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
 
-  // Verify that item drag has started.
-  ASSERT_TRUE(apps_grid_view_->drag_item());
-  ASSERT_TRUE(apps_grid_view_->IsDragging());
-  ASSERT_EQ(item_view->item(), apps_grid_view_->drag_item());
+    // Verify that item drag has started.
+    ASSERT_TRUE(apps_grid_view_->drag_item());
+    ASSERT_TRUE(apps_grid_view_->IsDragging());
+    ASSERT_EQ(item_view->item(), apps_grid_view_->drag_item());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    Shelf* const secondary_shelf =
+        Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id())
+            ->shelf();
 
-  Shelf* const secondary_shelf =
-      Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id())
-          ->shelf();
+    // Shelf should start handling the drag if it moves within its bounds.
+    ShelfView* shelf_view = secondary_shelf->GetShelfViewForTesting();
+    UpdateDragInScreen(
+        AppsGridView::MOUSE,
+        shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
+        /*steps=*/1);
+    if (!use_drag_drop_refactor()) {
+      ASSERT_TRUE(apps_grid_view_->FireDragToShelfTimerForTest());
+    }
 
-  // Shelf should start handling the drag if it moves within its bounds.
-  ShelfView* shelf_view = secondary_shelf->GetShelfViewForTesting();
-  UpdateDragInScreen(
-      AppsGridView::MOUSE,
-      shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
-      /*steps=*/1);
-  if (!use_drag_drop_refactor()) {
-    ASSERT_TRUE(apps_grid_view_->FireDragToShelfTimerForTest());
-  }
+    EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Enable animations to catch potential crashes during display removal.
+    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
-
-  // Enable animations to catch potential crashes during display removal.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  // Remove display while drag is over the shelf bounds, verify that the shelf
-  // model does not change.
-  UpdateDisplay("1024x768");
-  EXPECT_FALSE(ShelfModel::Get()->IsAppPinned("Item 1"));
-  EXPECT_TRUE(ShelfModel::Get()->items().empty());
+    // Remove display while drag is over the shelf bounds, verify that the shelf
+    // model does not change.
+    UpdateDisplay("1024x768");
+    EXPECT_FALSE(ShelfModel::Get()->IsAppPinned("Item 1"));
+    EXPECT_TRUE(ShelfModel::Get()->items().empty());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // DragDropController requires the test to release the pointer in order to
+    // free the drag loop.
+    EndDrag();
+  }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 }
 
 TEST_P(AppsGridViewDragTest, RemoveDisplayWhileDraggingFolderItemOntoShelf) {
@@ -4629,49 +4644,61 @@ TEST_P(AppsGridViewDragTest, RemoveDisplayWhileDraggingFolderItemOntoShelf) {
 
   AppListItemView* const item_view =
       GetItemViewInAppsGridAt(1, folder_apps_grid_view());
-  InitiateDragForView(AppsGridView::MOUSE, item_view, folder_apps_grid_view());
-  MaybeCheckHaptickEventsCount(1);
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, item_view);
 
-  // Verify app list item drag has started.
-  ASSERT_TRUE(folder_apps_grid_view()->drag_item());
-  ASSERT_TRUE(folder_apps_grid_view()->IsDragging());
-  ASSERT_EQ(item_view->item(), folder_apps_grid_view()->drag_item());
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
 
-  UpdateDragInScreen(
-      AppsGridView::MOUSE,
-      app_list_folder_view()->GetBoundsInScreen().right_center() +
-          gfx::Vector2d(20, 0),
-      /*steps=*/1);
+    // Verify app list item drag has started.
+    ASSERT_TRUE(folder_apps_grid_view()->drag_item());
+    ASSERT_TRUE(folder_apps_grid_view()->IsDragging());
+    ASSERT_EQ(item_view->item(), folder_apps_grid_view()->drag_item());
 
-  // Fire the reparent timer that should be started when an item is dragged out
-  // of folder bounds.
-  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+    UpdateDragInScreen(
+        AppsGridView::MOUSE,
+        app_list_folder_view()->GetBoundsInScreen().right_center() +
+            gfx::Vector2d(20, 0),
+        /*steps=*/1);
 
-  Shelf* const secondary_shelf =
-      Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id())
-          ->shelf();
+    // Fire the reparent timer that should be started when an item is dragged
+    // out of folder bounds.
+    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    Shelf* const secondary_shelf =
+        Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id())
+            ->shelf();
 
-  // Shelf should start handling the drag if it moves within its bounds.
-  ShelfView* shelf_view = secondary_shelf->GetShelfViewForTesting();
-  UpdateDragInScreen(
-      AppsGridView::MOUSE,
-      shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
-      /*steps=*/1);
-  if (!use_drag_drop_refactor()) {
-    ASSERT_TRUE(folder_apps_grid_view()->FireDragToShelfTimerForTest());
-  }
+    // Shelf should start handling the drag if it moves within its bounds.
+    ShelfView* shelf_view = secondary_shelf->GetShelfViewForTesting();
+    UpdateDragInScreen(
+        AppsGridView::MOUSE,
+        shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
+        /*steps=*/1);
+    if (!use_drag_drop_refactor()) {
+      ASSERT_TRUE(folder_apps_grid_view()->FireDragToShelfTimerForTest());
+    }
 
-  EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
+    EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Enable animations to catch potential crashes during display removal.
+    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  // Enable animations to catch potential crashes during display removal.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  // Remove display while drag is over the shelf bounds, verify that the shelf
-  // model does not change.
-  UpdateDisplay("1024x768");
-  EXPECT_FALSE(ShelfModel::Get()->IsAppPinned("Item 1"));
-  EXPECT_TRUE(ShelfModel::Get()->items().empty());
+    // Remove display while drag is over the shelf bounds, verify that the shelf
+    // model does not change.
+    UpdateDisplay("1024x768");
+    EXPECT_FALSE(ShelfModel::Get()->IsAppPinned("Item 1"));
+    EXPECT_TRUE(ShelfModel::Get()->items().empty());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // DragDropController requires the test to release the pointer in order to
+    // free the drag loop.
+    EndDrag();
+  }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 }
 
 TEST_P(AppsGridViewDragTest, MousePointerIsGrabbingDuringDrag) {
