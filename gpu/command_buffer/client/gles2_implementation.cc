@@ -4618,19 +4618,25 @@ void GLES2Implementation::GetUniformuiv(GLuint program,
   CheckGLError();
 }
 
-void GLES2Implementation::WritePixelsINTERNAL(const GLbyte* mailbox,
-                                              const void* src_color_space,
-                                              GLuint src_color_space_offset,
-                                              GLuint src_size,
-                                              GLuint src_width,
-                                              GLuint src_height,
-                                              GLuint src_sk_color_type,
-                                              GLuint src_sk_alpha_type,
-                                              GLuint src_row_bytes,
-                                              GLint x_offset,
-                                              GLint y_offset,
-                                              GLint plane_index,
-                                              const void* src_pixels) {
+void GLES2Implementation::WritePixelsYUVINTERNAL(
+    const GLbyte* mailbox,
+    GLuint src_size_plane1,
+    GLuint src_size_plane2,
+    GLuint src_size_plane3,
+    GLuint src_size_plane4,
+    GLuint src_width,
+    GLuint src_height,
+    GLuint src_plane_config,
+    GLuint src_subsampling,
+    GLuint src_datatype,
+    GLuint src_row_bytes_plane1,
+    GLuint src_row_bytes_plane2,
+    GLuint src_row_bytes_plane3,
+    GLuint src_row_bytes_plane4,
+    const void* src_pixels_plane1,
+    const void* src_pixels_plane2,
+    const void* src_pixels_plane3,
+    const void* src_pixels_plane4) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

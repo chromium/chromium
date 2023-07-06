@@ -3253,24 +3253,29 @@ void ReadbackARGBImagePixelsINTERNAL(GLint src_x,
   }
 }
 
-void WritePixelsINTERNAL(GLint x_offset,
-                         GLint y_offset,
-                         GLint plane_index,
-                         GLuint src_width,
-                         GLuint src_height,
-                         GLuint src_row_bytes,
-                         GLuint src_sk_color_type,
-                         GLuint src_sk_alpha_type,
-                         GLint shm_id,
-                         GLuint shm_offset,
-                         GLuint pixels_offset,
-                         GLuint mailbox_offset) {
-  gles2::cmds::WritePixelsINTERNAL* c =
-      GetCmdSpace<gles2::cmds::WritePixelsINTERNAL>();
+void WritePixelsYUVINTERNAL(GLuint src_width,
+                            GLuint src_height,
+                            GLuint src_row_bytes_plane1,
+                            GLuint src_row_bytes_plane2,
+                            GLuint src_row_bytes_plane3,
+                            GLuint src_row_bytes_plane4,
+                            GLuint src_yuv_plane_config,
+                            GLuint src_yuv_subsampling,
+                            GLuint src_yuv_datatype,
+                            GLint shm_id,
+                            GLuint shm_offset,
+                            GLuint pixels_offset_plane1,
+                            GLuint pixels_offset_plane2,
+                            GLuint pixels_offset_plane3,
+                            GLuint pixels_offset_plane4) {
+  gles2::cmds::WritePixelsYUVINTERNAL* c =
+      GetCmdSpace<gles2::cmds::WritePixelsYUVINTERNAL>();
   if (c) {
-    c->Init(x_offset, y_offset, plane_index, src_width, src_height,
-            src_row_bytes, src_sk_color_type, src_sk_alpha_type, shm_id,
-            shm_offset, pixels_offset, mailbox_offset);
+    c->Init(src_width, src_height, src_row_bytes_plane1, src_row_bytes_plane2,
+            src_row_bytes_plane3, src_row_bytes_plane4, src_yuv_plane_config,
+            src_yuv_subsampling, src_yuv_datatype, shm_id, shm_offset,
+            pixels_offset_plane1, pixels_offset_plane2, pixels_offset_plane3,
+            pixels_offset_plane4);
   }
 }
 

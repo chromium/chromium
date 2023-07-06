@@ -332,7 +332,7 @@
   OP(CopySharedImageINTERNALImmediate)                         /* 573 */ \
   OP(CopySharedImageToTextureINTERNALImmediate)                /* 574 */ \
   OP(ReadbackARGBImagePixelsINTERNAL)                          /* 575 */ \
-  OP(WritePixelsINTERNAL)                                      /* 576 */ \
+  OP(WritePixelsYUVINTERNAL)                                   /* 576 */ \
   OP(EnableiOES)                                               /* 577 */ \
   OP(DisableiOES)                                              /* 578 */ \
   OP(BlendEquationiOES)                                        /* 579 */ \

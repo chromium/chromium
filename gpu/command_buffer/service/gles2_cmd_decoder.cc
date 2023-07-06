@@ -12232,7 +12232,7 @@ error::Error GLES2DecoderImpl::HandleReadbackARGBImagePixelsINTERNAL(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleWritePixelsINTERNAL(
+error::Error GLES2DecoderImpl::HandleWritePixelsYUVINTERNAL(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   NOTIMPLEMENTED_LOG_ONCE();
