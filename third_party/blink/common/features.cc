@@ -1288,19 +1288,22 @@ BASE_FEATURE(kPrivateAggregationApi,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Selectively allows the JavaScript API to be disabled in just one of the
-// contexts.
+// contexts. The Protected Audience param's name has not been updated (from
+// "fledge") for consistency across versions
 constexpr base::FeatureParam<bool> kPrivateAggregationApiEnabledInSharedStorage{
     &kPrivateAggregationApi, "enabled_in_shared_storage",
     /*default_value=*/true};
-constexpr base::FeatureParam<bool> kPrivateAggregationApiEnabledInFledge{
-    &kPrivateAggregationApi, "enabled_in_fledge",
-    /*default_value=*/true};
+constexpr base::FeatureParam<bool>
+    kPrivateAggregationApiEnabledInProtectedAudience{&kPrivateAggregationApi,
+                                                     "enabled_in_fledge",
+                                                     /*default_value=*/true};
 
 // Selectively allows the Protected Audience-specific extensions to be disabled.
+// The name has not been updated (from "fledge") for consistency across versions
 constexpr base::FeatureParam<bool>
-    kPrivateAggregationApiFledgeExtensionsEnabled{&kPrivateAggregationApi,
-                                                  "fledge_extensions_enabled",
-                                                  /*default_value=*/true};
+    kPrivateAggregationApiProtectedAudienceExtensionsEnabled{
+        &kPrivateAggregationApi, "fledge_extensions_enabled",
+        /*default_value=*/true};
 
 BASE_FEATURE(kProcessHtmlDataImmediately,
              "ProcessHtmlDataImmediately",

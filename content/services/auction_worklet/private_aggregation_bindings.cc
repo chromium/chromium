@@ -307,7 +307,8 @@ PrivateAggregationBindings::~PrivateAggregationBindings() = default;
 void PrivateAggregationBindings::AttachToContext(
     v8::Local<v8::Context> context) {
   if (!base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) ||
-      !blink::features::kPrivateAggregationApiEnabledInFledge.Get()) {
+      !blink::features::kPrivateAggregationApiEnabledInProtectedAudience
+           .Get()) {
     return;
   }
 
@@ -327,7 +328,8 @@ void PrivateAggregationBindings::AttachToContext(
             send_histogram_report_function)
       .Check();
 
-  if (blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
+  if (blink::features::kPrivateAggregationApiProtectedAudienceExtensionsEnabled
+          .Get()) {
     v8::Local<v8::Function> report_contribution_for_event_function =
         v8::Function::New(
             context, &PrivateAggregationBindings::ContributeToHistogramOnEvent,

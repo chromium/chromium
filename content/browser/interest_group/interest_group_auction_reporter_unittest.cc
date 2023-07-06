@@ -1849,7 +1849,8 @@ TEST_F(
   // when collecting PA requests and sending to InterestGroupAuctionReporter,
   // and a compromised worklet can send PA requests to browser process when
   // feature param
-  // `blink::features::kPrivateAggregationApiFledgeExtensionsEnabled` is false.
+  // `blink::features::kPrivateAggregationApiProtectedAudienceExtensionsEnabled`
+  // is false.
   private_aggregation_event_map_["event_type"].push_back(
       kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
   private_aggregation_event_map_["event_type2"].push_back(
@@ -1875,7 +1876,8 @@ TEST_F(
   // The non-reserved aggregation requests from the bidder's reportWin() method
   // should not be passed along neither. reportWin() could only return PA
   // requests if the worklet is compromised when feature param
-  // `blink::features::kPrivateAggregationApiFledgeExtensionsEnabled` is false.
+  // `blink::features::kPrivateAggregationApiProtectedAudienceExtensionsEnabled`
+  // is false.
   WaitForReportWinAndRunCallback(
       /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
       MakeRequestPtrVector(

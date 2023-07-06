@@ -727,9 +727,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrivateAggregationApi);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kPrivateAggregationApiEnabledInSharedStorage;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPrivateAggregationApiEnabledInFledge;
+    kPrivateAggregationApiEnabledInProtectedAudience;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPrivateAggregationApiFledgeExtensionsEnabled;
+    kPrivateAggregationApiProtectedAudienceExtensionsEnabled;
 
 // If set, HTMLDocumentParser processes data immediately rather than after a
 // delay. This is further controlled by the feature params starting with the
