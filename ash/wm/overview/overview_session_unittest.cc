@@ -33,6 +33,7 @@
 #include "ash/style/rounded_label_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
+#include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_test_util.h"
@@ -3623,12 +3624,16 @@ TEST_F(FloatOverviewSessionTest, DraggingToNewDeskWithFloatedWindow) {
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
-  const auto* zero_state_new_desk_button =
-      desks_bar_view->zero_state_new_desk_button();
-  ASSERT_TRUE(zero_state_new_desk_button);
-  ASSERT_TRUE(zero_state_new_desk_button->GetVisible());
-  generator->DragMouseTo(
-      zero_state_new_desk_button->GetBoundsInScreen().CenterPoint());
+  views::LabelButton* new_desk_button = nullptr;
+  if (chromeos::features::IsJellyrollEnabled()) {
+    new_desk_button =
+        const_cast<CrOSNextDeskIconButton*>(desks_bar_view->new_desk_button());
+  } else {
+    new_desk_button = desks_bar_view->zero_state_new_desk_button();
+  }
+  ASSERT_TRUE(new_desk_button);
+  ASSERT_TRUE(new_desk_button->GetVisible());
+  generator->DragMouseTo(new_desk_button->GetBoundsInScreen().CenterPoint());
 
   // Check that a new desk has been created, and there should be no crash when
   // dropping the window.

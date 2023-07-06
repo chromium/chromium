@@ -35,6 +35,7 @@
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_state.h"
 #include "base/command_line.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/client/aura_constants.h"
@@ -521,7 +522,19 @@ TEST_F(DockedMagnifierTest, OverviewTabbing) {
   const auto* desk_bar_view = GetOverviewSession()
                                   ->GetGridWithRootWindow(root_window)
                                   ->desks_bar_view();
-  ASSERT_TRUE(desk_bar_view->IsZeroState());
+
+  views::LabelButton* default_desk_button = nullptr;
+  views::LabelButton* new_desk_button = nullptr;
+  if (chromeos::features::IsJellyrollEnabled()) {
+    default_desk_button = const_cast<CrOSNextDefaultDeskButton*>(
+        desk_bar_view->default_desk_button());
+    new_desk_button =
+        const_cast<CrOSNextDeskIconButton*>(desk_bar_view->new_desk_button());
+  } else {
+    ASSERT_TRUE(desk_bar_view->IsZeroState());
+    default_desk_button = desk_bar_view->zero_state_default_desk_button();
+    new_desk_button = desk_bar_view->zero_state_new_desk_button();
+  }
 
   // Tab once. The viewport should be centered on the beginning of the overview
   // item's title.
@@ -539,18 +552,14 @@ TEST_F(DockedMagnifierTest, OverviewTabbing) {
   // Tab one more time. The viewport should be centered on the center of the
   // default desk button in the zero state desks bar.
   SendKey(ui::VKEY_TAB);
-  TestMagnifierLayerTransform(desk_bar_view->zero_state_default_desk_button()
-                                  ->GetBoundsInScreen()
-                                  .CenterPoint(),
-                              root_window);
+  TestMagnifierLayerTransform(
+      default_desk_button->GetBoundsInScreen().CenterPoint(), root_window);
 
   // Tab one more time. The viewport should be centered on the center of the
   // new desk button in the zero state desks bar.
   SendKey(ui::VKEY_TAB);
-  TestMagnifierLayerTransform(desk_bar_view->zero_state_new_desk_button()
-                                  ->GetBoundsInScreen()
-                                  .CenterPoint(),
-                              root_window);
+  TestMagnifierLayerTransform(
+      new_desk_button->GetBoundsInScreen().CenterPoint(), root_window);
 }
 
 // Test that we exist split view and over view modes when a single window is
