@@ -41,9 +41,10 @@ bool PathProviderAndroid(int key, FilePath* result) {
     case base::DIR_MODULE:
       return base::android::GetNativeLibraryDirectory(result);
     case base::DIR_SRC_TEST_DATA_ROOT:
+    case base::DIR_OUT_TEST_DATA_ROOT:
       // These are only used by tests. In that context, they are overridden by
       // PathProviders in //base/test/test_support_android.cc.
-      NOTREACHED();
+      NOTIMPLEMENTED();
       return false;
     case base::DIR_USER_DESKTOP:
       // Android doesn't support GetUserDesktop.

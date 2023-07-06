@@ -6039,10 +6039,6 @@ test("unit_tests") {
     "../test/base/menu_model_test.h",
     "../test/base/v8_unit_test.cc",
     "../test/base/v8_unit_test.h",
-
-    # Duplicate these tests here because PathService has more items in
-    # unit_tests than in base_unittests.
-    "../../base/path_service_unittest.cc",
   ]
 
   if (!is_android) {
@@ -6551,6 +6547,10 @@ test("unit_tests") {
     "//ui/web_dialogs:web_dialogs_unittests",
     "//ui/webui",
     "//v8",
+
+    # Duplicate these tests here because PathService has more providers in
+    # unit_tests than in base_unittests.
+    "//base:path_service_unittest",
   ]
 
   if (is_chromeos) {

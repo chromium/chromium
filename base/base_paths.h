@@ -52,10 +52,10 @@ enum BasePathKey {
   DIR_ASSETS,  // Directory that contains application assets.
 
   // The following refer to system and system user directories.
-  DIR_TEMP,          // Temporary directory for the system and/or user.
-  DIR_HOME,          // User's root home directory. On Windows this will look
-                     // like "C:\Users\<user>"  which isn't necessarily a great
-                     // place to put files.
+  DIR_TEMP,  // Temporary directory for the system and/or user.
+  DIR_HOME,  // User's root home directory. On Windows this will look
+             // like "C:\Users\<user>"  which isn't necessarily a great
+             // place to put files.
 #if !BUILDFLAG(IS_IOS)
   DIR_USER_DESKTOP,  // The current user's Desktop.
 #endif
@@ -74,9 +74,18 @@ enum BasePathKey {
   DIR_SOURCE_ROOT = DIR_SRC_TEST_DATA_ROOT,  // Legacy name still widely used.
                                              // TODO(crbug.com/1264897): Replace
                                              // all instances and remove alias.
-  DIR_GEN_TEST_DATA_ROOT,  // The root of generated files that are
-                           // made available to tests. Note: for build-outputs
-                           // needed by tests, DIR_ASSETS should be used.
+  DIR_OUT_TEST_DATA_ROOT,  // Path of build outputs available to tests. Build
+                           // output files are normally placed directly in the
+                           // build output directory on platforms that do not
+                           // "package" tests. On platforms that "package"
+                           // tests this will instead return a package-local
+                           // path to copies of the relevant files.
+  DIR_GEN_TEST_DATA_ROOT,  // Path of generated intermediate files available to
+                           // tests. Build-intermediate files are normally
+                           // placed in the "gen" sub-directory of the build
+                           // output directory. On platforms that "package"
+                           // tests this will instead return a package-local
+                           // path to copies of the relevant files.
   DIR_TEST_DATA,           // Directory containing test data for //base tests.
                            // Only for use in base_unittests. Equivalent to
                            // DIR_SRC_TEST_DATA_ROOT + "/base/test/data".

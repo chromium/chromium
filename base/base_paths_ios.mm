@@ -39,8 +39,10 @@ bool PathProviderIOS(int key, base::FilePath* result) {
     }
 
     case base::DIR_SRC_TEST_DATA_ROOT:
-      // On iOS, there is no access to source root, however, the necessary
-      // resources are packaged into the test as assets.
+    case base::DIR_OUT_TEST_DATA_ROOT:
+      // On iOS, there is no access to source root, nor build dir,
+      // however, the necessary resources are packaged into the
+      // test app as assets.
       [[fallthrough]];
 
     case base::DIR_ASSETS:

@@ -29,7 +29,7 @@ namespace {
 
 base::FilePath out_test_file(const char* file) {
   base::FilePath path;
-  base::PathService::Get(base::DIR_ASSETS, &path);
+  base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &path);
   return path.AppendASCII(file);
 }
 

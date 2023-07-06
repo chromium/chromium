@@ -20,7 +20,7 @@ void RegisterClearKeyCdm(base::CommandLine* command_line,
                          bool use_wrong_cdm_path) {
   // External ClearKey is a loadable_module used only in tests.
   base::FilePath cdm_path;
-  base::PathService::Get(base::DIR_ASSETS, &cdm_path);
+  base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &cdm_path);
   std::string cdm_library_name =
       use_wrong_cdm_path ? "invalidcdmname" : media::kClearKeyCdmLibraryName;
   cdm_path = cdm_path
@@ -39,7 +39,7 @@ void RegisterMediaFoundationClearKeyCdm(
     std::vector<base::test::FeatureRefAndParams>& features) {
   // MediaFoundation ClearKey is a loadable_module used only in tests.
   base::FilePath cdm_path;
-  base::PathService::Get(base::DIR_ASSETS, &cdm_path);
+  base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &cdm_path);
   cdm_path = cdm_path.AppendASCII(base::GetLoadableModuleName(
       media::kMediaFoundationClearKeyCdmLibraryName));
 

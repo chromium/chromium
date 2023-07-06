@@ -46,10 +46,6 @@ bool ReturnsValidPath(int key) {
   // |result| is true and !path.empty() is the best we can do.
   bool check_path_exists = true;
 
-  // If no file is generate for the test, the path may not exist.
-  if (key == DIR_GEN_TEST_DATA_ROOT) {
-    check_path_exists = false;
-  }
 #if BUILDFLAG(IS_POSIX)
   // If chromium has never been started on this account, the cache path may not
   // exist.
@@ -361,20 +357,34 @@ TEST_F(PathServiceTest, DIR_ASSETS) {
 #endif
 }
 
-// DIR_GEN_TEST_DATA_ROOT is DIR_ASSETS/gen except on Fuchsia where
-// it is DIR_ASSETS.
+// DIR_OUT_TEST_DATA_ROOT is DIR_MODULE except on Fuchsia where it is the
+// package root, on ios where it is the resources directory and on Android
+// where it is overridden in tests by test_support_android.cc.
+TEST_F(PathServiceTest, DIR_OUT_TEST_DATA_ROOT) {
+  FilePath path;
+  ASSERT_TRUE(PathService::Get(DIR_OUT_TEST_DATA_ROOT, &path));
+#if BUILDFLAG(IS_FUCHSIA)
+  EXPECT_EQ(path.value(), "/pkg");
+#elif BUILDFLAG(IS_ANDROID)
+  // This key is overridden in //base/test/test_support_android.cc.
+  EXPECT_EQ(path.value(), kExpectedChromiumTestsRoot);
+#elif BUILDFLAG(IS_IOS)
+  // On iOS, build output files are moved to the resources directory.
+  EXPECT_EQ(path, base::apple::FrameworkBundlePath());
+#else
+  // On other platforms all build output is in the same directory,
+  // so DIR_OUT_TEST_DATA_ROOT should match DIR_MODULE.
+  EXPECT_EQ(path, PathService::CheckedGet(DIR_MODULE));
+#endif
+}
+
+// Test that DIR_GEN_TEST_DATA_ROOT contains dummy_generated.txt which is
+// generated for this test.
 TEST_F(PathServiceTest, DIR_GEN_TEST_DATA_ROOT) {
   FilePath path;
   ASSERT_TRUE(PathService::Get(DIR_GEN_TEST_DATA_ROOT, &path));
-#if BUILDFLAG(IS_FUCHSIA)
-  EXPECT_EQ(path.value(), "/pkg");
-#else
-  // On other platforms all gen output is in the same directory,
-  // so DIR_GEN_TEST_DATA_ROOT should match DIR_ASSETS/gen.
-  EXPECT_EQ(
-      path,
-      PathService::CheckedGet(DIR_ASSETS).Append(FILE_PATH_LITERAL("gen")));
-#endif
+  EXPECT_TRUE(base::PathExists(
+      path.Append(FILE_PATH_LITERAL("base/generated_file_for_test.txt"))));
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -394,6 +404,8 @@ TEST_F(PathServiceTest, AndroidTestOverrides) {
   EXPECT_EQ(PathService::CheckedGet(DIR_ASSETS).value(),
             kExpectedChromiumTestsRoot);
   EXPECT_EQ(PathService::CheckedGet(DIR_SRC_TEST_DATA_ROOT).value(),
+            kExpectedChromiumTestsRoot);
+  EXPECT_EQ(PathService::CheckedGet(DIR_OUT_TEST_DATA_ROOT).value(),
             kExpectedChromiumTestsRoot);
 }
 
