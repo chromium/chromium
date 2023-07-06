@@ -233,7 +233,8 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
                      config_.profile() == HEVCPROFILE_REXT ||
                      config_.profile() == HEVCPROFILE_MAIN10 ||
                      (config_.color_space_info().GuessGfxColorSpace().IsHDR() &&
-                      config_.codec() != VideoCodec::kH264)
+                      config_.codec() != VideoCodec::kH264 &&
+                      config_.profile() != HEVCPROFILE_MAIN)
                  ? 10
                  : 8);
 
