@@ -5,22 +5,20 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 
 #include <memory>
+#include <string>
 #include <tuple>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/path_service.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
-#include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
@@ -41,12 +39,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
-#include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -61,6 +59,10 @@ using policy::AddCopyOrMoveIOTask;
 using policy::kNotificationId;
 
 constexpr char kExampleUrl[] = "https://example1.com";
+const file_manager::io_task::IOTaskId kTaskId1 = 1u;
+const file_manager::io_task::IOTaskId kTaskId2 = 2u;
+constexpr char kNotificationId1[] = "swa-file-operation-1";
+constexpr char kNotificationId2[] = "swa-file-operation-2";
 
 }  // namespace
 
@@ -533,15 +535,6 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(dlp::FileAction::kDownload,
                         DlpFileDestination(data_controls::Component::kUsb))));
 
-class IOTaskStatusObserver
-    : public file_manager::io_task::IOTaskController::Observer {
- public:
-  MOCK_METHOD(void,
-              OnIOTaskStatus,
-              (const file_manager::io_task::ProgressStatus&),
-              (override));
-};
-
 class OnIONotificationClickedTest
     : public OnNotificationClickedTest,
       public ::testing::WithParamInterface<
@@ -549,18 +542,8 @@ class OnIONotificationClickedTest
  public:
   void SetUpOnMainThread() override {
     OnNotificationClickedTest::SetUpOnMainThread();
-    file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
-        base::BindLambdaForTesting([](content::BrowserContext* context) {
-          return std::unique_ptr<KeyedService>(
-              std::make_unique<file_manager::VolumeManager>(
-                  Profile::FromBrowserContext(context), nullptr, nullptr,
-                  ash::disks::DiskMountManager::GetInstance(), nullptr,
-                  file_manager::VolumeManager::GetMtpStorageInfoCallback()));
-        }));
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-
     file_system_context_ = file_manager::util::GetFileManagerFileSystemContext(
         browser()->profile());
     // DLP Setup.
@@ -575,42 +558,6 @@ class OnIONotificationClickedTest
   }
 
  protected:
-  void SetObserverExpectations(const file_manager::io_task::IOTaskId& task_id,
-                               const std::string& notification_id) {
-    // Task is queued.
-    EXPECT_CALL(
-        observer_,
-        OnIOTaskStatus(AllOf(
-            Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
-            Field(&file_manager::io_task::ProgressStatus::state,
-                  file_manager::io_task::State::kQueued))))
-        .Times(testing::AtLeast(1));
-    // Task is paused.
-    EXPECT_CALL(
-        observer_,
-        OnIOTaskStatus(AllOf(
-            Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
-            Field(&file_manager::io_task::ProgressStatus::state,
-                  file_manager::io_task::State::kPaused))))
-        .Times(testing::AtLeast(1))
-        .WillOnce([this, &notification_id](
-                      const file_manager::io_task::ProgressStatus& status) {
-          FilesPolicyNotificationManagerFactory::GetForBrowserContext(
-              browser()->profile())
-              ->ShowsFilesPolicyNotification(notification_id, status);
-        })
-        .WillRepeatedly(testing::Return());
-    // Task is cancelled.
-    EXPECT_CALL(
-        observer_,
-        OnIOTaskStatus(AllOf(
-            Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
-            Field(&file_manager::io_task::ProgressStatus::state,
-                  file_manager::io_task::State::kCancelled))))
-        .Times(testing::AtLeast(1));
-  }
-
-  IOTaskStatusObserver observer_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   const blink::StorageKey kTestStorageKey =
@@ -640,22 +587,11 @@ class OnIONotificationClickedTest
   std::unique_ptr<policy::MockDlpFilesControllerAsh> files_controller_;
 };
 
-// TODO(crbug.com/1458326): Re-enable this test
-#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
-#define MAYBE_MultiFileOKShowsDialogOverFilesApp \
-  DISABLED_MultiFileOKShowsDialogOverFilesApp
-#else
-#define MAYBE_MultiFileOKShowsDialogOverFilesApp \
-  MultiFileOKShowsDialogOverFilesApp
-#endif
-
 // Tests that clicking the OK button on a warning notification shown for copy or
 // move IO task with multiple warning files shows a dialog instead of continuing
 // the action, and opens the Files App only if there's not one opened already.
 IN_PROC_BROWSER_TEST_P(OnIONotificationClickedTest,
-                       MAYBE_MultiFileOKShowsDialogOverFilesApp) {
-  policy::GetIOTaskController(browser()->profile())->AddObserver(&observer_);
-
+                       MultiFileOKShowsDialogOverFilesApp_Warning) {
   auto [type, action] = GetParam();
 
   // 2 dialogs should be shown.
@@ -690,26 +626,43 @@ IN_PROC_BROWSER_TEST_P(OnIONotificationClickedTest,
       browser()->profile());
   ASSERT_TRUE(fpnm);
 
-  // Add the first task and set expectations.
-  file_manager::io_task::IOTaskId task_id_1 = 1u;
-  const std::string notification_id_1 = "swa-file-operation-1";
-  SetObserverExpectations(task_id_1, notification_id_1);
+  // Add the tasks.
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_FALSE(policy::AddCopyOrMoveIOTask(
-                     browser()->profile(), file_system_context_, task_id_1,
-                     type, temp_dir_.GetPath(), "test1.txt", kTestStorageKey)
+                     browser()->profile(), file_system_context_, kTaskId1, type,
+                     temp_dir_.GetPath(), "test1.txt", kTestStorageKey)
+                     .empty());
+    ASSERT_FALSE(policy::AddCopyOrMoveIOTask(
+                     browser()->profile(), file_system_context_, kTaskId2, type,
+                     temp_dir_.GetPath(), "test2.txt", kTestStorageKey)
                      .empty());
   }
-  ASSERT_TRUE(fpnm->HasIOTask(task_id_1));
+  ASSERT_TRUE(fpnm->HasIOTask(kTaskId1));
+  ASSERT_TRUE(fpnm->HasIOTask(kTaskId2));
 
-  // This should pause the task, which would normally notify
-  // file_manager::EventRouter with the status, that would also sent the update
-  // to FPNM. In the test this is simulated with the mock observer.
-  fpnm->ShowDlpWarning(cb.Get(), task_id_1, warning_files,
+  // Pause the tasks and save the info in FPNM. Then, the
+  // file_manager::EventRouter notifies FPNM with the paused status, which
+  // triggers the notification. Do this before any Files App is opened so that
+  // we are sure we show system notifications.
+  fpnm->ShowDlpWarning(cb.Get(), kTaskId1, warning_files,
                        DlpFileDestination(""), action);
-  ASSERT_TRUE(bridge_->GetDisplayedNotification(notification_id_1).has_value());
-  bridge_->Click(notification_id_1, NotificationButton::OK);
+  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification.has_value());
+  const std::u16string title = action == dlp::FileAction::kCopy
+                                   ? u"Review is required before copying"
+                                   : u"Review is required before moving";
+
+  fpnm->ShowDlpWarning(cb.Get(), kTaskId2, warning_files,
+                       DlpFileDestination(""), action);
+  notification = bridge_->GetDisplayedNotification(kNotificationId2);
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), title);
+
+  // Show the first dialog.
+  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+  EXPECT_EQ(notification->title(), title);
+  bridge_->Click(kNotificationId1, NotificationButton::OK);
 
   // Check that a new Files app is opened.
   Browser* first_app = ui_test_utils::WaitForBrowserToOpen();
@@ -717,32 +670,104 @@ IN_PROC_BROWSER_TEST_P(OnIONotificationClickedTest,
   ASSERT_EQ(first_app, FindFilesApp());
 
   // The notification should be closed.
-  EXPECT_FALSE(
-      bridge_->GetDisplayedNotification(notification_id_1).has_value());
+  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
 
-  // Add another task and set expectations.
-  file_manager::io_task::IOTaskId task_id_2 = 2u;
-  const std::string notification_id_2 = "swa-file-operation-2";
-  SetObserverExpectations(task_id_2, notification_id_2);
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_FALSE(policy::AddCopyOrMoveIOTask(
-                     browser()->profile(), file_system_context_, task_id_2,
-                     type, temp_dir_.GetPath(), "test2.txt", kTestStorageKey)
-                     .empty());
-  }
-  ASSERT_TRUE(fpnm->HasIOTask(task_id_2));
-
-  // Show another notification and dialog. No new app should be opened.
-  fpnm->ShowDlpWarning(cb.Get(), task_id_2, warning_files,
-                       DlpFileDestination(""), action);
-  ASSERT_TRUE(bridge_->GetDisplayedNotification(notification_id_2).has_value());
-  bridge_->Click(notification_id_2, NotificationButton::OK);
+  // Show the second dialog.
+  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId2).has_value());
+  bridge_->Click(kNotificationId2, NotificationButton::OK);
 
   // Check that the last active Files app is the same as before.
   ASSERT_TRUE(first_app);
   ASSERT_EQ(first_app, FindFilesApp());
-  policy::GetIOTaskController(browser()->profile())->RemoveObserver(&observer_);
+
+  // The notification should be closed.
+  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId2).has_value());
+}
+
+// Tests that clicking the OK button on an error notification shown for copy or
+// move IO task with multiple blocked files shows a dialog, for which it opens
+// the Files App only if there's not one opened already.
+IN_PROC_BROWSER_TEST_P(OnIONotificationClickedTest,
+                       MultiFileOKShowsDialogOverFilesApp_Error) {
+  auto [type, action] = GetParam();
+
+  BlockedFilesMap blocked_map;
+  blocked_map.emplace(base::FilePath("file1.txt"), Policy::kDlp);
+  blocked_map.emplace(base::FilePath("file2.txt"), Policy::kDlp);
+  EXPECT_CALL(*factory_, CreateErrorDialog(blocked_map, testing::_, action,
+                                           testing::NotNull()))
+      .Times(2);
+
+  // No Files app opened.
+  ASSERT_FALSE(FindFilesApp());
+
+  auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+      browser()->profile());
+  ASSERT_TRUE(fpnm);
+
+  // Add the tasks.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_FALSE(policy::AddCopyOrMoveIOTask(
+                     browser()->profile(), file_system_context_, kTaskId1, type,
+                     temp_dir_.GetPath(), "test1.txt", kTestStorageKey)
+                     .empty());
+    ASSERT_FALSE(policy::AddCopyOrMoveIOTask(
+                     browser()->profile(), file_system_context_, kTaskId2, type,
+                     temp_dir_.GetPath(), "test2.txt", kTestStorageKey)
+                     .empty());
+  }
+  ASSERT_TRUE(fpnm->HasIOTask(kTaskId1));
+  ASSERT_TRUE(fpnm->HasIOTask(kTaskId2));
+
+  // Save blocked files in FPNM. Once we complete the tasks with policy error,
+  // the file_manager::EventRouter will notify FPNM with the error status and
+  // trigger the notification. Do this before any Files App is opened so that
+  // we are sure we show system notifications.
+  fpnm->ShowDlpBlockedFiles(
+      kTaskId1, {base::FilePath("file1.txt"), base::FilePath("file2.txt")},
+      action);
+  GetIOTaskController(browser()->profile())
+      ->CompleteWithError(kTaskId1,
+                          file_manager::io_task::PolicyError(
+                              file_manager::io_task::PolicyErrorType::kDlp, 2));
+  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification.has_value());
+  const std::u16string title =
+      action == dlp::FileAction::kCopy ? u"Blocked copy" : u"Blocked move";
+  EXPECT_EQ(notification->title(), title);
+
+  fpnm->ShowDlpBlockedFiles(
+      kTaskId2, {base::FilePath("file1.txt"), base::FilePath("file2.txt")},
+      action);
+  GetIOTaskController(browser()->profile())
+      ->CompleteWithError(kTaskId2,
+                          file_manager::io_task::PolicyError(
+                              file_manager::io_task::PolicyErrorType::kDlp, 2));
+  notification = bridge_->GetDisplayedNotification(kNotificationId2);
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), title);
+
+  // Show the first dialog.
+  bridge_->Click(kNotificationId1, NotificationButton::OK);
+
+  // Check that a new Files app is opened.
+  Browser* first_app = ui_test_utils::WaitForBrowserToOpen();
+  ASSERT_TRUE(first_app);
+  ASSERT_EQ(first_app, FindFilesApp());
+
+  // The notification should be closed.
+  // TODO(b/289903108): Uncomment when notifications are deduped.
+  //     EXPECT_FALSE(
+  //         bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+
+  // Show the second dialog. No new app should be opened.
+  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId2).has_value());
+  bridge_->Click(kNotificationId2, NotificationButton::OK);
+
+  // Check that the last active Files app is the same as before.
+  ASSERT_TRUE(first_app);
+  ASSERT_EQ(first_app, FindFilesApp());
 }
 
 INSTANTIATE_TEST_SUITE_P(
