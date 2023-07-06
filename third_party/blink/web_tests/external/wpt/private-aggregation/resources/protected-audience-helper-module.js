@@ -131,24 +131,26 @@ async function runBasicFledgeTestExpectingNoWinner(test, testConfig) {
   assert_true(result === null, 'Auction unexpectedly had a winner');
 }
 
-// Test helper for report phase of auctions that lets the caller specify the
-// body of reportResult() and reportWin().
+// Test helper for report phase of auctions that lets the caller insert code
+// into the body of each worklet function.
 //
-// Passing worklets in null will cause the test fail.
-//
-// Null worklets test cases are handled under
-// fledge.
-async function runReportTest(test, uuid, reportResult, reportWin) {
-  assert_not_equals(reportResult, null)
-  assert_not_equals(reportWin, null)
+// See third_party/blink/web_tests/external/wpt/fledge for a more general
+// function.
+async function runReportTest(test, codeToInsert) {
+  const uuid = generateUuid(test);
+
+  let generateBid = codeToInsert.generateBid;
+  let scoreAd = codeToInsert.scoreAd;
+  let reportWin = codeToInsert.reportWin;
+  let reportResult = codeToInsert.reportResult;
 
   let interestGroupOverrides =
-    { biddingLogicUrl: createBiddingScriptUrl({ reportWin }) };
+    { biddingLogicUrl: createBiddingScriptUrl({ generateBid, reportWin }) };
 
   await joinInterestGroup(test, uuid, interestGroupOverrides);
   await runBasicFledgeAuctionAndNavigate(
       test, uuid,
       { decisionLogicUrl: createDecisionScriptUrl(
-        uuid, { reportResult })
+        uuid, { scoreAd, reportResult })
     });
 }

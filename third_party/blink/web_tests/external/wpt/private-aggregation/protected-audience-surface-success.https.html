@@ -5,85 +5,73 @@
 <script src="resources/protected-audience-helper-module.js"></script>
 
 <body>
-  <script>
-    'use strict';
+<script>
+'use strict';
 
-    promise_test(async test => {
-      const uuid = generateUuid(test);
-      const contribution = '{ bucket: 1n, value: 2 }';
+promise_test(async test => {
+  const contribution = '{ bucket: 1n, value: 2 }';
 
-      await runReportTest(
-        test, uuid,
-        // reportResult:
+  await runReportTest(test,
+    { reportResult:
         `privateAggregation.contributeToHistogram(${contribution});`,
-        // reportWin:
+      reportWin:
         `privateAggregation.contributeToHistogram(${contribution});`
-      );
-    }, 'basic contributeToHistogram() test');
+    });
+}, 'basic contributeToHistogram() test');
 
-  promise_test(async test => {
-    const uuid = generateUuid(test);
-    const contribution = '{ bucket: 0n, value: 2 }';
+promise_test(async test => {
+  const contribution = '{ bucket: 0n, value: 2 }';
 
-    await runReportTest(
-      test, uuid,
-      // reportResult:
-      `privateAggregation.contributeToHistogram(${contribution});`,
-      // reportWin:
-      `privateAggregation.contributeToHistogram(${contribution});`
-    );
-  }, 'contributeToHistogram() with a zero bucket');
+  await runReportTest(test,
+    { reportResult:
+        `privateAggregation.contributeToHistogram(${contribution});`,
+      reportWin:
+        `privateAggregation.contributeToHistogram(${contribution});`
+    });
+}, 'contributeToHistogram() with a zero bucket');
 
-  promise_test(async test => {
-    const uuid = generateUuid(test);
-    const contribution = '{ bucket: 1n, value: 0 }';
+promise_test(async test => {
+  const contribution = '{ bucket: 1n, value: 0 }';
 
-    await runReportTest(
-      test, uuid,
-      // reportResult:
-      `privateAggregation.contributeToHistogram(${contribution});`,
-      // reportWin:
-      `privateAggregation.contributeToHistogram(${contribution});`
-    );
-  }, 'contributeToHistogram() with a zero value');
+  await runReportTest(test,
+    { reportResult:
+        `privateAggregation.contributeToHistogram(${contribution});`,
+      reportWin:
+        `privateAggregation.contributeToHistogram(${contribution});`
+    });
+}, 'contributeToHistogram() with a zero value');
 
-  promise_test(async test => {
-    const uuid = generateUuid(test);
-    const contribution = '{ bucket: 18446744073709551616n, value: 5 }';
+promise_test(async test => {
+  const contribution = '{ bucket: 18446744073709551616n, value: 5 }';
 
-    await runReportTest(
-      test, uuid,
-      // reportResult:
-      `privateAggregation.contributeToHistogram(${contribution});`,
-      // reportWin:
-      `privateAggregation.contributeToHistogram(${contribution});`
-    );
-  }, 'contributeToHistogram() with a large bucket');
+  await runReportTest(test,
+    { reportResult:
+        `privateAggregation.contributeToHistogram(${contribution});`,
+      reportWin:
+        `privateAggregation.contributeToHistogram(${contribution});`
+    });
+}, 'contributeToHistogram() with a large bucket');
 
-  promise_test(async test => {
-    const uuid = generateUuid(test);
-    const contribution = '{ bucket: 340282366920938463463374607431768211455n, value: 5 }';
+promise_test(async test => {
+  const contribution = '{ bucket: 340282366920938463463374607431768211455n, value: 5 }';
 
-    await runReportTest(
-      test, uuid,
-      // reportResult:
-      `privateAggregation.contributeToHistogram(${contribution});`,
-      // reportWin:
-      `privateAggregation.contributeToHistogram(${contribution});`
-    );
-  }, 'contributeToHistogram() with a max bucket');
+  await runReportTest(test,
+    { reportResult:
+        `privateAggregation.contributeToHistogram(${contribution});`,
+      reportWin:
+        `privateAggregation.contributeToHistogram(${contribution});`
+    });
+}, 'contributeToHistogram() with a max bucket');
 
-  promise_test(async test => {
-    const uuid = generateUuid(test);
-    const contribution = '{ bucket: 1n, value: 2.3 }';
+promise_test(async test => {
+  const contribution = '{ bucket: 1n, value: 2.3 }';
 
-    await runReportTest(
-      test, uuid,
-      // reportResult:
-      `privateAggregation.contributeToHistogram(${contribution});`,
-      // reportWin:
-      `privateAggregation.contributeToHistogram(${contribution});`
-    );
-  }, 'contributeToHistogram() with a non-integer value');
-  </script>
+  await runReportTest(test,
+    { reportResult:
+        `privateAggregation.contributeToHistogram(${contribution});`,
+      reportWin:
+        `privateAggregation.contributeToHistogram(${contribution});`
+    });
+}, 'contributeToHistogram() with a non-integer value');
+</script>
 </body>
