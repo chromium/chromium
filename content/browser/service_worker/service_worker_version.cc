@@ -2107,7 +2107,8 @@ void ServiceWorkerVersion::DidEnsureLiveRegistrationForStartWorker(
       break;
     case EmbeddedWorkerStatus::STOPPING:
     case EmbeddedWorkerStatus::STOPPED:
-      if (purpose == ServiceWorkerMetrics::EventType::WARM_UP) {
+      if (running_status() == EmbeddedWorkerStatus::STOPPED &&
+          purpose == ServiceWorkerMetrics::EventType::WARM_UP) {
         // Postpone initializing the global scope.
         embedded_worker_->SetPauseInitializingGlobalScope();
 

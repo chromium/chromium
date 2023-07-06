@@ -710,6 +710,7 @@ void EmbeddedWorkerInstance::OnStarted(
 
   DCHECK_EQ(EmbeddedWorkerStatus::STARTING, status_);
   status_ = EmbeddedWorkerStatus::RUNNING;
+  pause_initializing_global_scope_ = false;
   thread_id_ = thread_id;
   inflight_start_info_.reset();
   for (auto& observer : listener_list_) {
@@ -1013,6 +1014,7 @@ void EmbeddedWorkerInstance::ReleaseProcess() {
   // from UpdateForegroundPriority() since we don't want it to be
   // re-added at this stage.
   status_ = EmbeddedWorkerStatus::STOPPING;
+  pause_initializing_global_scope_ = false;
   NotifyForegroundServiceWorkerRemoved();
 
   instance_host_receiver_.reset();
