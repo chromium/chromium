@@ -18,6 +18,8 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:paddingBottom="12dp"
         android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
         android:paddingLeft="@dimen/restore_tabs_sheet_padding"
         android:paddingRight="@dimen/restore_tabs_sheet_padding">
         <ImageButton
@@ -32,6 +34,8 @@ found in the LICENSE file.
             android:contentDescription="@string/restore_tabs_back_to_promo_screen_icon_description" />
         <TextView
             android:id="@+id/restore_tabs_toolbar_title_text_view"
+            android:accessibilityHeading="true"
+            android:focusable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -51,6 +55,7 @@ found in the LICENSE file.
         android:paddingBottom="10dp"
         android:paddingLeft="@dimen/restore_tabs_sheet_padding_content"
         android:paddingRight="@dimen/restore_tabs_sheet_padding_content"/>
+    <!-- Divider -->
     <View
         android:id="@+id/restore_tabs_bottom_toolbar_divider"
         android:layout_width="match_parent"
