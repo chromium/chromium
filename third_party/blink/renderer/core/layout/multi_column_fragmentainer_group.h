@@ -11,6 +11,8 @@
 
 namespace blink {
 
+struct LogicalRect;
+
 // A group of columns, that are laid out in the inline progression direction,
 // all with the same column height.
 //
@@ -126,9 +128,9 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   PhysicalRect FragmentsBoundingBox(
       const PhysicalRect& bounding_box_in_flow_thread) const;
 
-  LayoutRect FlowThreadPortionRectAt(unsigned column_index) const;
+  PhysicalRect FlowThreadPortionRectAt(unsigned column_index) const;
 
-  LayoutRect FlowThreadPortionOverflowRectAt(unsigned column_index) const;
+  PhysicalRect FlowThreadPortionOverflowRectAt(unsigned column_index) const;
 
   // Get the first and the last column intersecting the specified block range.
   // Note that |logicalBottomInFlowThread| is an exclusive endpoint.
@@ -171,7 +173,7 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   LayoutUnit LogicalTopInFlowThreadAt(unsigned column_index) const {
     return logical_top_in_flow_thread_ + column_index * ColumnLogicalHeight();
   }
-
+  LogicalRect LogicalFlowThreadPortionRectAt(unsigned column_index) const;
   // Return the column that the specified visual point belongs to. Only the
   // coordinate on the column progression axis is relevant. Every point belongs
   // to a column, even if said point is not inside any of the columns.

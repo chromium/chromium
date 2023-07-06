@@ -44,11 +44,9 @@ class FragmentainerIterator {
 
   // Return the physical clip rectangle of the current fragmentainer, relative
   // to the flow thread.
-  LayoutRect ClipRectInFlowThread() const;
+  PhysicalRect ClipRectInFlowThread() const;
 
  private:
-  const LayoutFlowThread& flow_thread_;
-
   const LayoutMultiColumnSet* current_column_set_;
   unsigned current_fragmentainer_group_index_;
   unsigned current_fragmentainer_index_;

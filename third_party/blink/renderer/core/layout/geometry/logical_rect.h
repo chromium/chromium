@@ -73,6 +73,18 @@ struct CORE_EXPORT LogicalRect {
   void Unite(const LogicalRect&);
   void UniteEvenIfEmpty(const LogicalRect&);
 
+  // Update block-start offset without changing the block-end offset.
+  void ShiftBlockStartEdgeTo(LayoutUnit edge) {
+    LayoutUnit new_block_size = (BlockEndOffset() - edge).ClampNegativeToZero();
+    offset.block_offset = edge;
+    size.block_size = new_block_size;
+  }
+
+  // Update block-end offset without changing the block-start offset.
+  void ShiftBlockEndEdgeTo(LayoutUnit edge) {
+    size.block_size = (edge - offset.block_offset).ClampNegativeToZero();
+  }
+
   // You can use this function only if we know `rect` is logical. See also:
   //  * `EnclosingLayoutRect() -> LayoutRect`
   //  * `PhysicalRect::EnclosingRect() -> PhysicalRect`

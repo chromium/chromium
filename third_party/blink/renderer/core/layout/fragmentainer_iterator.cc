@@ -13,7 +13,7 @@ namespace blink {
 FragmentainerIterator::FragmentainerIterator(
     const LayoutFlowThread& flow_thread,
     const PhysicalRect& physical_bounding_box_in_flow_thread)
-    : flow_thread_(flow_thread), current_fragmentainer_group_index_(0) {
+    : current_fragmentainer_group_index_(0) {
   LogicalRect bounds_in_flow_thread =
       flow_thread.CreateWritingModeConverter().ToLogical(
           physical_bounding_box_in_flow_thread);
@@ -65,9 +65,9 @@ LayoutUnit FragmentainerIterator::FragmentainerLogicalTopInFlowThread() const {
          current_fragmentainer_index_ * group.ColumnLogicalHeight();
 }
 
-LayoutRect FragmentainerIterator::ClipRectInFlowThread() const {
+PhysicalRect FragmentainerIterator::ClipRectInFlowThread() const {
   DCHECK(!AtEnd());
-  LayoutRect clip_rect;
+  PhysicalRect clip_rect;
   // An empty bounding box rect would typically be 0,0 0x0, so it would be
   // placed in the first column always. However, the first column might not have
   // a top edge clip (see FlowThreadPortionOverflowRectAt()). This might cause
@@ -83,7 +83,6 @@ LayoutRect FragmentainerIterator::ClipRectInFlowThread() const {
     clip_rect = CurrentGroup().FlowThreadPortionOverflowRectAt(
         current_fragmentainer_index_);
   }
-  flow_thread_.DeprecatedFlipForWritingMode(clip_rect);
   return clip_rect;
 }
 
