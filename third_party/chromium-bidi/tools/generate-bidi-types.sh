@@ -1,8 +1,8 @@
 #!/bin/bash
 
-readonly OUTFILE=src/protocol/webdriver-bidi.ts
-
-cat <<EOF > "$OUTFILE"
+TYPES_FILE=src/protocol/webdriver-bidi.ts
+ZOD_FILE=src/protocol-parser/webdriver-bidi.ts
+HEADER=$(cat <<EOF
 /**
  * Copyright 2023 Google LLC.
  * Copyright (c) Microsoft Corporation.
@@ -26,9 +26,18 @@ cat <<EOF > "$OUTFILE"
  */
 
 EOF
+)
 
-cddlconv "$1" >> "$OUTFILE"
+readonly TYPES_FILE
+readonly ZOD_FILE
+readonly HEADER
+
+echo "$HEADER" > "$TYPES_FILE"
+echo "$HEADER" > "$ZOD_FILE"
+
+cddlconv "$1" >> "$TYPES_FILE"
+cddlconv --format zod "$1" >> "$ZOD_FILE"
 
 # Format twice because the first format doesn't get everything.
-npx prettier --write "$OUTFILE"
-npx prettier --write "$OUTFILE"
+npx prettier --write "$TYPES_FILE" "$ZOD_FILE"
+npx prettier --write "$TYPES_FILE" "$ZOD_FILE"
