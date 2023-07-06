@@ -841,6 +841,10 @@ export class FileTable extends Table {
       label.appendChild(filelist.renderInlineStatus(this.ownerDocument));
     }
     if (!util.isJellyEnabled() && !util.isInlineSyncStatusEnabled()) {
+      const isEncrypted = FileType.isEncrypted(entry, metadata.contentMimeType);
+      if (isEncrypted) {
+        label.appendChild(this.renderEncryptedIcon_());
+      }
       const isDlpRestricted = !!metadata.isDlpRestricted;
       if (isDlpRestricted) {
         label.appendChild(this.renderDlpManagedIcon_());
@@ -944,8 +948,12 @@ export class FileTable extends Table {
       div.appendChild(label);
       label.className = 'date';
       this.updateDate_(label, entry);
-      const metadata =
-          this.metadataModel_.getCache([entry], ['isDlpRestricted'])[0];
+      const metadata = this.metadataModel_.getCache(
+          [entry], ['contentMimeType', 'isDlpRestricted'])[0];
+      const isEncrypted = FileType.isEncrypted(entry, metadata.contentMimeType);
+      if (isEncrypted) {
+        div.appendChild(this.renderEncryptedIcon_());
+      }
       const isDlpRestricted = !!metadata.isDlpRestricted;
       if (isDlpRestricted) {
         div.appendChild(this.renderDlpManagedIcon_());
@@ -1173,6 +1181,22 @@ export class FileTable extends Table {
     icon.dataset['tooltipLinkText'] = str('DLP_MANAGED_ICON_TOOLTIP_LINK');
     icon.setAttribute('aria-label', str('DLP_MANAGED_ICON_TOOLTIP'));
     icon.toggleAttribute('show-card-tooltip');
+    return icon;
+  }
+
+  /**
+   * Renders the encrypted icon in the detail table, used to mark Google Drive
+   * CSE files.
+   * @return {!HTMLDivElement} Created element.
+   * @private
+   */
+  renderEncryptedIcon_() {
+    const icon = /** @type {!HTMLDivElement} */
+        (this.ownerDocument.createElement('div'));
+    icon.className = 'encrypted-icon';
+    icon.setAttribute('aria-label', str('ENCRYPTED_ICON_TOOLTIP'));
+    /** @type {!FilesTooltip} */ (document.querySelector('files-tooltip'))
+        .addTarget(icon);
     return icon;
   }
 

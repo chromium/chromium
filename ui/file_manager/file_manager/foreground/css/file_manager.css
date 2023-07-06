@@ -1976,6 +1976,15 @@ li[renaming=''] .filename-label {
 /* The managed icon in the details list for DLP restricted files. */
 .dlp-managed-icon {
   -webkit-mask-image: url(chrome://resources/images/business.svg);
+}
+
+/* The encrypted icon in the details list for Google Drive CSE files. */
+.encrypted-icon {
+  -webkit-mask-image: url(../images/files/ui/encrypted.svg);
+}
+
+.dlp-managed-icon,
+.encrypted-icon {
   -webkit-mask-position: right center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 16px 16px;
@@ -1988,7 +1997,9 @@ li[renaming=''] .filename-label {
 }
 
 body.files-ng.check-select #list-container list:focus li[selected]
-.table-row-cell .dlp-managed-icon {
+.table-row-cell .dlp-managed-icon,
+body.files-ng.check-select #list-container list:focus li[selected]
+.table-row-cell .encrypted-icon {
   color: var(--cros-icon-color-selection);
 }
 
@@ -2660,7 +2671,8 @@ files-tooltip:not(:defined) {
   overflow: hidden;
 }
 
-.table-row-cell > .dateholder > .dlp-managed-icon {
+.table-row-cell > .dateholder > .dlp-managed-icon,
+.table-row-cell > .dateholder > .encrypted-icon {
   flex: 0 0 24px;
   margin-inline-start: 8px;
 }

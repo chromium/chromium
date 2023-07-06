@@ -1105,6 +1105,7 @@ void AddStringsGeneric(base::Value::Dict* dict) {
   SET_STRING("ONE_DRIVE_MOVED_FILE_NUDGE",
              IDS_FILE_BROWSER_ONE_DRIVE_MOVED_FILE_NUDGE);
   SET_STRING("DRIVE_MOVED_FILE_NUDGE", IDS_FILE_BROWSER_DRIVE_MOVED_FILE_NUDGE);
+  SET_STRING("ENCRYPTED_ICON_TOOLTIP", IDS_FILE_BROWSER_ENCRYPTED_ICON_TOOLTIP);
 }  // NOLINT(readability/fn_size): Structure of AddStringsGeneric function
    // should be easy to manage.
 

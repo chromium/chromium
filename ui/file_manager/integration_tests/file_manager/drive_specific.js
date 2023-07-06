@@ -915,17 +915,17 @@ testcase.driveEncryptionBadge = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.hello, ENTRIES.testCSEFile]);
 
-  // Check: non-encrypted file doesn't have a badge.
-  const plain = await remoteCall.waitForElementStyles(
-      appId, '#file-list [file-name="hello.txt"] .encryption-status',
-      ['display']);
-  chrome.test.assertEq('none', plain.styles.display);
-
   // Check: encrypted file has a badge.
   const encrypted = await remoteCall.waitForElementStyles(
-      appId, '#file-list [file-name="test-encrypted.txt"] .encryption-status',
+      appId, '#file-list [file-name="test-encrypted.txt"] .encrypted-icon',
       ['display']);
-  chrome.test.assertEq('flex', encrypted.styles.display);
+  chrome.test.assertNe('none', encrypted.styles.display);
+
+  // Check: non-encrypted file doesn't have a badge.
+  const plain = await remoteCall.callRemoteTestUtil(
+      'deepQueryAllElements', appId,
+      ['#file-list [file-name="hello.txt"] .encrypted-icon', []]);
+  chrome.test.assertEq(0, plain.length);
 };
 
 /**

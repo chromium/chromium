@@ -1709,6 +1709,15 @@ li[renaming=''] .filename-label {
 /* The managed icon in the details list for DLP restricted files. */
 .dlp-managed-icon {
   -webkit-mask-image: url(chrome://resources/images/business.svg);
+}
+
+/* The encrypted icon in the details list for Google Drive CSE files. */
+.encrypted-icon {
+  -webkit-mask-image: url(../images/files/ui/encrypted.svg);
+}
+
+.dlp-managed-icon,
+.encrypted-icon {
   -webkit-mask-position: right center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 16px 16px;
@@ -1989,6 +1998,7 @@ html.col-resize .table-header-label .sort-icon:not(:active):hover {
 }
 
 .table-row-cell .dlp-managed-icon,
+.table-row-cell .encrypted-icon,
 .table-row-cell .inline-status {
   color: var(--cros-sys-secondary);
 }
@@ -1998,6 +2008,7 @@ list:focus li[selected] .table-row-cell > * {
 }
 
 list:focus li[selected] .table-row-cell .dlp-managed-icon,
+list:focus li[selected] .table-row-cell .encrypted-icon,
     list:focus li[selected] .table-row-cell .inline-status {
   color: var(--cros-sys-on_secondary_container);
 }
@@ -2007,6 +2018,7 @@ list:focus li[selected] .table-row-cell .dlp-managed-icon,
 }
 
 .check-select list:focus li[selected] .table-row-cell .dlp-managed-icon,
+.check-select list:focus li[selected] .table-row-cell .encrypted-icon,
     .check-select list:focus li[selected] .table-row-cell .inline-status {
   color: var(--cros-sys-on_primary_container);
 }
@@ -2023,7 +2035,8 @@ list:focus li[selected] .table-row-cell .dlp-managed-icon,
   white-space: pre;
 }
 
-.table-row-cell > .dateholder > .dlp-managed-icon {
+.table-row-cell > .dateholder > .dlp-managed-icon,
+.table-row-cell > .dateholder > .encrypted-icon {
   flex: 0 0 24px;
   margin-inline-start: 8px;
 }
