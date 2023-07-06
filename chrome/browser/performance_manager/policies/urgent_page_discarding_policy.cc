@@ -81,6 +81,14 @@ void UrgentPageDiscardingPolicy::OnMemoryPressure(
     return;
   }
 
+  // Don't discard a page if urgent discarding is disabled. The feature state is
+  // checked here instead of at policy creation time so that only clients that
+  // experience memory pressure are enrolled in the experiment.
+  if (!base::FeatureList::IsEnabled(
+          performance_manager::features::kUrgentPageDiscarding)) {
+    return;
+  }
+
   handling_memory_pressure_notification_ = true;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
