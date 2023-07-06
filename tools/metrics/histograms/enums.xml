@@ -28444,6 +28444,14 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="3"
       label="DIPSDatabase::Read Error: `bounce_times` doesn't fully contain
              `stateful_bounce_times`."/>
+  <int value="4"
+      label="DIPSDatabase::Read Error: A query was made for an empty `site`;
+             db has an entry with an empty `site`."/>
+  <int value="5"
+      label="DIPSDatabase::Read Error: A query was made for an empty `site`;
+             db does not have an entry with an empty `site`."/>
+  <int value="6" label="No DIPSDatabase::Write error was encountered"/>
+  <int value="7" label="DIPSDatabase::Write Error: `site` is empty."/>
 </enum>
 
 <enum name="DIPSRedirectCategory">

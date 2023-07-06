@@ -174,6 +174,52 @@ TEST_P(DIPSDatabaseErrorHistogramsTest,
                                DIPSErrorCode::kRead_None, 1);
 }
 
+TEST_P(DIPSDatabaseErrorHistogramsTest, kRead_EmptySite_InDb) {
+  base::HistogramTester histograms;
+  // Manually write an entry with an empty string `site`, then try to read it.
+  ASSERT_TRUE(db_->ExecuteSqlForTesting(
+      "INSERT INTO "
+      "bounces(site,first_stateful_bounce_time,last_stateful_bounce_time,"
+      "first_bounce_time,last_bounce_time) VALUES ('',2,4,1,5)"));
+  EXPECT_EQ(db_->GetEntryCount(), 1u);
+  EXPECT_EQ(db_->Read(""), absl::nullopt);
+  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
+                                DIPSErrorCode::kRead_EmptySite_InDb, 1);
+  // Verify the entry was deleted during the read attempt.
+  EXPECT_EQ(db_->GetEntryCount(), 0u);
+}
+
+TEST_P(DIPSDatabaseErrorHistogramsTest, Read_EmptySite_NotInDb) {
+  base::HistogramTester histograms;
+  EXPECT_EQ(db_->Read(""), absl::nullopt);
+  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
+                                DIPSErrorCode::kRead_EmptySite_NotInDb, 1);
+}
+
+TEST_P(DIPSDatabaseErrorHistogramsTest, Write_EmptySite) {
+  base::HistogramTester histograms;
+  // Attempt to add a bounce for an empty site.
+  const std::string empty_site = GetSiteForDIPS(GURL(""));
+  TimestampRange bounce({Time::FromDoubleT(1), Time::FromDoubleT(1)});
+  EXPECT_FALSE(db_->Write(empty_site, TimestampRange(), TimestampRange(),
+                          TimestampRange(), bounce, TimestampRange()));
+  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
+                                DIPSErrorCode::kWrite_EmptySite, 1);
+}
+
+// Verifies the histograms logged for the success case (i.e., writing an entry
+// with a non-empty site).
+TEST_P(DIPSDatabaseErrorHistogramsTest, Write_None) {
+  base::HistogramTester histograms;
+  // Add a bounce for a non-empty site.
+  const std::string site = GetSiteForDIPS(GURL("https://example.test"));
+  TimestampRange bounce({Time::FromDoubleT(1), Time::FromDoubleT(1)});
+  EXPECT_TRUE(db_->Write(site, TimestampRange(), TimestampRange(),
+                         TimestampRange(), bounce, TimestampRange()));
+  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
+                                DIPSErrorCode::kWrite_None, 1);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DIPSDatabaseErrorHistogramsTest,
                          ::testing::Bool());

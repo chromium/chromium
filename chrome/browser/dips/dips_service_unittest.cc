@@ -144,6 +144,30 @@ TEST_F(DIPSServiceTest, PreserveRegularProfileDbFiles) {
   EXPECT_TRUE(base::PathExists(GetDIPSFilePath(profile.get())));
 }
 
+TEST_F(DIPSServiceTest, EmptySiteEventsIgnored) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(dips::kFeature);
+  std::unique_ptr<TestingProfile> profile = std::make_unique<TestingProfile>();
+  DIPSService* service = DIPSService::Get(profile.get());
+
+  // Record a bounce for an empty URL.
+  GURL url;
+  base::Time bounce = base::Time::FromDoubleT(2);
+  service->RecordBounceForTesting(
+      url, GURL("https://initial.com"), GURL("https://final.com"), bounce,
+      false, base::BindRepeating([](const GURL& final_url) {}));
+  WaitOnStorage(service);
+
+  // Verify that an entry is not returned when querying for an empty URL,
+  StateForURLCallback callback = base::BindLambdaForTesting(
+      [&](DIPSState state) { EXPECT_FALSE(state.was_loaded()); });
+  service->storage()
+      ->AsyncCall(&DIPSStorage::Read)
+      .WithArgs(url)
+      .Then(std::move(callback));
+  WaitOnStorage(service);
+}
+
 class DIPSServiceStateRemovalTest : public testing::Test {
  public:
   DIPSServiceStateRemovalTest()
@@ -419,34 +443,6 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Disabled) {
 
   EXPECT_THAT(ukm_recorder,
               EntryUrlsAre("DIPS.Deletion", {"http://example.com/"}));
-}
-
-TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_DoesNotMatchAll) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature, {{"delete", "true"}, {"triggering_action", "bounce"}});
-
-  // Record a bounce.
-  GURL url;
-  base::Time bounce = base::Time::FromDoubleT(2);
-  GetService()->RecordBounceForTesting(
-      url, GURL("https://initial.com"), GURL("https://final.com"), bounce,
-      false, base::BindRepeating([](const GURL& final_url) {}));
-  WaitOnStorage();
-
-  // Verify that a DIPS record actually exists for the empty URL.
-  EXPECT_TRUE(GetDIPSState(url).has_value());
-
-  // Time-travel to after the grace period has ended for the bounce.
-  AdvanceTimeTo(bounce + grace_period + tiny_delta);
-  FireDIPSTimer();
-  task_environment_.RunUntilIdle();
-
-  // Verify a removal task was not posted to the BrowsingDataRemover(Delegate).
-  delegate_.VerifyAndClearExpectations();
-
-  EXPECT_THAT(ukm_recorder, EntryUrlsAre("DIPS.Deletion", {}));
 }
 
 TEST_F(DIPSServiceStateRemovalTest,
@@ -997,39 +993,5 @@ TEST_F(DIPSServiceHistogramTest, Deletion_Enforced) {
               testing::ContainerEq(expected_counts));
   histograms().ExpectUniqueSample(kUmaHistogramDeletionPrefix + kBlock3PC,
                                   DIPSDeletionAction::kEnforced, 1);
-  EXPECT_TRUE(GetDIPSState(url).has_value());
-}
-
-TEST_F(DIPSServiceHistogramTest, Deletion_Ignored) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      dips::kFeature,
-      {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
-
-  // Verify the histogram is initially empty.
-  EXPECT_TRUE(histograms()
-                  .GetTotalCountsForPrefix(kUmaHistogramDeletionPrefix)
-                  .empty());
-
-  // Record a bounce.
-  GURL url;
-  base::Time bounce_time = base::Time::FromDoubleT(2);
-  GetService()->RecordBounceForTesting(
-      url, GURL("https://initial.com"), GURL("https://final.com"), bounce_time,
-      true, base::BindRepeating([](const GURL& final_url) {}));
-  WaitOnStorage();
-
-  // Time-travel to after the grace period has ended for the bounce.
-  AdvanceTimeTo(bounce_time + grace_period + tiny_delta);
-  FireDIPSTimer();
-  task_environment_.RunUntilIdle();
-
-  // Verify a deletion metric was emitted and the DIPS entry was not removed.
-  base::HistogramTester::CountsMap expected_counts;
-  expected_counts[kUmaHistogramDeletionPrefix + kBlock3PC] = 1;
-  EXPECT_THAT(histograms().GetTotalCountsForPrefix(kUmaHistogramDeletionPrefix),
-              testing::ContainerEq(expected_counts));
-  histograms().ExpectUniqueSample(kUmaHistogramDeletionPrefix + kBlock3PC,
-                                  DIPSDeletionAction::kIgnored, 1);
   EXPECT_TRUE(GetDIPSState(url).has_value());
 }

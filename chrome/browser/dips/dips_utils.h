@@ -252,7 +252,11 @@ enum class DIPSErrorCode {
   kRead_OpenEndedRange_NullStart = 1,
   kRead_OpenEndedRange_NullEnd = 2,
   kRead_BounceTimesIsntSupersetOfStatefulBounces = 3,
-  kMaxValue = kRead_BounceTimesIsntSupersetOfStatefulBounces,
+  kRead_EmptySite_InDb = 4,
+  kRead_EmptySite_NotInDb = 5,
+  kWrite_None = 6,
+  kWrite_EmptySite = 7,
+  kMaxValue = kWrite_EmptySite,
 };
 
 // DIPSDeletionAction is used in UMA enum histograms to record the actual

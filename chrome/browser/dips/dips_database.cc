@@ -453,8 +453,15 @@ bool DIPSDatabase::Write(const std::string& site,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(
       IsNullOrWithin(/*inner=*/stateful_bounce_times, /*outer=*/bounce_times));
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return false;
+  }
+
+  if (site.empty()) {
+    base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
+                                  DIPSErrorCode::kWrite_EmptySite);
+    return false;
+  }
 
   static constexpr char kWriteSql[] = R"(
     INSERT OR REPLACE INTO bounces(
@@ -479,7 +486,14 @@ bool DIPSDatabase::Write(const std::string& site,
   BindTimesOrNull(statement, stateful_bounce_times, 5, 6);
   BindTimesOrNull(statement, bounce_times, 7, 8);
   BindTimesOrNull(statement, web_authn_assertion_times, 9, 10);
-  return statement.Run();
+
+  if (!statement.Run()) {
+    return false;
+  }
+
+  base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
+                                DIPSErrorCode::kWrite_None);
+  return true;
 }
 
 absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
@@ -507,6 +521,11 @@ absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
   statement.BindString(0, site);
 
   if (!statement.Step()) {
+    if (statement.Succeeded() && site.empty()) {
+      base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
+                                    DIPSErrorCode::kRead_EmptySite_NotInDb);
+    }
+
     return absl::nullopt;
   }
 
@@ -552,6 +571,10 @@ absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
     }
   }
 
+  if (site.empty()) {
+    errors.push_back(DIPSErrorCode::kRead_EmptySite_InDb);
+  }
+
   if (errors.empty()) {
     base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
                                   DIPSErrorCode::kRead_None);
@@ -559,6 +582,13 @@ absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
     for (const DIPSErrorCode& error : errors) {
       base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes", error);
     }
+  }
+
+  // If `site` is an empty string, treat the entry as not in the database and
+  // remove it. See crbug.com/1447035 for context.
+  if (site.empty()) {
+    RemoveRow(site);
+    return absl::nullopt;
   }
 
   return StateValue{site_storage_times, user_interaction_times,

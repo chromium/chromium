@@ -372,7 +372,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
   auto i = 0;
 
   {
-    const GURL url(base::StringPrintf("case%d.test", ++i));
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
     storage_.WriteForTesting(
         url, {{}, {}, {}, {}, ToRange(delete_begin, delete_end)});
     storage_.RemoveEvents(delete_begin, delete_end, nullptr,
@@ -381,7 +381,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
   }
 
   {
-    const GURL url(base::StringPrintf("case%d.test", ++i));
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
     storage_.WriteForTesting(
         url, {{}, {}, {}, {}, ToRange(delete_begin + tiny_delta, delete_end)});
     storage_.RemoveEvents(delete_begin, delete_end, nullptr,
@@ -390,7 +390,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
   }
 
   {
-    const GURL url(base::StringPrintf("case%d.test", ++i));
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
     storage_.WriteForTesting(
         url, {{}, {}, {}, {}, ToRange(delete_begin, delete_end - tiny_delta)});
     storage_.RemoveEvents(delete_begin, delete_end, nullptr,
@@ -399,7 +399,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
   }
 
   {
-    const GURL url(base::StringPrintf("case%d.test", ++i));
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
     StateValue init_state;
     init_state.web_authn_assertion_times =
         ToRange(delete_begin, delete_end + tiny_delta);
@@ -412,7 +412,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
   }
 
   {
-    const GURL url(base::StringPrintf("case%d.test", ++i));
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
     StateValue init_state;
     init_state.web_authn_assertion_times =
         ToRange(delete_begin - tiny_delta, delete_end);
@@ -425,7 +425,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
   }
 
   {
-    const GURL url(base::StringPrintf("case%d.test", ++i));
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
     StateValue init_state;
     init_state.web_authn_assertion_times =
         ToRange(delete_begin - tiny_delta, delete_end + tiny_delta);
@@ -437,7 +437,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
   }
 
   {
-    const GURL url(base::StringPrintf("case%d.test", ++i));
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
     StateValue init_state;
     init_state.web_authn_assertion_times =
         ToRange(delete_end + tiny_delta, delete_end + tiny_delta * 2);
@@ -449,7 +449,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
   }
 
   {
-    const GURL url(base::StringPrintf("case%d.test", ++i));
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
     StateValue init_state;
     init_state.web_authn_assertion_times =
         ToRange(delete_begin - tiny_delta * 2, delete_begin - tiny_delta);
