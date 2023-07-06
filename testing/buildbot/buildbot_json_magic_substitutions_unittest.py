@@ -160,19 +160,19 @@ class GPUParallelJobs(unittest.TestCase):
   def testNoOsType(self):
     test_config = CreateConfigWithGpus(['vendor:device1-driver'])
     with self.assertRaises(AssertionError):
-      magic_substitutions.GPUParallelJobs(test_config, None, {})
+      magic_substitutions.GPUParallelJobs(test_config, 'name', {})
 
   def testParallelJobs(self):
     test_config = CreateConfigWithGpus(['vendor:device1-driver'])
     for os_type in ['lacros', 'linux', 'mac', 'win']:
-      retval = magic_substitutions.GPUParallelJobs(test_config, None,
+      retval = magic_substitutions.GPUParallelJobs(test_config, 'name',
                                                    {'os_type': os_type})
       self.assertEqual(retval, ['--jobs=4'])
 
   def testSerialJobs(self):
     test_config = CreateConfigWithGpus(['vendor:device1-driver'])
     for os_type in ['android', 'chromeos', 'fuchsia']:
-      retval = magic_substitutions.GPUParallelJobs(test_config, None,
+      retval = magic_substitutions.GPUParallelJobs(test_config, 'name',
                                                    {'os_type': os_type})
       self.assertEqual(retval, ['--jobs=1'])
 
@@ -190,7 +190,7 @@ class GPUParallelJobs(unittest.TestCase):
         if telemetry_test_name:
           c['telemetry_test_name'] = telemetry_test_name
         for os_type in ['lacros', 'linux', 'mac', 'win']:
-          retval = magic_substitutions.GPUParallelJobs(c, None,
+          retval = magic_substitutions.GPUParallelJobs(c, 'name',
                                                        {'os_type': os_type})
           if is_intel and os_type == 'win':
             self.assertEqual(retval, ['--jobs=1'])
@@ -213,7 +213,7 @@ class GPUParallelJobs(unittest.TestCase):
         if telemetry_test_name:
           c['telemetry_test_name'] = telemetry_test_name
         for os_type in ['lacros', 'linux', 'mac', 'win']:
-          retval = magic_substitutions.GPUParallelJobs(c, None,
+          retval = magic_substitutions.GPUParallelJobs(c, 'name',
                                                        {'os_type': os_type})
           if is_intel and os_type == 'win':
             self.assertEqual(retval, ['--jobs=2'])
@@ -225,8 +225,8 @@ class GPUParallelJobs(unittest.TestCase):
     nvidia_config = CreateConfigWithGpus(['10de:device1-driver'])
 
     for gpu_config in [nvidia_config, amd_config]:
-      for name, telemetry_test_name in [('webgl_conformance', None),
-                                        (None, 'webgl_conformance')]:
+      for name, telemetry_test_name in [('webgl1_conformance', None),
+                                        (None, 'webgl1_conformance')]:
         is_nvidia = gpu_config == nvidia_config
         c = gpu_config.copy()
         if name:
@@ -234,12 +234,51 @@ class GPUParallelJobs(unittest.TestCase):
         if telemetry_test_name:
           c['telemetry_test_name'] = telemetry_test_name
         for os_type in ['lacros', 'linux', 'mac', 'win']:
-          retval = magic_substitutions.GPUParallelJobs(c, None,
+          retval = magic_substitutions.GPUParallelJobs(c, 'name',
                                                        {'os_type': os_type})
           if is_nvidia and os_type == 'mac':
             self.assertEqual(retval, ['--jobs=3'])
           else:
             self.assertEqual(retval, ['--jobs=4'])
+
+  def testPixelMacDebugParallelJobs(self):
+    gpu_config = CreateConfigWithGpus(['1002:device1-driver'])
+    for name, telemetry_test_name in [('pixel_skia_gold_test', None),
+                                      (None, 'pixel')]:
+      c = gpu_config.copy()
+      if name:
+        c['name'] = name
+      if telemetry_test_name:
+        c['telemetry_test_name'] = telemetry_test_name
+      for os_type in ['lacros', 'linux', 'mac', 'win']:
+        for tester_name in ('Name Debug', 'Name Dbg', 'name debug', 'name dbg'):
+          retval = magic_substitutions.GPUParallelJobs(c, tester_name,
+                                                       {'os_type': os_type})
+          if os_type == 'mac':
+            self.assertEqual(retval, ['--jobs=1'])
+          else:
+            self.assertEqual(retval, ['--jobs=4'])
+      # Double check that non-debug Mac pixel tests still get parallelized.
+      retval = magic_substitutions.GPUParallelJobs(c, 'name release',
+                                                   {'os_type': 'mac'})
+      self.assertEqual(retval, ['--jobs=4'])
+
+  def testPixelMacNvidiaParallelJobs(self):
+    gpu_config = CreateConfigWithGpus(['10de:device1-driver'])
+    for name, telemetry_test_name in [('pixel_skia_gold_test', None),
+                                      (None, 'pixel')]:
+      c = gpu_config.copy()
+      if name:
+        c['name'] = name
+      if telemetry_test_name:
+        c['telemetry_test_name'] = telemetry_test_name
+      for os_type in ['lacros', 'linux', 'mac', 'win']:
+        retval = magic_substitutions.GPUParallelJobs(c, 'name',
+                                                     {'os_type': os_type})
+        if os_type == 'mac':
+          self.assertEqual(retval, ['--jobs=1'])
+        else:
+          self.assertEqual(retval, ['--jobs=4'])
 
 
 def CreateConfigWithDeviceTypes(device_types):

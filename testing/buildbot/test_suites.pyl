@@ -279,6 +279,7 @@
           '--test-machine-name',
           '${buildername}',
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'mixins': [
           'skia_gold_test',
@@ -3303,6 +3304,7 @@
           '--test-machine-name',
           '${buildername}',
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'android_args': [
           # TODO(crbug.com/1093085): Remove this once we fix the tests.
@@ -3398,6 +3400,7 @@
           '--test-machine-name',
           '${buildername}',
           '--extra-browser-args=--use-vulkan=native --disable-vulkan-fallback-to-gl-for-testing --enable-features=Vulkan --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'android_args': [
           # TODO(crbug.com/1093085): Remove this once we fix the tests.
@@ -3509,6 +3512,7 @@
           '--test-machine-name',
           '${buildername}',
           '--extra-browser-args=--use-cmd-decoder=validating',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'android_args': [
           # TODO(crbug.com/1093085): Remove this once we fix the tests.

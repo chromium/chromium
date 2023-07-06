@@ -7,7 +7,7 @@ import os
 import posixpath
 import sys
 import time
-from typing import Any, List
+from typing import Any, List, Set
 import unittest
 
 from gpu_tests import common_typing as ct
@@ -67,6 +67,44 @@ class PixelIntegrationTest(
   def Name(cls) -> str:
     """The name by which this test is invoked on the command line."""
     return 'pixel'
+
+  @classmethod
+  def _SuiteSupportsParallelTests(cls) -> bool:
+    return True
+
+  def _GetSerialGlobs(self) -> Set[str]:
+    serial_globs = {
+        # Test page flakily reports a failure when run in parallel on Linux and
+        # Windows w/ Intel GPUs.
+        'Pixel_MediaRecorderFromVideoElement*',
+    }
+    if sys.platform == 'darwin':
+      serial_globs |= {
+          # Flakily produces only half the image when run in parallel on Mac.
+          'Pixel_OffscreenCanvasWebGL*',
+          # Flakily fails to capture a screenshot when run in parallel on Mac.
+          'Pixel_VideoStreamFrom*',
+      }
+    return serial_globs
+
+  def _GetSerialTests(self) -> Set[str]:
+    serial_tests = {
+        # High/low power tests don't work properly with multiple browsers
+        # active.
+        'Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker',
+        'Pixel_OffscreenCanvasIBRCWebGLMain',
+        'Pixel_OffscreenCanvasIBRCWebGLWorker',
+        'Pixel_WebGLLowToHighPower',
+        'Pixel_WebGLLowToHighPowerAlphaFalse',
+    }
+
+    if sys.platform.startswith('linux'):
+      serial_tests |= {
+          # Flakily produces slightly incorrect images when run in parallel on
+          # AMD.
+          'Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker',
+      }
+    return serial_tests
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:

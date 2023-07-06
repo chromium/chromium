@@ -128,6 +128,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_webview",
@@ -509,6 +510,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_chrome",
@@ -553,6 +555,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_chrome",

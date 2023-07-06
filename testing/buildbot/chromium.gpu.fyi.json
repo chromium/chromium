@@ -360,6 +360,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_chrome",
@@ -561,6 +562,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_webview",
@@ -863,6 +865,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_chrome",
@@ -1095,6 +1098,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_chrome",
@@ -1261,6 +1265,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_webview",
@@ -1652,6 +1657,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_chrome",
@@ -1697,6 +1703,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_chrome",
@@ -2397,6 +2404,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_chrome",
@@ -2442,6 +2450,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_chrome",
@@ -3076,6 +3085,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--compatibility-mode=dont-require-rooted-device",
           "--git-revision=${got_revision}"
         ],
@@ -3606,6 +3616,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--compatibility-mode=dont-require-rooted-device",
           "--git-revision=${got_revision}"
         ],
@@ -4184,6 +4195,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--remote=127.0.0.1",
           "--remote-ssh-port=9222",
           "--magic-vm-cache=magic_cros_vm_cache",
@@ -4882,6 +4894,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--remote=variable_chromeos_device_hostname",
           "--git-revision=${got_revision}"
         ],
@@ -5304,6 +5317,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}",
           "--service-account=/creds/service_accounts/skylab-drone.json"
         ],
@@ -5792,6 +5806,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--xvfb",
           "--no-xvfb",
           "--use-weston",
@@ -6260,6 +6275,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -6939,6 +6955,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -7474,6 +7491,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -8004,6 +8022,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -8117,6 +8136,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -8628,6 +8648,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -9225,6 +9246,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -9921,6 +9943,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -10613,6 +10636,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -11357,6 +11381,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -12359,6 +12384,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -12940,6 +12966,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -13721,6 +13748,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -14500,6 +14528,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -15136,6 +15165,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -15814,6 +15844,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -16572,6 +16603,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -17335,6 +17367,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -18100,6 +18133,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -18897,6 +18931,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=4",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
