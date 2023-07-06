@@ -610,6 +610,11 @@ void ArcBluetoothBridge::OnGetServiceRecordsFinished(
     mojom::BluetoothAddressPtr remote_addr,
     const BluetoothUUID& target_uuid,
     const std::vector<bluez::BluetoothServiceRecordBlueZ>& records_bluez) {
+  // TODO(b/288866953): ARCVM crashes if records are empty
+  if (records_bluez.size() == 0) {
+    return;
+  }
+
   auto* sdp_bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->bluetooth(), OnGetSdpRecords);
   if (!sdp_bluetooth_instance) {
