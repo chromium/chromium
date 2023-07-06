@@ -872,7 +872,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)dealloc {
-  CHECK(!_recentTabsContextMenuHelper);
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!_recentTabsContextMenuHelper);
 }
 
 #pragma mark - TabPresentationDelegate

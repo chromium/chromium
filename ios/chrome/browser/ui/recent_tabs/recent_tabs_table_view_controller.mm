@@ -203,7 +203,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)dealloc {
-  CHECK(!self.signinPromoViewMediator);
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!self.signinPromoViewMediator);
 }
 
 - (void)viewDidLoad {

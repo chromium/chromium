@@ -68,7 +68,8 @@
 }
 
 - (void)dealloc {
-  CHECK(!self.viewController);
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!self.viewController);
 }
 
 #pragma mark - ClearBrowsingDataUIDelegate

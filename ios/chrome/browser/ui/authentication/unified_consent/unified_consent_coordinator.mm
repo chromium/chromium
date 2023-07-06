@@ -80,7 +80,8 @@
 }
 
 - (void)dealloc {
-  CHECK(!self.unifiedConsentMediator);
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!self.unifiedConsentMediator);
 }
 
 - (void)scrollToBottom {

@@ -51,7 +51,8 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
 @synthesize sceneController = _sceneController;
 
 - (void)dealloc {
-  CHECK(!_sceneState);
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!_sceneState);
 }
 
 - (SceneState*)sceneState {
