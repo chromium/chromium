@@ -177,7 +177,10 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
                     "sameSite": "none",
                     "secure": False,
                     "size": 6,
-                    "value": "bar",
+                    "value": {
+                        "type": "string",
+                        "value": "bar"
+                    },
                 }, ],
                 "headersSize": -1,
                 "bodySize": 0,
@@ -328,5 +331,7 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
     }
 
 
-def compute_response_headers_size(headers: list[dict[str, str]]) -> int:
-    return sum(sum(len(v) for v in header.values()) + 4 for header in headers)
+def compute_response_headers_size(headers) -> int:
+    return sum(
+        len(header['name']) + len(header['value']['value']) + 4
+        for header in headers)

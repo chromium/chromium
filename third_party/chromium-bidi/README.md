@@ -140,6 +140,15 @@ This is a Node.js project, so install dependencies as usual:
 npm install
 ```
 
+### `cargo`
+
+<!-- TODO(jrandolf): Remove after binaries get published -->
+
+We use [cddlconv](https://github.com/jrandolf/cddlconv) to generate our WebDriverBidi types before building.
+
+1.  Install [Rust](https://rustup.rs/).
+2.  Run `cargo install --git https://github.com/jrandolf/cddlconv.git cddlconv`
+
 ### pre-commit.com integration
 
 Refer to the documentation at [.pre-commit-config.yaml](.pre-commit-config.yaml).

@@ -704,19 +704,22 @@ export namespace Network {
 
   const BodySchema = zod.union([StringBodySchema, Base64BodySchema]);
 
-  const StringHeaderValueSchema = zod.object({
+  const StringValueSchema = zod.object({
+    type: zod.literal('string'),
     value: zod.string(),
   });
 
-  const BinaryHeaderValueSchema = zod.object({
-    binaryValue: zod.array(zod.number().int().min(0).max(255)),
+  const Base64ValueSchema = zod.object({
+    type: zod.literal('base64'),
+    value: zod.string(),
   });
 
-  const HeaderSchema = zod
-    .object({
-      name: zod.string(),
-    })
-    .and(zod.union([StringHeaderValueSchema, BinaryHeaderValueSchema]));
+  const BytesValueSchema = zod.union([StringValueSchema, Base64ValueSchema]);
+
+  const HeaderSchema = zod.object({
+    name: zod.string(),
+    value: BytesValueSchema,
+  });
 
   const ContinueRequestParametersSchema = zod.object({
     request: RequestSchema,

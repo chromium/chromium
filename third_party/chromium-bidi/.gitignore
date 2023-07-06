@@ -17,3 +17,4 @@ wptreport*.json
 MANIFEST.json
 *.png
 coverage/
+*.cddl
