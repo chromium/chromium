@@ -3987,6 +3987,14 @@
     "expiry_milestone": 116
   },
   {
+    "name": "fast-pair-devices-bluetooth-settings",
+    "owners": [
+      "//ash/quick_pair/OWNERS",
+      "jackshira"
+    ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "fast-pair-handshake-refactor",
     "owners": [
       "//ash/quick_pair/OWNERS",

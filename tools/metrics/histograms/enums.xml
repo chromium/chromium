@@ -59596,6 +59596,7 @@ from previous Chrome versions.
   <int value="-2124839789"
       label="OmniboxUIExperimentHideSteadyStateUrlSchemeAndSubdomains:enabled"/>
   <int value="-2124685253" label="USBGuard:enabled"/>
+  <int value="-2124353830" label="FastPairDevicesBluetoothSettings:enabled"/>
   <int value="-2123795624" label="ArcSmartTextSelection:enabled"/>
   <int value="-2123630746" label="VisualSearchSuggestions:disabled"/>
   <int value="-2123097607" label="NtpModulesRedesigned:disabled"/>
@@ -66805,6 +66806,7 @@ from previous Chrome versions.
   <int value="1593917165" label="SimplifiedNTP:disabled"/>
   <int value="1594247626" label="ContentSuggestionsSettings:enabled"/>
   <int value="1594664550" label="NTPModernLayout:enabled"/>
+  <int value="1594964573" label="FastPairDevicesBluetoothSettings:disabled"/>
   <int value="1594993731" label="BluetoothRevamp:enabled"/>
   <int value="1595208893" label="AudioWorkletRealtimeThread:enabled"/>
   <int value="1595796800" label="CameraAppLowStorageWarning:disabled"/>

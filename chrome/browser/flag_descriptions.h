@@ -3241,6 +3241,9 @@ extern const char kFastPairSoftwareScanningDescription[];
 extern const char kFastPairSavedDevicesName[];
 extern const char kFastPairSavedDevicesDescription[];
 
+extern const char kFastPairDevicesBluetoothSettingsName[];
+extern const char kFastPairDevicesBluetoothSettingsDescription[];
+
 extern const char kFrameSinkDesktopCapturerInCrdName[];
 extern const char kFrameSinkDesktopCapturerInCrdDescription[];
 

@@ -5646,6 +5646,12 @@ const char kFastPairSavedDevicesDescription[] =
     "user's devices and provide the option to opt in or out of saving devices "
     "to their account.";
 
+const char kFastPairDevicesBluetoothSettingsName[] =
+    "Enable Fast Pair Devices in Bluetooth Settings";
+const char kFastPairDevicesBluetoothSettingsDescription[] =
+    "Enables the Fast Pair Bluetooth Settings page to display a list of the "
+    "user's devices available for Subsequent Pairing.";
+
 const char kFrameSinkDesktopCapturerInCrdName[] =
     "Enable FrameSinkDesktopCapturer in CRD";
 const char kFrameSinkDesktopCapturerInCrdDescription[] =
