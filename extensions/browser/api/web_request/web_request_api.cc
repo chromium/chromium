@@ -68,7 +68,6 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/guest_view_events.h"
-#include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/warning_service.h"
@@ -138,6 +137,13 @@ enum class WebRequestEventResponse {
 };
 
 constexpr char kWebRequestEventPrefix[] = "webRequest.";
+constexpr char kWebViewEventPrefix[] = "webViewInternal.";
+constexpr char kEventMessage[] = "webViewInternal.onMessage";
+
+constexpr size_t kWebRequestEventPrefixLen =
+    std::char_traits<char>::length(kWebRequestEventPrefix);
+constexpr size_t kWebViewEventPrefixLen =
+    std::char_traits<char>::length(kWebViewEventPrefix);
 
 // List of all the webRequest events. Note: this doesn't include
 // "onActionIgnored" which is not related to a request's lifecycle and is
@@ -213,15 +219,10 @@ ExtensionWebRequestEventRouter::EventTypes GetEventTypeFromEventName(
        {keys::kOnCompleted, ExtensionWebRequestEventRouter::kOnCompleted}});
   static_assert(kRequestStageMap.size() == std::size(kWebRequestEvents));
 
-  static constexpr size_t kWebRequestEventPrefixLen =
-      std::char_traits<char>::length(kWebRequestEventPrefix);
-  static const size_t kWebViewEventPrefixLen =
-      strlen(webview::kWebViewEventPrefix);
-
   // Canonicalize the |event_name| to the request stage.
   if (base::StartsWith(event_name, kWebRequestEventPrefix)) {
     event_name.remove_prefix(kWebRequestEventPrefixLen);
-  } else if (base::StartsWith(event_name, webview::kWebViewEventPrefix)) {
+  } else if (base::StartsWith(event_name, kWebViewEventPrefix)) {
     event_name.remove_prefix(kWebViewEventPrefixLen);
   } else {
     return ExtensionWebRequestEventRouter::kInvalidEvent;
@@ -333,7 +334,7 @@ void SendOnMessageEventOnUI(
     event_filtering_info->has_instance_id = true;
     event_filtering_info->instance_id = web_view_instance_id;
     histogram_value = events::WEB_VIEW_INTERNAL_ON_MESSAGE;
-    event_name = webview::kEventMessage;
+    event_name = kEventMessage;
   } else {
     histogram_value = events::DECLARATIVE_WEB_REQUEST_ON_MESSAGE;
     event_name = declarative_keys::kOnMessage;
@@ -642,8 +643,7 @@ WebRequestAPI::WebRequestAPI(content::BrowserContext* context)
     event_router->RegisterObserver(this, event_name);
 
     // Also observe the corresponding webview event.
-    event_name.replace(
-        0, sizeof(kWebRequestEventPrefix) - 1, webview::kWebViewEventPrefix);
+    event_name.replace(0, kWebRequestEventPrefixLen, kWebViewEventPrefix);
     event_router->RegisterObserver(this, event_name);
   }
   extensions::ExtensionRegistry::Get(browser_context_)->AddObserver(this);
@@ -2242,8 +2242,8 @@ ExtensionWebRequestEventRouter::GetMatchingListeners(
 
   std::string web_request_event_name(event_name);
   if (request->is_web_view) {
-    web_request_event_name.replace(
-        0, sizeof(kWebRequestEventPrefix) - 1, webview::kWebViewEventPrefix);
+    web_request_event_name.replace(0, kWebRequestEventPrefixLen,
+                                   kWebViewEventPrefix);
   }
 
   RawListeners matching_listeners;

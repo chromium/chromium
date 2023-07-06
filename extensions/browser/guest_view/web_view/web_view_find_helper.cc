@@ -14,6 +14,20 @@
 
 using guest_view::GuestViewEvent;
 
+namespace {
+
+// Parameters to callback functions.
+const char kFindNumberOfMatches[] = "numberOfMatches";
+const char kFindActiveMatchOrdinal[] = "activeMatchOrdinal";
+const char kFindSelectionRect[] = "selectionRect";
+const char kFindRectLeft[] = "left";
+const char kFindRectTop[] = "top";
+const char kFindRectWidth[] = "width";
+const char kFindRectHeight[] = "height";
+const char kFindCanceled[] = "canceled";
+
+}  // anonymous namespace
+
 namespace extensions {
 
 WebViewFindHelper::WebViewFindHelper(WebViewGuest* webview_guest)
@@ -39,7 +53,7 @@ void WebViewFindHelper::DispatchFindUpdateEvent(bool canceled,
   CHECK(find_update_event_);
   base::Value::Dict args;
   find_update_event_->PrepareResults(args);
-  args.Set(webview::kFindCanceled, canceled);
+  args.Set(kFindCanceled, canceled);
   args.Set(webview::kFindFinalUpdate, final_update);
   CHECK(webview_guest_);
   webview_guest_->DispatchEventToView(std::make_unique<GuestViewEvent>(
@@ -212,14 +226,14 @@ void WebViewFindHelper::FindResults::AggregateResults(
 
 void WebViewFindHelper::FindResults::PrepareResults(
     base::Value::Dict& results) {
-  results.Set(webview::kFindNumberOfMatches, number_of_matches_);
-  results.Set(webview::kFindActiveMatchOrdinal, active_match_ordinal_);
+  results.Set(kFindNumberOfMatches, number_of_matches_);
+  results.Set(kFindActiveMatchOrdinal, active_match_ordinal_);
   base::Value::Dict rect;
-  rect.Set(webview::kFindRectLeft, selection_rect_.x());
-  rect.Set(webview::kFindRectTop, selection_rect_.y());
-  rect.Set(webview::kFindRectWidth, selection_rect_.width());
-  rect.Set(webview::kFindRectHeight, selection_rect_.height());
-  results.Set(webview::kFindSelectionRect, std::move(rect));
+  rect.Set(kFindRectLeft, selection_rect_.x());
+  rect.Set(kFindRectTop, selection_rect_.y());
+  rect.Set(kFindRectWidth, selection_rect_.width());
+  rect.Set(kFindRectHeight, selection_rect_.height());
+  results.Set(kFindSelectionRect, std::move(rect));
 }
 
 WebViewFindHelper::FindUpdateEvent::FindUpdateEvent(
@@ -274,7 +288,7 @@ void WebViewFindHelper::FindInfo::SendResponse(bool canceled) {
   // Prepare the find results to pass to the callback function.
   base::Value::Dict results;
   find_results_.PrepareResults(results);
-  results.Set(webview::kFindCanceled, canceled);
+  results.Set(kFindCanceled, canceled);
 
   // Call the callback.
   find_function_->ForwardResponse(std::move(results));

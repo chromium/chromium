@@ -94,6 +94,31 @@ namespace extensions {
 
 namespace {
 
+// Attributes.
+constexpr char kAttributeAllowTransparency[] = "allowtransparency";
+constexpr char kAttributeAllowScaling[] = "allowscaling";
+constexpr char kAttributeName[] = "name";
+constexpr char kAttributeSrc[] = "src";
+
+// API namespace.
+constexpr char kAPINamespace[] = "webViewInternal";
+
+// API error messages.
+constexpr char kAPILoadDataInvalidDataURL[] = "Invalid data URL \"%s\".";
+constexpr char kAPILoadDataInvalidBaseURL[] = "Invalid base URL \"%s\".";
+constexpr char kAPILoadDataInvalidVirtualURL[] = "Invalid virtual URL \"%s\".";
+
+// Initialization parameters.
+constexpr char kInitialZoomFactor[] = "initialZoomFactor";
+constexpr char kParameterUserAgentOverride[] = "userAgentOverride";
+
+// Internal parameters/properties on events.
+constexpr char kInternalBaseURLForDataURL[] = "baseUrlForDataUrl";
+constexpr char kInternalCurrentEntryIndex[] = "currentEntryIndex";
+constexpr char kInternalEntryCount[] = "entryCount";
+constexpr char kInternalProcessId[] = "processId";
+constexpr char kInternalVisibleUrl[] = "visibleUrl";
+
 // Returns storage partition removal mask from web_view clearData mask. Note
 // that storage partition mask is a subset of webview's data removal mask.
 uint32_t GetStoragePartitionRemovalMask(uint32_t web_view_removal_mask) {
@@ -530,7 +555,7 @@ bool WebViewGuest::ZoomPropagatesFromEmbedderToGuest() const {
 }
 
 const char* WebViewGuest::GetAPINamespace() const {
-  return webview::kAPINamespace;
+  return kAPINamespace;
 }
 
 int WebViewGuest::GetTaskPrefix() const {
@@ -839,16 +864,14 @@ void WebViewGuest::DidFinishNavigation(
 
   base::Value::Dict args;
   args.Set(guest_view::kUrl, navigation_handle->GetURL().spec());
-  args.Set(webview::kInternalVisibleUrl,
-           web_contents()->GetVisibleURL().spec());
+  args.Set(kInternalVisibleUrl, web_contents()->GetVisibleURL().spec());
   args.Set(guest_view::kIsTopLevel, IsInWebViewMainFrame(navigation_handle));
   args.Set(
-      webview::kInternalBaseURLForDataURL,
+      kInternalBaseURLForDataURL,
       GetController().GetLastCommittedEntry()->GetBaseURLForDataURL().spec());
-  args.Set(webview::kInternalCurrentEntryIndex,
-           GetController().GetCurrentEntryIndex());
-  args.Set(webview::kInternalEntryCount, GetController().GetEntryCount());
-  args.Set(webview::kInternalProcessId,
+  args.Set(kInternalCurrentEntryIndex, GetController().GetCurrentEntryIndex());
+  args.Set(kInternalEntryCount, GetController().GetEntryCount());
+  args.Set(kInternalProcessId,
            web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventLoadCommit, std::move(args)));
@@ -1190,7 +1213,7 @@ bool WebViewGuest::HandleKeyboardShortcuts(
 }
 
 void WebViewGuest::ApplyAttributes(const base::Value::Dict& params) {
-  if (const std::string* name = params.FindString(webview::kAttributeName)) {
+  if (const std::string* name = params.FindString(kAttributeName)) {
     // If the guest window's name is empty, then the WebView tag's name is
     // assigned. Otherwise, the guest window's name takes precedence over the
     // WebView tag's name.
@@ -1201,25 +1224,25 @@ void WebViewGuest::ApplyAttributes(const base::Value::Dict& params) {
     ReportFrameNameChange(name_);
 
   const std::string* user_agent_override =
-      params.FindString(webview::kParameterUserAgentOverride);
+      params.FindString(kParameterUserAgentOverride);
   SetUserAgentOverride(user_agent_override ? *user_agent_override : "");
 
   absl::optional<bool> allow_transparency =
-      params.FindBool(webview::kAttributeAllowTransparency);
+      params.FindBool(kAttributeAllowTransparency);
   if (allow_transparency) {
     // We need to set the background opaque flag after navigation to ensure that
     // there is a RenderWidgetHostView available.
     SetAllowTransparency(*allow_transparency);
   }
 
-  absl::optional<bool> allow_scaling =
-      params.FindBool(webview::kAttributeAllowScaling);
-  if (allow_scaling)
+  absl::optional<bool> allow_scaling = params.FindBool(kAttributeAllowScaling);
+  if (allow_scaling) {
     SetAllowScaling(*allow_scaling);
+  }
 
   // Check for a pending zoom from before the first navigation.
-  pending_zoom_factor_ = params.FindDouble(webview::kInitialZoomFactor)
-                             .value_or(pending_zoom_factor_);
+  pending_zoom_factor_ =
+      params.FindDouble(kInitialZoomFactor).value_or(pending_zoom_factor_);
 
   bool is_pending_new_window = false;
   WebViewGuest* opener = GetOpener();
@@ -1247,8 +1270,9 @@ void WebViewGuest::ApplyAttributes(const base::Value::Dict& params) {
 
   // Only read the src attribute if this is not a New Window API flow.
   if (!is_pending_new_window) {
-    if (const std::string* src = params.FindString(webview::kAttributeSrc))
+    if (const std::string* src = params.FindString(kAttributeSrc)) {
       NavigateGuest(*src, true /* force_navigation */);
+    }
   }
 }
 
@@ -1330,7 +1354,7 @@ bool WebViewGuest::LoadDataWithBaseURL(const GURL& data_url,
   // Check that the provided URLs are valid.
   // |data_url| must be a valid data URL.
   if (!data_url.is_valid() || !data_url.SchemeIs(url::kDataScheme)) {
-    base::SStringPrintf(error, webview::kAPILoadDataInvalidDataURL,
+    base::SStringPrintf(error, kAPILoadDataInvalidDataURL,
                         data_url.possibly_invalid_spec().c_str());
     return false;
   }
@@ -1341,13 +1365,13 @@ bool WebViewGuest::LoadDataWithBaseURL(const GURL& data_url,
   // is trusted to have control over.
   if (!base_url.is_valid() ||
       (!base_url.SchemeIsHTTPOrHTTPS() && !base_in_owner_origin)) {
-    base::SStringPrintf(error, webview::kAPILoadDataInvalidBaseURL,
+    base::SStringPrintf(error, kAPILoadDataInvalidBaseURL,
                         base_url.possibly_invalid_spec().c_str());
     return false;
   }
   // |virtual_url| must be a valid URL.
   if (!virtual_url.is_valid()) {
-    base::SStringPrintf(error, webview::kAPILoadDataInvalidVirtualURL,
+    base::SStringPrintf(error, kAPILoadDataInvalidVirtualURL,
                         virtual_url.possibly_invalid_spec().c_str());
     return false;
   }
