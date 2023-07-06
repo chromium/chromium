@@ -8,11 +8,9 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -59,23 +57,15 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
   auto* cookies_description_label =
       AddChildView(std::make_unique<views::StyledLabel>());
 
-  // In the new UI iteration, description labels are aligned with the icons on
-  // the left, not with the bubble title.
-  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
-    cookies_description_label->SetProperty(views::kMarginsKey, button_insets);
-  } else {
-    cookies_description_label->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(button_insets.top(), horizontal_offset,
-                          button_insets.bottom(), horizontal_offset));
-  }
+  cookies_description_label->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(button_insets.top(), horizontal_offset,
+                        button_insets.bottom(), horizontal_offset));
   cookies_description_label->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_DESCRIPTION_LABEL);
   cookies_description_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
   cookies_description_label->SetText(description_text);
   cookies_description_label->AddStyleRange(link_range, link_style);
-
-  AddThirdPartyCookiesContainer();
 
   // We need the container to have a placeholder to put the buttons in,
   // to ensure the views order.
@@ -150,16 +140,12 @@ void PageInfoCookiesContentView::SetCookieInfo(
           IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
           cookie_info.allowed_sites_count);
 
-  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
-    SetThirdPartyCookiesInfo(cookie_info);
-  } else {
-    // Create the cookie dialog button, blocking third-party cookies button
-    // (only if third-party cookies are blocked in settings) and FPS button
-    // (only if fps are not blocked) if they don't yet exist. Those methods get
-    // called each time site data is updated, so if they *do* already exist,
-    // skip creating the buttons and just update the texts.
-    SetBlockingThirdPartyCookiesInfo(cookie_info);
-  }
+  // Create the cookie dialog button, blocking third-party cookies button
+  // (only if third-party cookies are blocked in settings) and FPS button
+  // (only if fps are not blocked) if they don't yet exist. Those methods get
+  // called each time site data is updated, so if they *do* already exist,
+  // skip creating the buttons and just update the texts.
+  SetBlockingThirdPartyCookiesInfo(cookie_info);
 
   InitCookiesDialogButton();
   // Update the text displaying the number of allowed sites.
@@ -218,50 +204,6 @@ void PageInfoCookiesContentView::SetBlockingThirdPartyCookiesInfo(
   } else if (blocking_third_party_cookies_row_) {
     blocking_third_party_cookies_row_->SetVisible(false);
   }
-}
-
-void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
-    const CookiesNewInfo& cookie_info) {
-  // TODO(crbug.com/1446230): Use |cookie_info| to determine the state.
-  bool show_cookies_block_control = true;
-  bool are_third_party_cookies_blocked = true;
-
-  third_party_cookies_container_->SetVisible(show_cookies_block_control);
-  if (!show_cookies_block_control) {
-    return;
-  }
-
-  // TODO(crbug.com/1446230): Check the expiration and use separate strings for
-  // permanent and temporary exceptions.
-  bool is_permanent_exception = false;
-  bool will_create_permanent_exception =
-      content_settings::features::kUserBypassUIExceptionExpiration.Get()
-          .is_zero();
-
-  std::u16string title;
-  std::u16string description;
-  if (are_third_party_cookies_blocked) {
-    title =
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE);
-    description = l10n_util::GetStringUTF16(
-        will_create_permanent_exception
-            ? IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT
-            : IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY);
-  } else {
-    // TODO(crbug.com/1446230): Include the number of days until expiration in
-    // the string.
-    title = l10n_util::GetStringUTF16(
-        is_permanent_exception ? IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE
-                               : IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE);
-    description = l10n_util::GetStringUTF16(
-        is_permanent_exception
-            ? IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_DESCRIPTION_TODAY
-            : IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_DESCRIPTION);
-  }
-  third_party_cookies_title_->SetText(title);
-  third_party_cookies_description_->SetText(description);
-
-  // TODO(crbug.com/1446230): Update the toggle row icon, subtitle, controls.
 }
 
 void PageInfoCookiesContentView::UpdateBlockingThirdPartyCookiesToggle(
@@ -420,49 +362,4 @@ void PageInfoCookiesContentView::InitFpsButton(bool is_managed) {
 
 void PageInfoCookiesContentView::FpsSettingsButtonClicked(ui::Event const&) {
   presenter_->OpenAllSitesViewFilteredToFps();
-}
-
-void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
-  auto* provider = ChromeLayoutProvider::Get();
-  const int vertical_margin =
-      provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
-  const int side_margin =
-      provider->GetInsetsMetric(views::INSETS_DIALOG).left();
-
-  third_party_cookies_container_ =
-      AddChildView(std::make_unique<views::View>());
-  third_party_cookies_container_->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical));
-  third_party_cookies_container_->SetVisible(false);
-
-  auto* label_wrapper = third_party_cookies_container_->AddChildView(
-      std::make_unique<views::View>());
-  label_wrapper->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  label_wrapper->SetProperty(views::kMarginsKey,
-                             gfx::Insets::VH(vertical_margin, side_margin));
-  third_party_cookies_title_ =
-      label_wrapper->AddChildView(std::make_unique<views::Label>());
-  third_party_cookies_title_->SetTextContext(
-      views::style::CONTEXT_DIALOG_BODY_TEXT);
-  third_party_cookies_title_->SetTextStyle(views::style::STYLE_PRIMARY);
-  third_party_cookies_title_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_LEFT);
-  if (features::IsChromeRefresh2023()) {
-    third_party_cookies_title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
-  }
-
-  third_party_cookies_description_ =
-      label_wrapper->AddChildView(std::make_unique<views::Label>());
-  third_party_cookies_description_->SetTextContext(views::style::CONTEXT_LABEL);
-  third_party_cookies_description_->SetTextStyle(views::style::STYLE_SECONDARY);
-  third_party_cookies_description_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_LEFT);
-  third_party_cookies_description_->SetMultiLine(true);
-
-  // TODO(crbug.com/1446230): Add toggle row view.
-
-  third_party_cookies_container_->AddChildView(
-      PageInfoViewFactory::CreateSeparator());
 }

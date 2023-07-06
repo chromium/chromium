@@ -791,31 +791,4 @@
     Manage ad privacy
   </message>
 
-  <!-- User Bypass strings -->
-  <!-- TODO(crbug.com/1446230): Update strings and mark as translateable when finalized -->
-  <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE" translateable="false" desc="">
-    Site not working?
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" translateable="false" desc="">
-    Try temporarily allowing third-party cookies, which means less protection but site features are more likely to work
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" translateable="false" desc="">
-    Try allowing third-party cookies, which means less protection but site features are more likely to work
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" translateable="false" desc="">
-    Third-party cookies
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE" translateable="false" desc="">
-    17 days until Chrome starts blocking cookies again
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_DESCRIPTION_TODAY" translateable="false" desc="">
-    You allowed this site to use third-party cookies. This means that most site features should work, but you have less protection.
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE" translateable="false" desc="">
-    You allowed third-party cookies for this site
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_DESCRIPTION" translateable="false" desc="">
-    This means that most site features should work, but you have less protection
-  </message>
-
 </grit-part>
