@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeFeedbackContext, fakeInternalUserFeedbackContext, fakePngData, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
+import {fakeFeedbackContext, fakeFeedbackContextWithoutLinkedCrossDevicePhone, fakeInternalUserFeedbackContext, fakePngData, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
 import {AdditionalContextQueryParam, FeedbackFlowElement, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
@@ -124,6 +124,16 @@ export function FeedbackFlowTestSuite() {
     feedbackServiceProvider = new FakeFeedbackServiceProvider();
     feedbackServiceProvider.setFakeFeedbackContext(
         fakeInternalUserFeedbackContext);
+    setFeedbackServiceProviderForTesting(feedbackServiceProvider);
+  }
+
+  /**
+   * @private
+   */
+  function SetupTestWithoutLinkedCrossDevicePhone() {
+    feedbackServiceProvider = new FakeFeedbackServiceProvider();
+    feedbackServiceProvider.setFakeFeedbackContext(
+        fakeFeedbackContextWithoutLinkedCrossDevicePhone);
     setFeedbackServiceProviderForTesting(feedbackServiceProvider);
   }
 
@@ -427,11 +437,40 @@ export function FeedbackFlowTestSuite() {
     assertFalse(isVisible(bluetoothCheckbox));
   });
 
-  // Test the link cross device dogfood feedback checkbox will not show up if
+  // Test the "Link Cross Device Dogfood Feedback" checkbox will not show up if
   // not logged with an Internal google account.
   test(
       'LinkCrossDeviceDogfoodFeedbackHiddenWithoutInternalAccount',
       async () => {
+        await initializePage();
+
+        // Enable flag.
+        loadTimeData.overrideValues(
+            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
+
+        // Set input description related to cross device.
+        let activePage = page.shadowRoot.querySelector('.iron-selected');
+
+        activePage.shadowRoot.querySelector('textarea').value = 'phone';
+        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        await flushTasks();
+
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertEquals('shareDataPage', activePage.id);
+        const linkCrossDeviceDogfoodFeedbackCheckbox =
+            activePage.shadowRoot.querySelector(
+                '#linkCrossDeviceDogfoodFeedbackCheckboxContainer');
+        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+        assertFalse(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
+      });
+
+  // Test the "Link Cross Device Dogfood Feedback" checkbox will not show up if
+  // the ChromeOs device is not linked to a phone.
+  test(
+      'LinkCrossDeviceDogfoodFeedbackHiddenWithoutLinkedCrossDevicePhone',
+      async () => {
+        SetupTestWithoutLinkedCrossDevicePhone();
+
         await initializePage();
 
         // Enable flag.

@@ -72,7 +72,7 @@ void FeedbackServiceProvider::GetFeedbackContext(
   feedback_context->page_url = feedback_delegate_->GetLastActivePageUrl();
   feedback_context->email = feedback_delegate_->GetSignedInUserEmail();
   feedback_context->trace_id = feedback_delegate_->GetPerformanceTraceId();
-
+  feedback_context->has_linked_cross_device_phone = false;
   feedback_context->is_internal_account =
       IsInternalAccount(feedback_context->email);
   std::move(callback).Run(std::move(feedback_context));

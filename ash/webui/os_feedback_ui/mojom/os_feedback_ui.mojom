@@ -72,6 +72,9 @@ interface HelpContentProvider {
 struct FeedbackContext {
   // The e-mail of the user that initiated this feedback.
   string? email;
+  // Whether or not this ChromeOS device is linked to a phone
+  // (Google Internal only).
+  bool has_linked_cross_device_phone;
   // Whether or not the signed in email is an internal google account.
   bool is_internal_account;
   // Whether or not the feedback app is opened from Assistant.

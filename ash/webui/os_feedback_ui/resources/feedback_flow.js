@@ -451,7 +451,8 @@ export class FeedbackFlowElement extends PolymerElement {
             this.feedbackContext_ !== null &&
             loadTimeData.getBoolean(
                 'enableLinkCrossDeviceDogfoodFeedbackFlag') &&
-            this.feedbackContext_.isInternalAccount;
+            this.feedbackContext_.isInternalAccount &&
+            this.feedbackContext_.hasLinkedCrossDevicePhone;
         this.fetchScreenshot_();
         const shareDataPage = this.shadowRoot.querySelector('share-data-page');
         shareDataPage.focusScreenshotCheckbox();

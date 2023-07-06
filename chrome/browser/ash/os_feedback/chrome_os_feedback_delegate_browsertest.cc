@@ -80,7 +80,11 @@ constexpr char kSignedInUserEmail[] = "test_user_email@gmail.com";
 constexpr char kFeedbackUserConsentKey[] = "feedbackUserCtlConsent";
 constexpr char kFeedbackUserConsentGrantedValue[] = "true";
 constexpr char kFeedbackUserConsentDeniedValue[] = "false";
-constexpr char kFeedbackCategoryTag[] = "BluetoothReportWithLogs";
+constexpr char kFeedbackBluetoothCategoryTag[] = "BluetoothReportWithLogs";
+constexpr char kFeedbackCrossDeviceAndBluetoothCategoryTag[] =
+    "linkCrossDeviceDogfoodFeedbackWithBluetoothLogs";
+constexpr char kFeedbackCrossDeviceCategoryTag[] =
+    "linkCrossDeviceDogfoodFeedbackWithoutBluetoothLogs";
 const std::u16string kDescription = u"This is a fake description";
 constexpr int kPerformanceTraceId = 1;
 
@@ -371,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->contact_user_consent_granted = true;
   report->feedback_context->extra_diagnostics = kFakeExtraDiagnosticsValue;
   report->send_bluetooth_logs = true;
-  report->feedback_context->category_tag = kFeedbackCategoryTag;
+  report->feedback_context->category_tag = kFeedbackBluetoothCategoryTag;
   report->include_system_logs_and_histograms = true;
   report->feedback_context->is_internal_account = true;
   report->feedback_context->trace_id = kPerformanceTraceId;
@@ -404,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   EXPECT_EQ(kExtraDiagnosticsKey, extra_diagnostics->first);
   EXPECT_EQ(kFakeExtraDiagnosticsValue, extra_diagnostics->second);
   // Verify category_tag is marked as BluetoothReportWithLogs in the report.
-  EXPECT_EQ(kFeedbackCategoryTag, feedback_data->category_tag());
+  EXPECT_EQ(kFeedbackBluetoothCategoryTag, feedback_data->category_tag());
   EXPECT_EQ(kPerformanceTraceId, feedback_data->trace_id());
   EXPECT_TRUE(feedback_data->from_assistant());
   EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
@@ -466,6 +470,133 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(kFakeExtraDiagnosticsValue, extra_diagnostics->second);
   // Verify category_tag is marked as a fake category tag in the report.
   EXPECT_EQ(kFakeCategoryTag, feedback_data->category_tag());
+  EXPECT_EQ(kPerformanceTraceId, feedback_data->trace_id());
+  EXPECT_TRUE(feedback_data->from_assistant());
+  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
+}
+
+// Test that feedback params and data are populated with correct data before
+// passed to RedactThenSendFeedback method of the feedback service.
+// - System logs and histograms are included.
+// - Screenshot is included so tab titles will be sent too.
+// - Consent granted.
+// - Non-empty extra_diagnostics provided.
+// - sentBluetoothLog flag is set false.
+// - category_tag is set to "linkCrossDeviceDogfoodFeedbackWithBluetoothLogs".
+// - User is logged in with internal google account.
+// - Performance trace id is present.
+// - from_assistant flag is set true.
+// - Assistant debug info is allowed.
+IN_PROC_BROWSER_TEST_F(
+    ChromeOsFeedbackDelegateTest,
+    FeedbackDataPopulatedIncludeSysLogsAndScreenshotAndCrossDeviceAndBluetoothCategoryTag) {
+  ReportPtr report = Report::New();
+  report->feedback_context = FeedbackContext::New();
+  report->description = kDescription;
+  report->include_screenshot = true;
+  report->contact_user_consent_granted = true;
+  report->feedback_context->extra_diagnostics = kFakeExtraDiagnosticsValue;
+  report->send_bluetooth_logs = false;
+  report->feedback_context->category_tag =
+      kFeedbackCrossDeviceAndBluetoothCategoryTag;
+  report->include_system_logs_and_histograms = true;
+  report->feedback_context->is_internal_account = true;
+  report->feedback_context->trace_id = kPerformanceTraceId;
+  report->feedback_context->from_assistant = true;
+  report->feedback_context->assistant_debug_info_allowed = true;
+  const FeedbackParams expected_params{/*is_internal_email=*/true,
+                                       /*load_system_info=*/true,
+                                       /*send_tab_titles=*/true,
+                                       /*send_histograms=*/true,
+                                       /*send_bluetooth_logs=*/false,
+                                       /*send_autofill_metadata=*/false};
+
+  scoped_refptr<FeedbackData> feedback_data;
+  RunSendReport(std::move(report), expected_params, feedback_data);
+
+  EXPECT_EQ("", feedback_data->user_email());
+  EXPECT_EQ("", feedback_data->page_url());
+  EXPECT_EQ("", feedback_data->autofill_metadata());
+  EXPECT_EQ(base::UTF16ToUTF8(kDescription), feedback_data->description());
+  // Verify screenshot is added to feedback data.
+  EXPECT_GT(feedback_data->image().size(), 0u);
+  // Verify consent data appended to sys_info map.
+  auto consent_granted =
+      feedback_data->sys_info()->find(kFeedbackUserConsentKey);
+  EXPECT_NE(feedback_data->sys_info()->end(), consent_granted);
+  EXPECT_EQ(kFeedbackUserConsentKey, consent_granted->first);
+  EXPECT_EQ(kFeedbackUserConsentGrantedValue, consent_granted->second);
+  auto extra_diagnostics =
+      feedback_data->sys_info()->find(kExtraDiagnosticsKey);
+  EXPECT_EQ(kExtraDiagnosticsKey, extra_diagnostics->first);
+  EXPECT_EQ(kFakeExtraDiagnosticsValue, extra_diagnostics->second);
+  // Verify category_tag is marked as
+  // "linkCrossDeviceDogfoodFeedbackWithBluetoothLogs" in the report.
+  EXPECT_EQ(kFeedbackCrossDeviceAndBluetoothCategoryTag,
+            feedback_data->category_tag());
+  EXPECT_EQ(kPerformanceTraceId, feedback_data->trace_id());
+  EXPECT_TRUE(feedback_data->from_assistant());
+  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
+}
+
+// Test that feedback params and data are populated with correct data before
+// passed to RedactThenSendFeedback method of the feedback service.
+// - System logs and histograms are included.
+// - Screenshot is included so tab titles will be sent too.
+// - Consent granted.
+// - Non-empty extra_diagnostics provided.
+// - sentBluetoothLog flag is set false.
+// - category_tag is set to
+// "linkCrossDeviceDogfoodFeedbackWithoutBluetoothLogs".
+// - User is logged in with internal google account.
+// - Performance trace id is present.
+// - from_assistant flag is set true.
+// - Assistant debug info is allowed.
+IN_PROC_BROWSER_TEST_F(
+    ChromeOsFeedbackDelegateTest,
+    FeedbackDataPopulatedIncludeSysLogsAndScreenshotAndCrossDeviceCategoryTag) {
+  ReportPtr report = Report::New();
+  report->feedback_context = FeedbackContext::New();
+  report->description = kDescription;
+  report->include_screenshot = true;
+  report->contact_user_consent_granted = true;
+  report->feedback_context->extra_diagnostics = kFakeExtraDiagnosticsValue;
+  report->send_bluetooth_logs = false;
+  report->feedback_context->category_tag = kFeedbackCrossDeviceCategoryTag;
+  report->include_system_logs_and_histograms = true;
+  report->feedback_context->is_internal_account = true;
+  report->feedback_context->trace_id = kPerformanceTraceId;
+  report->feedback_context->from_assistant = true;
+  report->feedback_context->assistant_debug_info_allowed = true;
+  const FeedbackParams expected_params{/*is_internal_email=*/true,
+                                       /*load_system_info=*/true,
+                                       /*send_tab_titles=*/true,
+                                       /*send_histograms=*/true,
+                                       /*send_bluetooth_logs=*/false,
+                                       /*send_autofill_metadata=*/false};
+
+  scoped_refptr<FeedbackData> feedback_data;
+  RunSendReport(std::move(report), expected_params, feedback_data);
+
+  EXPECT_EQ("", feedback_data->user_email());
+  EXPECT_EQ("", feedback_data->page_url());
+  EXPECT_EQ("", feedback_data->autofill_metadata());
+  EXPECT_EQ(base::UTF16ToUTF8(kDescription), feedback_data->description());
+  // Verify screenshot is added to feedback data.
+  EXPECT_GT(feedback_data->image().size(), 0u);
+  // Verify consent data appended to sys_info map.
+  auto consent_granted =
+      feedback_data->sys_info()->find(kFeedbackUserConsentKey);
+  EXPECT_NE(feedback_data->sys_info()->end(), consent_granted);
+  EXPECT_EQ(kFeedbackUserConsentKey, consent_granted->first);
+  EXPECT_EQ(kFeedbackUserConsentGrantedValue, consent_granted->second);
+  auto extra_diagnostics =
+      feedback_data->sys_info()->find(kExtraDiagnosticsKey);
+  EXPECT_EQ(kExtraDiagnosticsKey, extra_diagnostics->first);
+  EXPECT_EQ(kFakeExtraDiagnosticsValue, extra_diagnostics->second);
+  // Verify category_tag is marked as
+  // "linkCrossDeviceDogfoodFeedbackWithoutBluetoothLogs" in the report.
+  EXPECT_EQ(kFeedbackCrossDeviceCategoryTag, feedback_data->category_tag());
   EXPECT_EQ(kPerformanceTraceId, feedback_data->trace_id());
   EXPECT_TRUE(feedback_data->from_assistant());
   EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
@@ -590,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
       feedback_data->sys_info()->find(kExtraDiagnosticsKey);
   EXPECT_EQ(feedback_data->sys_info()->end(), extra_diagnostics);
   // Verify category_tag is not marked as BluetoothReportWithLogs.
-  EXPECT_NE(kFeedbackCategoryTag, feedback_data->category_tag());
+  EXPECT_NE(kFeedbackBluetoothCategoryTag, feedback_data->category_tag());
   EXPECT_EQ(0, feedback_data->trace_id());
   EXPECT_FALSE(feedback_data->from_assistant());
   EXPECT_FALSE(feedback_data->assistant_debug_info_allowed());

@@ -87,6 +87,7 @@ export const fakeFeedbackContext = {
   fromAutofill: false,
   autofillMetadata: '',
   traceId: 1,
+  hasLinkedCrossDevicePhone: false,
 };
 
 /** @type {!FeedbackContext} */
@@ -100,6 +101,7 @@ export const fakeEmptyFeedbackContext = {
   fromAutofill: false,
   autofillMetadata: '',
   traceId: 0,
+  hasLinkedCrossDevicePhone: false,
 };
 
 /** @type {!FeedbackContext} */
@@ -113,6 +115,21 @@ export const fakeInternalUserFeedbackContext = {
   fromAutofill: false,
   autofillMetadata: '',
   traceId: 1,
+  hasLinkedCrossDevicePhone: true,
+};
+
+/** @type {!FeedbackContext} */
+export const fakeFeedbackContextWithoutLinkedCrossDevicePhone = {
+  email: 'test.user@google.com',
+  pageUrl: {url: 'chrome://tab/'},
+  isInternalAccount: true,
+  fromAssistant: true,
+  assistantDebugInfoAllowed: false,
+  fromSettingsSearch: true,
+  fromAutofill: false,
+  autofillMetadata: '',
+  traceId: 1,
+  hasLinkedCrossDevicePhone: false,
 };
 
 /** @type {!Array<number>} */
