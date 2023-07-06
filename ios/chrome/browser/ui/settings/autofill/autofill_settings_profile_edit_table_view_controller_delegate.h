@@ -16,6 +16,10 @@
 // the account.
 - (BOOL)isMinimumAddress;
 
+// Notifies the class that conforms this delegate that the profile needs to be
+// migrated to account.
+- (void)didTapMigrateToAccountButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_SETTINGS_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_DELEGATE_H_

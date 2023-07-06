@@ -123,6 +123,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return autofill::IsMinimumAddress(*_autofillProfile);
 }
 
+- (void)didTapMigrateToAccountButton {
+  _personalDataManager->MigrateProfileToAccount(*_autofillProfile);
+}
+
 #pragma mark - AutofillProfileEditTableViewControllerDelegate
 
 - (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country {

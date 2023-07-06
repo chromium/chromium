@@ -120,14 +120,7 @@ const CGFloat kSymbolSize = 22;
     // It can happen that the profile does not satisfy minimum requirements for
     // the migration so we don't show the migration button.
     if (self.showMigrateToAccountSection && ![self.delegate isMinimumAddress]) {
-      [self
-          performBatchTableViewUpdates:^{
-            [self removeSectionWithIdentifier:
-                      AutofillProfileDetailsSectionIdentifierMigrationToAccount
-                             withRowAnimation:UITableViewRowAnimationTop];
-          }
-                            completion:nil];
-      self.showMigrateToAccountSection = NO;
+      [self removeMigrateButtonSection];
     }
   }
 
@@ -164,8 +157,14 @@ const CGFloat kSymbolSize = 22;
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   if (itemType ==
-          AutofillProfileDetailsItemTypeMigrateToAccountRecommendation ||
-      itemType == AutofillProfileDetailsItemTypeMigrateToAccountButton) {
+      AutofillProfileDetailsItemTypeMigrateToAccountRecommendation) {
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    return;
+  }
+  if (itemType == AutofillProfileDetailsItemTypeMigrateToAccountButton) {
+    [self.delegate didTapMigrateToAccountButton];
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [self removeMigrateButtonSection];
     return;
   }
   [self.handler didSelectRowAtIndexPath:indexPath];
@@ -236,6 +235,18 @@ const CGFloat kSymbolSize = 22;
 }
 
 #pragma mark - Private
+
+// Removes the migrate button section from the view.
+- (void)removeMigrateButtonSection {
+  [self
+      performBatchTableViewUpdates:^{
+        [self removeSectionWithIdentifier:
+                  AutofillProfileDetailsSectionIdentifierMigrationToAccount
+                         withRowAnimation:UITableViewRowAnimationTop];
+      }
+                        completion:nil];
+  self.showMigrateToAccountSection = NO;
+}
 
 // Removes the given section if it exists.
 - (void)removeSectionWithIdentifier:(NSInteger)sectionIdentifier
