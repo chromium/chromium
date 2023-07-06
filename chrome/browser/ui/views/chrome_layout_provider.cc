@@ -124,6 +124,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 12;
     case DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE:
       return features::IsChromeRefresh2023() ? 20 : 16;
+    case DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SMALL_SIZE:
+      return 16;
     case DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE:
       return 28;
     case DISTANCE_EXTENSIONS_MENU_ICON_SPACING:

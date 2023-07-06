@@ -28,6 +28,7 @@
 #include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -521,7 +522,10 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                                 chrome::ShowExtensions(browser);
                               },
                               browser_),
-                          vector_icons::kSettingsIcon, icon_size))
+                          features::IsChromeRefresh2023()
+                              ? vector_icons::kSettingsChromeRefreshIcon
+                              : vector_icons::kSettingsIcon,
+                          icon_size))
                       .SetProperty(
                           views::kMarginsKey,
                           gfx::Insets::TLBR(0, horizontal_spacing, 0, 0))

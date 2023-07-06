@@ -29,10 +29,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/gfx/vector_icon_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -196,6 +198,8 @@ ExtensionMenuItemView::ExtensionMenuItemView(
   ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   const int icon_size =
       provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
+  const int small_icon_size = provider->GetDistanceMetric(
+      DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SMALL_SIZE);
   const int icon_label_spacing =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   const int menu_item_vertical_spacing =
@@ -205,7 +209,14 @@ ExtensionMenuItemView::ExtensionMenuItemView(
 
   auto site_permissions_button_icon =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kSubmenuArrowIcon, ui::kColorIcon));
+          features::IsChromeRefresh2023()
+              ? vector_icons::kSubmenuArrowChromeRefreshIcon
+              : vector_icons::kSubmenuArrowIcon,
+          ui::kColorIcon,
+          features::IsChromeRefresh2023()
+              ? small_icon_size
+              : gfx::GetDefaultSizeOfVectorIcon(
+                    vector_icons::kSubmenuArrowIcon)));
   site_permissions_button_icon_ = site_permissions_button_icon.get();
 
   views::Builder<ExtensionMenuItemView>(this)
@@ -266,14 +277,21 @@ ExtensionMenuItemView::ExtensionMenuItemView(
           // Secondary row.
           views::Builder<views::FlexLayoutView>().AddChildren(
               // Site permissions button.
+              // TODO(crbug.com/1390952): Enterprise icon should appear to the
+              // left of the label, instead of the right. HoverButton should
+              // take care of this, but for some reason it doesn't.
               views::Builder<HoverButton>(
                   std::make_unique<HoverButton>(
                       site_permissions_button_callback,
-                      is_enterprise ? std::make_unique<views::ImageView>(
-                                          ui::ImageModel::FromVectorIcon(
-                                              vector_icons::kBusinessIcon,
-                                              ui::kColorIcon, icon_size))
-                                    : nullptr,
+                      is_enterprise
+                          ? std::make_unique<views::ImageView>(
+                                ui::ImageModel::FromVectorIcon(
+                                    features::IsChromeRefresh2023()
+                                        ? vector_icons::
+                                              kBusinessChromeRefreshIcon
+                                        : vector_icons::kBusinessIcon,
+                                    ui::kColorIcon, small_icon_size))
+                          : nullptr,
                       std::u16string(), std::u16string(),
                       std::move(site_permissions_button_icon)))
                   .CopyAddressTo(&site_permissions_button_)
@@ -378,8 +396,9 @@ void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
       DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
   const auto* const color_provider = GetColorProvider();
   auto three_dot_icon = ui::ImageModel::FromVectorIcon(
-      kBrowserToolsIcon, color_provider->GetColor(kColorExtensionMenuIcon),
-      icon_size);
+      features::IsChromeRefresh2023() ? kBrowserToolsChromeRefreshIcon
+                                      : kBrowserToolsIcon,
+      color_provider->GetColor(kColorExtensionMenuIcon), icon_size);
 
   // Show a pin button for the context menu normal state icon when the action is
   // pinned in the toolbar. All other states should look, and behave, the same.

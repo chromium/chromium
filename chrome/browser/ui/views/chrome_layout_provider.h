@@ -43,6 +43,8 @@ enum ChromeDistanceMetric {
   DISTANCE_DROPDOWN_BUTTON_RIGHT_MARGIN,
   // Width and height of a button's icon in the extensions menu.
   DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE,
+  // Width and height of a small button's icon in the extensions menu.
+  DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SMALL_SIZE,
   // Width and height of an extension's icon in the extensions menu. This are
   // larger than menu button's icons because it contains internal padding to
   // provide space for badging.
