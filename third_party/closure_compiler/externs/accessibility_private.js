@@ -669,6 +669,13 @@ chrome.accessibilityPrivate.onTwoFingerTouchStart;
 chrome.accessibilityPrivate.onTwoFingerTouchStop;
 
 /**
+ * Fired when the Select to Speak context menu is clicked from outside the
+ * context of the Select to Speak extension.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onSelectToSpeakContextMenuClicked;
+
+/**
  * Fired when Chrome OS wants to change the Select-to-Speak state, between
  * selecting with the mouse, speaking, and inactive.
  * @type {!ChromeEvent}

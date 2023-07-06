@@ -917,6 +917,12 @@
         "parameters": []
       },
       {
+        "name": "onSelectToSpeakContextMenuClicked",
+        "type": "function",
+        "description": "Fired when the Select to Speak context menu is clicked from outside the context of the Select to Speak extension.",
+        "parameters": []
+      },
+      {
         "name": "onSelectToSpeakStateChangeRequested",
         "type": "function",
         "description": "Fired when Chrome OS wants to change the Select-to-Speak state, between selecting with the mouse, speaking, and inactive.",

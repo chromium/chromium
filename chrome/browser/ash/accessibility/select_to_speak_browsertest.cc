@@ -721,4 +721,18 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
+                       ReadsSelectedTextWithContextMenuNotification) {
+  std::string text = "Pick me! Read me!";
+  LoadURLAndSelectToSpeak(base::StringPrintf(
+      "data:text/html;charset=utf-8,<p>Not me!</p><p>%s</p><p>Nor me!</p>",
+      text.c_str()));
+  SelectNodeWithText(text);
+
+  AccessibilityManager::Get()->OnSelectToSpeakContextMenuClick();
+
+  sm_.ExpectSpeechPattern(text);
+  sm_.Replay();
+}
+
 }  // namespace ash

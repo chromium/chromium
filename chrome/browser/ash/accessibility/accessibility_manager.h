@@ -244,6 +244,10 @@ class AccessibilityManager
   // Called when the Select-to-Speak extension state has changed.
   void SetSelectToSpeakState(SelectToSpeakState state);
 
+  // Called when the Select to Speak context menu is clicked from
+  // outside Ash browser/webui (for example, on Lacros).
+  void OnSelectToSpeakContextMenuClick();
+
   // Invoked to enable or disable Switch Access.
   void SetSwitchAccessEnabled(bool enabled);
 
