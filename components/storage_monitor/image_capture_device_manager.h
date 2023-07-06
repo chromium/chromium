@@ -6,10 +6,14 @@
 #define COMPONENTS_STORAGE_MONITOR_IMAGE_CAPTURE_DEVICE_MANAGER_H_
 
 #import <Foundation/Foundation.h>
+
 #include <string>
 
-#include "base/mac/scoped_nsobject.h"
 #include "components/storage_monitor/storage_monitor.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 class MTPDeviceDelegateImplMacTest;
 
@@ -48,7 +52,7 @@ class ImageCaptureDeviceManager {
       base::OnceCallback<void(StorageMonitor::EjectStatus)> callback);
 
  private:
-  base::scoped_nsobject<ImageCaptureDeviceManagerImpl> device_browser_;
+  ImageCaptureDeviceManagerImpl* __strong device_browser_;
 
   // Returns a weak pointer to the internal device browser.
   ICDeviceBrowser* device_browser_for_test();
