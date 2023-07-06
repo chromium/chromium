@@ -2790,7 +2790,13 @@ TEST_F(DesksWithMultiDisplayOverview, CloseDeskBeforeAnimationFinishes) {
   // Verify that we are still in overview mode and that both desks bars are in
   // the zero state.
   ASSERT_TRUE(overview_controller->InOverviewSession());
-  ASSERT_TRUE(desks_bar_view_1->IsZeroState());
+  // When Jellyroll is enabled, desks bar never goes back to zero state after
+  // it's initialized.
+  if (chromeos::features::IsJellyrollEnabled()) {
+    ASSERT_FALSE(desks_bar_view_1->IsZeroState());
+  } else {
+    ASSERT_TRUE(desks_bar_view_1->IsZeroState());
+  }
   const auto* desks_bar_view_2 =
       GetOverviewGridForRoot(root_windows[1])->desks_bar_view();
   ASSERT_TRUE(desks_bar_view_2->IsZeroState());
