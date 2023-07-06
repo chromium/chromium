@@ -515,6 +515,7 @@ src/webgpu/shader/validation/expression/call/builtin/atomics.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/bitcast.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/exp.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/exp2.spec.ts
+src/webgpu/shader/validation/functions/alias_analysis.spec.ts
 src/webgpu/shader/validation/parse/align.spec.ts
 src/webgpu/shader/validation/parse/attribute.spec.ts
 src/webgpu/shader/validation/parse/binary_ops.spec.ts
@@ -538,6 +539,7 @@ src/webgpu/shader/validation/resource_interface/bindings.spec.ts
 src/webgpu/shader/validation/shader_io/util.ts
 src/webgpu/shader/validation/shader_io/builtins.spec.ts
 src/webgpu/shader/validation/shader_io/entry_point.spec.ts
+src/webgpu/shader/validation/shader_io/id.spec.ts
 src/webgpu/shader/validation/shader_io/interpolate.spec.ts
 src/webgpu/shader/validation/shader_io/invariant.spec.ts
 src/webgpu/shader/validation/shader_io/locations.spec.ts
