@@ -260,7 +260,7 @@ class DenseSet {
     }
 
     T operator*() const {
-      DCHECK(derefenceable());
+      DCHECK(dereferenceable());
       return index_to_value(index_);
     }
 
@@ -300,12 +300,12 @@ class DenseSet {
     // non-empty one.
     void Skip(Direction direction) {
       DCHECK_LE(index_, owner_->max_size());
-      while (index_ < owner_->max_size() && !derefenceable()) {
+      while (index_ < owner_->max_size() && !dereferenceable()) {
         index_ += direction;
       }
     }
 
-    bool derefenceable() const {
+    bool dereferenceable() const {
       DCHECK_LT(index_, owner_->max_size());
       return owner_->bitset_.get_bit(index_);
     }
@@ -337,6 +337,14 @@ class DenseSet {
     for (auto it = first; it != last; ++it) {
       insert(*it);
     }
+  }
+
+  static constexpr DenseSet all() {
+    DenseSet set;
+    for (auto x = Traits::kMinValue; x <= Traits::kMaxValue; ++x) {
+      set.insert(x);
+    }
+    return set;
   }
 
   // Returns a raw bitmask. Useful for serialization.
@@ -412,7 +420,7 @@ class DenseSet {
 
   // Erases the element |*it| and returns an iterator to its successor.
   iterator erase(const_iterator it) {
-    DCHECK(it.owner_ == this && it.derefenceable());
+    DCHECK(it.owner_ == this && it.dereferenceable());
     bitset_.unset_bit(it.index_);
     it.Skip(const_iterator::kForward);
     return it;
