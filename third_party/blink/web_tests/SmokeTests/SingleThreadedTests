@@ -88,6 +88,7 @@ compositing/shadows/shadow-drawing.html
 compositing/squashing/squash-above-fixed-1.html
 compositing/squashing/squash-above-fixed-3.html
 compositing/transform-gained-3d.html
+compositing/transitions/transform-on-large-layer.html
 compositing/video/video-reflection.html
 compositing/webgl/webgl-copy-image.html
 css1/pseudo/pseudo_elements_in_selectors.html
@@ -176,6 +177,7 @@ fast/backgrounds/background-opaque-clipped-gradients.html
 fast/backgrounds/repeat/negative-offset-repeat-transformed.html
 fast/backgrounds/root-background-display-none-no-crash.html
 fast/backgrounds/root-background-fixed-attachment-positioning.html
+fast/backgrounds/size/contain-and-cover-zoomed.html
 fast/block/float/016.html
 fast/block/float/4145535-crash.html
 fast/block/float/float-on-clean-line-subsequently-dirtied.html
@@ -1587,6 +1589,7 @@ paint/invalidation/table/composited-table-background-section-composited-row-init
 paint/invalidation/table/composited-table-background-section-composited-row.html
 paint/invalidation/table/scroll-inside-table-cell.html
 paint/invalidation/table/scroll-relative-table-inside-table-cell.html
+paint/invalidation/table/table-hover-on-link.html
 paint/invalidation/transform/change-transform.html
 paint/invalidation/transform/subpixel-offset-scaled-transform.html
 paint/invalidation/transform/transform-layout-repaint.html
