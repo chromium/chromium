@@ -451,7 +451,9 @@ def main():
       '--cts-release',
       # TODO(aluo): --platform is deprecated (the meaning is unclear).
       '--platform',
-      choices=sorted(set(SDK_PLATFORM_DICT.values())),
+      # TODO: crbug.com/1454486 - Remove 'U' once added to SDK_PLATFORM_DICT,
+      # added Android U CTS to CIPD and configured webview_cts_gcs_path.json.
+      choices=sorted(set(SDK_PLATFORM_DICT.values()) | {'U'}),
       required=False,
       default=None,
       help='Which CTS release to use for the run. This should generally be <= '
