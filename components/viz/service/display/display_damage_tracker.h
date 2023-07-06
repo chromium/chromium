@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/surfaces/surface_observer.h"
@@ -27,9 +26,9 @@ class SurfaceManager;
 // to Display damage. Used by DisplayScheduler to determine frame deadlines.
 class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
  public:
-  class VIZ_SERVICE_EXPORT Observer {
+  class VIZ_SERVICE_EXPORT Delegate {
    public:
-    virtual ~Observer() = default;
+    virtual ~Delegate() = default;
     virtual void OnDisplayDamaged(SurfaceId surface_id) = 0;
     virtual void OnRootFrameMissing(bool missing) = 0;
     virtual void OnPendingSurfacesChanged() = 0;
@@ -42,8 +41,7 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   DisplayDamageTracker(const DisplayDamageTracker&) = delete;
   DisplayDamageTracker& operator=(const DisplayDamageTracker&) = delete;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void SetDelegate(Delegate* delegate);
 
   // Notification that there was a resize and we should expect root surface
   // damage.
@@ -87,7 +85,6 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
     BeginFrameAck last_ack;
   };
 
-  friend class base::RefCounted<DisplayDamageTracker>;
   virtual bool SurfaceHasUnackedFrame(const SurfaceId& surface_id) const;
   virtual void UpdateRootFrameMissing();
   void SetRootFrameMissing(bool missing);
@@ -102,7 +99,7 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   void NotifyRootFrameMissing(bool missing);
   void NotifyPendingSurfacesChanged();
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  raw_ptr<Delegate> delegate_ = nullptr;
   const raw_ptr<SurfaceManager> surface_manager_;
   const raw_ptr<SurfaceAggregator> aggregator_;
 

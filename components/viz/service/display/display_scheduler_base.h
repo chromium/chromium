@@ -44,7 +44,7 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerClient {
 };
 
 class VIZ_SERVICE_EXPORT DisplaySchedulerBase
-    : public DisplayDamageTracker::Observer {
+    : public DisplayDamageTracker::Delegate {
  public:
   DisplaySchedulerBase();
   ~DisplaySchedulerBase() override;

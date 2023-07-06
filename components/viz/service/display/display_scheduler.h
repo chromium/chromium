@@ -55,7 +55,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
                        base::TimeTicks draw_start,
                        HintSession::BoostType boost_type) override;
 
-  // DisplayDamageTrackerObserver implementation.
+  // DisplayDamageTracker::Delegate implementation.
   void OnDisplayDamaged(SurfaceId surface_id) override;
   void OnRootFrameMissing(bool missing) override;
   void OnPendingSurfacesChanged() override;

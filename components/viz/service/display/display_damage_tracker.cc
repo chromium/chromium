@@ -25,12 +25,8 @@ DisplayDamageTracker::~DisplayDamageTracker() {
   surface_manager_->RemoveObserver(this);
 }
 
-void DisplayDamageTracker::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void DisplayDamageTracker::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
+void DisplayDamageTracker::SetDelegate(Delegate* delegate) {
+  delegate_ = delegate;
 }
 
 void DisplayDamageTracker::SetRootFrameMissing(bool missing) {
@@ -205,24 +201,28 @@ void DisplayDamageTracker::RunDrawCallbacks() {
   // embedded for the first time, so also go through SurfaceAggregator's list.
   for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
     Surface* surface = surface_manager_->GetSurfaceForId(surface_id);
-    if (surface)
+    if (surface) {
       surface->SendAckToClient();
+    }
   }
 }
 
 void DisplayDamageTracker::NotifyDisplayDamaged(SurfaceId surface_id) {
-  for (auto& observer : observers_)
-    observer.OnDisplayDamaged(surface_id);
+  if (delegate_) {
+    delegate_->OnDisplayDamaged(surface_id);
+  }
 }
 
 void DisplayDamageTracker::NotifyRootFrameMissing(bool missing) {
-  for (auto& observer : observers_)
-    observer.OnRootFrameMissing(missing);
+  if (delegate_) {
+    delegate_->OnRootFrameMissing(missing);
+  }
 }
 
 void DisplayDamageTracker::NotifyPendingSurfacesChanged() {
-  for (auto& observer : observers_)
-    observer.OnPendingSurfacesChanged();
+  if (delegate_) {
+    delegate_->OnPendingSurfacesChanged();
+  }
 }
 
 }  // namespace viz

@@ -46,7 +46,7 @@ class DisplaySchedulerWebView : public viz::DisplaySchedulerBase,
                        base::TimeTicks draw_start,
                        viz::HintSession::BoostType boost_type) override {}
 
-  // DisplayDamageTrackerObserver implementation.
+  // DisplayDamageTracker::Delegate implementation.
   void OnDisplayDamaged(viz::SurfaceId surface_id) override;
   void OnRootFrameMissing(bool missing) override {}
   void OnPendingSurfacesChanged() override {}
