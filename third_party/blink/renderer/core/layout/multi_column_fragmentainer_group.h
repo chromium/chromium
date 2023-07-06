@@ -140,12 +140,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
       unsigned& first_column,
       unsigned& last_column) const;
 
-  // Get the first and the last column intersecting the specified visual
-  // rectangle.
-  void ColumnIntervalForVisualRect(const LayoutRect&,
-                                   unsigned& first_column,
-                                   unsigned& last_column) const;
-
   LogicalRect CalculateOverflow() const;
 
   unsigned ColumnIndexAtOffset(LayoutUnit offset_in_flow_thread,

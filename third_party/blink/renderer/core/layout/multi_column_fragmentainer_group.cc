@@ -424,31 +424,6 @@ void MultiColumnFragmentainerGroup::ColumnIntervalForBlockRangeInFlowThread(
   }
 }
 
-void MultiColumnFragmentainerGroup::ColumnIntervalForVisualRect(
-    const LayoutRect& rect,
-    unsigned& first_column,
-    unsigned& last_column) const {
-  bool is_column_ltr = column_set_->StyleRef().IsLeftToRightDirection();
-  if (column_set_->IsHorizontalWritingMode()) {
-    if (is_column_ltr) {
-      first_column = ColumnIndexAtVisualPoint(rect.MinXMinYCorner());
-      last_column = ColumnIndexAtVisualPoint(rect.MaxXMinYCorner());
-    } else {
-      first_column = ColumnIndexAtVisualPoint(rect.MaxXMinYCorner());
-      last_column = ColumnIndexAtVisualPoint(rect.MinXMinYCorner());
-    }
-  } else {
-    if (is_column_ltr) {
-      first_column = ColumnIndexAtVisualPoint(rect.MinXMinYCorner());
-      last_column = ColumnIndexAtVisualPoint(rect.MinXMaxYCorner());
-    } else {
-      first_column = ColumnIndexAtVisualPoint(rect.MinXMaxYCorner());
-      last_column = ColumnIndexAtVisualPoint(rect.MinXMinYCorner());
-    }
-  }
-  DCHECK_LE(first_column, last_column);
-}
-
 unsigned MultiColumnFragmentainerGroup::UnclampedActualColumnCount() const {
   // We must always return a value of 1 or greater. Column count = 0 is a
   // meaningless situation, and will confuse and cause problems in other parts
