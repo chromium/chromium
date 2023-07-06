@@ -380,6 +380,15 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     return proto;
   }
 
+  absl::optional<GURL> GetLastLinkOpenedUrlFromPostMessage() {
+    content::EvalJsResult eval_js_result =
+        EvalJs("getLastReceivedLinkOpenedUrl()");
+    if (!eval_js_result.error.empty() || !eval_js_result.value.is_string()) {
+      return absl::nullopt;
+    }
+    return GURL(eval_js_result.ExtractString());
+  }
+
   void EnableMsbb(bool enable_msbb) {
     auto* pref_service = browser()->profile()->GetPrefs();
     pref_service->SetBoolean(
@@ -579,9 +588,11 @@ IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
 
   // Click a link on the companion page. It should open in the same tab and
   // refresh the companion.
+  content::TestNavigationObserver nav_observer(web_contents());
   std::string script =
       "document.getElementById('some_link').click(); waitForMessage();";
   EvalJs(script);
+  nav_observer.Wait();
 
   // Close side panel and verify UKM of the second companion entry.
   side_panel_coordinator()->Close();
@@ -735,6 +746,30 @@ IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
   EXPECT_EQ(nullptr, web_contents()->GetController().GetPendingEntry());
   EXPECT_EQ(2, web_contents()->GetController().GetEntryCount());
   EXPECT_NE(clicked_url, web_contents()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
+                       LinkClickOnCompanionPageNotifiesViaPostMessage) {
+  const GURL clicked_url = CreateUrl(kHost, "/clicked.html");
+  // EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  ClickUrlInCompanion(clicked_url);
+
+  // Ensure browser sent post message
+  EXPECT_EQ(clicked_url, GetLastLinkOpenedUrlFromPostMessage());
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, LinkClickOnCompanionPage) {
