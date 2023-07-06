@@ -277,7 +277,8 @@ TEST_F(WindowFloatTest, WindowFloatingResize) {
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(window_state->IsFloated());
   gfx::Rect default_float_bounds =
-      FloatController::GetPreferredFloatWindowClamshellBounds(window.get());
+      FloatController::GetFloatWindowClamshellBounds(
+          window.get(), chromeos::FloatStartLocation::kBottomRight);
   EXPECT_EQ(default_float_bounds, window->GetBoundsInScreen());
   // Unfloat.
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
@@ -290,8 +291,8 @@ TEST_F(WindowFloatTest, WindowFloatingResize) {
   EXPECT_TRUE(window_state->IsFullscreen());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(window_state->IsFloated());
-  default_float_bounds =
-      FloatController::GetPreferredFloatWindowClamshellBounds(window.get());
+  default_float_bounds = FloatController::GetFloatWindowClamshellBounds(
+      window.get(), chromeos::FloatStartLocation::kBottomRight);
   EXPECT_EQ(default_float_bounds, window->GetBoundsInScreen());
   // Unfloat.
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
@@ -1093,16 +1094,23 @@ TEST_F(WindowFloatMetricsTest, FloatWindowDuration) {
   histogram_tester_.ExpectBucketCount(kHistogramName, 3, 4);
 }
 
-// Test that the size of preferred bounds for unresizable windows is not
-// different from the size of the original window bounds.
-TEST_F(WindowFloatTest, PreferredBoundsForUnresizableWindow) {
+// Test bounds for a floated unresizable window.
+TEST_F(WindowFloatTest, BoundsForUnresizableWindow) {
   std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(600, 600));
   window->SetProperty(aura::client::kResizeBehaviorKey,
                       aura::client::kResizeBehaviorNone);
-  EXPECT_EQ(
-      FloatController::GetPreferredFloatWindowClamshellBounds(window.get())
-          .size(),
-      window->GetBoundsInScreen().size());
+  const gfx::Size window_size = window->GetBoundsInScreen().size();
+
+  // Float the window. Test that the size does not change, and that it is
+  // roughly in the bottom right.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  const gfx::Rect work_area_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  const gfx::Rect window_bounds = window->GetBoundsInScreen();
+  EXPECT_EQ(window_size, window_bounds.size());
+  EXPECT_NEAR(window_bounds.bottom(), work_area_bounds.bottom(), 10);
+  EXPECT_NEAR(window_bounds.right(), work_area_bounds.right(), 10);
 }
 
 class TabletWindowFloatTest : public WindowFloatTest,

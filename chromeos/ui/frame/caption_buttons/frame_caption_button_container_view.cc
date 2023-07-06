@@ -659,7 +659,7 @@ void FrameCaptionButtonContainerView::SizeButtonPressed() {
     base::RecordAction(base::UserMetricsAction("MaxButton_Clk_Restore"));
   } else if (frame_->GetNativeWindow()->GetProperty(kWindowStateTypeKey) ==
              WindowStateType::kFloated) {
-    FloatControllerBase::Get()->ToggleFloat(frame_->GetNativeWindow());
+    FloatControllerBase::Get()->UnsetFloat(frame_->GetNativeWindow());
   } else {
     frame_->Maximize();
     base::RecordAction(base::UserMetricsAction("MaxButton_Clk_Maximize"));
@@ -702,7 +702,13 @@ void FrameCaptionButtonContainerView::FloatButtonPressed() {
   SetButtonsToNormal(Animate::kNo);
   CHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
 
-  FloatControllerBase::Get()->ToggleFloat(GetWidget()->GetNativeWindow());
+  aura::Window* window = GetWidget()->GetNativeWindow();
+  if (window->GetProperty(kWindowStateTypeKey) == WindowStateType::kFloated) {
+    FloatControllerBase::Get()->UnsetFloat(window);
+  } else {
+    FloatControllerBase::Get()->SetFloat(window,
+                                         FloatStartLocation::kBottomRight);
+  }
 }
 
 bool FrameCaptionButtonContainerView::IsMinimizeButtonVisible() const {

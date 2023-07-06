@@ -225,7 +225,7 @@ gfx::Rect TabletModeWindowState::GetBoundsInTabletMode(
 
   if (chromeos::wm::features::IsWindowLayoutMenuEnabled() &&
       state_object->IsFloated()) {
-    return FloatController::GetPreferredFloatWindowTabletBounds(window);
+    return FloatController::GetFloatWindowTabletBounds(window);
   }
 
   gfx::Rect bounds_in_parent;

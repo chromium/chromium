@@ -228,9 +228,9 @@ void ScopedWindowTucker::AnimateTuck() {
   const gfx::Rect initial_bounds(window_->bounds());
 
   // Sets the destination tucked bounds after the animation.
-  // `TabletModeWindowState::UpdatePosition` calls
-  // `GetPreferredFloatWindowTabletBounds` which checks if a window is tucked
-  // and returns the tucked bounds accordingly.
+  // `TabletModeWindowState::UpdatePosition` calls `GetFloatWindowTabletBounds`
+  // which checks if a window is tucked and returns the tucked bounds
+  // accordingly.
   TabletModeWindowState::UpdateWindowPosition(
       WindowState::Get(window_), WindowState::BoundsChangeAnimationType::kNone);
   const gfx::Rect final_bounds(window_->bounds());

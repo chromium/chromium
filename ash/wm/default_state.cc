@@ -437,11 +437,10 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
       window_state->RecordWindowSnapActionSource(
           static_cast<const WindowSnapWMEvent*>(event)->snap_action_source());
     }
-    EnterToNextState(window_state, next_state_type);
-    return;
   }
 
-  EnterToNextState(window_state, next_state_type);
+  EnterToNextState(window_state, next_state_type,
+                   /*float_start_location=*/absl::nullopt);
 }
 
 bool DefaultState::SetMaximizedOrFullscreenBounds(WindowState* window_state) {
@@ -487,8 +486,10 @@ void DefaultState::SetBounds(WindowState* window_state,
   }
 }
 
-void DefaultState::EnterToNextState(WindowState* window_state,
-                                    WindowStateType next_state_type) {
+void DefaultState::EnterToNextState(
+    WindowState* window_state,
+    WindowStateType next_state_type,
+    absl::optional<chromeos::FloatStartLocation> float_start_location) {
   if (!ShouldEnterNextState(state_type_, next_state_type, window_state)) {
     return;
   }
@@ -527,7 +528,8 @@ void DefaultState::EnterToNextState(WindowState* window_state,
       window_state->SaveCurrentBoundsForRestore();
     }
 
-    UpdateBoundsFromState(window_state, previous_state_type);
+    UpdateBoundsFromState(window_state, previous_state_type,
+                          float_start_location);
     UpdateMinimizedState(window_state, previous_state_type);
   }
   window_state->NotifyPostStateTypeChange(previous_state_type);
@@ -565,7 +567,8 @@ void DefaultState::ReenterToCurrentState(
     window_state->SetRestoreBoundsInParent(stored_bounds_);
   }
 
-  UpdateBoundsFromState(window_state, state_in_previous_mode->GetType());
+  UpdateBoundsFromState(window_state, state_in_previous_mode->GetType(),
+                        /*float_start_location=*/absl::nullopt);
   UpdateMinimizedState(window_state, state_in_previous_mode->GetType());
 
   // Then restore the restore bounds to their previous value.
@@ -577,8 +580,10 @@ void DefaultState::ReenterToCurrentState(
   window_state->NotifyPostStateTypeChange(previous_state_type);
 }
 
-void DefaultState::UpdateBoundsFromState(WindowState* window_state,
-                                         WindowStateType previous_state_type) {
+void DefaultState::UpdateBoundsFromState(
+    WindowState* window_state,
+    WindowStateType previous_state_type,
+    absl::optional<chromeos::FloatStartLocation> float_start_location) {
   aura::Window* window = window_state->window();
   gfx::Rect bounds_in_parent;
 
@@ -649,9 +654,8 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
       bounds_in_parent =
           previous_state_type == WindowStateType::kMinimized
               ? window->bounds()
-              : Shell::Get()
-                    ->float_controller()
-                    ->GetPreferredFloatWindowClamshellBounds(window);
+              : Shell::Get()->float_controller()->GetFloatWindowClamshellBounds(
+                    window, chromeos::FloatStartLocation::kBottomRight);
       break;
     }
     case WindowStateType::kInactive:

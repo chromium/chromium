@@ -130,10 +130,11 @@ void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
   } else if (window_state->IsFloated()) {
     const gfx::Rect bounds =
         Shell::Get()->tablet_mode_controller()->InTabletMode()
-            ? FloatController::GetPreferredFloatWindowTabletBounds(
+            ? FloatController::GetFloatWindowTabletBounds(
                   window_state->window())
-            : FloatController::GetPreferredFloatWindowClamshellBounds(
-                  window_state->window());
+            : FloatController::GetFloatWindowClamshellBounds(
+                  window_state->window(),
+                  chromeos::FloatStartLocation::kBottomRight);
     delegate_->HandleBoundsRequest(window_state, window_state->GetStateType(),
                                    bounds, window_state->GetDisplay().id());
   } else if (event->type() == WM_EVENT_DISPLAY_BOUNDS_CHANGED) {
@@ -400,8 +401,9 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
     if (chromeos::wm::CanFloatWindow(window)) {
       const gfx::Rect bounds =
           Shell::Get()->tablet_mode_controller()->InTabletMode()
-              ? FloatController::GetPreferredFloatWindowTabletBounds(window)
-              : FloatController::GetPreferredFloatWindowClamshellBounds(window);
+              ? FloatController::GetFloatWindowTabletBounds(window)
+              : FloatController::GetFloatWindowClamshellBounds(
+                    window, chromeos::FloatStartLocation::kBottomRight);
 
       window_state->UpdateWindowPropertiesFromStateType();
       VLOG(1) << "Processing State Transtion: event=" << event_type

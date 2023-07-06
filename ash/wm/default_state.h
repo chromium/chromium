@@ -8,6 +8,7 @@
 #include "ash/wm/base_state.h"
 #include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -49,8 +50,10 @@ class DefaultState : public BaseState {
 
   // Enters next state. This is used when the state moves from one to another
   // within the same desktop mode.
-  void EnterToNextState(WindowState* window_state,
-                        chromeos::WindowStateType next_state_type);
+  void EnterToNextState(
+      WindowState* window_state,
+      chromeos::WindowStateType next_state_type,
+      absl::optional<chromeos::FloatStartLocation> float_start_location);
 
   // Reenters the current state. This is called when migrating from
   // previous desktop mode, and the window's state needs to re-construct the
@@ -60,8 +63,10 @@ class DefaultState : public BaseState {
 
   // Animates to new window bounds, based on the current and previous state
   // type.
-  void UpdateBoundsFromState(WindowState* window_state,
-                             chromeos::WindowStateType old_state_type);
+  void UpdateBoundsFromState(
+      WindowState* window_state,
+      chromeos::WindowStateType old_state_type,
+      absl::optional<chromeos::FloatStartLocation> float_start_location);
 
   // Updates the window bounds for display bounds, or display work area bounds
   // changes.

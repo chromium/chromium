@@ -123,6 +123,25 @@ void ShowFloatedWindow(aura::Window* floated_window) {
   floated_window->Show();
 }
 
+gfx::Rect GetFloatBounds(const gfx::Size& size,
+                         const gfx::Rect& work_area_bounds,
+                         chromeos::FloatStartLocation location) {
+  const int padding_dp = chromeos::wm::kFloatedWindowPaddingDp;
+  int origin_x;
+  const int origin_y = work_area_bounds.bottom() - size.height() - padding_dp;
+  switch (location) {
+    case chromeos::FloatStartLocation::kBottomLeft: {
+      origin_x = padding_dp;
+      break;
+    }
+    case chromeos::FloatStartLocation::kBottomRight: {
+      origin_x = work_area_bounds.right() - size.width() - padding_dp;
+      break;
+    }
+  }
+  return gfx::Rect(gfx::Point(origin_x, origin_y), size);
+}
+
 class FloatLayoutManager : public WmDefaultLayoutManager {
  public:
   FloatLayoutManager() = default;
@@ -372,8 +391,9 @@ FloatController::~FloatController() {
 }
 
 // static
-gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
-    aura::Window* window) {
+gfx::Rect FloatController::GetFloatWindowClamshellBounds(
+    aura::Window* window,
+    chromeos::FloatStartLocation location) {
   DCHECK(chromeos::wm::CanFloatWindow(window));
 
   // In the case of window restore, as we re-float previously floated window, we
@@ -391,10 +411,7 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
   if ((window->GetProperty(aura::client::kResizeBehaviorKey) &
        aura::client::kResizeBehaviorCanResize) == 0) {
     // Unresizable windows must not be resized for any reason.
-    const gfx::Size size = window->bounds().size();
-    return gfx::Rect(work_area.right() - size.width() - padding_dp,
-                     work_area.bottom() - size.height() - padding_dp,
-                     size.width(), size.height());
+    return GetFloatBounds(window->bounds().size(), work_area, location);
   }
 
   // Default float size is 1/3 width and 70% height of `work_area`.
@@ -420,15 +437,12 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
       std::min(preferred_bounds.width(), work_area.width() - 2 * padding_dp);
   const int preferred_height =
       std::min(preferred_bounds.height(), work_area.height() - 2 * padding_dp);
-
-  return gfx::Rect(work_area.right() - preferred_width - padding_dp,
-                   work_area.bottom() - preferred_height - padding_dp,
-                   preferred_width, preferred_height);
+  return GetFloatBounds(gfx::Size(preferred_width, preferred_height), work_area,
+                        location);
 }
 
 // static
-gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
-    aura::Window* window) {
+gfx::Rect FloatController::GetFloatWindowTabletBounds(aura::Window* window) {
   const gfx::Size preferred_size =
       chromeos::wm::GetFloatedWindowTabletSize(window);
 
@@ -493,6 +507,14 @@ gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
   }
 
   return gfx::Rect(origin, gfx::Size(width, height));
+}
+
+void FloatController::ToggleFloat(aura::Window* window) {
+  if (WindowState::Get(window)->IsFloated()) {
+    UnsetFloat(window);
+  } else {
+    SetFloat(window, chromeos::FloatStartLocation::kBottomRight);
+  }
 }
 
 void FloatController::MaybeUntuckFloatedWindowForTablet(
@@ -821,8 +843,9 @@ void FloatController::OnScreenRotationAnimationFinished(
         static_cast<int>(AppType::ARC_APP)) {
       const gfx::Rect bounds =
           Shell::Get()->tablet_mode_controller()->InTabletMode()
-              ? GetPreferredFloatWindowTabletBounds(window)
-              : GetPreferredFloatWindowClamshellBounds(window);
+              ? GetFloatWindowTabletBounds(window)
+              : GetFloatWindowClamshellBounds(
+                    window, chromeos::FloatStartLocation::kBottomRight);
       const SetBoundsWMEvent event(bounds);
       WindowState::Get(window)->OnWMEvent(&event);
     }
@@ -845,11 +868,22 @@ void FloatController::OnPinnedStateChanged(aura::Window* pinned_window) {
   }
 }
 
-void FloatController::ToggleFloat(aura::Window* window) {
-  WindowState* window_state = WindowState::Get(window);
-  const WMEvent toggle_event(window_state->IsFloated() ? WM_EVENT_RESTORE
-                                                       : WM_EVENT_FLOAT);
-  window_state->OnWMEvent(&toggle_event);
+void FloatController::SetFloat(
+    aura::Window* window,
+    chromeos::FloatStartLocation float_start_location) {
+  auto* window_state = WindowState::Get(window);
+  if (!window_state->IsFloated()) {
+    const WindowFloatWMEvent float_event(float_start_location);
+    window_state->OnWMEvent(&float_event);
+  }
+}
+
+void FloatController::UnsetFloat(aura::Window* window) {
+  auto* window_state = WindowState::Get(window);
+  if (window_state->IsFloated()) {
+    const WMEvent restore_event(WM_EVENT_RESTORE);
+    window_state->OnWMEvent(&restore_event);
+  }
 }
 
 // static
@@ -997,7 +1031,7 @@ void FloatController::UnfloatImpl(aura::Window* window) {
 void FloatController::ResetFloatedWindow(aura::Window* floated_window) {
   DCHECK(floated_window);
   DCHECK(WindowState::Get(floated_window)->IsFloated());
-  ToggleFloat(floated_window);
+  UnsetFloat(floated_window);
 }
 
 FloatController::FloatedWindowInfo* FloatController::MaybeGetFloatedWindowInfo(

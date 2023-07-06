@@ -423,7 +423,14 @@ void MultitaskMenuView::FullScreenButtonPressed() {
 }
 
 void MultitaskMenuView::FloatButtonPressed() {
-  FloatControllerBase::Get()->ToggleFloat(window_);
+  if (window_->GetProperty(kWindowStateTypeKey) == WindowStateType::kFloated) {
+    FloatControllerBase::Get()->UnsetFloat(window_);
+  } else {
+    // TOOD(b/289082657): If `is_reversed_`, float to bottom left.
+    FloatControllerBase::Get()->SetFloat(window_,
+                                         FloatStartLocation::kBottomRight);
+  }
+
   close_callback_.Run();
   RecordMultitaskMenuActionType(MultitaskMenuActionType::kFloatButton);
 }

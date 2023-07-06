@@ -32,7 +32,6 @@
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "components/app_restore/app_restore_utils.h"
@@ -759,19 +758,12 @@ void ShellSurfaceBase::SetRestoreInfoWithWindowIdSource(
 }
 
 void ShellSurfaceBase::SetFloat() {
-  aura::Window* window = widget_->GetNativeWindow();
-  if (window->GetProperty(chromeos::kWindowStateTypeKey) !=
-      chromeos::WindowStateType::kFloated) {
-    chromeos::FloatControllerBase::Get()->ToggleFloat(window);
-  }
+  chromeos::FloatControllerBase::Get()->SetFloat(
+      widget_->GetNativeWindow(), chromeos::FloatStartLocation::kBottomRight);
 }
 
 void ShellSurfaceBase::UnsetFloat() {
-  aura::Window* window = widget_->GetNativeWindow();
-  if (window->GetProperty(chromeos::kWindowStateTypeKey) ==
-      chromeos::WindowStateType::kFloated) {
-    chromeos::FloatControllerBase::Get()->ToggleFloat(window);
-  }
+  chromeos::FloatControllerBase::Get()->UnsetFloat(widget_->GetNativeWindow());
 }
 
 void ShellSurfaceBase::SetDisplay(int64_t display_id) {
