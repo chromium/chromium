@@ -1412,7 +1412,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
     state.StyleBuilder().SetHasNonUaHighlightPseudoStyles(true);
   }
 
-  CascadeAndApplyMatchedProperties(state, cascade);
+  CascadeAndApplyMatchedProperties(state, style_request, cascade);
 
   if (match_result.HasFlag(MatchFlag::kAffectedByDrag)) {
     state.StyleBuilder().SetAffectedByDrag();
@@ -2021,6 +2021,7 @@ bool StyleResolver::CacheSuccess::IsUsableAfterApplyInheritedOnly(
 
 StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     StyleResolverState& state,
+    const StyleRequest& style_request,
     const MatchResult& match_result) {
   const Element& element = state.GetElement();
 
@@ -2031,7 +2032,6 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
   const CachedMatchedProperties* cached_matched_properties =
       key.IsValid() ? matched_properties_cache_.Find(key, state) : nullptr;
 
-  AtomicString pseudo_argument = state.StyleBuilder().PseudoArgument();
   if (cached_matched_properties && MatchedPropertiesCache::IsCacheable(state)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_hit, 1);
@@ -2098,7 +2098,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
   // non-inherited values from the cached result. The argument isn't a style
   // property per se, it represents the argument to the matching element which
   // should remain unchanged.
-  state.StyleBuilder().SetPseudoArgument(pseudo_argument);
+  state.StyleBuilder().SetPseudoArgument(style_request.pseudo_argument);
 
   return CacheSuccess(is_inherited_cache_hit, is_non_inherited_cache_hit, key,
                       cached_matched_properties);
@@ -2283,11 +2283,13 @@ StyleResolver::BeforeChangeStyleForTransitionUpdate(
   return state.TakeStyle();
 }
 
-void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState& state,
-                                                     StyleCascade& cascade) {
+void StyleResolver::CascadeAndApplyMatchedProperties(
+    StyleResolverState& state,
+    const StyleRequest& style_request,
+    StyleCascade& cascade) {
   const MatchResult& result = cascade.GetMatchResult();
 
-  CacheSuccess cache_success = ApplyMatchedCache(state, result);
+  CacheSuccess cache_success = ApplyMatchedCache(state, style_request, result);
 
   if (cache_success.IsFullCacheHit()) {
     return;
