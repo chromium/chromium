@@ -5,7 +5,6 @@
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -916,44 +915,6 @@ TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
   page_specific_content_settings()->OnStorageAccessed(
       StorageType::DATABASE,
       CreateFirstPartyStorageKey(GURL("https://somethingelse.com")),
-      /*blocked_by_policy=*/false);
-  testing::Mock::VerifyAndClearExpectations(mock());
-}
-
-TEST_P(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
-  // An engagement score above HIGH.
-  const int kHighEngagement = 60;
-
-  site_engagement::SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
-      GURL("https://highengagement.com"), kHighEngagement);
-
-  // Create storage access exception for https://highengagement.com as top-level
-  // origin.
-  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
-  hcsm->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromURL(GURL("https://thirdparty.com")),
-      ContentSettingsPattern::FromURL(GURL("https://highengagement.com")),
-      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
-
-  NavigateAndCommit(GURL("https://highengagement.com"));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(CookieControlsStatus::kEnabled,
-                              CookieControlsEnforcement::kNoEnforcement,
-                              zero_expiration()));
-  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
-  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
-                           CookieControlsBreakageConfidenceLevel::kLow));
-  cookie_controls()->Update(web_contents());
-  testing::Mock::VerifyAndClearExpectations(mock());
-
-  // Even though the site has high engagement level, the confidence level is
-  // medium because SAA was requested in the site context.
-  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
-                           CookieControlsBreakageConfidenceLevel::kMedium));
-  page_specific_content_settings()->OnStorageAccessed(
-      StorageType::DATABASE,
-      CreateFirstPartyStorageKey(GURL("https://highengagement.com")),
       /*blocked_by_policy=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 }

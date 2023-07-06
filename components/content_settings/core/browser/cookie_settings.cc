@@ -165,30 +165,6 @@ bool CookieSettings::IsStorageDurable(const GURL& origin) const {
   return setting == CONTENT_SETTING_ALLOW;
 }
 
-bool CookieSettings::HasAnyFrameRequestedStorageAccess(
-    const GURL& first_party_url) const {
-  ContentSettingsForOneType settings =
-      host_content_settings_map_->GetSettingsForOneType(
-          ContentSettingsType::STORAGE_ACCESS);
-  for (ContentSettingPatternSource source : settings) {
-    // Skip default exceptions.
-    if (source.primary_pattern.MatchesAllHosts() ||
-        source.secondary_pattern.MatchesAllHosts()) {
-      continue;
-    }
-    // Skip exceptions that doesn't match the secondary pattern.
-    if (!source.secondary_pattern.Matches(first_party_url)) {
-      continue;
-    }
-
-    // There is an active SAA exception created in the context of
-    // |first_party_url|.
-    return true;
-  }
-
-  return false;
-}
-
 ContentSetting CookieSettings::GetSettingForLegacyCookieAccess(
     const std::string& cookie_domain) const {
   // The content setting patterns are treated as domains, not URLs, so the
