@@ -45,7 +45,6 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "components/policy/core/common/policy_bundle.h"
-#include "components/policy/core/common/policy_load_status.h"
 #include "components/policy/core/common/policy_loader_common.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"

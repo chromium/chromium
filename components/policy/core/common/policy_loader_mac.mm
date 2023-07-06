@@ -24,7 +24,6 @@
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/mac_util.h"
 #include "components/policy/core/common/policy_bundle.h"
-#include "components/policy/core/common/policy_load_status.h"
 #include "components/policy/core/common/policy_loader_common.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/preferences_mac.h"
