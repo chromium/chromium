@@ -1400,8 +1400,7 @@ std::string QuicTestPacketMaker::GenerateHttp3PriorityData(
   quic::PriorityUpdateFrame priority_update;
   quic::HttpStreamPriority priority{
       spdy_priority, quic::HttpStreamPriority::kDefaultIncremental};
-  if (client_priority_uses_incremental_ &&
-      base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+  if (client_priority_uses_incremental_) {
     priority.incremental = kDefaultPriorityIncremental;
   }
 

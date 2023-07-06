@@ -102,14 +102,11 @@ const uint16_t kDefaultServerPort = 443;
 
 struct TestParams {
   quic::ParsedQuicVersion version;
-  bool enable_quic_priority_incremental_support;
 };
 
 // Used by ::testing::PrintToStringParamName().
 std::string PrintToString(const TestParams& p) {
-  return base::StrCat({ParsedQuicVersionToString(p.version), "_",
-                       (p.enable_quic_priority_incremental_support ? "" : "No"),
-                       "Incremental"});
+  return ParsedQuicVersionToString(p.version);
 }
 
 std::vector<TestParams> GetTestParams() {
@@ -117,8 +114,7 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       AllSupportedQuicVersions();
   for (const auto& version : all_supported_versions) {
-    params.push_back(TestParams{version, false});
-    params.push_back(TestParams{version, true});
+    params.push_back(TestParams{version});
   }
   return params;
 }
@@ -289,9 +285,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
                       quic::Perspective::IS_SERVER,
                       false),
         printer_(version_) {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kPriorityIncremental,
-        GetParam().enable_quic_priority_incremental_support);
     FLAGS_quic_enable_http3_grease_randomness = false;
     quic::QuicEnableVersion(version_);
     IPAddress ip(192, 0, 2, 33);
@@ -603,7 +596,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   quic::test::QuicFlagSaver saver_;
 
   const quic::ParsedQuicVersion version_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   NetLogWithSource net_log_with_source_{
       NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::NONE)};

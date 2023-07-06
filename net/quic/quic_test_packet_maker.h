@@ -33,7 +33,7 @@ class QuicTestPacketMaker {
   // |client_priority_uses_incremental| affects the output of any method that
   // includes HTTP3 priority data. The protocol default is to omit the
   // incremental flag in the priority data but HTTP streams may enable it
-  // if the feature kPriorityIncremental is enabled.
+  // if the client supports incremental streams.
   QuicTestPacketMaker(quic::ParsedQuicVersion version,
                       quic::QuicConnectionId connection_id,
                       const quic::QuicClock* clock,

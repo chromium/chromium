@@ -350,10 +350,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kBlockNewForbiddenHeaders);
 NET_EXPORT BASE_DECLARE_FEATURE(kPlatformKeyProbeSHA256);
 #endif
 
-// Enable support for HTTP extensible priorities (RFC 9218)
-// https://crbug.com/1362031
-NET_EXPORT BASE_DECLARE_FEATURE(kPriorityIncremental);
-
 // Prefetch to follow normal semantics instead of 5-minute rule
 // https://crbug.com/1345207
 NET_EXPORT BASE_DECLARE_FEATURE(kPrefetchFollowsNormalCacheSemantics);

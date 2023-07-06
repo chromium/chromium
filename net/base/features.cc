@@ -310,11 +310,6 @@ BASE_FEATURE(kPlatformKeyProbeSHA256,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enable support for HTTP extensible priorities (RFC 9218)
-BASE_FEATURE(kPriorityIncremental,
-             "PriorityIncremental",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Prefetch to follow normal semantics instead of 5-minute rule
 // https://crbug.com/1345207
 BASE_FEATURE(kPrefetchFollowsNormalCacheSemantics,

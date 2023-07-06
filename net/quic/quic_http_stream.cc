@@ -514,10 +514,7 @@ int QuicHttpStream::DoSetRequestPriority() {
   DCHECK(request_info_);
 
   uint8_t urgency = ConvertRequestPriorityToQuicPriority(priority_);
-  bool incremental = quic::HttpStreamPriority::kDefaultIncremental;
-  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-    incremental = request_info_->priority_incremental;
-  }
+  bool incremental = request_info_->priority_incremental;
   stream_->SetPriority(
       quic::QuicStreamPriority(quic::HttpStreamPriority{urgency, incremental}));
   next_state_ = STATE_SEND_HEADERS;
@@ -526,10 +523,7 @@ int QuicHttpStream::DoSetRequestPriority() {
 
 int QuicHttpStream::DoSendHeaders() {
   uint8_t urgency = ConvertRequestPriorityToQuicPriority(priority_);
-  bool incremental = quic::HttpStreamPriority::kDefaultIncremental;
-  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-    incremental = request_info_->priority_incremental;
-  }
+  bool incremental = request_info_->priority_incremental;
   quic::QuicStreamPriority priority(
       quic::HttpStreamPriority{urgency, incremental});
   // Log the actual request with the URL Request's net log.

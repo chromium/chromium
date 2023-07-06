@@ -126,14 +126,11 @@ const quic::QuicConnectionId kNewCID = quic::test::TestConnectionId(12345678);
 // and enable_connection_racting.
 struct TestParams {
   quic::ParsedQuicVersion version;
-  bool enable_quic_priority_incremental_support;
 };
 
 // Used by ::testing::PrintToStringParamName().
 std::string PrintToString(const TestParams& p) {
-  return base::StrCat({ParsedQuicVersionToString(p.version), "_",
-                       (p.enable_quic_priority_incremental_support ? "" : "No"),
-                       "Incremental"});
+  return ParsedQuicVersionToString(p.version);
 }
 
 std::vector<TestParams> GetTestParams() {
@@ -141,8 +138,7 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       AllSupportedQuicVersions();
   for (const auto& version : all_supported_versions) {
-    params.push_back(TestParams{version, false});
-    params.push_back(TestParams{version, true});
+    params.push_back(TestParams{version});
   }
   return params;
 }
@@ -252,7 +248,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
  protected:
   QuicStreamFactoryTestBase(
       quic::ParsedQuicVersion version,
-      bool enable_quic_priority_incremental_support,
       std::vector<base::test::FeatureRef> enabled_features = {},
       std::vector<base::test::FeatureRef> disabled_features = {})
       : host_resolver_(std::make_unique<MockHostResolver>(
@@ -281,11 +276,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
             &QuicStreamFactoryTestBase::OnFailedOnDefaultNetwork,
             base::Unretained(this))),
         quic_params_(context_.params()) {
-    if (enable_quic_priority_incremental_support) {
-      enabled_features.push_back(features::kPriorityIncremental);
-    } else {
-      disabled_features.push_back(features::kPriorityIncremental);
-    }
     enabled_features.push_back(features::kAsyncQuicSession);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     FLAGS_quic_enable_http3_grease_randomness = false;
@@ -982,10 +972,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
 class QuicStreamFactoryTest : public QuicStreamFactoryTestBase,
                               public ::testing::TestWithParam<TestParams> {
  protected:
-  QuicStreamFactoryTest()
-      : QuicStreamFactoryTestBase(
-            GetParam().version,
-            GetParam().enable_quic_priority_incremental_support) {}
+  QuicStreamFactoryTest() : QuicStreamFactoryTestBase(GetParam().version) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
@@ -8533,11 +8520,8 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorMixedStreams2(
                             GetNthClientInitiatedBidirectionalStreamId(1),
                             /*fin=*/true);
   std::vector<uint64_t> original_packet_numbers = {1};
-  uint64_t retransmit_frame_count = 0;
-  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-    original_packet_numbers.push_back(2);
-    retransmit_frame_count = 2;
-  }
+  uint64_t retransmit_frame_count = 2;
+  original_packet_numbers.push_back(2);
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.MakeRetransmissionRstAndDataPacket(
                        original_packet_numbers, packet_number++,
@@ -8694,11 +8678,8 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorNonMigratableStream(
                               GetNthClientInitiatedBidirectionalStreamId(0),
                               /*fin=*/true);
     std::vector<uint64_t> original_packet_numbers = {1};
-    uint64_t retransmit_frame_count = 0;
-    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-      original_packet_numbers.push_back(2);
-      retransmit_frame_count = 2;
-    }
+    uint64_t retransmit_frame_count = 2;
+    original_packet_numbers.push_back(2);
     socket_data.AddWrite(
         SYNCHRONOUS, client_maker_.MakeRetransmissionRstAndDataPacket(
                          original_packet_numbers, packet_num++,
@@ -12812,7 +12793,6 @@ enum DestinationType {
 struct PoolingTestParams {
   quic::ParsedQuicVersion version;
   DestinationType destination_type;
-  bool enable_quic_priority_incremental_support;
 };
 
 // Used by ::testing::PrintToStringParamName().
@@ -12829,10 +12809,8 @@ std::string PrintToString(const PoolingTestParams& p) {
       destination_string = "DIFFERENT";
       break;
   }
-  return base::StrCat({ParsedQuicVersionToString(p.version), "_",
-                       destination_string, "_",
-                       (p.enable_quic_priority_incremental_support ? "" : "No"),
-                       "Incremental"});
+  return base::StrCat(
+      {ParsedQuicVersionToString(p.version), "_", destination_string});
 }
 
 std::vector<PoolingTestParams> GetPoolingTestParams() {
@@ -12840,12 +12818,9 @@ std::vector<PoolingTestParams> GetPoolingTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       AllSupportedQuicVersions();
   for (const quic::ParsedQuicVersion& version : all_supported_versions) {
-    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, false});
-    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, true});
-    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, false});
-    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, true});
-    params.push_back(PoolingTestParams{version, DIFFERENT, false});
-    params.push_back(PoolingTestParams{version, DIFFERENT, true});
+    params.push_back(PoolingTestParams{version, SAME_AS_FIRST});
+    params.push_back(PoolingTestParams{version, SAME_AS_SECOND});
+    params.push_back(PoolingTestParams{version, DIFFERENT});
   }
   return params;
 }
@@ -12857,9 +12832,7 @@ class QuicStreamFactoryWithDestinationTest
       public ::testing::TestWithParam<PoolingTestParams> {
  protected:
   QuicStreamFactoryWithDestinationTest()
-      : QuicStreamFactoryTestBase(
-            GetParam().version,
-            GetParam().enable_quic_priority_incremental_support),
+      : QuicStreamFactoryTestBase(GetParam().version),
         destination_type_(GetParam().destination_type),
         hanging_read_(SYNCHRONOUS, ERR_IO_PENDING, 0) {}
 
@@ -14363,7 +14336,7 @@ class QuicStreamFactoryDnsAliasPoolingTest
       public ::testing::TestWithParam<DnsAliasPoolingTestParams> {
  protected:
   QuicStreamFactoryDnsAliasPoolingTest()
-      : QuicStreamFactoryTestBase(GetParam().version, true),
+      : QuicStreamFactoryTestBase(GetParam().version),
         use_dns_aliases_(GetParam().use_dns_aliases),
         dns_aliases1_(GetParam().dns_aliases1),
         dns_aliases2_(GetParam().dns_aliases2),
@@ -14462,12 +14435,10 @@ class QuicStreamFactoryEchTest : public QuicStreamFactoryTestBase,
                                  public ::testing::TestWithParam<TestParams> {
  protected:
   QuicStreamFactoryEchTest()
-      : QuicStreamFactoryTestBase(
-            GetParam().version,
-            GetParam().enable_quic_priority_incremental_support,
-            /*enabled_features=*/
-            {features::kEncryptedClientHello,
-             features::kEncryptedClientHelloQuic}) {}
+      : QuicStreamFactoryTestBase(GetParam().version,
+                                  /*enabled_features=*/
+                                  {features::kEncryptedClientHello,
+                                   features::kEncryptedClientHelloQuic}) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
