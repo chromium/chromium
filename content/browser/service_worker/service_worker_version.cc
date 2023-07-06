@@ -2587,8 +2587,9 @@ void ServiceWorkerVersion::FoundRegistrationForUpdate(
   if (status != blink::ServiceWorkerStatusCode::kOk ||
       registration->active_version() != this)
     return;
-  context_->UpdateServiceWorker(registration.get(),
-                                false /* force_bypass_cache */);
+
+  context_->UpdateServiceWorkerWithoutExecutionContext(
+      registration.get(), false /* force_bypass_cache */);
 }
 
 void ServiceWorkerVersion::OnStoppedInternal(EmbeddedWorkerStatus old_status) {

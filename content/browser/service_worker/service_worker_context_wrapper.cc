@@ -1533,8 +1533,8 @@ void ServiceWorkerContextWrapper::DidFindRegistrationForUpdate(
   // bypassed. However, in order to provide options for callers to choose the
   // cache bypass mode, plumb |force_bypass_cache| through to
   // UpdateRegistration().
-  context_core_->UpdateServiceWorker(registration.get(),
-                                     true /* force_bypass_cache */);
+  context_core_->UpdateServiceWorkerWithoutExecutionContext(
+      registration.get(), true /* force_bypass_cache */);
 }
 
 void ServiceWorkerContextWrapper::DidFindRegistrationForNavigationHint(

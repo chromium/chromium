@@ -547,26 +547,14 @@ void ServiceWorkerContextCore::RegisterServiceWorker(
       policy_container_policies);
 }
 
-void ServiceWorkerContextCore::UpdateServiceWorker(
+void ServiceWorkerContextCore::UpdateServiceWorkerWithoutExecutionContext(
     ServiceWorkerRegistration* registration,
     bool force_bypass_cache) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  BrowserContext* browser_context = wrapper_->browser_context();
-  if (!browser_context) {
-    // There is no associated browser context (this can happen while the context
-    // is shutting down). Bail.
-    return;
-  }
-
-  if (!GetContentClient()
-           ->browser()
-           ->ShouldTryToUpdateServiceWorkerRegistration(registration->scope(),
-                                                        browser_context)) {
-    return;
-  }
-
-  job_coordinator_->Update(registration, force_bypass_cache);
+  // Use an empty fetch client settings object because this method is for
+  // browser-initiated update and there is no associated execution context.
+  UpdateServiceWorkerImpl(
+      registration, force_bypass_cache, /*skip_script_comparison=*/false,
+      blink::mojom::FetchClientSettingsObject::New(), base::NullCallback());
 }
 
 void ServiceWorkerContextCore::UpdateServiceWorker(
@@ -576,27 +564,9 @@ void ServiceWorkerContextCore::UpdateServiceWorker(
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     UpdateCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  BrowserContext* browser_context = wrapper_->browser_context();
-  if (!browser_context) {
-    // There is no associated browser context (this can happen while the context
-    // is shutting down). Bail.
-    return;
-  }
-
-  if (!GetContentClient()
-           ->browser()
-           ->ShouldTryToUpdateServiceWorkerRegistration(registration->scope(),
-                                                        browser_context)) {
-    return;
-  }
-
-  job_coordinator_->Update(
+  UpdateServiceWorkerImpl(
       registration, force_bypass_cache, skip_script_comparison,
-      std::move(outside_fetch_client_settings_object),
-      base::BindOnce(&ServiceWorkerContextCore::UpdateComplete, AsWeakPtr(),
-                     std::move(callback)));
+      std::move(outside_fetch_client_settings_object), std::move(callback));
 }
 
 void ServiceWorkerContextCore::UnregisterServiceWorker(
@@ -798,6 +768,40 @@ void ServiceWorkerContextCore::RegistrationComplete(
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnRegistrationCompleted,
       registration->id(), scope, key);
+}
+
+void ServiceWorkerContextCore::UpdateServiceWorkerImpl(
+    ServiceWorkerRegistration* registration,
+    bool force_bypass_cache,
+    bool skip_script_comparison,
+    blink::mojom::FetchClientSettingsObjectPtr
+        outside_fetch_client_settings_object,
+    UpdateCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  BrowserContext* browser_context = wrapper_->browser_context();
+  if (!browser_context) {
+    // There is no associated browser context (this can happen while the context
+    // is shutting down). Bail.
+    return;
+  }
+
+  if (!GetContentClient()
+           ->browser()
+           ->ShouldTryToUpdateServiceWorkerRegistration(registration->scope(),
+                                                        browser_context)) {
+    return;
+  }
+
+  ServiceWorkerRegisterJob::RegistrationCallback callback_wrapper;
+  if (callback) {
+    callback_wrapper = base::BindOnce(&ServiceWorkerContextCore::UpdateComplete,
+                                      AsWeakPtr(), std::move(callback));
+  }
+  job_coordinator_->Update(registration, force_bypass_cache,
+                           skip_script_comparison,
+                           std::move(outside_fetch_client_settings_object),
+                           std::move(callback_wrapper));
 }
 
 void ServiceWorkerContextCore::UpdateComplete(

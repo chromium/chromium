@@ -276,8 +276,13 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
   // Updates the service worker. If |force_bypass_cache| is true or 24 hours
   // have passed since the last update, bypasses the browser cache.
-  void UpdateServiceWorker(ServiceWorkerRegistration* registration,
-                           bool force_bypass_cache);
+  // This is used for update requests where there is no associated execution
+  // context.
+  void UpdateServiceWorkerWithoutExecutionContext(
+      ServiceWorkerRegistration* registration,
+      bool force_bypass_cache);
+  // As above, but for sites with an associated execution context, which leads
+  // to the specification of `outside_fetch_client_settings_object`.
   // |callback| is called when the promise for
   // ServiceWorkerRegistration.update() would be resolved.
   void UpdateServiceWorker(ServiceWorkerRegistration* registration,
@@ -418,6 +423,13 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                             blink::ServiceWorkerStatusCode status,
                             const std::string& status_message,
                             ServiceWorkerRegistration* registration);
+
+  void UpdateServiceWorkerImpl(ServiceWorkerRegistration* registration,
+                               bool force_bypass_cache,
+                               bool skip_script_comparison,
+                               blink::mojom::FetchClientSettingsObjectPtr
+                                   outside_fetch_client_settings_object,
+                               UpdateCallback callback);
 
   void UpdateComplete(UpdateCallback callback,
                       blink::ServiceWorkerStatusCode status,

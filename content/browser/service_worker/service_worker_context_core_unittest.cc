@@ -280,8 +280,9 @@ TEST_F(ServiceWorkerContextCoreTest,
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, Unregister(scope, key));
 
   // Queue an Update job.
-  context()->UpdateServiceWorker(registration.get(),
-                                 /*force_bypass_cache=*/false);
+  context()->UpdateServiceWorkerWithoutExecutionContext(
+      registration.get(),
+      /*force_bypass_cache=*/false);
 
   // Queue a register job.
   base::RunLoop register_job_loop;

@@ -2044,7 +2044,9 @@ TEST_F(ServiceWorkerUpdateJobTest, Update_ScriptUrlChanged) {
   registration->SetTaskRunnerForTest(runner);
 
   // Queue an Update. When this runs, it will use the waiting version's script.
-  job_coordinator()->Update(registration.get(), false);
+  job_coordinator()->Update(registration.get(), false, false,
+                            blink::mojom::FetchClientSettingsObject::New(),
+                            base::NullCallback());
 
   // Add a waiting version with a new script.
   scoped_refptr<ServiceWorkerVersion> version = new ServiceWorkerVersion(
@@ -2152,7 +2154,9 @@ TEST_F(ServiceWorkerUpdateJobTest, Update_UninstallingRegistration) {
                          run_loop.QuitClosure()));
 
   // Update should abort after it starts and sees uninstalling.
-  job_coordinator()->Update(registration.get(), false);
+  job_coordinator()->Update(registration.get(), false, false,
+                            blink::mojom::FetchClientSettingsObject::New(),
+                            base::NullCallback());
 
   run_loop.Run();
 
