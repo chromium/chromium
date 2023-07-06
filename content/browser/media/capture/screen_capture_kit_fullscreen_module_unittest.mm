@@ -178,7 +178,7 @@ class API_AVAILABLE(macos(12.3)) MockResetStreamInterface
 
 class SCKFullscreenModuleTest : public testing::Test {
  public:
-  SCKFullscreenModuleTest() {}
+  SCKFullscreenModuleTest() = default;
 
   void SetUp() override {}
   SCWindow* API_AVAILABLE(macos(12.3)) AddWindow(WindowConfig window_config) {
@@ -206,7 +206,7 @@ class SCKFullscreenModuleTest : public testing::Test {
     OCMStub([content windows]).andReturn(windows);
     OCMStub([content displays]).andReturn(displays);
 
-    std::move(handler).Run(base::scoped_nsobject<SCShareableContent>(content));
+    std::move(handler).Run(content);
   }
 
  protected:

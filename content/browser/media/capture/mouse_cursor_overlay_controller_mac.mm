@@ -10,10 +10,13 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "ui/base/cocoa/tracking_area.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 using LocationUpdateCallback = base::RepeatingCallback<void(const NSPoint&)>;
@@ -21,17 +24,16 @@ using LocationUpdateCallback = base::RepeatingCallback<void(const NSPoint&)>;
 
 // Uses a CrTrackingArea to monitor for mouse events and forwards them to the
 // MouseCursorOverlayController::Observer.
-@interface MouseCursorOverlayTracker : NSObject {
- @private
-  LocationUpdateCallback _callback;
-  ui::ScopedCrTrackingArea _trackingArea;
-}
+@interface MouseCursorOverlayTracker : NSObject
 - (instancetype)initWithCallback:(LocationUpdateCallback)callback
                          andView:(NSView*)nsView;
 - (void)stopTracking:(NSView*)nsView;
 @end
 
-@implementation MouseCursorOverlayTracker
+@implementation MouseCursorOverlayTracker {
+  LocationUpdateCallback _callback;
+  ui::ScopedCrTrackingArea _trackingArea;
+}
 
 - (instancetype)initWithCallback:(LocationUpdateCallback)callback
                          andView:(NSView*)nsView {
@@ -41,13 +43,13 @@ using LocationUpdateCallback = base::RepeatingCallback<void(const NSPoint&)>;
         NSTrackingMouseMoved | NSTrackingMouseEnteredAndExited |
         NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect |
         NSTrackingEnabledDuringMouseDrag;
-    base::scoped_nsobject<CrTrackingArea> trackingArea([[CrTrackingArea alloc]
-        initWithRect:NSZeroRect
-             options:kTrackingOptions
-               owner:self
-            userInfo:nil]);
-    _trackingArea.reset(trackingArea.get());
-    [nsView addTrackingArea:_trackingArea.get()];
+    CrTrackingArea* trackingArea =
+        [[CrTrackingArea alloc] initWithRect:NSZeroRect
+                                     options:kTrackingOptions
+                                       owner:self
+                                    userInfo:nil];
+    _trackingArea.reset(trackingArea);
+    [nsView addTrackingArea:trackingArea];
   }
   return self;
 }
@@ -77,14 +79,14 @@ namespace content {
 class MouseCursorOverlayController::Observer {
  public:
   explicit Observer(MouseCursorOverlayController* controller, NSView* view)
-      : controller_(controller), view_([view retain]) {
+      : controller_(controller), view_(view) {
     DCHECK(controller_);
     DCHECK(view_);
     controller_->OnMouseHasGoneIdle();
-    mouse_tracker_.reset([[MouseCursorOverlayTracker alloc]
+    mouse_tracker_ = [[MouseCursorOverlayTracker alloc]
         initWithCallback:base::BindRepeating(&Observer::OnMouseMoved,
                                              base::Unretained(this))
-                 andView:view_.get()]);
+                 andView:view_];
   }
 
   Observer(const Observer&) = delete;
@@ -94,15 +96,15 @@ class MouseCursorOverlayController::Observer {
 
   void StopTracking() {
     if (mouse_tracker_) {
-      [mouse_tracker_ stopTracking:view_.get()];
-      mouse_tracker_.reset();
+      [mouse_tracker_ stopTracking:view_];
+      mouse_tracker_ = nil;
       controller_->OnMouseHasGoneIdle();
     }
   }
 
   static NSView* GetTargetView(const std::unique_ptr<Observer>& observer) {
     if (observer) {
-      return observer->view_.get();
+      return observer->view_;
     }
     return nil;
   }
@@ -121,8 +123,8 @@ class MouseCursorOverlayController::Observer {
   }
 
   const raw_ptr<MouseCursorOverlayController> controller_;
-  base::scoped_nsobject<NSView> view_;
-  base::scoped_nsobject<MouseCursorOverlayTracker> mouse_tracker_;
+  NSView* __strong view_;
+  MouseCursorOverlayTracker* __strong mouse_tracker_;
 };
 
 MouseCursorOverlayController::MouseCursorOverlayController()

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_COCOA_SYSTEM_HOTKEY_MAP_H_
 
 #import <Cocoa/Cocoa.h>
+
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -15,7 +16,7 @@ namespace content {
 
 struct SystemHotkey;
 
-// Maintains a listing of all OSX system hotkeys. e.g. (cmd + `) These hotkeys
+// Maintains a listing of all macOS system hotkeys (e.g. cmd+`). These hotkeys
 // should have higher priority than web content, so NSEvents that correspond to
 // a system hotkey should not be passed to the renderer.
 class CONTENT_EXPORT SystemHotkeyMap {

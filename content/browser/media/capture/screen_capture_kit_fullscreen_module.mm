@@ -11,6 +11,10 @@
 #import "base/task/single_thread_task_runner.h"
 #include "content/public/common/content_features.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 namespace {
 
@@ -29,36 +33,37 @@ bool IsPowerPointSlideShow(NSString* window_title) {
   // Localized strings of the title name that identifies the PowerPoint slide
   // show. This is needed in order to distinguish between the slide show window
   // and the presenter's view.
-  constexpr std::array<NSString*, 27> kPowerPointSlideShowTitles = {
-      @"PowerPoint-Bildschirmpräsentation",
-      @"Προβολή παρουσίασης PowerPoint",
-      @"PowerPoint スライド ショー",
-      @"PowerPoint Slide Show",
-      @"PowerPoint 幻灯片放映",
-      @"Presentación de PowerPoint",
-      @"PowerPoint-slideshow",
-      @"Presentazione di PowerPoint",
-      @"Prezentácia programu PowerPoint",
-      @"Apresentação do PowerPoint",
-      @"PowerPoint-bildspel",
-      @"Prezentace v aplikaci PowerPoint",
-      @"PowerPoint 슬라이드 쇼",
-      @"PowerPoint-lysbildefremvisning",
-      @"PowerPoint-vetítés",
-      @"PowerPoint Slayt Gösterisi",
-      @"Pokaz slajdów programu PowerPoint",
-      @"PowerPoint 投影片放映",
-      @"Демонстрация PowerPoint",
-      @"Diaporama PowerPoint",
-      @"PowerPoint-diaesitys",
-      @"Peragaan Slide PowerPoint",
-      @"PowerPoint-diavoorstelling",
-      @"การนำเสนอสไลด์ PowerPoint",
-      @"Apresentação de slides do PowerPoint",
-      @"הצגת שקופיות של PowerPoint",
-      @"عرض شرائح في PowerPoint"};
+  static NSArray<NSString*>* kPowerPointSlideShowTitles = @[
+    @"PowerPoint-Bildschirmpräsentation",
+    @"Προβολή παρουσίασης PowerPoint",
+    @"PowerPoint スライド ショー",
+    @"PowerPoint Slide Show",
+    @"PowerPoint 幻灯片放映",
+    @"Presentación de PowerPoint",
+    @"PowerPoint-slideshow",
+    @"Presentazione di PowerPoint",
+    @"Prezentácia programu PowerPoint",
+    @"Apresentação do PowerPoint",
+    @"PowerPoint-bildspel",
+    @"Prezentace v aplikaci PowerPoint",
+    @"PowerPoint 슬라이드 쇼",
+    @"PowerPoint-lysbildefremvisning",
+    @"PowerPoint-vetítés",
+    @"PowerPoint Slayt Gösterisi",
+    @"Pokaz slajdów programu PowerPoint",
+    @"PowerPoint 投影片放映",
+    @"Демонстрация PowerPoint",
+    @"Diaporama PowerPoint",
+    @"PowerPoint-diaesitys",
+    @"Peragaan Slide PowerPoint",
+    @"PowerPoint-diavoorstelling",
+    @"การนำเสนอสไลด์ PowerPoint",
+    @"Apresentação de slides do PowerPoint",
+    @"הצגת שקופיות של PowerPoint",
+    @"عرض شرائح في PowerPoint"
+  ];
 
-  for (NSString* pp_slide_title : kPowerPointSlideShowTitles) {
+  for (NSString* pp_slide_title in kPowerPointSlideShowTitles) {
     if ([window_title hasPrefix:pp_slide_title]) {
       return true;
     }
@@ -178,8 +183,7 @@ void ScreenCaptureKitFullscreenModule::CheckForFullscreenPresentation() {
     get_shareable_content_for_test_.Run(content_callback);
   } else {
     auto handler = ^(SCShareableContent* content, NSError* error) {
-      content_callback.Run(base::scoped_nsobject<SCShareableContent>(
-          content, base::scoped_policy::RETAIN));
+      content_callback.Run(content);
     };
     [SCShareableContent getShareableContentExcludingDesktopWindows:true
                                                onScreenWindowsOnly:false
@@ -188,14 +192,14 @@ void ScreenCaptureKitFullscreenModule::CheckForFullscreenPresentation() {
 }
 
 void ScreenCaptureKitFullscreenModule::OnFullscreenShareableContentCreated(
-    base::scoped_nsobject<SCShareableContent> content) {
+    SCShareableContent* content) {
   DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
   if (!content || !timer_.IsRunning()) {
     return;
   }
   SCWindow* editor_window = nullptr;
   int number_of_impress_editor_windows = 0;
-  for (SCWindow* window : [content windows]) {
+  for (SCWindow* window in content.windows) {
     if (window.windowID == original_window_id_) {
       editor_window = window;
     }
@@ -235,20 +239,20 @@ void ScreenCaptureKitFullscreenModule::OnFullscreenShareableContentCreated(
 }
 
 SCWindow* ScreenCaptureKitFullscreenModule::GetFullscreenWindow(
-    base::scoped_nsobject<SCShareableContent> content,
+    SCShareableContent* content,
     SCWindow* editor_window,
     int number_of_impress_editor_windows) const {
   DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
   SCWindow* fullscreen_window = nullptr;
   int fullscreenWindowLayer = 0;
-  for (SCWindow* window : [content windows]) {
+  for (SCWindow* window in content.windows) {
     // Only check windows that belong to the same application as the original
     // window.
     if (window.owningApplication.processID == original_window_pid_ &&
         window.windowID != original_window_id_ && window.onScreen &&
         [window.owningApplication.applicationName
             isEqualToString:editor_window.owningApplication.applicationName] &&
-        IsWindowFullscreen(window, [content displays])) {
+        IsWindowFullscreen(window, content.displays)) {
       switch (mode_) {
         case Mode::kPowerPoint:
           if ([window.title containsString:editor_window.title]) {
@@ -261,7 +265,7 @@ SCWindow* ScreenCaptureKitFullscreenModule::GetFullscreenWindow(
           // Since the window title is empty, we cannot make a certain match to
           // determine what presentation is fullscreen if there are more than
           // one Impress editor window open.
-          if ([window.title length] == 0 &&
+          if (window.title.length == 0 &&
               number_of_impress_editor_windows == 1) {
             fullscreen_window = window;
           }

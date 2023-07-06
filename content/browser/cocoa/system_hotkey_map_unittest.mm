@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #import "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/path_service.h"
 #import "content/browser/cocoa/system_hotkey_map.h"
 #include "content/public/common/content_paths.h"

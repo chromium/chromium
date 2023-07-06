@@ -6,13 +6,19 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 #import <CoreText/CoreText.h>
-#include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
 #include <string>
 
+#include "base/apple/bridging.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace content {
 
@@ -20,8 +26,9 @@ namespace {
 
 base::ScopedCFTypeRef<CFStringRef> GetLocalizedString(CTFontDescriptorRef fd,
                                                       CFStringRef attribute) {
-  return base::ScopedCFTypeRef<CFStringRef>(base::mac::CFCast<CFStringRef>(
-      CTFontDescriptorCopyLocalizedAttribute(fd, attribute, nullptr)));
+  return base::ScopedCFTypeRef<CFStringRef>(
+      base::mac::CFCast<CFStringRef>(CTFontDescriptorCopyLocalizedAttribute(
+          fd, attribute, /*language=*/nullptr)));
 }
 
 base::ScopedCFTypeRef<CFStringRef> GetString(CTFontDescriptorRef fd,
@@ -70,15 +77,13 @@ blink::FontEnumerationTable FontEnumerationDataSourceMac::GetFonts(
   blink::FontEnumerationTable font_enumeration_table;
 
   @autoreleasepool {
-    CFTypeRef values[1] = {kCFBooleanTrue};
-    base::ScopedCFTypeRef<CFDictionaryRef> options(CFDictionaryCreate(
-        kCFAllocatorDefault,
-        (const void**)kCTFontCollectionRemoveDuplicatesOption,
-        (const void**)&values,
-        /*numValues=*/1, &kCFTypeDictionaryKeyCallBacks,
-        &kCFTypeDictionaryValueCallBacks));
+    NSDictionary* options = @{
+      base::apple::CFToNSPtrCast(kCTFontCollectionRemoveDuplicatesOption) : @YES
+    };
+
     base::ScopedCFTypeRef<CTFontCollectionRef> collection(
-        CTFontCollectionCreateFromAvailableFonts(options));
+        CTFontCollectionCreateFromAvailableFonts(
+            base::apple::NSToCFPtrCast(options)));
 
     base::ScopedCFTypeRef<CFArrayRef> font_descs(
         CTFontCollectionCreateMatchingFontDescriptors(collection));

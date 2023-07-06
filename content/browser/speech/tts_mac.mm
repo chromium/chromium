@@ -13,12 +13,15 @@
 
 #include "base/functional/bind.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "content/public/browser/tts_controller.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -50,10 +53,10 @@ std::vector<content::VoiceData>& Voices() {
     return voices;
   }
 
-  base::scoped_nsobject<NSMutableArray> av_speech_voices(
+  NSMutableArray* av_speech_voices =
       [[AVSpeechSynthesisVoice.speechVoices sortedArrayUsingDescriptors:@[
         [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]
-      ]] mutableCopy]);
+      ]] mutableCopy];
   AVSpeechSynthesisVoice* default_voice =
       [AVSpeechSynthesisVoice voiceWithLanguage:nil];
   if (default_voice) {
@@ -69,7 +72,7 @@ std::vector<content::VoiceData>& Voices() {
   // disambiguation.
   NSMutableDictionary<NSString*, NSNumber*>* name_counts =
       [NSMutableDictionary dictionary];
-  for (AVSpeechSynthesisVoice* av_speech_voice in av_speech_voices.get()) {
+  for (AVSpeechSynthesisVoice* av_speech_voice in av_speech_voices) {
     NSString* voice_name = av_speech_voice.name;
     if (!voice_name) {
       // AVSpeechSynthesisVoice.name is not a nullable property, but there are
@@ -85,8 +88,8 @@ std::vector<content::VoiceData>& Voices() {
     }
   }
 
-  voices.reserve(av_speech_voices.get().count);
-  for (AVSpeechSynthesisVoice* av_speech_voice in av_speech_voices.get()) {
+  voices.reserve(av_speech_voices.count);
+  for (AVSpeechSynthesisVoice* av_speech_voice in av_speech_voices) {
     NSString* voice_name = av_speech_voice.name;
     if (!voice_name) {
       // AVSpeechSynthesisVoice.name is not a nullable property, but there are
@@ -290,7 +293,7 @@ void TtsPlatformImplMac::Resume() {
 }
 
 bool TtsPlatformImplMac::IsSpeaking() {
-  return speech_synthesizer_.get().speaking;
+  return speech_synthesizer_.speaking;
 }
 
 void TtsPlatformImplMac::GetVoices(std::vector<content::VoiceData>* outVoices) {
@@ -319,7 +322,7 @@ void TtsPlatformImplMac::OnSpeechEvent(int utterance_id,
 TtsPlatformImplMac::TtsPlatformImplMac()
     : speech_synthesizer_([[AVSpeechSynthesizer alloc] init]),
       delegate_([[ChromeTtsDelegate alloc] initWithPlatformImplMac:this]) {
-  speech_synthesizer_.get().delegate = delegate_.get();
+  speech_synthesizer_.delegate = delegate_;
 }
 
 // static
@@ -334,7 +337,6 @@ std::vector<content::VoiceData>& TtsPlatformImplMac::VoicesRefForTesting() {
 }
 
 @implementation ChromeTtsDelegate {
- @private
   raw_ptr<TtsPlatformImplMac> _ttsImplMac;  // weak.
 }
 

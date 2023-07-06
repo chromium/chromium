@@ -6,6 +6,10 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 namespace {
@@ -35,13 +39,13 @@ void OnScreenlockNotificationReceived(CFNotificationCenterRef center,
 void ScreenlockMonitorDeviceSource::StartListeningForScreenlock() {
   CFNotificationCenterAddObserver(
       CFNotificationCenterGetDistributedCenter(), this,
-      &OnScreenlockNotificationReceived, kScreenLockedEvent, nullptr,
+      &OnScreenlockNotificationReceived, kScreenLockedEvent, /*object=*/nullptr,
       CFNotificationSuspensionBehaviorDeliverImmediately);
 
   CFNotificationCenterAddObserver(
       CFNotificationCenterGetDistributedCenter(), this,
-      &OnScreenlockNotificationReceived, kScreenUnlockedEvent, nullptr,
-      CFNotificationSuspensionBehaviorDeliverImmediately);
+      &OnScreenlockNotificationReceived, kScreenUnlockedEvent,
+      /*object=*/nullptr, CFNotificationSuspensionBehaviorDeliverImmediately);
 }
 
 void ScreenlockMonitorDeviceSource::StopListeningForScreenlock() {

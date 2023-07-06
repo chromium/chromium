@@ -43,12 +43,12 @@ void PopupMenuHelper::ShowPopupMenu(
     std::vector<blink::mojom::MenuItemPtr> items,
     bool right_aligned,
     bool allow_multiple_selection) {
-  menu_runner_.reset([[WebMenuRunner alloc]
-      initWithDelegate:weak_ptr_factory_.GetWeakPtr()
-                 items:items
-          initialIndex:selected_item
-              fontSize:item_font_size
-          rightAligned:right_aligned]);
+  menu_runner_ =
+      [[WebMenuRunner alloc] initWithDelegate:weak_ptr_factory_.GetWeakPtr()
+                                        items:items
+                                 initialIndex:selected_item
+                                     fontSize:item_font_size
+                                 rightAligned:right_aligned];
 
   [menu_runner_ showMenuInView:GetRenderWidgetHostView()->GetNativeView().Get()
                     withBounds:bounds.ToCGRect()];
@@ -65,7 +65,7 @@ void PopupMenuHelper::OnMenuCanceled() {
 }
 
 void PopupMenuHelper::CloseMenu() {
-  menu_runner_.reset();
+  menu_runner_ = nil;
   popup_client_.reset();
 }
 

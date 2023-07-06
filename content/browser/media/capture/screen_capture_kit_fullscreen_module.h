@@ -5,9 +5,9 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_SCREEN_CAPTURE_KIT_FULLSCREEN_MODULE_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_SCREEN_CAPTURE_KIT_FULLSCREEN_MODULE_H_
 
-#include <CoreGraphics/CGWindow.h>
+#include <CoreGraphics/CoreGraphics.h>
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
-#include "base/mac/scoped_nsobject.h"
+
 #import "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
@@ -38,8 +38,7 @@ class API_AVAILABLE(macos(12.3))
     kMaxValue = kLibreOffice,
   };
 
-  using ContentHandler =
-      base::OnceCallback<void(base::scoped_nsobject<SCShareableContent>)>;
+  using ContentHandler = base::OnceCallback<void(SCShareableContent*)>;
   using GetShareableContentCallback =
       base::RepeatingCallback<void(ContentHandler)>;
 
@@ -66,14 +65,11 @@ class API_AVAILABLE(macos(12.3))
 
  private:
   void CheckForFullscreenPresentation();
-  void OnFullscreenShareableContentCreated(
-      base::scoped_nsobject<SCShareableContent> content);
-  void OnExitFullscreenShareableContentCreated(
-      base::scoped_nsobject<SCShareableContent> content);
-  SCWindow* GetFullscreenWindow(
-      base::scoped_nsobject<SCShareableContent> content,
-      SCWindow* editor_window,
-      int number_of_impress_editor_windows) const;
+  void OnFullscreenShareableContentCreated(SCShareableContent* content);
+  void OnExitFullscreenShareableContentCreated(SCShareableContent* content);
+  SCWindow* GetFullscreenWindow(SCShareableContent* content,
+                                SCWindow* editor_window,
+                                int number_of_impress_editor_windows) const;
 
   const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
 
@@ -86,11 +82,14 @@ class API_AVAILABLE(macos(12.3))
 
   // The mode, corresponding to what slideshow application we're tracking.
   const Mode mode_;
+
   // True, if we've detected a fullscreen presentation and requested the stream
   // to be reset to the new window.
   bool fullscreen_mode_active_ = false;
+
   // Identified of the fullscreen window.
   CGWindowID fullscreen_window_id_ = 0;
+
   // Callback to mock function that is used in tests to mock the SCK OS API
   // GetShareableContent.
   GetShareableContentCallback get_shareable_content_for_test_;

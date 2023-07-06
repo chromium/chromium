@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_POPUP_MENU_HELPER_IOS_H_
 #define CONTENT_BROWSER_RENDERER_HOST_POPUP_MENU_HELPER_IOS_H_
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/scoped_observation.h"
 #include "content/browser/renderer_host/popup_menu_interaction_delegate.h"
 #include "content/public/browser/render_widget_host_observer.h"
@@ -13,6 +12,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "ui/gfx/geometry/rect.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class WebMenuRunner;
 
@@ -73,7 +76,7 @@ class PopupMenuHelper : public RenderWidgetHostObserver,
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
   mojo::Remote<blink::mojom::PopupMenuClient> popup_client_;
 
-  base::scoped_nsobject<WebMenuRunner> menu_runner_;
+  WebMenuRunner* __strong menu_runner_;
 
   base::WeakPtrFactory<PopupMenuHelper> weak_ptr_factory_{this};
 };

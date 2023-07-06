@@ -625,8 +625,6 @@ source_set("browser_sources") {
 
   if (is_apple) {
     configs += [ "//build/config/compiler:enable_arc" ]
-    deps += [ "//content/browser:browser_arc" ]
-    allow_circular_includes_from += [ "//content/browser:browser_arc" ]
   }
 
   if (is_mac) {

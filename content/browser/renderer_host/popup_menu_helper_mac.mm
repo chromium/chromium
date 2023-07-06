@@ -84,10 +84,9 @@ void PopupMenuHelper::ShowPopupMenu(
   }
 
   // Display the menu.
-  base::scoped_nsobject<WebMenuRunner> runner([[WebMenuRunner alloc]
-      initWithItems:items
-           fontSize:item_font_size
-       rightAligned:right_aligned]);
+  WebMenuRunner* runner = [[WebMenuRunner alloc] initWithItems:items
+                                                      fontSize:item_font_size
+                                                  rightAligned:right_aligned];
 
   // Take a weak reference so that Hide() can close the menu.
   objc_storage_->menu_runner = runner;

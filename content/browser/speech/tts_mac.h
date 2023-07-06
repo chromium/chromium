@@ -8,15 +8,18 @@
 #import <AVFAudio/AVFAudio.h>
 
 #include "base/functional/callback.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/no_destructor.h"
 #include "content/browser/speech/tts_platform_impl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 class TtsPlatformImplMac;
 
 @interface ChromeTtsDelegate : NSObject <AVSpeechSynthesizerDelegate>
 
-- (id)initWithPlatformImplMac:(TtsPlatformImplMac*)ttsImplMac;
+- (instancetype)initWithPlatformImplMac:(TtsPlatformImplMac*)ttsImplMac;
 
 @end
 
@@ -73,8 +76,8 @@ class TtsPlatformImplMac : public content::TtsPlatformImpl {
                      base::OnceCallback<void(bool)> on_speak_finished,
                      const std::string& parsed_utterance);
 
-  base::scoped_nsobject<AVSpeechSynthesizer> speech_synthesizer_;
-  base::scoped_nsobject<ChromeTtsDelegate> delegate_;
+  AVSpeechSynthesizer* __strong speech_synthesizer_;
+  ChromeTtsDelegate* __strong delegate_;
   int utterance_id_ = kInvalidUtteranceId;
   std::string utterance_;
   int last_char_index_ = 0;

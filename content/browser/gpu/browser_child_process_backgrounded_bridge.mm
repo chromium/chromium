@@ -13,6 +13,10 @@
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/public/browser/child_process_data.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 namespace {
@@ -24,8 +28,8 @@ bool g_notifications_enabled = true;
 struct BrowserChildProcessBackgroundedBridge::ObjCStorage {
   // Registration IDs for NSApplicationDidBecomeActiveNotification and
   // NSApplicationDidResignActiveNotification.
-  id did_become_active_observer = nil;
-  id did_resign_active_observer = nil;
+  id __strong did_become_active_observer = nil;
+  id __strong did_resign_active_observer = nil;
 };
 
 BrowserChildProcessBackgroundedBridge::BrowserChildProcessBackgroundedBridge(
@@ -72,7 +76,7 @@ void BrowserChildProcessBackgroundedBridge::SetOSNotificationsEnabledForTesting(
 }
 
 void BrowserChildProcessBackgroundedBridge::Initialize() {
-  // Do the initial ajustment based on the initial value of the
+  // Do the initial adjustment based on the initial value of the
   // TASK_CATEGORY_POLICY role of the browser process.
   base::SelfPortProvider self_port_provider;
   process_->SetProcessBackgrounded(
@@ -85,8 +89,8 @@ void BrowserChildProcessBackgroundedBridge::Initialize() {
   // Now subscribe to both NSApplicationDidBecomeActiveNotification and
   // NSApplicationDidResignActiveNotification, which are sent when the browser
   // process becomes foreground and background, respectively. The blocks
-  // implicity captures `this`. It is safe to do so since the subscriptions are
-  // removed in the destructor
+  // implicitly captures `this`. It is safe to do so since the subscriptions are
+  // removed in the destructor.
   objc_storage_->did_become_active_observer =
       [NSNotificationCenter.defaultCenter
           addObserverForName:NSApplicationDidBecomeActiveNotification

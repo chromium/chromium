@@ -10,6 +10,10 @@
 #include "base/no_destructor.h"
 #include "content/browser/cocoa/system_hotkey_map.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 constexpr auto* kSystemHotkeyPlistPath =
@@ -19,7 +23,7 @@ content::SystemHotkeyMap LoadSystemHotkeyMap() {
   auto* hotkey_plist_url = base::mac::FilePathToNSURL(
       base::mac::GetUserLibraryPath().Append(kSystemHotkeyPlistPath));
   NSDictionary* dictionary =
-      [NSDictionary dictionaryWithContentsOfURL:hotkey_plist_url];
+      [NSDictionary dictionaryWithContentsOfURL:hotkey_plist_url error:nil];
 
   content::SystemHotkeyMap map;
   bool success = map.ParseDictionary(dictionary);
