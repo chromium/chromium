@@ -135,7 +135,14 @@ export const MainPageMixin = dedupingMixin(
           this.dispatchCustomEvent_('show-container');
         }
 
-        private enterMainPage_(_oldRoute: Route): Promise<void> {
+        /**
+         * Indicates the page transition of leaving a subpage and entering the
+         * main page by emitting a `showing-main-page` event.
+         * If the page transition was a pop state (e.g. clicking back button on
+         * a subpage), then the cached scroll position on the main page is
+         * restored.
+         */
+        private enterMainPage(): Promise<void> {
           this.classList.remove('showing-subpage');
           return new Promise((resolve) => {
             requestAnimationFrame(() => {
@@ -322,12 +329,18 @@ export const MainPageMixin = dedupingMixin(
             assert(oldRoute);
             switch (newState) {
               case RouteState.SECTION:
-                this.enterMainPage_(oldRoute);
+                if (isRevampWayfindingEnabled()) {
+                  this.enterMainPage().then(() => {
+                    this.activatePage(newRoute, {focus: true});
+                  });
+                } else {
+                  this.enterMainPage();
 
-                // Scroll to the corresponding section, only if the user
-                // explicitly navigated to a section (via the menu).
-                if (!Router.getInstance().lastRouteChangeWasPopstate()) {
-                  this.showPage(newRoute);
+                  // Only if the user explicitly navigated to a section (via
+                  // the left menu), scroll to the corresponding section.
+                  if (!Router.getInstance().lastRouteChangeWasPopstate()) {
+                    this.scrollToSection(newRoute);
+                  }
                 }
                 return;
 
@@ -337,7 +350,7 @@ export const MainPageMixin = dedupingMixin(
                 // /displayAndMagnification linking to /display
                 if (!oldRoute.contains(newRoute) &&
                     !newRoute.contains(oldRoute)) {
-                  this.enterMainPage_(oldRoute).then(() => {
+                  this.enterMainPage().then(() => {
                     this.enterSubpage(newRoute);
                   });
                   return;
@@ -356,7 +369,7 @@ export const MainPageMixin = dedupingMixin(
               // Happens when the user navigates to a subpage via the search box
               // on the root page, and then clicks the back button.
               case RouteState.ROOT:
-                this.enterMainPage_(oldRoute).then(() => {
+                this.enterMainPage().then(() => {
                   this.activateInitialPage();
                 });
                 return;
@@ -364,7 +377,7 @@ export const MainPageMixin = dedupingMixin(
               // This is a supported case but there are currently no known
               // examples of this transition in Settings.
               case RouteState.DIALOG:
-                this.enterMainPage_(oldRoute);
+                this.enterMainPage();
                 return;
 
               default:

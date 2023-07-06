@@ -13,11 +13,11 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {createPageAvailabilityForTesting, CrSettingsPrefs, Router, routes, routesMojom, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
-import {assertEquals, assertNotEquals, assertNull} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNull} from 'chrome://webui-test/chai_assert.js';
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 const {Section} = routesMojom;
 
@@ -62,29 +62,33 @@ suite('<main-page-container> Route Navigation', () => {
   });
 
   /**
-   * Asserts the page with the given |section| is the only visible page by
-   * checking:
-   * - Only one page is marked active
-   * - Active page does not have style "display: none"
-   * - Inactive pages have style "display: none"
+   * Asserts the page with the given |section| is the only visible page.
    */
-  function assertOnlyVisiblePage(section) {
+  function assertIsOnlyVisiblePage(section) {
     const pages =
         mainPageContainer.shadowRoot.querySelectorAll('page-displayer');
-    let numActive = 0;
-
     for (const page of pages) {
-      const displayStyle = getComputedStyle(page).display;
-      if (page.hasAttribute('active')) {
-        numActive++;
-        assertNotEquals('none', displayStyle);
-        assertEquals(section, page.section);
+      if (page.section === section) {
+        assertTrue(isVisible(page));
       } else {
-        assertEquals('none', displayStyle);
+        assertFalse(isVisible(page));
       }
     }
+  }
 
-    assertEquals(1, numActive);
+  /**
+   * Asserts the page with the given |section| is the only page marked active.
+   */
+  function assertIsOnlyActivePage(section) {
+    const pages =
+        mainPageContainer.shadowRoot.querySelectorAll('page-displayer');
+    for (const page of pages) {
+      if (page.section === section) {
+        assertTrue(page.active);
+      } else {
+        assertFalse(page.active);
+      }
+    }
   }
 
   /**
@@ -107,8 +111,9 @@ suite('<main-page-container> Route Navigation', () => {
     await showContainerPromise;
   }
 
-  test('Network page is initially visible but not focused', async () => {
-    assertOnlyVisiblePage(Section.kNetwork);
+  test('Network page is initially visible but not focused', () => {
+    assertIsOnlyActivePage(Section.kNetwork);
+    assertIsOnlyVisiblePage(Section.kNetwork);
     assertNull(mainPageContainer.shadowRoot.activeElement);
   });
 
@@ -120,13 +125,14 @@ suite('<main-page-container> Route Navigation', () => {
   });
 
   suite('From Root', () => {
-    test('to Page should activate and focus that page', async () => {
+    test('to Page should show and focus that page', async () => {
       // Simulate navigating from root to Bluetooth page
       await runAndWaitForContainerShown(() => {
         Router.getInstance().navigateTo(routes.BLUETOOTH);
       });
 
-      assertOnlyVisiblePage(Section.kBluetooth);
+      assertIsOnlyActivePage(Section.kBluetooth);
+      assertIsOnlyVisiblePage(Section.kBluetooth);
       assertPageIsFocused(Section.kBluetooth);
     });
 
@@ -136,13 +142,14 @@ suite('<main-page-container> Route Navigation', () => {
         Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
       });
 
-      assertOnlyVisiblePage(Section.kBluetooth);
+      assertIsOnlyActivePage(Section.kBluetooth);
     });
 
     test('to Root should show Network page', async () => {
       // Simulate root page with search query
       Router.getInstance().navigateTo(
           routes.BASIC, new URLSearchParams('search=bluetooth'));
+      await flushTasks();
 
       // Simulate clearing search
       await runAndWaitForContainerShown(() => {
@@ -151,7 +158,8 @@ suite('<main-page-container> Route Navigation', () => {
             /*removeSearch=*/ true);
       });
 
-      assertOnlyVisiblePage(Section.kNetwork);
+      assertIsOnlyActivePage(Section.kNetwork);
+      assertIsOnlyVisiblePage(Section.kNetwork);
     });
   });
 
@@ -161,13 +169,14 @@ suite('<main-page-container> Route Navigation', () => {
       Router.getInstance().navigateTo(routes.OS_ACCESSIBILITY);
     });
 
-    test('to another Page should activate and focus that page', async () => {
+    test('to another Page should show and focus that page', async () => {
       // Simulate navigating from A11y page to Bluetooth page
       await runAndWaitForContainerShown(() => {
         Router.getInstance().navigateTo(routes.BLUETOOTH);
       });
 
-      assertOnlyVisiblePage(Section.kBluetooth);
+      assertIsOnlyActivePage(Section.kBluetooth);
+      assertIsOnlyVisiblePage(Section.kBluetooth);
       assertPageIsFocused(Section.kBluetooth);
     });
 
@@ -177,32 +186,71 @@ suite('<main-page-container> Route Navigation', () => {
         Router.getInstance().navigateTo(routes.A11Y_DISPLAY_AND_MAGNIFICATION);
       });
 
-      assertOnlyVisiblePage(Section.kAccessibility);
+      assertIsOnlyActivePage(Section.kAccessibility);
     });
 
-    test('to Root should activate Network page', async () => {
+    test('to Root should show Network page', async () => {
       // Simulate navigating from A11y page to root
       await runAndWaitForContainerShown(() => {
         Router.getInstance().navigateTo(routes.BASIC);
       });
 
-      assertOnlyVisiblePage(Section.kNetwork);
+      assertIsOnlyActivePage(Section.kNetwork);
+      assertIsOnlyVisiblePage(Section.kNetwork);
     });
   });
 
   suite('From Subpage', () => {
-    setup(() => {
-      // Simulate current route is Bluetooth subpage
-      Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
-    });
+    test('to Root should show Network page', async () => {
+      // Simulate current route is Display subpage
+      Router.getInstance().navigateTo(routes.DISPLAY);
+      await flushTasks();
 
-    test('to Root should activate Network page', async () => {
       // Simulate navigating from subpage back to root
       await runAndWaitForContainerShown(() => {
         Router.getInstance().navigateTo(routes.BASIC);
       });
 
-      assertOnlyVisiblePage(Section.kNetwork);
+      assertIsOnlyActivePage(Section.kNetwork);
+      assertIsOnlyVisiblePage(Section.kNetwork);
     });
+
+    test(
+        'to different top-level Page via menu item should show that page',
+        async () => {
+          // Simulate current route is Display subpage (under Device page)
+          Router.getInstance().navigateTo(routes.DISPLAY);
+          await flushTasks();
+
+          // Simulate navigating from subpage to Bluetooth page
+          await runAndWaitForContainerShown(() => {
+            Router.getInstance().navigateTo(routes.BLUETOOTH);
+          });
+
+          assertIsOnlyActivePage(Section.kBluetooth);
+          assertIsOnlyVisiblePage(Section.kBluetooth);
+          assertPageIsFocused(Section.kBluetooth);
+        });
+
+    test(
+        'to different top-level Page via back button should show that page',
+        async () => {
+          // Simulate current route is Bluetooth page
+          Router.getInstance().navigateTo(routes.BLUETOOTH);
+          await flushTasks();
+
+          // Simulate navigating to Display subpage (under Device page)
+          Router.getInstance().navigateTo(routes.DISPLAY);
+          await flushTasks();
+
+          // Simulate navigating to Bluetooth page via back navigation
+          await runAndWaitForContainerShown(() => {
+            Router.getInstance().navigateToPreviousRoute();
+          });
+
+          assertIsOnlyActivePage(Section.kBluetooth);
+          assertIsOnlyVisiblePage(Section.kBluetooth);
+          assertPageIsFocused(Section.kBluetooth);
+        });
   });
 });
