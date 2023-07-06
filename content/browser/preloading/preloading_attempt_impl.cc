@@ -207,9 +207,9 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptMetrics(
 
   // Check if the preloading attempt is sampled in.
   // We prefer to use the UKM source ID of the triggering page for determining
-  // sampling, so that all preloading attempts for the same page are included
-  // (or not) together. If there is no source for the triggering page, fallback
-  // to the navigated-to page.
+  // sampling, so that all preloading attempts from a given (preloading_type,
+  // predictor) for the same page are included (or not) together. If there is
+  // no source for the triggering page, fallback to the navigated-to page.
   ukm::SourceId sampling_source = triggered_primary_page_source_id_;
   if (sampling_source == ukm::kInvalidSourceId) {
     sampling_source = navigated_page_source_id;
