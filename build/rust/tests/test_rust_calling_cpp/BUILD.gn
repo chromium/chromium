@@ -1,0 +1,21 @@
+import("//build/rust/rust_static_library.gni")
+
+static_library("cpp_library") {
+  sources = [
+    "cpp_library.cc",
+    "cpp_library.h",
+  ]
+}
+
+rust_static_library("rust_calling_cpp_rlib") {
+  sources = [ "rust_calling_cpp_rlib.rs" ]
+  crate_root = "rust_calling_cpp_rlib.rs"
+  cxx_bindings = [ "rust_calling_cpp_rlib.rs" ]
+  allow_unsafe = true
+  deps = [ ":cpp_library" ]
+}
+
+executable("test_rust_calling_cpp") {
+  deps = [ ":rust_calling_cpp_rlib" ]
+  sources = [ "main.cc" ]
+}

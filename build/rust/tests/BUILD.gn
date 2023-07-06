@@ -31,6 +31,7 @@ group("deps") {
       "test_rlib_crate:target1",
       "test_rlib_crate:target2",
       "test_rlib_crate:test_rlib_crate_associated_bin",
+      "test_rust_calling_cpp",
       "test_rust_exe",
       "test_rust_metadata:test_rust_metadata_cc_exe",
       "test_rust_metadata:test_rust_metadata_exe",
