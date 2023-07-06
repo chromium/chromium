@@ -4,8 +4,7 @@
 
 package org.chromium.content.browser;
 
-import androidx.annotation.VisibleForTesting;
-
+import org.chromium.base.ResettersForTesting;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
@@ -50,9 +49,9 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
 
     // TODO(https://crbug.com/1340593): Mocking |#fromWebContents()| may be a better option, when
     // available.
-    @VisibleForTesting
     public static void setInstanceForTesting(RenderCoordinatesImpl instance) {
         sInstanceForTesting = instance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
     // Internally-visible set of update methods (used by WebContentsImpl).

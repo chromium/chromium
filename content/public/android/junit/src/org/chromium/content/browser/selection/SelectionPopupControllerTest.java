@@ -33,7 +33,6 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.ViewGroup;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -194,13 +193,6 @@ public class SelectionPopupControllerTest {
 
         mController = SelectionPopupControllerImpl.createForTesting(mWebContents, mPopupController);
         when(mController.getGestureListenerManager()).thenReturn(mGestureStateListenerManager);
-    }
-
-    @After
-    public void tearDown() {
-        SelectionPopupControllerImpl.setDisableMagnifierForTesting(false);
-        SelectionPopupControllerImpl.setEnableTabletUiModeForTesting(false);
-        setDropdownMenuFeatureEnabled(false);
     }
 
     @Test

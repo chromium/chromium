@@ -25,6 +25,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
@@ -1251,9 +1252,9 @@ class BottomSheet extends FrameLayout
         return smallestExpandingState;
     }
 
-    @VisibleForTesting
     public static void setSmallScreenForTesting(boolean isSmallScreen) {
         sIsSmallScreenForTesting = isSmallScreen;
+        ResettersForTesting.register(() -> sIsSmallScreenForTesting = null);
     }
 
     public boolean isSmallScreen() {

@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
@@ -94,9 +95,9 @@ public class GestureListenerManagerImpl
 
     // TODO(https://crbug.com/1340593): Mocking |#fromWebContents()| may be a better option, when
     // available.
-    @VisibleForTesting
     public static void setInstanceForTesting(GestureListenerManagerImpl instance) {
         sInstanceForTesting = instance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
     public GestureListenerManagerImpl(WebContents webContents) {

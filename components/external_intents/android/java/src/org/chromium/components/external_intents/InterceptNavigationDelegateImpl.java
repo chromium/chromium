@@ -7,10 +7,10 @@ package org.chromium.components.external_intents;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
@@ -483,10 +483,10 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 ContextUtils.getApplicationContext().getString(resId, url.getSpec()));
     }
 
-    @VisibleForTesting
     public void setResultCallbackForTesting(
             Callback<Pair<GURL, OverrideUrlLoadingResult>> callback) {
         mResultCallbackForTesting = callback;
+        ResettersForTesting.register(() -> mResultCallbackForTesting = null);
     }
 
     @NativeMethods

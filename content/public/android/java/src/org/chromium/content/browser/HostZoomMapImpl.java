@@ -9,6 +9,7 @@ import static org.chromium.content_public.browser.HostZoomMap.getSystemFontScale
 import static org.chromium.content_public.browser.HostZoomMap.setSystemFontScale;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.CalledByNativeForTesting;
 import org.chromium.base.annotations.JNINamespace;
@@ -119,7 +120,9 @@ public class HostZoomMapImpl {
 
     @CalledByNativeForTesting
     public static void setSystemFontScaleForTesting(float scale) {
+        var oldValue = getSystemFontScale();
         setSystemFontScale(scale);
+        ResettersForTesting.register(() -> setSystemFontScale(oldValue));
     }
 
     @NativeMethods

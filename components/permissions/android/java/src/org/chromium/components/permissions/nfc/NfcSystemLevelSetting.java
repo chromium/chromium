@@ -12,9 +12,8 @@ import android.nfc.NfcAdapter;
 import android.os.Process;
 import android.provider.Settings;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
@@ -90,22 +89,15 @@ public class NfcSystemLevelSetting {
     }
 
     /** Disable/enable Android NFC setting for testing use only. */
-    @VisibleForTesting
     public static void setNfcSettingForTesting(Boolean enabled) {
         sSystemNfcSettingForTesting = enabled;
+        ResettersForTesting.register(() -> sSystemNfcSettingForTesting = null);
     }
 
     /** Disable/enable Android NFC support for testing use only. */
-    @VisibleForTesting
     public static void setNfcSupportForTesting(Boolean enabled) {
         sNfcSupportForTesting = enabled;
-    }
-
-    /** Reset Android NFC support for testing use only. */
-    @VisibleForTesting
-    public static void resetNfcForTesting() {
-        sSystemNfcSettingForTesting = null;
-        sNfcSupportForTesting = null;
+        ResettersForTesting.register(() -> sNfcSupportForTesting = null);
     }
 
     @NativeMethods

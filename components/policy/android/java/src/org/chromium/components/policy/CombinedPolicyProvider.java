@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -165,7 +166,9 @@ public class CombinedPolicyProvider {
     }
 
     static void setForTesting(CombinedPolicyProvider p) {
+        var oldValue = sInstance;
         sInstance = p;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     @NativeMethods

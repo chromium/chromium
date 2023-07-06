@@ -12,6 +12,7 @@ import android.view.animation.AnimationUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
@@ -168,6 +169,7 @@ public class PageZoomCoordinator {
     @VisibleForTesting
     public static void setShouldShowMenuItemForTesting(@Nullable Boolean isEnabled) {
         sShouldShowMenuItemForTesting = isEnabled;
+        ResettersForTesting.register(() -> sShouldShowMenuItemForTesting = null);
     }
 
     /**

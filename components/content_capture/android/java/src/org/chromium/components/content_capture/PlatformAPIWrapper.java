@@ -10,7 +10,8 @@ import android.view.autofill.AutofillId;
 import android.view.contentcapture.ContentCaptureSession;
 
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.ResettersForTesting;
 
 /**
  * The class to wrap ContentCapture platform APIs, catches the exception from platform, and
@@ -52,8 +53,9 @@ public abstract class PlatformAPIWrapper {
 
     public abstract void notifyFaviconUpdated(ContentCaptureSession session, String favicon);
 
-    @VisibleForTesting
     public static void setPlatformAPIWrapperImplForTesting(PlatformAPIWrapper impl) {
+        var oldValue = sImpl;
         sImpl = impl;
+        ResettersForTesting.register(() -> sImpl = oldValue);
     }
 }

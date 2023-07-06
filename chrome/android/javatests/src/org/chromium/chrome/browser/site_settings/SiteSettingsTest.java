@@ -221,7 +221,6 @@ public class SiteSettingsTest {
         });
         LocationUtils.setFactory(null);
         LocationProviderOverrider.setLocationProviderImpl(null);
-        NfcSystemLevelSetting.resetNfcForTesting();
         IncognitoUtils.setEnabledForTesting(null);
         ContextUtils.getAppSharedPreferences()
                 .edit()

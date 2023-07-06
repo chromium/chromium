@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -372,6 +373,7 @@ public class Shell extends LinearLayout {
 
     public void setOverayModeChangedCallbackForTesting(Callback<Boolean> callback) {
         mOverlayModeChangedCallbackForTesting = callback;
+        ResettersForTesting.register(() -> mOverlayModeChangedCallbackForTesting = null);
     }
 
     /**

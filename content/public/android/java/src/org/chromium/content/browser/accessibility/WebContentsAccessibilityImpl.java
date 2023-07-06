@@ -82,6 +82,7 @@ import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
@@ -498,9 +499,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 mNativeObj);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void setAccessibilityTrackerForTesting(AccessibilityActionAndEventTracker tracker) {
+        var oldValue = mTracker;
         mTracker = tracker;
+        ResettersForTesting.register(() -> mTracker = oldValue);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

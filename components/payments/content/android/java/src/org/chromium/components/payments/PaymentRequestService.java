@@ -8,12 +8,12 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArrayMap;
 
 import org.chromium.base.Callback;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.page_info.CertificateChainHelper;
@@ -666,9 +666,9 @@ public class PaymentRequestService
      * before PaymentRequest implementations are instantiated.
      * @param nativeObserverForTest The native-side observer.
      */
-    @VisibleForTesting
     public static void setNativeObserverForTest(NativeObserverForTest nativeObserverForTest) {
         sNativeObserverForTest = nativeObserverForTest;
+        ResettersForTesting.register(() -> sNativeObserverForTest = null);
     }
 
     /** @return Get the native=side observer, for testing purpose only. */
@@ -1071,9 +1071,10 @@ public class PaymentRequestService
         return !TextUtils.isEmpty(mDelegate.getTwaPackageName());
     }
 
-    @VisibleForTesting
     public static void setIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest() {
         sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest = true;
+        ResettersForTesting.register(
+                () -> sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest = false);
     }
 
     // Implements PaymentAppFactoryDelegate:
@@ -1214,7 +1215,6 @@ public class PaymentRequestService
         return result;
     }
 
-    @VisibleForTesting
     public static void resetShowingPaymentRequestForTest() {
         sShowingPaymentRequest = null;
     }
@@ -1616,10 +1616,10 @@ public class PaymentRequestService
     }
 
     /** Set an observer for the payment request service, cannot be null. */
-    @VisibleForTesting
     public static void setObserverForTest(PaymentRequestServiceObserverForTest observerForTest) {
         assert observerForTest != null;
         sObserverForTest = observerForTest;
+        ResettersForTesting.register(() -> sObserverForTest = null);
     }
 
     /** Invokes {@link PaymentRequestClient.onShippingAddressChange}. */
@@ -1873,14 +1873,12 @@ public class PaymentRequestService
         }
     }
 
-    @VisibleForTesting
     @Nullable
     public static SecurePaymentConfirmationAuthnController
     getSecurePaymentConfirmationAuthnUiForTesting() {
         return sShowingPaymentRequest == null ? null : sShowingPaymentRequest.mSpcAuthnUiController;
     }
 
-    @VisibleForTesting
     @Nullable
     public static SecurePaymentConfirmationNoMatchingCredController
     getSecurePaymentConfirmationNoMatchingCredUiForTesting() {

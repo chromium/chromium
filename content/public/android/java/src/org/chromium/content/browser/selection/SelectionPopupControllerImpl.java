@@ -34,6 +34,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -125,8 +126,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     // menus from the context.
     private static boolean sMustUseWebContentsContext;
 
-    // Used in tests to disable magnifier.
-    private static boolean sDisableMagnifier;
+    private static boolean sDisableMagnifierForTesting;
 
     // Used in tests to enable tablet UI mode.
     private static boolean sEnableTabletUiModeForTesting;
@@ -302,14 +302,14 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 && SelectionPopupControllerImplJni.get().isMagnifierWithSurfaceControlSupported();
     }
 
-    @VisibleForTesting
     public static void setDisableMagnifierForTesting(boolean disable) {
-        sDisableMagnifier = disable;
+        sDisableMagnifierForTesting = disable;
+        ResettersForTesting.register(() -> sDisableMagnifierForTesting = false);
     }
 
-    @VisibleForTesting
     public static void setEnableTabletUiModeForTesting(boolean disable) {
         sEnableTabletUiModeForTesting = disable;
+        ResettersForTesting.register(() -> sEnableTabletUiModeForTesting = false);
     }
 
     /**
@@ -1707,9 +1707,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         mMagnifierAnimator = magnifierAnimator;
     }
 
-    private MagnifierAnimator getMagnifierAnimator() {
+    private @Nullable MagnifierAnimator getMagnifierAnimator() {
         if (mMagnifierAnimator != null) return mMagnifierAnimator;
-        if (sDisableMagnifier || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return null;
+        if (sDisableMagnifierForTesting || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            return null;
+        }
         ReadbackViewCallback callback = () -> {
             if (sShouldGetReadbackViewFromWindowAndroid) {
                 return mWindowAndroid == null ? null : mWindowAndroid.getReadbackView();

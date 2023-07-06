@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskParameters;
@@ -27,7 +28,9 @@ public class BackgroundTaskJobService extends JobService {
 
     @VisibleForTesting
     void setClockForTesting(BackgroundTaskSchedulerJobService.Clock clock) {
+        var oldValue = mClock;
         mClock = clock;
+        ResettersForTesting.register(() -> mClock = oldValue);
     }
 
     private static class TaskFinishedCallbackJobService

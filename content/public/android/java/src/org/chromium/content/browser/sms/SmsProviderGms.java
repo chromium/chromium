@@ -11,6 +11,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -61,22 +62,22 @@ public class SmsProviderGms {
         Log.i(TAG, "construction successfull %s, %s", mVerificationReceiver, mUserConsentReceiver);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void setUserConsentReceiverForTesting(SmsUserConsentReceiver userConsentReceiver) {
+        var oldValue = mUserConsentReceiver;
         mUserConsentReceiver = userConsentReceiver;
+        ResettersForTesting.register(() -> mUserConsentReceiver = oldValue);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void setVerificationReceiverForTesting(SmsVerificationReceiver verificationReceiver) {
+        var oldValue = mVerificationReceiver;
         mVerificationReceiver = verificationReceiver;
+        ResettersForTesting.register(() -> mVerificationReceiver = oldValue);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public SmsUserConsentReceiver getUserConsentReceiverForTesting() {
         return mUserConsentReceiver;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public SmsVerificationReceiver getVerificationReceiverForTesting() {
         return mVerificationReceiver;
     }

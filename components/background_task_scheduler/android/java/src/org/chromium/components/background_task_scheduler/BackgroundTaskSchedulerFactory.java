@@ -6,6 +6,7 @@ package org.chromium.components.background_task_scheduler;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.components.background_task_scheduler.internal.BackgroundTaskSchedulerFactoryInternal;
 import org.chromium.components.background_task_scheduler.internal.BackgroundTaskSchedulerUma;
 
@@ -47,6 +48,7 @@ public final class BackgroundTaskSchedulerFactory {
     @VisibleForTesting
     public static void setUmaReporterForTesting(BackgroundTaskSchedulerExternalUma externalUma) {
         sExternalUmaForTesting = externalUma;
+        ResettersForTesting.register(() -> sExternalUmaForTesting = null);
     }
 
     // Do not instantiate.

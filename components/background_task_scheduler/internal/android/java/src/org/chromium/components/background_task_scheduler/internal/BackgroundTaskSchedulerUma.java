@@ -10,6 +10,7 @@ import android.text.format.DateUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
@@ -102,9 +103,10 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
         return sInstance;
     }
 
-    @VisibleForTesting
     public static void setInstanceForTesting(BackgroundTaskSchedulerUma instance) {
+        var oldValue = sInstance;
         sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     /** Reports metrics for task scheduling and whether it was successful. */

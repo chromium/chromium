@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -94,12 +93,6 @@ public class SingleActionMessageTest {
         mDismissCallback = new CallbackHelper();
         mPrimaryActionCallback = new CallbackHelper();
         mSecondaryActionCallback = new CallbackHelper();
-        FeatureList.setTestFeatures(Collections.singletonMap(
-                MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false));
-    }
-
-    @After
-    public void tearDownTest() {
         FeatureList.setTestFeatures(Collections.singletonMap(
                 MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false));
     }
