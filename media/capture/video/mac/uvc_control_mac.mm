@@ -7,6 +7,7 @@
 #include <IOKit/IOCFPlugIn.h>
 
 #include "base/apple/bridging.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
@@ -146,27 +147,32 @@ static constexpr int kCtZoomAbsoluteControlBitIndex = 9;
 static constexpr int kCtPanTiltAbsoluteControlBitIndex = 11;
 static constexpr int kCtFocusAutoControlBitIndex = 17;
 
-static const base::flat_map<int, size_t> kProcessingUnitControlBitIndexes = {
-    {uvc::kPuBrightnessAbsoluteControl, kPuBrightnessAbsoluteControlBitIndex},
-    {uvc::kPuContrastAbsoluteControl, kPuContrastAbsoluteControlBitIndex},
-    {uvc::kPuSaturationAbsoluteControl, kPuSaturationAbsoluteControlBitIndex},
-    {uvc::kPuSharpnessAbsoluteControl, kPuSharpnessAbsoluteControlBitIndex},
-    {uvc::kPuWhiteBalanceTemperatureControl,
-     kPuWhiteBalanceTemperatureControlBitIndex},
-    {uvc::kPuPowerLineFrequencyControl, kPuPowerLineFrequencyControlBitIndex},
-    {uvc::kPuWhiteBalanceTemperatureAutoControl,
-     kPuWhiteBalanceTemperatureAutoControlBitIndex},
-};
+static constexpr auto kProcessingUnitControlBitIndexes =
+    base::MakeFixedFlatMap<int, size_t>(
+        {{uvc::kPuBrightnessAbsoluteControl,
+          kPuBrightnessAbsoluteControlBitIndex},
+         {uvc::kPuContrastAbsoluteControl, kPuContrastAbsoluteControlBitIndex},
+         {uvc::kPuSaturationAbsoluteControl,
+          kPuSaturationAbsoluteControlBitIndex},
+         {uvc::kPuSharpnessAbsoluteControl,
+          kPuSharpnessAbsoluteControlBitIndex},
+         {uvc::kPuWhiteBalanceTemperatureControl,
+          kPuWhiteBalanceTemperatureControlBitIndex},
+         {uvc::kPuPowerLineFrequencyControl,
+          kPuPowerLineFrequencyControlBitIndex},
+         {uvc::kPuWhiteBalanceTemperatureAutoControl,
+          kPuWhiteBalanceTemperatureAutoControlBitIndex}});
 
-static const base::flat_map<int, size_t> kCameraTerminalControlBitIndexes = {
-    {uvc::kCtAutoExposureModeControl, kCtAutoExposureModeControlBitIndex},
-    {uvc::kCtExposureTimeAbsoluteControl,
-     kCtExposureTimeAbsoluteControlBitIndex},
-    {uvc::kCtFocusAbsoluteControl, kCtFocusAbsoluteControlBitIndex},
-    {uvc::kCtZoomAbsoluteControl, kCtZoomAbsoluteControlBitIndex},
-    {uvc::kCtPanTiltAbsoluteControl, kCtPanTiltAbsoluteControlBitIndex},
-    {uvc::kCtFocusAutoControl, kCtFocusAutoControlBitIndex},
-};
+static constexpr auto kCameraTerminalControlBitIndexes =
+    base::MakeFixedFlatMap<int, size_t>({
+        {uvc::kCtAutoExposureModeControl, kCtAutoExposureModeControlBitIndex},
+        {uvc::kCtExposureTimeAbsoluteControl,
+         kCtExposureTimeAbsoluteControlBitIndex},
+        {uvc::kCtFocusAbsoluteControl, kCtFocusAbsoluteControlBitIndex},
+        {uvc::kCtZoomAbsoluteControl, kCtZoomAbsoluteControlBitIndex},
+        {uvc::kCtPanTiltAbsoluteControl, kCtPanTiltAbsoluteControlBitIndex},
+        {uvc::kCtFocusAutoControl, kCtFocusAutoControlBitIndex},
+    });
 
 static bool FindDeviceWithVendorAndProductIds(int vendor_id,
                                               int product_id,
@@ -657,13 +663,13 @@ bool UvcControl::IsControlAvailable(int control_selector) const {
   }
   size_t bitIndex;
   if (descriptor_subtype_ == uvc::kVcProcessingUnit) {
-    auto it = kProcessingUnitControlBitIndexes.find(control_selector);
+    const auto* it = kProcessingUnitControlBitIndexes.find(control_selector);
     if (it == kProcessingUnitControlBitIndexes.end()) {
       return false;
     }
     bitIndex = it->second;
   } else if (descriptor_subtype_ == uvc::kVcInputTerminal) {
-    auto it = kCameraTerminalControlBitIndexes.find(control_selector);
+    const auto* it = kCameraTerminalControlBitIndexes.find(control_selector);
     if (it == kCameraTerminalControlBitIndexes.end()) {
       return false;
     }
