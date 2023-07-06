@@ -21,6 +21,7 @@ test("ash_components_unittests") {
     "//ash/components/arc/session:unit_tests",
     "//base/test:test_support",
     "//chromeos/ash/components:test_support",
+    "//chromeos/ash/components/chaps_util:unit_tests",
     "//mojo/core/embedder",
   ]
 }

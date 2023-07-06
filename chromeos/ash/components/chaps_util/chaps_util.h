@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_UTIL_H_
-#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_UTIL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_CHAPS_UTIL_H_
+#define CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_CHAPS_UTIL_H_
 
 #include <pk11pub.h>
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "crypto/scoped_nss_types.h"
 
 namespace chromeos {
-namespace platform_keys {
 
 // Utility to perform operations on the chapsd daemon in a way that is
 // compatible with NSS.
-class ChapsUtil {
+class COMPONENT_EXPORT(CHAPS_UTIL) ChapsUtil {
  public:
   // Creates a ChapsUtil instance.
   static std::unique_ptr<ChapsUtil> Create();
@@ -56,7 +56,6 @@ class ChapsUtil {
   static void SetFactoryForTesting(const FactoryCallback& factory);
 };
 
-}  // namespace platform_keys
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_UTIL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_CHAPS_UTIL_H_

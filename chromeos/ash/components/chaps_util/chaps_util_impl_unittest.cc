@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/platform_keys/chaps_util_impl.h"
+#include "chromeos/ash/components/chaps_util/chaps_util_impl.h"
 
 #include "base/base64.h"
 #include "base/files/file_util.h"
@@ -15,8 +15,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/chromeos/platform_keys/chaps_slot_session.h"
-#include "chrome/browser/chromeos/platform_keys/pkcs12_reader.h"
+#include "chromeos/ash/components/chaps_util/chaps_slot_session.h"
+#include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 #include "crypto/nss_key_util.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -27,7 +27,6 @@
 #include "third_party/boringssl/src/include/openssl/bn.h"
 
 namespace chromeos {
-namespace platform_keys {
 namespace {
 
 const size_t kKeySizeBits = 2048;
@@ -980,5 +979,4 @@ TEST_F(ChapsUtilPKCS12ImportTest, CertObjectCreationFailedPKCS12ImportFailed) {
 }
 
 }  // namespace
-}  // namespace platform_keys
 }  // namespace chromeos

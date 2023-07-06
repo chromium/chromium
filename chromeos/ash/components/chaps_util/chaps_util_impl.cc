@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/platform_keys/chaps_util_impl.h"
+#include "chromeos/ash/components/chaps_util/chaps_util_impl.h"
 
 #include <dlfcn.h>
 #include <keyhi.h>
@@ -19,8 +19,8 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "chrome/browser/chromeos/platform_keys/chaps_slot_session.h"
-#include "chrome/browser/chromeos/platform_keys/pkcs12_reader.h"
+#include "chromeos/ash/components/chaps_util/chaps_slot_session.h"
+#include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 #include "crypto/chaps_support.h"
 #include "crypto/scoped_nss_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,7 +28,6 @@
 #include "third_party/boringssl/src/include/openssl/pkcs8.h"
 
 namespace chromeos {
-namespace platform_keys {
 
 namespace {
 
@@ -544,5 +543,4 @@ std::unique_ptr<ChapsSlotSession> ChapsUtilImpl::GetChapsSlotSessionForSlot(
       PK11_GetSlotID(slot));
 }
 
-}  // namespace platform_keys
 }  // namespace chromeos

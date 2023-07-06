@@ -2,25 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_UTIL_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_UTIL_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_CHAPS_UTIL_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_CHAPS_UTIL_IMPL_H_
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/chromeos/platform_keys/chaps_slot_session.h"
-#include "chrome/browser/chromeos/platform_keys/chaps_util.h"
-#include "chrome/browser/chromeos/platform_keys/pkcs12_reader.h"
+#include "chromeos/ash/components/chaps_util/chaps_slot_session.h"
+#include "chromeos/ash/components/chaps_util/chaps_util.h"
+#include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 #include "crypto/scoped_nss_types.h"
 
 namespace chromeos {
-namespace platform_keys {
 
 // Default implementation of the ChapsUtil class. Communicates with the chapsd
 // daemon using ChapsSlotSession. Should be used on a worker thread.
-class ChapsUtilImpl : public ChapsUtil {
+// Exported for unit tests only.
+class COMPONENT_EXPORT(CHAPS_UTIL) ChapsUtilImpl : public ChapsUtil {
  public:
-  ChapsUtilImpl(
+  explicit ChapsUtilImpl(
       std::unique_ptr<ChapsSlotSessionFactory> chaps_slot_session_factory);
   ~ChapsUtilImpl() override;
 
@@ -59,7 +60,6 @@ class ChapsUtilImpl : public ChapsUtil {
   bool is_chaps_provided_slot_for_testing_;
 };
 
-}  // namespace platform_keys
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_UTIL_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_CHAPS_UTIL_IMPL_H_

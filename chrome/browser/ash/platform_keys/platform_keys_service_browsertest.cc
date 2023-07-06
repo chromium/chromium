@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/chaps_util/test_util.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -516,7 +517,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
 
   // Arrange: Configure the ChapsUtilFactory singleton instance to return fake
   // ChapsUtil instances.
-  test_util::ScopedChapsUtilOverride scoped_chaps_util_override;
+  chromeos::ScopedChapsUtilOverride scoped_chaps_util_override;
 
   // Act: Generate the key pair.
   const TokenId token_id = GetParam().token_id;

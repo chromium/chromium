@@ -4,12 +4,12 @@
 
 #include <vector>
 
-#include "chrome/browser/chromeos/platform_keys/pkcs12_reader.h"
+#include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/x509.h"
 
-namespace chromeos::platform_keys {
+namespace chromeos {
 namespace {
 
 const char kPkcs12FilePassword[] = "12345";
@@ -339,4 +339,4 @@ TEST_F(Pkcs12ReaderTest, GetLabel) {
 }
 
 }  // namespace
-}  // namespace chromeos::platform_keys
+}  // namespace chromeos

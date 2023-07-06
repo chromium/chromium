@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_PKCS12_READER_H_
-#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_PKCS12_READER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_PKCS12_READER_H_
+#define CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_PKCS12_READER_H_
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
-#include "chrome/browser/chromeos/platform_keys/chaps_slot_session.h"
+#include "chromeos/ash/components/chaps_util/chaps_slot_session.h"
 #include "third_party/boringssl/src/include/openssl/pkcs7.h"
 
-namespace chromeos::platform_keys {
+namespace chromeos {
 
 enum class Pkcs12ReaderStatusCode {
   kSuccess = 0,
@@ -36,7 +37,7 @@ enum class Pkcs12ReaderStatusCode {
 
 // Class helper for operations with X509 certificates data which are required
 // for storing keys and certificates in Chaps.
-class Pkcs12Reader {
+class COMPONENT_EXPORT(CHAPS_UTIL) Pkcs12Reader {
  public:
   Pkcs12Reader() = default;
 
@@ -85,6 +86,6 @@ class Pkcs12Reader {
   virtual std::vector<uint8_t> BignumToBytes(const BIGNUM* bignum) const;
 };
 
-}  // namespace chromeos::platform_keys
+}  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_PKCS12_READER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_PKCS12_READER_H_

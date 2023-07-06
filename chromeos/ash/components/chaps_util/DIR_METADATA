@@ -1,0 +1,7 @@
+buganizer {
+  component_id: 1243853 # ChromeOS > Software > Commercial (Enterprise) > Certificate Management
+}
+buganizer_public {
+    component_id: 1243849 # ChromeOS > Public Tracker > Enterprise & Edu > Certificate Management
+}
+team_email: "chromeos-commercial-networking@google.com"

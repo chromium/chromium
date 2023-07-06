@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 #include <vector>
 
-#include "chrome/browser/chromeos/platform_keys/pkcs12_reader.h"
+#include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/pkcs8.h"
 
-namespace chromeos::platform_keys {
+namespace chromeos {
 
 std::vector<uint8_t> Pkcs12Reader::BignumToBytes(const BIGNUM* bignum) const {
   std::vector<uint8_t> result(BN_num_bytes(bignum));
@@ -143,4 +143,4 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetLabel(X509* cert,
   return Pkcs12ReaderStatusCode::kSuccess;
 }
 
-}  // namespace chromeos::platform_keys
+}  // namespace chromeos

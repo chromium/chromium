@@ -36,7 +36,7 @@
 #include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/platform_keys/chaps_util.h"
+#include "chromeos/ash/components/chaps_util/chaps_util.h"
 #endif
 
 // General pattern for implementing KcerToken methods:
@@ -127,7 +127,7 @@ void GenerateRsaKeyOnWorkerThread(Token token,
         &private_key);
   } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    auto chaps_util = chromeos::platform_keys::ChapsUtil::Create();
+    auto chaps_util = chromeos::ChapsUtil::Create();
     key_gen_success = chaps_util->GenerateSoftwareBackedRSAKey(
         slot.get(), modulus_length_bits, &public_key, &private_key);
 #else

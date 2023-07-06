@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/platform_keys/chaps_util.h"
+#include "chromeos/ash/components/chaps_util/chaps_util.h"
 
 #include <ostream>
 
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/chromeos/platform_keys/chaps_slot_session.h"
-#include "chrome/browser/chromeos/platform_keys/chaps_util_impl.h"
+#include "chromeos/ash/components/chaps_util/chaps_slot_session.h"
+#include "chromeos/ash/components/chaps_util/chaps_util_impl.h"
 
 namespace chromeos {
-namespace platform_keys {
 
 namespace {
 
@@ -40,5 +39,4 @@ void ChapsUtil::SetFactoryForTesting(const FactoryCallback& factory) {
   GetFactoryCallback() = factory;
 }
 
-}  // namespace platform_keys
 }  // namespace chromeos

@@ -1,0 +1,71 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+assert(is_chromeos_ash)
+
+component("chaps_util") {
+  defines = [ "IS_CHAPS_UTIL_IMPL" ]
+
+  sources = [
+    "chaps_slot_session.cc",
+    "chaps_slot_session.h",
+    "chaps_util.cc",
+    "chaps_util.h",
+    "chaps_util_impl.cc",
+    "chaps_util_impl.h",
+    "pkcs12_reader.cc",
+    "pkcs12_reader.h",
+  ]
+
+  deps = [
+    "//base",
+    "//crypto",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/boringssl",
+  ]
+
+  configs += [ "//build/config/linux/nss" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_util.cc",
+    "test_util.h",
+  ]
+
+  deps = [
+    ":chaps_util",
+    "//base",
+    "//crypto",
+    "//crypto:test_support",
+  ]
+
+  configs += [ "//build/config/linux/nss" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "chaps_util_impl_unittest.cc",
+    "pkcs12_reader_unittest.cc",
+  ]
+
+  deps = [
+    ":chaps_util",
+    "//base",
+    "//crypto",
+    "//crypto:test_support",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/boringssl",
+  ]
+
+  configs += [ "//build/config/linux/nss" ]
+}
