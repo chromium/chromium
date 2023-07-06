@@ -92,6 +92,8 @@ class FloatingWorkspaceService : public KeyedService,
 
   void MaybeCloseNotification();
 
+  std::vector<const ash::DeskTemplate*> GetFloatingWorkspaceTemplateEntries();
+
  protected:
   std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
   // Indicate if it is a testing class.

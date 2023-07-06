@@ -899,4 +899,119 @@ TEST_F(FloatingWorkspaceServiceTest,
   scoped_feature_list().Reset();
 }
 
+TEST_F(FloatingWorkspaceServiceTest, PopulateFloatingWorkspaceTemplate) {
+  scoped_feature_list().InitWithFeatures(
+      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
+       features::kDeskTemplateSync},
+      {});
+
+  const std::string template_name = "floating_workspace_template";
+  base::RunLoop loop;
+  fake_desk_sync_service()->GetDeskModel()->AddOrUpdateEntry(
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, base::Time::Now()),
+      base::BindLambdaForTesting(
+          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
+                      status);
+            loop.Quit();
+          }));
+  loop.Run();
+  std::unique_ptr<MockSyncService> mock_sync_service =
+      std::make_unique<MockSyncService>();
+
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), fake_desk_sync_service(), mock_sync_service.get(),
+      floating_workspace_util::FloatingWorkspaceVersion::
+          kFloatingWorkspaceV2Enabled);
+
+  mock_sync_service->SetDownloadStatus(
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_floating_workspace_service_v2.OnStateChanged(mock_sync_service.get());
+  EXPECT_EQ(
+      test_floating_workspace_service_v2.GetFloatingWorkspaceTemplateEntries()
+          .size(),
+      1u);
+  scoped_feature_list().Reset();
+}
+
+TEST_F(FloatingWorkspaceServiceTest,
+       PopulateFloatingWorkspaceTemplateWithUpdates) {
+  scoped_feature_list().InitWithFeatures(
+      {features::kFloatingWorkspaceV2, features::kDesksTemplates,
+       features::kDeskTemplateSync},
+      {});
+
+  std::unique_ptr<ash::DeskTemplate> template_1 =
+      MakeTestFloatingWorkspaceDeskTemplate("Template 1", base::Time::Now());
+  base::Uuid template_1_uuid = template_1->uuid();
+  base::RunLoop loop;
+  fake_desk_sync_service()->GetDeskModel()->AddOrUpdateEntry(
+      std::move(template_1),
+      base::BindLambdaForTesting(
+          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
+                      status);
+            loop.Quit();
+          }));
+  loop.Run();
+  std::unique_ptr<MockSyncService> mock_sync_service =
+      std::make_unique<MockSyncService>();
+
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), fake_desk_sync_service(), mock_sync_service.get(),
+      floating_workspace_util::FloatingWorkspaceVersion::
+          kFloatingWorkspaceV2Enabled);
+
+  mock_sync_service->SetDownloadStatus(
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_floating_workspace_service_v2.OnStateChanged(mock_sync_service.get());
+  EXPECT_EQ(
+      test_floating_workspace_service_v2.GetFloatingWorkspaceTemplateEntries()
+          .size(),
+      1u);
+
+  std::unique_ptr<ash::DeskTemplate> template_2 =
+      MakeTestFloatingWorkspaceDeskTemplate("Template 2", base::Time::Now());
+  base::Uuid template_2_uuid = template_2->uuid();
+  base::RunLoop loop2;
+  fake_desk_sync_service()->GetDeskModel()->AddOrUpdateEntry(
+      std::move(template_2),
+      base::BindLambdaForTesting(
+          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
+                      status);
+            loop2.Quit();
+          }));
+  loop2.Run();
+  base::RunLoop loop3;
+  fake_desk_sync_service()->GetDeskModel()->DeleteEntry(
+      template_1_uuid,
+      base::BindLambdaForTesting(
+          [&](desks_storage::DeskModel::DeleteEntryStatus status) {
+            EXPECT_EQ(desks_storage::DeskModel::DeleteEntryStatus::kOk, status);
+            loop3.Quit();
+          }));
+  loop3.Run();
+
+  mock_sync_service->SetDownloadStatus(
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_floating_workspace_service_v2.OnStateChanged(mock_sync_service.get());
+  EXPECT_EQ(
+      test_floating_workspace_service_v2.GetFloatingWorkspaceTemplateEntries()
+          .size(),
+      1u);
+  mock_sync_service->SetDownloadStatus(
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_floating_workspace_service_v2.OnStateChanged(mock_sync_service.get());
+  EXPECT_EQ(test_floating_workspace_service_v2
+                .GetFloatingWorkspaceTemplateEntries()[0]
+                ->uuid(),
+            template_2_uuid);
+
+  scoped_feature_list().Reset();
+}
+
 }  // namespace ash::floating_workspace

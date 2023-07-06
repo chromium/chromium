@@ -65,9 +65,6 @@ class FakeDeskSyncBridge : public DeskModel {
   // `desk_template_entries_` is keyed by UUIDs.
   DeskEntries desk_template_entries_;
 
-  // `floating_workspace_templates_uuid_` is keyed by cache_guids.
-  base::flat_map<std::string, base::Uuid> floating_workspace_templates_uuid_;
-
   std::string cache_guid_;
 
   base::WeakPtrFactory<FakeDeskSyncBridge> weak_ptr_factory_{this};

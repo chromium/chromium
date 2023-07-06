@@ -109,10 +109,6 @@ void FakeDeskSyncBridge::AddOrUpdateEntry(
   entry->set_template_name(
       base::CollapseWhitespace(new_entry->template_name(), true));
 
-  if (entry->type() == ash::DeskTemplateType::kFloatingWorkspace) {
-    floating_workspace_templates_uuid_[cache_guid_] = uuid;
-  }
-
   desk_template_entries_[uuid] = std::move(entry);
   added_or_updated.push_back(GetUserEntryByUUID(uuid));
   NotifyRemoteDeskTemplateAddedOrUpdated(added_or_updated);
@@ -135,18 +131,11 @@ void FakeDeskSyncBridge::DeleteEntry(const base::Uuid& uuid,
   }
 
   desk_template_entries_.erase(uuid);
-  for (const auto& [cache_guid, fws_uuid] :
-       floating_workspace_templates_uuid_) {
-    if (fws_uuid == uuid) {
-      floating_workspace_templates_uuid_.erase(cache_guid);
-    }
-  }
   std::move(callback).Run(DeleteEntryStatus::kOk);
 }
 
 void FakeDeskSyncBridge::DeleteAllEntries(DeleteEntryCallback callback) {
   desk_template_entries_.clear();
-  floating_workspace_templates_uuid_.clear();
   std::move(callback).Run(DeleteEntryStatus::kOk);
 }
 

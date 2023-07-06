@@ -348,25 +348,38 @@ void FloatingWorkspaceService::StopCaptureAndUploadActiveDesk() {
 
 const DeskTemplate*
 FloatingWorkspaceService::GetLatestFloatingWorkspaceTemplate() {
-  desks_storage::DeskModel::GetAllEntriesResult result =
-      desk_sync_service_->GetDeskModel()->GetAllEntries();
-  if (result.status != desks_storage::DeskModel::GetAllEntriesStatus::kOk) {
-    return nullptr;
-  }
   const DeskTemplate* floating_workspace_template = nullptr;
-  for (const DeskTemplate* desk_template : result.entries) {
-    if (desk_template &&
-        desk_template->type() == DeskTemplateType::kFloatingWorkspace) {
-      // Set the to be floating workspace template to the latest floating
-      // workspace template found.
-      if (!floating_workspace_template ||
-          floating_workspace_template->GetLastUpdatedTime() <
-              desk_template->GetLastUpdatedTime()) {
-        floating_workspace_template = desk_template;
-      }
+  std::vector<const ash::DeskTemplate*> fws_entries =
+      GetFloatingWorkspaceTemplateEntries();
+
+  for (const DeskTemplate* entry : fws_entries) {
+    if (!entry) {
+      continue;
+    }
+    if (!floating_workspace_template ||
+        floating_workspace_template->GetLastUpdatedTime() <
+            entry->GetLastUpdatedTime()) {
+      floating_workspace_template = entry;
     }
   }
   return floating_workspace_template;
+}
+
+std::vector<const ash::DeskTemplate*>
+FloatingWorkspaceService::GetFloatingWorkspaceTemplateEntries() {
+  std::vector<const ash::DeskTemplate*> entries;
+  desks_storage::DeskModel::GetAllEntriesResult result =
+      desk_sync_service_->GetDeskModel()->GetAllEntries();
+  if (result.status != desks_storage::DeskModel::GetAllEntriesStatus::kOk) {
+    return entries;
+  }
+  for (const DeskTemplate* desk_template : result.entries) {
+    if (desk_template &&
+        desk_template->type() == DeskTemplateType::kFloatingWorkspace) {
+      entries.push_back(desk_template);
+    }
+  }
+  return entries;
 }
 
 void FloatingWorkspaceService::CaptureAndUploadActiveDesk() {
@@ -567,15 +580,14 @@ void FloatingWorkspaceService::OnTemplateUploaded(
 absl::optional<base::Uuid>
 FloatingWorkspaceService::GetFloatingWorkspaceUuidForCurrentDevice() {
   std::string cache_guid = desk_sync_service_->GetDeskModel()->GetCacheGuid();
-  std::vector<const DeskTemplate*> entries =
-      desk_sync_service_->GetDeskModel()->GetAllEntries().entries;
-  auto iter = base::ranges::find_if(entries, [cache_guid](const auto& entry) {
-    return entry->client_cache_guid() == cache_guid;
-  });
-  if (iter == entries.end()) {
-    return absl::nullopt;
+  std::vector<const ash::DeskTemplate*> fws_entries =
+      GetFloatingWorkspaceTemplateEntries();
+  for (const DeskTemplate* entry : fws_entries) {
+    if (entry && entry->client_cache_guid() == cache_guid) {
+      return entry->uuid();
+    }
   }
-  return (*iter)->uuid();
+  return absl::nullopt;
 }
 
 void FloatingWorkspaceService::HandleSyncEror() {

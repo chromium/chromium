@@ -102,12 +102,8 @@ std::unique_ptr<syncer::EntityData> CopyToEntityData(
 // parameters are first for binding purposes.
 absl::optional<syncer::ModelError> ParseDeskTemplatesOnBackendSequence(
     base::flat_map<base::Uuid, std::unique_ptr<DeskTemplate>>* desk_templates,
-    base::flat_map<std::string, base::Uuid>*
-        floating_workspace_cache_guid_to_uuid,
     std::unique_ptr<ModelTypeStore::RecordList> record_list) {
   DCHECK(desk_templates);
-  DCHECK(floating_workspace_cache_guid_to_uuid);
-  DCHECK(floating_workspace_cache_guid_to_uuid->empty());
   DCHECK(desk_templates->empty());
   DCHECK(record_list);
 
@@ -128,13 +124,6 @@ absl::optional<syncer::ModelError> ParseDeskTemplatesOnBackendSequence(
 
       if (!entry)
         continue;
-      if (specifics->has_client_cache_guid() &&
-          entry->type() == ash::DeskTemplateType::kFloatingWorkspace) {
-        (*floating_workspace_cache_guid_to_uuid)[specifics
-                                                     ->client_cache_guid()] =
-            uuid;
-      }
-
       (*desk_templates)[uuid] = std::move(entry);
     } else {
       return syncer::ModelError(
@@ -575,27 +564,17 @@ void DeskSyncBridge::OnStoreCreated(
 
   auto stored_desk_templates = std::make_unique<DeskEntries>();
   DeskEntries* stored_desk_templates_copy = stored_desk_templates.get();
-  auto floating_workspace_cache_guid_to_uuid =
-      std::make_unique<base::flat_map<std::string, base::Uuid>>();
-  base::flat_map<std::string, base::Uuid>*
-      floating_workspace_cache_guid_to_uuid_copy =
-          floating_workspace_cache_guid_to_uuid.get();
   store_ = std::move(store);
   store_->ReadAllDataAndPreprocess(
-      base::BindOnce(
-          &ParseDeskTemplatesOnBackendSequence,
-          base::Unretained(stored_desk_templates_copy),
-          base::Unretained(floating_workspace_cache_guid_to_uuid_copy)),
+      base::BindOnce(&ParseDeskTemplatesOnBackendSequence,
+                     base::Unretained(stored_desk_templates_copy)),
       base::BindOnce(&DeskSyncBridge::OnReadAllData,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(stored_desk_templates),
-                     std::move(floating_workspace_cache_guid_to_uuid)));
+                     std::move(stored_desk_templates)));
 }
 
 void DeskSyncBridge::OnReadAllData(
     std::unique_ptr<DeskEntries> stored_desk_templates,
-    std::unique_ptr<base::flat_map<std::string, base::Uuid>>
-        floating_workspace_cache_guid_to_uuid,
     const absl::optional<syncer::ModelError>& error) {
   DCHECK(stored_desk_templates);
 
@@ -605,8 +584,6 @@ void DeskSyncBridge::OnReadAllData(
   }
 
   desk_template_entries_ = std::move(*stored_desk_templates);
-  floating_workspace_templates_uuid_ =
-      std::move(*floating_workspace_cache_guid_to_uuid);
   store_->ReadAllMetadata(base::BindOnce(&DeskSyncBridge::OnReadAllMetadata,
                                          weak_ptr_factory_.GetWeakPtr()));
 }
