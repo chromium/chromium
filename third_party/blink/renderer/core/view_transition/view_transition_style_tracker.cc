@@ -407,6 +407,11 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     element_data->captured_rect_in_layout_space =
         transition_state_element.captured_rect_in_layout_space;
 
+    CHECK_LE(transition_state_element.container_writing_mode,
+             static_cast<uint8_t>(WritingMode::kMaxWritingMode));
+    element_data->container_writing_mode = static_cast<WritingMode>(
+        transition_state_element.container_writing_mode);
+
     element_data->CacheGeometryState();
 
     element_data_map_.insert(name, std::move(element_data));
@@ -1576,15 +1581,14 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
     element.is_root = false;
     element.captured_rect_in_layout_space =
         element_data->captured_rect_in_layout_space;
-
-    // TODO(khushalsagar): Also writing mode.
+    element.container_writing_mode =
+        static_cast<uint8_t>(element_data->container_writing_mode);
 
     DCHECK(!old_root_data_ || element.paint_order > 0);
   }
 
   if (old_root_data_) {
     auto& element = transition_state.elements.emplace_back();
-    // TODO(khushalsagar): What about non utf8 strings?
     element.tag_name = old_root_data_->names[0].Utf8();
     element.border_box_size_in_css_space = gfx::SizeF(GetSnapshotRootSize());
     element.snapshot_id = old_root_data_->snapshot_id;

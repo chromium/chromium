@@ -25,6 +25,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
   int32_t paint_order = 0;
   bool is_root = false;
   absl::optional<gfx::RectF> captured_rect_in_layout_space;
+  uint8_t container_writing_mode = 0;
 };
 
 struct BLINK_COMMON_EXPORT ViewTransitionState {

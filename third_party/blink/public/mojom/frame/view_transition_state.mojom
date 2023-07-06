@@ -18,8 +18,7 @@ struct ViewTransitionElement {
   int32 paint_order;
   bool is_root;
   gfx.mojom.RectF? captured_rect_in_layout_space;
-
-  // TODO(khushalsagar): Add writing mode.
+  uint8 container_writing_mode;
 };
 
 struct ViewTransitionState {

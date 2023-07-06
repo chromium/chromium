@@ -55,6 +55,10 @@ struct BLINK_COMMON_EXPORT
     return r.captured_rect_in_layout_space;
   }
 
+  static uint8_t container_writing_mode(const blink::ViewTransitionElement& r) {
+    return r.container_writing_mode;
+  }
+
   static bool Read(blink::mojom::ViewTransitionElementDataView r,
                    blink::ViewTransitionElement* out);
 };
