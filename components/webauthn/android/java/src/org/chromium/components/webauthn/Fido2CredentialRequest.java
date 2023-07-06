@@ -79,6 +79,10 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             ComponentName.createRelative("com.google.android.gms",
                     ".auth.api.credentials.credman.service.PasswordAndPasskeyService");
     private static final String CHANNEL_KEY = "com.android.chrome.CHANNEL";
+    private static final String PASSWORDS_ONLY_FOR_THE_CHANNEL =
+            "com.android.chrome.PASSWORDS_ONLY_FOR_THE_CHANNEL";
+    private static final String PASSWORDS_WITH_NO_USERNAME_INCLUDED =
+            "com.android.chrome.PASSWORDS_WITH_NO_USERNAME_INCLUDED";
     private static final String TYPE_PASSKEY = CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL";
     static final String NON_EMPTY_ALLOWLIST_ERROR_MSG =
             "Authentication request must have non-empty allowList";
@@ -1439,6 +1443,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         Object passwordCredentialOption;
         Bundle passwordOptionBundle = new Bundle();
         passwordOptionBundle.putString(CHANNEL_KEY, getChannel());
+        passwordOptionBundle.putBoolean(PASSWORDS_ONLY_FOR_THE_CHANNEL, true);
+        passwordOptionBundle.putBoolean(PASSWORDS_WITH_NO_USERNAME_INCLUDED, true);
 
         final Class<?> credentialOptionBuilderClass = credManCredentialOptionBuilderClass();
         final Object credentialOptionBuilder =

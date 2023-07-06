@@ -657,6 +657,9 @@ public class Fido2CredentialRequestRobolectricTest {
                 .isEqualTo("androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
         assertThat(credentialOptions.get(1).getType())
                 .isEqualTo("android.credentials.TYPE_PASSWORD_CREDENTIAL");
+        assertThat(credentialOptions.get(1).getCandidateQueryData().containsKey(
+                           "com.android.chrome.PASSWORDS_ONLY_FOR_THE_CHANNEL"))
+                .isTrue();
 
         verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
         // A password is selected, the callback will not be signed.
