@@ -73,7 +73,7 @@ class ActiveDisplayMonitorX11::Core : public x11::EventObserver {
 
   ActiveDisplayMonitor::Callback callback_;
 
-  raw_ptr<x11::Connection> connection_{};
+  raw_ptr<x11::Connection> connection_ = nullptr;
 
   std::unique_ptr<x11::XScopedEventSelector> root_window_event_selector_;
 

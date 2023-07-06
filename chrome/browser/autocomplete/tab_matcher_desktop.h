@@ -31,7 +31,7 @@ class TabMatcherDesktop : public TabMatcher {
       const bool normalize_search_terms) const;
 
   raw_ptr<const TemplateURLService> template_url_service_;
-  raw_ptr<Profile> profile_{};
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_TAB_MATCHER_DESKTOP_H_

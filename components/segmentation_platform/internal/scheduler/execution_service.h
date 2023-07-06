@@ -91,7 +91,7 @@ class ExecutionService {
   void RunDailyTasks(bool is_startup);
 
  private:
-  raw_ptr<StorageService> storage_service_{};
+  raw_ptr<StorageService> storage_service_ = nullptr;
 
   // Training/inference input data generation.
   std::unique_ptr<processing::FeatureListQueryProcessor>
