@@ -232,9 +232,8 @@ bool EditingStyleUtilities::HasTransparentBackgroundColor(
 
 const CSSValue* EditingStyleUtilities::BackgroundColorValueInEffect(
     Node* node) {
-  CHECK(node);
   Element* ancestor = DynamicTo<Element>(node);
-  if (!ancestor) {
+  if (!ancestor && node) {
     ancestor = FlatTreeTraversal::ParentElement(*node);
   }
   for (; ancestor; ancestor = FlatTreeTraversal::ParentElement(*ancestor)) {
