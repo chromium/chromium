@@ -357,12 +357,13 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
 
     private void setStartSurfaceToolbarVisibility(
             boolean shouldShowStartSurfaceToolbar, boolean wasOnGridTabSwitcher) {
-        if (mPropertyModel.get(IS_VISIBLE) == shouldShowStartSurfaceToolbar) return;
-
+        // Force animation to finish before proceeding to ensure IS_VISIBLE is in the correct state.
         if (mAlphaAnimator != null) {
-            mAlphaAnimator.cancel();
+            mAlphaAnimator.end();
             mAlphaAnimator = null;
         }
+
+        if (mPropertyModel.get(IS_VISIBLE) == shouldShowStartSurfaceToolbar) return;
 
         // Only show cross fade animation when switching between tab and grid tab switcher surface.
         // When switching between Start surface and grid tab switcher, the visibility won't change,
