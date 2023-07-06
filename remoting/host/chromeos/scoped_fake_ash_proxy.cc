@@ -24,10 +24,15 @@ ScopedFakeAshProxy::~ScopedFakeAshProxy() {
   AshProxy::SetInstanceForTesting(nullptr);
 }
 
-display::Display& ScopedFakeAshProxy::AddPrimaryDisplay(DisplayId id) {
+display::Display& ScopedFakeAshProxy::AddPrimaryDisplayFromSpec(
+    const std::string& spec,
+    DisplayId id) {
   primary_display_id_ = id;
-  // Give the display a valid size.
-  return AddDisplayFromSpecWithId("800x600", id);
+  return AddDisplayFromSpecWithId(spec, id);
+}
+
+display::Display& ScopedFakeAshProxy::AddPrimaryDisplay(DisplayId id) {
+  return AddPrimaryDisplayFromSpec("800x600", id);
 }
 
 display::Display& ScopedFakeAshProxy::AddDisplayWithId(DisplayId id) {
@@ -72,8 +77,22 @@ void ScopedFakeAshProxy::RemoveDisplay(DisplayId id) {
   NOTREACHED();
 }
 
+void ScopedFakeAshProxy::UpdateDisplaySpec(DisplayId id,
+                                           const std::string& spec) {
+  RemoveDisplay(id);
+  AddDisplayFromSpecWithId(spec, id);
+}
+
+void ScopedFakeAshProxy::UpdatePrimaryDisplaySpec(const std::string& spec) {
+  UpdateDisplaySpec(GetPrimaryDisplayId(), spec);
+}
+
 DisplayId ScopedFakeAshProxy::GetPrimaryDisplayId() const {
   return primary_display_id_;
+}
+
+bool ScopedFakeAshProxy::HasPrimaryDisplay() const {
+  return primary_display_id_ != -1;
 }
 
 const std::vector<display::Display>& ScopedFakeAshProxy::GetActiveDisplays()

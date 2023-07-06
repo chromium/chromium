@@ -32,8 +32,14 @@ class ScopedFakeAshProxy : public AshProxy {
   ~ScopedFakeAshProxy() override;
 
   display::Display& AddPrimaryDisplay(DisplayId id = kDefaultPrimaryDisplayId);
+  display::Display& AddPrimaryDisplayFromSpec(
+      const std::string& spec,
+      DisplayId id = kDefaultPrimaryDisplayId);
+  bool HasPrimaryDisplay() const;
   display::Display& AddDisplayWithId(DisplayId id);
   void RemoveDisplay(DisplayId id);
+  void UpdateDisplaySpec(DisplayId id, const std::string& spec);
+  void UpdatePrimaryDisplaySpec(const std::string& spec);
   // Create a display with the given specifications.
   // See display::ManagedDisplayInfo::CreateFromSpec for details of the
   // specification string.
