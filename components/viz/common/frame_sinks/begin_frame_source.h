@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 
@@ -230,6 +231,9 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   // Update the display ID for the source. This can change, e.g, as a window
   // moves across displays.
   virtual void SetVSyncDisplayID(int64_t display_id) {}
+
+  virtual void SetUpdateVSyncParametersCallback(
+      UpdateVSyncParametersCallback callback) {}
 
  protected:
   // Returns whether begin-frames to clients should be withheld (because the gpu

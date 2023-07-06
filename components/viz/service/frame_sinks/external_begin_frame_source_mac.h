@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
+#include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/display/mac/display_link_mac.h"
@@ -21,8 +23,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
       public ExternalBeginFrameSourceClient,
       public DelayBasedTimeSourceClient {
  public:
-  ExternalBeginFrameSourceMac(std::unique_ptr<DelayBasedTimeSource> time_source,
-                              uint32_t restart_id);
+  ExternalBeginFrameSourceMac(uint32_t restart_id, int64_t display_id);
 
   ExternalBeginFrameSourceMac(const ExternalBeginFrameSourceMac&) = delete;
   ExternalBeginFrameSourceMac& operator=(const ExternalBeginFrameSourceMac&) =
@@ -41,10 +42,23 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   // DelayBasedTimeSourceClient implementation.
   void OnTimerTick() override;
 
+  // ExternalBeginFrameSource implementation.
+  void SetPreferredInterval(base::TimeDelta interval) override;
+  base::TimeDelta GetMaximumRefreshFrameInterval() override;
+
+  // CVDisplayLink Callback on the Viz thread.
+  void OnDisplayLinkCallback(ui::VSyncParamsMac params);
+
+  // Callback to RootCompositorFrameSinkImpl::SetDisplayVSyncParameters.
+  // When the frame rate changes, VSyncParameters should be updated.
+  void SetUpdateVSyncParametersCallback(
+      UpdateVSyncParametersCallback callback) override;
+
  private:
-  // Request a callback from DisplayLinkMac, and the callback function.
-  void RequestTimeSourceParamsUpdate();
-  void OnTimeSourceParamsUpdate(ui::VSyncParamsMac params);
+  void CreateDelayBasedTimeSourceIfNeeded();
+
+  void StartBeginFrame();
+  void StopBeginFrame();
 
   BeginFrameArgsGenerator begin_frame_args_generator_;
 
@@ -52,19 +66,26 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
 
   // CVDisplayLink and related structures to set timer parameters.
   int64_t display_id_ = display::kInvalidDisplayId;
-  scoped_refptr<ui::DisplayLinkMac> display_link_;
+  scoped_refptr<ui::DisplayLinkMac> display_link_mac_;
+
+  // CVDisplayLink callback.
+  std::unique_ptr<ui::VSyncCallbackMac> vsync_callback_mac_;
+
+  // The default interval is 60Hz.
+  base::TimeDelta nominal_refresh_period_ = BeginFrameArgs::DefaultInterval();
+
+  base::TimeDelta preferred_interval_;
 
   // Timer used to drive callbacks.
   // TODO(https://crbug.com/1404797): Only use this when it is not possible or
   // efficient to use `display_link_`.
   std::unique_ptr<DelayBasedTimeSource> time_source_;
-  base::TimeTicks last_timebase_;
+  base::TimeTicks last_frame_time_;
+  base::TimeDelta last_interval_;
 
-  // The callback that is used to update `time_source_`.
-  base::TimeTicks time_source_next_update_time_;
-  std::unique_ptr<ui::VSyncCallbackMac> time_source_updater_;
+  UpdateVSyncParametersCallback update_vsync_params_callback_;
 
-  base::WeakPtrFactory<ExternalBeginFrameSourceMac> weak_factory_{this};
+  base::WeakPtrFactory<ExternalBeginFrameSourceMac> weak_ptr_factory_{this};
 };
 
 // A delay-based begin frame source for use on macOS. Instead of being informed

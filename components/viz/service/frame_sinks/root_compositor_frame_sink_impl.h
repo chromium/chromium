@@ -128,6 +128,9 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
 #endif
 
   base::ScopedClosureRunner GetCacheBackBufferCb();
+  ExternalBeginFrameSource* external_begin_frame_source() {
+    return external_begin_frame_source_.get();
+  }
 
  private:
   class StandaloneBeginFrameObserver;

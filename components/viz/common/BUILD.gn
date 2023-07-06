@@ -304,6 +304,7 @@ viz_component("common") {
     "//mojo/public/cpp/system",
     "//services/tracing/public/cpp:cpp",
     "//third_party/libyuv",
+    "//ui/display/types",
     "//ui/gfx",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",

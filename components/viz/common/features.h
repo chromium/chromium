@@ -55,6 +55,10 @@ VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanSkipRenderPassOverlay);
 #endif
 
+#if BUILDFLAG(IS_MAC)
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCVDisplayLinkBeginFrameSource);
+#endif
+
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawPredictedInkPoint);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowBypassRenderPassQuads);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip);

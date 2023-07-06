@@ -37,6 +37,8 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "base/feature_list.h"
+#include "components/viz/common/features.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_mac.h"
 #endif
 
@@ -169,9 +171,16 @@ RootCompositorFrameSinkImpl::Create(
       auto time_source = std::make_unique<DelayBasedTimeSource>(
           base::SingleThreadTaskRunner::GetCurrentDefault().get());
 #if BUILDFLAG(IS_MAC)
-      synthetic_begin_frame_source =
-          std::make_unique<DelayBasedBeginFrameSourceMac>(
-              std::move(time_source), restart_id);
+      if (base::FeatureList::IsEnabled(
+              features::kCVDisplayLinkBeginFrameSource)) {
+        external_begin_frame_source =
+            std::make_unique<ExternalBeginFrameSourceMac>(
+                restart_id, params->renderer_settings.display_id);
+      } else {
+        synthetic_begin_frame_source =
+            std::make_unique<DelayBasedBeginFrameSourceMac>(
+                std::move(time_source), restart_id);
+      }
 #else
       synthetic_begin_frame_source =
           std::make_unique<DelayBasedBeginFrameSource>(std::move(time_source),
@@ -225,15 +234,26 @@ RootCompositorFrameSinkImpl::Create(
       std::move(external_begin_frame_source), std::move(display),
       hw_support_for_multiple_refresh_rates));
 
+  // Set up the callback for updating VSyncParameters.
+  // The new VSyncParameters will be sent to viz FrameRateDecider through viz
+  // display_->SetSupportedFrameIntervals() in SetDisplayVSyncParameters().
+  // |FrameRateDecider| decides the preferred_frame_interval and calls
+  // RootCompositorFrameSinkImpl::SetPreferredFrameInterval().
 #if !BUILDFLAG(IS_APPLE)
-  // On Mac vsync parameter updates come from the browser process. We don't need
-  // to provide a callback to the OutputSurface since it should never use it.
+  // On Mac vsync parameter updates does not come from OutputSurface.
   if (wants_vsync_updates || impl->synthetic_begin_frame_source_) {
     // |impl| owns and outlives display, and display owns the output surface so
     // unretained is safe.
     output_surface_ptr->SetUpdateVSyncParametersCallback(base::BindRepeating(
         &RootCompositorFrameSinkImpl::SetDisplayVSyncParameters,
         base::Unretained(impl.get())));
+  }
+#elif BUILDFLAG(IS_MAC)
+  if (impl->external_begin_frame_source_) {
+    impl->external_begin_frame_source()->SetUpdateVSyncParametersCallback(
+        base::BindRepeating(
+            &RootCompositorFrameSinkImpl::SetDisplayVSyncParameters,
+            base::Unretained(impl.get())));
   }
 #endif
 
