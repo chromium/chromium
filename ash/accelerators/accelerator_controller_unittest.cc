@@ -21,6 +21,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/display/display_configuration_controller_test_api.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/frame/non_client_frame_view_ash.h"
@@ -685,6 +686,58 @@ TEST_F(AcceleratorControllerTest, WindowSnap) {
                                         {});
     EXPECT_TRUE(window_state->IsSnapped());
   }
+}
+
+// Tests that if the screen is upside down, the left/right accelerators go to
+// the physical left/top side of the screen.
+TEST_F(AcceleratorControllerTest, WindowSnapUpsideDown) {
+  const int64_t primary_display_id =
+      WindowTreeHostManager::GetPrimaryDisplayId();
+
+  // Make the display upside down.
+  DisplayConfigurationController* controller =
+      Shell::Get()->display_configuration_controller();
+  controller->SetDisplayRotation(
+      primary_display_id, display::Display::ROTATE_180,
+      display::Display::RotationSource::USER,
+      DisplayConfigurationController::ANIMATION_SYNC);
+  display::Display current_display =
+      display_manager()->GetDisplayForId(primary_display_id);
+  ASSERT_TRUE(chromeos::IsDisplayLayoutHorizontal(current_display));
+  ASSERT_FALSE(chromeos::IsDisplayLayoutPrimary(current_display));
+
+  // Snap the window. Test that it goes to the physical left/right as expected.
+  auto window = CreateAppWindow(gfx::Rect(300, 300));
+  controller_->PerformActionIfEnabled(AcceleratorAction::kWindowCycleSnapLeft,
+                                      {});
+  EXPECT_EQ(gfx::Point(0, 0), window->GetBoundsInScreen().origin());
+
+  gfx::Rect work_area_bounds = current_display.work_area();
+  controller_->PerformActionIfEnabled(AcceleratorAction::kWindowCycleSnapRight,
+                                      {});
+  EXPECT_EQ(work_area_bounds.top_right(),
+            window->GetBoundsInScreen().top_right());
+
+  // Make the display 90 degrees (upside down vertically).
+  controller->SetDisplayRotation(
+      primary_display_id, display::Display::ROTATE_90,
+      display::Display::RotationSource::USER,
+      DisplayConfigurationController::ANIMATION_SYNC);
+  current_display = display_manager()->GetDisplayForId(primary_display_id);
+  ASSERT_FALSE(chromeos::IsDisplayLayoutHorizontal(current_display));
+  ASSERT_FALSE(chromeos::IsDisplayLayoutPrimary(current_display));
+
+  window = CreateAppWindow(gfx::Rect(300, 300));
+  work_area_bounds = current_display.work_area();
+
+  // Snap the window. Test that it goes to the physical top/bottom as expected.
+  controller_->PerformActionIfEnabled(AcceleratorAction::kWindowCycleSnapLeft,
+                                      {});
+  EXPECT_EQ(gfx::Point(0, 0), window->GetBoundsInScreen().origin());
+  controller_->PerformActionIfEnabled(AcceleratorAction::kWindowCycleSnapRight,
+                                      {});
+  EXPECT_EQ(work_area_bounds.bottom_left(),
+            window->GetBoundsInScreen().bottom_left());
 }
 
 // Tests that window snapping works.

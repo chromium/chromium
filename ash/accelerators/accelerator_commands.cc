@@ -80,6 +80,7 @@
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/prefs/pref_service.h"
@@ -1737,14 +1738,23 @@ void WindowSnap(AcceleratorAction action) {
           WindowSnapAcceleratorAction::kCycleRightSnapInClamshellNoOverview);
     }
   }
-  const WindowSnapWMEvent event(
-      action == AcceleratorAction::kWindowCycleSnapLeft
-          ? WM_EVENT_CYCLE_SNAP_PRIMARY
-          : WM_EVENT_CYCLE_SNAP_SECONDARY,
-      WindowSnapActionSource::kKeyboardShortcutToSnap);
+
   aura::Window* window = GetTargetWindow();
   DCHECK(window);
 
+  // For displays rotated 90 or 180 degrees, they are considered upside down.
+  // Here, primary snap does not match physical left or top. The accelerators
+  // should always match the physical left or top.
+  const bool physical_left_or_top =
+      (action == AcceleratorAction::kWindowCycleSnapLeft);
+  chromeos::SnapDirection snap_direction =
+      chromeos::GetSnapDirectionForWindow(window, physical_left_or_top);
+
+  const WindowSnapWMEvent event(
+      snap_direction == chromeos::SnapDirection::kPrimary
+          ? WM_EVENT_CYCLE_SNAP_PRIMARY
+          : WM_EVENT_CYCLE_SNAP_SECONDARY,
+      WindowSnapActionSource::kKeyboardShortcutToSnap);
   WindowState::Get(window)->OnWMEvent(&event);
 }
 
