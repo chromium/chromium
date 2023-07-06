@@ -849,8 +849,15 @@ BASE_FEATURE(kPreloadingHoldback,
              "PreloadingHoldback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables exposure of the core milestone 1 (M1) APIs in the renderer without an
+// origin trial token: Attribution Reporting, FLEDGE, Topics.
+BASE_FEATURE(kPrivacySandboxAdsAPIsM1Override,
+             "PrivacySandboxAdsAPIsM1Override",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables exposure of ads APIs in the renderer: Attribution Reporting,
-// FLEDGE, Topics.
+// FLEDGE, Topics, along with a number of other features actively in development
+// within these APIs.
 BASE_FEATURE(kPrivacySandboxAdsAPIsOverride,
              "PrivacySandboxAdsAPIsOverride",
              base::FEATURE_DISABLED_BY_DEFAULT);
