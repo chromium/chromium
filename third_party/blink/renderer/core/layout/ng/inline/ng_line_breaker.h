@@ -304,7 +304,7 @@ class CORE_EXPORT NGLineBreaker {
   // True when current box allows line wrapping.
   bool auto_wrap_ = false;
 
-  // True when current box has 'word-break/word-wrap: break-word'.
+  // True when current box should fallback to break anywhere if it overflows.
   bool break_anywhere_if_overflow_ = false;
 
   // Force LineBreakType::kBreakCharacter by ignoring the current style if

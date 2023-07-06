@@ -1701,7 +1701,12 @@ const CounterDirectives ComputedStyle::GetCounterDirectives(
 }
 
 AtomicString ComputedStyle::LocaleForLineBreakIterator() const {
-  switch (GetLineBreak()) {
+  return LocaleForLineBreakIterator(GetLineBreak());
+}
+
+AtomicString ComputedStyle::LocaleForLineBreakIterator(
+    LineBreak line_break) const {
+  switch (line_break) {
     case LineBreak::kAuto:
     case LineBreak::kAfterWhiteSpace:
     case LineBreak::kAnywhere:

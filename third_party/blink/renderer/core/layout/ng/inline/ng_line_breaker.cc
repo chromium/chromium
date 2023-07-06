@@ -3408,35 +3408,44 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
   current_style_ = &style;
 
   auto_wrap_ = ShouldAutoWrap(style);
-
   if (auto_wrap_) {
     DCHECK(!is_text_combine_);
     LineBreakType line_break_type;
-    EWordBreak word_break = style.WordBreak();
-    switch (word_break) {
-      case EWordBreak::kNormal:
-        line_break_type = LineBreakType::kNormal;
-        break;
-      case EWordBreak::kBreakAll:
-        line_break_type = LineBreakType::kBreakAll;
-        break;
-      case EWordBreak::kBreakWord:
-        line_break_type = LineBreakType::kNormal;
-        break;
-      case EWordBreak::kKeepAll:
-        line_break_type = LineBreakType::kKeepAll;
-        break;
-    }
-    EOverflowWrap overflow_wrap = style.OverflowWrap();
-    break_anywhere_if_overflow_ =
-        word_break == EWordBreak::kBreakWord ||
-        overflow_wrap == EOverflowWrap::kAnywhere ||
-        // `overflow-/word-wrap: break-word` affects layout but not min-content.
-        (overflow_wrap == EOverflowWrap::kBreakWord &&
-         mode_ == NGLineBreakerMode::kContent);
-    if (UNLIKELY((override_break_anywhere_ && break_anywhere_if_overflow_) ||
-                 style.GetLineBreak() == LineBreak::kAnywhere)) {
+    const LineBreak line_break = style.GetLineBreak();
+    if (UNLIKELY(line_break == LineBreak::kAnywhere)) {
       line_break_type = LineBreakType::kBreakCharacter;
+      break_anywhere_if_overflow_ = false;
+    } else {
+      switch (style.WordBreak()) {
+        case EWordBreak::kNormal:
+          line_break_type = LineBreakType::kNormal;
+          break_anywhere_if_overflow_ = false;
+          break;
+        case EWordBreak::kBreakAll:
+          line_break_type = LineBreakType::kBreakAll;
+          break_anywhere_if_overflow_ = false;
+          break;
+        case EWordBreak::kBreakWord:
+          line_break_type = LineBreakType::kNormal;
+          break_anywhere_if_overflow_ = true;
+          break;
+        case EWordBreak::kKeepAll:
+          line_break_type = LineBreakType::kKeepAll;
+          break_anywhere_if_overflow_ = false;
+          break;
+      }
+      if (!break_anywhere_if_overflow_) {
+        // `overflow-wrap: anywhere` affects both layout and min-content, while
+        // `break-word` affects layout but not min-content.
+        const EOverflowWrap overflow_wrap = style.OverflowWrap();
+        break_anywhere_if_overflow_ =
+            overflow_wrap == EOverflowWrap::kAnywhere ||
+            (overflow_wrap == EOverflowWrap::kBreakWord &&
+             mode_ == NGLineBreakerMode::kContent);
+      }
+      if (UNLIKELY(override_break_anywhere_ && break_anywhere_if_overflow_)) {
+        line_break_type = LineBreakType::kBreakCharacter;
+      }
     }
     break_iterator_.SetBreakType(line_break_type);
 
@@ -3450,7 +3459,7 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
       break_iterator_.SetBreakSpace(BreakSpaceType::kAfterSpaceRun);
     }
 
-    break_iterator_.SetLocale(style.LocaleForLineBreakIterator());
+    break_iterator_.SetLocale(style.LocaleForLineBreakIterator(line_break));
   }
 
   spacing_.SetSpacing(style.GetFont().GetFontDescription());
