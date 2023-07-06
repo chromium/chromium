@@ -6,9 +6,7 @@
 #define IOS_CHROME_BROWSER_SUPERVISED_USER_IOS_WEB_CONTENT_HANDLER_IMPL_H_
 
 #import "base/allocator/partition_allocator/pointers/raw_ptr.h"
-#import "base/functional/callback.h"
 #import "base/memory/weak_ptr.h"
-#import "base/time/time.h"
 #import "components/supervised_user/core/browser/web_content_handler.h"
 #import "url/gurl.h"
 

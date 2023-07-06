@@ -205,7 +205,7 @@ NSString* GetSupervisedUserErrorPageHTML(web::WebState* web_state,
       supervised_user::SupervisedUserInterstitial::GetHTMLContents(
           SupervisedUserServiceFactory::GetForBrowserState(browser_state),
           browser_state->GetPrefs(), info.filtering_behavior_reason(),
-          info.is_already_requested(), info.is_main_frame(),
+          container->IsRemoteApprovalPendingForUrl(url), info.is_main_frame(),
           GetApplicationContext()->GetApplicationLocale());
   return base::SysUTF8ToNSString(error_page_content);
 }

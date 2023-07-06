@@ -57,9 +57,7 @@ void OnURLFilteringDone(
     CHECK(container);
     container->SetSupervisedUserErrorInfo(
         std::make_unique<SupervisedUserErrorContainer::SupervisedUserErrorInfo>(
-            request_url, is_main_frame,
-            // TODO(b/265761985): Update once we have this information.
-            /*is_already_requested=*/false, reason));
+            request_url, is_main_frame, reason));
     decision = CreateSupervisedUserInterstitialErrorDecision();
   }
 
