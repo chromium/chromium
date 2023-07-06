@@ -8,6 +8,7 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
@@ -18,12 +19,10 @@
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "components/vector_icons/vector_icons.h"
-#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -70,18 +69,17 @@ std::unique_ptr<FeaturePodIconButton> CreateIconButton(
 }  // namespace
 
 GameDashboardMainMenuView::GameDashboardMainMenuView(
-    views::Widget* main_menu_button_widget,
-    aura::Window* game_window)
-    : game_window_(game_window) {
-  DCHECK(main_menu_button_widget);
-  DCHECK(game_window_);
+    GameDashboardContext* context)
+    : context_(context) {
+  DCHECK(context_);
+  DCHECK(context_->main_menu_button_widget());
 
   set_corner_radius(kBubbleCornerRadius);
   set_close_on_deactivate(false);
   set_internal_name("GameDashboardMainMenuView");
   set_margins(gfx::Insets());
-  set_parent_window(main_menu_button_widget->GetNativeWindow());
-  SetAnchorView(main_menu_button_widget->GetContentsView());
+  set_parent_window(context_->main_menu_button_widget()->GetNativeWindow());
+  SetAnchorView(context_->main_menu_button_widget()->GetContentsView());
   SetArrow(views::BubbleBorder::Arrow::NONE);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -102,7 +100,7 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
 GameDashboardMainMenuView::~GameDashboardMainMenuView() = default;
 
 void GameDashboardMainMenuView::OnToolbarTilePressed() {
-  // TODO(b/273641426): Add support when toolbar tile is pressed.
+  context_->ToggleToolbar();
 }
 
 void GameDashboardMainMenuView::OnGameControlsTilePressed() {
@@ -111,14 +109,15 @@ void GameDashboardMainMenuView::OnGameControlsTilePressed() {
 
 void GameDashboardMainMenuView::OnRecordGameTilePressed() {
   GetWidget()->Close();
-  CaptureModeController::Get()->StartForGameDashboard(game_window_);
+  CaptureModeController::Get()->StartForGameDashboard(context_->game_window());
   // TODO(b/286889385): Add support to stop game recording using
   // `GameDashboardMainMenuView` and the `GameDashboardMainMenuButton`.
 }
 
 void GameDashboardMainMenuView::OnScreenshotTilePressed() {
   GetWidget()->Close();
-  CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(game_window_);
+  CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(
+      context_->game_window());
 }
 
 void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
@@ -175,12 +174,12 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
 
 void GameDashboardMainMenuView::MaybeAddGameControlsTile(
     views::View* container) {
-  if (!IsArcWindow(game_window_)) {
+  if (!IsArcWindow(context_->game_window())) {
     return;
   }
 
   const ArcGameControlsFlag flags =
-      game_window_->GetProperty(kArcGameControlsFlagsKey);
+      context_->game_window()->GetProperty(kArcGameControlsFlagsKey);
   DCHECK(game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kKnown));
 
   if (!game_dashboard_utils::IsFlagSet(flags,
@@ -205,7 +204,7 @@ void GameDashboardMainMenuView::MaybeAddGameControlsTile(
 }
 
 void GameDashboardMainMenuView::MaybeAddScreenSizeSettingsRow() {
-  if (IsArcWindow(game_window_)) {
+  if (IsArcWindow(context_->game_window())) {
     AddChildView(CreateTile(
         base::BindRepeating(
             &GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed,

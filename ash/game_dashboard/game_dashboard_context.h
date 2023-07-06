@@ -5,8 +5,6 @@
 #ifndef ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONTEXT_H_
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONTEXT_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -26,6 +24,12 @@ class GameDashboardContext {
   GameDashboardContext& operator=(const GameDashboardContext&) = delete;
   ~GameDashboardContext();
 
+  aura::Window* game_window() { return game_window_.get(); }
+
+  views::Widget* main_menu_button_widget() {
+    return main_menu_button_widget_.get();
+  }
+
   // Called by `GameDashboardController` when the game window bounds change.
   void OnWindowBoundsChanged();
 
@@ -36,7 +40,13 @@ class GameDashboardContext {
   // if it is already shown.
   void ToggleMainMenu();
 
+  // Toggles the creation/deletion of the toolbar within the game window.
+  void ToggleToolbar();
+
  private:
+  // Indicator for the 4 quadrants that the toolbar is able to be placed.
+  enum ToolbarSnapLocation { kTopLeft, kTopRight, kBottomLeft, kBottomRight };
+
   friend class GameDashboardContextTest;
 
   // Creates a main menu button widget and adds it as a sibling of the game
@@ -51,6 +61,14 @@ class GameDashboardContext {
   // toggles the main menu.
   void OnMainMenuButtonPressed();
 
+  // Determines the toolbar's physical location on screen based on the
+  // `toolbar_snap_location_` value.
+  const gfx::Rect CalculateToolbarWidgetBounds();
+
+  // Conditionally, updates the toolbar widget's bounds and location, relative
+  // to the `game_window_`.
+  void MaybeUpdateToolbarWidgetBounds();
+
   const raw_ptr<aura::Window, ExperimentalAsh> game_window_;
 
   // Main menu button widget for the Game Dashboard.
@@ -58,6 +76,12 @@ class GameDashboardContext {
 
   // Expanded main menu for the Game Dashboard.
   views::UniqueWidgetPtr main_menu_widget_;
+
+  // The toolbar for the Game Dashboard.
+  std::unique_ptr<views::Widget> toolbar_widget_;
+
+  // The indicator of the current corner that the toolbar is placed.
+  ToolbarSnapLocation toolbar_snap_location_;
 
   base::WeakPtrFactory<GameDashboardContext> weak_ptr_factory_{this};
 };

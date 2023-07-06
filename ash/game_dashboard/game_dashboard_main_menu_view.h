@@ -5,10 +5,13 @@
 #ifndef ASH_GAME_DASHBOARD_GAME_DASHBOARD_MAIN_MENU_VIEW_H_
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_MAIN_MENU_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace ash {
+
+class GameDashboardContext;
 
 // GameDashboardMainMenuView is the expanded menu view attached to the game
 // dashboard button.
@@ -16,8 +19,7 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(GameDashboardMainMenuView);
 
-  GameDashboardMainMenuView(views::Widget* main_menu_button_widget,
-                            aura::Window* game_window);
+  explicit GameDashboardMainMenuView(GameDashboardContext* context);
   GameDashboardMainMenuView(const GameDashboardMainMenuView&) = delete;
   GameDashboardMainMenuView& operator=(const GameDashboardMainMenuView) =
       delete;
@@ -58,7 +60,8 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   // buttons) to the Game Controls tile view.
   void AddUtilityClusterRow();
 
-  const raw_ptr<aura::Window, ExperimentalAsh> game_window_;
+  // Allows this class to access `GameDashboardContext` owned functions/objects.
+  const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
 };
 
 }  // namespace ash

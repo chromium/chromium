@@ -51,6 +51,10 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     return game_context_->main_menu_widget_.get();
   }
 
+  views::Widget* GetToolbarWidget() {
+    return game_context_->toolbar_widget_.get();
+  }
+
   views::View* GetMainMenuViewById(int tile_view_id) {
     CHECK(GetMainMenuDialogWidget())
         << "The main menu must be opened first before trying to retrieve a "
@@ -348,6 +352,31 @@ TEST_P(GameTypeGameDashboardContextTest, ScreenCaptureFromMainMenu) {
   // TODO(b/286889385): Stop video recording using `GameDashboardMainMenuView`.
   CaptureModeTestApi().StopVideoRecording();
   EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
+}
+
+// Verifies the toolbar opens and closes when the toolbar button in the main
+// menu is clicked.
+TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
+  if (IsArcGame()) {
+    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
+  // Retrieve the toolbar button and verify the toolbar widget is not available.
+  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
+  FeatureTile* toolbar_tile =
+      static_cast<FeatureTile*>(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
+  ASSERT_TRUE(toolbar_tile);
+  EXPECT_FALSE(GetToolbarWidget());
+
+  LeftClickOn(toolbar_tile);
+
+  // Verify that the toolbar widget is now available.
+  EXPECT_TRUE(GetToolbarWidget());
+
+  LeftClickOn(toolbar_tile);
+
+  // Verify that the toolbar widget is no longer available.
+  EXPECT_FALSE(GetToolbarWidget());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
