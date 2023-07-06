@@ -11,14 +11,17 @@
 #include "ash/constants/ash_features.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_test_base.h"
+#include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -101,9 +104,22 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     LeftClickOn(menu_button);
   }
 
+  IconButton* GetToolbarScreenshotButton() {
+    return GetToolbarViewById(base::to_underlying(
+        GameDashboardToolbarView::ToolbarViewId::kScreenshotButton));
+  }
+
  protected:
   std::unique_ptr<aura::Window> game_window_;
   raw_ptr<GameDashboardContext, ExperimentalAsh> game_context_;
+
+ private:
+  IconButton* GetToolbarViewById(int button_id) {
+    CHECK(GetToolbarWidget()) << "The toolbar must be opened first before "
+                                 "trying to retrieve an button from it.";
+    return static_cast<IconButton*>(
+        GetToolbarWidget()->GetContentsView()->GetViewByID(button_id));
+  }
 };
 
 // Verifies Game Controls tile state.
@@ -307,12 +323,13 @@ TEST_P(GameTypeGameDashboardContextTest,
   EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_RECORD_GAME_TILE));
 }
 
-TEST_P(GameTypeGameDashboardContextTest, TakeScreenshot) {
+// Verifies the main menu screenshot tile will take a screenshot of the game
+// window.
+TEST_P(GameTypeGameDashboardContextTest, TakeScreenshotFromMainMenu) {
   if (IsArcGame()) {
     game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
   }
-
   // Retrieve the screenshot button and verify the initial state.
   LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
   FeatureTile* screenshot_tile = static_cast<FeatureTile*>(
@@ -377,6 +394,30 @@ TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
 
   // Verify that the toolbar widget is no longer available.
   EXPECT_FALSE(GetToolbarWidget());
+}
+
+// Verifies the toolbar screenshot button will take a screenshot of the game
+// window.
+TEST_P(GameTypeGameDashboardContextTest, TakeScreenshotFromToolbar) {
+  if (IsArcGame()) {
+    game_window_->SetProperty(kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
+  // Retrieve the toolbar via the main menu.
+  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
+  LeftClickOn(
+      static_cast<FeatureTile*>(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE)));
+  ASSERT_TRUE(GetToolbarWidget());
+
+  // Click on the screenshot button within the toolbar.
+  IconButton* screenshot_button = GetToolbarScreenshotButton();
+  ASSERT_TRUE(screenshot_button);
+  LeftClickOn(screenshot_button);
+
+  // Verify that a screenshot is taken of the game window.
+  const auto file_path = WaitForCaptureFileToBeSaved();
+  const gfx::Image image = ReadAndDecodeImageFile(file_path);
+  EXPECT_EQ(image.Size(), game_window_->GetBoundsInScreen().size());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -16,12 +16,22 @@ class GameDashboardToolbarView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(GameDashboardToolbarView);
 
-  GameDashboardToolbarView();
+  explicit GameDashboardToolbarView(aura::Window* game_window);
   GameDashboardToolbarView(const GameDashboardToolbarView&) = delete;
   GameDashboardToolbarView& operator=(const GameDashboardToolbarView) = delete;
   ~GameDashboardToolbarView() override;
 
  private:
+  // Used for testing. Starts at 1 because view IDs should not be 0.
+  enum class ToolbarViewId : int32_t {
+    kGamepadButton = 1,
+    kGameControlsButton = 2,
+    kScreenRecordButton = 3,
+    kScreenshotButton = 4,
+  };
+
+  friend class GameDashboardContextTest;
+
   // Callbacks for the tiles and buttons in the toolbar view.
   // Expands or collapses the toolbar.
   void OnGamepadButtonPressed();
@@ -32,6 +42,8 @@ class GameDashboardToolbarView : public views::BoxLayoutView {
 
   // Adds a list of shortcut tiles to the toolbar view.
   void AddShortcutTiles();
+
+  const raw_ptr<aura::Window, ExperimentalAsh> game_window_;
 };
 
 }  // namespace ash

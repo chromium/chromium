@@ -95,7 +95,7 @@ void GameDashboardContext::ToggleToolbar() {
   if (!toolbar_widget_) {
     toolbar_widget_ = CreateTransientChildWidget(
         game_window_, "GameDashboardToolbar",
-        std::make_unique<GameDashboardToolbarView>());
+        std::make_unique<GameDashboardToolbarView>(game_window_));
     DCHECK_EQ(game_window_,
               wm::GetTransientParent(toolbar_widget_->GetNativeWindow()));
     MaybeUpdateToolbarWidgetBounds();
