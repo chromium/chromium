@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -98,13 +99,6 @@ NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(InsecureTaintTracker);
 
 }  // namespace
 
-struct AttributionHost::NavigationInfo {
-  SuitableOrigin source_origin;
-  AttributionInputEvent input_event;
-  bool is_within_fenced_frame;
-  GlobalRenderFrameHostId initiator_root_frame_id;
-};
-
 AttributionHost::AttributionHost(WebContents* web_contents)
     : WebContentsObserver(web_contents),
       WebContentsUserData<AttributionHost>(*web_contents),
@@ -121,7 +115,7 @@ AttributionHost::AttributionHost(WebContents* web_contents)
 }
 
 AttributionHost::~AttributionHost() {
-  DCHECK_EQ(0u, navigation_info_map_.size());
+  DCHECK(ongoing_registration_eligible_navigations_.empty());
 }
 
 AttributionInputEvent AttributionHost::GetMostRecentNavigationInputEvent()
@@ -188,31 +182,21 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  auto [it, inserted] = navigation_info_map_.try_emplace(
-      navigation_handle->GetNavigationId(),
-      NavigationInfo{
-          .source_origin = std::move(*initiator_root_frame_origin),
-          .input_event =
-              AttributionHost::FromWebContents(
-                  WebContents::FromRenderFrameHost(initiator_frame_host))
-                  ->GetMostRecentNavigationInputEvent(),
-          .is_within_fenced_frame =
-              initiator_frame_host->IsNestedWithinFencedFrame(),
-          .initiator_root_frame_id = initiator_root_frame->GetGlobalId()});
-  DCHECK(inserted);
-
-  const NavigationInfo& navigation_info = it->second;
-
   auto* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
   DCHECK(attribution_manager);
 
   attribution_manager->GetDataHostManager()
       ->NotifyNavigationRegistrationStarted(
-          impression->attribution_src_token, navigation_info.source_origin,
-          navigation_info.is_within_fenced_frame,
-          navigation_info.initiator_root_frame_id,
+          impression->attribution_src_token,
+          GetMostRecentNavigationInputEvent(),
+          /*source_origin=*/*std::move(initiator_root_frame_origin),
+          initiator_frame_host->IsNestedWithinFencedFrame(),
+          /*render_frame_id=*/initiator_root_frame->GetGlobalId(),
           navigation_handle->GetNavigationId());
+  auto [_, inserted] = ongoing_registration_eligible_navigations_.emplace(
+      navigation_handle->GetNavigationId());
+  CHECK(inserted);
 }
 
 void AttributionHost::DidRedirectNavigation(
@@ -222,32 +206,41 @@ void AttributionHost::DidRedirectNavigation(
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
+  const auto& impression = navigation_handle->GetImpression();
+  if (!impression.has_value()) {
+    return;
+  }
+
   NotifyNavigationRegistrationData(navigation_handle,
                                    /*is_final_response=*/true);
-  navigation_info_map_.erase(navigation_handle->GetNavigationId());
+
+  auto* attribution_manager =
+      AttributionManager::FromWebContents(web_contents());
+  CHECK(attribution_manager);
+  attribution_manager->GetDataHostManager()
+      ->NotifyNavigationRegistrationCompleted(
+          impression->attribution_src_token);
+
+  ongoing_registration_eligible_navigations_.erase(
+      navigation_handle->GetNavigationId());
 }
 
 void AttributionHost::NotifyNavigationRegistrationData(
     NavigationHandle* navigation_handle,
     bool is_final_response) {
-  auto it = navigation_info_map_.find(navigation_handle->GetNavigationId());
-
-  // Observe only navigation toward a new document in the primary main frame.
-  // Impressions should never be attached to same-document navigations but can
-  // be the result of a bad renderer.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument()) {
-    DCHECK(it == navigation_info_map_.end());
-  }
-  if (it == navigation_info_map_.end()) {
+  if (!ongoing_registration_eligible_navigations_.contains(
+          navigation_handle->GetNavigationId())) {
     return;
   }
 
   const absl::optional<blink::Impression>& impression =
       navigation_handle->GetImpression();
-  if (!impression) {
-    return;
-  }
+  // If there is an ongoing_registration_eligible_navigation, the navigation
+  // must have an associated impression, be in the primary main frame and not in
+  // the same document.
+  DCHECK(impression.has_value());
+  DCHECK(navigation_handle->IsInPrimaryMainFrame());
+  DCHECK(!navigation_handle->IsSameDocument());
 
   // On redirect, the reporting origin should be the origin of the request
   // responsible for initiating the redirect. At this point, the navigation
@@ -284,11 +277,7 @@ void AttributionHost::NotifyNavigationRegistrationData(
           ->NotifyNavigationRegistrationData(
               impression->attribution_src_token,
               navigation_handle->GetResponseHeaders(),
-              std::move(*reporting_origin), it->second.source_origin,
-              it->second.input_event, it->second.is_within_fenced_frame,
-              it->second.initiator_root_frame_id,
-              navigation_handle->GetNavigationId(),
-              impression->runtime_features, is_final_response);
+              std::move(*reporting_origin), impression->runtime_features);
 
   if (had_header) {
     tracker->NotifySecureRegistrationAttempt();
@@ -368,8 +357,7 @@ void AttributionHost::RegisterNavigationDataHost(
   DCHECK(attribution_manager);
 
   if (!attribution_manager->GetDataHostManager()->RegisterNavigationDataHost(
-          std::move(data_host), attribution_src_token,
-          GetMostRecentNavigationInputEvent())) {
+          std::move(data_host), attribution_src_token)) {
     mojo::ReportBadMessage(
         "Renderer attempted to register a data host with a duplicate "
         "AttribtionSrcToken.");

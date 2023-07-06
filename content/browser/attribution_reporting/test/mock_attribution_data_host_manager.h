@@ -46,13 +46,13 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
       bool,
       RegisterNavigationDataHost,
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-       const blink::AttributionSrcToken& attribution_src_token,
-       AttributionInputEvent input_event),
+       const blink::AttributionSrcToken& attribution_src_token),
       (override));
 
   MOCK_METHOD(void,
               NotifyNavigationRegistrationStarted,
               (const blink::AttributionSrcToken& attribution_src_token,
+               AttributionInputEvent input_event,
                const attribution_reporting::SuitableOrigin& source_origin,
                bool is_within_fenced_frame,
                GlobalRenderFrameHostId,
@@ -64,13 +64,12 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
               (const blink::AttributionSrcToken& attribution_src_token,
                const net::HttpResponseHeaders* headers,
                attribution_reporting::SuitableOrigin reporting_origin,
-               const attribution_reporting::SuitableOrigin& source_origin,
-               AttributionInputEvent input_event,
-               bool is_within_fenced_frame,
-               GlobalRenderFrameHostId,
-               int64_t navigation_id,
-               network::AttributionReportingRuntimeFeatures,
-               bool is_final_response),
+               network::AttributionReportingRuntimeFeatures),
+              (override));
+
+  MOCK_METHOD(void,
+              NotifyNavigationRegistrationCompleted,
+              (const blink::AttributionSrcToken& attribution_src_token),
               (override));
 
   MOCK_METHOD(void,

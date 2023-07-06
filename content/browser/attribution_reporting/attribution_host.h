@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
@@ -108,21 +108,13 @@ class CONTENT_EXPORT AttributionHost
 
   AttributionInputEvent GetMostRecentNavigationInputEvent() const;
 
-  // Map which stores the top-frame origin an impression occurred on for all
-  // navigations with an associated impression, keyed by navigation ID.
-  // Initiator origins are stored at navigation start time to have the best
-  // chance of catching the initiating frame before it has a chance to go away.
-  // Storing the origins at navigation start also prevents cases where a frame
-  // initiates a navigation for itself, causing the frame to be correct but not
-  // representing the frame state at the time the navigation was initiated. They
-  // are stored until DidFinishNavigation, when they can be matched up with an
-  // impression.
-  //
-  // A flat_map is used as the number of ongoing impression navigations is
-  // expected to be very small in a given WebContents.
-  struct NavigationInfo;
-  using NavigationInfoMap = base::flat_map<int64_t, NavigationInfo>;
-  NavigationInfoMap navigation_info_map_;
+  // Keeps track of navigations for which we can register sources (i.e. All
+  // conditions were met in `DidStartNavigation` and
+  // `DataHostManager::NotifyNavigationRegistrationStarted` was called). This
+  // avoids making useless calls or checks when processing responses in
+  // `DidRedirectNavigation` and `DidFinishNavigation` for navigations for which
+  // we can't register sources.
+  base::flat_set<int64_t> ongoing_registration_eligible_navigations_;
 
   RenderFrameHostReceiverSet<blink::mojom::AttributionHost> receivers_;
 

@@ -226,11 +226,6 @@ struct AttributionDataHostManagerImpl::DeferredReceiver {
   base::TimeTicks initial_registration_time = base::TimeTicks::Now();
 };
 
-struct AttributionDataHostManagerImpl::NavigationDataHost {
-  mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host;
-  AttributionInputEvent input_event;
-};
-
 class AttributionDataHostManagerImpl::SourceRegistrations {
  public:
   SourceRegistrations(SourceRegistrationsId id, RegistrationContext context)
@@ -425,12 +420,9 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
 
 bool AttributionDataHostManagerImpl::RegisterNavigationDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-    const blink::AttributionSrcToken& attribution_src_token,
-    AttributionInputEvent input_event) {
+    const blink::AttributionSrcToken& attribution_src_token) {
   auto [it, inserted] = navigation_data_host_map_.try_emplace(
-      attribution_src_token,
-      NavigationDataHost{.data_host = std::move(data_host),
-                         .input_event = std::move(input_event)});
+      attribution_src_token, std::move(data_host));
   // Should only be possible with a misbehaving renderer.
   if (!inserted) {
     return false;
@@ -508,10 +500,20 @@ void AttributionDataHostManagerImpl::HandleNextOsDecode(
 
 void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
     const blink::AttributionSrcToken& attribution_src_token,
+    AttributionInputEvent input_event,
     const SuitableOrigin& source_origin,
     bool is_within_fenced_frame,
     GlobalRenderFrameHostId render_frame_id,
     int64_t navigation_id) {
+  auto [_, registration_inserted] = registrations_.emplace(
+      SourceRegistrationsId(attribution_src_token),
+      RegistrationContext(
+          /*context_origin=*/source_origin, RegistrationType::kSource,
+          is_within_fenced_frame, render_frame_id,
+          RegistrationNavigationContext(navigation_id, input_event)));
+  DCHECK(registration_inserted);
+  MaybeSetupDeferredReceivers(navigation_id);
+
   // A navigation-associated interface is used for
   // `blink::mojom::ConversionHost` and an `AssociatedReceiver` is used on the
   // browser side, therefore it's guaranteed that
@@ -521,18 +523,17 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
       it != navigation_data_host_map_.end()) {
     // We defer trigger registrations until background registrations complete;
     // when the navigation data host disconnects.
-    auto [_, inserted] =
+    auto [__, inserted] =
         ongoing_background_registrations_.emplace(navigation_id);
     DCHECK(inserted);
-    MaybeSetupDeferredReceivers(navigation_id);
 
     receivers_.Add(
-        this, std::move(it->second.data_host),
+        this, std::move(it->second),
         RegistrationContext(
             /*context_origin=*/source_origin, RegistrationType::kSource,
             is_within_fenced_frame, render_frame_id,
             RegistrationNavigationContext(navigation_id,
-                                          std::move(it->second.input_event))));
+                                          std::move(input_event))));
 
     navigation_data_host_map_.erase(it);
     RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
@@ -545,53 +546,44 @@ bool AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
     const blink::AttributionSrcToken& attribution_src_token,
     const net::HttpResponseHeaders* headers,
     SuitableOrigin reporting_origin,
-    const SuitableOrigin& source_origin,
-    AttributionInputEvent input_event,
-    bool is_within_fenced_frame,
-    GlobalRenderFrameHostId render_frame_id,
-    int64_t navigation_id,
-    network::AttributionReportingRuntimeFeatures runtime_features,
-    bool is_final_response) {
+    network::AttributionReportingRuntimeFeatures runtime_features) {
   auto header = RegistrarAndHeader::Get(
       headers, runtime_features.Has(
                    network::AttributionReportingRuntimeFeature::kCrossAppWeb));
-  if (header.has_value()) {
-    auto [it, inserted] = registrations_.emplace(
-        SourceRegistrationsId(attribution_src_token),
-        RegistrationContext(/*context_origin=*/source_origin,
-                            RegistrationType::kSource, is_within_fenced_frame,
-                            render_frame_id,
-                            RegistrationNavigationContext(
-                                navigation_id, std::move(input_event))));
-    DCHECK(!it->registrations_complete());
-
-    // We defer trigger registrations until source parsing completes.
-    MaybeSetupDeferredReceivers(navigation_id);
-    ParseSource(it, std::move(reporting_origin), std::move(*header));
+  if (!header.has_value()) {
+    return false;
   }
 
-  if (is_final_response) {
-    // The eligible data host should have been bound in
-    // `NotifyNavigationStartedForDataHost()`.
-    // For non-top level navigation and same document navigation,
-    // `AttributionHost::RegisterNavigationDataHost()` will be called but not
-    // `NotifyNavigationStartedForDataHost()`, therefore these navigations would
-    // still be tracked.
-    if (auto it = navigation_data_host_map_.find(attribution_src_token);
-        it != navigation_data_host_map_.end()) {
-      navigation_data_host_map_.erase(it);
-      RecordNavigationDataHostStatus(NavigationDataHostStatus::kIneligible);
-    }
+  auto it = registrations_.find(attribution_src_token);
+  CHECK(it != registrations_.end());
+  CHECK(!it->registrations_complete());
 
-    // We are not guaranteed to be processing registrations for a given
-    // navigation.
-    if (auto it = registrations_.find(attribution_src_token);
-        it != registrations_.end()) {
-      it->CompleteRegistrations();
-      MaybeOnRegistrationsFinished(it);
-    }
+  ParseSource(it, std::move(reporting_origin), std::move(*header));
+  return true;
+}
+
+void AttributionDataHostManagerImpl::NotifyNavigationRegistrationCompleted(
+    const blink::AttributionSrcToken& attribution_src_token) {
+  // The eligible data host should have been bound in
+  // `NotifyNavigationRegistrationStarted()`. For non-top level navigation and
+  // same document navigation, `AttributionHost::RegisterNavigationDataHost()`
+  // will be called but not `NotifyNavigationRegistrationStarted()`, therefore
+  // these navigations would still be tracked.
+  if (auto it = navigation_data_host_map_.find(attribution_src_token);
+      it != navigation_data_host_map_.end()) {
+    navigation_data_host_map_.erase(it);
+    RecordNavigationDataHostStatus(NavigationDataHostStatus::kIneligible);
   }
-  return header.has_value();
+
+  // It is possible to have no registration stored if
+  // `NotifyNavigationRegistrationStarted` wasn't previously called for this
+  // token. `NotifyNavigationRegistrationCompleted` is still called for these
+  // requests to the support cleanup above of `navigation_data_host_map_`.
+  if (auto it = registrations_.find(attribution_src_token);
+      it != registrations_.end()) {
+    it->CompleteRegistrations();
+    MaybeOnRegistrationsFinished(it);
+  }
 }
 
 const AttributionDataHostManagerImpl::RegistrationContext*

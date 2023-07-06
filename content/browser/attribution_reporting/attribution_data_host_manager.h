@@ -55,44 +55,48 @@ class AttributionDataHostManager
 
   // Registers a new data host which is associated with a navigation. The
   // context origin will be provided at a later time in
-  // `NotifyNavigationStartedForDataHost()` called with the same
+  // `NotifyNavigationRegistrationStarted()` called with the same
   // `attribution_src_token`. Returns `false` if `attribution_src_token` was
   // already registered.
   virtual bool RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-      const blink::AttributionSrcToken& attribution_src_token,
-      AttributionInputEvent input_event) = 0;
+      const blink::AttributionSrcToken& attribution_src_token) = 0;
 
-  // Notifies the manager that a navigation has started for a given data host.
+  // Notifies the manager that an attribution-enabled navigation has started.
   // This may arrive before or after the attribution configuration is available
   // for a given data host. Passes the topmost ancestor of the initiator render
-  // frame for obtaining the page access report.
+  // frame, `render_fame_id`, for obtaining the page access report. Every call
+  // to `NotifyNavigationRegistrationStarted` must be eventually
+  // followed by a call to `NotifyNavigationRegistrationCompleted`
+  // with the same `attribution_src_token`.
   virtual void NotifyNavigationRegistrationStarted(
       const blink::AttributionSrcToken& attribution_src_token,
+      AttributionInputEvent input_event,
       const attribution_reporting::SuitableOrigin& source_origin,
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id,
       int64_t navigation_id) = 0;
 
-  // Notifies the manager that an attribution-enabled navigation has sent a
-  // response. May be called multiple times for the same navigation.
-  // Important: `headers` is untrusted. Passes the topmost ancestor of the
-  // initiator render frame for obtaining the page access report.
-  // `is_final_response` indicates whether this is a redirect or a final
-  // response.
+  // Notifies the manager that an attribution request tied to an
+  // attribution-enabled navigation with token `attribution_src_token` has sent
+  // a response. It might be called multiple times for the same navigation; for
+  // redirects and a final response. Important: `headers` is untrusted. Must
+  // only be called for `attribution_src_token` for which
+  // `NotifyNavigationRegistrationStarted` was previously called.
   //
   // Returns true if there was Attribution Reporting relevant response headers.
   virtual bool NotifyNavigationRegistrationData(
       const blink::AttributionSrcToken& attribution_src_token,
       const net::HttpResponseHeaders* headers,
       attribution_reporting::SuitableOrigin reporting_origin,
-      const attribution_reporting::SuitableOrigin& source_origin,
-      AttributionInputEvent input_event,
-      bool is_within_fenced_frame,
-      GlobalRenderFrameHostId render_frame_id,
-      int64_t navigation_id,
-      network::AttributionReportingRuntimeFeatures,
-      bool is_final_response) = 0;
+      network::AttributionReportingRuntimeFeatures) = 0;
+
+  // Notifies the manager whenever an attribution-enabled navigation request
+  // completes. Should be called even for navigations when
+  // `NotifyNavigationRegistrationStarted` did not get call for the token as
+  // `RegisterNavigationDataHost` might have been called with the token.
+  virtual void NotifyNavigationRegistrationCompleted(
+      const blink::AttributionSrcToken& attribution_src_token) = 0;
 
   // Notifies the manager that a fenced frame reporting beacon was initiated
   // for reportEvent or for an automatic beacon and should be tracked.
