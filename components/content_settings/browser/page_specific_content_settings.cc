@@ -1404,6 +1404,31 @@ void PageSpecificContentSettings::OnPrerenderingPageActivation() {
   updates_queued_during_prerender_.reset();
 }
 
+void PageSpecificContentSettings::OnCapturingStateChanged(
+    ContentSettingsType type,
+    bool is_capturing) {
+  DCHECK(type == ContentSettingsType::MEDIASTREAM_MIC ||
+         type == ContentSettingsType::MEDIASTREAM_CAMERA);
+
+  MicrophoneCameraStateFlags state =
+      type == ContentSettingsType::MEDIASTREAM_MIC ? kMicrophoneAccessed
+                                                   : kCameraAccessed;
+
+  if (is_capturing) {
+    microphone_camera_state_.Put(state);
+  } else {
+    microphone_camera_state_.Remove(state);
+  }
+
+  // If `kMicrophoneAccessed` and `kCameraAccessed` not set, reset
+  // `microphone_camera_state_`.
+  if (microphone_camera_state_.HasAny({kMicrophoneAccessed, kCameraAccessed})) {
+    microphone_camera_state_.Clear();
+  }
+
+  MaybeUpdateLocationBar();
+}
+
 void PageSpecificContentSettings::MaybeNotifySiteDataObservers(
     const AccessDetails& access_details) {
   if (IsEmbeddedPage())

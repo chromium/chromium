@@ -24,6 +24,8 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/guest_view/browser/guest_view_base.h"
 #endif
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/prefs/pref_service.h"
@@ -37,7 +39,14 @@ namespace chrome {
 
 PageSpecificContentSettingsDelegate::PageSpecificContentSettingsDelegate(
     content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    : WebContentsObserver(web_contents) {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kImprovedSemanticsActivityIndicators)) {
+    media_observation_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
+                                   ->GetMediaStreamCaptureIndicator()
+                                   .get());
+  }
+}
 
 PageSpecificContentSettingsDelegate::~PageSpecificContentSettingsDelegate() =
     default;
@@ -48,6 +57,38 @@ PageSpecificContentSettingsDelegate::FromWebContents(
     content::WebContents* web_contents) {
   return static_cast<PageSpecificContentSettingsDelegate*>(
       PageSpecificContentSettings::GetDelegateForWebContents(web_contents));
+}
+
+void PageSpecificContentSettingsDelegate::OnIsCapturingVideoChanged(
+    content::WebContents* web_contents,
+    bool is_capturing_video) {
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents->GetPrimaryMainFrame());
+
+  if (pscs == nullptr) {
+    // There are cases, e.g. MPArch, where there is no active instance of
+    // PageSpecificContentSettings for a frame.
+    return;
+  }
+
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA,
+                                is_capturing_video);
+}
+
+void PageSpecificContentSettingsDelegate::OnIsCapturingAudioChanged(
+    content::WebContents* web_contents,
+    bool is_capturing_audio) {
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents->GetPrimaryMainFrame());
+
+  if (pscs == nullptr) {
+    // There are cases, e.g. MPArch, where there is no active instance of
+    // PageSpecificContentSettings for a frame.
+    return;
+  }
+
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_MIC,
+                                is_capturing_audio);
 }
 
 void PageSpecificContentSettingsDelegate::UpdateLocationBar() {

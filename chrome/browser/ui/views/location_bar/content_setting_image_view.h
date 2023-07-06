@@ -102,6 +102,10 @@ class ContentSettingImageView : public IconLabelBubbleView,
     return content_setting_image_model_->get_icon_for_testing();
   }
 
+  const gfx::VectorIcon* get_icon_badge_for_testing() const {
+    return content_setting_image_model_->get_icon_badge();
+  }
+
  private:
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

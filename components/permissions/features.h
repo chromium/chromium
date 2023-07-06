@@ -76,6 +76,9 @@ BASE_DECLARE_FEATURE(kWindowManagementPermissionAlias);
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kBlockMidiByDefault);
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kImprovedSemanticsActivityIndicators);
+
 }  // namespace features
 namespace feature_params {
 

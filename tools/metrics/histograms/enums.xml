@@ -64586,6 +64586,7 @@ from previous Chrome versions.
   <int value="417076452" label="EnableManagedByParentUi:enabled"/>
   <int value="417709910"
       label="AutofillSendExperimentIdsInPaymentsRPCs:disabled"/>
+  <int value="417742858" label="ImprovedSemanticsActivityIndicators:enabled"/>
   <int value="418769094" label="MixedContentSiteSetting:enabled"/>
   <int value="420160748" label="CornerShortcuts:enabled"/>
   <int value="420356964" label="OobeJelly:enabled"/>
@@ -64915,6 +64916,7 @@ from previous Chrome versions.
   <int value="606969417" label="DiscoverApp:enabled"/>
   <int value="608761130" label="PrintSaveToDrive:enabled"/>
   <int value="609112512" label="touch-selection-strategy"/>
+  <int value="609568740" label="ImprovedSemanticsActivityIndicators:disabled"/>
   <int value="609580715" label="ArcCupsApi:disabled"/>
   <int value="610545308" label="enable-potentially-annoying-security-features"/>
   <int value="613629912" label="LookalikeUrlNavigationSuggestions:enabled"/>

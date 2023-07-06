@@ -460,6 +460,9 @@ class PageSpecificContentSettings
   // called after the page activates.
   void OnPrerenderingPageActivation();
 
+  // This method is called when audio or video capturing is started or finished.
+  void OnCapturingStateChanged(ContentSettingsType type, bool is_capturing);
+
  private:
   friend class content::PageUserData<PageSpecificContentSettings>;
 
