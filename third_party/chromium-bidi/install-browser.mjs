@@ -28,14 +28,23 @@
  *  - `node install-browser.mjs /tmp/cache`
  */
 
-import fs from 'fs/promises';
+import {readFile} from 'fs/promises';
+import {homedir} from 'os';
+import {resolve} from 'path';
 
 import {install, computeExecutablePath} from '@puppeteer/browsers';
 import actions from '@actions/core';
 
+const SHELL_ARG = '--shell';
+
 try {
-  const browserSpec = (await fs.readFile('.browser', 'utf-8')).trim();
-  const cacheDir = process.argv[2] || process.cwd();
+  const browserSpec = (await readFile('.browser', 'utf-8')).trim();
+
+  let cacheDir = resolve(homedir(), '.cache/chromium-bidi');
+  if (process.argv[2] && process.argv[2] !== SHELL_ARG) {
+    cacheDir = process.argv[2];
+  }
+
   // See .browser for the format.
   const browser = browserSpec.split('@')[0];
   const buildId = browserSpec.split('@')[1];
@@ -49,7 +58,9 @@ try {
     browser,
     buildId,
   });
-  actions.setOutput('executablePath', executablePath);
+  if (!process.argv.includes(SHELL_ARG)) {
+    actions.setOutput('executablePath', executablePath);
+  }
   console.log(executablePath);
 } catch (err) {
   actions.setFailed(`Failed to download the browser: ${err.message}`);

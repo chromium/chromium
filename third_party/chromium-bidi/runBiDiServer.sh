@@ -19,7 +19,14 @@ if [[ $# -gt 0 && ("$1" == "-h" || "$1" == "--help") ]]; then
 fi
 
 # The chrome release channel to use: `stable`, `beta`, `canary`, `dev`.
-readonly CHANNEL="${CHANNEL:-dev}"
+# `local` means to use the browser version specified in `.browser`.
+CHANNEL="${CHANNEL:-local}"
+
+if [ "$CHANNEL" == "local" ]; then
+  export BROWSER_BIN="$(node install-browser.mjs --shell)"
+  # Need to pass valid CHANNEL to the command below
+  CHANNEL='canary'
+fi
 
 # Options from npm 'debug' package. DEBUG= (empty) is allowed, hence no colon below.
 readonly DEBUG="${DEBUG-*}"
