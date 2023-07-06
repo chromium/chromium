@@ -798,20 +798,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return margin_box_outsets_.right;
   }
   void SetMargin(const NGPhysicalBoxStrut&);
-  void SetMarginBefore(LayoutUnit value, const ComputedStyle& override_style) {
-    NOT_DESTROYED();
-    WritingDirectionMode mode = override_style.GetWritingDirection();
-    NGBoxStrut logical_margin = margin_box_outsets_.ConvertToLogical(mode);
-    logical_margin.block_start = value;
-    margin_box_outsets_ = logical_margin.ConvertToPhysical(mode);
-  }
-  void SetMarginAfter(LayoutUnit value, const ComputedStyle& override_style) {
-    NOT_DESTROYED();
-    WritingDirectionMode mode = override_style.GetWritingDirection();
-    NGBoxStrut logical_margin = margin_box_outsets_.ConvertToLogical(mode);
-    logical_margin.block_end = value;
-    margin_box_outsets_ = logical_margin.ConvertToPhysical(mode);
-  }
 
   void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const override;
@@ -918,9 +904,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                                   LayoutUnit& margin_end,
                                   Length margin_start_length,
                                   Length margin_start_end) const;
-
-  // Used to resolve margins in the containing block's block-flow direction.
-  void ComputeAndSetBlockDirectionMargins(const LayoutBlock* containing_block);
 
   enum PageBoundaryRule { kAssociateWithFormerPage, kAssociateWithLatterPage };
 
