@@ -496,6 +496,14 @@ public class OmniboxResourceProvider {
                         R.dimen.omnibox_suggestion_header_padding_top_smallest));
     }
 
+    /** Returns the min height of the header view. */
+    public static int getHeaderMinHeight(Context context) {
+        return context.getResources().getDimensionPixelSize(
+                selectMarginDimen(context, R.dimen.omnibox_suggestion_header_height_modern_phase2,
+                        R.dimen.omnibox_suggestion_header_height_modern_phase2_smaller,
+                        R.dimen.omnibox_suggestion_header_height_modern_phase2_smallest));
+    }
+
     /**
      * Returns the size of the spacer on the left side of the status view when the omnibox is
      * focused.
