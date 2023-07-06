@@ -536,9 +536,12 @@ src/webgpu/shader/validation/parse/unary_ops.spec.ts
 src/webgpu/shader/validation/parse/var_and_let.spec.ts
 src/webgpu/shader/validation/resource_interface/util.ts
 src/webgpu/shader/validation/resource_interface/bindings.spec.ts
+src/webgpu/shader/validation/shader_io/binding.spec.ts
 src/webgpu/shader/validation/shader_io/util.ts
 src/webgpu/shader/validation/shader_io/builtins.spec.ts
 src/webgpu/shader/validation/shader_io/entry_point.spec.ts
+src/webgpu/shader/validation/shader_io/group.spec.ts
+src/webgpu/shader/validation/shader_io/group_and_binding.spec.ts
 src/webgpu/shader/validation/shader_io/id.spec.ts
 src/webgpu/shader/validation/shader_io/interpolate.spec.ts
 src/webgpu/shader/validation/shader_io/invariant.spec.ts
