@@ -1,4 +1,0 @@
-Tests the Timeline events for GPUTask
-
-Found GPUTask events: true
-

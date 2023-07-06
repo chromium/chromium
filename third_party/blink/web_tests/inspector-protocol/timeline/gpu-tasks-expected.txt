@@ -1,0 +1,5 @@
+Tests generation of GPU tasks
+Recording started
+Tracing complete
+Got the expected amount of GPUTasks (at least 5): true
+
