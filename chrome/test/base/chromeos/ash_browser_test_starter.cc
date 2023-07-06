@@ -100,8 +100,9 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
     // Unlikely the path still exist. But in case it happens, we would let
     // the browser test framework to create the tmp folder as usual.
     if (!base::PathExists(test_output_folder)) {
-      command_line->AppendSwitchPath(switches::kUserDataDir,
-                                     test_output_folder);
+      // TODO(crbug.com/1459001) Re-enable logging on bots.
+      // command_line->AppendSwitchPath(switches::kUserDataDir,
+      //                                test_output_folder);
     }
   } else {
     LOG(WARNING)
