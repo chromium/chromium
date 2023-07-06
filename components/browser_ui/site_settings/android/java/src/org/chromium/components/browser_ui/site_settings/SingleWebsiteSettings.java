@@ -432,6 +432,11 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                     merged.addStorageInfo(storageInfo);
                 }
             }
+            for (SharedDictionaryInfo sharedDictionaryInfo : other.getSharedDictionaryInfo()) {
+                if (origin.equals(sharedDictionaryInfo.getOrigin())) {
+                    merged.addSharedDictionaryInfo(sharedDictionaryInfo);
+                }
+            }
             if (merged.getFPSCookieInfo() == null && other.getFPSCookieInfo() != null
                     && domainAndRegistry.equals(other.getAddress().getDomainAndRegistry())) {
                 merged.setFPSCookieInfo(other.getFPSCookieInfo());

@@ -92,6 +92,18 @@ public class WebsitePreferenceBridge {
     }
 
     @CalledByNative
+    private static Object createSharedDictionaryInfoList() {
+        return new ArrayList<SharedDictionaryInfo>();
+    }
+
+    @SuppressWarnings("unchecked")
+    @CalledByNative
+    private static void insertSharedDictionaryInfoIntoList(
+            ArrayList<SharedDictionaryInfo> list, String origin, String topFrameSite, long size) {
+        list.add(new SharedDictionaryInfo(origin, topFrameSite, size));
+    }
+
+    @CalledByNative
     private static Object createCookiesInfoMap() {
         return new HashMap<String, CookiesInfo>();
     }
@@ -134,6 +146,11 @@ public class WebsitePreferenceBridge {
     public void fetchStorageInfo(
             BrowserContextHandle browserContextHandle, Callback<ArrayList> callback) {
         WebsitePreferenceBridgeJni.get().fetchStorageInfo(browserContextHandle, callback);
+    }
+
+    public void fetchSharedDictionaryInfo(
+            BrowserContextHandle browserContextHandle, Callback<ArrayList> callback) {
+        WebsitePreferenceBridgeJni.get().fetchSharedDictionaryInfo(browserContextHandle, callback);
     }
 
     public void fetchCookiesInfo(BrowserContextHandle browserContextHandle,
@@ -394,6 +411,8 @@ public class WebsitePreferenceBridge {
         void clearCookieData(BrowserContextHandle browserContextHandle, String path);
         void clearLocalStorageData(
                 BrowserContextHandle browserContextHandle, String path, Object callback);
+        void clearSharedDictionary(BrowserContextHandle browserContextHandle, String origin,
+                String topLevelSite, Object callback);
         void clearStorageData(BrowserContextHandle browserContextHandle, String origin, int type,
                 Object callback);
         void getChosenObjects(BrowserContextHandle browserContextHandle,
@@ -405,6 +424,7 @@ public class WebsitePreferenceBridge {
         boolean urlMatchesContentSettingsPattern(String url, String pattern);
         void fetchCookiesInfo(BrowserContextHandle browserContextHandle, Object callback);
         void fetchStorageInfo(BrowserContextHandle browserContextHandle, Object callback);
+        void fetchSharedDictionaryInfo(BrowserContextHandle browserContextHandle, Object callback);
         void fetchLocalStorageInfo(BrowserContextHandle browserContextHandle, Object callback,
                 boolean includeImportant);
         void getOriginsForPermission(BrowserContextHandle browserContextHandle,

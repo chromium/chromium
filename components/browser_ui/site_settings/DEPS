@@ -15,6 +15,7 @@ include_rules = [
   "+content/public/browser",
   "+content/public/test",
   "+net/cookies",
+  "+net/extras/shared_dictionary",
   "+services/device/public",
   "+services/network/public",
   "+storage/browser",

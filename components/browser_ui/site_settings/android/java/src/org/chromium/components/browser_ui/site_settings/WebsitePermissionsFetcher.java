@@ -269,6 +269,8 @@ public class WebsitePermissionsFetcher {
             queue.add(new LocalStorageInfoFetcher());
             // Website storage is per-host.
             queue.add(new WebStorageInfoFetcher());
+            // Shared Dictionary info is per {origin, top level site}.
+            queue.add(new SharedDictionaryInfoFetcher());
         }
 
         private void addFetcherForContentSettingsType(
@@ -491,6 +493,27 @@ public class WebsitePermissionsFetcher {
                                     // conversion.
                                     String origin = WebsiteAddress.create(address).getOrigin();
                                     findOrCreateSite(origin, null).addStorageInfo(info);
+                                }
+                                queue.next();
+                            }
+                        });
+            }
+        }
+
+        private class SharedDictionaryInfoFetcher extends Task {
+            @Override
+            public void runAsync(final TaskQueue queue) {
+                mWebsitePreferenceBridge.fetchSharedDictionaryInfo(
+                        mBrowserContextHandle, new Callback<ArrayList>() {
+                            @Override
+                            public void onResult(ArrayList result) {
+                                @SuppressWarnings("unchecked")
+                                ArrayList<SharedDictionaryInfo> infoArray = result;
+
+                                for (SharedDictionaryInfo info : infoArray) {
+                                    String origin = info.getOrigin();
+                                    if (origin == null) continue;
+                                    findOrCreateSite(origin, null).addSharedDictionaryInfo(info);
                                 }
                                 queue.next();
                             }
