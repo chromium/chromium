@@ -1403,6 +1403,8 @@ bool SyncServiceImpl::HasObserver(const SyncServiceObserver* observer) const {
 
 ModelTypeSet SyncServiceImpl::GetPreferredDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/1134090): If in transport mode, filter out types that aren't
+  // supported - basically, merge GetDataTypesToConfigure() into this.
   return user_settings_->GetPreferredDataTypes();
 }
 

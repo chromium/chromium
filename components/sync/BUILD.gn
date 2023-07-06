@@ -288,6 +288,7 @@ source_set("unit_tests") {
     "//components/invalidation/impl",
     "//components/os_crypt/sync",
     "//components/os_crypt/sync:test_support",
+    "//components/password_manager/core/common:features",
     "//components/prefs:test_support",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",

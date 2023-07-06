@@ -1618,9 +1618,14 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorOnSyncPaused) {
             SyncService::ModelTypeDownloadStatus::kError);
 }
 
+// These tests cover signing in after browser startup, which isn't supported on
+// ChromeOS-Ash (where there's always a signed-in user).
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(
     SyncServiceImplTest,
     GetTypesWithPendingDownloadForInitialSyncDuringFirstSyncInTransportMode) {
+  base::test::ScopedFeatureList feature_list(kEnableBookmarksAccountStorage);
+
   component_factory()->AllowFakeEngineInitCompletion(false);
   InitializeService();
   base::RunLoop().RunUntilIdle();
@@ -1696,6 +1701,7 @@ TEST_F(SyncServiceImplTest,
   EXPECT_EQ(ModelTypeSet(),
             service()->GetTypesWithPendingDownloadForInitialSync());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(SyncServiceImplTest,
        GetTypesWithPendingDownloadForInitialSyncDuringNthSync) {

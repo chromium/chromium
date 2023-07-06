@@ -1235,14 +1235,11 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTestWithSyncTransport,
             sync_service->GetTransportState());
   ASSERT_FALSE(sync_service->IsSyncFeatureEnabled());
 
-  // History Sync is not active, but (maybe surprisingly) TYPED_URLS is still
-  // considered part of the "chosen" data types, since the user hasn't disabled
-  // it.
+  // History Sync is not active.
+  ASSERT_FALSE(sync_service->GetActiveDataTypes().Has(syncer::HISTORY));
   ASSERT_FALSE(sync_service->GetActiveDataTypes().Has(syncer::TYPED_URLS));
   ASSERT_FALSE(sync_service->GetActiveDataTypes().Has(
       syncer::HISTORY_DELETE_DIRECTIVES));
-  ASSERT_TRUE(sync_service->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kHistory));
 
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
 }

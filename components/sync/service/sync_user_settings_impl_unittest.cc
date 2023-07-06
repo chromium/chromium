@@ -6,19 +6,16 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/engine/configure_reason.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service_crypto.h"
 #include "components/sync/test/mock_trusted_vault_client.h"
@@ -117,7 +114,17 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
 
 TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInTransportMode) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kReplaceSyncPromosWithSignInPromos);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kReplaceSyncPromosWithSignInPromos,
+                            kEnableBookmarksAccountStorage,
+                            kReadingListEnableDualReadingListModel,
+                            kReadingListEnableSyncTransportModeUponSignIn,
+                            password_manager::features::
+                                kEnablePasswordsAccountStorage,
+                            kSyncEnableContactInfoDataType,
+                            kSyncEnableContactInfoDataTypeInTransportMode,
+                            kEnablePreferencesAccountStorage},
+      /*disabled_features=*/{});
 
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes(), /*in_transport_mode=*/true);
@@ -125,8 +132,13 @@ TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInTransportMode) {
   UserSelectableTypeSet registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
   UserSelectableTypeSet selected_types = sync_user_settings->GetSelectedTypes();
-  UserSelectableTypeSet expected_disabled_types = {UserSelectableType::kHistory,
-                                                   UserSelectableType::kTabs};
+  // History and Tabs require a separate opt-in.
+  // Apps, Extensions, Themes, and SavedTabGroups are not supported in transport
+  // mode.
+  UserSelectableTypeSet expected_disabled_types = {
+      UserSelectableType::kHistory, UserSelectableType::kTabs,
+      UserSelectableType::kApps,    UserSelectableType::kExtensions,
+      UserSelectableType::kThemes,  UserSelectableType::kSavedTabGroups};
 
   EXPECT_EQ(selected_types,
             Difference(registered_types, expected_disabled_types));

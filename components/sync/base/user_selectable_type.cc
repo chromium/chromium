@@ -4,6 +4,8 @@
 
 #include "components/sync/base/user_selectable_type.h"
 
+#include <ostream>
+
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/features.h"
@@ -245,5 +247,14 @@ ModelType UserSelectableOsTypeToCanonicalModelType(UserSelectableOsType type) {
   return GetUserSelectableOsTypeInfo(type).canonical_model_type;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+std::ostream& operator<<(std::ostream& stream, const UserSelectableType& type) {
+  return stream << GetUserSelectableTypeName(type);
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const UserSelectableTypeSet& types) {
+  return stream << UserSelectableTypeSetToString(types);
+}
 
 }  // namespace syncer

@@ -7,10 +7,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/testing_pref_service.h"
@@ -235,39 +235,85 @@ TEST_F(SyncPrefsTest, SetTypeDisabledByPolicy) {
 
 TEST_F(SyncPrefsTest, DefaultSelectedTypesInTransportMode) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kReplaceSyncPromosWithSignInPromos);
+  features.InitWithFeatures(
+      /*enabled_features=*/{kEnableBookmarksAccountStorage,
+                            kReadingListEnableDualReadingListModel,
+                            kReadingListEnableSyncTransportModeUponSignIn,
+                            password_manager::features::
+                                kEnablePasswordsAccountStorage,
+                            kSyncEnableContactInfoDataType,
+                            kSyncEnableContactInfoDataTypeInTransportMode,
+                            kEnablePreferencesAccountStorage},
+      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
+
+  // Based on the feature flags set above, Bookmarks, ReadingList, Passwords,
+  // and Autofill are supported and enabled by default.
+  // Preferences, History, and Tabs are not supported without
+  // kReplaceSyncPromosWithSignInPromos.
+  UserSelectableTypeSet expected_types{
+      UserSelectableType::kBookmarks, UserSelectableType::kReadingList,
+      UserSelectableType::kPasswords, UserSelectableType::kAutofill};
 
 #if BUILDFLAG(IS_IOS)
   // On iOS, Bookmarks and Reading list require a dedicated opt-in.
-  EXPECT_EQ(sync_prefs_->GetSelectedTypes(
-                SyncPrefs::SyncAccountState::kSignedInNotSyncing),
-            base::Difference(UserSelectableTypeSet::All(),
-                             {UserSelectableType::kBookmarks,
-                              UserSelectableType::kReadingList}));
+  EXPECT_EQ(
+      sync_prefs_->GetSelectedTypes(
+          SyncPrefs::SyncAccountState::kSignedInNotSyncing),
+      base::Difference(expected_types, {UserSelectableType::kBookmarks,
+                                        UserSelectableType::kReadingList}));
 
   sync_prefs_->SetBookmarksAndReadingListAccountStorageOptIn(true);
 #endif
+
   EXPECT_EQ(sync_prefs_->GetSelectedTypes(
                 SyncPrefs::SyncAccountState::kSignedInNotSyncing),
-            UserSelectableTypeSet::All());
+            expected_types);
 }
 
 TEST_F(SyncPrefsTest, DefaultSelectedTypesForAccountInTransportMode) {
-  base::test::ScopedFeatureList features(kReplaceSyncPromosWithSignInPromos);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{kReplaceSyncPromosWithSignInPromos,
+                            kEnableBookmarksAccountStorage,
+                            kReadingListEnableDualReadingListModel,
+                            kReadingListEnableSyncTransportModeUponSignIn,
+                            password_manager::features::
+                                kEnablePasswordsAccountStorage,
+                            kSyncEnableContactInfoDataType,
+                            kSyncEnableContactInfoDataTypeInTransportMode,
+                            kEnablePreferencesAccountStorage},
+      /*disabled_features=*/{});
 
-  // History and tabs require a dedicated opt-in.
+  // Based on the feature flags set above, Bookmarks, ReadingList, Passwords,
+  // Autofill, and Preferences are supported and enabled by default.
+  // (History and Tabs are also supported, but require a separate opt-in.)
+  UserSelectableTypeSet expected_types{
+      UserSelectableType::kBookmarks, UserSelectableType::kReadingList,
+      UserSelectableType::kPasswords, UserSelectableType::kAutofill,
+      UserSelectableType::kPreferences};
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
-            base::Difference(
-                UserSelectableTypeSet::All(),
-                {UserSelectableType::kHistory, UserSelectableType::kTabs}));
+            expected_types);
 }
 
 TEST_F(SyncPrefsTest, SetSelectedTypesInTransportMode) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kReplaceSyncPromosWithSignInPromos);
+  features.InitWithFeatures(
+      /*enabled_features=*/{kEnableBookmarksAccountStorage,
+                            kReadingListEnableDualReadingListModel,
+                            kReadingListEnableSyncTransportModeUponSignIn,
+                            password_manager::features::
+                                kEnablePasswordsAccountStorage,
+                            kSyncEnableContactInfoDataType,
+                            kSyncEnableContactInfoDataTypeInTransportMode},
+      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
+
+#if BUILDFLAG(IS_IOS)
+  // On iOS, Bookmarks and Reading list require a dedicated opt-in.
+  sync_prefs_->SetBookmarksAndReadingListAccountStorageOptIn(true);
+#endif
 
   const UserSelectableTypeSet new_types = {UserSelectableType::kAutofill,
-                                           UserSelectableType::kPreferences};
+                                           UserSelectableType::kPasswords};
   ASSERT_NE(sync_prefs_->GetSelectedTypes(
                 SyncPrefs::SyncAccountState::kSignedInNotSyncing),
             new_types);
@@ -294,10 +340,16 @@ TEST_F(SyncPrefsTest, SetSelectedTypesInTransportMode) {
 }
 
 TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
-  base::test::ScopedFeatureList features(kReplaceSyncPromosWithSignInPromos);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{kReplaceSyncPromosWithSignInPromos,
+                            password_manager::features::
+                                kEnablePasswordsAccountStorage},
+      /*disabled_features=*/{});
 
   const UserSelectableTypeSet default_selected_types =
       sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_);
+  ASSERT_TRUE(default_selected_types.Has(UserSelectableType::kPasswords));
 
   // Change one of the default values for example kPasswords.
   sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, false,
@@ -315,51 +367,60 @@ TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
 
 TEST_F(SyncPrefsTest, SetSelectedTypesInTransportModeWithPolicyRestrictedType) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kReplaceSyncPromosWithSignInPromos);
+  features.InitWithFeatures(
+      /*enabled_features=*/{password_manager::features::
+                                kEnablePasswordsAccountStorage},
+      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
-  pref_service_.SetManagedPref(prefs::internal::kSyncPreferences,
+  // Passwords is disabled by policy.
+  pref_service_.SetManagedPref(prefs::internal::kSyncPasswords,
                                base::Value(false));
 
-  // kPreferences should be disabled.
+  // kPasswords should be disabled.
   UserSelectableTypeSet selected_types = sync_prefs_->GetSelectedTypes(
       SyncPrefs::SyncAccountState::kSignedInNotSyncing);
   ASSERT_FALSE(selected_types.Empty());
-  EXPECT_FALSE(selected_types.Has(UserSelectableType::kPreferences));
+  EXPECT_FALSE(selected_types.Has(UserSelectableType::kPasswords));
 
-  // User tries to enable kPreferences.
+  // User tries to enable kPasswords.
   sync_prefs_->SetSelectedTypes(
       /*keep_everything_synced=*/false,
       /*registered_types=*/UserSelectableTypeSet::All(),
-      /*selected_types=*/{UserSelectableType::kPreferences});
+      /*selected_types=*/{UserSelectableType::kPasswords});
 
-  // kPreferences should still be disabled.
+  // kPasswords should still be disabled.
   EXPECT_FALSE(
       sync_prefs_
           ->GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
-          .Has(UserSelectableType::kPreferences));
+          .Has(UserSelectableType::kPasswords));
 }
 
 TEST_F(SyncPrefsTest,
        SetSelectedTypesForAccountInTransportModeWithPolicyRestrictedType) {
-  base::test::ScopedFeatureList feature_list(
-      kReplaceSyncPromosWithSignInPromos);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{kReplaceSyncPromosWithSignInPromos,
+                            password_manager::features::
+                                kEnablePasswordsAccountStorage},
+      /*disabled_features=*/{});
 
-  pref_service_.SetManagedPref(prefs::internal::kSyncPreferences,
+  // Passwords is disabled by policy.
+  pref_service_.SetManagedPref(prefs::internal::kSyncPasswords,
                                base::Value(false));
 
-  // kPreferences should be disabled.
+  // kPasswords should be disabled.
   UserSelectableTypeSet selected_types =
       sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_);
   ASSERT_FALSE(selected_types.Empty());
-  EXPECT_FALSE(selected_types.Has(UserSelectableType::kPreferences));
+  EXPECT_FALSE(selected_types.Has(UserSelectableType::kPasswords));
 
-  // User tries to enable kPreferences.
-  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPreferences, true,
+  // User tries to enable kPasswords.
+  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, true,
                                          gaia_id_hash_);
 
-  // kPreferences should still be disabled.
+  // kPasswords should still be disabled.
   EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
-                   .Has(UserSelectableType::kPreferences));
+                   .Has(UserSelectableType::kPasswords));
 }
 
 TEST_F(SyncPrefsTest, KeepAccountSettingsPrefsOnlyForUsers) {
@@ -792,9 +853,13 @@ TEST_F(SyncPrefsMigrationTest, SyncToSignin_TurnsPreferencesOff) {
 // one level higher to sync_user_settings_impl_unittest.
 TEST_F(SyncPrefsMigrationTest, SyncToSignin_MigratesBookmarksOptedIn) {
   {
-    // The feature starts disabled.
+    // The SyncToSignin feature starts disabled.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(kReplaceSyncPromosWithSignInPromos);
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{kEnableBookmarksAccountStorage,
+                              kReadingListEnableDualReadingListModel,
+                              kReadingListEnableSyncTransportModeUponSignIn},
+        /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
     // Bookmarks and ReadingList are enabled (by default - the actual prefs are
     // not set explicitly). On iOS, an additional opt-in pref is required.
@@ -813,10 +878,15 @@ TEST_F(SyncPrefsMigrationTest, SyncToSignin_MigratesBookmarksOptedIn) {
   }
 
   {
-    // Now (on the next browser restart) the feature gets enabled, and the
-    // migration runs.
-    base::test::ScopedFeatureList feature_list(
-        kReplaceSyncPromosWithSignInPromos);
+    // Now (on the next browser restart) the SyncToSignin feature gets enabled,
+    // and the migration runs.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{kEnableBookmarksAccountStorage,
+                              kReadingListEnableDualReadingListModel,
+                              kReadingListEnableSyncTransportModeUponSignIn,
+                              kReplaceSyncPromosWithSignInPromos},
+        /*disabled_features=*/{});
 
     SyncPrefs(&pref_service_)
         .MaybeMigratePrefsForSyncToSigninPart1(
@@ -840,9 +910,13 @@ TEST_F(SyncPrefsMigrationTest, SyncToSignin_MigratesBookmarksOptedIn) {
 TEST_F(SyncPrefsMigrationTest,
        DISABLED_SyncToSignin_MigratesBookmarksNotOptedIn) {
   {
-    // The feature starts disabled.
+    // The SyncToSignin feature starts disabled.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(kReplaceSyncPromosWithSignInPromos);
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{kEnableBookmarksAccountStorage,
+                              kReadingListEnableDualReadingListModel,
+                              kReadingListEnableSyncTransportModeUponSignIn},
+        /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
     // The regular Bookmarks and ReadingList prefs are enabled, but the
     // additional opt-in pref is not.
@@ -859,10 +933,15 @@ TEST_F(SyncPrefsMigrationTest,
   }
 
   {
-    // Now (on the next browser restart) the feature gets enabled, and the
-    // migration runs.
-    base::test::ScopedFeatureList feature_list(
-        kReplaceSyncPromosWithSignInPromos);
+    // Now (on the next browser restart) the SyncToSignin feature gets enabled,
+    // and the migration runs.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{kEnableBookmarksAccountStorage,
+                              kReadingListEnableDualReadingListModel,
+                              kReadingListEnableSyncTransportModeUponSignIn,
+                              kReplaceSyncPromosWithSignInPromos},
+        /*disabled_features=*/{});
 
     // Sanity check: Without the migration, Bookmarks and ReadingList would now
     // be considered enabled.

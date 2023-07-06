@@ -224,6 +224,8 @@ class SyncPrefs {
   static const char* GetPrefNameForOsType(UserSelectableOsType type);
 #endif
 
+  static bool IsTypeSupportedInTransportMode(UserSelectableType type);
+
   void OnSyncManagedPrefChanged();
   void OnFirstSetupCompletePrefChange();
 

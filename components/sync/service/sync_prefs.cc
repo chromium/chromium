@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_map.h"
@@ -169,6 +170,9 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
   UserSelectableTypeSet selected_types;
 
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
+    if (!IsTypeSupportedInTransportMode(type)) {
+      continue;
+    }
     const char* pref_name = GetPrefNameForType(type);
     DCHECK(pref_name);
     bool type_enabled = false;
@@ -194,6 +198,7 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
       selected_types.Put(type);
     }
   }
+
   return selected_types;
 }
 
@@ -209,6 +214,9 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypes(
     }
     case SyncAccountState::kSignedInNotSyncing: {
       for (UserSelectableType type : UserSelectableTypeSet::All()) {
+        if (!IsTypeSupportedInTransportMode(type)) {
+          continue;
+        }
         const char* pref_name = GetPrefNameForType(type);
         DCHECK(pref_name);
         CHECK(!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos))
@@ -498,6 +506,46 @@ void SyncPrefs::SetTypeDisabledByPolicy(PrefValueMap* policy_prefs,
   const char* pref_name = syncer::SyncPrefs::GetPrefNameForType(type);
   CHECK(pref_name);
   policy_prefs->SetValue(pref_name, base::Value(false));
+}
+
+// static
+bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
+  // Not all types are supported in transport mode, and many require one or more
+  // Features to be enabled.
+  switch (type) {
+    case UserSelectableType::kBookmarks:
+      return base::FeatureList::IsEnabled(kEnableBookmarksAccountStorage);
+    case UserSelectableType::kReadingList:
+      return base::FeatureList::IsEnabled(
+                 kReadingListEnableDualReadingListModel) &&
+             base::FeatureList::IsEnabled(
+                 kReadingListEnableSyncTransportModeUponSignIn);
+    case UserSelectableType::kPreferences:
+      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
+             base::FeatureList::IsEnabled(kEnablePreferencesAccountStorage);
+    case UserSelectableType::kPasswords:
+      return base::FeatureList::IsEnabled(
+          password_manager::features::kEnablePasswordsAccountStorage);
+    case UserSelectableType::kAutofill:
+      // Always supported, since AUTOFILL_WALLET_DATA (which is supported in
+      // transport mode everywhere) is covered by UserSelectableType::kAutofill.
+      return true;
+      // TODO(crbug.com/1435431): Once "Payments" is decoupled from "Autofill",
+      // check that the addresses type (CONTACT_INFO) is supported:
+      // return base::FeatureList::IsEnabled(kSyncEnableContactInfoDataType) &&
+      //        base::FeatureList::IsEnabled(
+      //            kSyncEnableContactInfoDataTypeInTransportMode);
+    case UserSelectableType::kHistory:
+    case UserSelectableType::kTabs:
+      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
+             base::FeatureList::IsEnabled(kSyncEnableHistoryDataType);
+    case UserSelectableType::kApps:
+    case UserSelectableType::kExtensions:
+    case UserSelectableType::kThemes:
+    case UserSelectableType::kSavedTabGroups:
+      // These types are not supported in transport mode yet.
+      return false;
+  }
 }
 
 void SyncPrefs::OnSyncManagedPrefChanged() {
