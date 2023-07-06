@@ -108,50 +108,10 @@ void RecordTitleEdit(BookmarkEditSource source) {
 }
 
 void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats) {
-  DCHECK_LE(stats.duplicate_url_bookmark_count, stats.total_url_bookmark_count);
-  DCHECK_LE(stats.duplicate_url_and_title_bookmark_count,
-            stats.duplicate_url_bookmark_count);
-  DCHECK_LE(stats.duplicate_url_and_title_and_parent_bookmark_count,
-            stats.duplicate_url_and_title_bookmark_count);
-
   base::UmaHistogramCounts100000(
       "Bookmarks.Count.OnProfileLoad3",
       base::saturated_cast<int>(stats.total_url_bookmark_count));
 
-  if (stats.duplicate_url_bookmark_count != 0) {
-    base::UmaHistogramCounts100000(
-        "Bookmarks.Count.OnProfileLoad.DuplicateUrl3",
-        base::saturated_cast<int>(stats.duplicate_url_bookmark_count));
-  }
-
-  if (stats.duplicate_url_and_title_bookmark_count != 0) {
-    base::UmaHistogramCounts100000(
-        "Bookmarks.Count.OnProfileLoad.DuplicateUrlAndTitle3",
-        base::saturated_cast<int>(
-            stats.duplicate_url_and_title_bookmark_count));
-  }
-
-  if (stats.duplicate_url_and_title_and_parent_bookmark_count != 0) {
-    base::UmaHistogramCounts100000(
-        "Bookmarks.Count.OnProfileLoad.DuplicateUrlAndTitleAndParent3",
-        base::saturated_cast<int>(
-            stats.duplicate_url_and_title_and_parent_bookmark_count));
-  }
-
-  // Log derived metrics for convenience.
-  base::UmaHistogramCounts100000(
-      "Bookmarks.Count.OnProfileLoad.UniqueUrl3",
-      base::saturated_cast<int>(stats.total_url_bookmark_count -
-                                stats.duplicate_url_bookmark_count));
-  base::UmaHistogramCounts100000(
-      "Bookmarks.Count.OnProfileLoad.UniqueUrlAndTitle3",
-      base::saturated_cast<int>(stats.total_url_bookmark_count -
-                                stats.duplicate_url_and_title_bookmark_count));
-  base::UmaHistogramCounts100000(
-      "Bookmarks.Count.OnProfileLoad.UniqueUrlAndTitleAndParent3",
-      base::saturated_cast<int>(
-          stats.total_url_bookmark_count -
-          stats.duplicate_url_and_title_and_parent_bookmark_count));
   base::UmaHistogramCounts1000(
       "Bookmarks.Times.OnProfileLoad.TimeSinceAdded3",
       base::saturated_cast<int>(stats.avg_num_days_since_added));

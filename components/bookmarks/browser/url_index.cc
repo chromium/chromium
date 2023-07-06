@@ -16,56 +16,6 @@ namespace bookmarks {
 
 namespace {
 
-// Computes and aggregates into |*stats| metrics corresponding to a particular
-// group of bookmarks with the same URL, listed in |*bookmarks_with_same_url|.
-// The caller is responsible to guarantee that these provided bookmarks all
-// share the same URL. Upon completion of this function, the state of
-// |*bookmarks_with_same_url| is unspecified, because the implementation is free
-// to modify its state desirable to avoid additional memory allocations on the
-// calling site.
-void AddStatsForBookmarksWithSameUrl(
-    std::vector<const BookmarkNode*>* bookmarks_with_same_url,
-    UrlLoadStats* stats) {
-  if (bookmarks_with_same_url->size() <= 1)
-    return;
-
-  stats->duplicate_url_bookmark_count += bookmarks_with_same_url->size() - 1;
-
-  // Sort only if there are 3 or more bookmarks. With exactly two (which is
-  // believed to be a common case) the precise ordering is irrelevant for the
-  // logic that follows.
-  if (bookmarks_with_same_url->size() > 2) {
-    std::sort(bookmarks_with_same_url->begin(), bookmarks_with_same_url->end(),
-              [](const BookmarkNode* a, const BookmarkNode* b) {
-                DCHECK_EQ(a->url(), b->url());
-                if (a->GetTitle() != b->GetTitle())
-                  return a->GetTitle() < b->GetTitle();
-                return a->parent() < b->parent();
-              });
-  }
-
-  size_t duplicate_title_count = 0;
-  size_t duplicate_title_and_parent_count = 0;
-
-  auto prev_i = bookmarks_with_same_url->begin();
-  for (auto i = std::next(prev_i); i != bookmarks_with_same_url->end();
-       ++i, ++prev_i) {
-    DCHECK_EQ((*prev_i)->url(), (*i)->url());
-    if ((*prev_i)->GetTitle() == (*i)->GetTitle()) {
-      ++duplicate_title_count;
-      if ((*prev_i)->parent() == (*i)->parent())
-        ++duplicate_title_and_parent_count;
-    }
-  }
-
-  DCHECK_LT(duplicate_title_count, bookmarks_with_same_url->size());
-  DCHECK_LE(duplicate_title_and_parent_count, duplicate_title_count);
-
-  stats->duplicate_url_and_title_bookmark_count += duplicate_title_count;
-  stats->duplicate_url_and_title_and_parent_bookmark_count +=
-      duplicate_title_and_parent_count;
-}
-
 void AddTimeStatsForBookmark(BookmarkNode* node,
                              base::Time now,
                              UrlLoadStats* stats) {
@@ -159,30 +109,13 @@ UrlLoadStats UrlIndex::ComputeStats() const {
 
   base::Time now = base::Time::Now();
   UrlLoadStats stats;
-  stats.total_url_bookmark_count = nodes_ordered_by_url_set_.size();
-  if (nodes_ordered_by_url_set_.begin() != nodes_ordered_by_url_set_.end()) {
-    AddTimeStatsForBookmark(*nodes_ordered_by_url_set_.begin(), now, &stats);
-  }
-
-  if (stats.total_url_bookmark_count <= 1)
-    return stats;
-
-  std::vector<const BookmarkNode*> bookmarks_with_same_url;
-  auto prev_i = nodes_ordered_by_url_set_.begin();
-  for (auto i = std::next(prev_i); i != nodes_ordered_by_url_set_.end();
-       ++i, ++prev_i) {
-    // Handle duplicate URL stats.
-    if ((*prev_i)->url() != (*i)->url()) {
-      AddStatsForBookmarksWithSameUrl(&bookmarks_with_same_url, &stats);
-      bookmarks_with_same_url.clear();
+  if (!nodes_ordered_by_url_set_.empty()) {
+    stats.total_url_bookmark_count = nodes_ordered_by_url_set_.size();
+    for (BookmarkNode* node : nodes_ordered_by_url_set_) {
+      AddTimeStatsForBookmark(node, now, &stats);
     }
-    bookmarks_with_same_url.push_back(*i);
-
-    AddTimeStatsForBookmark(*i, now, &stats);
+    stats.avg_num_days_since_added /= nodes_ordered_by_url_set_.size();
   }
-
-  stats.avg_num_days_since_added /= nodes_ordered_by_url_set_.size();
-  AddStatsForBookmarksWithSameUrl(&bookmarks_with_same_url, &stats);
   return stats;
 }
 
