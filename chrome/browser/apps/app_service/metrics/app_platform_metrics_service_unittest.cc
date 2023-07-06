@@ -217,7 +217,7 @@ class AppPlatformMetricsServiceTest
  public:
   void SetUp() override {
     AppPlatformMetricsServiceTestBase::SetUp();
-    if (IsLacrosPrimary()) {
+    if (IsLacrosEnabled()) {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/{ash::features::kLacrosSupport,
                                 ash::features::kLacrosPrimary,
@@ -227,10 +227,9 @@ class AppPlatformMetricsServiceTest
     } else {
       feature_list_.InitWithFeatures(
           {},
-          /*disabled_features=*/{
-              ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-              ash::features::kLacrosOnly,
-              ash::features::kLacrosProfileMigrationForceOff});
+          /*disabled_features=*/{ash::features::kLacrosSupport,
+                                 ash::features::kLacrosPrimary,
+                                 ash::features::kLacrosOnly});
     }
 
     InstallApps();
@@ -239,6 +238,8 @@ class AppPlatformMetricsServiceTest
     // state (where they have not yet been registered with the WebAppProvider
     // system).
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+    ASSERT_EQ(IsLacrosEnabled(), crosapi::browser_util::IsLacrosEnabled());
   }
 
   void TearDown() override {
@@ -248,7 +249,7 @@ class AppPlatformMetricsServiceTest
   }
 
   AppTypeName GetWebAppTypeName() {
-    return IsLacrosPrimary() ? AppTypeName::kStandaloneBrowserWebApp
+    return IsLacrosEnabled() ? AppTypeName::kStandaloneBrowserWebApp
                              : AppTypeName::kWeb;
   }
 
@@ -757,7 +758,7 @@ class AppPlatformMetricsServiceTest
     ASSERT_EQ(1, count);
   }
 
-  bool IsLacrosPrimary() const { return GetParam(); }
+  bool IsLacrosEnabled() const { return GetParam(); }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -1180,7 +1181,7 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTime) {
 }
 
 TEST_P(AppPlatformMetricsServiceTest, UsageTimeForLacros) {
-  if (!IsLacrosPrimary()) {
+  if (!IsLacrosEnabled()) {
     return;
   }
 
@@ -1690,7 +1691,7 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneBrowserApps) {
 }
 
 TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForWebAppsOpenInLacrosTabs) {
-  if (!IsLacrosPrimary()) {
+  if (!IsLacrosEnabled()) {
     return;
   }
 
@@ -1750,7 +1751,7 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForWebAppsOpenInLacrosTabs) {
 }
 
 TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneChromeApps) {
-  if (!IsLacrosPrimary()) {
+  if (!IsLacrosEnabled()) {
     return;
   }
 
@@ -1818,7 +1819,7 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneChromeApps) {
 
 TEST_P(AppPlatformMetricsServiceTest,
        UsageTimeUkmForWebAppWithStandaloneLacrosWindow) {
-  if (!IsLacrosPrimary()) {
+  if (!IsLacrosEnabled()) {
     return;
   }
 
@@ -2055,7 +2056,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
                       LaunchSource::kFromFileManager);
   VerifyAppLaunchPerAppTypeHistogram(1, GetWebAppTypeName());
   VerifyAppLaunchPerAppTypeV2Histogram(
-      1, IsLacrosPrimary() ? AppTypeNameV2::kStandaloneBrowserWebAppWindow
+      1, IsLacrosEnabled() ? AppTypeNameV2::kStandaloneBrowserWebAppWindow
                            : AppTypeNameV2::kWebWindow);
 
   // TODO(crbug.com/1253250): Register non-mojom apps and use
@@ -2063,7 +2064,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(AppLaunchParams(
       "w2", LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB, LaunchSource::kFromTest));
-  if (IsLacrosPrimary()) {
+  if (IsLacrosEnabled()) {
     VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kStandaloneBrowser,
                         LaunchSource::kFromTest);
     VerifyAppLaunchPerAppTypeHistogram(
@@ -2075,7 +2076,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
     VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kChromeBrowser);
   }
   VerifyAppLaunchPerAppTypeV2Histogram(
-      1, IsLacrosPrimary() ? AppTypeNameV2::kStandaloneBrowserWebAppTab
+      1, IsLacrosEnabled() ? AppTypeNameV2::kStandaloneBrowserWebAppTab
                            : AppTypeNameV2::kWebTab);
 
   proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(AppLaunchParams(
@@ -2260,7 +2261,7 @@ TEST_P(AppPlatformMetricsServiceTest, ShouldNotPersistUsageDataIfSyncDisabled) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppPlatformMetricsServiceTest,
-                         testing::Bool() /* IsLacrosPrimary */);
+                         testing::Bool() /* IsLacrosEnabled */);
 
 // Tests for app platform input metrics.
 class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
@@ -2704,7 +2705,7 @@ TEST_P(AppPlatformInputMetricsTest, StandaloneBrowserExtension) {
 }
 
 TEST_P(AppPlatformInputMetricsTest, LacrosWindowAndWebAppAndChromeApp) {
-  if (!IsLacrosPrimary()) {
+  if (!IsLacrosEnabled()) {
     return;
   }
 
@@ -2769,7 +2770,7 @@ TEST_P(AppPlatformInputMetricsTest, LacrosWindowAndWebAppAndChromeApp) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppPlatformInputMetricsTest,
-                         testing::Bool() /* IsLacrosPrimary */);
+                         testing::Bool() /* IsLacrosEnabled */);
 
 // Tests for app platform metrics observers.
 class AppPlatformMetricsObserverTest : public AppPlatformMetricsServiceTest {
@@ -2921,7 +2922,7 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnDestruction) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppPlatformMetricsObserverTest,
-                         testing::Bool() /* IsLacrosPrimary */);
+                         testing::Bool() /* IsLacrosEnabled */);
 
 // Tests for app discovery metrics test.
 class AppDiscoveryMetricsTest : public AppPlatformMetricsServiceTest {
@@ -2935,10 +2936,12 @@ class AppDiscoveryMetricsTest : public AppPlatformMetricsServiceTest {
     metrics::structured::Recorder::GetInstance()->SetUiTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
 
-    if (IsLacrosPrimary()) {
+    if (IsLacrosEnabled()) {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/{ash::features::kLacrosSupport,
                                 ash::features::kLacrosPrimary,
+                                ash::features::kLacrosOnly,
+                                ash::features::kLacrosProfileMigrationForceOff,
                                 metrics::structured::kAppDiscoveryLogging,
                                 metrics::structured::kEventSequenceLogging},
           {});
@@ -2947,10 +2950,13 @@ class AppDiscoveryMetricsTest : public AppPlatformMetricsServiceTest {
           /*enabled_features=*/{metrics::structured::kAppDiscoveryLogging,
                                 metrics::structured::kEventSequenceLogging},
           /*disabled_features=*/{ash::features::kLacrosSupport,
-                                 ash::features::kLacrosPrimary});
+                                 ash::features::kLacrosPrimary,
+                                 ash::features::kLacrosOnly});
     }
 
     AppPlatformMetricsServiceTestBase::SetUp();
+
+    ASSERT_EQ(IsLacrosEnabled(), crosapi::browser_util::IsLacrosEnabled());
   }
 
   metrics::structured::TestStructuredMetricsProvider*
@@ -3313,30 +3319,35 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecordedForTwoInstances) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppDiscoveryMetricsTest,
-                         testing::Bool() /* IsLacrosPrimary */);
+                         testing::Bool() /* IsLacrosEnabled */);
 
 class AppPlatformMetricsServiceObserverTest
     : public AppPlatformMetricsServiceTestBase,
       public ::testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
-    if (IsLacrosPrimary()) {
+    if (IsLacrosEnabled()) {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/{ash::features::kLacrosSupport,
-                                ash::features::kLacrosPrimary},
+                                ash::features::kLacrosPrimary,
+                                ash::features::kLacrosOnly,
+                                ash::features::kLacrosProfileMigrationForceOff},
           {});
     } else {
       feature_list_.InitWithFeatures(
           {},
           /*disabled_features=*/{ash::features::kLacrosSupport,
-                                 ash::features::kLacrosPrimary});
+                                 ash::features::kLacrosPrimary,
+                                 ash::features::kLacrosOnly});
     }
 
     // Set up test user.
     AddRegularUser("test@test.com");
+
+    ASSERT_EQ(IsLacrosEnabled(), crosapi::browser_util::IsLacrosEnabled());
   }
 
-  bool IsLacrosPrimary() const { return GetParam(); }
+  bool IsLacrosEnabled() const { return GetParam(); }
 
   MockObserver* observer() { return &observer_; }
 
@@ -3391,6 +3402,6 @@ TEST_P(AppPlatformMetricsServiceObserverTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppPlatformMetricsServiceObserverTest,
-                         ::testing::Bool() /* IsLacrosPrimary */);
+                         ::testing::Bool() /* IsLacrosEnabled */);
 
 }  // namespace apps
