@@ -325,9 +325,7 @@ public class ClearBrowsingDataFragmentTest {
         Spinner spinner = spinnerPref.getSpinnerForTesting();
         int itemCount = spinner.getAdapter().getCount();
         for (int i = 0; i < itemCount; i++) {
-            ClearBrowsingDataFragment.TimePeriodSpinnerOption option =
-                    (ClearBrowsingDataFragment.TimePeriodSpinnerOption) spinner.getAdapter()
-                            .getItem(i);
+            var option = (TimePeriodUtils.TimePeriodSpinnerOption) spinner.getAdapter().getItem(i);
             if (option.getTimePeriod() == time) {
                 spinner.setSelection(i);
                 return;

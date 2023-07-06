@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.browsing_data.TimePeriodUtils.getTimePeriodSpinnerOptions;
+
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +35,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -379,8 +382,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void testQuickDeleteDialog_TimePeriod_Binding() {
         QuickDeleteDialogDelegate dialog = new QuickDeleteDialogDelegate(mActivity,
                 mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock, mProfileMock);
-        QuickDeleteDialogDelegate.TimePeriodSpinnerOption options[] =
-                dialog.getTimePeriodSpinnerOptions();
+        TimePeriodUtils.TimePeriodSpinnerOption options[] = getTimePeriodSpinnerOptions(mActivity);
 
         assertEquals(6, options.length);
         assertEquals(TimePeriod.LAST_15_MINUTES, options[0].getTimePeriod());

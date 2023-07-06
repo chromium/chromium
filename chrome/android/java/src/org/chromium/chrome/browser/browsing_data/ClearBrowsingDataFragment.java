@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
+import static org.chromium.chrome.browser.browsing_data.TimePeriodUtils.getTimePeriodSpinnerOptions;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -31,6 +33,7 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataCounterBridge.BrowsingDataCounterCallback;
+import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinnerOption;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -145,37 +148,6 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
          */
         public void setShouldAnnounceCounterResult(boolean value) {
             mShouldAnnounceCounterResult = value;
-        }
-    }
-
-    /**
-     * An option to be shown in the time period spiner.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static class TimePeriodSpinnerOption {
-        private @TimePeriod int mTimePeriod;
-        private String mTitle;
-
-        /**
-         * Constructs this time period spinner option.
-         * @param timePeriod The time period.
-         * @param title The text that will be used to represent this item in the spinner.
-         */
-        public TimePeriodSpinnerOption(@TimePeriod int timePeriod, String title) {
-            mTimePeriod = timePeriod;
-            mTitle = title;
-        }
-
-        /**
-         * @return The time period.
-         */
-        public @TimePeriod int getTimePeriod() {
-            return mTimePeriod;
-        }
-
-        @Override
-        public String toString() {
-            return mTitle;
         }
     }
 
@@ -418,27 +390,6 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     protected abstract @ClearBrowsingDataTab int getClearBrowsingDataTabType();
 
     /**
-     * Returns the Array of time periods. Options are displayed in the same order as they appear
-     * in the array.
-     */
-    private TimePeriodSpinnerOption[] getTimePeriodSpinnerOptions() {
-        Activity activity = getActivity();
-
-        List<TimePeriodSpinnerOption> options = new ArrayList<>();
-        options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_HOUR,
-                activity.getString(R.string.clear_browsing_data_tab_period_hour)));
-        options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_DAY,
-                activity.getString(R.string.clear_browsing_data_tab_period_24_hours)));
-        options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_WEEK,
-                activity.getString(R.string.clear_browsing_data_tab_period_7_days)));
-        options.add(new TimePeriodSpinnerOption(TimePeriod.FOUR_WEEKS,
-                activity.getString(R.string.clear_browsing_data_tab_period_four_weeks)));
-        options.add(new TimePeriodSpinnerOption(TimePeriod.ALL_TIME,
-                activity.getString(R.string.clear_browsing_data_tab_period_everything)));
-        return options.toArray(new TimePeriodSpinnerOption[0]);
-    }
-
-    /**
      * Decides whether a given dialog option should be selected when the dialog is initialized.
      *
      * @param option The option in question.
@@ -603,7 +554,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
 
         // The time range selection spinner.
         SpinnerPreference spinner = (SpinnerPreference) findPreference(PREF_TIME_RANGE);
-        TimePeriodSpinnerOption[] spinnerOptions = getTimePeriodSpinnerOptions();
+        TimePeriodSpinnerOption[] spinnerOptions = getTimePeriodSpinnerOptions(getActivity());
         @TimePeriod
         int selectedTimePeriod = BrowsingDataBridge.getInstance().getBrowsingDataDeletionTimePeriod(
                 getClearBrowsingDataTabType());

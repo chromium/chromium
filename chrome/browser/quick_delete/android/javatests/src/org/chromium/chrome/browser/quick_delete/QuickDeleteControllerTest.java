@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridgeJni;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -219,9 +220,7 @@ public class QuickDeleteControllerTest {
             Spinner spinnerView = dialogView.findViewById(R.id.quick_delete_spinner);
             // Set the time selection for LAST_HOUR.
             spinnerView.setSelection(1);
-            QuickDeleteDialogDelegate.TimePeriodSpinnerOption option =
-                    (QuickDeleteDialogDelegate.TimePeriodSpinnerOption)
-                            spinnerView.getSelectedItem();
+            var option = (TimePeriodUtils.TimePeriodSpinnerOption) spinnerView.getSelectedItem();
             assertEquals(TimePeriod.LAST_HOUR, option.getTimePeriod());
 
             // Check below that the browsing data bridge is called for LAST_HOUR.
