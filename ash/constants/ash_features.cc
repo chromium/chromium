@@ -1108,6 +1108,13 @@ BASE_FEATURE(kFullscreenAlertBubble,
 // Debugging UI for ChromeOS FuseBox service.
 BASE_FEATURE(kFuseBoxDebug, "FuseBoxDebug", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the fwupd dbus client should be active. This is used only
+// for testing to prevent the fwupd service from spooling and re-activating
+// powerd service.
+BASE_FEATURE(kBlockFwupdClient,
+             "BlockFwupdClient",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable a notification to provide an option to open Gallery app for a
 // downloaded pdf file.
 BASE_FEATURE(kGalleryAppPdfEditNotification,
@@ -3032,6 +3039,10 @@ bool IsFullscreenAfterUnlockAllowed() {
 
 bool IsFullscreenAlertBubbleEnabled() {
   return base::FeatureList::IsEnabled(kFullscreenAlertBubble);
+}
+
+bool IsBlockFwupdClientEnabled() {
+  return base::FeatureList::IsEnabled(kBlockFwupdClient);
 }
 
 bool IsGaiaReauthEndpointEnabled() {
