@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -208,6 +209,11 @@ class QuickDeleteDialogDelegate {
                 quickDeleteDialogView.findViewById(R.id.search_history_disambiguation);
         addSearchHistoryDisambiguationTextIfRequired(searchHistoryDisambiguation);
 
+        // Update the "More options" chip.
+        ChipView moreOptionsView =
+                quickDeleteDialogView.findViewById(R.id.quick_delete_more_options);
+        updateMoreOptions(moreOptionsView);
+
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
                 .with(ModalDialogProperties.TITLE,
@@ -361,6 +367,14 @@ class QuickDeleteDialogDelegate {
             text.setMovementMethod(LinkMovementMethod.getInstance());
             text.setVisibility(View.VISIBLE);
         }
+    }
+
+    // TODO(crbug.com/1412087): Add logic here to update the primary text to "More options" and
+    //  open the CBD Advanced tab on click.
+    private void updateMoreOptions(@NonNull ChipView moreOptionsView) {
+        // TODO(crbug.com/1412087): Update the UX of the button to reflect the proposal before
+        //  updating the visibility to visible.
+        moreOptionsView.setVisibility(View.GONE);
     }
 
     /**

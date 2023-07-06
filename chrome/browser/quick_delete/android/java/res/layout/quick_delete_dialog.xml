@@ -90,4 +90,18 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:visibility="gone" />
+
+    <!--- TODO(crbug.com/1412087): Update the UX of the button to reflect the proposal before
+     updating the visibility and add the "More options" string.
+     -->
+    <org.chromium.components.browser_ui.widget.chips.ChipView
+        android:id="@+id/quick_delete_more_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textDirection="locale"
+        android:visibility="gone"
+        style="@style/MoreOptionsChip"
+        />
 </LinearLayout>

@@ -52,6 +52,7 @@ android_resources("java_resources") {
     "android/java/res/drawable/quick_delete_trash_bin_icon_24dp.xml",
     "android/java/res/layout/quick_delete_animation_view.xml",
     "android/java/res/layout/quick_delete_dialog.xml",
+    "android/java/res/values/styles.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
