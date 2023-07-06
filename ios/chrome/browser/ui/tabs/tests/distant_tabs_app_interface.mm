@@ -19,7 +19,7 @@
 
 namespace {
 
-// Create a DistantTab for the given `session`.
+// Creates a DistantTab for the given `session`.
 std::unique_ptr<synced_sessions::DistantTab> CreateDistantTabWithTitleAndURL(
     const std::string& title,
     const GURL& url,
