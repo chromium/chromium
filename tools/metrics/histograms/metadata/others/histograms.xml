@@ -13629,49 +13629,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VideoPlayer.CastAPIExtensionStatus"
-    enum="VideoPlayerCastAPIExtensionStatus" expires_after="M85">
-  <owner>yoshiki@chromium.org</owner>
-  <summary>
-    Chrome OS Video Player: the results of the cast API extension load. This is
-    recorded after the initialization of the extension is finished.
-  </summary>
-</histogram>
-
-<histogram name="VideoPlayer.CastedVideoLength" units="seconds"
-    expires_after="M85">
-  <owner>yoshiki@chromium.org</owner>
-  <summary>
-    Chrome OS Video Player: the length of casted video (in seconds).
-  </summary>
-</histogram>
-
-<histogram name="VideoPlayer.NumberOfCastDevices" units="units"
-    expires_after="M85">
-  <owner>yoshiki@chromium.org</owner>
-  <summary>
-    Chrome OS Video Player: the number of cast devices. This is recorded when
-    the cast extension finishes the discovery.
-  </summary>
-</histogram>
-
-<histogram name="VideoPlayer.NumberOfOpenedFiles" units="units"
-    expires_after="M85">
-  <owner>yoshiki@chromium.org</owner>
-  <summary>
-    Chrome OS Video Player: the number of files being opened on launch.
-  </summary>
-</histogram>
-
-<histogram name="VideoPlayer.PlayType" enum="VideoPlayerPlayType"
-    expires_after="M85">
-  <owner>yoshiki@chromium.org</owner>
-  <summary>
-    Chrome OS Video Player: type of playback (eg. local play, cast). This is
-    recorded when a video starts playing.
-  </summary>
-</histogram>
-
 <histogram name="ViewResourceAdapter.GetBitmapInterval" units="ms"
     expires_after="M82">
   <owner>wychen@chromium.org</owner>
