@@ -2099,12 +2099,14 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
         GetDidSwapBuffersCompleteCallback());
     AddChildWindowToBrowser(output_device->GetChildSurfaceHandle());
     output_device_ = std::move(output_device);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
     presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(),
                                               gl::GLSurfaceFormat());
+#if BUILDFLAG(IS_MAC)
     if (features::UseGpuVsync()) {
       presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
     }
+#endif
     output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
         std::make_unique<OutputPresenterGL>(
             presenter_, dependency_, shared_image_factory_.get(),
