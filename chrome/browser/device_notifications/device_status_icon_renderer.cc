@@ -152,7 +152,9 @@ void DeviceStatusIconRenderer::RefreshIcon() {
   int total_connection_count = 0;
   int total_origin_count = 0;
   // Title will be updated after looping through profiles below.
+#if !BUILDFLAG(IS_MAC)
   menu->AddTitle(u"");
+#endif  //! BUILDFLAG(IS_MAC)
   AddItem(menu.get(), GetAboutDeviceLabel(),
           base::BindRepeating(&DeviceStatusIconRenderer::ShowHelpCenterUrl,
                               weak_factory_.GetWeakPtr()));
@@ -189,7 +191,9 @@ void DeviceStatusIconRenderer::RefreshIcon() {
   }
   auto title_label = device_system_tray_icon_->GetTitleLabel(
       total_origin_count, total_connection_count);
+#if !BUILDFLAG(IS_MAC)
   menu->SetLabel(0, title_label);
+#endif  //! BUILDFLAG(IS_MAC)
 
   if (!status_icon_) {
     status_icon_ = status_tray->CreateStatusIcon(
