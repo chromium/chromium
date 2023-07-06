@@ -87,6 +87,13 @@ void AsanUnpoisonBuffer(RWBuffer* rw_buffer) {
 #endif
 }
 
+// This should be used to make sure that the last reference to the |this| is
+// decremented on the main thread (since that's where the destructor must
+// run), for example by posting a task with this to the main thread.
+void NotifyWriteToDiskFinished(scoped_refptr<ParkableImageImpl>) {
+  DCHECK(IsMainThread());
+}
+
 }  // namespace
 
 BASE_FEATURE(kUseParkableImageSegmentReader,
@@ -253,6 +260,16 @@ void ParkableImageImpl::WriteToDiskInBackground(
   // keep around the data for the ParkableImageImpl in this case.
   if (!parkable_image->on_disk_metadata_) {
     parkable_image->background_task_in_progress_ = false;
+    // This ensures that we don't destroy |this| on the background thread at
+    // the end of this function, if we happen to have the last reference to
+    // |this|.
+    //
+    // We cannot simply check the reference count here, since it may be
+    // changed racily on another thread, so posting a task is the only safe
+    // way to proceed.
+    PostCrossThreadTask(*callback_task_runner, FROM_HERE,
+                        CrossThreadBindOnce(&NotifyWriteToDiskFinished,
+                                            std::move(parkable_image)));
   } else {
     RecordWriteStatistics(parkable_image->on_disk_metadata_->size(), elapsed);
     ParkableImageManager::Instance().RecordDiskWriteTime(elapsed);
@@ -306,6 +323,7 @@ bool ParkableImageImpl::TransientlyUnableToPark() const {
 bool ParkableImageImpl::MaybePark(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(ParkableImageManager::IsParkableImagesToDiskEnabled());
+  DCHECK(IsMainThread());
 
   base::AutoLock lock(lock_);
 

@@ -42,6 +42,8 @@ class PLATFORM_EXPORT ParkableImageManager
     return base::FeatureList::IsEnabled(features::kParkableImagesToDisk);
   }
 
+  void MaybeParkImagesForTesting() { MaybeParkImages(); }
+
  private:
   struct Statistics;
 
