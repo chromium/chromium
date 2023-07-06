@@ -160,6 +160,7 @@
 #include "services/device/public/mojom/hid.mojom.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
 
@@ -638,6 +639,8 @@ void InjectBrowserInitParams(
 
   params->is_variable_refresh_rate_enabled =
       ::features::IsVariableRefreshRateEnabled();
+
+  params->is_pdf_ocr_enabled = ::features::IsPdfOcrEnabled();
 }
 
 template <typename BrowserParams>

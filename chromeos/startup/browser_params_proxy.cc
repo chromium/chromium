@@ -329,4 +329,8 @@ bool BrowserParamsProxy::IsVariableRefreshRateEnabled() const {
   return BrowserInitParams::Get()->is_variable_refresh_rate_enabled;
 }
 
+bool BrowserParamsProxy::IsPdfOcrEnabled() const {
+  return BrowserInitParams::Get()->is_pdf_ocr_enabled;
+}
+
 }  // namespace chromeos

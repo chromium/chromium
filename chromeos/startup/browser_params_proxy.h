@@ -138,6 +138,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsVariableRefreshRateEnabled() const;
 
+  bool IsPdfOcrEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 
