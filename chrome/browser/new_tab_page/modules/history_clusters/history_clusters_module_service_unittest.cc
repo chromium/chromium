@@ -17,6 +17,7 @@
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_util.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -47,6 +48,8 @@ class MockCartService : public CartService {
 
 constexpr char kSampleNonSearchUrl[] = "https://www.foo.com/";
 constexpr char kSampleSearchUrl[] = "https://default-engine.com/search?q=foo";
+constexpr int kMinRequiredVisits = 3;
+constexpr int kMinRequiredRelatedSearches = 3;
 
 const TemplateURLService::Initializer kTemplateURLData[] = {
     {"default-engine.com", "http://default-engine.com/search?q={searchTerms}",
@@ -99,15 +102,21 @@ class HistoryClustersModuleServiceTest : public testing::Test {
     std::vector<history::Cluster> clusters;
 
     base::RunLoop run_loop;
-    service().GetClusters(base::BindOnce(
-        [](base::RunLoop* run_loop, std::vector<history::Cluster>* out_clusters,
-           std::vector<history::Cluster> clusters,
-           base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
-               ranking_signals) {
-          *out_clusters = std::move(clusters);
-          run_loop->Quit();
-        },
-        &run_loop, &clusters));
+    const history_clusters::QueryClustersFilterParams filter_params =
+        CreateFilterParamsFromFeatureFlags(kMinRequiredVisits,
+                                           kMinRequiredRelatedSearches);
+    service().GetClusters(
+        filter_params, static_cast<size_t>(kMinRequiredRelatedSearches),
+        base::BindOnce(
+            [](base::RunLoop* run_loop,
+               std::vector<history::Cluster>* out_clusters,
+               std::vector<history::Cluster> clusters,
+               base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
+                   ranking_signals) {
+              *out_clusters = std::move(clusters);
+              run_loop->Quit();
+            },
+            &run_loop, &clusters));
 
     run_loop.Run();
 

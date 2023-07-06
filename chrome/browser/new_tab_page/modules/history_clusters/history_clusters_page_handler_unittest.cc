@@ -75,11 +75,13 @@ class MockHistoryClustersModuleService : public HistoryClustersModuleService {
   MockHistoryClustersModuleService()
       : HistoryClustersModuleService(nullptr, nullptr, nullptr, nullptr) {}
 
-  MOCK_METHOD1(
+  MOCK_METHOD3(
       GetClusters,
-      void(base::OnceCallback<
-           void(std::vector<history::Cluster>,
-                base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
+      void(const history_clusters::QueryClustersFilterParams filter_params,
+           size_t min_required_related_searches,
+           base::OnceCallback<void(
+               std::vector<history::Cluster>,
+               base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
                callback));
 };
 
@@ -252,9 +254,12 @@ TEST_F(HistoryClustersPageHandlerTest, GetClusters) {
         SampleCluster(i, /*srp_visits=*/1, /*non_srp_visits=*/2));
     ranking_signals[i] = HistoryClustersModuleRankingSignals();
   }
-  EXPECT_CALL(mock_history_clusters_module_service(), GetClusters(testing::_))
+  EXPECT_CALL(mock_history_clusters_module_service(),
+              GetClusters(testing::_, testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [&sample_clusters, &ranking_signals](
+              const history_clusters::QueryClustersFilterParams filter_params,
+              size_t min_required_related_searches,
               base::OnceCallback<void(
                   std::vector<history::Cluster>,
                   base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
@@ -339,7 +344,8 @@ TEST_F(HistoryClustersPageHandlerTest,
 
   const history::Cluster kSampleCluster =
       SampleCluster(/*srp_visits=*/1, /*non_srp_visits=*/2);
-  EXPECT_CALL(mock_history_clusters_module_service(), GetClusters(testing::_))
+  EXPECT_CALL(mock_history_clusters_module_service(),
+              GetClusters(testing::_, testing::_, testing::_))
       .Times(0);
 
   std::vector<history_clusters::mojom::ClusterPtr> clusters_mojom;
@@ -356,9 +362,12 @@ TEST_F(HistoryClustersPageHandlerTest,
 }
 
 TEST_F(HistoryClustersPageHandlerTest, NoClusters) {
-  EXPECT_CALL(mock_history_clusters_module_service(), GetClusters(testing::_))
+  EXPECT_CALL(mock_history_clusters_module_service(),
+              GetClusters(testing::_, testing::_, testing::_))
       .WillOnce(testing::Invoke(
-          [&](base::OnceCallback<void(
+          [&](const history_clusters::QueryClustersFilterParams filter_params,
+              size_t min_required_related_searches,
+              base::OnceCallback<void(
                   std::vector<history::Cluster>,
                   base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
                   callback) { std::move(callback).Run({}, {}); }));
@@ -434,9 +443,12 @@ TEST_F(HistoryClustersPageHandlerTest, RecordClick) {
   std::vector<history::Cluster> sample_clusters = {SampleCluster(0, 1, 2)};
   base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals =
       {{cluster_id, HistoryClustersModuleRankingSignals()}};
-  EXPECT_CALL(mock_history_clusters_module_service(), GetClusters(testing::_))
+  EXPECT_CALL(mock_history_clusters_module_service(),
+              GetClusters(testing::_, testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [&sample_clusters, &ranking_signals](
+              const history_clusters::QueryClustersFilterParams filter_params,
+              size_t min_required_related_searches,
               base::OnceCallback<void(
                   std::vector<history::Cluster>,
                   base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
@@ -472,9 +484,12 @@ TEST_F(HistoryClustersPageHandlerTest, RecordLayoutTypeShown) {
   std::vector<history::Cluster> sample_clusters = {SampleCluster(0, 1, 2)};
   base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals =
       {{cluster_id, HistoryClustersModuleRankingSignals()}};
-  EXPECT_CALL(mock_history_clusters_module_service(), GetClusters(testing::_))
+  EXPECT_CALL(mock_history_clusters_module_service(),
+              GetClusters(testing::_, testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [&sample_clusters, &ranking_signals](
+              const history_clusters::QueryClustersFilterParams filter_params,
+              size_t min_required_related_searches,
               base::OnceCallback<void(
                   std::vector<history::Cluster>,
                   base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
