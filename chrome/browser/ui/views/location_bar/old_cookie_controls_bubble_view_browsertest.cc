@@ -32,13 +32,14 @@
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
-class CookieControlsBubbleViewTest : public DialogBrowserTest {
+class OldCookieControlsBubbleViewTest : public DialogBrowserTest {
  public:
-  CookieControlsBubbleViewTest() = default;
+  OldCookieControlsBubbleViewTest() = default;
 
-  CookieControlsBubbleViewTest(const CookieControlsBubbleViewTest&) = delete;
-  CookieControlsBubbleViewTest& operator=(const CookieControlsBubbleViewTest&) =
+  OldCookieControlsBubbleViewTest(const OldCookieControlsBubbleViewTest&) =
       delete;
+  OldCookieControlsBubbleViewTest& operator=(
+      const OldCookieControlsBubbleViewTest&) = delete;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -153,14 +154,14 @@ class CookieControlsBubbleViewTest : public DialogBrowserTest {
 };
 
 // Test that cookie icon is not shown when cookies are not blocked.
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, NoCookiesBlocked) {
+IN_PROC_BROWSER_TEST_F(OldCookieControlsBubbleViewTest, NoCookiesBlocked) {
   NavigateToUrlWithThirdPartyCookies();
   EXPECT_FALSE(cookie_controls_icon()->GetVisible());
 }
 
 // Test opening cookie controls bubble and clicking on "not working" link.
 // Check that accepting the bubble unblocks 3p cookies for this origin.
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, NotWorkingClicked) {
+IN_PROC_BROWSER_TEST_F(OldCookieControlsBubbleViewTest, NotWorkingClicked) {
   // Block 3p cookies.
   SetThirdPartyCookieBlocking(true);
   GURL origin = embedded_test_server()->GetURL("a.com", "/");
@@ -176,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, NotWorkingClicked) {
 
 // Test that opening cookie controls bubble sets
 // `prefs::kInContextCookieControlsOpened`.
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(OldCookieControlsBubbleViewTest,
                        InContextCookieControlsOpenedRecorded) {
   // Block 3p cookies.
   SetThirdPartyCookieBlocking(true);
@@ -197,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
 
 // Test opening cookie controls bubble while 3p cookies are allowed for this
 // page. Check that accepting the bubble blocks cookies again.
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, BlockingDisabled) {
+IN_PROC_BROWSER_TEST_F(OldCookieControlsBubbleViewTest, BlockingDisabled) {
   // Block 3p cookies in general but allow them for this site.
   SetThirdPartyCookieBlocking(true);
   GURL origin = embedded_test_server()->GetURL("a.com", "/");
@@ -213,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, BlockingDisabled) {
   EXPECT_FALSE(cookie_settings()->IsThirdPartyAccessAllowed(origin, nullptr));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, NonAllowedCookieSite) {
+IN_PROC_BROWSER_TEST_F(OldCookieControlsBubbleViewTest, NonAllowedCookieSite) {
   // Regression test for crbug.com/1459383. Activating a tab where cookies are
   // blocked, such as an internal chrome:// url, while the UI is shown, should
   // not crash.
@@ -247,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, NonAllowedCookieSite) {
 #else
 #define MAYBE_InvokeUi_CookiesBlocked InvokeUi_CookiesBlocked
 #endif
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(OldCookieControlsBubbleViewTest,
                        MAYBE_InvokeUi_CookiesBlocked) {
   SetThirdPartyCookieBlocking(true);
   ShowAndVerifyUi();
@@ -260,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
 #else
 #define MAYBE_InvokeUi_StatefulBounce InvokeUi_StatefulBounce
 #endif
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(OldCookieControlsBubbleViewTest,
                        MAYBE_InvokeUi_StatefulBounce) {
   SetThirdPartyCookieBlocking(true);
   ShowAndVerifyUi();
@@ -273,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
 #else
 #define MAYBE_InvokeUi_NotWorkingClicked InvokeUi_NotWorkingClicked
 #endif
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(OldCookieControlsBubbleViewTest,
                        MAYBE_InvokeUi_NotWorkingClicked) {
   // Block 3p cookies.
   SetThirdPartyCookieBlocking(true);
@@ -290,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
 #else
 #define MAYBE_InvokeUi_BlockingDisabled InvokeUi_BlockingDisabled
 #endif
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(OldCookieControlsBubbleViewTest,
                        MAYBE_InvokeUi_BlockingDisabled) {
   // Block 3p cookies in general but allow them for this site.
   SetThirdPartyCookieBlocking(true);
@@ -302,7 +303,8 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, IconViewAccessibleName) {
+IN_PROC_BROWSER_TEST_F(OldCookieControlsBubbleViewTest,
+                       IconViewAccessibleName) {
   EXPECT_FALSE(cookie_controls_icon()->GetVisible());
   EXPECT_EQ(cookie_controls_icon()->GetAccessibleName(),
             l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
