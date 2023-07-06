@@ -122,7 +122,7 @@ const CGFloat kSymbolSize = 22;
     // It can happen that the profile does not satisfy minimum requirements for
     // the migration so we don't show the migration button.
     if (self.showMigrateToAccountSection && ![self.delegate isMinimumAddress]) {
-      [self removeMigrateButtonSection];
+      [self removeMigrateButtonSection:nil];
     }
   }
 
@@ -166,8 +166,11 @@ const CGFloat kSymbolSize = 22;
   if (itemType == AutofillProfileDetailsItemTypeMigrateToAccountButton) {
     [self.delegate didTapMigrateToAccountButton];
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [self removeMigrateButtonSection];
-    [self showPostMigrationToast];
+    __weak __typeof(self) weakSelf = self;
+    void (^completion)(BOOL) = ^(BOOL) {
+      [weakSelf showPostMigrationToast];
+    };
+    [self removeMigrateButtonSection:completion];
     return;
   }
   [self.handler didSelectRowAtIndexPath:indexPath];
@@ -241,14 +244,14 @@ const CGFloat kSymbolSize = 22;
 #pragma mark - Private
 
 // Removes the migrate button section from the view.
-- (void)removeMigrateButtonSection {
+- (void)removeMigrateButtonSection:(void (^)(BOOL finished))onCompletion {
   [self
       performBatchTableViewUpdates:^{
         [self removeSectionWithIdentifier:
                   AutofillProfileDetailsSectionIdentifierMigrationToAccount
-                         withRowAnimation:UITableViewRowAnimationTop];
+                         withRowAnimation:UITableViewRowAnimationFade];
       }
-                        completion:nil];
+                        completion:onCompletion];
   self.showMigrateToAccountSection = NO;
 }
 
