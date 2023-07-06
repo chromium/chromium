@@ -6541,7 +6541,7 @@
       'mac-arm64-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',
-          'mac_default_arm64',
+          'mac_12_arm64',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_finch_smoke_tests',
