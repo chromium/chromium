@@ -79,8 +79,7 @@ WGPUTexture DawnOzoneImageRepresentation::BeginAccess(WGPUTextureUsage usage) {
   WGPUTextureDescriptor texture_descriptor = {};
   texture_descriptor.format = format_;
   texture_descriptor.viewFormats = view_formats_.data();
-  texture_descriptor.viewFormatCount =
-      static_cast<uint32_t>(view_formats_.size());
+  texture_descriptor.viewFormatCount = view_formats_.size();
   texture_descriptor.usage = usage;
   texture_descriptor.dimension = WGPUTextureDimension_2D;
   texture_descriptor.size = {static_cast<uint32_t>(pixmap_size.width()),

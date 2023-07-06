@@ -21,8 +21,7 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
     GPUDevice* device,
     const GPURenderBundleEncoderDescriptor* webgpu_desc,
     ExceptionState& exception_state) {
-  uint32_t color_formats_count =
-      static_cast<uint32_t>(webgpu_desc->colorFormats().size());
+  size_t color_formats_count = webgpu_desc->colorFormats().size();
 
   for (const auto& color_format : webgpu_desc->colorFormats()) {
     if (color_format.has_value() &&

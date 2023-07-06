@@ -559,7 +559,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
           .format = ToWGPUFormat(representation_->format()),
           .mipLevelCount = 1,
           .sampleCount = 1,
-          .viewFormatCount = static_cast<uint32_t>(view_formats.size()),
+          .viewFormatCount = view_formats.size(),
           .viewFormats = view_formats.data(),
       };
 

@@ -56,8 +56,7 @@ WGPUTexture DawnAHardwareBufferImageRepresentation::BeginAccess(
                              static_cast<uint32_t>(size().height()), 1};
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
-  texture_descriptor.viewFormatCount =
-      static_cast<uint32_t>(view_formats_.size());
+  texture_descriptor.viewFormatCount = view_formats_.size();
   texture_descriptor.viewFormats = view_formats_.data();
 
   // We need to have internal usages of CopySrc for copies,

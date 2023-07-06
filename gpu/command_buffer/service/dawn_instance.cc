@@ -61,10 +61,10 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
 
   wgpu::DawnTogglesDescriptor dawn_toggle_desc;
   dawn_toggle_desc.enabledTogglesCount =
-      static_cast<uint32_t>(require_instance_enabled_toggles.size());
+      require_instance_enabled_toggles.size();
   dawn_toggle_desc.enabledToggles = require_instance_enabled_toggles.data();
   dawn_toggle_desc.disabledTogglesCount =
-      static_cast<uint32_t>(require_instance_disabled_toggles.size());
+      require_instance_disabled_toggles.size();
   dawn_toggle_desc.disabledToggles = require_instance_disabled_toggles.data();
 
   wgpu::DawnInstanceDescriptor dawn_instance_desc;
