@@ -1522,9 +1522,6 @@ void TileManager::CheckRasterFinishedQueries() {
 }
 
 void TileManager::FlushAndIssueSignals() {
-  if (!recordreplay::AreEventsDisallowed()) {
-    recordreplay::Assert("[RUN-2104-2228] TileManager::FlushAndIssueSignals");
-  }
   TRACE_EVENT0("cc", "TileManager::FlushAndIssueSignals");
   tile_task_manager_->CheckForCompletedTasks();
   did_check_for_completed_tasks_since_last_schedule_tasks_ = true;

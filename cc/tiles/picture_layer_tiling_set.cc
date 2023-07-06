@@ -77,13 +77,7 @@ PictureLayerTilingSet::PictureLayerTilingSet(
   recordreplay::RegisterPointer("PictureLayerTilingSet", this);
 }
 
-PictureLayerTilingSet::~PictureLayerTilingSet() {
-  recordreplay::AssertMaybeEventsDisallowed(
-      "[RUN-2104-2266] ~PictureLayerTilingSet %d %d %d",
-      recordreplay::PointerId(this), !!raster_source_,
-      raster_source_ && raster_source_->HasOneRef());
-  recordreplay::UnregisterPointer(this);
-}
+PictureLayerTilingSet::~PictureLayerTilingSet() = default;
 
 void PictureLayerTilingSet::CopyTilingsAndPropertiesFromPendingTwin(
     const PictureLayerTilingSet* pending_twin_set,

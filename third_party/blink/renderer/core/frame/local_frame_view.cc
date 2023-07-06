@@ -3748,6 +3748,9 @@ void LocalFrameView::DetachFromLayout() {
   SetParentVisible(false);
   SetAttached(false);
 
+  recordreplay::AssertMaybeEventsDisallowed(
+      "[RUN-2104-2296] LocalFrameView::DetachFromLayout");
+
   // We may need update paint properties in detached frame subtree for printing.
   // See UpdateLifecyclePhasesForPrinting().
   if (auto* layout_view = GetLayoutView()) {

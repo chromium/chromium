@@ -11,15 +11,9 @@
 namespace blink {
 
 DisplayItemList::~DisplayItemList() {
-  recordreplay::AssertMaybeEventsDisallowed(
-      "[RUN-2104-2266] ~DisplayItemList A %zu", MemoryUsageInBytes());
   for (auto& item : *this) {
-    recordreplay::AssertMaybeEventsDisallowed(
-        "[RUN-2104-2266] ~DisplayItemList B %s",
-        item.GetId().ToString().Utf8().c_str());
     item.Destruct();
   }
-  recordreplay::AssertMaybeEventsDisallowed("[RUN-2104-2266] ~DisplayItemList C");
 }
 
 #if DCHECK_IS_ON()

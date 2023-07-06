@@ -604,6 +604,8 @@ bool ResourcePool::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
 
 void ResourcePool::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
+  recordreplay::AutoDisallowEvents diallow("ResourcePool::OnMemoryPressure");
+
   switch (level) {
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:

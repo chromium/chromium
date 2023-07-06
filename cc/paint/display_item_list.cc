@@ -78,11 +78,7 @@ DisplayItemList::DisplayItemList(UsageHint usage_hint)
   }
 }
 
-DisplayItemList::~DisplayItemList() {
-  if (!recordreplay::AreEventsDisallowed())
-    recordreplay::Assert("[RUN-2104-2266] ~DisplayItemList %d",
-                         paint_op_buffer_.unique());
-}
+DisplayItemList::~DisplayItemList() = default;
 
 void DisplayItemList::Raster(SkCanvas* canvas,
                              ImageProvider* image_provider) const {

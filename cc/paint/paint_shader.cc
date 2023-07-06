@@ -229,9 +229,7 @@ size_t PaintShader::GetSerializedSize(const PaintShader* shader) {
 }
 
 PaintShader::PaintShader(Type type) : shader_type_(type) {}
-PaintShader::~PaintShader() {
-  recordreplay::AssertMaybeEventsDisallowed("[RUN-2104-2266] ~PaintShader %u", id_);
-}
+PaintShader::~PaintShader() = default;
 
 bool PaintShader::has_discardable_images() const {
   return (image_ && !image_.IsTextureBacked()) ||

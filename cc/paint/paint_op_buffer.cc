@@ -2921,10 +2921,7 @@ PaintOpBuffer::PaintOpBuffer(PaintOpBuffer&& other) {
 }
 
 PaintOpBuffer::~PaintOpBuffer() {
-  if (!recordreplay::AreEventsDisallowed()) {
-    recordreplay::Assert("[RUN-2104-2228] ~PaintOpBuffer %d",
-                         are_ops_destroyed_);
-  }
+  recordreplay::AutoDisallowEvents disallow("~PaintOpBuffer");
   Reset();
 }
 
@@ -2956,11 +2953,9 @@ PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
 void PaintOpBuffer::Reset() {
   if (!are_ops_destroyed_) {
     for (PaintOp& op : Iterator(this)) {
-      recordreplay::Assert("[RUN-2104-2266] PaintOpBuffer::Reset A %d", (int)op.GetType());
       op.DestroyThis();
     }
   }
-  recordreplay::Assert("[RUN-2104-2266] PaintOpBuffer::Reset B");
 
   // Leave data_ allocated, reserved_ unchanged. ShrinkToFit will take care of
   // that if called.
