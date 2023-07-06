@@ -27,6 +27,7 @@ class ObjectPath;
 namespace ash {
 
 class CellularESimInstaller;
+class CellularInhibitor;
 class NetworkProfileHandler;
 class NetworkStateHandler;
 class ManagedCellularPrefHandler;
@@ -57,12 +58,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
 
   void Init(CellularESimProfileHandler* cellular_esim_profile_handler,
             CellularESimInstaller* cellular_esim_installer,
+            CellularInhibitor* cellular_inhibitor,
             NetworkProfileHandler* network_profile_handler,
             NetworkStateHandler* network_state_handler,
             ManagedCellularPrefHandler* managed_cellular_pref_handler,
             ManagedNetworkConfigurationHandler*
                 managed_network_configuration_handler);
 
+  // TODO(b/281904820): Remove this function once SM-DS Support is launched.
   // Installs an eSIM profile and connects to its network from policy with
   // given |smdp_address|. The Shill service configuration will also be updated
   // to the policy guid and the new ICCID after installation completes. If
@@ -144,8 +147,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   // queue of policy eSIM installation requests.
   void ResumeInstallIfNeeded();
   void ProcessRequests();
-  void ScheduleRetry(std::unique_ptr<InstallPolicyESimRequest> request,
-                     InstallRetryReason reason);
+  void ScheduleRetryAndProcessRequests(
+      std::unique_ptr<InstallPolicyESimRequest> request,
+      InstallRetryReason reason);
   void PushRequestAndProcess(std::unique_ptr<InstallPolicyESimRequest> request);
   void PopRequest();
 
@@ -166,6 +170,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
       const dbus::ObjectPath& euicc_path,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void OnConfigureESimService(absl::optional<dbus::ObjectPath> service_path);
+  void OnInhibitedForRefreshSmdxProfiles(
+      const dbus::ObjectPath& euicc_path,
+      base::Value::Dict new_shill_properties,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void OnRefreshSmdxProfiles(
+      const dbus::ObjectPath& euicc_path,
+      base::Value::Dict new_shill_properties,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      HermesResponseStatus status,
+      const std::vector<dbus::ObjectPath>& profile_paths);
   void OnESimProfileInstallAttemptComplete(
       HermesResponseStatus hermes_status,
       absl::optional<dbus::ObjectPath> profile_path,
@@ -176,11 +190,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   const policy_util::SmdxActivationCode& GetCurrentActivationCode() const;
   absl::optional<dbus::ObjectPath> FindExistingMatchingESimProfile();
   bool HasNonCellularInternetConnectivity();
+  InstallRetryReason HermesResponseStatusToRetryReason(
+      HermesResponseStatus status) const;
 
   raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
       cellular_esim_profile_handler_ = nullptr;
   raw_ptr<CellularESimInstaller, ExperimentalAsh> cellular_esim_installer_ =
       nullptr;
+  raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_ = nullptr;
   raw_ptr<NetworkProfileHandler, ExperimentalAsh> network_profile_handler_ =
       nullptr;
   raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =

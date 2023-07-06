@@ -753,27 +753,32 @@ void ManagedNetworkConfigurationHandlerImpl::TriggerCellularPolicyApplication(
   const ProfilePolicies* policies = GetPoliciesForUser(profile.userhash);
   DCHECK(policies);
 
+  if (!cellular_policy_handler_) {
+    NET_LOG(ERROR) << "Unable to attempt policy eSIM installation since "
+                   << "CellularPolicyHandler has not been initialized";
+    return;
+  }
+
   for (const std::string& guid : new_cellular_policy_guids) {
     const base::Value::Dict* network_policy = policies->GetPolicyByGuid(guid);
     DCHECK(network_policy);
 
-    const std::string* smdp_address =
-        policy_util::GetSMDPAddressFromONC(*network_policy);
-    if (smdp_address) {
-      NET_LOG(EVENT)
-          << "Found ONC configuration with SMDP: " << *smdp_address
-          << ". Start installing policy eSim profile with ONC config: "
-          << *network_policy;
-      if (cellular_policy_handler_) {
+    if (ash::features::IsSmdsSupportEnabled()) {
+      cellular_policy_handler_->InstallESim(*network_policy);
+    } else {
+      const std::string* smdp_address =
+          policy_util::GetSMDPAddressFromONC(*network_policy);
+      if (smdp_address) {
+        NET_LOG(EVENT)
+            << "Found ONC configuration with SMDP: " << *smdp_address << ". "
+            << "Start installing policy eSim profile with ONC config: "
+            << *network_policy;
         cellular_policy_handler_->InstallESim(*smdp_address, *network_policy);
       } else {
-        NET_LOG(ERROR) << "Unable to install eSIM. CellularPolicyHandler not "
-                          "initialized.";
+        NET_LOG(EVENT) << "Skip installing policy eSIM either because the eSIM "
+                       << "policy feature is not enabled or the SMDP address "
+                       << "is missing from ONC.";
       }
-    } else {
-      NET_LOG(EVENT) << "Skip installing policy eSIM either because "
-                        "the eSIM policy feature is not enabled or the SMDP "
-                        "address is missing from ONC.";
     }
   }
 }

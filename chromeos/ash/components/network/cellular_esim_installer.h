@@ -66,19 +66,33 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
 
   // Installs an ESim profile and network with given |activation_code|,
   // |confirmation_code| and |euicc_path|. This method will attempt to create
-  // the Shill configuration with given |new_shill_properties| and then enable
-  // the newly installed profile and connect to its network afterward.
-  // |is_initial_install| is only used for recording eSIM policy install
-  // metrics, indicating whether the current attempt is an initial attempt or
-  // not.
+  // a Shill configuration with the given |new_shill_properties|, and and will
+  // enable and attempt to connect to the installed profile afterward. Both
+  // |is_initial_install| and |is_install_via_qr_code| are used for recording
+  // eSIM policy installation metrics. This function expects an inhibit lock of
+  // the cellular device to be provided. Callers should use the corresponding
+  // LockAndInstallProfileFromActivationCode() function if they do not have an
+  // inhibit lock prior to invocation.
   void InstallProfileFromActivationCode(
       const std::string& activation_code,
       const std::string& confirmation_code,
       const dbus::ObjectPath& euicc_path,
       base::Value::Dict new_shill_properties,
       InstallProfileFromActivationCodeCallback callback,
-      bool is_initial_install = true,
-      bool is_install_via_qr_code = false);
+      bool is_initial_install,
+      bool is_install_via_qr_code,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+
+  // This is a helper function that will receive an inhibit lock of the cellular
+  // device before invoking LockAndInstallProfileFromActivationCode().
+  void LockAndInstallProfileFromActivationCode(
+      const std::string& activation_code,
+      const std::string& confirmation_code,
+      const dbus::ObjectPath& euicc_path,
+      base::Value::Dict new_shill_properties,
+      InstallProfileFromActivationCodeCallback callback,
+      bool is_initial_install,
+      bool is_install_via_qr_code);
 
   // Attempts to create a Shill service configuration with given
   // |new_shill_properties| for eSIM with |profile_path| and |euicc_path|.
@@ -91,6 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
  private:
   friend class CellularESimInstallerTest;
   friend class CellularPolicyHandlerLegacyTest;
+  friend class CellularPolicyHandlerTest;
   FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest,
                            InstallProfileInvalidActivationCode);
   FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest,

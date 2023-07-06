@@ -201,7 +201,7 @@ void CellularESimProfileHandler::OnInhibitedForRequestAvailableProfiles(
 
   if (!inhibit_lock) {
     // TODO(b/278135630): Emit
-    // Network.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
+    // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
     NET_LOG(ERROR)
         << "Failed to inhibit cellular for requesting available profiles";
     std::move(info->callback)
@@ -224,7 +224,7 @@ void CellularESimProfileHandler::PerformRequestAvailableProfiles(
 
   if (info->smds_activation_codes.empty()) {
     // TODO(b/278135630): Emit
-    // Network.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
+    // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
     // TODO(b/278135534): Emit Network.Ash.Cellular.ESim.SMDSScan.ProfileCount.
     NET_LOG(EVENT) << "Finished requesting available profiles";
     std::move(info->callback)
@@ -259,15 +259,16 @@ void CellularESimProfileHandler::OnRequestAvailableProfiles(
   DCHECK(info->callback);
   DCHECK(inhibit_lock);
 
-  // TODO(b/278135481): Emit Network.Cellular.ESim.SMDSScan.{SMDSType}.Duration.
+  // TODO(b/278135481): Emit
+  // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.Duration.
   // TODO(b/278135630): Emit
-  // Network.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
+  // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
   // Each SM-DS scan will return both a result and zero or more available
   // profiles. An error being returned indicates there was an issue when
   // performing the scan, but since it does not invalidate the returned profiles
   // we simply log the error, capture the error in our metrics, and continue.
   NET_LOG(EVENT)
-      << "HermesEuiccClient::RefreshSmdsProfiles returned with result code "
+      << "HermesEuiccClient::RefreshSmdxProfiles returned with result code "
       << status;
 
   HermesEuiccClient::Properties* euicc_properties =

@@ -143,12 +143,25 @@ void CellularESimInstaller::InstallProfileFromActivationCode(
     base::Value::Dict new_shill_properties,
     InstallProfileFromActivationCodeCallback callback,
     bool is_initial_install,
+    bool is_install_via_qr_code,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  DCHECK(inhibit_lock);
+  PerformInstallProfileFromActivationCode(
+      activation_code, confirmation_code, euicc_path,
+      std::move(new_shill_properties), is_initial_install,
+      is_install_via_qr_code,
+      CreateTimedInstallProfileCallback(std::move(callback)),
+      std::move(inhibit_lock));
+}
+
+void CellularESimInstaller::LockAndInstallProfileFromActivationCode(
+    const std::string& activation_code,
+    const std::string& confirmation_code,
+    const dbus::ObjectPath& euicc_path,
+    base::Value::Dict new_shill_properties,
+    InstallProfileFromActivationCodeCallback callback,
+    bool is_initial_install,
     bool is_install_via_qr_code) {
-  // Try installing directly with activation code.
-  // TODO(crbug.com/1186682) Add a check for activation codes that are
-  // currently being installed to prevent multiple attempts for the same
-  // activation code.
-  NET_LOG(USER) << "Attempting installation with code " << activation_code;
   cellular_inhibitor_->InhibitCellularScanning(
       CellularInhibitor::InhibitReason::kInstallingProfile,
       base::BindOnce(
@@ -178,6 +191,10 @@ void CellularESimInstaller::PerformInstallProfileFromActivationCode(
                             /*service_path=*/absl::nullopt);
     return;
   }
+
+  // TODO(crbug.com/1186682) Add a check for activation codes that are currently
+  // being installed to prevent multiple attempts for the same activation code.
+  NET_LOG(USER) << "Attempting installation with code " << activation_code;
 
   HermesEuiccClient::Get()->InstallProfileFromActivationCode(
       euicc_path, activation_code, confirmation_code,

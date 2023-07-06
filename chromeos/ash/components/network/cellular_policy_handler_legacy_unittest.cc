@@ -155,8 +155,8 @@ class CellularPolicyHandlerLegacyTest : public testing::Test {
     cellular_policy_handler_ = std::make_unique<CellularPolicyHandler>();
     cellular_policy_handler_->Init(
         cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
-        network_profile_handler_.get(), network_state_handler_.get(),
-        managed_cellular_pref_handler_.get(),
+        cellular_inhibitor_.get(), network_profile_handler_.get(),
+        network_state_handler_.get(), managed_cellular_pref_handler_.get(),
         managed_network_configuration_handler_.get());
   }
 

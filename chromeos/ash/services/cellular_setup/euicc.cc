@@ -123,12 +123,13 @@ void Euicc::InstallProfileFromActivationCode(
     return;
   }
 
-  esim_manager_->cellular_esim_installer()->InstallProfileFromActivationCode(
-      activation_code, confirmation_code, path_,
-      /*new_shill_properties=*/base::Value::Dict(),
-      base::BindOnce(&Euicc::OnESimInstallProfileResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      /*is_initial_install=*/true, is_install_via_qr_code);
+  esim_manager_->cellular_esim_installer()
+      ->LockAndInstallProfileFromActivationCode(
+          activation_code, confirmation_code, path_,
+          /*new_shill_properties=*/base::Value::Dict(),
+          base::BindOnce(&Euicc::OnESimInstallProfileResult,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+          /*is_initial_install=*/true, is_install_via_qr_code);
 }
 
 void Euicc::OnESimInstallProfileResult(

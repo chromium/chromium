@@ -320,7 +320,7 @@ void FakeHermesEuiccClient::UpdateShillDeviceSimSlotInfo() {
       const dbus::Property<hermes::profile::State>& state =
           profile_properties->state();
       if (state.value() == hermes::profile::State::kActive) {
-        iccid = state.value();
+        iccid = profile_properties->iccid().value();
         break;
       }
     }

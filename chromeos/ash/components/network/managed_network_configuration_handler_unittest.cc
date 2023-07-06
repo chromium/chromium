@@ -220,8 +220,8 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     managed_network_configuration_handler_->AddObserver(&policy_observer_);
     cellular_policy_handler_->Init(
         cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
-        network_profile_handler_.get(), network_state_handler_.get(),
-        managed_cellular_pref_handler_.get(),
+        cellular_inhibitor_.get(), network_profile_handler_.get(),
+        network_state_handler_.get(), managed_cellular_pref_handler_.get(),
         managed_network_configuration_handler_.get());
     prohibited_technologies_handler_->Init(
         managed_network_configuration_handler_.get(),
