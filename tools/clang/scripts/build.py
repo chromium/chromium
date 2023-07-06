@@ -513,9 +513,6 @@ def compiler_rt_cmake_flags(*, sanitizers, profile):
       'COMPILER_RT_BUILD_XRAY=OFF',
       # See crbug.com/1205046: don't build scudo (and others we don't need).
       'COMPILER_RT_SANITIZERS_TO_BUILD=asan;dfsan;msan;hwasan;tsan;cfi',
-      # We explicitly list all targets we want to build, do not autodetect
-      # targets.
-      'COMPILER_RT_DEFAULT_TARGET_ONLY=ON',
   ]
   return args
 
