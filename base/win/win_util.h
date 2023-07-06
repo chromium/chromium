@@ -208,6 +208,9 @@ BASE_EXPORT std::wstring WStringFromGUID(const ::GUID& rguid);
 // pinned, |error| is set and the method returns false.
 BASE_EXPORT bool PinUser32(NativeLibraryLoadError* error = nullptr);
 
+// Load advapi32.dll to prevent delay loading errors.
+BASE_EXPORT bool PinAdvapi32ForTesting(NativeLibraryLoadError* error = nullptr);
+
 // Gets a pointer to a function within user32.dll, if available. If user32.dll
 // cannot be loaded or the function cannot be found, this function returns
 // nullptr and sets |error|. Once loaded, user32.dll is pinned, and therefore

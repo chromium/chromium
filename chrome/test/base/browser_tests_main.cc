@@ -35,6 +35,11 @@ int main(int argc, char** argv) {
   // load and pin the module early on in startup before the blocking becomes an
   // issue.
   base::win::PinUser32();
+  // Similarly advapi32.dll needs to be loaded. Delay loading may racily fail
+  // in asan tests, and in chrome.dll itself it is not delay loaded so delay
+  // loading it in browser_tests.exe is just a side effect of other
+  // configurations.
+  base::win::PinAdvapi32ForTesting();
 
   base::win::EnableHighDPISupport();
 
