@@ -35,28 +35,36 @@ class PinDialog {
     return shadowRoot;
   }
 
-  private pinKeyboard(): HTMLElement {
-    const pinKeyboard = this.shadowRoot().getElementById('pinKeyboard');
-    assertTrue(pinKeyboard instanceof HTMLElement);
-    return pinKeyboard;
+  // Returns the setup-pin-keyboard element (NOT the pin-keyboard element!) of
+  // the dialog. This element exists for a SETUP dialog only, not for an
+  // AUTOSUBMIT dialog.
+  private setupPinKeyboard(): HTMLElement {
+    assertTrue(this.dialogType === PinDialogType.SETUP);
+    // The ID of the setup-pin-keyboard element is (perhaps confusingly) just
+    // `pinKeyboard`.
+    const setupPinKeyboard = this.shadowRoot().getElementById('pinKeyboard');
+    assertTrue(setupPinKeyboard !== null);
+    return setupPinKeyboard;
   }
 
-  private pinInput(): HTMLElement&{value: string} {
-    const pinKeyboard = this.pinKeyboard();
-    assertTrue(pinKeyboard.shadowRoot !== null);
-
+  private pinKeyboard(): HTMLElement&{value: string} {
+    let pinKeyboard = null;
     switch (this.dialogType) {
       case PinDialogType.SETUP: {
-        const pinInput = pinKeyboard.shadowRoot.getElementById('pinKeyboard');
-        assertTrue(pinInput instanceof HTMLElement);
-        assertTrue(hasStringProperty(pinInput, 'value'));
-        return pinInput;
+        // The PinKeyboard element of a SETUP dialog is nested inside the
+        // SetupPinKeyboard element.
+        const setupPinKeyboard = this.setupPinKeyboard();
+        assertTrue(setupPinKeyboard.shadowRoot !== null);
+        pinKeyboard = setupPinKeyboard.shadowRoot.getElementById('pinKeyboard');
+        break;
       }
-      case PinDialogType.AUTOSUBMIT: {
-        assertTrue(hasStringProperty(pinKeyboard, 'value'));
-        return pinKeyboard;
-      }
+      case PinDialogType.AUTOSUBMIT:
+        pinKeyboard = this.shadowRoot().getElementById('pinKeyboard');
+        break;
     }
+    assertTrue(pinKeyboard !== null);
+    assertTrue(hasStringProperty(pinKeyboard, 'value'));
+    return pinKeyboard;
   }
 
   private cancelButton(): HTMLElement {
@@ -84,9 +92,9 @@ class PinDialog {
     let el = null;
     switch (this.dialogType) {
       case PinDialogType.SETUP: {
-        const pinKeyboard = this.pinKeyboard();
-        assertTrue(pinKeyboard.shadowRoot !== null);
-        el = pinKeyboard.shadowRoot.getElementById('problemDiv');
+        const setupPinKeyboard = this.setupPinKeyboard();
+        assertTrue(setupPinKeyboard.shadowRoot !== null);
+        el = setupPinKeyboard.shadowRoot.getElementById('problemDiv');
         break;
       }
       case PinDialogType.AUTOSUBMIT: {
@@ -109,18 +117,20 @@ class PinDialog {
   }
 
   // Returns the backspace button element of the PIN pad.
-  backspaceButton(): CrButtonElement {
+  backspaceButton(): HTMLElement&{disabled: boolean} {
     const pinKeyboard = this.pinKeyboard();
     assertTrue(pinKeyboard.shadowRoot !== null);
 
     const backspaceButton =
         pinKeyboard.shadowRoot.getElementById('backspaceButton');
-    assertTrue(backspaceButton instanceof CrButtonElement);
+    assertTrue(backspaceButton !== null);
+    assertTrue(hasBooleanProperty(backspaceButton, 'disabled'));
+
     return backspaceButton;
   }
 
   async enterPin(pin: string): Promise<void> {
-    (await retry(() => this.pinInput())).value = pin;
+    (await retry(() => this.pinKeyboard())).value = pin;
   }
 
   async submit(): Promise<void> {
@@ -138,13 +148,17 @@ class PinDialog {
 
   // Sends a keyboard event to the input control.
   sendKeyboardEvent(ev: KeyboardEvent) {
-    this.pinInput().dispatchEvent(ev);
+    const pinKeyboard = this.pinKeyboard();
+    assertTrue(pinKeyboard.shadowRoot !== null);
+    const pinInput = pinKeyboard.shadowRoot.getElementById('pinInput');
+    assertTrue(pinInput instanceof HTMLElement);
+    pinInput.dispatchEvent(ev);
   }
 
   // Returns the current value of the PIN input field. Throws an assertion
   // error if the pin input field cannot be found.
   pinValue(): string {
-    return this.pinInput().value;
+    return this.pinKeyboard().value;
   }
 
   // Returns the current title of the dialog. Throws an assertion error if the
@@ -487,15 +501,22 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
     const initialTitleText = pinDialog.titleText();
     const initialSubmitText = pinDialog.submitText();
 
-    assertAsync(() => pinDialog.backspaceButton().disabled);
+    await retryUntilSome(() => pinDialog.backspaceButton());
+    await assertAsync(() => pinDialog.backspaceButton().disabled);
     await pinDialog.enterPin(pin);
-    assertAsync(() => !pinDialog.backspaceButton().disabled);
+    await assertAsync(() => !pinDialog.backspaceButton().disabled);
 
     await pinDialog.submit();
 
-    assertAsync(() => pinDialog.pinValue() === '');
-    assertAsync(() => initialTitleText !== pinDialog.titleText());
-    assertAsync(() => initialSubmitText !== pinDialog.submitText());
+    // The PIN input value field should be cleared now.
+    await assertAsync(() => pinDialog.pinValue() === '');
+
+    // The title text of the dialog should change to inform the user that
+    // they're supposed to enter the PIN again.
+    await assertAsync(() => initialTitleText !== pinDialog.titleText());
+    // The submit button text should change to inform the user that this is
+    // the second entry.
+    await assertAsync(() => initialSubmitText !== pinDialog.submitText());
 
     await pinDialog.enterPin(pin);
     await pinDialog.submit();
@@ -604,24 +625,27 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
   async checkPinSetupDialogKeyInput(): Promise<void> {
     const pinDialog = await this.openPinSetupDialog();
 
-    // Text input should be blocked.
-    pinDialog.sendKeyboardEvent(
-        new KeyboardEvent('keydown', {cancelable: true, key: 'a'}));
-    assertForDuration(() => pinDialog.pinValue() === '');
+    // Pressing letter keys should be ignored.
+    const letterKeydown =
+        new KeyboardEvent('keydown', {cancelable: true, key: 'a', keyCode: 65});
+    pinDialog.sendKeyboardEvent(letterKeydown);
+    assertTrue(letterKeydown.defaultPrevented);
 
-    // Numerical input should be allowed.
-    pinDialog.sendKeyboardEvent(
-        new KeyboardEvent('keydown', {cancelable: true, key: '1'}));
-    assertAsync(() => pinDialog.pinValue() === '1');
-    await pinDialog.enterPin('');
+    // Pressing digit keys and system keys should not be ignored.
+    //
+    // Note that sending a digit keydown event won't update the value of the
+    // pin input, probably because our synthetic event doesn't have the
+    // |trusted| attribute. The best we can do appears to be to verify that the
+    // the event wasn't suppressed.
+    const digitKeydown =
+        new KeyboardEvent('keydown', {cancelable: true, key: '1', keyCode: 49});
+    pinDialog.sendKeyboardEvent(digitKeydown);
+    assertTrue(!digitKeydown.defaultPrevented);
 
-    // System keys should not be suppressed, but should not affect the PIN
-    // value.
-    const systemKeyEvent =
-        new KeyboardEvent('keydown', {cancelable: true, key: 'BrightnessUp'});
-    pinDialog.sendKeyboardEvent(systemKeyEvent);
-    assertTrue(!systemKeyEvent.defaultPrevented);
-    assertForDuration(() => pinDialog.pinValue() === '');
+    const systemKeydown = new KeyboardEvent(
+        'keydown', {cancelable: true, key: 'BrightnessUp', keyCode: 217});
+    pinDialog.sendKeyboardEvent(systemKeydown);
+    assertTrue(!systemKeydown.defaultPrevented);
   }
 
   private autosubmitToggle(): HTMLElement&{checked: boolean}|null {
@@ -697,9 +721,8 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
 
     // The autosubmit dialog should have disappeared, and autosubmit should not
     // have been enabled.
-    await assertAsync(
-        () => this.pinAutosubmitDialog() === null &&
-            !this.isPinAutosubmitEnabled());
+    await assertAsync(() => this.pinAutosubmitDialog() === null);
+    await assertForDuration(() => !this.isPinAutosubmitEnabled());
   }
 
   async enablePinAutosubmitTooLong(longPin: string): Promise<void> {
@@ -768,8 +791,8 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
   async assertAutoLockScreenFocused(): Promise<void> {
     const isFocused = () =>
         this.shadowRoot().activeElement === this.queryAutoLockScreenToggle();
-    assertAsync(isFocused);
-    assertForDuration(isFocused);
+    await assertAsync(isFocused);
+    await assertForDuration(isFocused);
   }
 
   async assertLockScreenNotificationFocused(): Promise<void> {
