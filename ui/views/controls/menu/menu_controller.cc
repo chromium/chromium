@@ -645,6 +645,10 @@ void MenuController::Run(Widget* parent,
   ViewsDelegate::GetInstance()->AddRef();
 }
 
+void MenuController::OnMenuEdgeReached() {
+  scroll_task_->StopScrolling();
+}
+
 void MenuController::Cancel(ExitType type) {
 #if BUILDFLAG(IS_MAC)
   menu_closure_animation_.reset();

@@ -288,6 +288,9 @@ class VIEWS_EXPORT MenuController
   // safe to discard the handle after the menu controller has been destroyed.
   AnnotationCallbackHandle SetAnnotationCallback(AnnotationCallback callback);
 
+  // Called from MenuScrollViewContainer when either end of the menu is reached.
+  void OnMenuEdgeReached();
+
  private:
   friend class internal::MenuRunnerImpl;
   friend class test::MenuControllerTest;

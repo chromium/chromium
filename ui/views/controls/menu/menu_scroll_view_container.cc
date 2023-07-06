@@ -375,10 +375,12 @@ void MenuScrollViewContainer::OnBoundsChanged(
 }
 
 void MenuScrollViewContainer::DidScrollToTop() {
+  content_view_->GetMenuItem()->GetMenuController()->OnMenuEdgeReached();
   scroll_up_button_->SetVisible(false);
 }
 
 void MenuScrollViewContainer::DidScrollToBottom() {
+  content_view_->GetMenuItem()->GetMenuController()->OnMenuEdgeReached();
   scroll_down_button_->SetVisible(false);
 }
 
