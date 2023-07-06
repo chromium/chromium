@@ -11,6 +11,7 @@ import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.PointF;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -1349,7 +1350,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             // Allow the user to drag the selected tab out of the tab toolbar.
             if (clickedTab != null) {
-                allowMovingTabOutOfStripLayout(clickedTab);
+                allowMovingTabOutOfStripLayout(clickedTab, new PointF(x, y));
             }
         }
     }
@@ -3092,7 +3093,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     @VisibleForTesting
-    void allowMovingTabOutOfStripLayout(StripLayoutTab clickedTab) {
+    void allowMovingTabOutOfStripLayout(StripLayoutTab clickedTab, PointF dragStartPointF) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
         if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
 
@@ -3105,7 +3106,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 // TODO(b/285624813): Verify if setting onDragListener on toolbar container view
                 // causes any conflict with images drop work.
                 if (TabDragSource.getInstance().startTabDragAction(
-                            mToolbarContainerView, this, tabBeingDragged)) {
+                            mToolbarContainerView, this, tabBeingDragged, dragStartPointF)) {
                     mActiveClickedTab = clickedTab;
                 }
             }

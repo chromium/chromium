@@ -16,7 +16,6 @@ import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -30,6 +29,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
+import android.graphics.PointF;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.ContextThemeWrapper;
@@ -150,6 +150,7 @@ public class StripLayoutHelperTest {
     private static final float NEW_TAB_BTN_HEIGHT = 100.f;
     private static final float BUTTON_END_PADDING_TSR = 12.f;
     private static final float MODEL_SELECTOR_BUTTON_BG_WIDTH_TSR = 32.f;
+    private static final PointF DRAG_START_POINT = new PointF(70f, 20f);
 
     private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_END = 72;
 
@@ -2276,7 +2277,7 @@ public class StripLayoutHelperTest {
         } catch (Exception ex) {
             assert (false);
         }
-        when(mTabDragSource.startTabDragAction(any(), any(), any())).thenReturn(true);
+        when(mTabDragSource.startTabDragAction(any(), any(), any(), any())).thenReturn(true);
 
         try {
             mContextForDragDrop = Mockito.spy(ContextUtils.getApplicationContext());
@@ -2321,10 +2322,9 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getActiveClickedTab() == null);
 
         // Act and verify.
-        mStripLayoutHelper.allowMovingTabOutOfStripLayout(theClickedTab);
+        mStripLayoutHelper.allowMovingTabOutOfStripLayout(theClickedTab, DRAG_START_POINT);
 
-        verify(mTabDragSource, atLeastOnce()).startTabDragAction(any(), any(), any());
-        verify(mTabDragSource, atMostOnce()).startTabDragAction(any(), any(), any());
+        verify(mTabDragSource, times(1)).startTabDragAction(any(), any(), any(), any());
         assertTrue("Tab being dragged should exist during drag action.",
                 mStripLayoutHelper.getActiveClickedTab() != null);
         assertTrue("Dragged Tab should match selected tab during drag action.",

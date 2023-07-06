@@ -714,7 +714,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
 
         // Check if the new Chrome instance can be opened.
-        if (getInstanceInfo().size() < mMaxInstances) {
+        if (MultiWindowUtils.getInstanceCount() < mMaxInstances) {
             moveAndReparentTabToNewWindow(tab, INVALID_INSTANCE_ID, /*preferNew=*/true,
                     /*openAdjacently=*/false, /*addTrustedIntentExtras=*/true);
         } else {
