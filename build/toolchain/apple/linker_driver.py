@@ -6,6 +6,7 @@
 
 import os
 import os.path
+import re
 import shutil
 import subprocess
 import sys
@@ -138,8 +139,8 @@ class LinkerDriver(object):
                 # produced by rustc for LTO includes these arguments, but the
                 # Apple linker doesn't accept them.
                 # Upstream bug: https://github.com/rust-lang/rust/issues/60059
-                BAD_RUSTC_ARGS = ['-Wl,-plugin-opt=O3,-plugin-opt=mcpu=core2']
-                if arg not in BAD_RUSTC_ARGS:
+                BAD_RUSTC_ARGS = '-Wl,-plugin-opt=O[0-9],-plugin-opt=mcpu=.*'
+                if not re.match(BAD_RUSTC_ARGS, arg):
                     compiler_driver_args.append(arg)
 
         if not self._driver_path:
