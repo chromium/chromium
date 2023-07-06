@@ -4319,6 +4319,18 @@
         <message name="IDS_SETTINGS_APN_MENU_REMOVE" desc="Remove button in three dotted menu for APNs">
           Remove
         </message>
+        <message name="IDS_SETTINGS_APN_A11Y_NAME" desc="Accessibility text to display the name of an APN item in the APN list and what index it is in the list">
+          <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="COUNT">$2<ex>5</ex></ph>, <ph name="NAME">$3<ex>ATT Broadband</ex></ph>.
+        </message>
+        <message name="IDS_SETTINGS_APN_A11Y_AUTO_DETECTED" desc="Accessibility text for when an APN is automatically detected">
+          APN is automatically detected.
+        </message>
+        <message name="IDS_SETTINGS_APN_A11Y_CONNECTED" desc="Accessibility text for when an APN is connected">
+          APN is connected.
+        </message>
+        <message name="IDS_SETTINGS_APN_A11Y_DISABLED" desc="Accessibility text for when an APN is disabled">
+          APN is disabled.
+        </message>
         <message name="IDS_SETTINGS_APN_MORE_ACTIONS_TITLE" desc="Description of the tree dotted menu for APNs">
           More actions for <ph name="APN_NAME">$1<ex>vzwinternet</ex></ph>
         </message>

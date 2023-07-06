@@ -324,4 +324,61 @@ suite('ApnListItemTest', function() {
         eventData.detail);
     assertFalse(apnListItem.$.dotsMenu.open);
   });
+
+  test('Item a11y', async function() {
+    apnListItem.itemIndex = 0;
+    apnListItem.listSize = 1;
+
+    // Enabled custom APN, non-connected.
+    const apnName = 'apn1';
+    const apnId = '1';
+    apnListItem.apn = {
+      id: apnId,
+      accessPointName: apnName,
+    };
+
+    const nameText = apnListItem.i18n(
+        'apnA11yName', /*index=*/ 1, /*count=*/ 1, /*name=*/ 'apn1');
+    assertEquals(apnListItem.$.actionMenuButton.ariaLabel, nameText);
+
+    // Enabled custom APN, connected.
+    apnListItem.isConnected = true;
+
+    const connectedText = apnListItem.i18n('apnA11yConnected');
+    assertEquals(
+        apnListItem.$.actionMenuButton.ariaLabel,
+        nameText + ' ' + connectedText);
+
+    // Disabled custom APN, non-connected.
+    apnListItem.apn = {
+      id: apnId,
+      accessPointName: apnName,
+      state: ApnState.kDisabled,
+    };
+    apnListItem.isConnected = false;
+
+    const disabledText = apnListItem.i18n('apnA11yDisabled');
+    assertEquals(
+        apnListItem.$.actionMenuButton.ariaLabel,
+        nameText + ' ' + disabledText);
+
+    // Enabled database APN, non-connected.
+    apnListItem.apn = {
+      accessPointName: apnName,
+    };
+    apnListItem.isConnected = false;
+    const autoDetectedText = apnListItem.i18n('apnA11yAutoDetected');
+    assertEquals(
+        apnListItem.$.actionMenuButton.ariaLabel,
+        nameText + ' ' + autoDetectedText);
+
+    // Enabled database APN, connected.
+    apnListItem.apn = {
+      accessPointName: apnName,
+    };
+    apnListItem.isConnected = true;
+    assertEquals(
+        apnListItem.$.actionMenuButton.ariaLabel,
+        nameText + ' ' + autoDetectedText + ' ' + connectedText);
+  });
 });

@@ -45,7 +45,7 @@ class ApnListItem extends ApnListItemBase {
 
       isConnected: {
         type: Boolean,
-        value: true,
+        value: false,
       },
 
       shouldDisallowDisablingRemoving: {
@@ -57,6 +57,15 @@ class ApnListItem extends ApnListItemBase {
         type: Boolean,
         value: false,
       },
+
+      /** The index of this item in its parent list, used for its a11y label. */
+      itemIndex: Number,
+
+      /**
+       * The total number of elements in this item's parent list, used for its
+       * a11y label.
+       */
+      listSize: Number,
 
       /** @private */
       isDisabled_: {
@@ -243,6 +252,35 @@ class ApnListItem extends ApnListItemBase {
    */
   computeIsDisabled_() {
     return !!this.apn.id && this.apn.state === ApnState.kDisabled;
+  }
+
+  /**
+   * Returns accessibility label for the item.
+   * @return {string}
+   * @private
+   */
+  getAriaLabel_() {
+    if (!this.apn) {
+      return '';
+    }
+
+    let a11yLabel = this.i18n(
+        'apnA11yName', this.itemIndex + 1, this.listSize,
+        this.getApnDisplayName_(this.apn));
+
+    if (!this.apn.id) {
+      a11yLabel += ' ' + this.i18n('apnA11yAutoDetected');
+    }
+
+    if (this.isConnected) {
+      a11yLabel += ' ' + this.i18n('apnA11yConnected');
+    }
+
+    if (this.isDisabled_) {
+      a11yLabel += ' ' + this.i18n('apnA11yDisabled');
+    }
+
+    return a11yLabel;
   }
 }
 
