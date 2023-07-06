@@ -78,6 +78,10 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager
   // Purges all unlocked frames, allowing us to reclaim resources.
   void PurgeAllUnlockedFrames();
 
+  // Chosen arbitrarily, didn't show regressions in metrics during a field trial
+  // in 2023. Should ideally be higher than a common time to switch between
+  // tabs. The reasoning is that if a tab isn't switched to in this delay, then
+  // it's unlikeky to soon be.
   static constexpr base::TimeDelta kPeriodicCullingDelay = base::Minutes(5);
 
  private:

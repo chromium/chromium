@@ -412,7 +412,7 @@ void ParkableStringManager::ScheduleAgingTaskIfNeeded() {
   if (has_pending_aging_task_)
     return;
 
-  base::TimeDelta delay = base::Seconds(kAgingIntervalInSeconds);
+  base::TimeDelta delay = kAgingInterval;
   // Delay the first aging tick, since this renderer may be short-lived, we do
   // not want to waste CPU time compressing memory that is going away soon.
   if (!first_string_aging_was_delayed_) {

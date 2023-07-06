@@ -75,7 +75,14 @@ class PLATFORM_EXPORT ParkableStringManager {
   static bool ShouldPark(const StringImpl& string);
 
   // Public for testing.
-  constexpr static int kAgingIntervalInSeconds = 2;
+  //
+  // Arbitrarily chosen, was shown to not regress metrics in a field experiment
+  // in 2019 on desktop and Android. From local testing, strings are either
+  // requested in a very rapid succession (during compilation), or almost
+  // never. We want to allow strings to be dropped quickly, to reduce peak
+  // memory usage, particularly as reading and decompressing strings is
+  // typically very cheap.
+  constexpr static base::TimeDelta kAgingInterval = base::Seconds(2);
 
   // According to UMA data (as of 2021-11-09) ~70% of renderers exist for less
   // than 60 seconds. Using this as a delay of the first parking attempts

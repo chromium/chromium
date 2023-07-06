@@ -96,8 +96,7 @@ class ParkableStringTest : public testing::TestWithParam<bool> {
           ParkableStringManager::kFirstParkingDelay);
       first_aging_done_ = true;
     } else {
-      task_environment_.FastForwardBy(
-          base::Seconds(ParkableStringManager::kAgingIntervalInSeconds));
+      task_environment_.FastForwardBy(ParkableStringManager::kAgingInterval);
     }
   }
 
@@ -589,8 +588,7 @@ TEST_P(ParkableStringTest, DelayFirstParkingOfString) {
 
   // Now that the first aging took place the next aging task will take place
   // after the normal interval.
-  task_environment_.FastForwardBy(
-      base::Seconds(ParkableStringManager::kAgingIntervalInSeconds));
+  task_environment_.FastForwardBy(ParkableStringManager::kAgingInterval);
 
   EXPECT_TRUE(parkable.Impl()->is_parked());
 }
@@ -1105,8 +1103,7 @@ TEST_P(ParkableStringTest, NoPrematureAging) {
   EXPECT_EQ(ParkableStringImpl::Age::kYoung,
             parkable.Impl()->age_for_testing());
 
-  task_environment_.FastForwardBy(
-      base::Seconds(ParkableStringManager::kAgingIntervalInSeconds));
+  task_environment_.FastForwardBy(ParkableStringManager::kAgingInterval);
 
   // Since not enough time elapsed not aging was done.
   EXPECT_EQ(ParkableStringImpl::Age::kYoung,
@@ -1375,8 +1372,7 @@ TEST_P(ParkableStringTestWithQueuedThreadPool, AgingParkingInProgress) {
   // task completes.
   base::RunLoop run_loop;
   scheduler::GetSingleThreadTaskRunnerForTesting()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::Seconds(ParkableStringManager::kAgingIntervalInSeconds));
+      FROM_HERE, run_loop.QuitClosure(), ParkableStringManager::kAgingInterval);
   run_loop.Run();
 
   // The aging task is rescheduled.
