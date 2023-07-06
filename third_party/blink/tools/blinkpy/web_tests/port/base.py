@@ -2322,7 +2322,6 @@ class Port(object):
         try:
             test_suite_json = json.loads(
                 self._filesystem.read_text_file(path_to_virtual_test_suites))
-            current_time = datetime.now()
             for json_config in test_suite_json:
                 # Strings are treated as comments.
                 if isinstance(json_config, str):
