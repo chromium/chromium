@@ -2,25 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/accessibility/android/android_accessibility_util.h"
+
 #include <memory>
 
-#include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
+#include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
 #include "services/accessibility/android/android_accessibility_util.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
+#include "services/accessibility/android/test/android_accessibility_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
-namespace arc {
+namespace ax::android {
 
 using AXEventType = mojom::AccessibilityEventType;
 using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
 using AXIntProperty = mojom::AccessibilityIntProperty;
 using AXRangeInfoData = mojom::AccessibilityRangeInfoData;
 
-TEST(ArcAccessibilityUtilTest, FromContentChangeTypesToAXEvent) {
+TEST(AndroidAccessibilityUtilTest, FromContentChangeTypesToAXEvent) {
   auto node_info_data = AXNodeInfoData::New();
   AccessibilityNodeInfoDataWrapper source_node_info_wrapper(
       nullptr, node_info_data.get());
@@ -64,7 +65,7 @@ TEST(ArcAccessibilityUtilTest, FromContentChangeTypesToAXEvent) {
   EXPECT_EQ(absl::nullopt, FromContentChangeTypesToAXEvent(not_enum_value));
 }
 
-TEST(ArcAccessibilityUtilTest, LiveRegionChangeEvent) {
+TEST(AndroidAccessibilityUtilTest, LiveRegionChangeEvent) {
   auto node_info_data = AXNodeInfoData::New();
 
   std::vector<int32_t> empty_list = {};
@@ -90,4 +91,4 @@ TEST(ArcAccessibilityUtilTest, LiveRegionChangeEvent) {
                 &source_node_info_wrapper, &source_node_info_wrapper_none));
 }
 
-}  // namespace arc
+}  // namespace ax::android

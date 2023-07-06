@@ -8,12 +8,10 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "services/accessibility/android/accessibility_info_data_wrapper.h"
-#include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom-shared.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/aura/window.h"
 
 namespace ax::android {
 

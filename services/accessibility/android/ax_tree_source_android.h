@@ -22,7 +22,6 @@
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_source.h"
-#include "ui/views/view.h"
 
 namespace aura {
 class Window;

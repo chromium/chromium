@@ -55,6 +55,7 @@ source_set("tests") {
 
   sources = [
     "accessibility_node_info_data_wrapper_unittest.cc",
+    "android_accessibility_util_unittest.cc",
     "auto_complete_handler_unittest.cc",
     "ax_tree_source_android_unittest.cc",
     "drawer_layout_handler_unittest.cc",
