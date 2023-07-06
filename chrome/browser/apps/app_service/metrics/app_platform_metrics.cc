@@ -8,9 +8,9 @@
 #include <set>
 
 #include "base/check_deref.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
@@ -66,29 +66,25 @@ constexpr char kInstallReasonCommandLineHistogram[] = "CommandLine";
 
 constexpr base::TimeDelta kMaxDuration = base::Days(1);
 
-std::set<apps::AppTypeName>& GetAppTypeNameSet() {
-  static base::NoDestructor<std::set<apps::AppTypeName>> app_type_name_map;
-  if (app_type_name_map->empty()) {
-    app_type_name_map->insert(apps::AppTypeName::kArc);
-    app_type_name_map->insert(apps::AppTypeName::kBuiltIn);
-    app_type_name_map->insert(apps::AppTypeName::kCrostini);
-    app_type_name_map->insert(apps::AppTypeName::kChromeApp);
-    app_type_name_map->insert(apps::AppTypeName::kWeb);
-    app_type_name_map->insert(apps::AppTypeName::kMacOs);
-    app_type_name_map->insert(apps::AppTypeName::kPluginVm);
-    app_type_name_map->insert(apps::AppTypeName::kStandaloneBrowser);
-    app_type_name_map->insert(apps::AppTypeName::kRemote);
-    app_type_name_map->insert(apps::AppTypeName::kBorealis);
-    app_type_name_map->insert(apps::AppTypeName::kSystemWeb);
-    app_type_name_map->insert(apps::AppTypeName::kChromeBrowser);
-    app_type_name_map->insert(apps::AppTypeName::kStandaloneBrowserChromeApp);
-    app_type_name_map->insert(apps::AppTypeName::kExtension);
-    app_type_name_map->insert(apps::AppTypeName::kStandaloneBrowserExtension);
-    app_type_name_map->insert(apps::AppTypeName::kStandaloneBrowserWebApp);
-    app_type_name_map->insert(apps::AppTypeName::kBruschetta);
-  }
-  return *app_type_name_map;
-}
+constexpr auto kAppTypeNameSet = base::MakeFixedFlatSet<apps::AppTypeName>({
+    apps::AppTypeName::kArc,
+    apps::AppTypeName::kBuiltIn,
+    apps::AppTypeName::kCrostini,
+    apps::AppTypeName::kChromeApp,
+    apps::AppTypeName::kWeb,
+    apps::AppTypeName::kMacOs,
+    apps::AppTypeName::kPluginVm,
+    apps::AppTypeName::kStandaloneBrowser,
+    apps::AppTypeName::kRemote,
+    apps::AppTypeName::kBorealis,
+    apps::AppTypeName::kSystemWeb,
+    apps::AppTypeName::kChromeBrowser,
+    apps::AppTypeName::kStandaloneBrowserChromeApp,
+    apps::AppTypeName::kExtension,
+    apps::AppTypeName::kStandaloneBrowserExtension,
+    apps::AppTypeName::kStandaloneBrowserWebApp,
+    apps::AppTypeName::kBruschetta,
+});
 
 std::string GetInstallReason(apps::InstallReason install_reason) {
   switch (install_reason) {
@@ -339,10 +335,6 @@ std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name) {
     case apps::AppTypeNameV2::kBruschetta:
       return kBruschettaHistogramName;
   }
-}
-
-const std::set<apps::AppTypeName>& GetAppTypeNameSet() {
-  return ::GetAppTypeNameSet();
 }
 
 ApplicationInstallTime ConvertInstallTimeToProtoApplicationInstallTime(
@@ -1001,7 +993,7 @@ void AppPlatformMetrics::InitRunningDuration() {
   ScopedDictPrefUpdate activated_count_update(profile_->GetPrefs(),
                                               kAppActivatedCount);
 
-  for (auto app_type_name : GetAppTypeNameSet()) {
+  for (auto app_type_name : kAppTypeNameSet) {
     std::string key = GetAppTypeHistogramName(app_type_name);
     if (key.empty()) {
       continue;
