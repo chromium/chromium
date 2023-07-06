@@ -370,7 +370,8 @@ class QuicStreamFactory::Job {
     // Callers do not need to wait for OnQuicSessionCreationComplete if the
     // kAsyncQuicSession flag is not set because session creation will be fully
     // synchronous, so no need to call ExpectQuicSessionCreation.
-    if (base::FeatureList::IsEnabled(net::features::kAsyncQuicSession)) {
+    if (base::FeatureList::IsEnabled(net::features::kAsyncQuicSession) &&
+        !session_creation_finished_) {
       request->ExpectQuicSessionCreation();
     }
   }
@@ -511,6 +512,7 @@ class QuicStreamFactory::Job {
   const bool retry_on_alternate_network_before_handshake_;
   const NetLogWithSource net_log_;
   bool host_resolution_finished_ = false;
+  bool session_creation_finished_ = false;
   bool connection_retried_ = false;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
@@ -787,6 +789,7 @@ int QuicStreamFactory::Job::DoCreateSession() {
   return rv;
 }
 int QuicStreamFactory::Job::DoCreateSessionComplete(int rv) {
+  session_creation_finished_ = true;
   if (rv != OK) {
     return rv;
   }

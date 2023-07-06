@@ -344,6 +344,22 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
                   NetworkAnonymizationKey()));
   }
 
+  void SetAsyncQuicSession(bool async_quic_session) {
+    std::vector<base::test::FeatureRef> enabled_features = {};
+    if (dns_https_alpn_enabled_) {
+      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
+    }
+    if (async_quic_session) {
+      feature_list_.Reset();
+      enabled_features.push_back(features::kAsyncQuicSession);
+      feature_list_.InitWithFeatures(enabled_features, {});
+    } else {
+      feature_list_.Reset();
+      feature_list_.InitWithFeatures(enabled_features,
+                                     {features::kAsyncQuicSession});
+    }
+  }
+
   void TestAltJobSucceedsAfterMainJobFailed(
       bool alt_job_retried_on_non_default_network,
       bool async_quic_session);
@@ -379,6 +395,7 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
   void TestDoNotDelayMainJobIfQuicWasRecentlyBroken(bool async_quic_session);
   void TestDelayMainJobAfterRecentlyBrokenQuicWasConfirmed(
       bool async_quic_session);
+  void TestDoNotDelayMainJobIfHasAvailableSpdySession(bool async_quic_session);
 
   bool dns_https_alpn_enabled() const { return dns_https_alpn_enabled_; }
 
@@ -1323,15 +1340,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
 
 void HttpStreamFactoryJobControllerTestBase::
     TestDoNotDelayMainJobIfQuicWasRecentlyBroken(bool async_quic_session) {
-  if (async_quic_session) {
-    feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAsyncQuicSession};
-    if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SetAsyncQuicSession(async_quic_session);
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::COLD_START);
   quic_data_ = std::make_unique<MockQuicData>(version_);
@@ -1407,15 +1416,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
 void HttpStreamFactoryJobControllerTestBase::
     TestDelayMainJobAfterRecentlyBrokenQuicWasConfirmed(
         bool async_quic_session) {
-  if (async_quic_session) {
-    feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAsyncQuicSession};
-    if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SetAsyncQuicSession(async_quic_session);
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::COLD_START);
   quic_data_ = std::make_unique<MockQuicData>(version_);
@@ -1498,15 +1499,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
 void HttpStreamFactoryJobControllerTestBase::TestOnStreamFailedForBothJobs(
     bool alt_job_retried_on_non_default_network,
     bool async_quic_session) {
-  if (async_quic_session) {
-    feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAsyncQuicSession};
-    if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SetAsyncQuicSession(async_quic_session);
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddConnect(ASYNC, ERR_FAILED);
   tcp_data_ = std::make_unique<SequencedSocketData>();
@@ -1582,15 +1575,7 @@ void HttpStreamFactoryJobControllerTestBase::
     TestAltJobFailsAfterMainJobSucceeded(
         bool alt_job_retried_on_non_default_network,
         bool async_quic_session) {
-  if (async_quic_session) {
-    feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAsyncQuicSession};
-    if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SetAsyncQuicSession(async_quic_session);
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(ASYNC, ERR_FAILED);
   crypto_client_stream_factory_.set_handshake_mode(
@@ -1684,15 +1669,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
 
 void HttpStreamFactoryJobControllerTestBase::TestAltJobSucceedsMainJobDestroyed(
     bool async_quic_session) {
-  if (async_quic_session) {
-    feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAsyncQuicSession};
-    if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SetAsyncQuicSession(async_quic_session);
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   // Use cold start and complete alt job manually.
@@ -1831,15 +1808,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
 
 void HttpStreamFactoryJobControllerTestBase::
     TestOrphanedJobCompletesControllerDestroyed(bool async_quic_session) {
-  if (async_quic_session) {
-    feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAsyncQuicSession};
-    if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SetAsyncQuicSession(async_quic_session);
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   // Use cold start and complete alt job manually.
@@ -1914,15 +1883,7 @@ void HttpStreamFactoryJobControllerTestBase::
     TestAltJobSucceedsAfterMainJobFailed(
         bool alt_job_retried_on_non_default_network,
         bool async_quic_session) {
-  if (async_quic_session) {
-    feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAsyncQuicSession};
-    if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SetAsyncQuicSession(async_quic_session);
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   // Use cold start and complete alt job manually.
@@ -2017,15 +1978,7 @@ void HttpStreamFactoryJobControllerTestBase::
     TestAltJobSucceedsAfterMainJobSucceeded(
         bool alt_job_retried_on_non_default_network,
         bool async_quic_session) {
-  if (async_quic_session) {
-    feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAsyncQuicSession};
-    if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SetAsyncQuicSession(async_quic_session);
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   // Use cold start and complete alt job manually.
@@ -2134,15 +2087,7 @@ void HttpStreamFactoryJobControllerTestBase::
     TestMainJobSucceedsAfterAltJobSucceeded(
         bool alt_job_retried_on_non_default_network,
         bool async_quic_session) {
-  if (async_quic_session) {
-    feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAsyncQuicSession};
-    if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SetAsyncQuicSession(async_quic_session);
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   // Use cold start and complete alt job manually.
@@ -2249,15 +2194,7 @@ void HttpStreamFactoryJobControllerTestBase::
     TestMainJobFailsAfterAltJobSucceeded(
         bool alt_job_retried_on_non_default_network,
         bool async_quic_session) {
-  if (async_quic_session) {
-    feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAsyncQuicSession};
-    if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SetAsyncQuicSession(async_quic_session);
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   // Use cold start and complete alt job manually.
@@ -2350,15 +2287,7 @@ void HttpStreamFactoryJobControllerTestBase::
     TestMainJobSucceedsAfterAltJobFailed(
         bool alt_job_retried_on_non_default_network,
         bool async_quic_session) {
-  if (async_quic_session) {
-    feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAsyncQuicSession};
-    if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SetAsyncQuicSession(async_quic_session);
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddConnect(SYNCHRONOUS, ERR_FAILED);
 
@@ -2449,15 +2378,7 @@ void HttpStreamFactoryJobControllerTestBase::
                                          bool async_quic_session,
                                          bool expect_broken,
                                          std::string alternate_host) {
-  if (async_quic_session) {
-    feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAsyncQuicSession};
-    if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SetAsyncQuicSession(async_quic_session);
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddConnect(SYNCHRONOUS, net_error);
   tcp_data_ = std::make_unique<SequencedSocketData>();
@@ -2618,15 +2539,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, GetLoadStateAfterMainJobFailed) {
 
 void HttpStreamFactoryJobControllerTestBase::TestResumeMainJobWhenAltJobStalls(
     bool async_quic_session) {
-  if (async_quic_session) {
-    feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAsyncQuicSession};
-    if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SetAsyncQuicSession(async_quic_session);
   // Use COLD_START to stall alt job.
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -3143,8 +3056,10 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   }
 }
 
-TEST_P(HttpStreamFactoryJobControllerTest,
-       DoNotDelayMainJobIfHasAvailableSpdySession) {
+void HttpStreamFactoryJobControllerTestBase::
+    TestDoNotDelayMainJobIfHasAvailableSpdySession(bool async_quic_session) {
+  SetAsyncQuicSession(async_quic_session);
+
   SetNotDelayMainJobWithAvailableSpdySession();
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -3190,11 +3105,36 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   EXPECT_TRUE(job_controller_->main_job());
   EXPECT_TRUE(job_controller_->alternative_job());
   // The main job shouldn't have any delay since request can be sent on
-  // available SPDY session. Main job should still be blocked as alt job has not
-  // succeeded or failed at least once yet.
+  // available SPDY session. When QUIC session creation is async, the main job
+  // should still be blocked as alt job has not succeeded or failed at least
+  // once yet. Otherwise the main job should not be blocked
   EXPECT_EQ(job_controller_->get_main_job_wait_time_for_tests(),
             base::TimeDelta());
-  EXPECT_FALSE(JobControllerPeer::main_job_is_blocked(job_controller_));
+  if (async_quic_session) {
+    EXPECT_TRUE(JobControllerPeer::main_job_is_blocked(job_controller_));
+    // The main job should have a SPDY session available.
+    EXPECT_TRUE(job_controller_->main_job()->HasAvailableSpdySession());
+    // Wait for QUIC session creation attempt to resume and unblock the main
+    // job.
+    FastForwardBy(base::Milliseconds(1));
+    // Main job should still have no delay and should be unblocked now.
+    EXPECT_EQ(job_controller_->get_main_job_wait_time_for_tests(),
+              base::TimeDelta());
+    EXPECT_FALSE(JobControllerPeer::main_job_is_blocked(job_controller_));
+  } else {
+    EXPECT_FALSE(JobControllerPeer::main_job_is_blocked(job_controller_));
+    EXPECT_TRUE(job_controller_->main_job()->HasAvailableSpdySession());
+  }
+}
+
+TEST_P(HttpStreamFactoryJobControllerTest,
+       DoNotDelayMainJobIfHasAvailableSpdySession) {
+  TestDoNotDelayMainJobIfHasAvailableSpdySession(false);
+}
+
+TEST_P(HttpStreamFactoryJobControllerTest,
+       DoNotDelayMainJobIfHasAvailableSpdySessionAsyncQuicSession) {
+  TestDoNotDelayMainJobIfHasAvailableSpdySession(true);
 }
 
 // Check the case that while a preconnect is waiting in the H2 request queue,
