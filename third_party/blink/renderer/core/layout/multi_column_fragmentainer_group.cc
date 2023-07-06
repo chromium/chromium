@@ -183,18 +183,13 @@ LayoutPoint MultiColumnFragmentainerGroup::VisualPointToFlowThreadPoint(
 PhysicalRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
     const PhysicalRect& bounding_box_in_flow_thread) const {
   // Find the start and end column intersected by the bounding box.
-  LayoutRect flipped_bounding_box_in_flow_thread =
-      bounding_box_in_flow_thread.ToLayoutRect();
-  LayoutFlowThread* flow_thread = column_set_->FlowThread();
-  flow_thread->DeprecatedFlipForWritingMode(
-      flipped_bounding_box_in_flow_thread);
-  bool is_horizontal_writing_mode = column_set_->IsHorizontalWritingMode();
+  const LogicalRect logical_bounding_box =
+      column_set_->FlowThread()->CreateWritingModeConverter().ToLogical(
+          bounding_box_in_flow_thread);
   LayoutUnit bounding_box_logical_top =
-      is_horizontal_writing_mode ? flipped_bounding_box_in_flow_thread.Y()
-                                 : flipped_bounding_box_in_flow_thread.X();
+      logical_bounding_box.offset.block_offset;
   LayoutUnit bounding_box_logical_bottom =
-      is_horizontal_writing_mode ? flipped_bounding_box_in_flow_thread.MaxY()
-                                 : flipped_bounding_box_in_flow_thread.MaxX();
+      logical_bounding_box.BlockEndOffset();
   if (bounding_box_logical_bottom <= LogicalTopInFlowThread() ||
       bounding_box_logical_top >= LogicalBottomInFlowThread()) {
     // The bounding box doesn't intersect this fragmentainer group.
