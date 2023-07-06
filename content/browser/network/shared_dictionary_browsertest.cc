@@ -33,6 +33,7 @@
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -411,13 +412,13 @@ class SharedDictionaryFeatureStateBrowserTest
         break;
       case FeatureState::kBackendOnly:
         enabled_features.emplace_back(
-            blink::features::kCompressionDictionaryTransportBackend);
+            network::features::kCompressionDictionaryTransportBackend);
         break;
       case FeatureState::kFullyEnabled:
         enabled_features.emplace_back(
-            blink::features::kCompressionDictionaryTransportBackend);
+            network::features::kCompressionDictionaryTransportBackend);
         enabled_features.emplace_back(
-            blink::features::kCompressionDictionaryTransport);
+            network::features::kCompressionDictionaryTransport);
         break;
     }
     scoped_feature_list_.InitWithFeatures(enabled_features,
@@ -696,9 +697,9 @@ class SharedDictionaryBrowserTest
  public:
   SharedDictionaryBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::
-                                  kCompressionDictionaryTransportBackend,
-                              blink::features::kCompressionDictionaryTransport},
+        /*enabled_features=*/
+        {network::features::kCompressionDictionaryTransportBackend,
+         network::features::kCompressionDictionaryTransport},
         /*disabled_features=*/{});
   }
   SharedDictionaryBrowserTest(const SharedDictionaryBrowserTest&) = delete;

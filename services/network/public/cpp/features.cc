@@ -331,4 +331,30 @@ BASE_FEATURE(kNetworkServiceEmptyOutOfProcess,
              "NetworkServiceEmptyOutOfProcess",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+// Enables the backend of the compression dictionary transport feature.
+// When this feature is enabled, the following will happen:
+//   * The network service loads the metadata database.
+//   * If there is a matching dictionary for a sending request, it adds the
+//     `sec-available-dictionary` header.
+//   * And if the `content-encoding` header of the response is `sbr`, it
+//     decompresses the response body using the dictionary.
+BASE_FEATURE(kCompressionDictionaryTransportBackend,
+             "CompressionDictionaryTransportBackend",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When both this feature and the kCompressionDictionaryTransportBackend feature
+// are enabled, the following will happen:
+//   * A <link rel=dictionary> HTML tag and a `Link: rel=dictionary` HTTP header
+//     will trigger dictionary download.
+//   * HTMLLinkElement.relList.supports('dictionary') will return true.
+//   * The network service may register a HTTP response as a dictionary if the
+//     response header contains a `use-as-dictionary` header.
+// This feature can be enabled by an Origin Trial token in Blink. To propagate
+// the enabled state to the network service, Blink sets the
+// `shared_dictionary_writer_enabled` flag in resource requests.
+BASE_FEATURE(kCompressionDictionaryTransport,
+             "CompressionDictionaryTransport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

@@ -674,14 +674,13 @@
     },
     {
       name: "CompressionDictionaryTransport",
-      base_feature_status: "enabled",
-      copied_from_base_feature_if: "overridden",
+      base_feature: "none",
       origin_trial_feature_name: "CompressionDictionaryTransport",
       public: true,
     },
     {
       name: "CompressionDictionaryTransportBackend",
-      base_feature_status: "disabled",
+      base_feature: "none",
       public: true,
     },
     {

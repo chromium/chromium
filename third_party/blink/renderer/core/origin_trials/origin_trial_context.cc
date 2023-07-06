@@ -535,7 +535,7 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
 
   if (trial_name == "CompressionDictionaryTransport") {
     return base::FeatureList::IsEnabled(
-        features::kCompressionDictionaryTransport);
+        network::features::kCompressionDictionaryTransportBackend);
   }
 
   if (trial_name == "AttributionReportingCrossAppWeb") {

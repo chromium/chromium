@@ -18,6 +18,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -438,7 +439,7 @@ class BrowsingDataModelSharedDictionaryTest : public BrowsingDataModelTest {
  public:
   BrowsingDataModelSharedDictionaryTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::
+        /*enabled_features=*/{network::features::
                                   kCompressionDictionaryTransportBackend},
         /*disabled_features=*/{});
   }

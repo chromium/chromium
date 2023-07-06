@@ -627,7 +627,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   // Shared Dictionaries.
   if ((remove_mask & DATA_TYPE_COOKIES) || (remove_mask & DATA_TYPE_CACHE)) {
     if (base::FeatureList::IsEnabled(
-            blink::features::kCompressionDictionaryTransportBackend)) {
+            network::features::kCompressionDictionaryTransportBackend)) {
       network::mojom::NetworkContext* network_context =
           browser_context_->GetDefaultStoragePartition()->GetNetworkContext();
       network_context->ClearSharedDictionaryCache(

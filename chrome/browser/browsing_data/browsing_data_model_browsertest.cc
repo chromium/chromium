@@ -251,8 +251,8 @@ class BrowsingDataModelBrowserTest
         {blink::features::kFencedFrames, {}},
         {blink::features::kBrowsingTopics, {}},
         {net::features::kThirdPartyStoragePartitioning, {}},
-        {blink::features::kCompressionDictionaryTransportBackend, {}},
-        {blink::features::kCompressionDictionaryTransport, {}}};
+        {network::features::kCompressionDictionaryTransportBackend, {}},
+        {network::features::kCompressionDictionaryTransport, {}}};
     std::vector<FeatureRef> disabled_features = {};
 
     if (GetParam()) {

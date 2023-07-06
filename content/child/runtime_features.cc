@@ -351,6 +351,10 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #if BUILDFLAG(IS_ANDROID)
     {"CCTNewRFMPushBehavior", raw_ref(blink::features::kCCTNewRFMPushBehavior)},
 #endif
+    {"CompressionDictionaryTransport",
+     raw_ref(network::features::kCompressionDictionaryTransport)},
+    {"CompressionDictionaryTransportBackend",
+     raw_ref(network::features::kCompressionDictionaryTransportBackend)},
     {"Fledge", raw_ref(blink::features::kFledge), kSetOnlyIfOverridden},
     {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
      kSetOnlyIfOverridden},
