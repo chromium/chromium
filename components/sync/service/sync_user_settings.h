@@ -63,9 +63,9 @@ class SyncUserSettings {
   virtual void SetSelectedTypes(bool sync_everything,
                                 UserSelectableTypeSet types) = 0;
 
-  // Setting selected types for Sync-the-transport users.
-  // Sets user's selected types. Must only be called if Sync-the-transport is
-  // active.
+  // Sets an individual type selection. For non-transport-mode cases, invoking
+  // this function is only allowed while IsSyncEverythingEnabled() returns
+  // false.
   virtual void SetSelectedType(UserSelectableType type, bool is_type_on) = 0;
 #if BUILDFLAG(IS_IOS)
   // Enables the account storage for bookmark and reading list datatype.

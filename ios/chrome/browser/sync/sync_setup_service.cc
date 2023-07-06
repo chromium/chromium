@@ -28,20 +28,6 @@ bool SyncSetupService::IsDataTypePreferred(
   return sync_service_->GetUserSettings()->GetSelectedTypes().Has(datatype);
 }
 
-void SyncSetupService::SetDataTypeEnabled(syncer::UserSelectableType datatype,
-                                          bool enabled) {
-  CHECK(sync_blocker_);
-
-  syncer::SyncUserSettings* user_settings = sync_service_->GetUserSettings();
-  syncer::UserSelectableTypeSet selected_types =
-      user_settings->GetSelectedTypes();
-  if (enabled)
-    selected_types.Put(datatype);
-  else
-    selected_types.Remove(datatype);
-  user_settings->SetSelectedTypes(IsSyncEverythingEnabled(), selected_types);
-}
-
 bool SyncSetupService::IsSyncEverythingEnabled() const {
   return sync_service_->GetUserSettings()->IsSyncEverythingEnabled();
 }

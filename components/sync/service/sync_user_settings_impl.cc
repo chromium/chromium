@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -144,11 +145,21 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
                                            bool is_type_on) {
   UserSelectableTypeSet registered_types = GetRegisteredSelectableTypes();
   CHECK(registered_types.Has(type));
-  // To insure this setter is used in transport-mode only.
-  CHECK(ShouldUsePerAccountPrefs());
-  signin::GaiaIdHash gaia_id_hash =
-      signin::GaiaIdHash::FromGaiaId(sync_account_info_callback_.Run().gaia);
-  prefs_->SetSelectedTypeForAccount(type, is_type_on, gaia_id_hash);
+
+  if (ShouldUsePerAccountPrefs()) {
+    signin::GaiaIdHash gaia_id_hash =
+        signin::GaiaIdHash::FromGaiaId(sync_account_info_callback_.Run().gaia);
+    prefs_->SetSelectedTypeForAccount(type, is_type_on, gaia_id_hash);
+  } else {
+    DUMP_WILL_BE_CHECK(!IsSyncEverythingEnabled());
+    syncer::UserSelectableTypeSet selected_types = GetSelectedTypes();
+    if (is_type_on) {
+      selected_types.Put(type);
+    } else {
+      selected_types.Remove(type);
+    }
+    SetSelectedTypes(IsSyncEverythingEnabled(), selected_types);
+  }
 }
 
 #if BUILDFLAG(IS_IOS)

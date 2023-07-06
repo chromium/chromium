@@ -115,7 +115,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
   }
 }
 
-TEST_F(SyncUserSettingsImplTest, SetSelectedType) {
+TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInTransportMode) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kReplaceSyncPromosWithSignInPromos);
 
@@ -142,6 +142,34 @@ TEST_F(SyncUserSettingsImplTest, SetSelectedType) {
   selected_types = sync_user_settings->GetSelectedTypes();
   EXPECT_EQ(selected_types,
             Difference(registered_types, expected_disabled_types));
+}
+
+TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInFullSyncMode) {
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes(), /*in_transport_mode=*/false);
+
+  const UserSelectableTypeSet registered_types =
+      sync_user_settings->GetRegisteredSelectableTypes();
+  const UserSelectableTypeSet registered_types_except_passwords =
+      base::Difference(registered_types,
+                       UserSelectableTypeSet({UserSelectableType::kPasswords}));
+
+  ASSERT_NE(registered_types, registered_types_except_passwords);
+  ASSERT_EQ(sync_user_settings->GetSelectedTypes(), registered_types);
+
+  // Disable the sync-everything toggle first, which is required to change
+  // individual toggles.
+  sync_user_settings->SetSelectedTypes(/*sync_everything=*/false,
+                                       /*types=*/registered_types);
+  ASSERT_EQ(sync_user_settings->GetSelectedTypes(), registered_types);
+  ASSERT_FALSE(sync_user_settings->IsSyncEverythingEnabled());
+
+  sync_user_settings->SetSelectedType(UserSelectableType::kPasswords, false);
+  EXPECT_EQ(sync_user_settings->GetSelectedTypes(),
+            registered_types_except_passwords);
+
+  sync_user_settings->SetSelectedType(UserSelectableType::kPasswords, true);
+  EXPECT_EQ(sync_user_settings->GetSelectedTypes(), registered_types);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

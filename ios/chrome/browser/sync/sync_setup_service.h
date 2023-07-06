@@ -41,11 +41,6 @@ class SyncSetupService : public KeyedService {
   // Returns whether the given datatype is enabled by the user.
   // TODO(crbug.com/1429249): Rename to get rid of the `preferred` terminology.
   virtual bool IsDataTypePreferred(syncer::UserSelectableType datatype) const;
-  // Enables or disables the given datatype. To be noted: this can be called at
-  // any time, but will only be meaningful if `IsSyncFeatureEnabled` is true and
-  // `IsSyncEverythingEnabled` is false. Changes won't take effect in the sync
-  // backend before the next call to `CommitChanges`.
-  void SetDataTypeEnabled(syncer::UserSelectableType datatype, bool enabled);
 
   // Returns whether all datatypes are being synced.
   virtual bool IsSyncEverythingEnabled() const;

@@ -916,36 +916,19 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
         break;
       case HistoryDataTypeItemType: {
         DCHECK(syncSwitchItem);
-
-        switch (self.syncAccountState) {
-          case SyncSettingsAccountState::kSignedIn:
-            // In kSignedIn case, the kTabs toggle does not exist. Instead it's
-            // controlled by the history toggle.
-
-            // Don't try to toggle the managed item.
-            if (![self isManagedSyncSettingsDataType:
-                           syncer::UserSelectableType::kHistory]) {
-              _syncService->GetUserSettings()->SetSelectedType(
-                  syncer::UserSelectableType::kHistory, value);
-            }
-            if (![self isManagedSyncSettingsDataType:
-                           syncer::UserSelectableType::kTabs]) {
-              _syncService->GetUserSettings()->SetSelectedType(
-                  syncer::UserSelectableType::kTabs, value);
-            }
-            break;
-          case SyncSettingsAccountState::kSyncing:
-          case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
-            if ([self isManagedSyncSettingsDataType:syncer::UserSelectableType::
-                                                        kHistory]) {
-              break;
-            }
-            self.syncSetupService->SetDataTypeEnabled(
-                syncer::UserSelectableType::kHistory, value);
-            break;
-          case SyncSettingsAccountState::kSignedOut:
-            NOTREACHED();
-            break;
+        // Don't try to toggle the managed item.
+        if (![self isManagedSyncSettingsDataType:syncer::UserSelectableType::
+                                                     kHistory]) {
+          _syncService->GetUserSettings()->SetSelectedType(
+              syncer::UserSelectableType::kHistory, value);
+        }
+        // In kSignedIn case, the kTabs toggle does not exist. Instead it's
+        // controlled by the history toggle.
+        if (self.syncAccountState == SyncSettingsAccountState::kSignedIn &&
+            ![self isManagedSyncSettingsDataType:syncer::UserSelectableType::
+                                                     kTabs]) {
+          _syncService->GetUserSettings()->SetSelectedType(
+              syncer::UserSelectableType::kTabs, value);
         }
         break;
       }
@@ -962,18 +945,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
         if ([self isManagedSyncSettingsDataType:dataType])
           break;
 
-        switch (self.syncAccountState) {
-          case SyncSettingsAccountState::kSignedIn:
-            _syncService->GetUserSettings()->SetSelectedType(dataType, value);
-            break;
-          case SyncSettingsAccountState::kSyncing:
-          case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
-            self.syncSetupService->SetDataTypeEnabled(dataType, value);
-            break;
-          case SyncSettingsAccountState::kSignedOut:
-            NOTREACHED();
-            break;
-        }
+        _syncService->GetUserSettings()->SetSelectedType(dataType, value);
+
         if (dataType == syncer::UserSelectableType::kAutofill) {
           // When the auto fill data type is updated, the autocomplete wallet
           // should be updated too. Autocomplete wallet should not be enabled
