@@ -27,6 +27,7 @@ source_set("browser_tests") {
   sources = [
     # TODO(crbug.com/1457360): List more '*_browsertest.cc' files below, as they
     # are migrated from old js2gtest '*_browsertest.js' files.
+    "bookmarks/bookmarks_browsertest.cc",
     "cr_components/cr_components_browsertest.cc",
     "cr_elements/cr_elements_browsertest.cc",
     "history/history_supervised_user_browsertest.cc",
@@ -39,6 +40,8 @@ source_set("browser_tests") {
 
   deps = [
     "//chrome/test:test_support",
+    "//components/bookmarks/browser:browser",
+    "//components/bookmarks/managed:managed",
     "//components/history/core/common:common",
     "//components/history_clusters/core:core",
   ]
@@ -50,6 +53,7 @@ source_set("interactive_ui_tests") {
   sources = [
     # TODO(crbug.com/1457360): List more '*test.cc' files below, as they
     # are migrated from old js2gtest '*_focus_test.js' files.
+    "bookmarks/bookmarks_focus_test.cc",
     "cr_components/cr_components_interactive_test.cc",
     "cr_elements/cr_elements_focus_test.cc",
     "history/history_focus_test.cc",
@@ -65,7 +69,6 @@ if (include_js_tests) {
     test_type = "webui"
 
     sources = [
-      "bookmarks/bookmarks_focus_test.js",
       "extensions/cr_extensions_interactive_ui_tests.js",
       "password_manager/password_manager_interactive_ui_tests.js",
       "settings/cr_settings_interactive_ui_tests.js",
@@ -124,7 +127,6 @@ if (include_js_tests) {
       "../../../browser/ui/webui/sync_internals/sync_internals_browsertest.js",
       "assertions.js",
       "async_gen.js",
-      "bookmarks/bookmarks_browsertest.js",
       "chrome_timeticks_browsertest.js",
       "commander/commander_browsertest.js",
       "css/css_browsertest.js",

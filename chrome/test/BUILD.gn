@@ -2439,8 +2439,6 @@ if (!is_android) {
       "../browser/ui/webui/app_service_internals/app_service_internals_browsertest.cc",
       "../browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui_browsertest.cc",
       "../browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui_browsertest.cc",
-      "../browser/ui/webui/bookmarks/bookmarks_browsertest.cc",
-      "../browser/ui/webui/bookmarks/bookmarks_browsertest.h",
       "../browser/ui/webui/chrome_url_data_manager_browsertest.cc",
       "../browser/ui/webui/chrome_web_ui_controller_factory_browsertest.cc",
       "../browser/ui/webui/chrome_webui_navigation_browsertest.cc",
