@@ -1644,8 +1644,13 @@ TEST_P(SharedStorageManagerErrorParamTest,
 }
 
 // TODO(crbug.com/1312273): Test is flaky.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_InitFailure_DestroyAndRecreateDatabase DISABLED_InitFailure_DestroyAndRecreateDatabase
+#else
+#define MAYBE_InitFailure_DestroyAndRecreateDatabase InitFailure_DestroyAndRecreateDatabase
+#endif
 TEST_P(SharedStorageManagerErrorParamTest,
-       DISABLED_InitFailure_DestroyAndRecreateDatabase) {
+       MAYBE_InitFailure_DestroyAndRecreateDatabase) {
   ASSERT_TRUE(GetManager());
   ASSERT_TRUE(GetManager()->database());
   SetDestroyCallback();
@@ -1715,8 +1720,13 @@ TEST_P(SharedStorageManagerErrorParamTest,
 }
 
 // Disabled because it is flaky. crbug.com/1312044
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_OtherOperationResults_NoErrorsAdded DISABLED_OtherOperationResults_NoErrorsAdded
+#else
+#define MAYBE_OtherOperationResults_NoErrorsAdded OtherOperationResults_NoErrorsAdded
+#endif
 TEST_P(SharedStorageManagerErrorParamTest,
-       DISABLED_OtherOperationResults_NoErrorsAdded) {
+       MAYBE_OtherOperationResults_NoErrorsAdded) {
   ASSERT_TRUE(GetManager());
   ASSERT_TRUE(GetManager()->database());
   SetDestroyCallback();
