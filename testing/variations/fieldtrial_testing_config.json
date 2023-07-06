@@ -7382,6 +7382,21 @@
             ]
         }
     ],
+    "IOSPaymentsBottomSheet": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSPaymentsBottomSheet"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPhoneNumberExperience": [
         {
             "platforms": [
