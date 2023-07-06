@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">A Google Drive jelenleg nem érhető el. A feltöltés automatikusan újrakezdődik, amint a Google Drive elérhetővé válik.</translation>
 <translation id="1307931752636661898">A Linux-fájlok megtekintése nem sikerült</translation>
 <translation id="1313405956111467313">Automatikus proxykonfiguráció</translation>
+<translation id="134645005685694099">Az eszközön nincs elég tárhely a fájlszinkronizálás bekapcsolva tartásához. A továbbiakban nem kerül sor új fájlok szinkronizálására.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">A fájl vagy könyvtár nem használható.</translation>
 <translation id="1363028406613469049">Szám</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP-proxy</translation>
 <translation id="2467267713099745100">Hálózat: <ph name="NETWORK_TYPE" />, kikapcsolva</translation>
 <translation id="2468402215065996499">Tamagocsi</translation>
+<translation id="2468470447085858632">A fájlszinkronizálással offline is hozzáférhet Google Drive-fájljaihoz</translation>
 <translation id="2470939964922472929">Túl sokszor lett megadva helytelen PIN-kód. Új PIN-kód beállításához adja meg a szolgáltatótól kapott nyolcjegyű PUK-kódot.</translation>
 <translation id="2500392669976258912">gudzsaráti, fonetikus</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -603,6 +605,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> áthelyezve a kukába</translation>
 <translation id="5724172041621205163">thai, pattachote-billentyűzettel</translation>
 <translation id="57383366388012121">Múlt hónap</translation>
+<translation id="575175778971367197">Ez a fájl jelenleg nem szinkronizálható.</translation>
 <translation id="5756666464756035725">Magyar QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> elem kijelölve</translation>
 <translation id="5763377084591234761">német (Svájc)</translation>
@@ -705,6 +708,7 @@
 <translation id="6558280019477628686">Hiba történt. Előfordulhat, hogy egyes elemek nem törlődtek.</translation>
 <translation id="656398493051028875">„<ph name="FILENAME" />” törlése...</translation>
 <translation id="6581162200855843583">Google Drive link</translation>
+<translation id="6588648400954570689">Fájlszinkronizálási beállítások</translation>
 <translation id="6594855146910089723">Ez a mappa meg van osztva a Linux és a Parallels Desktop rendszerrel</translation>
 <translation id="6607272825297743757">Fájlinformáció</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> mappa megosztva a Parallels Desktoppal</translation>
@@ -829,6 +833,7 @@
 <translation id="7547811415869834682">holland</translation>
 <translation id="7551643184018910560">Rögzítés a polcra</translation>
 <translation id="7553492409867692754">A Linux-alkalmazások engedélyt kapnak a(z) <ph name="FOLDER_NAME" /> mappában lévő fájlokhoz való hozzáférésre.</translation>
+<translation id="7555339735447658365">Ön jelenleg offline állapotban van. A fájlok szinkronizálása folytatódik, amint létrejön az internetkapcsolat.</translation>
 <translation id="7589661784326793847">Egy pillanat…</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> offline hozzáférhetővé tétele…</translation>
 <translation id="7600126690270271294">szerb</translation>
@@ -871,6 +876,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Hiba történt a hálózat konfigurálásakor</translation>
+<translation id="7832093238954689746">A fájl szinkronizálása befejeződött. A Saját meghajtón található fájlok offline állapotban is hozzáférhetők.</translation>
 <translation id="7839804798877833423">E fájlok lekérése mintegy <ph name="FILE_SIZE" />-nyi mobiladat-forgalmat fog generálni.</translation>
 <translation id="7846076177841592234">Kijelölés törlése</translation>
 <translation id="7853966320808728790">Francia BÉPO</translation>
@@ -919,6 +925,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Eszköz modellje</translation>
 <translation id="8223479393428528563">A fájlok offline használatra való mentéséhez lépjen fel újra az online felületre, kattintson jobb gombbal a fájlokra, és válassza a(z) <ph name="OFFLINE_CHECKBOX_NAME" /> lehetőséget.</translation>
+<translation id="8241139360630443550">Tárhely megtekintése</translation>
 <translation id="8249296373107784235">Megszakítás</translation>
 <translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Dokumentumok</translation>

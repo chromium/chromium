@@ -38,6 +38,7 @@
 <translation id="1297922636971898492">Το Google Drive δεν είναι διαθέσιμο αυτήν τη στιγμή. Η μεταφόρτωση θα ξεκινήσει ξανά, όταν το Google Drive είναι και πάλι διαθέσιμο.</translation>
 <translation id="1307931752636661898">Δεν είναι δυνατή η προβολή αρχείων Linux</translation>
 <translation id="1313405956111467313">Αυτόματη διαμόρφωση διακομιστή μεσολάβησης</translation>
+<translation id="134645005685694099">Η συσκευή σας δεν διαθέτει αρκετό αποθηκευτικό χώρο για να παραμείνει ενεργοποιημένος ο συγχρονισμός αρχείων. Τα νέα αρχεία δεν θα συγχρονίζονται πλέον αυτόματα.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Το αρχείο ή ο κατάλογος δεν μπορούν να χρησιμοποιηθούν.</translation>
 <translation id="1363028406613469049">Κομμάτι</translation>
@@ -182,6 +183,7 @@
 <translation id="2464089476039395325">Διακομιστής μεσολάβησης HTTP</translation>
 <translation id="2467267713099745100">Δίκτυο <ph name="NETWORK_TYPE" />, ανενεργό</translation>
 <translation id="2468402215065996499">Ταμαγκότσι</translation>
+<translation id="2468470447085858632">Αποκτήστε πρόσβαση στα αρχεία σας στο Google Drive όταν είστε εκτός σύνδεσης με τον συγχρονισμό αρχείων</translation>
 <translation id="2470939964922472929">Έγινε εισαγωγή εσφαλμένου PIN πάρα πολλές φορές. Για να ρυθμίσετε ένα νέο PIN, εισαγάγετε το προσωπικό κλειδί ξεκλειδώματος 8 ψηφίων (PUK) που παρασχέθηκε από την εταιρεία κινητής τηλεφωνίας σας.</translation>
 <translation id="2500392669976258912">Φωνητική εισαγωγή Γκουγιαράτι</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -616,6 +618,7 @@
 <translation id="5720028165859493293">Το αρχείο <ph name="FILE_NAME" /> μετακινήθηκε στον κάδο</translation>
 <translation id="5724172041621205163">Ταϊλανδικά με πληκτρολόγιο Pattachote</translation>
 <translation id="57383366388012121">Προηγούμενος μήνας</translation>
+<translation id="575175778971367197">Δεν είναι δυνατός ο συγχρονισμός του αρχείου αυτήν τη στιγμή</translation>
 <translation id="5756666464756035725">QWERTY Ουγγρικών</translation>
 <translation id="5760252553414789727">Επιλέχθηκαν <ph name="SELECTED_FILES_COUNT" /> στοιχεία</translation>
 <translation id="5763377084591234761">Γερμανικά (Ελβετία)</translation>
@@ -718,6 +721,7 @@
 <translation id="6558280019477628686">Παρουσιάστηκε σφάλμα. Ορισμένα στοιχεία ενδέχεται να μην έχουν διαγραφεί.</translation>
 <translation id="656398493051028875">Διαγραφή αρχείου "<ph name="FILENAME" />"…</translation>
 <translation id="6581162200855843583">Σύνδεσμος του Google Drive</translation>
+<translation id="6588648400954570689">Ρυθμίσεις συγχρονισμού αρχείων</translation>
 <translation id="6594855146910089723">Αυτός ο φάκελος χρησιμοποιείται από κοινού με το Linux και το Parallels Desktop.</translation>
 <translation id="6607272825297743757">Πληροφορίες αρχείου</translation>
 <translation id="6609332149380188670">Μοιραστήκατε <ph name="NUMBER_OF_ITEMS" /> φακέλους με το Parallels Desktop.</translation>
@@ -846,6 +850,7 @@
 </translation>
 <translation id="7551643184018910560">Καρφίτσωμα στο ράφι</translation>
 <translation id="7553492409867692754">Παραχωρήστε στις εφαρμογές Linux άδεια πρόσβασης σε αρχεία στον φάκελο <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">Είστε εκτός σύνδεσης. Ο συγχρονισμός αρχείων θα συνεχιστεί όταν συνδεθείτε στο διαδίκτυο</translation>
 <translation id="7589661784326793847">Περιμένετε λίγο</translation>
 <translation id="7592775719802218421">Το αρχείο <ph name="FILE_NAME" /> γίνεται διαθέσιμο εκτός σύνδεσης.</translation>
 <translation id="7600126690270271294">Σερβικά</translation>
@@ -888,6 +893,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Σφάλμα κατά τη διαμόρφωση του δικτύου</translation>
+<translation id="7832093238954689746">Ο συγχρονισμός αρχείων ολοκληρώθηκε. Τα αρχεία στην ενότητα Τo Drive μου είναι διαθέσιμα εκτός σύνδεσης.</translation>
 <translation id="7839804798877833423">Για την ανάκτηση αυτών των αρχείων θα χρησιμοποιηθούν περίπου <ph name="FILE_SIZE" /> δεδομένων κινητής τηλεφωνίας.</translation>
 <translation id="7846076177841592234">Ακύρωση επιλογής</translation>
 <translation id="7853966320808728790">Γαλλικά BÉPO</translation>
@@ -937,6 +943,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Μοντέλο της συσκευής</translation>
 <translation id="8223479393428528563">Για να αποθηκεύσετε αυτά τα αρχεία για χρήση εκτός σύνδεσης, συνδεθείτε ξανά στο διαδίκτυο, κάντε δεξί κλικ στα αρχεία και ενεργοποιήστε την επιλογή <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Προβολή αποθηκευτικού χώρου</translation>
 <translation id="8249296373107784235">Ματαίωση</translation>
 <translation id="8250690786522693009">Λατινικά</translation>
 <translation id="8250920743982581267">Έγγραφα</translation>

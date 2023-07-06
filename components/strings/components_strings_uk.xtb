@@ -127,6 +127,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ви ввели пароль на сайті, яким не керує ваша організація. Щоб захистити свій обліковий запис, не використовуйте цей пароль для інших додатків і сайтів.</translation>
 <translation id="1257553931232494454">рівні масштабування</translation>
+<translation id="1259843033850529027">Вибрати рівень відповідності правила</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати налаштуваннями Chrome</translation>
 <translation id="1264309058268477500">Альтернативний</translation>
 <translation id="1264974993859112054">Спорт</translation>
@@ -304,6 +305,7 @@
 <translation id="1593359183944365958">270 градусів</translation>
 <translation id="1594030484168838125">Вибрати</translation>
 <translation id="1596296697375291157">Трилери, детективи та кримінальні фільми</translation>
+<translation id="1597473228022844713">Ви відстежуєте цей товар. Цю сторінку збережено в папці "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="1599199147673445968">Якщо це нова картка, введіть її дані <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="160851722280695521">Грайте в гру Dino Run у Chrome</translation>
 <translation id="161042844686301425">Бірюзовий</translation>
@@ -949,6 +951,7 @@
 <translation id="3140646734028448730">Бізнес-послуги</translation>
 <translation id="3141093262818886744">Усе одно відкрити</translation>
 <translation id="3141641372357166056">немає згоди</translation>
+<translation id="3144458715650412431">Тестові правила застосовано. Їх можна переглянути й скинути на сторінці chrome://policy/test. Правила адміністратора не застосовуватимуться.</translation>
 <translation id="3145945101586104090">Помилка декодування відповіді</translation>
 <translation id="3150653042067488994">Тимчасова помилка сервера</translation>
 <translation id="3150889484970506196">Кнопка "Створити таблицю"; активуйте, щоб швидко створити нову таблицю Google</translation>
@@ -1344,6 +1347,7 @@
 <translation id="3987940399970879459">Менше 1 МБ</translation>
 <translation id="3990250421422698716">Поступове зміщення</translation>
 <translation id="3992684624889376114">Про цю сторінку</translation>
+<translation id="3995639283717357522">Застосувати правила</translation>
 <translation id="399952081411886534">Інші функції, які роблять рекламу конфіденційнішою</translation>
 <translation id="4000598935132966791">Докладніше про обмеження для сайтів у керованих веб-переглядачах</translation>
 <translation id="4006465311664329701">Способи оплати, пропозиції й адреси з Google Pay</translation>
@@ -1524,6 +1528,7 @@
 <translation id="4333561522337981382">керувати вікнами на всіх ваших екранах</translation>
 <translation id="4338709847516294988">Натисніть клавішу пошуку + m і конвертуйте зображення в текст у контекстному меню</translation>
 <translation id="4340575312453649552">Це оголошення використовувало забагато ресурсів пристрою, тож веб-переглядач Chrome видалив його.</translation>
+<translation id="4340810192899866471">Імпортувати з JSON</translation>
 <translation id="4340982228985273705">Цим комп’ютером не керує адміністратор підприємства, тому правило може лише автоматично встановити розширення, розміщені у Веб-магазині Chrome. URL-адреса для оновлення Веб-магазину Chrome: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4348834659292907206">З’єднання із сайтом <ph name="SITE" /> не захищене</translation>
 <translation id="4349365535725594680">Неможливо поділитися конфіденційним контентом</translation>
@@ -1772,6 +1777,7 @@
 <translation id="4901778704868714008">Зберегти…</translation>
 <translation id="4901952598169637881">Повсякденне взуття</translation>
 <translation id="4905659621780993806">Адміністратор автоматично перезапустить пристрій <ph name="DATE" /> о <ph name="TIME" />. Збережіть усі відкриті файли до цього часу.</translation>
+<translation id="4907289208610706508">Ціль</translation>
 <translation id="4913987521957242411">Пробити отвір угорі ліворуч</translation>
 <translation id="4918221908152712722">Установіть додаток <ph name="APP_NAME" /> (його не потрібно завантажувати)</translation>
 <translation id="4920457992177678649">Оренда житла для відпочинку й короткотермінового проживання</translation>
@@ -1881,6 +1887,7 @@
 <translation id="5145883236150621069">Відповідь правила містить код помилки</translation>
 <translation id="5146995429444047494">Сповіщення сайту <ph name="ORIGIN" /> заблоковано</translation>
 <translation id="514704532284964975">Сайт <ph name="URL" /> хоче переглядати й змінювати інформацію на пристроях NFC, яких ви торкаєтеся телефоном</translation>
+<translation id="5147633291963801297">Переглянути зниження ціни на бічній панелі</translation>
 <translation id="5148809049217731050">Лицевою стороною вгору</translation>
 <translation id="5153314898060540200">Хард-рок і прогресивна музика</translation>
 <translation id="5157504274688344097">Магазини зі змішаним асортиментом і універмаги</translation>
@@ -2457,6 +2464,7 @@
 <translation id="6450212216969386944">Конверт Chou 40</translation>
 <translation id="6451458296329894277">Підтвердити повторне надсилання форми</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453457495574553803">Вибрати правило</translation>
 <translation id="6456955391422100996">Оголошення вилучено.</translation>
 <translation id="6457206614190510200">Скріпити по згину</translation>
 <translation id="6457455098507772300">Сповіщення про зниження ціни з’являтимуться як спливаючі вікна на робочому столі</translation>
@@ -2740,6 +2748,7 @@
 <translation id="7108819624672055576">Дозволено розширенням</translation>
 <translation id="7109510814665441393">Симулятори водіння й перегонів</translation>
 <translation id="7110116949943042888">Тимчасові й сезонні вакансії</translation>
+<translation id="7110553203952632623">Якщо на якомусь сайті знизиться ціна, ви отримаєте сповіщення електронною поштою</translation>
 <translation id="7111012039238467737">(Дійсний)</translation>
 <translation id="7111507312244504964">Оцінка вартості й перевірка нерухомості</translation>
 <translation id="7112327784801341716">Не відображається актуальна інформація? Попросіть представника банку оновити її.</translation>
@@ -3232,6 +3241,7 @@
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> неправильно встановлено на вашому комп’ютері або в мережі. Попросіть IT-адміністратора вирішити цю проблему.</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
 <translation id="8134058435519644366">Набір персоналу й працевлаштування</translation>
+<translation id="8144303576836498784">Сталася помилка. Не вдалося зберегти зміну.</translation>
 <translation id="8148608574971654810">Версія PDF:</translation>
 <translation id="8149426793427495338">Ваш комп’ютер перейшов у режим сну.</translation>
 <translation id="8150722005171944719">Файл за адресою <ph name="URL" /> не читається. Можливо, його видалено, переміщено або доступ заборонено дозволами файлу.</translation>
@@ -3245,6 +3255,7 @@
 <translation id="8184538546369750125">Використовувати глобальне налаштування за умовчанням (Дозволяти)</translation>
 <translation id="8186706823560132848">Програмне забезпечення</translation>
 <translation id="8190193880870196235">Дозволом керує розширення</translation>
+<translation id="8194412401381329820">Ви не можете використовувати цю сторінку з керованого облікового запису на некерованому пристрої. Якщо ви нею скористаєтеся, усі керовані облікові записи буде заблоковано, крім тих, якими керує цей пристрій (зв’язані облікові записи).</translation>
 <translation id="8194797478851900357">&amp;Відмінити переміщення</translation>
 <translation id="8194956568907463262">Стрілялки</translation>
 <translation id="8200772114523450471">Відновити</translation>
@@ -3252,6 +3263,7 @@
 <translation id="8202370299023114387">Конфлікт</translation>
 <translation id="8207625368992715508">Мотоспорт</translation>
 <translation id="8208363704094329105">300 x 400 мм</translation>
+<translation id="8210490490377416373">Виберіть назву правила</translation>
 <translation id="8210604850413485128">Веб-хостинг</translation>
 <translation id="8211406090763984747">З’єднання безпечне</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -3367,6 +3379,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати параметрами файлів cookie в налаштуваннях Chrome</translation>
 <translation id="8433057134996913067">Ви вийдете з облікового запису на більшості веб-сайтів.</translation>
 <translation id="8434840396568290395">Домашні тварини</translation>
+<translation id="8436623588884785770">Додати правило</translation>
 <translation id="8437238597147034694">&amp;Відмінити переміщення</translation>
 <translation id="8438786541497918448">Використовувати камеру та мікрофон?</translation>
 <translation id="8438923942245957911">Ваша організація поскаржилася на цей сайт</translation>
@@ -3389,6 +3402,7 @@
 <translation id="8483229036294884935">Цю адресу буде видалено з вашого облікового запису Google (<ph name="ACCOUNT" />)</translation>
 <translation id="8488350697529856933">Застосовується до:</translation>
 <translation id="8490137692873530638">Накопичувач 10</translation>
+<translation id="8493829133024050711">Вибрати джерело правила</translation>
 <translation id="8493948351860045254">Звільнити місце</translation>
 <translation id="8498891568109133222">Хост <ph name="HOST_NAME" /> довго не відповідає.</translation>
 <translation id="8503559462189395349">Паролі Chrome</translation>

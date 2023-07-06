@@ -178,6 +178,7 @@
 <translation id="114036956334641753">ഓഡിയോയും അടിക്കുറിപ്പുകളും</translation>
 <translation id="1141949282671776404">ഈ ടാബ് നിഷ്ക്രിയമായിരുന്നപ്പോൾ, മറ്റ് ടാസ്ക്കുകൾക്കായി മെമ്മറി സേവർ <ph name="MEMORY_VALUE" /> ഇടം സൃഷ്ടിച്ചു.</translation>
 <translation id="1142002900084379065">പുതിയ ഫോട്ടോകൾ</translation>
+<translation id="1142713751288681188">പേപ്പർ തരം</translation>
 <translation id="1143142264369994168">സര്‍‌ട്ടിഫിക്കറ്റ് സൈന്‍‌ ചെയ്‌തയാള്‍‌</translation>
 <translation id="1145593918056169051">പ്രിന്റർ പ്രവർത്തനം നിർത്തി</translation>
 <translation id="114571748016232560">എന്തോ പിശകുണ്ടായി. പകരം നേരിട്ട് വിൻഡോകൾ തുറക്കുക.</translation>
@@ -350,6 +351,7 @@
 <translation id="1278859221870828664">Google Play ആപ്പുകളും സേവനങ്ങളും അവലോകനം ചെയ്യുക</translation>
 <translation id="127946606521051357">സമീപത്തുള്ള ഉപകരണം പങ്കിടുന്നു</translation>
 <translation id="1280965841156951489">ഫയലുകൾ എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{ഫയൽ തുറക്കാനാകുന്നില്ല}other{ഫയലുകൾ തുറക്കാനാകുന്നില്ല}}</translation>
 <translation id="1282311502488501110">സൈൻ ഇൻ ചെയ്യരുത്</translation>
 <translation id="1282465000333679776">സിസ്റ്റം ഓഡിയോ പങ്കിടുക</translation>
 <translation id="1284277788676816155">ഡാറ്റ സംരക്ഷിക്കാൻ അനുവദിക്കരുത്</translation>
@@ -590,6 +592,7 @@
 <translation id="1484979925941077974">സൈറ്റ് Bluetooth ഉപയോഗിക്കുന്നു</translation>
 <translation id="1485015260175968628">ഇതിന് ഇപ്പോൾ ആക്‌സസ്സുചെയ്യാൻ കഴിയുന്നത്:</translation>
 <translation id="1485141095922496924"><ph name="PRODUCT_VERSION" /> പതിപ്പ് (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
+<translation id="1485197926103629489">Microsoft 365-ന് ഫയലുകൾ OneDrive-ൽ സൂക്ഷിക്കേണ്ടതുണ്ട്. പ്രാദേശിക ഫയലുകൾ നീക്കി മറ്റ് ലൊക്കേഷനുകളിൽ നിന്നുള്ള ഫയലുകൾ പകർത്തും. Files ആപ്പിലെ Microsoft OneDrive ഫോൾഡറിൽ നിങ്ങളുടെ ഫയലുകൾ കണ്ടെത്താനാകും.</translation>
 <translation id="1486096554574027028">പാസ്‌വേഡുകള്‍ തിരയുക</translation>
 <translation id="1486486872607808064"><ph name="APP_NAME" /> എന്നതിനായി ഒരു പാസ്‌കീ സൃഷ്‌ടിക്കാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്ന ഉപകരണത്തിൽ ക്യാമറ ഉപയോഗിച്ച് ഈ QR കോഡ് സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="1487335504823219454">ഇഷ്‌ടാനുസൃത ക്രമീകരണം ഓണാക്കുക</translation>
@@ -941,6 +944,7 @@
 <translation id="1770407692401984718">ഒരു ചിത്രം ഇവിടേക്ക് വലിച്ചിടുക അല്ലെങ്കിൽ</translation>
 <translation id="177053719077591686">Android ആപ്പുകൾ Google Drive-ലേക്ക് ബാക്കപ്പെടുക്കുക.</translation>
 <translation id="1771075623623424448">ബ്രൗസറിന്റെ ഉപകരണ ലോഗ് പേജ് തിരയുകയാണോ? <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" /> സന്ദർശിക്കുക.</translation>
+<translation id="1773329206876345543">മറ്റ് ഉപകരണങ്ങൾക്ക് ഇന്റർനെറ്റ് നൽകാൻ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിന് മൊബൈൽ ഡാറ്റ ഉപയോഗിച്ച് ഒരു വൈഫൈ ഹോട്ട്‌സ്‌പോട്ട് സൃഷ്ടിക്കുക. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">ഹോസ്റ്റ് ചെയ്‌ത ആപ്പ് ഡാറ്റ</translation>
 <translation id="177529472352014190">OneDrive-ലേക്ക് കണക്റ്റ് ചെയ്യൂ</translation>
 <translation id="1776712937009046120">ഉപയോക്താവിനെ ചേര്‍ക്കുക</translation>
@@ -1037,6 +1041,7 @@
 <translation id="1834503245783133039">ഡൗൺലോഡ് പരാജയപ്പെട്ടു: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux അപ്‌ഗ്രേഡ് ചെയ്യുന്നു</translation>
 <translation id="1835612721186505600">ക്യാമറാ അനുമതിയുള്ള ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ആക്‌സസ് അനുവദിക്കുക</translation>
+<translation id="183578951251548153">ഈ Chromebook-ൽ നിന്ന് ഇനി നിങ്ങളുടെ Google Drive ഫയലുകൾ ആക്‌സസ് ചെയ്യാനാകില്ല.</translation>
 <translation id="1838374766361614909">തിരയൽ മായ്ക്കുക</translation>
 <translation id="1839021455997460752">നിങ്ങളുടെ ഇമെയിൽ വിലാസം</translation>
 <translation id="1839540115464516994"><ph name="LOCATION" /> എന്നതിൽ കാണിക്കുക</translation>
@@ -1198,6 +1203,7 @@
 <translation id="1975841812214822307">നീക്കംചെയ്യുക...</translation>
 <translation id="1976150099241323601">സുരക്ഷാ ഉപാധിയിലേക്ക് പ്രവേശിക്കുക</translation>
 <translation id="1976823515278601587">വലിയ ലാഭിക്കൽ</translation>
+<translation id="1976838602625526260">ഫയലുകൾ സ്വയമേവ സമന്വയിപ്പിക്കുമ്പോൾ സ്റ്റോറേജ് ക്ലീൻഅപ്പ് ചെയ്യാനാകില്ല.</translation>
 <translation id="1977965994116744507">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> അൺലോക്ക് ചെയ്യാൻ ഫോൺ അടുത്ത് കൊണ്ടുവെയ്‌ക്കുക.</translation>
 <translation id="1978666928180318515">Bruschetta നീക്കം ചെയ്യുക</translation>
 <translation id="1979095679518582070">ഈ ഫീച്ചർ ഓഫാക്കുന്നത്, സിസ്റ്റം അപ്‌ഡേറ്റുകളും സുരക്ഷയും പോലുള്ള അത്യാവശ്യ സേവനങ്ങൾക്ക് ആവശ്യമായ വിവരങ്ങൾ അയയ്‌ക്കുന്നതിനുള്ള ഈ ഉപകരണത്തിന്റെ കഴിവിനെ ബാധിക്കുകയില്ല.</translation>
@@ -1978,6 +1984,7 @@
 <translation id="2610157865375787051">സ്ലീപ്പിലാക്കുക</translation>
 <translation id="2610260699262139870">ശ&amp;രിയായ വലിപ്പം</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
+<translation id="261114180663074524">നിങ്ങളുടെ Microsoft അക്കൗണ്ടിൽ സൈൻ ഇൻ ചെയ്‌ത് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="2611776654555141051">ദീർഘചതുര ടൂൾ</translation>
 <translation id="2612676031748830579">കാർഡ് നമ്പർ</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> -ൽ വിപുലീകരണങ്ങളൊന്നും അനുവദിക്കരുത്</translation>
@@ -2051,6 +2058,7 @@
 <translation id="2671451824761031126">നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകളും ക്രമീകരണവും തയ്യാറാണ്</translation>
 <translation id="2672142220933875349">crx ഫയൽ മോശമാണ്, അൺപാക്കുചെയ്യൽ പരാജയപ്പെട്ടു.</translation>
 <translation id="2673135533890720193">നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം വായിക്കുക</translation>
+<translation id="2673873887296220733">തുറക്കാൻ ഒരു ഫയൽ <ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് പകർത്തണോ?</translation>
 <translation id="2674764818721168631">ഓഫാണ്</translation>
 <translation id="2675570801872027281">Bruschetta നീക്കം ചെയ്യുന്നതിൽ പിശകുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2676084251379299915">ഈ വിപുലീകരണം ഇനി Chrome വെബ് സ്റ്റോറിൽ ലഭ്യമല്ല, അതിനാൽ എന്റർപ്രൈസ് നയം വഴി അത് പ്രവർത്തനരഹിതമാക്കി.</translation>
@@ -2331,6 +2339,7 @@
 <translation id="289695669188700754">കീ ഐഡി: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">നിങ്ങളുടെ എല്ലാ അദൃശ്യ വിൻഡോകളും അടയ്‌ക്കുമ്പോൾ, ഈ ഇഷ്‌ടാനുസൃത ക്രമീകരണം നീക്കം ചെയ്യും</translation>
 <translation id="2897878306272793870">നിങ്ങള്‍ <ph name="TAB_COUNT" /> ടാബുകള്‍ തുറക്കാന്‍ പോവുകയാണെന്ന് ഉറപ്പുണ്ടോ?</translation>
+<translation id="2900247416110050639">Google Docs, Sheets, Slides എന്നിവയ്ക്ക് ഫയലുകൾ Google Drive-ൽ സൂക്ഷിക്കേണ്ടതുണ്ട്. പ്രാദേശിക ഫയലുകൾ നീക്കി മറ്റ് ലൊക്കേഷനുകളിൽ നിന്നുള്ള ഫയലുകൾ പകർത്തും. Files ആപ്പിലെ Google Drive ഫോൾഡറിൽ നിങ്ങളുടെ ഫയലുകൾ കണ്ടെത്താനാകും.</translation>
 <translation id="290105521672621980">ഉപയോഗിക്കാനാവാത്ത ഫീച്ചറുകളാണ് ഫയൽ ഉപയോഗിക്കുന്നത്</translation>
 <translation id="2901348420151309559">പുതിയ ഫോട്ടോകളും ആപ്പുകളും</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> എന്നതിന് ഈ പ്രിന്ററുമായി ആശയവിനിമയം നടത്താനായില്ല. പ്രിന്റർ പ്ലഗിൻ ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കി വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -2429,6 +2438,7 @@
 <translation id="2988018669686457659">സ്പെ‌യർ റെൻഡറർ</translation>
 <translation id="2988328607561082373">നിങ്ങൾ പാസ്‌വേഡുകളൊന്നും ആവർത്തിച്ച് ഉപയോഗിക്കുന്നില്ല</translation>
 <translation id="2989123969927553766">മൗസ് സ്ക്രോൾ ആക്സിലറേഷൻ</translation>
+<translation id="2989177286941477290">{NUM_OF_FILES,plural, =1{ഈ ഫയൽ നീക്കാൻ <ph name="CLOUD_PROVIDER" /> എന്നതിൽ ഇടമുണ്ടാക്കുക}other{ഈ ഫയലുകൾ നീക്കാൻ <ph name="CLOUD_PROVIDER" /> എന്നതിൽ ഇടമുണ്ടാക്കുക}}</translation>
 <translation id="2989474696604907455">അറ്റാച്ചുചെയ്‌തില്ല</translation>
 <translation id="2989786307324390836">DER-എന്‍‌കോഡ് ചെയ്‌ത ബൈനറി, ഒറ്റ സര്‍‌ട്ടിഫിക്കറ്റ്</translation>
 <translation id="2989805286512600854">പുതിയ ടാബില്‍ തുറക്കുക</translation>
@@ -2637,6 +2647,7 @@
 <translation id="3163511056918491211">ഏത് സമയത്തും എളുപ്പത്തിൽ നിങ്ങളുടെ ഡാറ്റ പുനഃസ്ഥാപിക്കുകയോ ഉപകരണങ്ങൾ തമ്മിൽ മാറുകയോ ചെയ്യൂ. നിങ്ങളുടെ ബാക്കപ്പുകൾ Google-ലേക്ക് അപ്‌ലോഡ് ചെയ്ത്, നിങ്ങളുടെ Google Account പാസ്‌വേഡ് ഉപയോഗിച്ച് എൻക്രിപ്റ്റ് ചെയ്തു.</translation>
 <translation id="3164329792803560526">ഈ ടാബ് <ph name="APP_NAME" /> എന്നതിലേക്ക് പങ്കിടുന്നു</translation>
 <translation id="3165390001037658081">ചില സേവനദായകർ ഈ ഫീച്ചർ ബ്ലോക്കുചെയ്‌തേക്കും.</translation>
+<translation id="3165734944977250074">ഫയൽ നിലവിലില്ലാത്തതിനാൽ അത് നീക്കാനാകില്ല</translation>
 <translation id="3169930038976362151">നിങ്ങളുടെ ആവശ്യങ്ങൾക്ക് അനുയോജ്യമായ തീം തിരഞ്ഞെടുക്കുക. നിങ്ങളുടെ തീമും വാൾപേപ്പറും സ്ക്രീൻ സേവറും മറ്റും മാറ്റാൻ ഡെസ്‌ക്ടോപ്പിൽ സ്‌പർശിച്ച് പിടിക്കുക.</translation>
 <translation id="3170072451822350649">നിങ്ങൾക്ക് സൈൻ ഇൻ ചെയ്യുന്നത് ഒഴിവാക്കി <ph name="LINK_START" />അതിഥിയായി ബ്രൗസ് ചെയ്യാനുമാകും<ph name="LINK_END" />.</translation>
 <translation id="3174311489448105660">ലഭ്യമാകുമ്പോൾ, സ്‌ക്രീൻ റീഡറിനായി ഉള്ളടക്കം ടെക്‌സ്‌റ്റിലേക്ക് പരിവർത്തനം ചെയ്യാൻ PDF ചിത്രങ്ങൾ സ്‌കാൻ ചെയ്യുക. Chrome ബ്രൗസറിൽ മാത്രമേ പിന്തുണയ്ക്കൂ.</translation>
@@ -2712,6 +2723,7 @@
 <translation id="3251714896659475029">"Ok Google" എന്ന് പറഞ്ഞ് Google Assistant ആക്സസ് ചെയ്യാൻ <ph name="SUPERVISED_USER_NAME" /> എന്ന കുട്ടിയെ അനുവദിക്കുക</translation>
 <translation id="3251759466064201842">&lt;സര്‍‌ട്ടിഫിക്കറ്റിന്‍റെ ഭാഗമല്ല&gt;</translation>
 <translation id="325238099842880997">നിങ്ങളുടെ കുട്ടികളെ കളിക്കാനും അടുത്തറിയാനും സ്‌കൂൾ വർക്ക് വീട്ടിൽ ചെയ്യാനും സഹായിക്കുന്നതിന് ഡിജിറ്റൽ അടിസ്ഥാന നിയമങ്ങൾ സജ്ജീകരിക്കുക</translation>
+<translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{ഈ ഫയൽ പകർത്താൻ <ph name="CLOUD_PROVIDER" /> എന്നതിൽ ഇടമുണ്ടാക്കുക}other{ഈ ഫയലുകൾ പകർത്താൻ <ph name="CLOUD_PROVIDER" /> എന്നതിൽ ഇടമുണ്ടാക്കുക}}</translation>
 <translation id="3253448572569133955">അജ്ഞാത അക്കൗണ്ട്</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{സുരക്ഷാ പ്രശ്‌നങ്ങളൊന്നും കണ്ടെത്തിയില്ല}=1{{COUNT} സുരക്ഷാ പ്രശ്‌നം കണ്ടെത്തി}other{{COUNT} സുരക്ഷാ പ്രശ്‌നങ്ങൾ കണ്ടെത്തി}}</translation>
 <translation id="3254451942070605467"><ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യുന്നു, <ph name="PERCENT_REMAINING" />% ശേഷിക്കുന്നു</translation>
@@ -2945,8 +2957,10 @@
 <translation id="3450157232394774192">നിഷ്ക്രിയ നില ഒക്യുപ്പൻസി ശതമാനം</translation>
 <translation id="3450180775417907283">നിങ്ങൾ ഇപ്പോൾ വൈഫൈയിൽ കണക്റ്റ് ചെയ്‌ത് അപ്‌ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യാൻ <ph name="MANAGER" /> ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="3452999110156026232">രക്ഷാകർതൃ ആക്‌സസ്</translation>
+<translation id="3453082738208775226">ഓഫ്‌ലൈൻ സ്റ്റോറേജ് ക്ലീൻഅപ്പ് ചെയ്യണോ?</translation>
 <translation id="3453612417627951340">അംഗീകാരം ആവശ്യമാണ്</translation>
 <translation id="3454213325559396544">ഈ <ph name="DEVICE_TYPE" />-ന് സ്വയമേവയുള്ള അവസാനത്തെ സോഫ്‌റ്റ്‌വെയർ, സുരക്ഷാ അപ്‌ഡേറ്റ് ആണിത്. ഭാവി അപ്‌ഡേറ്റുകൾ ലഭിക്കാൻ പുതിയൊരു മോഡലിലേക്ക് അപ്‌ഗ്രേഡ് ചെയ്യൂ.</translation>
+<translation id="3454818737556063691">ഒരു ഫയൽ തുറക്കാൻ അത് <ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് നീക്കണോ?</translation>
 <translation id="3455436146814891176">എൻക്രിപ്ഷൻ പാസ്‍വേഡ് സമന്വയിപ്പിക്കുക</translation>
 <translation id="345693547134384690">പുതിയ ടാബിൽ &amp;ചിത്രം തുറക്കുക</translation>
 <translation id="3458451003193188688">നെറ്റ്‌വർക്ക് പിശക് കാരണം വെർച്വൽ മെഷീൻ ഇൻസ്‍റ്റാൾ ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ അഡ്‍മിനെ ബന്ധപ്പെടുക. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
@@ -3043,6 +3057,7 @@
 <translation id="3529851166527095708">&amp;വിലാസങ്ങളും മറ്റും</translation>
 <translation id="3532273508346491126">സമന്വയ മാനേജ്മെന്റ്</translation>
 <translation id="3532521178906420528">നെറ്റ്‌വർക്ക് കണക്ഷൻ സ്ഥാപിക്കുന്നു ...</translation>
+<translation id="3532852121563960103">{NUM_OF_FILES,plural, =1{<ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് ഒരു ഫയൽ നീക്കുന്നു}other{<ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് {NUM_OF_FILES} ഫയലുകൾ നീക്കുന്നു}}</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - ഓഡിയോ മ്യൂട്ടുചെയ്‌തു</translation>
 <translation id="3537881477201137177">ഇത് പിന്നീട് ക്രമീകരണത്തിൽ പരിഷ്‌കരിക്കാനാകും</translation>
 <translation id="3538066758857505094">Linux അൺഇൻസ്‌റ്റാൾ ചെയ്യുന്നതിൽ പിശക്. വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -3326,6 +3341,7 @@
 <translation id="3771851622616482156">തുറന്നിരിക്കുന്ന ടാബുകളിൽ നിന്നുൾപ്പെടെ, ഈ സൈറ്റിൽ നിന്ന് നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്യും</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /><ph name="BEGIN_LINK2" />Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> ഞാൻ വായിച്ച് അംഗീകരിക്കുന്നു.</translation>
 <translation id="3774166835015494435">പുതിയ ഫോട്ടോകളും അറിയിപ്പുകളും</translation>
+<translation id="3774546890772201673"><ph name="NAME" /> അപ്ഡേറ്റ് ചെയ്യുക.</translation>
 <translation id="3775432569830822555">SSL സെര്‍വര്‍ സര്‍‌ട്ടിഫിക്കറ്റ്</translation>
 <translation id="3775705724665058594">നിങ്ങളുടെ ഉപകരണങ്ങളിലേക്ക് അയയ്‌ക്കുക</translation>
 <translation id="3776508619697147021">ഒന്നിലധികം ഫയലുകൾ സ്വയമേവ ഡൗൺലോഡ് ചെയ്യാൻ സൈറ്റുകൾക്ക് അനുവാദം ചോദിക്കാം</translation>
@@ -3343,6 +3359,7 @@
 <translation id="3784472333786002075">വെബ്‌സൈറ്റുകൾ സൃഷ്ടിക്കുന്ന ഫയലുകളാണ് കുക്കികൾ. രണ്ട് തരത്തിലുള്ള കുക്കികളുണ്ട്: ആദ്യ കക്ഷി കുക്കികളെ സൃഷ്ടിക്കുന്നത് നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റാണ്. വിലാസ ബാറിൽ സൈറ്റ് കാണാം. മൂന്നാം കക്ഷി കുക്കികളെ സൃഷ്ടിക്കുന്നത് മറ്റ് സൈറ്റുകളാണ്. നിങ്ങൾ സന്ദർശിക്കുന്ന വെബ്സൈറ്റിൽ കാണുന്ന പരസ്യങ്ങളോ ചിത്രങ്ങളോ പോലുള്ള ചില ഉള്ളടക്കം ഈ സൈറ്റുകളുടെ ഉടമസ്ഥതയിലാണ്.</translation>
 <translation id="3785308913036335955">ആപ്പുകളുടെ കുറുക്കുവഴി കാണിക്കുക</translation>
 <translation id="3785727820640310185">ഈ സൈറ്റിനായി സംരക്ഷിച്ച പാസ്‌വേഡുകൾ</translation>
+<translation id="3786834302860277193">കോമ്പോസിഷൻ ടെക്‌സ്‌റ്റിന് അടിവര കാണിക്കുക</translation>
 <translation id="3787434344076711519">വിവർത്തനത്തിനായി കാത്തിരിക്കുന്നു</translation>
 <translation id="3788301286821743879">കിയോസ്‌ക് ആപ്പ് ലോഞ്ച് ചെയ്യാനായില്ല.</translation>
 <translation id="3788331399335602504">ഈ ഫയലുകൾ</translation>
@@ -4248,6 +4265,7 @@
 <translation id="4555769855065597957">ഷാഡോ</translation>
 <translation id="4555863373929230635">നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്ക് പാസ്‍വേഡുകൾ സംരക്ഷിക്കാൻ, സൈൻ ഇൻ ചെയ്‌ത് സമന്വയിപ്പിക്കൽ ഓണാക്കുക.</translation>
 <translation id="4558426062282641716">സ്വയമേവ ലോഞ്ച് ചെയ്യാനുള്ള അനുമതി അഭ്യർത്ഥിച്ചു</translation>
+<translation id="4558542033859106586"><ph name="TARGET_APP" /> എന്നതിൽ തുറക്കുന്നു</translation>
 <translation id="4559617833001311418">നിങ്ങളുടെ ചലന സെൻസർ അല്ലെങ്കിൽ വെളിച്ച സെൻസർ ഈ സൈറ്റ് ആക്‌സസ് ചെയ്യുന്നു.</translation>
 <translation id="4560728518401799797"><ph name="FOLDER_TITLE" /> ബുക്ക്‌മാർക്കിനുള്ള കൂടുതൽ ഓപ്‌ഷനുകൾ</translation>
 <translation id="4561893854334016293">അടുത്തിടെ അനുമതികളൊന്നും മാറ്റിയിട്ടില്ല</translation>
@@ -4517,6 +4535,7 @@
 <translation id="4792510204382653691">വെബ്സ്റ്റോർ തുറക്കുക</translation>
 <translation id="4792711294155034829">&amp;ഒരു പ്രശ്നം റിപ്പോര്‍ട്ടുചെയ്യുക...</translation>
 <translation id="4794810983896241342">അപ്‌ഡേറ്റുകൾ മാനേജ് ചെയ്യുന്നത് <ph name="BEGIN_LINK" />നിങ്ങളുടെ അഡ്‌മിനാണ്<ph name="END_LINK" /></translation>
+<translation id="4794910597689955457"><ph name="NUM_OF_FILES" /> ഫയലുകൾ തുറക്കാൻ അവ <ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് നീക്കണോ?</translation>
 <translation id="479536056609751218">വെബ്‌പേജുകൾ, HTML മാത്രം</translation>
 <translation id="4796142525425001238">എപ്പോഴും പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="4797314204379834752">ഓൺലൈൻ ഷോപ്പിംഗും മറ്റും പോലുള്ള ടാസ്ക്കുകൾ ഓർഗനൈസ് ചെയ്യാൻ ടാബ് ഗ്രൂപ്പുകൾ ഉപയോഗിച്ച് നോക്കൂ</translation>
@@ -4677,6 +4696,7 @@
 <translation id="4918021164741308375"><ph name="ORIGIN" /> എന്നതിന് വിപുലീകരണ "<ph name="EXTENSION_NAME" />" ഉപയോഗിച്ച് ആശയവിനിമയം നടത്തേണ്ടതുണ്ട്</translation>
 <translation id="4918086044614829423">സ്വീകരിക്കുക</translation>
 <translation id="4918134162946436591">സൂചനയുമായി ബന്ധപ്പെട്ട ഓവർലേ കാണിക്കുക</translation>
+<translation id="4918762404810341788">പകർത്തുക, തുറക്കുക</translation>
 <translation id="4921348630401250116">ടെക്‌സ്‌റ്റ് ടു സ്‌പീച്ച്</translation>
 <translation id="492299503953721473">Android ആപ്പുകൾ നീക്കംചെയ്യുക</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> അണ്‍‌ഇന്‍സ്‌റ്റാള്‍ ചെയ്യുന്നു...</translation>
@@ -4770,6 +4790,7 @@
 <translation id="501394389332262641">ബാറ്ററി ചാർജ് കുറവാണ് അറിയിപ്പ് ശബ്‌ദം</translation>
 <translation id="5015344424288992913">റിസോള്‍വിംഗ് പ്രോക്സി...</translation>
 <translation id="5016491575926936899">കമ്പ്യൂട്ടറിൽ നിന്ന് ടെക്സ്റ്റ് ചെയ്യാനും നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പങ്കിടാനും സംഭാഷണ അറിയിപ്പുകൾക്ക് മറുപടി നൽകാനും നിങ്ങളുടെ ഫോൺ ഉപയോഗിച്ച് <ph name="DEVICE_TYPE" /> ഉപകരണം അൺലോക്ക് ചെയ്യാനുമാകും.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
+<translation id="5016813108691732343">ഇത് നിങ്ങളുടെ ഓഫ്‌ലൈൻ ഫയലുകൾ ഉപയോഗിക്കുന്ന <ph name="OFFLINE_STORAGE_SIZE" /> GB ഇടം നീക്കം ചെയ്യും. ചില ഫയലുകൾ ഇപ്പോഴും ഓഫ്‌ലൈനിൽ ലഭ്യമാകും. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">പുതിയ പാസ്‌വേഡ് പരീക്ഷിച്ച് നോക്കൂ</translation>
 <translation id="5017643436812738274">ടെക്‌സ്‌റ്റ് കഴ്‌സർ ഉപയോഗിച്ച് നിങ്ങൾക്ക് പേജുകൾക്കിടയിൽ നാവിഗേറ്റ് ചെയ്യാനാകും. ഓഫാക്കാൻ Ctrl+Search+7 അമർത്തുക.</translation>
 <translation id="5018207570537526145">വിപുലീകരണ വെബ്‌സൈറ്റ് തുറക്കുക</translation>
@@ -4861,6 +4882,7 @@
 <translation id="5093569275467863761">അദൃശ്യ ബാക്ക്-ഫോർവേഡ് കാഷെ സബ്ഫ്രെയിം: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Files ആപ്പിൽ നിന്നോ മറ്റ് ആപ്പുകളിൽ നിന്നോ ഈ ആപ്പ് ഉപയോഗിച്ച് പിന്തുണയ്ക്കുന്ന ഫയലുകൾ നിങ്ങൾക്ക് തുറക്കാനും എഡിറ്റ് ചെയ്യാനുമാകും. ഡിഫോൾട്ടായി ഏതൊക്കെ ഫയലുകൾ തുറക്കാൻ ഈ ആപ്പിന് കഴിയുമെന്നത് നിയന്ത്രിക്കാൻ, <ph name="BEGIN_LINK" />നിങ്ങളുടെ ഉപകരണത്തിൽ ഡിഫോൾട്ട് ആപ്പുകൾ എങ്ങനെ സജ്ജീകരിക്കാമെന്ന് അറിയുക<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">സഹകരിക്കുന്ന നേറ്റീവ് അപ്ലിക്കേഷനുകളുമായി ആശയവിനിമയം നടത്തുക</translation>
+<translation id="5095507226704905004">ഫയൽ നിലവിലില്ലാത്തതിനാൽ പകർത്താനാകില്ല</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />' നെറ്റ്‌വര്‍‌ക്കിലേക്ക് ബന്ധിപ്പിക്കുന്നതിൽ പരാജയപ്പെട്ടു: <ph name="DETAILS" /></translation>
 <translation id="5097306410549350357">ലൊക്കേഷൻ ഉപയോഗത്തെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="5097349930204431044">നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റുകൾക്ക് നിങ്ങൾക്ക് ഇഷ്ടമുള്ളതെന്തെന്ന് നിർണ്ണയിക്കാനും ബ്രൗസ് ചെയ്യുന്നത് തുടരുന്നതിനിടെ പരസ്യങ്ങൾ നിർദ്ദേശിക്കാനുമാകും</translation>
@@ -4879,6 +4901,7 @@
 <translation id="5111692334209731439">&amp;ബുക്ക്മാര്‍ക്ക് മാനേജര്‍</translation>
 <translation id="5111794652433847656">ഈ ഉപകരണത്തിൽ <ph name="APP_NAME" /> എന്നതിനുള്ള പാസ്‌കീകളൊന്നുമില്ല</translation>
 <translation id="5112577000029535889">&amp;ഡെവലപ്പര്‍‌ ഉപകരണങ്ങള്‍‌</translation>
+<translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{ഒരു ഫയൽ നീക്കി}other{{NUM_OF_FILES} ഫയലുകൾ നീക്കി}}</translation>
 <translation id="511313294362309725">ഫാസ്റ്റ് പെയർ ഓണാക്കുക</translation>
 <translation id="5113384440341086023">Play Store-ൽ നിന്ന് ഇൻസ്റ്റാൾ ചെയ്ത ആപ്പുകൾ, Chrome ബ്രൗസറിൽ നിന്നുള്ള വെബ് ആപ്പുകൾ</translation>
 <translation id="51143538739122961">നിങ്ങളുടെ സുരക്ഷാ കീ ബന്ധിപ്പിച്ച് അതിൽ സ്‌പർശിക്കുക</translation>
@@ -5001,6 +5024,7 @@
 <translation id="5225463052809312700">ക്യാമറ ഓണാക്കുക</translation>
 <translation id="5227679487546032910">ഡിഫോൾട്ടായ ടീൽ അവതാർ</translation>
 <translation id="5228579091201413441">സമന്വയം പ്രവർത്തനക്ഷമമാക്കുക</translation>
+<translation id="5230190638672215545">"ươ" ലഭിക്കാൻ "uow" ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="5230516054153933099">വിന്‍‌ഡോ</translation>
 <translation id="5231427103154766313">കാസ്റ്റ് ചെയ്യൽ നിർത്താൻ റിമോട്ട് ഉപയോഗിക്കുക.</translation>
 <translation id="5233019165164992427">NaCl ഡീബഗ് പോർട്ട്</translation>
@@ -5204,6 +5228,7 @@
 ഈ പ്രവർത്തനത്തിലേക്ക് നിങ്ങൾക്ക് ഒന്നിലധികം സ്വിച്ചുകൾ അസൈൻ ചെയ്യാനാകും.</translation>
 <translation id="540495485885201800">മുമ്പത്തേതുമായി സ്വാപ്പ് ചെയ്യുക</translation>
 <translation id="5405146885510277940">ക്രമീകരണം റീസെറ്റ് ചെയ്യുക</translation>
+<translation id="5406844893187365798">സൗകര്യപ്രദമായ ടൈപ്പ് ചെയ്യൽ</translation>
 <translation id="5407167491482639988">വ്യക്തതയില്ലാത്തത്</translation>
 <translation id="5408750356094797285">സൂം ചെയ്യുക: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ നിന്നുള്ളത്</translation>
@@ -6020,6 +6045,7 @@
 <translation id="608912389580139775">നിങ്ങളുടെ വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലേക്ക് ഈ പേജ് ചേർക്കാൻ, ബുക്ക്‌മാർക്ക് ഐക്കണിൽ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="6089289670051481345">നീല നിറത്തോടുള്ള വർണ്ണാന്ധത</translation>
 <translation id="6090760257419195752">ഡിസ്‌മിസ് ചെയ്‌ത മുന്നറിയിപ്പുകൾ</translation>
+<translation id="609174145569509836">ഇടം സൃഷ്ടിക്കുക</translation>
 <translation id="6091761513005122595">പങ്കിടൽ വിജയകരമായി മൗണ്ട് ചെയ്തു.</translation>
 <translation id="6093803049406781019">പ്രൊഫൈൽ ഇല്ലാതാക്കുക</translation>
 <translation id="6093888419484831006">അപ്‌ഡേറ്റ് റദ്ദാക്കുന്നു...</translation>
@@ -6088,6 +6114,7 @@
 <translation id="6148576794665275391">ഇപ്പോള്‍ തുറക്കുക</translation>
 <translation id="614890671148262506">ഈ സൈറ്റിൽ നിന്നുള്ള അറിയിപ്പുകൾ എപ്പോഴും അനുവദിക്കുക</translation>
 <translation id="6149015141270619212">ഇന്റർനെറ്റ് കണ‌ക്‌റ്റ് ചെയ്യാനാവുന്നില്ല</translation>
+<translation id="6149791593592044995">മോഡേൺ ടോൺ മാർക്ക് പ്ലേസ്‍മെന്റ് ഉപയോഗിക്കുക</translation>
 <translation id="6150116777338468525">ഓഡിയോ നിലവാരം</translation>
 <translation id="6150278227694566734">ചില കോൺടാക്‌റ്റുകൾ</translation>
 <translation id="6150961653851236686">പേജുകൾ വിവർത്തനം ചെയ്യുമ്പോൾ ഈ ഭാഷ ഉപയോഗിക്കുന്നു</translation>
@@ -6165,6 +6192,7 @@
 <translation id="6216696360484424239">സ്വയമേവ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> ഓഫ്‌ലൈനാണ്. ഇന്റർനെറ്റിലേക്ക് കണക്‌റ്റ് ചെയ്‌ത് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6220413761270491930">വിപുലീകരണം ലോഡ് ചെയ്യുന്നതിൽ പിശക്</translation>
+<translation id="622125358038862905">{NUM_OF_FILES,plural, =1{<ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് ഫയൽ പകർത്താനാകുന്നില്ല}other{<ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് ഫയലുകൾ പകർത്താനാകുന്നില്ല}}</translation>
 <translation id="6224481128663248237">ഫോർമാറ്റിംഗ് വിജയകരമായി പൂർത്തിയാക്കി!</translation>
 <translation id="622474711739321877">ഈ കണ്ടെയ്‌നർ മുമ്പേ നിലവിലുണ്ട്.</translation>
 <translation id="622537739776246443">പ്രൊഫൈല്‍ ഇല്ലാതാക്കപ്പെടും</translation>
@@ -6256,6 +6284,7 @@
 <translation id="6295855836753816081">സംരക്ഷിക്കുന്നു...</translation>
 <translation id="6298962879096096191">Android ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യാൻ Google Play ഉപയോഗിക്കുക</translation>
 <translation id="6300177430812514606">ഡാറ്റ അയയ്‌ക്കുന്നതോ സ്വീകരിക്കുന്നതോ പൂർത്തിയാക്കുന്നത് അനുവദിക്കുന്നില്ല</translation>
+<translation id="6300654006256345126">പാസ്‌വേഡ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="630065524203833229">&amp;പുറത്തുപോകുക</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> സ്വയമേവ കോൺഫിഗർ ചെയ്യാനായില്ല. വിപുലമായ പ്രിൻ്റർ വിശദാംശങ്ങൾ വ്യക്തമാക്കുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="6301300352769835063"><ph name="DEVICE_OS" /> മെച്ചപ്പെടുത്തുന്നതിന് നിങ്ങളുടെ ഹാർഡ്‌വെയർ ഡാറ്റ ഉപയോഗിക്കാൻ Google-നെ അനുവദിക്കുക. നിങ്ങൾ നിരസിച്ചാൽ, ശരിയായ അപ്ഡേറ്റുകൾ കണ്ടെത്താൻ Google-ന് ഈ ഡാറ്റ അയയ്ക്കുമെങ്കിലും മറ്റ് കാര്യങ്ങൾക്കായി സംഭരിക്കുകയോ ഉപയോഗിക്കുകയോ ഇല്ല. g.co/flex/HWDataCollection -ൽ കൂടുതലറിയുക.</translation>
@@ -6347,6 +6376,7 @@
 <translation id="6387674443318562538">ലംബമായി വിഭജിക്കുക</translation>
 <translation id="6388429472088318283">ഭാഷകൾ തിരയുക</translation>
 <translation id="6388577073199278153">നിങ്ങളുടെ മൊബൈൽ അക്കൗണ്ട് ആക്‌സസ് ചെയ്യാനാകുന്നില്ല</translation>
+<translation id="639000813364908555">ആക്‌സസ് നിരസിച്ചു</translation>
 <translation id="6390020764191254941">ടാബ് പുതിയ വിൻഡോയിലേക്ക് നീക്കുക</translation>
 <translation id="6391131092053186625">നിങ്ങളുടെ ഉപകരണത്തിന്റെ IMEI നമ്പർ <ph name="IMEI_NUMBER" /> ആണ്. സേവനം സജീവമാക്കാൻ സഹായിക്കുന്നതിന് ഈ നമ്പർ ഉപയോഗിക്കാം.</translation>
 <translation id="6393156038355142111">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിക്കുക</translation>
@@ -6374,6 +6404,7 @@
 <translation id="6411135999030237579">കീയുടെ ഫംഗ്‌ഷൻ സ്വയമേവ ആവർത്തിക്കാൻ അമർത്തിപ്പിടിക്കുക</translation>
 <translation id="641469293210305670">അപ്‌ഡേറ്റുകളും ആപ്പുകളും ഇൻസ്‌റ്റാൾ ചെയ്യൽ</translation>
 <translation id="6414878884710400018">സിസ്‌റ്റം മുൻഗണനകൾ തുറക്കുക</translation>
+<translation id="6415757856498750027">"ư" ലഭിക്കാൻ "w" ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="6415816101512323589">നിങ്ങളുടെ ഡാറ്റ പരിരക്ഷിക്കാൻ ലോക്കൽ ഡാറ്റ വീണ്ടെടുക്കൽ ഓണാക്കണോ?</translation>
 <translation id="6415900369006735853">ഫോണിലൂടെ ഇന്‍റർനെറ്റ് കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="6416743254476733475">നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ അനുവദിക്കുക അല്ലെങ്കിൽ ബ്ലോക്ക് ചെയ്യുക.</translation>
@@ -6919,6 +6950,7 @@
 <translation id="68601584151169673">&amp;സംരക്ഷിക്കുക, പങ്കിടുക</translation>
 <translation id="6860427144121307915">ടാബിൽ തുറക്കുക</translation>
 <translation id="6861179941841598556"><ph name="PROFILE_NAME" /> എന്നയാൾക്കുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
+<translation id="6862472520095266519">പേര് 32 പ്രതീകങ്ങളിൽ കൂടരുത്</translation>
 <translation id="6863496016067551393">എല്ലാ വിപുലീകരണങ്ങളും അനുവദിച്ചവ</translation>
 <translation id="686366188661646310">പാസ്‌വേഡ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="6865313869410766144">ഓട്ടോഫിൽ ഫോം ഡാറ്റ</translation>
@@ -7243,6 +7275,7 @@
 <translation id="7144856456372460176"><ph name="APP" /> &amp;ഇൻസ്റ്റാൾ ചെയ്യുക...</translation>
 <translation id="7144878232160441200">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7145413760160421938">മുമ്പത്തെ സെഷൻ പുനരാരംഭിക്കാനാകുന്നില്ല</translation>
+<translation id="7146882055510146554">Word, Excel, PowerPoint ഫയലുകൾ തുറക്കാനും എഡിറ്റ് ചെയ്യുന്നതിനും Microsoft 365, OneDrive ഉപയോഗിക്കുന്നു. "Microsoft OneDrive" എന്ന് ലേബൽ ചെയ്തിരിക്കുന്ന Files ആപ്പിലെ സൈഡ് നാവിഗേഷനിൽ ഈ ഫയലുകൾ കാണും. നിങ്ങളുടെ Microsoft അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യേണ്ടതുണ്ട്. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">സൈറ്റുകൾ നിങ്ങൾ പ്രതീക്ഷിക്കുന്നത് പോലെ പ്രവർത്തിച്ചേക്കില്ല. നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റുകളെക്കുറിച്ചുള്ള വിവരങ്ങൾ ഉപകരണത്തിൽ സൂക്ഷിക്കാൻ താൽപ്പര്യം ഇല്ലെങ്കിൽ മാത്രം ഈ ഓപ്ഷൻ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="7149839598364933473">ഈ ഉപകരണം ഒരു <ph name="DEVICE_OS" /> ഉപകരണമായി പരിവർത്തനം ചെയ്യുക.</translation>
 <translation id="7149893636342594995">അവസാന 24 മണിക്കൂർ</translation>
@@ -7523,6 +7556,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">തിരികെ <ph name="OLD_SEARCH_PROVIDER" /> എന്നതിലേക്ക് മാറ്റണോ?</translation>
 <translation id="7400839060291901923">നിങ്ങളുടെ <ph name="PHONE_NAME" /> ഫോണിൽ കണക്ഷൻ സജ്ജമാക്കുക</translation>
+<translation id="7401559588859088661">നീക്കുക, തുറക്കുക</translation>
 <translation id="7401778920660465883">ഈ സന്ദേശം ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="7402198013420237102">സംരക്ഷിച്ച പാസ്‌വേഡുകൾ നിങ്ങളുടെ Google Account-ലേക്ക് നീക്കണോ?</translation>
 <translation id="740333000181878130">ഉപകരണം ആരംഭിക്കുമ്പോഴുള്ള ശബ്‌ദം</translation>
@@ -8029,6 +8063,7 @@
 <translation id="7797571222998226653">ഓഫാണ്</translation>
 <translation id="7798504574384119986">വെബ് അനുമതികൾ കാണുക</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> സ്വയമേവ ബ്ലോക്ക് ചെയ്തു</translation>
+<translation id="7800485561443537737">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിന്റെ മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കുന്നു, നിങ്ങളുടെ സേവനദാതാവ് അധിക ഫീസ് ഈടാക്കിയേക്കാം. ബാറ്ററി ഉപയോഗം വർദ്ധിപ്പിച്ചേക്കാം. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">എ&amp;തിർ ഘടികാരദിശയിൽ തിരിക്കുക</translation>
 <translation id="7801679634091975683">നിങ്ങൾ ഇവിടെ വരുത്തുന്ന മാറ്റങ്ങൾ Lacros Chrome ബ്രൗസറിൽ മാത്രമേ ബാധകമാകൂ. നിങ്ങളുടെ Chrome ബ്രൗസർ ക്രമീകരണത്തിൽ മാറ്റങ്ങൾ വരുത്താൻ, Chrome ബ്രൗസർ തുറന്ന് ക്രമീകരണത്തിലേക്ക് പോകുക.</translation>
 <translation id="780301667611848630">വേണ്ട നന്ദി</translation>
@@ -8058,6 +8093,7 @@
 <translation id="7826254698725248775">വിരുദ്ധമായ ഉപകരണ ഐഡന്റിഫയർ.</translation>
 <translation id="7828642077514646543">പിശക്: സർട്ടിഫിക്കറ്റ് ഡീകോഡ് ചെയ്യാനായില്ല</translation>
 <translation id="7829877209233347340">സ്‌കൂൾ അക്കൗണ്ട് ചേർക്കുന്നതിന് അനുമതി നൽകാൻ രക്ഷിതാവിനോട് സൈൻ ഇൻ ചെയ്യാൻ ആവശ്യപ്പെടുക</translation>
+<translation id="7830833461614351956">തുറക്കാൻ <ph name="NUM_OF_FILES" /> ഫയലുകൾ <ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് പകർത്തണോ?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Google ഡിസ്‌കൗണ്ട് കണ്ടെത്തിയാൽ നിങ്ങൾക്കത് ഈ പേജിൽ കാണാം</translation>
 <translation id="7833720883933317473">സംരക്ഷിച്ച ഇഷ്‌ടാനുസൃത പദങ്ങൾ ഇവിടെ ദൃശ്യമാകും</translation>
@@ -8286,6 +8322,7 @@
 <translation id="8013993649590906847">ചിത്രത്തിൽ ഉപകാരപ്രദമായ വിവരണമില്ലെങ്കിൽ നിങ്ങൾക്കായി ഒരു വിവരണം നൽകാൻ Chrome ശ്രമിക്കും. വിവരണങ്ങൾ സൃഷ്‌ടിക്കാൻ, ചിത്രങ്ങൾ Google-ലേക്ക് അയയ്ക്കുന്നു.</translation>
 <translation id="8014154204619229810">അപ്‌ഡേറ്റർ നിലവിൽ പ്രവർത്തിക്കുന്നു. വീണ്ടും പരിശോധിക്കാൻ ഒരു മിനിറ്റിനുള്ളിൽ റീഫ്രഷ് ചെയ്യുക.</translation>
 <translation id="8014206674403687691">മുമ്പ് ഇൻസ്റ്റാൾ ചെയ്‌ത പതിപ്പിലേക്ക് <ph name="IDS_SHORT_PRODUCT_NAME" /> എന്നത് പുന:സ്ഥാപിക്കാനായില്ല. നിങ്ങളുടെ ഉപകരണം പവർവാഷ് ചെയ്യാൻ വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{ഒരു ഫയൽ പകർത്തി}other{{NUM_OF_FILES} ഫയലുകൾ പകർത്തി}}</translation>
 <translation id="8015812716978143">എല്ലാ ഡൗൺലോഡുകളും പുതിയ ടാബിൽ കാണിക്കുക</translation>
 <translation id="8017176852978888182">Linux-ൽ നിന്ന് പങ്കിട്ട ഡയറക്റ്ററികൾ</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8314,6 +8351,7 @@
 <translation id="8037117027592400564">സംശ്ലേഷിച്ച സംഭാഷണം ഉപയോഗിക്കുന്ന എല്ലാ ടെക്സ്റ്റ് സംഭാഷണവും റീഡുചെയ്യുക</translation>
 <translation id="8037357227543935929">ചോദിക്കുക (ഡിഫോൾട്ട്)</translation>
 <translation id="803771048473350947">ഫയല്‍</translation>
+<translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{<ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് ഒരു ഫയൽ പകർത്തുന്നു}other{<ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് {NUM_OF_FILES} ഫയലുകൾ പകർത്തുന്നു}}</translation>
 <translation id="8041089156583427627">ഫീഡ്ബാക്ക് അയയ്ക്കുക</translation>
 <translation id="8041267120753677077">നിങ്ങളുടെ ഫോണിലെ ആപ്പുകൾ സ്‌ട്രീം ചെയ്യുക</translation>
 <translation id="8042142357103597104">ടെക്‌സ്‌റ്റ് അതാര്യത</translation>
@@ -8366,6 +8404,7 @@
 <translation id="8077120325605624147">നിങ്ങൾ സന്ദർശിക്കുന്ന ഏത് സൈറ്റിനും ഏത് പരസ്യവും നിങ്ങളെ കാണിക്കാനാകും</translation>
 <translation id="8077579734294125741">മറ്റ് Chrome പ്രൊഫൈലുകൾ</translation>
 <translation id="80798452873915119">സൈറ്റുകൾക്ക് നിങ്ങളുടെ എല്ലാ ഡിസ്‌പ്ലേകളിലും വിൻഡോകൾ മാനേജ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
+<translation id="807990231167557618">നിങ്ങളുടെ Chromebook അപ്ഡേറ്റ് ചെയ്തു.</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">നിങ്ങളുടെ സെഷൻ മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER_NAME" /> ആണ്. നിങ്ങളുടെ പ്രൊഫൈൽ ഇല്ലാതാക്കാനും നെറ്റ്‌വർക്ക് ട്രാഫിക് നിരീക്ഷിക്കാനും അഡ്‌മിൻമാർക്ക് കഴിയും.</translation>
 <translation id="8081989000209387414">ADB ഡീബഗ് ചെയ്യൽ പ്രവർത്തനരഹിതമാക്കണോ?</translation>
@@ -8484,6 +8523,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180785270975217276">എനർജി സേവർ ഓണാക്കി</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" എന്നതിന് ചെക്ക് ചെയ്ത ലൊക്കേഷനുകളിൽ ചിത്രങ്ങളും വീഡിയോകളും ശബ്‌ദ ഫയലുകളും വായിക്കാനും ഇല്ലാതാക്കാനുമാവും.</translation>
+<translation id="8180826593917851025"><ph name="DEVICE_TYPE" /> ഹോട്ട്‌സ്‌പോട്ട് കോൺഫിഗർ ചെയ്യുക</translation>
 <translation id="8181215761849004992">ഡൊമെയ്‌ൻ ബന്ധപ്പെടുത്താനാവില്ല. ഉപകരണങ്ങൾ ചേർക്കാൻ നിങ്ങൾക്ക് മതിയായ പ്രത്യേക അധികാരങ്ങൾ ഉണ്ടോ എന്നറിയാൻ നിങ്ങളുടെ അക്കൗണ്ട് പരിശോധിക്കുക.</translation>
 <translation id="8182105986296479640">ആപ്പ് പ്രതികരിക്കുന്നില്ല.</translation>
 <translation id="8182412589359523143">ഈ <ph name="DEVICE_TYPE" /> എന്നതിൽ നിന്ന് എല്ലാ ഡാറ്റയും ഇല്ലാതാക്കാൻ <ph name="BEGIN_LINK" />ഇവിടെ ക്ലിക്ക് ചെയ്യുക<ph name="END_LINK" />.</translation>
@@ -8592,6 +8632,7 @@
     <ph name="BEGIN_PARAGRAPH3" />ഈ ഫീച്ചർ, ക്രമീകരണം &gt; വിപുലമായത് &gt;ഡയഗ്നോസ്‌റ്റിക് ഡാറ്റയും ഉപയോഗ ഡാറ്റയും Google-ലേക്ക് അയയ്ക്കുക എന്നതിൽ ഉടമയ്ക്ക് നിയന്ത്രിക്കാം.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />നിങ്ങളുടെ കുട്ടിയുടെ അധിക 'വെബ്, ആപ്പ് ആക്‌റ്റിവിറ്റി' ഓണാക്കിയിട്ടുണ്ടെങ്കിൽ, ഈ ഡാറ്റ നിങ്ങളുടെ കുട്ടിയുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചിട്ടുണ്ടാകാം. ഈ ക്രമീകരണത്തെക്കുറിച്ചും അത് എങ്ങനെ മാറ്റാമെന്നും families.google.com എന്നതിൽ അറിയുക.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">ക്ലയന്റ് സർട്ടിഫിക്കറ്റ് അസാധുവാണ്</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="827097179112817503">ഹോം ബട്ടൺ കാണിക്കുക</translation>
 <translation id="8271268254812352141">നിങ്ങൾ ടെക്സ്റ്റിൽ വലത്-ക്ലിക്ക് ചെയ്യുമ്പോഴോ സ്‌പർശിച്ച് പിടിക്കുമ്പോഴോ നിർവചനങ്ങളോ വിവർത്തനങ്ങളോ യൂണിറ്റ് കൺവേർഷനുകളോ നേടുക. <ph name="LINK_BEGIN" />വെബ്സൈറ്റ് ഭാഷകളിൽ<ph name="LINK_END" /> വിവർത്തന ഭാഷകൾ ഇഷ്ടാനുസൃതമാക്കുക.</translation>
 <translation id="8271379370373330993">രക്ഷിതാക്കളെ, അടുത്ത ഏതാനും ഘട്ടങ്ങൾ നിങ്ങൾക്കുള്ളതാണ്. അക്കൗണ്ട് സജ്ജീകരണത്തിന് ശേഷം, <ph name="DEVICE_TYPE" /> കുട്ടിക്ക് കൈമാറാവുന്നതാണ്.</translation>
@@ -8716,6 +8757,7 @@
 <translation id="8376752431516546391">Google Search സൈഡ് പാനൽ</translation>
 <translation id="8377625247046155446">ഈ പാസ്‌കീ ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിക്കൂ. നിങ്ങൾ എല്ലാ അദൃശ്യ വിൻഡോകളും അടച്ചതിനുശേഷവും ഇത് ഈ ഉപകരണത്തിൽ നിലനിൽക്കും.</translation>
 <translation id="8378714024927312812">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്</translation>
+<translation id="8379988659465232385">ഫയൽ പേര് നൽകാതിരിക്കാൻ കഴിയില്ല</translation>
 <translation id="8379991678458444070">ഈ ടാബ് ബുക്ക്‌മാർക്ക് ചെയ്‌താൽ വേഗത്തിൽ ഇവിടേക്ക് മടങ്ങിയെത്താൻ കഴിയും</translation>
 <translation id="8380266723152870797">വിൻഡോയുടെ പേര്</translation>
 <translation id="8380941800586852976">അപകടകരമായത്</translation>
@@ -8926,6 +8968,7 @@
 <translation id="8569682776816196752">ലക്ഷ്യസ്ഥാനങ്ങൾ ഒന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="8571213806525832805">കഴിഞ്ഞ 4 ആഴ്ച</translation>
 <translation id="8571687764447439720">Kerberos ടിക്കറ്റ് ചേർക്കുക</translation>
+<translation id="8573111744706778015">"ươ" ലഭിക്കാൻ "uo7"ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="8574990355410201600">എല്ലായ്‌പ്പോഴും <ph name="HOST" /> എന്നതിൽ ‌ശബ്ദം അനുവദിക്കുക</translation>
 <translation id="8575286410928791436">പുറത്തുകടക്കുന്നതിന് <ph name="KEY_EQUIVALENT" /> അമര്‍ത്തിപ്പിടിക്കുക</translation>
 <translation id="8576359558126669548">അദൃശ്യ മോഡിൽ മൂന്നാം-കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുന്നതിനെ കുറിച്ച് കൂടുതൽ വിവരങ്ങൾ</translation>
@@ -8961,11 +9004,13 @@
 <translation id="8610103157987623234">തെറ്റായ ഫോർമാറ്റ്, വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="8611682088849615761">MIDI ഉപകരണങ്ങളുടെ പൂർണ്ണ നിയന്ത്രണം നേടാൻ ഈ സൈറ്റിനെ അനുവദിക്കുന്നത് തുടരുക</translation>
 <translation id="8613164732773110792">ചെറിയ അക്ഷരങ്ങൾ, അക്കങ്ങൾ, അണ്ടർസ്കോറുകൾ, അല്ലെങ്കിൽ ഡാഷുകൾ മാത്രം</translation>
+<translation id="8613504115484579584">സൈൻ ഇൻ രീതികൾ</translation>
 <translation id="8613645710357126807">വിപുലീകരണങ്ങൾ ഉപയോഗിക്കാൻ അനുവാദമില്ലാത്തവ</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> എന്നത് സുരക്ഷാപരിശോധനയ്‌ക്ക് വളരെ വലുതാണ്. 50 MB വരെയുള്ള ഫയലുകൾ നിങ്ങൾക്ക് തുറക്കാം.</translation>
 <translation id="8615618338313291042">അദൃശ്യ മോഡ് ആപ്പ്: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" /> എന്നയാളെ കോൺടാക്‌റ്റുകളിലേക്ക് ചേർക്കുക</translation>
 <translation id="8617748779076050570">സുരക്ഷിത കണക്ഷൻ ഐഡി: <ph name="CONNECTION_ID" /></translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619803522055190423">ഡ്രോപ്പ് ഷാഡോ</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8621979332865976405">നിങ്ങളുടെ സ്‌ക്രീൻ പൂർണ്ണമായും പങ്കിടുക</translation>
@@ -9558,6 +9603,7 @@
 <translation id="9089416786594320554">ഇൻപുട്ട്  രീതികൾ</translation>
 <translation id="9089959054554410481">ടച്ച്പാഡ് സ്‍ക്രോൾ ചെയ്യൽ ദിശ മാറ്റുക</translation>
 <translation id="9090044809052745245">നിങ്ങളുടെ ഉപകരണം മറ്റുള്ളവർക്ക് എങ്ങനെ ദൃശ്യമാകുന്നു</translation>
+<translation id="9090295708045818045">{NUM_OF_FILES,plural, =1{<ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് ഫയൽ നീക്കാനാകുന്നില്ല}other{<ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് ഫയലുകൾ നീക്കാനാകുന്നില്ല}}</translation>
 <translation id="9093470422440389061">വൈഫൈ പ്രകടന മെട്രിക്കുകൾ</translation>
 <translation id="9094033019050270033">പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="9094038138851891550">ഉപയോക്തൃനാമം അസാധുവാണ്</translation>

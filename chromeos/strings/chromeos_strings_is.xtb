@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">Nota núverandi lyklasett</translation>
 <translation id="2320295602967756579">Virkja ljóst þema</translation>
 <translation id="2323506179655536734">SLEPPT</translation>
+<translation id="2324354238778375592">Fljótandi</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Kveiktu á Bluetooth til að uppgötva nálæg tæki</translation>
 <translation id="2346474577291266260">Frábær (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> prófun</translation>
 <translation id="370665806235115550">Hleður...</translation>
 <translation id="3708186454126126312">Áður tengt</translation>
+<translation id="3715651196924935218">Hætta að nota fljótandi stillingu</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> umsagnir)</translation>
 <translation id="3748026146096797577">Ótengt</translation>
 <translation id="3749289110408117711">Skráarheiti</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google-myndir</translation>
 <translation id="4150201353443180367">Skjár</translation>
 <translation id="4155551848414053977">Gakktu úr skugga um að kveikt sé á skannanum og hann tiltækur í gegnum nettengingu eða beintengingu</translation>
+<translation id="4159238217853743776">Hluti</translation>
 <translation id="4159784952369912983">Purpurarauður</translation>
 <translation id="4170180284036919717">Taka mynd</translation>
 <translation id="4170700058716978431">MISTÓKST</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">Opnaðu <ph name="BEGIN_LINK" />stillingarnar<ph name="END_LINK" /> til að setja upp eða uppfæra tengingu.</translation>
 <translation id="4932733599132424254">Dagsetning</translation>
 <translation id="4950314376641394653">Fastbúnaður <ph name="DEVICE_NAME" /> var uppfærður í útgáfu <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">Skipta</translation>
 <translation id="4972592110715526173">breyta stillingu</translation>
 <translation id="498186245079027698">Athugaðu skannann og reyndu aftur. Gakktu úr skugga um að nægilegt pláss sé á tækinu fyrir skannaðar skrár.</translation>
 <translation id="4985509611418653372">Keyra</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">Hýsilheiti þjóns</translation>
 <translation id="5089810972385038852">Ríki</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Allur skjárinn</translation>
 <translation id="5142961317498132443">Auðkenning</translation>
 <translation id="5154917547274118687">Minni</translation>
 <translation id="5160857336552977725">Skráðu þig inn í <ph name="DEVICE_TYPE" /></translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">Skrá út</translation>
 <translation id="522307662484862935">Ekki láta netfang fylgja</translation>
 <translation id="5227902338748591677">Áætlun dökks þema</translation>
+<translation id="5229344016299762883">Hætta að nota allan skjáinn</translation>
 <translation id="5234764350956374838">Hunsa</translation>
 <translation id="5252456968953390977">Í reiki</translation>
 <translation id="5257811368506016604">Kveikja á ljósri litastillingu</translation>
@@ -707,6 +713,7 @@
 <translation id="6566314079205407217">Fjölsíðuskönnun</translation>
 <translation id="6574762126505704998">Fylling</translation>
 <translation id="6575134580692778371">Ekki stillt</translation>
+<translation id="6576005492601044801">vinstri</translation>
 <translation id="6579509898032828423">Nota þessa mynd</translation>
 <translation id="6596816719288285829">IP-tala</translation>
 <translation id="6599673642868607614">Við þökkum þér fyrir ábendinguna. Ábendingin þín hjálpar okkur að bæta Chromebook-upplifunina og verður yfirfarin af teyminu okkar. Vegna fjölda tilkynninga höfum við ekki tök á því að svara.</translation>
@@ -812,6 +819,7 @@
 <translation id="7497215489070763236">CA-vottorð þjóns</translation>
 <translation id="7501957181231305652">eða</translation>
 <translation id="7502658306369382406">IPv6-veffang</translation>
+<translation id="7513770521371759388">neðst</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Hjálparefni er ekki tiltækt</translation>
 <translation id="7535791657097741517">Kveikja á ljósu þema</translation>
@@ -950,6 +958,7 @@
 <translation id="8655295600908251630">Rás</translation>
 <translation id="8655828773034788261">Deila vefslóð:</translation>
 <translation id="8660881923941176839">pund</translation>
+<translation id="8670574982334489519">hægri</translation>
 <translation id="8675354002693747642">PSK-lykill</translation>
 <translation id="8677859815076891398">Engin albúm. Búðu til albúm í <ph name="LINK_BEGIN" />Google myndum<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Notaðu ör til vinstri eða ör til hægri til að stjórna þessum eiginleika.</translation>
@@ -995,6 +1004,7 @@
 <translation id="8936793075252196307">IP-tala biðlara</translation>
 <translation id="8944651180182756621">Litur ræsiforrits</translation>
 <translation id="894617464444543719">Tækið er sími.</translation>
+<translation id="8950424402482976779">efst</translation>
 <translation id="8968751544471797276">Hleðsluhraði</translation>
 <translation id="8970109610781093811">Keyra aftur</translation>
 <translation id="8983038754672563810">HSPA</translation>

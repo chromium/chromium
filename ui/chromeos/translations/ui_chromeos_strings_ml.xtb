@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google ഡ്രൈവ് ഇപ്പോൾ ലഭ്യമല്ല. ലഭ്യമായിക്കഴിഞ്ഞാൽ, അപ്‌ലോഡ് ചെയ്യുന്നത് സ്വയമേവ പുനരാരംഭിക്കും.</translation>
 <translation id="1307931752636661898">Linux ഫയലുകൾ കാണാനാവുന്നില്ല</translation>
 <translation id="1313405956111467313">സ്വയമേവയുള്ള പ്രോക്സി ക്രമീകരണം</translation>
+<translation id="134645005685694099">ഫയൽ സമന്വയം ഓണാക്കി നിലനിർത്താൻ ആവശ്യമായ സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് നിങ്ങളുടെ ഉപകരണത്തിലില്ല. പുതിയ ഫയലുകൾ ഇനി സ്വയമേവ സമന്വയിപ്പിക്കില്ല.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ഫയലോ ഡയറക്‌റ്ററിയോ ഉപയോഗക്ഷമമല്ല.</translation>
 <translation id="1363028406613469049">ട്രാക്കുചെയ്യുക</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP പ്രോക്‌സി</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> നെറ്റ്‍വർക്ക്, ഓഫാണ്</translation>
 <translation id="2468402215065996499">താമഗോച്ചി</translation>
+<translation id="2468470447085858632">ഫയൽ സമന്വയിപ്പിക്കൽ ഉപയോഗിച്ച് നിങ്ങളുടെ Google Drive ഫയലുകൾ ഓഫ്‌ലൈനിൽ ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="2470939964922472929">തെറ്റായ പിൻ നിരവധി തവണ നൽകി. പുതിയ പിൻ സജ്ജീകരിക്കാൻ, നിങ്ങളുടെ സേവനദാതാവ് നൽകിയ 8 അക്ക പേഴ്‌സണൽ അൺബ്ലോക്കിംഗ് കീ (PUK) നല്‍കുക.</translation>
 <translation id="2500392669976258912">ഗുജറാത്തി ഉച്ചാരണശബ്‌ദം</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -603,6 +605,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ട്രാഷിലേക്ക് നീക്കി</translation>
 <translation id="5724172041621205163">Pattachote കീബോർഡ് ഉള്ള തായ്</translation>
 <translation id="57383366388012121">കഴിഞ്ഞ മാസം</translation>
+<translation id="575175778971367197">ഈ ഫയൽ ഇപ്പോൾ സമന്വയിപ്പിക്കാനാകില്ല</translation>
 <translation id="5756666464756035725">ഹംഗേറിയൻ ക്വെർട്ടി</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ഇനങ്ങൾ തിരഞ്ഞെടുത്തു</translation>
 <translation id="5763377084591234761">ജർമ്മനി (സ്വിറ്റ്സർലൻഡ്)</translation>
@@ -705,6 +708,7 @@
 <translation id="6558280019477628686">ഒരു പിശക് സംഭവിച്ചു. ചില ഇനങ്ങൾ ഇല്ലാതാക്കാൻ ഇടയില്ല.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ഇല്ലാതാക്കുന്നു...</translation>
 <translation id="6581162200855843583">Google ഡ്രൈവ് ലിങ്ക്</translation>
+<translation id="6588648400954570689">ഫയൽ സമന്വയിപ്പിക്കൽ ക്രമീകരണം</translation>
 <translation id="6594855146910089723">Linux-മായും Parallels Desktop-മായും ഈ ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="6607272825297743757">ഫയൽ വിവരം</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> ഫോൾഡറുകൾ Parallels Desktop ഉപയോഗിച്ച് പങ്കിട്ടു</translation>
@@ -829,6 +833,7 @@
 <translation id="7547811415869834682">ഡച്ച്</translation>
 <translation id="7551643184018910560">ഷെൽഫിലേക്ക് പിൻ ചെയ്യുക</translation>
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" /> ഫോൾഡറിലെ ഫയലുകൾ ആക്‌സസ് ചെയ്യാൻ Linux ആപ്പുകൾക്ക് അനുമതി നൽകുക</translation>
+<translation id="7555339735447658365">നിങ്ങൾ നിലവിൽ ഓഫ്‌ലൈനാണ്. നിങ്ങൾ ഇന്റർനെറ്റിലേക്ക് കണക്‌റ്റ് ചെയ്യുമ്പോൾ ഫയൽ സമന്വയിപ്പിക്കൽ പുനരാരംഭിക്കും</translation>
 <translation id="7589661784326793847">ഒരു നിമിഷം കാത്തിരിക്കുക</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> ഓഫ്‌ലൈനിൽ ലഭ്യമാക്കുന്നു</translation>
 <translation id="7600126690270271294">സെർബിയൻ</translation>
@@ -871,6 +876,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">നെറ്റ്‍വര്‍ക്ക് കോണ്‍ഫിഗര്‍ ചെയ്യുന്നതിൽ പിശക്</translation>
+<translation id="7832093238954689746">ഫയൽ സമന്വയിപ്പിക്കൽ പൂർത്തിയായി. എന്റെ ഡ്രൈവ് ഫയലുകൾ ഓഫ്‌ലൈനിൽ ലഭ്യമാണ്.</translation>
 <translation id="7839804798877833423">ഈ ഫയലുകൾ ലഭ്യമാക്കുന്നതിന് ഏകദേശം <ph name="FILE_SIZE" /> മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കും.</translation>
 <translation id="7846076177841592234">തിരഞ്ഞെടുത്തത് റദ്ദാക്കുക</translation>
 <translation id="7853966320808728790">ഫ്രഞ്ച് BÉPO</translation>
@@ -919,6 +925,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">ഉപകരണ മോഡൽ</translation>
 <translation id="8223479393428528563">ഓഫ്‌ലൈൻ ഉപയോഗത്തിനായി ഈ ഫയലുകൾ സംരക്ഷിക്കാൻ, ഓൺലൈനിൽ തിരികെ വന്ന് ഫയലുകൾ റൈറ്റ് ക്ലിക്ക് ചെയ്‌ത്, <ph name="OFFLINE_CHECKBOX_NAME" /> ഓപ്‌ഷൻ തിരഞ്ഞെടുക്കുക.</translation>
+<translation id="8241139360630443550">സ്‌റ്റോറേജ് കാണുക</translation>
 <translation id="8249296373107784235">ഉപേക്ഷിക്കുക</translation>
 <translation id="8250690786522693009">ലാറ്റിന്‍‌</translation>
 <translation id="8250920743982581267">ഡോക്യുമെന്റുകൾ</translation>

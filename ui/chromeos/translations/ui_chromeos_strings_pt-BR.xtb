@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">O Google Drive não está disponível no momento. O upload será reiniciado automaticamente assim que o Google Drive estiver de volta.</translation>
 <translation id="1307931752636661898">Não é possível ver os arquivos do Linux</translation>
 <translation id="1313405956111467313">Configuração automática de proxy</translation>
+<translation id="134645005685694099">O dispositivo não tem espaço de armazenamento suficiente para manter a sincronização de arquivos ativada. Arquivos novos não serão mais sincronizados automaticamente.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">O arquivo ou o diretório não é utilizável.</translation>
 <translation id="1363028406613469049">Rastrear</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">Proxy HTTP</translation>
 <translation id="2467267713099745100">Rede <ph name="NETWORK_TYPE" />, desativada</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">Acesse seus arquivos do Google Drive off-line com a sincronização de arquivos</translation>
 <translation id="2470939964922472929">Um PIN incorreto foi digitado muitas vezes. Para configurar um novo PIN, digite a chave de desbloqueio pessoal (PUK) de oito dígitos fornecida pela sua operadora.</translation>
 <translation id="2500392669976258912">Guzerate (fonético)</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -603,6 +605,7 @@
 <translation id="5720028165859493293">O arquivo <ph name="FILE_NAME" /> foi movido para a lixeira</translation>
 <translation id="5724172041621205163">Tailandês com teclado Pattachote</translation>
 <translation id="57383366388012121">Último mês</translation>
+<translation id="575175778971367197">Não é possível sincronizar esse arquivo no momento</translation>
 <translation id="5756666464756035725">QWERTY húngaro</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> itens selecionados</translation>
 <translation id="5763377084591234761">Alemão (Suíça)</translation>
@@ -705,6 +708,7 @@
 <translation id="6558280019477628686">Ocorreu um erro. Alguns itens podem não ter sido excluídos.</translation>
 <translation id="656398493051028875">Excluindo "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Link do Google Drive</translation>
+<translation id="6588648400954570689">Configurações de sincronização de arquivos</translation>
 <translation id="6594855146910089723">Esta pasta está sendo compartilhada com o Linux e o Parallels Desktop</translation>
 <translation id="6607272825297743757">Informações do arquivo</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> pastas compartilhadas com o Parallels Desktop</translation>
@@ -829,6 +833,7 @@
 <translation id="7547811415869834682">Holandês</translation>
 <translation id="7551643184018910560">Fixar na estante</translation>
 <translation id="7553492409867692754">Conceder aos apps do Linux permissão para acessar arquivos na pasta <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">No momento, você está off-line. A sincronização de arquivos será retomada quando houver uma conexão com a Internet.</translation>
 <translation id="7589661784326793847">Aguarde um segundo</translation>
 <translation id="7592775719802218421">Disponibilizando <ph name="FILE_NAME" /> off-line</translation>
 <translation id="7600126690270271294">Sérvio</translation>
@@ -871,6 +876,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Erro ao configurar a rede</translation>
+<translation id="7832093238954689746">Sincronização de arquivos concluída. Os arquivos do Meu Drive estão disponíveis off-line.</translation>
 <translation id="7839804798877833423">A busca destes arquivos usará aproximadamente <ph name="FILE_SIZE" /> de dados móveis.</translation>
 <translation id="7846076177841592234">Cancelar seleção</translation>
 <translation id="7853966320808728790">BÉPO francês</translation>
@@ -919,6 +925,7 @@
 <translation id="8179976553408161302">Entrar</translation>
 <translation id="8193175696669055101">Modelo do dispositivo</translation>
 <translation id="8223479393428528563">Para salvar esses arquivos para uso off-line, fique on-line novamente, clique com o botão direito nos arquivos e selecione a opção <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Consultar armazenamento</translation>
 <translation id="8249296373107784235">Cancelar</translation>
 <translation id="8250690786522693009">latim</translation>
 <translation id="8250920743982581267">Documentos</translation>

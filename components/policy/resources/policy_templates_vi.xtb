@@ -434,6 +434,7 @@ Chính sách này sẽ thay thế chính sách <ph name="DEFAULT_WINDOW_PLACEMEN
           Giá trị danh sách chặn là "*" có nghĩa là tất cả tiện ích đều bị chặn trừ khi những tiện ích đó được liệt kê rõ ràng trong danh sách cho phép.
 
           Nếu bạn không đặt chính sách này, thì người dùng có thể cài đặt bất kỳ tiện ích nào trong <ph name="PRODUCT_NAME" />.</translation>
+<translation id="1392703142209771447">Biểu thức chính quy để so khớp với mã máy in.</translation>
 <translation id="1393485621820363363">Đã bật máy in kết nối với thiết bị dành cho doanh nghiệp</translation>
 <translation id="1395505489889158859">Cho phép gửi tên người dùng và tên tệp đến máy in gốc</translation>
 <translation id="1395988776118675626">Bật tính năng "Ghi nhớ mật khẩu" cho Kerberos</translation>
@@ -1798,6 +1799,13 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 
           Bạn phải chỉ định giá trị của chính sách bằng mili giây. Các giá trị được giới hạn ở mức nhỏ hơn hoặc bằng thời gian chờ khi ở chế độ tạm vắng.</translation>
 <translation id="2548572254685798999">Báo cáo thông tin Duyệt web an toàn</translation>
+<translation id="2549472870177108435">Việc đặt chính sách này sẽ đặt các quy tắc lựa chọn máy in mặc định trong <ph name="PRODUCT_NAME" />, ghi đè các quy tắc mặc định. Máy in sẽ được chọn ngay trong lần đầu tiên người dùng cố gắng in, khi <ph name="PRODUCT_NAME" /> tìm kiếm một máy in phù hợp với các thuộc tính đã chỉ định. Trong trường hợp có một máy in không hoàn toàn phù hợp, <ph name="PRODUCT_NAME" /> có thể được thiết lập để chọn máy in phù hợp bất kỳ, tuỳ theo thứ tự tìm thấy máy in.
+
+Nếu bạn không đặt chính sách này hoặc đặt thành các thuộc tính mà theo đó, không có máy in nào phù hợp, thì máy in tệp PDF tích hợp sẽ là máy in mặc định. Nếu không có máy in tệp PDF, <ph name="PRODUCT_NAME" /> sẽ đặt mặc định là không có.
+
+Hiện tại, tất cả máy in đều được phân loại là <ph name="PRINTER_TYPE_LOCAL" />. Máy in đã kết nối với <ph name="CLOUD_PRINT_NAME" /> được coi là <ph name="PRINTER_TYPE_CLOUD" />, nhưng <ph name="CLOUD_PRINT_NAME" /> không được hỗ trợ nữa.
+
+Lưu ý: Việc bạn bỏ qua một trường nghĩa là mọi giá trị đều khớp với trường cụ thể đó. Ví dụ: Nếu bạn không chỉ định idPattern thì tính năng Xem trước bản in sẽ chấp nhận mọi mã máy in. Mẫu biểu thức chính quy phải tuân theo cú pháp JavaScript RegExp và kết quả trùng khớp có phân biệt chữ hoa/chữ thường.</translation>
 <translation id="2550593661567988768">Chỉ in một mặt</translation>
 <translation id="2552318891854145040">Nếu bạn đặt chính sách này, thì danh sách dấu trang sẽ được thiết lập, trong đó mỗi dấu trang là một từ điển có khóa "<ph name="NAME" />" và "<ph name="URL_LABEL" />". Những khóa này lưu giữ tên và đích của dấu trang. Quản trị viên có thể thiết lập thư mục con bằng cách xác định một dấu trang không có khóa "<ph name="URL_LABEL" />" nhưng có khóa "<ph name="CHILDREN" />" bổ sung. Khóa này cũng có danh sách dấu trang và một số dấu trang trong đó cũng có thể là thư mục. Chrome sẽ sửa đổi các URL chưa hoàn chỉnh như thể các URL đó được gửi qua thanh địa chỉ. Ví dụ: "<ph name="GOOGLE_COM" />" trở thành "<ph name="HTTPS_GOOGLE_COM" />".
 

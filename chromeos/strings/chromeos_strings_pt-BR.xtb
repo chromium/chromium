@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">Usar par de chaves atual</translation>
 <translation id="2320295602967756579">Ativar o tema claro</translation>
 <translation id="2323506179655536734">IGNORADO</translation>
+<translation id="2324354238778375592">Flutuante</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ativar o Bluetooth para descobrir dispositivos nas proximidades</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263">Teste de <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Carregando...</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
+<translation id="3715651196924935218">Botão flutuante "Sair"</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avaliações)</translation>
 <translation id="3748026146096797577">Não conectado</translation>
 <translation id="3749289110408117711">Nome do arquivo</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4150201353443180367">Exibição</translation>
 <translation id="4155551848414053977">Confira se o scanner está ligado e disponível pela rede ou por uma conexão direta</translation>
+<translation id="4159238217853743776">Parcial</translation>
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4170180284036919717">Tirar uma foto</translation>
 <translation id="4170700058716978431">FALHA</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">Para definir ou atualizar uma conexão, acesse as <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4950314376641394653">O firmware do <ph name="DEVICE_NAME" /> foi atualizado para a versão <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">Dividir</translation>
 <translation id="4972592110715526173">mudar o modo</translation>
 <translation id="498186245079027698">Confira o scanner e tente novamente. Confirme se há armazenamento local suficiente para salvar os arquivos digitalizados.</translation>
 <translation id="4985509611418653372">Executar</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">Nome do host do servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Tela cheia</translation>
 <translation id="5142961317498132443">Autenticação</translation>
 <translation id="5154917547274118687">Memória</translation>
 <translation id="5160857336552977725">Faça login no seu <ph name="DEVICE_TYPE" /></translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">Sair</translation>
 <translation id="522307662484862935">Não incluir endereço de e-mail</translation>
 <translation id="5227902338748591677">Programação do tema escuro</translation>
+<translation id="5229344016299762883">Sair da tela cheia</translation>
 <translation id="5234764350956374838">Dispensar</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Ativar o modo de cor claro</translation>
@@ -707,6 +713,7 @@
 <translation id="6566314079205407217">Digitalização de várias páginas</translation>
 <translation id="6574762126505704998">Preencher</translation>
 <translation id="6575134580692778371">Não configurado</translation>
+<translation id="6576005492601044801">lado esquerdo</translation>
 <translation id="6579509898032828423">Usar esta foto</translation>
 <translation id="6596816719288285829">Endereço IP</translation>
 <translation id="6599673642868607614">Agradecemos seu feedback. Seu feedback nos ajuda a melhorar a experiência no Chromebook e vai ser analisado pela nossa equipe. Devido ao grande número de avisos que recebemos, não conseguimos enviar uma resposta.</translation>
@@ -812,6 +819,7 @@
 <translation id="7497215489070763236">Certificado de CA do servidor</translation>
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502658306369382406">Endereço IPv6</translation>
+<translation id="7513770521371759388">parte de baixo</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">O conteúdo de ajuda não está disponível</translation>
 <translation id="7535791657097741517">Ativar o tema claro</translation>
@@ -950,6 +958,7 @@
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Compartilhar URL:</translation>
 <translation id="8660881923941176839">libras</translation>
+<translation id="8670574982334489519">lado direito</translation>
 <translation id="8675354002693747642">Chave pré-compartilhada</translation>
 <translation id="8677859815076891398">Nenhum álbum. Crie um no <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Use as teclas de seta para a esquerda ou direita para gerenciar este recurso.</translation>
@@ -995,6 +1004,7 @@
 <translation id="8936793075252196307">Endereço IP do cliente</translation>
 <translation id="8944651180182756621">Cor do acesso rápido</translation>
 <translation id="894617464444543719">Este dispositivo é um smartphone.</translation>
+<translation id="8950424402482976779">parte de cima</translation>
 <translation id="8968751544471797276">Taxa de carregamento</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
 <translation id="8983038754672563810">HSPA</translation>

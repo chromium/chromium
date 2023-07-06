@@ -311,6 +311,7 @@
 <translation id="1244265436519979884">Учурда Linux калыбына келтирилүүдө</translation>
 <translation id="1244303850296295656">Кеңейтүү катасы</translation>
 <translation id="1244917379075403655">“Параметрлерди” чыкылдатыңыз</translation>
+<translation id="1245331638296910488">Microsoft 365'те ачканда файлдар OneDrive'га өткөрүлөт</translation>
 <translation id="1245628370644070008">Түзмөктөгү маалыматты калыбына келтирүү</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> орнотулбай койду: Сүрөттүн URL'инде <ph name="HTTP_ERROR" /> ката коду чыкты. Администраторуңузга кайрылыңыз.</translation>
 <translation id="1247372569136754018">Микрофон (ички)</translation>
@@ -672,6 +673,7 @@
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" кеңейтүүсү эми издөө үчүн <ph name="SEARCH_PROVIDER_DOMAIN" /> колдонула тургандай кылып өзгөртүп койду</translation>
 <translation id="1552752544932680961">Кеңейтүүнү башкаруу</translation>
 <translation id="1553538517812678578">чексиз</translation>
+<translation id="1553947773881524342">Chromebook'тагы Microsoft 365 жөнүндө <ph name="LINK_BEGIN" />кеңири маалымат<ph name="LINK_END" />.</translation>
 <translation id="1555130319947370107">Көк</translation>
 <translation id="1556127816860282890">Фондогу аракеттер жана жылмакай сыдыруу сыяктуу визуалдык кубулуштар чектелиши мүмкүн</translation>
 <translation id="1556537182262721003">Кеңейтүү каталогу профилге жылган жок.</translation>
@@ -1129,6 +1131,7 @@
 <translation id="1904580727789512086">Сиз кирген URL даректери Google аккаунтуңузга сакталат</translation>
 <translation id="1905375423839394163">Chromebook түзмөгүнүн аталышы</translation>
 <translation id="1906181697255754968">Сайттар адатта ишиңизди автоматтык түрдө сактоо сыяктуу функциялар үчүн түзмөгүңүздөгү файлдарды жана папкаларды колдонот</translation>
+<translation id="1906488504371069394">Дагы башка кеңейтүүлөрдү жана темаларды <ph name="BEGIN_LINK" />Chrome Интернет дүкөнүнөн<ph name="END_LINK" /> табасыз</translation>
 <translation id="1907044622262489040">Айтып териңиз. Search + D баскычтарын басып, сүйлөп баштаңыз.</translation>
 <translation id="1908591798274282246">Жабылган топту кайра ачуу</translation>
 <translation id="1909880997794698664">Бул тузмөктү чын эле биротоло киоск режиминде калтырасызбы?</translation>
@@ -1943,6 +1946,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2561211427862644160">Бардык кыстармаларыңыз бул жерде</translation>
 <translation id="2564520396658920462">AppleScript аркылуу JavaScript файлдарын иштетүү өчүрүлгөн. Аны күйгүзүү үчүн меню тилкесинен Көрүнүш &gt; Иштеп чыгуучу &gt; Apple Events'теги JavaScript'ке уруксат берүү дегенди тандаңыз. Кеңири маалымат: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Жакшыртылган орфографиялык текшерүү</translation>
+<translation id="2565214867520763227">Экрандагыны окугучту күйгүзүңүз</translation>
 <translation id="2568694057933302218">Жашыруун режимде сайттар cookie файлдарыңыз аркылуу сиз көргөн вебсайттарды көрө албайт. Аракеттериңиз жарнамаларды жекелештирүү сыяктуу нерселер үчүн колдонулбайт. Функциялар айрым сайттарда иштебеши мүмкүн.</translation>
 <translation id="2568774940984945469">Маалымат тилкесинин контейнери</translation>
 <translation id="2569972178052279830">Чекене сатуучунун аталышы</translation>
@@ -2575,6 +2579,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3089948625237571254">Видеодогу кадрды көчүрүү</translation>
 <translation id="3090227230165225418">Жүктөп алуу билдирмелерин жарыялоо</translation>
 <translation id="3090589793601454425">Өткөрүлбөсүн</translation>
+<translation id="309079592386854321">Принтерди Chromebook менен бир Wi-Fi тармагына туташтырып же USB кабелин колдонуңуз. <ph name="LINK_BEGIN" />Шайкештик жөнүндө кеңири маалымат<ph name="LINK_END" />.</translation>
 <translation id="3090819949319990166">Тышкы crx файлы <ph name="TEMP_CRX_FILE" /> ичине көчүрүлбөй жатат.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" жупташты</translation>
 <translation id="3093714882666365141">Сайттар төлөм иштеткичтерди орното албасын</translation>
@@ -4089,6 +4094,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4410545552906060960">Түзмөгүңүздү сырсөздүн ордуна PIN код менен ачыңыз. PIN кодду кийинчерээк Параметрлер бөлүмүнөн жөндөп алыңыз.</translation>
 <translation id="4411578466613447185">Кодго кол койгуч</translation>
 <translation id="4411719918614785832">Бул киргизүүчү ачкычтар ушул компьютердеги Windows Hello функциясында сакталат. Алар Google аккаунтуңузда сакталбайт.</translation>
+<translation id="4412275763838812196">ChromeVox'ту (ChromeOS'тогу экрандагыны окугуч) негизинен азиз жана көзү начар көргөн адамдар колдонот. ChromeVox'ту күйгүзүү үчүн боштук баскычын басыңыз. ChromeVox иштетилгенде, бул функция тууралуу кыскача маалымат аласыз.</translation>
 <translation id="4412632005703201014">Chrome колдонмолору Прогрессивдүү веб колдонмолоруна көчүрүлүп жатат. Бул Chrome колдонмосун серепчиңизге уюмуңуз орноткон. Колдонмолордун тизмесинен Прогрессивдүү веб колдонмону ачуу үчүн, адегенде администратор менен байланышып, Chrome колдонмосун чыгарып салууну сураңыз. Азырынча <ph name="EXTENSION_LAUNCH_URL" /> сайтына өтүп, <ph name="EXTENSION_NAME" /> кызматын Интернетте ачыңыз.</translation>
 <translation id="4412698727486357573">Жардам борбору</translation>
 <translation id="4412992751769744546">Үчнчү жактн кукилрне урукст брүү</translation>
@@ -4300,6 +4306,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4585793705637313973">Баракты түзөтүү</translation>
 <translation id="4586275095964870617"><ph name="URL" /> шилтемеси кошумча серепчиде ачылган жок. Система администраторуңузга кайрылыңыз.</translation>
 <translation id="4587589328781138893">Сайттар</translation>
+<translation id="4588882777927162244">ChromeVox'ту (ChromeOS Flex'теги экрандагыны окугуч) негизинен азиз жана көзү начар көргөн адамдар колдонот. ChromeVox'ту күйгүзүү үчүн боштук баскычын басыңыз. ChromeVox иштетилгенде, бул функция тууралуу кыскача маалымат аласыз.</translation>
 <translation id="4589713469967853491">Таржымалдар "Жүктөлүп алынгандар" каталогуна ийгиликтүү жазылды.</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> аккаунтунда сакталган түзмөктөр жок</translation>
 <translation id="4592525994536856567">Серептөө жана издөө тезирээк болот.</translation>
@@ -5083,6 +5090,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5284445933715251131">Жүктөп алууну улантуу</translation>
 <translation id="5285635972691565180"><ph name="DISPLAY_ID" /> көрсөтүү</translation>
 <translation id="5286194356314741248">Текшерилүүдө</translation>
+<translation id="5287073652040102781">ChromeVox'ту (ChromeOS Flex'теги экрандагыны окугуч) негизинен азиз жана көзү начар көргөн адамдар колдонот. ChromeVox'ту күйгүзүү үчүн эки үн баскычын беш секунд коё бербей басып туруңуз. ChromeVox иштетилгенде, бул функция тууралуу кыскача маалымат аласыз.</translation>
 <translation id="5287425679749926365">Каттоо эсептериңиз</translation>
 <translation id="5288106344236929384">Дагы башка аракеттер, <ph name="DOMAIN" /> домениндеги <ph name="USERNAME" /> үчүн мүмкүндүк алуу ачкычынын параметрлери</translation>
 <translation id="5288678174502918605">Жабылган терезени кай&amp;ра ачуу</translation>
@@ -5631,6 +5639,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> Windows® колдонмолорун Chromebook'та иштетет. Аны орнотуп алуу үчүн <ph name="MINIMUM_SPACE" /> орун керек.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Барак жооп бергиче күтө турсаңыз же андан чыгып кетсеңиз болот.}other{Барактар жооп бергиче күтө турсаңыз же алардан чыгып кетсеңиз болот.}}</translation>
 <translation id="5772737134857645901"><ph name="FILE_NAME" /> <ph name="STATUS" />. Кошумча маалымат</translation>
+<translation id="577313026359983030">Менин кеңейтүүлөрүм</translation>
 <translation id="5774295353725270860">Файлдар колдонмосун ачуу</translation>
 <translation id="5776450228446082914">Вебсайттардын тизмеси эки серепчиде тең ачылат.</translation>
 <translation id="5776571780337000608">Бул колдонмодо колдоого алынган файлдарды файл серепчисинде же башка колдонмолордо ачып, түзөтө аласыз. Бул колдонмодо демейки шартта кайсы файлдар ачыларын көзөмөлдөө үчүн <ph name="BEGIN_LINK" />түзмөктө демейки колдонмолорду жөндөө жөнүндө билип алыңыз<ph name="END_LINK" />.</translation>
@@ -6833,6 +6842,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6798780071646309401">Caps Lock күйүк</translation>
 <translation id="6798954102094737107">Плагин: <ph name="PLUGIN_NAME" /></translation>
 <translation id="6801129617625983991">Жалпы жөндөөлөр</translation>
+<translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Бул кеңейтүү бул сайтты окуп же өзгөртсүнбү?}other{Бул кеңейтүүлөр бул сайтты окуп же өзгөртсүнбү?}}</translation>
 <translation id="6801435275744557998">Сенсордук экранды калибрлөө</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="680488281839478944">"<ph name="DEFAULT_VM_NAME" />" деп аталган виртуалдык машина бар</translation>
@@ -8039,6 +8049,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7800518121066352902">С&amp;аат жебесине каршы айлантуу</translation>
 <translation id="7801679634091975683">Бул жерде киргизген өзгөртүүлөрүңүз Lacros Chrome серепчисине карата гана колдонулат. Chrome серепчисинин параметрлерине өзгөрүүлөрдү киргизүү үчүн Chrome серепчисин ачып, параметрлерге өтүңүз.</translation>
 <translation id="780301667611848630">Жок, рахмат</translation>
+<translation id="7803267169006795990">ChromeVox'ту (ChromeOS'тогу экрандагыны окугуч) негизинен азиз жана көзү начар көргөн адамдар колдонот. ChromeVox'ту күйгүзүү үчүн эки үн баскычын беш секунд коё бербей басып туруңуз. ChromeVox иштетилгенде, бул функция тууралуу кыскача маалымат аласыз.</translation>
 <translation id="7803657407897251194">Android түзмөгүңүздө жөнжөөнү улантуу үчүн <ph name="DEVICE_TYPE" /> түзмөгүңүздү тармакка туташтырыңыз</translation>
 <translation id="7804072833593604762">Өтмөк жабылды</translation>
 <translation id="7805768142964895445">Статусу</translation>
@@ -9588,6 +9599,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9108808586816295166">Коопсуз DNS ар дайым жеткиликтүү болбошу мүмкүн</translation>
 <translation id="9109122242323516435">Орун бошотуу үчүн түзмөктүн сактагычынан файлдарды жок кылыңыз.</translation>
 <translation id="9109283579179481106">Мобилдик Интернетке туташуу</translation>
+<translation id="9110739391922513676">Файлдарды ачуу үчүн Microsoft 365'ти тууралаңыз</translation>
 <translation id="9111102763498581341">Кулпуну ачуу</translation>
 <translation id="9111305600911828693">Уруксаттама жөндөлгөн жок</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
@@ -9710,6 +9722,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9220820413868316583">Көтөрүп, кайталап көрүңүз.</translation>
 <translation id="922152298093051471">Chrome'ду ыңгайлаштыруу</translation>
 <translation id="923467487918828349">Баарын көрсөтүү</translation>
+<translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Аны тескөө үчүн "Кеңейтүүлөр" барагын ачыңыз}other{Аларды тескөө үчүн "Кеңейтүүлөр" барагын ачыңыз}}</translation>
 <translation id="924818813611903184">ChromeOS параметрлеринен тилдерди башкаруу</translation>
 <translation id="925270020047573546">Бул түзмөктө компьютердин аудиосун тышкы экранга чыгаруу колдоого алынган эмес.</translation>
 <translation id="930268624053534560">Убакыт мөөрлөрүнүн чоо-жайы</translation>

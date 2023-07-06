@@ -41,9 +41,11 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">ഡെസ്‌ക്‌ടോപ്പ് ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> ഭാഷയിലുള്ള പേജുകൾ ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
+<translation id="1070333806075222467">മെറ്റൽ (ഗ്ലോസി)</translation>
 <translation id="1070853536588271387">ഹൈബ്രിഡ്, ഇതര ഇന്ധന വാഹനങ്ങൾ</translation>
 <translation id="1070901266639972381">രാത്രി</translation>
 <translation id="1072594122896439679">സംഗീതവും ഓഡിയോയും</translation>
+<translation id="1073690811593784042">ഗ്ലാസ് (നിറമുള്ളത്)</translation>
 <translation id="1074497978438210769">സുരക്ഷിതമല്ല</translation>
 <translation id="1075079914415273530">കൃഷിയും വനപരിപാലനവും</translation>
 <translation id="1080116354587839789">അനുയോജ്യമായ വീതിയിലാക്കുക</translation>
@@ -66,6 +68,7 @@
 <translation id="1125573121925420732">വെബ്‌സൈറ്റുകൾ അവയുടെ സുരക്ഷ അപ്‌ഡേറ്റ് ചെയ്യുന്ന സമയത്ത് പൊതുവെ മുന്നറിയിപ്പുകൾ കാണിച്ചേക്കാം. ഇത് താമസിയാതെ മെച്ചപ്പെടും.</translation>
 <translation id="112840717907525620">നയ കാഷെ ശരി</translation>
 <translation id="1131264053432022307">നിങ്ങൾ പകർത്തിയ ചിത്രം</translation>
+<translation id="1142713751288681188">പേപ്പർ തരം</translation>
 <translation id="1142846828089312304">അദൃശ്യ മോഡിൽ മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="1147769322402934017">ഓൺലൈൻ ചിത്ര ഗാലറികൾ</translation>
 <translation id="1150565364351027703">സൺഗ്ലാസുകൾ</translation>
@@ -84,12 +87,14 @@
 
 അല്ലാത്തപക്ഷം, നിങ്ങളുടെ സ്വകാര്യതാ ക്രമീകരണം ഇത് ബ്ലോക്ക് ചെയ്യും. നിങ്ങൾ സംവദിക്കുന്ന ഉള്ളടക്കം ശരിയായി പ്രവർത്തിക്കാൻ ഇത് സഹായിക്കും, എന്നാൽ <ph name="EMBEDDED_URL" /> എന്നതിനെ നിങ്ങളുടെ പ്രവർത്തനം ട്രാക്ക് ചെയ്യാനും ഇത് അനുവദിച്ചേക്കാം.</translation>
 <translation id="1175364870820465910">&amp;അച്ചടിക്കൂ...</translation>
+<translation id="1175393348063009671">ഫോട്ടോ (തിളക്കമില്ലാത്തത്)</translation>
 <translation id="1175875016430184367">വലതുവശത്ത് മൂന്ന് തവണ സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="1177802847690410663">വെബ് ബ്രൗസറുകൾ</translation>
 <translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1178821169867863726">12 x 16 ഇഞ്ച്</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1186201132766001848">പാസ്‌വേഡ് പരിശോധിക്കൂ</translation>
+<translation id="1190491977647722791">പേപ്പർ (ഹെവിവെയിറ്റ്)</translation>
 <translation id="1195073053842921378">ഈ വിലാസം ഈ ഉപകരണത്തിൽ നിന്ന് ഇല്ലാതാക്കും</translation>
 <translation id="1195558154361252544">നിങ്ങൾ അനുവദിക്കുന്ന സൈറ്റുകൾക്ക് ഒഴികെ മറ്റ് എല്ലാ സൈറ്റുകൾക്കും അറിയിപ്പുകൾ സ്വയമേവ ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="1197088940767939838">ഓറഞ്ച്</translation>
@@ -115,6 +120,7 @@
 <translation id="124116460088058876">കൂടുതൽ ഭാഷകൾ</translation>
 <translation id="1243027604378859286">രചയിതാവ്:</translation>
 <translation id="1246424317317450637">ബോള്‍ഡ്</translation>
+<translation id="1247030632403369975">അലുമിനിയം</translation>
 <translation id="1250759482327835220">അടുത്ത പ്രാവശ്യം കൂടുതൽ വേഗത്തിൽ പണമടയ്ക്കാൻ, നിങ്ങളുടെ Google അക്കൗണ്ടിൽ കാർഡ്, പേര്, ബില്ലിംഗ് വിലാസം എന്നിവ സംരക്ഷിക്കുക.</translation>
 <translation id="1252209483516427155">ഔട്ടർവെയർ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (സമന്വയിപ്പിച്ചു)</translation>
@@ -220,6 +226,7 @@
 <translation id="1428146450423315676">സ്റ്റാക്കർ 7</translation>
 <translation id="142858679511221695">ക്ലൗഡ് ഉപയോക്താവ്</translation>
 <translation id="1428729058023778569">ഈ സൈറ്റ് HTTPS പിന്തുണയ്‌ക്കാത്തതിനാലാണ് നിങ്ങൾ ഈ മുന്നറിയിപ്പ് കാണുന്നത്. <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1429080515485835353">സെൽഫ് അഡ്ഡിസിവ് ഫിലിം</translation>
 <translation id="1430915738399379752">പ്രിന്റ് ചെയ്യുക</translation>
 <translation id="1432187715652018471">സേവനം കൈകാര്യം ചെയ്യുന്ന സംവിധാനം ഇൻസ്റ്റാൾ ചെയ്യാൻ ഈ പേജ് താൽപ്പര്യപ്പെടുന്നു.</translation>
 <translation id="1432581352905426595">തിരയൽ യന്ത്രം മാനേജ് ചെയ്യുക</translation>
@@ -256,6 +263,7 @@
 <translation id="14938948731065592">കമ്പ്യൂട്ടർ പെരിഫറലുകൾ</translation>
 <translation id="1495677929897281669">ടാബിലേക്ക് മടങ്ങുക</translation>
 <translation id="1501859676467574491">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ നിന്ന് കാർഡുകൾ കാണിക്കുക</translation>
+<translation id="1504042622576912555">പുല്ലാങ്കുഴൽ</translation>
 <translation id="150536342253161096">പ്രാദേശിക വാർത്ത</translation>
 <translation id="1507202001669085618">&lt;p&gt;ഓൺലൈൻ ആകുന്നതിന് സൈൻ ഇൻ ചെയ്യേണ്ടി വരുന്ന ഒരു വൈഫൈ പോർട്ടലാണ് നിങ്ങൾ ഉപയോഗിക്കുന്നതെങ്കിൽ, നിങ്ങൾ ഈ പിശക് കാണും.&lt;/p&gt;
     &lt;p&gt;പിശക് പരിഹരിക്കാൻ, നിങ്ങൾ തുറക്കാൻ ശ്രമിക്കുന്ന പേജിൽ &lt;strong&gt;കണക്‌റ്റ് ചെയ്യുക&lt;/strong&gt; ക്ലിക്ക് ചെയ്യുക.&lt;/p&gt;</translation>
@@ -280,6 +288,7 @@
 <translation id="1553152622374372421">വിന്റർ സ്‌പോർട്‌സ്</translation>
 <translation id="1553358976309200471">Chrome അപ്‌ഡേറ്റുചെയ്യുക</translation>
 <translation id="1555130319947370107">നീല</translation>
+<translation id="1559231233244409191">കാർഡ്ബോർഡ് (ട്രിപ്പിൾ വാൾ)</translation>
 <translation id="1559447966090556585">അറിയിപ്പുകൾ സ്വീകരിക്കാമോ?</translation>
 <translation id="1559486004335285648">പേയ്മെന്റ് വിവരങ്ങൾ സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="1559528461873125649">അത്തരത്തിലുള്ള ഫയലോ ഡയറക്റ്ററിയോ ഇല്ല</translation>
@@ -337,6 +346,7 @@
 <translation id="1658918301167915956">Bluetooth ഉപകരണങ്ങൾ</translation>
 <translation id="1662550410081243962">പേയ്‌മെന്റ് രീതികൾ സംരക്ഷിച്ച് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="1663943134801823270">കാർഡുകളും വിലാസങ്ങളും Chrome-ൽ നിന്നുള്ളതാണ്. നിങ്ങൾക്ക് അവ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> മാനേജ് ചെയ്യാം.</translation>
+<translation id="1664389769577564606">ഫ്ലെക്‌സോ ഫോട്ടോപോളിമർ</translation>
 <translation id="1668071460721346172">ഇമെയിൽ നേടുക</translation>
 <translation id="1671391448414634642">ഇനിമുതൽ <ph name="SOURCE_LANGUAGE" /> ഭാഷയിലുള്ള പേജുകൾ <ph name="TARGET_LANGUAGE" /> ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യപ്പെടും.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> എന്നതിൽ നിന്ന് <ph name="TARGET_LANGUAGE" /> എന്നതിലേക്ക്</translation>
@@ -392,6 +402,7 @@
 <translation id="1763864636252898013">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷ സർട്ടിഫിക്കറ്റിനെ നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഓപ്പറേറ്റിംഗ് സിസ്‌റ്റത്തിന് പരിചയമില്ല. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium-ലെ അദൃശ്യ മോഡിനെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="1777422078676229054">ഫോട്ടോ (ആർക്കൈവൽ)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Google അക്കൗണ്ടിലെ വിവരങ്ങളും സ്വകാര്യതയും സുരക്ഷയും മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
@@ -421,6 +432,8 @@
 <translation id="1838374766361614909">തിരയൽ മായ്ക്കുക</translation>
 <translation id="1839551713262164453">നയ മൂല്യങ്ങളുടെ സാധൂകരണം പിശകുകളോടെ പരാജയപ്പെട്ടു</translation>
 <translation id="1842969606798536927">പണമടയ്‌ക്കുക</translation>
+<translation id="1846432862466000825">പ്ലാസ്റ്റിക് (ആർക്കൈവൽ)</translation>
+<translation id="1848982255014129637">ഫോട്ടോ (ഹൈ ഗ്ലോസ്)</translation>
 <translation id="1855370856221982654">ബോക്സിംഗ്</translation>
 <translation id="1856713167556118146">അദൃശ്യ മോഡ് ചെയ്യാത്ത കാര്യങ്ങൾ</translation>
 <translation id="1862788842908766795">എക്‌സിക്യൂട്ടിവ്, മാനേജ്‌മെ‌ന്റ് ജോലികൾ</translation>
@@ -474,18 +487,21 @@
 <translation id="1992184150316179036">റേഡിയോ നിയന്ത്രണവും മോഡലിംഗും</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">നിങ്ങളുടെ ലോക്കൽ കമ്പ്യൂട്ടറിൽ ശാശ്വതമായി വലിയ ഡാറ്റ സംഭരിക്കാൻ <ph name="URL" />ആഗ്രഹിക്കുന്നു</translation>
+<translation id="1997774360448418989">പേപ്പർ (ലൈറ്റ്‌വെയിറ്റ്)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{കൂടാതെ 1 കൂടി}other{എന്നിവയും # എണ്ണവും കൂടി}}</translation>
 <translation id="2003709556000175978">നിങ്ങളുടെ പാസ്‌വേഡ് ഇപ്പോൾ തന്നെ റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="2003775180883135320">മുകളിൽ നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="2009942480257059311">'ഇവന്റ് സൃഷ്ടിക്കുക' ബട്ടൺ, Google Calendar-ൽ പുതിയൊരു ഇവന്റ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ സജീവമാക്കുക</translation>
 <translation id="201174227998721785">Chrome ക്രമീകരണത്തിൽ സൈറ്റുകളിലുടനീളം സംഭരിച്ചിരിക്കുന്ന അനുമതികളും ഡാറ്റയും മാനേജ് ചെയ്യുക</translation>
 <translation id="2012276282211112603">ഇപ്പോൾ കാണിക്കാൻ വിഷയങ്ങളൊന്നുമില്ല</translation>
+<translation id="2018769312928511665">ഫാബ്രിക് (ഗ്ലോസി)</translation>
 <translation id="2021333772895814435">ഇനിപ്പറയുന്നവ ഉപകരണങ്ങളിലുടനീളം സമന്വയിപ്പിക്കുന്നത് ഈ നയം സ്വയമേവ പ്രവർത്തനരഹിതമാക്കുന്നു: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 x 19 ഇഞ്ച്</translation>
 <translation id="2022815493835288714">പുതിയ പേയ്‌മെന്റ് ക്രമീകരണത്തെക്കുറിച്ചുള്ള മുന്നറിയിപ്പ് തുറന്നു</translation>
 <translation id="2025115093177348061">അനുബന്ധയാഥാർത്ഥ്യം</translation>
 <translation id="2025186561304664664">പ്രോക്സി സ്വയമേവ കോൺഫിഗർ ചെയ്യാൻ സജ്ജമാക്കി.</translation>
 <translation id="2025891858974379949">സുരക്ഷിതമല്ലാത്ത ഉള്ളടക്കം</translation>
+<translation id="2027465737841872819">പ്ലാസ്റ്റിക്</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />പ്രോക്‌സിയും ഫയർവാളും പരിശോധിക്കുന്നു<ph name="END_LINK" /></translation>
 <translation id="2034971124472263449">എന്തായാലും സംരക്ഷിക്കുക</translation>
 <translation id="2035400064145347639">യാത്രാ ഗൈഡുകളും യാത്രാ വിവരണങ്ങളും</translation>
@@ -589,6 +605,7 @@
 <translation id="2225927550500503913">വെർച്വൽ കാർഡ് ഓണാക്കി</translation>
 <translation id="2226636330183131181">വൈഫൈ നെറ്റ്‌വർക്കിലേക്ക് <ph name="BEGIN_LINK" />സൈൻ ഇൻ ചെയ്യുന്നു<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">ഈ വിലാസം നിലവിൽ Chrome-ൽ സംരക്ഷിച്ചിരിക്കുന്നു. Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാൻ, ഇത് നിങ്ങളുടെ <ph name="ACCOUNT" /> എന്ന Google Account-ൽ സംരക്ഷിക്കുക.</translation>
+<translation id="2233745931693710080">കോംപാക്റ്റ് ഡിസ്‌ക്</translation>
 <translation id="2239100178324503013">ഇപ്പോൾ അയയ്‌ക്കുക</translation>
 <translation id="2241693394036365668">ഫയൽ ഡൗൺലോഡ് ചെയ്യുമ്പോൾ</translation>
 <translation id="2246264294482514010">10 x 12 ഇഞ്ച്</translation>
@@ -667,6 +684,7 @@
 <translation id="2413155254802890957">പഴയവ</translation>
 <translation id="2413528052993050574">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; സെർവറിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ് റദ്ദാക്കിയിരിക്കാം. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="2414886740292270097">ഇരുണ്ടത്</translation>
+<translation id="2429716554270894715">ഫാബ്രിക് (വാട്ടർപ്രൂഫ്)</translation>
 <translation id="2436186046335138073">എല്ലാ <ph name="PROTOCOL" /> ലിങ്കുകളും തുറക്കാൻ <ph name="HANDLER_HOSTNAME" /> എന്നതിനെ അനുവദിക്കണോ?</translation>
 <translation id="2438874542388153331">വലതുവശത്ത് നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="2441854154602066476">ടച്ച് ചെയ്യുമ്പോൾ പൂരിപ്പിക്കാൻ ലഭ്യമായ പേയ്‌മെന്റ് രീതികൾ. കീബോർഡ് മറച്ചിരിക്കുന്നു.</translation>
@@ -680,6 +698,7 @@
 <translation id="2467272921457885625">ഉപകരണ ഹാർഡ്‌വെയർ സവിശേഷതകളും CPU/RAM ഉപയോഗ ചരിത്രം പോലുള്ള സ്ഥിതിവിവരക്കണക്കുകളും</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്യുന്നു<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-N ക്രമത്തിൽ</translation>
+<translation id="24699311393038040">പേപ്പർ (കോട്ട് ചെയ്തത്)</translation>
 <translation id="2470767536994572628">നിങ്ങൾ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യുമ്പോൾ, ഈ ഡോക്യുമെന്റ് ഒറ്റ പേജ് കാഴ്ചയിലേക്കും അതിന്റെ ഒറിജിനൽ റൊട്ടേഷനിലേക്കും മടങ്ങുന്നു</translation>
 <translation id="2479410451996844060">തിരയൽ URL അസാധുവാണ്.</translation>
 <translation id="2480300195898055381">നിങ്ങളുടെ <ph name="USER_EMAIL" /> എന്ന Google അക്കൗണ്ടിൽ</translation>
@@ -689,7 +708,9 @@
 <translation id="2491414235131909199">ഒരു വിപുലീകരണം ഈ പേജ് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="2495083838625180221">JSON പാർസർ</translation>
 <translation id="2498091847651709837">പുതിയ കാർഡ് സ്‌കാൻ ചെയ്യുക</translation>
+<translation id="2501270939904835585">ലേബലുകൾ (സാറ്റിൻ)</translation>
 <translation id="2501278716633472235">പിന്നോട്ട് പോകുക</translation>
+<translation id="250346157641628208">പേപ്പർ (ഇങ്ക്‌ജെറ്റ്)</translation>
 <translation id="2505268675989099013">അക്കൗണ്ട് പരിരക്ഷിക്കുക</translation>
 <translation id="2509167091171468975">ഭക്ഷണ, പലചരക്ക് ചില്ലറവ്യാപാരികൾ</translation>
 <translation id="2512101340618156538">അനുവദനീയമല്ല (ഡിഫോൾട്ട്)</translation>
@@ -725,6 +746,7 @@
 <translation id="255497580849974774">അപ്‌ഡേറ്റ് ചെയ്യുന്ന സമയത്ത് നിങ്ങളുടെ ഉപകരണം ഒരു ചാർജറുമായി കണക്‌റ്റ് ചെയ്‌ത് വെക്കുക.</translation>
 <translation id="2556876185419854533">&amp;എഡിറ്റുചെയ്യുന്നത് പഴയപടിയാക്കുക</translation>
 <translation id="2557417190997681027">ബിസിനസ് യാത്ര</translation>
+<translation id="2559566667529177711">മൾട്ടി ലെയർ</translation>
 <translation id="2562087035394240049">എങ്ങനെ ചെയ്യാം, DIY, വിദഗ്‌ദ്ധ ഉള്ളടക്കം</translation>
 <translation id="2563042576090522782">ഹണിമൂണുകൾ, റൊമാന്റിക് യാത്രകൾ</translation>
 <translation id="2570734079541893434">ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
@@ -755,6 +777,7 @@
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-ന്‍റെ സെർവർ IP വിലാസം കണ്ടെത്താനായില്ല.</translation>
 <translation id="2639739919103226564">നില:</translation>
 <translation id="2643134278432436513">മുടി പരിചരണം</translation>
+<translation id="2647086987482648627">ഫാബ്രിക് (സെമി ഗ്ലോസ്)</translation>
 <translation id="2647852283046201479">സ്‌ട്രാറ്റജി ഗെയിമുകൾ</translation>
 <translation id="264810637653812429">അനുയോജ്യമായ ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -785,6 +808,7 @@
 <translation id="2701514975700770343">ഫേസ് ഡൗൺ</translation>
 <translation id="2702592986366989640">കുറഞ്ഞ നിരക്കുള്ള ഓപ്ഷൻ</translation>
 <translation id="2702801445560668637">വായനാ ലിസ്റ്റ്</translation>
+<translation id="270415722347413271">ഒപ്റ്റിക്കൽ ഡിസ്‌ക് (തിളക്കമില്ലാത്തത്)</translation>
 <translation id="2704283930420550640">മൂല്യം ഫോർമാറ്റുമായി പൊരുത്തപ്പെടുന്നില്ല.</translation>
 <translation id="2704606927547763573">പകർത്തി</translation>
 <translation id="2705137772291741111">ഈ സൈറ്റിന്റെ സംരക്ഷിച്ച (കാഷെ ചെയ്‌ത) പതിപ്പ് വായിക്കാനാകാത്തതാണ്.</translation>
@@ -793,6 +817,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പേയ്‌മെന്റുകളും ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങളും മാനേജ് ചെയ്യാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="2715808615350965923">സൂപ്പർ A</translation>
 <translation id="271663710482723385">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| അമർത്തുക</translation>
+<translation id="2717336592027046789">റോൾ</translation>
 <translation id="2718207025093645426">മാനേജ് ചെയ്യുന്ന ഉപയോക്താവ് അല്ലെങ്കിൽ ഉപകരണത്തിൽ നയമൊന്നും ലോഡ് ചെയ്‌തിട്ടില്ല.</translation>
 <translation id="2721148159707890343">അഭ്യർത്ഥന വിജയിച്ചു</translation>
 <translation id="2722622039067384533">ലിവിംഗ് റൂം ഫർണിച്ചർ</translation>
@@ -821,6 +846,7 @@
 <translation id="2786008859124691917">സൈക്കിളുകളും ആക്‌സസറികളും</translation>
 <translation id="2792012897584536778">ഈ ഉപകരണത്തിന്റെ അഡ്‌മിൻമാർ സുരക്ഷാ സർട്ടിഫിക്കറ്റുകൾ സജ്ജീകരിച്ചിട്ടുണ്ട്, നിങ്ങൾ സന്ദർശിക്കുന്ന വെബ്‌സൈറ്റുകളുടെ ഉള്ളടക്കം കാണാൻ അവ അവരെ അനുവദിച്ചേക്കാം.</translation>
 <translation id="2794233252405721443">സൈറ്റ് ബ്ലോക്ക് ചെയ്‌തു</translation>
+<translation id="2794629552137076216">ഗ്ലാസ് (സർഫസ് ചെയ്തത്)</translation>
 <translation id="2799020568854403057">നിങ്ങൾ പോകുന്ന സൈറ്റിൽ ദോഷകരമായ ആപ്പുകളുണ്ട്</translation>
 <translation id="2799223571221894425">വീണ്ടും സമാരംഭിക്കുക</translation>
 <translation id="2803306138276472711"><ph name="SITE" /> എന്നതിൽ Google സുരക്ഷിത ബ്രൗസിംഗ് ഈയിടെ <ph name="BEGIN_LINK" />മാൽവെയർ കണ്ടെത്തി<ph name="END_LINK" />. സാധാരണ നിലയിൽ സുരക്ഷിതമായ വെബ്സൈറ്റുകളിൽ ചിലപ്പോൾ മാൽവെയർ ഉണ്ടായേക്കാം.</translation>
@@ -870,6 +896,7 @@
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> എണ്ണവും}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> എണ്ണവും}}</translation>
 <translation id="2930577230479659665">ഓരോ പകർപ്പിന് ശേഷവും ട്രിം ചെയ്യുക</translation>
 <translation id="2932085390869194046">പാസ്‌വേഡ് നിർദ്ദേശിക്കുക...</translation>
+<translation id="2933624813161016821">എംബോയിസിംഗ് ഫോയിൽ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ലിങ്കുകൾ തുറക്കുക</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 ഇഞ്ച്</translation>
 <translation id="2941952326391522266">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; <ph name="DOMAIN2" /> എന്നതിൽ നിന്നുള്ളതാണ് അതിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
@@ -929,6 +956,7 @@
 <translation id="3082007635241601060">വ്യക്തിപരമാക്കിയ കിഴിവുകൾ ലഭ്യമാകുമ്പോൾ അവ കണ്ടെത്തുന്നതിന് നിങ്ങളുടെ കാർട്ടുകൾ ഉപയോഗിക്കാൻ Google-നെ അനുവദിക്കുക</translation>
 <translation id="3086579638707268289">വെബിലുള്ള നിങ്ങളുടെ ആക്റ്റിവിറ്റി നിരീക്ഷണത്തിലാണ്</translation>
 <translation id="3087734570205094154">താഴെ</translation>
+<translation id="3090667236485488075">ഗ്ലാസ്</translation>
 <translation id="3095940652251934233">പ്രസ്‌താവന</translation>
 <translation id="3096195745018397576">കുട്ടികൾക്കുള്ള വസ്‌ത്രം</translation>
 <translation id="3098513225387949945">പ്രവർത്തനരഹിതമാക്കൽ ലിസ്റ്റിൽ '*' എന്നതിന് സമമായ ഒരു പാറ്റേൺ ഉള്ളതിനാൽ അവഗണിച്ചു, ഇത് നയം പ്രവർത്തനരഹിതമാക്കുന്നതിന് തുല്യമാണ്.</translation>
@@ -947,7 +975,9 @@
 <translation id="3119689199889622589">ജൈവ, പ്രകൃതിദത്ത ഭക്ഷണം</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />കണക്‌റ്റിവിറ്റി ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
+<translation id="3120807611504813890">എൻവലപ്പ് (ലൈറ്റ്‌വെയിറ്റ്)</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> എന്നതിലേക്ക് പോകുക</translation>
+<translation id="3126023634486644099">ലേബലുകൾ (ശാശ്വതം)</translation>
 <translation id="3140646734028448730">ബിസിനസ് സേവനങ്ങൾ</translation>
 <translation id="3141093262818886744">എന്തായാലും തുറക്കുക</translation>
 <translation id="3141641372357166056">സമ്മത തീരുമാനമൊന്നുമില്ല</translation>
@@ -1095,10 +1125,12 @@
 <translation id="3432601291244612633">പേജ് അടയ്ക്കുക</translation>
 <translation id="3433111389595862568">ഒരുമിച്ച് പ്രവർത്തിക്കുന്നതിനും കോൺഫറൻസിംഗിനുമുള്ള സോഫ്‌റ്റ്‌വെയർ</translation>
 <translation id="3433144818443565002">വോയ്‌സ്, വീഡിയോ ചാറ്റ്</translation>
+<translation id="3435557549311968410">തുടർച്ചയായത് (ചെറുത്)</translation>
 <translation id="3435738964857648380">സുരക്ഷ</translation>
 <translation id="3438829137925142401">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചിട്ടുള്ള പാസ്‌വേഡുകൾ ഉപയോഗിക്കുക</translation>
 <translation id="3440783957068352691">ചതുരം</translation>
 <translation id="3441653493275994384">സ്ക്രീന്‍‌</translation>
+<translation id="3443504041532578451">ഒപ്‌റ്റിക്കൽ ഡിസ്‌ക് (സാറ്റിൻ)</translation>
 <translation id="3447661539832366887">ഈ ഉപകരണത്തിന്റെ ഉടമ ദിനോസർ ഗെയിം ഓഫാക്കി.</translation>
 <translation id="3447884698081792621">സർട്ടിഫിക്കറ്റ് (<ph name="ISSUER" /> ഇഷ്യൂ ചെയ്‌തത്) കാണിക്കുക</translation>
 <translation id="3452404311384756672">ഇടവേള ലഭ്യമാക്കുക:</translation>
@@ -1122,6 +1154,7 @@
 <translation id="3498215018399854026">ഇപ്പോൾ ഞങ്ങൾക്ക് നിങ്ങളുടെ രക്ഷകർത്താവിനെ ബന്ധപ്പെടാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="350069200438440499">ഫയല്‍ നാമം:</translation>
 <translation id="3501300228850242680">മെറ്റൽ (സംഗീതം)</translation>
+<translation id="350421688684366066">ലേബലുകൾ (ഹൈ ഗ്ലോസ്)</translation>
 <translation id="3507869775212388416">നിയമവുമായി ബന്ധപ്പെട്ട ജോലികൾ</translation>
 <translation id="3507936815618196901">നിങ്ങളുടെ ചുറ്റുപാടുകളുടെ 3D മാപ്പ് സൃഷ്ടിക്കാനും ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാനും</translation>
 <translation id="3512163584740124171">ഇതേ നയ ഗ്രൂപ്പിൽ നിന്നുള്ള മറ്റൊരു നയത്തിന് ഉയർന്ന മുൻഗണനയുള്ളതിനാൽ ഈ നയം അവഗണിച്ചു.</translation>
@@ -1137,6 +1170,7 @@
 <translation id="3533328374079021623">മെയിൽബോക്സ് 5</translation>
 <translation id="3536227077203206203">ഇപ്പോൾ മാത്രം അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="3537165859691846083">ലെറ്റർ പ്ലസ്</translation>
+<translation id="353816159217417898">സ്ക്രീൻ (പേജ് ചെയ്തത്)</translation>
 <translation id="3542628208405253498">കാർഡിന്റെ ചിത്രം</translation>
 <translation id="3542768452570884558">പുതിയ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="3547746132308051926">20 x 24 ഇഞ്ച്</translation>
@@ -1162,6 +1196,7 @@
 <translation id="3583757800736429874">&amp;നീക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="3584299510153766161">താഴെ ഇരട്ട പഞ്ച് ചെയ്യുക</translation>
 <translation id="3584755835709800788">സയൻസ് ഫിക്ഷൻ, ഫാന്റസി സിനിമകൾ</translation>
+<translation id="3586833803451155175">വെറ്റ് ഫിലിം</translation>
 <translation id="3586931643579894722">വിശദാംശങ്ങൾ മറയ്‌ക്കുക‍‌</translation>
 <translation id="3587738293690942763">മദ്ധ്യം</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{നിങ്ങളുടെ ഗ്രൂപ്പ് ഏതുസമയത്തും റീസെറ്റ് ചെയ്യാം. പുതിയ ഗ്രൂപ്പിൽ ചേരാൻ ഒരു ദിവസമെടുക്കും.}=1{നിങ്ങളുടെ ഗ്രൂപ്പ് ഏതുസമയത്തും റീസെറ്റ് ചെയ്യാം. പുതിയ ഗ്രൂപ്പിൽ ചേരാൻ ഒരു ദിവസമെടുക്കും.}other{നിങ്ങളുടെ ഗ്രൂപ്പ് ഏതുസമയത്തും റീസെറ്റ് ചെയ്യാം. പുതിയ ഗ്രൂപ്പിൽ ചേരാൻ {NUM_DAYS} ദിവസമെടുക്കും.}}</translation>
@@ -1179,6 +1214,7 @@
 <translation id="3620239073311576716">യൂണിഫോമുകളും ജോലിസ്ഥലത്തെ വസ്‌ത്രവും</translation>
 <translation id="36224234498066874">ബ്രൌസിംഗ് ഡാറ്റ മായ്‌ക്കുക...</translation>
 <translation id="362276910939193118">മുഴുവന്‍ ചരിത്രവും കാണിക്കുക</translation>
+<translation id="3624292976554877583">ലേബലുകൾ (തിളക്കമില്ലാത്തത്)</translation>
 <translation id="3628905806504633297">{0,plural, =1{ഈ ഫയൽ <ph name="DESTINATION_NAME" /> എന്നതിലേക്ക് കൈമാറാൻ അഡ്‌മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല}other{ഈ ഫയലുകൾ <ph name="DESTINATION_NAME" /> എന്നതിലേക്ക് കൈമാറാൻ അഡ്‌മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല}}</translation>
 <translation id="3630155396527302611">ഇതിനെ നെറ്റ്‌വർക്ക് ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള ഒരു പ്രോഗ്രാമായി നിലവിൽ ലിസ്റ്റ് ചെയ്‌തിട്ടുണ്ടെങ്കിൽ,
       അതിനെ ലിസ്റ്റിൽ നിന്ന് നീക്കംചെയ്‌ത്, വീണ്ടും ചേർക്കാൻ ശ്രമിക്കുക.</translation>
@@ -1247,6 +1283,7 @@
 <translation id="3744212718085287312">അടുത്ത തവണ വെർച്വൽ കാർഡ് ഉപയോഗിച്ച് ഇത് കൂടുതൽ സുരക്ഷിതമാക്കണോ?</translation>
 <translation id="3744286742364977428">നിങ്ങൾ ഡൗൺലോഡ് ചെയ്യുന്ന ഫയലുകൾ വിശകലനത്തിനായി Google Cloud-ലേക്കോ മൂന്നാം കക്ഷികൾക്കോ അയയ്ക്കുന്നു. ഉദാഹരണത്തിന്, സെൻസിറ്റീവായിട്ടുള്ള വ്യക്തിപരമായ ഡാറ്റയോ മാൽവെയറോ ഉണ്ടോയെന്നറിയാൻ അവ സ്‌കാൻ ചെയ്‌തേക്കാം, കൂടാതെ കമ്പനിയുടെ നയങ്ങൾ അടിസ്ഥാനമാക്കി അവ സംഭരിച്ചേക്കാം.</translation>
 <translation id="3744899669254331632">Chromium-ന് പ്രോസസ് ചെയ്യാനാകാത്ത രൂപമാറ്റം വരുത്തിയ ക്രെഡൻഷ്യലുകൾ വെബ്സൈറ്റ് അയയ്ക്കുന്നതിനാൽ നിങ്ങൾക്കിപ്പോൾ <ph name="SITE" /> സന്ദർശിക്കാനാകില്ല. നെറ്റ്‌വർക്ക് പിശകുകളും ആക്രമണങ്ങളും സാധാരണയായി താൽക്കാലികമായതിനാൽ ഈ പേജ് മിക്കവാറും പിന്നീട് പ്രവർത്തിക്കും.</translation>
+<translation id="3748009735914587286">മെറ്റൽ (ഹൈ ഗ്ലോസ്)</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> എന്ന സൈറ്റിലെ ആക്രമികൾ, സോഫ്‌റ്റ്‌വയറുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യുന്നതോ, അല്ലെങ്കിൽ നിങ്ങളുടെ വ്യക്തിപരമായ വിവരങ്ങൾ വെളിപ്പെടുത്തുന്നതോ (ഉദാഹരണത്തിന് പാസ്‌വേഡുകൾ, ഫോൺ നമ്പറുകൾ അല്ലെങ്കിൽ ക്രെഡിറ്റ് ‌കാർഡുകൾ) പോലെയുള്ള അപകടകരമായ കാര്യങ്ങൾ ചെയ്യിപ്പിക്കുന്ന രീതിയിൽ നിങ്ങളെ കബളിപ്പിച്ചേക്കാം. <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">വ്യോമയാന വ്യവസായം</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> സജ്ജീകരിച്ചിട്ടില്ലാത്തതിനാൽ അവഗണിച്ചു.</translation>
@@ -1258,6 +1295,7 @@
 <translation id="3761718714832595332">സ്‌റ്റാറ്റസ് മറയ്ക്കുക</translation>
 <translation id="3765588406864124894">മെയിൽബോക്സ് 9</translation>
 <translation id="3767485424735936570">ഈ ഉള്ളടക്കം പകർത്തി <ph name="VM_NAME" />-ലേക്ക് ഒട്ടിക്കുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
+<translation id="3772211998634047851">പേപ്പർ (ബോണ്ട്)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep-ൽ പുതിയൊരു കുറിപ്പ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="3778403066972421603">ഈ കാർഡ് നിങ്ങളുടെ Google അക്കൗണ്ടിലും ഈ ഉപകരണത്തിലും സംരക്ഷിക്കണോ?</translation>
 <translation id="3780694243617746492">ഔട്ട്പുട്ട് ബിൻ</translation>
@@ -1377,6 +1415,7 @@
 <translation id="4073797364926776829">കാർഡ് കാണുക</translation>
 <translation id="4075732493274867456">ഒരു സാധാരണ SSL പ്രോട്ടോക്കോൾ പതിപ്പിനെയോ സൈഫർ സ്യൂട്ടിനെയോ ക്ലയന്റും സെർവറും പിന്തുണയ്‌ക്കില്ല.</translation>
 <translation id="4079302484614802869">പ്രോക്‌സി കോൺഫിഗറേഷൻ .pac സ്‌ക്രിപ്റ്റ് URL ഉപയോഗിക്കുന്നതിനായി സജ്ജീകരിച്ചിരിക്കുന്നു, സ്ഥിരമായ പ്രോക്‌സി സെർവറുകൾ ഉപയോഗിക്കുന്നതിനായല്ല.</translation>
+<translation id="4082333119419111506">പേപ്പർ (പ്രീപ്രിന്റ് ചെയ്തത്)</translation>
 <translation id="4082393374666368382">ക്രമീകരണം - മാനേജ്‌മെൻ്റ്</translation>
 <translation id="4084219288110917128">Envelope C1</translation>
 <translation id="4088981014127559358">സൈഡ് 1 ചിത്രം Y ഷിഫ്റ്റ്</translation>
@@ -1388,6 +1427,7 @@
 <translation id="4101413244023615925">ടെക്സ്റ്റും ഗ്രാഫിക്കും</translation>
 <translation id="410148943680000050">ഡെസ്ക്ടോപ്പ് പ്രസിദ്ധീകരണം</translation>
 <translation id="4103249731201008433">ഉപകരണ സീരിയൽ നമ്പർ അസാധുവാണ്</translation>
+<translation id="4103592298805904008">കാർഡ്ബോർഡ് (സിംഗിൾ വാൾ)</translation>
 <translation id="4106887816571530227">ഉൾച്ചേർത്ത ഉള്ളടക്കം അനുവദനീയമല്ല</translation>
 <translation id="4110652170750985508">നിങ്ങളുടെ പേയ്‌മെന്‍റ് അവലോകനം ചെയ്യുക</translation>
 <translation id="4111546256784973544">പെയിന്റ്‌ബോൾ</translation>
@@ -1470,6 +1510,9 @@
 <translation id="4231448684371260244">8 x 13 ഇഞ്ച്</translation>
 <translation id="4233220688695460165">30 ദിവസത്തിനുള്ളിൽ പരസ്യങ്ങൾ നിർദ്ദേശിക്കുന്ന സൈറ്റുകളും വിഷയങ്ങളും Chrome സ്വയമേവ ഇല്ലാതാക്കുന്നു. അല്ലെങ്കിൽ നിങ്ങൾക്ക് താൽപ്പര്യമില്ലാത്ത നിർദ്ദിഷ്ട വിഷയങ്ങളും സൈറ്റുകളും നിങ്ങൾക്ക് ബ്ലോക്ക് ചെയ്യാം.</translation>
 <translation id="4235360514405112390">സാധുത</translation>
+<translation id="4239799716689808527">ലേബലുകൾ</translation>
+<translation id="4242380780309416996">എൻവലപ്പ് (ഹെവി‌വെയിറ്റ്)</translation>
+<translation id="4244926541863471678">ഫിലിം</translation>
 <translation id="4246517972543675653">വിദേശ പഠനം</translation>
 <translation id="4250431568374086873">ഈ സൈറ്റിലുള്ള നിങ്ങളുടെ കണക്ഷൻ പൂർണ്ണമായും സുരക്ഷിതമല്ല</translation>
 <translation id="4250680216510889253">ഇല്ല</translation>
@@ -1540,6 +1583,7 @@
 <translation id="4358461427845829800">പേയ്മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക...</translation>
 <translation id="4359160567981085931">വഞ്ചനാപരമായ സൈറ്റിൽ നിങ്ങൾ ഇപ്പോൾ പാസ്‍വേഡ് നൽകി. Chrome-ന് സഹായിക്കാനാവും. നിങ്ങളുടെ പാസ്‌വേഡ് മാറ്റാനും നിങ്ങളുടെ അക്കൗണ്ട് അപകടത്തിലായിരിക്കാമെന്ന് Google-നെ അറിയിക്കാനും 'അക്കൗണ്ട് പരിരക്ഷിക്കുക' ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="4363222835916186793">ഈ ഉൽപ്പന്നത്തിനായുള്ള അറിയിപ്പുകൾ ഓഫാക്കി</translation>
+<translation id="4366943895537458493">പ്ലേറ്റ്</translation>
 <translation id="437040971055499437">സുരക്ഷാ ഇവന്റ് സംഭവിച്ചു</translation>
 <translation id="4371307856413138486">പരിവർത്തനം ചെയ്ത ടെക്സ്റ്റിന്റെ തുടക്കം</translation>
 <translation id="4371591986692297148">നിഷ്‌ക്രിയം</translation>
@@ -1558,6 +1602,7 @@
 <translation id="4411435778612100394">കൺസ്യൂമർ ഇലക്ട്രോണിക്‌സ്</translation>
 <translation id="4412074349188076601">ഈ കോൺഫിഗറേഷൻ ഇൻസ്റ്റാൾ ചെയ്യാവുന്നത് എന്ന് അടയാളപ്പെടുത്തിയിരിക്കുന്നു, എന്നാൽ ഈ ആർക്കിടെക്ച്ചർ സംബന്ധിച്ച ചിത്രങ്ങളൊന്നും നൽകാത്തതിനാൽ ഇത് ഇൻസ്റ്റാൾ ചെയ്യാനാകില്ല.</translation>
 <translation id="4414515549596849729">കുക്കികളും സൈറ്റ് ഡാറ്റയും</translation>
+<translation id="4415156962929755728">പ്ലാസ്റ്റിക് (ഹൈ ഗ്ലോസ്)</translation>
 <translation id="4415426530740016218">പിക്കപ്പ് വിലാസം</translation>
 <translation id="4424024547088906515">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ് Chrome-ന് പരിചയമില്ലാത്തതാണ്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="4425750422187370446">അത്‌ലെറ്റിക് വസ്‌ത്രങ്ങൾ</translation>
@@ -1721,6 +1766,7 @@
 <translation id="4785376858512657294">Google Account മാനേജ് ചെയ്യുക</translation>
 <translation id="4785689107224900852">ഈ ടാബിലേക്ക് സ്വിച്ച് ചെയ്യുക</translation>
 <translation id="4786804728079074733">വോളിബോൾ</translation>
+<translation id="4787182171088676626">എൻവലപ്പ് (ഫൈൻ)</translation>
 <translation id="4789704664580239421">നിങ്ങളുടെ തുറന്നിരിക്കുന്ന ടാബുകളിൽ വിലക്കുറവുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ ദൃശ്യമാകും</translation>
 <translation id="4791134497475588553">Linux ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്‌ത് അവസാനം ഉപയോഗിച്ചത് എപ്പോൾ</translation>
 <translation id="4792686369684665359">നിങ്ങൾ സമർപ്പിക്കാൻ പോകുന്ന വിവരങ്ങൾ സുരക്ഷിതമല്ല</translation>
@@ -1739,6 +1785,7 @@
 <translation id="4822493756793346865">വെബിൽ ഉടനീളമുള്ള സ്റ്റോറുകളിലെ കഴിഞ്ഞ 90 ദിവസത്തെ നിരക്കുകൾ അടിസ്ഥാനമാക്കിയുള്ളതാണ് 'സാധാരണ നിരക്കുകൾ'.</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, പുതിയൊരു Google Sheet വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="4825507807291741242">ശക്തമായത്</translation>
+<translation id="4831993743164297314">ഇമേജ് സെറ്റർ പേപ്പർ</translation>
 <translation id="483241715238664915">മുന്നറിയിപ്പുകൾ ഓണാക്കുക</translation>
 <translation id="4834250788637067901">Google Pay ഉപയോഗിക്കുന്ന പേയ്മെന്റ് രീതികളും ഓഫറുകളും വിലാസങ്ങളും</translation>
 <translation id="4838327282952368871">മനോരാജ്യത്തിൽ മുഴുകിയത്</translation>
@@ -1772,14 +1819,17 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ഒളിമ്പിക്‌സ്</translation>
 <translation id="4900217275619098670">ഒൻപതാമത്തെ റോൾ</translation>
+<translation id="4901052769830245369">ലേബലുകൾ (സെമി ഗ്ലോസ്)</translation>
 <translation id="4901162432287938633">ശുചിത്വവും ടോയ്‌ലറ്ററികളും</translation>
 <translation id="4901778704868714008">സംരക്ഷിക്കുക...</translation>
 <translation id="4901952598169637881">കാഷ്വൽ ഷൂകൾ</translation>
 <translation id="4905659621780993806">നിങ്ങളുടെ അഡ്‌മിൻ നിങ്ങളുടെ ഉപകരണം <ph name="DATE" />, <ph name="TIME" />-ന് റീസ്റ്റാർട്ട് ചെയ്യും. നിങ്ങളുടെ ഉപകരണം റീസ്റ്റാർട്ട് ചെയ്യുന്നതിന് മുമ്പ് തുറന്നിരിക്കുന്ന ഇനങ്ങളെല്ലാം സംരക്ഷിക്കുക.</translation>
 <translation id="4907289208610706508">ടാർഗറ്റ്</translation>
 <translation id="4913987521957242411">മുകളിൽ ഇടതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
+<translation id="4917064667437236721">ഇമേജിംഗ് സിലിണ്ടർ</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ഇൻസ്റ്റാൾ ചെയ്യുക (ഡൗൺലോഡ് ചെയ്യേണ്ടതില്ല)</translation>
 <translation id="4920457992177678649">വെക്കേഷൻ റെന്റലുകളും ഹ്രസ്വകാല താമസ സ്ഥലങ്ങളും</translation>
+<translation id="4920710383559189047">സ്ലീവ്</translation>
 <translation id="4923459931733593730">പേയ്‌മെന്റ് രീതി</translation>
 <translation id="4926049483395192435">വ്യക്തമാക്കേണ്ടതാണ്.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> പറയുന്നത്:</translation>
@@ -1816,6 +1866,7 @@
 <translation id="4995216769782533993">ഈ സൈറ്റുമായി നിങ്ങളുടെ കാർഡിന്റെ വിശദാംശങ്ങൾ പങ്കിടാൻ സുരക്ഷാ കോഡ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="4995474875135717171">പരിഷ്‌ക്കരിച്ചത്:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, സൈറ്റ് തിരയലും നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ യന്ത്രവും മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
+<translation id="4998950033665438990">സിംഗിൾ ഫേയ്‌സ്</translation>
 <translation id="5002932099480077015">പ്രവർത്തനക്ഷമമാക്കിയെങ്കിൽ, വേഗത്തിൽ ഫോം പൂരിപ്പിക്കാൻ Chrome ഈ ഉപകരണത്തിൽ നിങ്ങളുടെ കാർഡിന്റെ ഒരു പകർപ്പ് സൂക്ഷിക്കും.</translation>
 <translation id="5011561501798487822">ഭാഷ തിരിച്ചറിഞ്ഞു</translation>
 <translation id="5015510746216210676">മെഷീനിന്‍റെ പേര്‌:</translation>
@@ -1863,6 +1914,7 @@
 <translation id="5097099694988056070">CPU/RAM ഉപയോഗം പോലുള്ള ഉപകരണ സ്ഥിതിവിവരക്കണക്കുകൾ</translation>
 <translation id="5097468150760963273">27 x 39 ഇഞ്ച്</translation>
 <translation id="5097501891273180634">A2</translation>
+<translation id="510644072453496781">കാർഡ്ബോർഡ് (എൻഡ്)</translation>
 <translation id="5108881358339761672">സൈറ്റ് സുരക്ഷിതമല്ല</translation>
 <translation id="5109892411553231226">പേയ്മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -1871,6 +1923,7 @@
 <translation id="5114987907971894280">വെർച്വൽ റിയാലിറ്റി</translation>
 <translation id="5115232566827194440">നിയന്ത്രിത 'മാനേജ് ചെയ്യുന്ന അതിഥി സെഷൻ' അസാധുവാക്കൽ</translation>
 <translation id="5115563688576182185">(64-ബിറ്റ്)</translation>
+<translation id="5122786942953798871">എൻവലപ്പ് (കോട്ടൺ)</translation>
 <translation id="5123063207673082822">വാരാന്ത്യം</translation>
 <translation id="5123433949759960244">ബാസ്ക്കറ്റ്ബോൾ</translation>
 <translation id="5125751979347152379">URL അസാധുവാണ്.</translation>
@@ -1927,6 +1980,7 @@
 <translation id="5238301240406177137">അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="5239119062986868403">സാധാരണ നിരക്ക്</translation>
 <translation id="5239623327352565343">ലൊക്കേഷൻ ആക്സസ് അനുവദിച്ചു</translation>
+<translation id="5242610955375133957">ഡ്രൈ ഫിലിം</translation>
 <translation id="5242889659037569123">ലഗേജും യാത്രാ ആക്‌സസറികളും</translation>
 <translation id="5244521145258281926">'Google Account മാനേജ് ചെയ്യുക, നിങ്ങളുടെ Google Account-ലെ വിവരങ്ങളും സ്വകാര്യതയും സുരക്ഷയും മാനേജ് ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="5244732203286792411">ലോഡ് ചെയ്യുന്നു...
@@ -1982,6 +2036,8 @@
 <translation id="534295439873310000">NFC ഉപകരണങ്ങൾ</translation>
 <translation id="5344522958567249764">പരസ്യവുമായി ബന്ധപ്പെട്ട സ്വകാര്യത മാനേജ് ചെയ്യുക</translation>
 <translation id="5344579389779391559">ഈ പേജ് നിങ്ങളില്‍ നിന്ന് പണം ഈടാക്കാനിടയുണ്ട്</translation>
+<translation id="5345249337934847112">പേപ്പർ (ഹെവിവെയിറ്റ് കോട്ട് ചെയ്തത്)</translation>
+<translation id="5349543692327946794">ലേബലുകൾ (ഇങ്ക്‌ജെറ്റ്)</translation>
 <translation id="5351548097010183514">കെട്ടിട നിർമ്മാണത്തിനുള്ള വസ്തുക്കളും സാമഗ്രികളും</translation>
 <translation id="5355557959165512791">സർട്ടിഫിക്കറ്റ് റദ്ദാക്കിയതിനാൽ നിങ്ങൾക്കിപ്പോൾ <ph name="SITE" /> സന്ദർശിക്കാനാകില്ല. നെറ്റ്‌വർക്ക് പിശകുകളും ആക്രമണങ്ങളും സാധാരണ താൽക്കാലികമായിരിക്കും, അതിനാൽ ഈ പേജ് മിക്കവാറും പിന്നീട് പ്രവർത്തിക്കും.</translation>
 <translation id="5357848622083956825">ദൃശ്യ കലയും ഡിസൈനും</translation>
@@ -1996,11 +2052,13 @@
 <translation id="5383478552402031184">ഫ്ലോറിംഗ്</translation>
 <translation id="5385857628869214740">ഹാസ്യം</translation>
 <translation id="5386426401304769735">ഈ സൈറ്റിന്റെ സർട്ടിഫിക്കറ്റ് ചെയിനിൽ SHA-1 ഉപയോഗിച്ച് സൈൻ ചെയ്‌ത ഒരു സർട്ടിഫിക്കറ്റ് അടങ്ങിയിരിക്കുന്നു.</translation>
+<translation id="5392506727170022660">മെറ്റൽ (സെമി ഗ്ലോസ്)</translation>
 <translation id="5396631636586785122">വലതുവശത്ത് അരിക് കൂട്ടിച്ചേർക്കൽ</translation>
 <translation id="5398772614898833570">പരസ്യങ്ങൾ ബ്ലോക്കുചെയ്‌തു</translation>
 <translation id="5400836586163650660">ചാരനിറം</translation>
 <translation id="5401344472773249513">താരങ്ങളും വിനോദ വാർത്തകളും</translation>
 <translation id="5401674281624189321">പർവതങ്ങളും സ്‌കീ റിസോർട്ടുകളും</translation>
+<translation id="540949333488055151">പ്ലാസ്റ്റിക് (നിറമുള്ളത്)</translation>
 <translation id="540969355065856584">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷ സർട്ടിഫിക്കറ്റിന് ഇപ്പോൾ സാധുതയുള്ളതല്ല. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു ആക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="5411462078004183575">കുറഞ്ഞ നിരക്കുള്ള ഓപ്ഷൻ</translation>
 <translation id="5412040515238827314">ഫോർമാറ്റ് അസാധുവാണ്: പാറ്റേണുകളുടെ ലിസ്റ്റ് ആണ് ചേർക്കേണ്ടത്.</translation>
@@ -2021,6 +2079,7 @@
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> എണ്ണവും}other{<ph name="CONTACT_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> എണ്ണവും}}</translation>
 <translation id="5463625433003343978">ഉപകരണങ്ങൾ കണ്ടെത്തുന്നു...</translation>
 <translation id="5464236009658034488">ഓഫീസ് സപ്ലൈകൾ</translation>
+<translation id="5465724643247062031">ഗ്ലാസ് (അതാര്യം)</translation>
 <translation id="5466018172325111652">നിങ്ങളുടെ കോഡ് ലഭിച്ചില്ലേ? <ph name="BEGIN_LINK" />പുതിയ കോഡ് നേടുക<ph name="END_LINK" /></translation>
 <translation id="5470230812924696184">സിവിൽ എഞ്ചിനീയറിംഗ്</translation>
 <translation id="5470861586879999274">&amp;എഡിറ്റുചെയ്യുന്നത് വീണ്ടും ചെയ്യുക</translation>
@@ -2046,6 +2105,7 @@
 <translation id="5515388687005870733">55 x 85 മി.മീ</translation>
 <translation id="5518670652865028077">കലയും വിനോദവും</translation>
 <translation id="5519516356611866228">നിങ്ങൾ വരുത്തിയ മാറ്റങ്ങൾ സഹിതം</translation>
+<translation id="5519696598216267194">പേപ്പർ (പ്രീപഞ്ച് ചെയ്തത്)</translation>
 <translation id="5521782189689806907">ക്യാബിനറ്റ് നിർമ്മാണം</translation>
 <translation id="5523118979700054094">നയത്തിന്റെ പേര്</translation>
 <translation id="5525755241743357906">ഫയൽ പകർത്തി അല്ലെങ്കിൽ നീക്കി</translation>
@@ -2108,8 +2168,10 @@
 <translation id="5635237618724097525">സ്‌മാർട്ട് ഫോണുകൾ</translation>
 <translation id="5642411781689336699">സ്‌റ്റീരിയോ സിസ്‌റ്റങ്ങളും ഘടകങ്ങളും</translation>
 <translation id="5644090287519800334">സൈഡ് 1 ചിത്രം X ഷിഫ്റ്റ്</translation>
+<translation id="5645132789250840550">പ്ലാസ്റ്റിക് (സെമി ഗ്ലോസ്)</translation>
 <translation id="5645854190134202180">രണ്ടാമത്തെ ഷിഫ്റ്റ്</translation>
 <translation id="5649053991847567735">യാന്ത്രിക ഡൗൺലോഡുകൾ</translation>
+<translation id="5651323159439184939">ട്രാക്‌റ്റർ ഫീഡ്</translation>
 <translation id="5653432653077411130">ജലവിതരണവും സംസ്ക്കരണവും</translation>
 <translation id="5654927323611874862">അപ്‌ലോഡ് ചെയ്ത ക്രാഷ് റിപ്പോർട്ട് ഐഡി:</translation>
 <translation id="5659593005791499971">ഇമെയില്‍</translation>
@@ -2117,6 +2179,7 @@
 <translation id="5666606186680807225">ബീച്ചുകളും ദ്വീപുകളും</translation>
 <translation id="5667827081946850877">ഓഡിയോ ബുക്കുകൾ</translation>
 <translation id="5675650730144413517">ഈ പേജ് പ്രവർത്തിക്കുന്നില്ല</translation>
+<translation id="5678007133659493065">ഫോയിൽ</translation>
 <translation id="568292603005599551">ചിത്രം X സ്ഥാനം</translation>
 <translation id="5684277895745049190">ലിസ്റ്റ്</translation>
 <translation id="5684874026226664614">ക്ഷമിക്കണം. ഈ പേജ് വിവർത്തനം ചെയ്യാനായില്ല.</translation>
@@ -2222,12 +2285,14 @@
 <translation id="5922853866070715753">ഏതാണ്ട് പൂർത്തിയായി</translation>
 <translation id="5923492272538889093">CVC-ക്ക് പകരം ഉപകരണ അൺലോക്ക് ഉപയോഗിക്കണോ?</translation>
 <translation id="5924782825030413055">അവസാന സമ്മത അപ്ഡേറ്റിന്റെ ഉറവിടം:</translation>
+<translation id="5925040402342933574">ഒപ്‌റ്റിക്കൽ ഡിസ്‌ക് (സെമി ഗ്ലോസ്)</translation>
 <translation id="5926982310317673627">ജിമ്മുകളും ഹെൽത്ത് ക്ലബ്ബുകളും</translation>
 <translation id="5928444777041341328">വീടും പൂന്തോട്ടവും</translation>
 <translation id="5932224571077948991">അനാവശ്യമോ തെറ്റിദ്ധരിപ്പിക്കുന്നതോ ആയ പരസ്യങ്ങള്‍ കാണിക്കുന്ന സൈറ്റ്</translation>
 <translation id="5937560539988385583">പേജ് വിവർത്തനം ചെയ്‌തു</translation>
 <translation id="5938153366081463283">വെർച്വൽ കാർഡ് ചേർക്കുക</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5944297261866530437">ഫാബ്രിക് (ഹൈ ഗ്ലോസ്)</translation>
 <translation id="5947508410139465809">നിങ്ങൾ അപ്‌ലോഡ് ചെയ്യുന്നതോ അറ്റാച്ച് ചെയ്യുന്നതോ ആയ ഫയലുകൾ വിശകലനത്തിനായി Google Cloud-ലേക്കോ മൂന്നാം കക്ഷികൾക്കോ അയയ്ക്കുന്നു. ഉദാഹരണത്തിന്, സെൻസിറ്റീവായിട്ടുള്ള വ്യക്തിപരമായ ഡാറ്റയോ മാൽവെയറോ ഉണ്ടോയെന്നറിയാൻ അവ സ്‌കാൻ ചെയ്‌തേക്കാം, കൂടാതെ കമ്പനിയുടെ നയങ്ങൾ അടിസ്ഥാനമാക്കി അവ സംഭരിച്ചേക്കാം.</translation>
 <translation id="5951495562196540101">ഉപയോക്തൃ അക്കൗണ്ട് ഉപയോഗിച്ച് എൻറോൾ ചെയ്യാനാവില്ല (പാക്കേജ് ചെയ്‌ത ലൈസൻസ് ലഭ്യമാണ്).</translation>
 <translation id="5953516610448771166">ഈ മീഡിയയ്ക്ക് തത്സമയ ക്യാപ്ഷൻ ലഭ്യമല്ല. ക്യാപ്ഷനുകൾ നേടാൻ, ഈ സൈറ്റിനുള്ള <ph name="CONTENT_SETTINGS" /> ബ്ലോക്ക് ചെയ്യുക.</translation>
@@ -2250,6 +2315,7 @@
 <translation id="5995727681868049093">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ വിവരങ്ങളും സ്വകാര്യതയും സുരക്ഷയും മാനേജ് ചെയ്യുക</translation>
 <translation id="5997247540087773573">നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. നിങ്ങളുടെ അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ, ഇപ്പോൾ തന്നെ അവ മാറ്റാനും സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പരിശോധിക്കാനും Google Password Manager നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' എന്നതിനായി <ph name="RESULT_COUNT" /> ഫലങ്ങള്‍</translation>
+<translation id="6005659677094197001">തുടർച്ചയായ</translation>
 <translation id="6005765687956866568">സ്വയമേവ പൂരിപ്പിച്ച വിവരങ്ങൾ ഫോമിൽ നിന്ന് മായ്‌ച്ചു</translation>
 <translation id="6006365096047131769">3 x 5 ഇഞ്ച്</translation>
 <translation id="6006484371116297560">ക്ലാസിക്</translation>
@@ -2289,6 +2355,7 @@
 <translation id="6053584886670442526">സംരക്ഷിച്ച വിലാസങ്ങൾ നിങ്ങൾക്ക് Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാം. ഈ വിലാസം നിങ്ങളുടെ <ph name="ACCOUNT" /> എന്ന Google Account-ൽ സംരക്ഷിച്ചിരിക്കുന്നു.</translation>
 <translation id="6053735090575989697">Google എങ്ങനെയാണ് നിങ്ങളുടെ ഡാറ്റ പരിരക്ഷിക്കുന്നത് എന്ന് ഞങ്ങളുടെ സ്വകാര്യതാ നയത്തിൽ കൂടുതലറിയുക.</translation>
 <translation id="6055888660316801977">സുരക്ഷിതമായ പേയ്‌മെന്റ് ക്രെഡൻഷ്യലുമായി പൊരുത്തമില്ലാത്ത ക്രെഡൻഷ്യൽ ഷീറ്റ്</translation>
+<translation id="6055982527635883756">എൻവലപ്പ് (ആർക്കൈവൽ)</translation>
 <translation id="6058977677006700226">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങളുടെ കാർഡുകൾ ഉപയോഗിക്കണോ?</translation>
 <translation id="6059925163896151826">USB ഉപകരണങ്ങൾ</translation>
 <translation id="6060009363608157444">DnsOverHttps മോഡ് അസാധുവാണ്.</translation>
@@ -2297,6 +2364,7 @@
 <translation id="6064217302520318294">സ്ക്രീൻ ലോക്ക്</translation>
 <translation id="6064602040258638498">കൂപ്പണുകളും ഡിസ്‌കൗണ്ട് ഓഫറുകളും</translation>
 <translation id="6080696365213338172">അഡ്‌മിനിസ്‌ട്രേറ്റർ നൽകിയ സർട്ടിഫിക്കറ്റ് ഉപയോഗിച്ച് നിങ്ങൾ ഉള്ളടക്കം ആക്‌സസ് ചെയ്‌തു. നിങ്ങൾ <ph name="DOMAIN" /> എന്നതിലേക്ക് നൽകുന്ന ഡാറ്റ അഡ്‌മിനിസ്‌ട്രേറ്റർക്ക് തടയാനാവും.</translation>
+<translation id="6085149458302186532">ലേബലുകൾ (നിറമുള്ളത്)</translation>
 <translation id="6087312102907839798">അനുബന്ധ തിരയലുകൾ</translation>
 <translation id="6094273045989040137">അനോട്ടേറ്റ് ചെയ്യുക</translation>
 <translation id="6094290315941448991">രഹസ്യാത്മക ഉള്ളടക്കം ദൃശ്യമായിരിക്കുമ്പോൾ അഡ്‌മിൻ നയം സ്ക്രീൻ റെക്കോർഡിംഗ് പ്രവർത്തനരഹിതമാക്കുന്നു</translation>
@@ -2308,6 +2376,7 @@
 <translation id="6107012941649240045">ഇതിന് നല്‍‌കി</translation>
 <translation id="610911394827799129">നിങ്ങളുടെ Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="6116338172782435947">ക്ലിപ്പ്‌ബോർഡിലേക്ക് പകർത്തിയിട്ടുള്ള ടെക്‌സ്റ്റും ചിത്രങ്ങളും കാണുക</translation>
+<translation id="6117833587752089929">ഫോട്ടോ (സാറ്റിൻ)</translation>
 <translation id="6118782133429281336">ഒറിജിൻ ലിസ്റ്റ് ശൂന്യമാണ്.</translation>
 <translation id="6120179357481664955">നിങ്ങളുടെ UPI ഐഡി ഓർമ്മയുണ്ടോ?</translation>
 <translation id="6122181661879998141">നിങ്ങളുടെ കാർഡിന്റെ മുൻവശത്ത്</translation>
@@ -2341,15 +2410,18 @@
 <translation id="6195371403461054755">ജിയോളജി</translation>
 <translation id="6196640612572343990">മൂന്നാം കക്ഷി കുക്കികള്‍ ബ്ലോക്കുചെയ്യുക</translation>
 <translation id="6197648101609735209">89 x 89 മി.മീ</translation>
+<translation id="6198480336395236519">ഫുൾ കട്ട് ടാബുകൾ</translation>
 <translation id="6200386911308538077">ചിത്രം വിശകലനം ചെയ്യുന്നു</translation>
 <translation id="6203231073485539293">നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക</translation>
 <translation id="6205314730813004066">പരസ്യവുമായി ബന്ധപ്പെട്ട സ്വകാര്യത</translation>
 <translation id="6212314149070368045">യുഎസ് ഫാൻഫോൾഡ്</translation>
+<translation id="6215936431492593050">മെറ്റൽ (സാറ്റിൻ)</translation>
 <translation id="6217950634729714357">അടുക്കള, ഡൈനിംഗ് ഫർണിച്ചറുകൾ</translation>
 <translation id="6218753634732582820">Chromium-ത്തിൽ നിന്ന് വിലാസം നീക്കംചെയ്യണോ?</translation>
 <translation id="622039917539443112">സമാന്തര മടക്ക്</translation>
 <translation id="6221345481584921695"><ph name="BEGIN_LINK" /> എന്നതിൽ Google സുരക്ഷിത ബ്രൗസിംഗ് ഈയിടെ <ph name="END_LINK" />മാൽവെയർ കണ്ടെത്തി<ph name="SITE" /> . സാധാരണ നിലയിൽ സുരക്ഷിതമായ വെബ്സൈറ്റുകളിൽ ചിലപ്പോൾ മാൽവെയർ ഉണ്ടായിരിക്കാം. ഒരു അറിയപ്പെടുന്ന മാൽ‌വെയർ വിതരണക്കാരായ <ph name="SUBRESOURCE_HOST" /> എന്നതിൽ നിന്നാണ് ദോഷകരമായ ഉള്ളടക്കം വരുന്നത്.</translation>
 <translation id="6221892641068781024">ലളിതവൽക്കരിച്ച കാഴ്ച്ച</translation>
+<translation id="6222527803348563979">സ്‌റ്റേഷനറി</translation>
 <translation id="6224281071334553713">രത്നക്കല്ലുകളും ആഭരണങ്ങളും</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="6229196330202833460">സിനിമ, ടിവി സ്ട്രീമിംഗ്</translation>
@@ -2386,6 +2458,7 @@
 <translation id="6304398603974202180">മൾട്ടിമീഡിയ സോഫ്‌റ്റ്‌വെയർ</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ലഭ്യമല്ല.</translation>
 <translation id="6306713302480826305">ഇതിൽ നിന്നും നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്ന മറ്റ് ഉപകരണങ്ങളിൽ നിന്നും ഈ വിലാസം ഇല്ലാതാക്കും</translation>
+<translation id="6311410654831092784">കാർഡ് സ്റ്റോക്ക്</translation>
 <translation id="6312113039770857350">വെബ്പേജ് ലഭ്യമല്ല</translation>
 <translation id="6316226860534107313">സ്‌കൂട്ടറുകളും മോപ്പഡുകളും</translation>
 <translation id="6316723751983724988">പുതിയത്: Chrome-നുള്ള Family Link തിരഞ്ഞെടുപ്പുകൾ ഇവിടെ ബാധകമാണ്</translation>
@@ -2420,6 +2493,7 @@
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' എന്നതിനായി ഒരു ഫലം</translation>
 <translation id="6379054959395292297">ഇവന്റ്, സ്റ്റുഡിയോ ഫോട്ടോഗ്രഫി</translation>
 <translation id="6380497234672085559">A0</translation>
+<translation id="638289054711715023">ചുരുട്ടിയ ഫോയിൽ</translation>
 <translation id="6383221683286411806">ഭാവിയില്‍ നിരക്കുകള്‍ ഈടാക്കാനിടയുണ്ട്.</translation>
 <translation id="6385164437039878414">ബാക്ക്പാക്കുകളും യൂട്ടിലിറ്റി ബാഗുകളും</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{മറ്റൊരു നിർദ്ദേശം}other{മറ്റ് # നിർദ്ദേശങ്ങൾ}}</translation>
@@ -2428,7 +2502,9 @@
 <translation id="6388060462449937608">ഫിറ്റ്നസ് ഉപകരണവും ആക്‌സസറികളും</translation>
 <translation id="6389470377220713856">കാര്‍‌ഡിലെ പേര്</translation>
 <translation id="6390200185239044127">പകുതി Z-മടക്ക്</translation>
+<translation id="639068771471208680">മൾട്ടി പാർട്ട് ഫോം</translation>
 <translation id="6391700400718590966">സുരക്ഷിതമായ പേയ്‌മെന്റ് ക്രെഡൻഷ്യലുമായി പൊരുത്തമില്ലാത്ത ക്രെഡൻഷ്യൽ ഷീറ്റ് അടച്ചു</translation>
+<translation id="6392799395081100092">പേപ്പർ (വെലം)</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> -ൽ നിന്ന് ഈ ലൊക്കേഷനിൽ ഒട്ടിക്കുന്നത് നിങ്ങളുടെ അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="6394852772105848029">ഈ സൈറ്റിന് <ph name="APP_NAME" /> ആപ്പ് തുറക്കണമെന്നുണ്ട്</translation>
 <translation id="6398765197997659313">പൂര്‍ണ്ണ സ്ക്രീനില്‍ നിന്ന് പുറത്തുകടക്കുക</translation>
@@ -2473,6 +2549,7 @@
 <translation id="646793340882508547">സാഹസിക ഗെയിമുകൾ</translation>
 <translation id="6468485451923838994">ഫോണ്ടുകൾ</translation>
 <translation id="647261751007945333">ഉപകരണ നയങ്ങൾ</translation>
+<translation id="6472874020827012601">ഫാബ്രിക് (തിളക്കമില്ലാത്തത്)</translation>
 <translation id="647330291963761005">അപ്‌ഡേറ്റുകൾ ഇൻസ്റ്റാൾ ചെയ്യുന്നു</translation>
 <translation id="6474220430271405609">നയ ടെസ്‌റ്റുകൾ</translation>
 <translation id="6475672344094591109">നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റുകൾക്ക്, അവരുടെ പരസ്യങ്ങളുടെ പ്രകടനം അളക്കാൻ സഹായിക്കുന്ന വിവരങ്ങൾ Chrome-നോട് ആവശ്യപ്പെടാം. സൈറ്റുകൾക്ക് പരസ്പരം പങ്കിടാവുന്ന വിവരങ്ങൾ പരിമിതപ്പെടുത്തുന്നതിലൂടെ, Chrome നിങ്ങളുടെ സ്വകാര്യത പരിരക്ഷിക്കുന്നു.</translation>
@@ -2548,6 +2625,7 @@
 <translation id="6649510485211003056">195 x 270 മി.മീ</translation>
 <translation id="6651270836885078973">മാനേജ് ചെയ്യുന്നത്:</translation>
 <translation id="6652101503459149953">Windows Hello ഉപയോഗിക്കുക</translation>
+<translation id="6654244995031366386">ഗ്ലാസ് (ടെക്‌സ്ചർ ചെയ്തത്)</translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="6659246032834639189">ഇത് കുറഞ്ഞ നിരക്കാണ്</translation>
 <translation id="6660413144148052430">ലൊക്കേഷൻ</translation>
@@ -2560,6 +2638,7 @@
 <translation id="6677351035258626477">ഫാസ്റ്റ് ഫുഡ്</translation>
 <translation id="6683022854667115063">ഹെഡ്ഫോണുകൾ</translation>
 <translation id="6683717648675961851">ജോലി സംബന്ധമായ വിവരങ്ങൾ</translation>
+<translation id="6687230248707087982">എൻവലപ്പ് (പ്ലെയിൻ)</translation>
 <translation id="6687335167692595844">അഭ്യർത്ഥിച്ച ഫോണ്ട് വലുപ്പം</translation>
 <translation id="6687696737818665306">അഭിനയവും തീയറ്ററും</translation>
 <translation id="6688743156324860098">അപ്ഡേറ്റ് ചെയ്യുക…</translation>
@@ -2580,6 +2659,7 @@
 <translation id="6711464428925977395">പ്രോക്‌സി സെർവറിൽ എന്തോ പ്രശ്‌നമുണ്ട്, അല്ലെങ്കിൽ വിലാസം തെറ്റാണ്.</translation>
 <translation id="6716672519412350405">നിങ്ങളുടെ ചുറ്റുപാടുകളുടെ 3D മാപ്പ് സൃഷ്ടിക്കാനും ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാനും <ph name="URL" /> താല്‍‌പ്പര്യപ്പെടുന്നു</translation>
 <translation id="6718612893943028815">ക്യാമറ ഉപയോഗിക്കണോ?</translation>
+<translation id="6721164594124191969">ലേബലുകൾ (ഗ്ലോസി)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">ക്യാമറ</translation>
@@ -2596,14 +2676,17 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">നിങ്ങളുടെ ഉപകരണം സ്ലീപ്പ് മോഡിലായി</translation>
 <translation id="6767985426384634228">വിലാസം അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
+<translation id="6770747695101757579">പേപ്പർ (കോട്ടൺ)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">വാണിജ്യ ആവശ്യങ്ങൾക്കുള്ള വായ്പ</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 ഇഞ്ച്</translation>
 <translation id="67862343314499040">വയലറ്റ്</translation>
 <translation id="6786747875388722282">വിപുലീകരണങ്ങള്‍</translation>
 <translation id="6787094689637422836">കാണുന്ന പരസ്യങ്ങൾ സംബന്ധിച്ച് നിങ്ങൾക്ക് കൂടുതൽ ചോയ്‌സ് നൽകാൻ ഞങ്ങൾ പുതിയ സ്വകാര്യതാ ഫീച്ചറുകൾ അവതരിപ്പിക്കുന്നു.</translation>
+<translation id="6789062271869667677">തുടർച്ചയായ (നീളത്തിൽ)</translation>
 <translation id="678982761784843853">പരിരക്ഷിത ഉള്ളടക്ക ഐഡികൾ</translation>
 <translation id="6790428901817661496">പ്ലേചെയ്യുക</translation>
+<translation id="6793213097893210590">കാർഡ്ബോർഡ്</translation>
 <translation id="679355240208270552">നയ പ്രകാരം, ഡിഫോൾട്ട് തിരയൽ പ്രവർത്തനക്ഷമമാക്കാത്തതിനാൽ അവഗണിച്ചു.</translation>
 <translation id="6794951432696553238">Windows Hello ഉപയോഗിച്ച് നിങ്ങളുടെ കാർഡുകൾ ഇപ്പോൾ മുതൽ വേഗത്തിൽ സ്ഥിരീകരിക്കുക</translation>
 <translation id="6798460514924505775">Envelope Chou 3</translation>
@@ -2625,6 +2708,7 @@
 <translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
 <translation id="683108308100148227">ഇനം മറയ്ക്കുക</translation>
 <translation id="6832753933931306326">ഫോം പൂരിപ്പിച്ചു</translation>
+<translation id="6841864657731852591">ഗ്രാവ്യൂർ സിലിണ്ടർ</translation>
 <translation id="6842196666980060516">184 x 260 മി.മീ</translation>
 <translation id="6846340164947227603">വെർച്വൽ കാർഡ് നമ്പർ ഉപയോഗിക്കുക...</translation>
 <translation id="6849023911358004088">'സുരക്ഷാ ക്രമീകരണം മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ സുരക്ഷിത ബ്രൗസിംഗും മറ്റും മാനേജ് ചെയ്യാൻ സജീവമാക്കുക</translation>
@@ -2648,6 +2732,7 @@
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> ഉപയോഗിക്കുന്ന വെബ്സൈറ്റുകളിൽ <ph name="DEVICE_LABEL" /> ഉപയോഗിച്ച് പരിശോധിച്ചുറപ്പിക്കാൻ നിങ്ങൾ തിരഞ്ഞെടുത്തു. നിങ്ങളുടെ പേയ്മെന്റ് രീതിയെ കുറിച്ചുള്ള വിവരങ്ങൾ ഈ ദാതാവ് സംഭരിച്ചിട്ടുണ്ടാകാം, നിങ്ങൾക്ക് ഇത് <ph name="BEGIN_LINK" />ഇല്ലാതാക്കാൻ അഭ്യർത്ഥിക്കാവുന്നതാണ്<ph name="END_LINK" />.</translation>
 <translation id="6890956352250146925">കുക്കികൾക്കും സൈറ്റ് ഡാറ്റയ്‌ക്കുമുള്ള ഓപ്‌ഷനുകൾ</translation>
 <translation id="6891596781022320156">നയ നില പിന്തുണയ്ക്കുന്നില്ല.</translation>
+<translation id="6893057134494550310">ലാമിനേറ്റ് ചെയ്യുന്ന ഫോയിൽ</translation>
 <translation id="6895330447102777224">നിങ്ങളുടെ കാർഡ് സ്ഥിരീകരിച്ചു</translation>
 <translation id="6896758677409633944">പകര്‍ത്തുക</translation>
 <translation id="6897140037006041989">ഉപയോക്തൃ ഏജന്‍റ്</translation>
@@ -2673,6 +2758,7 @@
 <translation id="6950684638814147129">JSON മൂല്യം വിശകലനം ചെയ്യുമ്പോൾ പിശക്: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">എല്ലാം റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="6954049078461159956">ഹോക്കി</translation>
+<translation id="695582302419398462">കാർഡ്ബോർഡ് (ഡബിൾ വാൾ)</translation>
 <translation id="6957887021205513506">സെർവറിന്റെ സർട്ടിഫിക്കറ്റ് വിശ്വസിക്കാൻ കൊള്ളാത്ത ഒന്നായി തോന്നുന്നു.</translation>
 <translation id="6958564499836457428">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ Google സ്വകാര്യതാ ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="695864015080711809">ജോലിയും വിദ്യാഭ്യാസവും</translation>
@@ -2686,6 +2772,7 @@
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6965978654500191972">ഉപകരണം</translation>
 <translation id="696703987787944103">പെർസെപ്ച്വൽ</translation>
+<translation id="6970885655016700774">ഫാബ്രിക് (ആർക്കൈവൽ)</translation>
 <translation id="6971439137020188025">Slides-ൽ പുതിയൊരു Google അവതരണം വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="6972629891077993081">HID ഉപകരണങ്ങൾ</translation>
 <translation id="6973656660372572881">സ്ഥിരമായ പ്രോക്‌സി സെർവറുകളും ഒരു സ്‌ക്രിപ്റ്റ് URL-ഉം വ്യക്തമാക്കിയിരിക്കുന്നു.</translation>
@@ -2693,6 +2780,7 @@
 <translation id="6978236010531171013">എന്തായാലും പങ്കിടുക</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">മ്യൂട്ട് ചെയ്യുക (ഡിഫോൾട്ട്)</translation>
+<translation id="6987806006823772670">എൻവലപ്പ് (കോട്ട് ചെയ്തത്)</translation>
 <translation id="6989763994942163495">വിപുലമായ ക്രമീകരണങ്ങൾ കാണിക്കുക...</translation>
 <translation id="6992499368826755835">ഓട്ടോമോട്ടീവ് വ്യവസായം</translation>
 <translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" /> എല്ലായ്‌പ്പോഴും വിവർത്തനം ചെയ്യുക</translation>
@@ -2715,6 +2803,7 @@
 <translation id="7030436163253143341">സർട്ടിഫിക്കറ്റ് അസാധുവാണ്</translation>
 <translation id="7031646650991750659">ഏതൊക്കെ Google Play ആപ്പുകൾ നിങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്‍തിട്ടുണ്ട് എന്നത്</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Google Account സ്വകാര്യതാ ക്രമീകരണം മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
+<translation id="7043552168914147882">ടാബ് സ്റ്റോക്ക്</translation>
 <translation id="7044081119134178347">ഇപ്പോൾ മാത്രം ക്യാമറ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="7048095965575426564">യൂറോപ്യൻ ഫാൻഫോൾഡ്</translation>
 <translation id="7050187094878475250">നിങ്ങൾ <ph name="DOMAIN" /> എന്നതിലെത്താൻ ശ്രമിച്ചു, എന്നാൽ തീരെ വിശ്വാസയോഗ്യമല്ലാത്ത ഒരു കാലാവധിയുള്ള സർട്ടിഫിക്കറ്റാണ് സെർവർ കാണിക്കുന്നത്.</translation>
@@ -2786,6 +2875,7 @@
 <translation id="7182878459783632708">നയങ്ങളൊന്നും സജ്ജമാക്കിയിട്ടില്ല</translation>
 <translation id="7184379626380324540">ഗൃഹോപകരണങ്ങൾ</translation>
 <translation id="7186367841673660872">ഈ പേജ്<ph name="ORIGINAL_LANGUAGE" />ല്‍‌ നിന്നും<ph name="LANGUAGE_LANGUAGE" />ലേക്ക് വിവര്‍‌ത്തനം ചെയ്‌തു</translation>
+<translation id="7186833457841277072">എൻവലപ്പ് (ഇങ്ക്‌ജെറ്റ്)</translation>
 <translation id="7186840261985974511">Envelope #12</translation>
 <translation id="718872491229180389">ചിയർലീഡിംഗ്</translation>
 <translation id="7192188280913829296">"vendor_id" എന്ന ആട്രിബ്യൂട്ടും വ്യക്തമാക്കിയിരിക്കണം.</translation>
@@ -2865,6 +2955,7 @@
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">പേയ്‌മെന്റ് കൈകാര്യം ചെയ്യുന്ന സംവിധാനങ്ങൾ</translation>
 <translation id="7367985555340314048">'താൽപ്പര്യമുള്ള വിഷയങ്ങൾ' അടിസ്ഥാനമാക്കുന്നത് നിങ്ങളുടെ സമീപകാല ബ്രൗസിംഗ് ചരിത്രത്തെയാണ്, നിങ്ങൾക്ക് വ്യക്തിപരമാക്കിയ പരസ്യങ്ങൾ കാണിക്കുന്നതിനായി സൈറ്റുകൾ ഇവ ഉപയോഗിക്കുന്നു</translation>
+<translation id="7372526636730851647">ഫോട്ടോ (ഗ്ലോസി)</translation>
 <translation id="7372973238305370288">തിരയൽ ഫലം</translation>
 <translation id="7374461526650987610">പ്രോട്ടോക്കോൾ ഹാൻഡ്‌ലറുകൾ</translation>
 <translation id="7374733840632556089">നിങ്ങളുടെ ഉപകരണത്തിൽ നിങ്ങളോ മറ്റാരെങ്കിലുമോ ഇൻസ്റ്റാൾ ചെ‌യ്‌തിരിക്കുന്ന ഒരു സർട്ടിഫിക്കറ്റ് കാരണമാണ് ഈ പ്രശ്‌നം സംഭവിക്കുന്നത്. നെറ്റ്‍വർക്കുകൾ നിരീക്ഷിക്കുന്നതിനും തടസ്സപ്പെടുത്തുന്നതിനും ഉപയോഗിക്കുന്നതായി അറിയപ്പെടുന്നതാണ് ഈ സർട്ടിഫിക്കറ്റ്, Chrome-ന് ഇതിനെ വിശ്വാസമില്ല. സ്‍കൂളിലോ കമ്പനി നെറ്റ്‍വർക്കിലോ ഉള്ളതുപോലെ, നിരീക്ഷണവുമായി ബന്ധപ്പെട്ട സത്യന്ധമായ ചില സംഗതികൾ നിലവിലുണ്ട്, നിങ്ങൾക്കിത് അവസാനിപ്പിക്കാൻ കഴിയില്ലെങ്കിലും ഇത് നടക്കുന്നുണ്ടെന്ന് നിങ്ങളെ അറിയിക്കാൻ Chrome താൽപ്പര്യപ്പെടുന്നു. വെബ് ആക്‌സസ് ചെയ്യുന്ന ഏതൊരു ബ്രൗസറിലോ ആപ്പിലോ നിരീക്ഷണം നടന്നേക്കാം.</translation>
@@ -2901,6 +2992,7 @@
 <translation id="7418620734632363981">പ്രോഗ്രാമിംഗ്</translation>
 <translation id="7419106976560586862">പ്രൊഫൈൽ പാത</translation>
 <translation id="7421067045979951561">പ്രോട്ടോക്കോൾ ഹാൻഡ്‌ലറുകൾ</translation>
+<translation id="7422347648202898039">ലേബലുകൾ (സുരക്ഷ)</translation>
 <translation id="7423283032694727565">'കുക്കികൾ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ കുക്കി മുൻഗണനകൾ മാനേജ് ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="7427366580982928791">കുട്ടികളുടെ ഇന്റർനെറ്റ് സുരക്ഷ</translation>
 <translation id="7429429656042611765">എക്‌സിക്യൂട്ടീവ്</translation>
@@ -2974,6 +3066,7 @@
 <translation id="7554791636758816595">പുതിയ ടാബ്</translation>
 <translation id="7555777498260651025">കുടുംബ-കേന്ദ്രീകൃത ടിവി ഷോകൾ</translation>
 <translation id="7559278538486662777">ഈ ആപ്പിന്റെ വലുപ്പം‌ മാറ്റാനാകില്ല.</translation>
+<translation id="7561784249784255101">വിവിധോപയോഗപ്രദമായ ഡിജിറ്റൽ ഡിസ്‌ക്</translation>
 <translation id="7564049878696755256">നിങ്ങളുടെ <ph name="ORG_NAME" /> അക്കൗണ്ടിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകാനോ ഐഡന്‍റിറ്റി മോഷ്ടിക്കപ്പെടാനോ സാധ്യതയുണ്ട്. ഇപ്പോൾ തന്നെ പാസ്‍വേഡ് മാറ്റാൻ Chrome ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="7564667064360547717">ഷർട്ടുകളും ടോപ്പുകളും</translation>
 <translation id="7564680668369175887">സ്റ്റേഷൻ വാഗണുകൾ</translation>
@@ -2992,6 +3085,7 @@
 <translation id="7582602800368606489">Google Calendar-ൽ പുതിയൊരു ഇവന്റ് വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="7583969447617676942">നിയമ സേവനങ്ങൾ</translation>
 <translation id="7586676035079382730">അറിയിപ്പുകൾ ആക്സസ് അനുവദിച്ചില്ല</translation>
+<translation id="7588707273764747927">ട്രാൻസ്‌ഫർ</translation>
 <translation id="7591288787774558753">രഹസ്യാത്മക ഉള്ളടക്കം പങ്കിടണോ?</translation>
 <translation id="7591636454931265313"><ph name="TOP_LEVEL_URL" /> എന്നതിൽ കുക്കികളും സൈറ്റ് ഡാറ്റയും ഉപയോഗിക്കാൻ <ph name="EMBEDDED_URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="7592362899630581445">സെർവറിന്റെ സർട്ടിഫിക്കറ്റ് പേരിന്റെ പരിധി ലംഘിക്കുന്നു.</translation>
@@ -3007,6 +3101,7 @@
 <translation id="7617825962482469577">Envelope C7/C6</translation>
 <translation id="7619838219691048931">അവസാന ഷീറ്റ്</translation>
 <translation id="7625242817712715120">ഈ ഉള്ളടക്കം പ്രിന്റ് ചെയ്യാൻ അഡ്‌മിൻ നയം ശുപാർശ ചെയ്യുന്നില്ല</translation>
+<translation id="7627785503571172573">ഫോട്ടോ (ഫിലിം)</translation>
 <translation id="762844065391966283">ഒരു സമയം ഒന്ന്</translation>
 <translation id="763042426047865637">അഗ്‌നിശമന, സുരക്ഷാ സേവനങ്ങൾ</translation>
 <translation id="7630470133768862132">സമ്മത നില:</translation>
@@ -3035,12 +3130,14 @@
 <translation id="7669907849388166732">{COUNT,plural, =1{രഹസ്യാത്മകം എന്ന് ഫ്ലാഗ് ചെയ്ത ഡാറ്റ ഉപയോഗിച്ചുള്ള പ്രവർത്തനങ്ങൾ (ലോഗിൻ ചെയ്തത് മുതൽ ഒരു പ്രവർത്തനം). <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" />}other{രഹസ്യാത്മകം എന്ന് ഫ്ലാഗ് ചെയ്ത ഡാറ്റ ഉപയോഗിച്ചുള്ള പ്രവർത്തനങ്ങൾ (ലോഗിൻ ചെയ്തത് മുതൽ # പ്രവർത്തനങ്ങൾ). <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">മെയിൽബോക്സ് 6</translation>
 <translation id="7675325315208090829">പേയ്മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക...</translation>
+<translation id="767550629621587224">പ്രീ കട്ട് ടാബുകൾ</translation>
 <translation id="7676643023259824263">ക്ലിപ്പ്‌ബോർഡ് ടെക്‌സ്‌റ്റിനായി തിരയുക, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം കാണുക, മാനേജ് ചെയ്യുക</translation>
 <translation id="7679947978757153706">ബേസ്ബോൾ</translation>
 <translation id="7681273392938116652">ഫാന്റസി സ്‌പോർട്‌സുകൾ</translation>
 <translation id="7682287625158474539">ഷിപ്പിംഗ്</translation>
 <translation id="7682451652090915298">റഗ്‌ബി</translation>
+<translation id="7684683146428206649">മെറ്റൽ</translation>
 <translation id="7687186412095877299">നിങ്ങളുടെ സംരക്ഷിച്ച പേയ്‌മെന്‍റ് രീതികൾ ഉപയോഗിച്ച് പേയ്‌മെന്‍റ് ഫോമുകളിൽ പൂരിപ്പിക്കുന്നു</translation>
 <translation id="7687305263118037187">വീണ്ടും ശ്രമിക്കൽ ടൈം ഔട്ടായി</translation>
 <translation id="7690647519407127574">Oufuku Hagaki പോസ്റ്റ്കാർഡ്</translation>
@@ -3052,9 +3149,11 @@
 <translation id="7701040980221191251">ഒന്നുമില്ല</translation>
 <translation id="7701544340847569275">പിശകുകളോടെ അപ്ഡേറ്റ് പൂർത്തിയായി</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /> <ph name="SITE" /> എന്നതിലേക്ക് പോകുക (സുരക്ഷിതമല്ല)<ph name="END_LINK" /></translation>
+<translation id="7705992072972338699">ഒപ്‌റ്റിക്കൽ ഡിസ്‌ക് (ഹൈ ഗ്ലോസ്)</translation>
 <translation id="770607638235926858">സ്‌കീയിംഗ്, സ്‌നോബോർഡിംഗ്</translation>
 <translation id="7706689436519265630">നിങ്ങൾ പകർത്തുകയോ നീക്കുകയോ ചെയ്യുന്ന ഫയലുകൾ വിശകലനത്തിനായി Google Cloud-ലേക്കോ മൂന്നാം കക്ഷികൾക്കോ അയയ്ക്കുന്നു. ഉദാഹരണത്തിന്, സെൻസിറ്റീവായിട്ടുള്ള വ്യക്തിപരമായ ഡാറ്റയോ മാൽവെയറോ ഉണ്ടോയെന്നറിയാൻ അവ സ്‌കാൻ ചെയ്‌തേക്കാം, കൂടാതെ കമ്പനിയുടെ നയങ്ങൾ അടിസ്ഥാനമാക്കി അവ സംഭരിക്കുകയും ചെയ്‌തേക്കാം.</translation>
 <translation id="7709911732293795808">ഇൻഷുറൻസ്</translation>
+<translation id="7714404809393719981">ഫോട്ടോ (സെമി ഗ്ലോസ്)</translation>
 <translation id="7714464543167945231">സര്‍‌ട്ടിഫിക്കറ്റ്</translation>
 <translation id="7716147886133743102">നിങ്ങളുടെ അ‌ഡ്‌മിനി‌സ്‌ട്രേറ്റർ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="7716375162095500223">ഇതുവരെ അപ്‌ലോഡ് ചെയ്തിട്ടില്ല, അല്ലെങ്കിൽ അവഗണിച്ചു</translation>
@@ -3084,6 +3183,7 @@
 <translation id="7764225426217299476">വിലാസം ചേർക്കുക</translation>
 <translation id="7766518757692125295">സ്കേർട്ട്</translation>
 <translation id="7767278989746220252">നടുമുറ്റം, പുൽത്തകിടി, പൂന്തോട്ടം</translation>
+<translation id="776749070095465053">ഫാബ്രിക്</translation>
 <translation id="7773005668374414287">അതേ ക്രമത്തിൽ ഫേസ് അപ്പ്</translation>
 <translation id="7781829728241885113">ഇന്നലെ</translation>
 <translation id="7785790577395078482">ഈ ടാബ്‌ലെറ്റ്</translation>
@@ -3102,6 +3202,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome-ൽ നിന്നുള്ള നിർദ്ദേശം നീക്കംചെയ്യണോ?</translation>
 <translation id="781440967107097262">ക്ലിപ്പ്ബോർഡ് പങ്കിടണോ?</translation>
+<translation id="7815352264092918456">പേപ്പർ (പ്ലെയിൻ)</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' എന്നതിന്റെ <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> കണ്ടു</translation>
 <translation id="7822320754433038727">വേട്ടയും നായാട്ടും</translation>
 <translation id="7822611063308883975">കൈയിൽ പിടിക്കാവുന്ന ഗെയിം കൺസോൾ</translation>
@@ -3126,6 +3227,7 @@
 <translation id="7888575728750733395">പ്രിന്റ് റെൻഡറിംഗ് ഇന്റന്റ്</translation>
 <translation id="7894280532028510793">അക്ഷരങ്ങൾ ശരിയാണെങ്കിൽ <ph name="BEGIN_LINK" /> നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 ഇഞ്ച്</translation>
+<translation id="7916162853251942238">ഫ്ലെക്‌സോ ബേസ്</translation>
 <translation id="7927971017714848357">ലോട്ടുകളും സ്ഥലങ്ങളും</translation>
 <translation id="793209273132572360">വിലാസം അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="7932579305932748336">കോട്ട്</translation>
@@ -3185,6 +3287,7 @@
 <translation id="8027585818882015174">'Chrome സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms-ൽ പുതിയൊരു ഫോം വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="8028960012888758725">ജോലിക്ക് ശേഷം ട്രിം ചെയ്യുക</translation>
+<translation id="8032546467100845887">സുതാര്യത</translation>
 <translation id="8034522405403831421">ഈ പേജ് <ph name="SOURCE_LANGUAGE" />-ലാണ്. <ph name="TARGET_LANGUAGE" />-ലേക്ക് വിവർത്തനം ചെയ്യണോ?</translation>
 <translation id="8035152190676905274">പേന</translation>
 <translation id="8037117624646282037">അടുത്തിടെ ഉപകരണം ഉപയോഗിച്ചവർ</translation>
@@ -3205,6 +3308,7 @@
 <translation id="8067872629359326442">വഞ്ചനാപരമായ സൈറ്റിൽ നിങ്ങൾ ഇപ്പോൾ പാസ്‍വേഡ് നൽകി. Chromium-ന് സഹായിക്കാനാവും. നിങ്ങളുടെ പാസ്‌വേഡ് മാറ്റാനും നിങ്ങളുടെ അക്കൗണ്ട് അപകടത്തിലായിരിക്കാമെന്ന് Google-നെ അറിയിക്കാനും 'അക്കൗണ്ട് പരിരക്ഷിക്കുക' ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="8070439594494267500">ആപ്പ് ഐക്കൺ</translation>
 <translation id="8070495475341517754">സ്ഥലങ്ങൾ കാണാനുള്ള ടൂറുകൾ</translation>
+<translation id="8075588646978457437">സെൽഫ് അഡ്ഡിസിവ് പേപ്പർ</translation>
 <translation id="8075736640322370409">പുതിയൊരു Google Sheet വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="8075898834294118863">സൈറ്റ് ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
@@ -3255,6 +3359,7 @@
 <translation id="8194412401381329820">മാനേജ് ചെയ്യപ്പെടാത്ത ഈ ഉപകരണത്തിലെ മാനേജ് ചെയ്യപ്പെടുന്ന അക്കൗണ്ടിൽ നിന്ന് നിങ്ങൾക്ക് ഈ പേജ് ഉപയോഗിക്കാൻ കഴിയില്ല. നിങ്ങൾ ഈ പേജ് ഉപയോഗിക്കുകയാണെങ്കിൽ, ഈ ഉപകരണം മാനേജ് ചെയ്യുന്ന അതേ സ്ഥാപനം മാനേജ് ചെയ്യുന്ന അക്കൗണ്ടുകൾ (അഫിലിയേറ്റ് ചെയ്ത അക്കൗണ്ടുകൾ) ഒഴികെ, മാനേജ് ചെയ്യപ്പെടുന്ന എല്ലാ അക്കൗണ്ടുകളും ലോക്ക് ചെയ്യും.</translation>
 <translation id="8194797478851900357">&amp;നീക്കുന്നത് പഴയപടിയാക്കുക</translation>
 <translation id="8194956568907463262">ഷൂട്ടർ ഗെയിമുകൾ</translation>
+<translation id="8199437620497683918">ഒപ്റ്റിക്കല്‍ ഡിസ്‌ക് (ഗ്ലോസി)</translation>
 <translation id="8200772114523450471">പുനരാരംഭിക്കുക</translation>
 <translation id="8202097416529803614">ഓർഡർ സംഗ്രഹം</translation>
 <translation id="8202370299023114387">പൊരുത്തക്കേട്</translation>
@@ -3311,6 +3416,7 @@
 <translation id="8284769179630993263">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ സുരക്ഷിത ബ്രൗസിംഗും മറ്റും മാനേജ് ചെയ്യുക</translation>
 <translation id="8286036467436129157">സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="8286799286781881307">നിങ്ങളുടെ അഡ്‌മിൻ അംഗീകരിച്ച ആപ്പുകൾക്ക് നിങ്ങളുടെ ഉപകരണത്തിൽ അറ്റാച്ച് ചെയ്തിരിക്കുന്ന എല്ലാ സ്ക്രീനുകളും ക്യാപ്‌ചർ ചെയ്യാനാകും. ഈ വിവരങ്ങൾ ലോക്കലായി പ്രോസസ് ചെയ്യാം അല്ലെങ്കിൽ നിങ്ങളുടെ ഓർഗനൈസേഷന്റെ സെർവറുകളിലേക്ക് അപ്‌ലോഡ് ചെയ്യാം.</translation>
+<translation id="8287123726498397887">എൻവലപ്പ് (പ്രീപ്രിന്റ് ചെയ്തത്)</translation>
 <translation id="8288807391153049143">സർട്ടിഫിക്കറ്റ് കാണിക്കുക</translation>
 <translation id="8289355894181816810">ഇത് അർത്ഥമാക്കുന്നത് എന്താണെന്ന് നിങ്ങൾക്ക് ഉറപ്പില്ലെങ്കിൽ നെറ്റ്‌വർക്ക് അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="8292520987784410870">എല്ലായ്‌പ്പോഴും പരിശോധിച്ചുറപ്പിക്കണോ?</translation>
@@ -3420,6 +3526,7 @@
 <translation id="853246364274116957">ബ്രോഡ്‌വേ, മ്യൂസിക്കൽ തീയറ്റർ</translation>
 <translation id="853332391023689529">പിക്കപ്പ് ട്രക്കുകൾ</translation>
 <translation id="8533619373899488139">ബ്ലോക്ക് ചെയ്ത URL-കളുടെ ലിസ്റ്റും നിങ്ങളുടെ സിസ്റ്റം അഡ്‌മിൻ നടപ്പിലാക്കിയ മറ്റ് നയങ്ങളും കാണുന്നതിന് &lt;strong&gt;chrome://policy&lt;/strong&gt; സന്ദർശിക്കുക.</translation>
+<translation id="8536234749087605613">എൻവലപ്പ് (വിൻഡോ)</translation>
 <translation id="8539500321752640291">2 അനുമതികൾ നൽകണോ?</translation>
 <translation id="8541158209346794904">Bluetooth ഉപകരണം</translation>
 <translation id="8541410041357371550">നിങ്ങൾക്ക് കൂടുതൽ പ്രസക്തമായ പരസ്യങ്ങൾ കാണിക്കാൻ ഈ സൈറ്റിന് Chrome-ൽ നിന്ന് നിങ്ങളുടെ പരസ്യ വിഷയങ്ങൾ ലഭിക്കുന്നു</translation>
@@ -3427,8 +3534,10 @@
 <translation id="8542014550340843547">താഴെ മൂന്ന് തവണ സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">നിങ്ങൾക്ക് <ph name="BEGIN_ERROR_LINK" />സുരക്ഷാപ്രശ്‌നം റിപ്പോർട്ട് ചെയ്യാം<ph name="END_ERROR_LINK" /> അല്ലെങ്കിൽ, സുരക്ഷയെ ബാധിച്ചേക്കാവുന്ന അപകട സാധ്യതകളെക്കുറിച്ച് ബോധ്യമുണ്ടെങ്കിൽ <ph name="BEGIN_LINK" />സുരക്ഷിതമല്ലാത്ത ഈ സൈറ്റ്<ph name="END_LINK" />സന്ദർശിക്കുക.</translation>
+<translation id="8544303911974837265">പോളിസ്റ്റർ</translation>
 <translation id="854548366864113872">ഉയർന്ന നിരക്കുള്ള ഓപ്ഷൻ</translation>
 <translation id="8546350655047701518">JSON-ലേക്ക് ലോഗുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യുക</translation>
+<translation id="8546667245446052521">പേപ്പർ (ആർക്കൈവൽ)</translation>
 <translation id="854892890027593466">Envelope C6/C5</translation>
 <translation id="8553387990086529628">വിനോദസഞ്ചാര കേന്ദ്രങ്ങൾ</translation>
 <translation id="8554010658308662631">കൂടുതൽ ലോഡ് ചെയ്യുക</translation>
@@ -3462,12 +3571,15 @@
 <translation id="8624354461147303341">ഡിസ്‌കൗണ്ടുകൾ നേടുക</translation>
 <translation id="8634957317623797170">54 x 86 മി.മീ</translation>
 <translation id="8637577059508742477">നിങ്ങളുടെ പ്രൊഫൈലും ബ്രൗസറും മാനേജ് ചെയ്യുന്നത് <ph name="DOMAIN" /> ആണ്</translation>
+<translation id="8641131559425911240">എൻവലപ്പ് (ബോണ്ട്)</translation>
 <translation id="8643409044755049933">Envelope Kaku 3</translation>
 <translation id="8647287295490773273">210 x 330 മി.മീ</translation>
 <translation id="865032292777205197">മോഷൻ സെൻസറുകൾ</translation>
+<translation id="865255447216708819">ബാക്ക് പ്രിന്റ് ഫിലിം</translation>
 <translation id="8654126188050905496">55 x 91 മി.മീ</translation>
 <translation id="8662463432865928030">വാണിജ്യപരമായ പ്രോപ്പർട്ടികൾ</translation>
 <translation id="8663226718884576429">ഓർഡർ സംഗ്രഹം, <ph name="TOTAL_LABEL" />, കൂടുതൽ വിശദാംശങ്ങൾ</translation>
+<translation id="8663909737634214500">ഒപ്‌റ്റിക്കൽ ഡിസ്‌ക്</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> എന്ന മൂല്യം, വലുപ്പ സംബന്ധമായ ആവശ്യകതകൾ പാലിക്കുന്നില്ല.</translation>
 <translation id="867224526087042813">ഒപ്പ്</translation>
 <translation id="8672264262457010862">ബിസിനസും വ്യവസായവും</translation>
@@ -3481,6 +3593,7 @@
 <translation id="869891660844655955">കാലഹരണപ്പെടല്‍‌ തീയതി</translation>
 <translation id="8699041776323235191">HID ഉപകരണം</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
+<translation id="8702965365666568344">മൗണ്ട് ചെയ്യൽ ടേപ്പ്</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> ലേക്കുള്ള നിങ്ങളുടെ കണക്ഷന്‍ എന്‍‌ക്രിപ്റ്റ് ചെയ്തിട്ടില്ല.</translation>
 <translation id="8705331520020532516">സീരിയല്‍‌ നമ്പര്‍‌</translation>
 <translation id="8708134712139312373">Bluetooth ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
@@ -3491,6 +3604,7 @@
 <translation id="8718314106902482036">പേയ്‌മെന്റ് പൂർത്തിയായിട്ടില്ല</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, തിരയൽ നിർദ്ദേശം</translation>
 <translation id="8719528812645237045">മുകളിൽ ഒന്നിലധികം പഞ്ച് ചെയ്യുക</translation>
+<translation id="8722929331701811374">സ്റ്റേഷനറി (ലെറ്റർഹെഡ്)</translation>
 <translation id="8724824364712796726">Envelope B6</translation>
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="8726549941689275341">പേജിന്റെ വലുപ്പം:</translation>
@@ -3522,10 +3636,12 @@
 <translation id="8770286973007342895">പുല്ലരിയൽ യന്ത്രം</translation>
 <translation id="8772387130037509473">യോഗയും പൈലേറ്റ്സും</translation>
 <translation id="877348612833018844">{0,plural, =1{രഹസ്യാത്മക ഫയൽ നീക്കണോ?}other{രഹസ്യാത്മക ഫയലുകൾ നീക്കണോ?}}</translation>
+<translation id="8775347646940100151">പേപ്പർ (ലെറ്റർഹെഡ്)</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">'പേജ് വിവർത്തനം ചെയ്യുക' ബട്ടൺ, Google Translate ഉപയോഗിച്ച് ഈ പേജ് വിവർത്തനം ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="8785658048882205566">മോട്ടോർസൈക്കിളുകൾ</translation>
 <translation id="8790007591277257123">&amp;ഇല്ലാതാക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
+<translation id="8792272652220298572">പ്ലാസ്റ്റിക് (ഗ്ലോസി)</translation>
 <translation id="8792621596287649091">നിങ്ങളുടെ <ph name="ORG_NAME" /> അക്കൗണ്ടിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകാനോ ഐഡന്‍റിറ്റി മോഷ്ടിക്കപ്പെടാനോ സാധ്യതയുണ്ട്. ഇപ്പോൾ തന്നെ പാസ്‍വേഡ് മാറ്റാൻ Chromium ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="8792626944327216835">മൈക്രോഫോൺ</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" />, നിങ്ങളുടെ ബ്രൗസറിൽ Chrome Enterprise Connectors ഓണാക്കിയിരിക്കുന്നു. ഈ കണക്‌റ്ററുകൾക്ക് നിങ്ങളുടെ ചില ഡാറ്റയിലേക്ക് ആക്‌സസ് ഉണ്ട്.</translation>
@@ -3533,6 +3649,7 @@
 <translation id="8798739476508189189">ബ്രൗസർ ഫ്ലാഗുകൾ തിരയുകയാണോ? സന്ദർശിക്കുക</translation>
 <translation id="8805819170075074995">ലിസ്‌റ്റ് എൻട്രി "<ph name="LANGUAGE_ID" />": SpellcheckLanguage നയത്തിലും ഉൾപ്പെടുത്തിയിരിക്കുന്നതിനാൽ എൻട്രി അവഗണിച്ചു.</translation>
 <translation id="8806285662264631610">കുളിക്കാനും ശരീര സംരക്ഷണത്തിനുമുള്ള ഉൽപ്പന്നങ്ങൾ</translation>
+<translation id="8806696968588872703">പ്ലാസ്റ്റിക് (സാറ്റിൻ)</translation>
 <translation id="8807160976559152894">ഓരോ പേജിന് ശേഷവും ട്രിം ചെയ്യുക</translation>
 <translation id="8809203544698246977">ബ്ലോക്ക് ചെയ്ത വിഷയങ്ങൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="8811470563853401328">വിലാസം അക്കൗണ്ടിൽ സംരക്ഷിക്കണോ?</translation>
@@ -3644,6 +3761,7 @@
 <translation id="9063800855227801443">രഹസ്യാത്മക ഉള്ളടക്കം ക്യാപ്‌ചർ ചെയ്യാനാകില്ല</translation>
 <translation id="9065203028668620118">എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="9065745800631924235">ചരിത്രത്തിൽ നിന്നുള്ള <ph name="TEXT" /> തിരയൽ</translation>
+<translation id="90695670378604968">പ്ലാസ്റ്റിക് (തിളക്കമില്ലാത്തത്)</translation>
 <translation id="9069693763241529744">ഒരു വിപുലീകരണം മുഖേന ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="9073799351042754113">ഈ സൈറ്റിനുള്ള സുരക്ഷാ മുന്നറിയിപ്പുകൾ ഓഫാക്കാൻ നിങ്ങൾ തിരഞ്ഞെടുത്തു.</translation>
 <translation id="9076283476770535406">ഇതിൽ മുതിർന്നവർക്കുള്ള ഉള്ളടക്കം ഉണ്ടായിരിക്കാം</translation>
@@ -3709,6 +3827,7 @@
 <translation id="9186203289258525843">'ഡിഫോൾട്ട് ബ്രൗസറായി Chrome സജ്ജീകരിക്കുക' ബട്ടൺ, സിസ്റ്റത്തിന്റെ ഡിഫോൾട്ട് ബ്രൗസറായി Chrome ക്രമീകരിക്കാൻ സജീവമാക്കുക</translation>
 <translation id="9187461866967718678">എക്‌സ്‌ട്രീം സ്‌പോർട്‌സ്</translation>
 <translation id="9191834167571392248">താഴെ ഇടതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
+<translation id="9192361865877479444">മെറ്റൽ (തിളക്കമില്ലാത്തത്)</translation>
 <translation id="9199905725844810519">പ്രിന്റ് ചെയ്യൽ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="9205078245616868884">നിങ്ങളുടെ സമന്വയ പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച് ഡാറ്റ എൻക്രിപ്‌റ്റ് ചെയ്‌തു. സമന്വയം ആരംഭിക്കുന്നതിന് ഇത് നൽകുക.</translation>
 <translation id="9207861905230894330">ലേഖനം ചേർക്കാനായില്ല.</translation>
