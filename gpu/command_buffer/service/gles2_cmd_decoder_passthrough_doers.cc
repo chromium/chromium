@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/command_buffer/service/copy_shared_image_helper.h"
 #include "gpu/command_buffer/service/decoder_client.h"
@@ -22,7 +23,11 @@
 #include "gpu/command_buffer/service/multi_draw_manager.h"
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
+#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_priority_hint.h"
@@ -351,6 +356,20 @@ bool ModifyAttachmentsForEmulatedFramebuffer(std::vector<GLenum>* attachments) {
   }
 
   return true;
+}
+
+SkYUVAPixmapInfo::DataType ToSkYUVADataType(viz::SharedImageFormat format) {
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return SkYUVAPixmapInfo::DataType::kUnorm8;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+      return SkYUVAPixmapInfo::DataType::kUnorm10_Unorm2;
+    case viz::SharedImageFormat::ChannelFormat::k16:
+      return SkYUVAPixmapInfo::DataType::kUnorm16;
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      return SkYUVAPixmapInfo::DataType::kFloat16;
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // anonymous namespace
@@ -2470,7 +2489,192 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
     GLuint pixels_offset_plane2,
     GLuint pixels_offset_plane3,
     GLuint pixels_offset_plane4) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (!lazy_context_) {
+    lazy_context_ = LazySharedContextState::Create(this);
+    if (!lazy_context_) {
+      return error::kNoError;
+    }
+  }
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
+  auto* shared_context_state = lazy_context_->shared_context_state();
+  ui::ScopedMakeCurrent smc(shared_context_state->context(),
+                            shared_context_state->surface());
+
+  if (src_yuv_plane_config < 0 ||
+      src_yuv_plane_config > static_cast<int>(SkYUVAInfo::PlaneConfig::kLast)) {
+    InsertError(GL_INVALID_ENUM,
+                "src_yuv_plane_config must be a valid PlaneConfig");
+    return error::kNoError;
+  }
+  if (src_yuv_subsampling < 0 ||
+      src_yuv_subsampling > static_cast<int>(SkYUVAInfo::Subsampling::kLast)) {
+    InsertError(GL_INVALID_ENUM,
+                "src_yuv_subsampling must be a valid Subsampling");
+    return error::kNoError;
+  }
+  if (src_yuv_datatype < 0 ||
+      src_yuv_datatype > static_cast<int>(SkYUVAPixmapInfo::DataType::kLast)) {
+    InsertError(GL_INVALID_ENUM,
+                "src_yuv_datatype must be a valid SkYUVAPixmapInfo::DataType");
+    return error::kNoError;
+  }
+
+  auto* mailbox_memory =
+      GetSharedMemoryAs<Mailbox*>(shm_id, shm_offset, sizeof(Mailbox));
+  if (!mailbox_memory) {
+    InsertError(GL_INVALID_OPERATION,
+                "Failed to retrieve memory for WritePixelsYUV mailbox");
+    return error::kOutOfBounds;
+  }
+
+  auto* representation_factory = group_->shared_image_representation_factory();
+
+  Mailbox dest_mailbox = Mailbox::FromVolatile(
+      *reinterpret_cast<const volatile Mailbox*>(mailbox_memory));
+  DLOG_IF(ERROR, !dest_mailbox.Verify())
+      << "WritePixelsYUV was passed an invalid mailbox";
+  auto dest_shared_image =
+      representation_factory->ProduceSkia(dest_mailbox, shared_context_state);
+  if (!dest_shared_image) {
+    InsertError(GL_INVALID_OPERATION,
+                "Attempting to write to unknown mailbox.");
+    return error::kOutOfBounds;
+  }
+
+  SkYUVAInfo::PlaneConfig src_plane_config =
+      static_cast<SkYUVAInfo::PlaneConfig>(src_yuv_plane_config);
+  SkYUVAInfo::Subsampling src_subsampling =
+      static_cast<SkYUVAInfo::Subsampling>(src_yuv_subsampling);
+  SkYUVAPixmapInfo::DataType src_datatype =
+      static_cast<SkYUVAPixmapInfo::DataType>(src_yuv_datatype);
+  viz::SharedImageFormat dest_format = dest_shared_image->format();
+  if (!dest_format.is_multi_plane()) {
+    InsertError(GL_INVALID_OPERATION,
+                "dest_format must be a valid multiplanar SharedImageFormat.");
+    return error::kNoError;
+  }
+  if (src_plane_config != ToSkYUVAPlaneConfig(dest_format)) {
+    InsertError(GL_INVALID_OPERATION,
+                "PlaneConfig mismatch between source texture format and "
+                "the destination shared image format");
+    return error::kNoError;
+  }
+  if (src_subsampling != ToSkYUVASubsampling(dest_format)) {
+    InsertError(GL_INVALID_OPERATION,
+                "Subsampling mismatch between source texture format and "
+                "the destination shared image format");
+    return error::kNoError;
+  }
+  if (src_datatype != ToSkYUVADataType(dest_format)) {
+    InsertError(GL_INVALID_OPERATION,
+                "ChannelFormat mismatch between source texture format "
+                "and the destination shared image format");
+    return error::kNoError;
+  }
+
+  SkYUVAInfo yuv_info(SkISize::Make(src_width, src_height), src_plane_config,
+                      src_subsampling,
+                      SkYUVColorSpace::kIdentity_SkYUVColorSpace);
+  if (yuv_info.numPlanes() != dest_format.NumberOfPlanes()) {
+    InsertError(GL_INVALID_OPERATION,
+                "Planes mismatch between source texture format and the "
+                "destination shared image format");
+    return error::kNoError;
+  }
+
+  if (gfx::Size(src_width, src_height) != dest_shared_image->size()) {
+    InsertError(GL_INVALID_OPERATION,
+                "Unexpected size for multiplanar shared image");
+    return error::kNoError;
+  }
+
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+
+  // Allow uncleared access, as we manually handle clear tracking.
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+      dest_scoped_access = dest_shared_image->BeginScopedWriteAccess(
+          &begin_semaphores, &end_semaphores,
+          SharedImageRepresentation::AllowUnclearedAccess::kYes,
+          /*use_sk_surface=*/false);
+  if (!dest_scoped_access) {
+    InsertError(GL_INVALID_OPERATION, "Failed to begin scoped write access.");
+    return error::kNoError;
+  }
+  if (!begin_semaphores.empty()) {
+    // The Graphite SharedImage representation does not set semaphores.
+    CHECK(shared_context_state->gr_context());
+    bool result = shared_context_state->gr_context()->wait(
+        begin_semaphores.size(), begin_semaphores.data(),
+        /*deleteSemaphoresAfterWait=*/false);
+    CHECK(result);
+  }
+
+  size_t row_bytes[SkYUVAInfo::kMaxPlanes];
+  row_bytes[0] = src_row_bytes_plane1;
+  row_bytes[1] = src_row_bytes_plane2;
+  row_bytes[2] = src_row_bytes_plane3;
+  row_bytes[3] = src_row_bytes_plane4;
+
+  size_t plane_offsets[SkYUVAInfo::kMaxPlanes];
+  plane_offsets[0] = pixels_offset_plane1;
+  plane_offsets[1] = pixels_offset_plane2;
+  plane_offsets[2] = pixels_offset_plane3;
+  plane_offsets[3] = pixels_offset_plane4;
+
+  std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps = {};
+
+  for (int plane = 0; plane < yuv_info.numPlanes(); plane++) {
+    auto color_type = viz::ToClosestSkColorType(true, dest_format, plane);
+    auto plane_size =
+        dest_format.GetPlaneSize(plane, gfx::Size(src_width, src_height));
+    SkImageInfo src_info =
+        SkImageInfo::Make(gfx::SizeToSkISize(plane_size), color_type,
+                          SkAlphaType::kPremul_SkAlphaType, nullptr);
+
+    if (row_bytes[plane] < src_info.minRowBytes()) {
+      InsertError(GL_INVALID_VALUE,
+                  "row_bytes must be >= "
+                  "SkImageInfo::minRowBytes() for source image.");
+      return error::kNoError;
+    }
+
+    size_t byte_size = src_info.computeByteSize(row_bytes[plane]);
+    if (byte_size > UINT32_MAX) {
+      InsertError(GL_INVALID_VALUE,
+                  "Cannot request a memory chunk larger than UINT32_MAX bytes");
+      return error::kOutOfBounds;
+    }
+    if (plane > 0 &&
+        plane_offsets[plane] < plane_offsets[plane - 1] + byte_size) {
+      InsertError(GL_INVALID_VALUE,
+                  "plane_offsets[plane] must be >= plane_offsets[plane "
+                  "- 1] + byte_size");
+      return error::kOutOfBounds;
+    }
+
+    // The pixels are stored contiguously for all the planes one after another
+    // with padding.
+    void* pixel_data = GetSharedMemoryAs<void*>(
+        shm_id, shm_offset + plane_offsets[plane], byte_size);
+    if (!pixel_data) {
+      InsertError(GL_INVALID_OPERATION, "Couldn't retrieve pixel data.");
+      return error::kNoError;
+    }
+
+    // Create an SkPixmap for the plane.
+    pixmaps[plane] = SkPixmap(src_info, pixel_data, row_bytes[plane]);
+  }
+
+  // Try a direct texture upload without using SkSurface.
+  CopySharedImageHelper helper(group_->shared_image_representation_factory(),
+                               lazy_context_->shared_context_state());
+  auto helper_result = helper.WritePixelsYUV(
+      src_width, src_height, pixmaps, std::move(end_semaphores),
+      std::move(dest_shared_image), std::move(dest_scoped_access));
+  if (!helper_result.has_value()) {
+    InsertError(helper_result.error().gl_error, helper_result.error().msg);
+  }
   return error::kNoError;
 }
 

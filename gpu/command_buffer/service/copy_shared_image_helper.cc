@@ -24,7 +24,6 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
@@ -997,6 +996,52 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
                                     "glReadbackImagePixels",
                                     "Failed to read pixels from SkImage"));
   }
+  return base::ok();
+}
+
+base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
+    GLuint src_width,
+    GLuint src_height,
+    std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps,
+    std::vector<GrBackendSemaphore> end_semaphores,
+    std::unique_ptr<SkiaImageRepresentation> dest_shared_image,
+    std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+        dest_scoped_access) {
+  viz::SharedImageFormat dest_format = dest_shared_image->format();
+  auto* gr_context = shared_context_state_->gr_context();
+  for (int plane = 0; plane < dest_format.NumberOfPlanes(); plane++) {
+    bool written = false;
+    if (gr_context) {
+      written = gr_context->updateBackendTexture(
+          dest_scoped_access->promise_image_texture(plane)->backendTexture(),
+          &pixmaps[plane],
+          /*numLevels=*/1, dest_shared_image->surface_origin(), nullptr,
+          nullptr);
+    } else {
+      CHECK(shared_context_state_->graphite_context());
+      written =
+          shared_context_state_->gpu_main_graphite_recorder()
+              ->updateBackendTexture(
+                  dest_scoped_access->graphite_texture(plane), &pixmaps[plane],
+                  /*numLevels=*/1);
+    }
+    if (!written) {
+      return base::unexpected(
+          GLError(GL_INVALID_OPERATION, "glWritePixelsYUV",
+                  "Failed to upload pixels to dest shared image"));
+    }
+  }
+
+  if (gr_context) {
+    dest_scoped_access->ApplyBackendSurfaceEndState();
+  }
+  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
+                    is_drdc_enabled_);
+
+  if (!dest_shared_image->IsCleared()) {
+    dest_shared_image->SetClearedRect(gfx::Rect(src_width, src_height));
+  }
+
   return base::ok();
 }
 

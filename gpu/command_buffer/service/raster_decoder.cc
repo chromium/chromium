@@ -2291,6 +2291,8 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
   plane_offsets[2] = plane3_offset;
   plane_offsets[3] = plane4_offset;
 
+  std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps = {};
+
   for (int plane = 0; plane < yuv_info.numPlanes(); plane++) {
     auto color_type = viz::ToClosestSkColorType(true, dest_format, plane);
     auto plane_size =
@@ -2331,38 +2333,20 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
       return;
     }
 
-    // Try a direct texture upload without using SkSurface.
-    SkPixmap pixmap(src_info, pixel_data, row_bytes[plane]);
-    bool written = false;
-    if (gr_context()) {
-      written = gr_context()->updateBackendTexture(
-          dest_scoped_access->promise_image_texture(plane)->backendTexture(),
-          &pixmap,
-          /*numLevels=*/1, dest_shared_image->surface_origin(), nullptr,
-          nullptr);
-    } else {
-      CHECK(graphite_context());
-      written = graphite_recorder()->updateBackendTexture(
-          dest_scoped_access->graphite_texture(plane), &pixmap,
-          /*numLevels=*/1);
-    }
-    if (!written) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixelsYUV",
-                         "Failed to upload pixels to dest shared image");
-      return;
-    }
+    // Create an SkPixmap for the plane.
+    pixmaps[plane] = SkPixmap(src_info, pixel_data, row_bytes[plane]);
   }
 
-  if (gr_context()) {
-    dest_scoped_access->ApplyBackendSurfaceEndState();
-    SubmitIfNecessary(std::move(end_semaphores));
-  } else {
-    auto recording = graphite_recorder()->snap();
-    GraphiteFlushAndSubmitWithRecording(std::move(recording));
-  }
-
-  if (!dest_shared_image->IsCleared()) {
-    dest_shared_image->SetClearedRect(gfx::Rect(src_width, src_height));
+  // Try a direct texture upload without using SkSurface.
+  CopySharedImageHelper helper(&shared_image_representation_factory_,
+                               shared_context_state_.get());
+  auto helper_result = helper.WritePixelsYUV(
+      src_width, src_height, pixmaps, std::move(end_semaphores),
+      std::move(dest_shared_image), std::move(dest_scoped_access));
+  if (!helper_result.has_value()) {
+    LOCAL_SET_GL_ERROR(helper_result.error().gl_error,
+                       helper_result.error().function_name.c_str(),
+                       helper_result.error().msg.c_str());
   }
 }
 
