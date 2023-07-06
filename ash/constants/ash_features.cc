@@ -1973,7 +1973,7 @@ BASE_FEATURE(kProjectorFoldShortGapIntoPreviousTranscript,
 // connection fails for server side speech recognition.
 BASE_FEATURE(kProjectorServerSideRecognitionFallbackImpl,
              "ProjectorServerSideRecognititionFallbackImpl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether Projector's tutorial videos are displayed.
 BASE_FEATURE(kProjectorTutorialVideoView,
