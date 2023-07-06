@@ -448,10 +448,16 @@
         <message name="IDS_RECENTLY_CLOSED" desc="The section header for the Recently Closed section of the Recent Tabs menu.">
           Recently closed
         </message>
+        <message name="IDS_YOUR_DEVICES" desc="The section header for the Your Devices section of the Recent Tabs menu.">
+          Your devices
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_RECENTLY_CLOSED" desc="In Title Case: The section header for the Recently Closed section of the Recent Tabs menu.">
           Recently Closed
+        </message>
+        <message name="IDS_YOUR_DEVICES" desc="In Title Case: The section header for the Your Devices section of the Recent Tabs menu.">
+          Your Devices
         </message>
       </if>
       <message name="IDS_CHOOSE" desc="Label for a button to choose something, like a shipping address for a payment request. [CHAR_LIMIT=20]" formatter_data="android_java">

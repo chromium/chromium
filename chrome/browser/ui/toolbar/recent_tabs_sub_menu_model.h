@@ -129,8 +129,14 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
                            size_t curr_model_index);
 
   // Build the tab item for other devices with parameters needed to restore it.
-  void BuildOtherDevicesTabItem(const std::string& session_tag,
+  void BuildOtherDevicesTabItem(SimpleMenuModel* containing_model,
+                                const std::string& session_tag,
                                 const sessions::SessionTab& tab);
+
+  // Build a sub menu model for given device session.
+  std::unique_ptr<ui::SimpleMenuModel> CreateOtherDeviceSubMenu(
+      const sync_sessions::SyncedSession* session,
+      const std::vector<const sessions::SessionTab*>& tabs_in_session);
 
   // Create a submenu model representing the tabs within a window.
   std::unique_ptr<ui::SimpleMenuModel> CreateWindowSubMenuModel(
@@ -155,7 +161,8 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   int GetParentCommandId(int command_id) const;
 
   // Add the favicon for the device section header.
-  void AddDeviceFavicon(size_t index_in_menu,
+  void AddDeviceFavicon(SimpleMenuModel* containing_model,
+                        size_t index_in_menu,
                         syncer::DeviceInfo::FormFactor device_form_factor);
 
   // Add the favicon for a local or other devices' tab asynchronously,
@@ -252,6 +259,9 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // Sub menu items for sub menu entry points representing local recently
   // closed groups and windows. These are not executable.
   SubMenuItems local_sub_menu_items_;
+
+  // Sub menu items for sub menus representing other device tabs.
+  SubMenuItems device_sub_menu_items_;
 
   // Index of "Recently closed" title item.
   absl::optional<size_t> recently_closed_title_index_;

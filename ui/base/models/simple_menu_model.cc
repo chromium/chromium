@@ -140,6 +140,10 @@ void SimpleMenuModel::AddTitle(const std::u16string& label) {
   AppendItem(std::move(item));
 }
 
+void SimpleMenuModel::AddTitleWithStringId(int string_id) {
+  AddTitle(l10n_util::GetStringUTF16(string_id));
+}
+
 void SimpleMenuModel::AddSeparator(MenuSeparatorType separator_type) {
   if (items_.empty()) {
     if (separator_type == NORMAL_SEPARATOR) {
