@@ -53,6 +53,8 @@ bool StyleScope::HasImplicitRoot(Element* element) const {
 
 StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
                               const CSSParserContext* context,
+                              CSSNestingType nesting_type,
+                              StyleRule* parent_rule_for_nesting,
                               StyleSheetContents* style_sheet) {
   HeapVector<CSSSelector> arena;
 
@@ -64,22 +66,19 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
   // <scope-start>
   if (prelude.Peek().GetType() == kLeftParenthesisToken) {
     auto block = prelude.ConsumeBlock();
-    // TODO(crbug.com/1280240): Pass actual nesting context from the outside.
-    from = CSSSelectorParser::ParseScopeBoundary(
-        block, context, CSSNestingType::kNone,
-        /* parent_rule_for_nesting */ nullptr, style_sheet, arena);
+    from = CSSSelectorParser::ParseScopeBoundary(block, context, nesting_type,
+                                                 parent_rule_for_nesting,
+                                                 style_sheet, arena);
     if (!from.has_value()) {
       return nullptr;
     }
   }
 
-  CSSNestingType nesting_type = CSSNestingType::kNone;
   StyleRule* from_rule = nullptr;
   if (from.has_value() && !from.value().empty()) {
     auto* properties = MakeGarbageCollected<ImmutableCSSPropertyValueSet>(
         /* properties */ nullptr, /* count */ 0,
         CSSParserMode::kHTMLStandardMode);
-    nesting_type = CSSNestingType::kScope;
     from_rule = StyleRule::Create(from.value(), properties);
   }
 
@@ -91,9 +90,15 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
       return nullptr;
     }
 
+    // Note that <scope-start> should act as the enclosing style rule for
+    // the purposes of matching the parent pseudo-class (&) within <scope-end>,
+    // hence we're not passing `nesting_type` and `parent_rule_for_nesting`
+    // to `ParseScopeBoundary` here.
+    //
+    // https://drafts.csswg.org/css-nesting-1/#nesting-at-scope
     auto block = prelude.ConsumeBlock();
     to = CSSSelectorParser::ParseScopeBoundary(
-        block, context, nesting_type,
+        block, context, CSSNestingType::kScope,
         /* parent_rule_for_nesting */ from_rule, style_sheet, arena);
     if (!to.has_value()) {
       return nullptr;

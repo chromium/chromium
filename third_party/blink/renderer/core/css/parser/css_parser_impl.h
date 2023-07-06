@@ -225,7 +225,9 @@ class CORE_EXPORT CSSParserImpl {
   StyleRulePage* ConsumePageRule(CSSParserTokenStream&);
   StyleRuleProperty* ConsumePropertyRule(CSSParserTokenStream&);
   StyleRuleCounterStyle* ConsumeCounterStyleRule(CSSParserTokenStream&);
-  StyleRuleBase* ConsumeScopeRule(CSSParserTokenStream&);
+  StyleRuleBase* ConsumeScopeRule(CSSParserTokenStream&,
+                                  CSSNestingType,
+                                  StyleRule* parent_rule_for_nesting);
   StyleRuleContainer* ConsumeContainerRule(CSSParserTokenStream& stream,
                                            CSSNestingType,
                                            StyleRule* parent_rule_for_nesting);
@@ -254,6 +256,7 @@ class CORE_EXPORT CSSParserImpl {
 
   void ConsumeRuleListOrNestedDeclarationList(
       CSSParserTokenStream&,
+      bool is_nested_group_rule,
       CSSNestingType,
       StyleRule* parent_rule_for_nesting,
       HeapVector<Member<StyleRuleBase>, 4>* child_rules);

@@ -35,8 +35,14 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
   // can still have limits.
   explicit StyleScope(StyleSheetContents* contents, CSSSelectorList* to);
   StyleScope(const StyleScope&);
+  // Note that the `nesting_type` and `parent_rule_for_nesting` provided here
+  // are only used for parsing the <scope-start> selector. The <scope-end>
+  // selector and style rules within the scope's body will use
+  // CSSNestingType::kScope and `RuleForNesting()` instead.
   static StyleScope* Parse(CSSParserTokenRange prelude,
                            const CSSParserContext* context,
+                           CSSNestingType nesting_type,
+                           StyleRule* parent_rule_for_nesting,
                            StyleSheetContents* style_sheet);
 
   void Trace(blink::Visitor*) const;

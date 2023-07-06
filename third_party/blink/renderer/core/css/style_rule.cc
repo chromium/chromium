@@ -608,10 +608,16 @@ void StyleRuleScope::SetPreludeText(const ExecutionContext* execution_context,
   Vector<CSSParserToken, 32> tokens = CSSTokenizer(value).TokenizeToEOF();
 
   StyleRule* old_parent = style_scope_->RuleForNesting();
-  // Note that we do not need to explicitly reparent <scope-end>
-  // (StyleScope::From), because that selector is reparsed as part of
-  // StyleScope::Parse.
-  style_scope_ = StyleScope::Parse(tokens, parser_context, nullptr);
+  // TODO(crbug.com/1457247): SetPreludeText must retain nesting type,
+  // parent_rule_for_nesting and style_sheet. Otherwise, nesting selectors
+  // (&) present in `value` will not point to the correct rule, and implicit
+  // (prelude) scopes will not get any roots.
+  style_scope_ =
+      StyleScope::Parse(tokens, parser_context, CSSNestingType::kNone,
+                        /* parent_rule_for_nesting */ nullptr,
+                        /* style_sheet */ nullptr);
+
+  // Reparent rules within the @scope's body.
   Reparent(old_parent, style_scope_->RuleForNesting());
 }
 
