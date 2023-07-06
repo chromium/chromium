@@ -27,6 +27,7 @@ class DownloadBubbleUIController;
 class DownloadBubbleNavigationHandler;
 class DownloadBubbleRowView;
 class DownloadUIModel;
+class ParagraphsView;
 
 class DownloadBubbleSecurityView : public views::View {
  public:
@@ -89,7 +90,7 @@ class DownloadBubbleSecurityView : public views::View {
   raw_ptr<views::Checkbox> checkbox_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
-  raw_ptr<views::StyledLabel> styled_label_ = nullptr;
+  raw_ptr<ParagraphsView> paragraphs_ = nullptr;
   raw_ptr<views::ImageView> secondary_icon_ = nullptr;
   raw_ptr<views::StyledLabel> secondary_styled_label_ = nullptr;
   raw_ptr<views::ImageButton> back_button_ = nullptr;

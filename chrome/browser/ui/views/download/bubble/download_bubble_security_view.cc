@@ -46,6 +46,7 @@ constexpr int kProgressBarHeight = 3;
 // span. The 5 columns are Download Icon, Padding, Status text,
 // Main Button, Subpage Icon.
 constexpr int kNumColumns = 5;
+constexpr int kAfterParagraphSpacing = 8;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -64,6 +65,108 @@ enum class DownloadBubbleSubpageAction {
 const char kSubpageActionHistogram[] = "Download.Bubble.SubpageAction";
 
 }  // namespace
+
+// This class encapsulates a piece of text broken into several paragraphs.
+class ParagraphsView : public views::View {
+ public:
+  METADATA_HEADER(ParagraphsView);
+  ParagraphsView() {
+    SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetOrientation(views::LayoutOrientation::kVertical)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+    SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kUnbounded,
+                                 /*adjust_height_for_width=*/true));
+    SetProperty(views::kCrossAxisAlignmentKey,
+                views::LayoutAlignment::kStretch);
+  }
+  ~ParagraphsView() override = default;
+
+  void SetText(const std::u16string& text) {
+    paragraphs_.clear();
+    RemoveAllChildViews();
+
+    for (const auto& paragraph : base::SplitStringUsingSubstr(
+             text, u"\n\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+      views::StyledLabel* label =
+          AddChildView(std::make_unique<views::StyledLabel>());
+      label->SetProperty(views::kCrossAxisAlignmentKey,
+                         views::LayoutAlignment::kStretch);
+      label->SetProperty(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                   views::MaximumFlexSizeRule::kUnbounded,
+                                   /*adjust_height_for_width=*/true));
+      label->SetText(paragraph);
+      paragraphs_.push_back(label);
+    }
+
+    Update();
+  }
+
+  void SetTextContext(int text_context) {
+    if (text_context_ == text_context) {
+      return;
+    }
+
+    text_context_ = text_context;
+    Update();
+  }
+
+  void SetDefaultTextStyle(int text_style) {
+    if (default_text_style_ == text_style) {
+      return;
+    }
+
+    default_text_style_ = text_style;
+    Update();
+  }
+
+  int GetLineHeight() {
+    return views::style::GetLineHeight(text_context_, default_text_style_);
+  }
+
+  void SetAfterParagraph(int spacing) {
+    if (after_paragraph_ == spacing) {
+      return;
+    }
+
+    after_paragraph_ = spacing;
+    Update();
+  }
+
+  void SizeToFit(int fixed_width) {
+    for (views::StyledLabel* label : paragraphs_) {
+      label->SizeToFit(fixed_width);
+    }
+  }
+
+ private:
+  void Update() {
+    for (views::StyledLabel* label : paragraphs_) {
+      label->SetTextContext(text_context_);
+      label->SetDefaultTextStyle(default_text_style_);
+      label->SetProperty(views::kMarginsKey,
+                         gfx::Insets().set_bottom(after_paragraph_));
+    }
+
+    if (!paragraphs_.empty()) {
+      paragraphs_.back()->SetProperty(views::kMarginsKey, gfx::Insets());
+    }
+
+    PreferredSizeChanged();
+  }
+
+  int text_context_ = views::style::CONTEXT_LABEL;
+  int default_text_style_ = views::style::STYLE_PRIMARY;
+  int after_paragraph_ = 0;
+  std::vector<views::StyledLabel*> paragraphs_;
+};
+
+BEGIN_METADATA(ParagraphsView, View)
+END_METADATA
 
 void DownloadBubbleSecurityView::AddHeader() {
   auto* header = AddChildView(std::make_unique<views::View>());
@@ -162,12 +265,12 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
       *(ui_info.icon_model_override), ui_info.secondary_color,
       GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
 
-  styled_label_->SetText(ui_info.warning_summary);
+  paragraphs_->SetText(ui_info.warning_summary);
 
   // The label defaults to a single line, which would force the dialog wider;
   // instead give it a width that's the minimum we want it to have. Then the
   // Layout will stretch it back out into any additional space available.
-  styled_label_->SizeToFit(GetMinimumLabelWidth());
+  paragraphs_->SizeToFit(GetMinimumLabelWidth());
 
   checkbox_->SetVisible(ui_info.HasCheckbox());
   if (ui_info.HasCheckbox()) {
@@ -254,23 +357,24 @@ void DownloadBubbleSecurityView::AddIconAndText() {
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width=*/true));
 
-  styled_label_ = wrapper->AddChildView(std::make_unique<views::StyledLabel>());
-  styled_label_->SetProperty(views::kCrossAxisAlignmentKey,
-                             views::LayoutAlignment::kStretch);
-  styled_label_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
-  styled_label_->SetProperty(
+  paragraphs_ = wrapper->AddChildView(std::make_unique<ParagraphsView>());
+  paragraphs_->SetProperty(views::kCrossAxisAlignmentKey,
+                           views::LayoutAlignment::kStretch);
+  paragraphs_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+  paragraphs_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width=*/true));
+  paragraphs_->SetAfterParagraph(kAfterParagraphSpacing);
   if (features::IsChromeRefresh2023()) {
-    styled_label_->SetDefaultTextStyle(views::style::STYLE_BODY_3);
+    paragraphs_->SetDefaultTextStyle(views::style::STYLE_BODY_3);
     // Align the centers of icon and the first line of label.
-    styled_label_->SetProperty(
+    paragraphs_->SetProperty(
         views::kMarginsKey,
         gfx::Insets().set_top(icon_size / 2 +
                               GetLayoutInsets(DOWNLOAD_ICON).top() -
-                              styled_label_->GetLineHeight() / 2));
+                              paragraphs_->GetLineHeight() / 2));
   }
 
   checkbox_ = wrapper->AddChildView(std::make_unique<views::Checkbox>(
@@ -297,6 +401,10 @@ void DownloadBubbleSecurityView::AddIconAndText() {
       wrapper->AddChildView(std::make_unique<views::StyledLabel>());
   deep_scanning_link_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   deep_scanning_link_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  // `deep_scanning_link_` is after `paragraphs_`, and we should have the
+  // paragraph spacing between them.
+  deep_scanning_link_->SetProperty(
+      views::kMarginsKey, gfx::Insets().set_top(kAfterParagraphSpacing));
 }
 
 void DownloadBubbleSecurityView::AddSecondaryIconAndText() {
