@@ -1752,22 +1752,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.QuicSession.SendPacketSize"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="EngagementScoreBuckets" separator="_">
-  <owner>calamity@chromium.org</owner>
-  <suffix name="0" label=""/>
-  <suffix name="10" label=""/>
-  <suffix name="20" label=""/>
-  <suffix name="30" label=""/>
-  <suffix name="40" label=""/>
-  <suffix name="50" label=""/>
-  <suffix name="60" label=""/>
-  <suffix name="70" label=""/>
-  <suffix name="80" label=""/>
-  <suffix name="90" label=""/>
-  <suffix name="100" label=""/>
-  <affected-histogram name="SiteEngagementService.EngagementScoreBucket"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ExtensionSource" separator="_" ordering="prefix">
   <suffix name="OffStore" label="Extension hosted off the Chrome Web Store"/>
   <suffix name="WebStore" label="Extension from the Chrome Web Store"/>

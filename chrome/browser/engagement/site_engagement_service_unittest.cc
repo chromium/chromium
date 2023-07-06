@@ -498,8 +498,6 @@ TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
   EXPECT_EQ(0, service_->GetScore(url3));
 
   service_->SetLastShortcutLaunchTime(web_contents(), url2);
-  histograms.ExpectTotalCount(
-      SiteEngagementMetrics::kDaysSinceLastShortcutLaunchHistogram, 0);
   histograms.ExpectUniqueSample(SiteEngagementMetrics::kEngagementTypeHistogram,
                                 EngagementType::kWebappShortcutLaunch, 1);
 
@@ -508,8 +506,6 @@ TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
   clock_.SetNow(current_day);
   service_->SetLastShortcutLaunchTime(web_contents(), url2);
 
-  histograms.ExpectTotalCount(
-      SiteEngagementMetrics::kDaysSinceLastShortcutLaunchHistogram, 1);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               4);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
@@ -547,8 +543,6 @@ TEST_F(SiteEngagementServiceTest, DISABLED_CheckHistograms) {
 
   // Histograms should start empty as the testing SiteEngagementService
   // constructor does not record metrics.
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kTotalEngagementHistogram,
-                              0);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kTotalOriginsHistogram, 0);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kMeanEngagementHistogram,
                               0);
@@ -556,16 +550,12 @@ TEST_F(SiteEngagementServiceTest, DISABLED_CheckHistograms) {
                               0);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementScoreHistogram,
                               0);
-  histograms.ExpectTotalCount(
-      SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               0);
 
   // Record metrics for an empty engagement system.
   service_->RecordMetrics(service_->GetAllDetails());
 
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kTotalEngagementHistogram, 0, 1);
   histograms.ExpectUniqueSample(SiteEngagementMetrics::kTotalOriginsHistogram,
                                 0, 1);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementScoreHistogram,
@@ -574,16 +564,8 @@ TEST_F(SiteEngagementServiceTest, DISABLED_CheckHistograms) {
                                 0, 1);
   histograms.ExpectUniqueSample(
       SiteEngagementMetrics::kMedianEngagementHistogram, 0, 1);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 1);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               0);
-
-  const std::vector<std::string> engagement_bucket_histogram_names =
-      SiteEngagementMetrics::GetEngagementBucketHistogramNames();
-
-  for (const std::string& histogram_name : engagement_bucket_histogram_names)
-    histograms.ExpectTotalCount(histogram_name, 0);
 
   clock_.SetNow(clock_.Now() + base::Minutes(60));
 
@@ -602,8 +584,6 @@ TEST_F(SiteEngagementServiceTest, DISABLED_CheckHistograms) {
   // Wait until the background metrics recording happens.
   content::RunAllTasksUntilIdle();
 
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kTotalEngagementHistogram,
-                              2);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kTotalOriginsHistogram, 2);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kTotalOriginsHistogram, 0,
                                1);
@@ -616,8 +596,6 @@ TEST_F(SiteEngagementServiceTest, DISABLED_CheckHistograms) {
   // Recorded per origin.
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementScoreHistogram,
                               1);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 2);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               6);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
@@ -663,8 +641,6 @@ TEST_F(SiteEngagementServiceTest, DISABLED_CheckHistograms) {
   // Wait until the background metrics recording happens.
   content::RunAllTasksUntilIdle();
 
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kTotalEngagementHistogram,
-                              3);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kTotalOriginsHistogram, 0,
                                1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kTotalOriginsHistogram, 1,
@@ -678,8 +654,6 @@ TEST_F(SiteEngagementServiceTest, DISABLED_CheckHistograms) {
   // Recorded per origin.
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementScoreHistogram,
                               4);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 3);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               12);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
@@ -734,8 +708,6 @@ TEST_F(SiteEngagementServiceTest, DISABLED_CheckHistograms) {
   // Wait until the background metrics recording happens.
   content::RunAllTasksUntilIdle();
 
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kTotalEngagementHistogram,
-                              4);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kTotalOriginsHistogram, 0,
                                1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kTotalOriginsHistogram, 1,
@@ -748,23 +720,12 @@ TEST_F(SiteEngagementServiceTest, DISABLED_CheckHistograms) {
                               4);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementScoreHistogram,
                               7);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 4);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               24);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                                EngagementType::kNavigation, 13);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                                EngagementType::kFirstDailyEngagement, 3);
-
-  for (const std::string& histogram_name : engagement_bucket_histogram_names)
-    histograms.ExpectTotalCount(histogram_name, 3);
-
-  histograms.ExpectBucketCount(engagement_bucket_histogram_names[0], 100, 1);
-  histograms.ExpectBucketCount(engagement_bucket_histogram_names[0], 33, 1);
-  histograms.ExpectBucketCount(engagement_bucket_histogram_names[0], 66, 1);
-  histograms.ExpectBucketCount(engagement_bucket_histogram_names[1], 33, 1);
-  histograms.ExpectBucketCount(engagement_bucket_histogram_names[1], 66, 1);
 }
 
 // Expect that sites that have reached zero engagement are cleaned up. Expect

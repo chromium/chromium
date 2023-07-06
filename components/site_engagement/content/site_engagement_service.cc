@@ -306,14 +306,7 @@ void SiteEngagementService::SetLastShortcutLaunchTime(
     const GURL& url) {
   SiteEngagementScore score = CreateEngagementScore(url);
 
-  // Record the number of days since the last launch in UMA. If the user's clock
-  // has changed back in time, set this to 0.
   base::Time now = clock_->Now();
-  base::Time last_launch = score.last_shortcut_launch_time();
-  if (!last_launch.is_null()) {
-    SiteEngagementMetrics::RecordDaysSinceLastShortcutLaunch(
-        std::max(0, (now - last_launch).InDays()));
-  }
 
   score.set_last_shortcut_launch_time(now);
   score.Commit();
@@ -512,10 +505,7 @@ void SiteEngagementService::RecordMetrics(
   int total_origins = details.size();
 
   double total_engagement = 0;
-  int origins_with_max_engagement = 0;
   for (const auto& detail : details) {
-    if (detail.total_score == SiteEngagementScore::kMaxPoints)
-      ++origins_with_max_engagement;
     total_engagement += detail.total_score;
   }
 
@@ -523,14 +513,10 @@ void SiteEngagementService::RecordMetrics(
       (total_origins == 0 ? 0 : total_engagement / total_origins);
 
   SiteEngagementMetrics::RecordTotalOriginsEngaged(total_origins);
-  SiteEngagementMetrics::RecordTotalSiteEngagement(total_engagement);
   SiteEngagementMetrics::RecordMeanEngagement(mean_engagement);
   SiteEngagementMetrics::RecordMedianEngagement(
       GetMedianEngagementFromSortedDetails(details));
   SiteEngagementMetrics::RecordEngagementScores(details);
-
-  SiteEngagementMetrics::RecordOriginsWithMaxEngagement(
-      origins_with_max_engagement);
 }
 
 bool SiteEngagementService::ShouldRecordEngagement(const GURL& url) const {

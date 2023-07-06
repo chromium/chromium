@@ -1340,17 +1340,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SiteEngagementService.DaysSinceLastShortcutLaunch"
-    units="days" expires_after="2021-01-01">
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The number of days between launches of an origin saved to homescreen or as a
-    bookmark app shortcut. Recorded at the second and each following launch of a
-    specific origin from a shortcut, independently per origin.
-  </summary>
-</histogram>
-
 <histogram name="SiteEngagementService.EngagementScore" units="units"
     expires_after="2022-03-12">
   <owner>calamity@chromium.org</owner>
@@ -1359,17 +1348,6 @@ chromium-metrics-reviews@google.com.
     Distribution of the engagement scores accumulated by a user, recorded at
     startup per non-incognito profile, and then upon the first
     engagement-increasing event every hour thereafter.
-  </summary>
-</histogram>
-
-<histogram name="SiteEngagementService.EngagementScoreBucket" units="%"
-    expires_after="2022-03-12">
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The percentage of sites on a user's profile that have engagement scores that
-    fall in these buckets, recorded at startup per non-incognito profile, and
-    then upon the first engagement-increasing event every hour thereafter.
   </summary>
 </histogram>
 
@@ -1416,22 +1394,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SiteEngagementService.OriginsWithMaxDailyEngagement"
-    units="units" expires_after="2021-01-01">
-  <obsolete>
-    Removed in May 2022 / M104.
-  </obsolete>
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The number of origins which have reached the daily site engagement point
-    cap, recorded at startup per non-incognito profile, and then upon the first
-    engagement-increasing event every hour thereafter. Thus, each bin N contains
-    the number of clients where at least N origins have reached the maximum
-    daily site engagement point cap.
-  </summary>
-</histogram>
-
 <histogram name="SiteEngagementService.OriginsWithMaxEngagement" units="units"
     expires_after="2021-01-01">
   <owner>calamity@chromium.org</owner>
@@ -1442,17 +1404,6 @@ chromium-metrics-reviews@google.com.
     engagement-increasing event every hour thereafter. Thus, each bin N contains
     the number of clients where at least N origins have reached the maximum
     absolute site engagement point cap.
-  </summary>
-</histogram>
-
-<histogram name="SiteEngagementService.TotalEngagement" units="units"
-    expires_after="2022-03-12">
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The total site engagement accumulated by this profile, recorded at startup
-    per non-incognito profile, and then upon the first engagement-increasing
-    event every hour thereafter.
   </summary>
 </histogram>
 
