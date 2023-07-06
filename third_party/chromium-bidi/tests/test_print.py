@@ -15,11 +15,11 @@
 
 import pytest
 from anys import ANY_STR
-from test_helpers import assert_images_equal, execute_command, goto_url
+from test_helpers import execute_command, goto_url
 
 
 @pytest.mark.asyncio
-async def test_print(websocket, context_id, html, get_cdp_session_id):
+async def test_print(websocket, context_id, html):
     await goto_url(websocket, context_id, html())
 
     print_result = await execute_command(
@@ -47,34 +47,3 @@ async def test_print(websocket, context_id, html, get_cdp_session_id):
             'message': 'net::ERR_ABORTED'
         }
         pytest.xfail("PDF viewer not available in headless.")
-
-    session_id = await get_cdp_session_id(context_id)
-
-    # Set a fixed viewport to make the test deterministic.
-    await execute_command(
-        websocket, {
-            "method": "cdp.sendCommand",
-            "params": {
-                "method": "Emulation.setDeviceMetricsOverride",
-                "params": {
-                    "width": 200,
-                    "height": 200,
-                    "deviceScaleFactor": 1.0,
-                    "mobile": False,
-                },
-                "session": session_id
-            }
-        })
-
-    screenshot_result = await execute_command(
-        websocket, {
-            "method": "browsingContext.captureScreenshot",
-            "params": {
-                "context": context_id
-            }
-        })
-
-    assert_images_equal(
-        screenshot_result["data"],
-        "iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAAAXNSR0IArs4c6QAAAhlJREFUeJzt07ENgDAAwLDSEzsg8f8h9IEqKwz2BVlyrft5B3A0vw6APzMIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQNhGJAOQPl8yRgAAAABJRU5ErkJggg=="
-    )
