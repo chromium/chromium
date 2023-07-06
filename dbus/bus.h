@@ -28,6 +28,7 @@ class SequencedTaskRunner;
 
 namespace dbus {
 
+class Error;
 class ExportedObject;
 class ObjectManager;
 class ObjectProxy;
@@ -444,10 +445,13 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   // Sends a message to the bus and blocks until the response is
   // received. Used to implement synchronous method calls.
   //
+  // The |error| must not be nullptr.
+  // TODO(crbug.com/1459945): Use base::expected<void, Error> to return error.
+  //
   // BLOCKING CALL.
   virtual DBusMessage* SendWithReplyAndBlock(DBusMessage* request,
                                              int timeout_ms,
-                                             DBusError* error);
+                                             Error* error);
 
   // Requests to send a message to the bus. The reply is handled with
   // |pending_call| at a later time.
@@ -493,6 +497,10 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   // The same match rule can be added more than once and should be removed
   // as many times as it was added.
   //
+  // The |error| must not be nullptr.
+  // TODO(crbug.com/1459945): 1) Use base::expected<void, Error> to return
+  // error, and 2) handle error in safer manner.
+  //
   // The match rule looks like:
   // "type='signal', interface='org.chromium.SomeInterface'".
   //
@@ -501,14 +509,18 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   // http://dbus.freedesktop.org/doc/dbus-specification.html#message-bus-routing
   //
   // BLOCKING CALL.
-  virtual void AddMatch(const std::string& match_rule, DBusError* error);
+  virtual void AddMatch(const std::string& match_rule, Error* error);
 
   // Removes the match rule previously added by AddMatch().
   // Returns false if the requested match rule is unknown or has already been
   // removed. Otherwise, returns true and sets |error| accordingly.
   //
+  // The |error| must not be nullptr.
+  // TODO(crbug.com/1459945): 1) Use base::expected<void, Error> to return
+  // error, and 2) handle error in safer manner.
+  //
   // BLOCKING CALL.
-  virtual bool RemoveMatch(const std::string& match_rule, DBusError* error);
+  virtual bool RemoveMatch(const std::string& match_rule, Error* error);
 
   // Tries to register the object path. Returns true on success.
   // Returns false if the object path is already registered.
@@ -518,6 +530,9 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   //
   // The same object path must not be added more than once.
   //
+  // The |error| must not be nullptr.
+  // TODO(crbug.com/1459945): Use base::expected<void, Error> to return error.
+  //
   // See also documentation of |dbus_connection_try_register_object_path| at
   // http://dbus.freedesktop.org/doc/api/html/group__DBusConnection.html
   //
@@ -525,7 +540,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   virtual bool TryRegisterObjectPath(const ObjectPath& object_path,
                                      const DBusObjectPathVTable* vtable,
                                      void* user_data,
-                                     DBusError* error);
+                                     Error* error);
 
   // Tries to register the object path and its sub paths.
   // Returns true on success.
@@ -543,7 +558,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   virtual bool TryRegisterFallback(const ObjectPath& object_path,
                                    const DBusObjectPathVTable* vtable,
                                    void* user_data,
-                                   DBusError* error);
+                                   Error* error);
 
   // Unregister the object path.
   //
@@ -628,7 +643,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
       const ObjectPath& object_path,
       const DBusObjectPathVTable* vtable,
       void* user_data,
-      DBusError* error,
+      Error* error,
       TryRegisterObjectPathFunction* register_function);
 
   // Helper function used for RemoveObjectProxy().

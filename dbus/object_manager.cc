@@ -14,10 +14,10 @@
 #include "base/strings/stringprintf.h"
 #include "dbus/bus.h"
 #include "dbus/dbus_statistics.h"
+#include "dbus/error.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "dbus/property.h"
-#include "dbus/scoped_dbus_error.h"
 #include "dbus/util.h"
 
 namespace dbus {
@@ -168,11 +168,11 @@ void ObjectManager::CleanUp() {
     return;
 
   bus_->RemoveFilterFunction(&ObjectManager::HandleMessageThunk, this);
-
-  ScopedDBusError error;
-  bus_->RemoveMatch(match_rule_, error.get());
-  if (error.is_set())
+  Error error;
+  bus_->RemoveMatch(match_rule_, &error);
+  if (error.IsValid()) {
     LOG(ERROR) << "Failed to remove match rule: " << match_rule_;
+  }
 
   match_rule_.clear();
 }
@@ -204,9 +204,9 @@ bool ObjectManager::SetupMatchRuleAndFilter() {
 
   bus_->AddFilterFunction(&ObjectManager::HandleMessageThunk, this);
 
-  ScopedDBusError error;
-  bus_->AddMatch(match_rule, error.get());
-  if (error.is_set()) {
+  Error error;
+  bus_->AddMatch(match_rule, &error);
+  if (error.IsValid()) {
     LOG(ERROR) << "ObjectManager failed to add match rule \"" << match_rule
                << "\". Got " << error.name() << ": " << error.message();
     bus_->RemoveFilterFunction(&ObjectManager::HandleMessageThunk, this);

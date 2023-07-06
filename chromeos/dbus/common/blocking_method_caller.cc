@@ -10,8 +10,8 @@
 #include "base/task/task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "dbus/bus.h"
+#include "dbus/error.h"
 #include "dbus/object_proxy.h"
-#include "dbus/scoped_dbus_error.h"
 
 namespace chromeos {
 
@@ -22,7 +22,7 @@ void CallMethodAndBlockInternal(std::unique_ptr<dbus::Response>* response,
                                 base::ScopedClosureRunner* signaler,
                                 dbus::ObjectProxy* proxy,
                                 dbus::MethodCall* method_call,
-                                dbus::ScopedDBusError* error_out) {
+                                dbus::Error* error_out) {
   *response = proxy->CallMethodAndBlockWithErrorDetails(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, error_out);
 }
@@ -41,14 +41,13 @@ BlockingMethodCaller::~BlockingMethodCaller() = default;
 
 std::unique_ptr<dbus::Response> BlockingMethodCaller::CallMethodAndBlock(
     dbus::MethodCall* method_call) {
-  dbus::ScopedDBusError error;
+  dbus::Error error;
   return CallMethodAndBlockWithError(method_call, &error);
 }
 
 std::unique_ptr<dbus::Response>
-BlockingMethodCaller::CallMethodAndBlockWithError(
-    dbus::MethodCall* method_call,
-    dbus::ScopedDBusError* error_out) {
+BlockingMethodCaller::CallMethodAndBlockWithError(dbus::MethodCall* method_call,
+                                                  dbus::Error* error_out) {
   // on_blocking_method_call_->Signal() will be called when |signaler| is
   // destroyed.
   base::OnceClosure signal_task =

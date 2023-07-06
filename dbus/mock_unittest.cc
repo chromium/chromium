@@ -10,12 +10,12 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "dbus/error.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_exported_object.h"
 #include "dbus/mock_object_proxy.h"
 #include "dbus/object_path.h"
-#include "dbus/scoped_dbus_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -110,8 +110,10 @@ class MockTest : public testing::Test {
   }
 
   std::unique_ptr<Response> CreateMockProxyResponseWithErrorDetails(
-      MethodCall* method_call, int timeout_ms, ScopedDBusError* error) {
-    dbus_set_error(error->get(), DBUS_ERROR_NOT_SUPPORTED, "Not implemented");
+      MethodCall* method_call,
+      int timeout_ms,
+      Error* error) {
+    *error = Error(DBUS_ERROR_NOT_SUPPORTED, "Not implemented");
     return nullptr;
   }
 
@@ -173,16 +175,15 @@ TEST_F(MockTest, CallMethodAndBlockWithErrorDetails) {
   // Create a method call.
   MethodCall method_call("org.chromium.TestInterface", "Echo");
 
-  ScopedDBusError error;
+  Error error;
   // Call the method.
   std::unique_ptr<Response> response(proxy->CallMethodAndBlockWithErrorDetails(
       &method_call, ObjectProxy::TIMEOUT_USE_DEFAULT, &error));
 
   // Check the response.
   ASSERT_FALSE(response.get());
-  ASSERT_TRUE(error.is_set());
-  EXPECT_STREQ(DBUS_ERROR_NOT_SUPPORTED, error.name());
-  EXPECT_STREQ("Not implemented", error.message());
+  EXPECT_EQ(DBUS_ERROR_NOT_SUPPORTED, error.name());
+  EXPECT_EQ("Not implemented", error.message());
 }
 
 // This test demonstrates how to mock an asynchronous method call using the

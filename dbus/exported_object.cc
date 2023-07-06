@@ -14,6 +14,7 @@
 #include "base/task/task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "dbus/bus.h"
+#include "dbus/error.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/scoped_dbus_error.h"
@@ -196,18 +197,16 @@ bool ExportedObject::Register() {
   if (object_is_registered_)
     return true;
 
-  ScopedDBusError error;
+  Error error;
 
   DBusObjectPathVTable vtable = {};
   vtable.message_function = &ExportedObject::HandleMessageThunk;
   vtable.unregister_function = &ExportedObject::OnUnregisteredThunk;
-  const bool success = bus_->TryRegisterObjectPath(object_path_,
-                                                   &vtable,
-                                                   this,
-                                                   error.get());
+  const bool success =
+      bus_->TryRegisterObjectPath(object_path_, &vtable, this, &error);
   if (!success) {
     LOG(ERROR) << "Failed to register the object: " << object_path_.value()
-               << ": " << (error.is_set() ? error.message() : "");
+               << ": " << error.message();
     return false;
   }
 

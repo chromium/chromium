@@ -215,7 +215,7 @@ class InstallAttributesClientTest : public testing::Test {
   std::unique_ptr<dbus::Response> OnBlockingCallMethod(
       dbus::MethodCall* method_call,
       int timeout_ms,
-      dbus::ScopedDBusError* error) {
+      dbus::Error* error) {
     std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
     dbus::MessageWriter writer(response.get());
     if (shall_message_parsing_fail_) {
