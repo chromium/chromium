@@ -1422,9 +1422,7 @@ void AppMenuModel::Build() {
 #endif
 
   if (!browser_->profile()->IsGuestSession() &&
-      features::IsChromeRefresh2023() &&
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerRedesign)) {
+      features::IsChromeRefresh2023()) {
     sub_menus_.push_back(
         std::make_unique<PasswordsAndAutofillSubMenuModel>(this));
     AddSubMenuWithStringId(IDC_PASSWORDS_AND_AUTOFILL_MENU,
@@ -1463,7 +1461,8 @@ void AppMenuModel::Build() {
   if (!browser_->profile()->IsOffTheRecord() && web_contents &&
       !IsPasswordManagerPage(web_contents->GetURL()) &&
       base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerRedesign)) {
+          password_manager::features::kPasswordManagerRedesign) &&
+      !features::IsChromeRefresh2023()) {
     AddItemWithStringId(IDC_VIEW_PASSWORDS, IDS_VIEW_PASSWORDS);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_VIEW_PASSWORDS).value(),
                            kPasswordManagerMenuItem);

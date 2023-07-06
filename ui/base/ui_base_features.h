@@ -211,6 +211,8 @@ bool IsLacrosColorManagementEnabled();
 // Exposed for testing and flags integration. For actual checks please use
 // IsChromeRefresh2023().
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kChromeRefresh2023);
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kChromeRefreshSecondary2023);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsChromeRefresh2023();
 

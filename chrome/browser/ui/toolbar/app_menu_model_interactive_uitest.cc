@@ -222,8 +222,10 @@ class PasswordManagerMenuItemInteractiveTest
       public testing::WithParamInterface<bool> {
  public:
   PasswordManagerMenuItemInteractiveTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        password_manager::features::kPasswordManagerRedesign, GetParam());
+    scoped_feature_list_.InitWithFeatureStates(
+        {{password_manager::features::kPasswordManagerRedesign, GetParam()},
+         {features::kChromeRefresh2023, false},
+         {features::kChromeRefreshSecondary2023, false}});
   }
   PasswordManagerMenuItemInteractiveTest(
       const PasswordManagerMenuItemInteractiveTest&) = delete;
