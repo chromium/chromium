@@ -101,6 +101,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsFeatureHelper;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController;
@@ -311,6 +312,8 @@ public class RootUiCoordinator
     private final BackPressManager mBackPressManager;
     private final boolean mIsIncognitoReauthPendingOnRestore;
     protected final ExpandedSheetHelper mExpandedBottomSheetHelper;
+    private final ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
+            new ObservableSupplierImpl<>();
     @Nullable
     private PageZoomCoordinator mPageZoomCoordinator;
     private AppMenuObserver mAppMenuObserver;
@@ -810,6 +813,11 @@ public class RootUiCoordinator
                 mActivityTabProvider.get().loadIfNeeded(
                         LoadIfNeededCaller.ON_FINISH_NATIVE_INITIALIZATION);
             }
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
+            ReadAloudController controller = new ReadAloudController(mProfileSupplier);
+            mReadAloudControllerSupplier.set(controller);
         }
     }
 
@@ -1634,6 +1642,14 @@ public class RootUiCoordinator
 
     public OneshotSupplier<IncognitoReauthController> getIncognitoReauthControllerSupplier() {
         return mIncognitoReauthControllerOneshotSupplier;
+    }
+
+    /**
+     * Returns the supplier of {@link ReadAloudController}.
+     */
+    @NonNull
+    public Supplier<ReadAloudController> getReadAloudControllerSupplier() {
+        return mReadAloudControllerSupplier;
     }
 
     /**

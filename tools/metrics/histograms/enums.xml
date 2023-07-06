@@ -65341,6 +65341,7 @@ from previous Chrome versions.
   <int value="806063284" label="LacrosColorManagement:enabled"/>
   <int value="806334184" label="AndroidSpellChecker:enabled"/>
   <int value="806783713" label="DesktopPWAsTabStripLinkCapturing:enabled"/>
+  <int value="807394992" label="ReadAloud:disabled"/>
   <int value="807447752" label="ChromeMemex:disabled"/>
   <int value="807734471" label="tab-management-experiment-type-disabled"/>
   <int value="808855873" label="RequestDesktopSiteGlobal:disabled"/>
@@ -66286,6 +66287,7 @@ from previous Chrome versions.
   <int value="1305792241" label="SafeBrowsingEnhancedProtection:disabled"/>
   <int value="1306473273" label="BluetoothFlossCoredump:enabled"/>
   <int value="1307003774" label="AutofillEnableCompanyName:disabled"/>
+  <int value="1307402891" label="ReadAloud:enabled"/>
   <int value="1308474501" label="SiteInstanceGroupsForDataUrls:disabled"/>
   <int value="1308537004" label="force-pnacl-subzero"/>
   <int value="1308583017" label="PrefetchFontLookupTables:disabled"/>

@@ -263,6 +263,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kProbabilisticCryptidRenderer,
     &kQuickDeleteForAndroid,
     &kReachedCodeProfiler,
+    &kReadAloud,
     &kReaderModeInCCT,
     &kRecordSuppressionMetrics,
     &kReduceToolbarUpdatesForSameDocNavigations,
@@ -860,6 +861,8 @@ BASE_FEATURE(kQuickDeleteForAndroid,
 BASE_FEATURE(kReachedCodeProfiler,
              "ReachedCodeProfiler",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReadAloud, "ReadAloud", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReaderModeInCCT,
              "ReaderModeInCCT",

@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.readaloud;
 /** Empty implementation of ReadAloudReadabilityHooks. */
 public class ReadAloudReadabilityHooksImpl implements ReadAloudReadabilityHooks {
     @Override
-    boolean isEnabled() {
+    public boolean isEnabled() {
         return false;
     }
 
     @Override
-    void isPageReadable(String url, ReadabilityCallback callback) {
+    public void isPageReadable(String url, ReadabilityCallback callback) {
         return;
     }
 }
