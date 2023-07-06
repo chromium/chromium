@@ -181,9 +181,10 @@ void GLVersionInfo::ParseDriverInfo(const char* version_str) {
   for (size_t ii = 1; ii < pieces.size(); ++ii) {
     for (auto vendor : kVendors) {
       if (pieces[ii] == vendor.first) {
-        driver_vendor.assign(vendor.second.data(), vendor.second.size());
-        if (ii + 1 < pieces.size())
-          driver_version.assign(pieces[ii + 1].data(), pieces[ii + 1].size());
+        driver_vendor = vendor.second;
+        if (ii + 1 < pieces.size()) {
+          driver_version = pieces[ii + 1];
+        }
         return;
       }
     }
@@ -191,7 +192,7 @@ void GLVersionInfo::ParseDriverInfo(const char* version_str) {
   if (pieces.size() == 2) {
     if (pieces[1][0] == 'V')
       pieces[1].remove_prefix(1);
-    driver_version.assign(pieces[1].data(), pieces[1].size());
+    driver_version = pieces[1];
     return;
   }
   constexpr base::StringPiece kMaliPrefix = "v1.r";
@@ -212,7 +213,7 @@ void GLVersionInfo::ParseDriverInfo(const char* version_str) {
   }
   for (size_t ii = 1; ii < pieces.size(); ++ii) {
     if (pieces[ii].find('.') != std::string::npos) {
-      driver_version.assign(pieces[ii].data(), pieces[ii].size());
+      driver_version = pieces[ii];
       return;
     }
   }
@@ -237,7 +238,7 @@ void GLVersionInfo::ExtractDriverVendorANGLE(const char* renderer_str) {
   if (gl_strings.size() >= 3) {
     // The first part of the renderer string contains the native driver's
     // vendor string.
-    driver_vendor.assign(gl_strings[0].data(), gl_strings[0].size());
+    driver_vendor = gl_strings[0];
 
     std::string native_version_str;
     base::TrimString(gl_strings[2], ")", &native_version_str);

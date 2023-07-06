@@ -203,6 +203,8 @@ bool ParseHostAndPort(base::StringPiece input, std::string* host, int* port) {
   url::Component hostname_component;
   url::Component port_component;
 
+  // `input` is not NUL-terminated, so `input.data()` must be accompanied by a
+  // length. In these calls, `url::Component` provides an offset and length.
   url::ParseAuthority(input.data(), auth_component, &username_component,
                       &password_component, &hostname_component,
                       &port_component);
@@ -244,7 +246,8 @@ bool ParseHostAndPort(base::StringPiece input, std::string* host, int* port) {
   }
 
   // Pass results back to caller.
-  host->assign(input.data() + hostname_component.begin, hostname_component.len);
+  *host = std::string(
+      input.substr(hostname_component.begin, hostname_component.len));
   *port = parsed_port_number;
 
   return true;  // Success.

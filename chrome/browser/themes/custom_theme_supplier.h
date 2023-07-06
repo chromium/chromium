@@ -89,7 +89,7 @@ class CustomThemeSupplier
 
   void set_extension_id(base::StringPiece id) {
     DCHECK_EQ(get_theme_type(), ThemeType::kExtension);
-    extension_id_.assign(id.data(), id.size());
+    extension_id_ = id;
   }
 
  private:
