@@ -760,9 +760,9 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
-        // Verify new tab button position.
-        // tabWidth(237) + tabOverLapWidth(28) = 265
-        assertEquals("New tab button position is not as expected", 265.f,
+        // Verify new tab button x-position.
+        // stripWidth(800) - stripEndPadding(12) - NtbWidth(32) = 756
+        assertEquals("New tab button x-position is not as expected", 756.f,
                 mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
 
         assertEquals("Unexpected incognito button color.",

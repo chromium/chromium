@@ -1884,8 +1884,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     private boolean isNewTabButtonAnchorDisabled() {
         return !ChromeFeatureList.sTabStripRedesign.isEnabled()
-                || TabUiFeatureUtilities.isTabStripNtbAnchorDisabled()
-                || TabUiFeatureUtilities.isTabStripButtonStyleDisabled();
+                || TabUiFeatureUtilities.isTabStripNtbAnchorDisabled();
     }
 
     // @Todo (crbugs.com/1448590) Update NTB and incognito position for button style disabled param.
@@ -1904,8 +1903,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             // For TSI, NTB touch target offset is skewed towards the end of strip and then visually
             // placed correctly in the cc layer. Since we do not skew NTB touch target offset for
             // TSR here, so revert.
-            if (TabUiFeatureUtilities.isTabStripNtbAnchorDisabled()
-                    || TabUiFeatureUtilities.isTabStripButtonStyleDisabled()) {
+            if (TabUiFeatureUtilities.isTabStripNtbAnchorDisabled()) {
                 offset += getNewTabButtonTouchTargetOffset();
             }
 
