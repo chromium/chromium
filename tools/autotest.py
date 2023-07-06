@@ -50,7 +50,7 @@ DEBUG = False
 
 # Some test suites use suffixes that would also match non-test-suite targets.
 # Those test suites should be manually added here.
-_OTHER_TEST_TARGETS = [
+_TEST_TARGET_ALLOWLIST = [
     # Running ash_pixeltests requires the --no-try-android-wrappers flag.
     '//ash:ash_pixeltests',
     '//chrome/test:browser_tests',
@@ -58,9 +58,7 @@ _OTHER_TEST_TARGETS = [
     '//chrome/test:unit_tests',
 ]
 
-_TEST_TARGET_REGEX = re.compile(
-    r'(_browsertests|_junit_tests|_perftests|_test_.*apk|_unittests|' +
-    r'_wpr_tests)$')
+_TEST_TARGET_REGEX = re.compile(r'(_browsertests|_perftests|_wpr_tests)$')
 
 TEST_FILE_NAME_REGEX = re.compile(r'(.*Test\.java)|(.*_[a-z]*test\.cc)')
 
@@ -265,12 +263,6 @@ def FindMatchingTestFiles(target):
   return test_files
 
 
-def IsTestTarget(target):
-  if _TEST_TARGET_REGEX.search(target):
-    return True
-  return target in _OTHER_TEST_TARGETS
-
-
 def HaveUserPickFile(paths):
   paths = sorted(paths, key=lambda p: (len(p), p))
   path_list = '\n'.join(f'{i}. {t}' for i, t in enumerate(paths))
@@ -332,6 +324,28 @@ class TargetCache:
     return self.GetBuildNinjaMtime() == self.gold_mtime
 
 
+def _TestTargetsFromGnRefs(targets):
+  # First apply allowlists:
+  ret = [t for t in targets if '__' not in t]
+  ret = [
+      t for t in ret
+      if _TEST_TARGET_REGEX.search(t) or t in _TEST_TARGET_ALLOWLIST
+  ]
+  if ret:
+    return ret
+
+  _SUBTARGET_SUFFIXES = (
+      '__java_binary',  # robolectric_binary()
+      '__test_runner_script',  # test() targets
+      '__test_apk',  # instrumentation_test_apk() targets
+  )
+  ret = []
+  for suffix in _SUBTARGET_SUFFIXES:
+    ret.extend(t[:-len(suffix)] for t in targets if t.endswith(suffix))
+
+  return ret
+
+
 def FindTestTargets(target_cache, out_dir, paths, run_all):
   # Normalize paths, so they can be cached.
   paths = [os.path.realpath(p) for p in paths]
@@ -349,13 +363,18 @@ def FindTestTargets(target_cache, out_dir, paths, run_all):
 
     cmd = [gn_path, 'refs', out_dir, '--all'] + paths
     targets = RunCommand(cmd).splitlines()
-    targets = [t for t in targets if '__' not in t]
-    test_targets = [t for t in targets if IsTestTarget(t)]
+    test_targets = _TestTargetsFromGnRefs(targets)
+
+    # If not targets were identified as tests by looking at their names, ask GN
+    # if any are executables.
+    if not test_targets and targets:
+      test_targets = RunCommand(cmd + ['--type=executable']).splitlines()
 
   if not test_targets:
     ExitWithMessage(
-        f'Target(s) "{paths}" did not match any test targets. Consider adding'
-        f' one of the following targets to the top of {__file__}: {targets}')
+        f'"{paths}" did not match any test targets. Consider adding'
+        f' one of the following targets to _TEST_TARGET_ALLOWLIST within '
+        f'{__file__}: \n' + '\n'.join(targets))
 
   target_cache.Store(paths, test_targets)
   target_cache.Save()
