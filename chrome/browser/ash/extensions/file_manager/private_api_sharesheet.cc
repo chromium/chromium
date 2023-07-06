@@ -116,7 +116,7 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
     if (connection_status == drive::util::DRIVE_CONNECTED_METERED ||
         connection_status == drive::util::DRIVE_CONNECTED) {
       file_manager::util::SingleEntryPropertiesGetterForDriveFs::Start(
-          file_system_urls_[0], profile_, /*requested_properties=*/{},
+          file_system_urls_[0], profile_,
           base::BindOnce(
               &FileManagerPrivateInternalSharesheetHasTargetsFunction::
                   OnDrivePropertyCollected,
@@ -251,7 +251,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
     if (connection_status == drive::util::DRIVE_CONNECTED_METERED ||
         connection_status == drive::util::DRIVE_CONNECTED) {
       file_manager::util::SingleEntryPropertiesGetterForDriveFs::Start(
-          file_system_urls_[0], profile_, /*requested_properties=*/{},
+          file_system_urls_[0], profile_,
           base::BindOnce(&FileManagerPrivateInternalInvokeSharesheetFunction::
                              OnDrivePropertyCollected,
                          this, launch_source, std::move(mime_types)));

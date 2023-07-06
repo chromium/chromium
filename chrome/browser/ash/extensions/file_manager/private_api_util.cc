@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -309,13 +308,12 @@ bool IsPathUnderMyDrive(const base::FilePath& relative_path) {
 void SingleEntryPropertiesGetterForDriveFs::Start(
     const storage::FileSystemURL& file_system_url,
     Profile* const profile,
-    const std::set<fmp::EntryPropertyName> requested_properties,
     ResultCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   SingleEntryPropertiesGetterForDriveFs* instance =
-      new SingleEntryPropertiesGetterForDriveFs(
-          file_system_url, profile, requested_properties, std::move(callback));
+      new SingleEntryPropertiesGetterForDriveFs(file_system_url, profile,
+                                                std::move(callback));
   instance->StartProcess();
 
   // The instance will be destroyed by itself.
@@ -324,12 +322,10 @@ void SingleEntryPropertiesGetterForDriveFs::Start(
 SingleEntryPropertiesGetterForDriveFs::SingleEntryPropertiesGetterForDriveFs(
     const storage::FileSystemURL& file_system_url,
     Profile* const profile,
-    const std::set<fmp::EntryPropertyName> requested_properties,
     ResultCallback callback)
     : callback_(std::move(callback)),
       file_system_url_(file_system_url),
       running_profile_(profile),
-      requested_properties_(requested_properties),
       properties_(std::make_unique<fmp::EntryProperties>()) {
   DCHECK(callback_);
   DCHECK(profile);
@@ -381,20 +377,6 @@ void SingleEntryPropertiesGetterForDriveFs::StartProcess() {
       default:
         properties_->sync_status = fmp::SYNC_STATUS_NOT_FOUND;
         break;
-    }
-
-    std::set<fmp::EntryPropertyName> remote_requests;
-    base::ranges::set_difference(
-        requested_properties_, locally_available_properties_,
-        std::inserter(remote_requests, remote_requests.end()));
-
-    // If only locally available metadata was requested (sync status and
-    // progress) we don't need to request further metadata from DriveFS.
-    // Note: for backwards compatibility, not requesting any properties is
-    // currently considered the same as requesting all properties.
-    if (!requested_properties_.empty() && remote_requests.empty()) {
-      CompleteGetEntryProperties(drive::FILE_ERROR_OK);
-      return;
     }
   }
 
