@@ -155,7 +155,7 @@ class WebStateList {
   // WebStates at the beginning of the list).
   int SetWebStatePinnedAt(int index, bool pinned);
 
-  // Returns true if the WebState at |index| is pinned.
+  // Returns true if the WebState at `index` is pinned.
   bool IsWebStatePinnedAt(int index) const;
 
   // Inserts the specified WebState at the best position in the WebStateList

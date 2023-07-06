@@ -84,9 +84,6 @@ class WebStateListObserverBridge final : public WebStateListObserver {
                            web::WebState* new_web_state,
                            int active_index,
                            ActiveWebStateChangeReason reason) final;
-  void WebStatePinnedStateChanged(WebStateList* web_state_list,
-                                  web::WebState* web_state,
-                                  int index) final;
   void WillBeginBatchOperation(WebStateList* web_state_list) final;
   void BatchOperationEnded(WebStateList* web_state_list) final;
   void WebStateListDestroyed(WebStateList* web_state_list) final;

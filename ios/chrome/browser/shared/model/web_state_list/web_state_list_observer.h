@@ -52,6 +52,30 @@ class WebStateListChange {
   WebStateListChange() = default;
 };
 
+// Represents a change that corresponds to updating the active state or the
+// pinned state of a selected WebState.
+class WebStateListChangeSelectionOnly final : public WebStateListChange {
+ public:
+  static constexpr Type kType = Type::kSelectionOnly;
+
+  explicit WebStateListChangeSelectionOnly(
+      raw_ptr<web::WebState> selected_web_state);
+  ~WebStateListChangeSelectionOnly() final = default;
+
+  Type type() const final;
+
+  // The WebState that is updated. The selected WebState updates the active
+  // state or the pinned state, but the position of it isn't updated in
+  // WebStateList.
+  raw_ptr<web::WebState> selected_web_state() const {
+    CHECK(selected_web_state_);
+    return selected_web_state_;
+  }
+
+ private:
+  raw_ptr<web::WebState> selected_web_state_;
+};
+
 // Represents a change that corresponds to detaching one WebState from
 // WebStateList.
 class WebStateListChangeDetach final : public WebStateListChange {
@@ -174,6 +198,9 @@ struct WebStateSelection {
   // merged into WebStateListChange() because WebStateListChange() will be able
   // to handle an operation with the activation at the same time.
   const bool activating;
+  // True when the pinned state of the WebState at `index` in WebStateList is
+  // updated.
+  const bool pinned_state_change;
 };
 
 // Constants used when notifying about changes to active WebState.
@@ -225,11 +252,6 @@ class WebStateListObserver : public base::CheckedObserver {
                                    web::WebState* new_web_state,
                                    int active_index,
                                    ActiveWebStateChangeReason reason);
-
-  // Invoked when the pinned state of a tab changes.
-  virtual void WebStatePinnedStateChanged(WebStateList* web_state_list,
-                                          web::WebState* web_state,
-                                          int index);
 
   // Invoked before a batched operations begins. The observer can use this
   // notification if it is interested in considering all those individual

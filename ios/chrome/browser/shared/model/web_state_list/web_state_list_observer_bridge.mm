@@ -33,11 +33,15 @@ void WebStateListObserverBridge::WebStateListDidChange(
     const WebStateListChange& change,
     const WebStateSelection& selection) {
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // WebStateActivatedAt() to here. Note that here is reachable only when
-      // `reason` == ActiveWebStateChangeReason::Activated.
-      break;
+    case WebStateListChange::Type::kSelectionOnly: {
+      if (!selection.pinned_state_change) {
+        // TODO(crbug.com/1442546): Move the implementation from
+        // WebStateActivatedAt() to here. Note that here is reachable only when
+        // `reason` == ActiveWebStateChangeReason::Activated.
+        return;
+      }
+      [[fallthrough]];
+    }
     case WebStateListChange::Type::kDetach:
       [[fallthrough]];
     case WebStateListChange::Type::kMove:
@@ -75,21 +79,6 @@ void WebStateListObserverBridge::WebStateActivatedAt(
                   oldWebState:old_web_state
                       atIndex:active_index
                        reason:reason];
-}
-
-void WebStateListObserverBridge::WebStatePinnedStateChanged(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  const SEL selector = @selector(webStateList:
-              didChangePinnedStateForWebState:atIndex:);
-  if (![observer_ respondsToSelector:selector]) {
-    return;
-  }
-
-  [observer_ webStateList:web_state_list
-      didChangePinnedStateForWebState:web_state
-                              atIndex:index];
 }
 
 void WebStateListObserverBridge::WillBeginBatchOperation(

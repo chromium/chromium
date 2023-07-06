@@ -293,13 +293,22 @@ void RecordTabGridCloseTabsCount(int count) {
   }
 
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly:
+    case WebStateListChange::Type::kSelectionOnly: {
+      const WebStateListChangeSelectionOnly& selectionOnlyChange =
+          change.As<WebStateListChangeSelectionOnly>();
+      if (selection.pinned_state_change) {
+        [self changePinnedStateForWebState:selectionOnlyChange
+                                               .selected_web_state()
+                                   atIndex:selection.index];
+        return;
+      }
+
       // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason and
-      // webStateList:didChangePinnedStateForWebState:atIndex to here. Note that
-      // here is reachable only when `reason` ==
+      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
+      // here. Note that here is reachable only when `reason` ==
       // ActiveWebStateChangeReason::Activated in didChangeActiveWebState:.
       break;
+    }
     case WebStateListChange::Type::kDetach:
       // Do nothing when a WebState is detached.
       break;
@@ -388,40 +397,6 @@ void RecordTabGridCloseTabsCount(int count) {
   }
 
   [self.consumer selectItemWithID:newWebState->GetStableIdentifier()];
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didChangePinnedStateForWebState:(web::WebState*)webState
-                            atIndex:(int)index {
-  DCHECK_EQ(_webStateList, webStateList);
-  if (webStateList->IsBatchInProgress()) {
-    return;
-  }
-
-  if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(index)) {
-    [self.consumer
-        removeItemWithID:webState->GetStableIdentifier()
-          selectedItemID:GetActiveWebStateIdentifier(
-                             webStateList,
-                             WebStateSearchCriteria{
-                                 .pinned_state = PinnedState::kNonPinned,
-                             })];
-
-    _scopedWebStateObservation->RemoveObservation(webState);
-  } else {
-    TabSwitcherItem* item =
-        [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-    NSUInteger itemIndex = [self itemIndexFromWebStateListIndex:index];
-    [self.consumer insertItem:item
-                      atIndex:itemIndex
-               selectedItemID:GetActiveWebStateIdentifier(
-                                  webStateList,
-                                  WebStateSearchCriteria{
-                                      .pinned_state = PinnedState::kNonPinned,
-                                  })];
-
-    _scopedWebStateObservation->AddObservation(webState);
-  }
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
@@ -1175,6 +1150,35 @@ void RecordTabGridCloseTabsCount(int count) {
   }
 
   return [nonPinnedWebStates copy];
+}
+
+// Inserts/removes a non pinned item to/from the collection.
+- (void)changePinnedStateForWebState:(web::WebState*)webState
+                             atIndex:(int)index {
+  if (IsPinnedTabsEnabled() && self.webStateList->IsWebStatePinnedAt(index)) {
+    [self.consumer
+        removeItemWithID:webState->GetStableIdentifier()
+          selectedItemID:GetActiveWebStateIdentifier(
+                             self.webStateList,
+                             WebStateSearchCriteria{
+                                 .pinned_state = PinnedState::kNonPinned,
+                             })];
+
+    _scopedWebStateObservation->RemoveObservation(webState);
+  } else {
+    TabSwitcherItem* item =
+        [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+    NSUInteger itemIndex = [self itemIndexFromWebStateListIndex:index];
+    [self.consumer insertItem:item
+                      atIndex:itemIndex
+               selectedItemID:GetActiveWebStateIdentifier(
+                                  self.webStateList,
+                                  WebStateSearchCriteria{
+                                      .pinned_state = PinnedState::kNonPinned,
+                                  })];
+
+    _scopedWebStateObservation->AddObservation(webState);
+  }
 }
 
 // Records when the user switches between incognito, regular or remotes pages in

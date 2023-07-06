@@ -296,13 +296,14 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
 
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly:
+    case WebStateListChange::Type::kSelectionOnly: {
+      CHECK(!selection.pinned_state_change);
       // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason and
-      // webStateList:didChangePinnedStateForWebState:atIndexto here. Note that
-      // here is reachable only when `reason` ==
+      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
+      // here. Note that here is reachable only when `reason` ==
       // ActiveWebStateChangeReason::Activated for didChangeActiveWebState:.
       break;
+    }
     case WebStateListChange::Type::kDetach:
       // Do nothing when a WebState is detached.
       break;
@@ -334,12 +335,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
                     atIndex:(int)atIndex
                      reason:(ActiveWebStateChangeReason)reason {
   // No-op.
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didChangePinnedStateForWebState:(web::WebState*)webState
-                            atIndex:(int)index {
-  NOTREACHED_NORETURN();
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {

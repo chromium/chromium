@@ -118,13 +118,14 @@ using ScopedWebStateListObservation =
   }
 
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly:
+    case WebStateListChange::Type::kSelectionOnly: {
+      CHECK(!selection.pinned_state_change);
       // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason and
-      // webStateList:didChangePinnedStateForWebState:atIndex to here. Note that
-      // here is reachable only when `reason` ==
+      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
+      // here. Note that here is reachable only when `reason` ==
       // ActiveWebStateChangeReason::Activated in didChangeActiveWebState:.
       break;
+    }
     case WebStateListChange::Type::kDetach:
       [_consumer updateInactiveTabsCount:_webStateList->count()];
       break;
@@ -142,12 +143,6 @@ using ScopedWebStateListObservation =
                      reason:(ActiveWebStateChangeReason)reason {
   // No-op. This is called when the selected web state is moved (closed and
   // opened elsewhere) from inactive to active.
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didChangePinnedStateForWebState:(web::WebState*)webState
-                            atIndex:(int)index {
-  NOTREACHED();
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {

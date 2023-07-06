@@ -360,8 +360,8 @@ int WebStateList::InsertWebStateImpl(int index,
   }
 
   const WebStateListChangeInsert insert_change(web_state_ptr);
-  const WebStateSelection selection = {.index = index,
-                                       .activating = activating};
+  const WebStateSelection selection = {
+      .index = index, .activating = activating, .pinned_state_change = false};
   for (auto& observer : observers_) {
     observer.WebStateListDidChange(this, insert_change, selection);
   }
@@ -406,7 +406,8 @@ void WebStateList::MoveWebStateAtImpl(int from_index, int to_index) {
   }
 
   const WebStateListChangeMove move_change(web_state, from_index);
-  const WebStateSelection selection = {.index = to_index, .activating = false};
+  const WebStateSelection selection = {
+      .index = to_index, .activating = false, .pinned_state_change = false};
   for (auto& observer : observers_) {
     observer.WebStateListDidChange(this, move_change, selection);
   }
@@ -430,7 +431,8 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
   const WebStateListChangeReplace replace_change(replaced_web_state.get(),
                                                  web_state_ptr);
   const WebStateSelection selection = {.index = index,
-                                       .activating = (index == active_index_)};
+                                       .activating = (index == active_index_),
+                                       .pinned_state_change = false};
   for (auto& observer : observers_) {
     observer.WebStateListDidChange(this, replace_change, selection);
   }
@@ -457,7 +459,8 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
                                                is_user_action);
   // TODO(crbug.com/1442546): Remove `activating` and introduce `active_index`
   // which is the index of the currently active WebState.
-  const WebStateSelection selection = {.index = index, .activating = false};
+  const WebStateSelection selection = {
+      .index = index, .activating = false, .pinned_state_change = false};
 
   for (auto& observer : observers_) {
     observer.WebStateListWillChange(this, detach_change, selection);
@@ -688,10 +691,16 @@ int WebStateList::SetWebStatePinnedImpl(int index, bool pinned) {
     pinned_tabs_count_--;
   }
 
+  // TODO(crbug.com/1442546): Merge 2 API calls into one; WebStateListDidChange
+  // with kMove and WebStateListDidChange with kSelectionOnly.
   MoveWebStateAtImpl(index, new_index);
+
+  const WebStateListChangeSelectionOnly selection_only_change(
+      web_state_wrappers_[new_index]->web_state());
+  const WebStateSelection selection = {
+      .index = new_index, .activating = false, .pinned_state_change = true};
   for (auto& observer : observers_) {
-    observer.WebStatePinnedStateChanged(
-        this, web_state_wrappers_[new_index]->web_state(), new_index);
+    observer.WebStateListDidChange(this, selection_only_change, selection);
   }
 
   return new_index;
