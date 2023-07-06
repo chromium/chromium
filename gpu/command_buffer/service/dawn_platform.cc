@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/dawn_platform.h"
 
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_arguments.h"
@@ -125,6 +127,38 @@ uint64_t DawnPlatform::AddTraceEvent(
                 "TraceEventHandle must be memcpy'able");
   memcpy(&result, &handle, sizeof(base::trace_event::TraceEventHandle));
   return result;
+}
+
+void DawnPlatform::HistogramCustomCounts(const char* name,
+                                         int sample,
+                                         int min,
+                                         int max,
+                                         int bucketCount) {
+  // Copied from histogram macro, but without the static variable caching
+  // the histogram because name is dynamic.
+  base::HistogramBase* counter = base::Histogram::FactoryGet(
+      name, min, max, bucketCount,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  counter->Add(sample);
+}
+
+void DawnPlatform::HistogramEnumeration(const char* name,
+                                        int sample,
+                                        int boundaryValue) {
+  // Copied from histogram macro, but without the static variable caching
+  // the histogram because name is dynamic.
+  base::HistogramBase* counter = base::LinearHistogram::FactoryGet(
+      name, 1, boundaryValue, boundaryValue + 1,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  counter->Add(sample);
+}
+
+void DawnPlatform::HistogramSparse(const char* name, int sample) {
+  base::UmaHistogramSparse(name, sample);
+}
+
+void DawnPlatform::HistogramBoolean(const char* name, bool sample) {
+  HistogramEnumeration(name, sample ? 1 : 0, 2);
 }
 
 dawn::platform::CachingInterface* DawnPlatform::GetCachingInterface() {
