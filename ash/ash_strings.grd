@@ -6711,6 +6711,9 @@ New install
       </message>
 
       <!-- Glanceables -->
+      <message name="IDS_GLANCEABLES_DUE_TODAY" desc="Classroom glanceable displays upcoming/missed/completed assignments from Google Classroom. Tasks glanceable displays upcoming/missed assignments from Google Tasks. This text is displayed for tasks and assignments that are due today. In other cases date formatter is used and no translation is needed.">
+        Today
+      </message>
       <message name="IDS_GLANCEABLES_WELCOME_LABEL" desc="Personalized greeting / welcome message shown on glanceables surfaces (welcome screen and overview mode).">
         Welcome back, <ph name="GIVEN_NAME">$1<ex>John</ex></ph>
       </message>
@@ -6719,9 +6722,6 @@ New install
       </message>
       <message name="IDS_GLANCEABLES_LIST_FOOTER_ACTION_BUTTON_LABEL" desc="The glanceable displays classroom or tasks items fetched from Google Classroom or Google Tasks API. Glanceables UI renders only limited number of items, the rest of them can be seen by clicking this button, which will open a corresponding website.">
         See all
-      </message>
-      <message name="IDS_GLANCEABLES_CLASSROOM_ASSIGNMENT_DUE_TODAY" desc="Classroom glanceable displays upcoming/missed/completed assignments from Google Classroom. This text is displayed for assignments that are due today. In other cases date formatter is used and no translation is needed.">
-        Today
       </message>
 
       <!-- Do not disturb notification -->

@@ -63,8 +63,7 @@ std::u16string GetFormattedDueDate(const base::Time& due) {
   const auto midnight_tomorrow = midnight_today + base::Days(1);
 
   if (midnight_today <= due && due < midnight_tomorrow) {
-    return l10n_util::GetStringUTF16(
-        IDS_GLANCEABLES_CLASSROOM_ASSIGNMENT_DUE_TODAY);
+    return l10n_util::GetStringUTF16(IDS_GLANCEABLES_DUE_TODAY);
   }
 
   const auto midnight_in_7_days_from_today = midnight_today + base::Days(7);

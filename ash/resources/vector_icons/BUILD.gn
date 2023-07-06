@@ -117,6 +117,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "gif.icon",
     "glanceables_classroom.icon",
     "glanceables_classroom_assignment.icon",
+    "glanceables_tasks_due_date.icon",
     "global_media_controls.icon",
     "hide_closed_caption.icon",
     "holding_space.icon",
