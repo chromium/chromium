@@ -250,8 +250,8 @@ export class Realm {
 
   async callFunction(
     functionDeclaration: string,
-    _this: Script.ArgumentValue,
-    _arguments: Script.ArgumentValue[],
+    _this: Script.LocalValue,
+    _arguments: Script.LocalValue[],
     awaitPromise: boolean,
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions

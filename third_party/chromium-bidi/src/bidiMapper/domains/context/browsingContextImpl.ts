@@ -23,6 +23,7 @@ import {
   UnknownErrorException,
   UnsupportedOperationException,
   type EmptyResult,
+  InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
@@ -596,6 +597,12 @@ export class BrowsingContextImpl {
     url: string,
     wait: BrowsingContext.ReadinessState
   ): Promise<BrowsingContext.NavigateResult> {
+    try {
+      void new URL(url);
+    } catch {
+      throw new InvalidArgumentException(`Invalid URL: ${url}`);
+    }
+
     await this.awaitUnblocked();
 
     // TODO: handle loading errors.
@@ -788,6 +795,18 @@ export class BrowsingContextImpl {
       cdpParams.paperWidth = inchesFromCm(params.page.width);
     }
     if (params.pageRanges !== undefined) {
+      for (const range of params.pageRanges) {
+        if (typeof range === 'string') {
+          const [start, end] = range.split('-');
+          const startPage = start === '' ? 1 : Number(start);
+          const endPage = end === '' ? Infinity : Number(end);
+          if (startPage > endPage) {
+            throw new InvalidArgumentException(
+              `Invalid page range: ${start} > ${end}`
+            );
+          }
+        }
+      }
       cdpParams.pageRanges = params.pageRanges.join(',');
     }
     if (params.scale !== undefined) {

@@ -386,6 +386,12 @@ export namespace BrowsingContext {
   };
 }
 export namespace BrowsingContext {
+  /**
+   * Must match the pattern `"^(?:[0-9]+)?(?:-(?:[0-9]+)?)?$"`.
+   */
+  export type PageRange = string;
+}
+export namespace BrowsingContext {
   export type PrintParameters = {
     context: BrowsingContext.BrowsingContext;
     /**
@@ -398,7 +404,7 @@ export namespace BrowsingContext {
      */
     orientation?: 'portrait' | 'landscape';
     page?: BrowsingContext.PrintPageParameters;
-    pageRanges?: [...(JsUint | string)[]];
+    pageRanges?: [...(JsUint | BrowsingContext.PageRange)[]];
     /**
      * Must be between `0.1` and `2`, inclusive.
      *
@@ -944,7 +950,9 @@ export namespace Script {
 }
 export namespace Script {
   export type LocalValue =
+    | Script.RemoteReference
     | Script.PrimitiveProtocolValue
+    | Script.ChannelValue
     | Script.ArrayLocalValue
     | Script.DateLocalValue
     | Script.MapLocalValue
@@ -1450,17 +1458,11 @@ export namespace Script {
     functionDeclaration: string;
     awaitPromise: boolean;
     target: Script.Target;
-    arguments?: [...Script.ArgumentValue[]];
+    arguments?: [...Script.LocalValue[]];
     resultOwnership?: Script.ResultOwnership;
     serializationOptions?: Script.SerializationOptions;
-    this?: Script.ArgumentValue;
+    this?: Script.LocalValue;
   };
-}
-export namespace Script {
-  export type ArgumentValue =
-    | Script.RemoteReference
-    | Script.LocalValue
-    | Script.ChannelValue;
 }
 export namespace Script {
   export type Evaluate = {

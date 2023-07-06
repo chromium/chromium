@@ -570,6 +570,9 @@ export class ActionDispatcher {
     source: KeySource,
     action: Readonly<Input.KeyDownAction>
   ) {
+    if ([...action.value].length > 1) {
+      throw new InvalidArgumentException(`Invalid key value: ${action.value}`);
+    }
     const rawKey = action.value;
     const key = getNormalizedKey(rawKey);
     const repeat = source.pressed.has(key);
@@ -642,6 +645,9 @@ export class ActionDispatcher {
   }
 
   #dispatchKeyUpAction(source: KeySource, action: Readonly<Input.KeyUpAction>) {
+    if ([...action.value].length > 1) {
+      throw new InvalidArgumentException(`Invalid key value: ${action.value}`);
+    }
     const rawKey = action.value;
     const key = getNormalizedKey(rawKey);
     if (!source.pressed.has(key)) {

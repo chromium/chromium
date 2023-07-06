@@ -160,8 +160,8 @@ export class ScriptEvaluator {
   async callFunction(
     realm: Realm,
     functionDeclaration: string,
-    _this: Script.ArgumentValue,
-    _arguments: Script.ArgumentValue[],
+    _this: Script.LocalValue,
+    _arguments: Script.LocalValue[],
     awaitPromise: boolean,
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions
@@ -256,7 +256,7 @@ export class ScriptEvaluator {
   }
 
   async #deserializeToCdpArg(
-    argumentValue: Script.ArgumentValue,
+    argumentValue: Script.LocalValue,
     realm: Realm
   ): Promise<Protocol.Runtime.CallArgument> {
     if ('sharedId' in argumentValue && argumentValue.sharedId !== undefined) {

@@ -18,6 +18,7 @@
 import {
   ChromiumBidi,
   type BrowsingContext,
+  InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import {DefaultMap} from '../../../utils/DefaultMap.js';
 import {Buffer} from '../../../utils/buffer.js';
@@ -173,6 +174,10 @@ export class EventManager implements IEventManager {
     contextIds: (BrowsingContext.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {
+    for (const name of eventNames) {
+      checkEventName(name);
+    }
+
     // First check if all the contexts are known.
     for (const contextId of contextIds) {
       if (contextId !== null) {
@@ -233,6 +238,9 @@ export class EventManager implements IEventManager {
     contextIds: (BrowsingContext.BrowsingContext | null)[],
     channel: string | null
   ) {
+    for (const name of eventNames) {
+      checkEventName(name);
+    }
     this.#subscriptionManager.unsubscribeAll(eventNames, contextIds, channel);
   }
 
@@ -324,3 +332,20 @@ export class EventManager implements IEventManager {
     return result.sort((e1, e2) => e1.id - e2.id);
   }
 }
+
+const EVENT_NAMES = new Set([
+  ...Object.values(ChromiumBidi.BrowsingContext.EventNames),
+  ...Object.values(ChromiumBidi.Log.EventNames),
+  ...Object.values(ChromiumBidi.Network.EventNames),
+  ...Object.values(ChromiumBidi.Script.EventNames),
+]);
+
+const checkEventName = (name: string) => {
+  if (
+    !EVENT_NAMES.has(name as never) &&
+    !name.startsWith('cdp.') &&
+    name !== 'cdp'
+  ) {
+    throw new InvalidArgumentException(`Unknown event: ${name}`);
+  }
+};

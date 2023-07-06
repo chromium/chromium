@@ -21,17 +21,10 @@
  */
 import {z as zod, type ZodType} from 'zod';
 
+import type * as Protocol from '../protocol/protocol.js';
 import {InvalidArgumentException} from '../protocol/protocol.js';
-import {
-  BrowsingContext as BrowsingContextTypes,
-  ChromiumBidi,
-  Input as InputTypes,
-  Script as ScriptTypes,
-  type Cdp as CdpTypes,
-  type Session as SessionTypes,
-} from '../protocol/protocol.js';
 
-const MAX_INT = 9007199254740991 as const;
+import * as WebDriverBidi from './webdriver-bidi.js';
 
 export function parseObject<T extends ZodType>(
   obj: unknown,
@@ -52,556 +45,217 @@ export function parseObject<T extends ZodType>(
   throw new InvalidArgumentException(errorMessage);
 }
 
-const UnicodeCharacterSchema = zod.string().refine((value) => {
-  // The spread is a little hack so JS gives us an array of unicode characters
-  // to measure.
-  return [...value].length === 1;
-});
-
-export namespace CommonDataTypes {
-  export const SharedReferenceSchema = zod.object({
-    sharedId: zod.string().min(1),
-    handle: zod.string().optional(),
-  });
-  export const RemoteReferenceSchema = zod.object({
-    handle: zod.string().min(1),
-  });
-
-  // UndefinedValue = {
-  //   type: "undefined",
-  // }
-  const UndefinedValueSchema = zod.object({type: zod.literal('undefined')});
-
-  // NullValue = {
-  //   type: "null",
-  // }
-  const NullValueSchema = zod.object({type: zod.literal('null')});
-
-  // StringValue = {
-  //   type: "string",
-  //   value: text,
-  // }
-  const StringValueSchema = zod.object({
-    type: zod.literal('string'),
-    value: zod.string(),
-  });
-
-  // SpecialNumber = "NaN" / "-0" / "Infinity" / "-Infinity";
-  const SpecialNumberSchema = zod.enum(['NaN', '-0', 'Infinity', '-Infinity']);
-
-  // NumberValue = {
-  //   type: "number",
-  //   value: number / SpecialNumber,
-  // }
-  const NumberValueSchema = zod.object({
-    type: zod.literal('number'),
-    value: zod.union([SpecialNumberSchema, zod.number()]),
-  });
-
-  // BooleanValue = {
-  //   type: "boolean",
-  //   value: bool,
-  // }
-  const BooleanValueSchema = zod.object({
-    type: zod.literal('boolean'),
-    value: zod.boolean(),
-  });
-
-  // BigIntValue = {
-  //   type: "bigint",
-  //   value: text,
-  // }
-  const BigIntValueSchema = zod.object({
-    type: zod.literal('bigint'),
-    value: zod.string(),
-  });
-
-  const PrimitiveProtocolValueSchema = zod.union([
-    UndefinedValueSchema,
-    NullValueSchema,
-    StringValueSchema,
-    NumberValueSchema,
-    BooleanValueSchema,
-    BigIntValueSchema,
-  ]);
-
-  export const LocalValueSchema: zod.ZodType<ScriptTypes.LocalValue> = zod.lazy(
-    () =>
-      zod.union([
-        PrimitiveProtocolValueSchema,
-        ArrayLocalValueSchema,
-        DateLocalValueSchema,
-        MapLocalValueSchema,
-        ObjectLocalValueSchema,
-        RegExpLocalValueSchema,
-        SetLocalValueSchema,
-      ])
-  );
-
-  // Order is important, as `parse` is processed in the same order.
-  // `SharedReferenceSchema`->`RemoteReferenceSchema`->`LocalValueSchema`.
-  const LocalOrRemoteValueSchema = zod.union([
-    SharedReferenceSchema,
-    RemoteReferenceSchema,
-    LocalValueSchema,
-  ]);
-
-  // ListLocalValue = [*LocalValue];
-  const ListLocalValueSchema = zod.array(LocalOrRemoteValueSchema);
-
-  // ArrayLocalValue = {
-  //   type: "array",
-  //   value: ListLocalValue,
-  // }
-  const ArrayLocalValueSchema = zod.object({
-    type: zod.literal('array'),
-    value: ListLocalValueSchema,
-  });
-
-  // DateLocalValue = {
-  //   type: "date",
-  //   value: text
-  // }
-  const DateLocalValueSchema = zod.object({
-    type: zod.literal('date'),
-    value: zod.string().min(1),
-  });
-
-  // MappingLocalValue = [*[(LocalValue / text), LocalValue]];
-  const MappingLocalValueSchema = zod.tuple([
-    zod.union([zod.string(), LocalOrRemoteValueSchema]),
-    LocalOrRemoteValueSchema,
-  ]);
-
-  // MapLocalValue = {
-  //   type: "map",
-  //   value: MappingLocalValue,
-  // }
-  const MapLocalValueSchema = zod.object({
-    type: zod.literal('map'),
-    value: zod.array(MappingLocalValueSchema),
-  });
-
-  // ObjectLocalValue = {
-  //   type: "object",
-  //   value: MappingLocalValue,
-  // }
-  const ObjectLocalValueSchema = zod.object({
-    type: zod.literal('object'),
-    value: zod.array(MappingLocalValueSchema),
-  });
-
-  // RegExpLocalValue = {
-  //   type: "regexp",
-  //   value: RegExpValue,
-  // }
-  const RegExpLocalValueSchema = zod.object({
-    type: zod.literal('regexp'),
-    value: zod.object({
-      pattern: zod.string(),
-      flags: zod.string().optional(),
-    }),
-  });
-
-  // SetLocalValue = {
-  //   type: "set",
-  //   value: ListLocalValue,
-  // }
-  const SetLocalValueSchema: zod.ZodType = zod.lazy(() =>
-    zod.object({
-      type: zod.literal('set'),
-      value: ListLocalValueSchema,
-    })
-  );
-
-  // BrowsingContext = text;
-  export const BrowsingContextSchema = zod.string();
-
-  export const MaxDepthSchema = zod.number().int().nonnegative().max(MAX_INT);
-}
-
 /** @see https://w3c.github.io/webdriver-bidi/#module-script */
 export namespace Script {
-  const RealmTypeSchema = zod.enum([
-    'window',
-    'dedicated-worker',
-    'shared-worker',
-    'service-worker',
-    'worker',
-    'paint-worklet',
-    'audio-worklet',
-    'worklet',
-  ]);
-
-  export const GetRealmsParametersSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema.optional(),
-    type: RealmTypeSchema.optional(),
-  });
-
   export function parseGetRealmsParams(
     params: unknown
-  ): ScriptTypes.GetRealmsParameters {
-    return parseObject(params, GetRealmsParametersSchema);
+  ): Protocol.Script.GetRealmsParameters {
+    return parseObject(params, WebDriverBidi.Script.GetRealmsParametersSchema);
   }
 
-  // ContextTarget = {
-  //   context: BrowsingContext,
-  //   ?sandbox: text
-  // }
-  const ContextTargetSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
-    sandbox: zod.string().optional(),
-  });
-
-  // RealmTarget = {realm: Realm};
-  const RealmTargetSchema = zod.object({
-    realm: zod.string().min(1),
-  });
-
-  // Target = (
-  //   RealmTarget //
-  //   ContextTarget
-  // );
-  // Order is important, as `parse` is processed in the same order.
-  // `RealmTargetSchema` has higher priority.
-  const TargetSchema = zod.union([RealmTargetSchema, ContextTargetSchema]);
-
-  // ResultOwnership = "root" / "none"
-  const ResultOwnershipSchema = zod.enum([
-    ScriptTypes.ResultOwnership.Root,
-    ScriptTypes.ResultOwnership.None,
-  ]);
-
-  // SerializationOptions = {
-  //   ?maxDomDepth: (js-uint / null) .default 0,
-  //   ?maxObjectDepth: (js-uint / null) .default null,
-  //   ?includeShadowTree: ("none" / "open" / "all") .default "none",
-  // }
-  const SerializationOptionsSchema = zod.object({
-    maxDomDepth: zod
-      .union([zod.null(), zod.number().int().nonnegative()])
-      .optional(),
-    maxObjectDepth: zod
-      .union([zod.null(), zod.number().int().nonnegative().max(MAX_INT)])
-      .optional(),
-    includeShadowTree: zod.enum(['none', 'open', 'all']).optional(),
-  });
-
-  // script.EvaluateParameters = {
-  //   expression: text,
-  //   target: script.Target,
-  //   awaitPromise: bool,
-  //   ?resultOwnership: script.ResultOwnership,
-  //   ?serializationOptions: script.SerializationOptions,
-  // }
-  const EvaluateParametersSchema = zod.object({
-    expression: zod.string(),
-    awaitPromise: zod.boolean(),
-    target: TargetSchema,
-    resultOwnership: ResultOwnershipSchema.optional(),
-    serializationOptions: SerializationOptionsSchema.optional(),
-  });
-
-  export function parseEvaluateParams(
-    params: unknown
-  ): ScriptTypes.EvaluateParameters {
-    return parseObject(params, EvaluateParametersSchema);
+  export function parseEvaluateParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Script.EvaluateParametersSchema
+    ) as Protocol.Script.EvaluateParameters;
   }
-
-  // DisownParameters = {
-  //   handles: [Handle]
-  //   target: script.Target;
-  // }
-  const DisownParametersSchema = zod.object({
-    target: TargetSchema,
-    handles: zod.array(zod.string()),
-  });
 
   export function parseDisownParams(
     params: unknown
-  ): ScriptTypes.DisownParameters {
-    return parseObject(params, DisownParametersSchema);
+  ): Protocol.Script.DisownParameters {
+    return parseObject(params, WebDriverBidi.Script.DisownParametersSchema);
   }
 
-  const ChannelSchema = zod.string();
-
-  const ChannelPropertiesSchema = zod.object({
-    channel: ChannelSchema,
-    serializationOptions: SerializationOptionsSchema.optional(),
-    ownership: ResultOwnershipSchema.optional(),
-  });
-
-  export const ChannelValueSchema = zod.object({
-    type: zod.literal('channel'),
-    value: ChannelPropertiesSchema,
-  });
-
-  export const PreloadScriptSchema = zod.string();
-
-  export const AddPreloadScriptParametersSchema = zod.object({
-    functionDeclaration: zod.string(),
-    arguments: zod.array(ChannelValueSchema).optional(),
-    sandbox: zod.string().optional(),
-    context: CommonDataTypes.BrowsingContextSchema.optional(),
-  });
-
-  export function parseAddPreloadScriptParams(
-    params: unknown
-  ): ScriptTypes.AddPreloadScriptParameters {
-    return parseObject(params, AddPreloadScriptParametersSchema);
+  export function parseAddPreloadScriptParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Script.AddPreloadScriptParametersSchema
+    ) as Protocol.Script.AddPreloadScriptParameters;
   }
 
-  export const RemovePreloadScriptParametersSchema = zod.object({
-    script: PreloadScriptSchema,
-  });
-
-  export function parseRemovePreloadScriptParams(
-    params: unknown
-  ): ScriptTypes.RemovePreloadScriptParameters {
-    return parseObject(params, RemovePreloadScriptParametersSchema);
+  export function parseRemovePreloadScriptParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Script.RemovePreloadScriptParametersSchema
+    ) as Protocol.Script.RemovePreloadScriptParameters;
   }
 
-  // ArgumentValue = (
-  //   RemoteReference //
-  //   LocalValue //
-  //   script.Channel
-  // );
-  const ArgumentValueSchema = zod.union([
-    CommonDataTypes.RemoteReferenceSchema,
-    CommonDataTypes.SharedReferenceSchema,
-    CommonDataTypes.LocalValueSchema,
-    Script.ChannelValueSchema,
-  ]);
-
-  // CallFunctionParameters = {
-  //   functionDeclaration: text,
-  //   awaitPromise: bool,
-  //   target: script.Target,
-  //   ?arguments: [*script.ArgumentValue],
-  //   ?resultOwnership: script.ResultOwnership,
-  //   ?serializationOptions: script.SerializationOptions,
-  //   ?this: script.ArgumentValue,
-  // }
-  const CallFunctionParametersSchema = zod.object({
-    functionDeclaration: zod.string(),
-    awaitPromise: zod.boolean(),
-    target: TargetSchema,
-    arguments: zod.array(ArgumentValueSchema).optional(),
-    resultOwnership: ResultOwnershipSchema.optional(),
-    serializationOptions: SerializationOptionsSchema.optional(),
-    this: ArgumentValueSchema.optional(),
-  });
-
-  export function parseCallFunctionParams(
-    params: unknown
-  ): ScriptTypes.CallFunctionParameters {
-    return parseObject(params, CallFunctionParametersSchema);
+  export function parseCallFunctionParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Script.CallFunctionParametersSchema
+    ) as Protocol.Script.CallFunctionParameters;
   }
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-browsingContext */
 export namespace BrowsingContext {
-  // GetTreeParameters = {
-  //   ?maxDepth: js-uint,
-  //   ?root: browsingContext.BrowsingContext,
-  // }
-  const GetTreeParametersSchema = zod.object({
-    maxDepth: CommonDataTypes.MaxDepthSchema.optional(),
-    root: CommonDataTypes.BrowsingContextSchema.optional(),
-  });
-
   export function parseGetTreeParams(
     params: unknown
-  ): BrowsingContextTypes.GetTreeParameters {
-    return parseObject(params, GetTreeParametersSchema);
+  ): Protocol.BrowsingContext.GetTreeParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.GetTreeParametersSchema
+    );
   }
 
-  // ReadinessState = "none" / "interactive" / "complete"
-  const ReadinessStateSchema = zod.enum([
-    BrowsingContextTypes.ReadinessState.None,
-    BrowsingContextTypes.ReadinessState.Complete,
-    BrowsingContextTypes.ReadinessState.Interactive,
-  ]);
-
-  // BrowsingContextNavigateParameters = {
-  //   context: BrowsingContext,
-  //   url: text,
-  //   ?wait: ReadinessState,
-  // }
-  // ReadinessState = "none" / "interactive" / "complete"
-  const NavigateParametersSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
-    url: zod.string().url(),
-    wait: ReadinessStateSchema.optional(),
-  });
-
-  export function parseNavigateParams(
-    params: unknown
-  ): BrowsingContextTypes.NavigateParameters {
-    return parseObject(params, NavigateParametersSchema);
+  export function parseNavigateParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.NavigateParametersSchema
+    ) as Protocol.BrowsingContext.NavigateParameters;
   }
 
-  const ReloadParametersSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
-    ignoreCache: zod.boolean().optional(),
-    wait: ReadinessStateSchema.optional(),
-  });
-
-  export function parseReloadParams(
-    params: unknown
-  ): BrowsingContextTypes.ReloadParameters {
-    return parseObject(params, ReloadParametersSchema);
+  export function parseReloadParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.ReloadParametersSchema
+    ) as Protocol.BrowsingContext.ReloadParameters;
   }
 
-  // BrowsingContextCreateType = "tab" / "window"
-  // BrowsingContextCreateParameters = {
-  //   type: BrowsingContextCreateType
-  // }
-  const CreateParametersSchema = zod.object({
-    type: zod.enum([
-      BrowsingContextTypes.CreateType.Tab,
-      BrowsingContextTypes.CreateType.Window,
-    ]),
-    referenceContext: CommonDataTypes.BrowsingContextSchema.optional(),
-  });
-
-  export function parseCreateParams(
-    params: unknown
-  ): BrowsingContextTypes.CreateParameters {
-    return parseObject(params, CreateParametersSchema);
+  export function parseCreateParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.CreateParametersSchema
+    ) as Protocol.BrowsingContext.CreateParameters;
   }
-
-  // BrowsingContextCloseParameters = {
-  //   context: BrowsingContext
-  // }
-  const CloseParametersSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
-  });
 
   export function parseCloseParams(
     params: unknown
-  ): BrowsingContextTypes.CloseParameters {
-    return parseObject(params, CloseParametersSchema);
+  ): Protocol.BrowsingContext.CloseParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.CloseParametersSchema
+    );
   }
-
-  // browsingContext.CaptureScreenshotParameters = {
-  //   context: browsingContext.BrowsingContext
-  // }
-  const CaptureScreenshotParametersSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
-  });
 
   export function parseCaptureScreenshotParams(
     params: unknown
-  ): BrowsingContextTypes.CaptureScreenshotParameters {
-    return parseObject(params, CaptureScreenshotParametersSchema);
+  ): Protocol.BrowsingContext.CaptureScreenshotParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.CaptureScreenshotParametersSchema
+    );
   }
-
-  // All units are in cm.
-  // PrintPageParameters = {
-  //   ?height: (float .ge 0.0) .default 27.94,
-  //   ?width: (float .ge 0.0) .default 21.59,
-  // }
-  const PrintPageParametersSchema = zod.object({
-    height: zod.number().nonnegative().optional(),
-    width: zod.number().nonnegative().optional(),
-  });
-
-  // All units are in cm.
-  // PrintMarginParameters = {
-  //   ?bottom: (float .ge 0.0) .default 1.0,
-  //   ?left: (float .ge 0.0) .default 1.0,
-  //   ?right: (float .ge 0.0) .default 1.0,
-  //   ?top: (float .ge 0.0) .default 1.0,
-  // }
-  const PrintMarginParametersSchema = zod.object({
-    bottom: zod.number().nonnegative().optional(),
-    left: zod.number().nonnegative().optional(),
-    right: zod.number().nonnegative().optional(),
-    top: zod.number().nonnegative().optional(),
-  });
-
-  /** @see https://w3c.github.io/webdriver/#dfn-parse-a-page-range */
-  const PrintPageRangesSchema = zod
-    .array(zod.union([zod.string().min(1), zod.number().int().nonnegative()]))
-    .refine((pageRanges: (string | number)[]) => {
-      return pageRanges.every((pageRange: string | number) => {
-        const match = String(pageRange).match(
-          // matches: '2' | '2-' | '-2' | '2-4'
-          /^(?:(?:\d+)|(?:\d+[-])|(?:[-]\d+)|(?:(?<start>\d+)[-](?<end>\d+)))$/
-        );
-
-        // If a page range is specified, validate start <= end.
-        const {start, end} = match?.groups ?? {};
-        if (start && end && Number(start) > Number(end)) {
-          return false;
-        }
-
-        return match;
-      });
-    });
-
-  // PrintParameters = {
-  //   context: browsingContext.BrowsingContext,
-  //   ?background: bool .default false,
-  //   ?margin: browsingContext.PrintMarginParameters,
-  //   ?orientation: ("portrait" / "landscape") .default "portrait",
-  //   ?page: browsingContext.PrintPageParameters,
-  //   ?pageRanges: [*(js-uint / text)],
-  //   ?scale: 0.1..2.0 .default 1.0,
-  //   ?shrinkToFit: bool .default true,
-  // }
-  const PrintParametersSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
-    background: zod.boolean().optional(),
-    margin: PrintMarginParametersSchema.optional(),
-    orientation: zod.enum(['portrait', 'landscape']).optional(),
-    page: PrintPageParametersSchema.optional(),
-    pageRanges: PrintPageRangesSchema.optional(),
-    scale: zod.number().min(0.1).max(2.0).optional(),
-    shrinkToFit: zod.boolean().optional(),
-  });
 
   export function parsePrintParams(
     params: unknown
-  ): BrowsingContextTypes.PrintParameters {
-    return parseObject(params, PrintParametersSchema);
+  ): Protocol.BrowsingContext.PrintParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.PrintParametersSchema
+    );
   }
-
-  // browsingContext.Viewport = {
-  //   width: js-uint,
-  //   height: js-uint,
-  // }
-  const ViewportSchema = zod.object({
-    width: zod.number().int().nonnegative(),
-    height: zod.number().int().nonnegative(),
-  });
-
-  // browsingContext.SetViewportParameters = {
-  //   context: browsingContext.BrowsingContext,
-  //   viewport: emulation.Viewport / null
-  // }
-  const SetViewportActionSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
-    viewport: zod.union([zod.null(), ViewportSchema]),
-  });
 
   export function parseSetViewportParams(
     params: unknown
-  ): BrowsingContextTypes.SetViewportParameters {
-    return parseObject(params, SetViewportActionSchema);
+  ): Protocol.BrowsingContext.SetViewportParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.SetViewportParametersSchema
+    );
   }
-
-  const HandleUserPromptActionSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
-    accept: zod.boolean().optional(),
-    userText: zod.string().optional(),
-  });
 
   export function parseHandleUserPromptParameters(
     params: unknown
-  ): BrowsingContextTypes.HandleUserPromptParameters {
-    return parseObject(params, HandleUserPromptActionSchema);
+  ): Protocol.BrowsingContext.HandleUserPromptParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.HandleUserPromptParametersSchema
+    );
+  }
+}
+
+/** @see https://w3c.github.io/webdriver-bidi/#module-session */
+export namespace Session {
+  export function parseSubscribeParams(
+    params: unknown
+  ): Protocol.Session.SubscriptionRequest {
+    return parseObject(params, WebDriverBidi.Session.SubscriptionRequestSchema);
+  }
+}
+
+/** @see https://w3c.github.io/webdriver-bidi/#module-network */
+export namespace Network {
+  export function parseAddInterceptParams(
+    params: unknown
+  ): Protocol.Network.AddInterceptParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.AddInterceptParametersSchema
+    );
+  }
+
+  export function parseContinueRequestParams(
+    params: unknown
+  ): Protocol.Network.ContinueRequestParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.ContinueRequestParametersSchema
+    );
+  }
+
+  export function parseContinueResponseParams(
+    params: unknown
+  ): Protocol.Network.ContinueResponseParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.ContinueResponseParametersSchema
+    );
+  }
+
+  export function parseContinueWithAuthParams(
+    params: unknown
+  ): Protocol.Network.ContinueWithAuthParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.ContinueWithAuthParametersSchema
+    );
+  }
+
+  export function parseFailRequestParams(
+    params: unknown
+  ): Protocol.Network.ProvideResponseParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.FailRequestParametersSchema
+    );
+  }
+
+  export function parseProvideResponseParams(
+    params: unknown
+  ): Protocol.Network.ProvideResponseParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.ProvideResponseParametersSchema
+    );
+  }
+
+  export function parseRemoveInterceptParams(
+    params: unknown
+  ): Protocol.Network.RemoveInterceptParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.RemoveInterceptParametersSchema
+    );
+  }
+}
+
+export namespace Input {
+  export function parsePerformActionsParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Input.PerformActionsParametersSchema
+    ) as Protocol.Input.PerformActionsParameters;
+  }
+
+  export function parseReleaseActionsParams(
+    params: unknown
+  ): Protocol.Input.ReleaseActionsParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Input.ReleaseActionsParametersSchema
+    );
   }
 }
 
@@ -615,485 +269,20 @@ export namespace Cdp {
     session: zod.string().optional(),
   });
 
-  export function parseSendCommandRequest(
-    params: unknown
-  ): CdpTypes.SendCommandParameters {
+  const GetSessionRequestSchema = zod.object({
+    context: WebDriverBidi.BrowsingContext.BrowsingContextSchema,
+  });
+
+  export function parseSendCommandRequest(params: unknown) {
     return parseObject(
       params,
       SendCommandRequestSchema
-    ) as CdpTypes.SendCommandParameters;
+    ) as Protocol.Cdp.SendCommandParameters;
   }
-
-  const GetSessionRequestSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
-  });
 
   export function parseGetSessionRequest(
     params: unknown
-  ): CdpTypes.GetSessionParameters {
+  ): Protocol.Cdp.GetSessionParameters {
     return parseObject(params, GetSessionRequestSchema);
-  }
-}
-
-/** @see https://w3c.github.io/webdriver-bidi/#module-session */
-export namespace Session {
-  const BiDiSubscriptionRequestParametersEventsSchema = zod.nativeEnum({
-    // keep-sorted start
-    ...ChromiumBidi.BrowsingContext.EventNames,
-    ...ChromiumBidi.Log.EventNames,
-    ...ChromiumBidi.Network.EventNames,
-    ...ChromiumBidi.Script.EventNames,
-    // keep-sorted end
-  });
-
-  // BiDi+ events
-  const CdpSubscriptionRequestParametersEventsSchema =
-    zod.custom<CdpTypes.EventNames>((value: unknown) => {
-      return typeof value === 'string' && value.startsWith('cdp.');
-    }, 'Not a CDP event');
-
-  const SubscriptionRequestParametersEventsSchema = zod.union([
-    BiDiSubscriptionRequestParametersEventsSchema,
-    CdpSubscriptionRequestParametersEventsSchema,
-  ]);
-
-  // SessionSubscriptionRequest = {
-  //   events: [*text],
-  //   ?contexts: [*BrowsingContext],
-  // }
-  const SubscriptionRequestParametersSchema = zod.object({
-    events: zod.array(SubscriptionRequestParametersEventsSchema),
-    contexts: zod.array(CommonDataTypes.BrowsingContextSchema).optional(),
-  });
-
-  export function parseSubscribeParams(
-    params: unknown
-  ): SessionTypes.SubscriptionRequest {
-    return parseObject(params, SubscriptionRequestParametersSchema);
-  }
-}
-
-/** @see https://w3c.github.io/webdriver-bidi/#module-network */
-export namespace Network {
-  const InterceptPhaseSchema = zod.enum([
-    'beforeRequestSent',
-    'responseStarted',
-    'authRequired',
-  ]);
-
-  const AddInterceptParametersSchema = zod.object({
-    phases: zod.array(InterceptPhaseSchema),
-    urlPatterns: zod.array(zod.string()).optional(),
-  });
-
-  export function parseAddInterceptParams(params: unknown) {
-    return parseObject(params, AddInterceptParametersSchema);
-  }
-
-  const RequestSchema = zod.string();
-
-  const StringBodySchema = zod.object({
-    type: zod.literal('string'),
-    value: zod.string(),
-  });
-
-  const Base64BodySchema = zod.object({
-    type: zod.literal('base64'),
-    value: zod.string(),
-  });
-
-  const BodySchema = zod.union([StringBodySchema, Base64BodySchema]);
-
-  const StringValueSchema = zod.object({
-    type: zod.literal('string'),
-    value: zod.string(),
-  });
-
-  const Base64ValueSchema = zod.object({
-    type: zod.literal('base64'),
-    value: zod.string(),
-  });
-
-  const BytesValueSchema = zod.union([StringValueSchema, Base64ValueSchema]);
-
-  const HeaderSchema = zod.object({
-    name: zod.string(),
-    value: BytesValueSchema,
-  });
-
-  const ContinueRequestParametersSchema = zod.object({
-    request: RequestSchema,
-    body: BodySchema.optional(),
-    headers: zod.array(HeaderSchema).optional(),
-    method: zod.string().optional(),
-    url: zod.string().optional(),
-  });
-
-  export function parseContinueRequestParams(params: unknown) {
-    return parseObject(params, ContinueRequestParametersSchema);
-  }
-
-  const AuthCredentialsSchema = zod.object({
-    type: zod.literal('password'),
-    username: zod.string(),
-    password: zod.string(),
-  });
-
-  const ContinueResponseParametersSchema = zod.object({
-    request: RequestSchema,
-    credentials: AuthCredentialsSchema.optional(),
-    headers: zod.array(HeaderSchema).optional(),
-    reasonPhrase: zod.string().optional(),
-    statusCode: zod.number().int().nonnegative().optional(),
-  });
-
-  export function parseContinueResponseParams(params: unknown) {
-    return parseObject(params, ContinueResponseParametersSchema);
-  }
-
-  const ContinueWithAuthCredentialsSchema = zod.object({
-    action: zod.literal('provideCredentials'),
-    credentials: AuthCredentialsSchema,
-  });
-
-  const ContinueWithAuthNoCredentialsSchema = zod.object({
-    action: zod.union([zod.literal('default'), zod.literal('cancel')]),
-  });
-
-  const ContinueWithAuthParametersSchema = zod
-    .object({
-      request: RequestSchema,
-    })
-    .and(
-      zod.union([
-        ContinueWithAuthCredentialsSchema,
-        ContinueWithAuthNoCredentialsSchema,
-      ])
-    );
-
-  export function parseContinueWithAuthParams(params: unknown) {
-    return parseObject(params, ContinueWithAuthParametersSchema);
-  }
-
-  const FailRequestParametersSchema = zod.object({
-    request: RequestSchema,
-  });
-
-  export function parseFailRequestParams(params: unknown) {
-    return parseObject(params, FailRequestParametersSchema);
-  }
-
-  const ProvideResponseParametersSchema = zod.object({
-    request: RequestSchema,
-    body: BodySchema.optional(),
-    headers: zod.array(HeaderSchema).optional(),
-    reasonPhrase: zod.string().optional(),
-    statusCode: zod.number().int().nonnegative().optional(),
-  });
-
-  export function parseProvideResponseParams(params: unknown) {
-    return parseObject(params, ProvideResponseParametersSchema);
-  }
-
-  const InterceptSchema = zod.string();
-
-  const RemoveInterceptParametersSchema = zod.object({
-    intercept: InterceptSchema,
-  });
-
-  export function parseRemoveInterceptParams(params: unknown) {
-    return parseObject(params, RemoveInterceptParametersSchema);
-  }
-}
-
-/** @see https://w3c.github.io/webdriver-bidi/#module-input */
-export namespace Input {
-  // input.ElementOrigin = {
-  //   type: "element",
-  //   element: script.SharedReference
-  // }
-  const ElementOriginSchema = zod.object({
-    type: zod.literal('element'),
-    element: CommonDataTypes.SharedReferenceSchema,
-  });
-
-  // input.Origin = "viewport" / "pointer" / input.ElementOrigin
-  const OriginSchema = zod.union([
-    zod.literal('viewport'),
-    zod.literal('pointer'),
-    ElementOriginSchema,
-  ]);
-
-  // input.PauseAction = {
-  //   type: "pause",
-  //   ? duration: js-uint
-  // }
-  const PauseActionSchema = zod.object({
-    type: zod.literal('pause'),
-    duration: zod.number().nonnegative().int().optional(),
-  });
-
-  // input.KeyDownAction = {
-  //   type: "keyDown",
-  //   value: text
-  // }
-  const KeyDownActionSchema = zod.object({
-    type: zod.literal('keyDown'),
-    value: UnicodeCharacterSchema,
-  });
-
-  // input.KeyUpAction = {
-  //   type: "keyUp",
-  //   value: text
-  // }
-  const KeyUpActionSchema = zod.object({
-    type: zod.literal('keyUp'),
-    value: UnicodeCharacterSchema,
-  });
-
-  // input.TiltProperties = (
-  //   ? tiltX: -90..90 .default 0,
-  //   ? tiltY: -90..90 .default 0,
-  // )
-  const TiltPropertiesSchema = zod.object({
-    tiltX: zod.number().min(-90).max(90).int().default(0).optional(),
-    tiltY: zod.number().min(-90).max(90).int().default(0).optional(),
-  });
-
-  // input.AngleProperties = (
-  //   ? altitudeAngle: float .default 0.0,
-  //   ? azimuthAngle: float .default 0.0,
-  // )
-  const AnglePropertiesSchema = zod.object({
-    altitudeAngle: zod
-      .number()
-      .nonnegative()
-      .max(Math.PI / 2)
-      .default(0.0)
-      .optional(),
-    azimuthAngle: zod
-      .number()
-      .nonnegative()
-      .max(2 * Math.PI)
-      .default(0.0)
-      .optional(),
-  });
-
-  // input.PointerCommonProperties = (
-  //   ? width: js-uint .default 1,
-  //   ? height: js-uint .default 1,
-  //   ? pressure: float .default 0.0,
-  //   ? tangentialPressure: float .default 0.0,
-  //   ? twist: 0..359 .default 0,
-  //   (input.TiltProperties // input.AngleProperties)
-  // )
-  const PointerCommonPropertiesSchema = zod
-    .object({
-      width: zod.number().nonnegative().int().default(1),
-      height: zod.number().nonnegative().int().default(1),
-      pressure: zod.number().min(0.0).max(1.0).default(0.0),
-      tangentialPressure: zod.number().min(-1.0).max(1.0).default(0.0),
-      twist: zod.number().nonnegative().max(359).int().default(0),
-    })
-    .and(zod.union([TiltPropertiesSchema, AnglePropertiesSchema]));
-
-  // input.PointerUpAction = {
-  //   type: "pointerUp",
-  //   button: js-uint,
-  //   input.PointerCommonProperties
-  // }
-  const PointerUpActionSchema = zod
-    .object({
-      type: zod.literal('pointerUp'),
-      button: zod.number().nonnegative().int(),
-    })
-    .and(PointerCommonPropertiesSchema);
-
-  // input.PointerDownAction = {
-  //   type: "pointerDown",
-  //   button: js-uint,
-  //   input.PointerCommonProperties
-  // }
-  const PointerDownActionSchema = zod
-    .object({
-      type: zod.literal('pointerDown'),
-      button: zod.number().nonnegative().int(),
-    })
-    .and(PointerCommonPropertiesSchema);
-
-  // input.PointerMoveAction = {
-  //   type: "pointerMove",
-  //   x: js-int,
-  //   y: js-int,
-  //   ? duration: js-uint,
-  //   ? origin: input.Origin,
-  //   input.PointerCommonProperties
-  // }
-  const PointerMoveActionSchema = zod
-    .object({
-      type: zod.literal('pointerMove'),
-      x: zod.number().int(),
-      y: zod.number().int(),
-      duration: zod.number().nonnegative().int().optional(),
-      origin: OriginSchema.optional().default('viewport'),
-    })
-    .and(PointerCommonPropertiesSchema);
-
-  // input.WheelScrollAction = {
-  //   type: "scroll",
-  //   x: js-int,
-  //   y: js-int,
-  //   deltaX: js-int,
-  //   deltaY: js-int,
-  //   ? duration: js-uint,
-  //   ? origin: input.Origin .default "viewport",
-  // }
-  const WheelScrollActionSchema = zod.object({
-    type: zod.literal('scroll'),
-    x: zod.number().int(),
-    y: zod.number().int(),
-    deltaX: zod.number().int(),
-    deltaY: zod.number().int(),
-    duration: zod.number().nonnegative().int().optional(),
-    origin: OriginSchema.optional().default('viewport'),
-  });
-
-  // input.WheelSourceAction = (
-  //   input.PauseAction //
-  //   input.WheelScrollAction
-  // )
-  const WheelSourceActionSchema = zod.discriminatedUnion('type', [
-    PauseActionSchema,
-    WheelScrollActionSchema,
-  ]);
-
-  // input.WheelSourceActions = {
-  //   type: "wheel",
-  //   id: text,
-  //   actions: [*input.WheelSourceAction]
-  // }
-  const WheelSourceActionsSchema = zod.object({
-    type: zod.literal('wheel'),
-    id: zod.string(),
-    actions: zod.array(WheelSourceActionSchema),
-  });
-
-  // input.PointerSourceAction = (
-  //   input.PauseAction //
-  //   input.PointerDownAction //
-  //   input.PointerUpAction //
-  //   input.PointerMoveAction
-  // )
-  const PointerSourceActionSchema = zod.union([
-    PauseActionSchema,
-    PointerDownActionSchema,
-    PointerUpActionSchema,
-    PointerMoveActionSchema,
-  ]);
-
-  // input.PointerType = "mouse" / "pen" / "touch"
-  const PointerTypeSchema = zod.enum([
-    InputTypes.PointerType.Mouse,
-    InputTypes.PointerType.Pen,
-    InputTypes.PointerType.Touch,
-  ]);
-
-  // input.PointerParameters = {
-  //   ? pointerType: input.PointerType .default "mouse"
-  // }
-  const PointerParametersSchema = zod.object({
-    pointerType: PointerTypeSchema.optional().default(
-      InputTypes.PointerType.Mouse
-    ),
-  });
-
-  // input.PointerSourceActions = {
-  //   type: "pointer",
-  //   id: text,
-  //   ? parameters: input.PointerParameters,
-  //   actions: [*input.PointerSourceAction]
-  // }
-  const PointerSourceActionsSchema = zod.object({
-    type: zod.literal('pointer'),
-    id: zod.string(),
-    parameters: PointerParametersSchema.optional(),
-    actions: zod.array(PointerSourceActionSchema),
-  });
-
-  // input.KeySourceAction = (
-  //   input.PauseAction //
-  //   input.KeyDownAction //
-  //   input.KeyUpAction
-  // )
-  const KeySourceActionSchema = zod.discriminatedUnion('type', [
-    PauseActionSchema,
-    KeyDownActionSchema,
-    KeyUpActionSchema,
-  ]);
-
-  // input.KeySourceActions = {
-  //   type: "key",
-  //   id: text,
-  //   actions: [*input.KeySourceAction]
-  // }
-  const KeySourceActionsSchema = zod.object({
-    type: zod.literal('key'),
-    id: zod.string(),
-    actions: zod.array(KeySourceActionSchema),
-  });
-
-  // input.NoneSourceAction = input.PauseAction
-  const NoneSourceActionSchema = PauseActionSchema;
-
-  // input.NoneSourceActions = {
-  //   type: "none",
-  //   id: text,
-  //   actions: [*input.NoneSourceAction]
-  // }
-  const NoneSourceActionsSchema = zod.object({
-    type: zod.literal('none'),
-    id: zod.string(),
-    actions: zod.array(NoneSourceActionSchema),
-  });
-
-  // input.SourceActions = (
-  //   input.NoneSourceActions //
-  //   input.KeySourceActions //
-  //   input.PointerSourceActions //
-  //   input.WheelSourceActions
-  // )
-  const SourceActionsSchema = zod.discriminatedUnion('type', [
-    NoneSourceActionsSchema,
-    KeySourceActionsSchema,
-    PointerSourceActionsSchema,
-    WheelSourceActionsSchema,
-  ]);
-
-  // input.PerformActionsParameters = {
-  //   context: browsingContext.BrowsingContext,
-  //   actions: [*input.SourceActions]
-  // }
-  const PerformActionsParametersSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
-    actions: zod.array(SourceActionsSchema),
-  });
-
-  export function parsePerformActionsParams(
-    params: unknown
-  ): InputTypes.PerformActionsParameters {
-    return parseObject(params, PerformActionsParametersSchema);
-  }
-
-  // input.ReleaseActionsParameters = {
-  //   context: browsingContext.BrowsingContext,
-  // }
-  const ReleaseActionsParametersSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
-  });
-
-  export function parseReleaseActionsParams(
-    params: unknown
-  ): InputTypes.ReleaseActionsParameters {
-    return parseObject(params, ReleaseActionsParametersSchema);
   }
 }
