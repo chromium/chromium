@@ -152,6 +152,7 @@ class SystemDialogDelegateView::ButtonContainer : public views::FlexLayoutView {
         ViewID::VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_ACCEPT_BUTTON);
     accept_button_->SetProperty(views::kElementIdentifierKey,
                                 kAcceptButtonIdForTesting);
+    accept_button_->SetIsDefault(true);
   }
 
   ButtonContainer(const ButtonContainer&) = delete;
@@ -268,6 +269,7 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
                                views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded));
 
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
   // Make dialog initially focus on the accept button.
   SetInitiallyFocusedView(button_container_->accept_button());
 
@@ -287,6 +289,7 @@ void SystemDialogDelegateView::SetIcon(const gfx::VectorIcon& icon) {
 void SystemDialogDelegateView::SetTitleText(const std::u16string& title) {
   title_->SetText(title);
   title_->SetVisible(!title.empty());
+  SetAccessibleTitle(title);
 }
 
 void SystemDialogDelegateView::SetDescription(
