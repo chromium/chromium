@@ -670,15 +670,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
       render_frame_observer->associated_interfaces();
 
   if (!render_frame->IsInFencedFrameTree() ||
-      (base::FeatureList::IsEnabled(
-           autofill::features::kAutofillEnableWithinFencedFrame) &&
-       base::FeatureList::IsEnabled(
-           blink::features::kFencedFramesAPIChanges)) ||
-      (base::FeatureList::IsEnabled(
-           password_manager::features::
-               kEnablePasswordManagerWithinFencedFrame) &&
-       base::FeatureList::IsEnabled(
-           blink::features::kFencedFramesAPIChanges))) {
+      base::FeatureList::IsEnabled(blink::features::kFencedFramesAPIChanges)) {
     PasswordAutofillAgent* password_autofill_agent =
         new PasswordAutofillAgent(render_frame, associated_interfaces);
     PasswordGenerationAgent* password_generation_agent =

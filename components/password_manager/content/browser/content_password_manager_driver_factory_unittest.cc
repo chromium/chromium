@@ -20,25 +20,17 @@
 
 namespace password_manager {
 
-// Fixture for testing that Password Manager is enabled in fenced frames unless
-// EnablePasswordManagerWithinFencedFrame is enabled. The bool parameter
-// enables/disables that feature.
+// Fixture for testing that Password Manager is enabled in fenced frames.
 class ContentPasswordManagerDriverFactoryFencedFramesTest
-    : public content::RenderViewHostTestHarness,
-      public ::testing::WithParamInterface<bool> {
+    : public content::RenderViewHostTestHarness {
  public:
   ContentPasswordManagerDriverFactoryFencedFramesTest() {
     std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
     enabled.push_back(
         {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}});
-    if (password_manager_enabled_in_fencedframe()) {
-      enabled.push_back({blink::features::kFencedFramesAPIChanges, {}});
-      enabled.push_back(
-          {features::kEnablePasswordManagerWithinFencedFrame, {}});
-    } else {
-      disabled.push_back(features::kEnablePasswordManagerWithinFencedFrame);
-    }
+    enabled.push_back({blink::features::kFencedFramesAPIChanges, {}});
+
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 
@@ -60,8 +52,6 @@ class ContentPasswordManagerDriverFactoryFencedFramesTest
     navigation->Commit();
   }
 
-  bool password_manager_enabled_in_fencedframe() const { return GetParam(); }
-
   ContentPasswordManagerDriverFactory& factory() { return *factory_; }
 
  private:
@@ -71,7 +61,7 @@ class ContentPasswordManagerDriverFactoryFencedFramesTest
   std::unique_ptr<ContentPasswordManagerDriverFactory> factory_;
 };
 
-TEST_P(ContentPasswordManagerDriverFactoryFencedFramesTest,
+TEST_F(ContentPasswordManagerDriverFactoryFencedFramesTest,
        DisablePasswordManagerWithinFencedFrame) {
   NavigateAndCommitInFrame("http://test.org", main_rfh());
   content::RenderFrameHost* fenced_frame_root =
@@ -80,17 +70,8 @@ TEST_P(ContentPasswordManagerDriverFactoryFencedFramesTest,
       content::RenderFrameHostTester::For(fenced_frame_root)
           ->AppendChild("iframe");
   EXPECT_NE(nullptr, factory().GetDriverForFrame(main_rfh()));
-  if (password_manager_enabled_in_fencedframe()) {
-    EXPECT_NE(nullptr, factory().GetDriverForFrame(fenced_frame_root));
-    EXPECT_NE(nullptr, factory().GetDriverForFrame(fenced_frame_subframe));
-  } else {
-    EXPECT_EQ(nullptr, factory().GetDriverForFrame(fenced_frame_root));
-    EXPECT_EQ(nullptr, factory().GetDriverForFrame(fenced_frame_subframe));
-  }
+  EXPECT_NE(nullptr, factory().GetDriverForFrame(fenced_frame_root));
+  EXPECT_NE(nullptr, factory().GetDriverForFrame(fenced_frame_subframe));
 }
-
-INSTANTIATE_TEST_SUITE_P(ContentPasswordManagerDriverFactoryTest,
-                         ContentPasswordManagerDriverFactoryFencedFramesTest,
-                         testing::Bool());
 
 }  // namespace password_manager

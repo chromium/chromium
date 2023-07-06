@@ -86,10 +86,7 @@ ContentPasswordManagerDriverFactory::GetDriverForFrame(
     return nullptr;
 
   if (render_frame_host->IsNestedWithinFencedFrame() &&
-      !(base::FeatureList::IsEnabled(
-            features::kEnablePasswordManagerWithinFencedFrame) &&
-        base::FeatureList::IsEnabled(
-            blink::features::kFencedFramesAPIChanges))) {
+      !base::FeatureList::IsEnabled(blink::features::kFencedFramesAPIChanges)) {
     return nullptr;
   }
 
