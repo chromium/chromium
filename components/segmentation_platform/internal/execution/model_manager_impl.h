@@ -1,9 +1,9 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_EXECUTION_MANAGER_IMPL_H_
-#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_EXECUTION_MANAGER_IMPL_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_MANAGER_IMPL_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_MANAGER_IMPL_H_
 
 #include <map>
 #include <memory>
@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager.h"
+#include "components/segmentation_platform/internal/execution/model_manager.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,28 +31,27 @@ namespace proto {
 class SegmentInfo;
 }  // namespace proto
 
-// ModelExecutionManager that owns and manages non-default (OptimizationGuide
+// ModelManager that owns and manages non-default (OptimizationGuide
 // based) ModelProvider(s) and uses SegmentInfoDatabase (metadata) for storing
 // the latest model from ModelProvider. The vector of OptimizationTargets need
 // to be passed in at construction time so the SegmentationModelHandler
 // instances can be created early.
-class ModelExecutionManagerImpl : public ModelExecutionManager {
+class ModelManagerImpl : public ModelManager {
  public:
-  ModelExecutionManagerImpl(
+  ModelManagerImpl(
       const base::flat_set<SegmentId>& segment_ids,
       ModelProviderFactory* model_provider_factory,
       base::Clock* clock,
       SegmentInfoDatabase* segment_database,
       DefaultModelManager* default_model_manager,
       const SegmentationModelUpdatedCallback& model_updated_callback);
-  ~ModelExecutionManagerImpl() override;
+  ~ModelManagerImpl() override;
 
   // Disallow copy/assign.
-  ModelExecutionManagerImpl(const ModelExecutionManagerImpl&) = delete;
-  ModelExecutionManagerImpl& operator=(const ModelExecutionManagerImpl&) =
-      delete;
+  ModelManagerImpl(const ModelManagerImpl&) = delete;
+  ModelManagerImpl& operator=(const ModelManagerImpl&) = delete;
 
-  // ModelExecutionManager override:
+  // ModelManager override:
   ModelProvider* GetModelProvider(proto::SegmentId segment_id,
                                   proto::ModelSource model_source) override;
 
@@ -102,9 +101,9 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
   // Invoked whenever there is an update to any of the relevant ML models.
   SegmentationModelUpdatedCallback model_updated_callback_;
 
-  base::WeakPtrFactory<ModelExecutionManagerImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ModelManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace segmentation_platform
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_EXECUTION_MANAGER_IMPL_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_MANAGER_IMPL_H_

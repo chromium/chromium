@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
+#include "components/segmentation_platform/internal/execution/model_manager_impl.h"
 
 #include <memory>
 
@@ -23,8 +23,8 @@
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
+#include "components/segmentation_platform/internal/execution/model_manager.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/public/model_provider.h"
@@ -84,11 +84,10 @@ class MockSegmentInfoDatabase : public test::TestSegmentInfoDatabase {
 
 }  // namespace
 
-class ModelExecutionManagerTest : public testing::Test {
+class ModelManagerTest : public testing::Test {
  public:
-  ModelExecutionManagerTest()
-      : model_provider_factory_(&model_provider_data_) {}
-  ~ModelExecutionManagerTest() override = default;
+  ModelManagerTest() : model_provider_factory_(&model_provider_data_) {}
+  ~ModelManagerTest() override = default;
 
   void SetUp() override {
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
@@ -103,16 +102,16 @@ class ModelExecutionManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    model_execution_manager_.reset();
+    model_manager_.reset();
     // Allow for the SegmentationModelExecutor owned by ModelProvider
     // to be destroyed.
     RunUntilIdle();
   }
 
-  void CreateModelExecutionManager(
+  void CreateModelManager(
       const base::flat_set<SegmentId>& segment_ids,
-      const ModelExecutionManager::SegmentationModelUpdatedCallback& callback) {
-    model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
+      const ModelManager::SegmentationModelUpdatedCallback& callback) {
+    model_manager_ = std::make_unique<ModelManagerImpl>(
         segment_ids, &model_provider_factory_, &clock_, segment_database_.get(),
         default_model_manager_.get(), callback);
   }
@@ -134,28 +133,27 @@ class ModelExecutionManagerTest : public testing::Test {
   std::unique_ptr<MockSignalDatabase> signal_database_;
   std::unique_ptr<DefaultModelManager> default_model_manager_;
 
-  std::unique_ptr<ModelExecutionManagerImpl> model_execution_manager_;
+  std::unique_ptr<ModelManagerImpl> model_manager_;
 };
 
-TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedInvalidMetadata) {
+TEST_F(ModelManagerTest, OnSegmentationModelUpdatedInvalidMetadata) {
   // Use a MockSegmentInfoDatabase for this test in particular, to verify that
   // it is never used.
   auto mock_segment_database = std::make_unique<MockSegmentInfoDatabase>();
   auto* mock_segment_database_ptr = mock_segment_database.get();
   segment_database_ = std::move(mock_segment_database);
 
-  // Construct the ModelExecutionManager.
-  base::MockCallback<ModelExecutionManager::SegmentationModelUpdatedCallback>
-      callback;
+  // Construct the ModelManager.
+  base::MockCallback<ModelManager::SegmentationModelUpdatedCallback> callback;
   auto segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-  CreateModelExecutionManager({segment_id}, callback.Get());
+  CreateModelManager({segment_id}, callback.Get());
 
   // Create invalid metadata, which should be ignored.
   proto::SegmentInfo segment_info;
   proto::SegmentationModelMetadata metadata;
   metadata.set_time_unit(proto::UNKNOWN_TIME_UNIT);
 
-  // Verify that the ModelExecutionManager never invokes its
+  // Verify that the ModelManager never invokes its
   // SegmentInfoDatabase, nor invokes the callback.
   EXPECT_CALL(*mock_segment_database_ptr, GetSegmentInfo(_, _, _)).Times(0);
   EXPECT_CALL(callback, Run(_)).Times(0);
@@ -163,11 +161,10 @@ TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedInvalidMetadata) {
       segment_id, metadata, kModelVersion);
 }
 
-TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
-  base::MockCallback<ModelExecutionManager::SegmentationModelUpdatedCallback>
-      callback;
+TEST_F(ModelManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
+  base::MockCallback<ModelManager::SegmentationModelUpdatedCallback> callback;
   auto segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-  CreateModelExecutionManager({segment_id}, callback.Get());
+  CreateModelManager({segment_id}, callback.Get());
 
   proto::SegmentInfo segment_info;
   segment_info.set_model_source(proto::ModelSource::DEFAULT_MODEL_SOURCE);
@@ -203,12 +200,11 @@ TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
             segment_info_from_db->model_update_time_s());
 }
 
-TEST_F(ModelExecutionManagerTest,
+TEST_F(ModelManagerTest,
        OnSegmentationModelUpdatedWithPreviousMetadataAndPredictionResult) {
-  base::MockCallback<ModelExecutionManager::SegmentationModelUpdatedCallback>
-      callback;
+  base::MockCallback<ModelManager::SegmentationModelUpdatedCallback> callback;
   auto segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-  CreateModelExecutionManager({segment_id}, callback.Get());
+  CreateModelManager({segment_id}, callback.Get());
 
   // Fill in old data in the SegmentInfo database.
   segment_database_->SetBucketDuration(segment_id, 456, proto::TimeUnit::MONTH);
@@ -315,7 +311,7 @@ TEST_F(ModelExecutionManagerTest,
 
 // TODO(ritikagup) : Update this test to test the OnSegmentationModelUpdated
 // flow for default models, once default model runs the callback for it.
-TEST_F(ModelExecutionManagerTest, DatabaseUpdateForDefaultModel) {
+TEST_F(ModelManagerTest, DatabaseUpdateForDefaultModel) {
   auto segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER;
 
   // Fill in old data for default model in the SegmentInfo database.

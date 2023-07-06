@@ -14,7 +14,7 @@
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
+#include "components/segmentation_platform/internal/execution/model_manager_impl.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -47,13 +47,13 @@ class ExecutionService {
       std::unique_ptr<processing::FeatureListQueryProcessor> feature_processor,
       std::unique_ptr<ModelExecutor> executor,
       std::unique_ptr<ModelExecutionScheduler> scheduler,
-      std::unique_ptr<ModelExecutionManager> execution_manager);
+      std::unique_ptr<ModelManager> execution_manager);
 
   void Initialize(
       StorageService* storage_service,
       SignalHandler* signal_handler,
       base::Clock* clock,
-      ModelExecutionManager::SegmentationModelUpdatedCallback callback,
+      ModelManager::SegmentationModelUpdatedCallback callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const base::flat_set<SegmentId>& all_segment_ids,
       ModelProviderFactory* model_provider_factory,
@@ -104,7 +104,7 @@ class ExecutionService {
   std::unique_ptr<ModelExecutor> model_executor_;
 
   // Model execution.
-  std::unique_ptr<ModelExecutionManager> model_execution_manager_;
+  std::unique_ptr<ModelManager> model_manager_;
 
   // Model execution scheduling logic.
   std::unique_ptr<ModelExecutionScheduler> model_execution_scheduler_;

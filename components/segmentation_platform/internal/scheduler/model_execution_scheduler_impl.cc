@@ -10,7 +10,7 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
+#include "components/segmentation_platform/internal/execution/model_manager_impl.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/stats.h"
@@ -24,7 +24,7 @@ ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
     std::vector<Observer*>&& observers,
     SegmentInfoDatabase* segment_database,
     SignalStorageConfig* signal_storage_config,
-    ModelExecutionManager* model_execution_manager,
+    ModelManager* model_manager,
     ModelExecutor* model_executor,
     base::flat_set<proto::SegmentId> segment_ids,
     base::Clock* clock,
@@ -32,7 +32,7 @@ ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
     : observers_(observers),
       segment_database_(segment_database),
       signal_storage_config_(signal_storage_config),
-      model_execution_manager_(model_execution_manager),
+      model_manager_(model_manager),
       model_executor_(model_executor),
       all_segment_ids_(segment_ids),
       clock_(clock),
@@ -74,7 +74,7 @@ void ModelExecutionSchedulerImpl::RequestModelExecution(
       base::BindOnce(&ModelExecutionSchedulerImpl::OnModelExecutionCompleted,
                      weak_ptr_factory_.GetWeakPtr(), segment_info)));
   auto request = std::make_unique<ExecutionRequest>();
-  request->model_provider = model_execution_manager_->GetModelProvider(
+  request->model_provider = model_manager_->GetModelProvider(
       segment_info.segment_id(), proto::ModelSource::SERVER_MODEL_SOURCE);
   DCHECK(request->model_provider);
   request->segment_info = &segment_info;

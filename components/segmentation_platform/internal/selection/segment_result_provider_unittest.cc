@@ -69,7 +69,7 @@ class TestModelProvider : public ModelProvider {
   bool ModelAvailable() override { return true; }
 };
 
-class MockModelExecutionManager : public ModelExecutionManager {
+class MockModelManager : public ModelManager {
  public:
   MOCK_METHOD(ModelProvider*,
               GetModelProvider,
@@ -92,13 +92,12 @@ class SegmentResultProviderTest : public testing::Test {
     auto query_processor =
         std::make_unique<processing::MockFeatureListQueryProcessor>();
     mock_query_processor_ = query_processor.get();
-    auto moved_execution_manager =
-        std::make_unique<MockModelExecutionManager>();
-    mock_execution_manager_ = moved_execution_manager.get();
+    auto moved_model_manager = std::make_unique<MockModelManager>();
+    mock_execution_manager_ = moved_model_manager.get();
     execution_service_->InitForTesting(
         std::move(query_processor),
         std::make_unique<ModelExecutorImpl>(&clock_, mock_query_processor_),
-        nullptr, std::move(moved_execution_manager));
+        nullptr, std::move(moved_model_manager));
     score_provider_ = SegmentResultProvider::Create(
         segment_database_.get(), &signal_storage_config_,
         default_manager_.get(), execution_service_.get(), &clock_,
@@ -177,7 +176,7 @@ class SegmentResultProviderTest : public testing::Test {
   MockSignalDatabase signal_database_;
   raw_ptr<processing::MockFeatureListQueryProcessor, DanglingUntriaged>
       mock_query_processor_ = nullptr;
-  raw_ptr<MockModelExecutionManager, DanglingUntriaged> mock_execution_manager_;
+  raw_ptr<MockModelManager, DanglingUntriaged> mock_execution_manager_;
   SignalHandler signal_handler_;
   std::unique_ptr<DefaultModelManager> default_manager_;
   std::unique_ptr<ExecutionService> execution_service_;

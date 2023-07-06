@@ -24,9 +24,9 @@ InputContextAndroidTest.*
 IntentionalUserModelTest.*
 LowUserEngagementModelTest.*
 MetadataUtilsTest.*
-ModelExecutionManagerTest.*
 ModelExecutionSchedulerTest.*
 ModelExecutorTest.*
+ModelManagerTest.*
 ModelProviderFactoryImplTest.*
 OptimizationGuideSegmentationModelProviderTest.*
 PostProcessorTest.*

@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
+#include "components/segmentation_platform/internal/execution/model_manager_impl.h"
 
 #include <deque>
 #include <map>
@@ -16,7 +16,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager.h"
+#include "components/segmentation_platform/internal/execution/model_manager.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/stats.h"
@@ -31,7 +31,7 @@ class OptimizationGuideModelProvider;
 
 namespace segmentation_platform {
 
-ModelExecutionManagerImpl::ModelExecutionManagerImpl(
+ModelManagerImpl::ModelManagerImpl(
     const base::flat_set<SegmentId>& segment_ids,
     ModelProviderFactory* model_provider_factory,
     base::Clock* clock,
@@ -47,7 +47,7 @@ ModelExecutionManagerImpl::ModelExecutionManagerImpl(
     std::unique_ptr<ModelProvider> provider =
         model_provider_factory->CreateProvider(segment_id);
     provider->InitAndFetchModel(base::BindRepeating(
-        &ModelExecutionManagerImpl::OnSegmentationModelUpdated,
+        &ModelManagerImpl::OnSegmentationModelUpdated,
         weak_ptr_factory_.GetWeakPtr(), ModelSource::SERVER_MODEL_SOURCE));
     model_providers_.emplace(
         std::make_pair(segment_id, ModelSource::SERVER_MODEL_SOURCE),
@@ -60,14 +60,14 @@ ModelExecutionManagerImpl::ModelExecutionManagerImpl(
       continue;
     }
     default_provider->InitAndFetchModel(base::BindRepeating(
-        &ModelExecutionManagerImpl::OnSegmentationModelUpdated,
+        &ModelManagerImpl::OnSegmentationModelUpdated,
         weak_ptr_factory_.GetWeakPtr(), ModelSource::DEFAULT_MODEL_SOURCE));
   }
 }
 
-ModelExecutionManagerImpl::~ModelExecutionManagerImpl() = default;
+ModelManagerImpl::~ModelManagerImpl() = default;
 
-ModelProvider* ModelExecutionManagerImpl::GetModelProvider(
+ModelProvider* ModelManagerImpl::GetModelProvider(
     proto::SegmentId segment_id,
     proto::ModelSource model_source) {
   // TODO(ritikagup) : Remove the explicit check once default models are stored
@@ -80,13 +80,13 @@ ModelProvider* ModelExecutionManagerImpl::GetModelProvider(
   return it->second.get();
 }
 
-void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
+void ModelManagerImpl::OnSegmentationModelUpdated(
     proto::ModelSource model_source,
     proto::SegmentId segment_id,
     proto::SegmentationModelMetadata metadata,
     int64_t model_version) {
   TRACE_EVENT("segmentation_platform",
-              "ModelExecutionManagerImpl::OnSegmentationModelUpdated");
+              "ModelManagerImpl::OnSegmentationModelUpdated");
   // TODO(ritikagup@) : Add a variant for default model separately.
   stats::RecordModelDeliveryReceived(segment_id);
   if (segment_id == proto::SegmentId::OPTIMIZATION_TARGET_UNKNOWN) {
@@ -101,8 +101,9 @@ void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
   // TODO(ritikagup@) : Add a variant for default model separately.
   stats::RecordModelDeliveryMetadataValidation(
       segment_id, /* processed = */ false, validation);
-  if (validation != metadata_utils::ValidationResult::kValidationSuccess)
+  if (validation != metadata_utils::ValidationResult::kValidationSuccess) {
     return;
+  }
 
   auto old_segment_info =
       segment_database_->GetCachedSegmentInfo(segment_id, model_source);
@@ -111,14 +112,14 @@ void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
                                      old_segment_info);
 }
 
-void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
+void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
     proto::SegmentId segment_id,
     proto::ModelSource model_source,
     proto::SegmentationModelMetadata metadata,
     int64_t model_version,
     absl::optional<proto::SegmentInfo> old_segment_info) {
   TRACE_EVENT("segmentation_platform",
-              "ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate");
+              "ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate");
   proto::SegmentInfo new_segment_info;
   new_segment_info.set_segment_id(segment_id);
   new_segment_info.set_model_source(model_source);
@@ -171,8 +172,9 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
   // TODO(ritikagup@) : Add a variant for default model separately.
   stats::RecordModelDeliveryMetadataValidation(
       segment_id, /* processed = */ true, validation);
-  if (validation != metadata_utils::ValidationResult::kValidationSuccess)
+  if (validation != metadata_utils::ValidationResult::kValidationSuccess) {
     return;
+  }
 
   // TODO(ritikagup@) : Add a variant for default model separately.
   stats::RecordModelDeliveryMetadataFeatureCount(
@@ -181,20 +183,21 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
   // the new version in the database.
   segment_database_->UpdateSegment(
       segment_id, model_source, absl::make_optional(new_segment_info),
-      base::BindOnce(&ModelExecutionManagerImpl::OnUpdatedSegmentInfoStored,
+      base::BindOnce(&ModelManagerImpl::OnUpdatedSegmentInfoStored,
                      weak_ptr_factory_.GetWeakPtr(), new_segment_info));
 }
 
-void ModelExecutionManagerImpl::OnUpdatedSegmentInfoStored(
+void ModelManagerImpl::OnUpdatedSegmentInfoStored(
     proto::SegmentInfo segment_info,
     bool success) {
   TRACE_EVENT("segmentation_platform",
-              "ModelExecutionManagerImpl::OnUpdatedSegmentInfoStored");
+              "ModelManagerImpl::OnUpdatedSegmentInfoStored");
 
   // TODO(ritikagup@) : Add a variant for default model separately.
   stats::RecordModelDeliverySaveResult(segment_info.segment_id(), success);
-  if (!success)
+  if (!success) {
     return;
+  }
 
   // We are now ready to receive requests for execution, so invoke the
   // callback.

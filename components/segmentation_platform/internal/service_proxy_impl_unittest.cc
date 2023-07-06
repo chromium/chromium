@@ -66,7 +66,7 @@ class MockModelExecutionScheduler : public ModelExecutionScheduler {
                (std::unique_ptr<ModelExecutionResult>)));
 };
 
-class MockModelExecutionManager : public ModelExecutionManager {
+class MockModelManager : public ModelManager {
  public:
   MOCK_METHOD(ModelProvider*,
               GetModelProvider,
@@ -266,7 +266,7 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
 
   auto scheduler_moved = std::make_unique<MockModelExecutionScheduler>();
   MockModelExecutionScheduler* scheduler = scheduler_moved.get();
-  auto model_manager = std::make_unique<MockModelExecutionManager>();
+  auto model_manager = std::make_unique<MockModelManager>();
   ExecutionService execution;
   execution.InitForTesting(nullptr, nullptr, std::move(scheduler_moved),
                            std::move(model_manager));

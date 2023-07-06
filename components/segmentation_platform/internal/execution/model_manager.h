@@ -1,9 +1,9 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_EXECUTION_MANAGER_H_
-#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_EXECUTION_MANAGER_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_MANAGER_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_MANAGER_H_
 
 #include "base/functional/callback_forward.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -17,13 +17,13 @@ class ModelProvider;
 
 // The ModelExecutionManager is used to own ModelProvider(s) that interact with
 // optimization_guide. All model updates are saved to database.
-class ModelExecutionManager {
+class ModelManager {
  public:
-  virtual ~ModelExecutionManager() = default;
+  virtual ~ModelManager() = default;
 
   // Disallow copy/assign.
-  ModelExecutionManager(const ModelExecutionManager&) = delete;
-  ModelExecutionManager& operator=(const ModelExecutionManager&) = delete;
+  ModelManager(const ModelManager&) = delete;
+  ModelManager& operator=(const ModelManager&) = delete;
 
   // Invoked whenever there are changes to the state of a segmentation model.
   // Will not be invoked unless the proto::SegmentInfo is valid.
@@ -34,9 +34,9 @@ class ModelExecutionManager {
                                           proto::ModelSource model_source) = 0;
 
  protected:
-  ModelExecutionManager() = default;
+  ModelManager() = default;
 };
 
 }  // namespace segmentation_platform
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_EXECUTION_MANAGER_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_MANAGER_H_

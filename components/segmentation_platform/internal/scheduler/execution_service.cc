@@ -29,18 +29,18 @@ void ExecutionService::InitForTesting(
     std::unique_ptr<processing::FeatureListQueryProcessor> feature_processor,
     std::unique_ptr<ModelExecutor> executor,
     std::unique_ptr<ModelExecutionScheduler> scheduler,
-    std::unique_ptr<ModelExecutionManager> execution_manager) {
+    std::unique_ptr<ModelManager> execution_manager) {
   feature_list_query_processor_ = std::move(feature_processor);
   model_executor_ = std::move(executor);
   model_execution_scheduler_ = std::move(scheduler);
-  model_execution_manager_ = std::move(execution_manager);
+  model_manager_ = std::move(execution_manager);
 }
 
 void ExecutionService::Initialize(
     StorageService* storage_service,
     SignalHandler* signal_handler,
     base::Clock* clock,
-    ModelExecutionManager::SegmentationModelUpdatedCallback callback,
+    ModelManager::SegmentationModelUpdatedCallback callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::flat_set<SegmentId>& all_segment_ids,
     ModelProviderFactory* model_provider_factory,
@@ -66,14 +66,14 @@ void ExecutionService::Initialize(
   model_executor_ = std::make_unique<ModelExecutorImpl>(
       clock, feature_list_query_processor_.get());
 
-  model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
+  model_manager_ = std::make_unique<ModelManagerImpl>(
       all_segment_ids, model_provider_factory, clock,
       storage_service->segment_info_database(),
       storage_service->default_model_manager(), callback);
 
   model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
       std::move(observers), storage_service->segment_info_database(),
-      storage_service->signal_storage_config(), model_execution_manager_.get(),
+      storage_service->signal_storage_config(), model_manager_.get(),
       model_executor_.get(), all_segment_ids, clock, platform_options);
 }
 
@@ -87,7 +87,7 @@ void ExecutionService::OnNewModelInfoReadyLegacy(
 
 ModelProvider* ExecutionService::GetModelProvider(SegmentId segment_id,
                                                   ModelSource model_source) {
-  return model_execution_manager_->GetModelProvider(segment_id, model_source);
+  return model_manager_->GetModelProvider(segment_id, model_source);
 }
 
 void ExecutionService::RequestModelExecution(

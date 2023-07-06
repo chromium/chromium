@@ -192,7 +192,7 @@ class SegmentationPlatformServiceImplTest
     segment_db_->LoadCallback(true);
 
     // If we build with TF Lite, we need to also inspect whether the
-    // ModelExecutionManagerImpl is publishing the correct data and whether that
+    // ModelManagerImpl is publishing the correct data and whether that
     // leads to the SegmentationPlatformServiceImpl doing the right thing.
     base::HistogramTester histogram_tester;
     proto::SegmentationModelMetadata metadata;
