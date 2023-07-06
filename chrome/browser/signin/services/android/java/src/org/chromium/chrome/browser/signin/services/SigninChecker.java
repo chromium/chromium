@@ -143,7 +143,7 @@ public class SigninChecker implements AccountTrackerService.Observer {
     }
 
     private void checkChildAccount(List<Account> accounts) {
-        AccountUtils.checkChildAccountStatus(
+        AccountUtils.checkChildAccountStatusLegacy(
                 mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
     }
 

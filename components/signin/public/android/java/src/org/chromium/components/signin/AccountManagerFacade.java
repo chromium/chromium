@@ -108,6 +108,7 @@ public interface AccountManagerFacade {
 
     /**
      * Checks the child account status of the given account.
+     * TODO(crbug.com/1462264): Replace Account with CoreAccountId.
      *
      * @param account The account to check the child account status.
      * @param listener The listener is called when the status of the account

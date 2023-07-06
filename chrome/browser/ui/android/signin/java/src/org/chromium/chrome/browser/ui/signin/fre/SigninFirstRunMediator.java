@@ -82,8 +82,10 @@ public class SigninFirstRunMediator
     private boolean mInitialLoadCompleted;
 
     private AccountPickerDialogCoordinator mDialogCoordinator;
-    private @Nullable String mSelectedAccountName;
-    private @Nullable String mDefaultAccountName;
+    // TODO(crbug.com/1462558): Replace with CoreAccountInfo.
+    private @Nullable String mSelectedAccountEmail;
+    // TODO(crbug.com/1462558): Replace with CoreAccountInfo.
+    private @Nullable String mDefaultAccountEmail;
     private boolean mAllowMetricsAndCrashUploading;
 
     SigninFirstRunMediator(Context context, ModalDialogManager modalDialogManager,
@@ -106,8 +108,8 @@ public class SigninFirstRunMediator
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mAccountManagerFacade.addObserver(this);
-        updateAccounts(
-                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts()));
+        updateAccounts(AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
+                mAccountManagerFacade.getCoreAccountInfos()));
     }
 
     PropertyModel getModel() {
@@ -127,7 +129,7 @@ public class SigninFirstRunMediator
     }
 
     private Account getSelectedAccount() {
-        return AccountUtils.createAccountFromName(mSelectedAccountName);
+        return AccountUtils.createAccountFromName(mSelectedAccountEmail);
     }
 
     private void onNativeLoaded() {
@@ -216,23 +218,18 @@ public class SigninFirstRunMediator
         updateSelectedAccountData(accountEmail);
     }
 
-    /** Implements {@link AccountsChangeObserver}. */
-    @Override
-    public void onAccountsChanged() {
-        mAccountManagerFacade.getAccounts().then(this::updateAccounts);
-    }
-
     /**
      * Implements {@link AccountsChangeObserver}.
      */
     @Override
     public void onCoreAccountInfosChanged() {
         // TODO(crbug.com/1450614): Replace onAccountsChanged() with this method.
+        mAccountManagerFacade.getCoreAccountInfos().then(this::updateAccounts);
     }
 
     @Override
     public void onAccountSelected(String accountName) {
-        setSelectedAccountName(accountName);
+        setSelectedAccountEmail(accountName);
         if (mDialogCoordinator != null) mDialogCoordinator.dismissDialog();
     }
 
@@ -275,7 +272,7 @@ public class SigninFirstRunMediator
             mDelegate.advanceToNextPage();
             return;
         }
-        if (mSelectedAccountName == null) {
+        if (mSelectedAccountEmail == null) {
             mDelegate.addAccount();
             return;
         }
@@ -299,7 +296,7 @@ public class SigninFirstRunMediator
             return;
         }
         mDelegate.recordFreProgressHistogram(
-                TextUtils.equals(mDefaultAccountName, mSelectedAccountName)
+                TextUtils.equals(mDefaultAccountEmail, mSelectedAccountEmail)
                         ? MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT
                         : MobileFreProgress.WELCOME_SIGNIN_WITH_NON_DEFAULT_ACCOUNT);
         // If the user signs into an account on the FRE, goes to the sync consent page and presses
@@ -309,7 +306,7 @@ public class SigninFirstRunMediator
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        if (signedInAccount != null && signedInAccount.getEmail().equals(mSelectedAccountName)) {
+        if (signedInAccount != null && signedInAccount.getEmail().equals(mSelectedAccountEmail)) {
             mDelegate.advanceToNextPage();
             return;
         }
@@ -391,36 +388,38 @@ public class SigninFirstRunMediator
                 || mModel.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
     }
 
-    private void setSelectedAccountName(String accountName) {
-        mSelectedAccountName = accountName;
-        updateSelectedAccountData(mSelectedAccountName);
+    private void setSelectedAccountEmail(String accountEmail) {
+        mSelectedAccountEmail = accountEmail;
+        updateSelectedAccountData(mSelectedAccountEmail);
     }
 
     private void updateSelectedAccountData(String accountEmail) {
-        if (TextUtils.equals(mSelectedAccountName, accountEmail)) {
+        if (TextUtils.equals(mSelectedAccountEmail, accountEmail)) {
             mModel.set(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA,
                     mProfileDataCache.getProfileDataOrDefault(accountEmail));
         }
     }
 
-    private void updateAccounts(List<Account> accounts) {
-        if (accounts.isEmpty()) {
-            mDefaultAccountName = null;
-            mSelectedAccountName = null;
+    private void updateAccounts(List<CoreAccountInfo> coreAccountInfos) {
+        if (coreAccountInfos.isEmpty()) {
+            mDefaultAccountEmail = null;
+            mSelectedAccountEmail = null;
             mModel.set(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA, null);
             if (mDialogCoordinator != null) {
                 mDialogCoordinator.dismissDialog();
             }
         } else {
-            mDefaultAccountName = accounts.get(0).name;
-            if (mSelectedAccountName == null
-                    || AccountUtils.findAccountByName(accounts, mSelectedAccountName) == null) {
-                setSelectedAccountName(mDefaultAccountName);
+            mDefaultAccountEmail = coreAccountInfos.get(0).getEmail();
+            if (mSelectedAccountEmail == null
+                    || AccountUtils.findCoreAccountInfoByEmail(
+                               coreAccountInfos, mSelectedAccountEmail)
+                            == null) {
+                setSelectedAccountEmail(mDefaultAccountEmail);
             }
         }
 
         AccountUtils.checkChildAccountStatus(
-                mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
+                mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
     }
 
     private void onChildAccountStatusReady(boolean isChild, @Nullable Account childAccount) {

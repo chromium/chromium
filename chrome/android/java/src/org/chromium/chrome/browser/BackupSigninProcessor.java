@@ -51,7 +51,7 @@ public final class BackupSigninProcessor {
         final AccountManagerFacade accountManagerFacade =
                 AccountManagerFacadeProvider.getInstance();
         accountManagerFacade.getAccounts().then(accounts -> {
-            AccountUtils.checkChildAccountStatus(
+            AccountUtils.checkChildAccountStatusLegacy(
                     accountManagerFacade, accounts, (isChild, unused) -> {
                         if (isChild) {
                             // TODO(crbug.com/1318350): Pre-AllowSyncOffForChildAccounts, the backup
