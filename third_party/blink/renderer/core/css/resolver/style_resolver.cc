@@ -1166,7 +1166,6 @@ void StyleResolver::InitStyleAndApplyInheritance(
   // ‘text-shadow’) from the originating element, even if we have no parent
   // highlight ComputedStyle we can inherit from.
   if (UsesHighlightPseudoInheritance(style_request.pseudo_id)) {
-    state.StyleBuilder().SetInsideLink(state.ElementLinkState());
     state.StyleBuilder().SetInForcedColorsMode(
         style_request.originating_element_style->InForcedColorsMode());
     state.StyleBuilder().SetForcedColorAdjust(
@@ -1179,16 +1178,6 @@ void StyleResolver::InitStyleAndApplyInheritance(
 
   if (!style_request.IsPseudoStyleRequest() && element.IsLink()) {
     state.StyleBuilder().SetIsLink();
-    EInsideLink link_state = state.ElementLinkState();
-    if (link_state != EInsideLink::kNotInsideLink) {
-      bool force_visited = false;
-      probe::ForcePseudoState(&element, CSSSelector::kPseudoVisited,
-                              &force_visited);
-      if (force_visited) {
-        link_state = EInsideLink::kInsideVisitedLink;
-      }
-    }
-    state.StyleBuilder().SetInsideLink(link_state);
   }
 }
 
@@ -1382,7 +1371,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
 
   ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
                                  selector_filter_, cascade.MutableMatchResult(),
-                                 state.StyleBuilder().InsideLink());
+                                 state.InsideLink());
 
   if (style_request.IsPseudoStyleRequest()) {
     collector.SetPseudoElementStyleRequest(style_request);
@@ -1470,6 +1459,10 @@ void StyleResolver::ApplyBaseStyleNoCache(
   }
   state.StyleBuilder().SetPseudoElementStyles(
       match_result.PseudoElementStyles());
+
+  // Now we're done with all operations that may overwrite InsideLink,
+  // so we can set it once and for all.
+  state.StyleBuilder().SetInsideLink(state.InsideLink());
 
   ApplyCallbackSelectors(state);
   if (element->IsLink() && (element->HasTagName(html_names::kATag) ||
@@ -2063,16 +2056,11 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
       INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                     matched_property_cache_inherited_hit, 1);
 
-      EInsideLink link_status = state.StyleBuilder().InsideLink();
       // If the cache item parent style has identical inherited properties to
       // the current parent style then the resulting style will be identical
       // too. We copy the inherited properties over from the cache and are done.
       state.StyleBuilder().InheritFrom(
           *cached_matched_properties->computed_style);
-
-      // Unfortunately the 'link status' is treated like an inherited property.
-      // We need to explicitly restore it.
-      state.StyleBuilder().SetInsideLink(link_status);
 
       is_inherited_cache_hit = true;
     }
@@ -2380,7 +2368,7 @@ StyleRuleList* StyleResolver::CollectMatchingRulesFromUnconnectedRuleSet(
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
                                  selector_filter_, match_result,
-                                 state.StyleBuilder().InsideLink());
+                                 state.InsideLink());
   collector.SetMatchingRulesFromNoStyleSheet(true);
   collector.SetMode(SelectorChecker::kCollectingStyleRules);
   MatchRequest match_request(rule_set, scope);

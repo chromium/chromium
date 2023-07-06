@@ -236,9 +236,9 @@ void StyleCascade::Apply(CascadeFilter filter) {
     state_.StyleBuilder().SetHasAuthorBorderRadius();
   }
 
-  if ((state_.StyleBuilder().InsideLink() != EInsideLink::kInsideVisitedLink &&
+  if ((state_.InsideLink() != EInsideLink::kInsideVisitedLink &&
        (resolver.AuthorFlags() & CSSProperty::kHighlightColors)) ||
-      (state_.StyleBuilder().InsideLink() == EInsideLink::kInsideVisitedLink &&
+      (state_.InsideLink() == EInsideLink::kInsideVisitedLink &&
        (resolver.AuthorFlags() & CSSProperty::kVisitedHighlightColors))) {
     state_.StyleBuilder().SetHasAuthorHighlightColors();
   }

@@ -138,7 +138,7 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
     return nullptr;
   }
   if (cache_item->computed_style->InsideLink() !=
-      style_resolver_state.StyleBuilder().InsideLink()) {
+      style_resolver_state.InsideLink()) {
     return nullptr;
   }
   if (!cache_item->DependenciesEqual(style_resolver_state)) {
